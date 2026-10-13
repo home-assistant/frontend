@@ -62,7 +62,6 @@ export class InfraredDevicesPage extends LitElement {
         template: (device) =>
           device.last_used
             ? html`<ha-relative-time
-                .hass=${this.hass}
                 .datetime=${device.last_used}
                 capitalize
               ></ha-relative-time>`

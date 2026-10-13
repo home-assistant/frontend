@@ -189,12 +189,6 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
           (!ACTION_BUILDING_BLOCKS.includes(type) || mode === "moved")
         ) {
           row.openSidebar();
-          if (this.narrow) {
-            row.scrollIntoView({
-              block: "start",
-              behavior: "smooth",
-            });
-          }
         }
 
         if (mode === "new") {

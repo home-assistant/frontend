@@ -13,7 +13,7 @@ import { storage } from "../../../../../common/decorators/storage";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
-import "../../../../../components/ha-formfield";
+import "../../../../../components/ha-empty-state";
 import "../../../../../components/ha-icon-next";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-svg-icon";
@@ -77,7 +77,7 @@ export class MQTTConfigPanel extends LitElement {
   })
   private _retain = false;
 
-  @state() private _configEntry?: ConfigEntry;
+  @state() private _configEntry?: ConfigEntry | null;
 
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -110,8 +110,11 @@ export class MQTTConfigPanel extends LitElement {
   );
 
   protected render(): TemplateResult | typeof nothing {
-    if (!this._configEntry) {
+    if (this._configEntry === undefined) {
       return nothing;
+    }
+    if (this._configEntry === null) {
+      return this._renderNotConfigured();
     }
     const isOnline = this._configEntry.state === "loaded";
     const deviceIds = this._MQTTDeviceIds(
@@ -136,6 +139,31 @@ export class MQTTConfigPanel extends LitElement {
             <mqtt-subscribe-card .hass=${this.hass}></mqtt-subscribe-card>
           </div>
         </div>
+      </hass-subpage>
+    `;
+  }
+
+  private _renderNotConfigured() {
+    return html`
+      <hass-subpage
+        .narrow=${this.narrow}
+        .hass=${this.hass}
+        header="MQTT"
+        back-path="/config/integrations/integration/mqtt"
+      >
+        <ha-empty-state
+          .icon=${mdiMqttLogo}
+          .heading=${this.hass.localize(
+            "ui.panel.config.mqtt.not_configured_title"
+          )}
+          .description=${this.hass.localize(
+            "ui.panel.config.mqtt.not_configured_description"
+          )}
+        >
+          <ha-button appearance="plain" @click=${this._setUp}>
+            ${this.hass.localize("ui.panel.config.mqtt.set_up")}
+          </ha-button>
+        </ha-empty-state>
       </hass-subpage>
     `;
   }
@@ -276,14 +304,9 @@ export class MQTTConfigPanel extends LitElement {
               .options=${qosLevel}
             >
             </ha-select>
-            <ha-formfield
-              label=${this.hass!.localize("ui.panel.config.mqtt.retain")}
+            <ha-switch @change=${this._handleRetain} .checked=${this._retain}
+              >${this.hass!.localize("ui.panel.config.mqtt.retain")}</ha-switch
             >
-              <ha-switch
-                @change=${this._handleRetain}
-                .checked=${this._retain}
-              ></ha-switch>
-            </ha-formfield>
           </div>
           <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
           <ha-code-editor
@@ -308,9 +331,10 @@ export class MQTTConfigPanel extends LitElement {
     const configEntries = await getConfigEntries(this.hass, {
       domain: "mqtt",
     });
-    this._configEntry = configEntries.find(
+    const activeEntry = configEntries.find(
       (entry) => entry.disabled_by === null && entry.source !== "ignore"
     );
+    this._configEntry = activeEntry ?? null;
   }
 
   private _handleTopic(ev: InputEvent) {
@@ -372,6 +396,15 @@ export class MQTTConfigPanel extends LitElement {
       ),
       entryId: this._configEntry.entry_id,
       navigateToResult: true,
+    });
+  };
+
+  private _setUp = async () => {
+    const manifest = await fetchIntegrationManifest(this.hass, "mqtt");
+    showConfigFlowDialog(this, {
+      startFlowHandler: "mqtt",
+      manifest,
+      dialogClosedCallback: () => this._fetchConfigEntry(),
     });
   };
 

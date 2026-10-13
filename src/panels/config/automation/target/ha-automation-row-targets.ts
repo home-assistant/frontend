@@ -1,5 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   mdiAlert,
   mdiAlertOctagon,
@@ -21,6 +21,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { until } from "lit/directives/until";
+import { consume } from "../../../../common/decorators/consume";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { transform } from "../../../../common/decorators/transform";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
@@ -52,6 +53,7 @@ import {
 } from "../../../../data/selector";
 import { extractFromTarget, type TargetType } from "../../../../data/target";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
+import { isConfigObject } from "../ui-support";
 import { getTargetIcon } from "./get_target_icon";
 import { getTargetText } from "./get_target_text";
 
@@ -101,6 +103,7 @@ export class HaAutomationRowTargets extends LitElement {
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: ContextType<typeof connectionContext>;
 
+  @state()
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
@@ -259,7 +262,17 @@ export class HaAutomationRowTargets extends LitElement {
   }
 
   protected render() {
-    const length = Object.keys(this.target || {}).length;
+    // In actions, the whole target can be a template
+    if (typeof this.target === "string" && isTemplate(this.target)) {
+      return html`<span class="target-wrapper">
+        ${this._renderTarget("entity", this.target)}
+      </span>`;
+    }
+
+    // Any other value that isn't a mapping is invalid. Without this, the
+    // characters of a string or the items of a list would count as targets.
+    const target = isConfigObject(this.target) ? this.target : undefined;
+    const length = Object.keys(target || {}).length;
     if (!length) {
       return this._renderTargetBadge(
         this.targetRequired
@@ -272,13 +285,13 @@ export class HaAutomationRowTargets extends LitElement {
         this.targetRequired
       );
     }
-    const totalLength = Object.values(this.target || {}).reduce(
+    const totalLength = Object.values(target || {}).reduce(
       (acc, val) => acc + ensureArray(val).length,
       0
     );
 
     if (totalLength <= 5) {
-      const targets = Object.entries(this.target!).reduce<
+      const targets = Object.entries(target!).reduce<
         ["floor" | "area" | "device" | "entity" | "label", string][]
       >((acc, [targetType, targetId]) => {
         const type = targetType.replace("_id", "") as
@@ -300,7 +313,7 @@ export class HaAutomationRowTargets extends LitElement {
       );
     }
 
-    const rows = Object.entries(this.target!)
+    const rows = Object.entries(target!)
       .reduce<["floor" | "area" | "device" | "entity" | "label", string][]>(
         (acc, [targetType, targetId]) => {
           const type = targetType.replace("_id", "") as

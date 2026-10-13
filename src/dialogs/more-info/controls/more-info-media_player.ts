@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   mdiLoginVariant,
   mdiMusicNote,
@@ -14,6 +13,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";

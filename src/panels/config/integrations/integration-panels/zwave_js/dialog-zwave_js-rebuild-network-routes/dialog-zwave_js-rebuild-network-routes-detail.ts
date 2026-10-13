@@ -1,8 +1,9 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../../common/decorators/consume";
 import { transform } from "../../../../../../common/decorators/transform";
 import { computeAreaName } from "../../../../../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../../../../../common/entity/compute_device_name";
@@ -79,9 +80,11 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
   })
   private _progress?: number[];
 
+  @state()
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
+  @state()
   @consume({ context: registriesContext, subscribe: true })
   private _registries!: ContextType<typeof registriesContext>;
 

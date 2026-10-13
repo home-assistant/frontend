@@ -1,9 +1,10 @@
 import { mdiFileCodeOutline, mdiPackageVariant, mdiWeb } from "@mdi/js";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -31,6 +32,7 @@ export class HaIntegrationCardFooter extends LitElement {
 
   @property({ attribute: false }) public domainEntities: string[] = [];
 
+  @state()
   @consume({ context: devicesContext, subscribe: true })
   private _devices!: ContextType<typeof devicesContext>;
 

@@ -1,16 +1,15 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiFlash, mdiFlashOff } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { apiContext } from "../../data/context";
+import { apiContext, formattersContext } from "../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
-import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-switch";
 import { getToggleAction } from "../../common/entity/get_toggle_action";
@@ -34,6 +33,10 @@ export class HaEntityToggle extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api?: ContextType<typeof apiContext>;
 
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters?: ContextType<typeof formattersContext>;
+
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property() public label?: string;
@@ -45,13 +48,15 @@ export class HaEntityToggle extends LitElement {
       return html`<ha-switch disabled></ha-switch> `;
     }
 
+    const name = this._formatters?.formatEntityName(this.stateObj) ?? "";
+
     if (
       this.stateObj.attributes.assumed_state ||
       this.stateObj.state === UNKNOWN
     ) {
       return html`
         <ha-icon-button
-          .label=${`Turn ${computeStateName(this.stateObj)} off`}
+          .label=${`Turn ${name} off`}
           .path=${mdiFlashOff}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOff}
@@ -60,7 +65,7 @@ export class HaEntityToggle extends LitElement {
           }
         ></ha-icon-button>
         <ha-icon-button
-          .label=${`Turn ${computeStateName(this.stateObj)} on`}
+          .label=${`Turn ${name} on`}
           .path=${mdiFlash}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOn}
@@ -69,22 +74,13 @@ export class HaEntityToggle extends LitElement {
       `;
     }
 
-    const switchTemplate = html`<ha-switch
-      aria-label=${`Toggle ${computeStateName(this.stateObj)} ${
-        this._isOn ? "off" : "on"
-      }`}
+    return html`<ha-switch
+      aria-label=${`Toggle ${name} ${this._isOn ? "off" : "on"}`}
       .checked=${this._isOn}
       .disabled=${this.stateObj.state === UNAVAILABLE}
       @change=${this._toggleChanged}
-    ></ha-switch>`;
-
-    if (!this.label) {
-      return switchTemplate;
-    }
-
-    return html`
-      <ha-formfield .label=${this.label}>${switchTemplate}</ha-formfield>
-    `;
+      >${this.label}</ha-switch
+    >`;
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {

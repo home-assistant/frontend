@@ -282,6 +282,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             entityState.entity_id === HOME_ZONE_ENTITY_ID && this._canEditCore,
           radius_editable:
             entityState.entity_id === HOME_ZONE_ENTITY_ID && this._canEditCore,
+          fit: !entityState.attributes.passive,
         })
       );
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
@@ -295,6 +296,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         ),
         location_editable: true,
         radius_editable: true,
+        fit: !zone.passive,
       }));
       return storageLocations.concat(stateLocations);
     }
@@ -409,14 +411,15 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       Boolean(this.hass.user?.is_admin) &&
       ["storage", "default"].includes(this.hass.config.config_source);
     this._fetchData();
-    if (this.route.path === "/new") {
-      navigate("/config/zone", { replace: true });
-      this._createZone();
-    }
   }
 
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
+    // The page is kept between visits, so routes are handled on every change
+    if (changedProps.has("route") && this.route.path === "/new") {
+      this._openNewZone();
+      return;
+    }
     if (
       !this.route.path.startsWith("/edit/") ||
       !this._stateItems ||
@@ -588,6 +591,12 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._openDialog();
   }
 
+  private async _openNewZone() {
+    if (await navigate("/config/zone", { replace: true })) {
+      this._createZone();
+    }
+  }
+
   private _itemClicked(ev: CustomEvent) {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
@@ -713,6 +722,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   private async _openDialog(entry?: Zone) {
     showZoneDetailDialog(this, {
       entry,
+      location: entry ? undefined : this._map?.getView()?.center,
       createEntry: (values) => this._createEntry(values),
       updateEntry: entry
         ? (values) => this._updateEntry(entry, values, true)
@@ -751,7 +761,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
     .zone-avatar ha-icon {
       color: inherit;
-      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
     }
     ha-icon-button {
       --mdc-theme-text-disabled-on-light: var(--disabled-text-color);

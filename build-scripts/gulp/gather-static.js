@@ -77,10 +77,6 @@ async function copyMapPanel(staticDir) {
   // Style, glyphs and sprites for the vector base map
   await ensureMapAssets();
   fs.copySync(mapAssetsDir, staticPath("map/"));
-  copyFileDir(
-    npmPath("@mapbox/mapbox-gl-rtl-text/dist/mapbox-gl-rtl-text.js"),
-    staticPath("map/")
-  );
   // Controls and popups of the native MapLibre engine
   copyFileDir(npmPath("maplibre-gl/dist/maplibre-gl.css"), staticPath("map/"));
 }
@@ -177,6 +173,7 @@ gulp.task("copy-static-landing-page", async () => {
 
   copyFonts(paths.landingPage_output_static);
   copyTranslations(paths.landingPage_output_static);
+  copyLocaleData(paths.landingPage_output_static);
 });
 
 gulp.task("copy-static-e2e-test-app", async () => {

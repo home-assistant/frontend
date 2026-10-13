@@ -17,12 +17,18 @@ A styled container with roving-tabindex keyboard navigation. Host role is
 Home/End jump to the first/last enabled item; Enter/Space activates the
 focused item.
 
+With `virtual-focus`, DOM focus stays outside the list, for example in the
+search field of a picker. The list then ignores key presses. The element that
+owns the focus calls `moveActiveItem()`, and the list marks the row it points at
+with the `active` attribute and scrolls it into view instead of focusing it.
+
 **Attributes**
 
-| Name         | Type    | Default | Description                    |
-| ------------ | ------- | ------- | ------------------------------ |
-| `wrap-focus` | Boolean | `false` | Arrow keys wrap past the ends. |
-| `aria-label` | String  | —       | Accessible name.               |
+| Name            | Type    | Default | Description                                                      |
+| --------------- | ------- | ------- | ---------------------------------------------------------------- |
+| `wrap-focus`    | Boolean | `false` | Arrow keys wrap past the ends.                                   |
+| `virtual-focus` | Boolean | `false` | Keep DOM focus outside the list and mark the active row instead. |
+| `aria-label`    | String  | —       | Accessible name.                                                 |
 
 **Events**
 
@@ -36,6 +42,10 @@ focused item.
 - `getActiveItemIndex()` — current active index, or `-1`.
 - `setActiveItemIndex(index, focusItem?)` — move the active index without
   necessarily focusing.
+- `moveActiveItem(target)` — move the active row to `"next"`, `"previous"`,
+  `"first"`, `"last"`, `"next-page"` or `"previous-page"`, skipping rows that
+  are not interactive or disabled. Meant for `virtual-focus`.
+- `clearActiveItem()` — clear the active row.
 - `updateListItems()` — re-discover slotted items (called automatically on
   slotchange).
 
@@ -134,6 +144,8 @@ Non-interactive list row. Host role is `listitem`. Inherits everything from
 - `interactive` (Boolean, default `false`) — opt this row into the parent
   list's roving tabindex. Useful for sortable rows that need keyboard focus
   but no click action. Interactive subclasses set this automatically.
+- `active` (Boolean) — set by a parent list with `virtual-focus` on the row
+  that keyboard navigation points at.
 
 **CSS custom properties**
 
@@ -143,6 +155,8 @@ Non-interactive list row. Host role is `listitem`. Inherits everything from
   the focus-in animation.
 - `--ha-list-item-focus-offset` — focus outline offset.
 - `--ha-list-item-focus-background` — background color on keyboard focus.
+- `--ha-list-item-active-background` — background color of the `active` row.
+  Defaults to `--ha-list-item-focus-background`.
 
 ### `<ha-list-item-button>`
 

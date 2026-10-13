@@ -1,6 +1,4 @@
-import { consume } from "@lit/context";
 import {
-  mdiAppleKeyboardCommand,
   mdiArrowDown,
   mdiArrowUp,
   mdiCommentEditOutline,
@@ -14,6 +12,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../../common/decorators/consume";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
@@ -53,6 +52,8 @@ import {
   overflowStyles,
   rowStyles,
 } from "../styles";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import { scrollRowIntoView } from "../scroll-row-into-view";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -119,9 +120,7 @@ export default class HaAutomationOptionRow extends LitElement {
     if (typeof conditions[0] === "string") {
       str += conditions[0];
     } else {
-      str += describeCondition(conditions[0], this.hass, this._entityReg, {
-        hideTriggerIds: withTriggerReferences,
-      });
+      str += describeCondition(conditions[0], this.hass, this._entityReg);
     }
     // When chips are rendered, the additional-condition count follows them.
     if (conditions.length > 1 && !withTriggerReferences) {
@@ -310,17 +309,7 @@ export default class HaAutomationOptionRow extends LitElement {
                       "ui.panel.config.automation.editor.actions.type.choose.remove_option"
                     ),
                     html`<span class="shortcut">
-                      <span
-                        >${
-                          isMac
-                            ? html`<ha-svg-icon
-                                .path=${mdiAppleKeyboardCommand}
-                              ></ha-svg-icon>`
-                            : this.hass.localize(
-                                "ui.panel.config.automation.editor.ctrl"
-                              )
-                        }</span
-                      >
+                      <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                       <span>+</span>
                       <span
                         >${this.hass.localize(
@@ -602,10 +591,7 @@ export default class HaAutomationOptionRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180); // duration of transition of added padding for bottom sheet
     }
   }

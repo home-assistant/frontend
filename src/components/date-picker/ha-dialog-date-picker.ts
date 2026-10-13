@@ -1,10 +1,11 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiBackspace, mdiCalendarToday } from "@mdi/js";
 import "cally";
 import type { HassConfig } from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import {
   formatCallyMonthYear,
   formatDateMonthYear,

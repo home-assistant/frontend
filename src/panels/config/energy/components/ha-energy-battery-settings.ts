@@ -106,7 +106,8 @@ export class EnergyBatterySettings extends LitElement {
                               >${
                                 source.name ||
                                 getStatisticLabel(
-                                  this.hass,
+                                  this.hass.states,
+                                  this.hass.formatEntityName,
                                   source.stat_energy_from,
                                   this.statsMetadata?.[source.stat_energy_from]
                                 )
@@ -118,7 +119,8 @@ export class EnergyBatterySettings extends LitElement {
                                 : html`
                                     <span class="label"
                                       >${getStatisticLabel(
-                                        this.hass,
+                                        this.hass.states,
+                                        this.hass.formatEntityName,
                                         source.stat_energy_to,
                                         this.statsMetadata?.[
                                           source.stat_energy_to

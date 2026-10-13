@@ -5,15 +5,15 @@ You are helping develop the Home Assistant frontend. This repository is a TypeSc
 ## Essential Commands
 
 ```bash
-yarn lint          # ESLint + Prettier + TypeScript + Lit
-yarn format        # Auto-fix ESLint + Prettier
-yarn lint:types    # TypeScript compiler, run without file arguments
-yarn test          # Vitest
-yarn dev           # App dev server, supports --background/--status/--stop/--logs
-yarn dev:serve     # Local serving dev server, supports -c core URL, -p port, and dev flags
+pnpm lint          # ESLint + Prettier + TypeScript + Lit
+pnpm format        # Auto-fix ESLint + Prettier
+pnpm lint:types    # TypeScript compiler, run without file arguments
+pnpm test          # Vitest
+pnpm dev           # App dev server, supports --background/--status/--stop/--logs
+pnpm dev:serve     # Local serving dev server, supports -c core URL, -p port, and dev flags
 ```
 
-Never run `tsc` or `yarn lint:types` with file arguments. When `tsc` receives file arguments, it ignores `tsconfig.json` and can emit `.js` files into `src/`. Always run `yarn lint:types` without arguments. For individual file type checking, rely on editor diagnostics.
+Never run `tsc` or `pnpm lint:types` with file arguments. When `tsc` receives file arguments, it ignores `tsconfig.json` and can emit `.js` files into `src/`. Always run `pnpm lint:types` without arguments. For individual file type checking, rely on editor diagnostics.
 
 ## Architecture
 

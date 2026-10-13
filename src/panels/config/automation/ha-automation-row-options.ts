@@ -1,7 +1,8 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { createDurationData } from "../../../common/datetime/create_duration_data";
 import { formatDurationNarrow } from "../../../common/datetime/format_duration";
 import { hasTemplate } from "../../../common/string/has-template";

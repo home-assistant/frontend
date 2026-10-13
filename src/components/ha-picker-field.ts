@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiClose, mdiMenuDown } from "@mdi/js";
 import {
   css,
@@ -9,14 +9,17 @@ import {
   type TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { internationalizationContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import "./ha-combo-box-item";
-import type { HaComboBoxItem } from "./ha-combo-box-item";
 import "./ha-icon";
 import "./ha-icon-button";
+import "./ha-ripple";
+import "./ha-svg-icon";
 
 declare global {
   interface HASSDomEvents {
@@ -30,7 +33,10 @@ export type PickerValueRenderer = (value: string) => TemplateResult<1>;
 export class HaPickerField extends PickerMixin(LitElement) {
   @property({ type: Boolean, reflect: true }) public invalid = false;
 
-  @query("ha-combo-box-item", true) public item!: HaComboBoxItem;
+  @property({ type: String, attribute: "aria-label" })
+  public ariaLabel: string | null = null;
+
+  @query("#trigger", true) private _trigger?: HTMLButtonElement;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -38,7 +44,7 @@ export class HaPickerField extends PickerMixin(LitElement) {
 
   public async focus() {
     await this.updateComplete;
-    await this.item?.focus();
+    this._trigger?.focus();
   }
 
   protected render() {
@@ -56,6 +62,9 @@ export class HaPickerField extends PickerMixin(LitElement) {
           >`
         : nothing;
 
+    const labelShown = !!this.label && (hasValue || !this.placeholder);
+    const hiddenLabel = labelShown ? undefined : this.ariaLabel || this.label;
+
     const headlineContent = hasValue
       ? this.valueRenderer
         ? this.valueRenderer(this.value ?? "")
@@ -67,54 +76,65 @@ export class HaPickerField extends PickerMixin(LitElement) {
         : nothing;
 
     return html`
-      <ha-combo-box-item
-        aria-label=${ifDefined(this.label || this.placeholder)}
-        .disabled=${this.disabled}
-        type="button"
-        compact
-      >
+      <div class=${classMap({ field: true, disabled: this.disabled })}>
+        <ha-ripple .disabled=${this.disabled}></ha-ripple>
         ${
-          this.image
-            ? html`<img
-                alt=${this.label ?? ""}
-                slot="start"
-                .src=${this.image}
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-              />`
-            : this.icon
-              ? html`<ha-icon slot="start" .icon=${this.icon}></ha-icon>`
-              : html`<slot name="start"></slot>`
-        }
-        ${overlineLabel}${headlineContent}
-        ${
-          this.unknown
-            ? html`<div slot="supporting-text" class="unknown">
-                ${
-                  this.unknownItemText ||
-                  this._i18n?.localize("ui.components.combo-box.unknown_item")
-                }
-              </div>`
+          hiddenLabel
+            ? html`<span id="hidden-label" hidden>${hiddenLabel}</span>`
             : nothing
         }
+        <button
+          id="trigger"
+          class="trigger"
+          type="button"
+          aria-labelledby=${ifDefined(
+            hiddenLabel ? "hidden-label trigger" : undefined
+          )}
+          ?disabled=${this.disabled}
+        >
+          <ha-combo-box-item .disabled=${this.disabled}>
+            ${
+              this.image
+                ? html`<img
+                    alt=${this.label ?? ""}
+                    slot="start"
+                    .src=${this.image}
+                    crossorigin="anonymous"
+                    referrerpolicy="no-referrer"
+                  />`
+                : this.icon
+                  ? html`<ha-icon slot="start" .icon=${this.icon}></ha-icon>`
+                  : html`<slot name="start" slot="start"></slot>`
+            }
+            ${overlineLabel}${headlineContent}
+            ${
+              this.unknown
+                ? html`<div slot="supporting-text" class="unknown">
+                    ${
+                      this.unknownItemText ||
+                      this._i18n?.localize(
+                        "ui.components.combo-box.unknown_item"
+                      )
+                    }
+                  </div>`
+                : nothing
+            }
+          </ha-combo-box-item>
+        </button>
         ${
           showClearIcon
             ? html`
                 <ha-icon-button
                   class="clear"
-                  slot="end"
+                  .label=${this._i18n?.localize("ui.common.clear")}
                   @click=${this._clear}
                   .path=${mdiClose}
                 ></ha-icon-button>
               `
             : nothing
         }
-        <ha-svg-icon
-          class="arrow"
-          slot="end"
-          .path=${mdiMenuDown}
-        ></ha-svg-icon>
-      </ha-combo-box-item>
+        <ha-svg-icon class="arrow" .path=${mdiMenuDown}></ha-svg-icon>
+      </div>
     `;
   }
 
@@ -126,31 +146,61 @@ export class HaPickerField extends PickerMixin(LitElement) {
   static get styles(): CSSResultGroup {
     return [
       css`
-        ha-combo-box-item[disabled] {
-          background-color: var(--ha-color-form-background-disabled);
-          --md-list-item-disabled-opacity: 0.5;
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-        ha-combo-box-item {
+        .field {
           position: relative;
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          padding-inline-end: var(--ha-space-2);
+          box-sizing: border-box;
           background-color: var(--ha-color-form-background);
           border-radius: var(--ha-border-radius-sm);
           border-end-end-radius: 0;
           border-end-start-radius: 0;
-          --md-list-item-one-line-container-height: 56px;
-          --md-list-item-two-line-container-height: 56px;
-          --md-list-item-top-space: 0px;
-          --md-list-item-bottom-space: 0px;
-          --md-list-item-leading-space: var(--ha-space-4);
-          --md-list-item-trailing-space: var(--ha-space-2);
-          --ha-md-list-item-gap: var(--ha-space-2);
-          /* Remove the default focus ring */
-          --md-focus-ring-width: 0px;
-          --md-focus-ring-duration: 0s;
+          cursor: pointer;
+          --ha-ripple-color: var(--primary-text-color);
         }
 
-        ha-combo-box-item:after {
+        .field.disabled {
+          background-color: var(--ha-color-form-background-disabled);
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .trigger {
+          display: flex;
+          flex: 1;
+          min-width: 0;
+          align-self: stretch;
+          margin: 0;
+          padding: 0;
+          border: none;
+          background: none;
+          color: inherit;
+          font: inherit;
+          text-align: start;
+          cursor: inherit;
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        /* The bottom line shows focus instead */
+        .trigger:focus-visible {
+          outline: none;
+        }
+
+        ha-combo-box-item {
+          flex: 1;
+          min-width: 0;
+          --ha-combo-box-item-min-height: 56px;
+          --ha-combo-box-item-two-line-min-height: 56px;
+          --ha-combo-box-item-padding-block: 0px;
+          --ha-combo-box-item-padding-inline-start: var(--ha-space-4);
+          --ha-combo-box-item-padding-inline-end: 0px;
+          --ha-combo-box-item-gap: var(--ha-space-2);
+          --ha-combo-box-item-disabled-opacity: 0.5;
+        }
+
+        .field:after {
           display: block;
           content: "";
           position: absolute;
@@ -166,28 +216,31 @@ export class HaPickerField extends PickerMixin(LitElement) {
             background-color 180ms ease-in-out;
         }
 
-        ha-combo-box-item:focus:after {
+        .field:focus-within:after {
           height: 2px;
           background-color: var(--mdc-theme-primary);
         }
 
-        :host([unknown]) ha-combo-box-item {
+        :host([unknown]) .field {
           background-color: var(--ha-color-fill-warning-quiet-resting);
         }
 
-        :host([invalid]) ha-combo-box-item:after {
+        :host([invalid]) .field:after {
           height: 2px;
           background-color: var(--mdc-theme-error, var(--error-color, #b00020));
         }
 
         .clear {
           margin: 0 -8px;
+          color: var(--secondary-text-color);
           --ha-icon-button-size: 32px;
           --ha-icon-button-padding-inline: var(--ha-space-1);
         }
         .arrow {
           --mdc-icon-size: 20px;
           width: 32px;
+          flex: none;
+          color: var(--secondary-text-color);
         }
 
         .placeholder {

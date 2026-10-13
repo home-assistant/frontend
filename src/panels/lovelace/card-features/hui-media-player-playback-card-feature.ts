@@ -1,12 +1,13 @@
-import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityState,
   consumeLocalize,
 } from "../../../common/decorators/consume-context-entry";
+import { getShadowRootHost } from "../../../common/dom/get-shadow-root-host";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
@@ -138,9 +139,8 @@ class HuiMediaPlayerPlaybackCardFeature
     if (!this.isConnected) {
       return;
     }
-    const host = (this.getRootNode() as ShadowRoot).host as
-      HTMLElement | undefined;
-    const width = host?.clientWidth ?? this.clientWidth ?? 0;
+
+    const width = getShadowRootHost(this)?.clientWidth ?? this.clientWidth ?? 0;
     this._narrow = width < 200;
   }
 

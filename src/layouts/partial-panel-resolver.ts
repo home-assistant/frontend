@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   STATE_NOT_RUNNING,
   STATE_RUNNING,
@@ -6,6 +5,9 @@ import {
 } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { mainWindow } from "../common/dom/get_main_window";
+import { navigate } from "../common/navigate";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
 import { promiseTimeout } from "../common/util/promise-timeout";
@@ -44,6 +46,9 @@ const COMPONENTS = {
   map: { load: () => import("../panels/map/ha-panel-map") },
   my: { load: () => import("../panels/my/ha-panel-my") },
   profile: { load: () => import("../panels/profile/ha-panel-profile") },
+  marketplace: {
+    load: () => import("../panels/marketplace/ha-panel-marketplace"),
+  },
   todo: { load: () => import("../panels/todo/ha-panel-todo") },
   "media-browser": {
     load: () => import("../panels/media-browser/ha-panel-media-browser"),
@@ -172,8 +177,22 @@ class PartialPanelResolver extends HassRouterPage {
       routes[panel.url_path] = data;
     });
 
+    // The Marketplace replaced HACS, links in dashboards still point at /hacs.
+    // No route alias for it: the router resolves those before beforeRender.
+    const replacesHacs = Boolean(routes.marketplace && !routes.hacs);
+
     return {
       beforeRender: (page) => {
+        // Rendered right away, and moved to where the Marketplace loads its
+        // translations for. The rest of the path and the query go along.
+        if (page === "hacs" && replacesHacs) {
+          const { pathname, search, hash } = mainWindow.location;
+          navigate(
+            `${pathname.replace(/^\/hacs/, "/marketplace")}${search}${hash}`,
+            { replace: true }
+          );
+          return undefined;
+        }
         if (!page || !routes[page]) {
           return getDefaultPanel(this.hass).url_path;
         }

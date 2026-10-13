@@ -48,7 +48,6 @@ class StateCardDisplay extends LitElement {
             this.stateObj.state !== UNAVAILABLE &&
             this.stateObj.state !== UNKNOWN
               ? html`<hui-timestamp-display
-                  .hass=${this.hass}
                   .ts=${new Date(this.stateObj.state)}
                   .format=${
                     this.stateObj.attributes.device_class ===
@@ -87,6 +86,8 @@ class StateCardDisplay extends LitElement {
         }
         .state.has-unit_of_measurement {
           white-space: nowrap;
+          direction: ltr;
+          justify-content: var(--float-end, right);
         }
       `,
     ];

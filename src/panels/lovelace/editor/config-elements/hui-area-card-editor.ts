@@ -236,11 +236,18 @@ export class HuiAreaCardEditor
         return [];
       }
 
-      const binarySensorFilter = generateEntityFilter(this.hass!, {
-        domain: "binary_sensor",
-        area,
-        entity_category: "none",
-      });
+      const binarySensorFilter = generateEntityFilter(
+        this.hass!.states,
+        this.hass!.entities,
+        this.hass!.devices,
+        this.hass!.areas,
+        this.hass!.floors,
+        {
+          domain: "binary_sensor",
+          area,
+          entity_category: "none",
+        }
+      );
 
       const classes = Object.keys(this.hass!.entities)
         .filter(
@@ -263,12 +270,19 @@ export class HuiAreaCardEditor
         return [];
       }
 
-      const sensorFilter = generateEntityFilter(this.hass!, {
-        domain: "sensor",
-        area,
-        device_class: numericDeviceClasses,
-        entity_category: "none",
-      });
+      const sensorFilter = generateEntityFilter(
+        this.hass!.states,
+        this.hass!.entities,
+        this.hass!.devices,
+        this.hass!.areas,
+        this.hass!.floors,
+        {
+          domain: "sensor",
+          area,
+          device_class: numericDeviceClasses,
+          entity_category: "none",
+        }
+      );
 
       const classes = Object.keys(this.hass!.entities)
         .filter((id) => sensorFilter(id) && !excludeEntities?.includes(id))

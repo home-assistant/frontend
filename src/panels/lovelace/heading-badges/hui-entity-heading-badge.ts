@@ -137,11 +137,7 @@ export class HuiEntityHeadingBadge
     if (!stateObj) {
       return html`
         <ha-heading-badge class="error" .title=${entityId}>
-          <ha-svg-icon
-            slot="icon"
-            .hass=${this.hass}
-            .path=${mdiAlertCircle}
-          ></ha-svg-icon>
+          <ha-svg-icon slot="icon" .path=${mdiAlertCircle}></ha-svg-icon>
           -
         </ha-heading-badge>
       `;

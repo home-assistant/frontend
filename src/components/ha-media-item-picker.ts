@@ -78,7 +78,6 @@ export class HaMediaItemPicker extends LitElement {
     if (this.selector.media?.image_upload && !this.value) {
       return html`${this.label ? html`<label>${this.label}</label>` : nothing}
         <ha-picture-upload
-          .hass=${this.hass}
           .value=${null}
           .contentIdHelper=${this.selector.media?.content_id_helper}
           select-media

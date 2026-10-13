@@ -6,7 +6,10 @@ import type {
   Node,
 } from "../../../../../components/chart/ha-sankey-chart";
 import type { DeviceConsumptionEnergyPreference } from "../../../../../data/energy";
-import type { HomeAssistant } from "../../../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantRegistries,
+} from "../../../../../types";
 
 // Devices below this fraction of the home total are grouped into an "Other" node
 export const MIN_SANKEY_THRESHOLD_FACTOR = 0.001; // 0.1% of home total
@@ -413,7 +416,8 @@ export const buildSankeyDeviceNodes = (
 
 /** Bucket device nodes by their entity's area and floor. */
 export const groupSankeyDevicesByFloorAndArea = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
+  registries: HomeAssistantRegistries,
   deviceNodes: Node[]
 ): {
   areas: Record<string, { value: number; devices: Node[] }>;
@@ -432,14 +436,14 @@ export const groupSankeyDevicesByFloorAndArea = (
     },
   };
   deviceNodes.forEach((deviceNode) => {
-    const entity = hass.states[deviceNode.id];
+    const entity = states[deviceNode.id];
     const { area, floor } = entity
       ? getEntityContext(
           entity,
-          hass.entities,
-          hass.devices,
-          hass.areas,
-          hass.floors
+          registries.entities,
+          registries.devices,
+          registries.areas,
+          registries.floors
         )
       : { area: null, floor: null };
     if (area) {
@@ -523,7 +527,8 @@ export const getSankeyDeviceSections = (
 };
 
 export interface BuildSankeyLayoutOptions {
-  hass: HomeAssistant;
+  states: HomeAssistant["states"];
+  registries: HomeAssistantRegistries;
   computedStyle: CSSStyleDeclaration;
   localize: HomeAssistant["localize"];
   deviceNodes: SankeyDeviceNode[];
@@ -543,7 +548,8 @@ export const buildSankeyLayout = (
   options: BuildSankeyLayoutOptions
 ): { nodes: Node[]; links: Link[] } => {
   const {
-    hass,
+    states,
+    registries,
     computedStyle,
     localize,
     deviceNodes,
@@ -565,15 +571,16 @@ export const buildSankeyLayout = (
 
   if (groupByArea || groupByFloor) {
     const { areas, floors } = groupSankeyDevicesByFloorAndArea(
-      hass,
+      states,
+      registries,
       devicesWithoutParent
     );
 
     Object.keys(floors)
       .sort(
         (a, b) =>
-          (hass.floors[b]?.level ?? -Infinity) -
-          (hass.floors[a]?.level ?? -Infinity)
+          (registries.floors[b]?.level ?? -Infinity) -
+          (registries.floors[a]?.level ?? -Infinity)
       )
       .forEach((floorId) => {
         let floorNodeId = `floor_${floorId}`;
@@ -583,7 +590,7 @@ export const buildSankeyLayout = (
         } else {
           nodes.push({
             id: floorNodeId,
-            label: hass.floors[floorId].name,
+            label: registries.floors[floorId].name,
             value: floors[floorId].value,
             index: 2,
             color: primaryColor,
@@ -604,7 +611,7 @@ export const buildSankeyLayout = (
             const areaNodeId = `area_${areaId}`;
             nodes.push({
               id: areaNodeId,
-              label: hass.areas[areaId]?.name || areaId,
+              label: registries.areas[areaId]?.name || areaId,
               value: areas[areaId].value,
               index: 3,
               color: primaryColor,

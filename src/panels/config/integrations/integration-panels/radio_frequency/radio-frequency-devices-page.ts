@@ -81,7 +81,6 @@ export class RadioFrequencyDevicesPage extends LitElement {
           template: (transmitter) =>
             transmitter.last_used
               ? html`<ha-relative-time
-                  .hass=${this.hass}
                   .datetime=${transmitter.last_used}
                   capitalize
                 ></ha-relative-time>`

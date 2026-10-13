@@ -80,7 +80,7 @@ export class DialogEnergyGasSettings
       ? { ...params.source }
       : emptyGasEnergyPreference();
     this._pickedDisplayUnit = getDisplayUnit(
-      this.hass,
+      this.hass.states,
       params.source?.stat_energy_from,
       params.source?.stat_energy_from
         ? params.statsMetadata?.[params.source?.stat_energy_from]
@@ -224,7 +224,8 @@ export class DialogEnergyGasSettings
           .placeholder=${
             this._source?.stat_energy_from
               ? getStatisticLabel(
-                  this.hass,
+                  this.hass.states,
+                  this.hass.formatEntityName,
                   this._source.stat_energy_from,
                   this._params?.statsMetadata?.[this._source.stat_energy_from]
                 )
@@ -399,7 +400,7 @@ export class DialogEnergyGasSettings
 
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (ev.detail.value) {
-      const [metadata] = await getStatisticMetadata(this.hass, [
+      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
         ev.detail.value,
       ]);
       if (
@@ -412,7 +413,7 @@ export class DialogEnergyGasSettings
         this.requestUpdate("_params");
       }
       this._pickedDisplayUnit = getDisplayUnit(
-        this.hass,
+        this.hass.states,
         ev.detail.value,
         metadata
       );

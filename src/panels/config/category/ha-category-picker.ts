@@ -192,7 +192,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
         .placeholder=${this.placeholder}

@@ -16,6 +16,7 @@ import {
 } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import type { PropertyValues } from "lit";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
@@ -74,6 +75,9 @@ export class HatScriptGraph extends LitElement {
 
   @property({ attribute: false }) public selected?: string;
 
+  /** Accessible name per node path, from `buildTraceLabels`. */
+  @property({ attribute: false }) public labels?: Record<string, string>;
+
   @query("hat-graph-node[active], hat-graph-branch[active]")
   private _activeNode?: HTMLElement;
 
@@ -106,6 +110,9 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .notEnabled=${node.disabled}
         .error=${node.error}
+        role="img"
+        aria-label=${ifDefined(this.labels?.[path])}
+        aria-current=${ifDefined(this.selected === path || undefined)}
         tabindex=${hasTrace ? "0" : "-1"}
       >
         <ha-trigger-icon
@@ -132,27 +139,49 @@ export class HatScriptGraph extends LitElement {
     other: this._renderOtherNode,
   };
 
-  private _renderActionNode(node: TraceActionNode, graphStart = false) {
+  private _renderActionNode(
+    node: TraceActionNode,
+    graphStart = false,
+    graphEnd = false
+  ) {
     const type = node.actionType ?? "other";
     return (this._typeRenderers[type] ?? this._renderOtherNode).bind(this)(
       node,
-      graphStart
+      graphStart,
+      graphEnd
+    );
+  }
+
+  // Only the last action of a branch in a block that ends the graph ends it.
+  private _renderBranchActions(actions: TraceActionNode[], graphEnd: boolean) {
+    return actions.map((action, i) =>
+      this._renderActionNode(
+        action,
+        false,
+        graphEnd && i === actions.length - 1
+      )
     );
   }
 
   private _renderChooseNode(
     node: TraceActionNode<ChooseAction>,
-    graphStart = false
+    graphStart = false,
+    graphEnd = false
   ) {
     const { config, path, track } = node;
     const defaultBranch = node.branches[node.branches.length - 1];
     return html`
       <hat-graph-branch
+        .end=${graphEnd}
         tabindex=${node.hasTrace ? "0" : "-1"}
         @focus=${this._selectNode(config, path, "action")}
         ?track=${track}
         ?active=${this.selected === path}
         .notEnabled=${node.disabled}
+        role="group"
+        aria-label=${ifDefined(this.labels?.[path])}
+        aria-current=${ifDefined(this.selected === path || undefined)}
+        aria-disabled=${ifDefined(node.disabled || undefined)}
       >
         <hat-graph-node
           .graphStart=${graphStart}
@@ -164,6 +193,7 @@ export class HatScriptGraph extends LitElement {
           .error=${node.error}
           slot="head"
           nofocus
+          aria-hidden="true"
         ></hat-graph-node>
 
         ${node.branches.slice(0, -1).map(
@@ -187,34 +217,52 @@ export class HatScriptGraph extends LitElement {
                 ?track=${branch.hasTrace}
                 ?active=${this.selected === branch.path}
                 .notEnabled=${branch.disabled}
+                role="img"
+                aria-label=${ifDefined(this.labels?.[branch.path])}
+                aria-current=${ifDefined(this.selected === branch.path || undefined)}
               ></hat-graph-node>
-              ${branch.children.map((action) => this._renderActionNode(action))}
+              ${this._renderBranchActions(branch.children, graphEnd)}
             </div>
           `
         )}
-        <div
-          ?track=${defaultBranch.hasTrace}
-          ?unfinished=${defaultBranch.unfinished}
-        >
-          <hat-graph-spacer ?track=${defaultBranch.hasTrace}></hat-graph-spacer>
-          ${defaultBranch.children.map((action) =>
-            this._renderActionNode(action)
-          )}
-        </div>
+        ${
+          // An empty default branch leads nowhere when nothing follows.
+          graphEnd && !defaultBranch.children.length
+            ? nothing
+            : html`<div
+                ?track=${defaultBranch.hasTrace}
+                ?unfinished=${defaultBranch.unfinished}
+              >
+                <hat-graph-spacer
+                  aria-hidden="true"
+                  ?track=${defaultBranch.hasTrace}
+                ></hat-graph-spacer>
+                ${this._renderBranchActions(defaultBranch.children, graphEnd)}
+              </div>`
+        }
       </hat-graph-branch>
     `;
   }
 
-  private _renderIfNode(node: TraceActionNode<IfAction>, graphStart = false) {
+  private _renderIfNode(
+    node: TraceActionNode<IfAction>,
+    graphStart = false,
+    graphEnd = false
+  ) {
     const { config, path, track } = node;
     const [thenBranch, elseBranch] = node.branches;
     return html`
       <hat-graph-branch
+        .end=${graphEnd}
         tabindex=${node.hasTrace ? "0" : "-1"}
         @focus=${this._selectNode(config, path, "action")}
         ?track=${track}
         ?active=${this.selected === path}
         .notEnabled=${node.disabled}
+        role="group"
+        aria-label=${ifDefined(this.labels?.[path])}
+        aria-current=${ifDefined(this.selected === path || undefined)}
+        aria-disabled=${ifDefined(node.disabled || undefined)}
       >
         <hat-graph-node
           .graphStart=${graphStart}
@@ -226,7 +274,23 @@ export class HatScriptGraph extends LitElement {
           .error=${node.error}
           slot="head"
           nofocus
+          aria-hidden="true"
         ></hat-graph-node>
+        <div
+          class="graph-container"
+          ?track=${thenBranch.hasTrace}
+          ?unfinished=${thenBranch.unfinished}
+        >
+          <hat-graph-node
+            .iconPath=${mdiCallReceived}
+            ?track=${thenBranch.hasTrace}
+            ?active=${this.selected === path}
+            .notEnabled=${thenBranch.disabled}
+            nofocus
+            aria-hidden="true"
+          ></hat-graph-node>
+          ${this._renderBranchActions(thenBranch.children, graphEnd)}
+        </div>
         ${
           config.else
             ? html`<div
@@ -240,29 +304,17 @@ export class HatScriptGraph extends LitElement {
                   ?active=${this.selected === path}
                   .notEnabled=${elseBranch.disabled}
                   nofocus
+                  aria-hidden="true"
                 ></hat-graph-node
-                >${elseBranch.children.map((action) =>
-                  this._renderActionNode(action)
-                )}
+                >${this._renderBranchActions(elseBranch.children, graphEnd)}
               </div>`
-            : html`<hat-graph-spacer
-                ?track=${elseBranch.hasTrace}
-              ></hat-graph-spacer>`
+            : graphEnd
+              ? nothing
+              : html`<hat-graph-spacer
+                  aria-hidden="true"
+                  ?track=${elseBranch.hasTrace}
+                ></hat-graph-spacer>`
         }
-        <div
-          class="graph-container"
-          ?track=${thenBranch.hasTrace}
-          ?unfinished=${thenBranch.unfinished}
-        >
-          <hat-graph-node
-            .iconPath=${mdiCallReceived}
-            ?track=${thenBranch.hasTrace}
-            ?active=${this.selected === path}
-            .notEnabled=${thenBranch.disabled}
-            nofocus
-          ></hat-graph-node>
-          ${thenBranch.children.map((action) => this._renderActionNode(action))}
-        </div>
       </hat-graph-branch>
     `;
   }
@@ -281,6 +333,10 @@ export class HatScriptGraph extends LitElement {
         ?track=${track}
         ?active=${this.selected === path}
         .notEnabled=${model.disabled}
+        role="group"
+        aria-label=${ifDefined(this.labels?.[path])}
+        aria-current=${ifDefined(this.selected === path || undefined)}
+        aria-disabled=${ifDefined(model.disabled || undefined)}
         tabindex=${hasTrace ? "0" : "-1"}
         short
       >
@@ -293,6 +349,7 @@ export class HatScriptGraph extends LitElement {
           .error=${model.error}
           ?building-block=${CONDITION_BUILDING_BLOCKS.includes(condition)}
           nofocus
+          aria-hidden="true"
         >
           <ha-condition-icon
             slot="icon"
@@ -308,6 +365,7 @@ export class HatScriptGraph extends LitElement {
         <hat-graph-node
           .iconPath=${mdiClose}
           nofocus
+          aria-hidden="true"
           ?track=${failed}
           ?active=${this.selected === path}
           .notEnabled=${model.disabled}
@@ -318,17 +376,23 @@ export class HatScriptGraph extends LitElement {
 
   private _renderRepeatNode(
     model: TraceActionNode<RepeatAction>,
-    graphStart = false
+    graphStart = false,
+    graphEnd = false
   ) {
     const { config: node, path, track } = model;
     const [branch] = model.branches;
     return html`
       <hat-graph-branch
+        .end=${graphEnd}
         tabindex=${model.hasTrace ? "0" : "-1"}
         @focus=${this._selectNode(node, path, "action")}
         ?track=${track}
         ?active=${this.selected === path}
         .notEnabled=${model.disabled}
+        role="group"
+        aria-label=${ifDefined(this.labels?.[path])}
+        aria-current=${ifDefined(this.selected === path || undefined)}
+        aria-disabled=${ifDefined(model.disabled || undefined)}
       >
         <hat-graph-node
           .graphStart=${graphStart}
@@ -341,13 +405,14 @@ export class HatScriptGraph extends LitElement {
           .badge=${model.badge}
           slot="head"
           nofocus
+          aria-hidden="true"
         ></hat-graph-node>
         <div
           class="repeat-sequence"
           ?track=${branch.hasTrace}
           ?unfinished=${branch.unfinished}
         >
-          ${branch.children.map((action) => this._renderActionNode(action))}
+          ${this._renderBranchActions(branch.children, graphEnd)}
         </div>
       </hat-graph-branch>
     `;
@@ -372,6 +437,9 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .notEnabled=${model.disabled}
         .error=${model.error}
+        role="img"
+        aria-label=${ifDefined(this.labels?.[path])}
+        aria-current=${ifDefined(this.selected === path || undefined)}
         tabindex=${model.hasTrace ? "0" : "-1"}
       >
         ${
@@ -405,6 +473,9 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .notEnabled=${model.disabled}
         .error=${model.error}
+        role="img"
+        aria-label=${ifDefined(this.labels?.[path])}
+        aria-current=${ifDefined(this.selected === path || undefined)}
         tabindex=${model.hasTrace ? "0" : "-1"}
       ></hat-graph-node>
     `;
@@ -412,17 +483,23 @@ export class HatScriptGraph extends LitElement {
 
   private _renderSequenceNode(
     model: TraceActionNode<SequenceAction>,
-    graphStart = false
+    graphStart = false,
+    graphEnd = false
   ) {
     const { config: node, path, track } = model;
     const [branch] = model.branches;
     return html`
       <hat-graph-branch
+        .end=${graphEnd}
         tabindex=${model.hasTrace ? "0" : "-1"}
         @focus=${this._selectNode(node, path, "action")}
         ?track=${track}
         ?active=${this.selected === path}
         .notEnabled=${model.disabled}
+        role="group"
+        aria-label=${ifDefined(this.labels?.[path])}
+        aria-current=${ifDefined(this.selected === path || undefined)}
+        aria-disabled=${ifDefined(model.disabled || undefined)}
       >
         <div
           class="graph-container"
@@ -439,8 +516,9 @@ export class HatScriptGraph extends LitElement {
             .error=${model.error}
             slot="head"
             nofocus
+            aria-hidden="true"
           ></hat-graph-node>
-          ${branch.children.map((action) => this._renderActionNode(action))}
+          ${this._renderBranchActions(branch.children, graphEnd)}
         </div>
       </hat-graph-branch>
     `;
@@ -448,16 +526,22 @@ export class HatScriptGraph extends LitElement {
 
   private _renderParallelNode(
     model: TraceActionNode<ParallelAction>,
-    graphStart = false
+    graphStart = false,
+    graphEnd = false
   ) {
     const { config: node, path, track } = model;
     return html`
       <hat-graph-branch
+        .end=${graphEnd}
         tabindex=${model.hasTrace ? "0" : "-1"}
         @focus=${this._selectNode(node, path, "action")}
         ?track=${track}
         ?active=${this.selected === path}
         .notEnabled=${model.disabled}
+        role="group"
+        aria-label=${ifDefined(this.labels?.[path])}
+        aria-current=${ifDefined(this.selected === path || undefined)}
+        aria-disabled=${ifDefined(model.disabled || undefined)}
       >
         <hat-graph-node
           .graphStart=${graphStart}
@@ -469,6 +553,7 @@ export class HatScriptGraph extends LitElement {
           .error=${model.error}
           slot="head"
           nofocus
+          aria-hidden="true"
         ></hat-graph-node>
         ${model.branches.map(
           (branch) =>
@@ -476,9 +561,7 @@ export class HatScriptGraph extends LitElement {
               ?track=${branch.hasTrace}
               ?unfinished=${branch.unfinished}
             >
-              ${branch.children.map((sAction) =>
-                this._renderActionNode(sAction)
-              )}
+              ${this._renderBranchActions(branch.children, graphEnd)}
             </div>`
         )}
       </hat-graph-branch>
@@ -496,6 +579,9 @@ export class HatScriptGraph extends LitElement {
         ?active=${this.selected === path}
         .error=${model.error}
         .notEnabled=${model.disabled}
+        role="img"
+        aria-label=${ifDefined(this.labels?.[path])}
+        aria-current=${ifDefined(this.selected === path || undefined)}
       ></hat-graph-node>
     `;
   }
@@ -521,9 +607,19 @@ export class HatScriptGraph extends LitElement {
                 : ""
             }
             ${tree.conditions.map((node) => this._renderConditionNode(node))}
-            ${tree.actions.map((node) => this._renderActionNode(node))}
+            ${tree.actions.map((node, i) =>
+              this._renderActionNode(
+                node,
+                false,
+                !tree.sequence.length && i === tree.actions.length - 1
+              )
+            )}
             ${tree.sequence.map((node, i) =>
-              this._renderActionNode(node, i === 0)
+              this._renderActionNode(
+                node,
+                i === 0,
+                i === tree.sequence.length - 1
+              )
             )}
           </div>
         </div>

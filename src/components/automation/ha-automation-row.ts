@@ -189,10 +189,10 @@ export class HaAutomationRow extends LitElement {
       color: var(--ha-color-text-disabled);
     }
     :host([disabled]) .leading-icon-wrapper {
-      opacity: 0.6;
+      opacity: 0.8;
     }
     :host([disabled]) ::slotted([slot="header"]) {
-      opacity: 0.6;
+      opacity: 0.8;
       text-decoration: line-through;
     }
     .header {

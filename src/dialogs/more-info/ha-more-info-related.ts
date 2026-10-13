@@ -1,9 +1,9 @@
 import { mdiDevices, mdiTextureBox } from "@mdi/js";
-import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";

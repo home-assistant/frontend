@@ -36,6 +36,7 @@ declare global {
   var __BUILD__: "modern" | "legacy";
   var __VERSION__: string;
   var __STATIC_PATH__: string;
+  var __MAPLIBRE_WORKER_URL__: string;
   var __BACKWARDS_COMPAT__: boolean;
   var __HASS_URL__: string;
   /* eslint-enable @typescript-eslint/naming-convention */
@@ -286,7 +287,7 @@ export interface HomeAssistantFormatters {
   formatEntityAttributeName(stateObj: HassEntity, attribute: string): string;
   formatEntityName(
     stateObj: HassEntity,
-    name: string | EntityNameItem | EntityNameItem[] | undefined,
+    name?: string | EntityNameItem | EntityNameItem[],
     options?: EntityNameOptions
   ): string;
 }

@@ -1,10 +1,11 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiPlus, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, html, nothing } from "lit";
 import type { TemplateResult, PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { computeFloorName } from "../common/entity/compute_floor_name";
@@ -95,6 +96,7 @@ export class HaAreaPicker extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
+  @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
@@ -108,9 +110,11 @@ export class HaAreaPicker extends LitElement {
   @consume({ context: devicesContext, subscribe: true })
   private _devices!: ContextType<typeof devicesContext>;
 
+  @state()
   @consume({ context: areasContext, subscribe: true })
   private _areas!: ContextType<typeof areasContext>;
 
+  @state()
   @consume({ context: floorsContext, subscribe: true })
   private _floors!: ContextType<typeof floorsContext>;
 

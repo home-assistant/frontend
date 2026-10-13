@@ -147,10 +147,11 @@ export class HaTileContainer extends LitElement {
     .vertical.fixed-info-height {
       /* pin sizing so every tile in a grid reserves the same height, wrapping or not, secondary or not */
       gap: 2px;
-      --ha-tile-info-gap: 2px;
-      --ha-tile-info-primary-line-height: var(--ha-space-4);
-      --ha-tile-info-primary-min-height: var(--ha-space-8);
-      --ha-tile-info-min-height: var(--ha-space-12);
+      /* private, so a theme's --ha-tile-info-* override is not outranked from in here */
+      --_tile-info-fixed-gap: 2px;
+      /* the primary line height lives on hui-area-card's .twoline, the only caller that wraps */
+      --_tile-info-fixed-primary-min-height: var(--ha-space-8);
+      --_tile-info-fixed-min-height: var(--ha-space-12);
     }
     .vertical ::slotted([slot="info"]) {
       width: 100%;

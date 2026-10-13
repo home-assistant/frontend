@@ -1,7 +1,8 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { customElement, property, state } from "lit/decorators";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html } from "lit";
+import { consume } from "../common/decorators/consume";
 import { haStyle } from "../resources/styles";
 import { configContext, uiContext } from "../data/context";
 import { voiceAssistants } from "../data/expose";

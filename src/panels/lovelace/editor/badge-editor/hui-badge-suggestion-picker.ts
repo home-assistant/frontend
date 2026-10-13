@@ -169,12 +169,11 @@ export class HuiBadgeSuggestionPicker extends LitElement {
           "ui.panel.lovelace.editor.badge_picker.selected_entity"
         )}
       </ha-section-title>
-      <ha-combo-box-item compact class="selected-entity">
+      <ha-combo-box-item class="selected-entity">
         ${
           stateObj
             ? html`<state-badge
                 slot="start"
-                .hass=${this.hass}
                 .stateObj=${stateObj}
               ></state-badge>`
             : nothing

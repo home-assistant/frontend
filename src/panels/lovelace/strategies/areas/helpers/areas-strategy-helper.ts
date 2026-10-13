@@ -1,8 +1,6 @@
 import { computeDomain } from "../../../../../common/entity/compute_domain";
-import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import type { EntityFilterFunc } from "../../../../../common/entity/entity_filter";
 import { generateEntityFilter } from "../../../../../common/entity/entity_filter";
-import { stripPrefixFromEntityName } from "../../../../../common/entity/strip_prefix_from_entity_name";
 import { orderCompare } from "../../../../../common/string/compare";
 import type { AreaRegistryEntry } from "../../../../../data/area/area_registry";
 import type { FloorRegistryEntry } from "../../../../../data/floor_registry";
@@ -62,116 +60,242 @@ export const getAreaGroupedEntities = (
 
   const groupedFilters: AreaFilteredByGroup = {
     lights: [
-      generateEntityFilter(hass, {
-        domain: "light",
-        area: area,
-        entity_category: "none",
-      }),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "light",
+          area: area,
+          entity_category: "none",
+        }
+      ),
     ],
     covers: [
-      generateEntityFilter(hass, {
-        domain: "cover",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "binary_sensor",
-        area: area,
-        device_class: ["door", "garage_door", "window"],
-        entity_category: "none",
-      }),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "cover",
+          area: area,
+          entity_category: "none",
+        }
+      ),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "binary_sensor",
+          area: area,
+          device_class: ["door", "garage_door", "window"],
+          entity_category: "none",
+        }
+      ),
     ],
     climate: [
-      generateEntityFilter(hass, {
-        domain: "climate",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "humidifier",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "water_heater",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "fan",
-        area: area,
-        entity_category: "none",
-      }),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "climate",
+          area: area,
+          entity_category: "none",
+        }
+      ),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "humidifier",
+          area: area,
+          entity_category: "none",
+        }
+      ),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "water_heater",
+          area: area,
+          entity_category: "none",
+        }
+      ),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "fan",
+          area: area,
+          entity_category: "none",
+        }
+      ),
     ],
     media_players: [
-      generateEntityFilter(hass, {
-        domain: "media_player",
-        area: area,
-        entity_category: "none",
-      }),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "media_player",
+          area: area,
+          entity_category: "none",
+        }
+      ),
     ],
     security: [
-      generateEntityFilter(hass, {
-        domain: "alarm_control_panel",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "lock",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "camera",
-        area: area,
-        entity_category: "none",
-      }),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "alarm_control_panel",
+          area: area,
+          entity_category: "none",
+        }
+      ),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "lock",
+          area: area,
+          entity_category: "none",
+        }
+      ),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "camera",
+          area: area,
+          entity_category: "none",
+        }
+      ),
     ],
     actions: [
-      generateEntityFilter(hass, {
-        domain: ["script", "scene"],
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: ["automation"],
-        area: area,
-        entity_category: "none",
-      }),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: ["script", "scene"],
+          area: area,
+          entity_category: "none",
+        }
+      ),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: ["automation"],
+          area: area,
+          entity_category: "none",
+        }
+      ),
     ],
     others: [
-      generateEntityFilter(hass, {
-        domain: "vacuum",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "lawn_mower",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: "valve",
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: ["switch", "button", "input_boolean", "input_button"],
-        area: area,
-        entity_category: "none",
-      }),
-      generateEntityFilter(hass, {
-        domain: [
-          "select",
-          "number",
-          "input_select",
-          "input_number",
-          "counter",
-          "timer",
-        ],
-        area: area,
-        entity_category: "none",
-      }),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "vacuum",
+          area: area,
+          entity_category: "none",
+        }
+      ),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "lawn_mower",
+          area: area,
+          entity_category: "none",
+        }
+      ),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: "valve",
+          area: area,
+          entity_category: "none",
+        }
+      ),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: ["switch", "button", "input_boolean", "input_button"],
+          area: area,
+          entity_category: "none",
+        }
+      ),
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        {
+          domain: [
+            "select",
+            "number",
+            "input_select",
+            "input_number",
+            "counter",
+            "timer",
+          ],
+          area: area,
+          entity_category: "none",
+        }
+      ),
     ],
   };
 
@@ -206,10 +330,8 @@ export const getAreaGroupedEntities = (
 };
 
 export const computeAreaTileCardConfig =
-  (hass: HomeAssistant, prefix: string, includeFeature?: boolean) =>
+  (hass: HomeAssistant, includeFeature?: boolean) =>
   (entity: string): LovelaceCardConfig => {
-    const stateObj = hass.states[entity];
-
     const context: LovelaceCardFeatureContext = {
       entity_id: entity,
     };
@@ -264,13 +386,9 @@ export const computeAreaTileCardConfig =
       additionalCardConfig.features = [feature];
     }
 
-    const name = computeStateName(stateObj);
-    const stripedName = stripPrefixFromEntityName(name, prefix.toLowerCase());
-
     return {
       type: "tile",
       entity: entity,
-      name: stripedName,
       ...additionalCardConfig,
     };
   };

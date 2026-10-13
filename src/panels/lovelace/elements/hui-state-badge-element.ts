@@ -3,7 +3,6 @@ import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/ha-state-label-badge";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
@@ -111,7 +110,7 @@ export class HuiStateBadgeElement
     if (!stateObj) {
       return html`
         <hui-warning-element
-          .label=${createEntityNotFoundWarning(this.hass, this._config.entity!)}
+          .label=${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         ></hui-warning-element>
       `;
     }
@@ -121,14 +120,14 @@ export class HuiStateBadgeElement
         .state=${stateObj}
         .name=${
           this._config.name === undefined
-            ? computeStateName(stateObj)
+            ? this.hass.formatEntityName(stateObj)
             : this._config.name === null
               ? ""
               : this._config.name
         }
         .title=${
           this._config.title === undefined
-            ? computeStateName(stateObj)
+            ? this.hass.formatEntityName(stateObj)
             : this._config.title === null
               ? ""
               : this._config.title

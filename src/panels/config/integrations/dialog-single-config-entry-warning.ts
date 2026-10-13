@@ -1,6 +1,7 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";

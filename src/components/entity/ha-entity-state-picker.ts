@@ -138,7 +138,6 @@ export class HaEntityStatePicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .allowCustomValue=${this.allowCustomValue}
         .disabled=${this.disabled || noEntity}
         .autofocus=${this.autofocus}

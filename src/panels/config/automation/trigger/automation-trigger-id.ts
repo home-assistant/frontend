@@ -147,6 +147,10 @@ const walkLeafTriggers = (
     });
     return changed ? mapped : triggers;
   }
+  // Incomplete YAML can leave null entries in the trigger list
+  if (!triggers || typeof triggers !== "object") {
+    return triggers;
+  }
   if (isTriggerList(triggers)) {
     const newInner = triggers.triggers
       ? (walkLeafTriggers(triggers.triggers, callback) as Trigger | Trigger[])
@@ -196,7 +200,7 @@ const mapReferencedTriggerIds = (
   mapper: (id: string) => string | string[] | undefined
 ): TriggerCondition => {
   let changed = false;
-  const ids = ensureArray(condition.id).flatMap((id) => {
+  const ids = (ensureArray(condition.id) ?? []).flatMap((id) => {
     const mappedId = mapper(id);
     if (mappedId !== id) {
       changed = true;
@@ -259,8 +263,8 @@ class AutomationTriggerConditionMapper {
         [key]: this._mapConditions((expanded as LogicalCondition).conditions),
       };
     }
-    if (condition.condition === "trigger" && "id" in condition) {
-      return this._update(condition);
+    if (condition.condition === "trigger") {
+      return this._update(condition as TriggerCondition);
     }
     if (
       "conditions" in condition &&
@@ -376,6 +380,9 @@ export const updateTriggerCondition = (
  * triggers are stripped the same way.
  */
 export const stripGeneratedTriggerIds = (trigger: Trigger): Trigger => {
+  if (!trigger || typeof trigger !== "object") {
+    return trigger;
+  }
   if (isTriggerList(trigger)) {
     if (!trigger.triggers) {
       return trigger;

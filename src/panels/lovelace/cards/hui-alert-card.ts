@@ -1,13 +1,13 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../common/decorators/consume";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
 import "../../../components/ha-relative-time";
@@ -97,7 +97,9 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
             <ha-state-icon slot="icon" .stateObj=${stateObj}></ha-state-icon>
           </ha-tile-icon>
           <ha-tile-info slot="info">
-            <span slot="primary">${computeStateName(stateObj)}</span>
+            <span slot="primary"
+              >${this._formatters.formatEntityName(stateObj)}</span
+            >
             <span slot="secondary">
               ${stateDisplay} ·
               <ha-relative-time

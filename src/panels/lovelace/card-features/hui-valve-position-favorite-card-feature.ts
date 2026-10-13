@@ -22,7 +22,8 @@ const valvePositionFavoriteCardFeatureDefinition: NumericFavoriteCardFeatureDefi
     domain: "valve",
     supportsPosition: valveSupportsPosition,
     getFavoritePositions: (entry) => entry?.options?.valve?.favorite_positions,
-    getCurrentValue: (stateObj) => stateObj.attributes.current_position,
+    getCurrentValue: (stateObj) =>
+      stateObj.attributes.current_position ?? undefined,
     normalizeFavoritePositions,
     defaultFavoritePositions: DEFAULT_VALVE_FAVORITE_POSITIONS,
     setPositionService: "set_valve_position",

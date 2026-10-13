@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { formattersContext } from "../data/context";

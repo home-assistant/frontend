@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import {
   mdiClose,
   mdiDevices,
@@ -19,6 +18,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import {
@@ -132,7 +132,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
   @state()
   @consume({ context: labelsContext, subscribe: true })
-  _labelRegistry!: LabelRegistryEntry[];
+  _labelRegistry?: LabelRegistryEntry[];
 
   private _loadedConfigEntryId?: string;
 
@@ -166,6 +166,9 @@ export class HaTargetPickerItemRow extends LitElement {
   }
 
   protected render() {
+    if (this.type === "label" && !this._labelRegistry) {
+      return nothing;
+    }
     const { name, context, iconPath, fallbackIconPath, stateObject, notFound } =
       this._itemData(this.type, this.itemId);
 
@@ -639,9 +642,10 @@ export class HaTargetPickerItemRow extends LitElement {
       const area = device
         ? getDeviceArea(device, this.hass.areas, this.hass.devices)
         : undefined;
-      const parentDevice = device?.parent_device_id
-        ? this.hass.devices[device.parent_device_id]
-        : undefined;
+      const parentDevice =
+        device?.parent_device_id && device.next_name_part === "parent_device"
+          ? this.hass.devices[device.parent_device_id]
+          : undefined;
       const context = [
         area ? computeAreaName(area) : undefined,
         parentDevice ? computeDeviceName(parentDevice) : undefined,
@@ -683,7 +687,7 @@ export class HaTargetPickerItemRow extends LitElement {
     }
 
     // type label
-    const label: LabelRegistryEntry | undefined = this._labelRegistry.find(
+    const label: LabelRegistryEntry | undefined = this._labelRegistry!.find(
       (lab) => lab.label_id === item
     );
     return {
@@ -801,14 +805,6 @@ export class HaTargetPickerItemRow extends LitElement {
 
   static styles = [
     css`
-      :host {
-        --md-list-item-top-space: 0;
-        --md-list-item-bottom-space: 0;
-        --md-list-item-leading-space: var(--ha-space-2);
-        --md-list-item-trailing-space: var(--ha-space-2);
-        --md-list-item-two-line-container-height: 56px;
-      }
-
       .error {
         background: var(--ha-color-fill-warning-quiet-resting);
       }

@@ -10,12 +10,13 @@ import type {
 } from "echarts/types/dist/shared";
 import { mdiFormatTextVariant, mdiGoogleCirclesGroup } from "@mdi/js";
 import memoizeOne from "memoize-one";
-import { listenMediaQuery } from "../../common/dom/media_query";
+import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { reducedMotionContext } from "../../data/context";
 import type { HaECOption } from "../../resources/echarts/echarts";
 import "./ha-chart-base";
 import type { HaChartBase } from "./ha-chart-base";
-import type { HomeAssistant } from "../../types";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { deepEqual } from "../../common/util/deep-equal";
 
 export interface NetworkNode {
@@ -71,7 +72,7 @@ const PHYSICS_DISABLE_THRESHOLD = 512;
 let GraphChart: typeof import("echarts/lib/chart/graph/install");
 
 @customElement("ha-network-graph")
-export class HaNetworkGraph extends SubscribeMixin(LitElement) {
+export class HaNetworkGraph extends LitElement {
   public chart?: EChartsType;
 
   @property({ attribute: false }) public data!: NetworkData;
@@ -90,11 +91,13 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public searchFilter = "";
 
-  public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
 
   @state() private _highlightedNodes?: Set<string>;
 
-  @state() private _reducedMotion = false;
+  @state()
+  @consume({ context: reducedMotionContext, subscribe: true })
+  private _reducedMotion = false;
 
   @state() private _physicsEnabled?: boolean;
 
@@ -112,16 +115,6 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         this.requestUpdate();
       });
     }
-  }
-
-  protected hassSubscribe() {
-    return [
-      listenMediaQuery("(prefers-reduced-motion)", (matches) => {
-        if (this._reducedMotion !== matches) {
-          this._reducedMotion = matches;
-        }
-      }),
-    ];
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
@@ -145,7 +138,6 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
       this._highlightedNodes && this._highlightedNodes.size > 0;
 
     return html`<ha-chart-base
-      .hass=${this.hass}
       .data=${this._getSeries(
         this.data,
         this._physicsEnabled ?? false,
@@ -165,18 +157,14 @@ export class HaNetworkGraph extends SubscribeMixin(LitElement) {
         class=${this._physicsEnabled ? "active" : "inactive"}
         .path=${mdiGoogleCirclesGroup}
         @click=${this._togglePhysics}
-        label=${this.hass.localize(
-          "ui.panel.config.common.graph.toggle_physics"
-        )}
+        label=${this._localize("ui.panel.config.common.graph.toggle_physics")}
       ></ha-icon-button>
       <ha-icon-button
         slot="button"
         class=${this._showLabels ? "active" : "inactive"}
         .path=${mdiFormatTextVariant}
         @click=${this._toggleLabels}
-        label=${this.hass.localize(
-          "ui.panel.config.common.graph.toggle_labels"
-        )}
+        label=${this._localize("ui.panel.config.common.graph.toggle_labels")}
       ></ha-icon-button>
     </ha-chart-base>`;
   }

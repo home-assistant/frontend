@@ -15,6 +15,7 @@ permissions:
 jobs:
   upload:
     name: Upload
+    if: github.repository == 'home-assistant/frontend'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository

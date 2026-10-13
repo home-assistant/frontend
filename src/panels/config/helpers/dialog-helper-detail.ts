@@ -151,7 +151,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._open = true;
     await this.updateComplete;
     this.hass.loadFragmentTranslation("config");
-    const flows = await getConfigFlowHandlers(this.hass, ["helper"]);
+    const flows = await getConfigFlowHandlers(this.hass, "helper");
     await this.hass.loadBackendTranslation("title", flows, true);
     // Ensure the titles are loaded before we render the flows.
     this._helperFlows = flows;

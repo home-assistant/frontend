@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiAlertCircle,
   mdiCancel,
@@ -20,6 +19,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
@@ -28,7 +28,7 @@ import {
   getDuplicatedDeviceNames,
 } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   deleteEntity,
@@ -681,11 +681,7 @@ export class HaConfigEntities extends LitElement {
           .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
           .filter((lbl): lbl is LabelRegistryEntry => lbl !== undefined);
 
-        const entityName = computeEntityEntryName(
-          entry as EntityRegistryEntry,
-          this.hass.devices,
-          entity
-        );
+        const entityName = computeEntityEntryName(entry as EntityRegistryEntry);
 
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
@@ -700,7 +696,10 @@ export class HaConfigEntities extends LitElement {
 
         result.push({
           ...entry,
-          name: entityName || deviceName || entry.entity_id,
+          name:
+            entityName ||
+            deviceName ||
+            (entity ? computeStateName(entity) : entry.entity_id),
           device: deviceName,
           area: areaName,
           device_full: deviceFullName,
@@ -1294,8 +1293,8 @@ export class HaConfigEntities extends LitElement {
             ),
             text: html`<pre>
     ${rejected
-      .map((r) => r.reason.message || r.reason.code || r.reason)
-      .join("\r\n")}</pre>`,
+                .map((r) => r.reason.message || r.reason.code || r.reason)
+                .join("\r\n")}</pre>`,
           });
         }
 
@@ -1420,8 +1419,8 @@ export class HaConfigEntities extends LitElement {
         }),
         text: html`<pre>
 ${rejected
-  .map((r) => r.reason.message || r.reason.code || r.reason)
-  .join("\r\n")}</pre>`,
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
       });
     }
   }
@@ -1691,7 +1690,7 @@ ${rejected
           overflow-y: auto;
         }
         ha-dropdown ha-assist-chip {
-          --md-assist-chip-trailing-space: 8px;
+          --ha-assist-chip-trailing-space: 8px;
         }
       `,
     ];

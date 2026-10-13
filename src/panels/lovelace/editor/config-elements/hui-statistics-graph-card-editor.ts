@@ -135,7 +135,7 @@ export class HuiStatisticsGraphCardEditor
 
   private _getStatisticsMetaData = async (statisticIds?: string[]) => {
     this._metaDatas = await getStatisticMetadata(
-      this.hass!,
+      this.hass!.callWS,
       statisticIds || []
     );
   };
@@ -162,7 +162,7 @@ export class HuiStatisticsGraphCardEditor
       const units = new Set<string>();
       metaDatas?.forEach((metaData) => {
         const unit = getDisplayUnit(
-          this.hass!,
+          this.hass!.states,
           metaData.statistic_id,
           metaData
         );
@@ -547,7 +547,7 @@ export class HuiStatisticsGraphCardEditor
     }
     const metadata =
       config.stat_types || config.unit
-        ? await getStatisticMetadata(this.hass!, entityIds)
+        ? await getStatisticMetadata(this.hass!.callWS, entityIds)
         : undefined;
     if (config.stat_types && config.entities.length) {
       config.stat_types = ensureArray(config.stat_types).filter((stat_type) =>
@@ -561,8 +561,11 @@ export class HuiStatisticsGraphCardEditor
       config.unit &&
       !metadata!.some(
         (metaData) =>
-          getDisplayUnit(this.hass!, metaData?.statistic_id, metaData) ===
-          config.unit
+          getDisplayUnit(
+            this.hass!.states,
+            metaData?.statistic_id,
+            metaData
+          ) === config.unit
       )
     ) {
       delete config.unit;

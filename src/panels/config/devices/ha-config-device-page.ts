@@ -1,6 +1,5 @@
 import { startOfYesterday } from "date-fns";
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiCog,
   mdiDelete,
@@ -24,12 +23,13 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { getDeviceArea } from "../../../common/entity/context/get_device_context";
@@ -81,7 +81,6 @@ import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-  updateEntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
@@ -106,10 +105,12 @@ import {
 import { createSearchParam } from "../../../common/url/search-params";
 import { brandsUrl } from "../../../util/brands-url";
 import { fileDownload } from "../../../util/file_download";
+import { isWsErrorCode, getWsErrorMessage } from "../../../util/ws-error";
 import "../../logbook/ha-logbook";
 import "./device-detail/ha-device-child-devices-card";
 import "./device-detail/ha-device-entities-card";
 import "./device-detail/ha-device-info-card";
+import type { ESPHomeSetupController } from "./device-detail/integration-elements/esphome/esphome-setup-controller";
 import "./device-detail/ha-device-linked-devices-card";
 import "./device-detail/ha-device-via-devices-card";
 import { showDeviceAddToDialog } from "./device-detail/show-dialog-device-add-to";
@@ -207,6 +208,10 @@ export class HaConfigDevicePage extends LitElement {
   @state() private _deviceAlerts: DeviceAlert[] = [];
 
   private _deviceAlertsActionsTimeout?: number;
+
+  private _esphomeSetup?: ESPHomeSetupController;
+
+  private _esphomeSetupRequest = 0;
 
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
@@ -367,6 +372,7 @@ export class HaConfigDevicePage extends LitElement {
       this._deviceAlerts = [];
       this._deleteButtons = [];
       this._diagnosticDownloadLinks = [];
+      this._esphomeSetup?.clear();
     }
 
     if (changedProps.has("deviceId") || changedProps.has("entries")) {
@@ -901,6 +907,7 @@ export class HaConfigDevicePage extends LitElement {
             : ""
         }
       </ha-device-info-card>
+      ${this._esphomeSetup?.renderReminder() ?? nothing}
       <ha-device-child-devices-card
         .hass=${this.hass}
         .deviceId=${this.deviceId}
@@ -1080,7 +1087,6 @@ export class HaConfigDevicePage extends LitElement {
                           : nothing
                       }
                       <ha-battery-icon
-                        .hass=${this.hass}
                         .batteryStateObj=${battery}
                         .batteryChargingStateObj=${batteryChargingState}
                       ></ha-battery-icon>
@@ -1114,6 +1120,7 @@ export class HaConfigDevicePage extends LitElement {
             }
           </div>
         </div>
+        ${this._esphomeSetup?.renderBanner(deviceName) ?? nothing}
         ${columnContents.map(
           (contents) => html`<div class="column">${contents}</div>`
         )}
@@ -1128,7 +1135,34 @@ export class HaConfigDevicePage extends LitElement {
       clearTimeout(this._deviceAlertsActionsTimeout);
       this._getDeviceActions();
       this._getDeviceAlerts();
+      this._updateESPHomeSetup();
     }
+  }
+
+  private async _updateESPHomeSetup() {
+    const request = ++this._esphomeSetupRequest;
+    const deviceId = this.deviceId;
+    const device = this.hass.devices[deviceId];
+    if (
+      !device ||
+      !this._integrations(device, this.entries, this.manifests).some(
+        (entry) => entry.domain === "esphome"
+      )
+    ) {
+      this._esphomeSetup?.clear();
+      return;
+    }
+    if (!this._esphomeSetup) {
+      const esphomeSetup =
+        await import("./device-detail/integration-elements/esphome/esphome-setup-controller");
+      if (request !== this._esphomeSetupRequest || this.deviceId !== deviceId) {
+        return;
+      }
+      this._esphomeSetup ??= new esphomeSetup.ESPHomeSetupController(this, () =>
+        this._entities(this.deviceId, this._entityReg, this.hass.devices)
+      );
+    }
+    this._esphomeSetup.refresh(deviceId);
   }
 
   private async _getDiagnosticButtons(): Promise<void> {
@@ -1153,7 +1187,7 @@ export class HaConfigDevicePage extends LitElement {
           try {
             info = await fetchDiagnosticHandler(this.hass, entry.domain);
           } catch (err: unknown) {
-            if (err instanceof Error && err.message.includes("not_found")) {
+            if (isWsErrorCode(err, "not_found")) {
               return false;
             }
             throw err;
@@ -1247,7 +1281,9 @@ export class HaConfigDevicePage extends LitElement {
                 title: this.hass.localize(
                   "ui.panel.config.devices.error_delete"
                 ),
-                text: err instanceof Error ? err.message : String(err),
+                text:
+                  getWsErrorMessage(err) ??
+                  this.hass.localize("ui.common.unknown_error"),
               });
             }
           },
@@ -1441,7 +1477,7 @@ export class HaConfigDevicePage extends LitElement {
   ) {
     const device = devices[this.deviceId];
     return (
-      computeEntityEntryName(entity, devices) ||
+      computeEntityEntryName(entity) ||
       computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
     );
   }
@@ -1541,8 +1577,6 @@ export class HaConfigDevicePage extends LitElement {
     showDeviceRegistryDetailDialog(this, {
       device,
       updateEntry: async (updates) => {
-        const oldDeviceName = device.name_by_user || device.name;
-        const newDeviceName = updates.name_by_user;
         const disabled =
           updates.disabled_by === "user" && device.disabled_by !== "user";
 
@@ -1584,7 +1618,9 @@ export class HaConfigDevicePage extends LitElement {
                     title: this.hass.localize(
                       "ui.panel.config.integrations.config_entry.disable_error"
                     ),
-                    text: err instanceof Error ? err.message : String(err),
+                    text:
+                      getWsErrorMessage(err) ??
+                      this.hass.localize("ui.common.unknown_error"),
                   });
                   return;
                 }
@@ -1612,49 +1648,11 @@ export class HaConfigDevicePage extends LitElement {
             title: this.hass.localize(
               "ui.panel.config.devices.update_device_error"
             ),
-            text: err instanceof Error ? err.message : String(err),
+            text:
+              getWsErrorMessage(err) ??
+              this.hass.localize("ui.common.unknown_error"),
           });
-          return;
         }
-
-        if (
-          !oldDeviceName ||
-          !newDeviceName ||
-          oldDeviceName === newDeviceName
-        ) {
-          return;
-        }
-        const entities = this._entities(
-          this.deviceId,
-          this._entityReg,
-          this.hass.devices
-        );
-
-        const updateProms = entities.map((entity) => {
-          const name = entity.name || entity.stateName;
-          let newName: string | null | undefined;
-
-          if (entity.has_entity_name && !entity.name) {
-            return undefined;
-          }
-
-          if (
-            entity.has_entity_name &&
-            (entity.name === oldDeviceName || entity.name === newDeviceName)
-          ) {
-            // clear name if it matches the device name and it uses the device name (entity naming)
-            newName = null;
-          } else if (name?.includes(oldDeviceName)) {
-            newName = name.replace(oldDeviceName, newDeviceName);
-          } else {
-            return undefined;
-          }
-
-          return updateEntityRegistryEntry(this.hass, entity.entity_id, {
-            name: newName,
-          });
-        });
-        await Promise.all(updateProms);
       },
     });
   };

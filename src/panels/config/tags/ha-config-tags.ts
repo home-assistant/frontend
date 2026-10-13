@@ -7,13 +7,17 @@ import {
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { hasRejectedItems } from "../../../common/util/promise-all-settled-results";
+import "../../../components/chips/ha-assist-chip";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
+  SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -34,6 +38,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
@@ -57,6 +62,15 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public route!: Route;
 
   @state() private _tags: Tag[] = [];
+
+  @state() private _loading = true;
+
+  @state() private _loadFailed = false;
+
+  @state() private _selected: string[] = [];
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
 
   private get _canWriteTags() {
     return this.hass.auth.external?.config.canWriteTag;
@@ -195,10 +209,20 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configSections.tags}
         .columns=${this._columns(this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._data(this._tags)}
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize("ui.panel.config.tag.load_failed")
+            : undefined
+        }
+        @retry-load=${this._retryFetchTags}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
         has-fab
         clickable
         @row-click=${this._editTag}
@@ -210,6 +234,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
+        <ha-assist-chip
+          slot="selection-bar"
+          .label=${this.hass.localize("ui.panel.config.tag.delete_selected")}
+          .disabled=${!this._selected.length}
+          @click=${this._removeSelected}
+        ></ha-assist-chip>
         <ha-button slot="fab" size="l" @click=${this._addTag}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.tag.add_tag")}
@@ -266,7 +296,19 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchTags() {
-    this._tags = await fetchTags(this.hass);
+    try {
+      this._tags = await fetchTags(this.hass);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
+    } finally {
+      this._loading = false;
+    }
+  }
+
+  private _retryFetchTags() {
+    this._loading = true;
+    this._fetchTags();
   }
 
   private _openWrite(tag: Tag) {
@@ -334,6 +376,47 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       return false;
     }
   }
+
+  private _handleSelectionChanged = (
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void => {
+    this._selected = ev.detail.value;
+  };
+
+  private _removeSelected = () => {
+    let deleteFailed = false;
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.tag.confirm_delete_selected_title"
+      ),
+      text: this.hass.localize("ui.panel.config.tag.confirm_delete_selected", {
+        count: this._selected.length,
+      }),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+      action: async () => {
+        const results = await Promise.allSettled(
+          this._selected.map((id) => deleteTag(this.hass, id))
+        );
+        const deletedIds = new Set(
+          this._selected.filter(
+            (_id, index) => results[index].status === "fulfilled"
+          )
+        );
+        this._tags = this._tags.filter((tag) => !deletedIds.has(tag.id));
+        deleteFailed = hasRejectedItems(results);
+        this._dataTable.clearSelection();
+      },
+    }).then((confirmed) => {
+      if (confirmed && deleteFailed) {
+        showAlertDialog(this, {
+          title: this.hass.localize("ui.panel.config.tag.delete_failed_title"),
+          text: this.hass.localize("ui.panel.config.tag.delete_failed"),
+        });
+      }
+    });
+  };
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;

@@ -3,23 +3,20 @@ import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "../../data/entity/entity_registry";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantRegistries } from "../../types";
 import { ensureArray } from "../array/ensure-array";
 import { computeRTL } from "../util/compute_rtl";
 import { computeAreaName } from "./compute_area_name";
 import { computeDeviceName } from "./compute_device_name";
-import {
-  computeEntityEntryName,
-  computeEntityName,
-  entityUseDeviceName,
-} from "./compute_entity_name";
 import { computeFloorName } from "./compute_floor_name";
 import { computeStateName } from "./compute_state_name";
+import { getEntityEntryContext } from "./context/get_entity_context";
 import {
-  getEntityContext,
-  getEntityEntryContext,
-} from "./context/get_entity_context";
-import type { EntityNameItem, EntityNameOptions } from "./entity_name_config";
+  DEFAULT_ENTITY_NAME,
+  type EntityNameItem,
+  type EntityNameOptions,
+  type EntityNameType,
+} from "./entity_name_config";
 
 const DEFAULT_SEPARATOR = " ";
 
@@ -29,6 +26,12 @@ export type {
   EntityNameOptions,
   EntityNameType,
 } from "./entity_name_config";
+
+export type EntityNameParts = Partial<Record<EntityNameType, string>>;
+
+export interface EntityNamePartsOptions {
+  followContext?: boolean;
+}
 
 // Joins items that need no entity context. Returns undefined as soon as one
 // item references the registries (device, area, ...).
@@ -51,7 +54,7 @@ const computeTextOnlyName = (
  */
 export const computeEntityNameDisplayWithoutContext = (
   stateObj: HassEntity,
-  name: string | EntityNameItem | EntityNameItem[] | undefined,
+  name?: string | EntityNameItem | EntityNameItem[],
   options?: EntityNameOptions
 ): string => {
   if (typeof name === "string") {
@@ -66,148 +69,140 @@ export const computeEntityNameDisplayWithoutContext = (
   );
 };
 
+export const computeEntityEntryName = (
+  entry: EntityRegistryDisplayEntry | EntityRegistryEntry
+): string | undefined => {
+  const name =
+    entry.name ??
+    ("original_name" in entry && entry.original_name != null
+      ? String(entry.original_name)
+      : undefined);
+  return name || undefined;
+};
+
+export const computeEntityEntryNameParts = (
+  entry: EntityRegistryDisplayEntry | EntityRegistryEntry,
+  registries: HomeAssistantRegistries,
+  options?: EntityNamePartsOptions
+): EntityNameParts => {
+  const { device, parentDevice, area, floor } = getEntityEntryContext(
+    entry,
+    registries.entities,
+    registries.devices,
+    registries.areas,
+    registries.floors
+  );
+  const entityName = computeEntityEntryName(entry);
+  const followContext = options?.followContext ?? true;
+
+  // Same rule as the backend: an owner only adds its name part while the
+  // next_name_part links reach it, so owners above the first node with its own
+  // area are left out. An entity without a name of its own is still named
+  // after its device.
+  const nameDevice =
+    !followContext || entry.next_name_part === "device" || !entityName
+      ? device
+      : null;
+  const nameParentDevice =
+    !followContext ||
+    (entry.next_name_part === "device" &&
+      device?.next_name_part === "parent_device")
+      ? parentDevice
+      : null;
+
+  return {
+    entity: entityName,
+    device: nameDevice ? computeDeviceName(nameDevice) : undefined,
+    parent_device: nameParentDevice
+      ? computeDeviceName(nameParentDevice)
+      : undefined,
+    area: area ? computeAreaName(area) : undefined,
+    floor: floor ? computeFloorName(floor) : undefined,
+  };
+};
+
+export const computeEntityNameParts = (
+  stateObj: HassEntity,
+  registries: HomeAssistantRegistries,
+  options?: EntityNamePartsOptions
+): EntityNameParts => {
+  const entry = registries.entities[stateObj.entity_id] as
+    EntityRegistryDisplayEntry | undefined;
+
+  if (!entry) {
+    return { entity: computeStateName(stateObj) };
+  }
+  return computeEntityEntryNameParts(entry, registries, options);
+};
+
+export const computeDefaultEntityNameItems = (
+  stateObj: HassEntity,
+  registries: HomeAssistantRegistries
+): EntityNameItem[] => {
+  const parts = computeEntityNameParts(stateObj, registries);
+  return DEFAULT_ENTITY_NAME.filter((item) => parts[item.type]);
+};
+
 export const computeEntityNameDisplay = (
   stateObj: HassEntity,
   name: string | EntityNameItem | EntityNameItem[] | undefined,
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"],
-  areas: HomeAssistant["areas"],
-  floors: HomeAssistant["floors"],
+  registries: HomeAssistantRegistries,
   options?: EntityNameOptions
-) => {
+): string => {
   if (typeof name === "string") {
     return name;
   }
 
-  // If no name config is provided, fall back to the friendly name
-  if (!name) {
-    return computeStateName(stateObj);
-  }
-
-  let items = ensureArray(name);
-
   const separator = options?.separator ?? DEFAULT_SEPARATOR;
 
-  // If all items are text, just join them
+  if (!name) {
+    const parts = computeEntityNameParts(stateObj, registries);
+    return (
+      DEFAULT_ENTITY_NAME.map((item) => parts[item.type])
+        .filter((n) => n)
+        .join(separator) || computeStateName(stateObj)
+    );
+  }
+
+  const items = ensureArray(name);
+
   const textOnlyName = computeTextOnlyName(items, options);
   if (textOnlyName !== undefined) {
     return textOnlyName;
   }
 
-  const useDeviceName = entityUseDeviceName(stateObj, entities, devices);
-
-  // If entity uses device name, and device is not already included, replace it with device name
-  if (useDeviceName) {
-    const hasDevice = items.some((n) => n.type === "device");
-    if (!hasDevice) {
-      items = items.map((n) => (n.type === "entity" ? { type: "device" } : n));
-    }
-  }
-
-  const names = computeEntityNameList(
-    stateObj,
-    items,
-    entities,
-    devices,
-    areas,
-    floors
-  );
-
-  // If after processing there is only one name, return that
-  if (names.length === 1) {
-    return names[0] || "";
-  }
-
-  return names.filter((n) => n).join(separator);
-};
-
-export const computeEntityNameList = (
-  stateObj: HassEntity,
-  name: EntityNameItem[],
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"],
-  areas: HomeAssistant["areas"],
-  floors: HomeAssistant["floors"]
-): (string | undefined)[] => {
-  const entry = entities[stateObj.entity_id] as
-    EntityRegistryDisplayEntry | undefined;
-
-  if (!entry) {
-    return name.map((item) =>
-      item.type === "entity"
-        ? computeStateName(stateObj)
-        : item.type === "text"
-          ? item.text
-          : undefined
-    );
-  }
-
-  return computeEntityEntryNameList(
-    entry,
-    name,
-    entities,
-    devices,
-    areas,
-    floors
-  );
-};
-
-export const computeEntityEntryNameList = (
-  entry: EntityRegistryDisplayEntry | EntityRegistryEntry,
-  name: EntityNameItem[],
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"],
-  areas: HomeAssistant["areas"],
-  floors: HomeAssistant["floors"]
-): (string | undefined)[] => {
-  const { device, parentDevice, area, floor } = getEntityEntryContext(
-    entry,
-    entities,
-    devices,
-    areas,
-    floors
-  );
-
-  return name.map((item) => {
-    switch (item.type) {
-      case "entity":
-        return computeEntityEntryName(entry, devices);
-      case "device":
-        return device ? computeDeviceName(device) : undefined;
-      case "parent_device":
-        return parentDevice ? computeDeviceName(parentDevice) : undefined;
-      case "area":
-        return area ? computeAreaName(area) : undefined;
-      case "floor":
-        return floor ? computeFloorName(floor) : undefined;
-      case "text":
-        return item.text;
-      default:
-        return "";
-    }
+  const parts = computeEntityNameParts(stateObj, registries, {
+    followContext: false,
   });
+
+  // An entity without a name of its own is named after its device, unless the
+  // device is already part of the name
+  const useDeviceName =
+    !parts.entity && !items.some((item) => item.type === "device");
+
+  return items
+    .map((item) =>
+      item.type === "text"
+        ? item.text
+        : parts[item.type === "entity" && useDeviceName ? "device" : item.type]
+    )
+    .filter((n) => n)
+    .join(separator);
 };
 
 export const computeEntitySearchLabels = (
   stateObj: HassEntity,
-  entities: HomeAssistant["entities"],
-  devices: HomeAssistant["devices"],
-  areas: HomeAssistant["areas"],
-  floors: HomeAssistant["floors"]
+  registries: HomeAssistantRegistries
 ) => {
-  const { device, parentDevice, area } = getEntityContext(
-    stateObj,
-    entities,
-    devices,
-    areas,
-    floors
-  );
+  const parts = computeEntityNameParts(stateObj, registries, {
+    followContext: false,
+  });
   return {
-    entityName: computeEntityName(stateObj, entities, devices) || null,
+    entityName: parts.entity || null,
     friendlyName: computeStateName(stateObj) || null,
-    deviceName: (device && computeDeviceName(device)) || null,
-    parentDeviceName: (parentDevice && computeDeviceName(parentDevice)) || null,
-    areaName: (area && computeAreaName(area)) || null,
+    deviceName: parts.device || null,
+    parentDeviceName: parts.parent_device || null,
+    areaName: parts.area || null,
   };
 };
 
@@ -217,40 +212,20 @@ export interface EntityPickerDisplay {
 }
 
 export const computeEntityPickerDisplay = (
-  hass: Pick<
-    HomeAssistant,
-    | "entities"
-    | "devices"
-    | "areas"
-    | "floors"
-    | "language"
-    | "translationMetadata"
-  >,
+  hass: HomeAssistantRegistries &
+    Pick<HomeAssistant, "language" | "translationMetadata">,
   stateObj: HassEntity
 ): EntityPickerDisplay => {
-  const [entityName, deviceName, parentDeviceName, areaName] =
-    computeEntityNameList(
-      stateObj,
-      [
-        { type: "entity" },
-        { type: "device" },
-        { type: "parent_device" },
-        { type: "area" },
-      ],
-      hass.entities,
-      hass.devices,
-      hass.areas,
-      hass.floors
-    );
+  const parts = computeEntityNameParts(stateObj, hass);
 
   const isRTL = computeRTL(
     hass.language,
     hass.translationMetadata.translations
   );
 
-  const primary = entityName || deviceName || stateObj.entity_id;
+  const primary = parts.entity || parts.device || stateObj.entity_id;
   const secondary =
-    [areaName, parentDeviceName, entityName ? deviceName : undefined]
+    [parts.area, parts.parent_device, parts.entity ? parts.device : undefined]
       .filter(Boolean)
       .join(isRTL ? " ◂ " : " ▸ ") || undefined;
 

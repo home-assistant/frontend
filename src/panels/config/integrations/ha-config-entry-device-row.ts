@@ -22,6 +22,7 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-tree-indicator";
+import { bidiIsolate } from "../../../common/bidi";
 import "../../../components/item/ha-list-item-button";
 import {
   disableConfigEntry,
@@ -121,9 +122,11 @@ class HaConfigEntryDeviceRow extends LitElement {
         ${supportingText.length && entities.length ? " • " : nothing}
         ${
           entities.length
-            ? this.hass.localize(
-                "ui.panel.config.integrations.config_entry.entities",
-                { count: entities.length }
+            ? bidiIsolate(
+                this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.entities",
+                  { count: entities.length }
+                )
               )
             : nothing
         }</span
@@ -384,8 +387,8 @@ class HaConfigEntryDeviceRow extends LitElement {
         --ha-row-item-padding-inline: 56px 16px;
       }
       ha-icon-button,
-      ha-icon-next,
-      ha-svg-icon {
+      ha-list-item-button > ha-icon-next,
+      ha-list-item-button > ha-svg-icon {
         color: var(--ha-color-fill-neutral-loud-resting);
       }
       :host([is-child]) ha-list-item-button {

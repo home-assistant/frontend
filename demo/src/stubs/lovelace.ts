@@ -9,7 +9,7 @@ import {
 import "../custom-cards/cast-demo-row";
 import "../custom-cards/ha-demo-card";
 import "../custom-cards/ha-demo-next-card";
-import { mapEntities } from "./entities";
+import { mockMap } from "./map";
 
 export const mockLovelace = (
   hass: MockHomeAssistant,
@@ -17,7 +17,7 @@ export const mockLovelace = (
 ) => {
   hass.mockWS("lovelace/config", ({ url_path }) => {
     if (url_path === "map") {
-      hass.addEntities(mapEntities());
+      mockMap(hass);
       return {
         strategy: {
           type: "map",

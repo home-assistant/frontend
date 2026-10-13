@@ -96,6 +96,10 @@ export class HaConfigAppsInstalled extends LitElement {
           <ha-input-search
             appearance="outlined"
             .value=${this._filter}
+            .placeholder=${this.hass.localize(
+              "ui.panel.config.apps.installed.search",
+              { number: this._addonInfo.addons.length }
+            )}
             @input=${this._handleSearchChange}
           >
           </ha-input-search>

@@ -187,7 +187,6 @@ class DialogPersonDetail
             ></ha-input>
 
             <ha-picture-upload
-              .hass=${this.hass}
               .value=${this._picture}
               crop
               select-media

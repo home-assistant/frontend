@@ -421,7 +421,7 @@ export abstract class HuiElementEditor<
         try {
           this._configElement.setConfig(this.value);
         } catch (err: any) {
-          const msgs = handleStructError(this.hass, err);
+          const msgs = handleStructError(this.hass.localize, err);
           throw new GUISupportError(
             "Config is not supported",
             msgs.warnings,

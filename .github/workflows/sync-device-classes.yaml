@@ -1,7 +1,7 @@
 name: Sync device class constants
 
 # Mirrors the device class constants for Home Assistant Core's into the
-# build-time default in src/data/devce_classes.ts and opens a PR
+# build-time default in src/data/device_classes.ts and opens a PR
 # when it drifts. Reads homeassistant/generated/device_classes.json from core.
 
 on:
@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   sync:
+    if: github.repository == 'home-assistant/frontend'
     name: Sync
     runs-on: ubuntu-latest
     permissions:
@@ -32,16 +33,16 @@ jobs:
         run: ./script/gen_device_classes
 
       - name: Format
-        run: yarn prettier --write src/data/sensor_numeric_device_classes.ts
+        run: pnpm exec prettier --write src/data/device_classes.ts
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
-          branch: chore/sync-numeric-device-classes
-          commit-message: Update numeric sensor device classes
-          title: Update numeric sensor device classes
+          branch: chore/sync-device-classes
+          commit-message: Update device class constants
+          title: Update device class constants
           body: |
-            Regenerated `SENSOR_NUMERIC_DEVICE_CLASSES` from Home Assistant Core's
-            `SensorDeviceClass`.
+            Regenerated `DOMAIN_DEVICE_CLASSES` from Home Assistant Core's
+            `homeassistant/generated/device_classes.json`.
 
-            Automated by `.github/workflows/sync-numeric-device-classes.yaml`.
+            Automated by `.github/workflows/sync-device-classes.yaml`.

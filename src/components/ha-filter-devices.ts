@@ -1,10 +1,11 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import {
   FilterPanelController,
   filterPanelStyles,

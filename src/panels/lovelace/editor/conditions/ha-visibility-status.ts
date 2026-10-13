@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import { mdiAlertCircle, mdiEye, mdiEyeOff, mdiHelpCircle } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../../common/decorators/consume";
 import type { ConditionEvaluation } from "../../../../common/controllers/condition-evaluator-controller";
 import { ConditionEvaluatorController } from "../../../../common/controllers/condition-evaluator-controller";
 import "../../../../components/ha-alert";

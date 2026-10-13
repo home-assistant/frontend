@@ -17,7 +17,10 @@ import "../../../../components/ha-switch";
 import "../../../../components/ha-yaml-editor";
 import "../../../../components/item/ha-row-item";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
-import type { LovelaceSectionConfig } from "../../../../data/lovelace/config/section";
+import {
+  DEFAULT_SECTION_COLUMN_SPAN,
+  type LovelaceSectionConfig,
+} from "../../../../data/lovelace/config/section";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { HuiCard } from "../../cards/hui-card";
@@ -84,7 +87,8 @@ export class HuiCardLayoutEditor extends LitElement {
     const gridOptions = options;
     const gridValue = this._computeCardGridSize(gridOptions);
 
-    const columnSpan = this.sectionConfig.column_span ?? 1;
+    const columnSpan =
+      this.sectionConfig.column_span ?? DEFAULT_SECTION_COLUMN_SPAN;
     const gridTotalColumns = 12 * columnSpan;
 
     return html`
@@ -132,7 +136,7 @@ export class HuiCardLayoutEditor extends LitElement {
           : html`
               <ha-grid-size-picker
                 style=${styleMap({
-                  "max-width": `${(this.sectionConfig.column_span ?? 1) * 250 + 40}px`,
+                  "max-width": `${(this.sectionConfig.column_span ?? DEFAULT_SECTION_COLUMN_SPAN) * 250 + 40}px`,
                 })}
                 .columns=${gridTotalColumns}
                 .value=${gridValue}
@@ -301,7 +305,8 @@ export class HuiCardLayoutEditor extends LitElement {
       columns = "full";
     } else if (defaultGridOptions.columns === "full") {
       // Default is full width, so we need to set a specific value
-      const columnSpan = this.sectionConfig.column_span ?? 1;
+      const columnSpan =
+        this.sectionConfig.column_span ?? DEFAULT_SECTION_COLUMN_SPAN;
       const gridTotalColumns = 12 * columnSpan;
       columns = defaultGridOptions.max_columns ?? gridTotalColumns;
     } else {

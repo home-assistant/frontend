@@ -21,6 +21,16 @@ import { documentationUrl } from "../../util/documentation-url";
 // That's why redirects should be sorted with more specific ones first
 // Or else pressing "M" will link to the higher level page.
 
+// The Marketplace tabs with a table read these from the link
+const marketplaceTableParams = {
+  search: "string?",
+  type: "string?",
+  status: "string?",
+  source: "string?",
+  sort: "string?",
+  direction: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -452,13 +462,40 @@ export const getMyRedirects = (): Redirects => ({
     },
   },
   hacs_repository: {
-    component: "hacs",
-    redirect: "/hacs/_my_redirect/hacs_repository",
+    component: "marketplace",
+    redirect: "/marketplace/_my_redirect/hacs_repository",
     params: {
       owner: "string",
       repository: "string",
       category: "string?",
     },
+  },
+  marketplace_repository: {
+    component: "marketplace",
+    redirect: "/marketplace/_my_redirect/marketplace_repository",
+    params: {
+      owner: "string",
+      repository: "string",
+      category: "string?",
+    },
+  },
+  marketplace_discover: {
+    component: "marketplace",
+    redirect: "/marketplace/discover",
+  },
+  marketplace_browse: {
+    component: "marketplace",
+    redirect: "/marketplace/browse",
+    params: marketplaceTableParams,
+  },
+  marketplace_installed: {
+    component: "marketplace",
+    redirect: "/marketplace/installed",
+    params: marketplaceTableParams,
+  },
+  marketplace_repositories: {
+    component: "marketplace",
+    redirect: "/marketplace/repositories",
   },
 });
 
@@ -618,6 +655,14 @@ class HaPanelMy extends LitElement {
 
   private _createRedirectUrl(): string {
     const params = extractSearchParamsObject();
+
+    // The Marketplace took over HACS, links to its integration page still say hacs
+    if (
+      this._redirect!.redirect === "/config/integrations/integration" &&
+      params.domain === "hacs"
+    ) {
+      return `${this._redirect!.redirect}?${createSearchParam({ domain: "marketplace" })}`;
+    }
 
     // Special case for supervisor_app/supervisor_addon: use path-based URL
     // Support both "app" (new) and "addon" (legacy) parameters

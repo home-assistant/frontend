@@ -5,7 +5,7 @@
  * the demo content renders without JS errors and the page element is visible.
  *
  * Run with:
- *   yarn test:e2e:gallery
+ *   pnpm test:e2e:gallery
  */
 import { test, expect } from "@playwright/test";
 import {

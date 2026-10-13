@@ -37,7 +37,14 @@ export const getConfigPanelPath = (
     ?.url_path || integrationsWithPanel[domain];
 
 export type IntegrationType =
-  "device" | "helper" | "hub" | "service" | "hardware" | "entity" | "system";
+  | "device"
+  | "helper"
+  | "hub"
+  | "service"
+  | "hardware"
+  | "entity"
+  | "system"
+  | "virtual";
 
 export type DomainManifestLookup = Record<string, IntegrationManifest>;
 
@@ -46,7 +53,7 @@ export interface IntegrationManifest {
   overwrites_built_in?: boolean;
   domain: string;
   name: string;
-  config_flow: boolean;
+  config_flow?: boolean;
   documentation?: string;
   issue_tracker?: string;
   dependencies?: string[];
@@ -54,8 +61,18 @@ export interface IntegrationManifest {
   codeowners?: string[];
   requirements?: string[];
   ssdp?: { manufacturer?: string; modelName?: string; st?: string }[];
-  zeroconf?: string[];
-  homekit?: { models: string[] };
+  zeroconf?: (
+    | string
+    | {
+        type: string;
+        macaddress?: string;
+        manufacturer?: string;
+        model?: string;
+        name?: string;
+        properties?: Record<string, string>;
+      }
+  )[];
+  homekit?: { models?: string[] };
   integration_type?: IntegrationType;
   loggers?: string[];
   quality_scale?:
@@ -67,8 +84,9 @@ export interface IntegrationManifest {
     | "internal"
     | "legacy"
     | "custom";
-  iot_class:
+  iot_class?:
     | "assumed_state"
+    | "calculated"
     | "cloud_polling"
     | "cloud_push"
     | "local_polling"

@@ -1,8 +1,9 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiDelete } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { consumeEntityState } from "../../common/decorators/consume-context-entry";
 import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { fireEvent } from "../../common/dom/fire_event";

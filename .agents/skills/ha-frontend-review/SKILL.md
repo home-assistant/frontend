@@ -26,8 +26,8 @@ When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as the body
 
 ## Pre-Submission Checklist
 
-- `yarn lint` passes when practical for the scope.
-- `yarn test` or focused relevant tests are green when practical for the scope.
+- `pnpm lint` passes when practical for the scope.
+- `pnpm test` or focused relevant tests are green when practical for the scope.
 - Each test added by the change protects real logic, not the look of a component.
 - User-facing text is localized and follows `ha-frontend-user-facing-text` guidance.
 - Components handle loading, error, unavailable, and missing-entity states.
@@ -118,7 +118,10 @@ For user-facing changes, establish the existing design context as part of fronte
 - Before reviewing a pull request, read its existing comments, reviews, and threads, including their status, resolver, and Copilot resolution reason when available.
 - Prioritise substantive human feedback, especially from authors marked `MEMBER`, and validate agent-generated feedback against the code and repository guidance.
 - Do not duplicate unresolved findings as new inline comments; reference any that still need action in the review summary. Treat resolved feedback as closed only when the resolution reason or surrounding discussion supports that outcome; otherwise validate it against the current code before suppressing it. Respect **Won't fix** and **Incorrect** reasons.
-- Identify behavioral regressions, bugs, accessibility issues, and missing tests first.
+- When a later commit addresses an unresolved thread, note in the review summary that it looks addressed, linking the thread and the commit, so it can be resolved. Do not report it as still open.
+- Identify behavioral regressions, bugs, accessibility issues, and missing tests that `ha-frontend-testing` calls for first.
+- Do not ask for new tests on visual components. If the visuals clearly changed and the PR has no screenshots or videos, suggest adding them instead.
+- When the change adds something repository guidance rules out, such as a rendering test, open the comment with the removal ("Remove this test file") and cite the guidance in one sentence. Do not critique how the unwanted code is written, as that reads as a request to fix it.
 - Record the applicable UI/UX evidence for user-facing changes, whether or not further input is needed.
 - Keep style-only comments secondary unless they affect maintainability or user experience.
 - Prefer small, direct fixes over large refactors during review follow-up.

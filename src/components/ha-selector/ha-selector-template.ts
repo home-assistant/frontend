@@ -124,10 +124,10 @@ export class HaTemplateSelector extends LitElement {
           : this._test && this._templateResult
             ? html`<pre class="rendered">
 ${
-  typeof this._templateResult.result === "object"
-    ? JSON.stringify(this._templateResult.result, null, 2)
-    : this._templateResult.result
-}</pre>`
+                  typeof this._templateResult.result === "object"
+                    ? JSON.stringify(this._templateResult.result, null, 2)
+                    : this._templateResult.result
+                }</pre>`
             : nothing
       }
       ${
