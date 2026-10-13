@@ -320,8 +320,10 @@ function checkLocationCondition(
   // zone.home for them), so their state, the active zone name, is all there
   // is. Trackers that do report it have an empty list only when `not_home`.
   if (!Array.isArray(inZones) || inZones.length === 0) {
-    return zones.some(
-      (zoneId) => activeZoneState(hass, zoneId) === stateObj.state
+    // A zone can be named "not_home", but that state means away.
+    return (
+      stateObj.state !== "not_home" &&
+      zones.some((zoneId) => activeZoneState(hass, zoneId) === stateObj.state)
     );
   }
   if (condition.match_mode === "active_zone") {

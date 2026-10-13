@@ -519,6 +519,30 @@ describe("checkConditionsMet", () => {
         }
       );
 
+      it("does not match a zone named not_home while away", () => {
+        const hass = createActiveZoneHass("not_home", []);
+        hass.states["zone.not_home"] = {
+          entity_id: "zone.not_home",
+          state: "0",
+          attributes: { friendly_name: "not_home" },
+        } as any;
+        for (const matchMode of ["active_zone", "any_zone"]) {
+          expect(
+            checkConditionsMet(
+              [
+                {
+                  condition: "location",
+                  target: { entity_id: "zone.not_home" },
+                  match_mode: matchMode,
+                },
+              ] as any,
+              hass,
+              {}
+            )
+          ).toBe(false);
+        }
+      });
+
       it("never matches a passive zone", () => {
         const hass = createActiveZoneHass("Work", [
           "zone.work",
