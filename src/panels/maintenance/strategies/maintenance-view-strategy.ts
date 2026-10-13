@@ -49,7 +49,7 @@ export const filterLowBatteryEntities = (
 
     if (computeDomain(entityId) === "binary_sensor") {
       const device_class = states[entityId]?.attributes?.device_class ?? "";
-      return state === BINARY_STATE_ON && device_class !== "problem";
+      return state === BINARY_STATE_ON && device_class === "battery";
     }
 
     const stateValue = parseFloat(state);

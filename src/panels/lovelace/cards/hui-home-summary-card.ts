@@ -381,10 +381,13 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
               )
             : undefined;
 
-        let status = [lowBatteryText, problemText, unavailableText];
-        status = status.filter((x) => x !== undefined);
+        const status = [lowBatteryText, problemText, unavailableText].filter(
+          Boolean
+        );
 
-        if (status.length > 0) return status.join(", ");
+        if (status.length > 0) {
+          return status.join(", ");
+        }
 
         return localize("ui.card.home-summary.all_maintenance_good");
       }
