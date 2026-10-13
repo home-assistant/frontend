@@ -10,6 +10,7 @@ import { consumeEntityState } from "../../../common/decorators/consume-context-e
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ALERT_DOMAINS,
+  DEFAULT_ALERT_COLOR,
   isAlertActive,
 } from "../../../common/entity/alert_active";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -53,7 +54,7 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
       ALERT_DOMAINS
     );
 
-    return { type: "alert", entity: entity || "", color: "red" };
+    return { type: "alert", entity: entity || "" };
   }
 
   @state() private _config?: AlertCardConfig;
@@ -114,7 +115,11 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     });
 
     const active = isAlertActive(stateObj);
-    const color = active ? this._config.color : this._config.inactive_color;
+
+    const color = active
+      ? (this._config.color ?? DEFAULT_ALERT_COLOR)
+      : this._config.inactive_color;
+
     const pulse = active && this._config.pulse === true;
     const hasColor = color !== undefined && color !== "none";
 

@@ -8,6 +8,8 @@ export const ALERT_DOMAINS = [
   "lock",
 ];
 
+export const DEFAULT_ALERT_COLOR = "red";
+
 export const computeAlertActiveStates = (entityId: string): string[] => {
   switch (computeDomain(entityId)) {
     case "alarm_control_panel":

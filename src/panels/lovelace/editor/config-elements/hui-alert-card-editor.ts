@@ -2,7 +2,10 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { ALERT_DOMAINS } from "../../../../common/entity/alert_active";
+import {
+  ALERT_DOMAINS,
+  DEFAULT_ALERT_COLOR,
+} from "../../../../common/entity/alert_active";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
@@ -36,7 +39,9 @@ const SCHEMA = [
       },
       {
         name: "color",
-        selector: { ui_color: { include_none: true, default_color: "none" } },
+        selector: {
+          ui_color: { include_none: true, default_color: DEFAULT_ALERT_COLOR },
+        },
       },
     ],
   },

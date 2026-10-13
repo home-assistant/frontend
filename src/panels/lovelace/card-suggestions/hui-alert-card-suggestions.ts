@@ -9,6 +9,6 @@ export const alertCardSuggestions: CardSuggestionProvider<AlertCardConfig> = {
       return null;
     }
 
-    return { config: { type: "alert", entity: entityId, color: "red" } };
+    return { config: { type: "alert", entity: entityId } };
   },
 };
