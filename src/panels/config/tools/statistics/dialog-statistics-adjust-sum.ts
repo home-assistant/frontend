@@ -200,9 +200,13 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     if (changedProps.size !== 1 || !changedProps.has("hass")) {
       return true;
     }
-    // We only respond to hass changes if the translations changed
+    // We only respond to hass changes if the translations or locale changed
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    return !oldHass || oldHass.localize !== this.hass.localize;
+    return (
+      !oldHass ||
+      oldHass.localize !== this.hass.localize ||
+      oldHass.locale !== this.hass.locale
+    );
   }
 
   private _renderPickStatistic() {
