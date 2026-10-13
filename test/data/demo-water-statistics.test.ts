@@ -7,10 +7,15 @@ const fetchWater = (
   period: "5minute" | "hour" | "day" | "month",
   ids = ["sensor.energy_water", "sensor.energy_water_cost"],
   start = "2026-01-01T00:00:00Z",
-  end = "2026-02-01T00:00:00Z"
+  end = "2026-02-01T00:00:00Z",
+  timeZone = "UTC"
 ): Statistics => {
   const mockWS = vi.fn();
-  const hass = { mockWS, states: {} } as unknown as MockHomeAssistant;
+  const hass = {
+    mockWS,
+    states: {},
+    config: { time_zone: timeZone },
+  } as unknown as MockHomeAssistant;
   mockRecorder(hass);
   const handler = mockWS.mock.calls.find(
     ([type]) => type === "recorder/statistics_during_period"
@@ -74,6 +79,78 @@ describe("demo water statistics", () => {
     expect(stats["sensor.energy_water"].map((bucket) => bucket.change)).toEqual(
       [7440, 6720, 7440]
     );
+  });
+
+  it.each([
+    ["day", "2026-03-08T08:00:00Z", "2026-03-09T07:00:00Z", 23],
+    ["day", "2026-11-01T07:00:00Z", "2026-11-02T08:00:00Z", 25],
+    ["month", "2026-03-01T08:00:00Z", "2026-04-01T07:00:00Z", 743],
+    ["month", "2026-11-01T07:00:00Z", "2026-12-01T08:00:00Z", 721],
+  ] as const)(
+    "uses server DST boundaries for %s buckets starting %s",
+    (period, start, end, hours) => {
+      vi.setSystemTime(new Date("2027-01-01T00:00:00Z"));
+      const stats = fetchWater(
+        period,
+        [
+          "sensor.energy_water",
+          "sensor.energy_water_cost",
+          "sensor.energy_consumption_tarif_1",
+          "sensor.temperature",
+        ],
+        start,
+        end,
+        "America/Los_Angeles"
+      );
+      const consumption = stats["sensor.energy_water"];
+      const costs = stats["sensor.energy_water_cost"];
+      expect(consumption).toHaveLength(1);
+      expect(consumption[0].start).toBe(Date.parse(start));
+      expect(consumption[0].end).toBe(Date.parse(end));
+      expect(consumption[0].change).toBeCloseTo(10 * hours);
+      expect(costs[0].change).toBeCloseTo(10 * hours * 0.004);
+      expect(costs[0].end).toBe(Date.parse(end));
+      // Sum and mean generators must both preserve the timezone-aware start.
+      for (const id of [
+        "sensor.energy_consumption_tarif_1",
+        "sensor.temperature",
+      ]) {
+        expect(stats[id]).toHaveLength(1);
+        expect(stats[id][0].start).toBe(Date.parse(start));
+        expect(stats[id][0].end).toBe(Date.parse(end));
+      }
+    }
+  );
+
+  it("keeps server midnight boundaries for a half-hour timezone offset", () => {
+    vi.setSystemTime(new Date("2027-01-01T00:00:00Z"));
+    const start = "2026-03-01T18:30:00Z";
+    const end = "2026-03-02T18:30:00Z";
+    const stats = fetchWater("day", undefined, start, end, "Asia/Kolkata");
+    expect(stats["sensor.energy_water"]).toHaveLength(1);
+    expect(stats["sensor.energy_water"][0]).toMatchObject({
+      start: Date.parse(start),
+      end: Date.parse(end),
+      change: 240,
+    });
+  });
+
+  it("keeps consecutive daily buckets aligned across the spring DST change", () => {
+    vi.setSystemTime(new Date("2027-01-01T00:00:00Z"));
+    const stats = fetchWater(
+      "day",
+      undefined,
+      "2026-03-07T08:00:00Z",
+      "2026-03-10T07:00:00Z",
+      "America/Los_Angeles"
+    );
+    const consumption = stats["sensor.energy_water"];
+    expect(consumption.map((bucket) => bucket.change)).toEqual([240, 230, 240]);
+    expect(consumption.map((bucket) => bucket.end)).toEqual([
+      Date.parse("2026-03-08T08:00:00Z"),
+      Date.parse("2026-03-09T07:00:00Z"),
+      Date.parse("2026-03-10T07:00:00Z"),
+    ]);
   });
 
   it.each([
