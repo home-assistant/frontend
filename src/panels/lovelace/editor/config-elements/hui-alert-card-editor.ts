@@ -27,12 +27,18 @@ const SCHEMA = [
     selector: { entity: { filter: { domain: ALERT_DOMAINS } } },
   },
   {
-    name: "color",
-    selector: { ui_color: { include_none: true, default_color: "none" } },
-  },
-  {
-    name: "inactive_color",
-    selector: { ui_color: { include_none: true, default_color: "none" } },
+    name: "",
+    type: "grid",
+    schema: [
+      {
+        name: "inactive_color",
+        selector: { ui_color: { include_none: true, default_color: "none" } },
+      },
+      {
+        name: "color",
+        selector: { ui_color: { include_none: true, default_color: "none" } },
+      },
+    ],
   },
   { name: "pulse", selector: { boolean: {} } },
 ] as const;
