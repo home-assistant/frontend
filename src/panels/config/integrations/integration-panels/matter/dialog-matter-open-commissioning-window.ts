@@ -28,7 +28,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import type { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
 
-// Treat the code as expired this early: no countdown is shown, and pairing has to start in time.
+// No countdown is shown, so treat the code as expired early enough for the app to start pairing.
 const EXPIRY_MARGIN_SECONDS = 30;
 
 @customElement("dialog-matter-open-commissioning-window")
@@ -266,8 +266,10 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     // The footer button is pinned while the body scrolls, so on a phone the alert can land off-screen.
     if (
       (changedProperties.has("_shareFailed") ||
-        changedProperties.has("_shareExpired")) &&
-      (this._shareFailed || this._shareExpired)
+        changedProperties.has("_shareExpired") ||
+        changedProperties.has("_sharing")) &&
+      (this._shareFailed || this._shareExpired) &&
+      !this._sharing
     ) {
       this._shareAlert?.scrollIntoView({ block: "nearest" });
     }
@@ -374,7 +376,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       return;
     }
     await copyToClipboard(this._commissionParams.setup_manual_code);
-    // Closing would drop the window the app is still sharing.
+    // Closing under the open share sheet would discard its result.
     if (!this._sharing) {
       this.closeDialog();
     }

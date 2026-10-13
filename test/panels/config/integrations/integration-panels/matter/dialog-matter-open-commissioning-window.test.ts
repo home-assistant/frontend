@@ -289,7 +289,7 @@ describe("dialog-matter-open-commissioning-window", () => {
         };
       };
 
-      it("marks the code expired when the window runs out, without a tap", async () => {
+      it("marks the code expired 30 seconds before the window ends, without a tap", async () => {
         await openedWindow();
 
         vi.advanceTimersByTime(269_000);
@@ -324,10 +324,12 @@ describe("dialog-matter-open-commissioning-window", () => {
       });
 
       it("keeps the code while the app is still pairing on it", async () => {
-        shareMatterDeviceExternal.mockReturnValue(
-          new Promise((_resolve, reject) => {
-            setTimeout(() => reject({ code: "canceled" }), 20_000);
-          })
+        // Built on call, so the 20 s run from the share, not from setup.
+        shareMatterDeviceExternal.mockImplementation(
+          () =>
+            new Promise((_resolve, reject) => {
+              setTimeout(() => reject({ code: "canceled" }), 20_000);
+            })
         );
         await openedWindow();
         const draw = renderer();
@@ -359,10 +361,15 @@ describe("dialog-matter-open-commissioning-window", () => {
         expect(button.textContent).toContain("new_code");
 
         // `ha-button` forwards `click()` to its inner button, which a detached one never renders.
+        const settle = pendingWindow();
         button.dispatchEvent(new MouseEvent("click"));
-        await vi.runOnlyPendingTimersAsync();
 
         expect(openMatterCommissioningWindow).toHaveBeenCalledTimes(2);
+        expect(draw().querySelector("ha-qr-code")).toBeNull();
+        expect(draw().querySelector("ha-spinner")).not.toBeNull();
+        settle.resolve({ ...window_ });
+        await vi.advanceTimersByTimeAsync(0);
+        expect(draw().querySelector("ha-qr-code")).not.toBeNull();
       });
 
       it("stops the clock when the dialog closes", async () => {
