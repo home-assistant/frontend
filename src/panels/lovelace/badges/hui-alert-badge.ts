@@ -19,6 +19,7 @@ import {
 } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
+import { ALERT_DOMAINS } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import type { LovelaceBadge, LovelaceBadgeEditor } from "../types";
@@ -37,10 +38,13 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
     entities: string[],
     entitiesFallback: string[]
   ): AlertBadgeConfig {
-    const [entity] = findEntities(hass, 1, entities, entitiesFallback, [
-      "binary_sensor",
-      "alarm_control_panel",
-    ]);
+    const [entity] = findEntities(
+      hass,
+      1,
+      entities,
+      entitiesFallback,
+      ALERT_DOMAINS
+    );
 
     return { type: "alert", entity: entity || "", color: "red" };
   }

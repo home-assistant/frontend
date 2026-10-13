@@ -1,8 +1,7 @@
 import { computeDomain } from "../../../common/entity/compute_domain";
 import type { AlertBadgeConfig } from "../badges/types";
+import { ALERT_DOMAINS } from "../cards/types";
 import type { BadgeSuggestionProvider } from "./types";
-
-const ALERT_DOMAINS = ["binary_sensor", "alarm_control_panel"];
 
 export const alertBadgeSuggestions: BadgeSuggestionProvider<AlertBadgeConfig> =
   {
