@@ -998,8 +998,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     // and we want to avoid unnecessary recomputations when states change
     const sortDevices = (a: DeviceRegistryEntry, b: DeviceRegistryEntry) =>
       caseInsensitiveStringCompare(
-        computeDeviceNameDisplay(a, localize, this.hass.states) || "",
-        computeDeviceNameDisplay(b, localize, this.hass.states) || "",
+        computeDeviceNameDisplay(a, localize) || "",
+        computeDeviceNameDisplay(b, localize) || "",
         language
       );
 

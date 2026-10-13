@@ -105,6 +105,7 @@ export const isSystemUpdate = (entity: UpdateEntity): boolean => {
 
 export const filterUpdateEntities = (
   entities: HassEntities,
+  formatEntityName: HomeAssistant["formatEntityName"],
   language?: string
 ) =>
   (
@@ -131,18 +132,19 @@ export const filterUpdateEntities = (
       return 1;
     }
     return caseInsensitiveStringCompare(
-      a.attributes.title || a.attributes.friendly_name || "",
-      b.attributes.title || b.attributes.friendly_name || "",
+      a.attributes.title || formatEntityName(a),
+      b.attributes.title || formatEntityName(b),
       language
     );
   });
 
 export const filterUpdateEntitiesParameterized = (
   entities: HassEntities,
+  formatEntityName: HomeAssistant["formatEntityName"],
   showSkipped = false,
   showNotInstallable = false
 ) =>
-  filterUpdateEntities(entities).filter((entity) => {
+  filterUpdateEntities(entities, formatEntityName).filter((entity) => {
     if (showNotInstallable) {
       return updateCanNotInstall(entity, showSkipped);
     }
@@ -168,9 +170,11 @@ export const checkForEntityUpdates = async (
   element: HTMLElement,
   hass: HomeAssistant
 ) => {
-  const entities = filterUpdateEntities(hass.states, hass.locale.language).map(
-    (entity) => entity.entity_id
-  );
+  const entities = filterUpdateEntities(
+    hass.states,
+    hass.formatEntityName,
+    hass.locale.language
+  ).map((entity) => entity.entity_id);
 
   if (!entities.length) {
     showAlertDialog(element, {

@@ -109,6 +109,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     (
       storageItems: Zone[],
       stateItems: HassEntity[],
+      formatEntityName: HomeAssistant["formatEntityName"],
       language: string
     ): ({ entry: Zone } | { stateObject: HassEntity })[] => {
       const items = [
@@ -119,7 +120,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         })),
         ...stateItems.map((stateObject) => ({
           stateObject,
-          name: stateObject.attributes.friendly_name || stateObject.entity_id,
+          name: formatEntityName(stateObject) || stateObject.entity_id,
           home: stateObject.entity_id === HOME_ZONE_ENTITY_ID,
         })),
       ];
@@ -174,6 +175,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private _renderStateItem(stateObject: HassEntity) {
     const hass = this.hass;
+    const name = hass.formatEntityName(stateObject) || stateObject.entity_id;
     return html`
       <ha-list-item
         graphic="avatar"
@@ -187,9 +189,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           stateObject.entity_id,
           !!stateObject.attributes.passive,
           stateObject.attributes.icon,
-          stateObject.attributes.friendly_name || stateObject.entity_id
+          name
         )}
-        ${stateObject.attributes.friendly_name || stateObject.entity_id}
+        ${name}
         ${
           this.narrow &&
           stateObject.entity_id === "zone.home" &&
@@ -256,6 +258,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     (
       storageItems: Zone[],
       stateItems: HassEntity[],
+      formatEntityName: HomeAssistant["formatEntityName"],
       zoneEntityIds: Record<string, string>,
       pendingEdits: Record<string, PendingEdit>,
       entityReg: EntityRegistryEntry[],
@@ -267,7 +270,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         (entityState) => ({
           id: entityState.entity_id,
           icon: entityState.attributes.icon,
-          name: entityState.attributes.friendly_name || entityState.entity_id,
+          name: formatEntityName(entityState) || entityState.entity_id,
           latitude: entityState.attributes.latitude,
           longitude: entityState.attributes.longitude,
           radius: entityState.attributes.radius,
@@ -347,6 +350,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               ${this._sortedItems(
                 this._storageItems,
                 this._stateItems,
+                hass.formatEntityName,
                 hass.locale.language
               ).map((item) =>
                 "entry" in item
@@ -384,6 +388,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     .locations=${this._getZones(
                       this._storageItems,
                       this._stateItems,
+                      hass.formatEntityName,
                       this._zoneEntityIds,
                       this._pendingEdits,
                       this._entityReg,

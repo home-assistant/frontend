@@ -18,7 +18,6 @@ import type {
   HASSDomEvent,
 } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
@@ -611,7 +610,7 @@ class HaBlueprintOverview extends LitElement {
                   return html`<li>
                     ${
                       automationState
-                        ? `${computeStateName(automationState)} (${item})`
+                        ? `${this.hass.formatEntityName(automationState)} (${item})`
                         : item
                     }
                   </li>`;

@@ -1,12 +1,7 @@
 import memoizeOne from "memoize-one";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
-import type {
-  EntityRegistryDisplayEntry,
-  EntityRegistryEntry,
-} from "../../data/entity/entity_registry";
 import type { HomeAssistant } from "../../types";
 import { getDuplicates } from "../string/get_duplicates";
-import { computeStateName } from "./compute_state_name";
 
 export const computeDeviceName = (
   device: DeviceRegistryEntry
@@ -14,31 +9,14 @@ export const computeDeviceName = (
 
 export const computeDeviceNameDisplay = (
   device: DeviceRegistryEntry,
-  localize: HomeAssistant["localize"],
-  hassStates: HomeAssistant["states"],
-  entities?: EntityRegistryEntry[] | EntityRegistryDisplayEntry[] | string[]
+  localize: HomeAssistant["localize"]
 ) =>
   computeDeviceName(device) ||
-  (entities && fallbackDeviceName(hassStates, entities)) ||
   localize("ui.panel.config.devices.unnamed_device", {
     type: localize(
       `ui.panel.config.devices.type.${device.entry_type || "device"}`
     ),
   });
-
-export const fallbackDeviceName = (
-  hassStates: HomeAssistant["states"],
-  entities: EntityRegistryEntry[] | EntityRegistryDisplayEntry[] | string[]
-) => {
-  for (const entity of entities || []) {
-    const entityId = typeof entity === "string" ? entity : entity.entity_id;
-    const stateObj = hassStates[entityId];
-    if (stateObj) {
-      return computeStateName(stateObj);
-    }
-  }
-  return undefined;
-};
 
 export const getDuplicatedDeviceNames = memoizeOne(
   (devices: HomeAssistant["devices"]): Set<string> => {

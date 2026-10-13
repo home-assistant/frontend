@@ -502,13 +502,9 @@ export class HaConfigDeviceDashboard extends LitElement {
           device,
           this.hass.areas,
           this.hass.devices,
-          this.hass.states,
           this.hass.localize,
           this.hass.language,
-          this.hass.translationMetadata,
-          device.via_device_id
-            ? deviceEntityLookup[device.via_device_id]
-            : undefined
+          this.hass.translationMetadata
         );
 
         const floorArea =
@@ -528,12 +524,7 @@ export class HaConfigDeviceDashboard extends LitElement {
 
         return {
           ...device,
-          name: computeDeviceNameDisplay(
-            device,
-            this.hass.localize,
-            this.hass.states,
-            deviceEntityLookup[device.id]
-          ),
+          name: computeDeviceNameDisplay(device, this.hass.localize),
           model:
             device.model ||
             `<${localize("ui.panel.config.devices.data_table.unknown")}>`,
@@ -559,12 +550,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                   ),
           domains: deviceEntries.map((entry) => entry.domain),
           parent_device_name: parentDevice
-            ? computeDeviceNameDisplay(
-                parentDevice,
-                this.hass.localize,
-                this.hass.states,
-                deviceEntityLookup[parentDevice.id]
-              )
+            ? computeDeviceNameDisplay(parentDevice, this.hass.localize)
             : "",
           // Grouping key that keeps a device with its family: children group
           // under their parent's name, a parent groups under its own name, and
@@ -574,12 +560,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           // floor columns, this groups on the display name rather than the id,
           // because the data table renders the raw group value as its header.
           device_family_name: familyParentDevice
-            ? computeDeviceNameDisplay(
-                familyParentDevice,
-                this.hass.localize,
-                this.hass.states,
-                deviceEntityLookup[familyParentDevice.id]
-              )
+            ? computeDeviceNameDisplay(familyParentDevice, this.hass.localize)
             : undefined,
           firmware_version: device.sw_version || undefined,
           battery_entity: [

@@ -131,14 +131,17 @@ class HaConfigSectionUpdates extends LitElement {
 
   protected render(): TemplateResult {
     const installableUpdates = this._filterInstallableUpdateEntities(
-      this.hass.states
+      this.hass.states,
+      this.hass.formatEntityName
     );
     const notInstallableUpdates = this._filterNotInstallableUpdateEntities(
       this.hass.states,
+      this.hass.formatEntityName,
       this._showSkipped
     );
     const skippedUpdates = this._filterSkippedUpdateEntities(
       this.hass.states,
+      this.hass.formatEntityName,
       this._showSkipped
     );
 
@@ -367,7 +370,7 @@ class HaConfigSectionUpdates extends LitElement {
           message = message.replaceAll(
             entityId,
             stateObj.attributes.title ||
-              stateObj.attributes.friendly_name ||
+              this.hass.formatEntityName(stateObj) ||
               entityId
           );
         }
@@ -377,21 +380,42 @@ class HaConfigSectionUpdates extends LitElement {
   }
 
   private _filterInstallableUpdateEntities = memoizeOne(
-    (entities: HassEntities) =>
-      filterUpdateEntitiesParameterized(entities, false, false)
+    (
+      entities: HassEntities,
+      formatEntityName: HomeAssistant["formatEntityName"]
+    ) =>
+      filterUpdateEntitiesParameterized(
+        entities,
+        formatEntityName,
+        false,
+        false
+      )
   );
 
   private _filterNotInstallableUpdateEntities = memoizeOne(
-    (entities: HassEntities, showSkipped: boolean) =>
-      filterUpdateEntitiesParameterized(entities, showSkipped, true)
+    (
+      entities: HassEntities,
+      formatEntityName: HomeAssistant["formatEntityName"],
+      showSkipped: boolean
+    ) =>
+      filterUpdateEntitiesParameterized(
+        entities,
+        formatEntityName,
+        showSkipped,
+        true
+      )
   );
 
   private _filterSkippedUpdateEntities = memoizeOne(
-    (entities: HassEntities, showSkipped: boolean): UpdateEntity[] => {
+    (
+      entities: HassEntities,
+      formatEntityName: HomeAssistant["formatEntityName"],
+      showSkipped: boolean
+    ): UpdateEntity[] => {
       if (!showSkipped) {
         return [];
       }
-      return filterUpdateEntities(entities).filter(
+      return filterUpdateEntities(entities, formatEntityName).filter(
         (entity) =>
           latestVersionIsSkipped(entity) &&
           supportsFeature(entity, UpdateEntityFeature.INSTALL)
