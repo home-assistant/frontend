@@ -266,6 +266,30 @@ export const getDataFromPath = (
   return result;
 };
 
+/**
+ * Follows a trace path relative to a step config (for example
+ * `choose/0/conditions/1`) and returns the deepest config object it reaches.
+ */
+export const getNestedStepConfig = (config: unknown, path: string): unknown => {
+  let currentDetail = config;
+  for (const part of path.split("/")) {
+    if (typeof currentDetail !== "object" || currentDetail === null) {
+      break;
+    }
+    // Core traces the conditions of an `if` action as `if/condition/<index>`,
+    // while the config keeps them directly in the `if` list.
+    if (part === "condition" && Array.isArray(currentDetail)) {
+      continue;
+    }
+    const child = (currentDetail as Record<string, unknown>)[part];
+    if (child === undefined || typeof child === "string") {
+      break;
+    }
+    currentDetail = child;
+  }
+  return currentDetail;
+};
+
 // It is 'trigger' if manually triggered by the user via UI
 export const isTriggerPath = (path: string): boolean =>
   path === "trigger" || strStartsWith(path, "trigger/");

@@ -28,7 +28,11 @@ import type {
   TraceExtended,
 } from "../../data/trace";
 import type { TargetSelector } from "../../data/selector";
-import { getDataFromPath, isTriggerPath } from "../../data/trace";
+import {
+  getDataFromPath,
+  getNestedStepConfig,
+  isTriggerPath,
+} from "../../data/trace";
 import { getTraceTriggers } from "../../data/trace-tree";
 import type { TriggerDescriptions } from "../../data/trigger";
 import { getDeviceTarget } from "../../panels/config/automation/target/get_device_target";
@@ -220,20 +224,10 @@ export class HaTracePathDetails extends LitElement {
       const data: ActionTraceStep[] = paths[curPath];
 
       // Extract details from this.selected.config child properties used to add 'alias' (to headline), describeCondition and 'entity_id' (to result)
-      const nestPath = curPath
-        .substring(this.selected.path.length + 1)
-        .split("/");
-      let currentDetail: unknown = this.selected.config;
-      for (const part of nestPath) {
-        if (typeof currentDetail !== "object" || currentDetail === null) {
-          break;
-        }
-        const child = (currentDetail as Record<string, unknown>)[part];
-        if (child === undefined || typeof child === "string") {
-          break;
-        }
-        currentDetail = child;
-      }
+      const currentDetail = getNestedStepConfig(
+        this.selected.config,
+        curPath.substring(this.selected.path.length + 1)
+      );
 
       parts.push(
         data.map((trace, idx) => {
