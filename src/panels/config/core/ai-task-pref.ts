@@ -169,7 +169,16 @@ export class AITaskPref extends LitElement {
             .disabled=${disabled || !prefs.evaluate_entity_id}
             @change=${this._handleAutomaticEvaluationChange}
           >
-            ${this.hass.localize("ui.panel.config.ai_task.allow_automatic_evaluation")}
+            <span class="automatic-evaluation-heading">
+              ${this.hass.localize(
+                "ui.panel.config.ai_task.allow_automatic_evaluation"
+              )}
+            </span>
+            <span class="automatic-evaluation-description">
+              ${this.hass.localize(
+                "ui.panel.config.ai_task.allow_automatic_evaluation_description"
+              )}
+            </span>
           </ha-switch>
         </div>
         <div class="card-actions">
@@ -332,6 +341,16 @@ export class AITaskPref extends LitElement {
     }
     ha-switch::part(label) {
       margin-inline-start: var(--ha-space-4);
+    }
+    .automatic-evaluation-heading,
+    .automatic-evaluation-description {
+      display: block;
+    }
+    .automatic-evaluation-description {
+      margin-block-start: var(--ha-space-1);
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+      line-height: normal;
     }
     .picker {
       display: flex;
