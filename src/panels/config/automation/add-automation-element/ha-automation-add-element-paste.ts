@@ -1,94 +1,65 @@
-import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { ContextType } from "@lit/context";
-import { mdiContentPaste, mdiPlus } from "@mdi/js";
+import { mdiContentPaste } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-button";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/item/ha-list-item-button";
-import {
-  internationalizationContext,
-  narrowViewportContext,
-} from "../../../../data/context";
+import { internationalizationContext } from "../../../../data/context";
 import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
-import { shortcutStyles } from "../styles";
-import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
+/**
+ * Contextual action bar pinned to the bottom of the dialog's list pane.
+ * Place it as the last child of a scrolling container.
+ */
 @customElement("ha-automation-add-element-paste")
 export class HaAutomationAddElementPaste extends LitElement {
-  @property({ attribute: "clipboard-item" }) public clipboardItem?;
+  @property({ attribute: "clipboard-item", reflect: true })
+  public clipboardItem?: string;
 
   @property({ attribute: "automation-element-type" })
   public automationElementType!: AddAutomationElementDialogParams["type"];
 
-  @property({ type: Boolean }) public divider = false;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   protected _i18n!: ContextType<typeof internationalizationContext>;
-
-  @state()
-  @consume({ context: narrowViewportContext, subscribe: true })
-  protected _narrow!: ContextType<typeof narrowViewportContext>;
 
   protected render() {
     if (!this.clipboardItem) {
       return nothing;
     }
 
-    return html`<ha-list-item-button class="paste" @click=${this._paste}>
-        <div slot="headline" class="label">
-          ${this._i18n.localize(
-            `ui.panel.config.automation.editor.${this.automationElementType}s.paste`
-          )}
-        </div>
-        <div slot="supporting-text">
-          ${this._i18n.localize(
-            // @ts-ignore
-            `ui.panel.config.automation.editor.${this.automationElementType}s.type.${this.clipboardItem}.label`
-          )}
-        </div>
-        ${
-          !this._narrow
-            ? html`<span slot="end" class="shortcut">
-                <span>${renderCtrlOrCmd(this._i18n.localize)}</span>
-                <span>+</span>
-                <span>V</span>
-              </span>`
-            : nothing
-        }
-        <ha-svg-icon slot="start" .path=${mdiContentPaste}></ha-svg-icon
-        ><ha-svg-icon class="plus" slot="end" .path=${mdiPlus}></ha-svg-icon>
-      </ha-list-item-button>
-      ${this.divider ? html`<wa-divider></wa-divider>` : nothing}`;
+    return html`<ha-button appearance="filled" size="s" @click=${this._paste}>
+      <ha-svg-icon slot="start" .path=${mdiContentPaste}></ha-svg-icon>
+      ${this._i18n.localize(
+        `ui.panel.config.automation.editor.${this.automationElementType}s.paste_element`
+      )}
+    </ha-button>`;
   }
 
   private _paste() {
     fireEvent(this, "paste-element");
   }
 
-  static styles = [
-    shortcutStyles,
-    css`
-      :host {
-        display: block;
-      }
-
-      ha-list-item-button {
-        --ha-row-item-padding-block: var(--ha-space-1);
-        --ha-row-item-padding-inline: var(--ha-space-3);
-        --ha-row-item-min-height: 40px;
-      }
-      wa-divider {
-        --spacing: 0;
-      }
-
-      ha-svg-icon.plus {
-        color: var(--primary-color);
-      }
-    `,
-  ];
+  static styles = css`
+    :host {
+      position: sticky;
+      bottom: 0;
+      /* In a flex column shorter than its box, sit at the bottom anyway. */
+      margin-top: auto;
+      z-index: 3;
+      display: flex;
+      gap: var(--ha-space-2);
+      align-items: center;
+      padding: var(--ha-space-3);
+      padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
+      background-color: var(--ha-color-surface-low);
+    }
+    :host(:not([clipboard-item])) {
+      display: none;
+    }
+  `;
 }
 
 declare global {

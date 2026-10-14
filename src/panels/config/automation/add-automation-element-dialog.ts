@@ -732,12 +732,6 @@ class DialogAddAutomationElement
                       "ha-scrollbar": true,
                     })}
                   >
-                    <ha-automation-add-element-paste
-                      .automationElementType=${automationElementType}
-                      .clipboardItem=${this._params!.clipboardItem}
-                      @paste-element=${this._paste}
-                      divider
-                    ></ha-automation-add-element-paste>
                     ${collections.map(
                       (collection) => html`
                         ${
@@ -784,6 +778,11 @@ class DialogAddAutomationElement
                         )}
                       `
                     )}
+                    <ha-automation-add-element-paste
+                      .automationElementType=${automationElementType}
+                      .clipboardItem=${this._params!.clipboardItem}
+                      @paste-element=${this._paste}
+                    ></ha-automation-add-element-paste>
                   </ha-list-base>
                 `
         }
@@ -2395,8 +2394,20 @@ class DialogAddAutomationElement
           border: 1px solid var(--ha-color-border-neutral-quiet);
           margin: var(--ha-space-3);
           overflow: auto;
+          /* No rubber band: the paste bar is pinned to the bottom and would
+             bounce away from it on macOS. */
+          overscroll-behavior: none;
           flex: 0 0 360px;
           margin-inline-end: 0;
+        }
+
+        /* Fill the column so the paste bar can sit at its bottom edge, and
+           clip instead of hide: hidden makes this its own scroll container,
+           which pins the bar to the list's end rather than the column's. */
+        .groups::part(base) {
+          box-sizing: border-box;
+          min-height: 100%;
+          overflow-x: clip;
         }
 
         @media (max-width: 870px), (max-height: 500px) {
@@ -2462,6 +2473,12 @@ class DialogAddAutomationElement
 
         .groups {
           padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
+        }
+        /* A sticky bar stops at the scroller's padding, which would leave a
+           strip of list showing under it. The bar clears the home indicator
+           itself instead. */
+        .groups:has(> ha-automation-add-element-paste[clipboard-item]) {
+          padding-bottom: 0;
         }
 
         ha-icon-next {
