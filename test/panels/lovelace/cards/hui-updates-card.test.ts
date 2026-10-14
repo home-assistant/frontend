@@ -3,6 +3,7 @@ import type { HassEntities } from "home-assistant-js-websocket";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   configContext,
+  formattersContext,
   internationalizationContext,
   statesContext,
 } from "../../../../src/data/context";
@@ -11,6 +12,7 @@ import type { HuiUpdatesCard } from "../../../../src/panels/lovelace/cards/hui-u
 import type { UpdatesCardConfig } from "../../../../src/panels/lovelace/cards/types";
 import type {
   HomeAssistantConfig,
+  HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../../src/types";
 
@@ -55,6 +57,12 @@ const mount = async (): Promise<Mounted> => {
   new ContextProvider(host, {
     context: configContext,
     initialValue: { user: { is_admin: true } } as HomeAssistantConfig,
+  });
+  new ContextProvider(host, {
+    context: formattersContext,
+    initialValue: {
+      formatEntityName: vi.fn((stateObj) => stateObj.entity_id),
+    } as unknown as HomeAssistantFormatters,
   });
   const states = new ContextProvider(host, {
     context: statesContext,

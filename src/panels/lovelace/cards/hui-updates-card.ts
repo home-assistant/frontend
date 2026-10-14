@@ -55,6 +55,9 @@ export class HuiUpdatesCard extends LitElement implements LovelaceCard {
   @consume({ context: statesContext, subscribe: true })
   @transform<HassEntities, number>({
     transformer: function (this: HuiUpdatesCard, states) {
+      if (!this._formatters) {
+        return undefined;
+      }
       return filterUpdateEntities(
         states,
         this._formatters.formatEntityName,
