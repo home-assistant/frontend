@@ -9576,6 +9576,17 @@
             "not_loaded": "Usage Prediction integration is not loaded.",
             "no_data": "This place will soon fill up with the entities you use most often, based on your activity."
           },
+          "device": {
+            "no_device": "Select a device to show its entities.",
+            "device_not_found": "This device no longer exists.",
+            "categories": {
+              "control": "[%key:ui::panel::config::devices::entities::control%]",
+              "sensor": "[%key:ui::panel::config::devices::entities::sensor%]",
+              "event": "[%key:ui::panel::config::devices::entities::event%]",
+              "config": "[%key:ui::panel::config::devices::entities::config%]",
+              "diagnostic": "[%key:ui::panel::config::devices::entities::diagnostic%]"
+            }
+          },
           "light": {
             "lights": "Lights",
             "other_lights": "Other lights",
@@ -11573,6 +11584,29 @@
               "exclude_entities": "Exclude from suggestions",
               "exclude_entities_helper": "These entities will not be suggested based on your activity",
               "hide_empty": "Hide when empty"
+            },
+            "device": {
+              "device_id": "Device",
+              "categories": "Categories",
+              "display": "Display",
+              "display_options": {
+                "tiles": "Tiles",
+                "tiles_description": "One card per entity",
+                "list": "List",
+                "list_description": "All entities in a single card"
+              },
+              "group_by_category": "Group by category",
+              "group_by_category_helper": "Adds a subtitle above each category",
+              "heading": "Heading",
+              "heading_helper": "When shown, the heading includes the battery level",
+              "heading_options": {
+                "none": "No heading",
+                "device": "Device name",
+                "area": "Area and device name"
+              },
+              "entities": "Entities",
+              "exclude_entities": "Exclude entities",
+              "exclude_entities_helper": "Not shown in this section, even if their category is selected"
             },
             "original-states": {
               "areas": "Areas to display",
