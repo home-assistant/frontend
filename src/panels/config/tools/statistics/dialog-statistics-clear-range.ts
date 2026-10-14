@@ -28,18 +28,13 @@ import type { DialogStatisticsClearRangeParams } from "./show-dialog-statistics-
 // Longer ranges use hourly statistics to keep the preview fast.
 const MAX_5MINUTE_PREVIEW_MS = 3 * 24 * 60 * 60 * 1000;
 
+type PreviewPeriod = "5minute" | "hour";
+
 // The recorder also clears the period in which the range starts, so the
 // preview starts at the beginning of that period.
-const previewRange = (start: Date, end: Date) => {
-  const period: "5minute" | "hour" =
-    end.getTime() - start.getTime() > MAX_5MINUTE_PREVIEW_MS
-      ? "hour"
-      : "5minute";
+const periodStart = (date: Date, period: PreviewPeriod) => {
   const periodMs = (period === "hour" ? 60 : 5) * 60 * 1000;
-  return {
-    period,
-    start: new Date(Math.floor(start.getTime() / periodMs) * periodMs),
-  };
+  return new Date(Math.floor(date.getTime() / periodMs) * periodMs);
 };
 
 @customElement("dialog-statistics-clear-range")
@@ -59,6 +54,8 @@ class DialogStatisticsClearRange extends DialogMixin<DialogStatisticsClearRangeP
   @state() private _end = new Date();
 
   @state() private _statistics?: Statistics;
+
+  @state() private _previewStart?: Date;
 
   @state() private _busy = false;
 
@@ -149,7 +146,7 @@ class DialogStatisticsClearRange extends DialogMixin<DialogStatisticsClearRangeP
                       .chartType=${
                         this._statTypes[0] === "change" ? "bar" : "line"
                       }
-                      .startTime=${previewRange(this._start, this._end).start}
+                      .startTime=${this._previewStart}
                       .endTime=${this._end}
                       hide-legend
                       .clickForMoreInfo=${false}
@@ -195,19 +192,31 @@ class DialogStatisticsClearRange extends DialogMixin<DialogStatisticsClearRangeP
     if (!this._validRange) {
       return;
     }
-    const { period, start } = previewRange(this._start, this._end);
-    try {
+    const statisticId = this.params!.statistic.statistic_id;
+    const fetchPreview = async (period: PreviewPeriod) => {
+      const start = periodStart(this._start, period);
       const statistics = await fetchStatistics(
         this._api.callWS,
         start,
         this._end,
-        [this.params!.statistic.statistic_id],
+        [statisticId],
         period,
         undefined,
         this._statTypes.includes("change") ? ["change"] : ["mean", "min", "max"]
       );
+      return { start, statistics };
+    };
+    try {
+      const shortRange =
+        this._end.getTime() - this._start.getTime() <= MAX_5MINUTE_PREVIEW_MS;
+      let preview = await fetchPreview(shortRange ? "5minute" : "hour");
+      // Short term statistics are purged before the hourly statistics.
+      if (shortRange && !preview.statistics[statisticId]?.length) {
+        preview = await fetchPreview("hour");
+      }
       if (fetchId === this._fetchId) {
-        this._statistics = statistics;
+        this._previewStart = preview.start;
+        this._statistics = preview.statistics;
       }
     } catch (err: any) {
       if (fetchId === this._fetchId) {
