@@ -323,8 +323,8 @@ importers:
         specifier: 4.0.4
         version: 4.0.4
       '@vvo/tzdb':
-        specifier: 6.198.0
-        version: 6.198.0
+        specifier: 6.201.1
+        version: 6.201.1
       '@webcomponents/scoped-custom-element-registry':
         specifier: 0.0.10
         version: 0.0.10
@@ -3775,8 +3775,8 @@ packages:
   '@vscode/web-custom-data@0.4.13':
     resolution: {integrity: sha512-2ZUIRfhofZ/npLlf872EBnPmn27Kt4M2UssmQIfnJvgGgMYZJ5fvtHEDnttBBf2hnVtBgNCqZMVHJA+wsFVqTA==}
 
-  '@vvo/tzdb@6.198.0':
-    resolution: {integrity: sha512-bNRWBhWYl0edVgyX6AYbhoCM2tk2lXJjGCyO2VDc2xn6Dw8dLd7WGj2DDXkVOkmOIQTNjEAcxrEpIzz5pWVwFg==}
+  '@vvo/tzdb@6.201.1':
+    resolution: {integrity: sha512-ib7ymHHyiGD9N/WWGMX5951hmxaFnOP3W8l0ATUxaH0Y/NczPHWS4cQgJUd1S9zyjCq0od8WXxRHlnjlHNPdNg==}
 
   '@webcomponents/scoped-custom-element-registry@0.0.10':
     resolution: {integrity: sha512-wP4LF28aysE2Pq3NQRNQxko7Q0vOOwcoOSMg8FFI4S6z76UuXkYIc5ndC31dJMwso1/vSteL75LW2CEKedAJbA==}
@@ -11385,7 +11385,7 @@ snapshots:
 
   '@vscode/web-custom-data@0.4.13': {}
 
-  '@vvo/tzdb@6.198.0': {}
+  '@vvo/tzdb@6.201.1': {}
 
   '@webcomponents/scoped-custom-element-registry@0.0.10': {}
 
