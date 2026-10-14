@@ -524,6 +524,9 @@ export const pickRowConfig = <T extends object>(
   return config as Partial<T>;
 };
 
+export const getRowNote = (note: unknown): string | undefined =>
+  typeof note === "string" ? note.trim() || undefined : undefined;
+
 export const migrateAutomationTrigger = (
   trigger: Trigger | Trigger[],
   report?: AutomationMigrationReport

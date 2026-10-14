@@ -18,6 +18,7 @@ import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { OptionSidebarConfig } from "../../../../data/automation";
+import { getRowNote } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
 import "../ha-automation-note";
@@ -62,6 +63,8 @@ export default class HaAutomationSidebarOption extends LitElement {
 
   protected render() {
     const disabled = this.disabled;
+
+    const note = getRowNote(this.config.note);
 
     const subtitle = this.hass.localize(
       "ui.panel.config.automation.editor.actions.type.choose.label"
@@ -198,10 +201,10 @@ export default class HaAutomationSidebarOption extends LitElement {
           : html`<div class="description">${description}</div>`
       }
       ${
-        !this.config.defaultOption && this.config.note?.trim() && !this.yamlMode
+        !this.config.defaultOption && note && !this.yamlMode
           ? html`<ha-automation-note
               @edit-note=${this.config.editNote}
-              .note=${this.config.note}
+              .note=${note}
             ></ha-automation-note>`
           : nothing
       }
