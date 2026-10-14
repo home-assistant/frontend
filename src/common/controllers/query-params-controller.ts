@@ -14,8 +14,6 @@ import {
 
 const DEBOUNCE_WAIT = 300;
 
-type QueryParamsHost = ReactiveControllerHost & HTMLElement;
-
 export interface QueryParamsControllerOptions {
   /** Whether the host keeps its state in the URL. */
   enabled: () => boolean;
@@ -44,7 +42,7 @@ export class QueryParamsController<
   private _pendingTimeout?: number;
 
   constructor(
-    private _host: QueryParamsHost,
+    private _host: ReactiveControllerHost,
     private _config: C,
     private _options: QueryParamsControllerOptions
   ) {
@@ -116,6 +114,7 @@ export class QueryParamsController<
   }
 
   private _navigated = () => {
+    this._cancelPending();
     // Leaving the page gets here too, before the router swaps the page
     if (this._isActive()) {
       this._options.navigated();
