@@ -11,6 +11,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
@@ -38,6 +39,8 @@ export default class HaAutomationSidebarOption extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
+
   @property({ type: Number, attribute: "sidebar-key" })
   public sidebarKey?: number;
 
@@ -51,7 +54,8 @@ export default class HaAutomationSidebarOption extends LitElement {
       return;
     }
     this._warnings = undefined;
-    if (this.config.yamlMode && this.config.config.option) {
+    this.yamlMode = !!this.config.yamlMode;
+    if (this.yamlMode && this.config.config.option) {
       this.editor?.setValue(this.config.config.option);
       this._warnings = this._checkUiSupport(this.config.config.option);
     }
@@ -147,7 +151,7 @@ export default class HaAutomationSidebarOption extends LitElement {
                 <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
                 <div class="overflow-label">
                   ${this.hass.localize(
-                    `ui.panel.config.automation.editor.edit_${!this.config.yamlMode ? "yaml" : "ui"}`
+                    `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
                   )}
                   <span
                     class="shortcut-placeholder ${isMac ? "mac" : ""}"
@@ -184,7 +188,7 @@ export default class HaAutomationSidebarOption extends LitElement {
             `
       }
       ${
-        this.config.yamlMode && this.config.config.option
+        this.yamlMode && this.config.config.option
           ? keyed(
               this.sidebarKey,
               html`<ha-yaml-editor
@@ -197,7 +201,7 @@ export default class HaAutomationSidebarOption extends LitElement {
           : html`<div class="description">${description}</div>`
       }
       ${
-        !this.config.defaultOption && note && !this.config.yamlMode
+        !this.config.defaultOption && note && !this.yamlMode
           ? html`<ha-automation-note
               @edit-note=${this.config.editNote}
               .note=${note}
@@ -245,7 +249,7 @@ export default class HaAutomationSidebarOption extends LitElement {
         this.config.duplicate();
         break;
       case "toggle_yaml_mode":
-        this.config.toggleYamlMode();
+        fireEvent(this, "toggle-yaml-mode", { yamlMode: !this.yamlMode });
         break;
       case "delete":
         this.config.delete();

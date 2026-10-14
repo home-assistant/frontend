@@ -180,6 +180,7 @@ export class HaTileContainer extends LitElement {
     .container.inline ::slotted([slot="features-inline"]) {
       /* size the feature on the 6 column grid track, so it lines up with neighbouring tiles */
       width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
+      --feature-columns: 2;
       flex: none;
       padding: 0 var(--ha-space-3);
       padding-inline-start: 0;
