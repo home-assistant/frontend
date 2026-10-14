@@ -81,11 +81,19 @@ export class HaCardConditionUser extends LitElement {
     let users = this.condition.users ?? [];
 
     if (ev.detail.diff.added.length) {
-      users = [...users, sortedUsers[ev.detail.diff.added[0]].id];
+      const added = sortedUsers[ev.detail.diff.added[0]].id;
+      if (users.includes(added)) {
+        return;
+      }
+      users = [...users, added];
     } else if (ev.detail.diff.removed.length) {
-      users = users.filter(
-        (user) => user !== sortedUsers[ev.detail.diff.removed[0]].id
-      );
+      const removed = sortedUsers[ev.detail.diff.removed[0]].id;
+      if (!users.includes(removed)) {
+        return;
+      }
+      users = users.filter((user) => user !== removed);
+    } else {
+      return;
     }
 
     const condition: UserCondition = {
