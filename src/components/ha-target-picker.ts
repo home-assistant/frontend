@@ -408,7 +408,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           .emptyLabel=${this.hass.localize(
             "ui.components.target-picker.no_targets"
           )}
-          .sectionTitleFunction=${this._sectionTitleFunction}
           .selectedSection=${this._selectedSection}
           .popoverAnchor=${this._replaceTargetAnchor}
           .rowRenderer=${this._renderRow}
@@ -608,47 +607,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
     return undefined;
   }
-
-  private _sectionTitleFunction = ({
-    firstIndex,
-    lastIndex,
-    firstItem,
-    secondItem,
-    itemsCount,
-  }: {
-    firstIndex: number;
-    lastIndex: number;
-    firstItem: PickerComboBoxItem | string;
-    secondItem: PickerComboBoxItem | string;
-    itemsCount: number;
-  }) => {
-    if (
-      firstItem === undefined ||
-      secondItem === undefined ||
-      typeof firstItem === "string" ||
-      (typeof secondItem === "string" && secondItem !== "padding") ||
-      (firstIndex === 0 && lastIndex === itemsCount - 1)
-    ) {
-      return undefined;
-    }
-
-    const type = getTargetComboBoxItemType(firstItem as PickerComboBoxItem);
-    const translationType:
-      "areas" | "entities" | "devices" | "labels" | undefined =
-      type === "area" || type === "floor"
-        ? "areas"
-        : type === "entity"
-          ? "entities"
-          : type && type !== "empty"
-            ? `${type}s`
-            : undefined;
-
-    return translationType
-      ? this.hass.localize(
-          `ui.components.target-picker.type.${translationType}`
-        )
-      : undefined;
-  };
 
   private _getItems = (searchString: string, section: string) => {
     this._selectedSection = section as TargetTypeFloorless | undefined;
