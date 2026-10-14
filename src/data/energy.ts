@@ -1168,9 +1168,8 @@ export const getEnergyDataCollection = (
       if (!prefs) {
         try {
           prefs = await getEnergyPreferences(callWS);
-          if (requestRevision === revision) {
-            collection.prefs = prefs;
-          }
+          // Preferences are independent of the selected period and comparison.
+          collection.prefs = prefs;
         } catch (err: any) {
           if (err.code !== "not_found") {
             throw err;

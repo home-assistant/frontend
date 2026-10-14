@@ -1420,41 +1420,39 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
     assert.strictEqual(await latestResult, latestError);
   });
 
-  it("does not restore obsolete preferences after they have been cleared", async () => {
-    vi.useFakeTimers();
-    const { collection, pending, callWS } = createCollection();
-    const oldPrefs = { ...EMPTY_PREFERENCES };
-    const latestPrefs = { ...EMPTY_PREFERENCES };
-    let resolveOldPrefs!: (prefs: typeof oldPrefs) => void;
-    let resolveLatestPrefs!: (prefs: typeof latestPrefs) => void;
-    callWS.mockImplementationOnce(
-      () =>
-        new Promise((resolve) => {
-          resolveOldPrefs = resolve;
-        })
-    );
-    callWS.mockImplementationOnce(
-      () =>
-        new Promise((resolve) => {
-          resolveLatestPrefs = resolve;
-        })
-    );
-    collection.clearPrefs();
-    const oldRefresh = collection.refresh();
-    collection.clearPrefs();
-    const latestRefresh = collection.refresh();
-    resolveLatestPrefs(latestPrefs);
-    await vi.advanceTimersByTimeAsync(0);
-    resolveOldPrefs(oldPrefs);
-    await vi.advanceTimersByTimeAsync(0);
-    assert.strictEqual(collection.prefs, latestPrefs);
-    await complete(pending[1]);
-    await oldRefresh;
-    assert.equal(collection.state, undefined);
-    await complete(pending[0]);
-    await latestRefresh;
-    assert.strictEqual(collection.state?.prefs, latestPrefs);
-  });
+  it.each(["period", "comparison"])(
+    "retains loaded preferences when the %s changes during a refresh",
+    async (selection) => {
+      vi.useFakeTimers();
+      const { collection, pending, callWS } = createCollection();
+      const prefs = { ...EMPTY_PREFERENCES };
+      let resolvePrefs!: (prefs: typeof EMPTY_PREFERENCES) => void;
+      callWS.mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolvePrefs = resolve;
+          })
+      );
+      collection.clearPrefs();
+      // View strategies await refresh before reading collection.prefs.
+      const refresh = collection.refresh();
+      if (selection === "period") {
+        collection.setPeriod(
+          new Date("2026-02-01T00:00:00Z"),
+          new Date("2026-02-28T23:59:59Z")
+        );
+      } else {
+        collection.setCompare(CompareMode.PREVIOUS);
+      }
+      resolvePrefs(prefs);
+      await vi.advanceTimersByTimeAsync(0);
+      await complete(pending[0]);
+      await refresh;
+      assert.strictEqual(collection.prefs, prefs);
+      // The preferences remain usable, but the superseded data is discarded.
+      assert.isUndefined(collection.state);
+    }
+  );
 
   it("replays relevant cached data while refreshing the same selection", async () => {
     vi.useFakeTimers();
