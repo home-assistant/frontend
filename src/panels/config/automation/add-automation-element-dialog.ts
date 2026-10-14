@@ -2402,12 +2402,14 @@ class DialogAddAutomationElement
         }
 
         /* Fill the column so the paste bar can sit at its bottom edge, and
-           clip instead of hide: hidden makes this its own scroll container,
-           which pins the bar to the list's end rather than the column's. */
+           don't be a scroll container (ha-scrollbar sets overflow-y: auto,
+           the list hides x): that pins the bar to the list's end rather than
+           the column's. */
         .groups::part(base) {
           box-sizing: border-box;
           min-height: 100%;
           overflow-x: clip;
+          overflow-y: visible;
         }
 
         @media (max-width: 870px), (max-height: 500px) {
