@@ -8,7 +8,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import type { CloudStatus } from "../../../data/cloud";
 import { getConfigEntries } from "../../../data/config_entries";
-import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../data/page_navigation";
 import {
   childPanelReadyContext,
   type RegisterChildPanelReady,

@@ -38,7 +38,7 @@ import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
-import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../data/page_navigation";
 import { showEnergyCustomiseDialog } from "./dialogs/show-dialog-energy-customise";
 
 const INITIAL_CONFIG: EnergyPreferences = {

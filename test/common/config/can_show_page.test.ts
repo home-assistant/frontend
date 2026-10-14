@@ -4,7 +4,7 @@ import {
   isLoadedIntegration,
   isCore,
 } from "../../../src/common/config/can_show_page";
-import type { PageNavigation } from "../../../src/layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../../src/data/page_navigation";
 import type { HomeAssistant } from "../../../src/types";
 
 describe("canShowPage", () => {

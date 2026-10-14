@@ -9,7 +9,7 @@ import {
   mdiPlayBoxMultiple,
 } from "@mdi/js";
 import type { LocalizeKeys } from "../common/translations/localize";
-import type { PageNavigation } from "../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "./page_navigation";
 import type { HomeAssistant, PanelInfo } from "../types";
 
 export const APP_PANEL = "app";

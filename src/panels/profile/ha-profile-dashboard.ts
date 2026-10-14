@@ -12,7 +12,7 @@ import "./ha-pick-theme-row";
 import { isExternal } from "../../data/external";
 import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 import "../../layouts/hass-subpage";
-import type { PageNavigation } from "../../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "../../data/page_navigation";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant, Route } from "../../types";
 import { showEditProfileDialog } from "./show-dialog-edit-profile";

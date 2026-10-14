@@ -12,7 +12,7 @@ import {
 } from "../common/config/filter_navigation_pages";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import type { PickerComboBoxItem } from "../components/ha-picker-combo-box";
-import type { PageNavigation } from "../layouts/hass-tabs-subpage";
+import type { PageNavigation } from "./page_navigation";
 import { configSections } from "../panels/config/config-sections";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../types";
