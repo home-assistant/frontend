@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getTraceUrl } from "../../src/data/trace";
+import { getNestedConfigFromPath, getTraceUrl } from "../../src/data/trace";
 
 // Trace links from the logbook and from trace steps share this URL. Automation
 // ids are free-form, and the automation router decodes the path segment, so
@@ -26,5 +26,57 @@ describe("getTraceUrl", () => {
     );
     expect(decodeURIComponent(segment)).toBe(itemId);
     expect(parsed.searchParams.get("run_id")).toBe("run_1");
+  });
+});
+
+// Core traces the conditions of an `if` action under `if/condition/<n>` while
+// the config keeps them directly in the `if` list, so the path details must
+// skip that segment or they hand the whole list to the condition describer.
+describe("getNestedConfigFromPath", () => {
+  const stateCondition = {
+    condition: "state",
+    entity_id: "light.a",
+    state: "off",
+  };
+  const ifAction = {
+    if: [{ condition: "or", conditions: [stateCondition] }],
+    then: [],
+  };
+
+  it("resolves the conditions of an if action", () => {
+    expect(getNestedConfigFromPath(ifAction, ["if", "condition", "0"])).toBe(
+      ifAction.if[0]
+    );
+  });
+
+  it("keeps the condition for its traced entity ids", () => {
+    const path = ["if", "condition", "0", "conditions", "0", "entity_id", "0"];
+    expect(getNestedConfigFromPath(ifAction, path)).toBe(stateCondition);
+
+    const listCondition = { ...stateCondition, entity_id: ["light.a"] };
+    const listAction = { if: [listCondition], then: [] };
+    expect(
+      getNestedConfigFromPath(listAction, [
+        "if",
+        "condition",
+        "0",
+        "entity_id",
+        "0",
+      ])
+    ).toBe(listCondition);
+  });
+
+  it("resolves a template string condition", () => {
+    const templateAction = {
+      if: ["{{ is_state('light.a', 'off') }}"],
+      then: [],
+    };
+    expect(
+      getNestedConfigFromPath(templateAction, ["if", "condition", "0"])
+    ).toBe(templateAction.if[0]);
+  });
+
+  it("keeps the selected config when the path does not exist", () => {
+    expect(getNestedConfigFromPath(ifAction, ["else", "0"])).toBe(ifAction);
   });
 });

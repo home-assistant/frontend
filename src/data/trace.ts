@@ -266,6 +266,30 @@ export const getDataFromPath = (
   return result;
 };
 
+export const getNestedConfigFromPath = (
+  config: unknown,
+  nestPath: string[]
+): unknown => {
+  let result = config;
+  for (const part of nestPath) {
+    if (typeof result !== "object" || result === null) {
+      break;
+    }
+    if (part === "entity_id") {
+      break;
+    }
+    if (part === "condition" && Array.isArray(result)) {
+      continue;
+    }
+    const child = (result as Record<string, unknown>)[part];
+    if (child === undefined) {
+      break;
+    }
+    result = child;
+  }
+  return result;
+};
+
 // It is 'trigger' if manually triggered by the user via UI
 export const isTriggerPath = (path: string): boolean =>
   path === "trigger" || strStartsWith(path, "trigger/");
