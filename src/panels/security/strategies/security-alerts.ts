@@ -105,7 +105,7 @@ export const computeSecurityAlertCardConfig = (
   return {
     type: "alert",
     entity: alertEntity.entity,
-    color: severity === "alert" ? "red" : "amber",
+    alert_color: severity === "alert" ? "red" : "amber",
     visibility: computeDefaultSecurityAlertVisibility(alertEntity.entity),
   };
 };

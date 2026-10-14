@@ -10343,9 +10343,10 @@
             "alert": {
               "name": "Alert",
               "description": "This card highlights an entity that needs attention, with an optional color and pulsing background.",
-              "color_helper": "Used while the entity is in an alert state, such as a binary sensor that is on or an unlocked lock.",
-              "inactive_color": "Inactive color",
-              "inactive_color_helper": "Used when the entity isn't in an alert state. The background doesn't pulse.",
+              "alert_color": "Alert color",
+              "alert_color_helper": "Used while the entity is in an alert state, such as a binary sensor that is on or an unlocked lock.",
+              "clear_color": "Clear color",
+              "clear_color_helper": "Used when the entity isn't in an alert state. The background doesn't pulse.",
               "pulse": "Pulse",
               "pulse_helper": "Animates the colored background while the entity is in an alert state. When reduced motion is on, the background stays tinted instead."
             },

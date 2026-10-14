@@ -70,9 +70,10 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
   public setConfig(config: AlertCardConfig): void {
     if (
       !isValidEntityId(config.entity) ||
-      (config.color !== undefined && typeof config.color !== "string") ||
-      (config.inactive_color !== undefined &&
-        typeof config.inactive_color !== "string") ||
+      (config.alert_color !== undefined &&
+        typeof config.alert_color !== "string") ||
+      (config.clear_color !== undefined &&
+        typeof config.clear_color !== "string") ||
       (config.pulse !== undefined && typeof config.pulse !== "boolean")
     ) {
       throw new Error("Invalid configuration");
@@ -117,8 +118,8 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     const active = isAlertActive(stateObj);
 
     const color = active
-      ? (this._config.color ?? DEFAULT_ALERT_COLOR)
-      : this._config.inactive_color;
+      ? (this._config.alert_color ?? DEFAULT_ALERT_COLOR)
+      : this._config.clear_color;
 
     const pulse = active && this._config.pulse === true;
     const hasColor = color !== undefined && color !== "none";

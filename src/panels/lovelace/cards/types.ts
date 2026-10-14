@@ -739,8 +739,8 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
 export interface AlertCardConfig extends LovelaceCardConfig {
   type: "alert";
   entity: string;
-  color?: string;
-  inactive_color?: string;
+  alert_color?: string;
+  clear_color?: string;
   pulse?: boolean;
 }
 
