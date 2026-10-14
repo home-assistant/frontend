@@ -56,6 +56,42 @@ describe("getEntityActiveZone", () => {
     expect(getEntityActiveZone(entity, zones)).toBe(zones["zone.work"]);
   });
 
+  it("prefers a reported zone matching the current state over an earlier active zone", () => {
+    const entity = createMockEntityState("device_tracker.phone", "Work", {
+      in_zones: ["zone.gym", "zone.work"],
+    });
+
+    expect(
+      getEntityActiveZone(entity, {
+        ...zones,
+        "zone.gym": createMockEntityState("zone.gym", "0", {
+          friendly_name: "Gym",
+        }),
+      })
+    ).toBe(zones["zone.work"]);
+  });
+
+  it.each(["person.anne", "device_tracker.router"])(
+    "uses the associated passive zone matching the state for %s",
+    (entityId) => {
+      const lab = createMockEntityState("zone.lab", "0", {
+        friendly_name: "Lab",
+        icon: "mdi:flask",
+        passive: true,
+      });
+      const entity = createMockEntityState(entityId, "Lab", {
+        in_zones: ["zone.lab", "zone.home"],
+      });
+
+      expect(
+        getEntityActiveZone(entity, {
+          "zone.lab": lab,
+          "zone.home": createMockEntityState("zone.home", "0"),
+        })
+      ).toBe(lab);
+    }
+  );
+
   it.each([{ inZones: ["zone.removed"] }, { inZones: ["zone.passive"] }])(
     "does not fall back to names for reported zones $inZones",
     ({ inZones }) => {
@@ -67,7 +103,7 @@ describe("getEntityActiveZone", () => {
         getEntityActiveZone(entity, {
           "zone.work": zones["zone.work"],
           "zone.passive": createMockEntityState("zone.passive", "0", {
-            friendly_name: "Work",
+            friendly_name: "Passive",
             passive: true,
           }),
         })

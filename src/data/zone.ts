@@ -47,14 +47,17 @@ export const getEntityActiveZone = (
 
   const inZones: string[] | undefined = entity.attributes.in_zones;
   if (Array.isArray(inZones) && inZones.length > 0) {
-    return inZones
+    const reportedZones = inZones
       .map((zoneId) => states[zoneId])
-      .find(
-        (zone) =>
-          zone &&
-          computeStateDomain(zone) === "zone" &&
-          !zone.attributes.passive
-      );
+      .filter((zone) => zone && computeStateDomain(zone) === "zone");
+    const matchingZones = reportedZones.filter(
+      (zone) => computeZoneTrackerState(zone) === entity.state
+    );
+    return (
+      matchingZones.find((zone) => !zone.attributes.passive) ??
+      matchingZones[0] ??
+      reportedZones.find((zone) => !zone.attributes.passive)
+    );
   }
 
   if (entity.state === "home") {
