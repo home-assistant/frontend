@@ -928,7 +928,8 @@
       },
       "conversation-agent-picker": {
         "conversation_agent": "Conversation agent",
-        "none": "None"
+        "none": "None",
+        "settings": "Agent settings"
       },
       "country-picker": {
         "country": "Country",
@@ -3049,7 +3050,9 @@
           "gen_data_header": "Data generation tasks",
           "gen_data_description": "Suggest automation names.",
           "gen_image_header": "Image generation tasks",
-          "gen_image_description": "Generate images."
+          "gen_image_description": "Generate images.",
+          "gen_data_settings": "Data generation settings",
+          "gen_image_settings": "Image generation settings"
         },
         "mcp": {
           "header": "Model Context Protocol",
