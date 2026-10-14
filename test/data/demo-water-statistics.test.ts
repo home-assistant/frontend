@@ -154,6 +154,27 @@ describe("demo water statistics", () => {
     }
   });
 
+  it("keeps hourly solar statistics within the spring DST day", () => {
+    vi.setSystemTime(new Date("2027-01-01T00:00:00Z"));
+    const start = "2026-03-08T08:00:00Z";
+    const end = "2026-03-09T07:00:00Z";
+    const buckets = fetchWater(
+      "hour",
+      ["sensor.solar_production"],
+      start,
+      end,
+      "America/Los_Angeles"
+    )["sensor.solar_production"];
+    expect(buckets).toHaveLength(23);
+    expect(buckets[0].start).toBe(Date.parse(start));
+    expect(buckets.at(-1)!.end).toBe(Date.parse(end));
+    for (const bucket of buckets) {
+      expect(bucket.start).toBeGreaterThanOrEqual(Date.parse(start));
+      expect(bucket.end).toBeLessThanOrEqual(Date.parse(end));
+      expect(bucket.end - bucket.start).toBe(3600000);
+    }
+  });
+
   it("keeps consecutive daily buckets aligned across the spring DST change", () => {
     vi.setSystemTime(new Date("2027-01-01T00:00:00Z"));
     const stats = fetchWater(
