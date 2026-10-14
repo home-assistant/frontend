@@ -1,5 +1,9 @@
 import { describe, it, assert, expect, vi } from "vitest";
-import { HistoryStream, computeHistory } from "../../src/data/history";
+import {
+  HistoryStream,
+  computeHistory,
+  fetchDateWS,
+} from "../../src/data/history";
 import type { HomeAssistant } from "../../src/types";
 import { mockDevice, mockEntity } from "../common/entity/context/context-mock";
 import {
@@ -9,6 +13,55 @@ import {
 } from "../fixtures/hass";
 
 const mockHass = {} as HomeAssistant;
+
+describe("fetchDateWS", () => {
+  const startTime = new Date("2026-10-01T00:00:00Z");
+  const endTime = new Date("2026-10-02T00:00:00Z");
+
+  it("keeps minimal responses and significant changes as the default", async () => {
+    const hass = createMockHass({
+      "sensor.temperature": createMockEntityState("sensor.temperature", "20"),
+    });
+    hass.callWS = vi.fn().mockResolvedValue({});
+
+    await fetchDateWS(hass, startTime, endTime, ["sensor.temperature"]);
+
+    expect(hass.callWS).toHaveBeenCalledWith({
+      type: "history/history_during_period",
+      start_time: startTime.toISOString(),
+      end_time: endTime.toISOString(),
+      entity_ids: ["sensor.temperature"],
+      minimal_response: true,
+      significant_changes_only: true,
+      no_attributes: true,
+    });
+  });
+
+  it.each(["person.anne", "device_tracker.phone"])(
+    "requests attributes and attribute-only changes for %s",
+    async (entityId) => {
+      const hass = createMockHass({
+        [entityId]: createMockEntityState(entityId, "Work"),
+      });
+      hass.callWS = vi.fn().mockResolvedValue({});
+
+      await fetchDateWS(hass, startTime, endTime, [entityId], {
+        minimalResponse: false,
+        significantChangesOnly: false,
+      });
+
+      expect(hass.callWS).toHaveBeenCalledWith({
+        type: "history/history_during_period",
+        start_time: startTime.toISOString(),
+        end_time: endTime.toISOString(),
+        entity_ids: [entityId],
+        minimal_response: false,
+        significant_changes_only: false,
+        no_attributes: false,
+      });
+    }
+  );
+});
 
 describe("HistoryStream.processMessage", () => {
   it("should delete lc from boundary state when pruning expired history", () => {

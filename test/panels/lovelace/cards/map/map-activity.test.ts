@@ -5,17 +5,42 @@ import {
   personActivity,
   zoneActivity,
 } from "../../../../../src/panels/lovelace/cards/map/map-activity";
+import { createMockEntityState } from "../../../../fixtures/hass";
 
 // The window starts at t=1000s; samples are (state, seconds)
 const SINCE = 1000 * 1000;
-const sample = (s: string, seconds: number): EntityHistoryState =>
-  ({ s, lu: seconds, a: {} }) as EntityHistoryState;
+const sample = (
+  state: string,
+  seconds: number,
+  inZones?: string[]
+): EntityHistoryState => ({
+  s: state,
+  lu: seconds,
+  a: inZones === undefined ? {} : { in_zones: inZones },
+});
+
+const zones = {
+  "zone.home": createMockEntityState("zone.home", "0", {
+    friendly_name: "Home",
+  }),
+  "zone.work": createMockEntityState("zone.work", "0", {
+    friendly_name: "Work",
+  }),
+};
+
+const duplicateZones = {
+  ...zones,
+  "zone.other_work": createMockEntityState("zone.other_work", "0", {
+    friendly_name: "Work",
+  }),
+};
 
 describe("personActivity", () => {
   it("lists state changes inside the window, newest first", () => {
     const entries = personActivity(
       [sample("home", 900), sample("not_home", 1100), sample("work", 1200)],
-      SINCE
+      SINCE,
+      zones
     );
     expect(entries.map((e) => e.state)).toEqual(["work", "not_home"]);
     expect(entries[0].when.getTime()).toBe(1200 * 1000);
@@ -23,9 +48,9 @@ describe("personActivity", () => {
 
   it("counts the first sample only when it lies inside the window", () => {
     // Before the window it is the state at the window's start, not an event
-    expect(personActivity([sample("home", 900)], SINCE)).toEqual([]);
-    expect(personActivity([sample("home", 1100)], SINCE)).toEqual([
-      { state: "home", when: new Date(1100 * 1000) },
+    expect(personActivity([sample("home", 900)], SINCE, zones)).toEqual([]);
+    expect(personActivity([sample("home", 1100)], SINCE, zones)).toEqual([
+      { state: "home", zoneId: "zone.home", when: new Date(1100 * 1000) },
     ]);
   });
 
@@ -40,7 +65,8 @@ describe("personActivity", () => {
         sample("home", 1180),
         sample("not_home", 1200),
       ],
-      SINCE
+      SINCE,
+      zones
     );
     expect(entries.map((e) => e.state)).toEqual(["not_home"]);
   });
@@ -49,7 +75,102 @@ describe("personActivity", () => {
     const history = Array.from({ length: 30 }, (_, i) =>
       sample(`zone_${i}`, 1001 + i)
     );
-    expect(personActivity(history, SINCE)).toHaveLength(ACTIVITY_MAX_ENTRIES);
+    expect(personActivity(history, SINCE, zones)).toHaveLength(
+      ACTIVITY_MAX_ENTRIES
+    );
+  });
+
+  it("records direct transitions between zones with the same name", () => {
+    const entries = personActivity(
+      [
+        sample("Work", 900, ["zone.work"]),
+        sample("Work", 1100, ["zone.other_work"]),
+        sample("Work", 1200, ["zone.work"]),
+      ],
+      SINCE,
+      duplicateZones
+    );
+
+    expect(entries).toEqual([
+      { state: "Work", zoneId: "zone.work", when: new Date(1200 * 1000) },
+      { state: "Work", zoneId: "zone.other_work", when: new Date(1100 * 1000) },
+    ]);
+  });
+
+  it("preserves historical zone IDs after a zone is renamed", () => {
+    const entries = personActivity(
+      [sample("Old workplace", 1100, ["zone.work"])],
+      SINCE,
+      zones
+    );
+
+    expect(entries[0]).toMatchObject({
+      state: "Old workplace",
+      zoneId: "zone.work",
+    });
+  });
+
+  it("ignores passive zones and changes that leave the active zone unchanged", () => {
+    const entries = personActivity(
+      [
+        sample("Work", 900, ["zone.work"]),
+        sample("Work", 1100, ["zone.passive", "zone.work"]),
+        sample("Work", 1200, ["zone.passive", "zone.other_work"]),
+        sample("unavailable", 1250),
+        sample("Work", 1300, ["zone.other_work"]),
+      ],
+      SINCE,
+      {
+        ...duplicateZones,
+        "zone.passive": createMockEntityState("zone.passive", "0", {
+          friendly_name: "Work",
+          passive: true,
+        }),
+      }
+    );
+
+    expect(entries).toEqual([
+      { state: "Work", zoneId: "zone.other_work", when: new Date(1200 * 1000) },
+    ]);
+  });
+
+  it("does not guess a zone for legacy history with duplicate names", () => {
+    const entries = personActivity(
+      [sample("Work", 1100)],
+      SINCE,
+      duplicateZones
+    );
+
+    expect(entries).toEqual([
+      { state: "Work", zoneId: undefined, when: new Date(1100 * 1000) },
+    ]);
+  });
+
+  it.each([{ inZones: [] }, { inZones: ["zone.removed"] }])(
+    "does not fall back to names when in_zones is $inZones",
+    ({ inZones }) => {
+      const entries = personActivity(
+        [sample("Work", 1100, inZones)],
+        SINCE,
+        zones
+      );
+
+      expect(entries[0].zoneId).toBeUndefined();
+    }
+  );
+
+  it("resolves unique legacy zone names and the home state", () => {
+    const entries = personActivity(
+      [sample("home", 1100), sample("not_home", 1200), sample("Work", 1300)],
+      SINCE,
+      zones
+    );
+
+    expect(entries.map((entry) => entry.zoneId)).toEqual([
+      "zone.work",
+      undefined,
+      "zone.home",
+    ]);
   });
 });
 
@@ -65,8 +186,9 @@ describe("zoneActivity", () => {
         "person.bob": [sample("home", 900), sample("Work", 1200)],
       },
       ["person.anne", "person.bob"],
-      "Work",
-      SINCE
+      "zone.work",
+      SINCE,
+      zones
     );
     expect(
       entries.map((e) => [e.personId, e.arrived, e.when.getTime() / 1000])
@@ -87,8 +209,9 @@ describe("zoneActivity", () => {
         ],
       },
       ["person.anne"],
-      "Work",
-      SINCE
+      "zone.work",
+      SINCE,
+      zones
     );
     // Leaving Work happened before the window; Gym is not Work
     expect(entries).toEqual([]);
@@ -100,8 +223,9 @@ describe("zoneActivity", () => {
     const entries = zoneActivity(
       { "person.anne": [sample("Work", 1100)] },
       ["person.anne"],
-      "Work",
-      SINCE
+      "zone.work",
+      SINCE,
+      zones
     );
     expect(entries.map((e) => [e.arrived, e.when.getTime() / 1000])).toEqual([
       [true, 1100],
@@ -120,9 +244,142 @@ describe("zoneActivity", () => {
         ],
       },
       ["person.anne"],
-      "Work",
-      SINCE
+      "zone.work",
+      SINCE,
+      zones
     );
     expect(entries).toEqual([]);
+  });
+
+  it("keeps arrivals and departures in same-named zones separate", () => {
+    const history = {
+      "person.anne": [
+        sample("not_home", 900, []),
+        sample("Work", 1100, ["zone.work"]),
+        sample("not_home", 1300, []),
+      ],
+      "person.bob": [
+        sample("not_home", 900, []),
+        sample("Work", 1200, ["zone.other_work"]),
+        sample("not_home", 1400, []),
+      ],
+    };
+    const personIds = Object.keys(history);
+
+    expect(
+      zoneActivity(history, personIds, "zone.work", SINCE, duplicateZones)
+    ).toEqual([
+      {
+        state: "not_home",
+        personId: "person.anne",
+        arrived: false,
+        when: new Date(1300 * 1000),
+      },
+      {
+        state: "Work",
+        personId: "person.anne",
+        arrived: true,
+        when: new Date(1100 * 1000),
+      },
+    ]);
+    expect(
+      zoneActivity(history, personIds, "zone.other_work", SINCE, duplicateZones)
+    ).toEqual([
+      {
+        state: "not_home",
+        personId: "person.bob",
+        arrived: false,
+        when: new Date(1400 * 1000),
+      },
+      {
+        state: "Work",
+        personId: "person.bob",
+        arrived: true,
+        when: new Date(1200 * 1000),
+      },
+    ]);
+  });
+
+  it("records a departure and arrival when only the zone ID changes", () => {
+    const history = {
+      "person.anne": [
+        sample("Work", 900, ["zone.work"]),
+        sample("Work", 1100, ["zone.other_work"]),
+      ],
+    };
+    for (const [zoneId, arrived] of [
+      ["zone.work", false],
+      ["zone.other_work", true],
+    ] as const) {
+      expect(
+        zoneActivity(history, ["person.anne"], zoneId, SINCE, duplicateZones)
+      ).toEqual([
+        {
+          state: "Work",
+          personId: "person.anne",
+          arrived,
+          when: new Date(1100 * 1000),
+        },
+      ]);
+    }
+  });
+
+  it("uses historical membership even after a zone is renamed", () => {
+    const entries = zoneActivity(
+      { "person.anne": [sample("Old workplace", 1100, ["zone.work"])] },
+      ["person.anne"],
+      "zone.work",
+      SINCE,
+      zones
+    );
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0].arrived).toBe(true);
+  });
+
+  it("includes membership in overlapping zones without counting active-zone changes", () => {
+    const entries = zoneActivity(
+      {
+        "person.anne": [
+          sample("not_home", 900, []),
+          sample("Work", 1100, ["zone.other_work", "zone.work"]),
+          sample("Work", 1200, ["zone.work"]),
+          sample("not_home", 1300, []),
+        ],
+      },
+      ["person.anne"],
+      "zone.work",
+      SINCE,
+      duplicateZones
+    );
+
+    expect(
+      entries.map((entry) => [entry.arrived, entry.when.getTime() / 1000])
+    ).toEqual([
+      [false, 1300],
+      [true, 1100],
+    ]);
+  });
+
+  it("does not assign legacy history to multiple zones with the same name", () => {
+    const history = { "person.anne": [sample("Work", 1100)] };
+
+    for (const zoneId of ["zone.work", "zone.other_work"]) {
+      expect(
+        zoneActivity(history, ["person.anne"], zoneId, SINCE, duplicateZones)
+      ).toEqual([]);
+    }
+  });
+
+  it("does not infer membership from names when in_zones is empty", () => {
+    expect(
+      zoneActivity(
+        { "person.anne": [sample("Work", 1100, [])] },
+        ["person.anne"],
+        "zone.work",
+        SINCE,
+        zones
+      )
+    ).toEqual([]);
   });
 });

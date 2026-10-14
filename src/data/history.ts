@@ -104,13 +104,18 @@ export const fetchDateWS = (
   hass: Pick<HomeAssistant, "states" | "callWS">,
   startTime: Date,
   endTime: Date,
-  entityIds: string[]
+  entityIds: string[],
+  options: {
+    minimalResponse?: boolean;
+    significantChangesOnly?: boolean;
+  } = {}
 ) => {
   const params = {
     type: "history/history_during_period",
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
-    minimal_response: true,
+    minimal_response: options.minimalResponse ?? true,
+    significant_changes_only: options.significantChangesOnly ?? true,
     no_attributes: !entityIds.some((entityId) =>
       entityIdHistoryNeedsAttributes(hass, entityId)
     ),
