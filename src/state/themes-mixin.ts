@@ -162,7 +162,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           "content",
           darkMode
             ? "dark"
-            : themeName === "default" || selectedTheme?.modes
+            : themeName === "default" ||
+                (selectedTheme?.modes && "light" in selectedTheme.modes)
               ? "light"
               : "dark light"
         );
