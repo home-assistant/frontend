@@ -292,7 +292,7 @@ class HuiLightColorCardFeature
       css`
         .container {
           --hue-track-width: max(
-            100% * 12 / var(--column-size, 12),
+            100% * 12 * var(--feature-columns, 1) / var(--column-size, 12),
             var(--feature-height) * 3
           );
           display: flex;
