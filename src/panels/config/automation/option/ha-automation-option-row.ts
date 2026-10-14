@@ -418,6 +418,11 @@ export default class HaAutomationOptionRow extends LitElement {
       </div>`;
     }
 
+    // The visual editors can't render options that aren't UI-supported
+    if (this._warnings) {
+      return nothing;
+    }
+
     return html`<div
       class=${classMap({
         "card-content": true,
