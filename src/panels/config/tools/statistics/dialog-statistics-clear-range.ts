@@ -28,6 +28,20 @@ import type { DialogStatisticsClearRangeParams } from "./show-dialog-statistics-
 // Longer ranges use hourly statistics to keep the preview fast.
 const MAX_5MINUTE_PREVIEW_MS = 3 * 24 * 60 * 60 * 1000;
 
+// The recorder also clears the period in which the range starts, so the
+// preview starts at the beginning of that period.
+const previewRange = (start: Date, end: Date) => {
+  const period: "5minute" | "hour" =
+    end.getTime() - start.getTime() > MAX_5MINUTE_PREVIEW_MS
+      ? "hour"
+      : "5minute";
+  const periodMs = (period === "hour" ? 60 : 5) * 60 * 1000;
+  return {
+    period,
+    start: new Date(Math.floor(start.getTime() / periodMs) * periodMs),
+  };
+};
+
 @customElement("dialog-statistics-clear-range")
 class DialogStatisticsClearRange extends DialogMixin<DialogStatisticsClearRangeParams>(
   LitElement
@@ -135,7 +149,7 @@ class DialogStatisticsClearRange extends DialogMixin<DialogStatisticsClearRangeP
                       .chartType=${
                         this._statTypes[0] === "change" ? "bar" : "line"
                       }
-                      .startTime=${this._start}
+                      .startTime=${previewRange(this._start, this._end).start}
                       .endTime=${this._end}
                       hide-legend
                       .clickForMoreInfo=${false}
@@ -181,17 +195,14 @@ class DialogStatisticsClearRange extends DialogMixin<DialogStatisticsClearRangeP
     if (!this._validRange) {
       return;
     }
-    const start = this._start;
-    const end = this._end;
+    const { period, start } = previewRange(this._start, this._end);
     try {
       const statistics = await fetchStatistics(
         this._api.callWS,
         start,
-        end,
+        this._end,
         [this.params!.statistic.statistic_id],
-        end.getTime() - start.getTime() > MAX_5MINUTE_PREVIEW_MS
-          ? "hour"
-          : "5minute",
+        period,
         undefined,
         this._statTypes.includes("change") ? ["change"] : ["mean", "min", "max"]
       );
