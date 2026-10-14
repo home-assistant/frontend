@@ -41,6 +41,8 @@ export class QueryParamsController<
 
   private _pendingTimeout?: number;
 
+  private _hostUpdated = false;
+
   constructor(
     private _host: ReactiveControllerHost,
     private _config: C,
@@ -53,11 +55,16 @@ export class QueryParamsController<
     this._path = currentPath();
     mainWindow.addEventListener("location-changed", this._navigated);
     mainWindow.addEventListener("popstate", this._navigated);
+
     // Before the first update the host reads the URL itself, after its
     // initial state is set
-    if (this._host.hasUpdated) {
+    if (this._hostUpdated) {
       this._navigated();
     }
+  }
+
+  public hostUpdated() {
+    this._hostUpdated = true;
   }
 
   public hostDisconnected() {
