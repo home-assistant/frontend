@@ -681,12 +681,12 @@ export class HaAutomationRowTargets extends LitElement {
       padding: var(--ha-space-1) 0;
     }
 
-    .target state-badge {
+    .target state-badge,
+    ha-dropdown-item state-badge {
       width: 24px;
       height: 24px;
       flex-shrink: 0;
     }
-
     .target ha-floor-icon {
       display: flex;
       height: 32px;
