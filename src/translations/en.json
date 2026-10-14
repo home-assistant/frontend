@@ -7570,6 +7570,7 @@
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
+            "debug_logging_enabled_description": "Extra detail from this integration is being written to the logs. Reproduce the problem, then disable it. Home Assistant will download the log for your issue report if log file downloads are available. Leaving it on can slow Home Assistant down and fill up the logs.",
             "show_logs": "Show logs",
             "live_log": {
               "title": "Live log",
