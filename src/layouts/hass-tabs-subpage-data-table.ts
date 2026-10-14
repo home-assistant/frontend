@@ -18,9 +18,15 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { canShowPage } from "../common/config/can_show_page";
+import { QueryParamsController } from "../common/controllers/query-params-controller";
 import { consume } from "../common/decorators/consume";
 import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
+import {
+  dataTableQueryParamConfig,
+  dataTableQueryParamsFromState,
+  dataTableQueryStateFromUrl,
+} from "../common/url/data-table-query-params";
 import "../components/chips/ha-assist-chip";
 import "../components/data-table/ha-data-table";
 import type {
@@ -217,6 +223,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   @property({ attribute: false }) public hiddenColumns?: string[];
 
+  /**
+   * Keep search, sorting and grouping in the URL (`search`, `sort`,
+   * `direction` and `group`). Params in the URL win over the initial values.
+   * Opt in per page, as some pages use query params for other things.
+   */
+  @property({ attribute: "sync-url", type: Boolean }) public syncUrl = false;
+
   @state() private _sortColumn?: string;
 
   @state() private _sortDirection: SortingDirection = null;
@@ -238,6 +251,15 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
+
+  private _queryParams = new QueryParamsController(
+    this,
+    dataTableQueryParamConfig,
+    {
+      enabled: () => this.syncUrl,
+      navigated: () => this._applyUrl(),
+    }
+  );
 
   public clearSelection() {
     this._dataTable.clearSelection();
@@ -264,6 +286,22 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     if (this.initialSorting && this.columns[this.initialSorting.column]) {
       this._sortColumn = this.initialSorting.column;
       this._sortDirection = this.initialSorting.direction;
+    }
+    this._applyUrl();
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    if (!this.syncUrl) {
+      return;
+    }
+    const sortingOrGroupingChanged =
+      changedProperties.has("_sortColumn") ||
+      changedProperties.has("_sortDirection") ||
+      changedProperties.has("_groupColumn") ||
+      changedProperties.has("syncUrl");
+    if (sortingOrGroupingChanged || changedProperties.has("filter")) {
+      // Searching is written once typing pauses
+      this._writeUrl(!sortingOrGroupingChanged);
     }
   }
 
@@ -645,6 +683,52 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   private _clearFilters() {
     fireEvent(this, "clear-filter");
+  }
+
+  // A link with table params wins over what was picked before, the page is
+  // told so it keeps the same
+  private _applyUrl() {
+    const searchParams = this._queryParams.searchParams();
+    const linked = searchParams
+      ? dataTableQueryStateFromUrl(searchParams, this.columns)
+      : undefined;
+
+    if (linked) {
+      if (linked.search !== this.filter) {
+        this.filter = linked.search;
+        fireEvent(this, "search-changed", { value: this.filter });
+      }
+      if (
+        linked.sorting &&
+        (linked.sorting.column !== this._sortColumn ||
+          linked.sorting.direction !== this._sortDirection)
+      ) {
+        this._sortColumn = linked.sorting.column;
+        this._sortDirection = linked.sorting.direction;
+        fireEvent(this, "sorting-changed", linked.sorting);
+      }
+      if (linked.groupColumn && linked.groupColumn !== this._groupColumn) {
+        this._setGroupColumn(linked.groupColumn);
+      }
+    }
+
+    // Before the first update, writing follows once it is rendered
+    if (this.hasUpdated) {
+      this._writeUrl();
+    }
+  }
+
+  private _writeUrl(debounced = false) {
+    this._queryParams.write(
+      dataTableQueryParamsFromState(
+        this.columns,
+        this.filter,
+        this._sortColumn,
+        this._sortDirection,
+        this._groupColumn
+      ),
+      debounced
+    );
   }
 
   private _toggleFilters() {

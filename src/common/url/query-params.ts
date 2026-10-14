@@ -134,6 +134,48 @@ export function createQueryString(
   return searchParams.toString();
 }
 
+const queryParamKeys = (config: QueryParamConfig): string[] => [
+  ...(config.list ?? []),
+  ...(config.date ?? []),
+  ...(config.boolean ?? []).map(({ key }) => key),
+  ...(config.string ?? []),
+];
+
+/** Whether the search params hold any of the config's params. */
+export const hasQueryParams = (
+  searchParams: SearchParamsSource,
+  config: QueryParamConfig
+): boolean =>
+  queryParamKeys(config).some(
+    (key) => getSearchParam(searchParams, key) !== null
+  );
+
+/**
+ * Replace the config's params in a query string with the given values,
+ * keeping every other param as it is.
+ */
+export function updateQueryString<C extends QueryParamConfig>(
+  current: string,
+  values: QueryParamValues<NoInfer<C>>,
+  config: C
+): string;
+export function updateQueryString(
+  current: string,
+  values: Record<string, QueryParamValue | undefined>,
+  config: QueryParamConfig
+): string {
+  const searchParams = new URLSearchParams(current);
+  for (const key of queryParamKeys(config)) {
+    searchParams.delete(key);
+  }
+  for (const [key, value] of new URLSearchParams(
+    createQueryString(values, config)
+  )) {
+    searchParams.append(key, value);
+  }
+  return searchParams.toString();
+}
+
 export const serviceTargetFromQueryParams = <
   Key extends keyof HassServiceTarget & string,
 >(
