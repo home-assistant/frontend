@@ -174,10 +174,6 @@ class HuiLightColorTempCardFeature
           filter: saturate(0.5);
           --control-slider-background-opacity: 0.4;
         }
-        ha-control-slider.inactive:focus-within {
-          filter: none;
-          --control-slider-background-opacity: 1;
-        }
 
         ha-control-slider:dir(rtl) {
           --control-slider-background: linear-gradient(

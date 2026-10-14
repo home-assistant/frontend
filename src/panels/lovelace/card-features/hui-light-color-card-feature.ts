@@ -356,10 +356,6 @@ class HuiLightColorCardFeature
           filter: saturate(0.5);
           --gradient-opacity: 0.4;
         }
-        .inactive .axis:focus-within {
-          filter: none;
-          --gradient-opacity: 1;
-        }
         ha-control-button[disabled] .preview {
           opacity: 0.2;
         }
