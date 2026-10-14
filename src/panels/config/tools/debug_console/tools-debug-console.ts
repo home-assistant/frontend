@@ -29,13 +29,15 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { navigate } from "../../../../common/navigate";
+import { goBack } from "../../../../common/navigate";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
 import type {
   DebugConsoleExecuteResult,
+  DebugConsoleObjects,
   DebugConsoleSignature,
   DebugConsoleValue,
 } from "../../../../data/debug_console";
@@ -43,6 +45,8 @@ import {
   clearDebugConsole,
   completeDebugConsole,
   executeDebugConsole,
+  inspectDebugConsole,
+  getDebugConsoleAttribute,
   getDebugConsoleInfo,
   getDebugConsoleSignature,
 } from "../../../../data/debug_console";
@@ -60,6 +64,7 @@ type ConsoleEntryContent =
   | { kind: "log"; values: DebugConsoleValue[] }
   | { kind: "result"; value: DebugConsoleValue }
   | { kind: "error"; text: string }
+  | { kind: "output_truncated" }
   | { kind: "paste_blocked" }
   | { kind: "paste_allowed" };
 
@@ -108,15 +113,44 @@ const loadLog = (userId: string): ConsoleEntry[] => {
   return log;
 };
 
+// Session storage holds a few megabytes for the whole site.
+const MAX_STORED_LOG_LENGTH = 1_000_000;
+const pendingStores = new Map<string, number>();
+
 const saveLog = (userId: string, entries: ConsoleEntry[]) => {
   savedLogs.set(userId, entries);
+  // Storing serializes the whole log, so once after a burst of output.
+  window.clearTimeout(pendingStores.get(userId));
+  pendingStores.set(
+    userId,
+    window.setTimeout(() => {
+      pendingStores.delete(userId);
+      storeLog(userId, savedLogs.get(userId) ?? []);
+    }, 250)
+  );
+};
+
+// Stores the newest entries that fit; the rest stays for this page load.
+const storeLog = (userId: string, entries: ConsoleEntry[]) => {
+  const key = `${STORAGE_KEY_LOG}-${userId}`;
+  let stored = entries;
+  while (stored.length) {
+    const serialized = JSON.stringify(stored);
+    if (serialized.length <= MAX_STORED_LOG_LENGTH) {
+      try {
+        window.sessionStorage.setItem(key, serialized);
+        return;
+      } catch (_err: unknown) {
+        // Over the quota of the browser, try again with less.
+      }
+    }
+    stored = stored.slice(Math.ceil(stored.length / 2));
+  }
+
   try {
-    window.sessionStorage.setItem(
-      `${STORAGE_KEY_LOG}-${userId}`,
-      JSON.stringify(entries)
-    );
+    window.sessionStorage.removeItem(key);
   } catch (_err: unknown) {
-    // Too big or no storage; it is still kept for this page load.
+    // No storage at all.
   }
 };
 
@@ -142,6 +176,18 @@ class ToolsDebugConsole extends LitElement {
 
   // Responses can arrive out of order; only the latest request may set the hint.
   private _signatureRequest = 0;
+
+  // The code the last signature request was for, to skip asking again.
+  private _signatureCode?: string;
+
+  private _warningDialogOpen = false;
+
+  // Fixed for the lifetime of the console, so values do not update with hass.
+  private _objects: DebugConsoleObjects = {
+    inspect: (objectId) => inspectDebugConsole(this.hass, objectId),
+    getAttribute: (objectId, attribute) =>
+      getDebugConsoleAttribute(this.hass, objectId, attribute),
+  };
 
   @query(".log") private _log?: HTMLElement;
 
@@ -250,7 +296,7 @@ class ToolsDebugConsole extends LitElement {
           ${entry.values.map(
             (value) =>
               html`<tools-debug-console-value
-                .hass=${this.hass}
+                .objects=${this._objects}
                 .value=${value}
               ></tools-debug-console-value>`
           )}
@@ -259,7 +305,7 @@ class ToolsDebugConsole extends LitElement {
         return html`<div class="entry result">
           <ha-svg-icon class="marker" .path=${mdiChevronLeft}></ha-svg-icon>
           <tools-debug-console-value
-            .hass=${this.hass}
+            .objects=${this._objects}
             .value=${entry.value}
           ></tools-debug-console-value>
         </div>`;
@@ -276,6 +322,15 @@ class ToolsDebugConsole extends LitElement {
             {
               phrase: html`<code>${this._pastePhrase}</code>`,
             }
+          )}
+        </div>`;
+      case "output_truncated":
+        return html`<div
+          class="entry notice"
+          dir=${computeRTLDirection(this.hass)}
+        >
+          ${this.hass.localize(
+            "ui.panel.config.tools.tabs.debug_console.output_truncated"
           )}
         </div>`;
       case "paste_allowed":
@@ -314,7 +369,8 @@ class ToolsDebugConsole extends LitElement {
     }
 
     this._warningRequired = warningRequired;
-    if (warningRequired) {
+    if (warningRequired && !this._warningDialogOpen) {
+      this._warningDialogOpen = true;
       showDebugConsoleWarningDialog(this, {
         closedCallback: this._warningClosed,
       });
@@ -322,10 +378,12 @@ class ToolsDebugConsole extends LitElement {
   }
 
   private _warningClosed = (accepted: boolean) => {
+    this._warningDialogOpen = false;
     if (!accepted) {
       // Only when still here; the dialog also closes when leaving otherwise.
+      // Not to the Tools panel itself, as that returns to its last tab.
       if (this.isConnected) {
-        navigate("/config/tools");
+        goBack("/config");
       }
       return;
     }
@@ -339,6 +397,9 @@ class ToolsDebugConsole extends LitElement {
     // The router keeps this page around, so recreate the editor on return.
     if (this.hasUpdated) {
       this.requestUpdate();
+      if (this._warningRequired) {
+        this._checkWarning();
+      }
     }
   }
 
@@ -349,6 +410,7 @@ class ToolsDebugConsole extends LitElement {
     this._editor = undefined;
     // A hint for a prompt that is gone is of no use.
     this._signatureRequest++;
+    this._signatureCode = undefined;
   }
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -400,6 +462,11 @@ class ToolsDebugConsole extends LitElement {
         Prec.highest(promptTheme),
         haSyntaxHighlighting,
         EditorView.lineWrapping,
+        EditorView.contentAttributes.of({
+          "aria-label": this.hass.localize(
+            "ui.panel.config.tools.tabs.debug_console.prompt"
+          ),
+        }),
         EditorView.updateListener.of(this._onEditorUpdate),
         EditorView.domEventHandlers({
           paste: this._guardPaste,
@@ -496,18 +563,27 @@ class ToolsDebugConsole extends LitElement {
 
   private _onEditorUpdate = (update: ViewUpdate) => {
     if (update.docChanged || update.selectionSet) {
-      this._updateSignature();
+      this._debouncedUpdateSignature();
     }
   };
 
+  private _debouncedUpdateSignature = debounce(
+    () => this._updateSignature(),
+    150
+  );
+
   private async _updateSignature() {
-    const request = ++this._signatureRequest;
     const editorState = this._editor?.state;
     if (!editorState) {
       return;
     }
 
     const code = editorState.sliceDoc(0, editorState.selection.main.head);
+    if (code === this._signatureCode) {
+      return;
+    }
+    this._signatureCode = code;
+    const request = ++this._signatureRequest;
     let signature: DebugConsoleSignature | undefined;
     try {
       signature =
@@ -576,12 +652,13 @@ class ToolsDebugConsole extends LitElement {
       this._running = false;
     }
 
-    // Only touch the prompt if it is still there, holding what was submitted.
-    const promptUnchanged =
-      this._editor === editor && editor.state.doc.toString() === code;
+    // Only touch the prompt if it still holds what was submitted, also when
+    // it was saved while the page was left.
+    const promptState = this._editor?.state ?? this._savedEditorState;
+    const promptUnchanged = promptState?.doc.toString() === code;
 
     if (response.incomplete) {
-      if (promptUnchanged) {
+      if (promptUnchanged && this._editor === editor) {
         insertNewlineAndIndent(editor);
       }
       return;
@@ -589,7 +666,11 @@ class ToolsDebugConsole extends LitElement {
 
     this._addToHistory(code);
     if (promptUnchanged) {
-      this._setCode("");
+      if (this._editor) {
+        this._setCode("");
+      } else {
+        this._savedEditorState = undefined;
+      }
       this._draft = "";
     }
 
@@ -600,6 +681,9 @@ class ToolsDebugConsole extends LitElement {
     const entries: ConsoleEntryContent[] = [{ kind: "input", code }];
     for (const values of response.logs ?? []) {
       entries.push({ kind: "log", values });
+    }
+    if (response.logs_truncated) {
+      entries.push({ kind: "output_truncated" });
     }
     if (response.result) {
       entries.push({ kind: "result", value: response.result });

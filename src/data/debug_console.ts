@@ -50,7 +50,7 @@ export type DebugConsoleValue =
   | { type: "boolean"; value: boolean }
   | { type: "number"; value: string }
   | { type: "string"; value: string; truncated: boolean }
-  | { type: "text"; value: string }
+  | { type: "text"; value: string; truncated: boolean }
   | {
       type: "object";
       class: string;
@@ -63,12 +63,26 @@ export type DebugConsoleValue =
 export interface DebugConsoleExecuteResult {
   incomplete?: boolean;
   logs?: DebugConsoleValue[][];
+  /** Set when the code printed more lines than the console keeps. */
+  logs_truncated?: boolean;
   result?: DebugConsoleValue | null;
   error?: string;
 }
 
 export type DebugConsoleChild =
   { key: string; value: DebugConsoleValue } | { key: string; getter: true };
+
+/**
+ * Looks into objects of the console, for components that do not hold the
+ * hass object.
+ */
+export interface DebugConsoleObjects {
+  inspect(objectId: string): Promise<DebugConsoleInspectResult>;
+  getAttribute(
+    objectId: string,
+    attribute: string
+  ): Promise<DebugConsoleGetAttributeResult>;
+}
 
 export interface DebugConsoleInspectResult {
   children: DebugConsoleChild[];

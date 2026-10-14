@@ -1,19 +1,18 @@
+import type { ContextType } from "@lit/context";
 import { mdiChevronRight } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../components/ha-svg-icon";
+import { consume } from "../../../../common/decorators/consume";
+import { internationalizationContext } from "../../../../data/context";
 import type {
   DebugConsoleChild,
   DebugConsoleGetAttributeResult,
   DebugConsoleInspectResult,
+  DebugConsoleObjects,
   DebugConsoleValue,
 } from "../../../../data/debug_console";
-import {
-  getDebugConsoleAttribute,
-  inspectDebugConsole,
-} from "../../../../data/debug_console";
-import type { HomeAssistant } from "../../../../types";
 
 /**
  * A value in the console. Objects expand into a tree, loading their children
@@ -21,7 +20,13 @@ import type { HomeAssistant } from "../../../../types";
  */
 @customElement("tools-debug-console-value")
 export class ToolsDebugConsoleValue extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  // Not the hass object: trees can be large, and should not update on every
+  // state change in Home Assistant.
+  @property({ attribute: false }) public objects!: DebugConsoleObjects;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: false }) public value?: DebugConsoleValue;
 
@@ -67,9 +72,14 @@ export class ToolsDebugConsoleValue extends LitElement {
     const value = this._value;
 
     if (this.getter && !value) {
+      const label = this._i18n.localize(
+        "ui.panel.config.tools.tabs.debug_console.evaluate_property",
+        { property: this.key ?? "" }
+      );
       return html`${key}<button
           class="getter"
-          title=${this.hass.localize("ui.panel.config.tools.tabs.debug_console.evaluate")}
+          title=${label}
+          aria-label=${label}
           @click=${this._evaluate}
         >
           (...)
@@ -108,7 +118,7 @@ export class ToolsDebugConsoleValue extends LitElement {
               ${
                 this._children.truncated
                   ? html`<div class="truncated">
-                      ${this.hass.localize(
+                      ${this._i18n.localize(
                         "ui.panel.config.tools.tabs.debug_console.truncated",
                         { count: this._children.children.length }
                       )}
@@ -142,7 +152,9 @@ export class ToolsDebugConsoleValue extends LitElement {
           >'${value.value}${value.truncated ? "…" : ""}'</span
         >`;
       case "text":
-        return html`<span class="text">${value.value}</span>`;
+        return html`<span class="text"
+          >${value.value}${value.truncated ? "…" : ""}</span
+        >`;
     }
     return nothing;
   }
@@ -150,7 +162,7 @@ export class ToolsDebugConsoleValue extends LitElement {
   private _renderChild(child: DebugConsoleChild) {
     return html`<div class="child">
       <tools-debug-console-value
-        .hass=${this.hass}
+        .objects=${this.objects}
         .key=${child.key}
         .value=${"value" in child ? child.value : undefined}
         .getter=${"getter" in child}
@@ -174,7 +186,7 @@ export class ToolsDebugConsoleValue extends LitElement {
 
     const request = this._request;
     try {
-      const children = await inspectDebugConsole(this.hass, value.object_id);
+      const children = await this.objects.inspect(value.object_id);
       if (request === this._request) {
         this._children = children;
       }
@@ -193,11 +205,7 @@ export class ToolsDebugConsoleValue extends LitElement {
     const request = this._request;
     let result: DebugConsoleGetAttributeResult;
     try {
-      result = await getDebugConsoleAttribute(
-        this.hass,
-        this.parentId,
-        this.key
-      );
+      result = await this.objects.getAttribute(this.parentId, this.key);
     } catch (err: unknown) {
       result = { error: (err as { message?: string }).message ?? String(err) };
     }
@@ -283,16 +291,17 @@ export class ToolsDebugConsoleValue extends LitElement {
       margin-inline-start: 0.5em;
     }
 
+    /* The colors of the code editor, so values look like code there. */
     .keyword {
-      color: var(--purple-color, #9c27b0);
+      color: var(--codemirror-keyword, #6262ff);
     }
 
     .number {
-      color: var(--blue-color, #2196f3);
+      color: var(--codemirror-number, #ca7841);
     }
 
     .string {
-      color: var(--green-color, #4caf50);
+      color: var(--codemirror-string, #07a);
     }
 
     .error {
