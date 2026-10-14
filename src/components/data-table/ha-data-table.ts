@@ -79,12 +79,7 @@ export interface DataTableSortColumnData {
   valueColumn?: string;
   direction?: SortingDirection;
   groupable?: boolean;
-  /**
-   * Short public name for the column in `sort` and `group` URL params, for
-   * columns whose id is internal. Grouping is only kept in the URL for
-   * columns that have one, sorting falls back to the column id, so it must
-   * not match the id of another sortable column.
-   */
+  // Name in the `sort` and `group` URL params, grouping is only kept with one
   urlName?: string;
   moveable?: boolean;
   hideable?: boolean;
