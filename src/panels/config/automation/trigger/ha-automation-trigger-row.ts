@@ -56,7 +56,11 @@ import type {
   TriggerList,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
-import { isTrigger, subscribeTrigger } from "../../../../data/automation";
+import {
+  getRowNote,
+  isTrigger,
+  subscribeTrigger,
+} from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -246,12 +250,10 @@ export default class HaAutomationTriggerRow extends LitElement {
             ?.target
         : undefined;
 
-    const noteTooltipText = truncateWithEllipsis(
-      (type !== "list" &&
-        (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()) ||
-        "",
-      250
-    );
+    const note =
+      type !== "list"
+        ? getRowNote((this.trigger as Exclude<Trigger, TriggerList>).note)
+        : undefined;
 
     return html`
       <div slot="leading-icon" class="trigger-leading">
@@ -328,8 +330,7 @@ export default class HaAutomationTriggerRow extends LitElement {
             : nothing
         }
         ${
-          type !== "list" &&
-          (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()
+          note
             ? html`
                 <ha-svg-icon
                   tabindex="0"
@@ -341,7 +342,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                   class="note-indicator"
                 ></ha-svg-icon>
                 <ha-tooltip for="note-icon"
-                  ><p>${noteTooltipText}</p></ha-tooltip
+                  ><p>${truncateWithEllipsis(note, 250)}</p></ha-tooltip
                 >
               `
             : nothing

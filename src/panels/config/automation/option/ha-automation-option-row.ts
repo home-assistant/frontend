@@ -39,6 +39,7 @@ import type {
   OptionSidebarConfig,
   TriggerCondition,
 } from "../../../../data/automation";
+import { getRowNote } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
@@ -215,10 +216,7 @@ export default class HaAutomationOptionRow extends LitElement {
       firstCondition?.condition === "trigger"
         ? (firstCondition as TriggerCondition)
         : undefined;
-    const noteTooltipText = truncateWithEllipsis(
-      this.option?.note?.trim() || "",
-      250
-    );
+    const note = getRowNote(this.option?.note);
 
     return html`
       <h3 slot="header">
@@ -249,7 +247,7 @@ export default class HaAutomationOptionRow extends LitElement {
             : nothing
         }
         ${
-          this.option?.note?.trim()
+          note
             ? html`
                 <ha-svg-icon
                   id="note-icon"
@@ -261,7 +259,7 @@ export default class HaAutomationOptionRow extends LitElement {
                   class="note-indicator"
                 ></ha-svg-icon>
                 <ha-tooltip for="note-icon"
-                  ><p>${noteTooltipText}</p></ha-tooltip
+                  ><p>${truncateWithEllipsis(note, 250)}</p></ha-tooltip
                 >
               `
             : nothing
