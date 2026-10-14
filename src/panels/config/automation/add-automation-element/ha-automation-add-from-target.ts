@@ -1484,18 +1484,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
     if (expand && id) {
       this._expandTreeToItem(type, id);
       await this.updateComplete;
-      // A tree item created already expanded, like an area inside a floor that
-      // opens in the same update, collapses itself again. One more render lets
-      // live() put it back before the selection is scrolled to.
+      // Nested tree items created already expanded collapse themselves again,
+      // one more render lets live() open them before scrolling
       this.requestUpdate();
       await this.updateComplete;
-      // The rows grow open in an animation; scrolling before it ends lands
-      // on where the selection was mid-way, short of it.
-      await Promise.all(
-        [...this.shadowRoot!.querySelectorAll("wa-tree-item[expanded]")]
-          .flatMap((item) => item.shadowRoot?.getAnimations() ?? [])
-          .map((animation) => animation.finished.catch(() => undefined))
-      );
       if (type === "label") {
         this.shadowRoot!.querySelector(
           "ha-list-item-button.selected:not(.recent)"
