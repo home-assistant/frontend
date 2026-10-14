@@ -247,7 +247,14 @@ export class HaMarketplaceDashboard extends LitElement {
 
     if (link) {
       this._activeSearch = link.search;
-      this._filters = link.filters;
+      this._filters = {
+        ...link.filters,
+        [STATUS_FILTER]: statusFilterOfTab(
+          this._filters,
+          this.tab,
+          link.filters[STATUS_FILTER]
+        ),
+      };
     }
 
     this._writeFilters();
