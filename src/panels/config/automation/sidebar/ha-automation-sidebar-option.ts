@@ -9,6 +9,7 @@ import {
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
@@ -35,6 +36,9 @@ export default class HaAutomationSidebarOption extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Number, attribute: "sidebar-key" })
+  public sidebarKey?: number;
 
   @state() private _warnings?: string[];
 
@@ -178,12 +182,15 @@ export default class HaAutomationSidebarOption extends LitElement {
       }
       ${
         this.config.yamlMode && this.config.config.option
-          ? html`<ha-yaml-editor
-              class="sidebar-editor"
-              .defaultValue=${this.config.config.option}
-              .readOnly=${this.disabled}
-              @value-changed=${this._yamlChanged}
-            ></ha-yaml-editor>`
+          ? keyed(
+              this.sidebarKey,
+              html`<ha-yaml-editor
+                class="sidebar-editor"
+                .defaultValue=${this.config.config.option}
+                .readOnly=${this.disabled}
+                @value-changed=${this._yamlChanged}
+              ></ha-yaml-editor>`
+            )
           : html`<div class="description">${description}</div>`
       }
       ${

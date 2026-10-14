@@ -149,6 +149,7 @@ export default class HaAutomationSidebar extends LitElement {
           .isWide=${this.isWide}
           .narrow=${this.narrow}
           .disabled=${this.disabled}
+          .sidebarKey=${this.sidebarKey}
           @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-option>
       `;
