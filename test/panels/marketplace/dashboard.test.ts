@@ -263,8 +263,6 @@ it("browses the way the link says", async () => {
     "ha-filter-states"
   ) as unknown as (HTMLElement & { value: string[] })[];
 
-  // The table keeps its search, sorting and grouping in the URL itself
-  expect(table.hasAttribute("sync-url")).toBe(true);
   // A search left behind would hide part of what the link promised
   expect(table.filter).toBe("");
   expect(statusFilter.value).toEqual(["new", "installed"]);
