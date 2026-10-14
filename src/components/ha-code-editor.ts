@@ -1051,10 +1051,6 @@ export class HaCodeEditor extends ReactiveElement {
       formatEntityName: HomeAssistantFormatters["formatEntityName"],
       registries: HomeAssistantRegistries
     ): Completion[] => {
-      if (!states) {
-        return [];
-      }
-
       const options = Object.keys(states).map((key) => {
         const name = formatEntityName(states[key]);
         const { friendlyName } = computeEntitySearchLabels(
@@ -1076,6 +1072,15 @@ export class HaCodeEditor extends ReactiveElement {
       return options;
     }
   );
+
+  private _getEntityCompletions(): Completion[] {
+    if (!this._states || !this._formatters || !this._registries) return [];
+    return this._getStates(
+      this._states,
+      this._formatters.formatEntityName,
+      this._registries
+    );
+  }
 
   // Map of HA Jinja function name → (arg index → JinjaArgType).
   // Derived from the snippet definitions in jinja_ha_completions.ts.
@@ -1455,13 +1460,8 @@ export class HaCodeEditor extends ReactiveElement {
     from: number;
     to: number;
   }): CompletionResult | null {
-    if (!this._states || !this._formatters || !this._registries) return null;
-    const states = this._getStates(
-      this._states,
-      this._formatters.formatEntityName,
-      this._registries
-    );
-    if (!states?.length) return null;
+    const states = this._getEntityCompletions();
+    if (!states.length) return null;
     // from is stringNode.from + 1 to skip the opening quote character.
     const from = stringNode.from + 1;
     // Always offer completions inside a known entity-string context, including
@@ -1653,13 +1653,9 @@ export class HaCodeEditor extends ReactiveElement {
 
         // If cursor is after the entity field, show all entities
         if (context.pos >= afterField) {
-          const states = this._getStates(
-            this._states!,
-            this._formatters!.formatEntityName,
-            this._registries!
-          );
+          const states = this._getEntityCompletions();
 
-          if (!states || !states.length) {
+          if (!states.length) {
             return null;
           }
 
@@ -1712,13 +1708,9 @@ export class HaCodeEditor extends ReactiveElement {
             const afterListMarker = currentLine.from + listItemMatch[0].length;
 
             if (context.pos >= afterListMarker) {
-              const states = this._getStates(
-                this._states!,
-                this._formatters!.formatEntityName,
-                this._registries!
-              );
+              const states = this._getEntityCompletions();
 
-              if (!states || !states.length) {
+              if (!states.length) {
                 return null;
               }
 
@@ -1776,13 +1768,9 @@ export class HaCodeEditor extends ReactiveElement {
       return null;
     }
 
-    const states = this._getStates(
-      this._states!,
-      this._formatters!.formatEntityName,
-      this._registries!
-    );
+    const states = this._getEntityCompletions();
 
-    if (!states || !states.length) {
+    if (!states.length) {
       return null;
     }
 
