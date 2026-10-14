@@ -29,9 +29,11 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { goBack } from "../../../../common/navigate";
+import { goBack, navigate } from "../../../../common/navigate";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
@@ -57,6 +59,12 @@ import {
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showDebugConsoleWarningDialog } from "./show-dialog-debug-console-warning";
+import {
+  addToHistory,
+  loadHistory,
+  loadPasteAllowed,
+  savePasteAllowed,
+} from "./debug-console-storage";
 import "./tools-debug-console-value";
 
 type ConsoleEntryContent =
@@ -81,80 +89,13 @@ const promptTheme = EditorView.theme({
   ".cm-activeLine": { backgroundColor: "transparent" },
 });
 
-const STORAGE_KEY_HISTORY = "tools-debug-console-history";
-const STORAGE_KEY_ALLOW_PASTING = "tools-debug-console-allow-pasting";
-const STORAGE_KEY_LOG = "tools-debug-console-log";
 const MAX_LOG_ENTRIES = 500;
 
 // The log outlives this element, so leaving the page and coming back keeps it.
-// Also stored per browser tab, to survive a reload along with the backend
-// session. Both per user, so accounts taking turns in a tab share nothing.
-const savedLogs = new Map<string, ConsoleEntry[]>();
+// Only in memory: it shows objects that live in the backend session, which do
+// not survive a restart. Per user, so accounts taking turns share nothing.
+const logs = new Map<string, ConsoleEntry[]>();
 let nextEntryId = 0;
-
-const loadLog = (userId: string): ConsoleEntry[] => {
-  const saved = savedLogs.get(userId);
-  if (saved) {
-    return saved;
-  }
-
-  let stored: ConsoleEntryContent[] = [];
-  try {
-    const parsed = JSON.parse(
-      window.sessionStorage.getItem(`${STORAGE_KEY_LOG}-${userId}`) ?? "[]"
-    );
-    stored = Array.isArray(parsed) ? parsed : [];
-  } catch (_err: unknown) {
-    // Start with an empty log.
-  }
-
-  const log = stored.map((entry) => ({ ...entry, id: nextEntryId++ }));
-  savedLogs.set(userId, log);
-  return log;
-};
-
-// Session storage holds a few megabytes for the whole site.
-const MAX_STORED_LOG_LENGTH = 1_000_000;
-const pendingStores = new Map<string, number>();
-
-const saveLog = (userId: string, entries: ConsoleEntry[]) => {
-  savedLogs.set(userId, entries);
-  // Storing serializes the whole log, so once after a burst of output.
-  window.clearTimeout(pendingStores.get(userId));
-  pendingStores.set(
-    userId,
-    window.setTimeout(() => {
-      pendingStores.delete(userId);
-      storeLog(userId, savedLogs.get(userId) ?? []);
-    }, 250)
-  );
-};
-
-// Stores the newest entries that fit; the rest stays for this page load.
-const storeLog = (userId: string, entries: ConsoleEntry[]) => {
-  const key = `${STORAGE_KEY_LOG}-${userId}`;
-  let stored = entries;
-  while (stored.length) {
-    const serialized = JSON.stringify(stored);
-    if (serialized.length <= MAX_STORED_LOG_LENGTH) {
-      try {
-        window.sessionStorage.setItem(key, serialized);
-        return;
-      } catch (_err: unknown) {
-        // Over the quota of the browser, try again with less.
-      }
-    }
-    stored = stored.slice(Math.ceil(stored.length / 2));
-  }
-
-  try {
-    window.sessionStorage.removeItem(key);
-  } catch (_err: unknown) {
-    // No storage at all.
-  }
-};
-
-const MAX_HISTORY = 100;
 
 @customElement("tools-debug-console")
 class ToolsDebugConsole extends LitElement {
@@ -170,6 +111,10 @@ class ToolsDebugConsole extends LitElement {
   @state() private _running = false;
 
   @state() private _signature?: DebugConsoleSignature;
+
+  // Whether the console can be used: it can be disabled, or not reachable.
+  @state() private _status: "checking" | "ready" | "disabled" | "failed" =
+    "checking";
 
   // Beta and stable versions ask each user to accept a warning first.
   @state() private _warningRequired = false;
@@ -236,9 +181,10 @@ class ToolsDebugConsole extends LitElement {
           @click=${this._clear}
         ></ha-icon-button>
       </div>
+      ${this._renderStatus()}
       <div
         class="log ha-scrollbar"
-        ?inert=${this._warningRequired}
+        ?inert=${this._status !== "ready" || this._warningRequired}
         @click=${this._focusIfNoSelection}
       >
         <div
@@ -343,6 +289,7 @@ class ToolsDebugConsole extends LitElement {
           )}
         </div>`;
     }
+
     return nothing;
   }
 
@@ -351,23 +298,71 @@ class ToolsDebugConsole extends LitElement {
     const userId = this.hass.user!.id;
     if (userId !== this._userId) {
       this._userId = userId;
-      this._entries = loadLog(userId);
-      this._history = this._loadHistory();
+      this._entries = logs.get(userId) ?? [];
+      this._history = loadHistory(userId);
       this._historyIndex = this._history.length;
-      this._pasteAllowed = this._loadPasteAllowed();
-      this._checkWarning();
+      this._pasteAllowed = loadPasteAllowed(userId);
+      this._checkAvailability();
     }
   }
 
-  private async _checkWarning() {
+  private _renderStatus() {
+    switch (this._status) {
+      case "disabled":
+        return html`<ha-alert alert-type="info">
+          ${this.hass.localize(
+            "ui.panel.config.tools.tabs.debug_console.disabled"
+          )}
+          <ha-button
+            slot="action"
+            appearance="plain"
+            @click=${this._enableConsole}
+          >
+            ${this.hass.localize(
+              "ui.panel.config.tools.tabs.debug_console.enable"
+            )}
+          </ha-button>
+        </ha-alert>`;
+      case "failed":
+        return html`<ha-alert alert-type="error">
+          ${this.hass.localize("ui.panel.config.tools.tabs.debug_console.failed")}
+          <ha-button
+            slot="action"
+            appearance="plain"
+            @click=${this._checkAvailability}
+          >
+            ${this.hass.localize("ui.panel.config.tools.tabs.debug_console.retry")}
+          </ha-button>
+        </ha-alert>`;
+    }
+
+    return nothing;
+  }
+
+  private _enableConsole() {
+    navigate("/config/integrations/dashboard/add?domain=debug_console");
+  }
+
+  private _checkAvailability = async () => {
+    this._status = "checking";
+
     let warningRequired: boolean;
     try {
       warningRequired = (await getDebugConsoleInfo(this.hass)).warning_required;
-    } catch (_err: unknown) {
-      // The console reports why it can't run once code is run.
+    } catch (err: unknown) {
+      this._status =
+        (err as { code?: string }).code === "not_allowed"
+          ? "disabled"
+          : "failed";
       return;
     }
 
+    // Left the page while checking; coming back checks again.
+    if (!this.isConnected) {
+      return;
+    }
+
+    this._status = "ready";
     this._warningRequired = warningRequired;
     if (warningRequired && !this._warningDialogOpen) {
       this._warningDialogOpen = true;
@@ -375,7 +370,7 @@ class ToolsDebugConsole extends LitElement {
         closedCallback: this._warningClosed,
       });
     }
-  }
+  };
 
   private _warningClosed = (accepted: boolean) => {
     this._warningDialogOpen = false;
@@ -385,6 +380,7 @@ class ToolsDebugConsole extends LitElement {
       if (this.isConnected) {
         goBack("/config");
       }
+
       return;
     }
 
@@ -397,8 +393,8 @@ class ToolsDebugConsole extends LitElement {
     // The router keeps this page around, so recreate the editor on return.
     if (this.hasUpdated) {
       this.requestUpdate();
-      if (this._warningRequired) {
-        this._checkWarning();
+      if (this._status !== "ready" || this._warningRequired) {
+        this._checkAvailability();
       }
     }
   }
@@ -505,6 +501,7 @@ class ToolsDebugConsole extends LitElement {
     if (this._historyIndex === this._history.length) {
       this._draft = this._code;
     }
+
     this._historyIndex--;
     this._setCode(this._history[this._historyIndex]);
     return true;
@@ -582,6 +579,7 @@ class ToolsDebugConsole extends LitElement {
     if (code === this._signatureCode) {
       return;
     }
+
     this._signatureCode = code;
     const request = ++this._signatureRequest;
     let signature: DebugConsoleSignature | undefined;
@@ -646,8 +644,16 @@ class ToolsDebugConsole extends LitElement {
       response = await executeDebugConsole(this.hass, code, checkComplete);
     } catch (err: unknown) {
       // Websocket errors are plain objects with a message, not Error instances.
-      const message = (err as { message?: string }).message;
+      const { code: errorCode, message } = err as {
+        code?: string;
+        message?: string;
+      };
+
       response = { error: message ?? String(err) };
+      if (errorCode === "warning_not_accepted") {
+        this._warningRequired = true;
+        this._checkAvailability();
+      }
     } finally {
       this._running = false;
     }
@@ -661,6 +667,7 @@ class ToolsDebugConsole extends LitElement {
       if (promptUnchanged && this._editor === editor) {
         insertNewlineAndIndent(editor);
       }
+
       return;
     }
 
@@ -671,6 +678,7 @@ class ToolsDebugConsole extends LitElement {
       } else {
         this._savedEditorState = undefined;
       }
+
       this._draft = "";
     }
 
@@ -682,15 +690,19 @@ class ToolsDebugConsole extends LitElement {
     for (const values of response.logs ?? []) {
       entries.push({ kind: "log", values });
     }
+
     if (response.logs_truncated) {
       entries.push({ kind: "output_truncated" });
     }
+
     if (response.result) {
       entries.push({ kind: "result", value: response.result });
     }
+
     if (response.error) {
       entries.push({ kind: "error", text: response.error.trimEnd() });
     }
+
     await this._appendToLog(entries);
   }
 
@@ -699,7 +711,7 @@ class ToolsDebugConsole extends LitElement {
       ...this._entries,
       ...entries.map((entry) => ({ ...entry, id: nextEntryId++ })),
     ].slice(-MAX_LOG_ENTRIES);
-    saveLog(this._userId!, this._entries);
+    logs.set(this._userId!, this._entries);
 
     await this.updateComplete;
     this._log?.scrollTo({ top: this._log.scrollHeight });
@@ -708,7 +720,7 @@ class ToolsDebugConsole extends LitElement {
   private async _clear() {
     this._logGeneration++;
     this._entries = [];
-    saveLog(this._userId!, this._entries);
+    logs.set(this._userId!, this._entries);
     this._editor?.focus();
     // Let the backend release the objects it kept around for inspection.
     await clearDebugConsole(this.hass);
@@ -726,55 +738,13 @@ class ToolsDebugConsole extends LitElement {
 
   private _allowPasting() {
     this._pasteAllowed = true;
+    savePasteAllowed(this._userId!);
     this._appendToLog([{ kind: "paste_allowed" }]);
-    try {
-      window.localStorage.setItem(
-        `${STORAGE_KEY_ALLOW_PASTING}-${this._userId}`,
-        "true"
-      );
-    } catch (_err: unknown) {
-      // Without storage, pasting stays allowed until the page reloads.
-    }
-  }
-
-  private _loadPasteAllowed(): boolean {
-    try {
-      return (
-        window.localStorage.getItem(
-          `${STORAGE_KEY_ALLOW_PASTING}-${this._userId}`
-        ) === "true"
-      );
-    } catch (_err: unknown) {
-      return false;
-    }
-  }
-
-  private _loadHistory(): string[] {
-    try {
-      const stored = JSON.parse(
-        window.localStorage.getItem(`${STORAGE_KEY_HISTORY}-${this._userId}`) ??
-          "[]"
-      );
-      return Array.isArray(stored) ? stored : [];
-    } catch (_err: unknown) {
-      return [];
-    }
   }
 
   private _addToHistory(code: string) {
-    if (this._history[this._history.length - 1] !== code) {
-      this._history = [...this._history, code].slice(-MAX_HISTORY);
-    }
+    this._history = addToHistory(this._userId!, this._history, code);
     this._historyIndex = this._history.length;
-
-    try {
-      window.localStorage.setItem(
-        `${STORAGE_KEY_HISTORY}-${this._userId}`,
-        JSON.stringify(this._history)
-      );
-    } catch (_err: unknown) {
-      // History is a convenience; it works for this session without storage.
-    }
   }
 
   static readonly styles = [

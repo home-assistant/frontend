@@ -46,6 +46,9 @@ export class ToolsDebugConsoleValue extends LitElement {
 
   @state() private _evaluated?: DebugConsoleValue;
 
+  // Properties can change things, so one evaluation at a time.
+  @state() private _evaluating = false;
+
   // Bumped when the value changes, so answers about an earlier one are dropped.
   private _request = 0;
 
@@ -80,6 +83,7 @@ export class ToolsDebugConsoleValue extends LitElement {
           class="getter"
           title=${label}
           aria-label=${label}
+          .disabled=${this._evaluating}
           @click=${this._evaluate}
         >
           (...)
@@ -156,6 +160,7 @@ export class ToolsDebugConsoleValue extends LitElement {
           >${value.value}${value.truncated ? "…" : ""}</span
         >`;
     }
+
     return nothing;
   }
 
@@ -198,21 +203,25 @@ export class ToolsDebugConsoleValue extends LitElement {
   }
 
   private async _evaluate() {
-    if (this.parentId === undefined || !this.key) {
+    if (this.parentId === undefined || !this.key || this._evaluating) {
       return;
     }
 
     const request = this._request;
+    this._evaluating = true;
     let result: DebugConsoleGetAttributeResult;
     try {
       result = await this.objects.getAttribute(this.parentId, this.key);
     } catch (err: unknown) {
       result = { error: (err as { message?: string }).message ?? String(err) };
+    } finally {
+      this._evaluating = false;
     }
 
     if (request !== this._request) {
       return;
     }
+
     if ("error" in result) {
       this._error = result.error;
     } else {

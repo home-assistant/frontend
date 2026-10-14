@@ -74,6 +74,7 @@ class PanelTools extends SubscribeMixin(LitElement) {
           if (!messages.length || messages.some(({ type }) => type === null)) {
             this._debugConsoleEnabled = false;
           }
+
           for (const { type, entry } of messages) {
             if (entry.domain === "debug_console") {
               this._debugConsoleEnabled =
