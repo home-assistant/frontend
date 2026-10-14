@@ -1,13 +1,16 @@
 import type { ContextType } from "@lit/context";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import { STATE_RUNNING } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { supportsFeature } from "../common/entity/supports-feature";
+import type { LocalizeFunc } from "../common/translations/localize";
 import {
   CameraEntityFeature,
   type CameraCapabilities,
@@ -25,6 +28,11 @@ import {
   connectionContext,
   formattersContext,
 } from "../data/context";
+import {
+  resolveMediaSource,
+  type ResolvedMediaSource,
+} from "../data/media_source";
+import "./ha-alert";
 import "./ha-hls-player";
 import "./ha-web-rtc-player";
 
@@ -37,6 +45,10 @@ interface Stream {
 
 @customElement("ha-camera-stream")
 export class HaCameraStream extends LitElement {
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
   @state()
   @consume({ context: configContext, subscribe: true })
   private _config!: ContextType<typeof configContext>;
@@ -72,6 +84,12 @@ export class HaCameraStream extends LitElement {
   @state() private _posterUrl?: string;
 
   @state() private _connected = false;
+
+  @state() private _recording?: ResolvedMediaSource;
+
+  @state() private _recordingError?: string;
+
+  private _recordingRequest = 0;
 
   @state() private _capabilities?: CameraCapabilities;
 
@@ -110,6 +128,23 @@ export class HaCameraStream extends LitElement {
       this._getCapabilities();
       this._getPosterUrl();
     }
+
+    const recordingChanged =
+      changedProps.has("stateObj") &&
+      (changedProps.get("stateObj") as CameraEntity | undefined)?.attributes
+        .recording_media_source !==
+        this.stateObj?.attributes.recording_media_source;
+    if (
+      this._connected &&
+      this._api &&
+      (entityChanged ||
+        recordingChanged ||
+        backendStarted ||
+        changedProps.has("_connected") ||
+        changedProps.has("_api"))
+    ) {
+      this._getRecording();
+    }
   }
 
   public connectedCallback() {
@@ -120,11 +155,39 @@ export class HaCameraStream extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._connected = false;
+    this._recordingRequest++;
+    this._recording = undefined;
   }
 
   protected render() {
     if (!this.stateObj) {
       return nothing;
+    }
+    if (this.stateObj.attributes.recording_media_source) {
+      if (!this._connected) {
+        return nothing;
+      }
+      if (this._recordingError) {
+        return html`<ha-alert alert-type="error"
+          >${this._recordingError}</ha-alert
+        >`;
+      }
+      if (!this._recording || !this._connection) {
+        return html`<progress
+          aria-label=${this._localize("ui.common.loading")}
+        ></progress>`;
+      }
+      return html`<video
+        autoplay
+        playsinline
+        .src=${this._connection.hassUrl(this._recording.url)}
+        .controls=${this.controls}
+        .muted=${this.muted}
+        poster=${ifDefined(this._posterUrl)}
+        style=${styleMap({ aspectRatio: this.aspectRatio, objectFit: this.fitMode })}
+        @loadeddata=${this._handleImageLoad}
+        @error=${this._handleRecordingError}
+      ></video>`;
     }
     const streams = this._streams(
       this._capabilities?.frontend_stream_types,
@@ -208,6 +271,42 @@ export class HaCameraStream extends LitElement {
     this._capabilities = await fetchCameraCapabilities(
       this._api,
       this.stateObj!.entity_id
+    );
+  }
+
+  private async _getRecording(): Promise<void> {
+    const request = ++this._recordingRequest;
+    const mediaId = this.stateObj?.attributes.recording_media_source;
+    this._recording = undefined;
+    this._recordingError = undefined;
+    if (!mediaId) {
+      return;
+    }
+    try {
+      const recording = await resolveMediaSource(this._api, mediaId);
+      if (request !== this._recordingRequest || !this._connected) {
+        return;
+      }
+      if (!recording.mime_type.startsWith("video/")) {
+        this._handleRecordingError();
+        return;
+      }
+      this._recording = recording;
+    } catch (err: unknown) {
+      if (request === this._recordingRequest && this._connected) {
+        this._recordingError =
+          err && typeof err === "object" && "message" in err
+            ? String(err.message)
+            : this._localize(
+                "ui.components.media-browser.media_browsing_error"
+              );
+      }
+    }
+  }
+
+  private _handleRecordingError(): void {
+    this._recordingError = this._localize(
+      "ui.components.media-browser.media_not_supported"
     );
   }
 
@@ -317,11 +416,13 @@ export class HaCameraStream extends LitElement {
 
   static styles = css`
     :host,
-    img {
+    img,
+    video {
       display: block;
     }
 
-    img {
+    img,
+    video {
       width: 100%;
     }
 

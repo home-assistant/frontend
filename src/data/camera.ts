@@ -20,6 +20,7 @@ interface CameraEntityAttributes extends HassEntityAttributeBase {
   access_token?: string;
   brand?: string;
   motion_detection?: boolean;
+  recording_media_source?: string;
 }
 
 export interface CameraEntity extends HassEntityBase {
