@@ -1544,7 +1544,7 @@ export class HaMap extends ReactiveElement {
           !Array.isArray(inZones) ||
           !["not_home", UNKNOWN, UNAVAILABLE].includes(stateObj.state)
         ) {
-          zoneId = this._zoneContaining(position);
+          zoneId = this._zoneContaining(position, gpsAccuracy);
         }
       }
 
@@ -1617,17 +1617,26 @@ export class HaMap extends ReactiveElement {
     );
   }
 
-  private _zoneContaining(position: MapLatLng): string | undefined {
+  private _zoneContaining(
+    position: MapLatLng,
+    gpsAccuracy = 0
+  ): string | undefined {
     let found: string | undefined;
     let foundRadius = Infinity;
+    let foundDistance = Infinity;
     for (const [zoneId, radius] of Object.entries(this._zoneRadii)) {
+      if (this._states[zoneId]?.attributes.passive) {
+        continue;
+      }
+      const distance = distanceMeters(position, this._zonePositions[zoneId]);
       if (
-        radius < foundRadius &&
-        !this._states[zoneId]?.attributes.passive &&
-        distanceMeters(position, this._zonePositions[zoneId]) <= radius
+        distance - gpsAccuracy < radius &&
+        (radius < foundRadius ||
+          (radius === foundRadius && distance < foundDistance))
       ) {
         found = zoneId;
         foundRadius = radius;
+        foundDistance = distance;
       }
     }
     return found;

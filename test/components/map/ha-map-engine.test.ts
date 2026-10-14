@@ -435,6 +435,57 @@ describe("ha-map engine selection", () => {
           });
         }
       );
+
+      it("accounts for GPS accuracy in the coordinate fallback", async () => {
+        const entityId = `${domain}.paulus`;
+        const states: HassEntities = {
+          ...ZONES,
+          [entityId]: createMockEntityState(entityId, "Work", {
+            latitude: 52.3731,
+            longitude: 4.89,
+            gps_accuracy: 50,
+            in_zones: domain === "person" ? [] : undefined,
+          }),
+        };
+        const el = await createMap(states);
+
+        expect(entityHandles(el)).toMatchObject([
+          { clusterData: { entityId, zoneId: "zone.paulus" } },
+        ]);
+      });
+
+      it.each([
+        { radius: 100, expectedZoneId: "zone.anne_therese", state: "Gym" },
+        { radius: 200, expectedZoneId: "zone.paulus", state: "Work" },
+      ])(
+        "prefers smaller zones before distance (nearer zone radius: $radius)",
+        async ({ radius, expectedZoneId, state }) => {
+          const entityId = `${domain}.paulus`;
+          const states: HassEntities = {
+            ...ZONES,
+            "zone.anne_therese": createMockEntityState(
+              "zone.anne_therese",
+              "0",
+              {
+                friendly_name: "Gym",
+                latitude: 52.3725,
+                longitude: 4.89,
+                radius,
+              }
+            ),
+            [entityId]: createMockEntityState(entityId, state, {
+              latitude: 52.37245,
+              longitude: 4.89,
+              in_zones: domain === "person" ? [] : undefined,
+            }),
+          };
+          const el = await createMap(states);
+
+          expect(entityHandles(el)).toMatchObject([
+            { clusterData: { entityId, zoneId: expectedZoneId } },
+          ]);
+        }
+      );
     }
   );
 
