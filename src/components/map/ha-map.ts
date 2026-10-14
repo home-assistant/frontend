@@ -78,7 +78,6 @@ import type {
   ThemeMode,
 } from "../../types";
 import { FLOATING_LIFT, floatingMarkerFootprint } from "./ha-entity-marker";
-import { computeZoneTrackerState } from "../../data/zone";
 
 declare global {
   // for fire event
