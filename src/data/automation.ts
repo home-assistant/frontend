@@ -528,7 +528,7 @@ export const migrateAutomationTrigger = (
   trigger: Trigger | Trigger[],
   report?: AutomationMigrationReport
 ): Trigger | Trigger[] => {
-  if (!trigger) {
+  if (!trigger || typeof trigger !== "object") {
     return trigger;
   }
 
@@ -755,10 +755,10 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
 }
 
 export interface OptionSidebarConfig extends BaseSidebarConfig {
-  save: (value: Option) => void;
+  save: (value: unknown) => void;
   rename: () => void;
   duplicate: () => void;
-  toggleYamlMode: () => void;
+  toggleYamlMode: (yamlMode?: boolean) => void;
   yamlMode?: boolean;
   config: {
     option?: Option;
