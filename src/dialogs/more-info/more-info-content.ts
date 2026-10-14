@@ -197,6 +197,7 @@ class MoreInfoContent extends LitElement {
         ) {
           features.push({
             type: "light-color",
+            controls: "hue_saturation",
           });
         } else if (
           lightMainControl === "color_temp" &&
