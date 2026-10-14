@@ -256,6 +256,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   // written after that, so a link isn't overwritten before it is applied
   private _urlRead = false;
 
+  private _typedSearch?: string;
+
   private _queryParams = new QueryParamsController(
     this,
     dataTableQueryParamConfig,
@@ -316,8 +318,11 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       changedProperties.has("syncUrl") ||
       changedProperties.has("columns");
     if (sortingOrGroupingChanged || changedProperties.has("filter")) {
-      // Searching is written once typing pauses
-      this._writeUrl(!sortingOrGroupingChanged);
+      // Typing is written once it pauses, a search set by the page or a link
+      // straight away
+      this._writeUrl(
+        !sortingOrGroupingChanged && this.filter === this._typedSearch
+      );
     }
   }
 
@@ -878,6 +883,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     this.filter = target.value ?? "";
+    this._typedSearch = this.filter;
     fireEvent(this, "search-changed", { value: this.filter });
   }
 

@@ -6,20 +6,21 @@ import {
   type SearchParamsSource,
 } from "./query-params";
 
-const marketplaceBrowseQueryParamConfig = {
+// The filters of the Marketplace tables. Search, sorting and grouping are kept
+// by the data table, see data-table-query-params.
+export const marketplaceFilterQueryParamConfig = {
   list: ["status", "type", "source"],
-  string: ["search", "sort", "direction"],
 } as const satisfies QueryParamConfig;
 
-export type MarketplaceBrowseQueryParams = QueryParamValues<
-  typeof marketplaceBrowseQueryParamConfig
+export type MarketplaceFilterQueryParams = QueryParamValues<
+  typeof marketplaceFilterQueryParamConfig
 >;
 
-export const decodeMarketplaceBrowseQueryParams = (
+export const decodeMarketplaceFilterQueryParams = (
   searchParams: SearchParamsSource
-): MarketplaceBrowseQueryParams =>
-  decodeQueryParams(searchParams, marketplaceBrowseQueryParamConfig);
+): MarketplaceFilterQueryParams =>
+  decodeQueryParams(searchParams, marketplaceFilterQueryParamConfig);
 
-export const createMarketplaceBrowseQueryString = (
-  values: MarketplaceBrowseQueryParams
-): string => createQueryString(values, marketplaceBrowseQueryParamConfig);
+export const createMarketplaceFilterQueryString = (
+  values: MarketplaceFilterQueryParams
+): string => createQueryString(values, marketplaceFilterQueryParamConfig);

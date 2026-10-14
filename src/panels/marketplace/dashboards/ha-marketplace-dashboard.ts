@@ -14,7 +14,6 @@ import {
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { keyed } from "lit/directives/keyed";
 import memoize from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import type {
@@ -24,15 +23,10 @@ import type {
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import { transform } from "../../../common/decorators/transform";
-import { mainWindow } from "../../../common/dom/get_main_window";
-import {
-  navigate,
-  replaceCurrentUrl,
-  updateHistoryState,
-} from "../../../common/navigate";
+import { QueryParamsController } from "../../../common/controllers/query-params-controller";
+import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
-import { constructUrlCurrentPath } from "../../../common/url/construct-url";
-import { currentPath } from "../../../common/url/current-path";
+import { marketplaceFilterQueryParamConfig } from "../../../common/url/marketplace-query-params";
 import type {
   DataTableColumnContainer,
   SortingDirection,
@@ -77,8 +71,7 @@ import { marketplaceErrorMessage } from "../../../data/marketplace/websocket";
 import { dismissNewMarketplaceRepositories } from "../../../data/marketplace/repository";
 import { haStyle } from "../../../resources/styles";
 import {
-  browseQuery,
-  browseSettingsFromUrl,
+  browseLinkFromUrl,
   filterRepositories,
   filtersOfTab,
   SOURCE_FILTER,
@@ -128,12 +121,6 @@ const marketplaceTabs = (
       : undefined,
   },
 ];
-
-// Marks the history entry of a link once it is applied. Back and forward
-// return to that entry and keep what was picked after it, following a link
-// makes a new entry, which applies what it says again. The router keeps the
-// page of a tab, so it is often not around to hear the navigation itself.
-const APPLIED_LINK_STATE = "marketplaceAppliedLink";
 
 // The installed tab lists what is installed, the others everything
 const repositoriesOfTab = (
@@ -234,17 +221,16 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _openingOverflowMenu = false;
 
-  // The table takes its sorting once, every link applied gets it a new one
-  @state() private _linksApplied = 0;
-
-  public connectedCallback() {
-    super.connectedCallback();
-    window.addEventListener("location-changed", this._applyLink);
-    window.addEventListener("popstate", this._applyLink);
-    if (this.hasUpdated) {
-      this._applyLink();
+  // The filters are kept in the URL by the page, the search, sorting and
+  // grouping by the table
+  private _filterParams = new QueryParamsController(
+    this,
+    marketplaceFilterQueryParamConfig,
+    {
+      enabled: () => this.tab !== "discover",
+      navigated: () => this._applyLink(),
     }
-  }
+  );
 
   // Stored settings ignore what is set before the first update
   protected willUpdate() {
@@ -253,77 +239,22 @@ export class HaMarketplaceDashboard extends LitElement {
     }
   }
 
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    window.removeEventListener("location-changed", this._applyLink);
-    window.removeEventListener("popstate", this._applyLink);
-  }
-
-  // Links, like See all on Discover, say in the URL how to browse. The router
+  // Links, like See all on Discover, say in the URL what to show. The router
   // keeps the page of a tab, so a link often lands on a page that is open.
-  private _applyLink = () => {
-    // Leaving the tab gets here too, before the router swaps the page
-    if (
-      this.tab === "discover" ||
-      !["/marketplace/browse", "/marketplace/installed"].includes(currentPath())
-    ) {
-      return;
+  private _applyLink() {
+    const searchParams = this._filterParams.searchParams();
+    const link = searchParams ? browseLinkFromUrl(searchParams) : undefined;
+
+    if (link) {
+      this._activeSearch = link.search;
+      this._filters = link.filters;
     }
 
-    const search = mainWindow.location.search;
-
-    const settings =
-      mainWindow.history.state?.[APPLIED_LINK_STATE] === search
-        ? undefined
-        : browseSettingsFromUrl(search);
-
-    if (settings) {
-      this._linksApplied++;
-      // A search left behind would hide part of what the link promised
-      this._activeSearch = settings.search ?? "";
-      this._filters = settings.filters;
-
-      if (settings.sorting) {
-        this._activeSorting = settings.sorting;
-      }
-    }
-
-    this._writeUrl();
-  };
-
-  private _showsTableOfUrl(): boolean {
-    return (
-      this.tab !== "discover" && currentPath() === `/marketplace/${this.tab}`
-    );
+    this._writeFilters();
   }
 
-  // The link says what the table shows, so a My link or a copied one shares it.
-  // It counts as applied, what was picked stays when coming back to it.
-  private _writeUrl() {
-    if (!this._showsTableOfUrl()) {
-      return;
-    }
-
-    const queryString = browseQuery({
-      search: this._activeSearch,
-      sorting: this._activeSorting?.direction
-        ? {
-            column: this._activeSorting.column,
-            direction: this._activeSorting.direction,
-          }
-        : undefined,
-      filters: filtersOfTab(this._filters, this.tab),
-    });
-
-    const search = queryString ? `?${queryString}` : "";
-
-    if (mainWindow.location.search !== search) {
-      replaceCurrentUrl(constructUrlCurrentPath(queryString));
-    }
-
-    if (mainWindow.history.state?.[APPLIED_LINK_STATE] !== search) {
-      updateHistoryState({ [APPLIED_LINK_STATE]: search });
-    }
+  private _writeFilters() {
+    this._filterParams.write(filtersOfTab(this._filters, this.tab));
   }
 
   protected render(): TemplateResult {
@@ -356,105 +287,103 @@ export class HaMarketplaceDashboard extends LitElement {
       filters
     );
 
-    return html`${keyed(
-        this._linksApplied,
-        html`<hass-tabs-subpage-data-table
-          .tabs=${tabs}
-          .columns=${this._columns(
-            this._i18n.localize,
-            this.narrow,
-            this._darkMode,
-            // Everything on the installed tab is, a mark would say nothing
-            this.tab !== "installed"
-          )}
-          .data=${repositories}
-          .searchLabel=${this._i18n.localize(
-            "ui.panel.marketplace.dashboard.search",
-            { number: repositories.length }
-          )}
-          .isWide=${this.isWide}
-          .localizeFunc=${this._i18n.localize}
+    return html`<hass-tabs-subpage-data-table
+        .tabs=${tabs}
+        .columns=${this._columns(
+          this._i18n.localize,
+          this.narrow,
+          this._darkMode,
+          // Everything on the installed tab is, a mark would say nothing
+          this.tab !== "installed"
+        )}
+        .data=${repositories}
+        .searchLabel=${this._i18n.localize(
+          "ui.panel.marketplace.dashboard.search",
+          { number: repositories.length }
+        )}
+        .isWide=${this.isWide}
+        .localizeFunc=${this._i18n.localize}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        back-path="/config"
+        clickable
+        sync-url
+        .filter=${this._activeSearch || ""}
+        has-filters
+        .filters=${
+          Object.values(filters).filter((values) => values?.length).length
+        }
+        .noDataText=${this._i18n.localize("ui.panel.marketplace.dashboard.no_data")}
+        .empty=${!this.marketplace.repositories.length}
+        .initialSorting=${this._activeSorting}
+        .initialGroupColumn=${this._activeGrouping}
+        .initialCollapsedGroups=${this._activeCollapsed}
+        .groupOrder=${this._groupOrder(
+          this._activeGrouping,
+          this._i18n.localize
+        )}
+        .columnOrder=${this._orderTableColumns}
+        .hiddenColumns=${this._hiddenTableColumns}
+        @columns-changed=${this._handleColumnsChanged}
+        @grouping-changed=${this._handleGroupingChanged}
+        @collapsed-changed=${this._handleCollapseChanged}
+        @row-click=${this._handleRowClicked}
+        @clear-filter=${this._handleClearFilter}
+        @search-changed=${this._handleSearchFilterChanged}
+        @sorting-changed=${this._handleSortingChanged}
+      >
+        ${this._renderToolbar()}
+        ${
+          this.marketplace.repositories.length
+            ? nothing
+            : html`<div class="empty" slot="empty">
+                <ha-svg-icon .path=${mdiStore}></ha-svg-icon>
+                <h1>
+                  ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_header")}
+                </h1>
+                <p>
+                  ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_text")}
+                </p>
+                <ha-button
+                  href=${documentationUrl(this._config, "/integrations/marketplace")}
+                  target="_blank"
+                  appearance="plain"
+                  rel="noreferrer"
+                  size="s"
+                >
+                  ${this._i18n.localize("ui.panel.marketplace.common.learn_more")}
+                  <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
+                </ha-button>
+              </div>`
+        }
+        <ha-filter-states
+          slot="filter-pane"
+          .label=${this._i18n.localize("ui.panel.marketplace.filters.status")}
+          .value=${filters[STATUS_FILTER]}
+          .states=${this._statusStates(this._i18n.localize, this.tab)}
           .narrow=${this.narrow}
-          .route=${this.route}
-          back-path="/config"
-          clickable
-          .filter=${this._activeSearch || ""}
-          has-filters
-          .filters=${
-            Object.values(filters).filter((values) => values?.length).length
-          }
-          .noDataText=${this._i18n.localize("ui.panel.marketplace.dashboard.no_data")}
-          .empty=${!this.marketplace.repositories.length}
-          .initialSorting=${this._activeSorting}
-          .initialGroupColumn=${this._activeGrouping}
-          .initialCollapsedGroups=${this._activeCollapsed}
-          .groupOrder=${this._groupOrder(
-            this._activeGrouping,
-            this._i18n.localize
+          @data-table-filter-changed=${this._statusFilterChanged}
+        ></ha-filter-states>
+        <ha-filter-states
+          slot="filter-pane"
+          .label=${this._i18n.localize("ui.panel.marketplace.filters.type")}
+          .value=${this._filters[TYPE_FILTER]}
+          .states=${this._typeStates(
+            this._i18n.localize,
+            this.marketplace.info.categories
           )}
-          .columnOrder=${this._orderTableColumns}
-          .hiddenColumns=${this._hiddenTableColumns}
-          @columns-changed=${this._handleColumnsChanged}
-          @grouping-changed=${this._handleGroupingChanged}
-          @collapsed-changed=${this._handleCollapseChanged}
-          @row-click=${this._handleRowClicked}
-          @clear-filter=${this._handleClearFilter}
-          @search-changed=${this._handleSearchFilterChanged}
-          @sorting-changed=${this._handleSortingChanged}
-        >
-          ${this._renderToolbar()}
-          ${
-            this.marketplace.repositories.length
-              ? nothing
-              : html`<div class="empty" slot="empty">
-                  <ha-svg-icon .path=${mdiStore}></ha-svg-icon>
-                  <h1>
-                    ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_header")}
-                  </h1>
-                  <p>
-                    ${this._i18n.localize("ui.panel.marketplace.dashboard.empty_text")}
-                  </p>
-                  <ha-button
-                    href=${documentationUrl(this._config, "/integrations/marketplace")}
-                    target="_blank"
-                    appearance="plain"
-                    rel="noreferrer"
-                    size="s"
-                  >
-                    ${this._i18n.localize("ui.panel.marketplace.common.learn_more")}
-                    <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-                  </ha-button>
-                </div>`
-          }
-          <ha-filter-states
-            slot="filter-pane"
-            .label=${this._i18n.localize("ui.panel.marketplace.filters.status")}
-            .value=${filters[STATUS_FILTER]}
-            .states=${this._statusStates(this._i18n.localize, this.tab)}
-            .narrow=${this.narrow}
-            @data-table-filter-changed=${this._statusFilterChanged}
-          ></ha-filter-states>
-          <ha-filter-states
-            slot="filter-pane"
-            .label=${this._i18n.localize("ui.panel.marketplace.filters.type")}
-            .value=${this._filters[TYPE_FILTER]}
-            .states=${this._typeStates(
-              this._i18n.localize,
-              this.marketplace.info.categories
-            )}
-            .narrow=${this.narrow}
-            @data-table-filter-changed=${this._typeFilterChanged}
-          ></ha-filter-states>
-          <ha-filter-states
-            slot="filter-pane"
-            .label=${this._i18n.localize("ui.panel.marketplace.filters.source")}
-            .value=${this._filters[SOURCE_FILTER]}
-            .states=${this._sourceStates(this._i18n.localize)}
-            .narrow=${this.narrow}
-            @data-table-filter-changed=${this._sourceFilterChanged}
-          ></ha-filter-states>
-        </hass-tabs-subpage-data-table>`
-      )}
+          .narrow=${this.narrow}
+          @data-table-filter-changed=${this._typeFilterChanged}
+        ></ha-filter-states>
+        <ha-filter-states
+          slot="filter-pane"
+          .label=${this._i18n.localize("ui.panel.marketplace.filters.source")}
+          .value=${this._filters[SOURCE_FILTER]}
+          .states=${this._sourceStates(this._i18n.localize)}
+          .narrow=${this.narrow}
+          @data-table-filter-changed=${this._sourceFilterChanged}
+        ></ha-filter-states>
+      </hass-tabs-subpage-data-table>
       <ha-dropdown
         id="repository-overflow-menu"
         @wa-select=${this._handleOverflowAction}
@@ -650,6 +579,7 @@ export class HaMarketplaceDashboard extends LitElement {
         title: localizeFunc("ui.panel.marketplace.column.status"),
         sortable: true,
         groupable: true,
+        urlName: "status",
         hidden: false,
         defaultHidden: true,
       },
@@ -658,6 +588,7 @@ export class HaMarketplaceDashboard extends LitElement {
         title: localizeFunc("ui.panel.marketplace.column.type"),
         sortable: true,
         groupable: true,
+        urlName: "type",
         hidden: false,
       },
       translated_source: {
@@ -665,6 +596,7 @@ export class HaMarketplaceDashboard extends LitElement {
         title: localizeFunc("ui.panel.marketplace.column.source"),
         sortable: true,
         groupable: true,
+        urlName: "source",
         hidden: false,
         defaultHidden: true,
       },
@@ -837,27 +769,25 @@ export class HaMarketplaceDashboard extends LitElement {
         ev.detail.value
       ),
     };
-    this._writeUrl();
+    this._writeFilters();
   }
 
   private _typeFilterChanged(ev: CustomEvent<{ value: string[] }>) {
     this._filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
-    this._writeUrl();
+    this._writeFilters();
   }
 
   private _sourceFilterChanged(ev: CustomEvent<{ value: string[] }>) {
     this._filters = { ...this._filters, [SOURCE_FILTER]: ev.detail.value };
-    this._writeUrl();
+    this._writeFilters();
   }
 
   private _handleSearchFilterChanged(ev: CustomEvent) {
     this._activeSearch = ev.detail.value;
-    this._writeUrl();
   }
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
-    this._writeUrl();
   }
 
   private _handleGroupingChanged(
@@ -879,7 +809,7 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _handleClearFilter() {
     this._filters = {};
-    this._writeUrl();
+    this._writeFilters();
   }
 
   static get styles(): CSSResultGroup {
