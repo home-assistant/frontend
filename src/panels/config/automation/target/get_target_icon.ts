@@ -4,6 +4,7 @@ import "../../../../components/ha-domain-icon";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-state-icon";
+import "../../../../components/entity/state-badge";
 import "../../../../components/ha-svg-icon";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
@@ -57,10 +58,10 @@ export const getTargetIcon = (
   }
 
   if (targetType === "entity" && states[targetId]) {
-    return html`<ha-state-icon
+    return html`<state-badge
       .stateObj=${states[targetId]}
       .slot=${slot}
-    ></ha-state-icon>`;
+    ></state-badge>`;
   }
 
   if (targetType === "label" && getLabel) {

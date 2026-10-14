@@ -30,6 +30,7 @@ import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/entity/state-badge";
 import { showTargetDetailsDialog } from "../../../../components/target-picker/dialog/show-dialog-target-details";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
@@ -678,6 +679,12 @@ export class HaAutomationRowTargets extends LitElement {
     .target ha-domain-icon {
       display: flex;
       padding: var(--ha-space-1) 0;
+    }
+
+    .target state-badge {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
     }
 
     .target ha-floor-icon {
