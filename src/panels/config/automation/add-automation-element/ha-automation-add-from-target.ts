@@ -1499,6 +1499,12 @@ export default class HaAutomationAddFromTarget extends LitElement {
       // one more render lets live() open them before scrolling
       this.requestUpdate();
       await this.updateComplete;
+      // Opening rows push the selection down, scroll once they are open
+      await Promise.all(
+        [...this.shadowRoot!.querySelectorAll("wa-tree-item[expanded]")]
+          .flatMap((item) => item.shadowRoot?.getAnimations() ?? [])
+          .map((animation) => animation.finished.catch(() => undefined))
+      );
       if (type === "label") {
         this.shadowRoot!.querySelector(
           "ha-list-item-button.selected:not(.recent)"
