@@ -256,6 +256,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   // written after that, so a link isn't overwritten before it is applied
   private _urlRead = false;
 
+  private _urlWritePending = false;
+
   private _typedSearch?: string;
 
   private _queryParams = new QueryParamsController(
@@ -288,7 +290,14 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     if (!this.hasUpdated) {
-      this._applyInitialState();
+      if (this.initialGroupColumn && this.columns[this.initialGroupColumn]) {
+        this._setGroupColumn(this.initialGroupColumn);
+      }
+
+      if (this.initialSorting && this.columns[this.initialSorting.column]) {
+        this._sortColumn = this.initialSorting.column;
+        this._sortDirection = this.initialSorting.direction;
+      }
     }
 
     if (this.syncUrl && !this._urlRead && Object.keys(this.columns).length) {
@@ -297,32 +306,24 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
   }
 
-  private _applyInitialState() {
-    if (this.initialGroupColumn && this.columns[this.initialGroupColumn]) {
-      this._setGroupColumn(this.initialGroupColumn);
-    }
-    if (this.initialSorting && this.columns[this.initialSorting.column]) {
-      this._sortColumn = this.initialSorting.column;
-      this._sortDirection = this.initialSorting.direction;
-    }
-  }
-
   protected updated(changedProperties: PropertyValues) {
+    const typed = this.filter === this._typedSearch;
+    this._typedSearch = undefined;
     if (!this.syncUrl || !this._urlRead) {
+      this._urlWritePending = false;
       return;
     }
     const sortingOrGroupingChanged =
+      this._urlWritePending ||
       changedProperties.has("_sortColumn") ||
       changedProperties.has("_sortDirection") ||
-      changedProperties.has("_groupColumn") ||
-      changedProperties.has("syncUrl") ||
-      changedProperties.has("columns");
+      changedProperties.has("_groupColumn");
+
+    this._urlWritePending = false;
     if (sortingOrGroupingChanged || changedProperties.has("filter")) {
       // Typing is written once it pauses, a search set by the page or a link
       // straight away
-      this._writeUrl(
-        !sortingOrGroupingChanged && this.filter === this._typedSearch
-      );
+      this._writeUrl(!sortingOrGroupingChanged && typed);
     }
   }
 
@@ -734,10 +735,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       }
     }
 
-    // Before the first update, writing follows once it is rendered
-    if (this.hasUpdated) {
-      this._writeUrl();
-    }
+    this._urlWritePending = true;
+    this.requestUpdate();
   }
 
   private _flushUrl() {
