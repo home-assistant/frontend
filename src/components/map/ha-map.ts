@@ -528,8 +528,19 @@ export class HaMap extends ReactiveElement {
     } else if (this._loaded && oldStates && this.entities) {
       // Check if any state has changed
       for (const entity of this.entities) {
+        const entityId = getEntityId(entity);
+        const stateObj = this._states[entityId];
+        const inZones: string[] | undefined = stateObj?.attributes.in_zones;
         if (
-          oldStates[getEntityId(entity)] !== this._states[getEntityId(entity)]
+          oldStates[entityId] !== stateObj ||
+          (stateObj &&
+            ["person", "device_tracker"].includes(
+              computeStateDomain(stateObj)
+            ) &&
+            Array.isArray(inZones) &&
+            inZones.some(
+              (zoneId) => oldStates[zoneId] !== this._states[zoneId]
+            ))
         ) {
           this._drawEntities();
           autoFitRequired = !this._pauseAutoFit;

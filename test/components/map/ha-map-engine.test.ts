@@ -203,6 +203,12 @@ const ZONES = {
   }),
 };
 
+const ENCLOSING_ZONE = createMockEntityState("zone.enclosing", "0", {
+  ...ZONES["zone.anne_therese"].attributes,
+  friendly_name: "City",
+  radius: 1000,
+});
+
 const leafletMap = (el: HaMap) => (el as any)._engine?.leafletMap;
 const container = (el: HaMap) => el.shadowRoot!.getElementById("map")!;
 const isRevealed = (el: HaMap) => container(el).classList.contains("drawn");
@@ -356,11 +362,7 @@ describe("ha-map engine selection", () => {
           const entityId = `${domain}.paulus`;
           const states: HassEntities = {
             ...ZONES,
-            "zone.enclosing": createMockEntityState("zone.enclosing", "0", {
-              ...ZONES["zone.anne_therese"].attributes,
-              friendly_name: "City",
-              radius: 1000,
-            }),
+            "zone.enclosing": ENCLOSING_ZONE,
             "zone.passive": createMockEntityState("zone.passive", "0", {
               ...ZONES["zone.anne_therese"].attributes,
               radius: 50,
@@ -380,6 +382,57 @@ describe("ha-map engine selection", () => {
           expect(entityHandles(el)).toMatchObject([
             { clusterData: { entityId, zoneId: expectedZoneId } },
           ]);
+        }
+      );
+
+      it.each(["passive", "removed"])(
+        "updates grouping when an unlisted zone becomes %s and is restored",
+        async (change) => {
+          const entityId = `${domain}.paulus`;
+          const hiddenZone = ZONES["zone.anne_therese"];
+          const states: HassEntities = {
+            ...ZONES,
+            "zone.enclosing": ENCLOSING_ZONE,
+            [entityId]: createMockEntityState(entityId, "Work", {
+              latitude: hiddenZone.attributes.latitude,
+              longitude: hiddenZone.attributes.longitude,
+              in_zones: [hiddenZone.entity_id, "zone.enclosing"],
+            }),
+          };
+          const el = await createMap(states, ["zone.enclosing", entityId]);
+          const initialMarker = entityHandles(el)[0];
+          expect(initialMarker.clusterData).toMatchObject({
+            zoneId: undefined,
+          });
+
+          (el as any)._states = {
+            ...states,
+            "light.unrelated": createMockEntityState("light.unrelated", "on"),
+          };
+          await el.updateComplete;
+          expect(entityHandles(el)[0]).toBe(initialMarker);
+
+          const updatedStates = { ...states };
+          if (change === "removed") {
+            delete updatedStates[hiddenZone.entity_id];
+          } else {
+            updatedStates[hiddenZone.entity_id] = createMockEntityState(
+              hiddenZone.entity_id,
+              hiddenZone.state,
+              { ...hiddenZone.attributes, passive: true }
+            );
+          }
+          (el as any)._states = updatedStates;
+          await el.updateComplete;
+          expect(entityHandles(el)[0].clusterData).toMatchObject({
+            zoneId: "zone.enclosing",
+          });
+
+          (el as any)._states = states;
+          await el.updateComplete;
+          expect(entityHandles(el)[0].clusterData).toMatchObject({
+            zoneId: undefined,
+          });
         }
       );
     }
