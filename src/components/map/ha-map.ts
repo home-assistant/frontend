@@ -2056,10 +2056,6 @@ export class HaMap extends ReactiveElement {
       box-shadow: none !important;
       text-align: center;
     }
-
-    ha-icon {
-      --mdc-icon-size: calc(var(--ha-marker-size, 48px) / 2);
-    }
   `;
 }
 

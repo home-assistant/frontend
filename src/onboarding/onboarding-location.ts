@@ -11,6 +11,10 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import {
+  HOME_ZONE_ENTITY_ID,
+  zoneColor,
+} from "../common/map/entity-map-colors";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-button";
@@ -243,11 +247,25 @@ class OnboardingLocation extends LitElement {
       places?: OpenStreetMapPlace[] | null,
       highlightedMarker?: number
     ): MarkerLocation[] => {
+      // Drawn like the home zone on a map
+      const home: Pick<
+        MarkerLocation,
+        "iconPath" | "zone_marker" | "radius_color"
+      > = {
+        iconPath: mdiHome,
+        zone_marker: true,
+        radius_color: zoneColor(
+          HOME_ZONE_ENTITY_ID,
+          false,
+          [],
+          getComputedStyle(this)
+        ),
+      };
       if (!places) {
         return [
           {
             id: LOCATION_MARKER_ID,
-            iconPath: mdiHome,
+            ...home,
             latitude: (location || AMSTERDAM)[0],
             longitude: (location || AMSTERDAM)[1],
             location_editable: true,
@@ -257,8 +275,9 @@ class OnboardingLocation extends LitElement {
       return places?.length
         ? places.map((place) => ({
             id: String(place.place_id),
-            iconPath:
-              place.place_id === highlightedMarker ? mdiHome : mdiMapMarker,
+            ...(place.place_id === highlightedMarker
+              ? home
+              : { iconPath: mdiMapMarker }),
             latitude:
               location && place.place_id === highlightedMarker
                 ? location[0]
