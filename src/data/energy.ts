@@ -59,10 +59,6 @@ export const DEFAULT_POWER_COLLECTION_KEY = "energy_dashboard_now";
 
 // All collection keys created this session
 const energyCollectionKeys = new Set<string | undefined>();
-const energyCollections = new WeakMap<
-  Connection,
-  Map<string, EnergyCollection>
->();
 
 // Validate that a string is a valid energy collection key.
 export function validateEnergyCollectionKey(key: string | undefined) {
@@ -992,7 +988,7 @@ const findEnergyDataCollection = (
     panelUrl,
     collectionKey
   );
-  return energyCollections.get(connection)?.get(key);
+  return (connection as any)[key];
 };
 
 // The last-picked preset is remembered per energy collection, so each dashboard
@@ -1119,7 +1115,9 @@ export const getEnergyDataCollection = (
     panelUrl,
     options.key
   );
-  const existingCollection = energyCollections.get(connection)?.get(key);
+  const existingCollection: EnergyCollection | undefined = (connection as any)[
+    key
+  ];
   if (existingCollection) {
     return existingCollection;
   }
@@ -1368,12 +1366,8 @@ export const getEnergyDataCollection = (
       }
     },
   };
-  let connectionCollections = energyCollections.get(connection);
-  if (!connectionCollections) {
-    connectionCollections = new Map<string, EnergyCollection>();
-    energyCollections.set(connection, connectionCollections);
-  }
-  connectionCollections.set(key, collection);
+  // Custom cards also access the Energy collection directly on the connection.
+  (connection as any)[key] = collection;
   return collection;
 };
 

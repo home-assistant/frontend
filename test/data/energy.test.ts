@@ -1167,6 +1167,18 @@ describe("getEnergyDataCollection cache", () => {
       getEnergyDataCollection(hass.connection, options),
       collection
     );
+    assert.strictEqual(
+      Reflect.get(hass.connection, "_energy_cache"),
+      collection
+    );
+    assert.strictEqual(
+      Reflect.get(hass.connection, "_energy_cache_other"),
+      otherKey
+    );
+    assert.strictEqual(
+      Reflect.get(otherHass.connection, "_energy_cache"),
+      otherConnection
+    );
     assert.notStrictEqual(otherKey, collection);
     assert.notStrictEqual(otherConnection, collection);
 
