@@ -261,7 +261,10 @@ const statisticsFunctions: Record<
       start,
       start.getTime() + 21 * 60 * 60 * 1000
     );
-    const dayEnd = endOfDay(productionEnd);
+    const dayEnd = constructFrom(
+      end,
+      Math.min(endOfDay(productionEnd).getTime(), end.getTime())
+    );
     const production = generateCurvedStatistics(
       productionStart,
       productionEnd,
@@ -308,7 +311,10 @@ const statisticsFunctions: Record<
       start,
       start.getTime() + 23 * 60 * 60 * 1000
     );
-    const dayEnd = endOfDay(productionEnd);
+    const dayEnd = constructFrom(
+      end,
+      Math.min(endOfDay(productionEnd).getTime(), end.getTime())
+    );
     const production = generateCurvedStatistics(
       productionStart,
       productionEnd,
