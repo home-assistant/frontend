@@ -1,28 +1,18 @@
 import { mdiHome, mdiHomeExportOutline } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
 import { html } from "lit";
 import { styleMap } from "lit/directives/style-map";
 import { stateColorCss } from "../../../../../common/entity/state_color";
 import "../../../../../components/ha-icon";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/tile/ha-tile-badge";
-import type { HomeAssistant } from "../../../../../types";
+import { getEntityActiveZone } from "../../../../../data/zone";
 import type { RenderBadgeFunction } from "./tile-badge";
-import { computeZoneTrackerState } from "../../../../../data/zone";
-
-function getZone(entity: HassEntity, hass: HomeAssistant) {
-  const state = entity.state;
-  if (state === "home" || state === "not_home") return undefined;
-
-  const zones = Object.values(hass.states).filter((stateObj) =>
-    stateObj.entity_id.startsWith("zone.")
-  );
-
-  return zones.find((z) => state === computeZoneTrackerState(z));
-}
 
 export const renderPersonBadge: RenderBadgeFunction = (stateObj, hass) => {
-  const zone = getZone(stateObj, hass);
+  const zone =
+    stateObj.state === "home"
+      ? undefined
+      : getEntityActiveZone(stateObj, hass.states);
 
   const zoneIcon = zone?.attributes.icon;
 
