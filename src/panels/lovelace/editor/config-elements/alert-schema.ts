@@ -1,6 +1,8 @@
-import { mdiAlertOutline } from "@mdi/js";
+import { mdiAlertOutline, mdiTextShort } from "@mdi/js";
 import { DEFAULT_ALERT_COLOR } from "../../../../common/entity/alert_active";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
+import { contentLayoutSchema, displayedElementsSchema } from "./content-schema";
 
 export const alertSchema = () =>
   ({
@@ -32,4 +34,42 @@ export const alertSchema = () =>
       },
       { name: "pulse", selector: { boolean: {} } },
     ],
+  }) as const satisfies HaFormSchema;
+
+const nameSchema = {
+  name: "name",
+  selector: { entity_name: {} },
+  context: { entity: "entity" },
+} as const satisfies HaFormSchema;
+
+const iconSchema = {
+  name: "icon",
+  selector: { icon: {} },
+  context: { icon_entity: "entity" },
+} as const satisfies HaFormSchema;
+
+export const alertCardContentSchema = (localize: LocalizeFunc) =>
+  ({
+    name: "content",
+    type: "expandable",
+    flatten: true,
+    iconPath: mdiTextShort,
+    schema: [
+      nameSchema,
+      {
+        name: "",
+        type: "grid",
+        schema: [iconSchema, { name: "hide_state", selector: { boolean: {} } }],
+      },
+      contentLayoutSchema(localize),
+    ],
+  }) as const satisfies HaFormSchema;
+
+export const alertBadgeContentSchema = (localize: LocalizeFunc) =>
+  ({
+    name: "content",
+    type: "expandable",
+    flatten: true,
+    iconPath: mdiTextShort,
+    schema: [nameSchema, iconSchema, displayedElementsSchema(localize)],
   }) as const satisfies HaFormSchema;

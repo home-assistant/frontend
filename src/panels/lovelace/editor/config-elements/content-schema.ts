@@ -27,10 +27,48 @@ const colorSchema = {
   },
 } as const satisfies HaFormSchema;
 
+export const contentLayoutSchema = (localize: LocalizeFunc) =>
+  ({
+    name: "content_layout",
+    required: true,
+    selector: {
+      select: {
+        mode: "box",
+        options: ["horizontal", "vertical"].map((value) => ({
+          label: localize(
+            `ui.panel.lovelace.editor.card.tile.content_layout_options.${value}`
+          ),
+          value,
+          image: {
+            src: `/static/images/form/tile_content_layout_${value}.svg`,
+            src_dark: `/static/images/form/tile_content_layout_${value}_dark.svg`,
+            flip_rtl: true,
+          },
+        })),
+      },
+    },
+  }) as const satisfies HaFormSchema;
+
+export const displayedElementsSchema = (localize: LocalizeFunc) =>
+  ({
+    name: "displayed_elements",
+    selector: {
+      select: {
+        mode: "list",
+        multiple: true,
+        options: (["name", "state", "icon"] as const).map((value) => ({
+          value,
+          label: localize(
+            `ui.panel.lovelace.editor.badge.entity.displayed_elements_options.${value}`
+          ),
+        })),
+      },
+    },
+  }) as const satisfies HaFormSchema;
+
 export const tileContentSchema = (
   localize: LocalizeFunc,
-  showTimeFormat: boolean,
-  includeColor = true
+  showTimeFormat: boolean
 ) =>
   ({
     name: "content",
@@ -56,7 +94,7 @@ export const tileContentSchema = (
             },
             context: { icon_entity: "entity" },
           },
-          ...(includeColor ? [colorSchema] : []),
+          colorSchema,
           {
             name: "show_entity_picture",
             selector: {
@@ -90,33 +128,13 @@ export const tileContentSchema = (
           ui_time_format: {},
         },
       },
-      {
-        name: "content_layout",
-        required: true,
-        selector: {
-          select: {
-            mode: "box",
-            options: ["horizontal", "vertical"].map((value) => ({
-              label: localize(
-                `ui.panel.lovelace.editor.card.tile.content_layout_options.${value}`
-              ),
-              value,
-              image: {
-                src: `/static/images/form/tile_content_layout_${value}.svg`,
-                src_dark: `/static/images/form/tile_content_layout_${value}_dark.svg`,
-                flip_rtl: true,
-              },
-            })),
-          },
-        },
-      },
+      contentLayoutSchema(localize),
     ],
   }) as const satisfies HaFormSchema;
 
 export const badgeContentSchema = (
   localize: LocalizeFunc,
-  showTimeFormat: boolean,
-  includeColor = true
+  showTimeFormat: boolean
 ) =>
   ({
     name: "content",
@@ -135,7 +153,7 @@ export const badgeContentSchema = (
         name: "",
         type: "grid",
         schema: [
-          ...(includeColor ? [colorSchema] : []),
+          colorSchema,
           {
             name: "icon",
             selector: {
@@ -151,21 +169,7 @@ export const badgeContentSchema = (
           },
         ],
       },
-      {
-        name: "displayed_elements",
-        selector: {
-          select: {
-            mode: "list",
-            multiple: true,
-            options: (["name", "state", "icon"] as const).map((value) => ({
-              value,
-              label: localize(
-                `ui.panel.lovelace.editor.badge.entity.displayed_elements_options.${value}`
-              ),
-            })),
-          },
-        },
-      },
+      displayedElementsSchema(localize),
       {
         name: "state_content",
         selector: {

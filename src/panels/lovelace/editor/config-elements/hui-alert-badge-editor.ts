@@ -1,16 +1,7 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import {
-  array,
-  assert,
-  assign,
-  boolean,
-  object,
-  optional,
-  string,
-  union,
-} from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { ALERT_DOMAINS } from "../../../../common/entity/alert_active";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -19,22 +10,19 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import { stateContentHasTimestamp } from "../../../../state-display/state-display";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { AlertBadgeConfig } from "../../badges/types";
 import { ALERT_BADGE_DEFAULT_CONFIG } from "../../badges/hui-alert-badge";
-import { timeFormatConfigStruct } from "../../components/types";
 import type { LovelaceBadgeEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceBadgeConfig } from "../structs/base-badge-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
-import { alertSchema } from "./alert-schema";
+import { alertBadgeContentSchema, alertSchema } from "./alert-schema";
 import {
   badgeContentConfigFromForm,
   badgeContentFormData,
-  badgeContentSchema,
 } from "./content-schema";
-import { badgeInteractionsSchema } from "./interactions-schema";
+import { entityInteractionsSchema } from "./interactions-schema";
 
 const badgeConfigStruct = assign(
   baseLovelaceBadgeConfig,
@@ -45,12 +33,9 @@ const badgeConfigStruct = assign(
     alert_color: optional(string()),
     clear_color: optional(string()),
     pulse: optional(boolean()),
-    show_entity_picture: optional(boolean()),
     show_name: optional(boolean()),
     show_state: optional(boolean()),
     show_icon: optional(boolean()),
-    state_content: optional(union([string(), array(string())])),
-    time_format: optional(timeFormatConfigStruct),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
@@ -72,7 +57,7 @@ export class HuiAlertBadgeEditor
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, showTimeFormat: boolean) =>
+    (localize: LocalizeFunc) =>
       [
         {
           name: "entity",
@@ -80,8 +65,8 @@ export class HuiAlertBadgeEditor
           selector: { entity: { filter: { domain: ALERT_DOMAINS } } },
         },
         alertSchema(),
-        badgeContentSchema(localize, showTimeFormat, false),
-        badgeInteractionsSchema(),
+        alertBadgeContentSchema(localize),
+        entityInteractionsSchema(),
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -92,22 +77,11 @@ export class HuiAlertBadgeEditor
       return nothing;
     }
 
-    const entityId = this._config.entity;
-
-    const schema = this._schema(
-      this.hass.localize,
-      stateContentHasTimestamp(
-        entityId,
-        this.hass.states[entityId],
-        this._config.state_content
-      )
-    );
-
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this._formData(this._config)}
-        .schema=${schema}
+        .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
@@ -137,8 +111,6 @@ export class HuiAlertBadgeEditor
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.alert.alert_section"
         );
-      case "show_entity_picture":
-      case "state_content":
       case "displayed_elements":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.badge.entity.${schema.name}`

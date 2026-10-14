@@ -21,10 +21,9 @@ import "../../../components/ha-state-icon";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
-import { connectionContext, formattersContext } from "../../../data/context";
+import { formattersContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import "../../../state-display/state-display";
-import type { HomeAssistant, HomeAssistantConnection } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { hasAction } from "../common/has-action";
 import type {
@@ -32,13 +31,7 @@ import type {
   LovelaceCardEditor,
   LovelaceGridOptions,
 } from "../types";
-import {
-  getTileActionDefaults,
-  getTileIconActionConfig,
-  getTileImageUrl,
-  hasTileCardAction,
-  hasTileIconAction,
-} from "./tile/tile-card-helpers";
+import { hasTileCardAction } from "./tile/tile-card-helpers";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { AlertCardConfig } from "./types";
 
@@ -73,10 +66,6 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
   private _stateObj?: HassEntity;
 
   @state()
-  @consume({ context: connectionContext, subscribe: true })
-  private _connection!: HomeAssistantConnection;
-
-  @state()
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: ContextType<typeof formattersContext>;
 
@@ -99,7 +88,7 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     }
 
     this._config = {
-      ...getTileActionDefaults(config.entity),
+      tap_action: { action: "more-info" },
       ...config,
     };
   }
@@ -120,7 +109,7 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this._config || !this._formatters || !this._connection) {
+    if (!this._config || !this._formatters) {
       return nothing;
     }
 
@@ -138,9 +127,9 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     const pulse = active && this._config.pulse === true;
     const hasColor = color !== undefined && color !== "none";
 
-    const imageUrl = this._config.show_entity_picture
-      ? getTileImageUrl(this._connection, stateObj)
-      : undefined;
+    const areaName = this._formatters.formatEntityName(stateObj, {
+      type: "area",
+    });
 
     return html`
       <ha-card
@@ -162,25 +151,12 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
           }}
           @action=${this._handleAction}
         >
-          <ha-tile-icon
-            slot="icon"
-            .interactive=${hasTileIconAction(this._config)}
-            .actionHandlerOptions=${{
-              hasHold: hasAction(this._config.icon_hold_action),
-              hasDoubleClick: hasAction(this._config.icon_double_tap_action),
-            }}
-            .imageUrl=${imageUrl}
-            @action=${this._handleIconAction}
-          >
-            ${
-              imageUrl
-                ? nothing
-                : html`<ha-state-icon
-                    slot="icon"
-                    .icon=${this._config.icon}
-                    .stateObj=${stateObj}
-                  ></ha-state-icon>`
-            }
+          <ha-tile-icon slot="icon">
+            <ha-state-icon
+              slot="icon"
+              .icon=${this._config.icon}
+              .stateObj=${stateObj}
+            ></ha-state-icon>
           </ha-tile-icon>
           <ha-tile-info slot="info">
             <span slot="primary"
@@ -193,15 +169,12 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
               this._config.hide_state
                 ? nothing
                 : html`<span slot="secondary">
-                    ${
-                      this._config.state_content
-                        ? html`<state-display
-                            .stateObj=${stateObj}
-                            .content=${this._config.state_content}
-                            .timeFormat=${this._config.time_format}
-                          ></state-display>`
-                        : this._renderDefaultSecondary(stateObj)
-                    }
+                    ${this._formatters.formatEntityState(stateObj)} ·
+                    <ha-relative-time
+                      .datetime=${stateObj.last_changed}
+                      .format=${"short"}
+                    ></ha-relative-time>
+                    ${areaName ? html` · ${areaName}` : nothing}
                   </span>`
             }
           </ha-tile-info>
@@ -210,32 +183,9 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _renderDefaultSecondary(stateObj: HassEntity) {
-    const areaName = this._formatters.formatEntityName(stateObj, {
-      type: "area",
-    });
-
-    return html`
-      ${this._formatters.formatEntityState(stateObj)} ·
-      <ha-relative-time
-        .datetime=${stateObj.last_changed}
-        .format=${"short"}
-      ></ha-relative-time>
-      ${areaName ? html` · ${areaName}` : nothing}
-    `;
-  }
-
   private _handleAction(ev: ActionHandlerEvent): void {
     fireEvent(this, "hass-action", {
       config: this._config!,
-      action: ev.detail.action!,
-    });
-  }
-
-  private _handleIconAction(ev: ActionHandlerEvent): void {
-    ev.stopPropagation();
-    fireEvent(this, "hass-action", {
-      config: getTileIconActionConfig(this._config!.entity, this._config!),
       action: ev.detail.action!,
     });
   }
