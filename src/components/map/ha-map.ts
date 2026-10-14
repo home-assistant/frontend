@@ -1519,11 +1519,16 @@ export class HaMap extends ReactiveElement {
       if (["person", "device_tracker"].includes(computeStateDomain(stateObj))) {
         const inZones: string[] | undefined = stateObj.attributes.in_zones;
         if (Array.isArray(inZones) && inZones.length > 0) {
-          zoneId = inZones.find(
-            (candidate) =>
-              this._zonePositions[candidate] !== undefined &&
-              !states[candidate]?.attributes.passive
-          );
+          const activeZoneId = inZones.find((candidate) => {
+            const zone = states[candidate];
+            return zone && !zone.attributes.passive;
+          });
+          if (
+            activeZoneId !== undefined &&
+            this._zonePositions[activeZoneId] !== undefined
+          ) {
+            zoneId = activeZoneId;
+          }
         } else if (
           !Array.isArray(inZones) ||
           !["not_home", UNKNOWN, UNAVAILABLE].includes(stateObj.state)

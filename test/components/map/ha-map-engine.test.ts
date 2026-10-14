@@ -336,6 +336,14 @@ describe("ha-map engine selection", () => {
           expectedZoneId: undefined,
         },
         {
+          scenario:
+            "does not substitute an overlapping visible zone for the first active zone",
+          state: "Work",
+          inZones: ["zone.anne_therese", "zone.enclosing"],
+          visibleZones: ["zone.enclosing"],
+          expectedZoneId: undefined,
+        },
+        {
           scenario: "skips missing and passive zones when choosing a zone",
           state: "Work",
           inZones: ["zone.missing", "zone.passive", "zone.paulus"],
@@ -348,6 +356,11 @@ describe("ha-map engine selection", () => {
           const entityId = `${domain}.paulus`;
           const states: HassEntities = {
             ...ZONES,
+            "zone.enclosing": createMockEntityState("zone.enclosing", "0", {
+              ...ZONES["zone.anne_therese"].attributes,
+              friendly_name: "City",
+              radius: 1000,
+            }),
             "zone.passive": createMockEntityState("zone.passive", "0", {
               ...ZONES["zone.anne_therese"].attributes,
               radius: 50,
