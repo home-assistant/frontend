@@ -183,11 +183,7 @@ class StepFlowCreateEntry extends LitElement {
                             .label=${localize(
                               "ui.panel.config.integrations.config_flow.device_name"
                             )}
-                            .placeholder=${computeDeviceNameDisplay(
-                              device,
-                              this.hass.localize,
-                              this.hass.states
-                            )}
+                            .placeholder=${computeDeviceNameDisplay(device, this.hass.localize)}
                             .value=${
                               this._deviceUpdate[device.id]?.name ??
                               computeDeviceName(device)

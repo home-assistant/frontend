@@ -133,18 +133,15 @@ import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
-interface LimitedEntity {
-  entity_id: HassEntity["entity_id"];
-  attributes: {
-    friendly_name?: HassEntity["attributes"]["friendly_name"];
-    editable?: HassEntity["attributes"]["editable"];
-  };
-}
-function equalLimitedEntity(a: LimitedEntity, b: LimitedEntity): boolean {
+function equalHelperEntity(
+  a: HassEntity,
+  b: HassEntity,
+  formatEntityName: HomeAssistant["formatEntityName"]
+): boolean {
   return (
     a === b ||
     (a.entity_id === b.entity_id &&
-      a.attributes?.friendly_name === b.attributes?.friendly_name &&
+      formatEntityName(a) === formatEntityName(b) &&
       a.attributes?.editable === b.attributes?.editable)
   );
 }
@@ -157,7 +154,7 @@ interface HelperItem {
   editable?: boolean;
   type: string;
   configEntry?: ConfigEntry;
-  entity?: LimitedEntity;
+  entity?: HassEntity;
   category: string | undefined;
   area?: string;
   label_entries: LabelRegistryEntry[];
@@ -224,7 +221,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
-  @state() private _helperEntities?: LimitedEntity[];
+  @state() private _helperEntities?: HassEntity[];
 
   @state() private _disabledEntityEntries?: EntityRegistryEntry[];
 
@@ -489,7 +486,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _getItems = memoizeOne(
     (
       localize: LocalizeFunc,
-      stateItems: LimitedEntity[],
+      stateItems: HassEntity[],
+      formatEntityName: HomeAssistant["formatEntityName"],
       disabledEntries: EntityRegistryEntry[],
       configEntries: Record<string, ConfigEntry>,
       entityReg: EntityRegistryEntry[],
@@ -516,7 +514,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
         return {
           id: entityState.entity_id,
-          name: entityState.attributes.friendly_name || "",
+          name: formatEntityName(entityState),
           entity_id: entityState.entity_id,
           editable:
             configEntry !== undefined || entityState.attributes.editable,
@@ -637,6 +635,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const helpers = this._getItems(
       this.hass.localize,
       this._helperEntities,
+      this.hass.formatEntityName,
       this._disabledEntityEntries || [],
       this._configEntries,
       this._entityReg,
@@ -1311,7 +1310,7 @@ ${rejected
       !this._helperEntities ||
       this._helperEntities.length !== newHelpers.length ||
       !this._helperEntities.every((val, idx) =>
-        equalLimitedEntity(newHelpers[idx], val)
+        equalHelperEntity(newHelpers[idx], val, this.hass.formatEntityName)
       )
     ) {
       this._helperEntities = newHelpers;

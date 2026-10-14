@@ -27,7 +27,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
@@ -230,6 +229,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       scripts: ScriptEntity[],
       entityReg: EntityRegistryEntry[],
       areas: HomeAssistant["areas"],
+      formatEntityName: HomeAssistant["formatEntityName"],
       categoryReg?: CategoryRegistryEntry[],
       labelReg?: LabelRegistryEntry[],
       filteredScripts?: string[] | null
@@ -258,7 +258,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
         );
         return {
           ...script,
-          name: computeStateName(script),
+          name: formatEntityName(script),
           area: entityRegEntry?.area_id
             ? areas[entityRegEntry?.area_id]?.name
             : undefined,
@@ -421,6 +421,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
       this.scripts,
       this._entityReg,
       this.hass.areas,
+      this.hass.formatEntityName,
       this._categories,
       this._labels,
       this._filteredEntityIds
@@ -1027,7 +1028,7 @@ ${rejected
       await triggerScript(this.hass, entry.unique_id);
       showToast(this, {
         message: this.hass.localize("ui.notification_toast.triggered", {
-          name: computeStateName(script),
+          name: this.hass.formatEntityName(script),
         }),
       });
     }

@@ -23,7 +23,6 @@ import { consume } from "../../../common/decorators/consume";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { goBack, navigate } from "../../../common/navigate";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
@@ -274,11 +273,7 @@ class HaConfigAreaPage extends LitElement {
     // them without mutating the shared registry objects.
     const devices = memberships.devices.map((entry) => ({
       ...entry,
-      name: computeDeviceNameDisplay(
-        entry,
-        this.hass.localize,
-        this.hass.states
-      ),
+      name: computeDeviceNameDisplay(entry, this.hass.localize),
     }));
     sortDeviceRegistryByName(devices, this.hass.locale.language);
 
@@ -713,7 +708,7 @@ class HaConfigAreaPage extends LitElement {
         ] as unknown as EntityType;
         if (entityState) {
           groupedEntities.push({
-            name: computeStateName(entityState),
+            name: this.hass.formatEntityName(entityState),
             entity: entityState,
           });
         }
@@ -731,7 +726,7 @@ class HaConfigAreaPage extends LitElement {
         const entityState = this.hass.states[entity] as EntityType;
         if (entityState) {
           relatedEntities.push({
-            name: entityState ? computeStateName(entityState) : "",
+            name: this.hass.formatEntityName(entityState),
             entity: entityState,
           });
         }
