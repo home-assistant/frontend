@@ -699,15 +699,18 @@ export class HaAutomationRowTargets extends LitElement {
     :host([size="s"]) .target {
       height: 24px;
     }
-    /* A default 24px icon would fill the whole small chip. */
+
     :host([size="s"]) .target ha-icon,
     :host([size="s"]) .target ha-svg-icon,
     :host([size="s"]) .target ha-domain-icon,
     :host([size="s"]) .target ha-floor-icon {
       --mdc-icon-size: 16px;
     }
-    :host([size="s"]) .target ha-floor-icon {
-      height: 24px;
+
+    :host([size="s"]) .target state-badge {
+      width: 16px;
+      height: 16px;
+      --mdc-icon-size: 16px;
     }
 
     button.target {
