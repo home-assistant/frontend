@@ -11425,7 +11425,12 @@
                 }
               },
               "target-temperature": {
-                "label": "Target temperature"
+                "label": "Target temperature",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]"
+                }
               },
               "target-humidity": {
                 "label": "Target humidity",
