@@ -99,13 +99,18 @@ describe("personActivity", () => {
 
   it("preserves historical zone IDs after a zone is renamed", () => {
     const entries = personActivity(
-      [sample("Old workplace", 1100, ["zone.work"])],
+      [sample("Work", 1100, ["zone.work", "zone.other_work"])],
       SINCE,
-      zones
+      {
+        ...duplicateZones,
+        "zone.work": createMockEntityState("zone.work", "0", {
+          friendly_name: "New workplace",
+        }),
+      }
     );
 
     expect(entries[0]).toMatchObject({
-      state: "Old workplace",
+      state: "Work",
       zoneId: "zone.work",
     });
   });
@@ -134,43 +139,62 @@ describe("personActivity", () => {
     ]);
   });
 
-  it("does not guess a zone for legacy history with duplicate names", () => {
-    const entries = personActivity(
-      [sample("Work", 1100)],
-      SINCE,
-      duplicateZones
-    );
-
-    expect(entries).toEqual([
-      { state: "Work", zoneId: undefined, when: new Date(1100 * 1000) },
-    ]);
-  });
-
-  it.each([{ inZones: [] }, { inZones: ["zone.removed"] }])(
-    "does not fall back to names when in_zones is $inZones",
+  it.each([{ inZones: undefined }, { inZones: [] }])(
+    "does not guess a legacy zone with duplicate names when in_zones is $inZones",
     ({ inZones }) => {
       const entries = personActivity(
         [sample("Work", 1100, inZones)],
         SINCE,
-        zones
+        duplicateZones
       );
 
       expect(entries[0].zoneId).toBeUndefined();
     }
   );
 
-  it("resolves unique legacy zone names and the home state", () => {
+  it("does not fall back to names when a reported zone no longer exists", () => {
     const entries = personActivity(
-      [sample("home", 1100), sample("not_home", 1200), sample("Work", 1300)],
+      [sample("Work", 1100, ["zone.removed"])],
       SINCE,
       zones
     );
 
-    expect(entries.map((entry) => entry.zoneId)).toEqual([
-      "zone.work",
-      undefined,
-      "zone.home",
-    ]);
+    expect(entries[0].zoneId).toBeUndefined();
+  });
+
+  it.each([{ inZones: undefined }, { inZones: [] }])(
+    "resolves unique legacy names and home when in_zones is $inZones",
+    ({ inZones }) => {
+      const entries = personActivity(
+        [
+          sample("home", 1100, inZones),
+          sample("not_home", 1200, inZones),
+          sample("Work", 1300, inZones),
+        ],
+        SINCE,
+        zones
+      );
+
+      expect(entries.map((entry) => entry.zoneId)).toEqual([
+        "zone.work",
+        undefined,
+        "zone.home",
+      ]);
+    }
+  );
+
+  it("does not create a transition when zone IDs appear or disappear for the same legacy location", () => {
+    expect(
+      personActivity(
+        [
+          sample("Work", 900, []),
+          sample("Work", 1100, ["zone.work"]),
+          sample("Work", 1200, []),
+        ],
+        SINCE,
+        zones
+      )
+    ).toEqual([]);
   });
 });
 

@@ -32,7 +32,7 @@ const activityZoneId = (
   }
 
   const inZones: string[] | undefined = entry.a?.in_zones;
-  if (Array.isArray(inZones)) {
+  if (Array.isArray(inZones) && inZones.length > 0) {
     return inZones.find((zoneId) => {
       const zone = states[zoneId];
       return zone && !zone.attributes.passive;
