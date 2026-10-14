@@ -173,7 +173,7 @@ export interface VisibilityLogicalCondition extends BaseCondition {
 /** The parts of `hass` the condition checks read. */
 export type ConditionHass = Pick<
   HomeAssistant,
-  "states" | "user" | "locale" | "config"
+  "states" | "user" | "locale" | "config" | "entities" | "devices" | "areas"
 >;
 
 function getValueFromEntityId(
@@ -351,7 +351,7 @@ function checkLocationCondition(
  * otherwise the zone name. Passive zones never become the state.
  */
 function activeZoneState(
-  hass: HomeAssistant,
+  hass: ConditionHass,
   zoneId: string
 ): string | undefined {
   const stateObj = hass.states[zoneId];
@@ -404,7 +404,7 @@ const resolvedZonesCache = new WeakMap<HassServiceTarget, ResolvedZones>();
  * currently have a state.
  */
 export function resolveLocationZones(
-  hass: HomeAssistant,
+  hass: ConditionHass,
   target: HassServiceTarget
 ): string[] {
   // Checked on every call rather than cached, so a zone that loses its state
@@ -415,7 +415,7 @@ export function resolveLocationZones(
 }
 
 function resolveTargetZones(
-  hass: HomeAssistant,
+  hass: ConditionHass,
   target: HassServiceTarget
 ): string[] {
   const cached = resolvedZonesCache.get(target);

@@ -53,8 +53,10 @@ import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { Themes } from "../../../data/ws-themes";
 import {
+  areasContext,
   configContext,
   connectionContext,
+  devicesContext,
   entitiesContext,
   formattersContext,
   fullEntitiesContext,
@@ -186,6 +188,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @consume({ context: entitiesContext, subscribe: true })
   private _entities!: HomeAssistant["entities"];
+
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: HomeAssistant["devices"];
+
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: HomeAssistant["areas"];
 
   // Read on demand; rerenders come from _trackedStates
   @consume({ context: statesContext, subscribe: true })
@@ -558,6 +566,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         user: this._user,
         locale: this._i18n.locale,
         config: this._hassConfig,
+        entities: this._entities,
+        devices: this._devices,
+        areas: this._areas,
       },
       {}
     );
