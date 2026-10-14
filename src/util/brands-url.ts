@@ -76,13 +76,19 @@ export const clearBrandsTokenRefresh = (): void => {
   }
 };
 
-export const brandsUrl = (options: BrandsOptions, hassUrl?: string): string => {
+const integrationBrandsUrl = (
+  category: "integration" | "marketplace",
+  options: BrandsOptions,
+  hassUrl?: string
+): string => {
+  const image = `${options.domain}/${
+    options.darkOptimized ? "dark_" : ""
+  }${options.type}.png`;
+
   // In the demo there is no backend to serve the token-gated brands API, so
   // load the images straight from the public brands CDN instead.
   if (__DEMO__) {
-    return `https://brands.home-assistant.io/${options.domain}/${
-      options.darkOptimized ? "dark_" : ""
-    }${options.type}.png`;
+    return `https://brands.home-assistant.io/${image}`;
   }
 
   // The brands API requires a token; without one the request 401s. Return an
@@ -92,14 +98,21 @@ export const brandsUrl = (options: BrandsOptions, hassUrl?: string): string => {
     return "";
   }
   hassUrl = hassUrl ?? location.origin;
-  const base = `/api/brands/integration/${options.domain}/${
-    options.darkOptimized ? "dark_" : ""
-  }${options.type}.png`;
 
-  const url = new URL(base, hassUrl);
+  const url = new URL(`/api/brands/${category}/${image}`, hassUrl);
   url.searchParams.set("token", _brandsAccessToken);
   return url.toString();
 };
+
+export const brandsUrl = (options: BrandsOptions, hassUrl?: string): string =>
+  integrationBrandsUrl("integration", options, hassUrl);
+
+// Like brandsUrl, but also finds the images an integration ships itself
+// before it is installed
+export const marketplaceBrandsUrl = (
+  options: BrandsOptions,
+  hassUrl?: string
+): string => integrationBrandsUrl("marketplace", options, hassUrl);
 
 export const hardwareBrandsUrl = (
   options: HardwareBrandsOptions,

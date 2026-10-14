@@ -37,7 +37,6 @@ class SupervisorAppConfigDashboard extends LitElement {
           (hasConfiguration || this.addon.network || this.addon.audio)
             ? html`
                 <supervisor-app-system-managed
-                  .hass=${this.hass}
                   .narrow=${this.narrow}
                   .hideButton=${this.controlEnabled}
                 ></supervisor-app-system-managed>

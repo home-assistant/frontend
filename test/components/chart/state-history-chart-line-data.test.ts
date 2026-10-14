@@ -138,6 +138,26 @@ describe("generateStateHistoryChartLineData", () => {
     expect(result).toMatchSnapshot();
   });
 
+  it("matches snapshot when states continue past endTime", () => {
+    // A value and a gap that only closes after endTime are both dropped
+    const endSec = baseParams.endTime.getTime() / 1000;
+    const data = toLineChartEntities({
+      "sensor.power_meter": [
+        { s: "10", a: { unit_of_measurement: "W" }, lu: endSec - 300 },
+        { s: "12", a: {}, lu: endSec - 240 },
+        { s: "unavailable", a: {}, lu: endSec - 180 },
+        { s: "11", a: {}, lu: endSec - 120 },
+        { s: "13", a: {}, lu: endSec - 60 },
+        { s: "14", a: {}, lu: endSec + 60 },
+        { s: "unknown", a: {}, lu: endSec + 120 },
+        { s: "15", a: {}, lu: endSec + 180 },
+      ],
+    });
+    expect(
+      generateStateHistoryChartLineData({ ...baseParams, data })
+    ).toMatchSnapshot();
+  });
+
   it("large mixed payload digest is stable", () => {
     const data = toLineChartEntities(generateMixedHistory(42, "large"));
     expect(

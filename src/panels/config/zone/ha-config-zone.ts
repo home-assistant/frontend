@@ -761,7 +761,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
     .zone-avatar ha-icon {
       color: inherit;
-      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
     }
     ha-icon-button {
       --mdc-theme-text-disabled-on-light: var(--disabled-text-color);

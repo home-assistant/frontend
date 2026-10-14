@@ -63,7 +63,7 @@ export class HaDateRangeNav extends HaDateRangePicker {
       }
 
       .range {
-        --md-assist-chip-outline-color: transparent;
+        --ha-assist-chip-outline-color: transparent;
         --ha-assist-chip-container-shape: 0;
         --ha-assist-chip-container-color: transparent;
         border-inline: 1px solid var(--divider-color);

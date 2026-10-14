@@ -216,6 +216,22 @@ export class HaInput extends WaInputMixin(LitElement) {
     }
   }
 
+  protected override updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    this._syncAriaInvalid();
+  }
+
+  // wa-input never sets aria-invalid on its native input. Without it, WebKit
+  // falls back to the native validity, so screen readers announce an empty
+  // required field as invalid before anything was typed.
+  private async _syncAriaInvalid(): Promise<void> {
+    await this._input?.updateComplete;
+    this._getNativeInput()?.setAttribute(
+      "aria-invalid",
+      this.invalid || this._invalid ? "true" : "false"
+    );
+  }
+
   public override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener("focusin", this._syncFromNativeInput);
@@ -427,7 +443,8 @@ export class HaInput extends WaInputMixin(LitElement) {
 
       wa-input.label-raised::part(label),
       :host(:focus-within) wa-input::part(label),
-      :host([type="date"]) wa-input::part(label) {
+      :host([type="date"]) wa-input::part(label),
+      :host([type="color"]) wa-input::part(label) {
         padding-top: var(--ha-space-3);
         font-size: var(--ha-font-size-xs);
       }

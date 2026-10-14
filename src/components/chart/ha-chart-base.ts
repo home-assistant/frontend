@@ -2094,9 +2094,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       height: 100%;
       --ha-button-height: 24px;
       --ha-chip-label-weight: 500;
-      --md-assist-chip-leading-space: var(--ha-space-2);
-      --md-assist-chip-trailing-space: var(--ha-space-2);
-      --md-assist-chip-icon-label-space: var(--ha-space-1);
+      --ha-assist-chip-leading-space: var(--ha-space-2);
+      --ha-assist-chip-trailing-space: var(--ha-space-2);
+      --ha-assist-chip-icon-label-space: var(--ha-space-1);
     }
   `;
 }

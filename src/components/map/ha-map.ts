@@ -538,7 +538,11 @@ export class HaMap extends ReactiveElement {
       }
     }
 
-    if (changedProps.has("clusterMarkers") || changedProps.has("_entityReg")) {
+    if (
+      changedProps.has("clusterMarkers") ||
+      changedProps.has("_entityReg") ||
+      changedProps.has("_formatters")
+    ) {
       this._drawEntities();
     }
 
@@ -1320,7 +1324,7 @@ export class HaMap extends ReactiveElement {
     const states = this._states;
     const engine = this._engine;
 
-    if (!states || !engine) {
+    if (!states || !engine || !this._formatters) {
       return;
     }
 
@@ -1382,7 +1386,7 @@ export class HaMap extends ReactiveElement {
         continue;
       }
       const customTitle = typeof entity !== "string" ? entity.name : undefined;
-      const title = customTitle ?? computeStateName(stateObj);
+      const title = customTitle ?? this._formatters.formatEntityName(stateObj);
       const {
         passive,
         icon,

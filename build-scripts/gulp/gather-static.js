@@ -77,10 +77,6 @@ async function copyMapPanel(staticDir) {
   // Style, glyphs and sprites for the vector base map
   await ensureMapAssets();
   fs.copySync(mapAssetsDir, staticPath("map/"));
-  copyFileDir(
-    npmPath("@mapbox/mapbox-gl-rtl-text/dist/mapbox-gl-rtl-text.js"),
-    staticPath("map/")
-  );
   // Controls and popups of the native MapLibre engine
   copyFileDir(npmPath("maplibre-gl/dist/maplibre-gl.css"), staticPath("map/"));
 }
