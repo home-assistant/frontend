@@ -345,6 +345,20 @@ describe("dialog-live-log subscription errors", () => {
     expect(dialog.shadowRoot!.querySelector("ha-alert")).not.toBeNull();
   });
 
+  it("shows the error when the subscription fails otherwise", async () => {
+    vi.mocked(subscribeIntegrationLog).mockRejectedValueOnce({
+      code: "not_found",
+      message: "Integration not found",
+    });
+    await mountDialog();
+    await dialog.updateComplete;
+
+    expect(
+      dialog.shadowRoot!.querySelector("ha-alert")?.textContent?.trim()
+    ).toBe("Integration not found");
+    expect(dialog.shadowRoot!.querySelector(".toolbar")).toBeNull();
+  });
+
   it("subscribes again on ready when the subscription failed on a lost connection", async () => {
     vi.mocked(subscribeIntegrationLog).mockRejectedValueOnce(3);
     await openLogDialog();

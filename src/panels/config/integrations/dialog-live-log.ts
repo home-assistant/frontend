@@ -60,6 +60,8 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
 
   @state() private _unsupported = false;
 
+  @state() private _error?: string;
+
   @state() private _live = false;
 
   @state() private _newLogsIndicator = false;
@@ -126,6 +128,8 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
           err?.error?.code === ERR_CONNECTION_LOST
         ) {
           this._resubscribeOnReady = true;
+        } else {
+          this._error = err?.message ?? String(err);
         }
       }
     );
@@ -227,8 +231,6 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
     this._shownCount = Math.max(0, this._shownCount - excessLineCount);
     if (this._ansiToHtml) {
       this._ansiToHtml.trimLines(this._shownCount);
-      const hasMatches = this._ansiToHtml.filterLines(this._search);
-      this._noMatches = this._shownCount > 0 && !hasMatches;
     }
     if (logElement) {
       const removedHeight =
@@ -257,6 +259,10 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
   private _renderLines(lines: string[]) {
     const ansiToHtml = this._ansiToHtml;
     if (!ansiToHtml) {
+      return;
+    }
+    if (!this._search) {
+      ansiToHtml.parseLinesToColoredPre(lines);
       return;
     }
     // ha-ansi-to-html re-filters all lines after every added line while a
@@ -300,6 +306,11 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
     if (!this.params) {
       return nothing;
     }
+    const error = this._unsupported
+      ? this._i18n.localize(
+          "ui.panel.config.integrations.config_entry.live_log.unsupported"
+        )
+      : this._error;
     return html`
       <ha-dialog
         open
@@ -311,12 +322,8 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
         flexcontent
       >
         ${
-          this._unsupported
-            ? html`<ha-alert alert-type="error">
-                ${this._i18n.localize(
-                  "ui.panel.config.integrations.config_entry.live_log.unsupported"
-                )}
-              </ha-alert>`
+          error
+            ? html`<ha-alert alert-type="error">${error}</ha-alert>`
             : html`<div class="toolbar">
                   <ha-input-search
                     appearance="outlined"
