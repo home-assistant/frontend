@@ -17,8 +17,8 @@ const badgeConfigStruct = assign(
   baseLovelaceBadgeConfig,
   object({
     entity: optional(string()),
-    color: optional(string()),
-    inactive_color: optional(string()),
+    alert_color: optional(string()),
+    clear_color: optional(string()),
     pulse: optional(boolean()),
   })
 );
@@ -34,11 +34,11 @@ const SCHEMA = [
     type: "grid",
     schema: [
       {
-        name: "inactive_color",
+        name: "clear_color",
         selector: { ui_color: { include_none: true, default_color: "none" } },
       },
       {
-        name: "color",
+        name: "alert_color",
         selector: {
           ui_color: { include_none: true, default_color: DEFAULT_ALERT_COLOR },
         },
@@ -85,22 +85,22 @@ export class HuiAlertBadgeEditor
   }
 
   private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
-    if (schema.name === "pulse" || schema.name === "inactive_color") {
+    if (schema.name === "entity") {
       return this.hass!.localize(
-        `ui.panel.lovelace.editor.card.alert.${schema.name}`
+        "ui.panel.lovelace.editor.card.generic.entity"
       );
     }
 
     return this.hass!.localize(
-      `ui.panel.lovelace.editor.card.generic.${schema.name}`
+      `ui.panel.lovelace.editor.card.alert.${schema.name}`
     );
   };
 
   private _computeHelperCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
     if (
       schema.name === "pulse" ||
-      schema.name === "color" ||
-      schema.name === "inactive_color"
+      schema.name === "alert_color" ||
+      schema.name === "clear_color"
     ) {
       return this.hass?.localize(
         `ui.panel.lovelace.editor.card.alert.${schema.name}_helper`
