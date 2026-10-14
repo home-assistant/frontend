@@ -9,22 +9,16 @@ import { getConditionDomain } from "../../../../data/condition";
 import { getTriggerDomain } from "../../../../data/trigger";
 
 /**
- * The key of the category an element belongs to, worked out from the element
- * itself rather than from the way the user reached it — an element can be
- * added from a category, from a target, or straight out of the search box, and
- * only the first of those knows which category it came from.
- *
- * The answer is a key, not a promise that the category is on screen: an install
- * without the integration behind it renders no such group. Callers resolve it
- * against what they actually rendered.
+ * Find the key of the group an element belongs to, independent of how it was
+ * reached (category, target or search). The group may not be rendered, for
+ * example when the integration behind it is not set up.
  */
 export const findElementGroupKey = (
   type: "trigger" | "condition" | "action",
   collections: AutomationElementGroupCollection[],
   key: string
 ): string => {
-  // Elements that come from the backend carry the dynamic prefix on their key
-  // ("__DYNAMIC__sun.sunrise"); the domain is in what it prefixes.
+  // Backend elements are prefixed, like "__DYNAMIC__sun.sunrise"
   const value = isDynamic(key) ? getValueFromDynamic(key) : key;
 
   const domain =
@@ -34,8 +28,7 @@ export const findElementGroupKey = (
         ? getConditionDomain(value)
         : computeDomain(value);
 
-  // A curated group either names the element among its members or claims the
-  // whole domain it comes from.
+  // A curated group lists the element as a member or claims its domain
   for (const collection of collections) {
     for (const [groupKey, options] of Object.entries(collection.groups)) {
       if (
@@ -47,7 +40,6 @@ export const findElementGroupKey = (
     }
   }
 
-  // Otherwise it belongs to one of the domain groups the dynamic and
-  // integration sections generate.
+  // Otherwise it is in a generated domain group
   return `${DYNAMIC_PREFIX}${domain}`;
 };

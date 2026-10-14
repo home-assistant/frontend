@@ -15,8 +15,6 @@ describe("findElementGroupKey", () => {
   });
 
   it("strips the dynamic prefix a backend element carries", () => {
-    // The domain lives in what the prefix prefixes; reading it off the raw key
-    // gives "__DYNAMIC__sun" and matches nothing.
     expect(forTrigger(`${DYNAMIC_PREFIX}sun.sunrise`)).toBe("sun");
     expect(forTrigger(`${DYNAMIC_PREFIX}calendar.event`)).toBe("time");
   });
@@ -28,8 +26,7 @@ describe("findElementGroupKey", () => {
   });
 
   it("gives an element that is a row of its own no other category", () => {
-    // Nothing curates these, so they resolve to a generated group that is not
-    // rendered — the dialog shows no category beside them.
+    // Resolves to a generated group that is never rendered
     expect(forTrigger("template")).toBe(`${DYNAMIC_PREFIX}template`);
     expect(forTrigger("webhook")).toBe(`${DYNAMIC_PREFIX}webhook`);
   });
