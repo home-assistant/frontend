@@ -549,7 +549,11 @@ export const migrateAutomationTrigger = (
   }
 
   if ("options" in trigger) {
-    if (trigger.options && "behavior" in trigger.options) {
+    if (
+      typeof trigger.options === "object" &&
+      trigger.options !== null &&
+      "behavior" in trigger.options
+    ) {
       // Deprecated behavior values renamed in 2026; the backend raises a repair
       // when they are still used, so flag the migration to offer saving.
       if (trigger.options.behavior === "any") {
