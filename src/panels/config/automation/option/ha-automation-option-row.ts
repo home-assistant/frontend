@@ -536,24 +536,13 @@ export default class HaAutomationOptionRow extends LitElement {
       return;
     }
     const option = value.sequence
-      ? { ...value, sequence: this._migrateSequence(value.sequence) }
+      ? {
+          ...value,
+          sequence: migrateAutomationAction(value.sequence as Action[]),
+        }
       : value;
     this._sidebarOption = option;
     fireEvent(this, "value-changed", { value: option });
-  }
-
-  private _migrateSequence(sequence: unknown): unknown {
-    // Migration throws on scalars, leave them for the UI support check
-    if (Array.isArray(sequence)) {
-      return sequence.map((action) =>
-        isConfigObject(action)
-          ? migrateAutomationAction(action as Action)
-          : action
-      );
-    }
-    return isConfigObject(sequence)
-      ? migrateAutomationAction(sequence as Action)
-      : sequence;
   }
 
   private _moveUp() {
@@ -737,8 +726,10 @@ export default class HaAutomationOptionRow extends LitElement {
       editNote: this._editNoteOption,
       delete: this._removeOption,
       duplicate: this._duplicateOption,
-      toggleYamlMode: () => {
-        this._toggleYamlMode();
+      toggleYamlMode: (yamlMode?: boolean) => {
+        if (yamlMode === undefined || yamlMode !== this._yamlMode) {
+          this._toggleYamlMode();
+        }
       },
       yamlMode: this._yamlMode,
       config: {
