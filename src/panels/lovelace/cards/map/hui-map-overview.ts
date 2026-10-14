@@ -27,7 +27,6 @@ import type {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { getEntityLocation } from "../../../../common/entity/get_entity_location";
 import {
   HOME_ZONE_ENTITY_ID,
@@ -70,6 +69,7 @@ import type {
 } from "../../../../types";
 import type { ActivityEntry } from "./map-activity";
 import { personActivity, zoneActivity } from "./map-activity";
+import { computeZoneTrackerState } from "../../../../data/zone";
 
 export type OverviewTab = "people" | "devices" | "zones";
 
@@ -486,8 +486,7 @@ export class HuiMapOverview extends LitElement {
       return;
     }
     // A person's state is "home" for the home zone, the zone name otherwise
-    const zoneState =
-      entityId === "zone.home" ? "home" : computeStateName(zone);
+    const zoneState = computeZoneTrackerState(zone);
     this._activity = zoneActivity(history, personIds, zoneState, since);
   }
 
@@ -604,13 +603,11 @@ export class HuiMapOverview extends LitElement {
     if (entityState === "not_home" || entityState === "unknown") {
       return undefined;
     }
-    return entityState === "home"
-      ? this._states[HOME_ZONE_ENTITY_ID]
-      : Object.values(this._states).find(
-          (candidate) =>
-            computeStateDomain(candidate) === "zone" &&
-            computeStateName(candidate) === entityState
-        );
+    return Object.values(this._states).find(
+      (candidate) =>
+        computeStateDomain(candidate) === "zone" &&
+        computeZoneTrackerState(candidate) === entityState
+    );
   }
 
   // The same color as the zone's marker on the map

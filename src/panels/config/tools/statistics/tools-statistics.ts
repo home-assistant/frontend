@@ -24,6 +24,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
@@ -36,7 +37,6 @@ import {
   getDuplicatedDeviceNames,
 } from "../../../../common/entity/compute_device_name";
 import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chips/ha-assist-chip";
 import "../../../../components/data-table/ha-data-table";
@@ -67,6 +67,7 @@ import {
 import { getStatisticIds } from "../../../../data/recorder_statistic_ids";
 import {
   apiContext,
+  formattersContext,
   internationalizationContext,
   registriesContext,
   statesContext,
@@ -74,7 +75,10 @@ import {
 import { getAreaTableColumn } from "../../common/data-table-columns";
 import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistantRegistries } from "../../../../types";
+import type {
+  HomeAssistantFormatters,
+  HomeAssistantRegistries,
+} from "../../../../types";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
@@ -149,6 +153,16 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   private _registries!: ContextType<typeof registriesContext>;
 
   @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state()
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
@@ -170,7 +184,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       localize: LocalizeFunc,
       entities: HomeAssistantRegistries["entities"],
       devices: HomeAssistantRegistries["devices"],
-      areas: HomeAssistantRegistries["areas"]
+      areas: HomeAssistantRegistries["areas"],
+      formatEntityName: HomeAssistantFormatters["formatEntityName"]
     ): DisplayedStatisticData[] => {
       const duplicatedDeviceNames = getDuplicatedDeviceNames(devices);
 
@@ -194,7 +209,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           displayName:
             entityName ||
             deviceName ||
-            (item.state ? computeStateName(item.state) : undefined) ||
+            (item.state ? formatEntityName(item.state) : undefined) ||
             item.name ||
             item.statistic_id,
           device: deviceName,
@@ -573,7 +588,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
             this._i18n.localize,
             this._registries.entities,
             this._registries.devices,
-            this._registries.areas
+            this._registries.areas,
+            this._formatEntityName
           )}
           .noDataText=${this._i18n.localize(
             "ui.panel.config.tools.tabs.statistics.data_table.no_statistics"

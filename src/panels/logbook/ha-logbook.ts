@@ -482,7 +482,7 @@ export class HaLogbook extends LitElement {
         computeStateDomain(entity) === "person"
       ) {
         userIdToName[entity.attributes.user_id] =
-          entity.attributes.friendly_name;
+          this.hass.formatEntityName(entity);
       }
     }
 

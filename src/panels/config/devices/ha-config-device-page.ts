@@ -31,7 +31,6 @@ import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
@@ -267,8 +266,8 @@ export class HaConfigDevicePage extends LitElement {
   private _getEntitiesSorted = (entities: HassEntity[]) =>
     entities.sort((ent1, ent2) =>
       stringCompare(
-        ent1.attributes.friendly_name || `zzz${ent1.entity_id}`,
-        ent2.attributes.friendly_name || `zzz${ent2.entity_id}`,
+        this.hass.formatEntityName(ent1) || `zzz${ent1.entity_id}`,
+        this.hass.formatEntityName(ent2) || `zzz${ent2.entity_id}`,
         this.hass.locale.language
       )
     );
@@ -418,11 +417,7 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
-    const deviceName = computeDeviceNameDisplay(
-      device,
-      this.hass.localize,
-      this.hass.states
-    );
+    const deviceName = computeDeviceNameDisplay(device, this.hass.localize);
     const integrations = this._integrations(
       device,
       this.entries,
@@ -602,9 +597,7 @@ export class HaConfigDevicePage extends LitElement {
                                         ).automation.map((automation) =>
                                           automation
                                             ? html`<ha-list-item-button
-                                                .headline=${computeStateName(
-                                                  automation
-                                                )}
+                                                .headline=${this.hass.formatEntityName(automation)}
                                                 .href=${
                                                   automation.attributes.id
                                                     ? `/config/automation/edit/${encodeURIComponent(automation.attributes.id)}`
@@ -657,7 +650,7 @@ export class HaConfigDevicePage extends LitElement {
                                             : `/config/script/show/${script.entity_id}`;
                                           return html`
                                             <ha-list-item-button
-                                              .headline=${computeStateName(script)}
+                                              .headline=${this.hass.formatEntityName(script)}
                                               .href=${url}
                                             >
                                               <ha-icon-next
@@ -705,9 +698,7 @@ export class HaConfigDevicePage extends LitElement {
                                           return scene.attributes.id
                                             ? html`
                                                 <ha-list-item-button
-                                                  .headline=${computeStateName(
-                                                    scene
-                                                  )}
+                                                  .headline=${this.hass.formatEntityName(scene)}
                                                   .href=${`/config/scene/edit/${scene.attributes.id}`}
                                                 >
                                                   <ha-icon-next
@@ -718,9 +709,7 @@ export class HaConfigDevicePage extends LitElement {
                                             : html`
                                                 <ha-list-item-base
                                                   id=${sceneId}
-                                                  .headline=${computeStateName(
-                                                    scene
-                                                  )}
+                                                  .headline=${this.hass.formatEntityName(scene)}
                                                 >
                                                   <ha-icon-next
                                                     slot="end"
@@ -1478,7 +1467,7 @@ export class HaConfigDevicePage extends LitElement {
     const device = devices[this.deviceId];
     return (
       computeEntityEntryName(entity) ||
-      computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
+      computeDeviceNameDisplay(device, this.hass.localize)
     );
   }
 
