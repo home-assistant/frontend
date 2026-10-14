@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getNestedStepConfig, getTraceUrl } from "../../src/data/trace";
+import {
+  getNestedStepConfig,
+  getTracedEntityId,
+  getTraceUrl,
+} from "../../src/data/trace";
 
 // Trace links from the logbook and from trace steps share this URL. Automation
 // ids are free-form, and the automation router decodes the path segment, so
@@ -62,5 +66,98 @@ describe("getNestedStepConfig", () => {
     expect(
       getNestedStepConfig(config, "if/condition/0/conditions/0/entity_id/0")
     ).toBe(stateCondition);
+  });
+
+  it("follows an if action with a single condition", () => {
+    const config = { if: stateCondition, then: [] };
+
+    expect(getNestedStepConfig(config, "if/condition/0")).toBe(stateCondition);
+  });
+
+  it("follows nested conditions of a single condition", () => {
+    const config = { if: orCondition, then: [] };
+
+    expect(getNestedStepConfig(config, "if/condition/0/conditions/0")).toBe(
+      stateCondition
+    );
+  });
+
+  it("follows the conditions of a repeat", () => {
+    const config = {
+      repeat: { while: [orCondition], until: stateCondition, sequence: [] },
+    };
+
+    expect(getNestedStepConfig(config, "repeat/while/0/conditions/0")).toBe(
+      stateCondition
+    );
+    expect(getNestedStepConfig(config, "repeat/until/0")).toBe(stateCondition);
+  });
+
+  it("returns template conditions written as plain strings", () => {
+    const template = "{{ is_state('light.a', 'off') }}";
+
+    expect(
+      getNestedStepConfig({ if: [template], then: [] }, "if/condition/0")
+    ).toBe(template);
+    expect(
+      getNestedStepConfig({ if: template, then: [] }, "if/condition/0")
+    ).toBe(template);
+    expect(
+      getNestedStepConfig(
+        { choose: [{ conditions: [template], sequence: [] }] },
+        "choose/0/conditions/0"
+      )
+    ).toBe(template);
+  });
+
+  it("stops at a state condition with a list of entities", () => {
+    const condition = {
+      condition: "state",
+      entity_id: ["light.a", "light.b"],
+      state: "off",
+    };
+    const config = { if: [condition], then: [] };
+
+    expect(getNestedStepConfig(config, "if/condition/0/entity_id/1")).toBe(
+      condition
+    );
+  });
+});
+
+describe("getTracedEntityId", () => {
+  it("returns the entity checked by an entity_id step", () => {
+    const condition = {
+      condition: "state",
+      entity_id: ["light.a", "light.b"],
+      state: "off",
+    };
+
+    expect(getTracedEntityId(condition, "if/condition/0/entity_id/1")).toBe(
+      "light.b"
+    );
+    expect(
+      getTracedEntityId(
+        { condition: "state", entity_id: "light.a", state: "off" },
+        "entity_id/0"
+      )
+    ).toBe("light.a");
+  });
+
+  it("handles a single entity and indexes outside the list", () => {
+    expect(getTracedEntityId({ entity_id: "light.a" }, "entity_id/1")).toBe(
+      "light.a"
+    );
+    expect(
+      getTracedEntityId({ entity_id: ["light.a"] }, "entity_id/1")
+    ).toBeUndefined();
+  });
+
+  it("ignores steps that are not entity_id steps", () => {
+    const condition = { condition: "state", entity_id: "light.a" };
+
+    expect(getTracedEntityId(condition, "if/condition/0")).toBeUndefined();
+    expect(
+      getTracedEntityId("{{ true }}", "if/condition/0/entity_id/0")
+    ).toBeUndefined();
   });
 });

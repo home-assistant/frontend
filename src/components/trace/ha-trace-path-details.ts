@@ -31,6 +31,7 @@ import type { TargetSelector } from "../../data/selector";
 import {
   getDataFromPath,
   getNestedStepConfig,
+  getTracedEntityId,
   isTriggerPath,
 } from "../../data/trace";
 import { getTraceTriggers } from "../../data/trace-tree";
@@ -224,10 +225,12 @@ export class HaTracePathDetails extends LitElement {
       const data: ActionTraceStep[] = paths[curPath];
 
       // Extract details from this.selected.config child properties used to add 'alias' (to headline), describeCondition and 'entity_id' (to result)
+      const nestedPath = curPath.substring(this.selected.path.length + 1);
       const currentDetail = getNestedStepConfig(
         this.selected.config,
-        curPath.substring(this.selected.path.length + 1)
+        nestedPath
       );
+      const tracedEntityId = getTracedEntityId(currentDetail, nestedPath);
 
       parts.push(
         data.map((trace, idx) => {
@@ -322,14 +325,8 @@ export class HaTracePathDetails extends LitElement {
                 : html`<pre>${dump(rest)}</pre>`
             }
             ${
-              typeof currentDetail === "object" &&
-              currentDetail !== null &&
-              "entity_id" in currentDetail &&
-              currentDetail.entity_id &&
-              curPath
-                .substring(this.selected.path.length + 1)
-                .includes("entity_id")
-                ? html`<pre>entity: ${currentDetail.entity_id}</pre>`
+              tracedEntityId
+                ? html`<pre>entity: ${tracedEntityId}</pre>`
                 : nothing
             }
           `;
