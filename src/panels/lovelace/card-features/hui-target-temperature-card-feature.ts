@@ -427,7 +427,7 @@ class HuiTargetTemperatureCardFeature
     if (this._config.style === "slider") {
       return html`
         <ha-control-slider
-          .disabled=${this._stateObj.state === UNAVAILABLE}
+          disabled
           .unit=${this._hassConfig?.unit_system.temperature}
           .label=${this._formatters.formatEntityAttributeName(
             this._stateObj,
