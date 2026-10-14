@@ -3,7 +3,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
-import { computeStateName } from "../common/entity/compute_state_name";
 import { debounce } from "../common/util/debounce";
 import type { STTEngine } from "../data/stt";
 import { listSTTEngines } from "../data/stt";
@@ -63,7 +62,9 @@ export class HaSTTPicker extends LitElement {
       let label: string;
       if (engine.engine_id.includes(".")) {
         const stateObj = this.hass.states[engine.engine_id];
-        label = stateObj ? computeStateName(stateObj) : engine.engine_id;
+        label = stateObj
+          ? this.hass.formatEntityName(stateObj)
+          : engine.engine_id;
       } else {
         label = engine.name || engine.engine_id;
       }

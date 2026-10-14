@@ -94,14 +94,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     | "separator"
   )[];
 
-  @property({ attribute: false }) public sectionTitleFunction?: (listInfo: {
-    firstIndex: number;
-    lastIndex: number;
-    firstItem: PickerComboBoxItem | string;
-    secondItem: PickerComboBoxItem | string;
-    itemsCount: number;
-  }) => string | undefined;
-
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
   @property({ attribute: false }) public popoverAnchor?: Element | null;
@@ -295,7 +287,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .searchFn=${this.searchFn}
         .mode=${dialogMode ? "dialog" : "popover"}
         .sections=${this.sections}
-        .sectionTitleFunction=${this.sectionTitleFunction}
         .selectedSection=${this.selectedSection}
         .searchKeys=${this.searchKeys}
         .customValueLabel=${this.customValueLabel}

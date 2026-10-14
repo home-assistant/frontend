@@ -29,7 +29,6 @@ import {
 } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   deleteEntity,
   isDeletableEntity,
@@ -699,7 +698,7 @@ export class HaConfigEntities extends LitElement {
           name:
             entityName ||
             deviceName ||
-            (entity ? computeStateName(entity) : entry.entity_id),
+            (entity ? this.hass.formatEntityName(entity) : entry.entity_id),
           device: deviceName,
           area: areaName,
           device_full: deviceFullName,
@@ -1211,7 +1210,7 @@ export class HaConfigEntities extends LitElement {
           changed = true;
         }
         entitiesWithoutUniqueId.push({
-          name: computeStateName(this.hass.states[entityId]),
+          name: this.hass.formatEntityName(this.hass.states[entityId]),
           entity_id: entityId,
           platform:
             this._entitySources?.[entityId]?.domain || computeDomain(entityId),

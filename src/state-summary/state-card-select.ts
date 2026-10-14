@@ -1,7 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
 import "../components/ha-control-select-menu";
 import type { HaDropdownSelectEvent } from "../components/ha-dropdown";
@@ -26,7 +25,7 @@ class StateCardSelect extends LitElement {
       <state-badge .stateObj=${this.stateObj}></state-badge>
       <ha-control-select-menu
         .value=${this.stateObj.state}
-        .label=${computeStateName(this.stateObj)}
+        .label=${this.hass.formatEntityName(this.stateObj, { type: "entity" })}
         .options=${options}
         .disabled=${this.stateObj.state === UNAVAILABLE}
         hide-label

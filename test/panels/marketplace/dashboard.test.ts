@@ -258,15 +258,11 @@ it("browses the way the link says", async () => {
   window.history.replaceState(null, "", "/");
   const table = dashboard.shadowRoot!.querySelector(
     "hass-tabs-subpage-data-table"
-  ) as HTMLElement & { initialSorting: unknown; filter: string };
+  ) as HTMLElement & { filter: string };
   const [statusFilter, typeFilter] = dashboard.shadowRoot!.querySelectorAll(
     "ha-filter-states"
   ) as unknown as (HTMLElement & { value: string[] })[];
 
-  expect(table.initialSorting).toEqual({
-    column: "last_updated",
-    direction: "desc",
-  });
   // A search left behind would hide part of what the link promised
   expect(table.filter).toBe("");
   expect(statusFilter.value).toEqual(["new", "installed"]);
@@ -277,39 +273,24 @@ it("browses the way the link says, also when the tab was open before", async () 
   // The router keeps the page of a tab, and hangs it back in when it is opened
   const dashboard = await openDashboard();
   dashboard.remove();
-  window.history.replaceState(
-    null,
-    "",
-    "/marketplace/browse?sort=stars&direction=desc"
-  );
+  window.history.replaceState(null, "", "/marketplace/browse?type=theme");
   host.append(dashboard);
   await dashboard.updateComplete;
-  const table = () =>
-    dashboard.shadowRoot!.querySelector(
-      "hass-tabs-subpage-data-table"
-    ) as HTMLElement & { initialSorting: unknown };
+  const typeFilter = () =>
+    dashboard.shadowRoot!.querySelectorAll(
+      "ha-filter-states"
+    )[1] as unknown as {
+      value: string[];
+    };
 
-  expect(table().initialSorting).toEqual({
-    column: "stars",
-    direction: "desc",
-  });
+  expect(typeFilter().value).toEqual(["theme"]);
 
-  const before = table();
-  window.history.replaceState(
-    null,
-    "",
-    "/marketplace/browse?sort=last_updated&direction=asc"
-  );
+  window.history.replaceState(null, "", "/marketplace/browse?type=plugin");
   window.dispatchEvent(new CustomEvent("location-changed"));
   await dashboard.updateComplete;
   window.history.replaceState(null, "", "/");
 
-  // The table takes its sorting once, a new one takes the new sorting
-  expect(table()).not.toBe(before);
-  expect(table().initialSorting).toEqual({
-    column: "last_updated",
-    direction: "asc",
-  });
+  expect(typeFilter().value).toEqual(["plugin"]);
 });
 
 const LINK = "/marketplace/browse?sort=stars&direction=desc&status=new";
@@ -359,30 +340,29 @@ it.each([
 });
 
 it("links to what is picked, so a My link shares it", async () => {
-  window.history.pushState(null, "", "/marketplace/browse?status=new");
+  window.history.pushState(
+    null,
+    "",
+    "/marketplace/browse?status=new&sort=name"
+  );
   const dashboard = await openDashboard();
+  const statusFilter = dashboard.shadowRoot!.querySelector("ha-filter-states")!;
 
-  const table = dashboard.shadowRoot!.querySelector(
-    "hass-tabs-subpage-data-table"
-  )!;
-
-  dashboard.shadowRoot!.querySelector("ha-filter-states")!.dispatchEvent(
+  statusFilter.dispatchEvent(
     new CustomEvent("data-table-filter-changed", {
       detail: { value: ["installed"] },
     })
   );
-  table.dispatchEvent(
-    new CustomEvent("search-changed", { detail: { value: "spook" } })
-  );
 
-  const params = new URLSearchParams(window.location.search);
-  expect(params.get("status")).toBe("installed");
-  expect(params.get("search")).toBe("spook");
+  // The table's own params are left to it
+  expect(window.location.search).toBe("?sort=name&status=installed");
 
   // Leaving the tab, the page that opens has its own link
   window.history.pushState(null, "", "/marketplace/repository/1");
-  table.dispatchEvent(
-    new CustomEvent("search-changed", { detail: { value: "card" } })
+  statusFilter.dispatchEvent(
+    new CustomEvent("data-table-filter-changed", {
+      detail: { value: ["new"] },
+    })
   );
   expect(window.location.search).toBe("");
   window.history.replaceState(null, "", "/");

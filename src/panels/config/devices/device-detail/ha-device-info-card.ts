@@ -246,7 +246,7 @@ export class HaDeviceCard extends LitElement {
   private _computeDeviceNameDisplay(deviceId: string) {
     const device = this.hass.devices[deviceId];
     return device
-      ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
+      ? computeDeviceNameDisplay(device, this.hass.localize)
       : `<${this.hass.localize(
           "ui.panel.config.integrations.config_entry.unknown_via_device"
         )}>`;

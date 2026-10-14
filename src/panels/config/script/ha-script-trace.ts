@@ -130,7 +130,8 @@ export class HaScriptTrace extends LitElement {
       ? this.hass.states[this._entityId]
       : undefined;
 
-    const title = stateObj?.attributes.friendly_name || this._entityId;
+    const title =
+      (stateObj && this.hass.formatEntityName(stateObj)) || this._entityId;
 
     let devButtons: TemplateResult | string = "";
     if (__DEV__) {
@@ -226,7 +227,6 @@ export class HaScriptTrace extends LitElement {
                     .path=${mdiRayEndArrow}
                   ></ha-icon-button>
                   <ha-trace-picker
-                    .hass=${this.hass}
                     .traces=${this._traces}
                     .value=${this._runId}
                     @value-changed=${this._pickTrace}

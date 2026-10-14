@@ -8,6 +8,7 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/tile/ha-tile-badge";
 import type { HomeAssistant } from "../../../../../types";
 import type { RenderBadgeFunction } from "./tile-badge";
+import { computeZoneTrackerState } from "../../../../../data/zone";
 
 function getZone(entity: HassEntity, hass: HomeAssistant) {
   const state = entity.state;
@@ -17,7 +18,7 @@ function getZone(entity: HassEntity, hass: HomeAssistant) {
     stateObj.entity_id.startsWith("zone.")
   );
 
-  return zones.find((z) => state === z.attributes.friendly_name);
+  return zones.find((z) => state === computeZoneTrackerState(z));
 }
 
 export const renderPersonBadge: RenderBadgeFunction = (stateObj, hass) => {

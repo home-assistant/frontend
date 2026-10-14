@@ -4,14 +4,13 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { debounce } from "../common/util/debounce";
-import type { ConfigEntry, SubEntry } from "../data/config_entries";
-import { getConfigEntry, getSubEntries } from "../data/config_entries";
 import type { Agent } from "../data/conversation";
 import { listAgents } from "../data/conversation";
-import { getExtendedEntityRegistryEntry } from "../data/entity/entity_registry";
-import { fetchIntegrationManifest } from "../data/integration";
-import { showOptionsFlowDialog } from "../dialogs/config-flow/show-dialog-options-flow";
-import { showSubConfigFlowDialog } from "../dialogs/config-flow/show-dialog-sub-config-flow";
+import type { EntityConfigFlow } from "../dialogs/config-flow/entity-config-flow";
+import {
+  fetchEntityConfigFlow,
+  showEntityConfigFlow,
+} from "../dialogs/config-flow/entity-config-flow";
 import type { HomeAssistant } from "../types";
 import "./ha-select";
 import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
@@ -34,9 +33,7 @@ export class HaConversationAgentPicker extends LitElement {
 
   @state() _agents?: Agent[];
 
-  @state() private _configEntry?: ConfigEntry;
-
-  @state() private _subConfigEntry?: SubEntry;
+  @state() private _configFlow?: EntityConfigFlow;
 
   protected render() {
     if (!this._agents) {
@@ -79,16 +76,15 @@ export class HaConversationAgentPicker extends LitElement {
         .options=${options}
       ></ha-select
       >${
-        (this._subConfigEntry &&
-          this._configEntry?.supported_subentry_types[
-            this._subConfigEntry.subentry_type
-          ]?.supports_reconfigure) ||
-        this._configEntry?.supports_options
+        this._configFlow
           ? html`<ha-icon-button
+              .label=${this.hass.localize(
+                "ui.components.conversation-agent-picker.settings"
+              )}
               .path=${mdiCog}
-              @click=${this._openOptionsFlow}
+              @click=${this._openConfigFlow}
             ></ha-icon-button>`
-          : ""
+          : nothing
       }
     `;
   }
@@ -102,40 +98,23 @@ export class HaConversationAgentPicker extends LitElement {
     }
 
     if (changedProperties.has("value")) {
-      this._maybeFetchConfigEntry();
+      this._fetchConfigFlow();
     }
   }
 
-  private async _maybeFetchConfigEntry() {
-    if (!this.value || !(this.value in this.hass.entities)) {
-      this._configEntry = undefined;
-      return;
-    }
+  private async _fetchConfigFlow() {
+    const entityId = this.value;
+    this._configFlow = undefined;
+    let configFlow: EntityConfigFlow | undefined;
     try {
-      const regEntry = await getExtendedEntityRegistryEntry(
-        this.hass,
-        this.value
-      );
-
-      if (!regEntry.config_entry_id) {
-        this._configEntry = undefined;
-        return;
-      }
-
-      this._configEntry = (
-        await getConfigEntry(this.hass, regEntry.config_entry_id)
-      ).config_entry;
-
-      if (!regEntry.config_subentry_id) {
-        this._subConfigEntry = undefined;
-      } else {
-        this._subConfigEntry = (
-          await getSubEntries(this.hass, regEntry.config_entry_id)
-        ).find((entry) => entry.subentry_id === regEntry.config_subentry_id);
-      }
+      configFlow = entityId
+        ? await fetchEntityConfigFlow(this.hass, entityId)
+        : undefined;
     } catch (_err) {
-      this._configEntry = undefined;
-      this._subConfigEntry = undefined;
+      configFlow = undefined;
+    }
+    if (entityId === this.value) {
+      this._configFlow = configFlow;
     }
   }
 
@@ -203,35 +182,10 @@ export class HaConversationAgentPicker extends LitElement {
     }
   }
 
-  private async _openOptionsFlow() {
-    if (!this._configEntry) {
-      return;
+  private _openConfigFlow() {
+    if (this._configFlow) {
+      showEntityConfigFlow(this, this.hass, this._configFlow);
     }
-
-    if (
-      this._subConfigEntry &&
-      this._configEntry.supported_subentry_types[
-        this._subConfigEntry.subentry_type
-      ]?.supports_reconfigure
-    ) {
-      showSubConfigFlowDialog(
-        this,
-        this._configEntry,
-        this._subConfigEntry.subentry_type,
-        {
-          startFlowHandler: this._configEntry.entry_id,
-          subEntryId: this._subConfigEntry.subentry_id,
-        }
-      );
-      return;
-    }
-
-    showOptionsFlowDialog(this, this._configEntry, {
-      manifest: await fetchIntegrationManifest(
-        this.hass,
-        this._configEntry.domain
-      ),
-    });
   }
 
   static styles = css`

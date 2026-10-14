@@ -29,6 +29,7 @@ import {
   getAutomationActionType,
 } from "../../../../data/action";
 import type { ActionSidebarConfig } from "../../../../data/automation";
+import { getRowNote } from "../../../../data/automation";
 import type { DomainManifestLookup } from "../../../../data/integration";
 import { domainToName } from "../../../../data/integration";
 import type {
@@ -87,6 +88,8 @@ export default class HaAutomationSidebarAction extends LitElement {
 
   protected render() {
     const actionConfig = this.config.config.action;
+
+    const note = getRowNote(actionConfig.note);
 
     const rowDisabled =
       "enabled" in actionConfig && actionConfig.enabled === false;
@@ -385,10 +388,10 @@ export default class HaAutomationSidebarAction extends LitElement {
             )
       }
       ${
-        this.config.config.action.note?.trim() && !this.yamlMode
+        note && !this.yamlMode
           ? html`<ha-automation-note
               @edit-note=${this.config.editNote}
-              .note=${this.config.config.action.note}
+              .note=${note}
             ></ha-automation-note>`
           : nothing
       }
