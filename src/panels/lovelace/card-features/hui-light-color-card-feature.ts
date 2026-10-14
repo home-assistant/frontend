@@ -128,8 +128,11 @@ class HuiLightColorCardFeature
     const hue = hsColor?.[0];
     const saturation = hsColor?.[1];
 
-    const previewHue = this._liveHue ?? hue ?? 0;
-    const saturationGradient = `hsl(${previewHue} 0% 100%), hsl(${previewHue} 100% 50%)`;
+    const previewHue = this._liveHue ?? hue;
+    const saturationGradient =
+      previewHue == null
+        ? "hsl(0 0% 100%), hsl(0 0% 50%)"
+        : `hsl(${previewHue} 0% 100%), hsl(${previewHue} 100% 50%)`;
 
     const controls = this._config.controls ?? DEFAULT_LIGHT_COLOR_CONTROLS;
     const showHue = controls !== "saturation";
