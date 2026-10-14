@@ -1,7 +1,9 @@
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert } from "superstruct";
+import { storage } from "../../../../../common/decorators/storage";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/ha-checkbox";
@@ -13,6 +15,10 @@ import { serviceActionStruct } from "../../../../../data/script";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
 import type { ActionElement } from "../ha-automation-action-row";
+import {
+  addRecentTargets,
+  RECENT_TARGETS_STORAGE_KEY,
+} from "../../target/recent_targets";
 
 @customElement("ha-automation-action-service")
 export class HaServiceAction extends LitElement implements ActionElement {
@@ -27,6 +33,9 @@ export class HaServiceAction extends LitElement implements ActionElement {
   @state() private _action?: ServiceAction;
 
   @state() private _responseChecked = false;
+
+  @storage({ key: RECENT_TARGETS_STORAGE_KEY, state: false, subscribe: false })
+  private _recentTargets?: string[];
 
   public static get defaultConfig(): ServiceAction {
     return { action: "", data: {} };
@@ -170,6 +179,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
       }
     }
 
+    this._rememberTargets(this.action.target, value.target);
     fireEvent(this, "value-changed", { value });
   }
 
@@ -197,6 +207,20 @@ export class HaServiceAction extends LitElement implements ActionElement {
       const value = { ...this.action };
       delete value.response_variable;
       fireEvent(this, "value-changed", { value });
+    }
+  }
+
+  private _rememberTargets(
+    oldTarget: HassServiceTarget | undefined,
+    newTarget: HassServiceTarget | undefined
+  ) {
+    const recentTargets = addRecentTargets(
+      this._recentTargets,
+      oldTarget,
+      newTarget
+    );
+    if (recentTargets !== this._recentTargets) {
+      this._recentTargets = recentTargets;
     }
   }
 
