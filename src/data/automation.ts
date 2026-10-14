@@ -524,8 +524,6 @@ export const pickRowConfig = <T extends object>(
   return config as Partial<T>;
 };
 
-// A note edited in YAML is not guaranteed to be a string (e.g. `note: 123`),
-// so check the type before trimming instead of trusting the declared type.
 export const getRowNote = (note: unknown): string | undefined =>
   typeof note === "string" ? note.trim() || undefined : undefined;
 
