@@ -11,7 +11,6 @@ import {
   type QueryParamConfig,
   type QueryParamValues,
 } from "../url/query-params";
-import { debounce } from "../util/debounce";
 
 const DEBOUNCE_WAIT = 300;
 
@@ -40,10 +39,9 @@ export class QueryParamsController<
 > implements ReactiveController {
   private _path?: string;
 
-  private _debouncedWrite = debounce(
-    (values: QueryParamValues<C>) => this._write(values),
-    DEBOUNCE_WAIT
-  );
+  private _pending?: QueryParamValues<C>;
+
+  private _pendingTimeout?: number;
 
   constructor(
     private _host: QueryParamsHost,
@@ -67,7 +65,7 @@ export class QueryParamsController<
   public hostDisconnected() {
     mainWindow.removeEventListener("location-changed", this._navigated);
     mainWindow.removeEventListener("popstate", this._navigated);
-    this._debouncedWrite.cancel();
+    this._cancelPending();
   }
 
   /** The current search params, or undefined when not on the host's page. */
@@ -83,12 +81,34 @@ export class QueryParamsController<
    * typing; any later write replaces a pending one.
    */
   public write(values: QueryParamValues<NoInfer<C>>, debounced = false) {
+    this._cancelPending();
     if (debounced) {
-      this._debouncedWrite(values);
+      this._pending = values;
+      this._pendingTimeout = window.setTimeout(
+        () => this.flush(),
+        DEBOUNCE_WAIT
+      );
       return;
     }
-    this._debouncedWrite.cancel();
     this._write(values);
+  }
+
+  /**
+   * Write a pending debounced write now, like when typing ends, before
+   * something like a dialog adds a history entry it would land on.
+   */
+  public flush() {
+    const values = this._pending;
+    this._cancelPending();
+    if (values) {
+      this._write(values);
+    }
+  }
+
+  private _cancelPending() {
+    clearTimeout(this._pendingTimeout);
+    this._pendingTimeout = undefined;
+    this._pending = undefined;
   }
 
   private _isActive(): boolean {

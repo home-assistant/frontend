@@ -152,7 +152,7 @@ export const hasQueryParams = (
 
 /**
  * Replace the config's params in a query string with the given values,
- * keeping every other param as it is.
+ * keeping every other param exactly as it is written.
  */
 export function updateQueryString<C extends QueryParamConfig>(
   current: string,
@@ -164,16 +164,19 @@ export function updateQueryString(
   values: Record<string, QueryParamValue | undefined>,
   config: QueryParamConfig
 ): string {
-  const searchParams = new URLSearchParams(current);
-  for (const key of queryParamKeys(config)) {
-    searchParams.delete(key);
-  }
-  for (const [key, value] of new URLSearchParams(
-    createQueryString(values, config)
-  )) {
-    searchParams.append(key, value);
-  }
-  return searchParams.toString();
+  const keys = queryParamKeys(config);
+  const kept = current
+    .replace(/^\?/, "")
+    .split("&")
+    .filter((part) => {
+      if (!part) {
+        return false;
+      }
+      const [key] = new URLSearchParams(part).keys();
+      return !keys.includes(key);
+    });
+  const updated = createQueryString(values, config);
+  return [...kept, ...(updated ? [updated] : [])].join("&");
 }
 
 export const serviceTargetFromQueryParams = <

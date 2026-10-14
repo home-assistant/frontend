@@ -124,7 +124,7 @@ describe("updateQueryString", () => {
         { search: "new", sort: "name" },
         dataTableQueryParamConfig
       )
-    ).toBe("domain=light&label=a%2Cb&search=new&sort=name");
+    ).toBe("domain=light&label=a,b&search=new&sort=name");
   });
 
   it("removes the config's params when they are empty", () => {

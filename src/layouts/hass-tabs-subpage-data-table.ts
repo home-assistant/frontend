@@ -252,12 +252,20 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
 
+  // The URL is read once the table is opted in and has its columns, and only
+  // written after that, so a link isn't overwritten before it is applied
+  private _urlRead = false;
+
   private _queryParams = new QueryParamsController(
     this,
     dataTableQueryParamConfig,
     {
       enabled: () => this.syncUrl,
-      navigated: () => this._applyUrl(),
+      navigated: () => {
+        if (this._urlRead) {
+          this._applyUrl();
+        }
+      },
     }
   );
 
@@ -277,9 +285,17 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         ).length > 1;
     }
 
-    if (this.hasUpdated) {
-      return;
+    if (!this.hasUpdated) {
+      this._applyInitialState();
     }
+
+    if (this.syncUrl && !this._urlRead && Object.keys(this.columns).length) {
+      this._urlRead = true;
+      this._applyUrl();
+    }
+  }
+
+  private _applyInitialState() {
     if (this.initialGroupColumn && this.columns[this.initialGroupColumn]) {
       this._setGroupColumn(this.initialGroupColumn);
     }
@@ -287,18 +303,18 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       this._sortColumn = this.initialSorting.column;
       this._sortDirection = this.initialSorting.direction;
     }
-    this._applyUrl();
   }
 
   protected updated(changedProperties: PropertyValues) {
-    if (!this.syncUrl) {
+    if (!this.syncUrl || !this._urlRead) {
       return;
     }
     const sortingOrGroupingChanged =
       changedProperties.has("_sortColumn") ||
       changedProperties.has("_sortDirection") ||
       changedProperties.has("_groupColumn") ||
-      changedProperties.has("syncUrl");
+      changedProperties.has("syncUrl") ||
+      changedProperties.has("columns");
     if (sortingOrGroupingChanged || changedProperties.has("filter")) {
       // Searching is written once typing pauses
       this._writeUrl(!sortingOrGroupingChanged);
@@ -336,6 +352,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       appearance="outlined"
       .value=${this.filter}
       @input=${this._handleSearchChange}
+      @blur=${this._flushUrl}
       .placeholder=${this.searchLabel}
     >
     </ha-input-search>`;
@@ -716,6 +733,10 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     if (this.hasUpdated) {
       this._writeUrl();
     }
+  }
+
+  private _flushUrl() {
+    this._queryParams.flush();
   }
 
   private _writeUrl(debounced = false) {
