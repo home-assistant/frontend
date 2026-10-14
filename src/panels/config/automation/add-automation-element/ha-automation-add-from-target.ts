@@ -74,6 +74,10 @@ import type { AddAutomationElementListItem } from "../add-automation-element-dia
 import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
 import { getTargetIcon } from "../target/get_target_icon";
 import { getTargetText } from "../target/get_target_text";
+import {
+  MAX_RECENT_TARGETS,
+  parseRecentTarget,
+} from "../target/recent_targets";
 import { targetExists } from "../target/target_exists";
 import "./ha-automation-add-element-paste";
 
@@ -154,6 +158,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   @state() private _entries: Record<string, Level1Entries> = {};
 
+  // Recent targets can only be opened in the tree once it is built
+  @state() private _treeLoaded = false;
+
   @state() private _showShowMoreButton?: boolean;
 
   @state() private _fullHeight = false;
@@ -191,6 +198,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
   private async _initialDataLoad() {
     await this._loadConfigEntries();
     this._getTreeData();
+    this._treeLoaded = true;
   }
 
   private async _setShowTargetShowMoreButton() {
@@ -221,16 +229,20 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   .clipboardItem=${this.clipboardItem}
                 ></ha-automation-add-element-paste>
               </ha-list-base>
-              ${this._renderRecentTargets(
-                this.narrow,
-                this._getRecentTargets(
-                  this.recentTargets,
-                  this._registries,
-                  this.states,
-                  this._labelRegistry
-                ),
-                this.value
-              )}
+              ${
+                this._treeLoaded
+                  ? this._renderRecentTargets(
+                      this.narrow,
+                      this._getRecentTargets(
+                        this.recentTargets,
+                        this._registries,
+                        this.states,
+                        this._labelRegistry
+                      ),
+                      this.value
+                    )
+                  : nothing
+              }
               ${this._renderFloors(this.narrow, this._entries, this.value)}
               ${this._renderTimeLocation(
                 this.narrow,
@@ -353,14 +365,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
     ): [TargetType, string][] =>
       Array.isArray(recentTargets)
         ? recentTargets
-            .map(
-              (target) =>
-                target.split(TARGET_SEPARATOR, 2) as [TargetType, string]
-            )
+            .map(parseRecentTarget)
             .filter(
-              ([type, id]) =>
-                !!id && targetExists(registries, states, labels, type, id)
+              (target): target is [TargetType, string] =>
+                !!target &&
+                targetExists(registries, states, labels, target[0], target[1])
             )
+            .slice(0, MAX_RECENT_TARGETS)
         : []
   );
 

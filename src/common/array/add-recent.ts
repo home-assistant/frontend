@@ -17,7 +17,7 @@ export const addRecent = <T>(
     ? list.filter((item) => !isValid || isValid(item))
     : [];
   if (current.includes(value)) {
-    return current;
+    return current.slice(0, max);
   }
   return [value, ...current].slice(0, max);
 };

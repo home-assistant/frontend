@@ -111,7 +111,6 @@ import {
   getTargetComboBoxItemType,
   getTriggersForTarget,
   type SingleHassServiceTarget,
-  type TargetType,
 } from "../../../data/target";
 import type { TriggerDescriptions } from "../../../data/trigger";
 import {
@@ -129,7 +128,10 @@ import "./add-automation-element/ha-automation-add-element-paste";
 import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
-import { targetExists } from "./target/target_exists";
+import {
+  addRecentTargets,
+  RECENT_TARGETS_STORAGE_KEY,
+} from "./target/recent_targets";
 import { findElementGroupKey } from "./add-automation-element/element-group";
 import type { AddAutomationElementDialogParams } from "./show-add-automation-element-dialog";
 import {
@@ -192,16 +194,7 @@ const DYNAMIC_KEYWORDS = ["dynamicGroups", "helpers", "integrationGroups"];
 
 const DYNAMIC_TO_GENERIC = new Set([`${DYNAMIC_PREFIX}event`]);
 
-const MAX_RECENT = 4;
-
-// Structural buckets like unassigned devices are not remembered as targets.
-const RECENT_TARGET_TYPES = new Set<string>([
-  "floor",
-  "area",
-  "device",
-  "entity",
-  "label",
-]);
+const MAX_RECENT_ELEMENTS = 4;
 
 // Group keys surfaced as their own section in the "by target" tab because
 // their elements have no target (time/calendar/schedule, sun). Picking one
@@ -266,7 +259,7 @@ class DialogAddAutomationElement
 
   // "<type>________<id>" target strings, shared by all element types
   @state()
-  @storage({ key: "automation-recent-targets", state: true, subscribe: false })
+  @storage({ key: RECENT_TARGETS_STORAGE_KEY, state: true, subscribe: false })
   private _recentTargets?: string[];
 
   @state()
@@ -660,6 +653,9 @@ class DialogAddAutomationElement
           automationElementType,
           this._recentElements?.[automationElementType],
           this._currentItems(),
+          automationElementType === "trigger"
+            ? undefined
+            : this._getBlockItems(automationElementType, this.hass.localize),
           collections
         );
 
@@ -2036,18 +2032,29 @@ class DialogAddAutomationElement
       type: AddAutomationElementDialogParams["type"],
       recents: string[] | undefined,
       items: AddAutomationElementListItem[],
+      blockItems: AddAutomationElementListItem[] | undefined,
       collections: CollectionGroup[]
     ) => {
       if (!Array.isArray(recents)) {
         return [];
       }
+      const blocksName = this.hass.localize(
+        "ui.panel.config.automation.editor.blocks"
+      );
       return recents
-        .map((key) => items.find((item) => item.key === key))
-        .filter((item) => item !== undefined)
-        .map((item) => ({
-          item,
-          groupName: this._elementGroup(type, item.key, collections)?.name,
-        }));
+        .map((key) => {
+          const item = items.find((candidate) => candidate.key === key);
+          if (item) {
+            return {
+              item,
+              groupName: this._elementGroup(type, key, collections)?.name,
+            };
+          }
+          const block = blockItems?.find((candidate) => candidate.key === key);
+          return block ? { item: block, groupName: blocksName } : undefined;
+        })
+        .filter((entry) => entry !== undefined)
+        .slice(0, MAX_RECENT_ELEMENTS);
     }
   );
 
@@ -2057,11 +2064,7 @@ class DialogAddAutomationElement
     collections: CollectionGroup[]
   ) {
     const groupKey = findElementGroupKey(type, TYPES[type].collections, key);
-
-    // An element that is a row of its own has no category to show
-    if (groupKey === key) {
-      return undefined;
-    }
+    // Elements that are a row of their own resolve to a group that isn't rendered
     return collections
       .flatMap((collection) => collection.groups)
       .find((group) => group.key === groupKey);
@@ -2078,43 +2081,28 @@ class DialogAddAutomationElement
     this._recentTargets = [];
   };
 
+  // Existence is only checked when showing recents, data that is still
+  // loading must not remove valid ones
   private _rememberSelection(key: string, target?: SingleHassServiceTarget) {
     const type = this._params!.type;
-    const items = this._currentItems();
 
     this._recentElements = {
       ...this._recentElements,
-      [type]: addRecent(this._recentElements?.[type], key, MAX_RECENT, (item) =>
-        items.some((candidate) => candidate.key === item)
+      [type]: addRecent(
+        this._recentElements?.[type],
+        key,
+        MAX_RECENT_ELEMENTS,
+        (item) => typeof item === "string"
       ),
     };
 
-    if (!target) {
-      return;
+    if (target) {
+      this._recentTargets = addRecentTargets(
+        this._recentTargets,
+        undefined,
+        target
+      );
     }
-    const [targetType, targetId] = this._extractTypeAndIdFromTarget(target);
-    if (!targetId || !RECENT_TARGET_TYPES.has(targetType)) {
-      return;
-    }
-    this._recentTargets = addRecent(
-      this._recentTargets,
-      `${targetType}${TARGET_SEPARATOR}${targetId}`,
-      MAX_RECENT,
-      (recent) => {
-        const [recentType, id] = recent.split(TARGET_SEPARATOR, 2);
-        return (
-          RECENT_TARGET_TYPES.has(recentType) &&
-          !!id &&
-          targetExists(
-            this.hass,
-            this.hass.states,
-            this._labelRegistry,
-            recentType as TargetType,
-            id
-          )
-        );
-      }
-    );
   }
 
   private _selected(ev: ValueChangedEvent<string>) {
