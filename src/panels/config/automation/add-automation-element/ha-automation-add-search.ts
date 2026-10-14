@@ -494,10 +494,9 @@ export class HaAutomationAddSearch extends LitElement {
 
   @eventOptions({ passive: true })
   private _visibilityChanged(ev: HASSDomEvent<HaListVisibilityChangedDetail>) {
-    this._searchSectionTitle = findSectionTitle(
-      this._currentItems,
-      ev.detail.first
-    );
+    this._searchSectionTitle = !this._selectedSearchSection
+      ? findSectionTitle(this._currentItems, ev.detail.first)
+      : undefined;
   }
 
   private _createFuseIndex = (

@@ -422,7 +422,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     if (this.sections?.length) {
       const { first } = ev.detail;
       this._sectionTitle =
-        first < this._sectionedItemsCount
+        !this._selectedSection && first < this._sectionedItemsCount
           ? findSectionTitle(this._items, first)
           : undefined;
     }
