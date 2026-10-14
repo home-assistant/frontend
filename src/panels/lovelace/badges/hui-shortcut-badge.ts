@@ -105,6 +105,7 @@ export class HuiShortcutBadge extends LitElement implements LovelaceBadge {
       <ha-badge
         .type=${this._hasAction ? "button" : "badge"}
         .iconOnly=${!text}
+        .accessibleLabel=${defaults.label || undefined}
         style=${styleMap(style)}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({

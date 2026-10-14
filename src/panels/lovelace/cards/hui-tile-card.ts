@@ -349,6 +349,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
             }}
             .interactive=${this._hasIconAction}
+            .accessibleLabel=${name}
             .imageUrl=${imageUrl}
             data-domain=${ifDefined(domain)}
             data-state=${ifDefined(stateObj?.state)}
