@@ -487,7 +487,7 @@ export class HaRelatedItems extends LitElement {
     }
 
     .avatar {
-      border-radius: var(--ha-picture-border-radius);
+      border-radius: var(--ha-picture-border-radius-sm);
       background-position: center center;
       background-size: cover;
     }

@@ -20,6 +20,7 @@ export const coreStyles = css`
     --ha-border-radius-circle: 50%;
     --ha-border-radius-square: 0;
     --ha-picture-border-radius: var(--ha-border-radius-lg);
+    --ha-picture-border-radius-sm: var(--ha-border-radius-sm);
 
     /* Spacing */
     --ha-space-1: 4px;
