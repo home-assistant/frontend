@@ -36,7 +36,7 @@ import {
   badgeContentFormData,
   badgeContentSchema,
 } from "./content-schema";
-import { badgeInteractionsSchema } from "./interactions-schema";
+import { entityInteractionsSchema } from "./interactions-schema";
 import { stateContentHasTimestamp } from "../../../../state-display/state-display";
 import { timeFormatConfigStruct } from "../../components/types";
 
@@ -83,7 +83,7 @@ export class HuiEntityBadgeEditor
       [
         { name: "entity", selector: { entity: {} } },
         badgeContentSchema(localize, showTimeFormat),
-        badgeInteractionsSchema(),
+        entityInteractionsSchema(),
       ] as const satisfies readonly HaFormSchema[]
   );
 

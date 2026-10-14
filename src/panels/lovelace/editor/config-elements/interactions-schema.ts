@@ -58,7 +58,7 @@ export const tileInteractionsSchema = (entityId: string | undefined) =>
     ],
   }) as const satisfies HaFormSchema;
 
-export const badgeInteractionsSchema = () =>
+export const entityInteractionsSchema = () =>
   ({
     name: "interactions",
     type: "expandable",

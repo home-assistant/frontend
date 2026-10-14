@@ -739,7 +739,7 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface AlertCardConfig extends LovelaceCardConfig, TileActionsConfig {
+export interface AlertCardConfig extends LovelaceCardConfig {
   type: "alert";
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
@@ -747,11 +747,11 @@ export interface AlertCardConfig extends LovelaceCardConfig, TileActionsConfig {
   alert_color?: string;
   clear_color?: string;
   pulse?: boolean;
-  show_entity_picture?: boolean;
   hide_state?: boolean;
-  state_content?: string | string[];
-  time_format?: TimestampRenderingFormat;
   vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface ToggleGroupCardConfig extends LovelaceCardConfig {

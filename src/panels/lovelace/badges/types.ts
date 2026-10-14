@@ -42,9 +42,6 @@ export interface AlertBadgeConfig extends LovelaceBadgeConfig {
   show_name?: boolean;
   show_state?: boolean;
   show_icon?: boolean;
-  show_entity_picture?: boolean;
-  state_content?: string | string[];
-  time_format?: TimestampRenderingFormat;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;

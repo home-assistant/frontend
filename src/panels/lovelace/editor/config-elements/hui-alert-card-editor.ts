@@ -1,16 +1,7 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import {
-  array,
-  assert,
-  assign,
-  boolean,
-  object,
-  optional,
-  string,
-  union,
-} from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { ALERT_DOMAINS } from "../../../../common/entity/alert_active";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
@@ -19,21 +10,18 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import { stateContentHasTimestamp } from "../../../../state-display/state-display";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { AlertCardConfig } from "../../cards/types";
-import { timeFormatConfigStruct } from "../../components/types";
 import type { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entityNameStruct } from "../structs/entity-name-struct";
-import { alertSchema } from "./alert-schema";
+import { alertCardContentSchema, alertSchema } from "./alert-schema";
 import {
   tileContentConfigFromForm,
   tileContentFormData,
-  tileContentSchema,
 } from "./content-schema";
-import { tileInteractionsSchema } from "./interactions-schema";
+import { entityInteractionsSchema } from "./interactions-schema";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -44,17 +32,11 @@ const cardConfigStruct = assign(
     alert_color: optional(string()),
     clear_color: optional(string()),
     pulse: optional(boolean()),
-    show_entity_picture: optional(boolean()),
     hide_state: optional(boolean()),
-    state_content: optional(union([string(), array(string())])),
-    time_format: optional(timeFormatConfigStruct),
     vertical: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
-    icon_tap_action: optional(actionConfigStruct),
-    icon_hold_action: optional(actionConfigStruct),
-    icon_double_tap_action: optional(actionConfigStruct),
   })
 );
 
@@ -73,11 +55,7 @@ export class HuiAlertCardEditor
   }
 
   private _schema = memoizeOne(
-    (
-      localize: LocalizeFunc,
-      entityId: string | undefined,
-      showTimeFormat: boolean
-    ) =>
+    (localize: LocalizeFunc) =>
       [
         {
           name: "entity",
@@ -85,8 +63,8 @@ export class HuiAlertCardEditor
           selector: { entity: { filter: { domain: ALERT_DOMAINS } } },
         },
         alertSchema(),
-        tileContentSchema(localize, showTimeFormat, false),
-        tileInteractionsSchema(entityId),
+        alertCardContentSchema(localize),
+        entityInteractionsSchema(),
       ] as const satisfies readonly HaFormSchema[]
   );
 
@@ -95,25 +73,11 @@ export class HuiAlertCardEditor
       return nothing;
     }
 
-    const entityId = this._config.entity;
-
-    const schema = this._schema(
-      this.hass.localize,
-      entityId,
-      !this._config.hide_state &&
-        Boolean(this._config.state_content) &&
-        stateContentHasTimestamp(
-          entityId,
-          this.hass.states[entityId],
-          this._config.state_content
-        )
-    );
-
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${tileContentFormData(this._config)}
-        .schema=${schema}
+        .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
@@ -143,12 +107,7 @@ export class HuiAlertCardEditor
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.alert.alert_section"
         );
-      case "icon_tap_action":
-      case "icon_hold_action":
-      case "icon_double_tap_action":
-      case "show_entity_picture":
       case "hide_state":
-      case "state_content":
       case "content_layout":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.tile.${schema.name}`

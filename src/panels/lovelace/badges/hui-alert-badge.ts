@@ -23,14 +23,11 @@ import "../../../components/ha-badge";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { connectionContext, formattersContext } from "../../../data/context";
+import { formattersContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import "../../../state-display/state-display";
-import type { HomeAssistant, HomeAssistantConnection } from "../../../types";
-import {
-  getTileImageUrl,
-  hasTileCardAction,
-} from "../cards/tile/tile-card-helpers";
+import type { HomeAssistant } from "../../../types";
+import { hasTileCardAction } from "../cards/tile/tile-card-helpers";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasAction } from "../common/has-action";
@@ -79,10 +76,6 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
   private _stateObj?: HassEntity;
 
   @state()
-  @consume({ context: connectionContext, subscribe: true })
-  private _connection!: HomeAssistantConnection;
-
-  @state()
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: ContextType<typeof formattersContext>;
 
@@ -112,12 +105,7 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
   }
 
   protected render() {
-    if (
-      !this._config ||
-      !this._connection ||
-      !this._formatters ||
-      !this._localize
-    ) {
+    if (!this._config || !this._formatters || !this._localize) {
       return nothing;
     }
 
@@ -143,17 +131,11 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
 
     const name = this._formatters.formatEntityName(stateObj, this._config.name);
 
-    const imageUrl = this._config.show_entity_picture
-      ? getTileImageUrl(this._connection, stateObj, 32)
-      : undefined;
-
     const { show_name: showName, show_state: showState } = this._config;
 
     const content = showState
       ? html`<state-display
           .stateObj=${stateObj}
-          .content=${this._config.state_content}
-          .timeFormat=${this._config.time_format}
           .name=${name}
         ></state-display>`
       : showName
@@ -177,15 +159,13 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
         })}
       >
         ${
-          !this._config.show_icon
-            ? nothing
-            : imageUrl
-              ? html`<img slot="icon" src=${imageUrl} aria-hidden />`
-              : html`<ha-state-icon
-                  slot="icon"
-                  .stateObj=${stateObj}
-                  .icon=${this._config.icon}
-                ></ha-state-icon>`
+          this._config.show_icon
+            ? html`<ha-state-icon
+                slot="icon"
+                .stateObj=${stateObj}
+                .icon=${this._config.icon}
+              ></ha-state-icon>`
+            : nothing
         }
         ${content}
       </ha-badge>
