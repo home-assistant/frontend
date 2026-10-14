@@ -26,6 +26,7 @@ import type {
   ConditionSidebarConfig,
   LegacyCondition,
 } from "../../../../data/automation";
+import { getRowNote } from "../../../../data/automation";
 import {
   CONDITION_BUILDING_BLOCKS,
   getConditionDomain,
@@ -89,6 +90,8 @@ export default class HaAutomationSidebarCondition extends LitElement {
       "enabled" in this.config.config && this.config.config.enabled === false;
 
     const type = this.config.config.condition;
+
+    const note = getRowNote(this.config.config.note);
 
     const isBuildingBlock = CONDITION_BUILDING_BLOCKS.includes(type);
 
@@ -333,10 +336,10 @@ export default class HaAutomationSidebarCondition extends LitElement {
             )
       }
       ${
-        this.config.config.note?.trim() && !this.yamlMode
+        note && !this.yamlMode
           ? html`<ha-automation-note
               @edit-note=${this.config.editNote}
-              .note=${this.config.config.note}
+              .note=${note}
             ></ha-automation-note>`
           : nothing
       }

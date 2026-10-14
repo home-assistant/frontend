@@ -39,6 +39,7 @@ import type {
   OptionSidebarConfig,
   TriggerCondition,
 } from "../../../../data/automation";
+import { getRowNote } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
@@ -215,10 +216,7 @@ export default class HaAutomationOptionRow extends LitElement {
       firstCondition?.condition === "trigger"
         ? (firstCondition as TriggerCondition)
         : undefined;
-    const noteTooltipText = truncateWithEllipsis(
-      this.option?.note?.trim() || "",
-      250
-    );
+    const note = getRowNote(this.option?.note);
 
     return html`
       <h3 slot="header">
@@ -249,7 +247,7 @@ export default class HaAutomationOptionRow extends LitElement {
             : nothing
         }
         ${
-          this.option?.note?.trim()
+          note
             ? html`
                 <ha-svg-icon
                   id="note-icon"
@@ -261,7 +259,7 @@ export default class HaAutomationOptionRow extends LitElement {
                   class="note-indicator"
                 ></ha-svg-icon>
                 <ha-tooltip for="note-icon"
-                  ><p>${noteTooltipText}</p></ha-tooltip
+                  ><p>${truncateWithEllipsis(note, 250)}</p></ha-tooltip
                 >
               `
             : nothing
@@ -536,24 +534,13 @@ export default class HaAutomationOptionRow extends LitElement {
       return;
     }
     const option = value.sequence
-      ? { ...value, sequence: this._migrateSequence(value.sequence) }
+      ? {
+          ...value,
+          sequence: migrateAutomationAction(value.sequence as Action[]),
+        }
       : value;
     this._sidebarOption = option;
     fireEvent(this, "value-changed", { value: option });
-  }
-
-  private _migrateSequence(sequence: unknown): unknown {
-    // Migration throws on scalars, leave them for the UI support check
-    if (Array.isArray(sequence)) {
-      return sequence.map((action) =>
-        isConfigObject(action)
-          ? migrateAutomationAction(action as Action)
-          : action
-      );
-    }
-    return isConfigObject(sequence)
-      ? migrateAutomationAction(sequence as Action)
-      : sequence;
   }
 
   private _moveUp() {
@@ -737,8 +724,10 @@ export default class HaAutomationOptionRow extends LitElement {
       editNote: this._editNoteOption,
       delete: this._removeOption,
       duplicate: this._duplicateOption,
-      toggleYamlMode: () => {
-        this._toggleYamlMode();
+      toggleYamlMode: (yamlMode?: boolean) => {
+        if (yamlMode === undefined || yamlMode !== this._yamlMode) {
+          this._toggleYamlMode();
+        }
       },
       yamlMode: this._yamlMode,
       config: {

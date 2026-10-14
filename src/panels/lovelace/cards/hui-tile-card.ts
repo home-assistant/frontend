@@ -349,6 +349,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
             }}
             .interactive=${this._hasIconAction}
+            .accessibleLabel=${name}
             .imageUrl=${imageUrl}
             data-domain=${ifDefined(domain)}
             data-state=${ifDefined(stateObj?.state)}
@@ -454,6 +455,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         }
       }
 
+      /* Pictures are rounded squares, matching avatars elsewhere */
+      ha-tile-icon.image {
+        --tile-icon-border-radius: var(
+          --ha-tile-icon-border-radius,
+          var(--ha-picture-border-radius)
+        );
+      }
       /* Make sure we display the whole image */
       ha-tile-icon.image[data-domain="update"] {
         --tile-icon-border-radius: var(--ha-border-radius-square);

@@ -20,6 +20,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import { getRowNote } from "../../../data/automation";
 import type { ScriptFieldSidebarConfig } from "../../../data/automation";
 import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
@@ -72,10 +73,8 @@ export default class HaScriptFieldRow extends LitElement {
     const hasSelector =
       this.field.selector && typeof this.field.selector === "object";
 
-    const noteTooltipText = truncateWithEllipsis(
-      this.field.description?.trim() || "",
-      250
-    );
+    const note = getRowNote(this.field.description);
+    const noteTooltipText = truncateWithEllipsis(note || "", 250);
 
     return html`
       <ha-card outlined>
@@ -150,7 +149,7 @@ export default class HaScriptFieldRow extends LitElement {
           <h3 slot="header">
             ${this.field.name ?? this.key}
             ${
-              this.field.description?.trim()
+              note
                 ? html`
                     <ha-svg-icon
                       id="note-icon"

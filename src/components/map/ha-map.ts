@@ -2023,13 +2023,8 @@ export class HaMap extends ReactiveElement {
       font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
     }
-    /* Markers are rounded squares to match the cluster bubble avatars */
-    ha-entity-marker {
-      --ha-marker-border-radius: var(--ha-border-radius-lg);
-    }
     .cluster-bubble ha-entity-marker {
       flex: none;
-      --ha-marker-border-radius: 10px;
     }
     ${unsafeCSS(zoneMarkerStyles)}
     .leaflet-bottom {
@@ -2087,10 +2082,6 @@ export class HaMap extends ReactiveElement {
       border-radius: var(--ha-border-radius-sm);
       box-shadow: none !important;
       text-align: center;
-    }
-
-    ha-icon {
-      --mdc-icon-size: calc(var(--ha-marker-size, 48px) / 2);
     }
   `;
 }

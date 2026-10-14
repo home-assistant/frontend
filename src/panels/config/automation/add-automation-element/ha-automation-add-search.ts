@@ -12,6 +12,7 @@ import {
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
+import { findSectionTitle } from "../../../../components/list/find-section-title";
 import { consume } from "../../../../common/decorators/consume";
 import {
   fireEvent,
@@ -493,35 +494,9 @@ export class HaAutomationAddSearch extends LitElement {
 
   @eventOptions({ passive: true })
   private _visibilityChanged(ev: HASSDomEvent<HaListVisibilityChangedDetail>) {
-    const items = this._currentItems;
-    const firstItem = items[ev.detail.first];
-    const secondItem = items[ev.detail.first + 1];
-
-    if (
-      firstItem === undefined ||
-      secondItem === undefined ||
-      typeof firstItem === "string" ||
-      typeof secondItem === "string" ||
-      ev.detail.first === 0
-    ) {
-      this._searchSectionTitle = undefined;
-      return;
-    }
-
-    let section: SearchSection;
-
-    if (
-      (firstItem as AutomationItemComboBoxItem).type &&
-      !["area", "floor"].includes(
-        (firstItem as AutomationItemComboBoxItem).type
-      )
-    ) {
-      section = (firstItem as AutomationItemComboBoxItem).type as SearchSection;
-    } else {
-      section = getTargetComboBoxItemType(firstItem as any) as SearchSection;
-    }
-
-    this._searchSectionTitle = this._getSearchSectionLabel(section);
+    this._searchSectionTitle = !this._selectedSearchSection
+      ? findSectionTitle(this._currentItems, ev.detail.first)
+      : undefined;
   }
 
   private _createFuseIndex = (

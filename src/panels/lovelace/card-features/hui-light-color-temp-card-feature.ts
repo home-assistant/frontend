@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
@@ -120,13 +121,16 @@ class HuiLightColorTempCardFeature
       this._stateObj.attributes.max_color_temp_kelvin ?? DEFAULT_MAX_KELVIN;
 
     const gradient = this._generateTemperatureGradient(minKelvin!, maxKelvin);
+    const active = stateActive(this._stateObj);
+    const disabled = this._stateObj.state === UNAVAILABLE;
 
     return html`
       <ha-control-slider
         .value=${position}
         mode="cursor"
-        .showHandle=${stateActive(this._stateObj)}
-        .disabled=${this._stateObj!.state === UNAVAILABLE}
+        class=${classMap({ inactive: !active && !disabled })}
+        .showHandle=${active}
+        .disabled=${disabled}
         @value-changed=${this._valueChanged}
         .label=${this._localize("ui.card.light.color_temperature")}
         .min=${minKelvin}
@@ -165,6 +169,10 @@ class HuiLightColorTempCardFeature
           );
           --control-slider-background-opacity: 1;
           --control-slider-inset-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        ha-control-slider.inactive {
+          filter: saturate(0.5);
+          --control-slider-background-opacity: 0.4;
         }
 
         ha-control-slider:dir(rtl) {
