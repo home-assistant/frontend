@@ -66,6 +66,7 @@ import {
   statesContext,
   uiContext,
 } from "../../data/context";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { ensureMapTilesToken } from "../../data/map_tiles";
 import "../ha-tooltip";
@@ -1517,13 +1518,16 @@ export class HaMap extends ReactiveElement {
       let zoneId: string | undefined;
       if (["person", "device_tracker"].includes(computeStateDomain(stateObj))) {
         const inZones: string[] | undefined = stateObj.attributes.in_zones;
-        if (Array.isArray(inZones)) {
+        if (Array.isArray(inZones) && inZones.length > 0) {
           zoneId = inZones.find(
             (candidate) =>
               this._zonePositions[candidate] !== undefined &&
               !states[candidate]?.attributes.passive
           );
-        } else {
+        } else if (
+          !Array.isArray(inZones) ||
+          !["not_home", UNKNOWN, UNAVAILABLE].includes(stateObj.state)
+        ) {
           zoneId = this._zoneContaining(position);
         }
       }
@@ -1603,6 +1607,7 @@ export class HaMap extends ReactiveElement {
     for (const [zoneId, radius] of Object.entries(this._zoneRadii)) {
       if (
         radius < foundRadius &&
+        !this._states[zoneId]?.attributes.passive &&
         distanceMeters(position, this._zonePositions[zoneId]) <= radius
       ) {
         found = zoneId;
