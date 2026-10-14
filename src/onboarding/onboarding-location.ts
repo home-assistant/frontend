@@ -193,7 +193,8 @@ class OnboardingLocation extends LitElement {
         .locations=${this._markerLocations(
           this._location,
           this._places,
-          this._highlightedMarker
+          this._highlightedMarker,
+          zoneColor(HOME_ZONE_ENTITY_ID, false, [], getComputedStyle(this))
         )}
         zoom="14"
         .themeMode=${darkMql.matches ? "dark" : "light"}
@@ -243,9 +244,10 @@ class OnboardingLocation extends LitElement {
 
   private _markerLocations = memoizeOne(
     (
-      location?: [number, number],
-      places?: OpenStreetMapPlace[] | null,
-      highlightedMarker?: number
+      location: [number, number] | undefined,
+      places: OpenStreetMapPlace[] | null | undefined,
+      highlightedMarker: number | undefined,
+      homeColor: string
     ): MarkerLocation[] => {
       // Drawn like the home zone on a map
       const home: Pick<
@@ -254,12 +256,7 @@ class OnboardingLocation extends LitElement {
       > = {
         iconPath: mdiHome,
         zone_marker: true,
-        radius_color: zoneColor(
-          HOME_ZONE_ENTITY_ID,
-          false,
-          [],
-          getComputedStyle(this)
-        ),
+        radius_color: homeColor,
       };
       if (!places) {
         return [
