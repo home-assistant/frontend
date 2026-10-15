@@ -576,20 +576,21 @@ export class MatterNetworkVisualization extends LitElement {
   }
 
   private _handleChartClick(e: CustomEvent): void {
-    if (
-      e.detail.dataType === "node" &&
-      e.detail.event.target.cursor === "pointer"
-    ) {
-      const { id } = e.detail.data;
-      const node = this._getTopologyNode(id);
-      if (node?.is_bridge) {
-        this._toggleBridge(id);
-        return;
-      }
+    if (e.detail.dataType !== "node") {
+      return;
+    }
+    const { id } = e.detail.data;
+    const node = this._getTopologyNode(id);
+    // the label has a pointer cursor, the draggable symbol a move cursor
+    if (e.detail.event.target.cursor === "pointer") {
       const deviceId = getBridgedDeviceId(id) ?? node?.ha_device_id;
       if (deviceId) {
         navigate(`/config/devices/device/${deviceId}`);
       }
+      return;
+    }
+    if (node?.is_bridge) {
+      this._toggleBridge(id);
     }
   }
 
