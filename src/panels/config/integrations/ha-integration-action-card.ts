@@ -7,7 +7,6 @@ import {
 } from "../../../data/integration";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-card";
-import "../../../components/item/ha-row-item";
 import { brandsUrl } from "../../../util/brands-url";
 import { haStyle } from "../../../resources/styles";
 
@@ -28,9 +27,8 @@ export class HaIntegrationActionCard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card outlined>
-        <ha-row-item>
+        <div class="card-content">
           <img
-            slot="start"
             alt=""
             src=${brandsUrl(
               {
@@ -45,20 +43,19 @@ export class HaIntegrationActionCard extends LitElement {
             @error=${this._onImageError}
             @load=${this._onImageLoad}
           />
-          <span slot="headline" role="heading" aria-level="2"
-            >${this.label}</span
-          >
-          <span slot="supporting-text">
+          <h2>${this.label}</h2>
+          <h3>
             ${
               this.localizedDomainName &&
               this.localizedDomainName !== this.domain
                 ? this.localizedDomainName
                 : domainToName(this.hass.localize, this.domain, this.manifest)
             }
-          </span>
-          <slot name="header-button" slot="end"></slot>
-        </ha-row-item>
-        <div class="actions"><slot></slot></div>
+          </h3>
+        </div>
+        <div class="filler"></div>
+        <div class="card-actions"><slot></slot></div>
+        <div class="header-button"><slot name="header-button"></slot></div>
       </ha-card>
     `;
   }
@@ -77,35 +74,61 @@ export class HaIntegrationActionCard extends LitElement {
       ha-card {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
         height: 100%;
-      }
-      ha-row-item {
-        --ha-row-item-padding-block: var(--ha-space-4) var(--ha-space-2);
-        --ha-row-item-padding-inline: var(--ha-space-4) var(--ha-space-2);
-        --ha-row-item-gap: var(--ha-space-4);
-      }
-      ha-row-item::part(headline) {
-        white-space: normal;
-        overflow-wrap: anywhere;
-        font-size: var(--ha-font-size-l);
-      }
-      /* Pull the 48px icon button flush into the card corner */
-      ha-row-item::part(end) {
-        align-self: flex-start;
-        margin-block-start: calc(var(--ha-space-4) * -1);
-        margin-inline-end: calc(var(--ha-space-2) * -1);
       }
       img {
         width: 40px;
         height: 40px;
       }
-      .actions {
+      h2 {
+        font-size: var(--ha-font-size-l);
+        font-weight: var(--ha-font-weight-normal);
+        margin-top: 8px;
+        margin-bottom: 0;
+        max-width: 100%;
+      }
+      h3 {
+        font-size: var(--ha-font-size-m);
+        margin: 0;
+        max-width: 100%;
+        text-align: center;
+      }
+      .header-button {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        inset-inline-end: 8px;
+        inset-inline-start: initial;
+      }
+      .filler {
+        flex: 1;
+      }
+      .attention {
+        --state-color: var(--error-color);
+        --text-on-state-color: var(--text-primary-color);
+      }
+      .card-content {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: var(--ha-space-2);
-        padding: 0 var(--ha-space-4) var(--ha-space-4);
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+      }
+      .card-actions {
+        border-top: none;
+        padding-top: 0;
+        padding-bottom: 16px;
+        justify-content: center;
+        display: flex;
+      }
+      :host ::slotted(*) {
+        margin-right: 8px;
+        margin-inline-end: 8px;
+        margin-inline-start: initial;
+      }
+      :host ::slotted(:last-child) {
+        margin-right: 0;
+        margin-inline-end: 0;
+        margin-inline-start: initial;
       }
     `,
   ];

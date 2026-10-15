@@ -1,6 +1,7 @@
 import type { ContextType } from "@lit/context";
 import {
-  mdiExclamationThick,
+  mdiAlertCircle,
+  mdiBugOutline,
   mdiFileCodeOutline,
   mdiPackageVariant,
   mdiWeb,
@@ -14,18 +15,16 @@ import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import "../../../components/item/ha-row-item";
-import type { ConfigEntry } from "../../../data/config_entries";
 import { ERROR_STATES } from "../../../data/config_entries";
 import {
   configContext,
   devicesContext,
-  internationalizationContext,
   uiContext,
 } from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
@@ -36,14 +35,20 @@ import type {
 } from "../../../data/integration";
 import { domainToName, LogSeverity } from "../../../data/integration";
 import { haStyle } from "../../../resources/styles";
-import type {
-  HomeAssistantConfig,
-  HomeAssistantInternationalization,
-  HomeAssistantUI,
-} from "../../../types";
+import type { HomeAssistantConfig, HomeAssistantUI } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
-import { computeIntegrationCardSummary } from "./integration-card-summary";
+import {
+  computeIntegrationCardState,
+  computeIntegrationCardSummary,
+} from "./integration-card-summary";
+
+interface IntegrationCardStatus {
+  level: "error" | "warning" | "progress";
+  /** Icon path; omitted for "progress", which shows a spinner. */
+  icon?: string;
+  message: string;
+}
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
@@ -82,23 +87,20 @@ export class HaIntegrationCard extends LitElement {
   })
   private _hassUrl!: string;
 
-  @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  @transform<HomeAssistantInternationalization, boolean>({
-    transformer: ({ language, translationMetadata }) =>
-      computeRTL(language, translationMetadata.translations),
-  })
-  private _isRTL!: boolean;
+  // There is no hover on touch devices, so a tap on a tooltip anchor shows
+  // the tooltip instead of following the card link.
+  private _lastPointerType?: string;
 
   protected render(): TemplateResult {
-    const entryState = this._getState(this.items);
+    const entryState = computeIntegrationCardState(this.items);
     const isError = ERROR_STATES.includes(entryState);
     const debugLoggingEnabled = this.logInfo?.level === LogSeverity.DEBUG;
 
-    let status: { level: "error" | "warning"; message: string } | undefined;
+    let status: IntegrationCardStatus | undefined;
     if (isError) {
       status = {
         level: "error",
+        icon: mdiAlertCircle,
         message: this._localize(
           `ui.panel.config.integrations.config_entry.state.${entryState}`
         ),
@@ -106,6 +108,17 @@ export class HaIntegrationCard extends LitElement {
     } else if (entryState === "not_loaded" || entryState === "failed_unload") {
       status = {
         level: "warning",
+        icon: mdiAlertCircle,
+        message: this._localize(
+          `ui.panel.config.integrations.config_entry.state.${entryState}`
+        ),
+      };
+    } else if (
+      entryState === "setup_in_progress" ||
+      entryState === "unload_in_progress"
+    ) {
+      status = {
+        level: "progress",
         message: this._localize(
           `ui.panel.config.integrations.config_entry.state.${entryState}`
         ),
@@ -113,6 +126,7 @@ export class HaIntegrationCard extends LitElement {
     } else if (debugLoggingEnabled) {
       status = {
         level: "warning",
+        icon: mdiBugOutline,
         message: this._localize(
           "ui.panel.config.integrations.config_entry.debug_logging_enabled"
         ),
@@ -140,44 +154,35 @@ export class HaIntegrationCard extends LitElement {
         >
           <ha-ripple></ha-ripple>
           <ha-row-item>
-            <div slot="start" class="icon-wrapper">
-              <img
-                alt=""
-                src=${brandsUrl(
-                  {
-                    domain: this.domain,
-                    type: "icon",
-                    darkOptimized: this._darkMode,
-                  },
-                  this._hassUrl
-                )}
-                crossorigin="anonymous"
-                referrerpolicy="no-referrer"
-                @error=${this._onImageError}
-                @load=${this._onImageLoad}
-              />
-              ${
-                status
-                  ? html`<span id="status-badge" class="badge ${status.level}">
-                        <ha-svg-icon .path=${mdiExclamationThick}></ha-svg-icon>
-                      </span>
-                      <ha-tooltip for="status-badge"
-                        >${status.message}</ha-tooltip
-                      >`
-                  : nothing
-              }
-            </div>
-            <span slot="headline" role="heading" aria-level="1"
+            <img
+              slot="start"
+              alt=""
+              src=${brandsUrl(
+                {
+                  domain: this.domain,
+                  type: "icon",
+                  darkOptimized: this._darkMode,
+                },
+                this._hassUrl
+              )}
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+              @error=${this._onImageError}
+              @load=${this._onImageLoad}
+            />
+            <span slot="headline" class="name" role="heading" aria-level="1"
               >${domainName}</span
             >
-            ${this._renderSupportingText()} ${this._renderIcons()}
+            ${this._renderSupportingText(status)}
           </ha-row-item>
         </a>
       </ha-card>
     `;
   }
 
-  private _renderSupportingText(): TemplateResult | typeof nothing {
+  private _renderSupportingText(
+    status?: IntegrationCardStatus
+  ): TemplateResult | typeof nothing {
     const devices = this._getDevices(this.items, this._devices);
     const summary = computeIntegrationCardSummary(
       this.items,
@@ -192,31 +197,61 @@ export class HaIntegrationCard extends LitElement {
           )
     );
 
-    if (!summary) {
+    const icons = this._renderIcons();
+
+    if (!summary && !status && icons === nothing) {
       return nothing;
     }
 
-    const { unit, count, attention } = summary;
-
-    let text: string;
-    if (!attention) {
+    let text: string | undefined;
+    if (!summary) {
+      text = status?.message;
+    } else if (!summary.attention) {
       text = this._localize(
-        `ui.panel.config.integrations.config_entry.${unit}`,
-        { count }
+        `ui.panel.config.integrations.config_entry.${summary.unit}`,
+        { count: summary.count }
       );
-    } else if (attention >= count) {
+    } else if (summary.attention >= summary.count) {
       text = this._localize(
-        `ui.panel.config.integrations.config_entry.attention.${unit}_all`,
-        { count }
+        `ui.panel.config.integrations.config_entry.attention.${summary.unit}_all`,
+        { count: summary.count, state: summary.attentionState ?? "other" }
       );
     } else {
       text = this._localize(
-        `ui.panel.config.integrations.config_entry.attention.${unit}_some`,
-        { count, attention }
+        `ui.panel.config.integrations.config_entry.attention.${summary.unit}_some`,
+        {
+          count: summary.count,
+          attention: summary.attention,
+          state: summary.attentionState ?? "other",
+        }
       );
     }
 
-    return html`<span slot="supporting-text">${text}</span>`;
+    return html`<span slot="supporting-text" class="supporting-text">
+      ${
+        status
+          ? html`<span
+                id="status"
+                class="status status-${status.level}"
+                @pointerdown=${this._handleTooltipPointerDown}
+                @click=${this._handleTooltipClick}
+              >
+                ${
+                  status.icon
+                    ? html`<ha-svg-icon .path=${status.icon}></ha-svg-icon>`
+                    : html`<ha-spinner size="tiny"></ha-spinner>`
+                }
+                ${text ? html`<span class="text">${text}</span>` : nothing}
+              </span>
+              <ha-tooltip for="status" trigger="hover focus click"
+                >${status.message}</ha-tooltip
+              >`
+          : text
+            ? html`<span class="text">${text}</span>`
+            : nothing
+      }
+      ${icons}
+    </span>`;
   }
 
   private _renderIcons(): TemplateResult | typeof nothing {
@@ -235,53 +270,77 @@ export class HaIntegrationCard extends LitElement {
       return nothing;
     }
 
-    const placement = this._isRTL ? "right" : "left";
-
     return html`
-      <div slot="end" class="icons">
+      <span class="icons">
         ${
           isCustom
-            ? html`<span
-                  id="icon-custom"
-                  class="icon ${manifest.overwrites_built_in ? "overwrites" : "custom"}"
-                >
-                  <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
-                </span>
-                <ha-tooltip for="icon-custom" .placement=${placement}>
-                  ${this._localize(
-                    manifest.overwrites_built_in
-                      ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-                      : "ui.panel.config.integrations.config_entry.custom_integration"
-                  )}
-                </ha-tooltip>`
+            ? this._renderIcon(
+                "icon-custom",
+                mdiPackageVariant,
+                this._localize(
+                  manifest.overwrites_built_in
+                    ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
+                    : "ui.panel.config.integrations.config_entry.custom_integration"
+                ),
+                manifest.overwrites_built_in ? "overwrites" : "custom"
+              )
             : nothing
         }
         ${
           isCloud
-            ? html`<span id="icon-cloud" class="icon">
-                  <ha-svg-icon .path=${mdiWeb}></ha-svg-icon>
-                </span>
-                <ha-tooltip for="icon-cloud" .placement=${placement}>
-                  ${this._localize(
-                    "ui.panel.config.integrations.config_entry.depends_on_cloud"
-                  )}
-                </ha-tooltip>`
+            ? this._renderIcon(
+                "icon-cloud",
+                mdiWeb,
+                this._localize(
+                  "ui.panel.config.integrations.config_entry.depends_on_cloud"
+                )
+              )
             : nothing
         }
         ${
           isYaml
-            ? html`<span id="icon-yaml" class="icon">
-                  <ha-svg-icon .path=${mdiFileCodeOutline}></ha-svg-icon>
-                </span>
-                <ha-tooltip for="icon-yaml" .placement=${placement}>
-                  ${this._localize(
-                    "ui.panel.config.integrations.config_entry.no_config_flow"
-                  )}
-                </ha-tooltip>`
+            ? this._renderIcon(
+                "icon-yaml",
+                mdiFileCodeOutline,
+                this._localize(
+                  "ui.panel.config.integrations.config_entry.no_config_flow"
+                )
+              )
             : nothing
         }
-      </div>
+      </span>
     `;
+  }
+
+  private _renderIcon(
+    id: string,
+    path: string,
+    label: string,
+    className = ""
+  ): TemplateResult {
+    return html`<span
+        id=${id}
+        class="icon ${className}"
+        role="img"
+        aria-label=${label}
+        @pointerdown=${this._handleTooltipPointerDown}
+        @click=${this._handleTooltipClick}
+      >
+        <ha-svg-icon .path=${path}></ha-svg-icon>
+      </span>
+      <ha-tooltip for=${id} trigger="hover focus click">${label}</ha-tooltip>`;
+  }
+
+  private _handleTooltipPointerDown(ev: PointerEvent) {
+    this._lastPointerType = ev.pointerType;
+  }
+
+  private _handleTooltipClick(ev: MouseEvent) {
+    if (this._lastPointerType !== "touch") {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
   }
 
   private _onImageLoad(ev: Event) {
@@ -291,22 +350,6 @@ export class HaIntegrationCard extends LitElement {
   private _onImageError(ev: Event) {
     (ev.target as HTMLImageElement).style.visibility = "hidden";
   }
-
-  private _getState = memoizeOne(
-    (configEntry: ConfigEntry[]): ConfigEntry["state"] => {
-      if (configEntry.length === 1) {
-        return configEntry[0].state;
-      }
-      let entryState: ConfigEntry["state"];
-      for (const entry of configEntry) {
-        if (ERROR_STATES.includes(entry.state)) {
-          return entry.state;
-        }
-        entryState = entry.state;
-      }
-      return entryState!;
-    }
-  );
 
   private _getEntityCount = memoizeOne(
     (
@@ -406,50 +449,65 @@ export class HaIntegrationCard extends LitElement {
            card in the grid row is taller */
         ha-row-item::part(base) {
           flex: 1;
+          min-width: 0;
         }
         ha-row-item::part(headline) {
-          white-space: normal;
-          overflow-wrap: anywhere;
           font-size: var(--ha-font-size-l);
         }
-        .icon-wrapper {
-          position: relative;
+        .name {
+          display: block;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        img {
           width: 40px;
           height: 40px;
         }
-        .icon-wrapper img {
-          width: 100%;
-          height: 100%;
-        }
-        .badge {
-          position: absolute;
-          top: calc(var(--ha-space-1) * -1);
-          inset-inline-start: calc(var(--ha-space-1) * -1);
+        .supporting-text {
           display: flex;
           align-items: center;
-          justify-content: center;
-          width: 18px;
-          height: 18px;
-          box-sizing: border-box;
-          border: 1.5px solid currentColor;
-          border-radius: var(--ha-border-radius-circle);
-          background-color: var(--card-background-color);
-          --mdc-icon-size: 12px;
+          gap: var(--ha-space-1);
+          min-height: 1lh;
         }
-        .badge.error {
+        .supporting-text .text,
+        .status .text {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .status {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-1);
+          min-width: 0;
+          line-height: 16px;
+        }
+        .status ha-svg-icon,
+        .status ha-spinner {
+          flex-shrink: 0;
+          --mdc-icon-size: 16px;
+        }
+        .status ha-spinner {
+          --track-width: 2px;
+        }
+        .status-error ha-svg-icon {
           color: var(--error-color);
         }
-        .badge.warning {
+        .status-warning ha-svg-icon {
           color: var(--warning-color);
         }
         .icons {
           display: flex;
-          gap: var(--ha-space-2);
+          flex-shrink: 0;
+          gap: var(--ha-space-1);
+          margin-inline-start: auto;
+          padding-inline-start: var(--ha-space-1);
         }
         .icon {
           display: flex;
-          padding: var(--ha-space-1);
           color: var(--label-badge-grey);
+          --mdc-icon-size: 16px;
         }
         .icon.custom {
           color: var(--warning-color);
