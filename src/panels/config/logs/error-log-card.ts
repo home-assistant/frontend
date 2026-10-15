@@ -115,6 +115,9 @@ class ErrorLogCard extends LitElement {
 
   @state() private _logStreamAborter?: AbortController;
 
+  // Responses of an earlier load are ignored once the log source changes
+  private _loadId = 0;
+
   @state() private _streamSupported?: boolean;
 
   @state() private _loadingState: "loading" | "empty" | "loaded" = "loading";
@@ -486,6 +489,7 @@ class ErrorLogCard extends LitElement {
   }
 
   private async _loadLogs(retry = false): Promise<void> {
+    const loadId = ++this._loadId;
     this._error = undefined;
     this._loadingState = "loading";
     this._numberOfLines = retry ? (this._numberOfLines ?? 0) : 0;
@@ -538,6 +542,9 @@ class ErrorLogCard extends LitElement {
             this._boot
           );
           const testLogs = await testResponse.text();
+          if (loadId !== this._loadId) {
+            return;
+          }
           if (!testLogs.trim()) {
             this._loadingState = "empty";
           }
@@ -563,6 +570,10 @@ class ErrorLogCard extends LitElement {
             NUMBER_OF_LINES,
             this._boot
           );
+        }
+
+        if (loadId !== this._loadId) {
+          return;
         }
 
         if (response.headers.has("X-First-Cursor")) {
@@ -632,6 +643,10 @@ class ErrorLogCard extends LitElement {
           logs = await fetchErrorLog(this.hass);
         }
 
+        if (loadId !== this._loadId) {
+          return;
+        }
+
         if (logs) {
           this._ansiToHtmlElement?.parseTextToColoredPre(logs);
           this._loadingState = "loaded";
@@ -639,7 +654,7 @@ class ErrorLogCard extends LitElement {
         }
       }
     } catch (err: any) {
-      if (err.name === "AbortError") {
+      if (err.name === "AbortError" || loadId !== this._loadId) {
         return;
       }
 
@@ -718,6 +733,11 @@ class ErrorLogCard extends LitElement {
       0,
       this._integrationLines.length - INTEGRATION_LOG_LINE_LIMIT
     );
+    // ha-ansi-to-html re-filters all lines after every added line while a
+    // search is set, so search once after adding them
+    if (this.filter) {
+      this._ansiToHtmlElement?.filterLines("");
+    }
     this._ansiToHtmlElement?.parseLinesToColoredPre(newLines);
     this._ansiToHtmlElement?.trimLines(INTEGRATION_LOG_LINE_LIMIT);
     if (this.filter) {
@@ -787,12 +807,16 @@ class ErrorLogCard extends LitElement {
     const scrollPositionFromBottom =
       this._logElement.scrollHeight - this._logElement.scrollTop;
     this._loadingPrevState = "loading";
+    const loadId = this._loadId;
     const response = await fetchHassioLogs(
       this.hass,
       this.provider,
       `entries=${this._firstCursor}:-100:100`,
       this._boot
     );
+    if (loadId !== this._loadId) {
+      return;
+    }
 
     if (response.headers.has("X-First-Cursor")) {
       if (this._firstCursor === response.headers.get("X-First-Cursor")!) {
@@ -803,6 +827,9 @@ class ErrorLogCard extends LitElement {
     }
 
     const body = await response.text();
+    if (loadId !== this._loadId) {
+      return;
+    }
 
     if (body) {
       const lines = body

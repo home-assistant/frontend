@@ -161,7 +161,7 @@ export class SystemLogCard extends LitElement {
                       ></ha-icon-button>
 
                       ${
-                        logFileDownloadUnavailableReason
+                        logFileDownloadUnavailableReason && !this.integration
                           ? nothing
                           : html`<ha-dropdown
                               @wa-select=${this._handleOverflowAction}
