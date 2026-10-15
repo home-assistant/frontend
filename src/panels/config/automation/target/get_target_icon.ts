@@ -58,10 +58,22 @@ export const getTargetIcon = (
   }
 
   if (targetType === "entity" && states[targetId]) {
-    return html`<state-badge
-      .stateObj=${states[targetId]}
+    const stateObj = states[targetId];
+    const hasEntityPicture =
+      stateObj.attributes.entity_picture ||
+      stateObj.attributes.entity_picture_local;
+
+    if (hasEntityPicture) {
+      return html`<state-badge
+        .stateObj=${stateObj}
+        .slot=${slot}
+      ></state-badge>`;
+    }
+
+    return html`<ha-state-icon
+      .stateObj=${stateObj}
       .slot=${slot}
-    ></state-badge>`;
+    ></ha-state-icon>`;
   }
 
   if (targetType === "label" && getLabel) {

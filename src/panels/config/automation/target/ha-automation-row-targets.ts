@@ -696,7 +696,8 @@ export class HaAutomationRowTargets extends LitElement {
     :host([size="s"]) {
       min-height: 24px;
     }
-    :host([size="s"]) .target {
+
+    :host([size="s"]) .target ha-floor-icon {
       height: 24px;
     }
 
@@ -706,7 +707,6 @@ export class HaAutomationRowTargets extends LitElement {
     :host([size="s"]) .target ha-floor-icon {
       --mdc-icon-size: 16px;
     }
-
     :host([size="s"]) .target state-badge {
       width: 16px;
       height: 16px;
