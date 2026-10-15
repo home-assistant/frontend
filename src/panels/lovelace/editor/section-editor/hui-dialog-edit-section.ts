@@ -68,7 +68,7 @@ import type { ConfigChangedEvent } from "../hui-element-editor";
 import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import { getViewType } from "../../views/get-view-type";
-import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
+import { DEFAULT_MAX_COLUMNS, SECTIONS_VIEW_LAYOUT } from "../../views/const";
 
 const TABS = ["tab-strategy", "tab-appearance", "tab-visibility"] as const;
 
@@ -191,7 +191,10 @@ export class HuiDialogEditSection
         ? "tab-appearance"
         : this._currTab;
 
-    const columnSpan = this._config.column_span ?? DEFAULT_SECTION_COLUMN_SPAN;
+    const columnSpan = Math.min(
+      this._config.column_span ?? DEFAULT_SECTION_COLUMN_SPAN,
+      this._viewConfig?.max_columns || DEFAULT_MAX_COLUMNS
+    );
     const singleColumn = columnSpan === 1;
     const previewColumnSpan = this._previewMode === "desktop" ? columnSpan : 1;
 
