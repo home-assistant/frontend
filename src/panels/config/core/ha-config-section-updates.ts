@@ -287,7 +287,10 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
                 <div class="content">
                   ${
                     backupInProgressAlert &&
-                    groups.some((group) => group.key === APPS_KEY)
+                    groups.some(
+                      (group) =>
+                        group.key === APPS_KEY || group.key === SYSTEM_KEY
+                    )
                       ? backupInProgressAlert
                       : nothing
                   }
