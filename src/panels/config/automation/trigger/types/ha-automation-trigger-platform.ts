@@ -1,10 +1,8 @@
-import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { mdiHelpCircleOutline } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { storage } from "../../../../../common/decorators/storage";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { afterNextRender } from "../../../../../common/util/render-status";
 import "../../../../../components/ha-checkbox";
@@ -24,10 +22,6 @@ import {
 } from "../../../../../data/trigger";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
-import {
-  addRecentTargets,
-  RECENT_TARGETS_STORAGE_KEY,
-} from "../../target/recent_targets";
 
 const showOptionalToggle = (field: TriggerDescription["fields"][string]) =>
   field.selector &&
@@ -56,9 +50,6 @@ export class HaPlatformTrigger extends LitElement {
   @state() private _manifest?: IntegrationManifest;
 
   @state() private _resolvedTargetEntityCount?: number;
-
-  @storage({ key: RECENT_TARGETS_STORAGE_KEY, state: false, subscribe: false })
-  private _recentTargets?: string[];
 
   public static get defaultConfig(): PlatformTrigger {
     return { trigger: "" };
@@ -404,7 +395,6 @@ export class HaPlatformTrigger extends LitElement {
 
   private _targetChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    this._rememberTargets([this.trigger.target], ev.detail.value);
     fireEvent(this, "value-changed", {
       value: {
         ...this.trigger,
@@ -523,20 +513,6 @@ export class HaPlatformTrigger extends LitElement {
         }
       }
     });
-  }
-
-  private _rememberTargets(
-    oldTargets: (HassServiceTarget | undefined)[],
-    newTarget: HassServiceTarget | undefined
-  ) {
-    const recentTargets = addRecentTargets(
-      this._recentTargets,
-      oldTargets,
-      newTarget
-    );
-    if (recentTargets !== this._recentTargets) {
-      this._recentTargets = recentTargets;
-    }
   }
 
   static styles = css`

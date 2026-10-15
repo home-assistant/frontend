@@ -47,16 +47,31 @@ const targetIds = (target: HassServiceTarget | undefined): string[] =>
   );
 
 /**
- * Add the targets that are in `newTarget` but in none of `oldTargets` to the
+ * The places a trigger, condition or action config holds targets: its
+ * `target`, top level ids like those of entity and device pickers, and the
+ * legacy service `data` ids.
+ */
+export const configTargets = (config: unknown): HassServiceTarget[] => {
+  if (!config || typeof config !== "object") {
+    return [];
+  }
+  const { target, data } = config as Record<string, unknown>;
+  return [config, target, data].filter(
+    (value): value is HassServiceTarget => !!value && typeof value === "object"
+  );
+};
+
+/**
+ * Add the targets that are in `newTargets` but in none of `oldTargets` to the
  * recent targets. Returns the given list unchanged when nothing was added.
  */
 export const addRecentTargets = (
   recents: string[] | undefined,
-  oldTargets: (HassServiceTarget | undefined)[],
-  newTarget: HassServiceTarget | undefined
+  oldTargets: HassServiceTarget[],
+  newTargets: HassServiceTarget[]
 ): string[] | undefined => {
   const oldIds = new Set(oldTargets.flatMap(targetIds));
-  return targetIds(newTarget)
+  return [...new Set(newTargets.flatMap(targetIds))]
     .filter((id) => !oldIds.has(id))
     .reduce<string[] | undefined>(
       (list, id) =>

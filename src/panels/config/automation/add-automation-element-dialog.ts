@@ -2091,7 +2091,7 @@ class DialogAddAutomationElement
     }
 
     if (target) {
-      this._recentTargets = addRecentTargets(this._recentTargets, [], target);
+      this._recentTargets = addRecentTargets(this._recentTargets, [], [target]);
     }
   }
 

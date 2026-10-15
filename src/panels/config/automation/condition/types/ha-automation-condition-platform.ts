@@ -1,4 +1,3 @@
-import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { mdiAlertOutline, mdiHelpCircleOutline } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -6,7 +5,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { durationDataToSeconds } from "../../../../../common/datetime/duration_to_seconds";
-import { storage } from "../../../../../common/decorators/storage";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../../common/dom/stop_propagation";
 import { afterNextRender } from "../../../../../common/util/render-status";
@@ -35,10 +33,6 @@ import {
 } from "../../../../../data/target";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
-import {
-  addRecentTargets,
-  RECENT_TARGETS_STORAGE_KEY,
-} from "../../target/recent_targets";
 
 // Mirrors `MAX_HISTORY_PRIMING_LOOKBACK` in homeassistant/helpers/condition.py:
 // when a condition has a `for:` duration, the recorder is only queried this far
@@ -68,9 +62,6 @@ export class HaPlatformCondition extends LitElement {
   @state() private _resolvedTargetEntityCount?: number;
 
   @state() private _targetHasUnrecordedEntity = false;
-
-  @storage({ key: RECENT_TARGETS_STORAGE_KEY, state: false, subscribe: false })
-  private _recentTargets?: string[];
 
   // Incremented on each recording check so stale async responses are ignored.
   private _recordingCheckId = 0;
@@ -414,7 +405,6 @@ export class HaPlatformCondition extends LitElement {
 
   private _targetChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    this._rememberTargets([this.condition.target], ev.detail.value);
     fireEvent(this, "value-changed", {
       value: {
         ...this.condition,
@@ -644,20 +634,6 @@ export class HaPlatformCondition extends LitElement {
       if (checkId === this._recordingCheckId) {
         this._targetHasUnrecordedEntity = false;
       }
-    }
-  }
-
-  private _rememberTargets(
-    oldTargets: (HassServiceTarget | undefined)[],
-    newTarget: HassServiceTarget | undefined
-  ) {
-    const recentTargets = addRecentTargets(
-      this._recentTargets,
-      oldTargets,
-      newTarget
-    );
-    if (recentTargets !== this._recentTargets) {
-      this._recentTargets = recentTargets;
     }
   }
 
