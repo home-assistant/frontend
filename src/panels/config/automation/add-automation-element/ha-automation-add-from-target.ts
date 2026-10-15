@@ -158,10 +158,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   @state() private _entries: Record<string, Level1Entries> = {};
 
-  // Recent targets can only be opened in the tree once it is built
+  // Nothing is rendered until the tree is built, as recents and preselected
+  // targets open it
   @state() private _treeLoaded = false;
 
   private _initialDataLoadStarted = false;
+
+  private _configEntriesLoaded?: Promise<void>;
 
   @state() private _showShowMoreButton?: boolean;
 
@@ -175,6 +178,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      // Without config entries the tree only lacks integration icons
+      this._configEntriesLoaded = this._loadConfigEntries().catch(
+        () => undefined
+      );
+    }
 
     // The tree sorts helpers by their manifest, so it waits for them
     if (!this._initialDataLoadStarted && this.manifests) {
@@ -200,7 +210,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private async _initialDataLoad() {
-    await this._loadConfigEntries();
+    await this._configEntriesLoaded;
     this._getTreeData();
     this._treeLoaded = true;
   }
@@ -218,7 +228,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   // #region render
   protected render() {
-    if (!this.manifests || !this._configEntryLookup) {
+    if (!this._treeLoaded) {
       return nothing;
     }
 
@@ -233,20 +243,16 @@ export default class HaAutomationAddFromTarget extends LitElement {
                   .clipboardItem=${this.clipboardItem}
                 ></ha-automation-add-element-paste>
               </ha-list-base>
-              ${
-                this._treeLoaded
-                  ? this._renderRecentTargets(
-                      this.narrow,
-                      this._getRecentTargets(
-                        this.recentTargets,
-                        this._registries,
-                        this.states,
-                        this._labelRegistry
-                      ),
-                      this.value
-                    )
-                  : nothing
-              }
+              ${this._renderRecentTargets(
+                this.narrow,
+                this._getRecentTargets(
+                  this.recentTargets,
+                  this._registries,
+                  this.states,
+                  this._labelRegistry
+                ),
+                this.value
+              )}
               ${this._renderFloors(this.narrow, this._entries, this.value)}
               ${this._renderTimeLocation(
                 this.narrow,

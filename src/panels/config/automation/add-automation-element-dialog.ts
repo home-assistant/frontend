@@ -257,11 +257,9 @@ class DialogAddAutomationElement
 
   @state() private _openedFromQuery = false;
 
-  @state()
   @storage({ key: RECENT_TARGETS_STORAGE_KEY, state: true, subscribe: false })
   private _recentTargets?: string[];
 
-  @state()
   @storage({ key: "automation-recent-elements", state: true, subscribe: false })
   private _recentElements?: Partial<
     Record<AddAutomationElementDialogParams["type"], string[]>

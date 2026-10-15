@@ -6,7 +6,7 @@ describe("targetExists", () => {
   it("works", () => {
     const registries = {
       entities: { "light.kitchen": {} },
-      devices: {},
+      devices: { enabled: {}, disabled: { disabled_by: "user" } },
       areas: { kitchen: {} },
       floors: {},
     } as unknown as HomeAssistantRegistries;
@@ -19,6 +19,13 @@ describe("targetExists", () => {
       targetExists(registries, states, [], "entity", "light.kitchen")
     ).toBe(true);
     expect(targetExists(registries, states, [], "area", "kitchen")).toBe(true);
+    expect(targetExists(registries, states, [], "device", "enabled")).toBe(
+      true
+    );
+    // Disabled devices are not part of the target tree
+    expect(targetExists(registries, states, [], "device", "disabled")).toBe(
+      false
+    );
     // Entities without a registry entry are not part of the target tree
     expect(targetExists(registries, states, [], "entity", "light.yaml")).toBe(
       false

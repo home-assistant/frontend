@@ -6,8 +6,8 @@ const hasKey = (obj: object, key: string) =>
   Object.prototype.hasOwnProperty.call(obj, key);
 
 /**
- * Check whether a target exists in the registries. Entities also need a
- * registry entry, as only those are part of the target tree.
+ * Check whether a target exists and is part of the target tree. Entities need
+ * a registry entry and disabled devices are left out, like in the tree.
  */
 export const targetExists = (
   registries: HomeAssistantRegistries,
@@ -20,7 +20,10 @@ export const targetExists = (
     case "entity":
       return hasKey(states, targetId) && hasKey(registries.entities, targetId);
     case "device":
-      return hasKey(registries.devices, targetId);
+      return (
+        hasKey(registries.devices, targetId) &&
+        !registries.devices[targetId].disabled_by
+      );
     case "area":
       return hasKey(registries.areas, targetId);
     case "floor":
