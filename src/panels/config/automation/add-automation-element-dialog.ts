@@ -257,7 +257,6 @@ class DialogAddAutomationElement
 
   @state() private _openedFromQuery = false;
 
-  // "<type>________<id>" target strings, shared by all element types
   @state()
   @storage({ key: RECENT_TARGETS_STORAGE_KEY, state: true, subscribe: false })
   private _recentTargets?: string[];
@@ -806,8 +805,6 @@ class DialogAddAutomationElement
                     ${collections.map(
                       (collection) => html`
                         ${
-                          // Without a title the main collection would read as
-                          // part of the recents above it
                           collection.groups.length > 0 &&
                           (!!collection.titleKey || recentElements.length > 0)
                             ? html`<ha-section-title>
