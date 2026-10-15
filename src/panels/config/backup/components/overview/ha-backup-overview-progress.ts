@@ -140,7 +140,12 @@ export class HaBackupOverviewProgress extends LitElement {
 
   private _computeAgentPercent(agentId: string): number | undefined {
     const progress = this.uploadProgress[agentId];
-    if (!progress || progress.total_bytes === 0) {
+    // 0 bytes only means the upload started; the agent may never report more.
+    if (
+      !progress ||
+      progress.total_bytes === 0 ||
+      progress.uploaded_bytes === 0
+    ) {
       return undefined;
     }
     return Math.round((progress.uploaded_bytes / progress.total_bytes) * 100);
