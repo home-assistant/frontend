@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators";
 import { STRINGS_SEPARATOR_DOT } from "../../../../common/const";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import { getDeviceArea } from "../../../../common/entity/context/get_device_context";
 import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name_display";
 import { stringCompare } from "../../../../common/string/compare";
 import {
@@ -73,7 +74,7 @@ const computeDeviceSectionHeading = (
   localize: HomeAssistant["localize"]
 ): string => {
   const area =
-    heading === "area" && device.area_id ? areas[device.area_id] : undefined;
+    heading === "area" ? getDeviceArea(device, areas, devices) : undefined;
   const parentDevice =
     device.next_name_part === "parent_device" && device.parent_device_id
       ? devices[device.parent_device_id]
