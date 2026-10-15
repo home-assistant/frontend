@@ -138,7 +138,6 @@ export class DeviceSectionStrategy extends ReactiveElement {
         (entry) =>
           entry.device_id === device.id &&
           !entry.hidden &&
-          entry.entity_id in hass.states &&
           !config.exclude_entities?.includes(entry.entity_id)
       )
       .sort((entry1, entry2) => {
