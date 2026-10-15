@@ -147,10 +147,12 @@ export class HaBackupOverviewProgress extends LitElement {
   }
 
   private _computeUploadPercent(): number | undefined {
+    // Follow the slowest location still uploading. Finished ones are left out:
+    // already-written locations report 100% at once, and a location that
+    // doesn't report progress is only known once it has finished.
     const percents = Object.keys(this.uploadProgress)
       .map((agentId) => this._computeAgentPercent(agentId))
-      .filter((percent) => percent !== undefined);
-    // The upload stage only ends when the slowest location finishes.
+      .filter((percent) => percent !== undefined && percent < 100);
     return percents.length ? Math.min(...percents) : undefined;
   }
 
