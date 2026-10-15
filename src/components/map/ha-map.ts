@@ -17,7 +17,10 @@ import { UNIT_KM } from "../../common/const";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { getEntityLocation } from "../../common/entity/get_entity_location";
+import {
+  findFirstActiveZone,
+  getEntityLocation,
+} from "../../common/entity/get_entity_location";
 import { supportsVectorMaps } from "../../common/map/base-layer";
 import type {
   MapCircleHandle,
@@ -1530,15 +1533,9 @@ export class HaMap extends ReactiveElement {
       if (["person", "device_tracker"].includes(computeStateDomain(stateObj))) {
         const inZones: string[] | undefined = stateObj.attributes.in_zones;
         if (Array.isArray(inZones) && inZones.length > 0) {
-          const activeZoneId = inZones.find((candidate) => {
-            const zone = states[candidate];
-            return zone && !zone.attributes.passive;
-          });
-          if (
-            activeZoneId !== undefined &&
-            this._zonePositions[activeZoneId] !== undefined
-          ) {
-            zoneId = activeZoneId;
+          const activeZone = findFirstActiveZone(inZones, states);
+          if (activeZone && this._zonePositions[activeZone.entity_id]) {
+            zoneId = activeZone.entity_id;
           }
         } else if (
           !Array.isArray(inZones) ||
