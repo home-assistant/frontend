@@ -185,7 +185,6 @@ export default class HaAutomationConditionRow extends LitElement {
           ? html`<ha-automation-condition-live-test
               id="condition-icon"
               slot="leading-icon"
-              .hass=${this.hass}
               .condition=${this.condition}
             >
               <ha-condition-icon
