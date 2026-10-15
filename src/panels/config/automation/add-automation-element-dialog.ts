@@ -784,6 +784,9 @@ class DialogAddAutomationElement
                               )}
                               <ha-button
                                 class="clear-recent"
+                                aria-label=${this.hass.localize(
+                                  "ui.panel.config.automation.editor.clear_recently_used"
+                                )}
                                 appearance="plain"
                                 variant="neutral"
                                 size="s"

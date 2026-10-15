@@ -394,6 +394,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
         ${this._i18n.localize("ui.panel.config.automation.editor.recently_used")}
         <ha-button
           class="clear-recent"
+          aria-label=${this._i18n.localize(
+            "ui.panel.config.automation.editor.clear_recently_used"
+          )}
           appearance="plain"
           variant="neutral"
           size="s"
