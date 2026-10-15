@@ -306,7 +306,7 @@ export class AssistPipelineRunDebug extends LitElement {
 
         // Play audio when we're done.
         if (updatedRun.stage === "done" && !updatedRun.error) {
-          const url = updatedRun.tts!.tts_output!.url;
+          const url = this.hass.hassUrl(updatedRun.tts!.tts_output!.url);
           const audio = new Audio(url);
           audio.addEventListener("ended", () => {
             if (
@@ -386,7 +386,7 @@ export class AssistPipelineRunDebug extends LitElement {
 
         // Play audio when we're done.
         if (updatedRun.stage === "done") {
-          const url = updatedRun.tts!.tts_output!.url;
+          const url = this.hass.hassUrl(updatedRun.tts!.tts_output!.url);
           const audio = new Audio(url);
           audio.addEventListener("ended", () => {
             if (

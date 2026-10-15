@@ -592,7 +592,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
           if (event.type === "run-start") {
             this._stt_binary_handler_id =
               event.data.runner_data.stt_binary_handler_id;
-            this._audio = new Audio(event.data.tts_output!.url);
+            this._audio = new Audio(
+              this._connection.hassUrl(event.data.tts_output!.url)
+            );
             this._audio.play();
             this._audio.addEventListener("ended", () => {
               this._unloadAudio();
