@@ -21,46 +21,66 @@ import { DEFAULT_MAX_COLUMNS } from "../../views/const";
 
 const COLUMN_SPAN_NAMES = ["single", "double", "triple"] as const;
 
+const MAX_NAMED_COLUMN_SPAN = COLUMN_SPAN_NAMES.length + 1;
+
 const computeColumnSpanLabel = (
   span: number,
   maxColumns: number,
   localize: LocalizeFunc
-) =>
-  localize(
-    `ui.panel.lovelace.editor.edit_section.settings.column_span_options.${
-      span >= maxColumns ? "full" : COLUMN_SPAN_NAMES[span - 1]
-    }`
+) => {
+  if (span >= maxColumns) {
+    return localize(
+      "ui.panel.lovelace.editor.edit_section.settings.column_span_options.full"
+    );
+  }
+  return localize(
+    `ui.panel.lovelace.editor.edit_section.settings.column_span_options.${COLUMN_SPAN_NAMES[span - 1]}`
   );
+};
 
-const computeColumnSpanSchema = (maxColumns: number, localize: LocalizeFunc) =>
-  maxColumns > COLUMN_SPAN_NAMES.length + 1
-    ? ({
+const computeColumnSpanSchemas = (
+  maxColumns: number,
+  localize: LocalizeFunc
+) => {
+  if (maxColumns <= 1) {
+    return [];
+  }
+  if (maxColumns > MAX_NAMED_COLUMN_SPAN) {
+    return [
+      {
         name: "column_span",
         selector: {
           number: { min: 1, max: maxColumns, slider_ticks: true },
         },
-      } as const)
-    : ({
-        name: "column_span",
-        selector: {
-          select: {
-            mode: "box",
-            box_max_columns: maxColumns === 4 ? 2 : maxColumns,
-            options: Array.from({ length: maxColumns }, (_, i) => {
-              const span = i + 1;
-              return {
-                value: String(span),
-                label: computeColumnSpanLabel(span, maxColumns, localize),
-                image: {
-                  src: `/static/images/form/section_column_span_${span}_of_${maxColumns}.svg`,
-                  src_dark: `/static/images/form/section_column_span_${span}_of_${maxColumns}_dark.svg`,
-                  flip_rtl: true,
-                },
-              };
-            }),
-          },
+      },
+    ] as const;
+  }
+  const options = Array.from({ length: maxColumns }, (_, i) => {
+    const span = i + 1;
+    return {
+      value: String(span),
+      label: computeColumnSpanLabel(span, maxColumns, localize),
+      image: {
+        src: `/static/images/form/section_column_span_${span}_of_${maxColumns}.svg`,
+        src_dark: `/static/images/form/section_column_span_${span}_of_${maxColumns}_dark.svg`,
+        flip_rtl: true,
+      },
+    };
+  });
+  return [
+    {
+      name: "column_span",
+      selector: {
+        select: {
+          mode: "box",
+          box_max_columns:
+            maxColumns === MAX_NAMED_COLUMN_SPAN ? 2 : maxColumns,
+          options,
         },
-      } as const);
+      },
+    },
+  ] as const;
+};
 
 interface SettingsData {
   column_span?: string | number;
@@ -92,12 +112,17 @@ export class HuiDialogEditSection extends LitElement {
     );
   }
 
+  private get _columnSpanFormValue() {
+    if (this._maxColumns > MAX_NAMED_COLUMN_SPAN) {
+      return Number(this._displayedColumnSpan);
+    }
+    return this._displayedColumnSpan;
+  }
+
   private _schema = memoizeOne(
     (localize: LocalizeFunc, maxColumns: number) =>
       [
-        ...(maxColumns > 1
-          ? [computeColumnSpanSchema(maxColumns, localize)]
-          : []),
+        ...computeColumnSpanSchemas(maxColumns, localize),
         {
           name: "background_enabled",
           selector: { boolean: {} },
@@ -157,10 +182,7 @@ export class HuiDialogEditSection extends LitElement {
     const background = resolveSectionBackground(this.config.background);
 
     const data: SettingsData = {
-      column_span:
-        this._maxColumns > 4
-          ? Number(this._displayedColumnSpan)
-          : this._displayedColumnSpan,
+      column_span: this._columnSpanFormValue,
       background_enabled: backgroundEnabled,
       background_color: background?.color,
       background_opacity: background?.opacity,

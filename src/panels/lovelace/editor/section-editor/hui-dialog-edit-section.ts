@@ -184,17 +184,7 @@ export class HuiDialogEditSection
     const strategy = isStrategySection(this._config)
       ? cleanLegacyStrategyConfig(this._config.strategy)
       : undefined;
-    const strategyName = strategy
-      ? this.hass.localize(
-          `ui.panel.lovelace.editor.section_strategy.${strategy.type}.name`
-        )
-      : undefined;
-    const heading = strategyName
-      ? this.hass.localize(
-          "ui.panel.lovelace.editor.edit_section.typed_header",
-          { type: strategyName }
-        )
-      : this.hass.localize("ui.panel.lovelace.editor.edit_section.header");
+    const heading = this._computeHeading(strategy);
     const tabs = strategy ? TABS : TABS.filter((tab) => tab !== "tab-strategy");
     const currentTab =
       !strategy && this._currTab === "tab-strategy"
@@ -455,6 +445,25 @@ export class HuiDialogEditSection
     if (this._strategyError) return;
     this._config = { ...this._config, strategy: ev.detail.config };
     this._updateDirtyState(this._config);
+  }
+
+  private _computeHeading(strategy?: LovelaceStrategyConfig) {
+    const header = this.hass.localize(
+      "ui.panel.lovelace.editor.edit_section.header"
+    );
+    if (!strategy) {
+      return header;
+    }
+    const strategyName = this.hass.localize(
+      `ui.panel.lovelace.editor.section_strategy.${strategy.type}.name`
+    );
+    if (!strategyName) {
+      return header;
+    }
+    return this.hass.localize(
+      "ui.panel.lovelace.editor.edit_section.typed_header",
+      { type: strategyName }
+    );
   }
 
   private _previewModeClicked(ev: Event) {
