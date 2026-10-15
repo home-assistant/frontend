@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { listenMediaQuery } from "../../../../common/dom/media_query";
 import { slugify } from "../../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
@@ -30,6 +31,10 @@ declare global {
 }
 
 const VALID_PATH_REGEX = /^[a-zA-Z0-9_-]+$/;
+
+const MAX_COLUMNS_PRESETS = [1, 2, 3, 4] as const;
+const MAX_COLUMNS_MORE = "more";
+const MAX_COLUMNS_LIMIT = 10;
 const INTEGER_REGEX = /^[0-9]+$/;
 
 @customElement("hui-view-editor")
@@ -43,10 +48,27 @@ export class HuiViewEditor extends LitElement {
 
   @state() private _error: Record<string, string> | undefined;
 
+  @state() private _narrow = false;
+
+  private _unsubMql?: () => void;
+
   private _suggestedPath = false;
 
+  connectedCallback(): void {
+    super.connectedCallback();
+    this._unsubMql = listenMediaQuery("(max-width: 600px)", (matches) => {
+      this._narrow = matches;
+    });
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubMql?.();
+    this._unsubMql = undefined;
+  }
+
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, narrow: boolean) =>
       [
         {
           name: "type",
@@ -101,13 +123,33 @@ export class HuiViewEditor extends LitElement {
           schema: [
             {
               name: "max_columns",
-              default: DEFAULT_MAX_COLUMNS,
+              selector: {
+                select: {
+                  mode: "box",
+                  box_max_columns: narrow ? 3 : 5,
+                  options: [
+                    ...MAX_COLUMNS_PRESETS.map((count) => ({
+                      value: String(count),
+                      label: String(count),
+                    })),
+                    {
+                      value: MAX_COLUMNS_MORE,
+                      label: localize(
+                        "ui.panel.lovelace.editor.edit_view.max_columns_more"
+                      ),
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: "max_columns_custom",
+              visible: { field: "max_columns", value: MAX_COLUMNS_MORE },
               selector: {
                 number: {
-                  min: 1,
-                  max: 10,
-                  mode: "slider",
-                  slider_ticks: true,
+                  min: MAX_COLUMNS_PRESETS.length + 1,
+                  max: MAX_COLUMNS_LIMIT,
+                  mode: "box",
                 },
               },
             },
@@ -137,8 +179,14 @@ export class HuiViewEditor extends LitElement {
   }
 
   protected render() {
+    const maxColumns = this._config.max_columns ?? DEFAULT_MAX_COLUMNS;
+    const isPreset = maxColumns <= MAX_COLUMNS_PRESETS.length;
     const data = {
       ...this._config,
+      max_columns: isPreset ? String(maxColumns) : MAX_COLUMNS_MORE,
+      max_columns_custom: isPreset
+        ? MAX_COLUMNS_PRESETS.length + 1
+        : maxColumns,
       type: this._type,
       theme:
         this._config.theme?.toLowerCase() === "backend-selected"
@@ -149,7 +197,7 @@ export class HuiViewEditor extends LitElement {
     return html`
       <ha-form
         .data=${data}
-        .schema=${this._schema(this._localize)}
+        .schema=${this._schema(this._localize, this._narrow)}
         .computeLabel=${this._computeLabel}
         .computeHelper=${this._computeHelper}
         .computeError=${this._computeError}
@@ -160,7 +208,33 @@ export class HuiViewEditor extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value as LovelaceViewConfig;
+    const { max_columns_custom: maxColumnsCustom, ...value } = ev.detail
+      .value as LovelaceViewConfig & {
+      max_columns?: string;
+      max_columns_custom?: number;
+    };
+    const config = value as unknown as LovelaceViewConfig;
+
+    const maxColumns =
+      value.max_columns === MAX_COLUMNS_MORE
+        ? Math.min(
+            Math.max(
+              maxColumnsCustom ?? MAX_COLUMNS_PRESETS.length + 1,
+              MAX_COLUMNS_PRESETS.length + 1
+            ),
+            MAX_COLUMNS_LIMIT
+          )
+        : Number(value.max_columns ?? DEFAULT_MAX_COLUMNS);
+    if (maxColumns === (this._config.max_columns ?? DEFAULT_MAX_COLUMNS)) {
+      config.max_columns = this._config.max_columns;
+    } else if (maxColumns === DEFAULT_MAX_COLUMNS) {
+      delete config.max_columns;
+    } else {
+      config.max_columns = maxColumns;
+    }
+    if (config.max_columns === undefined) {
+      delete config.max_columns;
+    }
 
     if (config.type !== SECTIONS_VIEW_LAYOUT) {
       delete config.max_columns;
@@ -211,6 +285,7 @@ export class HuiViewEditor extends LitElement {
       case "show_icon_and_title":
       case "subview":
       case "max_columns":
+      case "max_columns_custom":
       case "dense_section_placement":
       case "top_margin":
       case "section_specifics":
@@ -231,6 +306,7 @@ export class HuiViewEditor extends LitElement {
       case "path":
       case "show_icon_and_title":
       case "subview":
+      case "max_columns":
       case "dense_section_placement":
       case "top_margin":
         return this._localize(
