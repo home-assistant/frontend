@@ -43,7 +43,10 @@ import {
   findAvailableLanguage,
   getTranslation,
 } from "../util/common-translation";
-import { documentationUrl } from "../util/documentation-url";
+import {
+  documentationUrl,
+  SECURE_CONNECTION_DOCUMENTATION_PATH,
+} from "../util/documentation-url";
 import "./ha-alert";
 import "./ha-markdown";
 import "./input/ha-input";
@@ -541,17 +544,14 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
 
   private _showNotSupportedMessage() {
     const documentationLink = `[${this._localize(
-      "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
-    )}](${documentationUrl(
-      this._config,
-      "/docs/configuration/securing/#remote-access"
-    )})`;
+      "ui.components.secure_connection_required.documentation_link"
+    )}](${documentationUrl(this._config, SECURE_CONNECTION_DOCUMENTATION_PATH)})`;
     this._addMessage({
       who: "hass",
       text: `${this._localize(
-        "ui.dialogs.voice_command.not_supported_microphone_browser"
+        "ui.components.secure_connection_required.microphone"
       )}\n\n${this._localize(
-        "ui.dialogs.voice_command.not_supported_microphone_documentation",
+        "ui.components.secure_connection_required.learn_more",
         { documentation_link: documentationLink }
       )}`,
       thinking: "",
@@ -573,13 +573,31 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
     }
     this._stt_binary_handler_id = undefined;
     this._audioBuffer = [];
+
+    const microphoneError = await this._audioRecorder.start();
+
+    if (microphoneError) {
+      this._audioBuffer = undefined;
+      this._processing = false;
+      this._addMessage({
+        who: "hass",
+        text: this._localize(
+          `ui.dialogs.voice_command.microphone_${microphoneError}`
+        ),
+        thinking: "",
+        tool_calls: {},
+        error: true,
+      });
+
+      return;
+    }
+
     const userMessage: AssistMessage = {
       who: "user",
       text: "…",
       thinking: "",
       tool_calls: {},
     };
-    await this._audioRecorder.start();
 
     this._addMessage(userMessage);
 
@@ -608,7 +626,11 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
             );
             this._audio.addEventListener("error", () => {
               this._unloadAudio();
-              showAlertDialog(this, { title: "Error playing audio." });
+              showAlertDialog(this, {
+                title: this._localize(
+                  "ui.dialogs.voice_command.error_playing_audio"
+                ),
+              });
             });
           }
 
@@ -658,7 +680,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
       );
     } catch (err: any) {
       await showAlertDialog(this, {
-        title: "Error starting pipeline",
+        title: this._localize(
+          "ui.dialogs.voice_command.error_starting_pipeline"
+        ),
         text: err.message || err,
       });
       this._stopListening();

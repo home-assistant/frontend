@@ -1509,7 +1509,6 @@
       },
       "qr-scanner": {
         "select_camera": "Select camera",
-        "only_https_supported": "You can only use your camera to scan a QR code when using HTTPS.",
         "not_supported": "Your browser doesn't support QR scanning.",
         "manual_input": "You can scan the QR code with another QR scanner and paste the code in the input below",
         "enter_qr_code": "Enter QR code value",
@@ -1521,6 +1520,13 @@
           "description": "Find the code on your device",
           "alternativeOptionLabel": "More options"
         }
+      },
+      "secure_connection_required": {
+        "microphone": "Your browser blocks the microphone because your connection to Home Assistant is not secured using HTTPS.",
+        "camera": "Your browser blocks the camera because your connection to Home Assistant is not secured using HTTPS.",
+        "push_notifications": "Your browser blocks push notifications because your connection to Home Assistant is not secured using HTTPS.",
+        "learn_more": "Use the Home Assistant app, or {documentation_link} to learn how to set up a secure connection.",
+        "documentation_link": "read the documentation"
       },
       "climate-control": {
         "temperature_up": "Increase temperature",
@@ -1756,9 +1762,12 @@
         "send_text": "Send text",
         "start_listening": "Start listening",
         "manage_assistants": "Manage assistants",
-        "not_supported_microphone_browser": "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone.",
-        "not_supported_microphone_documentation": "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL",
-        "not_supported_microphone_documentation_link": "the documentation",
+        "microphone_permission_denied": "Home Assistant doesn't have permission to use your microphone. Allow microphone access in your browser settings and try again.",
+        "microphone_not_found": "No microphone was found. Connect a microphone and try again.",
+        "microphone_in_use": "Your microphone could not be started. It may be in use by another app.",
+        "microphone_unknown": "Your microphone could not be started.",
+        "error_playing_audio": "The response could not be played",
+        "error_starting_pipeline": "Assist could not start",
         "unknown_error_load_assist": "Loading the Assist pipeline failed",
         "not_found_error_load_assist": "Cannot find the Assist pipeline",
         "show_details": "Show details"
@@ -8522,7 +8531,6 @@
             "check_logs": "Please check the logs for more information.",
             "timeout_error": "No device found after {minutes} minutes. Please check the device and try again.",
             "select_method": {
-              "webcam_unsupported": "You can only use your camera to scan a QR code when using a secure connection with the app or over HTTPS.",
               "qr_code_webcam": "Scan QR code using webcam",
               "qr_code_webcam_description": "Find and scan the code on your device.",
               "qr_code_manual": "Enter QR code manually",
@@ -11774,7 +11782,7 @@
           "header": "Receive notifications",
           "description": "Enable HTML5 browser notifications on this device.",
           "error_load_platform": "Configure notify.html5.",
-          "error_use_https": "Requires SSL enabled for frontend.",
+          "error_not_supported": "Your browser doesn't support push notifications.",
           "push_notifications": "Push notifications",
           "link_promo": "Learn more",
           "add_device_prompt": {
