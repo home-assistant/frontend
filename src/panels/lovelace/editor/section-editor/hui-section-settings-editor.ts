@@ -224,10 +224,9 @@ export class HuiDialogEditSection extends LitElement {
       ...this.config,
     };
 
-    if (
-      newData.column_span !== undefined &&
-      String(newData.column_span) !== this._displayedColumnSpan
-    ) {
+    if (newData.column_span === undefined) {
+      delete newConfig.column_span;
+    } else if (String(newData.column_span) !== this._displayedColumnSpan) {
       const columnSpan = Number(newData.column_span);
       if (columnSpan === DEFAULT_SECTION_COLUMN_SPAN) {
         delete newConfig.column_span;
