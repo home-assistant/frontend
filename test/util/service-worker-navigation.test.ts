@@ -89,6 +89,22 @@ describe("service-worker-navigation", () => {
     await expect(respond("/history", 404)).resolves.toBe(shell);
   });
 
+  it("returns the 404 for a path that has no fallback even when cached", async () => {
+    store.set(`${ORIGIN}/local/page.html`, new Response("old page"));
+
+    const response = await respond("/local/page.html", 404);
+
+    expect(response.status).toBe(404);
+    expect(match).not.toHaveBeenCalled();
+  });
+
+  it("serves the cached copy of a path that has no fallback on a 5xx", async () => {
+    const page = new Response("page");
+    store.set(`${ORIGIN}/local/page.html`, page);
+
+    await expect(respond("/local/page.html", 502)).resolves.toBe(page);
+  });
+
   it("returns the 404 for a path that was never cached", async () => {
     store.set(`${ORIGIN}/`, new Response("root"));
 

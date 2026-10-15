@@ -30,7 +30,8 @@ const NAVIGATION_MAX_ENTRIES = 50;
 // requests (signature expired, token missing) never reach the server and
 // don't trigger spurious "Login attempt" warnings from http.ban after BFCache
 // restore, tab resume, network change, or any other browser-initiated replay
-// of a stale `<img>` URL.
+// of a stale `<img>` URL. This only covers subresources: navigation preload
+// sends a navigation to core before the worker runs.
 const proxyPathRegEx =
   /^\/api\/(camera_proxy_stream|camera_proxy|image_proxy)\//;
 
@@ -63,7 +64,7 @@ const isJwtExpired = (jwt: string): boolean => {
   }
 };
 
-const handleProxyRequest: RouteHandler = async ({ request }) => {
+const handleProxyRequest: RouteHandler = async ({ request, event }) => {
   const req = request as Request;
   const url = new URL(req.url);
 
@@ -80,6 +81,12 @@ const handleProxyRequest: RouteHandler = async ({ request }) => {
     });
   }
 
+  if (req.mode === "navigate" && event instanceof FetchEvent) {
+    const preloaded = await event.preloadResponse;
+    if (preloaded) {
+      return preloaded;
+    }
+  }
   return fetch(req);
 };
 
@@ -209,10 +216,9 @@ const initRouting = () => {
   // Get manifest and onboarding from network.
   registerRoute(/\/(?:manifest\.json|onboarding\.html)/, new NetworkOnly());
 
-  // Core serves the same index.html for "/" and every registered panel path.
-  // It imports this build's hashed bundles, and a stale cached copy imports
-  // deleted files, so the cache is only the offline fallback. Entries are
-  // keyed by path without the query, so logins and view params don't add up.
+  // A stale index imports deleted bundles, so the cache is only a fallback;
+  // keyed by path so query params don't add entries. Only a 200 may replace
+  // the cached shell: a proxy redirect is status 0 and would be replayed.
   registerRoute(
     ({ request }) => request.mode === "navigate",
     new NetworkFirst({
@@ -220,6 +226,7 @@ const initRouting = () => {
       networkTimeoutSeconds: NAVIGATION_TIMEOUT_SECONDS,
       plugins: [
         createNavigationFallbackPlugin(NAVIGATION_CACHE),
+        new CacheableResponsePlugin({ statuses: [200] }),
         new ExpirationPlugin({
           maxEntries: NAVIGATION_MAX_ENTRIES,
           purgeOnQuotaError: true,
