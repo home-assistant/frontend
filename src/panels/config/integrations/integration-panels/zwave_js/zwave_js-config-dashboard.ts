@@ -54,7 +54,6 @@ import {
 import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import "../../../../../layouts/hass-subpage";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
@@ -63,7 +62,7 @@ import { showZWaveJSAddNodeDialog } from "./add-node/show-dialog-zwave_js-add-no
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 
 @customElement("zwave_js-config-dashboard")
-class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
+class ZWaveJSConfigDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -96,13 +95,35 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private _unsubscribeRestore?: UnsubscribeFunc;
 
-  private _backupProgress?: number;
+  @state() private _backupProgress?: number;
 
-  private _restoreProgress?: number;
+  @state() private _restoreProgress?: number;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.hass && this.hasUpdated && !this._dialogOpen) {
+      this._subscribeS2Inclusion();
+    }
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeS2Inclusion();
+    this._unsubscribeBackup?.();
+    this._unsubscribeBackup = undefined;
+    this._backupProgress = undefined;
+    this._unsubscribeRestore?.();
+    this._unsubscribeRestore = undefined;
+    this._restoreProgress = undefined;
+  }
 
   protected async firstUpdated() {
     if (this.hass) {
+      this._subscribeS2Inclusion();
       await this._fetchData();
+      if (!this.isConnected) {
+        return;
+      }
       if (this._status === "connected") {
         const inclusion_state = this._network?.controller.inclusion_state;
         // show dialog if inclusion/exclusion is already in progress
@@ -113,10 +134,6 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         }
       }
     }
-  }
-
-  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [this._subscribeS2Inclusion()];
   }
 
   protected render() {
@@ -717,11 +734,16 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
   private async _downloadBackup() {
     try {
       this._backupProgress = 0;
-      this._unsubscribeBackup = await subscribeZwaveNVMBackup(
+      const unsubscribe = await subscribeZwaveNVMBackup(
         this.hass!,
         this.configEntryId!,
         this._handleBackupMessage
       );
+      if (this.isConnected) {
+        this._unsubscribeBackup = unsubscribe;
+      } else {
+        unsubscribe();
+      }
     } catch (err: any) {
       this._backupProgress = undefined;
       showAlertDialog(this, {
@@ -762,12 +784,17 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         reader.readAsArrayBuffer(file);
       });
 
-      this._unsubscribeRestore = await restoreZwaveNVM(
+      const unsubscribe = await restoreZwaveNVM(
         this.hass!,
         this.configEntryId!,
         base64Data,
         this._handleRestoreMessage
       );
+      if (this.isConnected) {
+        this._unsubscribeRestore = unsubscribe;
+      } else {
+        unsubscribe();
+      }
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
@@ -785,11 +812,7 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
 
   private _openInclusionDialog(dsk?: string, inclusionOngoing = false) {
     if (!this._dialogOpen) {
-      // Unsubscribe from S2 inclusion before opening dialog
-      if (this._s2InclusionUnsubscribe) {
-        this._s2InclusionUnsubscribe.then((unsubscribe) => unsubscribe());
-        this._s2InclusionUnsubscribe = undefined;
-      }
+      this._unsubscribeS2Inclusion();
 
       showZWaveJSAddNodeDialog(this, {
         entry_id: this.configEntryId!,
@@ -806,10 +829,13 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
     // refresh the data after the dialog is closed. add a small delay for the inclusion state to update
     setTimeout(() => this._fetchData(), 100);
     this._dialogOpen = false;
-    this._subscribeS2Inclusion();
+    if (this.isConnected) {
+      this._subscribeS2Inclusion();
+    }
   };
 
   private _subscribeS2Inclusion() {
+    this._unsubscribeS2Inclusion();
     this._s2InclusionUnsubscribe = subscribeS2Inclusion(
       this.hass,
       this.configEntryId,
@@ -817,7 +843,13 @@ class ZWaveJSConfigDashboard extends SubscribeMixin(LitElement) {
         this._openInclusionDialog(message.dsk);
       }
     );
-    return this._s2InclusionUnsubscribe;
+  }
+
+  private _unsubscribeS2Inclusion() {
+    this._s2InclusionUnsubscribe
+      ?.then((unsubscribe) => unsubscribe())
+      .catch(() => undefined);
+    this._s2InclusionUnsubscribe = undefined;
   }
 
   private _handleBackupMessage = (message: any) => {
