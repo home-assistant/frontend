@@ -29,7 +29,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { goBack, navigate } from "../../../../common/navigate";
+import { goBack } from "../../../../common/navigate";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { debounce } from "../../../../common/util/debounce";
 import "../../../../components/ha-alert";
@@ -313,15 +313,6 @@ class ToolsDebugConsole extends LitElement {
           ${this.hass.localize(
             "ui.panel.config.tools.tabs.debug_console.disabled"
           )}
-          <ha-button
-            slot="action"
-            appearance="plain"
-            @click=${this._enableConsole}
-          >
-            ${this.hass.localize(
-              "ui.panel.config.tools.tabs.debug_console.enable"
-            )}
-          </ha-button>
         </ha-alert>`;
       case "failed":
         return html`<ha-alert alert-type="error">
@@ -339,19 +330,16 @@ class ToolsDebugConsole extends LitElement {
     return nothing;
   }
 
-  private _enableConsole() {
-    navigate("/config/integrations/dashboard/add?domain=debug_console");
-  }
-
   private _checkAvailability = async () => {
     this._status = "checking";
 
-    let warningRequired: boolean;
+    let info: Awaited<ReturnType<typeof getDebugConsoleInfo>>;
     try {
-      warningRequired = (await getDebugConsoleInfo(this.hass)).warning_required;
+      info = await getDebugConsoleInfo(this.hass);
     } catch (err: unknown) {
+      // Without the integration loaded, its commands do not exist at all.
       this._status =
-        (err as { code?: string }).code === "not_allowed"
+        (err as { code?: string }).code === "unknown_command"
           ? "disabled"
           : "failed";
       return;
@@ -362,9 +350,14 @@ class ToolsDebugConsole extends LitElement {
       return;
     }
 
+    if (!info.enabled) {
+      this._status = "disabled";
+      return;
+    }
+
     this._status = "ready";
-    this._warningRequired = warningRequired;
-    if (warningRequired && !this._warningDialogOpen) {
+    this._warningRequired = info.warning_required;
+    if (info.warning_required && !this._warningDialogOpen) {
       this._warningDialogOpen = true;
       showDebugConsoleWarningDialog(this, {
         closedCallback: this._warningClosed,

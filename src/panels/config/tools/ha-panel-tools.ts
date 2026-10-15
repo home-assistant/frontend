@@ -1,7 +1,6 @@
 import { mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { customElement, property, state } from "lit/decorators";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { navigate } from "../../../common/navigate";
@@ -12,8 +11,8 @@ import "../../../components/ha-icon-button-arrow-prev";
 import "../../../components/ha-tab-group";
 import "../../../components/ha-tab-group-tab";
 import "../../../components/ha-top-app-bar-fixed";
-import { subscribeConfigEntries } from "../../../data/config_entries";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { getDebugConsoleInfo } from "../../../data/debug_console";
 import type { HomeAssistant, Route } from "../../../types";
 import "./tools-router";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -54,42 +53,35 @@ const TOOLS_TABS = [
 ] as const;
 
 @customElement("ha-panel-tools")
-class PanelTools extends SubscribeMixin(LitElement) {
+class PanelTools extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  // Enabled by its config entry, which the user can add or remove at any time.
+  // Enabled in YAML, or by default on development versions. Loaded but
+  // disabled when turned off there, so the backend tells.
   @state() private _debugConsoleEnabled = false;
-
-  public hassSubscribe(): (UnsubscribeFunc | Promise<UnsubscribeFunc>)[] {
-    return [
-      subscribeConfigEntries(
-        this.hass,
-        (messages) => {
-          // A snapshot lists every entry, and is empty without any; an entry
-          // missing from it is gone. Updates are never empty.
-          if (!messages.length || messages.some(({ type }) => type === null)) {
-            this._debugConsoleEnabled = false;
-          }
-
-          for (const { type, entry } of messages) {
-            if (entry.domain === "debug_console") {
-              this._debugConsoleEnabled =
-                type !== "removed" && entry.state === "loaded";
-            }
-          }
-        },
-        { type: ["service"] }
-      ),
-    ];
-  }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+    this._checkDebugConsole();
+  }
+
+  private async _checkDebugConsole() {
+    if (!isComponentLoaded(this.hass.config, "debug_console")) {
+      return;
+    }
+
+    try {
+      this._debugConsoleEnabled = (
+        await getDebugConsoleInfo(this.hass)
+      ).enabled;
+    } catch (_err: unknown) {
+      // Without an answer, the tab stays hidden; the page itself retries.
+    }
   }
 
   protected render(): TemplateResult {
