@@ -179,8 +179,11 @@ export const showRepairsFlowDialog = (
         );
       },
 
-      renderShowFormStepFieldLocalizeValue(hass, _step, key) {
-        return hass.localize(`component.${issue.domain}.selector.${key}`);
+      renderShowFormStepFieldLocalizeValue(hass, _step, key, values) {
+        return hass.localize(
+          `component.${issue.domain}.selector.${key}`,
+          values
+        );
       },
 
       renderShowFormStepSubmitButton(hass, step) {
