@@ -3,8 +3,10 @@
 import fs from "fs-extra";
 import gulp from "gulp";
 import path from "path";
+import env from "../env.cjs";
 import paths from "../paths.cjs";
 import { ensureMapAssets, mapAssetsDir } from "./map-assets.js";
+import { copyScopedRegistryPolyfill } from "./scoped-registry-polyfill.js";
 
 const npmPath = (...parts) =>
   path.resolve(paths.root_dir, "node_modules", ...parts);
@@ -119,6 +121,9 @@ gulp.task("copy-static-app", async () => {
   // Qr Scanner assets
   copyZXingWasm(staticDir);
   copyQrScannerWorker(staticDir);
+
+  // Loaded by the index page before any module
+  copyScopedRegistryPolyfill(paths.app_output_latest, env.isProdBuild());
 });
 
 gulp.task("copy-static-demo", async () => {

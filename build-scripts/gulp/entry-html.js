@@ -12,6 +12,7 @@ import template from "lodash.template";
 import { dirname, extname, resolve } from "node:path";
 import { htmlMinifierOptions, terserOptions } from "../bundle.cjs";
 import paths from "../paths.cjs";
+import { scopedRegistryPolyfillFile } from "./scoped-registry-polyfill.js";
 
 // macOS companion app has no way to obtain the Safari version used by WKWebView,
 // and it is not in the default user agent string. So we add an additional regex
@@ -123,6 +124,7 @@ const genPagesDevTask =
             (entry) => `${publicRoot}/frontend_es5/${entry}.js`
           ),
           latestCustomPanelJS: `${publicRoot}/frontend_latest/custom-panel.js`,
+          scopedRegistryJS: `${publicRoot}/frontend_latest/${scopedRegistryPolyfillFile(false)}`,
           es5CustomPanelJS: `${publicRoot}/frontend_es5/custom-panel.js`,
         }
       );
@@ -163,6 +165,7 @@ const genPagesProdTask =
             ? entries.map((entry) => es5Manifest[`${entry}.js`])
             : [],
           latestCustomPanelJS: latestManifest["custom-panel.js"],
+          scopedRegistryJS: `/frontend_latest/${scopedRegistryPolyfillFile(true)}`,
           es5CustomPanelJS: outputES5 ? es5Manifest["custom-panel.js"] : "",
         }
       );
