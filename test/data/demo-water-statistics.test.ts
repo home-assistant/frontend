@@ -167,7 +167,7 @@ describe("demo water statistics", () => {
     )["sensor.solar_production"];
     expect(buckets).toHaveLength(23);
     expect(buckets[0].start).toBe(Date.parse(start));
-    expect(buckets.at(-1)!.end).toBe(Date.parse(end));
+    expect(buckets[buckets.length - 1].end).toBe(Date.parse(end));
     for (const bucket of buckets) {
       expect(bucket.start).toBeGreaterThanOrEqual(Date.parse(start));
       expect(bucket.end).toBeLessThanOrEqual(Date.parse(end));
