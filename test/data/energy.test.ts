@@ -2440,8 +2440,8 @@ describe("getEnergyDataCollection heat unit", () => {
     );
     assert.equal(data?.heatUnit, "kWh");
     // Only the heat request configures a mass unit
-    const heatRequests = statisticRequests.filter((msg) =>
-      Object.hasOwn(msg.units as object, "mass")
+    const heatRequests = statisticRequests.filter(
+      (msg) => "mass" in (msg.units as object)
     );
     assert.lengthOf(heatRequests, 1);
     assert.deepEqual(heatRequests[0].statistic_ids, [
