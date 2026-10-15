@@ -1,6 +1,7 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { addRecent } from "../../../../common/array/add-recent";
 import { ensureArray } from "../../../../common/array/ensure-array";
+import { isValidEntityId } from "../../../../common/entity/valid_entity_id";
 import { hasTemplate } from "../../../../common/string/has-template";
 import { TARGET_SEPARATOR, type TargetType } from "../../../../data/target";
 
@@ -41,7 +42,9 @@ const targetIds = (target: HassServiceTarget | undefined): string[] =>
           typeof id === "string" &&
           !!id &&
           !hasTemplate(id) &&
-          !(type === "entity" && (id === "all" || id === "none"))
+          // Device automations can reference an entity by its registry id,
+          // and "all" or "none" are no entities
+          (type !== "entity" || isValidEntityId(id))
       )
       .map((id) => `${type}${TARGET_SEPARATOR}${id}`)
   );

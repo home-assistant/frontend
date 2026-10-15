@@ -50,6 +50,20 @@ describe("addRecentTargets", () => {
         { trigger: "device", domain: "light", device_id: "abc" }
       )
     ).toEqual(["device________abc"]);
+    // Device automations can reference an entity by its registry id
+    expect(
+      add(
+        undefined,
+        { trigger: "device", domain: "light" },
+        {
+          trigger: "device",
+          domain: "light",
+          device_id: "abc",
+          entity_id: "5c4e2a9b1f0d4e8c",
+          type: "turned_on",
+        }
+      )
+    ).toEqual(["device________abc"]);
   });
 
   it("keeps the list when nothing was added", () => {
