@@ -1,10 +1,8 @@
-import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
-import { computeStateDomain } from "../common/entity/compute_state_domain";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { HOME_ZONE_ENTITY_ID } from "../common/map/entity-map-colors";
 import { navigate } from "../common/navigate";
 import type { HomeAssistant } from "../types";
-import { UNAVAILABLE, UNKNOWN } from "./entity/entity";
 
 export interface Zone {
   id: string;
@@ -36,43 +34,6 @@ export interface ZoneMutableParams {
 // state name (friendly_name, or the object id) for any other zone.
 export const computeZoneTrackerState = (zone: HassEntity): string =>
   zone.entity_id === HOME_ZONE_ENTITY_ID ? "home" : computeStateName(zone);
-
-export const getEntityActiveZone = (
-  entity: HassEntity,
-  states: HassEntities
-): HassEntity | undefined => {
-  if (["not_home", UNKNOWN, UNAVAILABLE].includes(entity.state)) {
-    return undefined;
-  }
-
-  const inZones: string[] | undefined = entity.attributes.in_zones;
-  if (Array.isArray(inZones) && inZones.length > 0) {
-    const reportedZones = inZones
-      .map((zoneId) => states[zoneId])
-      .filter((zone) => zone && computeStateDomain(zone) === "zone");
-    const matchingZones = reportedZones.filter(
-      (zone) => computeZoneTrackerState(zone) === entity.state
-    );
-    return (
-      matchingZones.find((zone) => !zone.attributes.passive) ??
-      matchingZones[0] ??
-      reportedZones.find((zone) => !zone.attributes.passive)
-    );
-  }
-
-  if (entity.state === "home") {
-    const homeZone = states[HOME_ZONE_ENTITY_ID];
-    return homeZone && !homeZone.attributes.passive ? homeZone : undefined;
-  }
-
-  const matchingZones = Object.values(states).filter(
-    (zone) =>
-      computeStateDomain(zone) === "zone" &&
-      !zone.attributes.passive &&
-      entity.state === computeZoneTrackerState(zone)
-  );
-  return matchingZones.length === 1 ? matchingZones[0] : undefined;
-};
 
 export const fetchZones = (hass: HomeAssistant) =>
   hass.callWS<Zone[]>({ type: "zone/list" });
