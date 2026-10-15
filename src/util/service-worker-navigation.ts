@@ -10,28 +10,22 @@ export const navigationCacheKey = (request: Request) => {
   return url.href;
 };
 
-// Core serves the index for "/" and registered panel paths only, and it
-// starts serving before every integration has registered its panel, so a
-// reload on a panel path during startup gets a 404. A reverse proxy or the
-// cloud answers 5xx while core restarts. Both get the cached shell so the app
-// reconnects on its own. Runs on the final response, so it also covers
-// preloaded navigations.
+// Core 404s panel paths until their integration loads and proxies 5xx during
+// a restart; serve the cached shell so the app reconnects. Runs on preloaded
+// responses too. A 404 for a /local/ file is real and passes through.
 export const createNavigationFallbackPlugin = (
   cacheName: string
 ): WorkboxPlugin => ({
   cacheKeyWillBeUsed: async ({ request }) => navigationCacheKey(request),
   handlerWillRespond: async ({ request, response }) => {
-    if (response.status !== 404 && response.status < 500) {
+    const noFallback = noFallBackRegEx.test(request.url);
+    if (response.status < 500 && (response.status !== 404 || noFallback)) {
       return response;
     }
     const cached = await caches.match(navigationCacheKey(request), {
       cacheName,
     });
-    if (
-      cached ||
-      response.status === 404 ||
-      noFallBackRegEx.test(request.url)
-    ) {
+    if (cached || response.status === 404 || noFallback) {
       return cached ?? response;
     }
     return (

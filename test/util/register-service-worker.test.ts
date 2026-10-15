@@ -16,6 +16,8 @@ class FakeRegistration extends EventTarget {
   public installing: ServiceWorker | null = null;
 
   public waiting: ServiceWorker | null = null;
+
+  public active: ServiceWorker | null = null;
 }
 
 class FakeServiceWorkerContainer extends EventTarget {
@@ -105,6 +107,31 @@ describe("reloadOnControllerChange", () => {
 
     expect(reload).toHaveBeenCalledOnce();
   });
+
+  it("reloads an uncontrolled page once it is marked as claimed", () => {
+    const markClaimed = reloadOnControllerChange(
+      serviceWorker as unknown as ServiceWorkerContainer,
+      reload
+    );
+
+    markClaimed();
+    changeController();
+
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("reloads once for a change that happened before the page was marked as claimed", () => {
+    const markClaimed = reloadOnControllerChange(
+      serviceWorker as unknown as ServiceWorkerContainer,
+      reload
+    );
+
+    changeController();
+    markClaimed();
+    changeController();
+
+    expect(reload).toHaveBeenCalledOnce();
+  });
 });
 
 describe("registerServiceWorker", () => {
@@ -154,6 +181,7 @@ describe("registerServiceWorker", () => {
 
   afterEach(() => {
     latestNotification()?.secondaryAction?.action();
+    vi.unstubAllGlobals();
     vi.clearAllTimers();
     vi.useRealTimers();
     window.isDirtyState = false;
@@ -175,6 +203,50 @@ describe("registerServiceWorker", () => {
     await registerServiceWorker(root);
 
     expect(serviceWorker.register).not.toHaveBeenCalled();
+  });
+
+  it("treats a hard-reloaded page with an active worker as claimed", async () => {
+    serviceWorker.controller = null;
+    registration.active = worker as unknown as ServiceWorker;
+    const reload = vi.fn<() => void>();
+    vi.stubGlobal("location", { ...location, reload });
+
+    await registerServiceWorker(root, false);
+    serviceWorker.dispatchEvent(new Event("controllerchange"));
+
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("reloads a hard-reloaded page claimed while registration is pending", async () => {
+    serviceWorker.controller = null;
+    registration.active = worker as unknown as ServiceWorker;
+    const reload = vi.fn<() => void>();
+    vi.stubGlobal("location", { ...location, reload });
+    let resolveRegistration!: (reg: FakeRegistration) => void;
+    serviceWorker.register.mockReturnValue(
+      new Promise<FakeRegistration>((resolve) => {
+        resolveRegistration = resolve;
+      })
+    );
+
+    const registering = registerServiceWorker(root, false);
+    serviceWorker.dispatchEvent(new Event("controllerchange"));
+    expect(reload).not.toHaveBeenCalled();
+    resolveRegistration(registration);
+    await registering;
+
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("does not reload a first install's claim", async () => {
+    serviceWorker.controller = null;
+    const reload = vi.fn<() => void>();
+    vi.stubGlobal("location", { ...location, reload });
+
+    await registerServiceWorker(root, false);
+    serviceWorker.dispatchEvent(new Event("controllerchange"));
+
+    expect(reload).not.toHaveBeenCalled();
   });
 
   it("listens for controller changes before registering", async () => {

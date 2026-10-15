@@ -9,25 +9,39 @@ export const supportsServiceWorker = () =>
 
 /**
  * Reload once when a new worker takes over. The claim after a first install
- * is skipped: that page already runs the build it registered.
+ * is skipped: that page already runs the build it registered. Returns a
+ * callback that marks the page as claimed for the cases the controller
+ * doesn't show, such as a hard reload that bypassed an active worker. A
+ * change skipped before that call was an update after all, so it reloads.
  */
 export const reloadOnControllerChange = (
   container: ServiceWorkerContainer,
   reload: () => void = () => location.reload()
 ) => {
   let claimed = Boolean(container.controller);
+  let skipped = false;
   let reloading = false;
-  container.addEventListener("controllerchange", () => {
-    if (!claimed) {
-      claimed = true;
-      return;
-    }
+  const reloadOnce = () => {
     if (reloading) {
       return;
     }
     reloading = true;
     reload();
+  };
+  container.addEventListener("controllerchange", () => {
+    if (claimed) {
+      reloadOnce();
+      return;
+    }
+    claimed = true;
+    skipped = true;
   });
+  return () => {
+    claimed = true;
+    if (skipped) {
+      reloadOnce();
+    }
+  };
 };
 
 export const registerServiceWorker = async (
@@ -38,9 +52,13 @@ export const registerServiceWorker = async (
     return;
   }
 
-  reloadOnControllerChange(navigator.serviceWorker);
+  const markClaimed = reloadOnControllerChange(navigator.serviceWorker);
 
   const reg = await navigator.serviceWorker.register(`/sw-${__BUILD__}.js`);
+
+  if (reg.active) {
+    markClaimed();
+  }
 
   if (!notifyUpdate || __DEV__ || __DEMO__) {
     return;
