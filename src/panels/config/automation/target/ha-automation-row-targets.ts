@@ -697,6 +697,10 @@ export class HaAutomationRowTargets extends LitElement {
       min-height: 24px;
     }
 
+    :host([size="s"]) .target {
+      height: 24px;
+    }
+
     :host([size="s"]) .target ha-floor-icon {
       height: 24px;
     }
