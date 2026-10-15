@@ -60,6 +60,11 @@ export class HaAnsiToHtml extends LitElement {
     return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
   }
 
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    CSS.highlights?.delete("search-results");
+  }
+
   protected firstUpdated(_changedProperties: PropertyValues<this>): void {
     super.firstUpdated(_changedProperties);
 
