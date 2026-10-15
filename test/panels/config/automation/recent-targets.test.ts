@@ -20,24 +20,29 @@ describe("parseRecentTarget", () => {
 describe("addRecentTargets", () => {
   it("only adds targets that are new in the changed target", () => {
     expect(
-      addRecentTargets(
-        ["area________kitchen"],
-        { entity_id: "light.a" },
-        { entity_id: ["light.a", "light.b"], area_id: "kitchen" }
-      )
+      addRecentTargets(["area________kitchen"], [{ entity_id: "light.a" }], {
+        entity_id: ["light.a", "light.b"],
+        area_id: "kitchen",
+      })
     ).toEqual(["entity________light.b", "area________kitchen"]);
   });
 
   it("keeps the list when nothing was added", () => {
     const recents = ["area________kitchen"];
     expect(
-      addRecentTargets(recents, { area_id: "kitchen" }, { area_id: [] })
+      addRecentTargets(recents, [{ area_id: "kitchen" }], { area_id: [] })
+    ).toBe(recents);
+    // A target that moved from service data into the target isn't new
+    expect(
+      addRecentTargets(recents, [undefined, { entity_id: "light.a" }], {
+        entity_id: "light.a",
+      })
     ).toBe(recents);
   });
 
   it("skips templates and special entity ids", () => {
     expect(
-      addRecentTargets(undefined, undefined, {
+      addRecentTargets(undefined, [], {
         entity_id: ["all", "{{ states.light | list }}"],
         floor_id: "ground",
       })

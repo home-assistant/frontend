@@ -179,7 +179,16 @@ export class HaServiceAction extends LitElement implements ActionElement {
       }
     }
 
-    this._rememberTargets(this.action.target, value.target);
+    // ha-service-control moves targets from the service data into the
+    // target, those were not added
+    this._rememberTargets(
+      [
+        this.action.target,
+        this.action.data,
+        { entity_id: this.action.entity_id },
+      ],
+      value.target
+    );
     fireEvent(this, "value-changed", { value });
   }
 
@@ -211,12 +220,12 @@ export class HaServiceAction extends LitElement implements ActionElement {
   }
 
   private _rememberTargets(
-    oldTarget: HassServiceTarget | undefined,
+    oldTargets: (HassServiceTarget | undefined)[],
     newTarget: HassServiceTarget | undefined
   ) {
     const recentTargets = addRecentTargets(
       this._recentTargets,
-      oldTarget,
+      oldTargets,
       newTarget
     );
     if (recentTargets !== this._recentTargets) {

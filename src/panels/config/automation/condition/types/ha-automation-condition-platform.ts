@@ -414,7 +414,7 @@ export class HaPlatformCondition extends LitElement {
 
   private _targetChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    this._rememberTargets(this.condition.target, ev.detail.value);
+    this._rememberTargets([this.condition.target], ev.detail.value);
     fireEvent(this, "value-changed", {
       value: {
         ...this.condition,
@@ -648,12 +648,12 @@ export class HaPlatformCondition extends LitElement {
   }
 
   private _rememberTargets(
-    oldTarget: HassServiceTarget | undefined,
+    oldTargets: (HassServiceTarget | undefined)[],
     newTarget: HassServiceTarget | undefined
   ) {
     const recentTargets = addRecentTargets(
       this._recentTargets,
-      oldTarget,
+      oldTargets,
       newTarget
     );
     if (recentTargets !== this._recentTargets) {

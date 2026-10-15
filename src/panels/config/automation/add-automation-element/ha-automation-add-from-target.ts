@@ -161,6 +161,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
   // Recent targets can only be opened in the tree once it is built
   @state() private _treeLoaded = false;
 
+  private _initialDataLoadStarted = false;
+
   @state() private _showShowMoreButton?: boolean;
 
   @state() private _fullHeight = false;
@@ -174,7 +176,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
-    if (!this.hasUpdated) {
+    // The tree sorts helpers by their manifest, so it waits for them
+    if (!this._initialDataLoadStarted && this.manifests) {
+      this._initialDataLoadStarted = true;
       this._initialDataLoad();
     }
 

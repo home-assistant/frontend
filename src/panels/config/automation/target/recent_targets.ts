@@ -47,15 +47,15 @@ const targetIds = (target: HassServiceTarget | undefined): string[] =>
   );
 
 /**
- * Add the targets that are in `newTarget` but not in `oldTarget` to the recent
- * targets. Returns the given list unchanged when nothing was added.
+ * Add the targets that are in `newTarget` but in none of `oldTargets` to the
+ * recent targets. Returns the given list unchanged when nothing was added.
  */
 export const addRecentTargets = (
   recents: string[] | undefined,
-  oldTarget: HassServiceTarget | undefined,
+  oldTargets: (HassServiceTarget | undefined)[],
   newTarget: HassServiceTarget | undefined
 ): string[] | undefined => {
-  const oldIds = new Set(targetIds(oldTarget));
+  const oldIds = new Set(oldTargets.flatMap(targetIds));
   return targetIds(newTarget)
     .filter((id) => !oldIds.has(id))
     .reduce<string[] | undefined>(

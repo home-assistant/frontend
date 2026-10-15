@@ -656,7 +656,8 @@ class DialogAddAutomationElement
           automationElementType === "trigger"
             ? undefined
             : this._getBlockItems(automationElementType, this.hass.localize),
-          collections
+          collections,
+          this.hass.localize
         );
 
     return html`
@@ -2033,14 +2034,13 @@ class DialogAddAutomationElement
       recents: string[] | undefined,
       items: AddAutomationElementListItem[],
       blockItems: AddAutomationElementListItem[] | undefined,
-      collections: CollectionGroup[]
+      collections: CollectionGroup[],
+      localize: LocalizeFunc
     ) => {
       if (!Array.isArray(recents)) {
         return [];
       }
-      const blocksName = this.hass.localize(
-        "ui.panel.config.automation.editor.blocks"
-      );
+      const blocksName = localize("ui.panel.config.automation.editor.blocks");
       return recents
         .map((key) => {
           const item = items.find((candidate) => candidate.key === key);
@@ -2097,11 +2097,7 @@ class DialogAddAutomationElement
     };
 
     if (target) {
-      this._recentTargets = addRecentTargets(
-        this._recentTargets,
-        undefined,
-        target
-      );
+      this._recentTargets = addRecentTargets(this._recentTargets, [], target);
     }
   }
 
