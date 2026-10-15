@@ -532,6 +532,9 @@ export class HaBackupOverviewProgress extends LitElement {
           font-size: var(--ha-font-size-s);
           color: var(--secondary-text-color);
         }
+        ha-list-item-base::part(end) {
+          gap: var(--ha-space-2);
+        }
         ha-list-item-base::part(supporting-text) {
           display: flex;
           align-items: center;
