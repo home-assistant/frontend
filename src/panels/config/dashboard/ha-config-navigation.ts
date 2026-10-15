@@ -106,7 +106,6 @@ class HaConfigNavigation extends LitElement {
       <div class="visually-hidden" role="heading" aria-level="2">${label}</div>
       <ha-config-navigation-list
         has-secondary
-        .hass=${this.hass}
         .narrow=${this.narrow}
         .pages=${pages}
         .label=${label}
