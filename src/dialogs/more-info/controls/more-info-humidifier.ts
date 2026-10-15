@@ -9,7 +9,6 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
-import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { apiContext, formattersContext } from "../../../data/context";
 import type { HumidifierEntity } from "../../../data/humidifier";

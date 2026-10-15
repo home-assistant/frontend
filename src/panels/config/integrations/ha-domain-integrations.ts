@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -275,7 +274,7 @@ class HaDomainIntegrations extends LitElement {
     </ha-list-base> `;
   }
 
-  private async _integrationPicked(ev: CustomEvent<RequestSelectedDetail>) {
+  private async _integrationPicked(ev: MouseEvent) {
     const domain = (ev.currentTarget as any).domain;
 
     if (
@@ -341,7 +340,7 @@ class HaDomainIntegrations extends LitElement {
     navigate("/config/integrations/dashboard?historyBack=1");
   }
 
-  private _standardPicked(ev: CustomEvent<RequestSelectedDetail>) {
+  private _standardPicked(ev: MouseEvent) {
     const domain = (ev.currentTarget as any).domain;
     const dialogParentElement = getShadowRootHost(this) ?? this;
     fireEvent(this, "close-dialog");

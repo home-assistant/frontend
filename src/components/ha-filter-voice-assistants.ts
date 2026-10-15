@@ -19,7 +19,6 @@ import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-label";
 import "./ha-list";
-import "./ha-list-item";
 import "./voice-assistant-brand-icon";
 import { voiceAssistants } from "../data/expose";
 
