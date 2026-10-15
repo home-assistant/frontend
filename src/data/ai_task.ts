@@ -5,8 +5,11 @@ export enum AITaskEntityFeature {
   GENERATE_DATA = 1,
   SUPPORT_ATTACHMENTS = 2,
   GENERATE_IMAGE = 4,
+  EVALUATE = 8,
 }
 export interface AITaskPreferences {
+  evaluate_entity_id: string | null;
+  allow_automatic_evaluation: boolean;
   gen_data_entity_id: string | null;
   gen_image_entity_id: string | null;
 }
