@@ -11,6 +11,7 @@ import type {
   EnergyPreferencesValidation,
   EnergyValidationIssue,
   GasSourceTypeEnergyPreference,
+  HeatSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
   getEnergyGasUnitClass,
@@ -248,11 +249,18 @@ export class EnergyGasSettings extends LitElement {
       return;
     }
 
+    const heatSource: HeatSourceTypeEnergyPreference = {
+      ...sourceToMove,
+      type: "heat",
+    };
+    // Heating rates are not shown or editable yet, so drop the gas flow rate
+    delete heatSource.stat_rate;
+
     try {
       await this._savePreferences({
         ...this.preferences,
         energy_sources: this.preferences.energy_sources.map((source) =>
-          source === sourceToMove ? { ...sourceToMove, type: "heat" } : source
+          source === sourceToMove ? heatSource : source
         ),
       });
     } catch (err: any) {
