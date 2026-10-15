@@ -15,7 +15,6 @@ import {
 } from "../data/supervisor/mounts";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
-import "./ha-list-item";
 import "./ha-select";
 import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 

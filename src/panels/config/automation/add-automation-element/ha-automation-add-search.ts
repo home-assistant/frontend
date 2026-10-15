@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import { mdiPlus, mdiTextureBox, mdiUnfoldMoreHorizontal } from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";

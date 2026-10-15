@@ -19,7 +19,6 @@ import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
-import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   shouldShowFavoriteOptions,

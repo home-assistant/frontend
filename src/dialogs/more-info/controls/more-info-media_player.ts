@@ -29,7 +29,6 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list-item";
 import "../../../components/ha-marquee-text";
 import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-svg-icon";
