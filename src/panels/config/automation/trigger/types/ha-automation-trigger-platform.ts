@@ -16,6 +16,7 @@ import { fetchIntegrationManifest } from "../../../../../data/integration";
 import type { TargetSelector } from "../../../../../data/selector";
 import { getTargetEntityCount } from "../../../../../data/target";
 import {
+  fetchTriggerDescription,
   getTriggerDomain,
   getTriggerObjectId,
   type TriggerDescription,
@@ -51,8 +52,20 @@ export class HaPlatformTrigger extends LitElement {
 
   @state() private _resolvedTargetEntityCount?: number;
 
+  // Description with the fields the integration amends at runtime. Unset while
+  // loading, when the trigger has no dynamic fields or when fetching failed.
+  @state() private _dynamicDescription?: TriggerDescription;
+
+  private _dynamicDescriptionKey?: string;
+
+  private _dynamicDescriptionFetchId = 0;
+
   public static get defaultConfig(): PlatformTrigger {
     return { trigger: "" };
+  }
+
+  private get _effectiveDescription(): TriggerDescription | undefined {
+    return this._dynamicDescription ?? this.description;
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
@@ -60,6 +73,12 @@ export class HaPlatformTrigger extends LitElement {
     if (!this.hasUpdated) {
       this.hass.loadBackendTranslation("triggers");
       this.hass.loadBackendTranslation("selector");
+    }
+    if (
+      changedProperties.has("trigger") ||
+      changedProperties.has("description")
+    ) {
+      this._updateDynamicDescription();
     }
     if (!changedProperties.has("trigger")) {
       return;
@@ -109,56 +128,105 @@ export class HaPlatformTrigger extends LitElement {
     if (
       this.trigger &&
       oldValue?.trigger !== this.trigger.trigger &&
-      this.description?.fields
+      this.description?.fields &&
+      // Triggers with dynamic fields apply defaults once those are fetched
+      !this.description.has_dynamic_fields
     ) {
-      const hadOptions = "options" in this.trigger;
-      const updatedOptions = this.trigger.options
-        ? { ...this.trigger.options }
-        : {};
-      const loadDefaults = !hadOptions;
-      let updatedDefaultValue = false;
-      // Set mandatory bools without a default value to false
-      Object.entries(this.description.fields).forEach(([key, field]) => {
-        if (
-          field.selector &&
-          field.required &&
-          field.default === undefined &&
-          "boolean" in field.selector &&
-          updatedOptions[key] === undefined
-        ) {
-          updatedDefaultValue = true;
-          updatedOptions[key] = false;
-        } else if (
-          loadDefaults &&
-          field.selector &&
-          field.default !== undefined &&
-          updatedOptions[key] === undefined &&
-          !(
-            field.selector &&
-            "automation_behavior" in field.selector &&
-            this.description?.target &&
-            !this.trigger?.target
-          )
-        ) {
-          updatedDefaultValue = true;
-          updatedOptions[key] = field.default;
-        }
-      });
-
-      if (!hadOptions || updatedDefaultValue) {
-        fireEvent(this, "value-changed", {
-          value: {
-            ...this.trigger,
-            options: updatedOptions,
-          },
-        });
-      }
+      this._applyFieldDefaults();
     }
 
     if (oldValue?.target !== this.trigger?.target) {
       this._updateTargetEntityCount();
       this._setDefaultBehavior();
     }
+  }
+
+  private _applyFieldDefaults() {
+    const description = this._effectiveDescription;
+    if (!this.trigger || !description?.fields) {
+      return;
+    }
+    const hadOptions = "options" in this.trigger;
+    const updatedOptions = this.trigger.options
+      ? { ...this.trigger.options }
+      : {};
+    const loadDefaults = !hadOptions;
+    let updatedDefaultValue = false;
+    // Set mandatory bools without a default value to false
+    Object.entries(description.fields).forEach(([key, field]) => {
+      if (
+        field.selector &&
+        field.required &&
+        field.default === undefined &&
+        "boolean" in field.selector &&
+        updatedOptions[key] === undefined
+      ) {
+        updatedDefaultValue = true;
+        updatedOptions[key] = false;
+      } else if (
+        loadDefaults &&
+        field.selector &&
+        field.default !== undefined &&
+        updatedOptions[key] === undefined &&
+        !(
+          field.selector &&
+          "automation_behavior" in field.selector &&
+          description.target &&
+          !this.trigger?.target
+        )
+      ) {
+        updatedDefaultValue = true;
+        updatedOptions[key] = field.default;
+      }
+    });
+
+    if (!hadOptions || updatedDefaultValue) {
+      fireEvent(this, "value-changed", {
+        value: {
+          ...this.trigger,
+          options: updatedOptions,
+        },
+      });
+    }
+  }
+
+  private _updateDynamicDescription() {
+    const triggerKey = this.trigger?.trigger;
+    if (!triggerKey || !this.description?.has_dynamic_fields) {
+      if (this._dynamicDescriptionKey !== undefined) {
+        // Drop an in-flight response for the previous trigger
+        this._dynamicDescriptionFetchId++;
+        this._dynamicDescriptionKey = undefined;
+        this._dynamicDescription = undefined;
+      }
+      return;
+    }
+    // Dynamic fields depend on the integration, not on this trigger's config
+    if (triggerKey === this._dynamicDescriptionKey) {
+      return;
+    }
+    this._dynamicDescriptionKey = triggerKey;
+    this._dynamicDescription = undefined;
+    this._fetchDynamicDescription(triggerKey);
+  }
+
+  private async _fetchDynamicDescription(triggerKey: string) {
+    const fetchId = ++this._dynamicDescriptionFetchId;
+    let dynamicDescription: TriggerDescription | undefined;
+    try {
+      dynamicDescription = await fetchTriggerDescription(
+        this.hass.callWS,
+        triggerKey
+      );
+    } catch (_err) {
+      // Unknown trigger or an older core: keep the static description
+    }
+    if (fetchId !== this._dynamicDescriptionFetchId || !this.isConnected) {
+      return;
+    }
+    this._dynamicDescription = dynamicDescription;
+    this._applyFieldDefaults();
+    this._setDefaultBehavior();
   }
 
   protected render() {
@@ -169,7 +237,7 @@ export class HaPlatformTrigger extends LitElement {
       `component.${domain}.triggers.${triggerName}.description`
     );
 
-    const triggerDesc = this.description;
+    const triggerDesc = this._effectiveDescription;
 
     const shouldRenderDataYaml = !triggerDesc?.fields;
 
@@ -266,7 +334,7 @@ export class HaPlatformTrigger extends LitElement {
 
     if (
       "automation_behavior" in selector &&
-      this.description?.target &&
+      this._effectiveDescription?.target &&
       (!this.trigger?.target ||
         (this._resolvedTargetEntityCount !== undefined &&
           this._resolvedTargetEntityCount <= 1))
@@ -347,9 +415,10 @@ export class HaPlatformTrigger extends LitElement {
     }
 
     const context: Record<string, any> = {};
+    const description = this._effectiveDescription;
     for (const [context_key, data_key] of Object.entries(field.context)) {
-      if (data_key === "target" && this.description?.target) {
-        context.target_selector = this._targetSelector(this.description.target);
+      if (data_key === "target" && description?.target) {
+        context.target_selector = this._targetSelector(description.target);
       }
       context[context_key] =
         data_key === "target"
@@ -417,9 +486,7 @@ export class HaPlatformTrigger extends LitElement {
 
     if (checked) {
       this._checkedKeys.add(key);
-      const field =
-        this.description &&
-        Object.entries(this.description).find(([k, _value]) => k === key)?.[1];
+      const field = this._effectiveDescription?.fields[key];
       let defaultValue = field?.default;
 
       if (defaultValue == null && field?.selector) {
@@ -481,7 +548,7 @@ export class HaPlatformTrigger extends LitElement {
       }
 
       const behaviorFieldEntry = Object.entries(
-        this.description?.fields ?? {}
+        this._effectiveDescription?.fields ?? {}
       ).find(
         ([, field]) => field.selector && "automation_behavior" in field.selector
       );
