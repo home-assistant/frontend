@@ -25,7 +25,6 @@ import "../../../components/ha-svg-icon";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { formattersContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import "../../../state-display/state-display";
 import type { HomeAssistant } from "../../../types";
 import { hasTileCardAction } from "../cards/tile/tile-card-helpers";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -134,10 +133,7 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
     const { show_name: showName, show_state: showState } = this._config;
 
     const content = showState
-      ? html`<state-display
-          .stateObj=${stateObj}
-          .name=${name}
-        ></state-display>`
+      ? this._formatters.formatEntityState(stateObj)
       : showName
         ? name
         : undefined;
