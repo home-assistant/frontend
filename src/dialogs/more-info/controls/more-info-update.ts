@@ -5,11 +5,15 @@ import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { consume } from "../../../common/decorators/consume";
 import { BINARY_STATE_OFF } from "../../../common/const";
-import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import {
+  consumeEntityRegistryEntry,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
+import { closestWithProperty } from "../../../common/dom/ancestors-with-property";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
@@ -22,8 +26,10 @@ import {
   configContext,
   connectionContext,
   formattersContext,
+  internationalizationContext,
 } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
 import {
   latestVersionIsSkipped,
@@ -42,6 +48,9 @@ import { showToast } from "../../../util/toast";
 import "../components/update/ha-more-info-update-backup";
 import type { HaMoreInfoUpdateBackup } from "../components/update/ha-more-info-update-backup";
 
+// Dialogs that reflect their open state to the `open` attribute.
+const DIALOG_ELEMENTS = new Set(["ha-adaptive-dialog", "ha-dialog"]);
+
 @customElement("more-info-update")
 class MoreInfoUpdate extends LitElement {
   @property({ attribute: false }) public stateObj?: UpdateEntity;
@@ -56,6 +65,13 @@ class MoreInfoUpdate extends LitElement {
 
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consumeEntityRegistryEntry({ entityIdPath: ["stateObj", "entity_id"] })
+  private _entityEntry?: EntityRegistryDisplayEntry;
 
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: ContextType<typeof connectionContext>;
@@ -88,13 +104,20 @@ class MoreInfoUpdate extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._backupEventsUnsub?.then((unsub) => unsub());
+    this._backupEventsUnsub?.then(
+      (unsub) => unsub(),
+      () => undefined
+    );
     this._backupEventsUnsub = undefined;
     this._backupState = "idle";
   }
 
   private _subscribeBackupEvents(): void {
-    if (this._backupEventsUnsub || !isComponentLoaded(this._config, "backup")) {
+    if (
+      this._backupEventsUnsub ||
+      !isComponentLoaded(this._config, "backup") ||
+      !isComponentLoaded(this._config, "hassio")
+    ) {
       return;
     }
 
@@ -115,6 +138,11 @@ class MoreInfoUpdate extends LitElement {
   }
 
   private _backupInProgressMessage(): string | undefined {
+    // The Supervisor only holds back the updates it manages.
+    if (this._entityEntry?.platform !== "hassio") {
+      return undefined;
+    }
+
     switch (this._backupState) {
       case "create_backup":
       case "receive_backup":
@@ -370,15 +398,15 @@ class MoreInfoUpdate extends LitElement {
         false
       );
     } catch (err: any) {
-      const message = err?.message ?? String(err);
+      const message = await this._localizeInstallError(err);
 
-      if (this.isConnected) {
+      if (this._isShown()) {
         this._installError = message;
 
         return;
       }
 
-      // The dialog was closed while the update was installing.
+      // The dialog was closed, or is closing, while the update was installing.
       const toastHost = document.querySelector("home-assistant");
 
       if (toastHost) {
@@ -391,6 +419,45 @@ class MoreInfoUpdate extends LitElement {
         });
       }
     }
+  }
+
+  private _isShown(): boolean {
+    if (!this.isConnected) {
+      return false;
+    }
+
+    // The dialog keeps its content mounted while its close animation runs.
+    let element = closestWithProperty(this, "open", false);
+
+    while (element) {
+      if (DIALOG_ELEMENTS.has(element.localName)) {
+        return element.hasAttribute("open");
+      }
+
+      element = closestWithProperty(element, "open", false);
+    }
+
+    return true;
+  }
+
+  private async _localizeInstallError(err: any): Promise<string> {
+    if (err?.translation_domain && err?.translation_key) {
+      const localize = await this._i18n.loadBackendTranslation(
+        "exceptions",
+        err.translation_domain
+      );
+
+      const localizedMessage = localize(
+        `component.${err.translation_domain}.exceptions.${err.translation_key}.message`,
+        err.translation_placeholders
+      );
+
+      if (localizedMessage) {
+        return localizedMessage;
+      }
+    }
+
+    return err?.message ?? String(err);
   }
 
   private _handleSkip(): void {

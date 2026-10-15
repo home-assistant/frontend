@@ -141,7 +141,7 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
   }
 
   protected hassSubscribe(): Promise<UnsubscribeFunc>[] {
-    if (!isComponentLoaded(this.hass.config, "backup")) {
+    if (!this._watchesBackups()) {
       return [];
     }
 
@@ -157,11 +157,16 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
     ];
   }
 
-  private _backupStateLoading(): boolean {
+  // The Supervisor only holds back the updates it manages.
+  private _watchesBackups(): boolean {
     return (
-      this._backupState === undefined &&
-      isComponentLoaded(this.hass.config, "backup")
+      isComponentLoaded(this.hass.config, "backup") &&
+      isComponentLoaded(this.hass.config, "hassio")
     );
+  }
+
+  private _backupStateLoading(): boolean {
+    return this._backupState === undefined && this._watchesBackups();
   }
 
   private _backupInProgressAlert() {
@@ -280,7 +285,12 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
               `
             : html`
                 <div class="content">
-                  ${backupInProgressAlert && groups.length ? backupInProgressAlert : nothing}
+                  ${
+                    backupInProgressAlert &&
+                    groups.some((group) => group.key === APPS_KEY)
+                      ? backupInProgressAlert
+                      : nothing
+                  }
                   ${groups.map(
                     (group) => html`
                       <ha-card outlined>
@@ -297,7 +307,8 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
                                       size="s"
                                       .group=${group}
                                       .disabled=${
-                                        !!backupInProgressAlert ||
+                                        (!!backupInProgressAlert &&
+                                          group.key === APPS_KEY) ||
                                         group.entities.every((entity) =>
                                           updateIsInstalling(entity)
                                         )
