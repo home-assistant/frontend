@@ -142,8 +142,10 @@ export class HaIntegrationCard extends LitElement {
         outlined
         class=${classMap({
           "state-not-loaded": entryState === "not_loaded",
+          "all-not-loaded": this.items.every(
+            (entry) => entry.state === "not_loaded"
+          ),
           "state-failed-unload": entryState === "failed_unload",
-          "state-setup": entryState === "setup_in_progress",
           "state-error": isError,
           "debug-logging": debugLoggingEnabled,
         })}
@@ -238,8 +240,16 @@ export class HaIntegrationCard extends LitElement {
               >
                 ${
                   status.icon
-                    ? html`<ha-svg-icon .path=${status.icon}></ha-svg-icon>`
-                    : html`<ha-spinner size="tiny"></ha-spinner>`
+                    ? html`<ha-svg-icon
+                        .path=${status.icon}
+                        role="img"
+                        aria-label=${status.message}
+                      ></ha-svg-icon>`
+                    : html`<ha-spinner
+                        size="tiny"
+                        role="img"
+                        aria-label=${status.message}
+                      ></ha-spinner>`
                 }
                 ${text ? html`<span class="text">${text}</span>` : nothing}
               </span>
@@ -468,7 +478,9 @@ export class HaIntegrationCard extends LitElement {
           display: flex;
           align-items: center;
           gap: var(--ha-space-1);
-          min-height: 1lh;
+          min-height: calc(
+            var(--ha-font-size-s) * var(--ha-line-height-normal)
+          );
         }
         .supporting-text .text,
         .status .text {
@@ -528,11 +540,10 @@ export class HaIntegrationCard extends LitElement {
           --ha-card-border-color: var(--state-color);
         }
         .state-not-loaded {
-          opacity: 0.8;
           --state-color: var(--warning-color);
           --ha-card-border-color: var(--state-color);
         }
-        .state-setup {
+        .all-not-loaded {
           opacity: 0.8;
         }
         :host(.highlight) ha-card {
