@@ -310,11 +310,15 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         position: relative;
       }
 
-      #states > div:first-child > hui-section-row::part(divider) {
+      #states
+        > div:nth-child(1 of :not([hidden]))
+        hui-section-row::part(divider) {
         display: none;
       }
 
-      #states > div:first-child > hui-section-row::part(label) {
+      #states
+        > div:nth-child(1 of :not([hidden]))
+        hui-section-row::part(label) {
         margin-top: 0;
       }
 
@@ -372,11 +376,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   private _updateRowVisibility = (ev) => {
-    if (ev.detail?.value === false) {
-      ev.detail?.row?.parentElement!.style.setProperty("display", "none");
-    } else {
-      ev.detail?.row?.parentElement!.style.setProperty("display", "");
-    }
+    ev.detail?.row?.parentElement!.toggleAttribute(
+      "hidden",
+      ev.detail?.value === false
+    );
   };
 }
 
