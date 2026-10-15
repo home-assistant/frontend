@@ -51,7 +51,7 @@ import type { HaInput } from "./input/ha-input";
 
 interface AssistMessage {
   who: string;
-  text: string | TemplateResult;
+  text: string;
   thinking: string;
   thinking_expanded?: boolean;
   tool_calls: Record<
@@ -539,31 +539,21 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
     this._conversation = [...this._conversation!, message];
   }
 
-  private async _showNotSupportedMessage() {
+  private _showNotSupportedMessage() {
+    const documentationLink = `[${this._localize(
+      "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
+    )}](${documentationUrl(
+      this._config,
+      "/docs/configuration/securing/#remote-access"
+    )})`;
     this._addMessage({
       who: "hass",
-      text:
-        // New lines matter for messages
-        // prettier-ignore
-        html`${this._localize(
-          "ui.dialogs.voice_command.not_supported_microphone_browser"
-        )}
-
-        ${this._localize(
-          "ui.dialogs.voice_command.not_supported_microphone_documentation",
-          {
-            documentation_link: html`<a
-                target="_blank"
-                rel="noopener noreferrer"
-                href=${documentationUrl(
-                  this._config,
-                  "/docs/configuration/securing/#remote-access"
-                )}
-              >${this._localize(
-                  "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
-                )}</a>`,
-          }
-          )}`,
+      text: `${this._localize(
+        "ui.dialogs.voice_command.not_supported_microphone_browser"
+      )}\n\n${this._localize(
+        "ui.dialogs.voice_command.not_supported_microphone_documentation",
+        { documentation_link: documentationLink }
+      )}`,
       thinking: "",
       tool_calls: {},
     });
