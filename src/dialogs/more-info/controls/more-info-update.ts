@@ -1,8 +1,12 @@
+import type { ContextType } from "@lit/context";
+import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { consume } from "../../../common/decorators/consume";
 import { BINARY_STATE_OFF } from "../../../common/const";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
@@ -11,7 +15,14 @@ import "../../../components/ha-button";
 import "../../../components/ha-markdown";
 import "../../../components/ha-spinner";
 import "../../../components/progress/ha-progress-bar";
-import { apiContext, formattersContext } from "../../../data/context";
+import type { ManagerState } from "../../../data/backup_manager";
+import { subscribeBackupEvents } from "../../../data/backup_manager";
+import {
+  apiContext,
+  configContext,
+  connectionContext,
+  formattersContext,
+} from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { UpdateEntity } from "../../../data/update";
 import {
@@ -21,8 +32,13 @@ import {
   updateIsInstalling,
   updateReleaseNotes,
 } from "../../../data/update";
-import type { HomeAssistantApi, HomeAssistantFormatters } from "../../../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+} from "../../../types";
 import { showAlertDialog } from "../../generic/show-dialog-box";
+import { showToast } from "../../../util/toast";
 import "../components/update/ha-more-info-update-backup";
 import type { HaMoreInfoUpdateBackup } from "../components/update/ha-more-info-update-backup";
 
@@ -41,14 +57,82 @@ class MoreInfoUpdate extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
 
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _config!: HassConfig;
+
   @state() private _releaseNotes?: string | null;
 
   @state() private _error?: string;
+
+  @state() private _installError?: string;
+
+  @state() private _backupState: ManagerState = "idle";
 
   @state() private _markdownLoading = true;
 
   @query("ha-more-info-update-backup")
   private _backupElement?: HaMoreInfoUpdateBackup;
+
+  private _backupEventsUnsub?: Promise<UnsubscribeFunc>;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._subscribeBackupEvents();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._backupEventsUnsub?.then((unsub) => unsub());
+    this._backupEventsUnsub = undefined;
+    this._backupState = "idle";
+  }
+
+  private _subscribeBackupEvents(): void {
+    if (this._backupEventsUnsub || !isComponentLoaded(this._config, "backup")) {
+      return;
+    }
+
+    const backupEventsUnsub = subscribeBackupEvents(
+      this._connection,
+      (event) => {
+        this._backupState = event.manager_state;
+      }
+    );
+
+    backupEventsUnsub.catch(() => {
+      // The update can still be attempted; a failure is shown inline.
+      if (this._backupEventsUnsub === backupEventsUnsub) {
+        this._backupEventsUnsub = undefined;
+      }
+    });
+    this._backupEventsUnsub = backupEventsUnsub;
+  }
+
+  private _backupInProgressMessage(): string | undefined {
+    switch (this._backupState) {
+      case "create_backup":
+      case "receive_backup":
+      case "restore_backup":
+        return this._localize(
+          `ui.dialogs.more_info_control.update.backup_in_progress.${this._backupState}`,
+          {
+            backups_link: html`<a href="/config/backup"
+              >${this._localize(
+                "ui.dialogs.more_info_control.update.backup_in_progress.backups_link"
+              )}</a
+            >`,
+          }
+        );
+      default:
+        return undefined;
+    }
+  }
 
   protected render() {
     if (
@@ -61,6 +145,7 @@ class MoreInfoUpdate extends LitElement {
     }
 
     const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
+    const backupInProgressMessage = this._backupInProgressMessage();
 
     return html`
       <div class="content">
@@ -160,7 +245,22 @@ class MoreInfoUpdate extends LitElement {
       <div class="footer">
         <ha-more-info-update-backup
           .stateObj=${this.stateObj}
+          .disabled=${!!backupInProgressMessage}
         ></ha-more-info-update-backup>
+        ${
+          backupInProgressMessage
+            ? html`<ha-alert alert-type="info">
+                ${backupInProgressMessage}
+              </ha-alert>`
+            : this._installError
+              ? html`<ha-alert alert-type="error">
+                  ${this._localize(
+                    "ui.dialogs.more_info_control.update.install_failed",
+                    { error: this._installError }
+                  )}
+                </ha-alert>`
+              : nothing
+        }
         <div class="actions">
           ${
             this.stateObj.state === BINARY_STATE_OFF &&
@@ -195,7 +295,10 @@ class MoreInfoUpdate extends LitElement {
                   <ha-button
                     @click=${this._handleInstall}
                     .loading=${updateIsInstalling(this.stateObj)}
-                    .disabled=${updateButtonIsDisabled(this.stateObj)}
+                    .disabled=${
+                      updateButtonIsDisabled(this.stateObj) ||
+                      !!backupInProgressMessage
+                    }
                   >
                     ${this._localize(
                       "ui.dialogs.more_info_control.update.update"
@@ -240,7 +343,7 @@ class MoreInfoUpdate extends LitElement {
     }
   }
 
-  private _handleInstall(): void {
+  private async _handleInstall(): Promise<void> {
     const installData: Record<string, any> = {
       entity_id: this.stateObj!.entity_id,
     };
@@ -256,7 +359,38 @@ class MoreInfoUpdate extends LitElement {
       installData.version = this.stateObj!.attributes.latest_version;
     }
 
-    this._api.callService("update", "install", installData);
+    this._installError = undefined;
+
+    try {
+      await this._api.callService(
+        "update",
+        "install",
+        installData,
+        undefined,
+        false
+      );
+    } catch (err: any) {
+      const message = err?.message ?? String(err);
+
+      if (this.isConnected) {
+        this._installError = message;
+
+        return;
+      }
+
+      // The dialog was closed while the update was installing.
+      const toastHost = document.querySelector("home-assistant");
+
+      if (toastHost) {
+        showToast(toastHost, {
+          message: this._localize(
+            "ui.dialogs.more_info_control.update.install_failed",
+            { error: message }
+          ),
+          duration: 10000,
+        });
+      }
+    }
   }
 
   private _handleSkip(): void {
@@ -327,6 +461,13 @@ class MoreInfoUpdate extends LitElement {
       align-items: center;
       overflow: hidden;
       z-index: 10;
+    }
+
+    .footer ha-alert {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      padding: var(--ha-space-2) var(--ha-space-4) 0;
     }
 
     .actions {
