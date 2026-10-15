@@ -62,6 +62,7 @@ export class HuiUpdatesCard extends LitElement implements LovelaceCard {
     }
     return filterUpdateEntities(
       this.hass.states,
+      this.hass.formatEntityName,
       this.hass.locale.language
     ).filter((entity) => updateCanInstall(entity, false));
   }

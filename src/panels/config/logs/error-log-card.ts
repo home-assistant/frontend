@@ -667,7 +667,7 @@ class ErrorLogCard extends LitElement {
     this._ansiToHtmlElement?.clear();
 
     const unsub = subscribeIntegrationLog(
-      this.hass,
+      this.hass.connection,
       this.integration!,
       (lines) => {
         if (this._integrationUnsub === unsub) {

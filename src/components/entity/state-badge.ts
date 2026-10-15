@@ -230,7 +230,7 @@ export class StateBadge extends LitElement {
       const domain = computeDomain(this.stateObj.entity_id);
       if (domain === "update") {
         cls.set("has-no-radius", true);
-      } else if (domain === "media_player" || domain === "camera") {
+      } else if (domain === "media_player") {
         cls.set("has-media-image", true);
       } else if (this.style.backgroundImage !== "") {
         cls.set("has-image", true);
@@ -257,7 +257,10 @@ export class StateBadge extends LitElement {
           justify-content: center;
         }
         :host(.has-image) {
-          border-radius: var(--state-badge-with-image-border-radius, 50%);
+          border-radius: var(
+            --state-badge-with-image-border-radius,
+            var(--ha-picture-border-radius)
+          );
         }
         :host(.has-media-image) {
           border-radius: var(--state-badge-with-media-image-border-radius, 8%);

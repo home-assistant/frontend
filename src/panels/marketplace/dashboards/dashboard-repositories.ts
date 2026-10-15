@@ -1,8 +1,16 @@
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { dataTableQueryParamConfig } from "../../../common/url/data-table-query-params";
 import {
-  createMarketplaceBrowseQueryString,
-  decodeMarketplaceBrowseQueryParams,
+  createMarketplaceFilterQueryString,
+  decodeMarketplaceFilterQueryParams,
+  marketplaceFilterQueryParamConfig,
 } from "../../../common/url/marketplace-query-params";
+import {
+  createQueryString,
+  decodeQueryParams,
+  hasQueryParams,
+  type SearchParamsSource,
+} from "../../../common/url/query-params";
 import type { DataTableRowData } from "../../../components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
 import type { MarketplaceTab } from "./ha-marketplace-dashboard";
@@ -155,54 +163,61 @@ export const filterRepositories = (
 // /marketplace/browse?status=new&search=card&sort=stars&direction=desc
 export interface BrowseSettings {
   search?: string;
+  // The column by its name in the URL, the one its `urlName` gives
   sorting?: { column: string; direction: "asc" | "desc" };
   filters: RepositoryFilters;
 }
 
-export const browseQuery = ({
+export const browseUrl = ({
   search,
   sorting,
   filters,
-}: BrowseSettings): string =>
-  createMarketplaceBrowseQueryString({
-    ...filters,
-    search,
-    sort: sorting?.column,
-    direction: sorting?.direction,
-  });
-
-export const browseUrl = (settings: BrowseSettings): string => {
-  const query = browseQuery(settings);
+}: BrowseSettings): string => {
+  const query = [
+    createMarketplaceFilterQueryString(filters),
+    createQueryString(
+      {
+        search,
+        sort: sorting?.column,
+        // Ascending is what a sort without a direction does
+        direction: sorting?.direction === "desc" ? "desc" : undefined,
+      },
+      dataTableQueryParamConfig
+    ),
+  ]
+    .filter(Boolean)
+    .join("&");
   return query ? `/marketplace/browse?${query}` : "/marketplace/browse";
 };
 
-// Nothing about browsing in the link keeps what was picked before
-export const browseSettingsFromUrl = (
-  query: string
-): BrowseSettings | undefined => {
-  const { search, sort, direction, ...lists } =
-    decodeMarketplaceBrowseQueryParams(query);
+// What a link says to show, undefined when it says nothing about browsing so
+// what was picked before stays. A link replaces the search and the filters,
+// ones left behind would hide part of what it shows. The table applies its
+// sorting and grouping.
+export interface BrowseLink {
+  search: string;
+  filters: RepositoryFilters;
+}
 
-  const filters: RepositoryFilters = {
-    [STATUS_FILTER]: lists.status?.filter(Boolean),
-    [TYPE_FILTER]: lists.type?.filter(Boolean),
-    [SOURCE_FILTER]: lists.source?.filter(Boolean),
-  };
-
+export const browseLinkFromUrl = (
+  searchParams: SearchParamsSource
+): BrowseLink | undefined => {
   if (
-    !search &&
-    !sort &&
-    !Object.values(filters).some((values) => values?.length)
+    !hasQueryParams(searchParams, marketplaceFilterQueryParamConfig) &&
+    !hasQueryParams(searchParams, dataTableQueryParamConfig)
   ) {
     return undefined;
   }
 
+  const lists = decodeMarketplaceFilterQueryParams(searchParams);
+  const { search } = decodeQueryParams(searchParams, dataTableQueryParamConfig);
+
   return {
-    search,
-    sorting: sort
-      ? // Ascending unless the link says otherwise, like picking a sort in the table
-        { column: sort, direction: direction === "desc" ? "desc" : "asc" }
-      : undefined,
-    filters,
+    search: search ?? "",
+    filters: {
+      [STATUS_FILTER]: lists.status?.filter(Boolean),
+      [TYPE_FILTER]: lists.type?.filter(Boolean),
+      [SOURCE_FILTER]: lists.source?.filter(Boolean),
+    },
   };
 };

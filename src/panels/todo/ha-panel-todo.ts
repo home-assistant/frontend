@@ -16,7 +16,6 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -199,7 +198,7 @@ class PanelTodo extends LitElement {
                       ${
                         this._entityId
                           ? entityState
-                            ? computeStateName(entityState)
+                            ? this.hass.formatEntityName(entityState)
                             : this._entityId
                           : nothing
                       }
@@ -346,7 +345,7 @@ class PanelTodo extends LitElement {
       title: this.hass.localize("ui.panel.todo.delete_confirm_title", {
         name:
           this._entityId in this.hass.states
-            ? computeStateName(this.hass.states[this._entityId])
+            ? this.hass.formatEntityName(this.hass.states[this._entityId])
             : this._entityId,
       }),
       text: this.hass.localize("ui.panel.todo.delete_confirm_text"),

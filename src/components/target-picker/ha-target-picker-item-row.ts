@@ -662,11 +662,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
       return {
         name: device
-          ? computeDeviceNameDisplay(
-              device,
-              this.hass.localize,
-              this.hass.states
-            )
+          ? computeDeviceNameDisplay(device, this.hass.localize)
           : item,
         context,
         fallbackIconPath: mdiDevices,

@@ -11,13 +11,13 @@ import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type {
   LovelaceViewConfig,
   LovelaceViewRawConfig,
 } from "../../../data/lovelace/config/view";
+import { normalizeViewConfig } from "../../../data/lovelace/config/normalize";
 import { isStrategyView } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import {
@@ -232,7 +232,7 @@ export class HUIView extends ReactiveElement {
       "ll-edit-badge",
       (ev: HASSDomEvent<HASSDomEvents["ll-edit-badge"]>) => {
         const path = ev.detail.path;
-        const badge = getAtPath<Partial<LovelaceBadgeConfig> | string>(
+        const badge = getAtPath<LovelaceBadgeConfig>(
           this.lovelace.config,
           path
         );
@@ -249,7 +249,7 @@ export class HUIView extends ReactiveElement {
             );
             await this.lovelace.saveConfig(newConfig);
           },
-          badgeConfig: ensureBadgeConfig(badge),
+          badgeConfig: badge,
         });
       }
     );
@@ -435,10 +435,11 @@ export class HUIView extends ReactiveElement {
     config: LovelaceViewRawConfig
   ): Promise<LovelaceViewConfig> {
     if (isStrategyView(config)) {
-      const generatedConfig = await generateLovelaceViewStrategy(
+      const strategyConfig = await generateLovelaceViewStrategy(
         config,
         this.hass!
       );
+      const generatedConfig = normalizeViewConfig(strategyConfig);
       return {
         ...generatedConfig,
         type: getViewType(generatedConfig),
@@ -525,11 +526,7 @@ export class HUIView extends ReactiveElement {
       return;
     }
 
-    this._badges = config.badges.map((badge) => {
-      const badgeConfig = ensureBadgeConfig(badge);
-      const element = this.createBadgeElement(badgeConfig);
-      return element;
-    });
+    this._badges = config.badges.map((badge) => this.createBadgeElement(badge));
   }
 
   private _createCards(config: LovelaceViewConfig): void {

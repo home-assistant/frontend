@@ -88,11 +88,7 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
     return html`
       <ha-adaptive-dialog
         .open=${this._open}
-        header-title=${computeDeviceNameDisplay(
-          device,
-          this.hass.localize,
-          this.hass.states
-        )}
+        header-title=${computeDeviceNameDisplay(device, this.hass.localize)}
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >

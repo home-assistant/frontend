@@ -928,7 +928,8 @@
       },
       "conversation-agent-picker": {
         "conversation_agent": "Conversation agent",
-        "none": "None"
+        "none": "None",
+        "settings": "Agent settings"
       },
       "country-picker": {
         "country": "Country",
@@ -3049,7 +3050,14 @@
           "gen_data_header": "Data generation tasks",
           "gen_data_description": "Suggest automation names.",
           "gen_image_header": "Image generation tasks",
-          "gen_image_description": "Generate images."
+          "gen_image_description": "Generate images.",
+          "gen_data_settings": "Data generation settings",
+          "gen_image_settings": "Image generation settings",
+          "evaluate_header": "Decisions",
+          "evaluate_description": "Evaluate questions.",
+          "evaluate_settings": "Decision settings",
+          "allow_automatic_evaluation": "Use decisions in Home Assistant features",
+          "allow_automatic_evaluation_description": "Allow Home Assistant to automatically use the selected decision model to improve built-in features."
         },
         "mcp": {
           "header": "Model Context Protocol",
@@ -4313,6 +4321,13 @@
                 }
               },
               "adjust_sum": "Adjust sum",
+              "clear_range": {
+                "title": "Delete statistics in a time range",
+                "info_text": "Delete the statistics of {name} between the start and end time. Use this to remove bad measurements from your graphs. Deleted statistics cannot be restored.",
+                "invalid_range": "The end time must be after the start time.",
+                "no_statistics_found": "No statistics found for this period.",
+                "deleted": "Statistics deleted"
+              },
               "data_table": {
                 "select_all_issues": "Select all with issues",
                 "name": "Name",
@@ -7571,15 +7586,13 @@
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
-            "show_live_log": "Show live log",
+            "debug_logging_enabled_description": "Extra detail from this integration is being written to the logs. Reproduce the problem, then disable it. Home Assistant will download the log for your issue report if log file downloads are available. Leaving it on can slow Home Assistant down and fill up the logs.",
+            "show_logs": "Show logs",
             "live_log": {
               "title": "Live log",
               "waiting": "Waiting for log messages from {integration}…",
               "unsupported": "This version of Home Assistant can't stream the log.",
-              "no_matches": "No log lines match the filters",
-              "pause": "[%key:ui::card::timer::actions::pause%]",
-              "resume": "Resume",
-              "paused": "Paused"
+              "no_matches": "No log lines match the search"
             },
             "state": {
               "loaded": "Loaded",
@@ -11425,18 +11438,29 @@
                 "style": "Style",
                 "style_list": {
                   "buttons": "Buttons",
-                  "slider": "Slider"
+                  "buttons_description": "Change the value step by step with minus and plus",
+                  "slider": "Slider",
+                  "slider_description": "Drag to set the value"
                 }
               },
               "target-temperature": {
-                "label": "Target temperature"
+                "label": "Target temperature",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "buttons_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons_description%]",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]",
+                  "slider_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider_description%]"
+                }
               },
               "target-humidity": {
                 "label": "Target humidity",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
                 "style_list": {
                   "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
-                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]"
+                  "buttons_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons_description%]",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]",
+                  "slider_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider_description%]"
                 }
               },
               "water-heater-operation-modes": {

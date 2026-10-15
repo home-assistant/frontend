@@ -1,16 +1,30 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
-import { connectionContext } from "../../../data/context";
+import { transform } from "../../../common/decorators/transform";
+import { connectionContext, formattersContext } from "../../../data/context";
 import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
-import type { HomeAssistantConnection } from "../../../types";
+import type {
+  HomeAssistantConnection,
+  HomeAssistantFormatters,
+} from "../../../types";
 
 @customElement("more-info-image")
 class MoreInfoImage extends LitElement {
   @state()
   @consume({ context: connectionContext, subscribe: true })
   private _connection?: HomeAssistantConnection;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName?: HomeAssistantFormatters["formatEntityName"];
 
   @property({ attribute: false }) public stateObj?: ImageEntity;
 
@@ -23,7 +37,7 @@ class MoreInfoImage extends LitElement {
       return nothing;
     }
     return html`<img
-      alt=${this.stateObj.attributes.friendly_name || this.stateObj.entity_id}
+      alt=${this._formatEntityName?.(this.stateObj) || this.stateObj.entity_id}
       src=${this._connection.hassUrl(imageUrl)}
     /> `;
   }

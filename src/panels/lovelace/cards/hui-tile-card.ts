@@ -173,6 +173,17 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   private _handleIconAction(ev: ActionHandlerEvent) {
     ev.stopPropagation();
+
+    // The icon only has a hold or double tap action, so a tap belongs to the card
+    if (
+      ev.detail.action === "tap" &&
+      !hasAction(this._config?.icon_tap_action)
+    ) {
+      this._handleAction(ev);
+
+      return;
+    }
+
     const config = {
       entity: this._config!.entity,
       tap_action: this._config!.icon_tap_action,
@@ -247,7 +258,10 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
 
   private get _hasIconAction() {
     return (
-      !this._config?.icon_tap_action || hasAction(this._config?.icon_tap_action)
+      !this._config?.icon_tap_action ||
+      hasAction(this._config?.icon_tap_action) ||
+      hasAction(this._config?.icon_hold_action) ||
+      hasAction(this._config?.icon_double_tap_action)
     );
   }
 
@@ -335,6 +349,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
             }}
             .interactive=${this._hasIconAction}
+            .accessibleLabel=${name}
             .imageUrl=${imageUrl}
             data-domain=${ifDefined(domain)}
             data-state=${ifDefined(stateObj?.state)}
@@ -440,6 +455,13 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
         }
       }
 
+      /* Pictures are rounded squares, matching avatars elsewhere */
+      ha-tile-icon.image {
+        --tile-icon-border-radius: var(
+          --ha-tile-icon-border-radius,
+          var(--ha-picture-border-radius)
+        );
+      }
       /* Make sure we display the whole image */
       ha-tile-icon.image[data-domain="update"] {
         --tile-icon-border-radius: var(--ha-border-radius-square);

@@ -1,5 +1,6 @@
 import {
   mdiCrosshairsGps,
+  mdiHome,
   mdiMagnify,
   mdiMapMarker,
   mdiMapSearchOutline,
@@ -10,6 +11,10 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import {
+  HOME_ZONE_ENTITY_ID,
+  zoneColor,
+} from "../common/map/entity-map-colors";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-button";
@@ -188,7 +193,8 @@ class OnboardingLocation extends LitElement {
         .locations=${this._markerLocations(
           this._location,
           this._places,
-          this._highlightedMarker
+          this._highlightedMarker,
+          zoneColor(HOME_ZONE_ENTITY_ID, false, [], getComputedStyle(this))
         )}
         zoom="14"
         .themeMode=${darkMql.matches ? "dark" : "light"}
@@ -238,14 +244,25 @@ class OnboardingLocation extends LitElement {
 
   private _markerLocations = memoizeOne(
     (
-      location?: [number, number],
-      places?: OpenStreetMapPlace[] | null,
-      highlightedMarker?: number
+      location: [number, number] | undefined,
+      places: OpenStreetMapPlace[] | null | undefined,
+      highlightedMarker: number | undefined,
+      homeColor: string
     ): MarkerLocation[] => {
+      // Drawn like the home zone on a map
+      const home: Pick<
+        MarkerLocation,
+        "iconPath" | "zone_marker" | "radius_color"
+      > = {
+        iconPath: mdiHome,
+        zone_marker: true,
+        radius_color: homeColor,
+      };
       if (!places) {
         return [
           {
             id: LOCATION_MARKER_ID,
+            ...home,
             latitude: (location || AMSTERDAM)[0],
             longitude: (location || AMSTERDAM)[1],
             location_editable: true,
@@ -255,8 +272,9 @@ class OnboardingLocation extends LitElement {
       return places?.length
         ? places.map((place) => ({
             id: String(place.place_id),
-            iconPath:
-              place.place_id === highlightedMarker ? undefined : mdiMapMarker,
+            ...(place.place_id === highlightedMarker
+              ? home
+              : { iconPath: mdiMapMarker }),
             latitude:
               location && place.place_id === highlightedMarker
                 ? location[0]

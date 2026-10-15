@@ -6,6 +6,7 @@ import { keyed } from "lit/directives/keyed";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
+import { getRowNote } from "../../../../data/automation";
 import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
@@ -51,6 +52,7 @@ export default class HaAutomationSidebarScriptField extends LitElement {
   }
 
   protected render() {
+    const note = getRowNote(this.config.config.field.description);
     const title = this.hass.localize(
       "ui.panel.config.script.editor.field.label"
     );
@@ -127,10 +129,10 @@ export default class HaAutomationSidebarScriptField extends LitElement {
         ></ha-script-field-editor>`
       )}
       ${
-        this.config.config.field.description?.trim() && !this.yamlMode
+        note && !this.yamlMode
           ? html`<ha-automation-note
               @edit-note=${this.config.editNote}
-              .note=${this.config.config.field.description}
+              .note=${note}
             ></ha-automation-note>`
           : nothing
       }

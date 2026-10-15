@@ -809,6 +809,7 @@ const describeLegacyTrigger = (
     const localized = localizeDeviceAutomationTrigger(
       hass.localize,
       hass.states,
+      hass.formatEntityName,
       entityRegistry,
       config
     );
@@ -1287,6 +1288,7 @@ const describeLegacyCondition = (
     const localized = localizeDeviceAutomationCondition(
       hass.localize,
       hass.states,
+      hass.formatEntityName,
       entityRegistry,
       config
     );

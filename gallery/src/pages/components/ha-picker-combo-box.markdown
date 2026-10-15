@@ -63,26 +63,25 @@ means supplying one.
 
 ### Properties/Attributes
 
-| Name                 | Type               | Default   | Description                                                                                                                 |
-| -------------------- | ------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------- |
-| getItems             | Function           | -         | Required. Returns the items, optionally filtered by search string and section.                                              |
-| getAdditionalItems   | Function           | -         | Extra items appended to search results, for example "add new".                                                              |
-| value                | String             | -         | Id of the current item. Marks its row `selected`, and the virtualized list opens with that row in view.                     |
-| label                | String             | -         | Placeholder for the search field. Falls back to a localized "Search".                                                       |
-| mode                 | "popover"/"dialog" | "popover" | Adjusts padding for the surface the list sits in.                                                                           |
-| shown                | Boolean            | true      | Whether the surface finished animating. `ha-generic-picker` sets it so the virtualizer does not measure rows mid-animation. |
-| sections             | Array              | -         | Filter chips. Section headers are plain strings returned by `getItems`.                                                     |
-| selectedSection      | String             | -         | Section filter selected when the list is initialized.                                                                       |
-| sectionTitleFunction | Function           | -         | Builds the sticky section title from the visible range.                                                                     |
-| searchKeys           | Array              | -         | Fuse weighted keys for fuzzy search.                                                                                        |
-| searchFn             | Function           | -         | Post-processes filtered results.                                                                                            |
-| rowRenderer          | Function           | -         | Replaces the default row template.                                                                                          |
-| allowCustomValue     | Boolean            | false     | Offers the typed string as an item.                                                                                         |
-| customValueLabel     | String             | -         | Label for that custom item.                                                                                                 |
-| notFoundLabel        | String/Function    | -         | Shown when a search matches nothing.                                                                                        |
-| emptyLabel           | String             | -         | Shown when there are no items at all.                                                                                       |
-| noSort               | Boolean            | false     | Keeps the order `getItems` returned.                                                                                        |
-| clearable            | Boolean            | false     | Adjusts search field padding for a clear affordance.                                                                        |
+| Name               | Type               | Default   | Description                                                                                                                             |
+| ------------------ | ------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| getItems           | Function           | -         | Required. Returns the items, optionally filtered by search string and section.                                                          |
+| getAdditionalItems | Function           | -         | Extra items appended to search results, for example "add new".                                                                          |
+| value              | String             | -         | Id of the current item. Marks its row `selected`, and the virtualized list opens with that row in view.                                 |
+| label              | String             | -         | Placeholder for the search field. Falls back to a localized "Search".                                                                   |
+| mode               | "popover"/"dialog" | "popover" | Adjusts padding for the surface the list sits in.                                                                                       |
+| shown              | Boolean            | true      | Whether the surface finished animating. `ha-generic-picker` sets it so the virtualizer does not measure rows mid-animation.             |
+| sections           | Array              | -         | Filter chips. Section headers are plain strings returned by `getItems`, and the sticky title shows the one above the first visible row. |
+| selectedSection    | String             | -         | Section filter selected when the list is initialized.                                                                                   |
+| searchKeys         | Array              | -         | Fuse weighted keys for fuzzy search.                                                                                                    |
+| searchFn           | Function           | -         | Post-processes filtered results.                                                                                                        |
+| rowRenderer        | Function           | -         | Replaces the default row template.                                                                                                      |
+| allowCustomValue   | Boolean            | false     | Offers the typed string as an item.                                                                                                     |
+| customValueLabel   | String             | -         | Label for that custom item.                                                                                                             |
+| notFoundLabel      | String/Function    | -         | Shown when a search matches nothing.                                                                                                    |
+| emptyLabel         | String             | -         | Shown when there are no items at all.                                                                                                   |
+| noSort             | Boolean            | false     | Keeps the order `getItems` returned.                                                                                                    |
+| clearable          | Boolean            | false     | Adjusts search field padding for a clear affordance.                                                                                    |
 
 ### Events
 

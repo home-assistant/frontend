@@ -17,7 +17,7 @@ import type {
   DeviceCondition,
   DeviceTrigger,
 } from "./device/device_automation";
-import type { Action, Field, MODES } from "./script";
+import type { Action, Field, MODES, Option } from "./script";
 import { migrateAutomationAction } from "./script";
 import type { TriggerDescription } from "./trigger";
 
@@ -524,11 +524,14 @@ export const pickRowConfig = <T extends object>(
   return config as Partial<T>;
 };
 
+export const getRowNote = (note: unknown): string | undefined =>
+  typeof note === "string" ? note.trim() || undefined : undefined;
+
 export const migrateAutomationTrigger = (
   trigger: Trigger | Trigger[],
   report?: AutomationMigrationReport
 ): Trigger | Trigger[] => {
-  if (!trigger) {
+  if (!trigger || typeof trigger !== "object") {
     return trigger;
   }
 
@@ -549,7 +552,11 @@ export const migrateAutomationTrigger = (
   }
 
   if ("options" in trigger) {
-    if (trigger.options && "behavior" in trigger.options) {
+    if (
+      typeof trigger.options === "object" &&
+      trigger.options !== null &&
+      "behavior" in trigger.options
+    ) {
       // Deprecated behavior values renamed in 2026; the backend raises a repair
       // when they are still used, so flag the migration to offer saving.
       if (trigger.options.behavior === "any") {
@@ -755,8 +762,14 @@ export interface ActionSidebarConfig extends BaseSidebarConfig {
 }
 
 export interface OptionSidebarConfig extends BaseSidebarConfig {
+  save: (value: unknown) => void;
   rename: () => void;
   duplicate: () => void;
+  toggleYamlMode: (yamlMode?: boolean) => void;
+  yamlMode?: boolean;
+  config: {
+    option?: Option;
+  };
   defaultOption?: boolean;
   note?: string;
 }

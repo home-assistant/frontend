@@ -14,6 +14,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
+import { findSectionTitle } from "./list/find-section-title";
 import { consume } from "../common/decorators/consume";
 import {
   fireEvent,
@@ -188,14 +189,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     | "separator"
   )[];
 
-  @property({ attribute: false }) public sectionTitleFunction?: (listInfo: {
-    firstIndex: number;
-    lastIndex: number;
-    firstItem: PickerComboBoxItem | string;
-    secondItem: PickerComboBoxItem | string;
-    itemsCount: number;
-  }) => string | undefined;
-
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
   @property({ type: Boolean, reflect: true }) public clearable = false;
@@ -232,6 +225,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   @state() private _sectionTitle?: string;
 
   private _allItems: PickerComboBoxItem[] = [];
+
+  // Rows from this index on are added by the combo box itself, like "Add custom
+  // item", and belong to no section.
+  private _sectionedItemsCount = 0;
 
   // The virtualized list renders its scroller a moment after it connects, so
   // the scroll fades attach once it reports its first visible rows.
@@ -319,14 +316,14 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         this.sections?.length
           ? html`
               <div class="section-title-wrapper">
-                <div
+                <ha-section-title
                   class=${classMap({
                     "section-title": true,
                     show: !this._selectedSection && !!this._sectionTitle,
                   })}
                 >
                   ${this._sectionTitle}
-                </div>
+                </ha-section-title>
               </div>
             `
           : nothing
@@ -422,15 +419,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       this._virtualScrollElement = scrollElement;
       this.requestUpdate();
     }
-    if (this.sectionTitleFunction && this.sections?.length) {
-      const { first, last } = ev.detail;
-      this._sectionTitle = this.sectionTitleFunction({
-        firstIndex: first,
-        lastIndex: last,
-        firstItem: this._items[first],
-        secondItem: this._items[first + 1],
-        itemsCount: this._items.length,
-      });
+    if (this.sections?.length) {
+      const { first } = ev.detail;
+      this._sectionTitle =
+        !this._selectedSection && first < this._sectionedItemsCount
+          ? findSectionTitle(this._items, first)
+          : undefined;
     }
   }
 
@@ -466,6 +460,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         );
       });
     }
+
+    this._sectionedItemsCount = items.length;
 
     if (!items.length && (!this.allowCustomValue || this.emptyLabel)) {
       items.push({ id: NO_ITEMS_AVAILABLE_ID, primary: "" });
@@ -535,10 +531,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _renderRow(item: PickerComboBoxItem | string, index: number) {
     if (typeof item === "string") {
-      return html`<ha-section-title
-        style="padding: var(--ha-space-1) var(--ha-space-4);"
-        >${item}</ha-section-title
-      >`;
+      return html`<ha-section-title>${item}</ha-section-title>`;
     }
     if (item.id === PADDING_ID) {
       return html`<div
@@ -867,6 +860,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           padding-top: var(--ha-space-4);
           flex: 1;
           min-height: 0;
+          --ha-section-title-padding: var(--ha-space-1) var(--ha-space-4);
         }
 
         :host([clearable]) {
@@ -972,17 +966,6 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           height: var(--ha-space-8);
           width: 0;
           border: 1px solid var(--ha-color-border-neutral-quiet);
-        }
-
-        .section-title {
-          box-sizing: border-box;
-          background-color: var(--ha-color-fill-neutral-quiet-resting);
-          padding: var(--ha-space-1) var(--ha-space-4);
-          font-weight: var(--ha-font-weight-bold);
-          color: var(--secondary-text-color);
-          min-height: var(--ha-space-6);
-          display: flex;
-          align-items: center;
         }
 
         .section-title-wrapper {

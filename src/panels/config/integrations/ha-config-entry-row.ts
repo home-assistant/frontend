@@ -664,8 +664,13 @@ export class HaConfigEntryRow extends LitElement {
     const locale_key = result.require_restart
       ? "reload_restart_confirm"
       : "reload_confirm";
-    showAlertDialog(this, {
-      text: this.hass.localize(
+    // The row can move between sections when the entry state changes on reload
+    const host =
+      (this.isConnected
+        ? this
+        : document.querySelector<HTMLElement>("home-assistant")) ?? this;
+    showToast(host, {
+      message: this.hass.localize(
         `ui.panel.config.integrations.config_entry.${locale_key}`
       ),
     });

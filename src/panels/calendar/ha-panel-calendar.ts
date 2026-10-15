@@ -7,7 +7,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-button";
 import "../../components/ha-card";
 import "../../components/ha-dropdown";
@@ -381,7 +380,7 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
       const nameList = error_entity_ids
         .map((error_entity_id) =>
           this.hass!.states[error_entity_id]
-            ? computeStateName(this.hass!.states[error_entity_id])
+            ? this.hass!.formatEntityName(this.hass!.states[error_entity_id])
             : error_entity_id
         )
         .join(", ");

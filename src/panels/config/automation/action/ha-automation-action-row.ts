@@ -64,6 +64,7 @@ import type {
   Condition,
   TriggerCondition,
 } from "../../../../data/automation";
+import { getRowNote } from "../../../../data/automation";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { validateConfig } from "../../../../data/config";
@@ -340,10 +341,7 @@ export default class HaAutomationActionRow extends LitElement {
             ]?.target
           : undefined;
 
-    const noteTooltipText = truncateWithEllipsis(
-      this.action.note?.trim() || "",
-      250
-    );
+    const note = getRowNote(this.action.note);
 
     const liveTestCondition = !this.optionsInSidebar
       ? undefined
@@ -367,7 +365,6 @@ export default class HaAutomationActionRow extends LitElement {
             ? html`<ha-automation-condition-live-test
                 id="condition-icon"
                 slot="leading-icon"
-                .hass=${this.hass}
                 .condition=${liveTestCondition}
               >
                 <ha-svg-icon
@@ -420,7 +417,7 @@ export default class HaAutomationActionRow extends LitElement {
             : nothing
         }
         ${
-          noteTooltipText
+          note
             ? html`
                 <ha-svg-icon
                   id="note-icon"
@@ -432,7 +429,7 @@ export default class HaAutomationActionRow extends LitElement {
                   class="note-indicator"
                 ></ha-svg-icon
                 ><ha-tooltip for="note-icon"
-                  ><p>${noteTooltipText}</p></ha-tooltip
+                  ><p>${truncateWithEllipsis(note, 250)}</p></ha-tooltip
                 >
               `
             : nothing
