@@ -152,7 +152,9 @@ export class HaBackupOverviewProgress extends LitElement {
     // doesn't report progress is only known once it has finished.
     const percents = Object.keys(this.uploadProgress)
       .map((agentId) => this._computeAgentPercent(agentId))
-      .filter((percent) => percent !== undefined && percent < 100);
+      .filter(
+        (percent): percent is number => percent !== undefined && percent < 100
+      );
     return percents.length ? Math.min(...percents) : undefined;
   }
 
