@@ -652,11 +652,7 @@ class DialogAddAutomationElement
           automationElementType,
           this._recentElements?.[automationElementType],
           this._currentItems(),
-          automationElementType === "trigger"
-            ? undefined
-            : this._getBlockItems(automationElementType, this.hass.localize),
-          collections,
-          this.hass.localize
+          collections
         );
 
     return html`
@@ -2033,28 +2029,19 @@ class DialogAddAutomationElement
       type: AddAutomationElementDialogParams["type"],
       recents: string[] | undefined,
       items: AddAutomationElementListItem[],
-      blockItems: AddAutomationElementListItem[] | undefined,
-      collections: CollectionGroup[],
-      localize: LocalizeFunc
+      collections: CollectionGroup[]
     ) => {
       if (!Array.isArray(recents)) {
         return [];
       }
-      const blocksName = localize("ui.panel.config.automation.editor.blocks");
       return recents
-        .map((key) => {
-          const item = items.find((candidate) => candidate.key === key);
-          if (item) {
-            return {
-              item,
-              groupName: this._elementGroup(type, key, collections)?.name,
-            };
-          }
-          const block = blockItems?.find((candidate) => candidate.key === key);
-          return block ? { item: block, groupName: blocksName } : undefined;
-        })
-        .filter((entry) => entry !== undefined)
-        .slice(0, MAX_RECENT_ELEMENTS);
+        .map((key) => items.find((item) => item.key === key))
+        .filter((item) => item !== undefined)
+        .slice(0, MAX_RECENT_ELEMENTS)
+        .map((item) => ({
+          item,
+          groupName: this._elementGroup(type, item.key, collections)?.name,
+        }));
     }
   );
 
@@ -2086,15 +2073,24 @@ class DialogAddAutomationElement
   private _rememberSelection(key: string, target?: SingleHassServiceTarget) {
     const type = this._params!.type;
 
-    this._recentElements = {
-      ...this._recentElements,
-      [type]: addRecent(
-        this._recentElements?.[type],
-        key,
-        MAX_RECENT_ELEMENTS,
-        (item) => typeof item === "string"
-      ),
-    };
+    // Building blocks are rarely reused, they are not remembered
+    const blocks =
+      type === "action"
+        ? ACTION_BUILDING_BLOCKS_GROUP
+        : type === "condition"
+          ? CONDITION_BUILDING_BLOCKS_GROUP
+          : {};
+    if (!(key in blocks)) {
+      this._recentElements = {
+        ...this._recentElements,
+        [type]: addRecent(
+          this._recentElements?.[type],
+          key,
+          MAX_RECENT_ELEMENTS,
+          (item) => typeof item === "string"
+        ),
+      };
+    }
 
     if (target) {
       this._recentTargets = addRecentTargets(this._recentTargets, [], target);
