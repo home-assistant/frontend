@@ -42,6 +42,8 @@ import type {
 export class HaMoreInfoUpdateBackup extends LitElement {
   @property({ attribute: false }) public stateObj?: UpdateEntity;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -126,7 +128,7 @@ export class HaMoreInfoUpdateBackup extends LitElement {
                 slot="end"
                 .checked=${this._createBackup}
                 @change=${this._createBackupChanged}
-                .disabled=${updateIsInstalling(this.stateObj)}
+                .disabled=${this.disabled || updateIsInstalling(this.stateObj)}
               ></ha-switch>`
         }
       </ha-row-item>
