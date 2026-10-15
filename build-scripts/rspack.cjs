@@ -124,6 +124,12 @@ const createRspackConfig = ({
     __dirname,
     "lit-disable-dev-mode-loader.cjs"
   );
+  // temporal-polyfill needs BigInt (Safari 14, Chrome 67). FullCalendar only
+  // uses a few time zone conversions from it, which Intl covers.
+  const temporalFnsShim = path.join(
+    paths.root_dir,
+    "src/resources/polyfills/temporal-fns"
+  );
   return {
     name,
     mode: isProdBuild ? "production" : "development",
@@ -380,6 +386,20 @@ const createRspackConfig = ({
     resolve: {
       extensions: [".ts", ".js", ".json"],
       alias: {
+        ...(!latestBuild && {
+          "temporal-polyfill/fns/Instant$": path.join(
+            temporalFnsShim,
+            "instant.ts"
+          ),
+          "temporal-polyfill/fns/PlainDateTime$": path.join(
+            temporalFnsShim,
+            "plain-date-time.ts"
+          ),
+          "temporal-polyfill/fns/ZonedDateTime$": path.join(
+            temporalFnsShim,
+            "zoned-date-time.ts"
+          ),
+        }),
         "lit/static-html$": "lit/static-html.js",
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",

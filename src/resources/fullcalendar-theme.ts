@@ -90,5 +90,16 @@ export const fullCalendarStyles = [
       font-weight: var(--ha-font-weight-bold);
       text-transform: uppercase;
     }
+
+    /* Chrome < 65 has no display: contents, so a list event's time and
+       title would stack */
+    @supports not (display: contents) {
+      .ha-fc-list-event > :not(.ha-fc-dot) {
+        display: flex;
+        flex-grow: 1;
+        min-width: 0;
+        align-items: center;
+      }
+    }
   `,
 ];
