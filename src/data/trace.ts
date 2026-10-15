@@ -273,8 +273,8 @@ export const getDataFromPath = (
  */
 export const getNestedStepConfig = (config: unknown, path: string): unknown => {
   let currentDetail = config;
-  let previousPart: string | undefined;
-  for (const part of path.split("/")) {
+  const parts = path.split("/");
+  for (const [index, part] of parts.entries()) {
     if (typeof currentDetail !== "object" || currentDetail === null) {
       break;
     }
@@ -286,8 +286,7 @@ export const getNestedStepConfig = (config: unknown, path: string): unknown => {
     // Core traces the conditions of an `if` action as `if/condition/<index>`,
     // while the config keeps them directly in `if`, as a list or as a single
     // condition.
-    if (part === "condition" && previousPart === "if") {
-      previousPart = part;
+    if (part === "condition" && parts[index - 1] === "if") {
       continue;
     }
     // A list of conditions or actions can also be written as a single item,
@@ -296,7 +295,6 @@ export const getNestedStepConfig = (config: unknown, path: string): unknown => {
       if (part !== "0") {
         break;
       }
-      previousPart = part;
       continue;
     }
     const child = (currentDetail as Record<string, unknown>)[part];
@@ -304,7 +302,6 @@ export const getNestedStepConfig = (config: unknown, path: string): unknown => {
       break;
     }
     currentDetail = child;
-    previousPart = part;
   }
   return currentDetail;
 };

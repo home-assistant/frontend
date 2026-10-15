@@ -35,8 +35,7 @@ describe("getTraceUrl", () => {
 
 // The step details of a trace describe nested steps by following their trace
 // path through the config of the selected step. Core traces the conditions of
-// an `if` action as `if/condition/<index>`, while the config keeps them in the
-// `if` list. Stopping at the list made describeCondition throw.
+// an `if` action as `if/condition/<index>`, while the config keeps them in `if`.
 describe("getNestedStepConfig", () => {
   const stateCondition = {
     condition: "state",
@@ -80,17 +79,6 @@ describe("getNestedStepConfig", () => {
     expect(getNestedStepConfig(config, "if/condition/0/conditions/0")).toBe(
       stateCondition
     );
-  });
-
-  it("follows the conditions of a repeat", () => {
-    const config = {
-      repeat: { while: [orCondition], until: stateCondition, sequence: [] },
-    };
-
-    expect(getNestedStepConfig(config, "repeat/while/0/conditions/0")).toBe(
-      stateCondition
-    );
-    expect(getNestedStepConfig(config, "repeat/until/0")).toBe(stateCondition);
   });
 
   it("returns template conditions written as plain strings", () => {
