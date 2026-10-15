@@ -238,6 +238,13 @@ describe("registerServiceWorker", () => {
     expect(reload).toHaveBeenCalledOnce();
   });
 
+  it("tolerates a blocked registration that resolves without a worker", async () => {
+    serviceWorker.controller = null;
+    serviceWorker.register.mockResolvedValue(undefined);
+
+    await expect(registerServiceWorker(root, false)).resolves.toBeUndefined();
+  });
+
   it("does not reload a first install's claim", async () => {
     serviceWorker.controller = null;
     const reload = vi.fn<() => void>();
