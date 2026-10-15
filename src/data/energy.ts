@@ -46,6 +46,7 @@ import {
   getStatisticLabel,
   getStatisticMetadata,
   ENERGY_UNITS,
+  MASS_UNITS,
   VOLUME_UNITS,
 } from "./recorder";
 
@@ -108,6 +109,15 @@ export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
 export const emptyWaterEnergyPreference =
   (): WaterSourceTypeEnergyPreference => ({
     type: "water",
+    stat_energy_from: "",
+    stat_cost: null,
+    entity_energy_price: null,
+    number_energy_price: null,
+  });
+
+export const emptyHeatEnergyPreference =
+  (): HeatSourceTypeEnergyPreference => ({
+    type: "heat",
     stat_energy_from: "",
     stat_cost: null,
     entity_energy_price: null,
@@ -225,12 +235,33 @@ export interface WaterSourceTypeEnergyPreference {
   name?: string;
 }
 
+export interface HeatSourceTypeEnergyPreference {
+  type: "heat";
+
+  // kWh, fuel volume (L, m³, gal) or fuel mass (kg, lb) meter
+  stat_energy_from: string;
+
+  // Heat power (kW) or fuel flow rate (L/h, etc.)
+  stat_rate?: string;
+
+  // $ meter
+  stat_cost: string | null;
+
+  // Can be used to generate costs if stat_cost omitted
+  entity_energy_price: string | null;
+  number_energy_price: number | null;
+  unit_of_measurement?: string | null;
+
+  name?: string;
+}
+
 export type EnergySource =
   | SolarSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference
   | GasSourceTypeEnergyPreference
-  | WaterSourceTypeEnergyPreference;
+  | WaterSourceTypeEnergyPreference
+  | HeatSourceTypeEnergyPreference;
 
 export interface EnergyPreferences {
   energy_sources: EnergySource[];
@@ -315,6 +346,7 @@ export interface EnergySourceByType {
   battery?: BatterySourceTypeEnergyPreference[];
   gas?: GasSourceTypeEnergyPreference[];
   water?: WaterSourceTypeEnergyPreference[];
+  heat?: HeatSourceTypeEnergyPreference[];
 }
 
 export const energySourcesByType = (prefs: EnergyPreferences) =>
@@ -404,6 +436,7 @@ export interface EnergyData {
   fossilEnergyConsumptionCompare?: FossilEnergyConsumption;
   waterUnit: string;
   gasUnit: string;
+  heatUnit: string;
 }
 
 export const getReferencedStatisticIds = (
@@ -423,7 +456,11 @@ export const getReferencedStatisticIds = (
       continue;
     }
 
-    if (source.type === "gas" || source.type === "water") {
+    if (
+      source.type === "gas" ||
+      source.type === "water" ||
+      source.type === "heat"
+    ) {
       statIDs.push(source.stat_energy_from);
 
       if (source.stat_cost) {
@@ -483,7 +520,11 @@ export const getReferencedStatisticIdsPower = (
   const statIDs: (string | undefined)[] = [];
 
   for (const source of prefs.energy_sources) {
-    if (source.type === "gas" || source.type === "water") {
+    if (
+      source.type === "gas" ||
+      source.type === "water" ||
+      source.type === "heat"
+    ) {
       if (source.stat_rate) {
         statIDs.push(source.stat_rate);
       }
@@ -576,8 +617,15 @@ const getEnergyData = async (
   ]);
   const powerStatIds = getReferencedStatisticIdsPower(prefs);
   const waterStatIds = getReferencedStatisticIds(prefs, info, ["water"]);
+  // Heat is fetched separately, its volume unit may differ from the gas unit.
+  const heatStatIds = getReferencedStatisticIds(prefs, info, ["heat"]);
 
-  const allStatIDs = [...energyStatIds, ...waterStatIds, ...powerStatIds];
+  const allStatIDs = [
+    ...energyStatIds,
+    ...waterStatIds,
+    ...heatStatIds,
+    ...powerStatIds,
+  ];
 
   const dayDifference = differenceInDays(end || new Date(), start);
 
@@ -639,6 +687,18 @@ const getEnergyData = async (
   const waterUnits: StatisticsUnitConfiguration = {
     volume: waterUnit,
   };
+  const heatUnit = getEnergyHeatUnit(states, prefs, statsMetadata);
+  const heatUnits: StatisticsUnitConfiguration = {
+    energy: ENERGY_UNITS.includes(heatUnit as any)
+      ? (heatUnit as (typeof ENERGY_UNITS)[number])
+      : undefined,
+    volume: VOLUME_UNITS.includes(heatUnit as any)
+      ? (heatUnit as (typeof VOLUME_UNITS)[number])
+      : undefined,
+    mass: MASS_UNITS.includes(heatUnit as any)
+      ? (heatUnit as (typeof MASS_UNITS)[number])
+      : undefined,
+  };
 
   const _energyStats: Statistics | Promise<Statistics> = energyStatIds.length
     ? fetchStatistics(
@@ -696,6 +756,18 @@ const getEnergyData = async (
       )
     : {};
 
+  const _heatStats: Statistics | Promise<Statistics> = heatStatIds.length
+    ? fetchStatistics(
+        callWS,
+        periodStart,
+        periodEnd,
+        heatStatIds,
+        period,
+        heatUnits,
+        ["change"]
+      )
+    : {};
+
   let statsCompare;
   let startCompare;
   let endCompare;
@@ -704,6 +776,7 @@ const getEnergyData = async (
   let _energyStatsCompare: Statistics | Promise<Statistics> = {};
   let _waterStatsCompare: Statistics | Promise<Statistics> = {};
   let _gasEnergyStatsCompare: Statistics | Promise<Statistics> = {};
+  let _heatStatsCompare: Statistics | Promise<Statistics> = {};
   if (compare) {
     if (compare === CompareMode.PREVIOUS) {
       if (
@@ -788,6 +861,17 @@ const getEnergyData = async (
         ["change"]
       );
     }
+    if (heatStatIds.length) {
+      _heatStatsCompare = fetchStatistics(
+        callWS,
+        periodStartCompare,
+        periodEndCompare,
+        heatStatIds,
+        period,
+        heatUnits,
+        ["change"]
+      );
+    }
   }
 
   let _fossilEnergyConsumption: undefined | Promise<FossilEnergyConsumption>;
@@ -820,9 +904,11 @@ const getEnergyData = async (
     powerStats,
     powerStatsHour,
     waterStats,
+    heatStats,
     energyStatsCompare,
     gasEnergyStatsCompare,
     waterStatsCompare,
+    heatStatsCompare,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
   ] = await Promise.all([
@@ -831,9 +917,11 @@ const getEnergyData = async (
     _powerStats,
     _powerStatsHour,
     _waterStats,
+    _heatStats,
     _energyStatsCompare,
     _gasEnergyStatsCompare,
     _waterStatsCompare,
+    _heatStatsCompare,
     _fossilEnergyConsumption,
     _fossilEnergyConsumptionCompare,
   ]);
@@ -872,6 +960,7 @@ const getEnergyData = async (
     ...energyStats,
     ...gasEnergyStats,
     ...waterStats,
+    ...heatStats,
     ...powerStats,
   };
   if (compare) {
@@ -879,6 +968,7 @@ const getEnergyData = async (
       ...energyStatsCompare,
       ...gasEnergyStatsCompare,
       ...waterStatsCompare,
+      ...heatStatsCompare,
     };
   }
 
@@ -898,6 +988,7 @@ const getEnergyData = async (
     fossilEnergyConsumptionCompare,
     waterUnit,
     gasUnit,
+    heatUnit,
   };
 
   return data;
@@ -1493,6 +1584,62 @@ const getEnergyWaterUnit = (
   }
 
   return config.unit_system.length === "km" ? "L" : "gal";
+};
+
+const energyHeatUnitClass = ["energy", "volume", "mass"] as const;
+export type EnergyHeatUnitClass = (typeof energyHeatUnitClass)[number];
+
+export const getEnergyHeatUnitClass = (
+  prefs: EnergyPreferences,
+  excludeSource?: string,
+  statisticsMetaData: Record<string, StatisticsMetaData> = {}
+): EnergyHeatUnitClass | undefined => {
+  for (const source of prefs.energy_sources) {
+    if (source.type !== "heat") {
+      continue;
+    }
+    if (excludeSource && excludeSource === source.stat_energy_from) {
+      continue;
+    }
+    const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
+    if (
+      energyHeatUnitClass.includes(
+        statisticIdWithMeta?.unit_class as EnergyHeatUnitClass
+      )
+    ) {
+      return statisticIdWithMeta.unit_class as EnergyHeatUnitClass;
+    }
+  }
+  return undefined;
+};
+
+const DEFAULT_HEAT_UNITS: Record<EnergyHeatUnitClass, string> = {
+  energy: "kWh",
+  volume: "L",
+  mass: "kg",
+};
+
+const getEnergyHeatUnit = (
+  states: HomeAssistant["states"],
+  prefs: EnergyPreferences,
+  statisticsMetaData: Record<string, StatisticsMetaData>
+): string => {
+  const unitClass =
+    getEnergyHeatUnitClass(prefs, undefined, statisticsMetaData) ?? "energy";
+  const units = prefs.energy_sources
+    .filter((s) => s.type === "heat")
+    .map((s) =>
+      getDisplayUnit(
+        states,
+        s.stat_energy_from,
+        statisticsMetaData[s.stat_energy_from]
+      )
+    );
+  const first = units[0];
+  if (first && units.every((u) => u === first)) {
+    return first;
+  }
+  return DEFAULT_HEAT_UNITS[unitClass];
 };
 
 export const energyStatisticHelpUrl =
@@ -2321,6 +2468,28 @@ export const downloadEnergyData = (
     state.waterUnit,
     "water_consumption_cost",
     water_consumptions_cost
+  );
+
+  const heat_consumptions: string[] = [];
+  const heat_consumptions_cost: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "heat")
+    .forEach((source) => {
+      source = source as HeatSourceTypeEnergyPreference;
+      const statId = source.stat_energy_from;
+      heat_consumptions.push(statId);
+      const costId = source.stat_cost || state.info.cost_sensors[statId];
+      if (costId) {
+        heat_consumptions_cost.push(costId);
+      }
+    });
+
+  printCategory(
+    "heat_consumption",
+    heat_consumptions,
+    state.heatUnit,
+    "heat_consumption_cost",
+    heat_consumptions_cost
   );
 
   const devices: string[] = [];

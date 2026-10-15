@@ -3,6 +3,7 @@ import {
   mdiDownload,
   mdiFire,
   mdiLightningBolt,
+  mdiRadiator,
   mdiViewDashboardEdit,
   mdiWater,
 } from "@mdi/js";
@@ -35,6 +36,7 @@ import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
 import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
+import "./components/ha-energy-heat-settings";
 import "./components/ha-energy-water-settings";
 import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
@@ -58,6 +60,12 @@ const TABS: PageNavigation[] = [
     path: "/config/energy/gas",
     translationKey: "ui.panel.config.energy.tabs.gas",
     iconPath: mdiFire,
+    iconColor: "#F1C447",
+  },
+  {
+    path: "/config/energy/heat",
+    translationKey: "ui.panel.config.energy.tabs.heat",
+    iconPath: mdiRadiator,
     iconColor: "#F1C447",
   },
   {
@@ -195,6 +203,16 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-gas-settings>
+        `;
+      case "heat":
+        return html`
+          <ha-energy-heat-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-heat-settings>
         `;
       case "water":
         return html`
@@ -334,6 +352,7 @@ class HaConfigEnergy extends LitElement {
         ha-energy-solar-settings,
         ha-energy-battery-settings,
         ha-energy-gas-settings,
+        ha-energy-heat-settings,
         ha-energy-water-settings,
         ha-energy-device-settings,
         ha-energy-device-settings-water {

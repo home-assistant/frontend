@@ -2294,3 +2294,124 @@ describe("computeEnergyDeviceLabels", () => {
     );
   });
 });
+
+describe("getEnergyDataCollection heat unit", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const loadHeatData = async (
+    key: string,
+    heatUnits: Record<string, [string, string]>,
+    otherSources: EnergySource[] = []
+  ) => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-28T12:00:00Z"));
+    const hass = createMockHass();
+    hass.locale = { ...energyPeriodLocale, time_zone: TimeZone.local };
+    const statisticIds = Object.keys(heatUnits);
+    const callWS = vi.fn(async (msg: Record<string, unknown>) => {
+      switch (msg.type) {
+        case "energy/info":
+          return { cost_sensors: {}, solar_forecast_domains: [] };
+        case "recorder/get_statistics_metadata":
+          return statisticIds.map((id): StatisticsMetaData => ({
+            statistic_id: id,
+            source: "test",
+            name: null,
+            statistics_unit_of_measurement: heatUnits[id][0],
+            unit_class: heatUnits[id][1],
+            mean_type: StatisticMeanType.NONE,
+            has_sum: true,
+          }));
+        case "recorder/statistics_during_period":
+          return {};
+      }
+      throw new Error(`unexpected ${msg.type}`);
+    });
+    Object.assign(hass, {
+      connection: {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        connected: true,
+      },
+      callWS,
+    });
+    const collection = getEnergyDataCollection(hass.connection, {
+      callWS: hass.callWS,
+      entities: hass.entities,
+      states: hass.states,
+      locale: hass.locale,
+      config: hass.config,
+      panelUrl: hass.panelUrl,
+      key,
+      prefs: {
+        ...EMPTY_PREFERENCES,
+        energy_sources: [
+          ...statisticIds.map((id) => ({
+            type: "heat" as const,
+            stat_energy_from: id,
+            stat_cost: null,
+            entity_energy_price: null,
+            number_energy_price: null,
+          })),
+          ...otherSources,
+        ],
+      },
+    });
+    collection.setPeriod(
+      new Date(2026, 8, 18),
+      endOfDay(new Date(2026, 8, 21))
+    );
+    await collection.refresh();
+    const statisticRequests = callWS.mock.calls
+      .map(([msg]) => msg)
+      .filter((msg) => msg.type === "recorder/statistics_during_period");
+    return { data: collection.state, statisticRequests };
+  };
+
+  it("shows pellets in kg and requests them in kg", async () => {
+    const { data, statisticRequests } = await loadHeatData("energy_heat_kg", {
+      "integration:pellets": ["kg", "mass"],
+    });
+    assert.equal(data?.heatUnit, "kg");
+    const request = statisticRequests.find((msg) =>
+      (msg.statistic_ids as string[]).includes("integration:pellets")
+    );
+    assert.deepEqual(request?.units, {
+      energy: undefined,
+      volume: undefined,
+      mass: "kg",
+    });
+  });
+
+  it("requests heat separately from gas so their volume units don't mix", async () => {
+    const { data, statisticRequests } = await loadHeatData(
+      "energy_heat_oil_gas",
+      { "integration:heating_oil": ["L", "volume"] },
+      [
+        {
+          type: "gas",
+          stat_energy_from: "integration:gas",
+          stat_cost: null,
+          entity_energy_price: null,
+          number_energy_price: null,
+        },
+      ]
+    );
+    assert.equal(data?.heatUnit, "L");
+    const heatRequest = statisticRequests.find((msg) =>
+      (msg.statistic_ids as string[]).includes("integration:heating_oil")
+    );
+    assert.deepEqual(heatRequest?.statistic_ids, ["integration:heating_oil"]);
+    assert.equal((heatRequest?.units as { volume?: string }).volume, "L");
+  });
+
+  it("falls back to the default unit when heat sources use different units", async () => {
+    const { data } = await loadHeatData("energy_heat_mixed", {
+      "integration:heat_a": ["GJ", "energy"],
+      "integration:heat_b": ["MWh", "energy"],
+    });
+    assert.equal(data?.heatUnit, "kWh");
+  });
+});

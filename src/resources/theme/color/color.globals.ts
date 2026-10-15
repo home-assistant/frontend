@@ -65,6 +65,7 @@ export const colorStyles = css`
     --energy-battery-in-color: #f06292;
     --energy-gas-color: #8e021b;
     --energy-water-color: #00bcd4;
+    --energy-heat-color: #d84315;
 
     /* color */
     --disabled-color: #bdbdbd;

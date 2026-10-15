@@ -150,5 +150,6 @@ export const generateEnergyData = (
     statsCompare,
     waterUnit: "L",
     gasUnit: "m³",
+    heatUnit: "kWh",
   } as EnergyData;
 };

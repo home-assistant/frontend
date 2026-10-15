@@ -1,4 +1,4 @@
-import { mdiDelete, mdiFire, mdiPencil, mdiPlus } from "@mdi/js";
+import { mdiDelete, mdiFire, mdiPencil, mdiPlus, mdiRadiator } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -14,6 +14,7 @@ import type {
 } from "../../../../data/energy";
 import {
   getEnergyGasUnitClass,
+  getEnergyHeatUnitClass,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
@@ -120,6 +121,13 @@ export class EnergyGasSettings extends LitElement {
                           ></ha-icon-button>
                           <ha-icon-button
                             .label=${this.hass.localize(
+                              "ui.panel.config.energy.gas.move_to_heat"
+                            )}
+                            @click=${this._moveSourceToHeat}
+                            .path=${mdiRadiator}
+                          ></ha-icon-button>
+                          <ha-icon-button
+                            .label=${this.hass.localize(
                               "ui.panel.config.energy.gas.delete_gas_source"
                             )}
                             @click=${this._deleteSource}
@@ -189,6 +197,58 @@ export class EnergyGasSettings extends LitElement {
         });
       },
     });
+  }
+
+  private async _moveSourceToHeat(ev) {
+    const sourceToMove: GasSourceTypeEnergyPreference =
+      ev.currentTarget.closest(".row").source;
+
+    // All heat sources share one unit class to be summed up on the dashboard.
+    const heatUnitClass = getEnergyHeatUnitClass(
+      this.preferences,
+      undefined,
+      this.statsMetadata
+    );
+    const sourceUnitClass =
+      this.statsMetadata?.[sourceToMove.stat_energy_from]?.unit_class;
+    if (heatUnitClass && sourceUnitClass && heatUnitClass !== sourceUnitClass) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.energy.gas.move_to_heat_unit_mismatch_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.energy.gas.move_to_heat_unit_mismatch_text"
+        ),
+      });
+      return;
+    }
+
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.energy.gas.move_to_heat_confirm_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.energy.gas.move_to_heat_confirm_text"
+        ),
+        confirmText: this.hass.localize(
+          "ui.panel.config.energy.gas.move_to_heat_confirm"
+        ),
+      }))
+    ) {
+      return;
+    }
+
+    try {
+      await this._savePreferences({
+        ...this.preferences,
+        energy_sources: this.preferences.energy_sources.map((source) =>
+          source === sourceToMove ? { ...sourceToMove, type: "heat" } : source
+        ),
+      });
+    } catch (err: any) {
+      showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
+    }
   }
 
   private async _deleteSource(ev) {

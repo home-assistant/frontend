@@ -74,6 +74,7 @@ const cardConfigStruct = assign(
       literal("energy-compare"),
       literal("energy-distribution"),
       literal("energy-gas-graph"),
+      literal("energy-heat-graph"),
       literal("energy-grid-balance"),
       literal("energy-grid-neutrality-gauge"),
       literal("energy-self-sufficiency-gauge"),

@@ -115,6 +115,8 @@ export interface StatisticsValidationResultMeanTypeChanged {
 
 export const VOLUME_UNITS = ["L", "gal", "ft³", "m³", "CCF", "MCF"] as const;
 
+export const MASS_UNITS = ["μg", "mg", "g", "kg", "oz", "lb", "st"] as const;
+
 export const ENERGY_UNITS = [
   "J",
   "kJ",
@@ -135,6 +137,7 @@ export const ENERGY_UNITS = [
 
 export interface StatisticsUnitConfiguration {
   energy?: (typeof ENERGY_UNITS)[number];
+  mass?: (typeof MASS_UNITS)[number];
   power?: "W" | "kW";
   pressure?:
     "Pa" | "hPa" | "kPa" | "bar" | "cbar" | "mbar" | "inHg" | "psi" | "mmHg";

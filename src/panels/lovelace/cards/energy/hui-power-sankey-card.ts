@@ -100,7 +100,10 @@ class HuiPowerSankeyCard
       if (states && prefs) {
         [
           ...prefs.energy_sources.map((source) =>
-            source.type === "gas" || source.type === "water"
+            // Not electric power: flow rates, or heat power not drawn from the grid
+            source.type === "gas" ||
+            source.type === "water" ||
+            source.type === "heat"
               ? undefined
               : source.stat_rate
           ),

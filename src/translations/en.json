@@ -4434,6 +4434,7 @@
           "tabs": {
             "electricity": "Electricity",
             "gas": "Gas",
+            "heat": "Heating",
             "water": "Water"
           },
           "customise": {
@@ -4579,6 +4580,12 @@
             "edit_gas_source": "Edit gas source",
             "delete_gas_source": "Remove gas source",
             "add_gas_source": "Add gas source",
+            "move_to_heat": "Move to heating",
+            "move_to_heat_confirm_title": "Move gas source to heating?",
+            "move_to_heat_confirm_text": "This source will be shown as heating instead of gas, like for pellets, wood, or heating oil. Its history and costs are kept.",
+            "move_to_heat_confirm": "Move",
+            "move_to_heat_unit_mismatch_title": "Can't move gas source",
+            "move_to_heat_unit_mismatch_text": "Your heating sources measure a different kind of unit. All heating sources must measure either energy, volume, or mass.",
             "dialog": {
               "header": "Configure gas consumption",
               "paragraph": "Gas consumption is measured either as the volume of gas that flows to your home or as the amount of energy contained in the gas.",
@@ -4599,6 +4606,36 @@
               "gas_usage": "Gas consumption",
               "gas_flow_rate": "Gas flow rate",
               "flow_rate_para": "Optionally pick a sensor which measures the gas flow rate in either of {unit}."
+            }
+          },
+          "heat": {
+            "title": "Heating",
+            "sub": "Let Home Assistant monitor the energy or fuel you use for heating, like district heating, heating oil, pellets, or wood.",
+            "learn_more": "[%key:ui::panel::config::energy::gas::learn_more%]",
+            "edit_heat_source": "Edit heating source",
+            "delete_heat_source": "Remove heating source",
+            "add_heat_source": "Add heating source",
+            "dialog": {
+              "header": "Configure heating",
+              "paragraph": "Heating is measured either as the amount of heat or energy you use, or as the amount of fuel you burn, by volume or by mass.",
+              "entity_para": "Pick a sensor which measures heating consumption in either of {unit}.",
+              "note_para": "Note: All heating sources must measure the same kind of unit: energy, volume, or mass. To combine different fuels, use sensors that convert them to energy.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
+              "cost_para": "Select how Home Assistant should keep track of your heating costs.",
+              "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
+              "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
+              "cost_stat_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat_input%]",
+              "cost_entity": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity%]",
+              "cost_entity_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_entity_input%]",
+              "cost_entity_helper": "[%key:ui::panel::config::energy::gas::dialog::cost_entity_helper%]",
+              "cost_entity_helper_energy": "[%key:ui::panel::config::energy::gas::dialog::cost_entity_helper_energy%]",
+              "cost_entity_helper_volume": "[%key:ui::panel::config::energy::gas::dialog::cost_entity_helper_volume%]",
+              "cost_entity_helper_mass": "mass",
+              "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
+              "heat_usage": "Heating consumption",
+              "heat_rate": "Heating power or fuel flow rate",
+              "heat_rate_para": "Optionally pick a sensor which measures the heating power or fuel flow rate in either of {unit}."
             }
           },
           "water": {
@@ -9724,6 +9761,7 @@
             "energy_sources_table": {
               "grid_total": "Grid total",
               "gas_total": "Gas total",
+              "heat_total": "Heating total",
               "solar_total": "Solar total",
               "water_total": "Water total",
               "source": "Source",
@@ -9747,6 +9785,9 @@
               "total_consumed": "Total {num} {unit}"
             },
             "energy_water_graph": {
+              "total_consumed": "[%key:ui::panel::lovelace::cards::energy::energy_gas_graph::total_consumed%]"
+            },
+            "energy_heat_graph": {
               "total_consumed": "[%key:ui::panel::lovelace::cards::energy::energy_gas_graph::total_consumed%]"
             },
             "solar_consumed_gauge": {
@@ -10568,6 +10609,10 @@
               "name": "Gas consumption graph",
               "description": "This card shows the amount of gas consumed per source."
             },
+            "energy-heat-graph": {
+              "name": "Heating consumption graph",
+              "description": "This card shows the amount of heat or fuel consumed per source."
+            },
             "energy-water-graph": {
               "name": "Water consumption graph",
               "description": "This card shows the amount of water consumed per source."
@@ -10598,6 +10643,7 @@
                 "solar": "Solar",
                 "battery": "Battery",
                 "gas": "Gas",
+                "heat": "Heating",
                 "water": "Water"
               }
             },
@@ -12389,6 +12435,7 @@
           "overview": "Summary",
           "electricity": "Electricity",
           "gas": "Gas",
+          "heat": "Heating",
           "water": "Water",
           "now": "Now"
         },
@@ -12410,6 +12457,7 @@
           "energy_usage_graph_title": "Electricity",
           "energy_solar_graph_title": "Solar production",
           "energy_gas_graph_title": "Gas consumption",
+          "energy_heat_graph_title": "Heating consumption",
           "energy_water_graph_title": "Water consumption",
           "energy_distribution_title": "Energy distribution",
           "energy_sources_table_title": "Totals",

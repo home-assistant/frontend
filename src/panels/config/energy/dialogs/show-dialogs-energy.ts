@@ -3,9 +3,11 @@ import type {
   BatterySourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference,
   EnergyGasUnitClass,
+  EnergyHeatUnitClass,
   EnergyInfo,
   GasSourceTypeEnergyPreference,
   GridSourceTypeEnergyPreference,
+  HeatSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
@@ -39,6 +41,14 @@ export interface EnergySettingsGasDialogParams {
   gas_sources: GasSourceTypeEnergyPreference[];
   statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
+}
+
+export interface EnergySettingsHeatDialogParams {
+  source?: HeatSourceTypeEnergyPreference;
+  allowedHeatUnitClass?: EnergyHeatUnitClass;
+  heat_sources: HeatSourceTypeEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
+  saveCallback: (source: HeatSourceTypeEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsWaterDialogParams {
@@ -102,6 +112,17 @@ export const showEnergySettingsGasDialog = (
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-energy-gas-settings",
     dialogImport: () => import("./dialog-energy-gas-settings"),
+    dialogParams: dialogParams,
+  });
+};
+
+export const showEnergySettingsHeatDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsHeatDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-heat-settings",
+    dialogImport: () => import("./dialog-energy-heat-settings"),
     dialogParams: dialogParams,
   });
 };
