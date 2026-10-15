@@ -67,6 +67,17 @@ const polyfillSupport = {
   "intl-other": {
     // Not specified (i.e. always try polyfill) since compatibility depends on supported locales
   },
+  "intl-formatrangetoparts": {
+    android: 76,
+    chrome: 76,
+    edge: 79,
+    firefox: 91,
+    ios: 14.5,
+    opera: 63,
+    opera_mobile: 54,
+    safari: 14.1,
+    samsung: 12.0,
+  },
   "resize-observer": {
     android: 64,
     chrome: 64,
@@ -90,6 +101,10 @@ const polyfillMap = {
     },
   },
   instance: {
+    formatRangeToParts: {
+      key: "intl-formatrangetoparts",
+      module: join(POLYFILL_DIR, "intl-formatrangetoparts.ts"),
+    },
     attachInternals: {
       key: "element-internals",
       module: "element-internals-polyfill",
