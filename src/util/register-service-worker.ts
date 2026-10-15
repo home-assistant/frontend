@@ -68,7 +68,7 @@ export const registerServiceWorker = async (
 
   const reg = await navigator.serviceWorker.register(`/sw-${__BUILD__}.js`);
 
-  if (reg.active) {
+  if (reg?.active) {
     markClaimed();
   }
 
