@@ -315,6 +315,7 @@ export class HaConfigLogs extends LitElement {
             }
           ),
         });
+        return;
       }
     }
     if (

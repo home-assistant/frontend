@@ -68,6 +68,8 @@ import { fileDownload } from "../../../util/file_download";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 
 const NUMBER_OF_LINES = 100;
+// Matches the live log dialog on the integration page
+const INTEGRATION_LOG_LINE_LIMIT = 5000;
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
@@ -712,7 +714,17 @@ class ErrorLogCard extends LitElement {
     }
     const scrolledToBottom = this._scrolledToBottomController.value;
     this._integrationLines.push(...newLines);
+    this._integrationLines.splice(
+      0,
+      this._integrationLines.length - INTEGRATION_LOG_LINE_LIMIT
+    );
     this._ansiToHtmlElement?.parseLinesToColoredPre(newLines);
+    this._ansiToHtmlElement?.trimLines(INTEGRATION_LOG_LINE_LIMIT);
+    if (this.filter) {
+      this._noSearchResults = !this._ansiToHtmlElement?.filterLines(
+        this.filter
+      );
+    }
     this._loadingState = "loaded";
 
     if (scrolledToBottom) {
