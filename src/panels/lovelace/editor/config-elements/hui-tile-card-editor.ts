@@ -126,6 +126,7 @@ export class HuiTileCardEditor
                     ui_color: {
                       default_color: "state",
                       include_state: true,
+                      include_none: true,
                     },
                   },
                 },
