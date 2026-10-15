@@ -14,6 +14,7 @@ import type {
 } from "../../../../data/energy";
 import {
   getEnergyHeatUnitClass,
+  getMissingStatisticsMetadata,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
@@ -145,17 +146,30 @@ export class EnergyHeatSettings extends LitElement {
     `;
   }
 
-  private _addSource() {
+  private get _heatSources(): HeatSourceTypeEnergyPreference[] {
+    return this.preferences.energy_sources.filter(
+      (src) => src.type === "heat"
+    ) as HeatSourceTypeEnergyPreference[];
+  }
+
+  private _heatStatsMetadata() {
+    return getMissingStatisticsMetadata(
+      this.hass.callWS,
+      this._heatSources.map((source) => source.stat_energy_from),
+      this.statsMetadata
+    );
+  }
+
+  private async _addSource() {
+    const statsMetadata = await this._heatStatsMetadata();
     showEnergySettingsHeatDialog(this, {
-      statsMetadata: this.statsMetadata,
+      statsMetadata,
       allowedHeatUnitClass: getEnergyHeatUnitClass(
         this.preferences,
         undefined,
-        this.statsMetadata
+        statsMetadata
       ),
-      heat_sources: this.preferences.energy_sources.filter(
-        (src) => src.type === "heat"
-      ) as HeatSourceTypeEnergyPreference[],
+      heat_sources: this._heatSources,
       saveCallback: async (source) => {
         delete source.unit_of_measurement;
         await this._savePreferences({
@@ -166,20 +180,19 @@ export class EnergyHeatSettings extends LitElement {
     });
   }
 
-  private _editSource(ev) {
+  private async _editSource(ev) {
     const origSource: HeatSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
+    const statsMetadata = await this._heatStatsMetadata();
     showEnergySettingsHeatDialog(this, {
       source: { ...origSource },
-      statsMetadata: this.statsMetadata,
+      statsMetadata,
       allowedHeatUnitClass: getEnergyHeatUnitClass(
         this.preferences,
         origSource.stat_energy_from,
-        this.statsMetadata
+        statsMetadata
       ),
-      heat_sources: this.preferences.energy_sources.filter(
-        (src) => src.type === "heat"
-      ) as HeatSourceTypeEnergyPreference[],
+      heat_sources: this._heatSources,
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,

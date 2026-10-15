@@ -41,7 +41,6 @@ interface HeatFormState {
 
 const heatDeviceClasses = ["energy", "gas", "volume", "weight"];
 const heatUnitClasses = ["energy", "volume", "mass"];
-const heatRateUnitClasses = ["power", "volume_flow_rate"];
 // Fuel units supported by the energy integration for heat sources.
 const heatVolumeUnits = ["CCF", "ft³", "m³", "gal", "L", "MCF"];
 const heatMassUnits = ["kg", "lb"];
@@ -85,13 +84,9 @@ export class DialogEnergyHeatSettings
 
   @state() private _energy_units?: string[];
 
-  @state() private _rate_units?: string[];
-
   @state() private _error?: string;
 
   private _excludeList?: string[];
-
-  private _excludeListFlowRate?: string[];
 
   public async showDialog(
     params: EnergySettingsHeatDialogParams
@@ -121,17 +116,9 @@ export class DialogEnergyHeatSettings
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
-    const [powerUnits, flowRateUnits] = await Promise.all([
-      getSensorDeviceClassConvertibleUnits(this.hass, "power"),
-      getSensorDeviceClassConvertibleUnits(this.hass, "volume_flow_rate"),
-    ]);
-    this._rate_units = [...powerUnits.units, ...flowRateUnits.units];
     this._excludeList = this._params.heat_sources
       .map((entry) => entry.stat_energy_from)
       .filter((id) => id !== this._source?.stat_energy_from);
-    this._excludeListFlowRate = this._params.heat_sources
-      .map((entry) => entry.stat_rate)
-      .filter((id) => id && id !== this._source?.stat_rate) as string[];
 
     this._open = true;
     this._initDirtyTracking(
@@ -151,7 +138,6 @@ export class DialogEnergyHeatSettings
     this._pickedDisplayUnit = undefined;
     this._error = undefined;
     this._excludeList = undefined;
-    this._excludeListFlowRate = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -207,6 +193,7 @@ export class DialogEnergyHeatSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
+          statistic-types="sum"
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${
             this._params.allowedHeatUnitClass || heatUnitClasses
@@ -223,21 +210,6 @@ export class DialogEnergyHeatSettings
             { unit: pickableUnit }
           )}
           autofocus
-        ></ha-statistic-picker>
-
-        <ha-statistic-picker
-          .hass=${this.hass}
-          .includeUnitClass=${heatRateUnitClasses}
-          .value=${this._source.stat_rate}
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.heat.dialog.heat_rate"
-          )}
-          .excludeStatistics=${this._excludeListFlowRate}
-          @value-changed=${this._flowRateStatisticChanged}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.heat.dialog.heat_rate_para",
-            { unit: this._rate_units?.join(", ") || "" }
-          )}
         ></ha-statistic-picker>
 
         <ha-input
@@ -361,6 +333,9 @@ export class DialogEnergyHeatSettings
               !this._source!.stat_energy_from ||
               (this._costs === "number" &&
                 typeof this._source!.number_energy_price !== "number") ||
+              (this._costs === "entity" &&
+                !this._source!.entity_energy_price) ||
+              (this._costs === "statistic" && !this._source!.stat_cost) ||
               (!!this._params?.source && !this.isDirtyState)
             }
             slot="primaryAction"
@@ -413,44 +388,42 @@ export class DialogEnergyHeatSettings
     this._updateFormDirtyState();
   }
 
-  private _flowRateStatisticChanged(ev: ValueChangedEvent<string>) {
-    this._source = {
-      ...this._source!,
-      stat_rate: ev.detail.value || undefined,
-    };
-    this._updateFormDirtyState();
-  }
-
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
-    if (ev.detail.value) {
-      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
-        ev.detail.value,
-      ]);
-      if (
-        metadata &&
-        isExternalStatistic(ev.detail.value) &&
-        this._params?.statsMetadata &&
-        !(ev.detail.value in this._params.statsMetadata)
-      ) {
-        this._params.statsMetadata[ev.detail.value] = metadata;
-        this.requestUpdate("_params");
-      }
-      this._pickedDisplayUnit = getDisplayUnit(
-        this.hass.states,
-        ev.detail.value,
-        metadata
-      );
-      if (isExternalStatistic(ev.detail.value) && this._costs !== "statistic") {
-        this._costs = "no-costs";
-      }
-    } else {
-      this._pickedDisplayUnit = undefined;
-    }
+    const statisticId = ev.detail.value;
     this._source = {
       ...this._source!,
-      stat_energy_from: ev.detail.value,
+      stat_energy_from: statisticId,
     };
     this._updateFormDirtyState();
+    if (!statisticId) {
+      this._pickedDisplayUnit = undefined;
+      return;
+    }
+    const [metadata] = await getStatisticMetadata(this.hass.callWS, [
+      statisticId,
+    ]);
+    // Ignore the response if the selection changed or the dialog closed
+    if (this._source?.stat_energy_from !== statisticId) {
+      return;
+    }
+    if (
+      metadata &&
+      isExternalStatistic(statisticId) &&
+      this._params?.statsMetadata &&
+      !(statisticId in this._params.statsMetadata)
+    ) {
+      this._params.statsMetadata[statisticId] = metadata;
+      this.requestUpdate("_params");
+    }
+    this._pickedDisplayUnit = getDisplayUnit(
+      this.hass.states,
+      statisticId,
+      metadata
+    );
+    if (isExternalStatistic(statisticId) && this._costs !== "statistic") {
+      this._costs = "no-costs";
+      this._updateFormDirtyState();
+    }
   }
 
   private _nameChanged(ev: InputEvent) {

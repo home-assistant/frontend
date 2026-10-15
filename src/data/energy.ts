@@ -520,11 +520,12 @@ export const getReferencedStatisticIdsPower = (
   const statIDs: (string | undefined)[] = [];
 
   for (const source of prefs.energy_sources) {
-    if (
-      source.type === "gas" ||
-      source.type === "water" ||
-      source.type === "heat"
-    ) {
+    // Heating rates are not shown on the dashboard yet
+    if (source.type === "heat") {
+      continue;
+    }
+
+    if (source.type === "gas" || source.type === "water") {
       if (source.stat_rate) {
         statIDs.push(source.stat_rate);
       }
@@ -687,7 +688,32 @@ const getEnergyData = async (
   const waterUnits: StatisticsUnitConfiguration = {
     volume: waterUnit,
   };
-  const heatUnit = getEnergyHeatUnit(states, prefs, statsMetadata);
+  // A heat statistic that is also fetched by another request must use the
+  // unit of that request, the merged stats would otherwise mislabel one.
+  const gasEnergyStatIdSet = new Set(gasEnergyStatIds);
+  const energyStatIdSet = new Set(energyStatIds);
+  const waterStatIdSet = new Set(waterStatIds);
+  let sharedHeatUnit: string | undefined;
+  for (const source of energySourcesByType(prefs).heat ?? []) {
+    const statId = source.stat_energy_from;
+    if (gasEnergyStatIdSet.has(statId)) {
+      sharedHeatUnit = gasUnit;
+    } else if (energyStatIdSet.has(statId)) {
+      sharedHeatUnit =
+        statsMetadata[statId]?.unit_class === "volume"
+          ? (energyUnits.volume ??
+            getDisplayUnit(states, statId, statsMetadata[statId]) ??
+            undefined)
+          : "kWh";
+    } else if (waterStatIdSet.has(statId)) {
+      sharedHeatUnit = waterUnit;
+    }
+    if (sharedHeatUnit) {
+      break;
+    }
+  }
+  const heatUnit =
+    sharedHeatUnit ?? getEnergyHeatUnit(states, prefs, statsMetadata);
   const heatUnits: StatisticsUnitConfiguration = {
     energy: ENERGY_UNITS.includes(heatUnit as any)
       ? (heatUnit as (typeof ENERGY_UNITS)[number])
@@ -1611,6 +1637,27 @@ export const getEnergyHeatUnitClass = (
     }
   }
   return undefined;
+};
+
+/**
+ * Statistics metadata for the given statistics, fetching the ones that are
+ * missing from `known`. Settings shown outside the energy configuration page,
+ * like the setup wizard, don't receive the metadata up front.
+ */
+export const getMissingStatisticsMetadata = async (
+  callWS: HomeAssistant["callWS"],
+  statisticIds: string[],
+  known: Record<string, StatisticsMetaData> = {}
+): Promise<Record<string, StatisticsMetaData>> => {
+  const missing = statisticIds.filter((id) => !(id in known));
+  if (!missing.length) {
+    return known;
+  }
+  const fetched = await getStatisticMetadata(callWS, missing);
+  return {
+    ...known,
+    ...Object.fromEntries(fetched.map((meta) => [meta.statistic_id, meta])),
+  };
 };
 
 const DEFAULT_HEAT_UNITS: Record<EnergyHeatUnitClass, string> = {

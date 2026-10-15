@@ -4633,9 +4633,7 @@
               "cost_entity_helper_mass": "mass",
               "cost_number": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
-              "heat_usage": "Heating consumption",
-              "heat_rate": "Heating power or fuel flow rate",
-              "heat_rate_para": "Optionally pick a sensor which measures the heating power or fuel flow rate in either of {unit}."
+              "heat_usage": "Heating consumption"
             }
           },
           "water": {

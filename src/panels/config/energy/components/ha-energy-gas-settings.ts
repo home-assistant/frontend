@@ -15,6 +15,7 @@ import type {
 import {
   getEnergyGasUnitClass,
   getEnergyHeatUnitClass,
+  getMissingStatisticsMetadata,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
@@ -203,14 +204,22 @@ export class EnergyGasSettings extends LitElement {
     const sourceToMove: GasSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
 
+    const statsMetadata = await getMissingStatisticsMetadata(
+      this.hass.callWS,
+      this.preferences.energy_sources
+        .filter((source) => source.type === "heat")
+        .map((source) => source.stat_energy_from)
+        .concat(sourceToMove.stat_energy_from),
+      this.statsMetadata
+    );
     // All heat sources share one unit class to be summed up on the dashboard.
     const heatUnitClass = getEnergyHeatUnitClass(
       this.preferences,
       undefined,
-      this.statsMetadata
+      statsMetadata
     );
     const sourceUnitClass =
-      this.statsMetadata?.[sourceToMove.stat_energy_from]?.unit_class;
+      statsMetadata[sourceToMove.stat_energy_from]?.unit_class;
     if (heatUnitClass && sourceUnitClass && heatUnitClass !== sourceUnitClass) {
       showAlertDialog(this, {
         title: this.hass.localize(

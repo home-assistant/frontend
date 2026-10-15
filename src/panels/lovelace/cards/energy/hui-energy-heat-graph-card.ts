@@ -225,7 +225,7 @@ export class HuiEnergyHeatGraphCard extends LitElement implements LovelaceCard {
             chart-type="bar"
           ></ha-chart-base>
           ${
-            !this._chartData.length
+            !this._chartData.some((series) => series.data?.length)
               ? html`<div class="no-data">
                   ${
                     isToday(this._start)

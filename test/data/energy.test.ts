@@ -2303,7 +2303,8 @@ describe("getEnergyDataCollection heat unit", () => {
   const loadHeatData = async (
     key: string,
     heatUnits: Record<string, [string, string]>,
-    otherSources: EnergySource[] = []
+    otherSources: EnergySource[] = [],
+    deviceStatIds: string[] = []
   ) => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-09-28T12:00:00Z"));
@@ -2347,6 +2348,9 @@ describe("getEnergyDataCollection heat unit", () => {
       key,
       prefs: {
         ...EMPTY_PREFERENCES,
+        device_consumption: deviceStatIds.map((id) => ({
+          stat_consumption: id,
+        })),
         energy_sources: [
           ...statisticIds.map((id) => ({
             type: "heat" as const,
@@ -2405,6 +2409,23 @@ describe("getEnergyDataCollection heat unit", () => {
     );
     assert.deepEqual(heatRequest?.statistic_ids, ["integration:heating_oil"]);
     assert.equal((heatRequest?.units as { volume?: string }).volume, "L");
+  });
+
+  it("keeps a heat statistic shared with a device in kWh", async () => {
+    const { data, statisticRequests } = await loadHeatData(
+      "energy_heat_shared_device",
+      { "integration:heat_pump": ["MWh", "energy"] },
+      [],
+      ["integration:heat_pump"]
+    );
+    assert.equal(data?.heatUnit, "kWh");
+    const heatRequests = statisticRequests.filter((msg) =>
+      (msg.statistic_ids as string[]).includes("integration:heat_pump")
+    );
+    assert.isNotEmpty(heatRequests);
+    heatRequests.forEach((msg) =>
+      assert.equal((msg.units as { energy?: string }).energy, "kWh")
+    );
   });
 
   it("falls back to the default unit when heat sources use different units", async () => {
