@@ -126,7 +126,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
   @property({ attribute: "automation-element-type" })
   public automationElementType!: AddAutomationElementDialogParams["type"];
 
-  // "<type>________<id>" target strings, most recently selected first
   @property({ attribute: false }) public recentTargets?: string[];
 
   // #endregion properties
