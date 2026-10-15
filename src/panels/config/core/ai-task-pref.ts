@@ -338,9 +338,12 @@ export class AITaskPref extends LitElement {
     }
     ha-switch::part(base) {
       height: auto;
+      flex-direction: row-reverse;
     }
     ha-switch::part(label) {
-      margin-inline-start: var(--ha-space-4);
+      flex: 1;
+      margin-inline-start: 0;
+      margin-inline-end: var(--ha-space-4);
     }
     .automatic-evaluation-heading,
     .automatic-evaluation-description {
