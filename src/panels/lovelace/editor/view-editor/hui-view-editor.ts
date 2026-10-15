@@ -41,7 +41,7 @@ const MAX_CUSTOM_MAX_COLUMNS = 10;
 
 interface MaxColumnsFormData {
   max_columns: string;
-  max_columns_custom: number;
+  max_columns_custom?: number;
 }
 
 const maxColumnsToFormData = (maxColumns: number): MaxColumnsFormData => {
@@ -59,7 +59,7 @@ const maxColumnsFromFormData = (data: MaxColumnsFormData): number => {
     return Number(data.max_columns);
   }
   return clamp(
-    data.max_columns_custom,
+    data.max_columns_custom ?? MIN_CUSTOM_MAX_COLUMNS,
     MIN_CUSTOM_MAX_COLUMNS,
     MAX_CUSTOM_MAX_COLUMNS
   );
