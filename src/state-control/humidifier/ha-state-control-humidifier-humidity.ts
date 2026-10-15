@@ -10,6 +10,7 @@ import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import { clamp } from "../../common/number/clamp";
 import { debounce } from "../../common/util/debounce";
+import { PendingValueSync } from "../../common/util/pending-value-sync";
 import "../../components/ha-big-number";
 import "../../components/ha-control-circular-slider";
 import "../../components/ha-outlined-icon-button";
@@ -52,11 +53,24 @@ export class HaStateControlHumidifierHumidity extends LitElement {
 
   private _sizeController = createStateControlCircularSliderController(this);
 
+  private _pendingSync = new PendingValueSync();
+
   protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj")) {
-      this._targetHumidity = this.stateObj.attributes.humidity;
+    if (!changedProp.has("stateObj")) {
+      return;
     }
+    if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
+      this._debouncedCallService.cancel();
+      this._pendingSync.reset();
+      this._syncTargetHumidity();
+    } else if (this._pendingSync.shouldSync()) {
+      this._syncTargetHumidity();
+    }
+  }
+
+  private _syncTargetHumidity() {
+    this._targetHumidity = this.stateObj.attributes.humidity;
   }
 
   private get _step() {
@@ -75,6 +89,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
     const { value } = ev.detail;
     if (typeof value !== "number" || isNaN(value)) return;
     this._targetHumidity = value;
+    this._debouncedCallService.cancel();
     this._callService();
   }
 
@@ -87,10 +102,14 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   private _debouncedCallService = debounce(() => this._callService(), 1000);
 
   private _callService() {
-    this._api.callService("humidifier", "set_humidity", {
+    const data = {
       entity_id: this.stateObj!.entity_id,
       humidity: this._targetHumidity,
-    });
+    };
+    return this._pendingSync.run(
+      () => this._api.callService("humidifier", "set_humidity", data),
+      () => this._syncTargetHumidity()
+    );
   }
 
   private _handleButton(ev) {
@@ -101,6 +120,7 @@ export class HaStateControlHumidifierHumidity extends LitElement {
     humidity = clamp(humidity, this._min, this._max);
 
     this._targetHumidity = humidity;
+    this._pendingSync.schedule();
     this._debouncedCallService();
   }
 

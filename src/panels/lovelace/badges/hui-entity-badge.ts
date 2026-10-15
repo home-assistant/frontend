@@ -182,7 +182,6 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
     const stateDisplay = html`
       <state-display
         .stateObj=${stateObj}
-        .hass=${this.hass}
         .content=${this._config.state_content}
         .timeFormat=${this._config.time_format}
         .name=${name}
@@ -211,6 +210,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         .label=${label}
+        .accessibleLabel=${name}
         .iconOnly=${!content}
         style=${styleMap(style)}
         class=${classMap({ active })}

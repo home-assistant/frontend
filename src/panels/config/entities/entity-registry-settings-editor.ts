@@ -486,11 +486,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 >${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.use_device_name"
                 )}
-                (${computeDeviceNameDisplay(
-                  this._device,
-                  this.hass.localize,
-                  this.hass.states
-                )})</span
+                (${computeDeviceNameDisplay(this._device, this.hass.localize)})</span
               >
               <span slot="supporting-text"
                 >${this.hass.localize(

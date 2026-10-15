@@ -6,7 +6,6 @@ import memoizeOne from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../../common/entity/supports-feature";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-button";
@@ -95,6 +94,7 @@ export class CloudTTSPref extends LitElement {
     const target = this._target || "browser";
     const targetOptions = this._getTargetOptions(
       this.hass.states,
+      this.hass.formatEntityName,
       this.hass.localize(
         "ui.panel.config.cloud.account.tts.dialog.target_browser"
       )
@@ -340,6 +340,7 @@ export class CloudTTSPref extends LitElement {
   private _getTargetOptions = memoizeOne(
     (
       states: HomeAssistant["states"],
+      formatEntityName: HomeAssistant["formatEntityName"],
       browserLabel: string
     ): HaSelectOption[] => [
       { value: "browser", label: browserLabel },
@@ -351,7 +352,7 @@ export class CloudTTSPref extends LitElement {
         )
         .map((entity) => ({
           value: entity.entity_id,
-          label: computeStateName(entity),
+          label: formatEntityName(entity),
         })),
     ]
   );

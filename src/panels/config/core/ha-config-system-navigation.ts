@@ -145,7 +145,6 @@ class HaConfigSystemNavigation extends LitElement {
         >
           <ha-card outlined>
             <ha-config-navigation-list
-              .hass=${this.hass}
               .narrow=${this.narrow}
               .pages=${pages}
               has-secondary

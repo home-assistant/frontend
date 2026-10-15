@@ -77,6 +77,9 @@ export class HaEntityPicker extends LitElement {
 
   @property() public label?: string;
 
+  @property({ attribute: "aria-label" })
+  public ariaLabel: string | null = null;
+
   @property() public value?: string;
 
   @property() public helper?: string;
@@ -449,6 +452,7 @@ export class HaEntityPicker extends LitElement {
         .allowCustomValue=${this.allowCustomEntity}
         .required=${this.required}
         .label=${this.label}
+        .ariaLabel=${this.ariaLabel}
         .placeholder=${placeholder}
         .helper=${this.helper}
         .value=${this.addButton ? undefined : this.value}

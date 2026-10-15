@@ -3,7 +3,7 @@ import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { DataTableRowData } from "../../../src/components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
 import {
-  browseSettingsFromUrl,
+  browseLinkFromUrl,
   browseUrl,
   filterRepositories,
   filtersOfTab,
@@ -159,29 +159,43 @@ describe("filterRepositories", () => {
 });
 
 describe("browseUrl", () => {
-  it("links to what browseSettingsFromUrl reads back", () => {
-    const settings = {
-      search: "mushroom card",
-      sorting: { column: "stars", direction: "desc" as const },
-      filters: { status: ["new"], type: ["theme"], source: ["custom"] },
-    };
-
-    const url = new URL(browseUrl(settings), "http://localhost");
+  it("links to what browseLinkFromUrl and the table read back", () => {
+    const url = new URL(
+      browseUrl({
+        search: "mushroom card",
+        sorting: { column: "stars", direction: "desc" },
+        filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+      }),
+      "http://localhost"
+    );
 
     expect(url.pathname).toBe("/marketplace/browse");
-    expect(browseSettingsFromUrl(url.search)).toEqual(settings);
+    expect(url.searchParams.get("sort")).toBe("stars");
+    expect(url.searchParams.get("direction")).toBe("desc");
+    expect(browseLinkFromUrl(url.search)).toEqual({
+      search: "mushroom card",
+      filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+    });
   });
 
-  it("sorts ascending when the link gives no direction", () => {
-    expect(browseSettingsFromUrl("?sort=name")?.sorting).toEqual({
-      column: "name",
-      direction: "asc",
+  it("leaves the direction out when sorting ascending", () => {
+    expect(
+      browseUrl({ sorting: { column: "name", direction: "asc" }, filters: {} })
+    ).toBe("/marketplace/browse?sort=name");
+  });
+});
+
+describe("browseLinkFromUrl", () => {
+  it("replaces the search and filters for a link that only sorts", () => {
+    expect(browseLinkFromUrl("?sort=stars&direction=desc")).toEqual({
+      search: "",
+      filters: { status: undefined, type: undefined, source: undefined },
     });
   });
 
   it("keeps what was picked for a link that says nothing about browsing", () => {
     expect(
-      browseSettingsFromUrl("?owner=hacs&repository=integration")
+      browseLinkFromUrl("?owner=hacs&repository=integration")
     ).toBeUndefined();
   });
 });

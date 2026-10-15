@@ -276,7 +276,7 @@ export class ESPHomeSetupController implements ReactiveController {
     showESPHomeDeviceSetupDialog(this._host, {
       deviceId,
       deviceName: device
-        ? computeDeviceNameDisplay(device, hass.localize, hass.states)
+        ? computeDeviceNameDisplay(device, hass.localize)
         : undefined,
       capabilities: this._capabilities,
       mediaPlayerSupported: getESPHomeAudioControls(

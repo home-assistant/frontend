@@ -134,7 +134,8 @@ export class HaAutomationTrace extends LitElement {
       ? this.hass.states[this._entityId]
       : undefined;
 
-    const title = stateObj?.attributes.friendly_name || this._entityId;
+    const title =
+      (stateObj && this.hass.formatEntityName(stateObj)) || this._entityId;
 
     let devButtons: TemplateResult | string = "";
     if (__DEV__) {
