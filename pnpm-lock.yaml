@@ -404,8 +404,8 @@ importers:
         specifier: 6.14.0
         version: 6.14.0
       marked:
-        specifier: 18.1.0
-        version: 18.1.0
+        specifier: 18.1.1
+        version: 18.1.1
       memoize-one:
         specifier: 6.0.0
         version: 6.0.0
@@ -5923,8 +5923,8 @@ packages:
     engines: {node: '>= 18'}
     hasBin: true
 
-  marked@18.1.0:
-    resolution: {integrity: sha512-PamYXWWWg2nboG3oX5Ffzpy3EFZROqZJK9hSlMmUnekp7TxPs5DcT95vwd46m73/exfKCRVMtgXoPMI4FEJL6w==}
+  marked@18.1.1:
+    resolution: {integrity: sha512-zEGgrtUG8crk+TrMacJSVABU4DYDDkS8uqgU3ohrn/2fW9C2AEfUrO3m6IhpIpQpl7YcVpiXXC9cSMWDANT3dg==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -13688,7 +13688,7 @@ snapshots:
 
   marked@11.2.0: {}
 
-  marked@18.1.0: {}
+  marked@18.1.1: {}
 
   math-intrinsics@1.1.0: {}
 
