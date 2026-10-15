@@ -510,7 +510,6 @@ export class HaServiceControl extends LitElement {
       this.hidePicker
         ? nothing
         : html`<ha-service-picker
-            .hass=${this.hass}
             .value=${this._value?.action}
             .disabled=${this.disabled}
             @value-changed=${this._serviceChanged}
