@@ -3002,7 +3002,18 @@
           "leave_beta": "Leave beta channel",
           "skipped": "Skipped",
           "update_in_progress": "Update in progress",
-          "no_area": "No area"
+          "no_area": "No area",
+          "backup_in_progress": {
+            "title": {
+              "create_backup": "[%key:ui::panel::config::backup::overview::progress::heading::create_backup%]",
+              "receive_backup": "[%key:ui::panel::config::backup::overview::progress::heading::receive_backup%]",
+              "restore_backup": "[%key:ui::panel::config::backup::overview::progress::heading::restore_backup%]"
+            },
+            "create_backup": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::create_backup%]",
+            "receive_backup": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::receive_backup%]",
+            "restore_backup": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::restore_backup%]",
+            "backups_link": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::backups_link%]"
+          }
         },
         "repairs": {
           "caption": "Repairs",
