@@ -13,7 +13,10 @@ import {
   registriesContext,
   statesContext,
 } from "../../../../data/context";
-import type { EnergyData } from "../../../../data/energy";
+import type {
+  EnergyData,
+  HomeSourceTypeEnergyPreference,
+} from "../../../../data/energy";
 import {
   computeConsumptionData,
   computeEnergyDeviceLabels,
@@ -164,7 +167,11 @@ class HuiEnergySankeyCard
 
     const homeNode: Node = {
       id: "home",
-      label: this._hassConfig.location_name,
+      label:
+        prefs.energy_sources.find(
+          (source): source is HomeSourceTypeEnergyPreference =>
+            source.type === "home"
+        )?.name || this._hassConfig.location_name,
       value: Math.max(0, consumption.total.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,

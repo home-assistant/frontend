@@ -571,6 +571,7 @@ const getEnergyData = async (
   const energyStatIds = getReferencedStatisticIds(prefs, info, [
     "grid",
     "solar",
+    "home",
     "battery",
     "gas",
     "device",
@@ -1413,23 +1414,17 @@ export const reconcileUsageWithHome = (
   usage: { used_grid: number; used_solar: number; used_battery: number }
 ) => {
   const used_total = Math.max(home, 0);
-  const sum = usage.used_grid + usage.used_solar + usage.used_battery;
-
-  if (sum <= 0) {
-    return {
-      used_total,
-      used_grid: used_total,
-      used_solar: 0,
-      used_battery: 0,
-    };
+  let excess =
+    usage.used_grid + usage.used_solar + usage.used_battery - used_total;
+  if (excess <= 0) {
+    return { used_total, ...usage, used_grid: usage.used_grid - excess };
   }
-  const k = used_total / sum;
-  return {
-    used_total,
-    used_grid: usage.used_grid * k,
-    used_solar: usage.used_solar * k,
-    used_battery: usage.used_battery * k,
-  };
+  const used_grid = Math.max(0, usage.used_grid - excess);
+  excess -= usage.used_grid - used_grid;
+  const used_battery = Math.max(0, usage.used_battery - excess);
+  excess -= usage.used_battery - used_battery;
+  const used_solar = Math.max(0, usage.used_solar - excess);
+  return { used_total, used_grid, used_solar, used_battery };
 };
 
 export const energyStatisticHelpUrl =

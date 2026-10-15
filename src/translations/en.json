@@ -4490,7 +4490,7 @@
             "title": "Home consumption",
             "sub": "If you have a meter that measures your whole house consumption, you can configure it here.",
             "add_home_meter": "Add home meter",
-            "delete_home_meter": "Delete home meter",
+            "remove_home_meter": "Remove home meter",
             "edit_home_meter": "Edit home meter",
             "dialog": {
               "header": "Configure home consumption",

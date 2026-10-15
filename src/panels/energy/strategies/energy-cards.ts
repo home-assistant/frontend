@@ -132,7 +132,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "overview",
     "energy-sources-table",
     "ui.panel.energy.cards.energy_sources_table_title",
-    (p) => p.energy_sources.length > 0
+    (p) => p.energy_sources.some((s) => s.type !== "home")
   ),
   entry(
     "overview",

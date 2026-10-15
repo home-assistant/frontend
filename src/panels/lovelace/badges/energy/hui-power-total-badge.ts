@@ -12,7 +12,11 @@ import {
   internationalizationContext,
   statesContext,
 } from "../../../../data/context";
-import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
+import type {
+  EnergyData,
+  EnergyPreferences,
+  HomeSourceTypeEnergyPreference,
+} from "../../../../data/energy";
 import { getPowerFromState } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import type { HomeAssistantInternationalization } from "../../../../types";
@@ -29,6 +33,7 @@ export class HuiPowerTotalBadge extends LitElement implements LovelaceBadge {
       this._data?.prefs.energy_sources.forEach((source) => {
         if (
           (source.type === "solar" ||
+            source.type === "home" ||
             source.type === "grid" ||
             source.type === "battery") &&
           source.stat_rate &&
@@ -90,6 +95,14 @@ export class HuiPowerTotalBadge extends LitElement implements LovelaceBadge {
         else if (value < 0) toBattery += Math.abs(value);
       }
     });
+
+    const homeRate = prefs.energy_sources.find(
+      (source): source is HomeSourceTypeEnergyPreference =>
+        source.type === "home" && !!source.stat_rate
+    )?.stat_rate;
+    if (homeRate && this._states[homeRate]) {
+      return Math.max(0, this._getCurrentPower(homeRate));
+    }
 
     const usedTotal = fromGrid + solar + fromBattery - toGrid - toBattery;
     return Math.max(0, usedTotal);

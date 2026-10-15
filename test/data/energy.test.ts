@@ -1,6 +1,6 @@
 import { addDays, endOfDay, startOfDay } from "date-fns";
 import type { HassConfig } from "home-assistant-js-websocket";
-import { afterEach, assert, describe, it, vi, expect } from "vitest";
+import { afterEach, assert, describe, it, vi } from "vitest";
 
 import { calcDate } from "../../src/common/datetime/calc_date";
 import {
@@ -1849,24 +1849,41 @@ describe("computeEnergyDeviceLabels", () => {
 });
 
 describe("reconcileUsageWithHome", () => {
-  it("scales source usage to match the home meter", () => {
-    const r = reconcileUsageWithHome(20, {
+  const usage = { used_grid: 4, used_solar: 3, used_battery: 0 };
+
+  it("lets grid absorb a higher meter reading", () => {
+    assert.deepEqual(reconcileUsageWithHome(9, usage), {
+      used_total: 9,
       used_grid: 6,
       used_solar: 3,
-      used_battery: 1,
+      used_battery: 0,
     });
-    expect(r.used_total).toBe(20);
-    expect(r.used_grid + r.used_solar + r.used_battery).toBeCloseTo(20);
-    expect(r.used_grid / r.used_solar).toBeCloseTo(2);
   });
 
-  it("falls back to grid when no source usage is computed", () => {
-    expect(
-      reconcileUsageWithHome(5, {
-        used_grid: 0,
-        used_solar: 0,
-        used_battery: 0,
-      })
-    ).toEqual({ used_total: 5, used_grid: 5, used_solar: 0, used_battery: 0 });
+  it("reduces grid first when the meter is lower", () => {
+    assert.deepEqual(reconcileUsageWithHome(5, usage), {
+      used_total: 5,
+      used_grid: 2,
+      used_solar: 3,
+      used_battery: 0,
+    });
+  });
+
+  it("reduces solar after grid and battery", () => {
+    assert.deepEqual(reconcileUsageWithHome(2, usage), {
+      used_total: 2,
+      used_grid: 0,
+      used_solar: 2,
+      used_battery: 0,
+    });
+  });
+
+  it("keeps a real zero reading", () => {
+    assert.deepEqual(reconcileUsageWithHome(0, usage), {
+      used_total: 0,
+      used_grid: 0,
+      used_solar: 0,
+      used_battery: 0,
+    });
   });
 });

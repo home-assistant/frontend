@@ -28,9 +28,7 @@ export interface EnergySettingsSolarDialogParams {
 }
 
 export interface EnergySettingsHomeDialogParams {
-  info: EnergyInfo;
   source?: HomeSourceTypeEnergyPreference;
-  energy_sources: HomeSourceTypeEnergyPreference[];
   statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: HomeSourceTypeEnergyPreference) => Promise<void>;
 }

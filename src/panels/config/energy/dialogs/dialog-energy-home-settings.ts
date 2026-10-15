@@ -14,7 +14,6 @@ import {
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import {
-  getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
 } from "../../../../data/recorder";
@@ -116,16 +115,7 @@ export class DialogEnergyHomeSettings
           type="text"
           .disabled=${!this._source.stat_energy_from}
           .value=${this._source.name || ""}
-          .placeholder=${
-            this._source.stat_energy_from
-              ? getStatisticLabel(
-                  this.hass.states,
-                  this.hass.formatEntityName,
-                  this._source.stat_energy_from,
-                  this._params.statsMetadata?.[this._source.stat_energy_from]
-                )
-              : ""
-          }
+          .placeholder=${this.hass.config.location_name}
           @input=${this._nameChanged}
         >
         </ha-input>

@@ -14,11 +14,16 @@ import {
   registriesContext,
   statesContext,
 } from "../../../../data/context";
-import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
+import type {
+  EnergyData,
+  EnergyPreferences,
+  HomeSourceTypeEnergyPreference,
+} from "../../../../data/energy";
 import {
   computeEnergyDeviceLabels,
   formatPowerShort,
   getPowerFromState,
+  reconcileUsageWithHome,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -195,7 +200,11 @@ class HuiPowerSankeyCard
     // Create home node
     const homeNode: Node = {
       id: "home",
-      label: this._hassConfig.location_name,
+      label:
+        prefs.energy_sources.find(
+          (source): source is HomeSourceTypeEnergyPreference =>
+            source.type === "home"
+        )?.name || this._hassConfig.location_name,
       value: Math.max(0, powerData.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -507,6 +516,27 @@ class HuiPowerSankeyCard
     // Grid_In -> Consumption
     const used_grid = Math.min(used_total_remaining, grid_remaining);
 
+    const home = prefs.energy_sources.find(
+      (source): source is HomeSourceTypeEnergyPreference =>
+        source.type === "home"
+    );
+    const homePower = home?.stat_rate
+      ? getPowerFromState(this._states[home.stat_rate])
+      : undefined;
+    const usage =
+      homePower === undefined
+        ? {
+            used_total: Math.max(0, used_total),
+            used_solar,
+            used_grid,
+            used_battery,
+          }
+        : reconcileUsageWithHome(homePower, {
+            used_grid,
+            used_solar,
+            used_battery,
+          });
+
     return {
       solar,
       from_grid,
@@ -517,10 +547,10 @@ class HuiPowerSankeyCard
       battery_to_grid,
       solar_to_battery,
       solar_to_grid,
-      used_solar,
-      used_grid,
-      used_battery,
-      used_total: Math.max(0, used_total),
+      used_solar: usage.used_solar,
+      used_grid: usage.used_grid,
+      used_battery: usage.used_battery,
+      used_total: usage.used_total,
     };
   }
 
