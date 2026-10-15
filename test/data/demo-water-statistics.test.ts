@@ -136,42 +136,124 @@ describe("demo water statistics", () => {
   });
 
   it.each([
-    "sensor.energy_consumption_tarif_1",
-    "sensor.energy_consumption_tarif_2",
-    "sensor.energy_production_tarif_2",
-    "sensor.solar_production",
-  ])("preserves the server zone in derived hourly boundaries for %s", (id) => {
-    vi.setSystemTime(new Date("2027-01-01T00:00:00Z"));
-    const start = "2026-03-01T18:30:00Z";
-    const end = "2026-03-02T18:30:00Z";
-    const buckets = fetchWater("hour", [id], start, end, "Asia/Kolkata")[id];
-    expect(buckets.length).toBeGreaterThan(0);
-    for (const bucket of buckets) {
-      expect((bucket.start - Date.parse(start)) % 3600000).toBe(0);
-      expect(bucket.end - bucket.start).toBe(3600000);
-      expect(bucket.start).toBeGreaterThanOrEqual(Date.parse(start));
-      expect(bucket.end).toBeLessThanOrEqual(Date.parse(end));
+    [
+      "ordinary LA day",
+      "2026-10-13T07:00:00Z",
+      "2026-10-14T06:59:59.999Z",
+      "America/Los_Angeles",
+      24,
+    ],
+    [
+      "LA spring DST day",
+      "2026-03-08T08:00:00Z",
+      "2026-03-09T06:59:59.999Z",
+      "America/Los_Angeles",
+      23,
+    ],
+    [
+      "LA fall DST day",
+      "2025-11-02T07:00:00Z",
+      "2025-11-03T07:59:59.999Z",
+      "America/Los_Angeles",
+      25,
+    ],
+    [
+      "UTC browser day across LA fall DST",
+      "2025-11-02T00:00:00Z",
+      "2025-11-02T23:59:59.999Z",
+      "America/Los_Angeles",
+      24,
+    ],
+    [
+      "Kolkata browser day against an LA server",
+      "2026-10-12T18:30:00Z",
+      "2026-10-13T18:29:59.999Z",
+      "America/Los_Angeles",
+      24,
+    ],
+    [
+      "Kolkata server day",
+      "2026-03-01T18:30:00Z",
+      "2026-03-02T18:29:59.999Z",
+      "Asia/Kolkata",
+      24,
+    ],
+  ] as const)(
+    "returns contiguous UTC hours for a %s",
+    (_scenario, start, end, timeZone, hours) => {
+      vi.setSystemTime(new Date("2027-01-01T00:00:00Z"));
+      const ids = [
+        "sensor.energy_water",
+        "sensor.energy_water_cost",
+        "sensor.energy_consumption_tarif_1",
+        "sensor.energy_consumption_tarif_2",
+        "sensor.energy_production_tarif_2",
+        "sensor.solar_production",
+        "sensor.temperature",
+      ];
+      const stats = fetchWater("hour", ids, start, end, timeZone);
+      const firstStart = Math.ceil(Date.parse(start) / 3600000) * 3600000;
+      for (const id of ids) {
+        const buckets = stats[id];
+        expect(buckets, id).toHaveLength(hours);
+        expect(buckets[0].start, id).toBe(firstStart);
+        expect(buckets[buckets.length - 1].end, id).toBe(
+          firstStart + hours * 3600000
+        );
+        expect(buckets[buckets.length - 1].end, id).toBeGreaterThanOrEqual(
+          Date.parse(end)
+        );
+        buckets.forEach((bucket, index) => {
+          expect(bucket.start % 3600000, id).toBe(0);
+          expect(bucket.end - bucket.start, id).toBe(3600000);
+          if (index > 0) {
+            expect(bucket.start, id).toBe(buckets[index - 1].end);
+          }
+        });
+      }
+      expect(
+        stats["sensor.energy_water"].reduce(
+          (total, bucket) => total + bucket.change!,
+          0
+        )
+      ).toBeCloseTo(hours * 10);
+      expect(
+        stats["sensor.energy_water_cost"].reduce(
+          (total, bucket) => total + bucket.change!,
+          0
+        )
+      ).toBeCloseTo(hours * 10 * 0.004);
     }
-  });
+  );
 
-  it("keeps hourly solar statistics within the spring DST day", () => {
-    vi.setSystemTime(new Date("2027-01-01T00:00:00Z"));
-    const start = "2026-03-08T08:00:00Z";
-    const end = "2026-03-09T07:00:00Z";
-    const buckets = fetchWater(
-      "hour",
-      ["sensor.solar_production"],
+  it.each([
+    ["2026-01-01T18:30:00Z", 4],
+    ["2026-01-01T18:32:17Z", 3],
+  ] as const)("uses the five-minute UTC grid from %s", (start, count) => {
+    const ids = ["sensor.energy_water", "sensor.temperature"];
+    const stats = fetchWater(
+      "5minute",
+      ids,
       start,
-      end,
+      "2026-01-01T18:49:59.999Z",
       "America/Los_Angeles"
-    )["sensor.solar_production"];
-    expect(buckets).toHaveLength(23);
-    expect(buckets[0].start).toBe(Date.parse(start));
-    expect(buckets[buckets.length - 1].end).toBe(Date.parse(end));
-    for (const bucket of buckets) {
-      expect(bucket.start).toBeGreaterThanOrEqual(Date.parse(start));
-      expect(bucket.end).toBeLessThanOrEqual(Date.parse(end));
-      expect(bucket.end - bucket.start).toBe(3600000);
+    );
+    for (const id of ids) {
+      const buckets = stats[id];
+      expect(buckets, id).toHaveLength(count);
+      expect(buckets[0].start, id).toBe(
+        Date.parse(count === 4 ? start : "2026-01-01T18:35:00Z")
+      );
+      expect(buckets[buckets.length - 1].end, id).toBe(
+        Date.parse("2026-01-01T18:50:00Z")
+      );
+      buckets.forEach((bucket, index) => {
+        expect(bucket.start % 300000, id).toBe(0);
+        expect(bucket.end - bucket.start, id).toBe(300000);
+        if (index > 0) {
+          expect(bucket.start, id).toBe(buckets[index - 1].end);
+        }
+      });
     }
   });
 

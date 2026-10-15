@@ -15,6 +15,18 @@ import type {
 } from "../../../src/data/recorder";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
+const getFirstDate = (
+  start: Date,
+  period: "5minute" | "hour" | "day" | "month"
+): Date => {
+  if (period === "day" || period === "month") {
+    return constructFrom(start, start);
+  }
+  // Core returns UTC-aligned buckets whose start is at or after the request.
+  const interval = (period === "hour" ? 60 : 5) * 60 * 1000;
+  return constructFrom(start, Math.ceil(start.getTime() / interval) * interval);
+};
+
 const getNextDate = (
   currentDate: Date,
   period: "5minute" | "hour" | "day" | "month"
@@ -35,8 +47,7 @@ const generateMeanStatistics = (
   maxDiff: number
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = constructFrom(start, start);
-  currentDate.setMinutes(0, 0, 0);
+  let currentDate = getFirstDate(start, period);
   const now = new Date();
   while (end > currentDate && currentDate < now) {
     const delta = Math.random() * maxDiff;
@@ -65,8 +76,7 @@ const generateSumStatistics = (
   maxDiff: number | ((start: Date, end: Date) => number)
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = constructFrom(start, start);
-  currentDate.setMinutes(0, 0, 0);
+  let currentDate = getFirstDate(start, period);
   let sum = initValue;
   const now = new Date();
   while (end > currentDate && currentDate < now) {
@@ -100,8 +110,7 @@ const generateCurvedStatistics = (
   metered: boolean
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = constructFrom(start, start);
-  currentDate.setMinutes(0, 0, 0);
+  let currentDate = getFirstDate(start, period);
   let sum = initValue;
   const hours = differenceInHours(end, start) - 1;
   let i = 0;
@@ -164,15 +173,9 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const morningEnd = constructFrom(
-      start,
-      start.getTime() + 10 * 60 * 60 * 1000
-    );
+    const morningEnd = addHours(start, 10);
     const morningLow = generateSumStatistics(start, morningEnd, period, 0, 0.7);
-    const eveningStart = constructFrom(
-      start,
-      start.getTime() + 20 * 60 * 60 * 1000
-    );
+    const eveningStart = addHours(start, 20);
     const morningFinalVal = morningLow.length
       ? morningLow[morningLow.length - 1].sum!
       : 0;
@@ -207,14 +210,8 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const morningEnd = constructFrom(
-      start,
-      start.getTime() + 9 * 60 * 60 * 1000
-    );
-    const eveningStart = constructFrom(
-      start,
-      start.getTime() + 20 * 60 * 60 * 1000
-    );
+    const morningEnd = addHours(start, 9);
+    const eveningStart = addHours(start, 20);
     const highTarif = generateSumStatistics(
       morningEnd,
       eveningStart,
@@ -253,14 +250,8 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const productionStart = constructFrom(
-      start,
-      start.getTime() + 9 * 60 * 60 * 1000
-    );
-    const productionEnd = constructFrom(
-      start,
-      start.getTime() + 21 * 60 * 60 * 1000
-    );
+    const productionStart = addHours(start, 9);
+    const productionEnd = addHours(start, 21);
     const dayEnd = constructFrom(
       end,
       Math.min(endOfDay(productionEnd).getTime(), end.getTime())
@@ -303,14 +294,8 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const productionStart = constructFrom(
-      start,
-      start.getTime() + 7 * 60 * 60 * 1000
-    );
-    const productionEnd = constructFrom(
-      start,
-      start.getTime() + 23 * 60 * 60 * 1000
-    );
+    const productionStart = addHours(start, 7);
+    const productionEnd = addHours(start, 23);
     const dayEnd = constructFrom(
       end,
       Math.min(endOfDay(productionEnd).getTime(), end.getTime())
