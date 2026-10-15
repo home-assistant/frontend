@@ -11434,7 +11434,9 @@
                 "style": "Style",
                 "style_list": {
                   "buttons": "Buttons",
-                  "slider": "Slider"
+                  "buttons_description": "Change the value step by step with minus and plus",
+                  "slider": "Slider",
+                  "slider_description": "Drag to set the value"
                 }
               },
               "target-temperature": {
@@ -11442,7 +11444,9 @@
                 "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
                 "style_list": {
                   "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
-                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]"
+                  "buttons_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons_description%]",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]",
+                  "slider_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider_description%]"
                 }
               },
               "target-humidity": {
@@ -11450,7 +11454,9 @@
                 "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
                 "style_list": {
                   "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
-                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]"
+                  "buttons_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons_description%]",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]",
+                  "slider_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider_description%]"
                 }
               },
               "water-heater-operation-modes": {
