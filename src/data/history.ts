@@ -107,7 +107,6 @@ export const fetchDateWS = (
   entityIds: string[],
   options: {
     minimalResponse?: boolean;
-    significantChangesOnly?: boolean;
   } = {}
 ) => {
   const params = {
@@ -115,7 +114,6 @@ export const fetchDateWS = (
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
     minimal_response: options.minimalResponse ?? true,
-    significant_changes_only: options.significantChangesOnly ?? true,
     no_attributes: !entityIds.some((entityId) =>
       entityIdHistoryNeedsAttributes(hass, entityId)
     ),
