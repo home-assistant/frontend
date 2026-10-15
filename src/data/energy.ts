@@ -688,30 +688,34 @@ const getEnergyData = async (
   const waterUnits: StatisticsUnitConfiguration = {
     volume: waterUnit,
   };
-  // A heat statistic that is also fetched by another request must use the
-  // unit of that request, the merged stats would otherwise mislabel one.
+  // Statistics that another request already fetches are not fetched again,
+  // so heat never overwrites their values in the merged stats. Heat is shown
+  // in the unit of that request instead.
   const gasEnergyStatIdSet = new Set(gasEnergyStatIds);
   const energyStatIdSet = new Set(energyStatIds);
   const waterStatIdSet = new Set(waterStatIds);
-  let sharedHeatUnit: string | undefined;
-  for (const source of energySourcesByType(prefs).heat ?? []) {
-    const statId = source.stat_energy_from;
+  const getSharedUnit = (statId: string): string | undefined => {
     if (gasEnergyStatIdSet.has(statId)) {
-      sharedHeatUnit = gasUnit;
-    } else if (energyStatIdSet.has(statId)) {
-      sharedHeatUnit =
-        statsMetadata[statId]?.unit_class === "volume"
-          ? (energyUnits.volume ??
+      return gasUnit;
+    }
+    if (energyStatIdSet.has(statId)) {
+      return statsMetadata[statId]?.unit_class === "volume"
+        ? (energyUnits.volume ??
             getDisplayUnit(states, statId, statsMetadata[statId]) ??
             undefined)
-          : "kWh";
-    } else if (waterStatIdSet.has(statId)) {
-      sharedHeatUnit = waterUnit;
+        : "kWh";
     }
-    if (sharedHeatUnit) {
-      break;
+    if (waterStatIdSet.has(statId)) {
+      return waterUnit;
     }
-  }
+    return undefined;
+  };
+  const sharedHeatUnit = (energySourcesByType(prefs).heat ?? [])
+    .map((source) => getSharedUnit(source.stat_energy_from))
+    .find((unit) => unit !== undefined);
+  const heatFetchStatIds = heatStatIds.filter(
+    (statId) => !energyStatIdSet.has(statId) && !waterStatIdSet.has(statId)
+  );
   const heatUnit =
     sharedHeatUnit ?? getEnergyHeatUnit(states, prefs, statsMetadata);
   const heatUnits: StatisticsUnitConfiguration = {
@@ -782,12 +786,12 @@ const getEnergyData = async (
       )
     : {};
 
-  const _heatStats: Statistics | Promise<Statistics> = heatStatIds.length
+  const _heatStats: Statistics | Promise<Statistics> = heatFetchStatIds.length
     ? fetchStatistics(
         callWS,
         periodStart,
         periodEnd,
-        heatStatIds,
+        heatFetchStatIds,
         period,
         heatUnits,
         ["change"]
@@ -887,12 +891,12 @@ const getEnergyData = async (
         ["change"]
       );
     }
-    if (heatStatIds.length) {
+    if (heatFetchStatIds.length) {
       _heatStatsCompare = fetchStatistics(
         callWS,
         periodStartCompare,
         periodEndCompare,
-        heatStatIds,
+        heatFetchStatIds,
         period,
         heatUnits,
         ["change"]

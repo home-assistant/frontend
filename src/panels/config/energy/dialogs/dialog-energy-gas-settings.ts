@@ -110,7 +110,8 @@ export class DialogEnergyGasSettings
     ).units;
     this._excludeList = this._params.gas_sources
       .map((entry) => entry.stat_energy_from)
-      .filter((id) => id !== this._source?.stat_energy_from);
+      .filter((id) => id !== this._source?.stat_energy_from)
+      .concat(this._params.heat_statistics);
     this._excludeListFlowRate = this._params.gas_sources
       .map((entry) => entry.stat_rate)
       .filter((id) => id && id !== this._source?.stat_rate) as string[];

@@ -2428,6 +2428,28 @@ describe("getEnergyDataCollection heat unit", () => {
     );
   });
 
+  it("doesn't fetch heat statistics again that another request fetches", async () => {
+    const { data, statisticRequests } = await loadHeatData(
+      "energy_heat_shared_not_refetched",
+      {
+        "integration:heat_pump": ["MWh", "energy"],
+        "integration:district_heating": ["MWh", "energy"],
+      },
+      [],
+      ["integration:heat_pump"]
+    );
+    assert.equal(data?.heatUnit, "kWh");
+    // Only the heat request configures a mass unit
+    const heatRequests = statisticRequests.filter((msg) =>
+      Object.hasOwn(msg.units as object, "mass")
+    );
+    assert.lengthOf(heatRequests, 1);
+    assert.deepEqual(heatRequests[0].statistic_ids, [
+      "integration:district_heating",
+    ]);
+    assert.equal((heatRequests[0].units as { energy?: string }).energy, "kWh");
+  });
+
   it("falls back to the default unit when heat sources use different units", async () => {
     const { data } = await loadHeatData("energy_heat_mixed", {
       "integration:heat_a": ["GJ", "energy"],
