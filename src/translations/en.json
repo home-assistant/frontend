@@ -10164,8 +10164,17 @@
           "error_section": {
             "title": "Error"
           },
+          "section_strategy": {
+            "common-controls": {
+              "name": "Common controls"
+            }
+          },
           "edit_section": {
-            "header": "Edit section",
+            "header": "Section configuration",
+            "typed_header": "{type} section configuration",
+            "preview": "Preview",
+            "preview_desktop": "Desktop preview",
+            "preview_mobile": "Mobile preview",
             "tab_strategy": "Configuration",
             "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_view::tab_visibility%]",
             "tab_appearance": "Appearance",
@@ -10173,7 +10182,13 @@
             "edit_yaml": "[%key:ui::panel::lovelace::editor::edit_view::edit_yaml%]",
             "settings": {
               "column_span": "Width",
-              "column_span_helper": "Larger sections will be made smaller to fit the display. (for example, on mobile devices)",
+              "column_span_helper": "Smaller screens may show it narrower, and phones stack sections one under the other.",
+              "column_span_options": {
+                "single": "Single",
+                "double": "Double",
+                "triple": "Triple",
+                "full": "Full width"
+              },
               "background": "Background options",
               "background_enabled": "Background",
               "background_enabled_helper": "Display a colored background behind the section",
