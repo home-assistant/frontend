@@ -152,6 +152,12 @@ export class EnergyHeatSettings extends LitElement {
     ) as HeatSourceTypeEnergyPreference[];
   }
 
+  private get _gasStatistics(): string[] {
+    return this.preferences.energy_sources
+      .filter((src) => src.type === "gas")
+      .map((src) => src.stat_energy_from);
+  }
+
   private _heatStatsMetadata() {
     return getMissingStatisticsMetadata(
       this.hass.callWS,
@@ -170,6 +176,7 @@ export class EnergyHeatSettings extends LitElement {
         statsMetadata
       ),
       heat_sources: this._heatSources,
+      gas_statistics: this._gasStatistics,
       saveCallback: async (source) => {
         delete source.unit_of_measurement;
         await this._savePreferences({
@@ -193,6 +200,7 @@ export class EnergyHeatSettings extends LitElement {
         statsMetadata
       ),
       heat_sources: this._heatSources,
+      gas_statistics: this._gasStatistics,
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,

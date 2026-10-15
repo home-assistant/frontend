@@ -118,7 +118,8 @@ export class DialogEnergyHeatSettings
     ).units;
     this._excludeList = this._params.heat_sources
       .map((entry) => entry.stat_energy_from)
-      .filter((id) => id !== this._source?.stat_energy_from);
+      .filter((id) => id !== this._source?.stat_energy_from)
+      .concat(this._params.gas_statistics);
 
     this._open = true;
     this._initDirtyTracking(

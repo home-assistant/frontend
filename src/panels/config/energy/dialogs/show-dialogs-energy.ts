@@ -47,6 +47,8 @@ export interface EnergySettingsHeatDialogParams {
   source?: HeatSourceTypeEnergyPreference;
   allowedHeatUnitClass?: EnergyHeatUnitClass;
   heat_sources: HeatSourceTypeEnergyPreference[];
+  // Meters of gas sources, a heat source can't use the same meter
+  gas_statistics: string[];
   statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: HeatSourceTypeEnergyPreference) => Promise<void>;
 }
