@@ -140,7 +140,12 @@ export class HaBackupOverviewProgress extends LitElement {
 
   private _computeAgentPercent(agentId: string): number | undefined {
     const progress = this.uploadProgress[agentId];
-    if (!progress || progress.total_bytes === 0) {
+    // 0 bytes only means the upload started; the agent may never report more.
+    if (
+      !progress ||
+      progress.total_bytes === 0 ||
+      progress.uploaded_bytes === 0
+    ) {
       return undefined;
     }
     return Math.round((progress.uploaded_bytes / progress.total_bytes) * 100);
@@ -358,9 +363,12 @@ export class HaBackupOverviewProgress extends LitElement {
       return nothing;
     }
 
-    const hasProgress = Object.keys(this.uploadProgress).length > 0;
+    // Only upload events tell which locations this backup goes to.
+    const agents = this.agents.filter(
+      (agent) => agent.agent_id in this.uploadProgress
+    );
 
-    if (!hasProgress) {
+    if (agents.length === 0) {
       return nothing;
     }
 
@@ -372,7 +380,7 @@ export class HaBackupOverviewProgress extends LitElement {
         }
       >
         <ha-list-base class="agent-list">
-          ${this.agents.map((agent) => {
+          ${agents.map((agent) => {
             const name = computeBackupAgentName(
               this.hass.localize,
               agent.agent_id,
