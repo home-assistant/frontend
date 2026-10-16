@@ -1873,7 +1873,7 @@ export class HaDataTable extends LitElement {
           inset-inline-start: initial;
         }
         .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) span,
-        .mdc-data-table__header-cell--numeric.sortable.not-sorted:hover span {
+        .mdc-data-table__header-cell--numeric.sortable:hover.not-sorted span {
           left: -24px;
           inset-inline-start: -24px;
           inset-inline-end: initial;
