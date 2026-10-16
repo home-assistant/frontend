@@ -2,7 +2,7 @@ import type { LoRaWANDevice } from "../../../../../src/data/lorawan";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 import { minutesAgo } from "../helpers";
 import { emitInitial } from "../subscription";
-import { CHIRPSTACK_ENTRY, OFFLINE_ENTRY, TTN_ENTRY } from "./fixtures";
+import { CHIRPSTACK_ENTRY, TTN_ENTRY } from "./fixtures";
 
 const devices = (): LoRaWANDevice[] => {
   const base: LoRaWANDevice = {
@@ -100,13 +100,6 @@ const devices = (): LoRaWANDevice[] => {
       name: "Garden shed",
       device_id: null,
       support: "integration_not_configured",
-      connection: {
-        entry_id: OFFLINE_ENTRY,
-        domain: "chirpstack",
-        title: "Garden ChirpStack",
-        configuration_url: "https://garden.example.com/",
-        connected: false,
-      },
       battery_level: 18,
       last_uplink: minutesAgo(180),
       last_status: minutesAgo(600),
@@ -126,13 +119,6 @@ export const mockLoRaWAN = (hass: MockHomeAssistant) => {
           device.connection,
         ])
       ).values(),
-      {
-        entry_id: "mock-lorawan-empty",
-        domain: "chirpstack",
-        title: "New connection",
-        connected: true,
-        configuration_url: "https://new-chirpstack.example.com/",
-      },
     ],
   };
   hass.mockWS("lorawan/devices/list", () => snapshot);

@@ -10,7 +10,6 @@ import type { ConnectivityFixtures } from "../types";
 export const CHIRPSTACK_ENTRY = "mock-lorawan-chirpstack";
 export const TTN_ENTRY = "mock-lorawan-ttn";
 export const SENSECAP_ENTRY = "mock-lorawan-sensecap";
-export const OFFLINE_ENTRY = "mock-lorawan-offline";
 
 const REGISTRY_ENTRIES = [
   registryEntry(
@@ -50,10 +49,6 @@ export const lorawanFixtures: ConnectivityFixtures = {
   configEntries: [
     {
       type: "hub",
-      entry: configEntry("mock-lorawan-empty", "chirpstack", "New connection"),
-    },
-    {
-      type: "hub",
       entry: configEntry(CHIRPSTACK_ENTRY, "chirpstack", "Home ChirpStack"),
     },
     {
@@ -63,12 +58,6 @@ export const lorawanFixtures: ConnectivityFixtures = {
         "thethingsnetwork_lorawan",
         "The Things Network"
       ),
-    },
-    {
-      type: "hub",
-      entry: configEntry(OFFLINE_ENTRY, "chirpstack", "Garden ChirpStack", {
-        state: "setup_retry",
-      }),
     },
     {
       type: "device",

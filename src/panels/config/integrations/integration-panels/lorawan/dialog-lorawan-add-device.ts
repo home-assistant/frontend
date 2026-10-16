@@ -43,6 +43,7 @@ class DialogLoRaWANAddDevice extends DialogMixin<{
     const selected = this._selected;
     return html`<ha-dialog
       open
+      class=${selected ? "" : "connection-picker"}
       .headerTitle=${this._i18n.localize("ui.panel.config.lorawan.add_device")}
       .headerSubtitle=${selected?.title}
     >
@@ -120,6 +121,12 @@ class DialogLoRaWANAddDevice extends DialogMixin<{
   }
 
   static styles = css`
+    .connection-picker {
+      --dialog-content-padding: 0;
+    }
+    .connection-picker p {
+      margin: var(--ha-space-4) var(--ha-space-6);
+    }
     a {
       display: inline-flex;
       align-items: center;
