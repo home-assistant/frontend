@@ -63,7 +63,7 @@ export class HaDeviceCard extends LitElement {
       <ha-card
         outlined
         .header=${this.hass.localize(
-          `ui.panel.config.devices.${this.device.entry_type || "device"}_info`
+          `ui.panel.config.devices.${this.device.entry_type || "device"}_info_heading`
         )}
       >
         <div class="card-content">
