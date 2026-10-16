@@ -54,3 +54,41 @@ describe("debug console session", () => {
     expect(sessionIdOf(callWS)).toEqual(expect.any(String));
   });
 });
+
+describe("debug console sessions across tabs", () => {
+  // Each import is a tab of its own, sharing the session storage of the test.
+  const openTab = async () => {
+    vi.resetModules();
+    return import("../../src/data/debug_console");
+  };
+
+  it("starts its own session in a tab opened from another one", async () => {
+    const original = await openTab();
+    const first = createHass("erin");
+    await original.executeDebugConsole(first.hass, "1");
+
+    // A tab opened from the original one gets a copy of its session storage.
+    const copy = await openTab();
+    const second = createHass("erin");
+    await copy.executeDebugConsole(second.hass, "1");
+
+    expect(sessionIdOf(second.callWS)).not.toBe(sessionIdOf(first.callWS));
+    expect(
+      window.sessionStorage.getItem("tools-debug-console-session-erin")
+    ).toBe(sessionIdOf(second.callWS));
+  });
+
+  it("continues the session after a reload", async () => {
+    // The tab that used it before the reload is gone.
+    window.sessionStorage.setItem(
+      "tools-debug-console-session-frank",
+      "before-reload"
+    );
+
+    const reloaded = await openTab();
+    const { hass, callWS } = createHass("frank");
+    await reloaded.executeDebugConsole(hass, "1");
+
+    expect(sessionIdOf(callWS)).toBe("before-reload");
+  });
+});

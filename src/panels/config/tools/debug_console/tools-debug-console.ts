@@ -24,6 +24,7 @@ import {
   mdiCancel,
   mdiChevronLeft,
   mdiChevronRight,
+  mdiStop,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -44,6 +45,7 @@ import type {
   DebugConsoleValue,
 } from "../../../../data/debug_console";
 import {
+  checkDebugConsoleInput,
   clearDebugConsole,
   completeDebugConsole,
   executeDebugConsole,
@@ -51,6 +53,8 @@ import {
   getDebugConsoleAttribute,
   getDebugConsoleInfo,
   getDebugConsoleSignature,
+  prepareDebugConsoleSession,
+  stopDebugConsole,
 } from "../../../../data/debug_console";
 import {
   haSyntaxHighlighting,
@@ -68,6 +72,7 @@ import {
   loadPasteAllowed,
   savePasteAllowed,
 } from "./debug-console-storage";
+import { DebugConsoleRuns, type DebugConsoleRun } from "./debug-console-runs";
 import "./tools-debug-console-value";
 
 type ConsoleEntryContent =
@@ -114,7 +119,15 @@ class ToolsDebugConsole extends LitElement {
   // Bumped by each availability check, so only the latest one counts.
   private _availabilityCheck = 0;
 
-  @state() private _running = false;
+  // Code still running, shown below the log until it is done.
+  @state() private _pending: DebugConsoleRun[] = [];
+
+  private _runs = new DebugConsoleRuns(() => {
+    this._pending = this._runs.pending;
+  });
+
+  // Asking the backend if code is complete, before it runs.
+  private _checking = false;
 
   @state() private _signature?: DebugConsoleSignature;
 
@@ -150,9 +163,6 @@ class ToolsDebugConsole extends LitElement {
   // cursor for when we come back.
   private _savedEditorState?: EditorState;
 
-  // Bumped by Clear, so executions started before it do not refill the log.
-  private _logGeneration = 0;
-
   // Like browser consoles, pasting is blocked until the user types a phrase,
   // as "paste this into the console" is a common way to trick people.
   private _pasteAllowed = false;
@@ -181,6 +191,17 @@ class ToolsDebugConsole extends LitElement {
             </div>
           </div>
         </div>
+        ${
+          this._pending.length
+            ? html`<ha-icon-button
+                .label=${this.hass.localize(
+                  "ui.panel.config.tools.tabs.debug_console.stop"
+                )}
+                .path=${mdiStop}
+                @click=${this._stop}
+              ></ha-icon-button>`
+            : nothing
+        }
         <ha-icon-button
           .label=${this.hass.localize("ui.panel.config.tools.tabs.debug_console.clear")}
           .path=${mdiCancel}
@@ -206,13 +227,15 @@ class ToolsDebugConsole extends LitElement {
             (entry) => entry.id,
             (entry) => this._renderEntry(entry)
           )}
-          ${
-            this._running
-              ? html`<div class="entry">
-                  <ha-spinner size="tiny"></ha-spinner>
-                </div>`
-              : nothing
-          }
+          ${repeat(
+            this._pending,
+            (run) => run.id,
+            (run) =>
+              html`<div class="entry input pending">
+                <ha-spinner class="marker" size="tiny"></ha-spinner>
+                <pre>${run.code}</pre>
+              </div>`
+          )}
         </div>
         <div class="entry prompt" dir="ltr">
           <ha-svg-icon class="marker" .path=${mdiChevronRight}></ha-svg-icon>
@@ -308,6 +331,7 @@ class ToolsDebugConsole extends LitElement {
       this._history = loadHistory(userId);
       this._historyIndex = this._history.length;
       this._pasteAllowed = loadPasteAllowed(userId);
+      prepareDebugConsoleSession(userId);
       this._checkAvailability();
       return;
     }
@@ -461,6 +485,8 @@ class ToolsDebugConsole extends LitElement {
             { key: "ArrowUp", run: this._handleHistoryBack },
             { key: "ArrowDown", run: this._handleHistoryForward },
             { key: "Mod-l", run: this._handleClear },
+            // Like in a terminal; with a selection, it still copies.
+            { key: "Ctrl-c", run: this._handleStop },
           ])
         ),
         keymap.of([
@@ -553,6 +579,15 @@ class ToolsDebugConsole extends LitElement {
 
   private _handleClear = (): boolean => {
     this._clear();
+    return true;
+  };
+
+  private _handleStop = (view: EditorView): boolean => {
+    if (!view.state.selection.main.empty || !this._pending.length) {
+      return false;
+    }
+
+    this._stop();
     return true;
   };
 
@@ -650,7 +685,7 @@ class ToolsDebugConsole extends LitElement {
   private async _run(checkComplete: boolean) {
     const editor = this._editor;
     const code = this._code;
-    if (!code.trim() || this._running || !editor) {
+    if (!code.trim() || this._checking || !editor) {
       return;
     }
 
@@ -661,33 +696,7 @@ class ToolsDebugConsole extends LitElement {
       return;
     }
 
-    const logGeneration = this._logGeneration;
-    this._running = true;
-    let response: DebugConsoleExecuteResult;
-    try {
-      response = await executeDebugConsole(this.hass, code, checkComplete);
-    } catch (err: unknown) {
-      // Websocket errors are plain objects with a message, not Error instances.
-      const { code: errorCode, message } = err as {
-        code?: string;
-        message?: string;
-      };
-
-      response = { error: message ?? String(err) };
-      if (errorCode === "warning_not_accepted") {
-        this._warningRequired = true;
-        this._checkAvailability();
-      }
-    } finally {
-      this._running = false;
-    }
-
-    // Only touch the prompt if it still holds what was submitted, also when
-    // it was saved while the page was left.
-    const promptState = this._editor?.state ?? this._savedEditorState;
-    const promptUnchanged = promptState?.doc.toString() === code;
-
-    if (response.incomplete) {
+    if (checkComplete && (await this._needsMoreInput(code))) {
       if (this._editor === editor) {
         this._continueAfter(editor, code);
       }
@@ -695,8 +704,12 @@ class ToolsDebugConsole extends LitElement {
       return;
     }
 
+    // Off the prompt before it runs, which can take a while, so the next code
+    // can be typed meanwhile. Only if it still holds what was submitted, also
+    // when it was saved while the page was left.
     this._addToHistory(code);
-    if (promptUnchanged) {
+    const promptState = this._editor?.state ?? this._savedEditorState;
+    if (promptState?.doc.toString() === code) {
       if (this._editor) {
         this._setCode("");
       } else {
@@ -706,7 +719,9 @@ class ToolsDebugConsole extends LitElement {
       this._draft = "";
     }
 
-    if (logGeneration !== this._logGeneration) {
+    const response = await this._runs.run(code, this._execute);
+    // Cleared while it ran.
+    if (!response) {
       return;
     }
 
@@ -728,6 +743,52 @@ class ToolsDebugConsole extends LitElement {
     }
 
     await this._appendToLog(entries);
+  }
+
+  private async _needsMoreInput(code: string): Promise<boolean> {
+    this._checking = true;
+    try {
+      return (await checkDebugConsoleInput(this.hass, code)).incomplete;
+    } catch (_err: unknown) {
+      // Running it reports what is wrong, like a warning not yet accepted.
+      return false;
+    } finally {
+      this._checking = false;
+    }
+  }
+
+  private _execute = async (
+    code: string
+  ): Promise<DebugConsoleExecuteResult> => {
+    try {
+      return await executeDebugConsole(this.hass, code);
+    } catch (err: unknown) {
+      // Websocket errors are plain objects with a message, not Error instances.
+      const { code: errorCode, message } = err as {
+        code?: string;
+        message?: string;
+      };
+
+      if (errorCode === "warning_not_accepted") {
+        this._warningRequired = true;
+        this._checkAvailability();
+      }
+
+      return { error: message ?? String(err) };
+    }
+  };
+
+  private async _stop() {
+    try {
+      await stopDebugConsole(this.hass);
+    } catch (err: unknown) {
+      await this._appendToLog([
+        {
+          kind: "error",
+          text: (err as { message?: string }).message ?? String(err),
+        },
+      ]);
+    }
   }
 
   /**
@@ -772,7 +833,7 @@ class ToolsDebugConsole extends LitElement {
   }
 
   private async _clear() {
-    this._logGeneration++;
+    this._runs.clear();
     this._entries = [];
     logs.set(this._userId!, this._entries);
     this._editor?.focus();

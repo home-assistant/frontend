@@ -4228,6 +4228,7 @@
               "event_loop": "Code runs in the event loop, so blocking calls freeze Home Assistant until they finish.",
               "placeholder": "Python code. Enter to run, Shift+Enter for a new line.",
               "clear": "Clear console",
+              "stop": "Stop running code",
               "output": "Console output",
               "evaluate_property": "Evaluate {property}",
               "prompt": "Python code",
