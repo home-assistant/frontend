@@ -1,9 +1,10 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { ContextType } from "@lit/context";
-import { LitElement, html, nothing } from "lit";
+import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consume } from "../../../../../common/decorators/consume";
 import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-button";
 import {
@@ -57,6 +58,7 @@ class DialogLoRaWANDevice extends DialogMixin<{ device: LoRaWANDevice }>(
       .headerTitle=${device.name || device.dev_eui}
       .headerSubtitle=${device.model}
     >
+      ${device.support === "supported" ? nothing : html`<ha-alert alert-type="info">${this._i18n.localize(`ui.panel.config.lorawan.support.${device.support}`)}</ha-alert>`}
       <lorawan-device-details .device=${device}></lorawan-device-details>
       <ha-dialog-footer slot="footer"
         ><ha-button
@@ -68,6 +70,19 @@ class DialogLoRaWANDevice extends DialogMixin<{ device: LoRaWANDevice }>(
       >
     </ha-dialog>`;
   }
+
+  static styles = css`
+    ha-dialog {
+      --dialog-content-padding: 0;
+    }
+    ha-alert {
+      --ha-border-radius-sm: 0;
+      --ha-alert-padding: var(--ha-space-3) var(--ha-space-6);
+    }
+    lorawan-device-details {
+      padding: var(--ha-space-6);
+    }
+  `;
 }
 
 declare global {

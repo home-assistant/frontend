@@ -9585,7 +9585,6 @@
             "no_console": "This connection does not provide a management console URL.",
             "open_console": "Open management console"
           },
-          "manage_connection": "Manage connection",
           "caption": "LoRaWAN",
           "description": "Devices across your LoRaWAN connections",
           "device": "Device",

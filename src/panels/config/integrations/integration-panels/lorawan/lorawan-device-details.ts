@@ -2,8 +2,6 @@ import type { ContextType } from "@lit/context";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../../common/decorators/consume";
-import "../../../../../components/ha-alert";
-import "../../../../../components/ha-button";
 import "../../../../../components/ha-relative-time";
 import { internationalizationContext } from "../../../../../data/context";
 import type { LoRaWANDevice } from "../../../../../data/lorawan";
@@ -29,7 +27,6 @@ export class LoRaWANDeviceDetails extends LitElement {
   protected render() {
     const device = this.device;
     return html`
-      ${device.support === "supported" ? nothing : html`<ha-alert alert-type="info">${this._i18n.localize(`ui.panel.config.lorawan.support.${device.support}`)}</ha-alert>`}
       <dl>
         <dt>${this._i18n.localize("ui.panel.config.lorawan.connection")}</dt>
         <dd>
@@ -56,7 +53,6 @@ export class LoRaWANDeviceDetails extends LitElement {
                 <dd>${device.downlink_margin} dB</dd>`
         }
       </dl>
-      ${device.connection.configuration_url ? html`<ha-button appearance="plain" href=${device.connection.configuration_url} target="_blank" rel="noopener noreferrer">${this._i18n.localize("ui.panel.config.lorawan.manage_connection")}</ha-button>` : nothing}
       <h3>${this._i18n.localize("ui.panel.config.lorawan.gateways")}</h3>
       ${
         device.receptions.length
@@ -97,9 +93,6 @@ export class LoRaWANDeviceDetails extends LitElement {
   static styles = css`
     :host {
       display: block;
-    }
-    ha-alert {
-      margin-bottom: var(--ha-space-4);
     }
     dl {
       display: grid;
