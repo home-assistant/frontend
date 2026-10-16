@@ -369,18 +369,13 @@ export function generatePowerSourcesGraphData(
     }
   }
   if (homeByX) {
-    if (!firstData) {
-      [...homeByX.entries()]
-        .sort((a, b) => a[0] - b[0])
-        .forEach(([x, y]) => usageData.push([x, y]));
-    } else {
-      for (let i = 0; i < usageData.length; i++) {
-        const point = usageData[i] as [number, number];
-        const home = homeByX.get(point[0]);
-        if (home !== undefined) {
-          usageData[i] = [point[0], home];
-        }
-      }
+    const usageByX = new Map(usageData as [number, number][]);
+    for (const [x, y] of homeByX) {
+      usageByX.set(x, y);
+    }
+    usageData.length = 0;
+    for (const point of [...usageByX.entries()].sort((a, b) => a[0] - b[0])) {
+      usageData.push(point);
     }
   }
   chartData.push({

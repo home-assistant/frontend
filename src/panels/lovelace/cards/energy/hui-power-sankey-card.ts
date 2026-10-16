@@ -260,7 +260,7 @@ class HuiPowerSankeyCard
     }
 
     // Add grid source if available
-    if (powerData.from_grid > 0) {
+    if (powerData.from_grid > 0 || powerData.used_grid > 0) {
       nodes.push({
         id: "grid",
         label: this._i18n.localize(

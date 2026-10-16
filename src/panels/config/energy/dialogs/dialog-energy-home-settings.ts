@@ -1,6 +1,7 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state, consume } from "lit/decorators";
+import type { ContextType } from "@lit/context";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
@@ -19,9 +20,13 @@ import {
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type { ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsHomeDialogParams } from "./show-dialogs-energy";
 import { DialogMixin } from "../../../../dialogs/dialog-mixin";
+import {
+  configContext,
+  internationalizationContext,
+} from "../../../../data/context";
 
 const energyUnitClasses = ["energy"];
 const powerUnitClasses = ["power"];
@@ -30,7 +35,13 @@ const powerUnitClasses = ["power"];
 export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSourceTypeEnergyPreference>()(
   DialogMixin<EnergySettingsHomeDialogParams>(LitElement)
 ) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig!: ContextType<typeof configContext>;
 
   @state() private _source?: HomeSourceTypeEnergyPreference;
 
@@ -54,8 +65,8 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
 
   private async _loadUnits() {
     const [energy, power] = await Promise.all([
-      getSensorDeviceClassConvertibleUnits(this.hass, "energy"),
-      getSensorDeviceClassConvertibleUnits(this.hass, "power"),
+      getSensorDeviceClassConvertibleUnits(this.params!.hass, "energy"),
+      getSensorDeviceClassConvertibleUnits(this.params!.hass, "power"),
     ]);
     this._energy_units = energy.units;
     this._power_units = power.units;
@@ -69,7 +80,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
     return html`
       <ha-dialog
         open
-        header-title=${this.hass.localize(
+        header-title=${this._i18n.localize(
           "ui.panel.config.energy.home.dialog.header"
         )}
         .preventScrimClose=${this.isDirtyState}
@@ -77,15 +88,15 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
 
         <ha-statistic-picker
-          .hass=${this.hass}
+          .hass=${this.params.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
-          .label=${this.hass.localize(
+          .label=${this._i18n.localize(
             "ui.panel.config.energy.home.dialog.home_energy"
           )}
           @value-changed=${this._statisticChanged}
-          .helper=${this.hass.localize(
+          .helper=${this._i18n.localize(
             "ui.panel.config.energy.home.dialog.entity_para",
             { unit: this._energy_units?.join(", ") || "" }
           )}
@@ -93,26 +104,26 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
         ></ha-statistic-picker>
 
         <ha-input
-          .label=${this.hass.localize(
+          .label=${this._i18n.localize(
             "ui.panel.config.energy.home.dialog.display_name"
           )}
           type="text"
           .disabled=${!this._source.stat_energy_from}
           .value=${this._source.name || ""}
-          .placeholder=${this.hass.config.location_name}
+          .placeholder=${this._hassConfig.config.location_name}
           @input=${this._nameChanged}
         >
         </ha-input>
 
         <ha-statistic-picker
-          .hass=${this.hass}
+          .hass=${this.params.hass}
           .includeUnitClass=${powerUnitClasses}
           .value=${this._source.stat_rate}
-          .label=${this.hass.localize(
+          .label=${this._i18n.localize(
             "ui.panel.config.energy.home.dialog.home_power"
           )}
           @value-changed=${this._powerStatisticChanged}
-          .helper=${this.hass.localize(
+          .helper=${this._i18n.localize(
             "ui.panel.config.energy.home.dialog.entity_para",
             { unit: this._power_units?.join(", ") || "" }
           )}
@@ -124,7 +135,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
             @click=${this.closeDialog}
             slot="secondaryAction"
           >
-            ${this.hass.localize("ui.common.cancel")}
+            ${this._i18n.localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             @click=${this._save}
@@ -134,7 +145,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
             }
             slot="primaryAction"
           >
-            ${this.hass.localize("ui.common.save")}
+            ${this._i18n.localize("ui.common.save")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -149,7 +160,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
       this.params?.statsMetadata &&
       !(ev.detail.value in this.params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
+      const [metadata] = await getStatisticMetadata(this.params.hass.callWS, [
         ev.detail.value,
       ]);
       if (metadata) {

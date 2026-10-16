@@ -138,6 +138,7 @@ export class EnergyHomeSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsHomeDialog(this, {
+      hass: this.hass,
       statsMetadata: this.statsMetadata,
       saveCallback: async (source) => {
         await this._savePreferences({
@@ -152,6 +153,7 @@ export class EnergyHomeSettings extends LitElement {
     const origSource: HomeSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
     showEnergySettingsHomeDialog(this, {
+      hass: this.hass,
       statsMetadata: this.statsMetadata,
       source: { ...origSource },
       saveCallback: async (newSource) => {

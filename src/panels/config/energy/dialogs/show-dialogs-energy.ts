@@ -11,6 +11,7 @@ import type {
   HomeSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
+import type { HomeAssistant } from "../../../../types";
 
 export interface EnergySettingsGridDialogParams {
   source?: GridSourceTypeEnergyPreference;
@@ -28,6 +29,7 @@ export interface EnergySettingsSolarDialogParams {
 }
 
 export interface EnergySettingsHomeDialogParams {
+  hass: HomeAssistant;
   source?: HomeSourceTypeEnergyPreference;
   statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: HomeSourceTypeEnergyPreference) => Promise<void>;
