@@ -23,10 +23,7 @@ const devices = (): LoRaWANDevice[] => {
     last_uplink: minutesAgo(2),
     last_join: minutesAgo(2400),
     last_status: minutesAgo(64),
-    receptions: [
-      { gateway_id: "home-indoor", rssi: -67, snr: 9.5 },
-      { gateway_id: "garden-gateway", rssi: -92, snr: 3.2 },
-    ],
+    receptions: [{ gateway_id: "home-indoor", rssi: -67, snr: 9.5 }],
     battery_level: 87,
     external_power_source: false,
     downlink_margin: 12,
@@ -47,7 +44,10 @@ const devices = (): LoRaWANDevice[] => {
         configuration_url: "https://eu1.cloud.thethings.network/console",
         connected: true,
       },
-      receptions: [{ gateway_id: "brooklyn-rooftop", rssi: -103, snr: -2.5 }],
+      receptions: [
+        { gateway_id: "brooklyn-rooftop", rssi: -103, snr: -2.5 },
+        { gateway_id: "brooklyn-community", rssi: -110, snr: -5.2 },
+      ],
       battery_level: 64,
       last_uplink: minutesAgo(4),
       last_status: minutesAgo(140),
@@ -101,7 +101,7 @@ const devices = (): LoRaWANDevice[] => {
       battery_level: 18,
       last_uplink: minutesAgo(180),
       last_status: minutesAgo(600),
-      receptions: [{ gateway_id: "garden-gateway", rssi: -112, snr: -7.5 }],
+      receptions: [{ gateway_id: "home-indoor", rssi: -112, snr: -7.5 }],
     },
   ];
 };
