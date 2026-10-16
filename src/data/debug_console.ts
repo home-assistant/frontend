@@ -9,10 +9,9 @@ const SESSION_CHANNEL = "tools-debug-console-sessions";
 // How long a tab waits for another tab to say it uses a session already.
 const CLAIM_TIMEOUT = 100;
 
-interface SessionMessage {
-  type: "claim" | "taken";
-  sessionId: string;
-}
+type SessionMessage =
+  | { type: "claim"; sessionId: string; ticket: number }
+  | { type: "taken"; sessionId: string };
 
 // Per user, so accounts taking turns in the same browser tab share nothing.
 const sessionIds = new Map<string, Promise<string>>();
@@ -38,13 +37,18 @@ const sessionChannel = (() => {
   }
 })();
 
-/** Return if another open tab uses this session already. */
+/**
+ * Return if another open tab uses this session already, or claims it at the
+ * same time. Then the tab with the lowest ticket keeps it; both see the claim
+ * of the other, so exactly one of them does.
+ */
 const isSessionTaken = (sessionId: string): Promise<boolean> => {
   const channel = sessionChannel;
   if (!channel) {
     return Promise.resolve(false);
   }
 
+  const ticket = Math.random();
   return new Promise((resolve) => {
     const done = (taken: boolean) => {
       window.clearTimeout(timeout);
@@ -52,14 +56,26 @@ const isSessionTaken = (sessionId: string): Promise<boolean> => {
       resolve(taken);
     };
     const onMessage = (ev: MessageEvent<SessionMessage>) => {
-      if (ev.data.type === "taken" && ev.data.sessionId === sessionId) {
+      const message = ev.data;
+      if (message.sessionId !== sessionId) {
+        return;
+      }
+
+      if (
+        message.type === "taken" ||
+        (message.type === "claim" && message.ticket < ticket)
+      ) {
         done(true);
       }
     };
     const timeout = window.setTimeout(() => done(false), CLAIM_TIMEOUT);
 
     channel.addEventListener("message", onMessage);
-    channel.postMessage({ type: "claim", sessionId } satisfies SessionMessage);
+    channel.postMessage({
+      type: "claim",
+      sessionId,
+      ticket,
+    } satisfies SessionMessage);
   });
 };
 

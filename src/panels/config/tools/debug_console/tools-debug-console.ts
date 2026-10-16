@@ -705,19 +705,9 @@ class ToolsDebugConsole extends LitElement {
     }
 
     // Off the prompt before it runs, which can take a while, so the next code
-    // can be typed meanwhile. Only if it still holds what was submitted, also
-    // when it was saved while the page was left.
+    // can be typed meanwhile.
     this._addToHistory(code);
-    const promptState = this._editor?.state ?? this._savedEditorState;
-    if (promptState?.doc.toString() === code) {
-      if (this._editor) {
-        this._setCode("");
-      } else {
-        this._savedEditorState = undefined;
-      }
-
-      this._draft = "";
-    }
+    this._takeOffPrompt(code);
 
     const response = await this._runs.run(code, this._execute);
     // Cleared while it ran.
@@ -743,6 +733,23 @@ class ToolsDebugConsole extends LitElement {
     }
 
     await this._appendToLog(entries);
+  }
+
+  /**
+   * Take submitted code off the start of the prompt, also when the page was
+   * left meanwhile. What was typed after it, while it was checked, stays.
+   */
+  private _takeOffPrompt(code: string) {
+    const removeCode = { changes: { from: 0, to: code.length } };
+    if (this._editor) {
+      if (this._editor.state.doc.toString().startsWith(code)) {
+        this._editor.dispatch(removeCode);
+      }
+    } else if (this._savedEditorState?.doc.toString().startsWith(code)) {
+      this._savedEditorState = this._savedEditorState.update(removeCode).state;
+    }
+
+    this._draft = "";
   }
 
   private async _needsMoreInput(code: string): Promise<boolean> {

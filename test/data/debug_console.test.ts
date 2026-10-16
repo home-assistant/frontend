@@ -78,6 +78,30 @@ describe("debug console sessions across tabs", () => {
     ).toBe(sessionIdOf(second.callWS));
   });
 
+  it("gives one of two tabs claiming a session at once a new one", async () => {
+    window.sessionStorage.setItem(
+      "tools-debug-console-session-grace",
+      "copied"
+    );
+
+    // Both start before either of them knows the session is in use.
+    const first = await openTab();
+    const second = await openTab();
+    const firstHass = createHass("grace");
+    const secondHass = createHass("grace");
+    await Promise.all([
+      first.executeDebugConsole(firstHass.hass, "1"),
+      second.executeDebugConsole(secondHass.hass, "1"),
+    ]);
+
+    const sessions = [
+      sessionIdOf(firstHass.callWS),
+      sessionIdOf(secondHass.callWS),
+    ];
+    expect(sessions[0]).not.toBe(sessions[1]);
+    expect(sessions).toContain("copied");
+  });
+
   it("continues the session after a reload", async () => {
     // The tab that used it before the reload is gone.
     window.sessionStorage.setItem(
