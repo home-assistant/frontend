@@ -43,10 +43,6 @@ export const lorawanFixtures: ConnectivityFixtures = {
     manifest("sensecap", "SenseCAP", {
       integration_type: "device",
       dependencies: ["lorawan"],
-      lorawan: [
-        ["chirpstack", 744],
-        ["tts", "sensecap"],
-      ],
     }),
     manifest("chirpstack", "ChirpStack", { integration_type: "hub" }),
     manifest("thethingsnetwork_lorawan", "The Things Network", {

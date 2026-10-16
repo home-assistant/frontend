@@ -1515,7 +1515,8 @@ export class HaConfigDevicePage extends LitElement {
       this.hass.user?.is_admin &&
       this.manifests.some(
         (manifest) =>
-          domains.includes(manifest.domain) && manifest.lorawan?.length
+          domains.includes(manifest.domain) &&
+          manifest.dependencies?.includes("lorawan")
       )
     ) {
       import("./device-detail/integration-elements/lorawan/ha-device-info-lorawan");
