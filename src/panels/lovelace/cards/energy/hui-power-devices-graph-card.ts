@@ -54,10 +54,12 @@ import type { PowerDevicesGraphCardConfig } from "../types";
 import { formatNumber } from "../../../../common/number/format_number";
 
 const UNIT_TO_KW: Record<string, number> = {
+  mW: 0.000001,
   W: 0.001,
   kW: 1,
   MW: 1000,
   GW: 1000000,
+  TW: 1000000000,
 };
 const EXTRA_COMPONENTS = [PieChart];
 
@@ -188,7 +190,7 @@ export class HuiPowerDevicesGraphCard
       .filter((d) => d.stat_rate)
       .map((d) => {
         const rate = d.stat_rate as string;
-        return `${rate}:${this._toKw(rate).toFixed(2)}`;
+        return `${rate}:${this._toKw(rate)}`;
       })
       .join("|");
   }
@@ -199,10 +201,13 @@ export class HuiPowerDevicesGraphCard
       const allowedModes = this._getAllowedModes();
       if (!this._chartType || !allowedModes.includes(this._chartType)) {
         this._chartType = allowedModes[0];
-        if (this._data) {
-          this._getStatistics(this._data);
-        }
       }
+    }
+    if (
+      (changedProps.has("_config") || changedProps.has("_i18n")) &&
+      this._data
+    ) {
+      this._getStatistics(this._data);
     }
   }
 
@@ -250,6 +255,7 @@ export class HuiPowerDevicesGraphCard
               (this._legendData?.length || 0) * 28 + 50
             )}px`}
             .extraComponents=${EXTRA_COMPONENTS}
+            .sonificationLabelFormatter=${this._getDeviceName}
             .expandLegend=${this._config.expand_legend}
             click-label-for-more-info
             @chart-click=${this._handleChartClick}
@@ -436,18 +442,28 @@ export class HuiPowerDevicesGraphCard
       (d) => d.stat_rate
     );
 
-    // included_in_stat references a stat_consumption: map it to the stat_rate
-    const rateByConsumption = new Map<string, string | undefined>(
-      energyData.prefs.device_consumption.map((d) => [
-        d.stat_consumption,
-        d.stat_rate,
+    // Resolve the nearest ancestor that also has a power sensor.
+    const deviceByConsumption = new Map<string, (typeof devices)[number]>(
+      energyData.prefs.device_consumption.map((device) => [
+        device.stat_consumption,
+        device,
       ])
     );
 
-    const parentRate = (d: (typeof devices)[number]): string | undefined =>
-      d.included_in_stat
-        ? rateByConsumption.get(d.included_in_stat)
-        : undefined;
+    const parentRate = (d: (typeof devices)[number]): string | undefined => {
+      let parentId = d.included_in_stat;
+      for (let hops = 0; parentId && hops < deviceByConsumption.size; hops++) {
+        const parent = deviceByConsumption.get(parentId);
+        if (!parent) {
+          return undefined;
+        }
+        if (parent.stat_rate) {
+          return parent.stat_rate;
+        }
+        parentId = parent.included_in_stat;
+      }
+      return undefined;
+    };
 
     this._compoundStats = devices
       .map((d) => parentRate(d))
@@ -588,7 +604,7 @@ export class HuiPowerDevicesGraphCard
       e.detail.event?.target?.type === "tspan" // label
     ) {
       const id = (e.detail.data as any).id as string;
-      if (!isExternalStatistic(id) && this._states[id]) {
+      if (id && !isExternalStatistic(id) && this._states[id]) {
         fireEvent(this, "hass-more-info", {
           entityId: id,
         });
