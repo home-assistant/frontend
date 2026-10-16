@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
-import type { LoRaWANConnection, LoRaWANDevice } from "../../src/data/lorawan";
-import { buildLoRaWANTopology } from "../../src/data/lorawan_topology";
+import type {
+  LoRaWANConnection,
+  LoRaWANDevice,
+} from "../../../../../../src/data/lorawan";
+import { buildLoRaWANTopology } from "../../../../../../src/panels/config/integrations/integration-panels/lorawan/lorawan_topology";
 
 const connection: LoRaWANConnection = {
   entry_id: "home",

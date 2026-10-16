@@ -3,7 +3,7 @@ import type {
   LoRaWANDevice,
   LoRaWANDevices,
   LoRaWANReception,
-} from "./lorawan";
+} from "../../../../../data/lorawan";
 
 export type LoRaWANTopologyNode =
   | { id: string; kind: "connection"; connection: LoRaWANConnection }

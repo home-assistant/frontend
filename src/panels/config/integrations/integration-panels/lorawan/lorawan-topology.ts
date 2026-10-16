@@ -29,11 +29,8 @@ import type {
   LoRaWANDevices,
 } from "../../../../../data/lorawan";
 import { subscribeLoRaWANDevices } from "../../../../../data/lorawan";
-import type {
-  LoRaWANTopology,
-  LoRaWANTopologyNode,
-} from "../../../../../data/lorawan_topology";
-import { buildLoRaWANTopology } from "../../../../../data/lorawan_topology";
+import type { LoRaWANTopology, LoRaWANTopologyNode } from "./lorawan_topology";
+import { buildLoRaWANTopology } from "./lorawan_topology";
 import "../../../../../layouts/hass-subpage";
 import { panelIsReady } from "../../../../../layouts/panel-ready";
 import type { HomeAssistant } from "../../../../../types";
