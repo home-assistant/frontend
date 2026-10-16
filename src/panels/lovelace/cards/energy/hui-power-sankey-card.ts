@@ -227,6 +227,7 @@ class HuiPowerSankeyCard
       links.push({
         source: "battery",
         target: "home",
+        value: powerData.used_battery,
       });
     }
 
@@ -246,12 +247,14 @@ class HuiPowerSankeyCard
         links.push({
           source: "grid",
           target: "battery_in",
+          value: powerData.grid_to_battery,
         });
       }
       if (powerData.solar_to_battery > 0) {
         links.push({
           source: "solar",
           target: "battery_in",
+          value: powerData.solar_to_battery,
         });
       }
     }
@@ -263,7 +266,10 @@ class HuiPowerSankeyCard
         label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
-        value: powerData.from_grid,
+        value: Math.max(
+          powerData.from_grid,
+          powerData.used_grid + powerData.grid_to_battery
+        ),
         color: computedStyle
           .getPropertyValue("--energy-grid-consumption-color")
           .trim(),
@@ -272,6 +278,7 @@ class HuiPowerSankeyCard
       links.push({
         source: "grid",
         target: "home",
+        value: powerData.used_grid,
       });
     }
 
@@ -289,6 +296,7 @@ class HuiPowerSankeyCard
       links.push({
         source: "solar",
         target: "home",
+        value: powerData.used_solar,
       });
     }
 
@@ -309,12 +317,14 @@ class HuiPowerSankeyCard
         links.push({
           source: "battery",
           target: "grid_return",
+          value: powerData.battery_to_grid,
         });
       }
       if (powerData.solar_to_grid > 0) {
         links.push({
           source: "solar",
           target: "grid_return",
+          value: powerData.solar_to_grid,
         });
       }
     }

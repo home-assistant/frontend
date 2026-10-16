@@ -59,6 +59,7 @@ export const hasDeviceConsumption = (prefs: EnergyPreferences): boolean =>
 
 export const hasPowerSources = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => {
+    if (source.type === "home" && !!source.stat_rate) return true;
     if (source.type === "solar" && source.stat_rate) return true;
     if (source.type === "battery" && source.stat_rate) return true;
     if (source.type === "grid") {

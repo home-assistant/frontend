@@ -79,7 +79,17 @@ export function getPowerLegendValues(
   formatPower: (powerWatts: number) => string
 ): Record<string, string> {
   const watts: Record<string, number> = {};
+  let homeWatts: number | undefined;
   for (const source of energyData.prefs.energy_sources) {
+    if (source.type === "home") {
+      if (source.stat_rate) {
+        const w = getPowerFromState(states[source.stat_rate]);
+        if (w !== undefined) {
+          homeWatts = (homeWatts ?? 0) + w;
+        }
+      }
+      continue;
+    }
     if (
       (source.type === "solar" ||
         source.type === "grid" ||
@@ -93,7 +103,7 @@ export function getPowerLegendValues(
     }
   }
   const keys = Object.keys(watts);
-  if (!keys.length) {
+  if (!keys.length && homeWatts === undefined) {
     return {};
   }
   const values: Record<string, string> = {};
@@ -102,8 +112,7 @@ export function getPowerLegendValues(
     values[key] = formatPower(watts[key]);
     total += watts[key];
   }
-  // Same as the usage line: consumption can't be negative
-  values.usage = formatPower(Math.max(0, total));
+  values.usage = formatPower(Math.max(0, homeWatts ?? total));
   return values;
 }
 
@@ -152,12 +161,18 @@ export function generatePowerSourcesGraphData(
     if (v < yMin) yMin = v;
     if (v > yMax) yMax = v;
   };
+  let homeStatId: string | undefined;
 
   for (const source of energyData.prefs.energy_sources) {
     if (source.type === "solar") {
       if (source.stat_rate) {
         statIds.solar.stats.push(source.stat_rate);
       }
+      continue;
+    }
+
+    if (source.type === "home") {
+      homeStatId = source.stat_rate;
       continue;
     }
 
@@ -197,6 +212,23 @@ export function generatePowerSourcesGraphData(
     }
   > = {};
 
+  const getStatsWithCurrent = (id: string): StatisticValue[] => {
+    const stats = [...(energyData.stats[id] ?? [])];
+    if (showingToday) {
+      // Append current state if we are showing today
+      const currentStateWatts = getPowerFromState(states[id]);
+      if (currentStateWatts !== undefined) {
+        // getPowerFromState returns power in W; convert to kW for this graph
+        stats.push({
+          start: now,
+          end: now,
+          mean: currentStateWatts / 1000,
+        });
+      }
+    }
+    return stats;
+  };
+
   Object.keys(statIds).forEach((key) => {
     const meta = statIds[key];
     if (meta.stats.length) {
@@ -205,22 +237,7 @@ export function generatePowerSourcesGraphData(
       // Echarts is supposed to handle that but it is bugged when you use it together with stacking.
       // The interpolation breaks the stacking, so this positive/negative is a workaround
       const { positive, negative } = processData(
-        meta.stats.map((id: string) => {
-          const stats = [...(energyData.stats[id] ?? [])];
-          if (showingToday) {
-            // Append current state if we are showing today
-            const currentStateWatts = getPowerFromState(states[id]);
-            if (currentStateWatts !== undefined) {
-              // getPowerFromState returns power in W; convert to kW for this graph
-              stats.push({
-                start: now,
-                end: now,
-                mean: currentStateWatts / 1000,
-              });
-            }
-          }
-          return stats;
-        }),
+        meta.stats.map(getStatsWithCurrent),
         trackY
       );
 
@@ -305,6 +322,14 @@ export function generatePowerSourcesGraphData(
   const chartData = fillLineGaps(datasets);
   const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
 
+  let homeByX: Map<number, number> | undefined;
+  if (homeStatId) {
+    const { positive } = processData([getStatsWithCurrent(homeStatId)], trackY);
+    if (positive.length) {
+      homeByX = new Map(positive);
+    }
+  }
+
   const usageData: NonNullable<LineSeriesOption["data"]> = [];
   // fillLineGaps ensures all datasets share the same x values, so iterate the
   // P points of the first dataset and sum across the D datasets per point.
@@ -341,6 +366,21 @@ export function generatePowerSourcesGraphData(
       // configuration (e.g. solar exporting to grid without a configured
       // solar source) would otherwise drag the usage line below zero.
       usageData[i] = [x, Math.max(0, sum)];
+    }
+  }
+  if (homeByX) {
+    if (!firstData) {
+      [...homeByX.entries()]
+        .sort((a, b) => a[0] - b[0])
+        .forEach(([x, y]) => usageData.push([x, y]));
+    } else {
+      for (let i = 0; i < usageData.length; i++) {
+        const point = usageData[i] as [number, number];
+        const home = homeByX.get(point[0]);
+        if (home !== undefined) {
+          usageData[i] = [point[0], home];
+        }
+      }
     }
   }
   chartData.push({

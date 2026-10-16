@@ -1,7 +1,6 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
@@ -18,25 +17,20 @@ import {
   isExternalStatistic,
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsHomeDialogParams } from "./show-dialogs-energy";
+import { DialogMixin } from "../../../../dialogs/dialog-mixin";
 
 const energyUnitClasses = ["energy"];
 const powerUnitClasses = ["power"];
 
 @customElement("dialog-energy-home-settings")
-export class DialogEnergyHomeSettings
-  extends DirtyStateProviderMixin<HomeSourceTypeEnergyPreference>()(LitElement)
-  implements HassDialog<EnergySettingsHomeDialogParams>
-{
+export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSourceTypeEnergyPreference>()(
+  DialogMixin<EnergySettingsHomeDialogParams>(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @state() private _params?: EnergySettingsHomeDialogParams;
-
-  @state() private _open = false;
 
   @state() private _source?: HomeSourceTypeEnergyPreference;
 
@@ -46,49 +40,39 @@ export class DialogEnergyHomeSettings
 
   @state() private _error?: string;
 
-  public async showDialog(
-    params: EnergySettingsHomeDialogParams
-  ): Promise<void> {
-    this._params = params;
-    this._source = params.source
-      ? { ...params.source }
+  connectedCallback() {
+    super.connectedCallback();
+    if (!this.params) {
+      return;
+    }
+    this._source = this.params.source
+      ? { ...this.params.source }
       : emptyHomeEnergyPreference();
+    this._initDirtyTracking({ type: "deep" }, this._source);
+    this._loadUnits();
+  }
+
+  private async _loadUnits() {
     const [energy, power] = await Promise.all([
       getSensorDeviceClassConvertibleUnits(this.hass, "energy"),
       getSensorDeviceClassConvertibleUnits(this.hass, "power"),
     ]);
     this._energy_units = energy.units;
     this._power_units = power.units;
-
-    this._open = true;
-    this._initDirtyTracking({ type: "deep" }, this._source);
-  }
-
-  public closeDialog() {
-    this._open = false;
-    return true;
-  }
-
-  private _dialogClosed() {
-    this._params = undefined;
-    this._source = undefined;
-    this._error = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render() {
-    if (!this._params || !this._source) {
+    if (!this.params || !this._source) {
       return nothing;
     }
 
     return html`
       <ha-dialog
-        .open=${this._open}
+        open
         header-title=${this.hass.localize(
           "ui.panel.config.energy.home.dialog.header"
         )}
         .preventScrimClose=${this.isDirtyState}
-        @closed=${this._dialogClosed}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
 
@@ -146,7 +130,7 @@ export class DialogEnergyHomeSettings
             @click=${this._save}
             .disabled=${
               !this._source.stat_energy_from ||
-              (!!this._params.source && !this.isDirtyState)
+              (!!this.params.source && !this.isDirtyState)
             }
             slot="primaryAction"
           >
@@ -162,15 +146,15 @@ export class DialogEnergyHomeSettings
     if (
       ev.detail.value &&
       isExternalStatistic(ev.detail.value) &&
-      this._params?.statsMetadata &&
-      !(ev.detail.value in this._params.statsMetadata)
+      this.params?.statsMetadata &&
+      !(ev.detail.value in this.params.statsMetadata)
     ) {
       const [metadata] = await getStatisticMetadata(this.hass.callWS, [
         ev.detail.value,
       ]);
       if (metadata) {
-        this._params.statsMetadata[ev.detail.value] = metadata;
-        this.requestUpdate("_params");
+        this.params.statsMetadata[ev.detail.value] = metadata;
+        this.requestUpdate();
       }
     }
     this._updateDirtyState(this._source);
@@ -194,7 +178,7 @@ export class DialogEnergyHomeSettings
 
   private async _save() {
     try {
-      await this._params!.saveCallback(this._source!);
+      await this.params!.saveCallback(this._source!);
       this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
