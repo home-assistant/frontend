@@ -370,11 +370,21 @@ class ToolsDebugConsole extends LitElement {
 
     this._status = "ready";
     this._warningRequired = info.warning_required;
-    if (info.warning_required && !this._warningDialogOpen) {
-      this._warningDialogOpen = true;
-      showDebugConsoleWarningDialog(this, {
-        closedCallback: this._warningClosed,
-      });
+    if (info.warning_required) {
+      if (!this._warningDialogOpen) {
+        this._warningDialogOpen = true;
+        showDebugConsoleWarningDialog(this, {
+          closedCallback: this._warningClosed,
+        });
+      }
+
+      return;
+    }
+
+    // Focus is ignored while the console is inert, like during this check.
+    await this.updateComplete;
+    if (this.isConnected && check === this._availabilityCheck) {
+      this._editor?.focus();
     }
   };
 

@@ -1,4 +1,5 @@
 import type { ContextType } from "@lit/context";
+import { mdiClose } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
@@ -9,6 +10,7 @@ import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-icon-button";
 import {
   apiContext,
   internationalizationContext,
@@ -86,6 +88,12 @@ export class DialogDebugConsoleWarning extends DialogMixin<DebugConsoleWarningDi
           "ui.panel.config.tools.tabs.debug_console.warning.title"
         )}
       >
+        <ha-icon-button
+          slot="headerNavigationIcon"
+          .label=${this._i18n.localize("ui.common.close")}
+          .path=${mdiClose}
+          @click=${this._decline}
+        ></ha-icon-button>
         <p>
           ${this._i18n.localize(
             "ui.panel.config.tools.tabs.debug_console.warning.intro"

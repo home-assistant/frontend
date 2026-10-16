@@ -1,8 +1,8 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 
 /**
- * How the warning closed: accepted, declined with Go back, or closed by
- * something else, like navigating away.
+ * How the warning closed: accepted, declined with Go back or its close button,
+ * or closed by something else, like navigating away.
  */
 export type DebugConsoleWarningResult = "accepted" | "declined" | "closed";
 
