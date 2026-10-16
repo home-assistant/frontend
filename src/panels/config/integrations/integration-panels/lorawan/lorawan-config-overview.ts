@@ -2,6 +2,7 @@ import {
   mdiCheck,
   mdiAlertCircleOutline,
   mdiDevices,
+  mdiPlus,
   mdiLanConnect,
   mdiCloseCircleOutline,
   mdiVectorPolyline,
@@ -80,13 +81,15 @@ export class LoRaWANConfigOverview extends LitElement {
       .narrow=${this.narrow}
       .header=${this.hass.localize("ui.panel.config.lorawan.title")}
       back-path="/config/connectivity"
+      has-fab
     >
       <ha-button
-        slot="toolbar-icon"
-        appearance="plain"
+        slot="fab"
+        size="l"
         @click=${this._addDevice}
         .disabled=${!snapshot?.connections.length}
       >
+        <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
         ${this.hass.localize("ui.panel.config.lorawan.add_device")}
       </ha-button>
       <div class="container">
