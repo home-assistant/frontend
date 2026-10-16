@@ -37,14 +37,9 @@ const callDebugConsole = <T>(
   message: { type: string; [key: string]: unknown }
 ) => hass.callWS<T>({ ...message, session_id: getSessionId(hass.user!.id) });
 
-/**
- * Return if the console is enabled, and if the user has to accept the warning
- * before using it.
- */
+/** Return if the user has to accept the warning before using the console. */
 export const getDebugConsoleInfo = (hass: Pick<HomeAssistant, "callWS">) =>
-  hass.callWS<{ enabled: boolean; warning_required: boolean }>({
-    type: "debug_console/info",
-  });
+  hass.callWS<{ warning_required: boolean }>({ type: "debug_console/info" });
 
 export const acceptDebugConsoleWarning = (
   hass: Pick<HomeAssistant, "callWS">

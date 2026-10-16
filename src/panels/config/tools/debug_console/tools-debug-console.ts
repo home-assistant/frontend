@@ -108,6 +108,9 @@ class ToolsDebugConsole extends LitElement {
   // The user the log and history belong to.
   private _userId?: string;
 
+  // Bumped by each availability check, so only the latest one counts.
+  private _availabilityCheck = 0;
+
   @state() private _running = false;
 
   @state() private _signature?: DebugConsoleSignature;
@@ -303,6 +306,13 @@ class ToolsDebugConsole extends LitElement {
       this._historyIndex = this._history.length;
       this._pasteAllowed = loadPasteAllowed(userId);
       this._checkAvailability();
+      return;
+    }
+
+    // A new configuration, like after a restart, can enable or disable it.
+    const oldHass = changedProps.get("hass");
+    if (oldHass && oldHass.config !== this.hass.config) {
+      this._checkAvailability();
     }
   }
 
@@ -331,27 +341,27 @@ class ToolsDebugConsole extends LitElement {
   }
 
   private _checkAvailability = async () => {
+    const check = ++this._availabilityCheck;
     this._status = "checking";
 
     let info: Awaited<ReturnType<typeof getDebugConsoleInfo>>;
     try {
       info = await getDebugConsoleInfo(this.hass);
     } catch (err: unknown) {
-      // Without the integration loaded, its commands do not exist at all.
-      this._status =
-        (err as { code?: string }).code === "unknown_command"
-          ? "disabled"
-          : "failed";
+      if (check === this._availabilityCheck) {
+        // Without the integration loaded, its commands do not exist at all.
+        this._status =
+          (err as { code?: string }).code === "unknown_command"
+            ? "disabled"
+            : "failed";
+      }
+
       return;
     }
 
-    // Left the page while checking; coming back checks again.
-    if (!this.isConnected) {
-      return;
-    }
-
-    if (!info.enabled) {
-      this._status = "disabled";
+    // Left the page while checking, which checks again on return, or a newer
+    // check replaced this one.
+    if (!this.isConnected || check !== this._availabilityCheck) {
       return;
     }
 
@@ -657,8 +667,8 @@ class ToolsDebugConsole extends LitElement {
     const promptUnchanged = promptState?.doc.toString() === code;
 
     if (response.incomplete) {
-      if (promptUnchanged && this._editor === editor) {
-        insertNewlineAndIndent(editor);
+      if (this._editor === editor) {
+        this._continueAfter(editor, code);
       }
 
       return;
@@ -697,6 +707,36 @@ class ToolsDebugConsole extends LitElement {
     }
 
     await this._appendToLog(entries);
+  }
+
+  /**
+   * Start a new line after code that needs more, where Enter was pressed.
+   *
+   * Typing on while that was checked continues on the new line, as long as
+   * the prompt still starts with that code.
+   */
+  private _continueAfter(editor: EditorView, code: string) {
+    if (!editor.state.doc.toString().startsWith(code)) {
+      return;
+    }
+
+    const { anchor, head } = editor.state.selection.main;
+    const lengthBefore = editor.state.doc.length;
+    editor.dispatch({ selection: { anchor: code.length } });
+    insertNewlineAndIndent(editor);
+
+    // Without typing on, the cursor goes to the new line, like Enter does.
+    // Otherwise it stays where it was, in what was typed after.
+    if (anchor <= code.length && head <= code.length) {
+      return;
+    }
+
+    const inserted = editor.state.doc.length - lengthBefore;
+    const shift = (position: number) =>
+      position > code.length ? position + inserted : position;
+    editor.dispatch({
+      selection: { anchor: shift(anchor), head: shift(head) },
+    });
   }
 
   private async _appendToLog(entries: ConsoleEntryContent[]) {

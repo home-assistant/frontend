@@ -52,11 +52,16 @@ export class ToolsDebugConsoleValue extends LitElement {
   // Bumped when the value changes, so answers about an earlier one are dropped.
   private _request = 0;
 
+  // Inspecting runs code of the object, so reopening waits for the answer
+  // instead of asking again.
+  private _inspecting = false;
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     if (changedProps.has("value") || changedProps.has("parentId")) {
       this._request++;
       this._expanded = false;
+      this._inspecting = false;
       this._children = undefined;
       this._error = undefined;
       this._evaluated = undefined;
@@ -185,11 +190,12 @@ export class ToolsDebugConsoleValue extends LitElement {
     }
 
     this._expanded = !this._expanded;
-    if (!this._expanded || this._children) {
+    if (!this._expanded || this._children || this._inspecting) {
       return;
     }
 
     const request = this._request;
+    this._inspecting = true;
     try {
       const children = await this.objects.inspect(value.object_id);
       if (request === this._request) {
@@ -198,6 +204,10 @@ export class ToolsDebugConsoleValue extends LitElement {
     } catch (err: unknown) {
       if (request === this._request) {
         this._error = (err as { message?: string }).message ?? String(err);
+      }
+    } finally {
+      if (request === this._request) {
+        this._inspecting = false;
       }
     }
   }

@@ -1,7 +1,7 @@
 import { mdiDotsVertical } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-dropdown";
@@ -12,7 +12,6 @@ import "../../../components/ha-tab-group";
 import "../../../components/ha-tab-group-tab";
 import "../../../components/ha-top-app-bar-fixed";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { getDebugConsoleInfo } from "../../../data/debug_console";
 import type { HomeAssistant, Route } from "../../../types";
 import "./tools-router";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -60,28 +59,9 @@ class PanelTools extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  // Enabled in YAML, or by default on development versions. Loaded but
-  // disabled when turned off there, so the backend tells.
-  @state() private _debugConsoleEnabled = false;
-
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
-    this._checkDebugConsole();
-  }
-
-  private async _checkDebugConsole() {
-    if (!isComponentLoaded(this.hass.config, "debug_console")) {
-      return;
-    }
-
-    try {
-      this._debugConsoleEnabled = (
-        await getDebugConsoleInfo(this.hass)
-      ).enabled;
-    } catch (_err: unknown) {
-      // Without an answer, the tab stays hidden; the page itself retries.
-    }
   }
 
   protected render(): TemplateResult {
@@ -107,7 +87,10 @@ class PanelTools extends LitElement {
         </ha-dropdown>
         <ha-tab-group @wa-tab-show=${this._handlePageSelected} slot="subRow">
           ${TOOLS_TABS.filter(
-            (tab) => tab.panel !== "debug-console" || this._debugConsoleEnabled
+            (tab) =>
+              tab.panel !== "debug-console" ||
+              // Only loaded when enabled in YAML.
+              isComponentLoaded(this.hass.config, "debug_console")
           ).map(
             (tab) => html`
               <ha-tab-group-tab
