@@ -4251,6 +4251,39 @@
               "domain": "Domain",
               "keyboard_tip": "Press {autocomplete} to trigger autocomplete, when your cursor is inside a function that supports it."
             },
+            "debug_console": {
+              "title": "Debug console",
+              "intro": "This Python console runs inside Home Assistant itself. It is meant for development and for debugging the live internals of a running instance.",
+              "event_loop": "Code runs in the event loop, so blocking calls freeze Home Assistant until they finish.",
+              "placeholder": "Python code. Enter to run, Shift+Enter for a new line.",
+              "clear": "Clear console",
+              "stop": "Stop running code",
+              "output": "Console output",
+              "evaluate_property": "Evaluate {property}",
+              "prompt": "Python code",
+              "output_truncated": "The output was cut short, only the first lines are shown.",
+              "disabled": "The debug console is not enabled. To enable it, add debug_console to your configuration.yaml file and restart Home Assistant.",
+              "failed": "The debug console could not be reached.",
+              "retry": "[%key:ui::panel::app::retry%]",
+              "truncated": "Only the first {count} items are shown.",
+              "paste_blocked": "Pasting is blocked. Do not paste code you do not understand or have not checked yourself. People who ask you to paste code here may be trying to take over your Home Assistant or steal your data. To allow pasting, type {phrase} and press Enter.",
+              "paste_phrase": "allow pasting",
+              "paste_allowed": "Pasting is now allowed.",
+              "warning": {
+                "title": "Before you use the debug console",
+                "intro": "The debug console runs Python code inside Home Assistant itself, with full access to its live internals. It is meant for development and debugging.",
+                "risks": {
+                  "access": "Code runs with the same access as Home Assistant. It can read and change everything, including your configuration, passwords, and tokens.",
+                  "safety": "There are no safety checks. Code can change or delete data, and blocking code freezes Home Assistant until it finishes.",
+                  "scams": "People who ask you to run or paste code here may be trying to take over your Home Assistant or steal your data.",
+                  "logged": "Everything you run is written to the Home Assistant log."
+                },
+                "understand": "I understand the risks, and only run code I understand myself",
+                "go_back": "Go back",
+                "continue": "Continue",
+                "continue_in": "Continue in {seconds}"
+              }
+            },
             "statistics": {
               "title": "Statistics",
               "entity": "Entity",
