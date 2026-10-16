@@ -1,12 +1,15 @@
 import type { ContextType } from "@lit/context";
+import { mdiClose, mdiOpenInNew } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consume } from "../../../../../common/decorators/consume";
 import type { HASSDomCurrentTargetEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-icon-button-prev";
+import "../../../../../components/ha-svg-icon";
 import "../../../../../components/item/ha-list-item-button";
 import "../../../../../components/list/ha-list-nav";
 import {
@@ -43,6 +46,13 @@ class DialogLoRaWANAddDevice extends DialogMixin<{
       .headerTitle=${this._i18n.localize("ui.panel.config.lorawan.add_device")}
       .headerSubtitle=${selected?.title}
     >
+      ${selected ? html`<ha-icon-button-prev slot="headerNavigationIcon" .label=${this._i18n.localize("ui.common.back")} @click=${this._back}></ha-icon-button-prev>` : html`<span slot="headerNavigationIcon"></span>`}
+      <ha-icon-button
+        slot="headerActionItems"
+        .path=${mdiClose}
+        .label=${this._i18n.localize("ui.common.close")}
+        @click=${this.closeDialog}
+      ></ha-icon-button>
       ${
         selected
           ? html`<p>
@@ -80,15 +90,17 @@ class DialogLoRaWANAddDevice extends DialogMixin<{
             `
       }
       ${
-        selected
+        selected?.configuration_url
           ? html`<ha-dialog-footer slot="footer">
-              <ha-button
-                slot="secondaryAction"
-                appearance="plain"
-                @click=${this._back}
-                >${this._i18n.localize("ui.common.back")}</ha-button
+              <a
+                slot="primaryAction"
+                href=${selected.configuration_url}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-              ${selected.configuration_url ? html`<ha-button slot="primaryAction" href=${selected.configuration_url} target="_blank" rel="noopener noreferrer">${this._i18n.localize("ui.panel.config.lorawan.add_device_dialog.open_console")}</ha-button>` : nothing}
+                ${this._i18n.localize("ui.panel.config.lorawan.add_device_dialog.open_console")}
+                <ha-svg-icon .path=${mdiOpenInNew}></ha-svg-icon>
+              </a>
             </ha-dialog-footer>`
           : nothing
       }
@@ -108,8 +120,14 @@ class DialogLoRaWANAddDevice extends DialogMixin<{
   }
 
   static styles = css`
-    ha-button[slot="secondaryAction"] {
-      margin-inline-end: auto;
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--ha-space-2);
+      color: var(--primary-color);
+    }
+    a ha-svg-icon {
+      --mdc-icon-size: 18px;
     }
   `;
 }
