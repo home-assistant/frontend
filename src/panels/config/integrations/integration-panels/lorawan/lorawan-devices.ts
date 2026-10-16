@@ -6,6 +6,7 @@ import { customElement, property, state } from "lit/decorators";
 import { QueryParamsController } from "../../../../../common/controllers/query-params-controller";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { navigate } from "../../../../../common/navigate";
 import type {
   DataTableColumnContainer,
@@ -117,10 +118,13 @@ export class LoRaWANDevices extends LitElement {
       });
   }
 
-  private _columns(): DataTableColumnContainer<DeviceRow> {
-    return {
+  private _columns = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      narrow: boolean
+    ): DataTableColumnContainer<DeviceRow> => ({
       name: {
-        title: this.hass.localize("ui.panel.config.lorawan.device"),
+        title: localize("ui.panel.config.lorawan.device"),
         main: true,
         showNarrow: true,
         filterable: true,
@@ -138,8 +142,8 @@ export class LoRaWANDevices extends LitElement {
       connection_title: {
         groupable: true,
         urlName: "connection",
-        hidden: this.narrow,
-        title: this.hass.localize("ui.panel.config.lorawan.connection"),
+        hidden: narrow,
+        title: localize("ui.panel.config.lorawan.connection"),
         filterable: true,
         sortable: true,
         minWidth: "210px",
@@ -150,15 +154,15 @@ export class LoRaWANDevices extends LitElement {
           ></lorawan-connection-link>`,
       },
       last_uplink: {
-        hidden: this.narrow,
-        title: this.hass.localize("ui.panel.config.lorawan.last_uplink"),
+        hidden: narrow,
+        title: localize("ui.panel.config.lorawan.last_uplink"),
         sortable: true,
         minWidth: "150px",
-        template: (device) => this._time(device.last_uplink),
+        template: (device) => this._time(device.last_uplink, localize),
       },
       rssi: {
-        hidden: this.narrow,
-        title: this.hass.localize("ui.panel.config.lorawan.rssi"),
+        hidden: narrow,
+        title: localize("ui.panel.config.lorawan.rssi"),
         sortable: true,
         type: "numeric",
         minWidth: "90px",
@@ -167,8 +171,8 @@ export class LoRaWANDevices extends LitElement {
           device.rssi === null ? "—" : `${device.rssi} dBm`,
       },
       battery_level: {
-        hidden: this.narrow,
-        title: this.hass.localize("ui.panel.config.lorawan.battery"),
+        hidden: narrow,
+        title: localize("ui.panel.config.lorawan.battery"),
         sortable: true,
         type: "numeric",
         minWidth: "75px",
@@ -177,23 +181,23 @@ export class LoRaWANDevices extends LitElement {
           device.external_power_source
             ? html`<ha-svg-icon
                 .path=${mdiPowerPlug}
-                aria-label=${this.hass.localize("ui.panel.config.lorawan.external_power")}
-                title=${this.hass.localize("ui.panel.config.lorawan.external_power")}
+                aria-label=${localize("ui.panel.config.lorawan.external_power")}
+                title=${localize("ui.panel.config.lorawan.external_power")}
               ></ha-svg-icon>`
             : device.battery_level === null
               ? "—"
               : `${Math.round(device.battery_level)}%`,
       },
-    };
-  }
+    })
+  );
 
-  private _time(timestamp: string | null) {
+  private _time(timestamp: string | null, localize: LocalizeFunc) {
     return timestamp
       ? html`<ha-relative-time
           .datetime=${timestamp}
           title=${timestamp}
         ></ha-relative-time>`
-      : this.hass.localize("ui.panel.config.lorawan.not_observed");
+      : localize("ui.panel.config.lorawan.not_observed");
   }
 
   private _readConnectionFilter() {
@@ -218,7 +222,7 @@ export class LoRaWANDevices extends LitElement {
       .isWide=${this.isWide}
       .route=${this.route}
       .tabs=${this._tabs}
-      .columns=${this._columns()}
+      .columns=${this._columns(this.hass.localize, this.narrow)}
       .data=${this._rows(this._devices, this._connectionId)}
       .loading=${this._devices === undefined && !this._error}
       .loadError=${this._error}
