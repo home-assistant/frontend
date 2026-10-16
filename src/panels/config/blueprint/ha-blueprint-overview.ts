@@ -411,10 +411,7 @@ class HaBlueprintOverview extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.config.blueprint.overview.delete_selected"
           )}
-          .disabled=${
-            this._usageCountsLoading ||
-            !this._selected.some((fullpath) => !this._usageCounts[fullpath])
-          }
+          .disabled=${this._usageCountsLoading || !this._selected.length}
           @click=${this._removeSelected}
         ></ha-assist-chip>
         <ha-button slot="fab" size="l" @click=${this._addBlueprintClicked}>
