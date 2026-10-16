@@ -9545,6 +9545,37 @@
         },
         "system_dashboard": {
           "restart_homeassistant": "Restart Home Assistant"
+        },
+        "lorawan": {
+          "title": "LoRaWAN",
+          "rssi": "RSSI",
+          "snr": "SNR",
+          "add_device": "Add device",
+          "manage_connection": "Manage connection",
+          "caption": "LoRaWAN",
+          "description": "Devices across your LoRaWAN connections",
+          "device": "Device",
+          "connection": "Connection",
+          "connection_unavailable": "Connection unavailable",
+          "dev_eui": "DevEUI",
+          "application": "Application",
+          "last_uplink": "Last uplink",
+          "last_join": "Last join",
+          "last_status": "Last status report",
+          "battery": "Battery",
+          "external_power": "External power",
+          "downlink_margin": "Downlink margin",
+          "gateways": "Gateways on last uplink",
+          "gateway": "Gateway",
+          "not_observed": "Not observed",
+          "no_devices": "No LoRaWAN devices found",
+          "search": "Search devices or connections",
+          "device_info": "LoRaWAN info",
+          "support": {
+            "missing_identity": "The device type could not be identified.",
+            "integration_not_configured": "Set up the device integration to add this device to Home Assistant.",
+            "unsupported_model": "This device model is not supported by a configured integration."
+          }
         }
       },
       "lovelace": {

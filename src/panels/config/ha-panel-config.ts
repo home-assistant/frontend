@@ -196,6 +196,11 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import("./integrations/integration-panels/zha/zha-config-dashboard-router"),
       },
+      lorawan: {
+        tag: "lorawan-config-panel",
+        load: () =>
+          import("./integrations/integration-panels/lorawan/lorawan-config-panel"),
+      },
       mqtt: {
         tag: "mqtt-config-panel",
         load: () =>

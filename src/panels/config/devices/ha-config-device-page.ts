@@ -1511,6 +1511,18 @@ export class HaConfigDevicePage extends LitElement {
     deviceInfo: TemplateResult[]
   ) {
     const domains = integrations.map((int) => int.domain);
+    if (
+      this.hass.user?.is_admin &&
+      this.hass.config.components.includes("lorawan")
+    ) {
+      import("./device-detail/integration-elements/lorawan/ha-device-info-lorawan");
+      deviceInfo.push(
+        html`<ha-device-info-lorawan
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-lorawan>`
+      );
+    }
     if (domains.includes("zha")) {
       import("./device-detail/integration-elements/zha/ha-device-info-zha");
       deviceInfo.push(html`

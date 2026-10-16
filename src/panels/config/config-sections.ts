@@ -168,6 +168,13 @@ export const configSections: Record<string, PageNavigation[]> = {
       adminOnly: true,
     },
     {
+      path: "/config/lorawan",
+      iconPath: mdiRadioTower,
+      component: "lorawan",
+      translationKey: "lorawan",
+      adminOnly: true,
+    },
+    {
       path: "/config/mqtt",
       iconPath: mdiMqttLogo,
       iconColor: "#660066",

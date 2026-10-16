@@ -88,6 +88,12 @@ const integrationBrandsUrl = (
   // In the demo there is no backend to serve the token-gated brands API, so
   // load the images straight from the public brands CDN instead.
   if (__DEMO__) {
+    if (
+      options.domain === "chirpstack" ||
+      options.domain === "thethingsnetwork_lorawan"
+    ) {
+      return `/images/brands/${image}`;
+    }
     return `https://brands.home-assistant.io/${image}`;
   }
 
