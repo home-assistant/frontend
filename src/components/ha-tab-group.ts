@@ -1,4 +1,6 @@
 import TabGroup from "@home-assistant/webawesome/dist/components/tab-group/tab-group";
+import type Tab from "@home-assistant/webawesome/dist/components/tab/tab";
+import { WaTabShowEvent } from "@home-assistant/webawesome/dist/events/tab-show";
 import { css, type CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
 import { DragScrollController } from "../common/controllers/drag-scroll-controller";
@@ -18,11 +20,13 @@ export class HaTabGroup extends TabGroup {
     // Prevent the tab group from consuming Alt+Arrow and Cmd+Arrow keys,
     // which browsers use for back/forward navigation.
     this.addEventListener("keydown", this._handleKeyDown, true);
+    this.addEventListener("keydown", this._handleTabKeyDown);
   }
 
   disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener("keydown", this._handleKeyDown, true);
+    this.removeEventListener("keydown", this._handleTabKeyDown);
   }
 
   private _handleKeyDown = (event: KeyboardEvent) => {
@@ -31,11 +35,32 @@ export class HaTabGroup extends TabGroup {
     }
   };
 
+  // Bubbles here after the tab group handled the key inside its shadow root.
+  private _handleTabKeyDown = (event: KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      this._showIgnoredTab(event);
+    }
+  };
+
   protected override handleClick(event: MouseEvent) {
     if (this._dragScrollController.scrolled) {
       return;
     }
     super.handleClick(event);
+    this._showIgnoredTab(event);
+  }
+
+  /**
+   * Web Awesome does not activate disabled tabs. When a disabled tab is made
+   * active, like the tab of a hidden dashboard view, the group keeps tracking
+   * the previous tab as active and ignores it when it is picked again. Show
+   * the picked tab ourselves when the group did not.
+   */
+  private _showIgnoredTab(event: Event) {
+    const tab = (event.target as HTMLElement).closest<Tab>(this.tabTag);
+    if (tab?.closest(this.localName) === this && !tab.disabled && !tab.active) {
+      this.dispatchEvent(new WaTabShowEvent({ name: tab.panel }));
+    }
   }
 
   static get styles(): CSSResultGroup {
