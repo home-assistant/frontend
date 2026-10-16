@@ -35,8 +35,8 @@ type DeviceRow = LoRaWANDevice & {
   connection_title: string;
 };
 
-@customElement("lorawan-config-panel")
-export class LoRaWANConfigPanel extends LitElement {
+@customElement("lorawan-devices")
+export class LoRaWANDevices extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property({ type: Boolean }) public narrow = false;
   @property({ attribute: false }) public route!: Route;
@@ -291,6 +291,6 @@ export class LoRaWANConfigPanel extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lorawan-config-panel": LoRaWANConfigPanel;
+    "lorawan-devices": LoRaWANDevices;
   }
 }

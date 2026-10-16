@@ -3,8 +3,8 @@ import type { RouterOptions } from "../../../../../layouts/hass-router-page";
 import { HassRouterPage } from "../../../../../layouts/hass-router-page";
 import type { HomeAssistant } from "../../../../../types";
 
-@customElement("lorawan-config-router")
-class LoRaWANConfigRouter extends HassRouterPage {
+@customElement("lorawan-router")
+class LoRaWANRouter extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property({ type: Boolean }) public narrow = false;
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -14,16 +14,16 @@ class LoRaWANConfigRouter extends HassRouterPage {
     showLoading: true,
     routes: {
       overview: {
-        tag: "lorawan-config-overview",
-        load: () => import("./lorawan-config-overview"),
+        tag: "lorawan-overview",
+        load: () => import("./lorawan-overview"),
       },
       connections: {
         tag: "lorawan-connections",
         load: () => import("./lorawan-connections"),
       },
       devices: {
-        tag: "lorawan-config-panel",
-        load: () => import("./lorawan-config-panel"),
+        tag: "lorawan-devices",
+        load: () => import("./lorawan-devices"),
       },
       topology: {
         tag: "lorawan-topology",
@@ -42,6 +42,6 @@ class LoRaWANConfigRouter extends HassRouterPage {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lorawan-config-router": LoRaWANConfigRouter;
+    "lorawan-router": LoRaWANRouter;
   }
 }

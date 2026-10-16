@@ -26,8 +26,8 @@ import { panelIsReady } from "../../../../../layouts/panel-ready";
 import { haLora } from "../../../../../resources/ha-icons";
 import type { HomeAssistant } from "../../../../../types";
 
-@customElement("lorawan-config-overview")
-export class LoRaWANConfigOverview extends LitElement {
+@customElement("lorawan-overview")
+export class LoRaWANOverview extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property({ type: Boolean }) public narrow = false;
   @state() private _snapshot?: LoRaWANDevices;
@@ -271,6 +271,6 @@ export class LoRaWANConfigOverview extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "lorawan-config-overview": LoRaWANConfigOverview;
+    "lorawan-overview": LoRaWANOverview;
   }
 }
