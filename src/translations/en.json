@@ -9791,6 +9791,14 @@
               "untracked_consumption": "Untracked consumption",
               "untracked": "untracked"
             },
+            "power_devices_graph": {
+              "power_usage": "Power",
+              "previous_power_usage": "Previous power",
+              "total_power_usage": "[%key:ui::panel::lovelace::cards::energy::energy_devices_graph::total_energy_usage%]",
+              "change_chart_type": "[%key:ui::panel::lovelace::cards::energy::energy_devices_graph::change_chart_type%]",
+              "untracked_consumption": "[%key:ui::panel::lovelace::cards::energy::energy_devices_graph::untracked_consumption%]",
+              "untracked": "[%key:ui::panel::lovelace::cards::energy::energy_devices_graph::untracked%]"
+            },
             "energy_devices_detail_graph": {
               "untracked_consumption": "Untracked consumption",
               "over_reported_consumption": "Over-reported consumption",
