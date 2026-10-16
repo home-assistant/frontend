@@ -43,6 +43,7 @@ class DialogLoRaWANAddDevice extends DialogMixin<{
     const selected = this._selected;
     return html`<ha-dialog
       open
+      type="alert"
       class=${selected ? "" : "connection-picker"}
       .headerTitle=${this._i18n.localize(
         selected
