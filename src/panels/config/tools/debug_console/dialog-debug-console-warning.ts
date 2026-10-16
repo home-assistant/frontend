@@ -15,7 +15,10 @@ import {
 } from "../../../../data/context";
 import { acceptDebugConsoleWarning } from "../../../../data/debug_console";
 import { DialogMixin } from "../../../../dialogs/dialog-mixin";
-import type { DebugConsoleWarningDialogParams } from "./show-dialog-debug-console-warning";
+import type {
+  DebugConsoleWarningDialogParams,
+  DebugConsoleWarningResult,
+} from "./show-dialog-debug-console-warning";
 
 const RISKS = ["scams", "access", "safety", "logged"] as const;
 
@@ -45,7 +48,7 @@ export class DialogDebugConsoleWarning extends DialogMixin<DebugConsoleWarningDi
 
   @state() private _secondsLeft = READ_SECONDS;
 
-  private _accepted = false;
+  private _result: DebugConsoleWarningResult = "closed";
 
   private _countdown?: number;
 
@@ -65,7 +68,7 @@ export class DialogDebugConsoleWarning extends DialogMixin<DebugConsoleWarningDi
 
   public disconnectedCallback(): void {
     this._stopCountdown();
-    this.params?.closedCallback(this._accepted);
+    this.params?.closedCallback(this._result);
     super.disconnectedCallback();
   }
 
@@ -119,7 +122,7 @@ export class DialogDebugConsoleWarning extends DialogMixin<DebugConsoleWarningDi
           <ha-button
             slot="secondaryAction"
             appearance="plain"
-            @click=${this.closeDialog}
+            @click=${this._decline}
           >
             ${this._i18n.localize(
               "ui.panel.config.tools.tabs.debug_console.warning.go_back"
@@ -172,7 +175,12 @@ export class DialogDebugConsoleWarning extends DialogMixin<DebugConsoleWarningDi
       this._accepting = false;
     }
 
-    this._accepted = true;
+    this._result = "accepted";
+    this.closeDialog();
+  }
+
+  private _decline() {
+    this._result = "declined";
     this.closeDialog();
   }
 

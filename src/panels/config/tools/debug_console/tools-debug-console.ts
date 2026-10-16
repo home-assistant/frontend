@@ -58,7 +58,10 @@ import {
 } from "../../../../resources/codemirror";
 import { haStyleScrollbar } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { showDebugConsoleWarningDialog } from "./show-dialog-debug-console-warning";
+import {
+  showDebugConsoleWarningDialog,
+  type DebugConsoleWarningResult,
+} from "./show-dialog-debug-console-warning";
 import {
   addToHistory,
   loadHistory,
@@ -375,10 +378,9 @@ class ToolsDebugConsole extends LitElement {
     }
   };
 
-  private _warningClosed = (accepted: boolean) => {
+  private _warningClosed = async (result: DebugConsoleWarningResult) => {
     this._warningDialogOpen = false;
-    if (!accepted) {
-      // Only when still here; the dialog also closes when leaving otherwise.
+    if (result === "declined") {
       // Not to the Tools panel itself, as that returns to its last tab.
       if (this.isConnected) {
         goBack("/config");
@@ -387,8 +389,17 @@ class ToolsDebugConsole extends LitElement {
       return;
     }
 
+    // Closed otherwise, like by navigating away, which goes on by itself.
+    if (result !== "accepted") {
+      return;
+    }
+
     this._warningRequired = false;
-    this._editor?.focus();
+    // Once the console is no longer inert, which ignores focus.
+    await this.updateComplete;
+    if (this.isConnected && this._status === "ready") {
+      this._editor?.focus();
+    }
   };
 
   public connectedCallback() {
@@ -755,8 +766,23 @@ class ToolsDebugConsole extends LitElement {
     this._entries = [];
     logs.set(this._userId!, this._entries);
     this._editor?.focus();
-    // Let the backend release the objects it kept around for inspection.
-    await clearDebugConsole(this.hass);
+
+    // Let the backend release the objects it kept around for inspection, when
+    // there is a console to ask.
+    if (this._status !== "ready" || this._warningRequired) {
+      return;
+    }
+
+    try {
+      await clearDebugConsole(this.hass);
+    } catch (err: unknown) {
+      await this._appendToLog([
+        {
+          kind: "error",
+          text: (err as { message?: string }).message ?? String(err),
+        },
+      ]);
+    }
   }
 
   // Selecting text in the log, or using a control in it, keeps focus there.
