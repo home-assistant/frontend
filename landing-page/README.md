@@ -32,7 +32,7 @@ It is similar to the core frontend dev.
   - `"mounts": ["source=/path/to/hass/frontend,target=/workspaces/frontend,type=bind,consistency=cached"]`
 - use the dev container
 - start the dev server with following optional env vars:
-  - `SUPERVISOR_HOST` to have real supervisor data, you can [setup a supervisor remote API access](https://developers.home-assistant.io/docs/supervisor/development/#supervisor-api-access) and set the host of your supervisor. e.g.: `SUPERVISOR_HOST=192.168.0.20:8888`
+  - `SUPERVISOR_HOST` to have real supervisor data, you can [setup a supervisor remote API access](https://contributors.home-assistant.io/os/supervisor/core-connection/#get-access-to-the-supervisor-api) and set the host of your supervisor. e.g.: `SUPERVISOR_HOST=192.168.0.20:8888`
   - `SUPERVISOR_TOKEN` the supervisor api token you get from the Remote API proxy Addon Logs
   - `FRONTEND_PATH` the path inside your container should be `/workspaces/frontend`
   - example: `SUPERVISOR_TOKEN=abc123 SUPERVISOR_HOST=192.168.0.20:8888 FRONTEND_PATH=/workspaces/frontend go run main.go http.go mdns.go`

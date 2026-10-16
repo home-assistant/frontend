@@ -33,4 +33,4 @@ We want to make it as easy for designers to contribute as it is for developers. 
 
 ## Developers
 
-Everything you need to get started developing can be found in our <a href="https://developers.home-assistant.io" rel="noopener noreferrer" target="_blank">Home Assistant Developer Docs</a>.
+Everything you need to get started developing can be found in our <a href="https://contributors.home-assistant.io/frontend/" rel="noopener noreferrer" target="_blank">Home Assistant contributor docs</a>.
