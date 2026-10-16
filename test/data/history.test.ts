@@ -8,13 +8,11 @@ import {
   mockLocalize,
 } from "../fixtures/hass";
 
-const mockHass = {} as HomeAssistant;
-
 describe("HistoryStream.processMessage", () => {
   it("should delete lc from boundary state when pruning expired history", () => {
     const now = Date.now();
     const hoursToShow = 1;
-    const stream = new HistoryStream(mockHass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const purgeBeforePythonTime = (now - 60 * 60 * hoursToShow * 1000) / 1000;
 
     // Seed combinedHistory with states where lc differs from lu
@@ -51,7 +49,7 @@ describe("HistoryStream.processMessage", () => {
   it("should handle boundary state without lc correctly", () => {
     const now = Date.now();
     const hoursToShow = 1;
-    const stream = new HistoryStream(mockHass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const purgeBeforePythonTime = (now - 60 * 60 * hoursToShow * 1000) / 1000;
 
     // State without lc (lc equals lu, so lc is omitted)
@@ -82,7 +80,7 @@ describe("HistoryStream.processMessage", () => {
   it("should not modify states when none are expired", () => {
     const now = Date.now();
     const hoursToShow = 1;
-    const stream = new HistoryStream(mockHass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const purgeBeforePythonTime = (now - 60 * 60 * hoursToShow * 1000) / 1000;
 
     // All states are within the time window

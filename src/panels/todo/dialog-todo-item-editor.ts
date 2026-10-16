@@ -384,7 +384,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
 
     this._submitting = true;
     try {
-      await createItem(this.hass!, this._params!.entity, {
+      await createItem(this.hass!.callService, this._params!.entity, {
         summary: this._summary,
         description: this._description,
         due: this._due
@@ -414,7 +414,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
     const entry = this._params!.item!;
 
     try {
-      await updateItem(this.hass!, this._params!.entity, {
+      await updateItem(this.hass!.callService, this._params!.entity, {
         ...(entry as TodoItem),
         summary: this._summary,
         description:
@@ -467,7 +467,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
       return;
     }
     try {
-      await deleteItems(this.hass!, this._params!.entity, [
+      await deleteItems(this.hass!.callService, this._params!.entity, [
         (entry as TodoItem).uid,
       ]);
     } catch (err: any) {
