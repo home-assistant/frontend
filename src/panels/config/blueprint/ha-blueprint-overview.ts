@@ -137,6 +137,8 @@ class HaBlueprintOverview extends LitElement {
 
   private _usageCountRequest = 0;
 
+  @state() private _usageCountsLoading = false;
+
   @state() private _selected: string[] = [];
 
   @state() private _deletedFullpaths: string[] = [];
@@ -409,9 +411,10 @@ class HaBlueprintOverview extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.config.blueprint.overview.delete_selected"
           )}
-          .disabled=${!this._selected.some(
-            (fullpath) => !this._usageCounts[fullpath]
-          )}
+          .disabled=${
+            this._usageCountsLoading ||
+            !this._selected.some((fullpath) => !this._usageCounts[fullpath])
+          }
           @click=${this._removeSelected}
         ></ha-assist-chip>
         <ha-button slot="fab" size="l" @click=${this._addBlueprintClicked}>
@@ -468,6 +471,7 @@ class HaBlueprintOverview extends LitElement {
     }
 
     const request = ++this._usageCountRequest;
+    this._usageCountsLoading = true;
     const usageCounts: Record<string, number> = {};
 
     const blueprintList = this._processedBlueprints(
@@ -500,6 +504,7 @@ class HaBlueprintOverview extends LitElement {
 
     if (request === this._usageCountRequest) {
       this._usageCounts = usageCounts;
+      this._usageCountsLoading = false;
     }
   }
 
@@ -712,6 +717,17 @@ class HaBlueprintOverview extends LitElement {
         findRelated(this.hass, `${row.type}_blueprint`, row.path)
       )
     );
+    if (usageChecks.some((check) => check.status === "rejected")) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.blueprint.overview.delete_check_failed_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.blueprint.overview.delete_check_failed"
+        ),
+      });
+      return;
+    }
     const deletable = selectedRows.filter((_row, index) => {
       const check = usageChecks[index];
       return (
