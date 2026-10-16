@@ -19,5 +19,6 @@ export const mockLabelRegistry = (
       throw new Error(`Label ${msg.label_id} not found`);
     }
     labels.splice(index, 1);
+    hass.mockEvent("label_registry_updated");
   });
 };
