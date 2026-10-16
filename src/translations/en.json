@@ -6472,7 +6472,7 @@
             "delete_none_deletable_title": "Blueprints in use",
             "delete_none_deletable": "None of the selected blueprints can be deleted because they are all in use.",
             "delete_failed_title": "Delete failed",
-            "delete_failed": "Some blueprints failed to delete successfully. Check system logs for more information.",
+            "delete_failed": "Some blueprints could not be deleted. Check system logs for more information.",
             "add_blueprint": "Import blueprint",
             "no_blueprints": "[%key:ui::panel::config::automation::editor::blueprint::no_blueprints%]",
             "create_automation": "Create automation",

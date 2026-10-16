@@ -317,11 +317,6 @@ class HaBlueprintOverview extends LitElement {
     })
   );
 
-  private _selectedCanDelete = memoizeOne(
-    (selected: string[], usageCounts: Record<string, number>): string[] =>
-      selected.filter((fullpath) => !usageCounts[fullpath])
-  );
-
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadUsageCounts();
@@ -334,10 +329,16 @@ class HaBlueprintOverview extends LitElement {
     }
   }
 
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    if (changedProps.has("blueprints") && this._deletedFullpaths.length) {
+      this._deletedFullpaths = [];
+    }
+  }
+
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("blueprints")) {
-      this._deletedFullpaths = [];
       this._loadUsageCounts();
     }
   }
@@ -408,10 +409,9 @@ class HaBlueprintOverview extends LitElement {
           .label=${this.hass.localize(
             "ui.panel.config.blueprint.overview.delete_selected"
           )}
-          .disabled=${!this._selectedCanDelete(
-            this._selected,
-            this._usageCounts
-          ).length}
+          .disabled=${!this._selected.some(
+            (fullpath) => !this._usageCounts[fullpath]
+          )}
           @click=${this._removeSelected}
         ></ha-assist-chip>
         <ha-button slot="fab" size="l" @click=${this._addBlueprintClicked}>
