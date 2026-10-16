@@ -318,13 +318,12 @@ export function generatePowerSourcesGraphData(
 
   const start = energyData.start;
   const end = energyData.end || endOfToday();
-
   const chartData = fillLineGaps(datasets);
-  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
 
   const homeStats = homeStatId
     ? getStatsWithCurrent(homeStatId).filter((stat) => stat.mean != null)
     : [];
+  homeStats.forEach((stat) => trackY(stat.mean!));
   let homeIdx = 0;
   // Home reading covering timestamp x (its bucket, or the live point)
   const homeAt = (x: number): number | undefined => {
@@ -337,6 +336,8 @@ export function generatePowerSourcesGraphData(
     const stat = homeStats[homeIdx];
     return stat && stat.start <= x && x <= stat.end ? stat.mean! : undefined;
   };
+
+  const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
 
   const usageData: NonNullable<LineSeriesOption["data"]> = [];
   // fillLineGaps ensures all datasets share the same x values, so iterate the
@@ -374,6 +375,10 @@ export function generatePowerSourcesGraphData(
       // configuration (e.g. solar exporting to grid without a configured
       // solar source) would otherwise drag the usage line below zero.
       usageData[i] = [x, Math.max(0, homeAt(x) ?? sum)];
+    }
+  } else {
+    for (const stat of homeStats) {
+      usageData.push([(stat.start + stat.end) / 2, Math.max(0, stat.mean!)]);
     }
   }
   chartData.push({

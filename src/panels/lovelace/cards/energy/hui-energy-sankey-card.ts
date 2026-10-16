@@ -230,7 +230,7 @@ class HuiEnergySankeyCard
       }
     }
 
-    if (types.grid) {
+    if (types.grid || consumption.total.used_grid > 0) {
       const totalFromGrid = summedData.total.from_grid ?? 0;
 
       nodes.push({
