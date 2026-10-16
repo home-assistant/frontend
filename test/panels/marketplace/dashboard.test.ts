@@ -58,12 +58,12 @@ vi.mock(
   () => ({ repositoryMenuItems: () => [], renderRepositoryMenuEntry: vi.fn() })
 );
 vi.mock("../../../src/data/config_entries", async (importOriginal) => ({
-  ...(await importOriginal()),
+  ...(await importOriginal<object>()),
   getConfigEntries: vi.fn(),
   deleteConfigEntry: vi.fn(),
 }));
 vi.mock("../../../src/data/marketplace/repository", async (importOriginal) => ({
-  ...(await importOriginal()),
+  ...(await importOriginal<object>()),
   uninstallMarketplaceRepository: vi.fn(),
 }));
 
