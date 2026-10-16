@@ -110,7 +110,14 @@ class MoreInfoLight extends LitElement {
   }
 
   private get _stateOverride() {
-    if (this.stateObj?.attributes.brightness) {
+    const attrs = this.stateObj?.attributes;
+    if (this._mainControl === "color_temp" && attrs?.color_temp_kelvin) {
+      return this._formatters.formatEntityAttributeValue(
+        this.stateObj!,
+        "color_temp_kelvin"
+      );
+    }
+    if (attrs?.brightness) {
       return this._formatters.formatEntityAttributeValue(
         this.stateObj!,
         "brightness"
