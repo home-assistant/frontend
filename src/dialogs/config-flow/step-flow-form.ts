@@ -348,11 +348,15 @@ class StepFlowForm extends LitElement {
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);
 
-  private _localizeValueCallback = (key: string) =>
+  private _localizeValueCallback = (
+    key: string,
+    values?: Record<string, string>
+  ) =>
     this.flowConfig.renderShowFormStepFieldLocalizeValue(
       this.hass,
       this.step,
-      key
+      key,
+      values
     );
 
   static get styles(): CSSResultGroup {
