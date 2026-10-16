@@ -84,6 +84,7 @@ export class DialogDebugConsoleWarning extends DialogMixin<DebugConsoleWarningDi
         open
         prevent-scrim-close
         width="medium"
+        @keydown=${this._escapeListener}
         .headerTitle=${this._i18n.localize(
           "ui.panel.config.tools.tabs.debug_console.warning.title"
         )}
@@ -191,6 +192,17 @@ export class DialogDebugConsoleWarning extends DialogMixin<DebugConsoleWarningDi
     this._result = "declined";
     this.closeDialog();
   }
+
+  // Escape closes the dialog too, which declines it like the buttons do. In
+  // the capture phase, as the dialog itself stops it from going further.
+  private _escapeListener = {
+    handleEvent: (ev: KeyboardEvent) => {
+      if (ev.key === "Escape") {
+        this._result = "declined";
+      }
+    },
+    capture: true,
+  };
 
   static styles = css`
     p {
