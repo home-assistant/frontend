@@ -1811,11 +1811,8 @@
         "history": "History",
         "aggregate": "5-minute aggregated",
         "logbook": "Activity",
-        "device_or_service_info": "[%key:ui::panel::config::devices::device_info%]",
-        "device_type": {
-          "device": "[%key:ui::panel::config::devices::type::device_heading%]",
-          "service": "[%key:ui::panel::config::devices::type::service_heading%]"
-        },
+        "device_info": "[%key:ui::panel::config::devices::device_info%]",
+        "service_info": "[%key:ui::panel::config::devices::service_info%]",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
@@ -7101,7 +7098,8 @@
           "description": "Manage configured devices",
           "filtering_by_config_entry": "[%key:ui::panel::config::entities::picker::filtering_by_config_entry%]",
           "config_entries_load_failed": "An unknown error occurred while loading integrations for your devices.",
-          "device_info": "{type} info",
+          "device_info": "Device info",
+          "service_info": "Service info",
           "edit_settings": "Edit settings",
           "restore_entity_ids": "Recreate entity IDs",
           "quick_links": {
