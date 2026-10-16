@@ -60,10 +60,6 @@
       }
       #ha-launch-screen {
         font-family: ui-sans-serif, system-ui, sans-serif;
-        position: fixed;
-        inset: 0;
-        background-color: var(--primary-background-color, #fafafa);
-        z-index: 100;
         height: 100%;
         display: flex;
         flex-direction: column;
