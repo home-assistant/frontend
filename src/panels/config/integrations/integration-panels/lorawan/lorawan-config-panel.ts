@@ -1,7 +1,9 @@
+import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { mdiPowerPlug, mdiPlus } from "@mdi/js";
+import { mdiPowerPlug } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { QueryParamsController } from "../../../../../common/controllers/query-params-controller";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
@@ -9,7 +11,8 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
-import "../../../../../components/data-table/ha-data-table";
+import "../../../../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-relative-time";
 import "../../../../../components/ha-svg-icon";
 import type {
@@ -20,15 +23,10 @@ import {
   strongestLoRaWANReception,
   subscribeLoRaWANDevices,
 } from "../../../../../data/lorawan";
-import "../../../../../layouts/hass-subpage";
+import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { panelIsReady } from "../../../../../layouts/panel-ready";
 import { loadVirtualizer } from "../../../../../resources/virtualizer";
-import "../../../../../components/ha-button";
-import "../../../../../components/ha-dropdown";
-import "../../../../../components/ha-dropdown-item";
-import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdown";
-import { brandsUrl } from "../../../../../util/brands-url";
-import type { HomeAssistant } from "../../../../../types";
+import type { HomeAssistant, Route } from "../../../../../types";
 import "./lorawan-connection-link";
 
 type DeviceRow = LoRaWANDevice & {
@@ -41,11 +39,47 @@ type DeviceRow = LoRaWANDevice & {
 export class LoRaWANConfigPanel extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property({ type: Boolean }) public narrow = false;
+  @property({ attribute: false }) public route!: Route;
+  @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+  @state() private _connectionId = "";
+
+  private _queryParams = new QueryParamsController(
+    this,
+    { string: ["connection"] as const },
+    {
+      enabled: () => true,
+      navigated: () => this._readConnectionFilter(),
+    }
+  );
+
+  private _tabs = [
+    {
+      translationKey: "ui.panel.config.lorawan.devices",
+      path: "/config/lorawan/devices",
+    },
+  ];
   @state() private _devices?: LoRaWANDevice[];
   @state() private _error = false;
   @state() private _connections: LoRaWANConnection[] = [];
 
   private _unsubscribe?: Promise<UnsubscribeFunc>;
+
+  private _rows = memoizeOne(
+    (
+      devices: LoRaWANDevice[] | undefined,
+      connection: string | null
+    ): DeviceRow[] =>
+      (devices ?? [])
+        .filter(
+          (device) => !connection || device.connection.entry_id === connection
+        )
+        .map((device) => ({
+          ...device,
+          id: `${device.connection.entry_id}:${device.dev_eui}`,
+          rssi: strongestLoRaWANReception(device.receptions)?.rssi ?? null,
+          connection_title: device.connection.title,
+        }))
+  );
 
   public connectedCallback() {
     super.connectedCallback();
@@ -59,6 +93,7 @@ export class LoRaWANConfigPanel extends LitElement {
   }
 
   protected firstUpdated() {
+    this._readConnectionFilter();
     this._subscribe();
   }
 
@@ -170,63 +205,61 @@ export class LoRaWANConfigPanel extends LitElement {
       : this.hass.localize("ui.panel.config.lorawan.not_observed");
   }
 
+  private _readConnectionFilter() {
+    this._connectionId =
+      this._queryParams.searchParams()?.get("connection") ?? "";
+  }
+
+  private _connectionChanged(ev: HaSelectSelectEvent) {
+    this._connectionId = ev.detail.value === "all" ? "" : ev.detail.value;
+    this._queryParams.write({ connection: this._connectionId });
+  }
+
+  private _clearFilter() {
+    this._connectionId = "";
+    this._queryParams.write({ connection: "" });
+  }
+
   protected render() {
-    const rows =
-      this._devices?.map((device): DeviceRow => ({
-        ...device,
-        id: `${device.connection.entry_id}:${device.dev_eui}`,
-        rssi: strongestLoRaWANReception(device.receptions)?.rssi ?? null,
-        connection_title: device.connection.title,
-      })) ?? [];
-    return html`<hass-subpage
+    return html`<hass-tabs-subpage-data-table
       .hass=${this.hass}
       .narrow=${this.narrow}
-      .header=${this.hass.localize("ui.panel.config.lorawan.title")}
-      .scrollable=${false}
-      back-path="/config/connectivity"
+      .isWide=${this.isWide}
+      .route=${this.route}
+      .tabs=${this._tabs}
+      .columns=${this._columns()}
+      .data=${this._rows(this._devices, this._connectionId)}
+      .loading=${this._devices === undefined && !this._error}
+      .loadError=${this._error}
+      .noDataText=${this.hass.localize("ui.panel.config.lorawan.no_devices")}
+      .filters=${this._connectionId ? 1 : 0}
+      has-filters
+      sync-url
+      clickable
+      back-path="/config/lorawan"
+      @row-click=${this._rowClicked}
+      @retry-load=${this._subscribe}
+      @clear-filter=${this._clearFilter}
     >
-      ${this._renderAddDevice()}
-      <ha-data-table
-        .columns=${this._columns()}
-        .data=${rows}
-        .narrow=${this.narrow}
-        .loading=${this._devices === undefined && !this._error}
-        .loadError=${this._error}
-        .noDataText=${this.hass.localize("ui.panel.config.lorawan.no_devices")}
-        .searchLabel=${this.hass.localize("ui.panel.config.lorawan.search")}
-        clickable
-        @row-click=${this._rowClicked}
-        @retry-load=${this._subscribe}
-      ></ha-data-table>
-    </hass-subpage>`;
-  }
-
-  private _renderAddDevice() {
-    const connections = this._connections.filter(
-      (connection) => connection.configuration_url
-    );
-    if (!connections.length) return nothing;
-    if (connections.length === 1) {
-      return html`<ha-button
-        slot="toolbar-icon"
-        href=${connections[0].configuration_url!}
-        target="_blank"
-        rel="noopener noreferrer"
-        ><ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
-        >${this.hass.localize("ui.panel.config.lorawan.add_device")}</ha-button
-      >`;
-    }
-    return html`<ha-dropdown slot="toolbar-icon" @wa-select=${this._addDevice}>
-      <ha-button slot="trigger"
-        ><ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon
-        >${this.hass.localize("ui.panel.config.lorawan.add_device")}</ha-button
-      >
-      ${connections.map((connection) => html`<ha-dropdown-item .value=${connection.configuration_url!}><img slot="icon" alt="" width="24" height="24" src=${brandsUrl({ domain: connection.domain, type: "icon", darkOptimized: this.hass.themes.darkMode }, this.hass.hassUrl())} />${connection.title}</ha-dropdown-item>`)}
-    </ha-dropdown>`;
-  }
-
-  private _addDevice(ev: HaDropdownSelectEvent) {
-    window.open(ev.detail.item.value, "_blank", "noopener,noreferrer");
+      <ha-select
+        slot="filter-pane"
+        .label=${this.hass.localize("ui.panel.config.lorawan.connection")}
+        .value=${this._connectionId || "all"}
+        .options=${[
+          {
+            value: "all",
+            label: this.hass.localize(
+              "ui.panel.config.lorawan.all_connections"
+            ),
+          },
+          ...this._connections.map((connection) => ({
+            value: connection.entry_id,
+            label: connection.title,
+          })),
+        ]}
+        @selected=${this._connectionChanged}
+      ></ha-select>
+    </hass-tabs-subpage-data-table>`;
   }
 
   private _rowClicked(ev: HASSDomEvent<RowClickedEvent>) {
@@ -250,12 +283,15 @@ export class LoRaWANConfigPanel extends LitElement {
       display: block;
       height: 100%;
     }
-    ha-data-table {
+    hass-tabs-subpage-data-table {
       display: block;
       --data-table-row-height: 72px;
     }
+    ha-select {
+      margin: var(--ha-space-4);
+    }
     @media (max-width: 600px) {
-      ha-data-table {
+      hass-tabs-subpage-data-table {
         --data-table-row-height: 132px;
       }
     }

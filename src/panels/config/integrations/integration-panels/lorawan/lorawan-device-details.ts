@@ -1,12 +1,10 @@
 import type { ContextType } from "@lit/context";
-import { mdiPowerPlug } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../../common/decorators/consume";
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-relative-time";
-import "../../../../../components/ha-svg-icon";
 import { internationalizationContext } from "../../../../../data/context";
 import type { LoRaWANDevice } from "../../../../../data/lorawan";
 import "./lorawan-connection-link";
@@ -47,10 +45,6 @@ export class LoRaWANDeviceDetails extends LitElement {
         <dd>${this._time(device.last_uplink)}</dd>
         <dt>${this._i18n.localize("ui.panel.config.lorawan.last_join")}</dt>
         <dd>${this._time(device.last_join)}</dd>
-        <dt>${this._i18n.localize("ui.panel.config.lorawan.battery")}</dt>
-        <dd>
-          ${device.external_power_source ? html`<ha-svg-icon .path=${mdiPowerPlug}></ha-svg-icon> ${this._i18n.localize("ui.panel.config.lorawan.external_power")}` : device.battery_level === null ? "—" : `${Math.round(device.battery_level)}%`}
-        </dd>
         <dt>${this._i18n.localize("ui.panel.config.lorawan.last_status")}</dt>
         <dd>${this._time(device.last_status)}</dd>
         ${
@@ -124,10 +118,6 @@ export class LoRaWANDeviceDetails extends LitElement {
     }
     .identifier {
       font-family: var(--ha-font-family-code);
-    }
-    ha-svg-icon {
-      --mdc-icon-size: 20px;
-      vertical-align: middle;
     }
     h3 {
       font-size: var(--ha-font-size-m);

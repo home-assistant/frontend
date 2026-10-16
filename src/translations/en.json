@@ -2956,6 +2956,10 @@
           "insteon": {
             "main": "Insteon",
             "secondary": "Dual-mesh home automation"
+          },
+          "lorawan": {
+            "main": "LoRaWAN",
+            "secondary": "Long-range wireless devices and connections"
           }
         },
         "common": {
@@ -9547,10 +9551,40 @@
           "restart_homeassistant": "Restart Home Assistant"
         },
         "lorawan": {
+          "devices": "Devices",
+          "all_connections": "All connections",
+          "overview": {
+            "network": "My network",
+            "show_map": "Show map",
+            "connections": "Connections",
+            "connected": "Connected",
+            "connections_count": "{available} of {total} {total, plural, one {connection} other {connections}} available",
+            "total_connections": "{count} {count, plural, one {connection} other {connections}}",
+            "devices_count": "{count} {count, plural, one {device} other {devices}}",
+            "view_devices": "View devices",
+            "no_connections": "No LoRaWAN connections configured.",
+            "load_error": "Could not load LoRaWAN connections."
+          },
+          "topology": {
+            "title": "LoRaWAN network",
+            "connection": "Connection",
+            "gateway": "Gateway",
+            "device": "Device",
+            "unobserved": "No gateway observed",
+            "no_connections": "No LoRaWAN connections configured.",
+            "load_error": "Could not load the LoRaWAN network.",
+            "search": "Find a device or gateway"
+          },
           "title": "LoRaWAN",
           "rssi": "RSSI",
           "snr": "SNR",
           "add_device": "Add device",
+          "add_device_dialog": {
+            "choose_connection": "Choose a connection to add your device to.",
+            "instructions": "To add a device to this connection, please visit the management console.",
+            "no_console": "This connection does not provide a management console URL.",
+            "open_console": "Open management console"
+          },
           "manage_connection": "Manage connection",
           "caption": "LoRaWAN",
           "description": "Devices across your LoRaWAN connections",
