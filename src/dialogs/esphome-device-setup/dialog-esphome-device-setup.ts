@@ -965,7 +965,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     } finally {
       this._openingMusicAssistantFlow = false;
     }
-    if (!this._audioFlowCurrent(flowId)) {
+    if (!this._audioFlowCurrent(flowId) || this._view !== "audio-offer") {
       return;
     }
     showConfigFlowDialog(this, {
