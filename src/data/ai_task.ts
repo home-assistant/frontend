@@ -49,7 +49,7 @@ export const saveAITaskPreferences = (
   });
 
 export const generateDataAITask = async <T = string>(
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   task: GenDataTask
 ): Promise<GenDataTaskResult<T>> => {
   const result = await hass.callService<GenDataTaskResult<T>>(

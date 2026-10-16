@@ -6353,6 +6353,11 @@
             "no_traces_found": "No traces found",
             "trace_no_longer_available": "Chosen trace is no longer available",
             "enter_downloaded_trace": "Enter downloaded trace",
+            "explain": "Explain with AI",
+            "explanation": {
+              "title": "What happened",
+              "generating": "Generating explanation…"
+            },
             "graph": {
               "node_label": "{description}, {state}",
               "state": {

@@ -7,6 +7,7 @@ import {
   mdiRayEndArrow,
   mdiRayStartArrow,
   mdiRefresh,
+  mdiStarFourPoints,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -38,6 +39,7 @@ import type {
   HatScriptGraph,
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
+import { fetchAITaskPreferences } from "../../../data/ai_task";
 import type { AutomationEntity } from "../../../data/automation";
 import {
   fireRelatedContext,
@@ -63,6 +65,7 @@ import { fileDownload } from "../../../util/file_download";
 import "../../../components/ha-trace-picker";
 import "../../../components/ha-split-panel";
 import type { HaSplitPanel } from "../../../components/ha-split-panel";
+import { showAutomationTraceExplanationDialog } from "./trace-explanation-dialog/show-dialog-automation-trace-explanation";
 
 const TABS = ["details", "timeline", "logbook", "automation_config"] as const;
 
@@ -106,6 +109,8 @@ export class HaAutomationTrace extends LitElement {
   @state() private _view: (typeof TABS)[number] | "blueprint" = "details";
 
   @state() private _splitPosition = DEFAULT_SPLIT_POSITION;
+
+  @state() private _canExplain = false;
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
@@ -155,6 +160,27 @@ export class HaAutomationTrace extends LitElement {
         .scrollable=${this.narrow}
       >
         ${
+          !this.narrow && this._canExplain
+            ? html`
+                <ha-button
+                  appearance="plain"
+                  size="s"
+                  slot="toolbar-icon"
+                  .disabled=${!this._trace}
+                  @click=${this._explainTrace}
+                >
+                  <ha-svg-icon
+                    slot="start"
+                    .path=${mdiStarFourPoints}
+                  ></ha-svg-icon>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.trace.explain"
+                  )}
+                </ha-button>
+              `
+            : nothing
+        }
+        ${
           !this.narrow && stateObj?.attributes.id
             ? html`
                 <ha-button
@@ -197,6 +223,24 @@ export class HaAutomationTrace extends LitElement {
                       "ui.panel.config.automation.trace.edit_automation"
                     )}
                     <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
+                  </ha-dropdown-item>
+                `
+              : nothing
+          }
+          ${
+            this.narrow && this._canExplain
+              ? html`
+                  <ha-dropdown-item
+                    .disabled=${!this._trace}
+                    value="explain_trace"
+                  >
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.trace.explain"
+                    )}
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiStarFourPoints}
+                    ></ha-svg-icon>
                   </ha-dropdown-item>
                 `
               : nothing
@@ -410,6 +454,12 @@ export class HaAutomationTrace extends LitElement {
     this.hass.loadBackendTranslation("triggers");
     this.hass.loadBackendTranslation("conditions");
 
+    if (isComponentLoaded(this.hass.config, "ai_task")) {
+      fetchAITaskPreferences(this.hass).then((prefs) => {
+        this._canExplain = Boolean(prefs.gen_data_entity_id);
+      });
+    }
+
     const storedPosition = localStorage?.[STORAGE_KEY_SPLIT_POSITION];
     if (storedPosition) {
       const parsed = parseFloat(storedPosition);
@@ -621,6 +671,13 @@ export class HaAutomationTrace extends LitElement {
     );
   }
 
+  private _explainTrace() {
+    showAutomationTraceExplanationDialog(this, {
+      trace: this._trace!,
+      logbookEntries: this._logbookEntries ?? [],
+    });
+  }
+
   private _importTrace() {
     const traceText = prompt(
       this.hass.localize(
@@ -690,6 +747,9 @@ export class HaAutomationTrace extends LitElement {
         break;
       case "download_trace":
         this._downloadTrace();
+        break;
+      case "explain_trace":
+        this._explainTrace();
         break;
       case "edit_automation":
         this._navigateToAutomation();
