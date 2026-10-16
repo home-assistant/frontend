@@ -135,7 +135,8 @@ export class LoRaWANConfigOverview extends LitElement {
                   <ha-list-nav
                     .ariaLabel=${this.hass.localize("ui.panel.config.lorawan.overview.network")}
                   >
-                    <ha-list-item-button href="/config/lorawan/devices"
+                    <ha-list-item-button
+                      href="/config/lorawan/devices?group=connection"
                       ><ha-svg-icon
                         slot="start"
                         .path=${mdiDevices}

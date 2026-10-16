@@ -1,7 +1,7 @@
 import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { mdiPowerPlug } from "@mdi/js";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { QueryParamsController } from "../../../../../common/controllers/query-params-controller";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
@@ -133,20 +133,11 @@ export class LoRaWANConfigPanel extends LitElement {
             <div class="secondary">
               ${[device.manufacturer, device.model].filter(Boolean).join(" · ") || device.dev_eui}
             </div>
-            ${
-              this.narrow
-                ? html`<lorawan-connection-link
-                      .connection=${device.connection}
-                    ></lorawan-connection-link>
-                    <div class="secondary">
-                      ${this._time(device.last_uplink)} ·
-                      ${device.rssi === null ? "—" : `${device.rssi} dBm`}
-                    </div>`
-                : nothing
-            }
           </div>`,
       },
       connection_title: {
+        groupable: true,
+        urlName: "connection",
         hidden: this.narrow,
         title: this.hass.localize("ui.panel.config.lorawan.connection"),
         filterable: true,
@@ -176,8 +167,8 @@ export class LoRaWANConfigPanel extends LitElement {
           device.rssi === null ? "—" : `${device.rssi} dBm`,
       },
       battery_level: {
+        hidden: this.narrow,
         title: this.hass.localize("ui.panel.config.lorawan.battery"),
-        showNarrow: true,
         sortable: true,
         type: "numeric",
         minWidth: "75px",
