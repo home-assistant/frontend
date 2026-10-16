@@ -3414,7 +3414,12 @@
           "introduction": "Labels can help you organize your areas, devices, and entities. They can be used to filter in the UI, or use them as a target in automations.",
           "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
           "confirm_remove_title": "Remove label?",
-          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities."
+          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities.",
+          "remove_selected": "Remove selected",
+          "confirm_remove_selected_title": "Remove selected labels?",
+          "confirm_remove_selected": "{count, plural,\n  one {The selected label will be removed from all areas, devices, and entities.}\n  other {The {count} selected labels will be removed from all areas, devices, and entities.}\n}",
+          "remove_failed_title": "Remove failed",
+          "remove_failed": "Some labels could not be removed. Check system logs for more information."
         },
         "areas": {
           "caption": "Areas",

@@ -11,4 +11,10 @@ export const mockLabelRegistry = (
 ) => {
   labels = data;
   hass.mockWS("config/label_registry/list", () => data);
+  hass.mockWS("config/label_registry/delete", (msg: { label_id: string }) => {
+    const index = data.findIndex((label) => label.label_id === msg.label_id);
+    if (index !== -1) {
+      data.splice(index, 1);
+    }
+  });
 };
