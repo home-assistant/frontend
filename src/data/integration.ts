@@ -75,6 +75,7 @@ export interface IntegrationManifest {
   homekit?: { models?: string[] };
   integration_type?: IntegrationType;
   loggers?: string[];
+  lorawan?: [string, number | string][];
   quality_scale?:
     | "bronze"
     | "silver"
