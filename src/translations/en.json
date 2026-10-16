@@ -9580,7 +9580,7 @@
           "snr": "SNR",
           "add_device": "Add device",
           "add_device_dialog": {
-            "choose_connection": "Choose a connection to add your device to.",
+            "choose_connection": "Choose a connection",
             "instructions": "To add a device to this connection, please visit the management console.",
             "no_console": "This connection does not provide a management console URL.",
             "open_console": "Open management console"

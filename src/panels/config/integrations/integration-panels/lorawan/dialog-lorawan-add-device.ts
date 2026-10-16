@@ -44,7 +44,11 @@ class DialogLoRaWANAddDevice extends DialogMixin<{
     return html`<ha-dialog
       open
       class=${selected ? "" : "connection-picker"}
-      .headerTitle=${this._i18n.localize("ui.panel.config.lorawan.add_device")}
+      .headerTitle=${this._i18n.localize(
+        selected
+          ? "ui.panel.config.lorawan.add_device"
+          : "ui.panel.config.lorawan.add_device_dialog.choose_connection"
+      )}
       .headerSubtitle=${selected?.title}
     >
       ${selected ? html`<ha-icon-button-prev slot="headerNavigationIcon" .label=${this._i18n.localize("ui.common.back")} @click=${this._back}></ha-icon-button-prev>` : html`<span slot="headerNavigationIcon"></span>`}
@@ -64,9 +68,6 @@ class DialogLoRaWANAddDevice extends DialogMixin<{
               )}
             </p>`
           : html`
-              <p>
-                ${this._i18n.localize("ui.panel.config.lorawan.add_device_dialog.choose_connection")}
-              </p>
               <ha-list-nav
                 .ariaLabel=${this._i18n.localize("ui.panel.config.lorawan.connection")}
               >
@@ -123,9 +124,6 @@ class DialogLoRaWANAddDevice extends DialogMixin<{
   static styles = css`
     .connection-picker {
       --dialog-content-padding: 0;
-    }
-    .connection-picker p {
-      margin: var(--ha-space-4) var(--ha-space-6);
     }
     a {
       display: inline-flex;
