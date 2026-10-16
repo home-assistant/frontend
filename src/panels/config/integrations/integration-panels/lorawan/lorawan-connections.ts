@@ -5,14 +5,15 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-spinner";
-import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/ha-icon-next";
+import "../../../../../components/item/ha-list-item-button";
 import "../../../../../components/list/ha-list-base";
 import type { LoRaWANDevices } from "../../../../../data/lorawan";
 import { subscribeLoRaWANDevices } from "../../../../../data/lorawan";
 import "../../../../../layouts/hass-subpage";
 import { panelIsReady } from "../../../../../layouts/panel-ready";
 import type { HomeAssistant } from "../../../../../types";
-import "./lorawan-connection-link";
+import { brandsUrl } from "../../../../../util/brands-url";
 
 @customElement("lorawan-connections")
 export class LoRaWANConnections extends LitElement {
@@ -69,21 +70,24 @@ export class LoRaWANConnections extends LitElement {
                   ><ha-list-base>
                     ${snapshot.connections.map(
                       (connection) =>
-                        html`<ha-list-item-base>
-                          <lorawan-connection-link
-                            slot="headline"
-                            .connection=${connection}
-                          ></lorawan-connection-link>
+                        html`<ha-list-item-button
+                          href=${`/config/lorawan/devices?connection=${connection.entry_id}`}
+                        >
+                          <img
+                            slot="start"
+                            alt=""
+                            width="24"
+                            height="24"
+                            src=${brandsUrl({ domain: connection.domain, type: "icon", darkOptimized: this.hass.themes.darkMode }, this.hass.hassUrl())}
+                          />
+                          <div slot="headline">${connection.title}</div>
                           <div slot="supporting-text">
-                            ${connection.connected ? html`${this.hass.localize("ui.panel.config.lorawan.overview.connected")} · ` : nothing}${this.hass.localize("ui.panel.config.lorawan.overview.devices_count", { count: snapshot.devices.filter((device) => device.connection.entry_id === connection.entry_id).length })}
+                            ${this.hass.localize(connection.connected ? "ui.panel.config.lorawan.overview.connected" : "ui.panel.config.lorawan.connection_unavailable")}
+                            ·
+                            ${this.hass.localize("ui.panel.config.lorawan.overview.devices_count", { count: snapshot.devices.filter((device) => device.connection.entry_id === connection.entry_id).length })}
                           </div>
-                          <ha-button
-                            slot="end"
-                            appearance="plain"
-                            href=${`/config/lorawan/devices?connection=${connection.entry_id}`}
-                            >${this.hass.localize("ui.panel.config.lorawan.overview.view_devices")}</ha-button
-                          >
-                        </ha-list-item-base>`
+                          <ha-icon-next slot="end"></ha-icon-next>
+                        </ha-list-item-button>`
                     )}
                   </ha-list-base></ha-card
                 >`
