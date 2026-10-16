@@ -321,7 +321,7 @@ export class HaConfigLabels extends LitElement {
         <wa-divider></wa-divider>
         <ha-dropdown-item variant="danger" value="remove">
           <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
-          ${this.hass.localize("ui.common.delete")}
+          ${this.hass.localize("ui.common.remove")}
         </ha-dropdown-item>
       </ha-dropdown>
     `;
