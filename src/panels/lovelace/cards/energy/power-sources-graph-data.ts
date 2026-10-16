@@ -322,13 +322,21 @@ export function generatePowerSourcesGraphData(
   const chartData = fillLineGaps(datasets);
   const yAxisFractionDigits = computeYAxisFractionDigits(yMin, yMax, true);
 
-  let homeByX: Map<number, number> | undefined;
-  if (homeStatId) {
-    const { positive } = processData([getStatsWithCurrent(homeStatId)], trackY);
-    if (positive.length) {
-      homeByX = new Map(positive);
+  const homeStats = homeStatId
+    ? getStatsWithCurrent(homeStatId).filter((stat) => stat.mean != null)
+    : [];
+  let homeIdx = 0;
+  // Home reading covering timestamp x (its bucket, or the live point)
+  const homeAt = (x: number): number | undefined => {
+    while (
+      homeIdx < homeStats.length - 1 &&
+      homeStats[homeIdx + 1].start <= x
+    ) {
+      homeIdx++;
     }
-  }
+    const stat = homeStats[homeIdx];
+    return stat && stat.start <= x && x <= stat.end ? stat.mean! : undefined;
+  };
 
   const usageData: NonNullable<LineSeriesOption["data"]> = [];
   // fillLineGaps ensures all datasets share the same x values, so iterate the
@@ -365,17 +373,7 @@ export function generatePowerSourcesGraphData(
       // Consumption can't be negative; sources unaccounted for in the
       // configuration (e.g. solar exporting to grid without a configured
       // solar source) would otherwise drag the usage line below zero.
-      usageData[i] = [x, Math.max(0, sum)];
-    }
-  }
-  if (homeByX) {
-    const usageByX = new Map(usageData as [number, number][]);
-    for (const [x, y] of homeByX) {
-      usageByX.set(x, y);
-    }
-    usageData.length = 0;
-    for (const point of [...usageByX.entries()].sort((a, b) => a[0] - b[0])) {
-      usageData.push(point);
+      usageData[i] = [x, Math.max(0, homeAt(x) ?? sum)];
     }
   }
   chartData.push({

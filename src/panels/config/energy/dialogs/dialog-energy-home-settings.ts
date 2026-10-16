@@ -1,7 +1,8 @@
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state, consume } from "lit/decorators";
-import type { ContextType } from "@lit/context";
+import { customElement, state } from "lit/decorators";
+import { consume } from "../../../../common/decorators/consume";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";

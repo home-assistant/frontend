@@ -642,7 +642,7 @@ export class HuiEnergyUsageGraphCard
       }
     }
 
-    if (combinedData.from_grid && (summedData.to_battery || summedData.home)) {
+    if (summedData.to_battery || summedData.home) {
       const gridNotUsed: Record<number, number> = {};
       for (const start of summedData.timestamps) {
         gridNotUsed[start] =
@@ -650,7 +650,7 @@ export class HuiEnergyUsageGraphCard
           consumptionData.used_grid[start];
       }
       const used_grid = buildCombinedUsed(
-        combinedData.from_grid,
+        combinedData.from_grid ?? {},
         gridNotUsed,
         consumptionData.used_grid
       );
