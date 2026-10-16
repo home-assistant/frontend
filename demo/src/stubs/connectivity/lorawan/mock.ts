@@ -16,8 +16,7 @@ const devices = (): LoRaWANDevice[] => {
       entry_id: CHIRPSTACK_ENTRY,
       domain: "chirpstack",
       title: "Home ChirpStack",
-      configuration_url:
-        "https://chirpstack.example.com/#/tenants/home/applications",
+      configuration_url: "https://www.chirpstack.io/",
       connected: true,
     },
     support: "supported",
@@ -45,8 +44,7 @@ const devices = (): LoRaWANDevice[] => {
         entry_id: TTN_ENTRY,
         domain: "thethingsnetwork_lorawan",
         title: "The Things Network",
-        configuration_url:
-          "https://eu1.cloud.thethings.network/console/applications/demo-home",
+        configuration_url: "https://eu1.cloud.thethings.network/console",
         connected: true,
       },
       receptions: [{ gateway_id: "brooklyn-rooftop", rssi: -103, snr: -2.5 }],
