@@ -12,24 +12,25 @@ import "../../../../integrations/integration-panels/lorawan/lorawan-device-detai
 export class HaDeviceInfoLoRaWAN extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @property({ attribute: false }) public device!: DeviceRegistryEntry;
-  @state() private _devices: LoRaWANDevice[] = [];
+  @state() private _device?: LoRaWANDevice;
 
   protected hassSubscribe() {
     return [
       subscribeLoRaWANDevices(this.hass.connection, ({ devices }) => {
-        this._devices = devices;
+        this._device = devices.find(
+          (device) => device.device_id === this.device.id
+        );
       }),
     ];
   }
 
   protected render() {
-    const device = this._devices.find(
-      (candidate) => candidate.device_id === this.device.id
-    );
-    return device
+    return this._device
       ? html`<ha-expansion-panel
           .header=${this.hass.localize("ui.panel.config.lorawan.device_info")}
-          ><lorawan-device-details .device=${device}></lorawan-device-details
+          ><lorawan-device-details
+            .device=${this._device}
+          ></lorawan-device-details
         ></ha-expansion-panel>`
       : nothing;
   }
