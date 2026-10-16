@@ -10583,6 +10583,17 @@
               "description": "This card shows historical power data.",
               "show_legend": "Show legend"
             },
+            "power-devices-graph": {
+              "name": "Device power graph",
+              "description": "This card shows the power usage per device, it is sorted by usage.",
+              "max_devices": "Maximum devices allowed",
+              "hide_compound_stats": "Hide upstream devices",
+              "modes": "Chart types",
+              "mode_options": {
+                "bar": "Bar",
+                "pie": "Pie"
+              }
+            },
             "energy-devices-graph": {
               "name": "Device energy graph",
               "description": "This card shows the energy usage per device, it is sorted by usage.",

@@ -343,7 +343,7 @@ export class HuiPowerDevicesGraphCard
           // take order from data
           data: data[0]?.data?.map((d: any) => d.name),
           axisLabel: {
-            formatter: this._getDeviceName.bind(this),
+            formatter: this._getDeviceName,
             overflow: "truncate",
             fontSize: 12,
             margin: 5,
@@ -375,7 +375,7 @@ export class HuiPowerDevicesGraphCard
     }
   );
 
-  private _getDeviceName(statisticId: string): string {
+  private _getDeviceName = (statisticId: string): string => {
     const suffix = this._compoundStats.includes(statisticId)
       ? ` (${this._i18n.localize(
           "ui.panel.lovelace.cards.energy.power_devices_graph.untracked"
@@ -390,7 +390,7 @@ export class HuiPowerDevicesGraphCard
           undefined
         )) + suffix
     );
-  }
+  };
 
   private _animateNext = false;
   private _getStatistics(energyData: EnergyData): void {
