@@ -31,10 +31,6 @@ import {
 } from "../data/context";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, Route } from "../types";
-import {
-  ThemeBackgroundController,
-  themeBackgroundStyles,
-} from "../common/controllers/theme-background-controller";
 
 const normalizePathname = (pathname: string): string =>
   pathname.endsWith("/") && pathname.length > 1
@@ -62,8 +58,6 @@ export interface PageNavigation {
 
 @customElement("hass-tabs-subpage")
 export class HassTabsSubpage extends LitElement {
-  protected readonly _themeBackground = new ThemeBackgroundController(this);
-
   // Unread, kept for callers that still pass it until they move to contexts
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -310,7 +304,6 @@ export class HassTabsSubpage extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      themeBackgroundStyles,
       haStyleScrollbar,
       css`
         :host {

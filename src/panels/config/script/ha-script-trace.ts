@@ -714,6 +714,10 @@ export class HaScriptTrace extends LitElement {
         }
 
         .graph {
+          background: var(
+            --ha-panel-background,
+            var(--primary-background-color)
+          );
           box-sizing: border-box;
           display: flex;
           flex-direction: column;
@@ -740,8 +744,13 @@ export class HaScriptTrace extends LitElement {
           min-width: 0;
           min-height: 0;
           overflow-y: auto;
+          background: var(--ha-card-background, var(--card-background-color));
         }
         ha-tab-group {
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--ha-panel-background, var(--primary-background-color))
+          );
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
         }

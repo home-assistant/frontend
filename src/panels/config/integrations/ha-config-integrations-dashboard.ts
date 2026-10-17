@@ -1110,8 +1110,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           top: 0;
           z-index: 2;
           background: var(
-            --app-toolbar-background,
-            var(--lovelace-background, var(--primary-background-color))
+            --ha-panel-toolbar-background,
+            var(--primary-background-color)
           );
           padding: 0 16px;
           gap: var(--ha-space-4);

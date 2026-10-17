@@ -676,6 +676,10 @@ export class HaTracePathDetails extends LitElement {
         }
 
         ha-tab-group {
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--ha-panel-background, var(--primary-background-color))
+          );
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
         }

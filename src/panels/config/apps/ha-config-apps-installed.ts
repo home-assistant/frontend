@@ -280,8 +280,8 @@ export class HaConfigAppsInstalled extends LitElement {
         box-sizing: border-box;
         border-bottom: 1px solid var(--divider-color);
         background: var(
-          --app-toolbar-background,
-          var(--lovelace-background, var(--primary-background-color))
+          --ha-panel-toolbar-background,
+          var(--primary-background-color)
         );
       }
 

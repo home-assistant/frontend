@@ -74,17 +74,11 @@ import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { csvDownload, csvSafeString } from "../../util/csv";
 import { addEntitiesToLovelaceView } from "../lovelace/editor/add-entities-to-view";
-import {
-  ThemeBackgroundController,
-  themeBackgroundStyles,
-} from "../../common/controllers/theme-background-controller";
 
 const EMPTY_STATES: HomeAssistant["states"] = {};
 
 @customElement("ha-panel-history")
 class HaPanelHistory extends LitElement {
-  protected readonly _themeBackground = new ThemeBackgroundController(this);
-
   @property({ attribute: false }) hass!: HomeAssistant;
 
   @property({ reflect: true, type: Boolean }) public narrow = false;
@@ -802,7 +796,6 @@ class HaPanelHistory extends LitElement {
 
   static get styles() {
     return [
-      themeBackgroundStyles,
       haStyle,
       haStyleScrollbar,
       css`
@@ -862,10 +855,6 @@ class HaPanelHistory extends LitElement {
           height: 56px;
           flex-shrink: 0;
           padding: 0 16px;
-          background: var(
-            --app-toolbar-background,
-            var(--lovelace-background, var(--primary-background-color))
-          );
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
           overflow-x: auto;

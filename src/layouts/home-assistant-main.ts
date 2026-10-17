@@ -193,6 +193,11 @@ export class HomeAssistantMain extends LitElement {
       --ha-top-app-bar-width: 100%;
       --safe-area-content-inset-left: var(--safe-area-inset-left);
     }
+    partial-panel-resolver {
+      display: block;
+      min-height: 100vh;
+      background: var(--ha-panel-background, var(--primary-background-color));
+    }
     partial-panel-resolver,
     ha-sidebar {
       /* allow a light tap highlight on the actual interface elements  */
