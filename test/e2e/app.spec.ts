@@ -426,7 +426,8 @@ test("keeps the launch screen until initial panel content renders", async ({
     {
       name: "connectivity",
       path: "/?scenario=delayed-connectivity#/config/connectivity",
-      loadingSelector: "ha-config-connectivity ha-card",
+      loadingSelector:
+        "ha-config-connectivity ha-card:has(ha-config-navigation)",
       readySelector: "ha-config-connectivity ha-list-item-button",
       resolvers: ["resolveConnectivityConfigEntries"],
     },

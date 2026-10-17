@@ -177,28 +177,35 @@ class HaConfigConnectivity extends LitElement {
     }
 
     const infraredStats = statsFor("infrared");
-    infraredDevices.forEach((device, i) => {
-      const key = `infrared:${i}`;
+    for (const device of infraredDevices) {
+      const key = device.device_id ?? `entity:${device.id}`;
       allDevices.add(key);
       infraredStats.monitored.add(key);
       if (!device.online) {
         infraredStats.offline.add(key);
         allOffline.add(key);
       }
-    });
+    }
 
     const rfStats = statsFor("radio_frequency");
+    const rfUnavailable = new Map<string, boolean>();
     for (const tx of this._rfTransmitters) {
       const key = tx.device_id ?? `entity:${tx.entity_id}`;
+      const stateObj = this.hass.states[tx.entity_id];
+      rfUnavailable.set(
+        key,
+        (rfUnavailable.get(key) ?? true) &&
+          (!stateObj || stateObj.state === "unavailable")
+      );
+    }
+    for (const [key, unavailable] of rfUnavailable) {
       allDevices.add(key);
       rfStats.monitored.add(key);
-      if (this.hass.states[tx.entity_id]?.state === "unavailable") {
+      if (unavailable) {
         rfStats.offline.add(key);
         allOffline.add(key);
       }
     }
-
-    result.total = allDevices.size;
     result.offlineTotal = allOffline.size;
 
     for (const [domain, { monitored, offline }] of perDomain) {
