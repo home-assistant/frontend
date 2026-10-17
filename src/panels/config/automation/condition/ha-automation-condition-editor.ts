@@ -3,6 +3,7 @@ import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
@@ -19,6 +20,11 @@ import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
 import type { ConditionElement } from "./ha-automation-condition-row";
 import "./types/ha-automation-condition-platform";
+import {
+  addRecentTargets,
+  configTargets,
+  RECENT_TARGETS_STORAGE_KEY,
+} from "../target/recent_targets";
 
 @customElement("ha-automation-condition-editor")
 export default class HaAutomationConditionEditor extends LitElement {
@@ -51,6 +57,9 @@ export default class HaAutomationConditionEditor extends LitElement {
   private _processedCondition = memoizeOne((condition) =>
     expandConditionWithShorthand(condition)
   );
+
+  @storage({ key: RECENT_TARGETS_STORAGE_KEY, state: false, subscribe: false })
+  private _recentTargets?: string[];
 
   protected render() {
     const condition = this._processedCondition(this.condition);
@@ -132,7 +141,21 @@ export default class HaAutomationConditionEditor extends LitElement {
       ...ev.detail.value,
       ...pickRowConfig(this.condition, CONDITION_ROW_CONFIG_KEYS),
     };
+    this._rememberTargets(this.condition, value);
     fireEvent(this, "value-changed", { value });
+  }
+
+  // Targets picked in the editor, like with an entity or device picker, are
+  // also offered as recent targets in the add dialog
+  private _rememberTargets(oldConfig: unknown, newConfig: unknown) {
+    const recentTargets = addRecentTargets(
+      this._recentTargets,
+      configTargets(oldConfig),
+      configTargets(newConfig)
+    );
+    if (recentTargets !== this._recentTargets) {
+      this._recentTargets = recentTargets;
+    }
   }
 
   public expandAll() {

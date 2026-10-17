@@ -3,6 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
@@ -18,6 +19,11 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 import "./types/ha-automation-trigger-platform";
+import {
+  addRecentTargets,
+  configTargets,
+  RECENT_TARGETS_STORAGE_KEY,
+} from "../target/recent_targets";
 
 @customElement("ha-automation-trigger-editor")
 export default class HaAutomationTriggerEditor extends LitElement {
@@ -37,6 +43,9 @@ export default class HaAutomationTriggerEditor extends LitElement {
   @property({ attribute: false }) public description?: TriggerDescription;
 
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
+
+  @storage({ key: RECENT_TARGETS_STORAGE_KEY, state: false, subscribe: false })
+  private _recentTargets?: string[];
 
   protected render() {
     const type = isTriggerList(this.trigger) ? "list" : this.trigger.trigger;
@@ -114,7 +123,21 @@ export default class HaAutomationTriggerEditor extends LitElement {
       ...ev.detail.value,
       ...pickRowConfig(this.trigger, TRIGGER_ROW_CONFIG_KEYS),
     };
+    this._rememberTargets(this.trigger, value);
     fireEvent(this, "value-changed", { value });
+  }
+
+  // Targets picked in the editor, like with an entity or device picker, are
+  // also offered as recent targets in the add dialog
+  private _rememberTargets(oldConfig: unknown, newConfig: unknown) {
+    const recentTargets = addRecentTargets(
+      this._recentTargets,
+      configTargets(oldConfig),
+      configTargets(newConfig)
+    );
+    if (recentTargets !== this._recentTargets) {
+      this._recentTargets = recentTargets;
+    }
   }
 
   static get styles(): CSSResultGroup {

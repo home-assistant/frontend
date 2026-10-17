@@ -5538,6 +5538,8 @@
             "home": "Home",
             "unassigned": "Unassigned",
             "time_sun": "Time and sun",
+            "recently_used": "Recently used",
+            "clear_recently_used": "Clear recently used",
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",
