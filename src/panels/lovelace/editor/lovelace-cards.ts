@@ -193,6 +193,10 @@ export const energyCards: Card[] = [
     showElement: false,
   },
   {
+    type: "power-devices-graph",
+    showElement: false,
+  },
+  {
     type: "water-sankey",
     showElement: false,
   },
