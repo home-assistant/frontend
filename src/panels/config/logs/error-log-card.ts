@@ -11,6 +11,7 @@ import {
   mdiWrap,
   mdiWrapDisabled,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   type CSSResultGroup,
@@ -46,9 +47,11 @@ import { debounce } from "../../../common/util/debounce";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import type { ConnectionStatus } from "../../../data/connection-status";
 import {
+  downloadIntegrationLog,
   fetchErrorLog,
   getCoreLogFileDownloadUnavailableReason,
   getErrorLogDownloadUrl,
+  subscribeIntegrationLog,
 } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -59,11 +62,14 @@ import {
   fetchHassioLogsLegacy,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
+import { domainToName } from "../../../data/integration";
 import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 
 const NUMBER_OF_LINES = 100;
+// Matches the live log dialog on the integration page
+const INTEGRATION_LOG_LINE_LIMIT = 5000;
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
@@ -76,6 +82,8 @@ class ErrorLogCard extends LitElement {
   @property() public header?: string;
 
   @property() public provider?: string;
+
+  @property() public integration?: string;
 
   @property({ attribute: "allow-switch", type: Boolean }) public allowSwitch =
     false;
@@ -107,6 +115,9 @@ class ErrorLogCard extends LitElement {
 
   @state() private _logStreamAborter?: AbortController;
 
+  // Responses of an earlier load are ignored once the log source changes
+  private _loadId = 0;
+
   @state() private _streamSupported?: boolean;
 
   @state() private _loadingState: "loading" | "empty" | "loaded" = "loading";
@@ -125,18 +136,28 @@ class ErrorLogCard extends LitElement {
 
   @state() private _wrapLines = true;
 
-  protected render(): TemplateResult {
-    const streaming =
-      this._streamSupported &&
-      this.provider &&
-      isComponentLoaded(this.hass.config, "hassio") &&
-      this._loadingState !== "loading";
+  @state() private _integrationLive = false;
 
-    const hasBoots = this._streamSupported && Array.isArray(this._boots);
+  private _integrationUnsub?: Promise<UnsubscribeFunc>;
+
+  private _integrationLines: string[] = [];
+
+  protected render(): TemplateResult {
+    const integrationLog = this._isIntegrationLog();
+
+    const streaming = integrationLog
+      ? this._integrationLive
+      : this._streamSupported &&
+        this.provider &&
+        isComponentLoaded(this.hass.config, "hassio") &&
+        this._loadingState !== "loading";
+
+    const hasBoots =
+      !integrationLog && this._streamSupported && Array.isArray(this._boots);
 
     const localize = this.localizeFunc || this.hass.localize;
     const logFileDownloadUnavailableReason =
-      !this.provider || this.provider === "core"
+      !integrationLog && (!this.provider || this.provider === "core")
         ? getCoreLogFileDownloadUnavailableReason(this.hass)
         : undefined;
 
@@ -297,7 +318,19 @@ class ErrorLogCard extends LitElement {
                     </div>`
                   : this._loadingState === "empty"
                     ? html`<div>
-                        ${localize("ui.panel.config.logs.no_errors")}
+                        ${
+                          integrationLog
+                            ? localize(
+                                "ui.panel.config.logs.integration_log_waiting",
+                                {
+                                  integration: domainToName(
+                                    this.hass.localize,
+                                    this.integration!
+                                  ),
+                                }
+                              )
+                            : localize("ui.panel.config.logs.no_errors")
+                        }
                       </div>`
                     : nothing
             }
@@ -368,7 +401,7 @@ class ErrorLogCard extends LitElement {
       this.hass.loadFragmentTranslation("config");
     }
 
-    if (changedProps.has("provider")) {
+    if (changedProps.has("provider") || changedProps.has("integration")) {
       this._boot = 0;
       this._loadLogs();
     }
@@ -412,6 +445,8 @@ class ErrorLogCard extends LitElement {
       this._logStreamAborter.abort();
     }
 
+    this._unsubscribeIntegrationLog();
+
     window.removeEventListener(
       "connection-status",
       this._handleConnectionStatus
@@ -419,6 +454,11 @@ class ErrorLogCard extends LitElement {
   }
 
   private async _downloadLogs(): Promise<void> {
+    if (this._isIntegrationLog()) {
+      downloadIntegrationLog(this.integration!, this._integrationLines);
+      return;
+    }
+
     if (
       (!this.provider || this.provider === "core") &&
       getCoreLogFileDownloadUnavailableReason(this.hass)
@@ -449,6 +489,7 @@ class ErrorLogCard extends LitElement {
   }
 
   private async _loadLogs(retry = false): Promise<void> {
+    const loadId = ++this._loadId;
     this._error = undefined;
     this._loadingState = "loading";
     this._numberOfLines = retry ? (this._numberOfLines ?? 0) : 0;
@@ -457,6 +498,17 @@ class ErrorLogCard extends LitElement {
       this._loadingPrevState = undefined;
       this._firstCursor = undefined;
       this._ansiToHtmlElement?.clear();
+    }
+
+    this._unsubscribeIntegrationLog();
+
+    if (this._isIntegrationLog()) {
+      if (this._logStreamAborter) {
+        this._logStreamAborter.abort();
+        this._logStreamAborter = undefined;
+      }
+      this._subscribeIntegrationLog();
+      return;
     }
 
     if (
@@ -490,6 +542,9 @@ class ErrorLogCard extends LitElement {
             this._boot
           );
           const testLogs = await testResponse.text();
+          if (loadId !== this._loadId) {
+            return;
+          }
           if (!testLogs.trim()) {
             this._loadingState = "empty";
           }
@@ -515,6 +570,10 @@ class ErrorLogCard extends LitElement {
             NUMBER_OF_LINES,
             this._boot
           );
+        }
+
+        if (loadId !== this._loadId) {
+          return;
         }
 
         if (response.headers.has("X-First-Cursor")) {
@@ -584,6 +643,10 @@ class ErrorLogCard extends LitElement {
           logs = await fetchErrorLog(this.hass);
         }
 
+        if (loadId !== this._loadId) {
+          return;
+        }
+
         if (logs) {
           this._ansiToHtmlElement?.parseTextToColoredPre(logs);
           this._loadingState = "loaded";
@@ -591,7 +654,7 @@ class ErrorLogCard extends LitElement {
         }
       }
     } catch (err: any) {
-      if (err.name === "AbortError") {
+      if (err.name === "AbortError" || loadId !== this._loadId) {
         return;
       }
 
@@ -608,6 +671,86 @@ class ErrorLogCard extends LitElement {
           error: extractApiErrorMessage(err),
         }
       );
+    }
+  }
+
+  private _isIntegrationLog(): boolean {
+    return !!this.integration && (!this.provider || this.provider === "core");
+  }
+
+  private _subscribeIntegrationLog() {
+    // The backlog is sent again on every subscription
+    this._integrationLines = [];
+    this._ansiToHtmlElement?.clear();
+
+    const unsub = subscribeIntegrationLog(
+      this.hass.connection,
+      this.integration!,
+      (lines) => {
+        if (this._integrationUnsub === unsub) {
+          this._addIntegrationLines(lines);
+        }
+      }
+    );
+    this._integrationUnsub = unsub;
+    unsub.then(
+      () => {
+        if (this._integrationUnsub !== unsub) {
+          return;
+        }
+        this._integrationLive = true;
+        if (this._loadingState === "loading") {
+          this._loadingState = "empty";
+        }
+      },
+      () => {
+        if (this._integrationUnsub !== unsub) {
+          return;
+        }
+        this._integrationUnsub = undefined;
+        this._loadingState = "loaded";
+        this._error = (this.localizeFunc || this.hass.localize)(
+          "ui.panel.config.logs.integration_log_unsupported"
+        );
+      }
+    );
+  }
+
+  private _unsubscribeIntegrationLog() {
+    this._integrationUnsub?.then((unsub) => unsub()).catch(() => undefined);
+    this._integrationUnsub = undefined;
+    this._integrationLive = false;
+  }
+
+  private _addIntegrationLines(lines: string[]) {
+    const newLines = lines.flatMap((line) => line.split("\n"));
+    if (!newLines.length) {
+      return;
+    }
+    const scrolledToBottom = this._scrolledToBottomController.value;
+    this._integrationLines.push(...newLines);
+    this._integrationLines.splice(
+      0,
+      this._integrationLines.length - INTEGRATION_LOG_LINE_LIMIT
+    );
+    // ha-ansi-to-html re-filters all lines after every added line while a
+    // search is set, so search once after adding them
+    if (this.filter) {
+      this._ansiToHtmlElement?.filterLines("");
+    }
+    this._ansiToHtmlElement?.parseLinesToColoredPre(newLines);
+    this._ansiToHtmlElement?.trimLines(INTEGRATION_LOG_LINE_LIMIT);
+    if (this.filter) {
+      this._noSearchResults = !this._ansiToHtmlElement?.filterLines(
+        this.filter
+      );
+    }
+    this._loadingState = "loaded";
+
+    if (scrolledToBottom) {
+      this._scrollToBottom();
+    } else {
+      this._newLogsIndicator = true;
     }
   }
 
@@ -639,6 +782,12 @@ class ErrorLogCard extends LitElement {
       this._logStreamAborter.abort();
       this._loadingState = "loading";
     }
+    if (ev.detail === "disconnected" && this._integrationUnsub) {
+      // The subscription ended with the connection
+      this._integrationUnsub = undefined;
+      this._integrationLive = false;
+      this._loadingState = "loading";
+    }
     if (ev.detail === "connected") {
       this._loadLogs(true);
     }
@@ -658,12 +807,16 @@ class ErrorLogCard extends LitElement {
     const scrollPositionFromBottom =
       this._logElement.scrollHeight - this._logElement.scrollTop;
     this._loadingPrevState = "loading";
+    const loadId = this._loadId;
     const response = await fetchHassioLogs(
       this.hass,
       this.provider,
       `entries=${this._firstCursor}:-100:100`,
       this._boot
     );
+    if (loadId !== this._loadId) {
+      return;
+    }
 
     if (response.headers.has("X-First-Cursor")) {
       if (this._firstCursor === response.headers.get("X-First-Cursor")!) {
@@ -674,6 +827,9 @@ class ErrorLogCard extends LitElement {
     }
 
     const body = await response.text();
+    if (loadId !== this._loadId) {
+      return;
+    }
 
     if (body) {
       const lines = body
