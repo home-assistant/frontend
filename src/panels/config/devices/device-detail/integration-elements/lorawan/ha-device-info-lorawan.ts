@@ -1,3 +1,4 @@
+import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
@@ -14,9 +15,23 @@ export class HaDeviceInfoLoRaWAN extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public device!: DeviceRegistryEntry;
   @state() private _device?: LoRaWANDevice;
 
+  protected hassSubscribeRequiredHostProps = ["device"];
+
+  private _devices: LoRaWANDevice[] = [];
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has("device")) {
+      this._device = this._devices.find(
+        (device) => device.device_id === this.device.id
+      );
+    }
+  }
+
   protected hassSubscribe() {
     return [
       subscribeLoRaWANDevices(this.hass.connection, ({ devices }) => {
+        this._devices = devices;
         this._device = devices.find(
           (device) => device.device_id === this.device.id
         );
