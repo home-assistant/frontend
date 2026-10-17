@@ -11201,6 +11201,10 @@
             "state_filter": "[%key:ui::panel::lovelace::editor::card::picture-elements::state_filter%]"
           },
           "badge": {
+            "alert": {
+              "name": "Alert",
+              "description": "A badge that highlights an entity that needs attention, with an optional color and pulsing background."
+            },
             "entity": {
               "name": "Entity",
               "description": "The Entity badge gives you a quick overview of an entity.",
