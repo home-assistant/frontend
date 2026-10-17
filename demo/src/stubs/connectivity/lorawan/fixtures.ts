@@ -13,21 +13,21 @@ export const SENSECAP_ENTRY = "mock-lorawan-sensecap";
 
 const REGISTRY_ENTRIES = [
   registryEntry(
-    "sensor.greenhouse_temperature",
+    "sensor.lorawan_greenhouse_temperature",
     "lorawan-greenhouse",
     SENSECAP_ENTRY,
     "sensecap",
     "Temperature"
   ),
   registryEntry(
-    "sensor.greenhouse_humidity",
+    "sensor.lorawan_greenhouse_humidity",
     "lorawan-greenhouse",
     SENSECAP_ENTRY,
     "sensecap",
     "Humidity"
   ),
   registryEntry(
-    "sensor.study_carbon_dioxide",
+    "sensor.lorawan_study_carbon_dioxide",
     "lorawan-study",
     SENSECAP_ENTRY,
     "sensecap",
@@ -94,8 +94,8 @@ export const lorawanFixtures: ConnectivityFixtures = {
   entityRegistryEntries: REGISTRY_ENTRIES,
   entities: () =>
     withRegistryLinks(REGISTRY_ENTRIES, {
-      "sensor.greenhouse_temperature": {
-        entity_id: "sensor.greenhouse_temperature",
+      "sensor.lorawan_greenhouse_temperature": {
+        entity_id: "sensor.lorawan_greenhouse_temperature",
         state: "24.3",
         attributes: {
           friendly_name: "Greenhouse temperature",
@@ -104,8 +104,8 @@ export const lorawanFixtures: ConnectivityFixtures = {
           unit_of_measurement: "°C",
         },
       },
-      "sensor.greenhouse_humidity": {
-        entity_id: "sensor.greenhouse_humidity",
+      "sensor.lorawan_greenhouse_humidity": {
+        entity_id: "sensor.lorawan_greenhouse_humidity",
         state: "58",
         attributes: {
           friendly_name: "Greenhouse humidity",
@@ -114,8 +114,8 @@ export const lorawanFixtures: ConnectivityFixtures = {
           unit_of_measurement: "%",
         },
       },
-      "sensor.study_carbon_dioxide": {
-        entity_id: "sensor.study_carbon_dioxide",
+      "sensor.lorawan_study_carbon_dioxide": {
+        entity_id: "sensor.lorawan_study_carbon_dioxide",
         state: "652",
         attributes: {
           friendly_name: "Study carbon dioxide",

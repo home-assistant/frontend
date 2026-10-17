@@ -10,6 +10,7 @@ import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { navigate } from "../../../../../common/navigate";
 import type {
   DataTableColumnContainer,
+  DataTableRowData,
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-select";
@@ -29,12 +30,13 @@ import { panelIsReady } from "../../../../../layouts/panel-ready";
 import { loadVirtualizer } from "../../../../../resources/virtualizer";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "./lorawan-connection-link";
+import { connectionLabels } from "./connection-labels";
 
-type DeviceRow = LoRaWANDevice & {
+interface DeviceRow extends LoRaWANDevice, DataTableRowData {
   id: string;
   rssi: number | null;
   connection_title: string;
-};
+}
 
 @customElement("lorawan-devices")
 export class LoRaWANDevices extends LitElement {
@@ -65,10 +67,13 @@ export class LoRaWANDevices extends LitElement {
 
   private _unsubscribe?: Promise<UnsubscribeFunc>;
 
+  private _connectionLabels = memoizeOne(connectionLabels);
+
   private _rows = memoizeOne(
     (
       devices: LoRaWANDevice[] | undefined,
-      connection: string | null
+      connection: string | null,
+      labels: Map<string, string>
     ): DeviceRow[] =>
       (devices ?? [])
         .filter(
@@ -78,7 +83,7 @@ export class LoRaWANDevices extends LitElement {
           ...device,
           id: `${device.connection.entry_id}:${device.dev_eui}`,
           rssi: strongestLoRaWANReception(device.receptions)?.rssi ?? null,
-          connection_title: device.connection.title,
+          connection_title: labels.get(device.connection.entry_id)!,
         }))
   );
 
@@ -138,6 +143,11 @@ export class LoRaWANDevices extends LitElement {
               ${[device.manufacturer, device.model].filter(Boolean).join(" · ") || device.dev_eui}
             </div>
           </div>`,
+      },
+      dev_eui: {
+        title: localize("ui.panel.config.lorawan.dev_eui"),
+        hidden: true,
+        filterable: true,
       },
       connection_title: {
         groupable: true,
@@ -216,6 +226,7 @@ export class LoRaWANDevices extends LitElement {
   }
 
   protected render() {
+    const labels = this._connectionLabels(this._connections);
     return html`<hass-tabs-subpage-data-table
       .hass=${this.hass}
       .narrow=${this.narrow}
@@ -223,7 +234,7 @@ export class LoRaWANDevices extends LitElement {
       .route=${this.route}
       .tabs=${this._tabs}
       .columns=${this._columns(this.hass.localize, this.narrow)}
-      .data=${this._rows(this._devices, this._connectionId)}
+      .data=${this._rows(this._devices, this._connectionId, labels)}
       .loading=${this._devices === undefined && !this._error}
       .loadError=${this._error}
       .noDataText=${this.hass.localize("ui.panel.config.lorawan.no_devices")}
@@ -249,7 +260,7 @@ export class LoRaWANDevices extends LitElement {
           },
           ...this._connections.map((connection) => ({
             value: connection.entry_id,
-            label: connection.title,
+            label: labels.get(connection.entry_id)!,
           })),
         ]}
         @selected=${this._connectionChanged}
