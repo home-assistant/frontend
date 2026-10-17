@@ -686,7 +686,16 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface TileCardConfig extends LovelaceCardConfig {
+export interface TileActionsConfig {
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+  icon_tap_action?: ActionConfig;
+  icon_hold_action?: ActionConfig;
+  icon_double_tap_action?: ActionConfig;
+}
+
+export interface TileCardConfig extends LovelaceCardConfig, TileActionsConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   hide_state?: boolean;
@@ -695,12 +704,6 @@ export interface TileCardConfig extends LovelaceCardConfig {
   color?: string;
   show_entity_picture?: boolean;
   vertical?: boolean;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-  double_tap_action?: ActionConfig;
-  icon_tap_action?: ActionConfig;
-  icon_hold_action?: ActionConfig;
-  icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
   features_position?: LovelaceCardFeaturePosition;
   time_format?: TimestampRenderingFormat;
@@ -739,9 +742,16 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
 export interface AlertCardConfig extends LovelaceCardConfig {
   type: "alert";
   entity: string;
+  name?: string | EntityNameItem | EntityNameItem[];
+  icon?: string;
   alert_color?: string;
   clear_color?: string;
   pulse?: boolean;
+  hide_state?: boolean;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface ToggleGroupCardConfig extends LovelaceCardConfig {

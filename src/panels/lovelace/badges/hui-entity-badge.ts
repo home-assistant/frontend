@@ -8,15 +8,17 @@ import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { hsv2rgb, rgb2hex, rgb2hsv } from "../../../common/color/convert-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
 import "../../../components/ha-badge";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
-import { cameraUrlWithWidthHeight } from "../../../data/camera";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
+import {
+  getTileImageUrl,
+  hasTileCardAction,
+} from "../cards/tile/tile-card-helpers";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
@@ -99,12 +101,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
   }
 
   get hasAction() {
-    return (
-      !this._config?.tap_action ||
-      hasAction(this._config?.tap_action) ||
-      hasAction(this._config?.hold_action) ||
-      hasAction(this._config?.double_tap_action)
-    );
+    return hasTileCardAction(this._config);
   }
 
   private _computeStateColor = memoizeOne(
@@ -137,21 +134,6 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
       return stateColorCss(stateObj);
     }
   );
-
-  private _getImageUrl(stateObj: HassEntity): string | undefined {
-    const entityPicture =
-      stateObj.attributes.entity_picture_local ||
-      stateObj.attributes.entity_picture;
-
-    if (!entityPicture) return undefined;
-
-    let imageUrl = this.hass!.hassUrl(entityPicture);
-    if (computeStateDomain(stateObj) === "camera") {
-      imageUrl = cameraUrlWithWidthHeight(imageUrl, 32, 32);
-    }
-
-    return imageUrl;
-  }
 
   protected render() {
     if (!this._config || !this.hass) {
@@ -195,7 +177,7 @@ export class HuiEntityBadge extends LitElement implements LovelaceBadge {
     const showEntityPicture = this._config.show_entity_picture;
 
     const imageUrl = showEntityPicture
-      ? this._getImageUrl(stateObj)
+      ? getTileImageUrl(this.hass, stateObj, 32)
       : undefined;
 
     const label = showState && showName ? name : undefined;

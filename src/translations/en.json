@@ -10405,7 +10405,8 @@
               "clear_color": "Clear color",
               "clear_color_helper": "Used when the entity isn't in an alert state. The background doesn't pulse.",
               "pulse": "Pulse",
-              "pulse_helper": "Animates the colored background while the entity is in an alert state. When reduced motion is on, the background stays tinted instead."
+              "pulse_helper": "Animates the colored background while the entity is in an alert state. When reduced motion is on, the background stays tinted instead.",
+              "alert_section": "Alert"
             },
             "area": {
               "name": "Area",
