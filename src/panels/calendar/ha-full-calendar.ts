@@ -72,7 +72,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
 
 @customElement("ha-full-calendar")
 export class HAFullCalendar extends LitElement {
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -601,6 +601,10 @@ export class HAFullCalendar extends LitElement {
           padding-left: var(--calendar-header-padding);
           padding-inline-start: var(--calendar-header-padding);
           padding-inline-end: var(--calendar-header-padding);
+        }
+
+        h1 {
+          font-size: var(--calendar-title-font-size, var(--ha-font-size-2xl));
         }
 
         .navigation {
