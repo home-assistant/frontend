@@ -193,15 +193,24 @@ export class HomeAssistantMain extends LitElement {
       --ha-top-app-bar-width: 100%;
       --safe-area-content-inset-left: var(--safe-area-inset-left);
     }
-    partial-panel-resolver {
-      display: block;
-      min-height: 100vh;
-      background: var(--ha-panel-background, var(--primary-background-color));
-    }
     partial-panel-resolver,
     ha-sidebar {
       /* allow a light tap highlight on the actual interface elements  */
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    }
+    partial-panel-resolver {
+      display: block;
+      height: 100%;
+      isolation: isolate;
+    }
+    partial-panel-resolver::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: var(--ha-panel-background, var(--primary-background-color));
+      background-attachment: scroll !important;
     }
   `;
 }

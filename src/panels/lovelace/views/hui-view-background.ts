@@ -201,7 +201,7 @@ export class HUIViewBackground extends LitElement {
       width: 100%;
       background: var(
         --view-background,
-        var(--lovelace-background, var(--primary-background-color))
+        var(--lovelace-background, transparent)
       );
       opacity: var(--view-background-opacity);
     }

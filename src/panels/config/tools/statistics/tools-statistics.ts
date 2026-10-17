@@ -868,6 +868,10 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           border-bottom: 1px solid var(--divider-color);
           overflow-x: auto;
           scrollbar-width: none;
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--ha-panel-background, var(--primary-background-color))
+          );
         }
         ha-input-search {
           flex: 1;
