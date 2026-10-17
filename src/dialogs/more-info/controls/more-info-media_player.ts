@@ -368,6 +368,13 @@ class MoreInfoMediaPlayer extends LitElement {
     const secondaryTitle = computeMediaDescription(stateObj);
     const turnOn = controls?.find((c) => c.action === "turn_on");
     const turnOff = controls?.find((c) => c.action === "turn_off");
+    // Stop is only a main control when there is no play/pause
+    const stop = controls?.find((c) => c.action === "media_stop");
+    const stopIsMain =
+      stop &&
+      !controls!.some((c) =>
+        ["media_play_pause", "media_pause", "media_play"].includes(c.action)
+      );
 
     return html`
       ${
@@ -468,7 +475,10 @@ class MoreInfoMediaPlayer extends LitElement {
                   "media_play",
                   "media_stop",
                 ].map((action) => {
-                  const control = controls?.find((c) => c.action === action);
+                  const control =
+                    action !== "media_stop" || stopIsMain
+                      ? controls?.find((c) => c.action === action)
+                      : undefined;
                   return control
                     ? html`<ha-button
                         variant="brand"
@@ -506,6 +516,17 @@ class MoreInfoMediaPlayer extends LitElement {
         }
         ${this._renderVolumeControl()}
         <div class="controls-row">
+          ${
+            stop && !stopIsMain
+              ? this._renderControlButton(
+                  "media_stop",
+                  this._localize("ui.card.media_player.media_stop"),
+                  stop.icon,
+                  this._handleClick,
+                  stop.action
+                )
+              : nothing
+          }
           ${
             stateObj.state !== UNAVAILABLE &&
             supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
