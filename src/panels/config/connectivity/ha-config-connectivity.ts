@@ -1,43 +1,42 @@
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import type { ContextType } from "@lit/context";
 import {
   mdiAlertCircleOutline,
   mdiAlertOutline,
   mdiCheck,
   mdiMenuDown,
 } from "@mdi/js";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
+import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
+import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-icon-next";
-import "../../../components/item/ha-list-item-button";
-import "../../../components/list/ha-list-nav";
-import type { ConfigEntry } from "../../../data/config_entries";
-import { getConfigEntries } from "../../../data/config_entries";
-import { brandsUrl } from "../../../util/brands-url";
-import "../../../components/ha-card";
+import { configEntriesContext } from "../../../data/context";
+import { computeInfraredDevices } from "../../../data/infrared";
+import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-subpage";
 import { ChildPanelReady } from "../../../layouts/panel-ready";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 import { configSections } from "../config-sections";
 import "../dashboard/ha-config-navigation";
 import "../ha-config-section";
-import { navigate } from "../../../common/navigate";
-import { domainToName } from "../../../data/integration";
 
 const OVERVIEW_DOMAINS = [
   ...new Set([
     ...configSections.connectivity
       .flatMap((page) => page.component ?? [])
       .filter((component) => component !== "tag"),
-    "infrared",
     "serial",
   ]),
 ];
+
+const TRANSITIONAL_STATES = ["setup_in_progress", "unload_in_progress"];
 
 const findPage = (domain: string) =>
   configSections.connectivity.find((page) =>
@@ -49,6 +48,7 @@ const pagePath = (domain: string) =>
 
 interface Overview {
   total: number;
+  offlineTotal: number;
   offline: { domain: string; count: number }[];
   problems: { domain: string; text: string; severity: "error" | "warning" }[];
 }
@@ -61,7 +61,8 @@ class HaConfigConnectivity extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _entries: ConfigEntry[] = [];
+  @consume({ context: configEntriesContext, subscribe: true })
+  private _configEntries?: ContextType<typeof configEntriesContext>;
 
   public constructor() {
     super();
@@ -70,20 +71,7 @@ class HaConfigConnectivity extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    this._load();
-  }
-
-  private async _load() {
     this.hass.loadBackendTranslation("title", OVERVIEW_DOMAINS);
-    const domains = OVERVIEW_DOMAINS.filter((d) =>
-      isComponentLoaded(this.hass.config, d)
-    );
-    const results = await Promise.all(
-      domains.map((domain) => getConfigEntries(this.hass, { domain }))
-    );
-    this._entries = results
-      .flat()
-      .filter((e) => e.disabled_by === null && e.source !== "ignore");
   }
 
   private _openOffline(ev: CustomEvent<{ item: { value: string } }>) {
@@ -91,9 +79,21 @@ class HaConfigConnectivity extends LitElement {
   }
 
   private _overview(): Overview | null {
-    if (!this._entries.length) {
+    const entries = (this._configEntries ?? []).filter(
+      (e) =>
+        OVERVIEW_DOMAINS.includes(e.domain) &&
+        e.disabled_by === null &&
+        e.source !== "ignore"
+    );
+    const infraredDevices = computeInfraredDevices(
+      this.hass.entities,
+      this.hass.states,
+      this.hass.devices
+    );
+    if (!entries.length && !infraredDevices.length) {
       return null;
     }
+
     const allUnavailable = new Map<string, boolean>();
     for (const entity of Object.values(this.hass.entities)) {
       if (entity.device_id) {
@@ -105,18 +105,49 @@ class HaConfigConnectivity extends LitElement {
       }
     }
 
-    const result: Overview = { total: 0, offline: [], problems: [] };
-    const perDomain = new Map<string, { devices: number; offline: number }>();
-    for (const entry of this._entries) {
-      const devices = Object.values(this.hass.devices).filter((d) =>
-        d.config_entries.includes(entry.entry_id)
-      );
-      const stats = perDomain.get(entry.domain) ?? { devices: 0, offline: 0 };
-      stats.devices += devices.length;
-      stats.offline += devices.filter((d) => allUnavailable.get(d.id)).length;
-      perDomain.set(entry.domain, stats);
-      result.total += devices.length;
-      if (entry.state !== "loaded") {
+    const result: Overview = {
+      total: 0,
+      offlineTotal: 0,
+      offline: [],
+      problems: [],
+    };
+    const allDevices = new Set<string>();
+    const allOffline = new Set<string>();
+    const perDomain = new Map<
+      string,
+      { monitored: Set<string>; offline: Set<string> }
+    >();
+    const statsFor = (domain: string) => {
+      let stats = perDomain.get(domain);
+      if (!stats) {
+        stats = { monitored: new Set(), offline: new Set() };
+        perDomain.set(domain, stats);
+      }
+      return stats;
+    };
+
+    for (const entry of entries) {
+      const stats = statsFor(entry.domain);
+      for (const device of Object.values(this.hass.devices)) {
+        if (
+          device.disabled_by !== null ||
+          !device.config_entries.includes(entry.entry_id)
+        ) {
+          continue;
+        }
+        allDevices.add(device.id);
+        if (allUnavailable.has(device.id)) {
+          stats.monitored.add(device.id);
+          if (allUnavailable.get(device.id)) {
+            stats.offline.add(device.id);
+            allOffline.add(device.id);
+          }
+        }
+      }
+      if (
+        entry.state !== "loaded" &&
+        !TRANSITIONAL_STATES.includes(entry.state)
+      ) {
         result.problems.push({
           domain: entry.domain,
           severity: "error",
@@ -126,15 +157,30 @@ class HaConfigConnectivity extends LitElement {
         });
       }
     }
-    for (const [domain, { devices, offline }] of perDomain) {
-      if (!offline) {
+
+    const infraredStats = statsFor("infrared");
+    infraredDevices.forEach((device, i) => {
+      const key = `infrared:${i}`;
+      allDevices.add(key);
+      infraredStats.monitored.add(key);
+      if (!device.online) {
+        infraredStats.offline.add(key);
+        allOffline.add(key);
+      }
+    });
+
+    result.total = allDevices.size;
+    result.offlineTotal = allOffline.size;
+
+    for (const [domain, { monitored, offline }] of perDomain) {
+      if (!offline.size) {
         continue;
       }
-      result.offline.push({ domain, count: offline });
+      result.offline.push({ domain, count: offline.size });
       if (result.problems.some((x) => x.domain === domain)) {
         continue;
       }
-      if (offline === devices) {
+      if (offline.size === monitored.size) {
         result.problems.push({
           domain,
           severity: "error",
@@ -142,7 +188,7 @@ class HaConfigConnectivity extends LitElement {
             "ui.panel.config.dashboard.connectivity.all_offline"
           ),
         });
-      } else if (offline * 2 >= devices) {
+      } else if (offline.size * 2 >= monitored.size) {
         result.problems.push({
           domain,
           severity: "warning",
@@ -172,8 +218,7 @@ class HaConfigConnectivity extends LitElement {
         domainToName(this.hass.localize, domain)
       );
     };
-    const { total, offline, problems } = overview;
-    const offlineTotal = offline.reduce((sum, x) => sum + x.count, 0);
+    const { total, offlineTotal, offline, problems } = overview;
     const level = problems.some((x) => x.severity === "error")
       ? "error"
       : problems.length
@@ -190,7 +235,7 @@ class HaConfigConnectivity extends LitElement {
                 .path=${
                   level === "error"
                     ? mdiAlertCircleOutline
-                    : problems.length
+                    : level === "warning"
                       ? mdiAlertOutline
                       : mdiCheck
                 }
