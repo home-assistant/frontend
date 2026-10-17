@@ -16,31 +16,36 @@ const REGISTRY_ENTRIES = [
     "sensor.lorawan_greenhouse_temperature",
     "lorawan-greenhouse",
     SENSECAP_ENTRY,
-    "sensecap",
+    "sensecap_lorawan",
     "Temperature"
   ),
   registryEntry(
     "sensor.lorawan_greenhouse_humidity",
     "lorawan-greenhouse",
     SENSECAP_ENTRY,
-    "sensecap",
+    "sensecap_lorawan",
     "Humidity"
   ),
   registryEntry(
     "sensor.lorawan_study_carbon_dioxide",
     "lorawan-study",
     SENSECAP_ENTRY,
-    "sensecap",
+    "sensecap_lorawan",
     "Carbon dioxide"
   ),
 ];
 
 export const lorawanFixtures: ConnectivityFixtures = {
-  components: ["lorawan", "sensecap", "chirpstack", "thethingsnetwork_lorawan"],
+  components: [
+    "lorawan",
+    "sensecap_lorawan",
+    "chirpstack",
+    "thethingsnetwork_lorawan",
+  ],
   commands: ["lorawan/"],
   manifests: [
     manifest("lorawan", "LoRaWAN", { integration_type: "helper" }),
-    manifest("sensecap", "SenseCAP", {
+    manifest("sensecap_lorawan", "SenseCAP", {
       integration_type: "device",
       dependencies: ["lorawan"],
     }),
@@ -64,7 +69,7 @@ export const lorawanFixtures: ConnectivityFixtures = {
     },
     {
       type: "device",
-      entry: configEntry(SENSECAP_ENTRY, "sensecap", "SenseCAP"),
+      entry: configEntry(SENSECAP_ENTRY, "sensecap_lorawan", "SenseCAP"),
     },
   ],
   devices: [
@@ -76,7 +81,9 @@ export const lorawanFixtures: ConnectivityFixtures = {
       SENSECAP_ENTRY,
       {
         config_entries: [SENSECAP_ENTRY, CHIRPSTACK_ENTRY],
-        identifiers: [["sensecap", `${CHIRPSTACK_ENTRY}:0000000000000001`]],
+        identifiers: [
+          ["sensecap_lorawan", `${CHIRPSTACK_ENTRY}:0000000000000001`],
+        ],
       }
     ),
     device(
@@ -87,7 +94,7 @@ export const lorawanFixtures: ConnectivityFixtures = {
       SENSECAP_ENTRY,
       {
         config_entries: [SENSECAP_ENTRY, TTN_ENTRY],
-        identifiers: [["sensecap", `${TTN_ENTRY}:0000000000000002`]],
+        identifiers: [["sensecap_lorawan", `${TTN_ENTRY}:0000000000000002`]],
       }
     ),
   ],
