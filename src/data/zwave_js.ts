@@ -309,22 +309,15 @@ export interface ZWaveJSSetRawConfigParamData {
   value_format: number;
 }
 
-export interface ZWaveJSSetConfigParamResult {
-  value_id: string;
-  status: number;
+export type ZWaveJSSetConfigParamStatus = "accepted" | "queued";
+
+export interface ZWaveJSSetRawConfigParamResult {
+  status: ZWaveJSSetConfigParamStatus;
 }
 
-export type ZWaveJSSetConfigParamStatus = "accepted" | "queued" | "error";
-
-// Maps the numeric SetValueStatus from zwave-js.
-export const computeSetConfigParamStatus = (
-  status: number
-): ZWaveJSSetConfigParamStatus => {
-  if (status === 254 || status === 255) {
-    return "accepted";
-  }
-  return status === 1 ? "queued" : "error";
-};
+export interface ZWaveJSSetConfigParamResult extends ZWaveJSSetRawConfigParamResult {
+  value_id: string;
+}
 
 export interface ZwaveJSNodeConfigParameterUpdate {
   id: string;
@@ -815,7 +808,7 @@ export const setZwaveNodeRawConfigParameter = (
   value: number,
   value_size: number,
   value_format: number
-): Promise<ZWaveJSSetConfigParamResult> => {
+): Promise<ZWaveJSSetRawConfigParamResult> => {
   const data: ZWaveJSSetRawConfigParamData = {
     type: "zwave_js/set_raw_config_parameter",
     device_id,

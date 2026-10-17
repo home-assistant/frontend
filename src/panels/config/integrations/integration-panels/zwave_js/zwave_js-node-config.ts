@@ -34,7 +34,6 @@ import type {
   ZwaveJSNodeMetadata,
 } from "../../../../../data/zwave_js";
 import {
-  computeSetConfigParamStatus,
   fetchZwaveNodeCapabilities,
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
@@ -62,7 +61,7 @@ const icons = {
 };
 
 interface ConfigParamResult {
-  status: ZWaveJSSetConfigParamStatus;
+  status: ZWaveJSSetConfigParamStatus | "error";
   error?: string;
 }
 
@@ -693,7 +692,7 @@ class ZWaveJSNodeConfig extends LitElement {
       );
       this._config![target.key].value = value;
 
-      this._setResult(target.key, computeSetConfigParamStatus(result.status));
+      this._setResult(target.key, result.status);
     } catch (err: any) {
       this._setError(target.key, err.message);
     }
