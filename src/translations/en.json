@@ -2868,7 +2868,14 @@
           },
           "connectivity": {
             "main": "Connectivity",
-            "secondary": "Communication protocols and radios for your devices"
+            "secondary": "Communication protocols and radios for your devices",
+            "all_ok": "All good",
+            "issues": "Issues detected",
+            "device_count": "{count, plural,\n one {# device}\n other {# devices}\n}",
+            "offline_devices": "Offline devices",
+            "offline_count": "({count} offline)",
+            "all_offline": "All devices are offline",
+            "many_offline": "Many devices offline"
           },
           "voice_assistants": {
             "main": "Voice assistants",
