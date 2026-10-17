@@ -7,7 +7,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
 import { navigate } from "../../../common/navigate";
 import "../../../components/ha-alert";
@@ -26,6 +26,9 @@ import { brandsUrl } from "../../../util/brands-url";
 import { configSections } from "../config-sections";
 import "../dashboard/ha-config-navigation";
 import "../ha-config-section";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { RadioFrequencyTransmitter } from "../../../data/radio_frequency";
+import { fetchRadioFrequencyTransmitters } from "../../../data/radio_frequency";
 
 const OVERVIEW_DOMAINS = [
   ...new Set([
@@ -39,8 +42,9 @@ const OVERVIEW_DOMAINS = [
 const TRANSITIONAL_STATES = ["setup_in_progress", "unload_in_progress"];
 
 const findPage = (domain: string) =>
-  configSections.connectivity.find((page) =>
-    [page.component].flat().includes(domain)
+  configSections.connectivity.find(
+    (page) =>
+      [page.component].flat().includes(domain) || page.translationKey === domain
   );
 
 const pagePath = (domain: string) =>
@@ -61,8 +65,11 @@ class HaConfigConnectivity extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
+  @state()
   @consume({ context: configEntriesContext, subscribe: true })
   private _configEntries?: ContextType<typeof configEntriesContext>;
+
+  @state() private _rfTransmitters: RadioFrequencyTransmitter[] = [];
 
   public constructor() {
     super();
@@ -72,6 +79,13 @@ class HaConfigConnectivity extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title", OVERVIEW_DOMAINS);
+    if (isComponentLoaded(this.hass.config, "radio_frequency")) {
+      fetchRadioFrequencyTransmitters(this.hass)
+        .then((res) => {
+          this._rfTransmitters = res.transmitters;
+        })
+        .catch(() => undefined);
+    }
   }
 
   private _openOffline(ev: CustomEvent<{ item: { value: string } }>) {
@@ -90,7 +104,11 @@ class HaConfigConnectivity extends LitElement {
       this.hass.states,
       this.hass.devices
     );
-    if (!entries.length && !infraredDevices.length) {
+    if (
+      !entries.length &&
+      !infraredDevices.length &&
+      !this._rfTransmitters.length
+    ) {
       return null;
     }
 
@@ -169,6 +187,17 @@ class HaConfigConnectivity extends LitElement {
       }
     });
 
+    const rfStats = statsFor("radio_frequency");
+    for (const tx of this._rfTransmitters) {
+      const key = tx.device_id ?? `entity:${tx.entity_id}`;
+      allDevices.add(key);
+      rfStats.monitored.add(key);
+      if (this.hass.states[tx.entity_id]?.state === "unavailable") {
+        rfStats.offline.add(key);
+        allOffline.add(key);
+      }
+    }
+
     result.total = allDevices.size;
     result.offlineTotal = allOffline.size;
 
@@ -212,9 +241,13 @@ class HaConfigConnectivity extends LitElement {
         values
       );
     const name = (domain: string) => {
-      const key = findPage(domain)?.translationKey;
+      const page = findPage(domain);
       return (
-        (key && this.hass.localize(key as any)) ||
+        (page &&
+          (page.name ||
+            this.hass.localize(
+              `ui.panel.config.dashboard.${page.translationKey}.main` as any
+            ))) ||
         domainToName(this.hass.localize, domain)
       );
     };

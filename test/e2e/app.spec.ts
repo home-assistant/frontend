@@ -840,7 +840,9 @@ test.describe("Config panel", () => {
   const getConnectivity = async (page) => {
     const dashboard = await getDashboard(page);
     await dashboard.getByRole("link", { name: /^Connectivity\b/ }).click();
-    const connectivity = page.locator("ha-config-connectivity");
+    const connectivity = page.locator(
+      "ha-config-connectivity ha-card:has(ha-config-navigation)"
+    );
     await expect(connectivity).toBeAttached({ timeout: PANEL_TIMEOUT });
     return connectivity;
   };
