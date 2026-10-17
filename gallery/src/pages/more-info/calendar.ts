@@ -1,6 +1,9 @@
-import type { PropertyValues, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import type { PropertyValues } from "lit";
+import { html, LitElement, nothing } from "lit";
+import { customElement, property } from "lit/decorators";
+import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
+import type { ShowDialogParams } from "../../../../src/dialogs/make-dialog-manager";
+import { showDialog } from "../../../../src/dialogs/make-dialog-manager";
 import "../../../../src/components/ha-card";
 import "../../../../src/dialogs/more-info/more-info-content";
 import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
@@ -14,9 +17,38 @@ const ENTITIES = ["calendar.family", "calendar.empty", "calendar.holidays"];
 class DemoMoreInfoCalendar extends LitElement {
   @property({ attribute: false }) public hass!: MockHomeAssistant;
 
-  @query("demo-more-infos") private _demoRoot!: HTMLElement;
+  public provideHass(el) {
+    el.hass = this.hass;
+  }
 
-  protected render(): TemplateResult {
+  public connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("show-dialog", this._dialogManager);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener("show-dialog", this._dialogManager);
+  }
+
+  // Opens the event detail and editor dialogs of the calendar
+  private _dialogManager = (e: HASSDomEvent<ShowDialogParams<unknown>>) => {
+    const { dialogTag, dialogImport, dialogParams, addHistory, parentElement } =
+      e.detail;
+    showDialog(
+      this,
+      dialogTag,
+      dialogParams,
+      dialogImport,
+      parentElement,
+      addHistory
+    );
+  };
+
+  protected render() {
+    if (!this.hass) {
+      return nothing;
+    }
     return html`
       <demo-more-infos
         .hass=${this.hass}
@@ -27,7 +59,8 @@ class DemoMoreInfoCalendar extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
-    const hass = provideHass(this._demoRoot);
+    // Provided on this element, so the dialogs it opens get the mocks too
+    const hass = provideHass(this);
     hass.updateTranslations(null, "en");
     mockCalendars(hass);
     hass.addEntities(CALENDAR_ENTITIES);

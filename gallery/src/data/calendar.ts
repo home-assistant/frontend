@@ -159,4 +159,8 @@ export const mockCalendars = (hass: MockHomeAssistant) => {
     });
     return () => undefined;
   });
+  // Changes made in the event dialogs are accepted but not stored
+  hass.mockWS("calendar/event/create", () => null);
+  hass.mockWS("calendar/event/update", () => null);
+  hass.mockWS("calendar/event/delete", () => null);
 };

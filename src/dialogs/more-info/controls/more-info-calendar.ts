@@ -33,14 +33,25 @@ class MoreInfoCalendar extends LitElement {
 
   private _end?: Date;
 
+  private _calendars: Calendar[] = [];
+
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
-    if (
-      this._start &&
-      (changedProps.has("stateObj") || changedProps.has("entry")) &&
-      this._calendarChanged(changedProps)
-    ) {
-      this._subscribe();
+    if (!this.stateObj) {
+      return;
+    }
+    const calendars = this._computeCalendars(
+      this.stateObj.entity_id,
+      this.entry?.options?.calendar?.color,
+      this.hass.themes?.theme,
+      this.hass.themes?.darkMode
+    );
+    if (calendars !== this._calendars) {
+      this._calendars = calendars;
+      // Events carry the calendar colors, so they are fetched again
+      if (this._start) {
+        this._subscribe();
+      }
     }
   }
 
@@ -55,7 +66,7 @@ class MoreInfoCalendar extends LitElement {
         auto-height
         .hass=${this.hass}
         .events=${this._events.events}
-        .calendars=${this._calendars(this.stateObj.entity_id, this.entry)}
+        .calendars=${this._calendars}
         .views=${VIEWS}
         .initialView=${INITIAL_VIEW}
         .error=${
@@ -68,28 +79,18 @@ class MoreInfoCalendar extends LitElement {
     `;
   }
 
-  private _calendarChanged(changedProps: PropertyValues<this>): boolean {
-    const oldStateObj = changedProps.get("stateObj") as HassEntity | undefined;
-    const oldEntry = changedProps.get("entry") as
-      ExtEntityRegistryEntry | null | undefined;
-    return (
-      (changedProps.has("stateObj") &&
-        oldStateObj?.entity_id !== this.stateObj?.entity_id) ||
-      (changedProps.has("entry") &&
-        oldEntry?.options?.calendar?.color !==
-          this.entry?.options?.calendar?.color)
-    );
-  }
-
-  private _calendars = memoizeOne(
-    (entityId: string, entry?: ExtEntityRegistryEntry | null): Calendar[] => [
+  // The colors are resolved against the theme, so they are computed again
+  // when it changes.
+  private _computeCalendars = memoizeOne(
+    (
+      entityId: string,
+      color: string | null | undefined,
+      _theme: string | undefined,
+      _darkMode: boolean | undefined
+    ): Calendar[] => [
       {
         entity_id: entityId,
-        ...getCalendarColors(
-          entry?.options?.calendar?.color,
-          0,
-          getComputedStyle(this)
-        ),
+        ...getCalendarColors(color, 0, getComputedStyle(this)),
       },
     ]
   );
@@ -102,15 +103,10 @@ class MoreInfoCalendar extends LitElement {
 
   private async _subscribe(): Promise<void> {
     await this._events.unsubscribeAll();
-    if (!this.stateObj || !this._start || !this._end) {
+    if (!this._start || !this._end) {
       return;
     }
-    this._events.subscribe(
-      this.hass,
-      this._calendars(this.stateObj.entity_id, this.entry),
-      this._start,
-      this._end
-    );
+    this._events.subscribe(this.hass, this._calendars, this._start, this._end);
   }
 
   static styles = css`
