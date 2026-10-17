@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ShowToastParams } from "../../src/managers/notification-manager";
 import {
   registerServiceWorker,
+  reloadOnControllerChange,
   supportsServiceWorker,
 } from "../../src/util/register-service-worker";
 
@@ -15,6 +16,8 @@ class FakeRegistration extends EventTarget {
   public installing: ServiceWorker | null = null;
 
   public waiting: ServiceWorker | null = null;
+
+  public active: ServiceWorker | null = null;
 }
 
 class FakeServiceWorkerContainer extends EventTarget {
@@ -52,6 +55,82 @@ describe("supportsServiceWorker", () => {
     Reflect.deleteProperty(navigator, "serviceWorker");
 
     expect(supportsServiceWorker()).toBe(false);
+  });
+});
+
+describe("reloadOnControllerChange", () => {
+  let serviceWorker: FakeServiceWorkerContainer;
+  let reload: ReturnType<typeof vi.fn<() => void>>;
+
+  const changeController = () => {
+    serviceWorker.controller = new FakeWorker() as unknown as ServiceWorker;
+    serviceWorker.dispatchEvent(new Event("controllerchange"));
+  };
+
+  beforeEach(() => {
+    serviceWorker = new FakeServiceWorkerContainer();
+    reload = vi.fn<() => void>();
+  });
+
+  it("reloads once when a new worker takes over a controlled page", () => {
+    serviceWorker.controller = new FakeWorker() as unknown as ServiceWorker;
+    reloadOnControllerChange(
+      serviceWorker as unknown as ServiceWorkerContainer,
+      reload
+    );
+
+    changeController();
+    changeController();
+
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("does not reload for the first install's claim", () => {
+    reloadOnControllerChange(
+      serviceWorker as unknown as ServiceWorkerContainer,
+      reload
+    );
+
+    changeController();
+
+    expect(reload).not.toHaveBeenCalled();
+  });
+
+  it("reloads for an update after the first install's claim", () => {
+    reloadOnControllerChange(
+      serviceWorker as unknown as ServiceWorkerContainer,
+      reload
+    );
+
+    changeController();
+    changeController();
+
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("reloads an uncontrolled page once it is marked as claimed", () => {
+    const markClaimed = reloadOnControllerChange(
+      serviceWorker as unknown as ServiceWorkerContainer,
+      reload
+    );
+
+    markClaimed();
+    changeController();
+
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("reloads once for a change that happened before the page was marked as claimed", () => {
+    const markClaimed = reloadOnControllerChange(
+      serviceWorker as unknown as ServiceWorkerContainer,
+      reload
+    );
+
+    changeController();
+    markClaimed();
+    changeController();
+
+    expect(reload).toHaveBeenCalledOnce();
   });
 });
 
@@ -102,6 +181,7 @@ describe("registerServiceWorker", () => {
 
   afterEach(() => {
     latestNotification()?.secondaryAction?.action();
+    vi.unstubAllGlobals();
     vi.clearAllTimers();
     vi.useRealTimers();
     window.isDirtyState = false;
@@ -123,6 +203,57 @@ describe("registerServiceWorker", () => {
     await registerServiceWorker(root);
 
     expect(serviceWorker.register).not.toHaveBeenCalled();
+  });
+
+  it("treats a hard-reloaded page with an active worker as claimed", async () => {
+    serviceWorker.controller = null;
+    registration.active = worker as unknown as ServiceWorker;
+    const reload = vi.fn<() => void>();
+    vi.stubGlobal("location", { ...location, reload });
+
+    await registerServiceWorker(root, false);
+    serviceWorker.dispatchEvent(new Event("controllerchange"));
+
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("reloads a hard-reloaded page claimed while registration is pending", async () => {
+    serviceWorker.controller = null;
+    registration.active = worker as unknown as ServiceWorker;
+    const reload = vi.fn<() => void>();
+    vi.stubGlobal("location", { ...location, reload });
+    let resolveRegistration!: (reg: FakeRegistration) => void;
+    serviceWorker.register.mockReturnValue(
+      new Promise<FakeRegistration>((resolve) => {
+        resolveRegistration = resolve;
+      })
+    );
+
+    const registering = registerServiceWorker(root, false);
+    serviceWorker.dispatchEvent(new Event("controllerchange"));
+    expect(reload).not.toHaveBeenCalled();
+    resolveRegistration(registration);
+    await registering;
+
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("tolerates a blocked registration that resolves without a worker", async () => {
+    serviceWorker.controller = null;
+    serviceWorker.register.mockResolvedValue(undefined);
+
+    await expect(registerServiceWorker(root, false)).resolves.toBeUndefined();
+  });
+
+  it("does not reload a first install's claim", async () => {
+    serviceWorker.controller = null;
+    const reload = vi.fn<() => void>();
+    vi.stubGlobal("location", { ...location, reload });
+
+    await registerServiceWorker(root, false);
+    serviceWorker.dispatchEvent(new Event("controllerchange"));
+
+    expect(reload).not.toHaveBeenCalled();
   });
 
   it("listens for controller changes before registering", async () => {
