@@ -29,6 +29,8 @@ export class CalendarEventsController implements ReactiveController {
 
   private _received = new Set<string>();
 
+  private _connected = false;
+
   constructor(host: ReactiveControllerHost) {
     this._host = host;
     host.addController(this);
@@ -43,17 +45,29 @@ export class CalendarEventsController implements ReactiveController {
     );
   }
 
+  hostConnected(): void {
+    this._connected = true;
+  }
+
   hostDisconnected(): void {
+    this._connected = false;
     this.unsubscribeAll();
   }
 
-  /** Subscribe the given calendars, replacing any existing subscription of them. */
+  /**
+   * Subscribe the given calendars, replacing any existing subscription of them.
+   * Does nothing while the host is disconnected, so a subscribe that was
+   * awaiting `unsubscribeAll()` cannot outlive the host.
+   */
   public subscribe(
     hass: HomeAssistant,
     calendars: Calendar[],
     start: Date,
     end: Date
   ): void {
+    if (!this._connected) {
+      return;
+    }
     calendars.forEach((calendar) => {
       this.unsubscribe(calendar.entity_id);
       // Registered before subscribing, as the first update may arrive
@@ -73,6 +87,12 @@ export class CalendarEventsController implements ReactiveController {
           this._handleUpdate(calendar, update.events);
         }
       );
+      subscription.unsub.catch(() => {
+        // A rejected subscription reports no events, so show it as failed
+        if (this._subscriptions[calendar.entity_id] === subscription) {
+          this._handleUpdate(calendar, null);
+        }
+      });
     });
   }
 
