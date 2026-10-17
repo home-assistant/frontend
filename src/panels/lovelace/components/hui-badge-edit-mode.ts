@@ -21,17 +21,14 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
-import {
-  ensureBadgeConfig,
-  type LovelaceBadgeConfig,
-} from "../../../data/lovelace/config/badge";
+import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
 import { haStyle } from "../../../resources/styles";
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
+import type { LovelacePath } from "../editor/lovelace-path";
 import {
-  findLovelaceItems,
-  getLovelaceContainerPath,
-  parseLovelaceCardPath,
+  appendAtPath,
+  getAtPath,
+  getParentPath,
 } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
@@ -39,7 +36,7 @@ import type { Lovelace } from "../types";
 export class HuiBadgeEditMode extends LitElement {
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ type: Array }) public path!: LovelaceCardPath;
+  @property({ attribute: false }) public path!: LovelacePath;
 
   @property({ attribute: "hidden-overlay", type: Boolean })
   public hiddenOverlay = false;
@@ -63,11 +60,10 @@ export class HuiBadgeEditMode extends LitElement {
     subscribe: false,
     storage: "sessionStorage",
   })
-  protected _clipboard?: string | Partial<LovelaceBadgeConfig>;
+  protected _clipboard?: LovelaceBadgeConfig;
 
-  private get _badges() {
-    const containerPath = getLovelaceContainerPath(this.path!);
-    return findLovelaceItems("badges", this.lovelace!.config, containerPath)!;
+  private get _badgeConfig() {
+    return getAtPath<LovelaceBadgeConfig>(this.lovelace.config, this.path)!;
   }
 
   private _touchStarted = false;
@@ -211,33 +207,36 @@ export class HuiBadgeEditMode extends LitElement {
 
   private _cutBadge(): void {
     this._copyBadge();
-    fireEvent(this, "ll-delete-badge", { path: this.path!, silent: true });
+    fireEvent(this, "ll-delete-badge", { path: this.path, silent: true });
   }
 
   private _copyBadge(): void {
-    const { cardIndex } = parseLovelaceCardPath(this.path!);
-    const cardConfig = this._badges[cardIndex];
-    this._clipboard = deepClone(cardConfig);
+    this._clipboard = deepClone(this._badgeConfig);
   }
 
   private _duplicateBadge(): void {
-    const { cardIndex } = parseLovelaceCardPath(this.path!);
-    const containerPath = getLovelaceContainerPath(this.path!);
-    const badgeConfig = ensureBadgeConfig(this._badges![cardIndex]);
+    const badgesPath = getParentPath(this.path);
     showEditBadgeDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: containerPath as [number],
-      badgeConfig,
+      lovelaceConfig: this.lovelace.config,
+      saveBadgeConfig: async (newBadgeConfig) => {
+        const newConfig = appendAtPath(
+          this.lovelace.config,
+          badgesPath,
+          newBadgeConfig
+        );
+        await this.lovelace.saveConfig(newConfig);
+      },
+      badgeConfig: this._badgeConfig,
+      isNew: true,
     });
   }
 
   private _editBadge(): void {
-    fireEvent(this, "ll-edit-badge", { path: this.path! });
+    fireEvent(this, "ll-edit-badge", { path: this.path });
   }
 
   private _deleteBadge(): void {
-    fireEvent(this, "ll-delete-badge", { path: this.path!, silent: false });
+    fireEvent(this, "ll-delete-badge", { path: this.path, silent: false });
   }
 
   static get styles(): CSSResultGroup {

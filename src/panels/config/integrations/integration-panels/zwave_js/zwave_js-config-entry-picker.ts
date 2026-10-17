@@ -131,11 +131,6 @@ class ZWaveJSConfigEntryPicker extends LitElement {
           text-decoration: none;
           color: inherit;
         }
-
-        ha-list {
-          --md-list-item-leading-space: var(--ha-space-4);
-          --md-list-item-trailing-space: var(--ha-space-4);
-        }
       `,
     ];
   }

@@ -249,7 +249,12 @@ export class HaStatisticPicker extends LitElement {
         if (!stateObj) {
           if (!entitiesOnly) {
             const id = meta.statistic_id;
-            const label = getStatisticLabel(this.hass, meta.statistic_id, meta);
+            const label = getStatisticLabel(
+              this.hass.states,
+              this.hass.formatEntityName,
+              meta.statistic_id,
+              meta
+            );
             const type =
               meta.statistic_id.includes(":") &&
               !meta.statistic_id.includes(".")
@@ -291,13 +296,7 @@ export class HaStatisticPicker extends LitElement {
           hass,
           stateObj
         );
-        const searchLabels = computeEntitySearchLabels(
-          stateObj,
-          hass.entities,
-          hass.devices,
-          hass.areas,
-          hass.floors
-        );
+        const searchLabels = computeEntitySearchLabels(stateObj, hass);
 
         const sortingPrefix = `${TYPE_ORDER.indexOf("entity")}`;
         output.push({
@@ -391,13 +390,7 @@ export class HaStatisticPicker extends LitElement {
         this.hass,
         stateObj
       );
-      const searchLabels = computeEntitySearchLabels(
-        stateObj,
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
+      const searchLabels = computeEntitySearchLabels(stateObj, this.hass);
 
       const sortingPrefix = `${TYPE_ORDER.indexOf("entity")}`;
       return {
@@ -428,7 +421,12 @@ export class HaStatisticPicker extends LitElement {
 
       if (type === "external") {
         const sortingPrefix = `${TYPE_ORDER.indexOf("external")}`;
-        const label = getStatisticLabel(this.hass, statisticId, statistic);
+        const label = getStatisticLabel(
+          this.hass.states,
+          this.hass.formatEntityName,
+          statisticId,
+          statistic
+        );
         const domain = statisticId.split(":")[0];
         const domainName = domainToName(this.hass.localize, domain);
 
@@ -446,7 +444,12 @@ export class HaStatisticPicker extends LitElement {
     }
 
     const sortingPrefix = `${TYPE_ORDER.indexOf("external")}`;
-    const label = getStatisticLabel(this.hass, statisticId, statistic);
+    const label = getStatisticLabel(
+      this.hass.states,
+      this.hass.formatEntityName,
+      statisticId,
+      statistic
+    );
 
     return {
       id: statisticId,
@@ -508,7 +511,6 @@ export class HaStatisticPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .allowCustomValue=${this.allowCustomEntity}
         .disabled=${this.disabled}

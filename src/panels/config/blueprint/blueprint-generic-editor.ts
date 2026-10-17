@@ -1,6 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
@@ -16,6 +17,7 @@ import type {
   Blueprints,
 } from "../../../data/blueprint";
 import type { BlueprintScriptConfig } from "../../../data/script";
+import { resolveSelectorContext } from "../../../data/selector";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 
@@ -42,6 +44,33 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
     }
     return this._blueprints[this._config.use_blueprint.path];
   }
+
+  // Values of all inputs, including those inside sections, falling back to
+  // their defaults, so a selector context can name any other input
+  private _inputValues = memoizeOne(
+    (
+      input: Record<string, unknown> | undefined,
+      metadataInput:
+        | Record<string, BlueprintInput | BlueprintInputSection | null>
+        | undefined
+    ): Record<string, unknown> => {
+      const values: Record<string, unknown> = {};
+      const addInputs = (inputs: Record<string, BlueprintInput | null>) => {
+        for (const [key, value] of Object.entries(inputs)) {
+          values[key] =
+            input && key in input ? input[key] : (value?.default ?? undefined);
+        }
+      };
+      for (const [key, value] of Object.entries(metadataInput ?? {})) {
+        if (value && "input" in value) {
+          addInputs(value.input ?? {});
+        } else {
+          addInputs({ [key]: value });
+        }
+      }
+      return values;
+    }
+  );
 
   protected abstract get _config():
     BlueprintAutomationConfig | BlueprintScriptConfig;
@@ -192,6 +221,21 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         narrow
         .hass=${this.hass}
         .selector=${selector}
+        .context=${
+          value?.selector
+            ? resolveSelectorContext(
+                value.selector,
+                this._inputValues(
+                  // The input holds the values of the inputs by key
+                  this._config.use_blueprint.input as
+                    Record<string, unknown> | undefined,
+                  this._blueprint && "metadata" in this._blueprint
+                    ? this._blueprint.metadata.input
+                    : undefined
+                )
+              )
+            : undefined
+        }
         .key=${key}
         .disabled=${this.disabled}
         .required=${value?.default === undefined}

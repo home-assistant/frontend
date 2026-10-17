@@ -45,7 +45,10 @@ import {
   findAvailableLanguage,
   getTranslation,
 } from "../util/common-translation";
-import { documentationUrl } from "../util/documentation-url";
+import {
+  documentationUrl,
+  SECURE_CONNECTION_DOCUMENTATION_PATH,
+} from "../util/documentation-url";
 import "./ha-alert";
 import "./ha-markdown";
 import "./input/ha-input";
@@ -66,6 +69,14 @@ export const greetingTranslationLanguage = (
   interfaceLanguage: string | undefined
 ): string | undefined => {
   if (!pipelineLanguage || pipelineLanguage === interfaceLanguage) {
+    return undefined;
+  }
+  // A bare pipeline language ("zh") covers the interface's variant of it
+  // ("zh-Hans"), which a lookup of the bare language may not pick
+  if (
+    !pipelineLanguage.includes("-") &&
+    interfaceLanguage?.startsWith(`${pipelineLanguage}-`)
+  ) {
     return undefined;
   }
   const language = findAvailableLanguage(pipelineLanguage);
@@ -517,31 +528,18 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
     this._conversation = [...this._conversation!, message];
   }
 
-  private async _showNotSupportedMessage() {
+  private _showNotSupportedMessage() {
+    const documentationLink = `[${this._localize(
+      "ui.components.secure_connection_required.documentation_link"
+    )}](${documentationUrl(this._config, SECURE_CONNECTION_DOCUMENTATION_PATH)})`;
     this._addMessage({
       who: "hass",
-      text:
-        // New lines matter for messages
-        // prettier-ignore
-        html`${this._localize(
-          "ui.dialogs.voice_command.not_supported_microphone_browser"
-        )}
-
-        ${this._localize(
-          "ui.dialogs.voice_command.not_supported_microphone_documentation",
-          {
-            documentation_link: html`<a
-                target="_blank"
-                rel="noopener noreferrer"
-                href=${documentationUrl(
-                  this._config,
-                  "/docs/configuration/securing/#remote-access"
-                )}
-              >${this._localize(
-                  "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
-                )}</a>`,
-          }
-          )}`,
+      text: `${this._localize(
+        "ui.components.secure_connection_required.microphone"
+      )}\n\n${this._localize(
+        "ui.components.secure_connection_required.learn_more",
+        { documentation_link: documentationLink }
+      )}`,
       thinking: "",
       tool_calls: {},
     });
@@ -561,13 +559,31 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
     }
     this._stt_binary_handler_id = undefined;
     this._audioBuffer = [];
+
+    const microphoneError = await this._audioRecorder.start();
+
+    if (microphoneError) {
+      this._audioBuffer = undefined;
+      this._processing = false;
+      this._addMessage({
+        who: "hass",
+        text: this._localize(
+          `ui.dialogs.voice_command.microphone_${microphoneError}`
+        ),
+        thinking: "",
+        tool_calls: {},
+        error: true,
+      });
+
+      return;
+    }
+
     const userMessage: AssistMessage = {
       who: "user",
       text: "…",
       thinking: "",
       tool_calls: {},
     };
-    await this._audioRecorder.start();
 
     this._addMessage(userMessage);
 
@@ -580,7 +596,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
           if (event.type === "run-start") {
             this._stt_binary_handler_id =
               event.data.runner_data.stt_binary_handler_id;
-            this._audio = new Audio(event.data.tts_output!.url);
+            this._audio = new Audio(
+              this._connection.hassUrl(event.data.tts_output!.url)
+            );
             this._audio.play();
             this._audio.addEventListener("ended", () => {
               this._unloadAudio();
@@ -594,7 +612,11 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
             );
             this._audio.addEventListener("error", () => {
               this._unloadAudio();
-              showAlertDialog(this, { title: "Error playing audio." });
+              showAlertDialog(this, {
+                title: this._localize(
+                  "ui.dialogs.voice_command.error_playing_audio"
+                ),
+              });
             });
           }
 
@@ -647,7 +669,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
       );
     } catch (err: any) {
       await showAlertDialog(this, {
-        title: "Error starting pipeline",
+        title: this._localize(
+          "ui.dialogs.voice_command.error_starting_pipeline"
+        ),
         text: err.message || err,
       });
       this._stopListening();

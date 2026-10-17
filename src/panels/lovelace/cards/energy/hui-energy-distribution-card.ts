@@ -11,28 +11,42 @@ import {
   mdiTransmissionTower,
   mdiWater,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, svg } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../../common/decorators/consume";
+import { preserveUnchangedEntityStatesRecord } from "../../../../common/decorators/consume-context-entry";
+import { transform } from "../../../../common/decorators/transform";
 import { batteryLevelIconPath } from "../../../../common/entity/battery_icon";
+import { shallowEqual } from "../../../../common/util/shallow-equal";
 import "../../../../components/ha-button";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
+import {
+  configContext,
+  entitiesContext,
+  internationalizationContext,
+  reducedMotionContext,
+  statesContext,
+  uiContext,
+} from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeConsumptionData,
   energySourcesByType,
   formatConsumptionShort,
-  getEnergyDataCollection,
   getSummedData,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
+import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import { calculateStatisticsSumGrowth } from "../../../../data/recorder";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../../../types";
-import { hasConfigChanged } from "../../common/has-changed";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+  HomeAssistantUI,
+} from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -50,16 +64,11 @@ const periodIncludesNow = (data: EnergyData): boolean =>
   !data.end || data.end.getTime() >= Date.now();
 
 @customElement("hui-energy-distribution-card")
-class HuiEnergyDistrubutionCard
-  extends SubscribeMixin(LitElement)
-  implements LovelaceCard
-{
+class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
     await import("../../editor/config-elements/hui-energy-graph-card-editor");
     return document.createElement("hui-energy-graph-card-editor");
   }
-
-  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyDistributionCardConfig;
 
@@ -75,25 +84,101 @@ class HuiEnergyDistrubutionCard
 
   @state() private _data?: EnergyData;
 
-  @state() private _animate = true;
+  @state()
+  @consume({ context: reducedMotionContext, subscribe: true })
+  private _reducedMotion = false;
 
-  protected hassSubscribeRequiredHostProps = ["_config"];
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, string>({
+    transformer: ({ config }) => config?.location_name,
+  })
+  private _locationName?: string;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean>({
+    transformer: ({ panels }) => Boolean(panels?.energy),
+  })
+  private _hasEnergyPanel?: boolean;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, Record<string, HassEntity | undefined>>({
+    transformer: function (this: HuiEnergyDistrubutionCard, states) {
+      const next: Record<string, HassEntity | undefined> = {};
+      const data = this._data;
+      if (data?.co2SignalEntity) {
+        next[data.co2SignalEntity] = states?.[data.co2SignalEntity];
+      }
+      if (data && periodIncludesNow(data)) {
+        for (const source of energySourcesByType(data.prefs).battery ?? []) {
+          if (source.stat_soc) {
+            next[source.stat_soc] = states?.[source.stat_soc];
+          }
+        }
+      }
+      return preserveUnchangedEntityStatesRecord(this._entityStates, next);
+    },
+    watch: ["_data"],
+  })
+  private _entityStates?: Record<string, HassEntity | undefined>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, Record<string, string | undefined>>({
+    transformer: function (this: HuiEnergyDistrubutionCard, states) {
+      const next: Record<string, string | undefined> = {};
+      if (this._data) {
+        for (const source of energySourcesByType(this._data.prefs).gas ?? []) {
+          next[source.stat_energy_from] =
+            states?.[source.stat_energy_from]?.attributes.unit_of_measurement;
+        }
+      }
+      return shallowEqual(this._gasUnits, next) ? this._gasUnits : next;
+    },
+    watch: ["_data"],
+  })
+  private _gasUnits?: Record<string, string | undefined>;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  @transform<HomeAssistant["entities"], Record<string, number | undefined>>({
+    transformer: function (this: HuiEnergyDistrubutionCard, entities) {
+      const next: Record<string, number | undefined> = {};
+      if (this._data) {
+        for (const source of energySourcesByType(this._data.prefs).gas ?? []) {
+          next[source.stat_energy_from] =
+            entities?.[source.stat_energy_from]?.display_precision;
+        }
+      }
+      return shallowEqual(this._gasDisplayPrecisions, next)
+        ? this._gasDisplayPrecisions
+        : next;
+    },
+    watch: ["_data"],
+  })
+  private _gasDisplayPrecisions?: Record<string, number | undefined>;
+
+  constructor() {
+    super();
+    new EnergyCollectionController(this, {
+      config: () => this._config,
+      onData: (data) => {
+        this._data = data;
+      },
+    });
+  }
 
   public setConfig(config: EnergyDistributionCardConfig): void {
     if (config.collection_key) {
       validateEnergyCollectionKey(config.collection_key);
     }
     this._config = config;
-  }
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => {
-        this._data = data;
-      }),
-    ];
   }
 
   private get _energyDashboardHref(): string {
@@ -111,70 +196,13 @@ class HuiEnergyDistrubutionCard
     return 3;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (
-      hasConfigChanged(this, changedProps) ||
-      changedProps.size > 1 ||
-      !changedProps.has("hass")
-    ) {
-      return true;
-    }
-    const oldHass = changedProps.get("hass");
-    if (!oldHass) {
-      return true;
-    }
-    const oldStates = oldHass.states;
-    if (
-      this._data?.co2SignalEntity &&
-      this.hass.states[this._data.co2SignalEntity] !==
-        oldStates[this._data.co2SignalEntity]
-    ) {
-      return true;
-    }
-    if (
-      this._data &&
-      energySourcesByType(this._data.prefs).gas?.some((source) => {
-        const statId = source.stat_energy_from;
-        return (
-          this.hass.entities[statId]?.display_precision !==
-            oldHass.entities[statId]?.display_precision ||
-          this.hass.states[statId]?.attributes.unit_of_measurement !==
-            oldHass.states[statId]?.attributes.unit_of_measurement
-        );
-      })
-    ) {
-      return true;
-    }
-    if (this._data && periodIncludesNow(this._data)) {
-      const batteries = energySourcesByType(this._data.prefs).battery;
-      if (
-        batteries?.some(
-          (source) =>
-            source.stat_soc &&
-            this.hass.states[source.stat_soc] !== oldStates[source.stat_soc]
-        )
-      ) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  protected willUpdate() {
-    if (!this.hasUpdated && matchMedia("(prefers-reduced-motion)").matches) {
-      this._animate = false;
-    }
-  }
-
   protected render() {
     if (!this._config) {
       return nothing;
     }
 
     if (!this._data) {
-      return html`${this.hass.localize(
-        "ui.panel.lovelace.cards.energy.loading"
-      )}`;
+      return html`${this._i18n.localize("ui.panel.lovelace.cards.energy.loading")}`;
     }
 
     const prefs = this._data.prefs;
@@ -190,14 +218,9 @@ class HuiEnergyDistrubutionCard
     const gasUnit = this._data.gasUnit;
     const gasDisplayPrecisions = types.gas
       ?.filter(
-        (source) =>
-          this.hass.states[source.stat_energy_from]?.attributes
-            .unit_of_measurement === gasUnit
+        (source) => this._gasUnits?.[source.stat_energy_from] === gasUnit
       )
-      .map(
-        (source) =>
-          this.hass.entities[source.stat_energy_from]?.display_precision
-      )
+      .map((source) => this._gasDisplayPrecisions?.[source.stat_energy_from])
       .filter((precision): precision is number => precision !== undefined);
     const gasDisplayPrecision = gasDisplayPrecisions?.length
       ? Math.max(...gasDisplayPrecisions)
@@ -253,7 +276,7 @@ class HuiEnergyDistrubutionCard
         const socBatteries = types
           .battery!.map((source) => ({
             soc: source.stat_soc
-              ? Number(this.hass.states[source.stat_soc]?.state)
+              ? Number(this._entityStates?.[source.stat_soc]?.state)
               : NaN,
             capacity: source.capacity,
           }))
@@ -339,7 +362,7 @@ class HuiEnergyDistrubutionCard
         this._data.fossilEnergyConsumption
       ).reduce((sum, a) => sum + a, 0);
 
-      const co2State = this.hass.states[this._data.co2SignalEntity];
+      const co2State = this._entityStates?.[this._data.co2SignalEntity];
 
       if (co2State?.attributes.country_code) {
         electricityMapUrl += `/zone/${co2State.attributes.country_code}`;
@@ -391,7 +414,11 @@ class HuiEnergyDistrubutionCard
       totalBatteryIn || 0,
       totalBatteryOut || 0
     );
-    const targetEnergyUnit = formatConsumptionShort(this.hass, maxEnergy, "kWh")
+    const targetEnergyUnit = formatConsumptionShort(
+      this._i18n.locale,
+      maxEnergy,
+      "kWh"
+    )
       .split(" ")
       .pop();
 
@@ -409,7 +436,7 @@ class HuiEnergyDistrubutionCard
                       ? html`<div class="spacer"></div>`
                       : html`<div class="circle-container low-carbon">
                           <span class="label"
-                            >${this.hass.localize(
+                            >${this._i18n.localize(
                               "ui.panel.lovelace.cards.energy.energy_distribution.low_carbon"
                             )}</span
                           >
@@ -421,7 +448,7 @@ class HuiEnergyDistrubutionCard
                           >
                             <ha-svg-icon .path=${mdiLeaf}></ha-svg-icon>
                             ${formatConsumptionShort(
-                              this.hass,
+                              this._i18n.locale,
                               lowCarbonEnergy,
                               "kWh",
                               targetEnergyUnit
@@ -436,14 +463,14 @@ class HuiEnergyDistrubutionCard
                     hasSolarProduction
                       ? html`<div class="circle-container solar">
                           <span class="label"
-                            >${this.hass.localize(
+                            >${this._i18n.localize(
                               "ui.panel.lovelace.cards.energy.energy_distribution.solar"
                             )}</span
                           >
                           <div class="circle">
                             <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
                             ${formatConsumptionShort(
-                              this.hass,
+                              this._i18n.locale,
                               totalSolarProduction,
                               "kWh",
                               targetEnergyUnit
@@ -458,14 +485,14 @@ class HuiEnergyDistrubutionCard
                     hasGas
                       ? html`<div class="circle-container gas">
                           <span class="label"
-                            >${this.hass.localize(
+                            >${this._i18n.localize(
                               "ui.panel.lovelace.cards.energy.energy_distribution.gas"
                             )}</span
                           >
                           <div class="circle">
                             <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
                             ${formatConsumptionShort(
-                              this.hass,
+                              this._i18n.locale,
                               gasUsage,
                               this._data.gasUnit,
                               undefined,
@@ -475,7 +502,7 @@ class HuiEnergyDistrubutionCard
                           <svg width="80" height="30">
                             <path d="M40 0 v30" id="gas" />
                             ${
-                              gasUsage && this._animate
+                              gasUsage && !this._reducedMotion
                                 ? svg`<circle
                     r="1"
                     class="gas"
@@ -496,14 +523,14 @@ class HuiEnergyDistrubutionCard
                       : hasWater
                         ? html`<div class="circle-container water">
                             <span class="label"
-                              >${this.hass.localize(
+                              >${this._i18n.localize(
                                 "ui.panel.lovelace.cards.energy.energy_distribution.water"
                               )}</span
                             >
                             <div class="circle">
                               <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
                               ${formatConsumptionShort(
-                                this.hass,
+                                this._i18n.locale,
                                 waterUsage,
                                 this._data.waterUnit
                               )}
@@ -511,7 +538,7 @@ class HuiEnergyDistrubutionCard
                             <svg width="80" height="30">
                               <path d="M40 0 v30" id="water" />
                               ${
-                                waterUsage && this._animate
+                                waterUsage && !this._reducedMotion
                                   ? svg`<circle
                 r="1"
                 class="water"
@@ -548,7 +575,7 @@ class HuiEnergyDistrubutionCard
                                 .path=${mdiArrowLeft}
                               ></ha-svg-icon
                               >${formatConsumptionShort(
-                                this.hass,
+                                this._i18n.locale,
                                 returnedToGrid,
                                 "kWh",
                                 targetEnergyUnit
@@ -565,7 +592,7 @@ class HuiEnergyDistrubutionCard
                               ></ha-svg-icon>`
                             : ""
                         }${formatConsumptionShort(
-                          this.hass,
+                          this._i18n.locale,
                           totalFromGrid,
                           "kWh",
                           targetEnergyUnit
@@ -573,7 +600,7 @@ class HuiEnergyDistrubutionCard
                       </span>
                     </div>
                     <span class="label"
-                      >${this.hass.localize(
+                      >${this._i18n.localize(
                         "ui.panel.lovelace.cards.energy.energy_distribution.grid"
                       )}</span
                     >
@@ -590,7 +617,7 @@ class HuiEnergyDistrubutionCard
               >
                 <ha-svg-icon .path=${mdiHome}></ha-svg-icon>
                 ${formatConsumptionShort(
-                  this.hass,
+                  this._i18n.locale,
                   totalHomeConsumption,
                   "kWh",
                   targetEnergyUnit
@@ -677,9 +704,7 @@ class HuiEnergyDistrubutionCard
               ${
                 hasGas && hasWater
                   ? ""
-                  : html`<span class="label"
-                      >${this.hass.config.location_name}</span
-                    >`
+                  : html`<span class="label">${this._locationName}</span>`
               }
             </div>
           </div>
@@ -700,7 +725,7 @@ class HuiEnergyDistrubutionCard
                                   ? html`<span
                                       >${formatNumber(
                                         averageBatterySoc,
-                                        this.hass.locale,
+                                        this._i18n.locale,
                                         {
                                           maximumFractionDigits: 0,
                                         }
@@ -716,7 +741,7 @@ class HuiEnergyDistrubutionCard
                                 .path=${mdiArrowDown}
                               ></ha-svg-icon
                               >${formatConsumptionShort(
-                                this.hass,
+                                this._i18n.locale,
                                 totalBatteryIn,
                                 "kWh",
                                 targetEnergyUnit
@@ -728,7 +753,7 @@ class HuiEnergyDistrubutionCard
                                 .path=${mdiArrowUp}
                               ></ha-svg-icon
                               >${formatConsumptionShort(
-                                this.hass,
+                                this._i18n.locale,
                                 totalBatteryOut,
                                 "kWh",
                                 targetEnergyUnit
@@ -736,7 +761,7 @@ class HuiEnergyDistrubutionCard
                             </span>
                           </div>
                           <span class="label"
-                            >${this.hass.localize(
+                            >${this._i18n.localize(
                               "ui.panel.lovelace.cards.energy.energy_distribution.battery"
                             )}</span
                           >
@@ -749,7 +774,7 @@ class HuiEnergyDistrubutionCard
                           <svg width="80" height="30">
                             <path d="M40 30 v-30" id="water" />
                             ${
-                              waterUsage && this._animate
+                              waterUsage && !this._reducedMotion
                                 ? svg`<circle
                     r="1"
                     class="water"
@@ -769,13 +794,13 @@ class HuiEnergyDistrubutionCard
                           <div class="circle">
                             <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
                             ${formatConsumptionShort(
-                              this.hass,
+                              this._i18n.locale,
                               waterUsage,
                               this._data.waterUnit
                             )}
                           </div>
                           <span class="label"
-                            >${this.hass.localize(
+                            >${this._i18n.localize(
                               "ui.panel.lovelace.cards.energy.energy_distribution.water"
                             )}</span
                           >
@@ -864,7 +889,7 @@ class HuiEnergyDistrubutionCard
                   : nothing
               }
               ${
-                hasFlow(solarToGrid) && this._animate
+                hasFlow(solarToGrid) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="return"
@@ -881,7 +906,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                hasFlow(solarConsumption) && this._animate
+                hasFlow(solarConsumption) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="solar"
@@ -898,7 +923,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                hasFlow(gridConsumption) && this._animate
+                hasFlow(gridConsumption) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="grid"
@@ -915,7 +940,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                hasFlow(solarToBattery) && this._animate
+                hasFlow(solarToBattery) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="battery-solar"
@@ -932,7 +957,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                hasFlow(batteryConsumption) && this._animate
+                hasFlow(batteryConsumption) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="battery-house"
@@ -949,7 +974,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                hasFlow(batteryFromGrid) && this._animate
+                hasFlow(batteryFromGrid) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="battery-from-grid"
@@ -967,7 +992,7 @@ class HuiEnergyDistrubutionCard
                   : ""
               }
               ${
-                hasFlow(batteryToGrid) && this._animate
+                hasFlow(batteryToGrid) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="battery-to-grid"
@@ -987,7 +1012,7 @@ class HuiEnergyDistrubutionCard
           </div>
         </div>
         ${
-          this._config.link_dashboard && this.hass.panels.energy
+          this._config.link_dashboard && this._hasEnergyPanel
             ? html`
                 <div class="card-actions">
                   <ha-button
@@ -995,7 +1020,7 @@ class HuiEnergyDistrubutionCard
                     size="s"
                     href=${this._energyDashboardHref}
                   >
-                    ${this.hass.localize(
+                    ${this._i18n.localize(
                       "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
                     )}
                   </ha-button>

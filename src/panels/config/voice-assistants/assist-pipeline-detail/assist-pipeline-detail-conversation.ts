@@ -150,7 +150,7 @@ export class AssistPipelineDetailConversation extends LitElement {
     }
     p {
       color: var(--secondary-text-color);
-      font-size: var(--mdc-typography-body2-font-size, var(--ha-font-size-s));
+      font-size: var(--ha-font-size-s);
       margin-top: 0;
       margin-bottom: 0;
     }

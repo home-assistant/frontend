@@ -29,9 +29,8 @@ import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
@@ -81,7 +80,6 @@ import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   findBatteryChargingEntity,
   findBatteryEntity,
-  updateEntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
 import type { IntegrationManifest } from "../../../data/integration";
 import { domainToName } from "../../../data/integration";
@@ -268,8 +266,8 @@ export class HaConfigDevicePage extends LitElement {
   private _getEntitiesSorted = (entities: HassEntity[]) =>
     entities.sort((ent1, ent2) =>
       stringCompare(
-        ent1.attributes.friendly_name || `zzz${ent1.entity_id}`,
-        ent2.attributes.friendly_name || `zzz${ent2.entity_id}`,
+        this.hass.formatEntityName(ent1) || `zzz${ent1.entity_id}`,
+        this.hass.formatEntityName(ent2) || `zzz${ent2.entity_id}`,
         this.hass.locale.language
       )
     );
@@ -419,11 +417,7 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
-    const deviceName = computeDeviceNameDisplay(
-      device,
-      this.hass.localize,
-      this.hass.states
-    );
+    const deviceName = computeDeviceNameDisplay(device, this.hass.localize);
     const integrations = this._integrations(
       device,
       this.entries,
@@ -603,9 +597,7 @@ export class HaConfigDevicePage extends LitElement {
                                         ).automation.map((automation) =>
                                           automation
                                             ? html`<ha-list-item-button
-                                                .headline=${computeStateName(
-                                                  automation
-                                                )}
+                                                .headline=${this.hass.formatEntityName(automation)}
                                                 .href=${
                                                   automation.attributes.id
                                                     ? `/config/automation/edit/${encodeURIComponent(automation.attributes.id)}`
@@ -658,7 +650,7 @@ export class HaConfigDevicePage extends LitElement {
                                             : `/config/script/show/${script.entity_id}`;
                                           return html`
                                             <ha-list-item-button
-                                              .headline=${computeStateName(script)}
+                                              .headline=${this.hass.formatEntityName(script)}
                                               .href=${url}
                                             >
                                               <ha-icon-next
@@ -706,9 +698,7 @@ export class HaConfigDevicePage extends LitElement {
                                           return scene.attributes.id
                                             ? html`
                                                 <ha-list-item-button
-                                                  .headline=${computeStateName(
-                                                    scene
-                                                  )}
+                                                  .headline=${this.hass.formatEntityName(scene)}
                                                   .href=${`/config/scene/edit/${scene.attributes.id}`}
                                                 >
                                                   <ha-icon-next
@@ -719,9 +709,7 @@ export class HaConfigDevicePage extends LitElement {
                                             : html`
                                                 <ha-list-item-base
                                                   id=${sceneId}
-                                                  .headline=${computeStateName(
-                                                    scene
-                                                  )}
+                                                  .headline=${this.hass.formatEntityName(scene)}
                                                 >
                                                   <ha-icon-next
                                                     slot="end"
@@ -1088,7 +1076,6 @@ export class HaConfigDevicePage extends LitElement {
                           : nothing
                       }
                       <ha-battery-icon
-                        .hass=${this.hass}
                         .batteryStateObj=${battery}
                         .batteryChargingStateObj=${batteryChargingState}
                       ></ha-battery-icon>
@@ -1479,8 +1466,8 @@ export class HaConfigDevicePage extends LitElement {
   ) {
     const device = devices[this.deviceId];
     return (
-      computeEntityEntryName(entity, devices) ||
-      computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
+      computeEntityEntryName(entity) ||
+      computeDeviceNameDisplay(device, this.hass.localize)
     );
   }
 
@@ -1524,6 +1511,22 @@ export class HaConfigDevicePage extends LitElement {
     deviceInfo: TemplateResult[]
   ) {
     const domains = integrations.map((int) => int.domain);
+    if (
+      this.hass.user?.is_admin &&
+      this.manifests.some(
+        (manifest) =>
+          domains.includes(manifest.domain) &&
+          manifest.dependencies?.includes("lorawan")
+      )
+    ) {
+      import("./device-detail/integration-elements/lorawan/ha-device-info-lorawan");
+      deviceInfo.push(
+        html`<ha-device-info-lorawan
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-lorawan>`
+      );
+    }
     if (domains.includes("zha")) {
       import("./device-detail/integration-elements/zha/ha-device-info-zha");
       deviceInfo.push(html`
@@ -1579,8 +1582,6 @@ export class HaConfigDevicePage extends LitElement {
     showDeviceRegistryDetailDialog(this, {
       device,
       updateEntry: async (updates) => {
-        const oldDeviceName = device.name_by_user || device.name;
-        const newDeviceName = updates.name_by_user;
         const disabled =
           updates.disabled_by === "user" && device.disabled_by !== "user";
 
@@ -1656,47 +1657,7 @@ export class HaConfigDevicePage extends LitElement {
               getWsErrorMessage(err) ??
               this.hass.localize("ui.common.unknown_error"),
           });
-          return;
         }
-
-        if (
-          !oldDeviceName ||
-          !newDeviceName ||
-          oldDeviceName === newDeviceName
-        ) {
-          return;
-        }
-        const entities = this._entities(
-          this.deviceId,
-          this._entityReg,
-          this.hass.devices
-        );
-
-        const updateProms = entities.map((entity) => {
-          const name = entity.name || entity.stateName;
-          let newName: string | null | undefined;
-
-          if (entity.has_entity_name && !entity.name) {
-            return undefined;
-          }
-
-          if (
-            entity.has_entity_name &&
-            (entity.name === oldDeviceName || entity.name === newDeviceName)
-          ) {
-            // Use the device name when the entity name matches it
-            newName = "";
-          } else if (name?.includes(oldDeviceName)) {
-            newName = name.replace(oldDeviceName, newDeviceName);
-          } else {
-            return undefined;
-          }
-
-          return updateEntityRegistryEntry(this.hass, entity.entity_id, {
-            name: newName,
-          });
-        });
-        await Promise.all(updateProms);
       },
     });
   };

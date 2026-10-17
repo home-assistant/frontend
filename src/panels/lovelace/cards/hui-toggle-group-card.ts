@@ -124,6 +124,7 @@ export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
             slot="icon"
             icon="mdi:power"
             .interactive=${true}
+            .accessibleLabel=${primary}
             @action=${this._handleTap}
           ></ha-tile-icon>
           <ha-tile-info

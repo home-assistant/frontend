@@ -37,6 +37,8 @@ export class HaAuthorize extends provideLiteI18nMixin(
 
   @property({ attribute: false }) public codeChallengeMethod?: string;
 
+  @property({ attribute: false }) public responseType?: string;
+
   @property({ attribute: false }) public translationFragment = "page-authorize";
 
   @state() private _authProvider?: AuthProvider;
@@ -58,15 +60,10 @@ export class HaAuthorize extends provideLiteI18nMixin(
     if (query.redirect_uri) {
       this.redirectUri = query.redirect_uri;
     }
-    if (query.state) {
-      this.oauth2State = query.state;
-    }
-    if (query.code_challenge) {
-      this.codeChallenge = query.code_challenge;
-    }
-    if (query.code_challenge_method) {
-      this.codeChallengeMethod = query.code_challenge_method;
-    }
+    this.oauth2State = query.state;
+    this.codeChallenge = query.code_challenge;
+    this.codeChallengeMethod = query.code_challenge_method;
+    this.responseType = query.response_type;
   }
 
   protected render() {
@@ -197,6 +194,7 @@ export class HaAuthorize extends provideLiteI18nMixin(
                   .oauth2State=${this.oauth2State}
                   .codeChallenge=${this.codeChallenge}
                   .codeChallengeMethod=${this.codeChallengeMethod}
+                  .responseType=${this.responseType}
                   .authProvider=${this._authProvider}
                   .initStoreToken=${this._preselectStoreToken}
                 ></ha-auth-flow>

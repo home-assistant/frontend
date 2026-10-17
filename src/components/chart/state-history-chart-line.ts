@@ -106,7 +106,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _hiddenStats = new Set<string>();
 
-  @state() private _yWidth = MIN_Y_AXIS_WIDTH;
+  @state() private _yWidth = 0;
 
   @state() private _visualMap?: VisualMapComponentOption[];
 
@@ -117,7 +117,6 @@ export class StateHistoryChartLine extends LitElement {
   protected render() {
     return html`
       <ha-chart-base
-        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
         .height=${this.height}

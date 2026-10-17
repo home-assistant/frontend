@@ -1,4 +1,3 @@
-import type { TemplateResult } from "lit";
 import type {
   ConversationChatLogAssistantDelta,
   ConversationChatLogToolResultDelta,
@@ -8,7 +7,7 @@ import type { ChatLogToolResult } from "./chat_log";
 
 export interface AssistMessage {
   who: string;
-  text: string | TemplateResult;
+  text: string;
   thinking: string;
   thinking_expanded?: boolean;
   tool_calls: Record<
@@ -86,7 +85,7 @@ export const createAssistMessageProcessor = ({
     Object.keys(message.tool_calls).length === 0;
 
   const finalizeStreamingText = () => {
-    if (streamingMarker && typeof hassMessage.text === "string") {
+    if (streamingMarker) {
       hassMessage.text = stripStreamingEllipsis(hassMessage.text);
     }
     streamingMarker = false;
@@ -117,8 +116,7 @@ export const createAssistMessageProcessor = ({
   // it into the streamed text instead of replacing it.
   const applyFinalResponse = (response: string) => {
     finalizeStreamingText();
-    const streamed =
-      typeof hassMessage.text === "string" ? hassMessage.text : "";
+    const streamed = hassMessage.text;
     if (streamed === "") {
       hassMessage.text = response;
     } else if (latestSegment.trim() !== response.trim()) {
@@ -148,7 +146,7 @@ export const createAssistMessageProcessor = ({
       }
 
       if (isAssistantDelta(delta)) {
-        if (delta.content && typeof hassMessage.text === "string") {
+        if (delta.content) {
           let text = stripStreamingEllipsis(hassMessage.text);
           if (pendingMessageBoundary) {
             text = joinWithBreak(text, delta.content);

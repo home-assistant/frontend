@@ -132,7 +132,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
   @state()
   @consume({ context: labelsContext, subscribe: true })
-  _labelRegistry!: LabelRegistryEntry[];
+  _labelRegistry?: LabelRegistryEntry[];
 
   private _loadedConfigEntryId?: string;
 
@@ -166,6 +166,9 @@ export class HaTargetPickerItemRow extends LitElement {
   }
 
   protected render() {
+    if (this.type === "label" && !this._labelRegistry) {
+      return nothing;
+    }
     const { name, context, iconPath, fallbackIconPath, stateObject, notFound } =
       this._itemData(this.type, this.itemId);
 
@@ -659,11 +662,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
       return {
         name: device
-          ? computeDeviceNameDisplay(
-              device,
-              this.hass.localize,
-              this.hass.states
-            )
+          ? computeDeviceNameDisplay(device, this.hass.localize)
           : item,
         context,
         fallbackIconPath: mdiDevices,
@@ -684,7 +683,7 @@ export class HaTargetPickerItemRow extends LitElement {
     }
 
     // type label
-    const label: LabelRegistryEntry | undefined = this._labelRegistry.find(
+    const label: LabelRegistryEntry | undefined = this._labelRegistry!.find(
       (lab) => lab.label_id === item
     );
     return {
@@ -802,14 +801,6 @@ export class HaTargetPickerItemRow extends LitElement {
 
   static styles = [
     css`
-      :host {
-        --md-list-item-top-space: 0;
-        --md-list-item-bottom-space: 0;
-        --md-list-item-leading-space: var(--ha-space-2);
-        --md-list-item-trailing-space: var(--ha-space-2);
-        --md-list-item-two-line-container-height: 56px;
-      }
-
       .error {
         background: var(--ha-color-fill-warning-quiet-resting);
       }

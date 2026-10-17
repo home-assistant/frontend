@@ -2,7 +2,14 @@ import { describe, expect, it } from "vitest";
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { DataTableRowData } from "../../../src/components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
-import { filterRepositories } from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
+import {
+  browseLinkFromUrl,
+  browseUrl,
+  filterRepositories,
+  filtersOfTab,
+  statusesOfTab,
+  statusFilterOfTab,
+} from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
 
 const localize = ((key: string) => key) as LocalizeFunc;
 
@@ -57,6 +64,23 @@ describe("filterRepositories", () => {
     ).toEqual(expected);
   });
 
+  it.each([
+    [{ source: ["custom"] }, ["Linked"]],
+    [{ source: ["catalog"] }, ["Plain"]],
+    [{ source: ["catalog", "custom"] }, ["Linked", "Plain"]],
+    [{ source: ["custom"], type: ["theme"] }, []],
+  ])("keeps the source that matches %j", (activeFilters, expected) => {
+    expect(
+      names(
+        filterRepositories(
+          [repository("Plain"), repository("Linked", { custom: true })],
+          localize,
+          activeFilters
+        )
+      )
+    ).toEqual(expected);
+  });
+
   it("puts installed first, then new, then the most starred, then by name", () => {
     const sorted = filterRepositories(
       [
@@ -93,9 +117,15 @@ describe("filterRepositories", () => {
     ]);
   });
 
-  it("adds the translated status and category to group by", () => {
+  it("adds the translated status, category and source to group by", () => {
     const [row] = filterRepositories(
-      [repository("Downloaded", { status: "installed", category: "theme" })],
+      [
+        repository("Downloaded", {
+          status: "installed",
+          category: "theme",
+          custom: true,
+        }),
+      ],
       localize
     );
 
@@ -104,6 +134,9 @@ describe("filterRepositories", () => {
     );
     expect(row.translated_category).toBe(
       "ui.panel.marketplace.common.type.theme"
+    );
+    expect(row.translated_source).toBe(
+      "ui.panel.marketplace.repository_source.custom"
     );
   });
 
@@ -122,5 +155,84 @@ describe("filterRepositories", () => {
     filterRepositories(unsorted, localize);
 
     expect(names(unsorted)).toEqual(["Beta", "Alpha"]);
+  });
+});
+
+describe("browseUrl", () => {
+  it("links to what browseLinkFromUrl and the table read back", () => {
+    const url = new URL(
+      browseUrl({
+        search: "mushroom card",
+        sorting: { column: "stars", direction: "desc" },
+        filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+      }),
+      "http://localhost"
+    );
+
+    expect(url.pathname).toBe("/marketplace/browse");
+    expect(url.searchParams.get("sort")).toBe("stars");
+    expect(url.searchParams.get("direction")).toBe("desc");
+    expect(browseLinkFromUrl(url.search)).toEqual({
+      search: "mushroom card",
+      filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+    });
+  });
+
+  it("leaves the direction out when sorting ascending", () => {
+    expect(
+      browseUrl({ sorting: { column: "name", direction: "asc" }, filters: {} })
+    ).toBe("/marketplace/browse?sort=name");
+  });
+});
+
+describe("browseLinkFromUrl", () => {
+  it("replaces the search and filters for a link that only sorts", () => {
+    expect(browseLinkFromUrl("?sort=stars&direction=desc")).toEqual({
+      search: "",
+      filters: { status: undefined, type: undefined, source: undefined },
+    });
+  });
+
+  it("keeps what was picked for a link that says nothing about browsing", () => {
+    expect(
+      browseLinkFromUrl("?owner=hacs&repository=integration")
+    ).toBeUndefined();
+  });
+});
+
+describe("filtersOfTab", () => {
+  it("only offers statuses something installed can have on the installed tab", () => {
+    expect(statusesOfTab("installed")).toEqual([
+      "pending-restart",
+      "pending-upgrade",
+      "installed",
+    ]);
+    expect(statusesOfTab("browse")).toContain("new");
+  });
+
+  it("leaves out a status picked on browse that the installed tab can't list", () => {
+    const filters = { status: ["new", "installed"], type: ["theme"] };
+
+    expect(filtersOfTab(filters, "installed")).toEqual({
+      status: ["installed"],
+      type: ["theme"],
+    });
+    expect(filtersOfTab(filters, "browse")).toEqual(filters);
+    // Kept as picked, for when browse is opened again
+    expect(filters.status).toEqual(["new", "installed"]);
+  });
+
+  it("keeps a status picked on browse when the installed status pane changes", () => {
+    const filters = { status: ["new", "installed"] };
+
+    expect(
+      statusFilterOfTab(filters, "installed", ["pending-upgrade"])
+    ).toEqual(["new", "pending-upgrade"]);
+    expect(statusFilterOfTab(filters, "installed", [])).toEqual(["new"]);
+    // The pane's clear button sends no value
+    expect(statusFilterOfTab(filters, "installed", undefined)).toEqual(["new"]);
+    expect(statusFilterOfTab(filters, "browse", ["default"])).toEqual([
+      "default",
+    ]);
   });
 });

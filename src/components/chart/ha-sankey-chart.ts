@@ -7,7 +7,6 @@ import memoizeOne from "memoize-one";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import SankeyChart from "../../resources/echarts/components/sankey/install";
-import type { HomeAssistant } from "../../types";
 import type { HaECOption } from "../../resources/echarts/echarts";
 import { measureTextWidth } from "../../util/text";
 import "./ha-chart-base";
@@ -48,8 +47,6 @@ const BIDI_MARKS = /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
 
 @customElement("ha-sankey-chart")
 export class HaSankeyChart extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public data: SankeyChartData = {
     nodes: [],
     links: [],
@@ -88,7 +85,6 @@ export class HaSankeyChart extends LitElement {
     };
 
     return html`<ha-chart-base
-      .hass=${this.hass}
       .data=${this._createData(
         this.data,
         this._sizeController.value?.width,

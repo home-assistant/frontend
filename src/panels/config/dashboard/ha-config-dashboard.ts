@@ -235,7 +235,8 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
     const { updates: canInstallUpdates, total: totalUpdates } =
       this._filterUpdateEntitiesParameterized(
         this.hass.states,
-        this.hass.entities
+        this.hass.entities,
+        this.hass.formatEntityName
       );
 
     const { issues: repairsIssues, total: totalRepairIssues } =
@@ -384,10 +385,12 @@ class HaConfigDashboard extends SubscribeMixin(LitElement) {
   private _filterUpdateEntitiesParameterized = memoizeOne(
     (
       entities: HomeAssistant["states"],
-      entityRegistry: HomeAssistant["entities"]
+      entityRegistry: HomeAssistant["entities"],
+      formatEntityName: HomeAssistant["formatEntityName"]
     ): DashboardSummary<"updates", UpdateEntity> => {
       const updates = filterUpdateEntitiesParameterized(
         entities,
+        formatEntityName,
         false,
         false
       ).filter((entity) => !entityRegistry[entity.entity_id]?.hidden);

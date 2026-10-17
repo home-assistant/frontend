@@ -1,19 +1,19 @@
+import type { HassConfig } from "home-assistant-js-websocket";
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
-import type { HomeAssistant } from "../../../types";
 import "../cards/hui-error-card";
 
 export const createEntityNotFoundWarning = (
-  hass: Pick<HomeAssistant, "config" | "localize">,
-  // left for backwards compatibility for custom cards
-  _entityId: string
+  localize: LocalizeFunc,
+  config: HassConfig
 ) =>
-  hass.config.state !== STATE_NOT_RUNNING
-    ? hass.localize("ui.card.common.entity_not_found")
-    : hass.localize("ui.panel.lovelace.warning.starting");
+  config.state !== STATE_NOT_RUNNING
+    ? localize("ui.card.common.entity_not_found")
+    : localize("ui.panel.lovelace.warning.starting");
 
 @customElement("hui-warning")
 export class HuiWarning extends LitElement {

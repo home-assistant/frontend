@@ -9,11 +9,16 @@ import type {
   MapEngineOptions,
   MapMarkerHandle,
 } from "../../../src/common/map/map-engine";
+import { computeEntityNameDisplayWithoutContext } from "../../../src/common/entity/compute_entity_name_display";
 import "../../../src/components/map/ha-map";
 import type {
   HaMap,
   HaMapEditableLocation,
 } from "../../../src/components/map/ha-map";
+
+const FORMATTERS = {
+  formatEntityName: computeEntityNameDisplayWithoutContext,
+};
 
 // ha-map picks its engine at runtime: MapLibre GL where WebGL2 is available,
 // Leaflet otherwise or after MapLibre fails. jsdom has no WebGL2 and cannot
@@ -75,6 +80,8 @@ const fakeEngine = vi.hoisted(() => {
 
     setView = vi.fn();
 
+    getView = () => undefined;
+
     setZoom = vi.fn();
 
     fitBounds = vi.fn();
@@ -89,9 +96,9 @@ const fakeEngine = vi.hoisted(() => {
       remove: vi.fn(),
     }));
 
-    addCircle = vi.fn(() => ({ remove: vi.fn() }));
+    addCircle = vi.fn(() => ({ update: vi.fn(), remove: vi.fn() }));
 
-    addPath = vi.fn(() => ({ remove: vi.fn() }));
+    addPath = vi.fn(() => ({ update: vi.fn(), remove: vi.fn() }));
 
     setClustering = vi.fn();
 
@@ -192,6 +199,7 @@ const createMap = async (): Promise<HaMap> => {
   el.entities = ["device_tracker.paulus", "device_tracker.anne_therese"];
   el.clusterMarkers = false;
   (el as any)._states = STATES;
+  (el as any)._formatters = FORMATTERS;
   (el as any)._config = {
     config: { latitude: 52.3731339, longitude: 4.8903147 },
   };
@@ -233,6 +241,7 @@ describe("ha-map engine selection", () => {
     el.themeMode = "auto";
     (el as any)._ui = { themes: null };
     (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
     (el as any)._config = {
       config: { latitude: 52.3731339, longitude: 4.8903147 },
     };
@@ -273,6 +282,7 @@ describe("ha-map engine selection", () => {
     el.entities = ["device_tracker.paulus", "device_tracker.anne_therese"];
     el.clusterMarkers = false;
     (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
     (el as any)._config = {
       config: { latitude: 52.3731339, longitude: 4.8903147 },
     };
@@ -303,6 +313,7 @@ describe("ha-map engine selection", () => {
     el.entities = ["device_tracker.paulus"];
     el.clusterMarkers = false;
     (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
     (el as any)._config = {
       config: { latitude: 52.3731339, longitude: 4.8903147 },
     };
@@ -403,6 +414,7 @@ describe("ha-map readiness", () => {
     const el = document.createElement("ha-map");
     el.entities = ["device_tracker.paulus"];
     (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
     (el as any)._config = {
       config: { latitude: 52.3731339, longitude: 4.8903147 },
     };

@@ -6,7 +6,6 @@ import {
 import { getColorByIndex } from "../common/color/colors";
 import { getContrastedColorHex, isOpaqueColor } from "../common/color/rgb";
 import { computeDomain } from "../common/entity/compute_domain";
-import { computeStateName } from "../common/entity/compute_state_name";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE } from "./entity/entity";
 import type { EntityRegistryEntry } from "./entity/entity_registry";
@@ -158,7 +157,7 @@ export const getCalendars = (
       const entityColor = entityOptionsMap.get(eid)?.calendar?.color;
       return {
         ...stateObj,
-        name: computeStateName(stateObj),
+        name: hass.formatEntityName(stateObj),
         ...getCalendarColors(entityColor, idx, computedStyles),
       };
     });

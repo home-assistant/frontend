@@ -4,6 +4,9 @@ const DOCUMENTATION_DOMAIN = "home-assistant.io";
 
 export const DOCUMENTATION_URL = `https://www.${DOCUMENTATION_DOMAIN}`;
 
+export const SECURE_CONNECTION_DOCUMENTATION_PATH =
+  "/docs/configuration/securing/#remote-access";
+
 export const documentationUrl = (
   { config }: Pick<HomeAssistantConfig, "config">,
   path: string

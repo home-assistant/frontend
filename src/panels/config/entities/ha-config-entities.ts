@@ -28,8 +28,7 @@ import {
   getDuplicatedDeviceNames,
 } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import {
   deleteEntity,
   isDeletableEntity,
@@ -681,11 +680,7 @@ export class HaConfigEntities extends LitElement {
           .map((lbl) => labelReg!.find((label) => label.label_id === lbl))
           .filter((lbl): lbl is LabelRegistryEntry => lbl !== undefined);
 
-        const entityName = computeEntityEntryName(
-          entry as EntityRegistryEntry,
-          this.hass.devices,
-          entity
-        );
+        const entityName = computeEntityEntryName(entry as EntityRegistryEntry);
 
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
@@ -700,7 +695,10 @@ export class HaConfigEntities extends LitElement {
 
         result.push({
           ...entry,
-          name: entityName || deviceName || entry.entity_id,
+          name:
+            entityName ||
+            deviceName ||
+            (entity ? this.hass.formatEntityName(entity) : entry.entity_id),
           device: deviceName,
           area: areaName,
           device_full: deviceFullName,
@@ -1212,7 +1210,7 @@ export class HaConfigEntities extends LitElement {
           changed = true;
         }
         entitiesWithoutUniqueId.push({
-          name: computeStateName(this.hass.states[entityId]),
+          name: this.hass.formatEntityName(this.hass.states[entityId]),
           entity_id: entityId,
           platform:
             this._entitySources?.[entityId]?.domain || computeDomain(entityId),
@@ -1691,7 +1689,7 @@ ${rejected
           overflow-y: auto;
         }
         ha-dropdown ha-assist-chip {
-          --md-assist-chip-trailing-space: 8px;
+          --ha-assist-chip-trailing-space: 8px;
         }
       `,
     ];

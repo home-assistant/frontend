@@ -17,6 +17,7 @@ import {
   type LovelaceSectionRawConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import { DEFAULT_MAX_COLUMNS } from "../../views/const";
 
 interface SettingsData {
   column_span?: number;
@@ -116,7 +117,7 @@ export class HuiDialogEditSection extends LitElement {
     };
 
     const schema = this._schema(
-      this.viewConfig.max_columns || 4,
+      this.viewConfig.max_columns || DEFAULT_MAX_COLUMNS,
       this._localize
     );
 
