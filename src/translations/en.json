@@ -12580,7 +12580,8 @@
           "empty_header": "Nothing in the Marketplace yet",
           "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
-          "repository_not_found": "Repository not found"
+          "repository_not_found": "Repository not found",
+          "uninstall_selected": "Uninstall selected"
         },
         "entry": {
           "disabled": "The Marketplace is disabled. Enable it on the integration page to use it.",
@@ -12754,7 +12755,14 @@
           },
           "uninstall": {
             "title": "Uninstall {name}?",
-            "message": "This removes the files the Marketplace installed for it."
+            "message": "This removes the files the Marketplace installed for it.",
+            "selected_title": "Uninstall selected repositories?",
+            "selected": "{count, plural,\n  one {The selected repository will be uninstalled. This removes the files the Marketplace installed for it.}\n  other {The {count} selected repositories will be uninstalled. This removes the files the Marketplace installed for them.}\n}",
+            "selected_in_use": "{count, plural, one {The selected repository} other {The {count} selected repositories}} will be uninstalled. {in_use, plural, one {The setup of one of them} other {The setups of # of them}} will be deleted with their devices and entities. This cannot be undone.",
+            "check_failed_title": "Unable to check repositories",
+            "check_failed": "The setups of some selected repositories could not be verified.",
+            "failed_title": "Uninstall failed",
+            "failed": "Some repositories could not be uninstalled."
           },
           "disabled": {
             "title": "The Marketplace is disabled",
