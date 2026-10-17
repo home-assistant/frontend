@@ -664,6 +664,7 @@ export class HaTracePathDetails extends LitElement {
 
         pre {
           margin: 0;
+          direction: ltr;
         }
 
         .error {

@@ -513,13 +513,25 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _splitRepositioned(ev: HASSDomTargetEvent<HaSplitPanel>) {
+    // Ignore reposition events caused by applying the current position.
+    if (ev.target.position === this._splitPosition) {
+      return;
+    }
+
     this._splitPosition = ev.target.position;
     this._storeSplitPosition();
   }
 
   private _storeSplitPosition = debounce(
     () => {
-      localStorage[STORAGE_KEY_SPLIT_POSITION] = String(this._splitPosition);
+      const position = computeRTL(
+        this.hass.language,
+        this.hass.translationMetadata.translations
+      )
+        ? 100 - this._splitPosition
+        : this._splitPosition;
+
+      localStorage[STORAGE_KEY_SPLIT_POSITION] = String(position);
     },
     500,
     false
@@ -721,7 +733,7 @@ export class HaAutomationTrace extends LitElement {
           display: flex;
           overflow: hidden;
           background-color: var(--card-background-color);
-          direction: ltr;
+          direction: var(--direction);
         }
 
         :host([narrow]) .main {
