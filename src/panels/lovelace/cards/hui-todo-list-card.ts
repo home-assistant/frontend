@@ -5,6 +5,7 @@ import {
   mdiDeleteSweep,
   mdiDotsVertical,
   mdiDragHorizontalVariant,
+  mdiMagnify,
   mdiPlus,
   mdiSort,
 } from "@mdi/js";
@@ -29,6 +30,7 @@ import memoizeOne from "memoize-one";
 import { calcDate } from "../../../common/datetime/calc_date";
 import { firstWeekdayIndex } from "../../../common/datetime/first_weekday";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
@@ -37,6 +39,7 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
+import type { HaIconButton } from "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-markdown-element";
 import "../../../components/ha-relative-time";
@@ -44,6 +47,8 @@ import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
+import "../../../components/input/ha-input-search";
+import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { TodoItem } from "../../../data/todo";
 import {
@@ -52,6 +57,8 @@ import {
   TodoSortMode,
   createItem,
   deleteItems,
+  filterTodoItems,
+  getTodoDueDate,
   moveItem,
   subscribeItems,
   updateItem,
@@ -109,7 +116,15 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   @state() private _reordering = false;
 
+  @state() private _showSearch = false;
+
+  @state() private _search = "";
+
   @query("ha-input", true) private _input!: HaInput;
+
+  @query("ha-input-search") private _searchInput?: HaInputSearch;
+
+  @query(".searchButton") private _searchButton?: HaIconButton;
 
   @query("ha-list") private _list?: List;
 
@@ -173,8 +188,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     ) {
       const sortOrder = sort === TodoSortMode.DUEDATE_ASC ? 1 : -1;
       return items.sort((a, b) => {
-        const aDue = this._getDueDate(a) ?? Infinity;
-        const bDue = this._getDueDate(b) ?? Infinity;
+        const aDue = getTodoDueDate(a) ?? Infinity;
+        const bDue = getTodoDueDate(b) ?? Infinity;
         if (aDue === bDue) {
           return 0;
         }
@@ -189,6 +204,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       items?: TodoItem[],
       sort?: string | undefined,
       due_date_period?: TodoDueDatePeriod,
+      search?: string,
       _memoTime?: number
     ): TodoItem[] =>
       items
@@ -196,7 +212,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             this._filterItems(
               items,
               [null, TodoItemStatus.NeedsAction],
-              due_date_period
+              due_date_period,
+              search
             ),
             sort
           )
@@ -208,6 +225,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       items?: TodoItem[],
       sort?: string | undefined,
       due_date_period?: TodoDueDatePeriod,
+      search?: string,
       _memoTime?: number
     ): TodoItem[] =>
       items
@@ -215,7 +233,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             this._filterItems(
               items,
               [TodoItemStatus.Completed],
-              due_date_period
+              due_date_period,
+              search
             ),
             sort
           )
@@ -227,6 +246,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       items?: TodoItem[],
       sort?: string | undefined,
       due_date_period?: TodoDueDatePeriod,
+      search?: string,
       _memoTime?: number
     ): TodoItem[] =>
       items
@@ -234,7 +254,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             this._filterItems(
               items,
               [TodoItemStatus.NeedsAction],
-              due_date_period
+              due_date_period,
+              search
             ),
             sort
           )
@@ -246,11 +267,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       items?: TodoItem[],
       sort?: string | undefined,
       due_date_period?: TodoDueDatePeriod,
+      search?: string,
       _memoTime?: number
     ): TodoItem[] =>
       items
         ? this._sortItems(
-            this._filterItems(items, [null], due_date_period),
+            this._filterItems(items, [null], due_date_period, search),
             sort
           )
         : []
@@ -259,23 +281,15 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _filterItems(
     items: TodoItem[],
     status: (TodoItemStatus | null)[],
-    period?: TodoDueDatePeriod
+    period?: TodoDueDatePeriod,
+    search?: string
   ): TodoItem[] {
     const endDate =
       period && period.calendar && period.calendar.period
         ? this._addPeriod(new Date(), period.calendar)
         : undefined;
 
-    return items.filter((item) => {
-      if (!status.includes(item.status || null)) {
-        return false;
-      }
-      if (!endDate) {
-        return true;
-      }
-      const dueDate = this._getDueDate(item);
-      return dueDate && dueDate <= endDate;
-    });
+    return filterTodoItems(items, { status, endDate, search });
   }
 
   private _addPeriod(
@@ -343,6 +357,13 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       this._subscribeItems();
     }
 
+    if (
+      changedProperties.has("_entityId") ||
+      (changedProperties.has("_config") && !this._config?.show_search)
+    ) {
+      this._closeSearch();
+    }
+
     if (!this._refreshTimer) {
       this._setRefreshTimer();
     }
@@ -394,16 +415,20 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         ).getTime()
       : 0;
 
+    const search = this._search.trim();
+
     const checkedItems = this._getCheckedItems(
       this._items,
       this._config.display_order,
       this._config.due_date_period,
+      search,
       memoTime
     );
     const uncheckedItems = this._getUncheckedItems(
       this._items,
       this._config.display_order,
       this._config.due_date_period,
+      search,
       memoTime
     );
 
@@ -411,6 +436,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       this._items,
       this._config.display_order,
       this._config.due_date_period,
+      search,
       memoTime
     );
 
@@ -419,9 +445,14 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           this._items,
           this._config.display_order,
           this._config.due_date_period,
+          search,
           memoTime
         )
       : undefined;
+
+    const showAddRow =
+      !this._config.hide_create &&
+      this._todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM);
 
     return html`
       <ha-card
@@ -431,29 +462,63 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         })}
       >
         ${
-          !this._config.hide_create &&
-          this._todoListSupportsFeature(TodoListEntityFeature.CREATE_TODO_ITEM)
+          showAddRow || this._config.show_search
             ? html`
                 <div class="addRow">
-                  <ha-input
-                    .placeholder=${this.hass!.localize(
-                      "ui.panel.lovelace.cards.todo-list.add_item"
+                  ${
+                    showAddRow
+                      ? html`<ha-input
+                          .placeholder=${this.hass!.localize(
+                            "ui.panel.lovelace.cards.todo-list.add_item"
+                          )}
+                          @keydown=${this._addKeyPress}
+                          .disabled=${unavailable}
+                        >
+                          <ha-icon-button
+                            slot="end"
+                            class="addButton"
+                            .path=${mdiPlus}
+                            .title=${this.hass!.localize(
+                              "ui.panel.lovelace.cards.todo-list.add_item"
+                            )}
+                            .disabled=${unavailable}
+                            @click=${this._addItem}
+                          >
+                          </ha-icon-button>
+                        </ha-input>`
+                      : nothing
+                  }
+                  ${
+                    this._config.show_search
+                      ? html`<ha-icon-button
+                          class="searchButton"
+                          .path=${mdiMagnify}
+                          .label=${this.hass.localize(
+                            this._showSearch
+                              ? "ui.panel.lovelace.cards.todo-list.close_search"
+                              : "ui.panel.lovelace.cards.todo-list.search_items"
+                          )}
+                          .selected=${this._showSearch}
+                          @click=${this._toggleSearch}
+                        ></ha-icon-button>`
+                      : nothing
+                  }
+                </div>
+              `
+            : nothing
+        }
+        ${
+          this._showSearch
+            ? html`
+                <div class="searchRow" @keydown=${this._searchKeyDown}>
+                  <ha-input-search
+                    appearance="outlined"
+                    .value=${this._search}
+                    .placeholder=${this.hass.localize(
+                      "ui.panel.lovelace.cards.todo-list.search_items"
                     )}
-                    @keydown=${this._addKeyPress}
-                    .disabled=${unavailable}
-                  >
-                    <ha-icon-button
-                      slot="end"
-                      class="addButton"
-                      .path=${mdiPlus}
-                      .title=${this.hass!.localize(
-                        "ui.panel.lovelace.cards.todo-list.add_item"
-                      )}
-                      .disabled=${unavailable}
-                      @click=${this._addItem}
-                    >
-                    </ha-icon-button>
-                  </ha-input>
+                    @input=${this._searchChanged}
+                  ></ha-input-search>
                 </div>
               `
             : nothing
@@ -469,11 +534,19 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
               !this._items
                 ? nothing
                 : !uncheckedItems.length && !itemsWithoutStatus.length
-                  ? html`<p class="empty">
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
-                      )}
-                    </p>`
+                  ? search
+                    ? !checkedItems.length || this._config.hide_completed
+                      ? html`<p class="empty">
+                          ${this.hass.localize(
+                            "ui.panel.lovelace.cards.todo-list.no_matching_items"
+                          )}
+                        </p>`
+                      : nothing
+                    : html`<p class="empty">
+                        ${this.hass.localize(
+                          "ui.panel.lovelace.cards.todo-list.no_unchecked_items"
+                        )}
+                      </p>`
                   : this._reordering
                     ? html`<div class="header" role="separator">
                           <h2>
@@ -545,6 +618,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                                 )}
                               </h2>
                               ${
+                                !search &&
                                 this._todoListSupportsFeature(
                                   TodoListEntityFeature.DELETE_TODO_ITEM
                                 )
@@ -587,6 +661,10 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   }
 
   private _renderMenu(config: TodoListCardConfig, _unavailable: boolean) {
+    // Reordering acts on the whole list, not on search results
+    if (this._search.trim()) {
+      return nothing;
+    }
     return (!config.display_order ||
       config.display_order === TodoSortMode.NONE) &&
       this._todoListSupportsFeature(TodoListEntityFeature.MOVE_TODO_ITEM)
@@ -610,14 +688,6 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       : nothing;
   }
 
-  private _getDueDate(item: TodoItem): Date | undefined {
-    return item.due
-      ? item.due.includes("T")
-        ? new Date(item.due)
-        : endOfDay(new Date(`${item.due}T00:00:00`))
-      : undefined;
-  }
-
   private _renderItems(items: TodoItem[], unavailable = false) {
     return html`
       ${repeat(
@@ -633,7 +703,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             );
           const showReorder =
             item.status !== TodoItemStatus.Completed && this._reordering;
-          const due = this._getDueDate(item);
+          const due = getTodoDueDate(item);
           const today =
             due && !item.due!.includes("T") && isSameDay(new Date(), due);
           return html`
@@ -854,6 +924,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
   private _addItem(ev) {
     const newItem = this._newItem;
     if (newItem.value!.length > 0) {
+      // Close the search so the new item is not hidden by the filter
+      this._closeSearch();
       if (this._config?.due_date_period) {
         const item = {
           summary: newItem.value!,
@@ -898,6 +970,38 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private _toggleReorder() {
     this._reordering = !this._reordering;
+    if (this._reordering) {
+      this._closeSearch();
+    }
+  }
+
+  private async _toggleSearch() {
+    if (this._showSearch) {
+      this._closeSearch();
+      return;
+    }
+    this._reordering = false;
+    this._showSearch = true;
+    await this.updateComplete;
+    await this._searchInput?.updateComplete;
+    this._searchInput?.focus();
+  }
+
+  private _closeSearch() {
+    this._showSearch = false;
+    this._search = "";
+  }
+
+  private _searchChanged(ev: HASSDomCurrentTargetEvent<HaInputSearch>) {
+    this._search = ev.currentTarget.value ?? "";
+  }
+
+  private _searchKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Escape") {
+      ev.stopPropagation();
+      this._closeSearch();
+      this._searchButton?.focus();
+    }
   }
 
   private async _itemMoved(ev: CustomEvent) {
@@ -974,6 +1078,22 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     .addRow ha-icon-button {
       --ha-icon-button-size: 32px;
+    }
+
+    .searchButton {
+      /* Line up with the section header menus */
+      margin-inline-start: auto;
+      margin-inline-end: var(--ha-space-2);
+      padding-inline-start: var(--ha-space-2);
+    }
+
+    .searchRow {
+      display: flex;
+      padding: var(--ha-space-2) var(--ha-space-4) 0;
+    }
+
+    .searchRow ha-input-search {
+      flex-grow: 1;
     }
 
     .addRow,

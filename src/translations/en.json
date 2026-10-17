@@ -9699,7 +9699,10 @@
             "drag_and_drop": "Drag and drop",
             "delete_item": "Delete item",
             "delete_confirm_title": "Remove completed items?",
-            "delete_confirm_text": "{number} {number, plural,\n  one {item}\n  other {items}\n} will be permanently removed from the to-do list."
+            "delete_confirm_text": "{number} {number, plural,\n  one {item}\n  other {items}\n} will be permanently removed from the to-do list.",
+            "search_items": "Search to-do items",
+            "close_search": "Close search",
+            "no_matching_items": "No to-do items match your search."
           },
           "picture-elements": {
             "hold": "Hold:",
@@ -11113,6 +11116,8 @@
               "integration_not_loaded": "This card requires the `todo` integration to be set up.",
               "hide_completed": "Hide completed items",
               "hide_create": "Hide 'Add item' field",
+              "show_search": "Show search",
+              "show_search_helper": "Adds a button to search the to-do items by name or description.",
               "hide_section_headers": "Hide section headers",
               "hide_section_headers_helper": "Removes the 'Active' and 'Completed' section headers and their overflow menus.",
               "display_order": "Display order",
