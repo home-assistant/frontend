@@ -30,6 +30,7 @@ import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/entity/state-badge";
 import { showTargetDetailsDialog } from "../../../../components/target-picker/dialog/show-dialog-target-details";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
@@ -680,6 +681,12 @@ export class HaAutomationRowTargets extends LitElement {
       padding: var(--ha-space-1) 0;
     }
 
+    .target state-badge,
+    ha-dropdown-item state-badge {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
     .target ha-floor-icon {
       display: flex;
       height: 32px;
@@ -689,18 +696,25 @@ export class HaAutomationRowTargets extends LitElement {
     :host([size="s"]) {
       min-height: 24px;
     }
+
     :host([size="s"]) .target {
       height: 24px;
     }
-    /* A default 24px icon would fill the whole small chip. */
+
+    :host([size="s"]) .target ha-floor-icon {
+      height: 24px;
+    }
+
     :host([size="s"]) .target ha-icon,
     :host([size="s"]) .target ha-svg-icon,
     :host([size="s"]) .target ha-domain-icon,
     :host([size="s"]) .target ha-floor-icon {
       --mdc-icon-size: 16px;
     }
-    :host([size="s"]) .target ha-floor-icon {
-      height: 24px;
+    :host([size="s"]) .target state-badge {
+      width: 16px;
+      height: 16px;
+      --mdc-icon-size: 16px;
     }
 
     button.target {
