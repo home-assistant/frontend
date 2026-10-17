@@ -25,7 +25,6 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -65,6 +64,11 @@ import {
   sortConfigEntries,
 } from "../../../data/config_entries";
 import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
+import {
+  DEVICE_ENTITY_CATEGORIES,
+  computeDeviceEntityCategory,
+  type DeviceEntityCategory,
+} from "../../../data/device/device_entity_category";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import {
   removeDeviceFromRegistry,
@@ -305,44 +309,11 @@ export class HaConfigDevicePage extends LitElement {
 
   private _entitiesByCategory = memoizeOne(
     (entities: EntityRegistryEntry[]) => {
-      const result = groupBy(entities, (entry) => {
-        const domain = computeDomain(entry.entity_id);
-
-        if (ASSIST_ENTITIES.includes(domain)) {
-          return "assist";
-        }
-
-        if (domain === "event" || domain === "notify") {
-          return domain;
-        }
-
-        if (entry.entity_category) {
-          return entry.entity_category;
-        }
-
-        if (SENSOR_ENTITIES.includes(domain)) {
-          return "sensor";
-        }
-
-        return "control";
-      }) as Record<
-        | "control"
-        | "event"
-        | "sensor"
-        | "assist"
-        | "notify"
-        | NonNullable<EntityRegistryEntry["entity_category"]>,
+      const result = groupBy(entities, computeDeviceEntityCategory) as Record<
+        DeviceEntityCategory,
         EntityRegistryStateEntry[]
       >;
-      for (const key of [
-        "assist",
-        "config",
-        "control",
-        "diagnostic",
-        "event",
-        "notify",
-        "sensor",
-      ]) {
+      for (const key of DEVICE_ENTITY_CATEGORIES) {
         if (!(key in result)) {
           result[key] = [];
         }
@@ -909,17 +880,7 @@ export class HaConfigDevicePage extends LitElement {
     `;
 
     const entitiesColumn = html`
-      ${(
-        [
-          "control",
-          "sensor",
-          "notify",
-          "event",
-          "assist",
-          "config",
-          "diagnostic",
-        ] as const
-      ).map((category) =>
+      ${DEVICE_ENTITY_CATEGORIES.map((category) =>
         // Make sure we render controls if no other cards will be rendered
         entitiesByCategory[category].length > 0 ||
         (entities.length === 0 && category === "control")
