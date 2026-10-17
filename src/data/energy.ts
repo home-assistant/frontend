@@ -90,6 +90,12 @@ export const emptySolarEnergyPreference =
     config_entry_solar_forecast: null,
   });
 
+export const emptyHomeEnergyPreference =
+  (): HomeSourceTypeEnergyPreference => ({
+    type: "home",
+    stat_energy_from: "",
+  });
+
 export const emptyBatteryEnergyPreference =
   (): BatterySourceTypeEnergyPreference => ({
     type: "battery",
@@ -175,6 +181,14 @@ export interface SolarSourceTypeEnergyPreference {
   name?: string;
 }
 
+export interface HomeSourceTypeEnergyPreference {
+  type: "home";
+
+  stat_energy_from: string;
+  stat_rate?: string;
+  name?: string;
+}
+
 export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
@@ -227,6 +241,7 @@ export interface WaterSourceTypeEnergyPreference {
 
 export type EnergySource =
   | SolarSourceTypeEnergyPreference
+  | HomeSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference
   | GasSourceTypeEnergyPreference
@@ -312,6 +327,7 @@ export const getFossilEnergyConsumption = async (
 export interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
+  home?: HomeSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];
   gas?: GasSourceTypeEnergyPreference[];
   water?: WaterSourceTypeEnergyPreference[];
@@ -418,7 +434,7 @@ export const getReferencedStatisticIds = (
       continue;
     }
 
-    if (source.type === "solar") {
+    if (source.type === "solar" || source.type === "home") {
       statIDs.push(source.stat_energy_from);
       continue;
     }
@@ -490,7 +506,7 @@ export const getReferencedStatisticIdsPower = (
       continue;
     }
 
-    if (source.type === "solar") {
+    if (source.type === "solar" || source.type === "home") {
       statIDs.push(source.stat_rate);
       continue;
     }
@@ -570,6 +586,7 @@ const getEnergyData = async (
   const energyStatIds = getReferencedStatisticIds(prefs, info, [
     "grid",
     "solar",
+    "home",
     "battery",
     "gas",
     "device",
@@ -1425,7 +1442,7 @@ const getEnergyGasUnit = (
     const kWhStatIds = new Set([
       ...prefs.device_consumption.map((device) => device.stat_consumption),
       ...prefs.energy_sources.flatMap((source) => {
-        if (source.type === "solar") {
+        if (source.type === "solar" || source.type === "home") {
           return [source.stat_energy_from];
         }
         if (source.type === "battery") {
@@ -1495,6 +1512,24 @@ const getEnergyWaterUnit = (
   return config.unit_system.length === "km" ? "L" : "gal";
 };
 
+export const reconcileUsageWithHome = (
+  home: number,
+  usage: { used_grid: number; used_solar: number; used_battery: number }
+) => {
+  const used_total = Math.max(home, 0);
+  let excess =
+    usage.used_grid + usage.used_solar + usage.used_battery - used_total;
+  if (excess <= 0) {
+    return { used_total, ...usage, used_grid: usage.used_grid - excess };
+  }
+  const used_grid = Math.max(0, usage.used_grid - excess);
+  excess -= usage.used_grid - used_grid;
+  const used_battery = Math.max(0, usage.used_battery - excess);
+  excess -= usage.used_battery - used_battery;
+  const used_solar = Math.max(0, usage.used_solar - excess);
+  return { used_total, used_grid, used_solar, used_battery };
+};
+
 export const energyStatisticHelpUrl =
   "/docs/energy/faq/#troubleshooting-missing-entities";
 
@@ -1504,12 +1539,14 @@ export interface EnergySumData {
   to_battery?: Record<number, number>;
   from_battery?: Record<number, number>;
   solar?: Record<number, number>;
+  home?: Record<number, number>;
   total: {
     to_grid?: number;
     from_grid?: number;
     to_battery?: number;
     from_battery?: number;
     solar?: number;
+    home?: number;
   };
   timestamps: number[];
 }
@@ -1557,6 +1594,7 @@ const getSummedDataPartial = (
     solar?: string[];
     to_battery?: string[];
     from_battery?: string[];
+    home?: string[];
   } = {};
 
   for (const source of data.prefs.energy_sources) {
@@ -1566,6 +1604,11 @@ const getSummedDataPartial = (
       } else {
         statIds.solar = [source.stat_energy_from];
       }
+      continue;
+    }
+
+    if (source.type === "home") {
+      statIds.home = [source.stat_energy_from];
       continue;
     }
 
@@ -1696,18 +1739,28 @@ const computeConsumptionDataPartial = (
       from_battery: fromBattery && (fromBattery[t] ?? 0),
     });
 
-    outData.used_total[t] = used_total;
-    total.used_total += used_total;
+    const homeUsed = data.home?.[t];
+    const usage =
+      homeUsed !== undefined && homeUsed !== null
+        ? reconcileUsageWithHome(homeUsed, {
+            used_grid,
+            used_solar,
+            used_battery,
+          })
+        : { used_total, used_grid, used_solar, used_battery };
+
+    outData.used_total[t] = usage.used_total;
+    total.used_total += usage.used_total;
+    outData.used_grid[t] = usage.used_grid;
+    total.used_grid += usage.used_grid;
+    outData.used_solar[t] = usage.used_solar;
+    total.used_solar += usage.used_solar;
+    outData.used_battery[t] = usage.used_battery;
+    total.used_battery += usage.used_battery;
     outData.grid_to_battery[t] = grid_to_battery;
     total.grid_to_battery += grid_to_battery;
     outData.battery_to_grid![t] = battery_to_grid;
     total.battery_to_grid += battery_to_grid;
-    outData.used_battery![t] = used_battery;
-    total.used_battery += used_battery;
-    outData.used_grid![t] = used_grid;
-    total.used_grid += used_grid;
-    outData.used_solar![t] = used_solar;
-    total.used_solar += used_solar;
     outData.solar_to_battery[t] = solar_to_battery;
     total.solar_to_battery += solar_to_battery;
     outData.solar_to_grid[t] = solar_to_grid;

@@ -27,6 +27,7 @@ import {
   saveEnergyPreferences,
   EMPTY_PREFERENCES,
   CompareMode,
+  reconcileUsageWithHome,
 } from "../../src/data/energy";
 import type { EnergyData, EnergySource } from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
@@ -2292,5 +2293,45 @@ describe("computeEnergyDeviceLabels", () => {
       ),
       { "sensor.washer_power": "Washer Power" }
     );
+  });
+});
+
+describe("reconcileUsageWithHome", () => {
+  const usage = { used_grid: 4, used_solar: 3, used_battery: 0 };
+
+  it("lets grid absorb a higher meter reading", () => {
+    assert.deepEqual(reconcileUsageWithHome(9, usage), {
+      used_total: 9,
+      used_grid: 6,
+      used_solar: 3,
+      used_battery: 0,
+    });
+  });
+
+  it("reduces grid first when the meter is lower", () => {
+    assert.deepEqual(reconcileUsageWithHome(5, usage), {
+      used_total: 5,
+      used_grid: 2,
+      used_solar: 3,
+      used_battery: 0,
+    });
+  });
+
+  it("reduces solar after grid and battery", () => {
+    assert.deepEqual(reconcileUsageWithHome(2, usage), {
+      used_total: 2,
+      used_grid: 0,
+      used_solar: 2,
+      used_battery: 0,
+    });
+  });
+
+  it("keeps a real zero reading", () => {
+    assert.deepEqual(reconcileUsageWithHome(0, usage), {
+      used_total: 0,
+      used_grid: 0,
+      used_solar: 0,
+      used_battery: 0,
+    });
   });
 });

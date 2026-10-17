@@ -4567,6 +4567,20 @@
               "add_forecast": "Add forecast"
             }
           },
+          "home": {
+            "title": "Home consumption",
+            "sub": "If you have a meter that measures your whole house consumption, you can configure it here.",
+            "add_home_meter": "Add home meter",
+            "remove_home_meter": "Remove home meter",
+            "edit_home_meter": "Edit home meter",
+            "dialog": {
+              "header": "Configure home consumption",
+              "entity_para": "Pick a sensor which measures home consumption in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
+              "home_energy": "Home energy",
+              "home_power": "Home power"
+            }
+          },
           "battery": {
             "title": "Home battery storage",
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",

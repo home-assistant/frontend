@@ -14,11 +14,16 @@ import {
   registriesContext,
   statesContext,
 } from "../../../../data/context";
-import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
+import type {
+  EnergyData,
+  EnergyPreferences,
+  HomeSourceTypeEnergyPreference,
+} from "../../../../data/energy";
 import {
   computeEnergyDeviceLabels,
   formatPowerShort,
   getPowerFromState,
+  reconcileUsageWithHome,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -195,7 +200,11 @@ class HuiPowerSankeyCard
     // Create home node
     const homeNode: Node = {
       id: "home",
-      label: this._hassConfig.location_name,
+      label:
+        prefs.energy_sources.find(
+          (source): source is HomeSourceTypeEnergyPreference =>
+            source.type === "home"
+        )?.name || this._hassConfig.location_name,
       value: Math.max(0, powerData.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -218,6 +227,7 @@ class HuiPowerSankeyCard
       links.push({
         source: "battery",
         target: "home",
+        value: powerData.used_battery,
       });
     }
 
@@ -237,24 +247,29 @@ class HuiPowerSankeyCard
         links.push({
           source: "grid",
           target: "battery_in",
+          value: powerData.grid_to_battery,
         });
       }
       if (powerData.solar_to_battery > 0) {
         links.push({
           source: "solar",
           target: "battery_in",
+          value: powerData.solar_to_battery,
         });
       }
     }
 
     // Add grid source if available
-    if (powerData.from_grid > 0) {
+    if (powerData.from_grid > 0 || powerData.used_grid > 0) {
       nodes.push({
         id: "grid",
         label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
-        value: powerData.from_grid,
+        value: Math.max(
+          powerData.from_grid,
+          powerData.used_grid + powerData.grid_to_battery
+        ),
         color: computedStyle
           .getPropertyValue("--energy-grid-consumption-color")
           .trim(),
@@ -263,6 +278,7 @@ class HuiPowerSankeyCard
       links.push({
         source: "grid",
         target: "home",
+        value: powerData.used_grid,
       });
     }
 
@@ -280,6 +296,7 @@ class HuiPowerSankeyCard
       links.push({
         source: "solar",
         target: "home",
+        value: powerData.used_solar,
       });
     }
 
@@ -300,12 +317,14 @@ class HuiPowerSankeyCard
         links.push({
           source: "battery",
           target: "grid_return",
+          value: powerData.battery_to_grid,
         });
       }
       if (powerData.solar_to_grid > 0) {
         links.push({
           source: "solar",
           target: "grid_return",
+          value: powerData.solar_to_grid,
         });
       }
     }
@@ -507,6 +526,27 @@ class HuiPowerSankeyCard
     // Grid_In -> Consumption
     const used_grid = Math.min(used_total_remaining, grid_remaining);
 
+    const home = prefs.energy_sources.find(
+      (source): source is HomeSourceTypeEnergyPreference =>
+        source.type === "home"
+    );
+    const homePower = home?.stat_rate
+      ? getPowerFromState(this._states[home.stat_rate])
+      : undefined;
+    const usage =
+      homePower === undefined
+        ? {
+            used_total: Math.max(0, used_total),
+            used_solar,
+            used_grid,
+            used_battery,
+          }
+        : reconcileUsageWithHome(homePower, {
+            used_grid,
+            used_solar,
+            used_battery,
+          });
+
     return {
       solar,
       from_grid,
@@ -517,10 +557,10 @@ class HuiPowerSankeyCard
       battery_to_grid,
       solar_to_battery,
       solar_to_grid,
-      used_solar,
-      used_grid,
-      used_battery,
-      used_total: Math.max(0, used_total),
+      used_solar: usage.used_solar,
+      used_grid: usage.used_grid,
+      used_battery: usage.used_battery,
+      used_total: usage.used_total,
     };
   }
 

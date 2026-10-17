@@ -59,6 +59,7 @@ export const hasDeviceConsumption = (prefs: EnergyPreferences): boolean =>
 
 export const hasPowerSources = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => {
+    if (source.type === "home" && !!source.stat_rate) return true;
     if (source.type === "solar" && source.stat_rate) return true;
     if (source.type === "battery" && source.stat_rate) return true;
     if (source.type === "grid") {
@@ -132,7 +133,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "overview",
     "energy-sources-table",
     "ui.panel.energy.cards.energy_sources_table_title",
-    (p) => p.energy_sources.length > 0
+    (p) => p.energy_sources.some((s) => s.type !== "home")
   ),
   entry(
     "overview",

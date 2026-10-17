@@ -13,7 +13,10 @@ import {
   registriesContext,
   statesContext,
 } from "../../../../data/context";
-import type { EnergyData } from "../../../../data/energy";
+import type {
+  EnergyData,
+  HomeSourceTypeEnergyPreference,
+} from "../../../../data/energy";
 import {
   computeConsumptionData,
   computeEnergyDeviceLabels,
@@ -164,7 +167,11 @@ class HuiEnergySankeyCard
 
     const homeNode: Node = {
       id: "home",
-      label: this._hassConfig.location_name,
+      label:
+        prefs.energy_sources.find(
+          (source): source is HomeSourceTypeEnergyPreference =>
+            source.type === "home"
+        )?.name || this._hassConfig.location_name,
       value: Math.max(0, consumption.total.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -223,7 +230,7 @@ class HuiEnergySankeyCard
       }
     }
 
-    if (types.grid) {
+    if (types.grid || consumption.total.used_grid > 0) {
       const totalFromGrid = summedData.total.from_grid ?? 0;
 
       nodes.push({
@@ -231,7 +238,10 @@ class HuiEnergySankeyCard
         label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
-        value: totalFromGrid,
+        value: Math.max(
+          totalFromGrid,
+          consumption.total.used_grid + consumption.total.grid_to_battery
+        ),
         color: computedStyle
           .getPropertyValue("--energy-grid-consumption-color")
           .trim(),
