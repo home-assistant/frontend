@@ -206,6 +206,7 @@ class HaConfigConnectivity extends LitElement {
         allOffline.add(key);
       }
     }
+    result.total = allDevices.size;
     result.offlineTotal = allOffline.size;
 
     for (const [domain, { monitored, offline }] of perDomain) {
