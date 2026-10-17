@@ -9590,12 +9590,10 @@
             "network": "My network",
             "show_map": "Show map",
             "connections": "Connections",
-            "connected": "Connected",
-            "connections_count": "{available} of {total} {total, plural, one {connection} other {connections}} available",
             "total_connections": "{count} {count, plural, one {connection} other {connections}}",
             "devices_count": "{count} {count, plural, one {device} other {devices}}",
             "view_devices": "View devices",
-            "no_connections": "No LoRaWAN connections configured.",
+            "no_connections": "No LoRaWAN connections available.",
             "load_error": "Could not load LoRaWAN connections."
           },
           "topology": {
@@ -9604,7 +9602,7 @@
             "gateway": "Gateway",
             "device": "Device",
             "unobserved": "No gateway observed",
-            "no_connections": "No LoRaWAN connections configured.",
+            "no_connections": "No LoRaWAN connections available.",
             "load_error": "Could not load the LoRaWAN network.",
             "search": "Find a device or gateway"
           },
@@ -9622,7 +9620,6 @@
           "description": "Devices across your LoRaWAN connections",
           "device": "Device",
           "connection": "Connection",
-          "connection_unavailable": "Connection unavailable",
           "dev_eui": "DevEUI",
           "application": "Application",
           "last_uplink": "Last uplink",

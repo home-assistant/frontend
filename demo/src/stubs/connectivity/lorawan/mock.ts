@@ -17,7 +17,6 @@ const devices = (): LoRaWANDevice[] => {
       domain: "chirpstack",
       title: "Home ChirpStack",
       configuration_url: "https://www.chirpstack.io/",
-      connected: true,
     },
     support: "supported",
     last_uplink: minutesAgo(2),
@@ -42,7 +41,6 @@ const devices = (): LoRaWANDevice[] => {
         domain: "thethingsnetwork_lorawan",
         title: "The Things Network",
         configuration_url: "https://eu1.cloud.thethings.network/console",
-        connected: true,
       },
       receptions: [
         { gateway_id: "brooklyn-rooftop", rssi: -103, snr: -2.5 },

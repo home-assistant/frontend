@@ -11,7 +11,6 @@ export interface LoRaWANConnection {
   entry_id: string;
   domain: string;
   title: string;
-  connected: boolean;
   configuration_url: string | null;
 }
 

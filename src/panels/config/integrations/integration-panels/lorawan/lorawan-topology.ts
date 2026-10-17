@@ -83,17 +83,12 @@ export class LoRaWANTopologyPanel extends LitElement {
   }
 
   private _graphData = memoizeOne(
-    (
-      topology: LoRaWANTopology,
-      narrow: boolean,
-      localize: HomeAssistant["localize"]
-    ): NetworkData => {
+    (topology: LoRaWANTopology, narrow: boolean): NetworkData => {
       const style = getComputedStyle(this);
       const colors = {
         connection: style.getPropertyValue("--primary-color"),
         gateway: style.getPropertyValue("--teal-color"),
         device: style.getPropertyValue("--blue-color"),
-        unavailable: style.getPropertyValue("--warning-color"),
         link: style.getPropertyValue("--divider-color"),
       };
       const nodes: NetworkNode[] = [];
@@ -123,12 +118,7 @@ export class LoRaWANTopologyPanel extends LitElement {
           nodes.push({
             id: node.id,
             name: this._nodeName(node),
-            context:
-              node.kind === "connection" && !node.connection.connected
-                ? localize("ui.panel.config.lorawan.connection_unavailable")
-                : node.kind === "device"
-                  ? node.device.model
-                  : undefined,
+            context: node.kind === "device" ? node.device.model : undefined,
             symbol:
               node.kind === "connection"
                 ? "roundRect"
@@ -137,10 +127,7 @@ export class LoRaWANTopologyPanel extends LitElement {
                   : "circle",
             symbolSize: node.kind === "device" ? 20 : 30,
             itemStyle: {
-              color:
-                node.kind === "connection" && !node.connection.connected
-                  ? colors.unavailable
-                  : colors[node.kind],
+              color: colors[node.kind],
             },
             label: {
               position:
@@ -225,7 +212,7 @@ export class LoRaWANTopologyPanel extends LitElement {
                 >`
               : html`<div class="map">
                   <ha-network-graph
-                    .data=${this._graphData(this._topology, this.narrow, this.hass.localize)}
+                    .data=${this._graphData(this._topology, this.narrow)}
                     .searchFilter=${this._search}
                     .tooltipFormatter=${this._tooltip}
                     @chart-click=${this._chartClicked}

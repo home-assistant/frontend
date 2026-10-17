@@ -82,8 +82,6 @@ export class LoRaWANConnections extends LitElement {
                           />
                           <div slot="headline">${connection.title}</div>
                           <div slot="supporting-text">
-                            ${this.hass.localize(connection.connected ? "ui.panel.config.lorawan.overview.connected" : "ui.panel.config.lorawan.connection_unavailable")}
-                            ·
                             ${this.hass.localize("ui.panel.config.lorawan.overview.devices_count", { count: snapshot.devices.filter((device) => device.connection.entry_id === connection.entry_id).length })}
                           </div>
                           <ha-icon-next slot="end"></ha-icon-next>

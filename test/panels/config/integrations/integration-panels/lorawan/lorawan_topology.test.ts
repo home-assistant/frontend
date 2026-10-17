@@ -9,7 +9,6 @@ const connection: LoRaWANConnection = {
   entry_id: "home",
   domain: "chirpstack",
   title: "Home",
-  connected: true,
   configuration_url: null,
 };
 const device = (overrides: Partial<LoRaWANDevice> = {}): LoRaWANDevice => ({
@@ -75,7 +74,7 @@ describe("buildLoRaWANTopology", () => {
   });
 
   it("keeps matching device and gateway IDs on different connections separate", () => {
-    const second = { ...connection, entry_id: "garden", connected: false };
+    const second = { ...connection, entry_id: "garden" };
     const receptions = [{ gateway_id: "indoor", rssi: -61, snr: 4 }];
     const topology = buildLoRaWANTopology({
       connections: [connection, second],

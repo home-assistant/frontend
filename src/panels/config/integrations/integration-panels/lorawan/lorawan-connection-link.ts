@@ -1,14 +1,10 @@
 import type { ContextType } from "@lit/context";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import { isNavigationClick } from "../../../../../common/dom/is-navigation-click";
 import { consume } from "../../../../../common/decorators/consume";
-import {
-  internationalizationContext,
-  uiContext,
-  connectionContext,
-} from "../../../../../data/context";
+import { uiContext, connectionContext } from "../../../../../data/context";
 import type { LoRaWANDevice } from "../../../../../data/lorawan";
 import { brandsUrl } from "../../../../../util/brands-url";
 
@@ -16,10 +12,6 @@ import { brandsUrl } from "../../../../../util/brands-url";
 export class LoRaWANConnectionLink extends LitElement {
   @property({ attribute: false })
   public connection!: LoRaWANDevice["connection"];
-
-  @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state()
   @consume({ context: uiContext, subscribe: true })
@@ -38,9 +30,7 @@ export class LoRaWANConnectionLink extends LitElement {
         alt=""
         src=${brandsUrl({ domain: this.connection.domain, type: "icon", darkOptimized: this._ui?.themes.darkMode }, this._connection?.hassUrl())}
       />
-      <span
-        >${this.connection.title}${this.connection.connected ? nothing : html`<small>${this._i18n.localize("ui.panel.config.lorawan.connection_unavailable")}</small>`}</span
-      >
+      <span>${this.connection.title}</span>
     </a>`;
   }
 
@@ -66,11 +56,6 @@ export class LoRaWANConnectionLink extends LitElement {
       width: 24px;
       height: 24px;
       object-fit: contain;
-    }
-    small {
-      display: block;
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
     }
   `;
 }

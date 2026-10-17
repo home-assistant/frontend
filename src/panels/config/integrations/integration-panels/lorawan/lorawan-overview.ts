@@ -1,6 +1,5 @@
 import {
   mdiCheck,
-  mdiAlertCircleOutline,
   mdiDevices,
   mdiPlus,
   mdiLanConnect,
@@ -65,17 +64,7 @@ export class LoRaWANOverview extends LitElement {
 
   protected render() {
     const snapshot = this._snapshot;
-    const connected =
-      snapshot?.connections.filter((connection) => connection.connected)
-        .length ?? 0;
-    const unavailable = !!snapshot?.connections.some(
-      (connection) => !connection.connected
-    );
-    const status = !connected
-      ? "unavailable"
-      : unavailable
-        ? "warning"
-        : "connected";
+    const connected = !!snapshot?.connections.length;
     return html`<hass-subpage
       .hass=${this.hass}
       .narrow=${this.narrow}
@@ -100,14 +89,16 @@ export class LoRaWANOverview extends LitElement {
             ? html`
                 <ha-card class="summary">
                   <div class="summary-content">
-                    <div class="status-icon ${status}">
+                    <div
+                      class="status-icon ${connected ? "connected" : "unavailable"}"
+                    >
                       <ha-svg-icon
-                        .path=${!connected ? mdiCloseCircleOutline : unavailable ? mdiAlertCircleOutline : mdiCheck}
+                        .path=${connected ? mdiCheck : mdiCloseCircleOutline}
                       ></ha-svg-icon>
                     </div>
                     <div>
                       <h2>
-                        ${this.hass.localize("ui.panel.config.lorawan.overview.connections_count", { available: connected, total: snapshot.connections.length })}
+                        ${this.hass.localize("ui.panel.config.lorawan.overview.total_connections", { count: snapshot.connections.length })}
                       </h2>
                       <p>
                         ${this.hass.localize("ui.panel.config.lorawan.overview.devices_count", { count: snapshot.devices.length })}
@@ -213,9 +204,6 @@ export class LoRaWANOverview extends LitElement {
       overflow: hidden;
       flex-shrink: 0;
       --icon-color: var(--success-color);
-    }
-    .status-icon.warning {
-      --icon-color: var(--warning-color);
     }
     .status-icon.unavailable {
       --icon-color: var(--error-color);

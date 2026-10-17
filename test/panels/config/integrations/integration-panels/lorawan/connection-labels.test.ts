@@ -6,7 +6,6 @@ const connection = (entry_id: string, title: string): LoRaWANConnection => ({
   entry_id,
   title,
   domain: "chirpstack",
-  connected: true,
   configuration_url: null,
 });
 
