@@ -722,7 +722,9 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
     }
     this._progress = undefined;
     let catchingUp = true;
-    let fetchPending = true;
+    // Fetching re-runs the current step, which external steps can treat as the user returning,
+    // and only progress tasks can finish before the subscription is in place
+    let fetchPending = this._step?.type === "progress";
     const unsubs = [
       subscribeDataEntryFlowProgressed(this.hass.connection, (ev) => {
         if (ev.data.flow_id !== this._step?.flow_id) {
@@ -762,17 +764,23 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
         ) {
           break;
         }
+        // A failed fetch only ends the loop if no progressed event arrived while it was in flight
         // eslint-disable-next-line no-await-in-loop
         const current = await this._params!.flowConfig.fetchFlow(
           this.hass,
           step.flow_id
-        );
+        ).catch(() => undefined);
         if (
+          current &&
           this._step === step &&
           !(
             current.type === step.type &&
             "step_id" in current &&
-            current.step_id === step.step_id
+            current.step_id === step.step_id &&
+            // Progress steps can move on to another task without changing step_id
+            (current.type !== "progress" ||
+              (step.type === "progress" &&
+                current.progress_action === step.progress_action))
           )
         ) {
           this._progress = undefined;

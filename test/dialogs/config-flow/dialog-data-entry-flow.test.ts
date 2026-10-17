@@ -290,16 +290,60 @@ describe("dialog-data-entry-flow progress", () => {
     expect(shownStep(dialog)).toEqual(nextFormStep);
   });
 
-  it("does not reopen an external step that has not moved on", async () => {
+  it("does not fetch an external step on subscribe", async () => {
     const open = vi.spyOn(window, "open").mockReturnValue(null);
-    vi.mocked(flowConfig.fetchFlow).mockResolvedValueOnce({ ...externalStep });
 
     const dialog = await openDialog(externalStep);
     await settle(dialog);
 
-    expect(flowConfig.fetchFlow).toHaveBeenCalledOnce();
+    expect(flowConfig.fetchFlow).not.toHaveBeenCalled();
     expect(open).toHaveBeenCalledOnce();
     open.mockRestore();
+  });
+
+  it("shows the next task when a progress step keeps its step_id", async () => {
+    const nextTaskStep: DataEntryFlowStepProgress = {
+      ...progressStep,
+      progress_action: "configure",
+    };
+    vi.mocked(flowConfig.fetchFlow).mockResolvedValueOnce(nextTaskStep);
+
+    const dialog = await openDialog(progressStep);
+    await settle(dialog);
+
+    expect(flowConfig.fetchFlow).toHaveBeenCalledOnce();
+    expect(shownStep(dialog)).toEqual(nextTaskStep);
+  });
+
+  it("retries the catch-up fetch when it fails after a progressed event", async () => {
+    let rejectFetch!: (err: Error) => void;
+    vi.mocked(flowConfig.fetchFlow)
+      .mockReturnValueOnce(
+        new Promise((_resolve, reject) => {
+          rejectFetch = reject;
+        })
+      )
+      .mockResolvedValueOnce(nextFormStep);
+
+    const dialog = await openDialog(progressStep);
+    fireFlowProgressed();
+    rejectFetch(new Error("connection lost"));
+    await settle(dialog);
+
+    expect(flowConfig.fetchFlow).toHaveBeenCalledTimes(2);
+    expect(shownStep(dialog)).toEqual(nextFormStep);
+  });
+
+  it("keeps waiting when the catch-up fetch fails without a progressed event", async () => {
+    vi.mocked(flowConfig.fetchFlow).mockRejectedValueOnce(
+      new Error("connection lost")
+    );
+
+    const dialog = await openDialog(progressStep);
+    await settle(dialog);
+
+    expect(flowConfig.fetchFlow).toHaveBeenCalledOnce();
+    expect(shownStep(dialog)).toEqual(progressStep);
   });
 
   it("follows a progressed event after catching up", async () => {
