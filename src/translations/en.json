@@ -1532,6 +1532,10 @@
         "temperature_up": "Increase temperature",
         "temperature_down": "Decrease temperature"
       },
+      "number-buttons": {
+        "increment": "Increment",
+        "decrement": "Decrement"
+      },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
         "syntax_error": "YAML syntax error",
