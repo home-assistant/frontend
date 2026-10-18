@@ -190,6 +190,32 @@ export const removeEntityRegistryEntry = (
   hass.mockEvent("entity_registry_updated");
 };
 
+export const removeLabelFromEntityRegistry = (
+  hass: MockHomeAssistant,
+  labelId: string
+) => {
+  if (!entries.some((entry) => entry.labels.includes(labelId))) {
+    return;
+  }
+  entries = entries.map((entry) =>
+    entry.labels.includes(labelId)
+      ? { ...entry, labels: entry.labels.filter((id) => id !== labelId) }
+      : entry
+  );
+  const entities = { ...hass.entities };
+  for (const entry of entries) {
+    const entity = entities[entry.entity_id];
+    if (entity?.labels.includes(labelId)) {
+      entities[entry.entity_id] = {
+        ...entity,
+        labels: entity.labels.filter((id) => id !== labelId),
+      };
+    }
+  }
+  hass.updateHass({ entities });
+  hass.mockEvent("entity_registry_updated");
+};
+
 // Adds an entry like core does when an integration creates an entity
 export const addEntityRegistryEntry = (
   hass: MockHomeAssistant,
