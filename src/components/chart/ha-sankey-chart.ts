@@ -241,6 +241,7 @@ export class HaSankeyChart extends LitElement {
         distance: LABEL_DISTANCE,
         minMargin: LABEL_MIN_MARGIN,
         overflow: "break",
+        lineOverflow: this.vertical ? "truncate" : "none",
       },
       labelLayout: (params) => {
         if (this.vertical) {
@@ -270,7 +271,10 @@ export class HaSankeyChart extends LitElement {
             (wrapWidth / wordWidth) * FONT_SIZE
           );
           return {
-            fontSize: fontSize > 1 ? fontSize : 0,
+            fontSize,
+            // Safari draws a 0px canvas font at its default size, so hide
+            // unreadable labels by dropping all of their lines instead.
+            height: fontSize > 1 ? undefined : 0,
             width: availableWidth,
             align: "center",
             dy: -2, // shift up or the lowest row labels may be cut off
