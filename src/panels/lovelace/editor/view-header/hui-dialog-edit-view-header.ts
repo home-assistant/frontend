@@ -24,10 +24,11 @@ import type { HomeAssistant } from "../../../../types";
 import "./hui-view-header-settings-editor";
 import type { EditViewHeaderDialogParams } from "./show-edit-view-header-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("hui-dialog-edit-view-header")
 export class HuiDialogEditViewHeader extends DirtyStateProviderMixin<LovelaceViewHeaderConfig>()(
-  LitElement
+  KeyboardShortcutMixin(LitElement)
 ) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -149,8 +150,20 @@ export class HuiDialogEditViewHeader extends DirtyStateProviderMixin<LovelaceVie
     const action = ev.detail.item.value;
 
     if (action === "toggle-mode") {
-      this._yamlMode = !this._yamlMode;
+      this._toggleMode();
     }
+  }
+
+  private _toggleMode() {
+    this._yamlMode = !this._yamlMode;
+  }
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return this._params ? { Y: () => this._toggleMode() } : {};
+  }
+
+  protected supportedShortcutsInInput(): string[] {
+    return ["Y"];
   }
 
   private _configChanged(ev: CustomEvent): void {

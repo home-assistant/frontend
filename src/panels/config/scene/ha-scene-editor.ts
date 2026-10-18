@@ -808,12 +808,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
         this._promptSceneRename();
         break;
       case "toggle-yaml":
-        if (this._mode === "yaml") {
-          this._initEntities(this._config!);
-          this._exitYamlMode();
-        } else {
-          this._enterYamlMode();
-        }
+        this._toggleYamlMode();
         break;
       case "duplicate":
         this._duplicate();
@@ -821,6 +816,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
       case "delete":
         this._deleteTapped();
         break;
+    }
+  }
+
+  private _toggleYamlMode() {
+    if (this._mode === "yaml") {
+      this._initEntities(this._config!);
+      this._exitYamlMode();
+    } else {
+      this._enterYamlMode();
     }
   }
 
@@ -1348,7 +1352,12 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   protected supportedShortcuts(): SupportedShortcuts {
     return {
       s: () => this._saveScene(),
+      Y: () => this._toggleYamlMode(),
     };
+  }
+
+  protected supportedShortcutsInInput(): string[] {
+    return ["Y"];
   }
 
   private get _sceneAreaIdCurrent(): string | undefined | null {

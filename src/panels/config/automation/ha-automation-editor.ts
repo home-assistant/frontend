@@ -123,6 +123,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
+  private _sidebarConfig?: SidebarConfig;
+
   @query("manual-automation-editor")
   private _manualEditor?: HaManualAutomationEditor;
 
@@ -802,6 +804,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   private _sidebarConfigChanged = (
     ev: CustomEvent<{ value: SidebarConfig | undefined }>
   ) => {
+    this._sidebarConfig = ev.detail.value;
     this._triggerController.checkShowIndices(ev.detail.value);
   };
 
@@ -1186,7 +1189,24 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       z: () => this._undo(),
       Z: () => this._redo(),
       y: () => this._redo(),
+      Y: () =>
+        this._sidebarConfig
+          ? this._sidebarConfig.toggleYamlMode()
+          : this._toggleYamlMode(),
     };
+  }
+
+  protected supportedShortcutsInInput(): string[] {
+    return ["Y"];
+  }
+
+  private _toggleYamlMode() {
+    this._sidebarConfig = undefined;
+    if (this.mode === "gui") {
+      this.switchYamlMode();
+    } else {
+      this.switchUiMode();
+    }
   }
 
   // @ts-ignore
@@ -1267,11 +1287,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         this._takeControl();
         break;
       case "toggle_yaml_mode":
-        if (this.mode === "gui") {
-          this.switchYamlMode();
-          break;
-        }
-        this.switchUiMode();
+        this._toggleYamlMode();
         break;
       case "disable":
         this._toggle();

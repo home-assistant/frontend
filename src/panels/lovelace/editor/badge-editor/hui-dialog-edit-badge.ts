@@ -38,6 +38,7 @@ import type { GUIModeChangedEvent } from "../types";
 import "./hui-badge-element-editor";
 import type { HuiBadgeElementEditor } from "./hui-badge-element-editor";
 import type { EditBadgeDialogParams } from "./show-edit-badge-dialog";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 
 declare global {
   // for fire event
@@ -52,7 +53,9 @@ declare global {
 
 @customElement("hui-dialog-edit-badge")
 export class HuiDialogEditBadge
-  extends DirtyStateProviderMixin<LovelaceBadgeConfig>()(LitElement)
+  extends DirtyStateProviderMixin<LovelaceBadgeConfig>()(
+    KeyboardShortcutMixin(LitElement)
+  )
   implements HassDialog<EditBadgeDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -320,9 +323,20 @@ export class HuiDialogEditBadge
   }
 
   private _toggleMode(): void {
+    if (!this._guiModeAvailable) {
+      return;
+    }
     withViewTransition(() => {
       this._badgeEditorEl?.toggleMode();
     });
+  }
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return this._params ? { Y: () => this._toggleMode() } : {};
+  }
+
+  protected supportedShortcutsInInput(): string[] {
+    return ["Y"];
   }
 
   private _opened() {

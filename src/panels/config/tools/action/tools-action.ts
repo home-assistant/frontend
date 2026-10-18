@@ -50,9 +50,12 @@ import { documentationUrl } from "../../../../util/documentation-url";
 import { resolveMediaSource } from "../../../../data/media_source";
 import { MatchMinHeightMixin } from "../../../../mixins/match-min-height-mixin";
 import { withViewTransition } from "../../../../common/util/view-transition";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("tools-action")
-class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
+class HaPanelDevAction extends MatchMinHeightMixin(
+  KeyboardShortcutMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -615,7 +618,10 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
 
   private _modeChanged(ev: HASSDomEvent<{ value: string }>) {
     ev.stopPropagation();
-    const yamlMode = ev.detail.value === "yaml";
+    this._setYamlMode(ev.detail.value === "yaml");
+  }
+
+  private _setYamlMode(yamlMode: boolean) {
     if (yamlMode === this._yamlMode) {
       return;
     }
@@ -624,6 +630,16 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
       this._yamlValid = true;
       this._error = undefined;
     });
+  }
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      Y: () => this._uiAvailable && this._setYamlMode(!this._yamlMode),
+    };
+  }
+
+  protected supportedShortcutsInInput(): string[] {
+    return ["Y"];
   }
 
   private _yamlChanged(ev: HASSDomEvent<{ value: any; isValid: boolean }>) {

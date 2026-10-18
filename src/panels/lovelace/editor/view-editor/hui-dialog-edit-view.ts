@@ -59,12 +59,13 @@ import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
 @customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfig>()(
-  LitElement
+  KeyboardShortcutMixin(LitElement)
 ) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -355,12 +356,24 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
 
     switch (action) {
       case "toggle-mode":
-        this._yamlMode = !this._yamlMode;
+        this._toggleMode();
         break;
       case "move-to-dashboard":
         this._openSelectDashboard();
         break;
     }
+  }
+
+  private _toggleMode() {
+    this._yamlMode = !this._yamlMode;
+  }
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return this._params ? { Y: () => this._toggleMode() } : {};
+  }
+
+  protected supportedShortcutsInInput(): string[] {
+    return ["Y"];
   }
 
   private _openSelectDashboard(): void {

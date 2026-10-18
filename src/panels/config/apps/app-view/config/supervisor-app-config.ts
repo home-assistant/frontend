@@ -36,6 +36,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { supervisorAppsStyle } from "../../resources/supervisor-apps-style";
 import { suggestSupervisorAppRestart } from "../dialogs/suggestSupervisorAppRestart";
+import { KeyboardShortcutMixin } from "../../../../../mixins/keyboard-shortcut-mixin";
 
 const SUPPORTED_UI_TYPES = [
   "string",
@@ -58,7 +59,7 @@ const MASKED_FIELDS = ["password", "secret", "token"];
 @customElement("supervisor-app-config")
 class SupervisorAppConfig extends DirtyStateProviderMixin<
   Record<string, unknown>
->()(LitElement) {
+>()(KeyboardShortcutMixin(LitElement)) {
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -411,6 +412,20 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
       case "reset":
         this._resetTapped(ev);
     }
+  }
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return {
+      Y: () => {
+        if (this._canShowSchema && !this.disabled) {
+          this._yamlMode = !this._yamlMode;
+        }
+      },
+    };
+  }
+
+  protected supportedShortcutsInInput(): string[] {
+    return ["Y"];
   }
 
   private _toggleOptional() {

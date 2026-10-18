@@ -18,6 +18,9 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
         !event.altKey &&
         key in supportedShortcuts
       ) {
+        if (this.supportedShortcutsInInput().includes(key)) {
+          return;
+        }
         // Only capture the event if the user is not focused on an input
         if (!canOverrideAlphanumericInput(event.composedPath())) {
           return;
@@ -35,6 +38,21 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       if (key in supportedSingleKeyShortcuts) {
         event.preventDefault();
         supportedSingleKeyShortcuts[key]();
+      }
+    };
+
+    private _keydownCaptureEvent = (event: KeyboardEvent) => {
+      const supportedShortcuts = this.supportedShortcuts();
+      const key = event.shiftKey ? event.key.toUpperCase() : event.key;
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        !event.altKey &&
+        key in supportedShortcuts &&
+        this.supportedShortcutsInInput().includes(key)
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+        supportedShortcuts[key]();
       }
     };
 
@@ -56,15 +74,21 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       }
       this._listenersAdded = true;
       window.addEventListener("keydown", this._keydownEvent);
+      window.addEventListener("keydown", this._keydownCaptureEvent, true);
     }
 
     public removeKeyboardShortcuts() {
       this._listenersAdded = false;
       window.removeEventListener("keydown", this._keydownEvent);
+      window.removeEventListener("keydown", this._keydownCaptureEvent, true);
     }
 
     protected supportedShortcuts(): SupportedShortcuts {
       return {};
+    }
+
+    protected supportedShortcutsInInput(): string[] {
+      return [];
     }
 
     protected supportedSingleKeyShortcuts(): SupportedShortcuts {

@@ -54,12 +54,15 @@ import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import { getViewType } from "../../views/get-view-type";
 import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 
 const TABS = ["tab-strategy", "tab-appearance", "tab-visibility"] as const;
 
 @customElement("hui-dialog-edit-section")
 export class HuiDialogEditSection
-  extends DirtyStateProviderMixin<LovelaceSectionRawConfig>()(LitElement)
+  extends DirtyStateProviderMixin<LovelaceSectionRawConfig>()(
+    KeyboardShortcutMixin(LitElement)
+  )
   implements HassDialog<EditSectionDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -340,6 +343,14 @@ export class HuiDialogEditSection
     withViewTransition(() => {
       this._yamlMode = !this._yamlMode;
     });
+  }
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return this._params ? { Y: () => this._toggleMode() } : {};
+  }
+
+  protected supportedShortcutsInInput(): string[] {
+    return ["Y"];
   }
 
   private _openSelectView(): void {

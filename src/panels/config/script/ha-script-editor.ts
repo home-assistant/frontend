@@ -79,6 +79,7 @@ import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import { renderCtrlOrCmd } from "../../../common/keyboard/ctrl-or-cmd";
+import type { SidebarConfig } from "../../../data/automation";
 
 @customElement("ha-script-editor")
 export class HaScriptEditor extends SubscribeMixin(
@@ -87,6 +88,14 @@ export class HaScriptEditor extends SubscribeMixin(
   )
 ) {
   @property({ attribute: false }) public scriptId: string | null = null;
+
+  private _sidebarConfig?: SidebarConfig;
+
+  private _sidebarConfigChanged = (
+    ev: CustomEvent<{ value: SidebarConfig | undefined }>
+  ) => {
+    this._sidebarConfig = ev.detail.value;
+  };
 
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
@@ -452,6 +461,7 @@ export class HaScriptEditor extends SubscribeMixin(
                               @value-changed=${this._valueChanged}
                               @editor-save=${this._handleSaveScript}
                               @save-script=${this._handleSaveScript}
+                              @sidebar-config-changed=${this._sidebarConfigChanged}
                             >
                               <div class="alert-wrapper" slot="alerts">
                                 ${this._renderDeprecatedMigratedAlert()}
@@ -1065,7 +1075,24 @@ export class HaScriptEditor extends SubscribeMixin(
       z: () => this._undo(),
       Z: () => this._redo(),
       y: () => this._redo(),
+      Y: () =>
+        this._sidebarConfig
+          ? this._sidebarConfig.toggleYamlMode()
+          : this._toggleYamlMode(),
     };
+  }
+
+  protected supportedShortcutsInInput(): string[] {
+    return ["Y"];
+  }
+
+  private _toggleYamlMode() {
+    this._sidebarConfig = undefined;
+    if (this.mode === "gui") {
+      this.switchYamlMode();
+    } else {
+      this.switchUiMode();
+    }
   }
 
   // @ts-ignore
@@ -1149,11 +1176,7 @@ export class HaScriptEditor extends SubscribeMixin(
         this._takeControl();
         break;
       case "toggle_yaml_mode":
-        if (this.mode === "gui") {
-          this.switchYamlMode();
-          break;
-        }
-        this.switchUiMode();
+        this._toggleYamlMode();
         break;
       case "delete":
         this._deleteConfirm();
