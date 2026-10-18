@@ -192,8 +192,8 @@ export default async function checkPullRequestStandards({
     `\n\n` +
     `Please complete the ` +
     `[PR template](https://github.com/home-assistant/frontend/blob/dev/.github/PULL_REQUEST_TEMPLATE.md?plain=1) ` +
-    `and see the [developer docs](https://developers.home-assistant.io/docs/review-process) ` +
-    `for more on creating a great pull request (see point 6).`;
+    `and see the [contributor docs](https://contributors.home-assistant.io/start/pull-requests/#fill-out-the-template) ` +
+    `for more on creating a great pull request.`;
 
   if (existing) {
     await withRetry("comment update", () =>

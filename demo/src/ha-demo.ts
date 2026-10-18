@@ -142,7 +142,45 @@ export class HaDemo extends HomeAssistantAppEl {
         (localize?: LocalizeFunc) => localize ?? this.hass!.localize
       );
 
-    mockLovelace(hass, localizePromise);
+    mockLovelace(hass, localizePromise, [
+      {
+        id: "music",
+        url_path: "music",
+        require_admin: false,
+        show_in_sidebar: true,
+        icon: "mdi:music",
+        title: "Music",
+        mode: "storage",
+      },
+      {
+        id: "cameras",
+        url_path: "cameras",
+        require_admin: false,
+        show_in_sidebar: true,
+        icon: "mdi:cctv",
+        title: "Cameras",
+        mode: "storage",
+      },
+      {
+        id: "garden",
+        url_path: "garden",
+        require_admin: false,
+        show_in_sidebar: true,
+        icon: "mdi:flower",
+        title: "Garden",
+        mode: "storage",
+      },
+      {
+        id: "lovelace-advanced",
+        url_path: "lovelace-advanced",
+        require_admin: false,
+        show_in_sidebar: false,
+        icon: "mdi:cog",
+        title: "Advanced",
+        mode: "yaml",
+        filename: "lovelace-advanced.yaml",
+      },
+    ]);
     mockAuth(hass);
     mockTranslations(hass, localizePromise);
     mockHistory(hass);

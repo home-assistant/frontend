@@ -237,8 +237,10 @@ export class HaSankeyChart extends LitElement {
         distance: LABEL_DISTANCE,
         minMargin: LABEL_MIN_MARGIN,
         overflow: "break",
+        lineOverflow: this.vertical ? "truncate" : "none",
       },
       labelLayout: (params) => {
+        // params.rect is already zoomed, only the gap slack needs scaling
         if (this.vertical) {
           // reduce the label font size so the longest word fits on one line
           const longestWord = params.text
@@ -257,7 +259,7 @@ export class HaSankeyChart extends LitElement {
                 : longest;
             }, "");
           const wordWidth = measureTextWidth(longestWord, FONT_SIZE) || 1;
-          const availableWidth = (params.rect.width + 6) * this._currentZoom;
+          const availableWidth = params.rect.width + 6 * this._currentZoom;
           // minMargin is applied as padding on the label box, so words must
           // fit in the inner wrap width or overflow:break splits them.
           const wrapWidth = Math.max(availableWidth - LABEL_MIN_MARGIN, 1);
@@ -266,14 +268,17 @@ export class HaSankeyChart extends LitElement {
             (wrapWidth / wordWidth) * FONT_SIZE
           );
           return {
-            fontSize: fontSize > 1 ? fontSize : 0,
+            fontSize,
+            // Safari draws a 0px canvas font at its default size, so hide
+            // unreadable labels by dropping all of their lines instead.
+            height: fontSize > 1 ? undefined : 0,
             width: availableWidth,
             align: "center",
             dy: -2, // shift up or the lowest row labels may be cut off
           };
         }
 
-        const availableHeight = (params.rect.height + 8) * this._currentZoom; // account for the margin
+        const availableHeight = params.rect.height + 8 * this._currentZoom; // account for the margin
         const fontSize = Math.min(
           (availableHeight / params.labelRect.height) * FONT_SIZE,
           FONT_SIZE
