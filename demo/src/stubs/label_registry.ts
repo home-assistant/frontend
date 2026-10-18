@@ -10,7 +10,7 @@ export const mockLabelRegistry = (
   hass: MockHomeAssistant,
   data: LabelRegistryEntry[] = []
 ) => {
-  labels = data;
+  labels = [...data];
   hass.mockWS("config/label_registry/list", () =>
     labels.map((label) => ({ ...label }))
   );
