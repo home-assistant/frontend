@@ -295,9 +295,9 @@ export class HaConfigLabels extends LitElement {
         ></ha-icon-button>
         <ha-assist-chip
           slot="selection-bar"
-          .label=${this.hass.localize("ui.panel.config.labels.remove_selected")}
+          .label=${this.hass.localize("ui.panel.config.labels.delete_selected")}
           .disabled=${!this._selected.length}
-          @click=${this._removeSelected}
+          @click=${this._deleteSelected}
         ></ha-assist-chip>
         <ha-button slot="fab" size="l" @click=${this._addLabel}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
@@ -319,9 +319,9 @@ export class HaConfigLabels extends LitElement {
           `
         )}
         <wa-divider></wa-divider>
-        <ha-dropdown-item variant="danger" value="remove">
+        <ha-dropdown-item variant="danger" value="delete">
           <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
-          ${this.hass.localize("ui.common.remove")}
+          ${this.hass.localize("ui.common.delete")}
         </ha-dropdown-item>
       </ha-dropdown>
     `;
@@ -361,7 +361,7 @@ export class HaConfigLabels extends LitElement {
       updateEntry: entry
         ? (values) => this._updateLabel(entry, values)
         : undefined,
-      removeEntry: entry ? () => this._removeLabel(entry) : undefined,
+      removeEntry: entry ? () => this._deleteLabel(entry) : undefined,
     });
   }
 
@@ -388,21 +388,21 @@ export class HaConfigLabels extends LitElement {
     return updated;
   }
 
-  private _handleRemoveLabelClick = () => {
-    this._removeLabel(this._overflowLabel);
+  private _handleDeleteLabelClick = () => {
+    this._deleteLabel(this._overflowLabel);
   };
 
-  private async _removeLabel(selectedLabel: LabelRegistryEntry) {
+  private async _deleteLabel(selectedLabel: LabelRegistryEntry) {
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass!.localize(
-          "ui.panel.config.labels.confirm_remove_title"
+          "ui.panel.config.labels.confirm_delete_title"
         ),
-        text: this.hass.localize("ui.panel.config.labels.confirm_remove", {
+        text: this.hass.localize("ui.panel.config.labels.confirm_delete", {
           label: selectedLabel.name || selectedLabel.label_id,
         }),
         dismissText: this.hass!.localize("ui.common.cancel"),
-        confirmText: this.hass!.localize("ui.common.remove"),
+        confirmText: this.hass!.localize("ui.common.delete"),
         destructive: true,
       }))
     ) {
@@ -425,17 +425,17 @@ export class HaConfigLabels extends LitElement {
     this._selected = ev.detail.value;
   };
 
-  private _removeSelected = () => {
-    let removeFailed = false;
+  private _deleteSelected = () => {
+    let deleteFailed = false;
     showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.labels.confirm_remove_selected_title"
+        "ui.panel.config.labels.confirm_delete_selected_title"
       ),
       text: this.hass.localize(
-        "ui.panel.config.labels.confirm_remove_selected",
+        "ui.panel.config.labels.confirm_delete_selected",
         { count: this._selected.length }
       ),
-      confirmText: this.hass.localize("ui.common.remove"),
+      confirmText: this.hass.localize("ui.common.delete"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
       action: async () => {
@@ -444,24 +444,24 @@ export class HaConfigLabels extends LitElement {
             deleteLabelRegistryEntry(this.hass, labelId)
           )
         );
-        const removedIds = new Set(
+        const deletedIds = new Set(
           this._selected.filter(
             (_id, index) => results[index].status === "fulfilled"
           )
         );
         this._labels = this._labels.filter(
-          (label) => !removedIds.has(label.label_id)
+          (label) => !deletedIds.has(label.label_id)
         );
-        removeFailed = hasRejectedItems(results);
+        deleteFailed = hasRejectedItems(results);
         this._dataTable.clearSelection();
       },
     }).then((confirmed) => {
-      if (confirmed && removeFailed) {
+      if (confirmed && deleteFailed) {
         showAlertDialog(this, {
           title: this.hass.localize(
-            "ui.panel.config.labels.remove_failed_title"
+            "ui.panel.config.labels.delete_failed_title"
           ),
-          text: this.hass.localize("ui.panel.config.labels.remove_failed"),
+          text: this.hass.localize("ui.panel.config.labels.delete_failed"),
         });
       }
     });
@@ -489,8 +489,8 @@ export class HaConfigLabels extends LitElement {
       case "navigate-scripts":
         this._navigateConfig("/config/script/dashboard");
         break;
-      case "remove":
-        this._handleRemoveLabelClick();
+      case "delete":
+        this._handleDeleteLabelClick();
         break;
     }
   };
