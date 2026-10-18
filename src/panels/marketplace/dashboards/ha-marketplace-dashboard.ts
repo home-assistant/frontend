@@ -29,11 +29,13 @@ import { formatNumber } from "../../../common/number/format_number";
 import { marketplaceFilterQueryParamConfig } from "../../../common/url/marketplace-query-params";
 import type {
   DataTableColumnContainer,
+  SelectionChangedEvent,
   SortingDirection,
 } from "../../../components/data-table/ha-data-table";
 import "../../../layouts/hass-tabs-subpage";
 import "../../../layouts/hass-tabs-subpage-data-table";
 
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import type {
@@ -48,6 +50,7 @@ import type { HaIconButton } from "../../../components/ha-icon-button";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-svg-icon";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistantUI, Route } from "../../../types";
 import { showMarketplaceAddFromLink } from "../tools/add-from-link";
 import "../components/ha-marketplace-discover";
@@ -56,6 +59,11 @@ import {
   renderRepositoryMenuEntry,
   repositoryMenuItems,
 } from "../components/ha-marketplace-repository-overflow-menu";
+import type { ConfigEntry } from "../../../data/config_entries";
+import {
+  deleteConfigEntry,
+  getConfigEntries,
+} from "../../../data/config_entries";
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
 import {
   apiContext,
@@ -68,7 +76,10 @@ import type {
   RepositoryType,
 } from "../../../data/marketplace/repository";
 import { marketplaceErrorMessage } from "../../../data/marketplace/websocket";
-import { dismissNewMarketplaceRepositories } from "../../../data/marketplace/repository";
+import {
+  dismissNewMarketplaceRepositories,
+  uninstallMarketplaceRepository,
+} from "../../../data/marketplace/repository";
 import { haStyle } from "../../../resources/styles";
 import {
   browseLinkFromUrl,
@@ -85,7 +96,10 @@ import {
 import type { RepositoryFilters } from "./dashboard-repositories";
 import { documentationUrl } from "../../../util/documentation-url";
 import { renderRepositoryIcon } from "../tools/repository-icon";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 
 const defaultKeyData = {
   title: "",
@@ -221,6 +235,13 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _openingOverflowMenu = false;
 
+  @state() private _selected: string[] = [];
+
+  @state() private _checkingSelection = false;
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
+
   // The filters are kept in the URL by the page, the search, sorting and
   // grouping by the table
   private _filterParams = new QueryParamsController(
@@ -335,11 +356,26 @@ export class HaMarketplaceDashboard extends LitElement {
         @grouping-changed=${this._handleGroupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @row-click=${this._handleRowClicked}
+        ?selectable=${this.tab === "installed"}
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
         @clear-filter=${this._handleClearFilter}
         @search-changed=${this._handleSearchFilterChanged}
         @sorting-changed=${this._handleSortingChanged}
       >
         ${this._renderToolbar()}
+        ${
+          this.tab === "installed"
+            ? html`<ha-assist-chip
+                slot="selection-bar"
+                .label=${this._i18n.localize(
+                  "ui.panel.marketplace.dashboard.uninstall_selected"
+                )}
+                .disabled=${!this._selected.length || this._checkingSelection}
+                @click=${this._uninstallSelected}
+              ></ha-assist-chip>`
+            : nothing
+        }
         ${
           this.marketplace.repositories.length
             ? nothing
@@ -647,6 +683,152 @@ export class HaMarketplaceDashboard extends LitElement {
       (repository) => repository.id === button.dataset.repositoryId
     );
     this._repositoryOverflowMenu.open = true;
+  };
+
+  private _handleSelectionChanged = (
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void => {
+    this._selected = ev.detail.value;
+  };
+
+  private _uninstallSelected = async () => {
+    const selectedRepositories = this.marketplace.repositories.filter(
+      (repository) => this._selected.includes(repository.id)
+    );
+    if (!selectedRepositories.length) {
+      return;
+    }
+
+    this._checkingSelection = true;
+    try {
+      const domains = [
+        ...new Set(
+          selectedRepositories.flatMap((repository) =>
+            repository.category === "integration" && repository.domain
+              ? [repository.domain]
+              : []
+          )
+        ),
+      ];
+      const entriesChecks = await Promise.allSettled(
+        domains.map((domain) => getConfigEntries(this._api, { domain }))
+      );
+      const checkErrors = entriesChecks
+        .filter(
+          (check): check is PromiseRejectedResult => check.status === "rejected"
+        )
+        .map((check) =>
+          marketplaceErrorMessage(check.reason, this._i18n.localize)
+        );
+      if (checkErrors.length) {
+        showAlertDialog(this, {
+          title: this._i18n.localize(
+            "ui.panel.marketplace.dialog.uninstall.check_failed_title"
+          ),
+          text: html`
+            <p>
+              ${this._i18n.localize(
+                "ui.panel.marketplace.dialog.uninstall.check_failed"
+              )}
+            </p>
+            <pre>${checkErrors.join("\n")}</pre>
+          `,
+        });
+        return;
+      }
+
+      const entriesByDomain = new Map<string, ConfigEntry[]>();
+      domains.forEach((domain, index) => {
+        const check = entriesChecks[index];
+        if (check.status === "fulfilled" && check.value.length) {
+          entriesByDomain.set(domain, check.value);
+        }
+      });
+      const inUseCount = selectedRepositories.filter(
+        (repository) =>
+          repository.category === "integration" &&
+          repository.domain &&
+          entriesByDomain.has(repository.domain)
+      ).length;
+
+      const failures: string[] = [];
+      showConfirmationDialog(this, {
+        title: this._i18n.localize(
+          "ui.panel.marketplace.dialog.uninstall.selected_title"
+        ),
+        text: this._i18n.localize(
+          inUseCount
+            ? "ui.panel.marketplace.dialog.uninstall.selected_in_use"
+            : "ui.panel.marketplace.dialog.uninstall.selected",
+          {
+            count: selectedRepositories.length,
+            ...(inUseCount ? { in_use: inUseCount } : {}),
+          }
+        ),
+        confirmText: this._i18n.localize(
+          "ui.panel.marketplace.common.uninstall"
+        ),
+        dismissText: this._i18n.localize("ui.common.cancel"),
+        destructive: true,
+        action: async () => {
+          const units = new Map<string, RepositoryBase[]>();
+          selectedRepositories.forEach((repository) => {
+            const key = repository.domain ?? repository.id;
+            const unit = units.get(key);
+            if (unit) {
+              unit.push(repository);
+            } else {
+              units.set(key, [repository]);
+            }
+          });
+          const unitList = [...units.values()];
+          const results = await Promise.allSettled(
+            unitList.map(async (unit) => {
+              const entries = entriesByDomain.get(unit[0].domain ?? "") ?? [];
+              for (const entry of entries) {
+                // eslint-disable-next-line no-await-in-loop
+                await deleteConfigEntry(this._api, entry.entry_id);
+              }
+              for (const repository of unit) {
+                // eslint-disable-next-line no-await-in-loop
+                await uninstallMarketplaceRepository(this._api, repository.id);
+              }
+            })
+          );
+          unitList.forEach((unit, index) => {
+            const result = results[index];
+            if (result.status === "rejected") {
+              const error = marketplaceErrorMessage(
+                result.reason,
+                this._i18n.localize
+              );
+              unit.forEach((repository) =>
+                failures.push(`${repository.name}: ${error}`)
+              );
+            }
+          });
+          this._dataTable.clearSelection();
+        },
+      }).then((confirmed) => {
+        if (confirmed && failures.length) {
+          showAlertDialog(this, {
+            title: this._i18n.localize(
+              "ui.panel.marketplace.dialog.uninstall.failed_title"
+            ),
+            text: html`
+              <p>
+                ${this._i18n.localize(
+                  "ui.panel.marketplace.dialog.uninstall.failed"
+                )}
+              </p>
+              <pre>${failures.join("\n")}</pre>
+            `,
+          });
+        }
+      });
+    } finally {
+      this._checkingSelection = false;
+    }
   };
 
   private _handleMenuAction = (ev: HaDropdownSelectEvent) => {
