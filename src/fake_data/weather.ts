@@ -86,12 +86,24 @@ export const weatherHistory = (entityId: string) => {
 
 /** Forecasts for weather entities. */
 export const mockWeatherForecasts = (hass: MockHomeAssistant) => {
-  hass.mockWS("weather/subscribe_forecast", (msg, _hass, onChange) => {
-    onChange!({
-      type: msg.forecast_type,
-      forecast:
-        msg.forecast_type === "hourly" ? hourlyForecast() : dailyForecast(),
-    });
+  hass.mockWS("weather/subscribe_forecast", (msg, currentHass, onChange) => {
+    let forecast: ForecastAttribute[];
+    if (msg.forecast_type === "hourly") {
+      // Start the hourly forecast at the current temperature
+      forecast = hourlyForecast();
+      const current = currentHass.states[msg.entity_id]?.attributes.temperature;
+      const offset =
+        typeof current === "number"
+          ? Math.round(current) - forecast[0].temperature
+          : 0;
+      forecast = forecast.map((entry) => ({
+        ...entry,
+        temperature: entry.temperature + offset,
+      }));
+    } else {
+      forecast = dailyForecast();
+    }
+    onChange!({ type: msg.forecast_type, forecast });
     return () => undefined;
   });
 };

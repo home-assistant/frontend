@@ -391,13 +391,15 @@ export class HuiWeatherMetricCard extends WeatherPageCardBase<WeatherMetricCardC
     }
     const level = getUvLevel(uv.value);
 
-    // Highest UV index for the rest of today, from the hourly forecast
+    // Highest UV index in the coming hours of today, from the hourly forecast
     const endOfDay = new Date();
     endOfDay.setHours(23, 59, 59, 999);
     const peak = (this._forecast?.get("hourly")?.forecast ?? [])
       .filter(
         (entry) =>
-          entry.uv_index != null && new Date(entry.datetime) <= endOfDay
+          entry.uv_index != null &&
+          new Date(entry.datetime) > new Date() &&
+          new Date(entry.datetime) <= endOfDay
       )
       .reduce<{ uv: number; time: Date } | undefined>(
         (best, entry) =>
