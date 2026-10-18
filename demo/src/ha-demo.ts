@@ -210,7 +210,35 @@ export class HaDemo extends HomeAssistantAppEl {
     mockAreaRegistry(hass);
     mockDeviceRegistry(hass, demoDevices);
     mockFloorRegistry(hass);
-    mockLabelRegistry(hass);
+    mockLabelRegistry(hass, [
+      {
+        label_id: "kitchen",
+        name: "Kitchen",
+        icon: null,
+        color: "red",
+        description: "Everything in the kitchen",
+        created_at: 1735689600,
+        modified_at: 1735689600,
+      },
+      {
+        label_id: "garden",
+        name: "Garden",
+        icon: "mdi:flower",
+        color: "green",
+        description: null,
+        created_at: 1735689600,
+        modified_at: 1735689600,
+      },
+      {
+        label_id: "battery-powered",
+        name: "Battery powered",
+        icon: null,
+        color: "orange",
+        description: "Runs on batteries",
+        created_at: 1735689600,
+        modified_at: 1735689600,
+      },
+    ]);
     mockUsagePrediction(hass);
     mockEntityRegistryDisplay(hass);
     mockEntityRegistry(hass, [
