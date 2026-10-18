@@ -2,9 +2,15 @@ import SplitPanel from "@home-assistant/webawesome/dist/components/split-panel/s
 import type { CSSResultGroup } from "lit";
 import { css } from "lit";
 import { customElement } from "lit/decorators";
+import { mainWindow } from "../common/dom/get_main_window";
 
 @customElement("ha-split-panel")
 export class HaSplitPanel extends SplitPanel {
+  public connectedCallback() {
+    super.connectedCallback();
+    this.dir = mainWindow.document.dir;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       SplitPanel.styles,
