@@ -168,7 +168,7 @@ export class HaControlNumberButton extends LitElement {
           type="button"
           tabindex="-1"
           aria-label=${ifDefined(
-            this._i18n?.localize("ui.components.number-buttons.decrease")
+            this._i18n?.localize("ui.components.number-buttons.decrement")
           )}
           @click=${this._handleMinusButton}
           .disabled=${
@@ -182,7 +182,7 @@ export class HaControlNumberButton extends LitElement {
           type="button"
           tabindex="-1"
           aria-label=${ifDefined(
-            this._i18n?.localize("ui.components.number-buttons.increase")
+            this._i18n?.localize("ui.components.number-buttons.increment")
           )}
           @click=${this._handlePlusButton}
           .disabled=${
