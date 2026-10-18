@@ -5,6 +5,7 @@ import type { SankeySeriesOption } from "echarts/types/dist/echarts";
 import type { CallbackDataParams } from "echarts/types/src/util/types";
 import memoizeOne from "memoize-one";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import { parsePlainText } from "zrender/lib/graphic/helper/parseText.js";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import SankeyChart from "../../resources/echarts/components/sankey/install";
 import type { HaECOption } from "../../resources/echarts/echarts";
@@ -44,6 +45,59 @@ const LABEL_DISTANCE = 5;
 const NODE_SIZE = 30;
 const LABEL_MIN_MARGIN = 5;
 const BIDI_MARKS = /[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g;
+const LABEL_FONT = `${FONT_SIZE}px Roboto, Noto, sans-serif`;
+// zrender's overflow "break" only wraps at these characters, see isWordBreakChar
+const WORD_BREAK =
+  /[ ,&?/;\]]|[^\u0020-\u024F\u0370-\u10FF\u1200-\u13FF\u1E00-\u206F]/;
+
+const measureLabel = (text: string, width?: number) =>
+  parsePlainText(
+    text,
+    { font: LABEL_FONT, width, overflow: "break" },
+    undefined,
+    undefined
+  );
+
+// Largest font size at which the label, wrapped at `width`, fits in `height`
+// without breaking a word. `unwrappedHeight` is its height at FONT_SIZE.
+const fitLabelFontSize = (
+  text: string,
+  width: number,
+  height: number,
+  unwrappedHeight: number
+) => {
+  // ECharts measures at the final font size, leave room for rounding
+  const fitWidth = Math.max(width - 1, 1);
+  const unwrappedContentHeight = measureLabel(text).contentHeight;
+  const words = text.split(WORD_BREAK).filter(Boolean);
+  // a label at a smaller font wraps like one at FONT_SIZE in a wider box
+  const fits = (fontSize: number) => {
+    const scale = fontSize / FONT_SIZE;
+    const wrapWidth = fitWidth / scale;
+    const wrapped = measureLabel(text, wrapWidth);
+    // zrender moves a space that doesn't fit to the next line, indenting it
+    const badBreak =
+      words.some((word) => measureLabel(word, wrapWidth).lines.length > 1) ||
+      wrapped.lines.some((line, i) => i > 0 && line.startsWith(" "));
+    const wrappedHeight =
+      unwrappedHeight + wrapped.contentHeight - unwrappedContentHeight;
+    return !badBreak && wrappedHeight * scale <= height;
+  };
+  let low = 0;
+  let high = Math.min(FONT_SIZE, (height / unwrappedHeight) * FONT_SIZE);
+  if (fits(high)) {
+    return high;
+  }
+  for (let i = 0; i < 10; i++) {
+    const mid = (low + high) / 2;
+    if (fits(mid)) {
+      low = mid;
+    } else {
+      high = mid;
+    }
+  }
+  return low;
+};
 
 @customElement("ha-sankey-chart")
 export class HaSankeyChart extends LitElement {
@@ -274,13 +328,14 @@ export class HaSankeyChart extends LitElement {
         }
 
         const availableHeight = (params.rect.height + 8) * this._currentZoom; // account for the margin
-        const fontSize = Math.min(
-          (availableHeight / params.labelRect.height) * FONT_SIZE,
-          FONT_SIZE
-        );
         return {
-          fontSize,
-          lineHeight: fontSize,
+          // labelRect is measured before the width is applied, so unwrapped
+          fontSize: fitLabelFontSize(
+            params.text,
+            labelSpace,
+            availableHeight,
+            params.labelRect.height
+          ),
           width: labelSpace,
           height: params.rect.height,
         };
