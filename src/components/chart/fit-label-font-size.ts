@@ -35,30 +35,48 @@ export function fitLabelFontSize(
   const unwrappedContentHeight = measure(text).contentHeight;
   const words = text.split(WORD_BREAK).filter(Boolean);
   // a label at a smaller font wraps like one at baseFontSize in a wider box
+  const wrapWidthAt = (fontSize: number) =>
+    (fitWidth * baseFontSize) / fontSize;
+  const maxFontSize = (height / unwrappedHeight) * baseFontSize;
   const fits = (fontSize: number) => {
-    const scale = fontSize / baseFontSize;
-    const wrapWidth = fitWidth / scale;
-    const wrapped = measure(text, wrapWidth);
-    // zrender moves a space that doesn't fit to the next line, indenting it
-    const badBreak =
-      words.some((word) => measure(word, wrapWidth).lines.length > 1) ||
-      wrapped.lines.some((line, i) => i > 0 && line.startsWith(" "));
+    const wrapWidth = wrapWidthAt(fontSize);
+    if (words.some((word) => measure(word, wrapWidth).lines.length > 1)) {
+      return false;
+    }
     const wrappedHeight =
-      unwrappedHeight + wrapped.contentHeight - unwrappedContentHeight;
-    return !badBreak && wrappedHeight * scale <= height;
+      unwrappedHeight +
+      (measure(text, wrapWidth).contentHeight - unwrappedContentHeight);
+    // exact at maxFontSize when the label doesn't wrap
+    return fontSize <= maxFontSize * (unwrappedHeight / wrappedHeight);
   };
   let low = 0;
-  let high = Math.min(baseFontSize, (height / unwrappedHeight) * baseFontSize);
+  let high = Math.min(baseFontSize, maxFontSize);
   if (fits(high)) {
-    return high;
-  }
-  for (let i = 0; i < 10; i++) {
-    const mid = (low + high) / 2;
-    if (fits(mid)) {
-      low = mid;
-    } else {
-      high = mid;
+    low = high;
+  } else {
+    for (let i = 0; i < 10; i++) {
+      const mid = (low + high) / 2;
+      if (fits(mid)) {
+        low = mid;
+      } else {
+        high = mid;
+      }
     }
   }
-  return low;
+  // zrender moves a space that doesn't fit to the next line, indenting it.
+  // Shrinking further only widens the wrap, so the label still fits.
+  const spaceWidth = measure(" ").contentWidth;
+  const indents = (fontSize: number) =>
+    text
+      .split("\n")
+      .some((paragraph) =>
+        measure(paragraph, wrapWidthAt(fontSize)).lines.some(
+          (line, i) => i > 0 && line.startsWith(" ")
+        )
+      );
+  let fontSize = low;
+  for (let i = 0; i < 3 && indents(fontSize); i++) {
+    fontSize = (fitWidth * baseFontSize) / (wrapWidthAt(fontSize) + spaceWidth);
+  }
+  return fontSize;
 }
