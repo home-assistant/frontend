@@ -194,12 +194,19 @@ export const removeLabelFromEntityRegistry = (
   hass: MockHomeAssistant,
   labelId: string
 ) => {
+  const withoutLabel = (labels: string[]) =>
+    labels.filter((id) => id !== labelId);
+  for (const [key, entry] of retiredEntries) {
+    if (entry.labels.includes(labelId)) {
+      retiredEntries.set(key, { ...entry, labels: withoutLabel(entry.labels) });
+    }
+  }
   if (!entries.some((entry) => entry.labels.includes(labelId))) {
     return;
   }
   entries = entries.map((entry) =>
     entry.labels.includes(labelId)
-      ? { ...entry, labels: entry.labels.filter((id) => id !== labelId) }
+      ? { ...entry, labels: withoutLabel(entry.labels) }
       : entry
   );
   const entities = { ...hass.entities };
@@ -208,7 +215,7 @@ export const removeLabelFromEntityRegistry = (
     if (entity?.labels.includes(labelId)) {
       entities[entry.entity_id] = {
         ...entity,
-        labels: entity.labels.filter((id) => id !== labelId),
+        labels: withoutLabel(entity.labels),
       };
     }
   }
