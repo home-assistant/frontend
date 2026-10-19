@@ -182,7 +182,7 @@ jobs:
           node-modules-cache-key: node-modules-container-v1
 
       - name: Download demo build
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: demo-dist
           path: demo/dist/
@@ -236,7 +236,7 @@ jobs:
           node-modules-cache-key: node-modules-container-v1
 
       - name: Download e2e test app build
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: e2e-test-app-dist
           path: test/e2e/app/dist/
@@ -290,7 +290,7 @@ jobs:
           node-modules-cache-key: node-modules-container-v1
 
       - name: Download gallery build
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: gallery-dist
           path: gallery/dist/
@@ -331,21 +331,21 @@ jobs:
           node-modules-cache: true
 
       - name: Download demo blob reports
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         continue-on-error: true
         with:
           pattern: blob-report-demo-*
           path: test/e2e/reports/demo/
 
       - name: Download app blob reports
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         continue-on-error: true
         with:
           pattern: blob-report-app-*
           path: test/e2e/reports/app/
 
       - name: Download gallery blob reports
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         continue-on-error: true
         with:
           pattern: blob-report-gallery-*
