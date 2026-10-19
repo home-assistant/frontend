@@ -557,9 +557,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
                     size="small"
                     @click=${this._showSupervisorLogs}
                   >
-                    ${this.i18n.localize(
-                      "ui.panel.config.apps.dashboard.action_error.view_supervisor_logs"
-                    )}
+                    ${this.i18n.localize("ui.panel.config.logs.supervisor_logs")}
                   </ha-button>
                 </ha-alert>`
               : nothing

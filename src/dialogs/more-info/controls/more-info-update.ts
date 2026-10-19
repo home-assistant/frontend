@@ -304,7 +304,7 @@ class MoreInfoUpdate extends LitElement {
                           @click=${this._handleShowSupervisorLogs}
                         >
                           ${this._localize(
-                            "ui.dialogs.more_info_control.update.show_supervisor_logs"
+                            "ui.dialogs.more_info_control.update.supervisor_logs"
                           )}
                         </ha-button>`
                       : nothing
@@ -442,7 +442,7 @@ class MoreInfoUpdate extends LitElement {
           action: this._canShowSupervisorLogs()
             ? {
                 text: this._localize(
-                  "ui.dialogs.more_info_control.update.show_supervisor_logs"
+                  "ui.dialogs.more_info_control.update.supervisor_logs"
                 ),
                 action: () =>
                   this._showSupervisorLogs(toastHost as HTMLElement),

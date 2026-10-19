@@ -1868,7 +1868,6 @@
             "backups_link": "View backups"
           },
           "install_failed": "The update could not be started: {error}",
-          "show_supervisor_logs": "[%key:ui::panel::config::apps::dashboard::action_error::view_supervisor_logs%]",
           "supervisor_logs": "[%key:ui::panel::config::logs::supervisor_logs%]",
           "create_backup": {
             "automatic": "Automatic backup before update",
