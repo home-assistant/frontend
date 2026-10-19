@@ -154,6 +154,9 @@ class HaMfaModuleSetupFlow extends DirtyStateProviderMixin<
             appearance=${ifDefined(
               this._step?.type === "form" ? "plain" : undefined
             )}
+            variant=${ifDefined(
+              this._step?.type === "form" ? "neutral" : undefined
+            )}
             @click=${this.closeDialog}
             >${this.hass.localize(
               ["abort", "create_entry"].includes(this._step?.type || "")

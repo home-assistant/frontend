@@ -92,6 +92,7 @@ export class DemoHaDialog extends LitElement {
             <ha-button
               data-dialog="close"
               appearance="plain"
+              variant="neutral"
               slot="secondaryAction"
             >
               Cancel
@@ -229,19 +230,26 @@ export class DemoHaDialog extends LitElement {
             <tr>
               <th>Slot</th>
               <th>Description</th>
-              <th>Appearance to use</th>
+              <th>Button to use</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>secondaryAction</code></td>
               <td>The secondary action button(s).</td>
-              <td><code>appearance="plain"</code></td>
+              <td>
+                <code>appearance="plain"</code>, with
+                <code>variant="neutral"</code> for buttons that dismiss the
+                dialog (Cancel, Close, Back)
+              </td>
             </tr>
             <tr>
               <td><code>primaryAction</code></td>
               <td>The primary action button(s).</td>
-              <td>Default (no appearance attribute)</td>
+              <td>
+                Default appearance, with <code>variant="danger"</code> or
+                <code>variant="warning"</code> for risky actions
+              </td>
             </tr>
           </tbody>
         </table>
@@ -265,6 +273,7 @@ export class DemoHaDialog extends LitElement {
     &lt;ha-button
       data-dialog="close"
       appearance="plain"
+      variant="neutral"
       slot="secondaryAction"
     &gt;
       Cancel

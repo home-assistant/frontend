@@ -113,13 +113,11 @@ export class DemoHaAdaptivePopover extends LitElement {
             <ha-button
               @click=${this._handleClosed}
               slot="secondaryAction"
-              variant="plain"
+              appearance="plain"
+              variant="neutral"
               >Cancel</ha-button
             >
-            <ha-button
-              @click=${this._handleClosed}
-              slot="primaryAction"
-              variant="accent"
+            <ha-button @click=${this._handleClosed} slot="primaryAction"
               >Submit</ha-button
             >
           </ha-dialog-footer>

@@ -166,6 +166,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
           .disabled=${this._busy}
           @click=${this._clearChosenStatistic}
           appearance="plain"
+          variant="neutral"
         >
           ${this.hass.localize("ui.common.back")}</ha-button
         >

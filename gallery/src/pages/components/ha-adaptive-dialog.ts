@@ -140,13 +140,11 @@ export class DemoHaAdaptiveDialog extends LitElement {
             <ha-button
               @click=${this._handleClosed}
               slot="secondaryAction"
-              variant="plain"
+              appearance="plain"
+              variant="neutral"
               >Cancel</ha-button
             >
-            <ha-button
-              @click=${this._handleClosed}
-              slot="primaryAction"
-              variant="accent"
+            <ha-button @click=${this._handleClosed} slot="primaryAction"
               >Submit</ha-button
             >
           </ha-dialog-footer>
@@ -330,19 +328,26 @@ export class DemoHaAdaptiveDialog extends LitElement {
             <tr>
               <th>Slot</th>
               <th>Description</th>
-              <th>Variant to use</th>
+              <th>Button to use</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>secondaryAction</code></td>
               <td>The secondary action button(s).</td>
-              <td><code>plain</code></td>
+              <td>
+                <code>appearance="plain"</code>, with
+                <code>variant="neutral"</code> for buttons that dismiss the
+                dialog (Cancel, Close, Back)
+              </td>
             </tr>
             <tr>
               <td><code>primaryAction</code></td>
               <td>The primary action button(s).</td>
-              <td><code>accent</code></td>
+              <td>
+                Default appearance, with <code>variant="danger"</code> or
+                <code>variant="warning"</code> for risky actions
+              </td>
             </tr>
           </tbody>
         </table>
@@ -393,10 +398,14 @@ export class DemoHaAdaptiveDialog extends LitElement {
   &lt;/div&gt;
   &lt;div&gt;Dialog content&lt;/div&gt;
   &lt;ha-dialog-footer slot="footer"&gt;
-    &lt;ha-button slot="secondaryAction" variant="plain"
-      &gt;Cancel&lt;/ha-button
+    &lt;ha-button
+      slot="secondaryAction"
+      appearance="plain"
+      variant="neutral"
     &gt;
-    &lt;ha-button slot="primaryAction" variant="accent"&gt;Submit&lt;/ha-button&gt;
+      Cancel
+    &lt;/ha-button&gt;
+    &lt;ha-button slot="primaryAction"&gt;Submit&lt;/ha-button&gt;
   &lt;/ha-dialog-footer&gt;
 &lt;/ha-adaptive-dialog&gt;</code></pre>
 
