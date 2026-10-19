@@ -5562,7 +5562,7 @@
             "select_target": "Select a target",
             "home": "Home",
             "unassigned": "Unassigned",
-            "time_sun": "Time and sun",
+            "other": "Other",
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",

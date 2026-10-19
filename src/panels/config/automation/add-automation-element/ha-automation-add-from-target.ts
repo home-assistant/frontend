@@ -70,6 +70,10 @@ import type { AddAutomationElementListItem } from "../add-automation-element-dia
 import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
 import "./ha-automation-add-element-paste";
 
+// Person entities are also shown in the "Other" section next to time and sun
+// (triggers/conditions only), in addition to the unassigned entities list.
+const PERSON_GROUP = `entity_person${TARGET_SEPARATOR}`;
+
 interface Level1Entries {
   open: boolean;
   areas?: Record<string, Level2Entries>;
@@ -214,6 +218,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
               ${this._renderFloors(this.narrow, this._entries, this.value)}
               ${this._renderTimeLocation(
                 this.narrow,
+                this._entries,
                 this.timeLocationLabel,
                 this.timeLocationGroups,
                 this.selectedGroup
@@ -390,17 +395,33 @@ export default class HaAutomationAddFromTarget extends LitElement {
   private _renderTimeLocation = memoizeOne(
     (
       narrow: boolean,
+      entries: Record<string, Level1Entries>,
       label?: string,
       groups?: AddAutomationElementListItem[],
       selectedGroup?: string
     ) => {
-      if (!label || !groups?.length) {
+      const people =
+        entries[`device${TARGET_SEPARATOR}`]?.devices?.[PERSON_GROUP];
+      if (!label || (!groups?.length && !people)) {
         return nothing;
       }
 
+      const peopleItem = people
+        ? this._renderItem(
+            this._i18n.localize("ui.panel.config.person.caption"),
+            PERSON_GROUP,
+            true,
+            false,
+            !people.open && !!people.entities.length,
+            people.open,
+            this._renderDomainIcon("person"),
+            people.open ? this._renderEntities(people.entities) : undefined
+          )
+        : nothing;
+
       return html`<ha-section-title>${label}</ha-section-title>
         <ha-list-base>
-          ${groups.map(
+          ${groups?.map(
             (group) =>
               html`<ha-list-item-button
                 .value=${group.key}
@@ -425,7 +446,15 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 }
               </ha-list-item-button>`
           )}
-        </ha-list-base>`;
+          ${narrow ? peopleItem : nothing}
+        </ha-list-base>
+        ${
+          !narrow && people
+            ? html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
+                ${peopleItem}
+              </wa-tree>`
+            : nothing
+        }`;
     }
   );
 
