@@ -109,12 +109,6 @@ class ZWaveJSConfigDashboard extends LitElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._unsubscribeS2Inclusion();
-    this._unsubscribeBackup?.();
-    this._unsubscribeBackup = undefined;
-    this._backupProgress = undefined;
-    this._unsubscribeRestore?.();
-    this._unsubscribeRestore = undefined;
-    this._restoreProgress = undefined;
   }
 
   protected async firstUpdated() {
@@ -736,16 +730,11 @@ class ZWaveJSConfigDashboard extends LitElement {
   private async _downloadBackup() {
     try {
       this._backupProgress = 0;
-      const unsubscribe = await subscribeZwaveNVMBackup(
+      this._unsubscribeBackup = await subscribeZwaveNVMBackup(
         this.hass!,
         this.configEntryId!,
         this._handleBackupMessage
       );
-      if (this.isConnected) {
-        this._unsubscribeBackup = unsubscribe;
-      } else {
-        unsubscribe();
-      }
     } catch (err: any) {
       this._backupProgress = undefined;
       showAlertDialog(this, {
@@ -786,17 +775,12 @@ class ZWaveJSConfigDashboard extends LitElement {
         reader.readAsArrayBuffer(file);
       });
 
-      const unsubscribe = await restoreZwaveNVM(
+      this._unsubscribeRestore = await restoreZwaveNVM(
         this.hass!,
         this.configEntryId!,
         base64Data,
         this._handleRestoreMessage
       );
-      if (this.isConnected) {
-        this._unsubscribeRestore = unsubscribe;
-      } else {
-        unsubscribe();
-      }
     } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
