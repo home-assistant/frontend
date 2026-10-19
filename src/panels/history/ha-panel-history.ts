@@ -198,18 +198,6 @@ class HaPanelHistory extends LitElement {
         <h1 class="page-title" slot="title">
           ${this.hass.localize("panel.history")}
         </h1>
-        ${
-          this._isZoomed() && !loading
-            ? html`<ha-icon-button
-                slot="actionItems"
-                .label=${this.hass.localize(
-                  "ui.components.history_charts.zoom_reset"
-                )}
-                .path=${mdiRestart}
-                @click=${this._resetZoom}
-              ></ha-icon-button>`
-            : nothing
-        }
         <ha-dropdown slot="actionItems" @wa-select=${this._handleMenuAction}>
           <ha-icon-button
             slot="trigger"
@@ -308,6 +296,14 @@ class HaPanelHistory extends LitElement {
                 // bottom of the results, as on the energy dashboard
                 !loading && hasTargets && hasResults
                   ? html`<div class="zoom-bar">
+                      <ha-icon-button
+                        .disabled=${!this._isZoomed()}
+                        .label=${this.hass.localize(
+                          "ui.components.history_charts.zoom_reset"
+                        )}
+                        .path=${mdiRestart}
+                        @click=${this._resetZoom}
+                      ></ha-icon-button>
                       <ha-chart-zoom-slider
                         .start=${this._zoomRange[0]}
                         .end=${this._zoomRange[1]}
@@ -951,6 +947,7 @@ class HaPanelHistory extends LitElement {
           margin-inline: auto;
           display: flex;
           align-items: center;
+          gap: var(--ha-space-2);
           min-height: 56px;
           padding: var(--ha-space-2) var(--ha-space-4);
           border-radius: var(
