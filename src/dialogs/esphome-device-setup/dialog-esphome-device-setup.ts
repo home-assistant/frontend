@@ -582,6 +582,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   /**
    * Undefined when USB usage has not been loaded. A port of a connected device
    * is always in the scan, so a missing or absent port means it is offline.
+   * Without the usb integration nothing is scanned, so a missing port says nothing.
    */
   private _serialPortUsage(url: string) {
     if (!this._serialPorts) {
@@ -590,7 +591,12 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     const usage = this._serialPorts.find((port) => port.device === url);
     return {
       consumers: usage?.consumers ?? [],
-      offline: !usage?.present,
+      offline: usage
+        ? !usage.present
+        : Boolean(
+            this._hassConfig &&
+            isComponentLoaded(this._hassConfig.config, "usb")
+          ),
     };
   }
 
