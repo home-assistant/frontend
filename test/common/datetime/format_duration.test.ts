@@ -143,16 +143,30 @@ describe("without Intl.DurationFormat", () => {
     { seconds: 1, milliseconds: 500 },
     { milliseconds: 250 },
     { days: 2, hours: 0, minutes: 0, seconds: 7 },
+    // Rejected by Intl.DurationFormat
+    { hours: 1, minutes: -30 },
+    { seconds: 1.5 },
+    { hours: NaN, minutes: 5 },
   ];
+
+  const attempt = (format: () => string) => {
+    try {
+      return format();
+    } catch (err) {
+      return (err as Error).name;
+    }
+  };
 
   const formatAll = (locale: FrontendLocaleData) => [
     ...DURATIONS.flatMap((duration) => [
-      formatDurationLong(locale, duration),
-      formatDurationNarrow(locale, duration),
-      formatDurationDigital(locale, duration),
+      attempt(() => formatDurationLong(locale, duration)),
+      attempt(() => formatDurationNarrow(locale, duration)),
+      attempt(() => formatDurationDigital(locale, duration)),
     ]),
-    ...["0", "0.25", "1", "95.5"].flatMap((value) =>
-      DURATION_UNITS.map((unit) => formatDuration(locale, value, unit))
+    ...["0", "0.25", "1", "95.5", "-1", "-0.5", "-1.25"].flatMap((value) =>
+      DURATION_UNITS.map((unit) =>
+        attempt(() => formatDuration(locale, value, unit))
+      )
     ),
   ];
 
@@ -175,6 +189,7 @@ describe("without Intl.DurationFormat", () => {
   it.each(["en", "de", "nl"])(
     "matches Intl.DurationFormat in %s",
     (language) => {
+      expect("DurationFormat" in Intl).toBe(false);
       expect(formatAll({ ...LOCALE, language })).toEqual(expected[language]);
     }
   );

@@ -59,8 +59,18 @@ type DurationFormatOptions = {
 
 type DurationFormatter = (duration: HaDurationData) => string;
 
-const isNegativeDuration = (duration: HaDurationData) =>
-  Object.values(duration).some((value) => value < 0);
+// Throws like Intl.DurationFormat on fractions, NaN and mixed signs
+const isNegativeDuration = (duration: HaDurationData) => {
+  const values = DURATION_FIELDS.map(([field]) => Number(duration[field] ?? 0));
+  const negative = values.some((value) => value < 0);
+  if (
+    !values.every((value) => Number.isInteger(value)) ||
+    (negative && values.some((value) => value > 0))
+  ) {
+    throw new RangeError("Invalid duration");
+  }
+  return negative;
+};
 
 const fallbackUnitsFormat = (
   language: string,
