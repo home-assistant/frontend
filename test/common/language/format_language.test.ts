@@ -21,6 +21,11 @@ describe("formatLanguageCode", () => {
     expect(formatLanguageCode("zh-TW", zhHantLocale)).toBe("中文（中國台灣）");
   });
 
+  it("matches language codes regardless of casing", () => {
+    expect(formatLanguageCode("zh-tw", zhHansLocale)).toBe("中文（中国台湾）");
+    expect(formatLanguageCode("ZH-TW", zhHantLocale)).toBe("中文（中國台灣）");
+  });
+
   it("leaves regional Chinese UI locales to Intl.DisplayNames", () => {
     for (const uiLanguage of ["zh-TW", "zh-HK", "zh-Hant-TW"]) {
       expect(
