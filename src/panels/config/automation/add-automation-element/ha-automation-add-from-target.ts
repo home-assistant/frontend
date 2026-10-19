@@ -3,7 +3,7 @@ import type WaTreeItem from "@home-assistant/webawesome/dist/components/tree-ite
 import "@home-assistant/webawesome/dist/components/tree/tree";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import type { ContextType } from "@lit/context";
-import { mdiTextureBox } from "@mdi/js";
+import { mdiAccountMultiple, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -425,7 +425,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
             false,
             !people.open && !!people.entities.length,
             people.open,
-            this._renderDomainIcon("person"),
+            (slot) =>
+              html`<ha-svg-icon
+                slot=${ifDefined(slot)}
+                .path=${mdiAccountMultiple}
+              ></ha-svg-icon>`,
             people.open ? this._renderEntities(people.entities) : undefined
           )
         : nothing;
