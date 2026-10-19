@@ -1,6 +1,5 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { ifDefined } from "lit/directives/if-defined";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
@@ -151,12 +150,8 @@ class HaMfaModuleSetupFlow extends DirtyStateProviderMixin<
             slot=${
               this._step?.type === "form" ? "secondaryAction" : "primaryAction"
             }
-            appearance=${ifDefined(
-              this._step?.type === "form" ? "plain" : undefined
-            )}
-            variant=${ifDefined(
-              this._step?.type === "form" ? "neutral" : undefined
-            )}
+            appearance="plain"
+            variant="neutral"
             @click=${this.closeDialog}
             >${this.hass.localize(
               ["abort", "create_entry"].includes(this._step?.type || "")
