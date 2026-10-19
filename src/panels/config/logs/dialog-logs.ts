@@ -1,9 +1,12 @@
-import type { CSSResultGroup } from "lit";
+import type { ContextType } from "@lit/context";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dialog";
 import "../../../components/input/ha-input-search";
+import { internationalizationContext } from "../../../data/context";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import "./error-log-card";
@@ -11,7 +14,11 @@ import type { LogsDialogParams } from "./show-dialog-logs";
 
 @customElement("dialog-logs")
 class LogsDialog extends LitElement {
+  // Only for error-log-card, which still takes hass (see #55062).
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state() private _dialogParams?: LogsDialogParams;
 
@@ -22,8 +29,12 @@ class LogsDialog extends LitElement {
   public showDialog(dialogParams: LogsDialogParams) {
     this._dialogParams = dialogParams;
     this._open = true;
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
+    super.firstUpdated(changedProps);
     // The log card's strings live in the config fragment, which isn't loaded on dashboards.
-    this.hass.loadFragmentTranslation("config");
+    this._i18n.loadFragmentTranslation("config");
   }
 
   public closeDialog() {
@@ -51,7 +62,7 @@ class LogsDialog extends LitElement {
         <ha-input-search
           appearance="outlined"
           .value=${this._filter}
-          .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
+          .placeholder=${this._i18n.localize("ui.panel.config.logs.search")}
           @input=${this._filterChanged}
         ></ha-input-search>
         <error-log-card
