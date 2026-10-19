@@ -30,7 +30,11 @@ import {
   reconcileUsageWithHome,
   computeConsumptionData,
 } from "../../src/data/energy";
-import type { EnergyData, EnergySource, EnergySumData } from "../../src/data/energy";
+import type {
+  EnergyData,
+  EnergySource,
+  EnergySumData,
+} from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
 import { StatisticMeanType } from "../../src/data/recorder";
