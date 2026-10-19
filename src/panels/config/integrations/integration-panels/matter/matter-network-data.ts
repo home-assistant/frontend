@@ -430,6 +430,31 @@ export function createMatterNetworkChartData(
     }
   });
 
+  // keep the strongest link of every node in the force layout so
+  // nodes hang near their best connection instead of floating free
+  nodes.forEach((node) => {
+    let bestLink: NetworkLink | undefined;
+    const hasActiveLink = links.some((link) => {
+      if (link.source !== node.id && link.target !== node.id) {
+        return false;
+      }
+      if (!link.ignoreForceLayout) {
+        return true;
+      }
+      const linkValue = Math.max(link.value ?? 0, link.reverseValue ?? 0);
+      if (
+        linkValue >
+        Math.max(bestLink?.value ?? -1, bestLink?.reverseValue ?? -1)
+      ) {
+        bestLink = link;
+      }
+      return false;
+    });
+    if (!hasActiveLink && bestLink) {
+      bestLink.ignoreForceLayout = false;
+    }
+  });
+
   bridgedDevices.forEach((devices, bridgeId) => {
     devices.forEach((device) => {
       const id = `${BRIDGED_DEVICE_NODE_PREFIX}${device.id}`;
@@ -462,31 +487,6 @@ export function createMatterNetworkChartData(
         },
       });
     });
-  });
-
-  // keep the strongest link of every node in the force layout so
-  // nodes hang near their best connection instead of floating free
-  nodes.forEach((node) => {
-    let bestLink: NetworkLink | undefined;
-    const hasActiveLink = links.some((link) => {
-      if (link.source !== node.id && link.target !== node.id) {
-        return false;
-      }
-      if (!link.ignoreForceLayout) {
-        return true;
-      }
-      const linkValue = Math.max(link.value ?? 0, link.reverseValue ?? 0);
-      if (
-        linkValue >
-        Math.max(bestLink?.value ?? -1, bestLink?.reverseValue ?? -1)
-      ) {
-        bestLink = link;
-      }
-      return false;
-    });
-    if (!hasActiveLink && bestLink) {
-      bestLink.ignoreForceLayout = false;
-    }
   });
 
   return { nodes, links, categories };
