@@ -81,6 +81,11 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                 <div class="flex">
                   <ha-slider
                     labeled
+                    hide-label
+                    .label=${this.hass.formatEntityName(
+                      stateObj,
+                      this._config.name
+                    )}
                     .disabled=${stateObj.state === UNAVAILABLE}
                     .step=${Number(stateObj.attributes.step)}
                     .min=${Number(stateObj.attributes.min)}
@@ -101,6 +106,11 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
             : html`
                 <div class="flex box">
                   <ha-input
+                    hide-label
+                    .label=${this.hass.formatEntityName(
+                      stateObj,
+                      this._config.name
+                    )}
                     auto-validate
                     .disabled=${stateObj.state === UNAVAILABLE}
                     pattern="[0-9]+([\\.][0-9]+)?"

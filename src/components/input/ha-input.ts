@@ -126,6 +126,9 @@ export class HaInput extends WaInputMixin(LitElement) {
   @property({ type: Boolean, attribute: "inset-label" })
   public insetLabel = false;
 
+  @property({ type: Boolean, reflect: true, attribute: "hide-label" })
+  public hideLabel = false;
+
   /** Sets the native input id (and label `for`) on the inner `wa-input`. */
   @property({ attribute: "input-id" })
   public inputId?: string;
@@ -283,7 +286,7 @@ export class HaInput extends WaInputMixin(LitElement) {
             (this.value !== undefined && this.value !== "") ||
             (this.label && this.placeholder) ||
             (hasStartSlot && this.insetLabel),
-          "no-label": !this.label,
+          "no-label": !this.label || this.hideLabel,
           "hint-hidden":
             !this.hint &&
             !hasHintSlot &&
@@ -427,6 +430,17 @@ export class HaInput extends WaInputMixin(LitElement) {
       }
       :host([appearance="outlined"]) {
         padding-bottom: var(--ha-input-padding-bottom);
+      }
+
+      :host([hide-label]) wa-input::part(label) {
+        position: absolute;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        width: 1px;
+        margin: -1px;
+        padding: 0;
+        border: 0;
       }
 
       wa-input::part(label) {

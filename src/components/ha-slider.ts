@@ -9,6 +9,9 @@ export class HaSlider extends Slider {
 
   @property({ type: Boolean, attribute: "with-tooltip" }) withTooltip = true;
 
+  @property({ type: Boolean, reflect: true, attribute: "hide-label" })
+  hideLabel = false;
+
   public connectedCallback() {
     super.connectedCallback();
     this.dir = mainWindow.document.dir;
@@ -64,9 +67,18 @@ export class HaSlider extends Slider {
           width: 200px;
         }
 
+        :host([hide-label]) #label {
+          display: none;
+        }
+
         /* Expand slider touch target to 32px */
         #slider {
           padding-block: 14px;
+        }
+
+        /* Also cancels the gap Web Awesome adds below a visible label */
+        #slider,
+        :host([hide-label]) #label.has-label ~ #slider.horizontal {
           margin-block: -14px;
         }
 
