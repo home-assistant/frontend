@@ -88,7 +88,9 @@ export class HUIViewBackground extends LitElement {
     const themeBackground = computedStyles.getPropertyValue(
       "--lovelace-background"
     );
-
+    const themeBackground =
+      computedStyles.getPropertyValue("--lovelace-background") ||
+      computedStyles.getPropertyValue("--ha-panel-background");
     const fixedBackground = this._isFixedBackground(
       this.background || themeBackground
     );
@@ -201,7 +203,10 @@ export class HUIViewBackground extends LitElement {
       width: 100%;
       background: var(
         --view-background,
-        var(--lovelace-background, transparent)
+        var(
+          --lovelace-background,
+          var(--ha-panel-background, var(--primary-background-color))
+        )
       );
       opacity: var(--view-background-opacity);
     }
