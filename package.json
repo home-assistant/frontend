@@ -122,7 +122,7 @@
     "sortablejs": "1.15.7",
     "stacktrace-js": "2.0.2",
     "superstruct": "2.0.2",
-    "temporal-polyfill": "1.0.5",
+    "temporal-polyfill": "1.0.6",
     "tinykeys": "4.0.1",
     "weekstart": "2.0.0",
     "workbox-cacheable-response": "7.4.1",
