@@ -12767,6 +12767,7 @@
           },
           "version_installed": "Version {version} installed",
           "version_update": "Version {installed} installed, {version} available",
+          "version_skipped": "Version {installed} installed, {version} skipped",
           "requires_homeassistant": "The newest version needs Home Assistant {version} or newer.",
           "requires_newer_homeassistant": "The newest version needs a newer version of Home Assistant.",
           "earlier_version_hint": "Update Home Assistant, or select an earlier version with Install another version in the menu."
