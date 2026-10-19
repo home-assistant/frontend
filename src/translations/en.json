@@ -10665,8 +10665,8 @@
               "name": "History graph",
               "description": "This card allows you to display a graph for each of the entities listed.",
               "show_names": "Show entity names",
-              "name_position": "Entity name position",
-              "name_position_options": {
+              "label_position": "Label position",
+              "label_position_options": {
                 "side": "Beside the graph",
                 "below": "Below each bar"
               },

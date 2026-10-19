@@ -47,7 +47,7 @@ const cardConfigStruct = assign(
     hours_to_show: optional(number()),
     refresh_interval: optional(number()), // deprecated
     show_names: optional(boolean()),
-    name_position: optional(enums(["side", "below"])),
+    label_position: optional(enums(["side", "below"])),
     logarithmic_scale: optional(boolean()),
     expand_legend: optional(boolean()),
     min_y_axis: optional(number()),
@@ -99,7 +99,7 @@ export class HuiHistoryGraphCardEditor
           ],
         },
         {
-          name: "name_position",
+          name: "label_position",
           required: false,
           visible: [{ field: "show_names", operator: "not_eq", value: false }],
           selector: {
@@ -108,7 +108,7 @@ export class HuiHistoryGraphCardEditor
               options: ["side", "below"].map((value) => ({
                 value,
                 label: localize(
-                  `ui.panel.lovelace.editor.card.history-graph.name_position_options.${value}`
+                  `ui.panel.lovelace.editor.card.history-graph.label_position_options.${value}`
                 ),
               })),
             },
@@ -304,7 +304,7 @@ export class HuiHistoryGraphCardEditor
   ) => {
     switch (schema.name) {
       case "show_names":
-      case "name_position":
+      case "label_position":
       case "logarithmic_scale":
       case "expand_legend":
       case "min_y_axis":
