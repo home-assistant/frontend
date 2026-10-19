@@ -90,7 +90,6 @@ import {
   browseLinkFromUrl,
   filterRepositories,
   filtersOfTab,
-  SHOW_SKIPPED,
   skippedUpdateRepositories,
   SOURCE_FILTER,
   SOURCE_ORDER,
@@ -99,7 +98,6 @@ import {
   statusesOfTab,
   statusFilterOfTab,
   TYPE_FILTER,
-  UPDATES_FILTER,
 } from "./dashboard-repositories";
 import type {
   MarketplaceRepository,
@@ -330,8 +328,7 @@ export class HaMarketplaceDashboard extends LitElement {
   protected render(): TemplateResult {
     const marketplaceRepositories = this._applySkippedUpdates(
       this.marketplace.repositories,
-      this._skippedUpdates,
-      Boolean(this._filters[UPDATES_FILTER]?.includes(SHOW_SKIPPED))
+      this._skippedUpdates
     );
     const tabs = this._tabs(
       this._i18n.localize,
@@ -471,14 +468,6 @@ export class HaMarketplaceDashboard extends LitElement {
           .states=${this._sourceStates(this._i18n.localize)}
           .narrow=${this.narrow}
           @data-table-filter-changed=${this._sourceFilterChanged}
-        ></ha-filter-states>
-        <ha-filter-states
-          slot="filter-pane"
-          .label=${this._i18n.localize("ui.panel.marketplace.filters.updates")}
-          .value=${this._filters[UPDATES_FILTER]}
-          .states=${this._updatesStates(this._i18n.localize)}
-          .narrow=${this.narrow}
-          @data-table-filter-changed=${this._updatesFilterChanged}
         ></ha-filter-states>
       </hass-tabs-subpage-data-table>
       <ha-dropdown
@@ -984,13 +973,6 @@ export class HaMarketplaceDashboard extends LitElement {
     }))
   );
 
-  private _updatesStates = memoize((localize: LocalizeFunc) => [
-    {
-      value: SHOW_SKIPPED,
-      label: localize("ui.panel.marketplace.filters.show_skipped"),
-    },
-  ]);
-
   // Statuses and sources group in the order of their filters, not alphabetically
   private _groupOrder = memoize(
     (grouping: string | undefined, localize: LocalizeFunc) => {
@@ -1034,11 +1016,6 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _sourceFilterChanged(ev: CustomEvent<{ value: string[] }>) {
     this._filters = { ...this._filters, [SOURCE_FILTER]: ev.detail.value };
-    this._writeFilters();
-  }
-
-  private _updatesFilterChanged(ev: CustomEvent<{ value: string[] }>) {
-    this._filters = { ...this._filters, [UPDATES_FILTER]: ev.detail.value };
     this._writeFilters();
   }
 

@@ -12661,9 +12661,7 @@
         "filters": {
           "status": "Status",
           "type": "Type",
-          "source": "Source",
-          "updates": "Updates",
-          "show_skipped": "Show skipped updates"
+          "source": "Source"
         },
         "dialog_custom_repositories": {
           "title": "Add from a GitHub link",

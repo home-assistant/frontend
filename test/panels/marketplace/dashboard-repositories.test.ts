@@ -173,12 +173,7 @@ describe("browseUrl", () => {
       browseUrl({
         search: "mushroom card",
         sorting: { column: "stars", direction: "desc" },
-        filters: {
-          status: ["new"],
-          type: ["theme"],
-          source: ["custom"],
-          updates: ["skipped"],
-        },
+        filters: { status: ["new"], type: ["theme"], source: ["custom"] },
       }),
       "http://localhost"
     );
@@ -188,12 +183,7 @@ describe("browseUrl", () => {
     expect(url.searchParams.get("direction")).toBe("desc");
     expect(browseLinkFromUrl(url.search)).toEqual({
       search: "mushroom card",
-      filters: {
-        status: ["new"],
-        type: ["theme"],
-        source: ["custom"],
-        updates: ["skipped"],
-      },
+      filters: { status: ["new"], type: ["theme"], source: ["custom"] },
     });
   });
 
@@ -208,12 +198,7 @@ describe("browseLinkFromUrl", () => {
   it("replaces the search and filters for a link that only sorts", () => {
     expect(browseLinkFromUrl("?sort=stars&direction=desc")).toEqual({
       search: "",
-      filters: {
-        status: undefined,
-        type: undefined,
-        source: undefined,
-        updates: undefined,
-      },
+      filters: { status: undefined, type: undefined, source: undefined },
     });
   });
 
@@ -339,12 +324,11 @@ describe("applySkippedUpdates", () => {
     }),
   ];
 
-  it("shows a skipped update as installed while skipped updates are hidden", () => {
-    const [skipped, restart, outdated] = applySkippedUpdates(
-      repositories,
-      ["Skipped", "Restart"],
-      false
-    );
+  it("shows a skipped update as installed", () => {
+    const [skipped, restart, outdated] = applySkippedUpdates(repositories, [
+      "Skipped",
+      "Restart",
+    ]);
 
     expect(skipped).toMatchObject({
       status: "installed",
@@ -357,15 +341,5 @@ describe("applySkippedUpdates", () => {
       pending_upgrade: false,
     });
     expect(outdated).toBe(repositories[2]);
-  });
-
-  it("keeps a skipped update as an update while skipped updates are shown", () => {
-    const [skipped] = applySkippedUpdates(repositories, ["Skipped"], true);
-
-    expect(skipped).toMatchObject({
-      status: "pending-upgrade",
-      pending_upgrade: true,
-      update_skipped: true,
-    });
   });
 });

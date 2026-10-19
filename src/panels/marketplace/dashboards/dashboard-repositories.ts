@@ -38,10 +38,6 @@ export const TYPE_FILTER = "type";
 
 export const SOURCE_FILTER = "source";
 
-// Skipped updates show as installed, unless this is picked in the updates pane
-export const UPDATES_FILTER = "updates";
-export const SHOW_SKIPPED = "skipped";
-
 // Where a repository comes from, the community catalog or added from a link
 export const SOURCE_ORDER = ["catalog", "custom"] as const;
 
@@ -53,10 +49,7 @@ const repositorySource = (repository: RepositoryBase): RepositorySource =>
 // What the filter panes picked, nothing picked in a pane shows everything
 export type RepositoryFilters = Partial<
   Record<
-    | typeof STATUS_FILTER
-    | typeof TYPE_FILTER
-    | typeof SOURCE_FILTER
-    | typeof UPDATES_FILTER,
+    typeof STATUS_FILTER | typeof TYPE_FILTER | typeof SOURCE_FILTER,
     string[]
   >
 >;
@@ -102,8 +95,7 @@ export const skippedUpdateRepositories = (
 // is still needed, so that status stays.
 export const applySkippedUpdates = (
   repositories: RepositoryBase[],
-  skipped: string[],
-  showSkipped: boolean
+  skipped: string[]
 ): MarketplaceRepository[] =>
   skipped.length
     ? repositories.map((repository): MarketplaceRepository => {
@@ -111,17 +103,15 @@ export const applySkippedUpdates = (
           return repository;
         }
 
-        return showSkipped
-          ? { ...repository, update_skipped: true }
-          : {
-              ...repository,
-              update_skipped: true,
-              pending_upgrade: false,
-              status:
-                repository.status === "pending-upgrade"
-                  ? "installed"
-                  : repository.status,
-            };
+        return {
+          ...repository,
+          update_skipped: true,
+          pending_upgrade: false,
+          status:
+            repository.status === "pending-upgrade"
+              ? "installed"
+              : repository.status,
+        };
       })
     : repositories;
 
@@ -292,7 +282,6 @@ export const browseLinkFromUrl = (
       [STATUS_FILTER]: lists.status?.filter(Boolean),
       [TYPE_FILTER]: lists.type?.filter(Boolean),
       [SOURCE_FILTER]: lists.source?.filter(Boolean),
-      [UPDATES_FILTER]: lists.updates?.filter(Boolean),
     },
   };
 };
