@@ -189,7 +189,6 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                   style=${styleMap(this._matchMinHeightStyle)}
                 >
                   <ha-service-picker
-                    .hass=${this.hass}
                     .value=${this._serviceData?.action}
                     @value-changed=${this._serviceChanged}
                     show-service-id

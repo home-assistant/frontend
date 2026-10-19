@@ -1,40 +1,42 @@
 import type { ContextType } from "@lit/context";
-import { mdiAlert } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import {
+  mdiAlertOctagonOutline,
+  mdiAlertOutline,
+  mdiDatabaseExportOutline,
+  mdiWeb,
+} from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
+import { goBack } from "../../../common/navigate";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
-import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../components/ha-checkbox";
+import "../../../components/ha-dialog";
+import "../../../components/ha-dialog-footer";
 import "../../../components/ha-svg-icon";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/list/ha-list-base";
 import { apiContext, internationalizationContext } from "../../../data/context";
-import "../../../layouts/hass-subpage";
-import { haStyle } from "../../../resources/styles";
 import {
   acceptMarketplaceWarning,
   marketplaceErrorMessage,
 } from "../../../data/marketplace/websocket";
 
 const RISKS = [
-  "not_supported",
-  "own_risk",
-  "privacy",
-  "security",
-  "stability",
+  { risk: "internet", icon: mdiWeb },
+  { risk: "data", icon: mdiDatabaseExportOutline },
+  { risk: "stability", icon: mdiAlertOctagonOutline },
 ] as const;
 
-// Long enough to read the risks before they can be accepted, shorter in
-// development so it doesn't slow down testing
-const READ_SECONDS = __DEV__ ? 5 : 30;
+const MINDFUL = ["read", "monitor", "uninstall"] as const;
 
+// Shown over the Marketplace until the user accepts it, the Marketplace stays
+// visible behind it but can't be used before then
 @customElement("ha-marketplace-warning")
 export class HaMarketplaceWarning extends LitElement {
-  @property({ type: Boolean }) public narrow = false;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
@@ -48,108 +50,97 @@ export class HaMarketplaceWarning extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _secondsLeft = READ_SECONDS;
-
-  private _countdown?: number;
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-
-    const shownAt = Date.now();
-    this._secondsLeft = READ_SECONDS;
-    this._countdown = window.setInterval(() => {
-      const elapsed = Math.floor((Date.now() - shownAt) / 1000);
-      this._secondsLeft = Math.max(READ_SECONDS - elapsed, 0);
-      if (this._secondsLeft === 0) {
-        this._stopCountdown();
-      }
-    }, 1000);
-  }
-
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._stopCountdown();
-  }
-
-  private _stopCountdown(): void {
-    window.clearInterval(this._countdown);
-    this._countdown = undefined;
-  }
+  // Going back twice would leave the page before the Marketplace as well
+  private _leaving = false;
 
   protected render() {
     return html`
-      <hass-subpage
-        .narrow=${this.narrow}
-        .header=${this._i18n.localize("ui.panel.marketplace.title")}
-        back-path="/config"
+      <ha-dialog
+        open
+        prevent-scrim-close
+        .headerTitle=${this._i18n.localize(
+          "ui.panel.marketplace.warning.title"
+        )}
       >
-        <div class="content">
-          <ha-card outlined>
-            <div class="card-content">
-              ${
-                this._error
-                  ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-                  : nothing
-              }
-              <div class="heading">
-                <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
-                <h1>
-                  ${this._i18n.localize("ui.panel.marketplace.warning.title")}
-                </h1>
-              </div>
-              <p class="intro">
-                ${this._i18n.localize("ui.panel.marketplace.warning.intro")}
-              </p>
-              <ha-alert
-                class="risks"
-                alert-type="warning"
-                .title=${this._i18n.localize(
-                  "ui.panel.marketplace.warning.risks_title"
-                )}
-              >
-                <span slot="icon"></span>
-                <ul>
-                  ${RISKS.map(
-                    (risk) =>
-                      html`<li>
-                        ${this._i18n.localize(
-                          `ui.panel.marketplace.warning.risks.${risk}`
-                        )}
-                      </li>`
-                  )}
-                </ul>
-              </ha-alert>
-              <ha-checkbox
-                .checked=${this._understood}
-                .disabled=${this._accepting}
-                @change=${this._understoodChanged}
-              >
-                ${this._i18n.localize("ui.panel.marketplace.warning.understand")}
-              </ha-checkbox>
-            </div>
-            <div class="card-actions">
-              ${
-                this._secondsLeft > 0
-                  ? html`<span class="countdown">
-                      ${this._i18n.localize(
-                        "ui.panel.marketplace.warning.continue_in",
-                        { seconds: this._secondsLeft }
-                      )}
-                    </span>`
-                  : nothing
-              }
-              <ha-button
-                variant="warning"
-                .disabled=${!this._understood || this._secondsLeft > 0}
-                .loading=${this._accepting}
-                @click=${this._accept}
-              >
-                ${this._i18n.localize("ui.panel.marketplace.warning.continue")}
-              </ha-button>
-            </div>
-          </ha-card>
+        <ha-svg-icon
+          slot="headerNavigationIcon"
+          class="badge"
+          .path=${mdiAlertOutline}
+        ></ha-svg-icon>
+        <p class="intro">
+          ${this._i18n.localize("ui.panel.marketplace.warning.intro")}
+        </p>
+        ${
+          this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : nothing
+        }
+        <section class="box risks">
+          <h3>
+            ${this._i18n.localize("ui.panel.marketplace.warning.risks_title")}
+          </h3>
+          <ha-list-base>
+            ${RISKS.map(
+              ({ risk, icon }) => html`
+                <ha-list-item-base>
+                  <ha-svg-icon slot="start" .path=${icon}></ha-svg-icon>
+                  <span slot="content">
+                    ${this._i18n.localize(
+                      `ui.panel.marketplace.warning.risks.${risk}`
+                    )}
+                  </span>
+                </ha-list-item-base>
+              `
+            )}
+          </ha-list-base>
+        </section>
+        <section class="box mindful">
+          <h3>
+            ${this._i18n.localize("ui.panel.marketplace.warning.mindful_title")}
+          </h3>
+          <ha-list-base>
+            ${MINDFUL.map(
+              (step, index) => html`
+                <ha-list-item-base>
+                  <span slot="start" class="step">${index + 1}</span>
+                  <span slot="content">
+                    ${this._i18n.localize(
+                      `ui.panel.marketplace.warning.mindful.${step}`
+                    )}
+                  </span>
+                </ha-list-item-base>
+              `
+            )}
+          </ha-list-base>
+        </section>
+        <div class="box agree">
+          <ha-checkbox
+            autofocus
+            .checked=${this._understood}
+            .disabled=${this._accepting}
+            @change=${this._understoodChanged}
+          >
+            ${this._i18n.localize("ui.panel.marketplace.warning.understand")}
+          </ha-checkbox>
         </div>
-      </hass-subpage>
+        <ha-dialog-footer slot="footer">
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._goBack}
+          >
+            ${this._i18n.localize("ui.panel.marketplace.warning.go_back")}
+          </ha-button>
+          <ha-button
+            slot="primaryAction"
+            .disabled=${!this._understood}
+            .loading=${this._accepting}
+            @click=${this._accept}
+          >
+            ${this._i18n.localize("ui.panel.marketplace.warning.continue")}
+          </ha-button>
+        </ha-dialog-footer>
+      </ha-dialog>
     `;
   }
 
@@ -157,8 +148,18 @@ export class HaMarketplaceWarning extends LitElement {
     this._understood = ev.target.checked;
   }
 
+  // Neither Escape nor the scrim close the warning, leaving the Marketplace
+  // takes a deliberate choice here, like accepting it does
+  private _goBack(): void {
+    if (this._leaving) {
+      return;
+    }
+    this._leaving = true;
+    goBack("/config");
+  }
+
   private async _accept(): Promise<void> {
-    if (!this._understood || this._secondsLeft > 0 || this._accepting) {
+    if (!this._understood || this._accepting) {
       return;
     }
 
@@ -166,136 +167,94 @@ export class HaMarketplaceWarning extends LitElement {
     this._error = undefined;
 
     try {
+      // The panel removes the warning once it fetches the acceptance, until
+      // then it stays usable
       await acceptMarketplaceWarning(this._api);
     } catch (err: unknown) {
       this._error = marketplaceErrorMessage(err, this._i18n.localize);
-      return;
     } finally {
-      // The panel swaps this screen once the backend reports the acceptance,
-      // until then it stays usable
       this._accepting = false;
     }
   }
 
-  static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      css`
-        :host {
-          display: block;
-          height: 100%;
-        }
+  static styles = css`
+    ha-dialog {
+      --ha-dialog-header-white-space: normal;
+      --ha-dialog-header-title-height: auto;
+    }
 
-        .content {
-          box-sizing: border-box;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          min-height: 100%;
-          max-width: calc(65ch + 2 * var(--ha-space-6));
-          margin-inline: auto;
-          padding: var(--ha-space-4);
-        }
+    .badge {
+      flex: none;
+      align-self: center;
+      margin-inline-start: var(--ha-space-4);
+      margin-inline-end: var(--ha-space-3);
+      padding: var(--ha-space-2);
+      border-radius: var(--ha-border-radius-circle);
+      background-color: rgba(var(--rgb-warning-color), 0.16);
+      color: var(--warning-color);
+    }
 
-        ha-card {
-          border: var(--ha-border-width-lg) solid var(--warning-color);
-        }
+    .intro {
+      margin: 0 0 var(--ha-space-4);
+      color: var(--secondary-text-color);
+    }
 
-        .card-content {
-          --card-padding: var(--ha-space-6);
-          display: flex;
-          flex-direction: column;
-          gap: var(--ha-space-4);
-          padding: var(--card-padding);
-        }
+    ha-alert {
+      display: block;
+      margin-bottom: var(--ha-space-3);
+    }
 
-        .heading {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: var(--ha-space-2);
-        }
+    .box {
+      padding: var(--ha-space-4);
+      border-radius: var(--ha-border-radius-lg);
+    }
 
-        .heading ha-svg-icon {
-          --mdc-icon-size: 96px;
-          color: var(--warning-color);
-        }
+    .box + .box {
+      margin-top: var(--ha-space-3);
+    }
 
-        h1 {
-          align-self: stretch;
-          margin: 0;
-          font-size: var(--ha-font-size-3xl);
-          font-weight: var(--ha-font-weight-bold);
-          line-height: var(--ha-line-height-condensed);
-          color: var(--warning-color);
-        }
+    .risks,
+    .agree {
+      background-color: rgba(var(--rgb-warning-color), 0.12);
+    }
 
-        .intro {
-          margin: 0;
-          font-size: var(--ha-font-size-l);
-          line-height: var(--ha-line-height-normal);
-        }
+    .mindful {
+      border: 1px solid var(--divider-color);
+    }
 
-        ha-alert {
-          display: block;
-        }
+    h3 {
+      margin: 0 0 var(--ha-space-3);
+      font-size: var(--ha-font-size-l);
+      font-weight: var(--ha-font-weight-medium);
+    }
 
-        /* Span the full card width, aligning the text with the card content */
-        ha-alert.risks {
-          margin-inline: calc(-1 * var(--card-padding));
-          --ha-alert-icon-size: 0;
-          --ha-alert-padding: var(--ha-space-4)
-            calc(var(--card-padding) - var(--ha-space-2));
-          --ha-border-radius-sm: 0;
-        }
+    ha-list-base {
+      --ha-list-gap: var(--ha-space-3);
+    }
 
-        ul {
-          margin: 0;
-          padding-inline-start: var(--ha-space-5);
-        }
+    ha-list-item-base {
+      --ha-row-item-gap: var(--ha-space-3);
+      --ha-row-item-padding-block: 0;
+      --ha-row-item-padding-inline: 0;
+      --ha-row-item-min-height: 0;
+    }
 
-        li {
-          margin-block: var(--ha-space-2);
-          font-weight: var(--ha-font-weight-medium);
-        }
+    .risks ha-svg-icon {
+      --mdc-icon-size: 20px;
+      color: var(--warning-color);
+    }
 
-        ha-checkbox {
-          font-weight: var(--ha-font-weight-bold);
-        }
-
-        .card-actions {
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: flex-end;
-          gap: var(--ha-space-2);
-        }
-
-        .countdown {
-          color: var(--secondary-text-color);
-          font-variant-numeric: tabular-nums;
-        }
-
-        @media (max-width: 600px) {
-          .content {
-            padding: var(--ha-space-2);
-          }
-
-          .card-content {
-            --card-padding: var(--ha-space-4);
-          }
-
-          .heading ha-svg-icon {
-            --mdc-icon-size: 72px;
-          }
-
-          h1 {
-            font-size: var(--ha-font-size-2xl);
-          }
-        }
-      `,
-    ];
-  }
+    .step {
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: var(--ha-border-radius-circle);
+      background-color: var(--secondary-background-color);
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
+    }
+  `;
 }
 
 declare global {

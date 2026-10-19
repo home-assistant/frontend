@@ -612,7 +612,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     if (!area) {
       return html`
-        <hui-warning .hass=${this.hass}>
+        <hui-warning>
           ${this.hass.localize("ui.card.area.area_not_found")}
         </hui-warning>
       `;

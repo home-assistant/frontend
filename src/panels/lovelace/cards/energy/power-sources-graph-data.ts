@@ -13,6 +13,7 @@ import { fillLineGaps } from "./common/energy-chart-options";
 
 export interface PowerSourcesGraphDataParams {
   localize: LocalizeFunc;
+  formatPower: (powerWatts: number) => string;
   states: HassEntities;
   energyData: EnergyData;
   computedStyles: CSSStyleDeclaration;
@@ -72,6 +73,40 @@ function processData(
   return { positive, negative };
 }
 
+export function getPowerLegendValues(
+  energyData: EnergyData,
+  states: HassEntities,
+  formatPower: (powerWatts: number) => string
+): Record<string, string> {
+  const watts: Record<string, number> = {};
+  for (const source of energyData.prefs.energy_sources) {
+    if (
+      (source.type === "solar" ||
+        source.type === "grid" ||
+        source.type === "battery") &&
+      source.stat_rate
+    ) {
+      const w = getPowerFromState(states[source.stat_rate]);
+      if (w !== undefined) {
+        watts[source.type] = (watts[source.type] ?? 0) + w;
+      }
+    }
+  }
+  const keys = Object.keys(watts);
+  if (!keys.length) {
+    return {};
+  }
+  const values: Record<string, string> = {};
+  let total = 0;
+  for (const key of keys) {
+    values[key] = formatPower(watts[key]);
+    total += watts[key];
+  }
+  // Same as the usage line: consumption can't be negative
+  values.usage = formatPower(Math.max(0, total));
+  return values;
+}
+
 /**
  * Transforms an energy collection update (`EnergyData` + prefs) into the
  * ECharts series, legend, and derived state for the power sources graph card.
@@ -83,6 +118,12 @@ export function generatePowerSourcesGraphData(
   params: PowerSourcesGraphDataParams
 ): PowerSourcesGraphData {
   const { localize, states, energyData, computedStyles } = params;
+
+  const legendValues = getPowerLegendValues(
+    energyData,
+    states,
+    params.formatPower
+  );
 
   const datasets: LineSeriesOption[] = [];
   const legendData: CustomLegendOption["data"] = [];
@@ -249,6 +290,7 @@ export function generatePowerSourcesGraphData(
         id: key,
         secondaryIds: key !== "solar" ? [`${key}-negative`] : [],
         name: statIds[key].name,
+        value: legendValues[key],
         itemStyle: {
           color: `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`,
           borderColor: colorHex,
@@ -316,6 +358,7 @@ export function generatePowerSourcesGraphData(
   legendData!.push({
     id: "usage",
     name: localize("ui.panel.lovelace.cards.energy.power_graph.usage"),
+    value: legendValues.usage,
     itemStyle: {
       color: computedStyles.getPropertyValue("--primary-text-color"),
     },

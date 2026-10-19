@@ -59,7 +59,7 @@ const NAME_EN: ExpressionSpecification = ["get", "name_en"];
 
 // Strings compare by code point: anything from Basic Latin up to Latin
 // Extended-B, digits and punctuation included.
-const IS_LATIN: ExpressionSpecification = ["<", NAME, "ɐ"];
+const IS_LATIN: ExpressionSpecification = ["<", ["coalesce", NAME, ""], "ɐ"];
 
 const ENGLISH_SCALE = 0.8;
 

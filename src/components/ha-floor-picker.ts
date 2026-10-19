@@ -403,7 +403,6 @@ export class HaFloorPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .disabled=${this.disabled}
         .label=${this.label}

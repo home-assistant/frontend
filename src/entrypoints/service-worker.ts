@@ -93,9 +93,13 @@ const initRouting = () => {
     ignoreURLParametersMatching: [/.*/],
   });
 
-  // Cache static content (including translations) on first access.
+  // Cache static content (including translations) on first access. Match on
+  // the start of the path: custom integrations serve their own files from
+  // paths like /api/<domain>/static/, and those must not be cached forever.
   registerRoute(
-    /\/(static|frontend_latest|frontend_es5)\/.+/,
+    ({ url }) =>
+      url.origin === location.origin &&
+      /^\/(static|frontend_latest|frontend_es5)\/.+/.test(url.pathname),
     new CacheFirst({ matchOptions: { ignoreSearch: true } })
   );
 

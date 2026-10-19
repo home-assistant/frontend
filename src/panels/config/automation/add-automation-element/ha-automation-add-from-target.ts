@@ -20,7 +20,7 @@ import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
-import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
+import { computeEntityNameParts } from "../../../../common/entity/compute_entity_name_display";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-floor-icon";
@@ -771,14 +771,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
       .map((entityId) => {
         const stateObj = this.states[entityId];
 
-        const [entityName, deviceName] = computeEntityNameList(
-          stateObj,
-          [{ type: "entity" }, { type: "device" }, { type: "area" }],
-          this._registries.entities,
-          this._registries.devices,
-          this._registries.areas,
-          this._registries.floors
-        );
+        const { entity: entityName, device: deviceName } =
+          computeEntityNameParts(stateObj, this._registries);
 
         let label = entityName || deviceName || entityId;
 
@@ -1619,10 +1613,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
       background-color: var(--ha-color-fill-primary-normal-hover);
     }
 
-    wa-tree-item::part(base).tree-item-selected .item {
-      background-color: yellow;
-    }
-
     ha-list-base {
       --ha-row-item-padding-inline: var(--ha-space-3);
       --ha-row-item-padding-block: var(--ha-space-1);
@@ -1635,7 +1625,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     ha-list-item-button.selected {
       background-color: var(--ha-color-fill-primary-normal-active);
-      --md-list-item-label-text-color: var(--ha-color-on-primary-normal);
       --icon-primary-color: var(--ha-color-on-primary-normal);
     }
 

@@ -456,7 +456,7 @@ export const migrateAutomationAction = (
   action: Action | Action[],
   report?: AutomationMigrationReport
 ): Action | Action[] => {
-  if (!action) {
+  if (!action || typeof action !== "object") {
     return action;
   }
 
@@ -464,7 +464,7 @@ export const migrateAutomationAction = (
     return action.map((a) => migrateAutomationAction(a, report)) as Action[];
   }
 
-  if (typeof action === "object" && action !== null && "service" in action) {
+  if ("service" in action) {
     if (!("action" in action)) {
       action.action = action.service;
     }
@@ -472,7 +472,7 @@ export const migrateAutomationAction = (
   }
 
   // legacy scene (scene: scene_name)
-  if (typeof action === "object" && action !== null && "scene" in action) {
+  if ("scene" in action) {
     action.action = "scene.turn_on";
     action.target = {
       entity_id: action.scene,
@@ -482,8 +482,6 @@ export const migrateAutomationAction = (
 
   // legacy play media
   if (
-    typeof action === "object" &&
-    action !== null &&
     "action" in action &&
     action.action === "media_player.play_media" &&
     "data" in action &&
@@ -505,11 +503,12 @@ export const migrateAutomationAction = (
     };
   }
 
-  if (typeof action === "object" && action !== null && "sequence" in action) {
+  if ("sequence" in action) {
     delete (action as SequenceAction).metadata;
-    for (const sequenceAction of (action as SequenceAction).sequence ?? []) {
-      migrateAutomationAction(sequenceAction, report);
-    }
+    migrateAutomationAction(
+      (action as SequenceAction).sequence as Action[],
+      report
+    );
   }
 
   const actionType = getActionType(action);
@@ -523,7 +522,7 @@ export const migrateAutomationAction = (
     const _action = action as ChooseAction;
     if (Array.isArray(_action.choose)) {
       for (const choice of _action.choose) {
-        migrateAutomationAction(choice.sequence, report);
+        migrateAutomationAction(choice?.sequence, report);
       }
     } else if (_action.choose) {
       migrateAutomationAction(_action.choose.sequence, report);
@@ -535,7 +534,7 @@ export const migrateAutomationAction = (
 
   if (actionType === "repeat") {
     const _action = action as RepeatAction;
-    migrateAutomationAction(_action.repeat.sequence, report);
+    migrateAutomationAction(_action.repeat?.sequence, report);
   }
 
   if (actionType === "if") {

@@ -186,12 +186,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
           const device = deviceLookup[deviceId];
           const deviceEntities: string[] = deviceEntityLookup[deviceId] || [];
           outputDevices.push({
-            name: computeDeviceNameDisplay(
-              device,
-              this.hass.localize,
-              this.hass.states,
-              this._deviceEntityLookup[device.id]
-            ),
+            name: computeDeviceNameDisplay(device, this.hass.localize),
             id: device.id,
             entities: deviceEntities,
           });

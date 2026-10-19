@@ -50,7 +50,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _config: FrontendSystemData["home"] = {};
+  @state() private _config?: HomeFrontendSystemData;
 
   @state() private _securityConfig: SecurityFrontendSystemData = {};
 
@@ -83,8 +83,8 @@ class PanelHome extends SubscribeMixin(LitElement) {
   }
 
   private get _showBanner(): boolean {
-    // Don't show if already dismissed
-    if (this._config.welcome_banner_dismissed) {
+    // Don't show until the config loaded or if already dismissed
+    if (!this._config || this._config.welcome_banner_dismissed) {
       return false;
     }
     // Don't show if HA is not running
@@ -197,7 +197,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
     if (homeResult.status === "rejected") {
       // eslint-disable-next-line no-console
       console.error("Failed to load home configuration:", homeResult.reason);
-      this._config = {};
+      this._config = undefined;
     } else {
       this._config = homeResult.value || {};
     }
@@ -260,7 +260,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   private _editHome = () => {
     showEditHomeDialog(this, {
-      config: this._config,
+      config: this._config ?? {},
       saveConfig: async (config) => {
         await this._saveConfig(config);
       },
@@ -382,6 +382,9 @@ class PanelHome extends SubscribeMixin(LitElement) {
   private _learnMore() {
     showNewOverviewDialog(this, {
       dismiss: async () => {
+        if (!this._config) {
+          return;
+        }
         const newConfig = {
           ...this._config,
           welcome_banner_dismissed: true,
@@ -397,11 +400,11 @@ class PanelHome extends SubscribeMixin(LitElement) {
       strategy: {
         type: "home",
         alert_entities: this._securityConfig.alert_entities,
-        favorite_entities: this._config.favorite_entities,
+        favorite_entities: this._config?.favorite_entities,
         home_panel: true,
-        hide_welcome_message: this._config.hide_welcome_message,
-        hide_suggested_entities: this._config.hide_suggested_entities,
-        shortcuts: this._config.shortcuts,
+        hide_welcome_message: this._config?.hide_welcome_message,
+        hide_suggested_entities: this._config?.hide_suggested_entities,
+        shortcuts: this._config?.shortcuts,
       },
     };
   }

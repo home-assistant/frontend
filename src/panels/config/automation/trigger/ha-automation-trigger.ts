@@ -237,12 +237,6 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
       row.updateComplete.then(() => {
         if (this.optionsInSidebar) {
           row.openSidebar();
-          if (this.narrow) {
-            row.scrollIntoView({
-              block: "start",
-              behavior: "smooth",
-            });
-          }
         } else {
           row.expand();
           row.focus();

@@ -4,7 +4,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
@@ -38,13 +37,17 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
   private _deviceEntities = memoizeOne(
     (
       deviceId: string,
-      entities: EntityRegistryEntry[]
+      entities: EntityRegistryEntry[],
+      states: HomeAssistant["states"],
+      formatEntityName: HomeAssistant["formatEntityName"]
     ): EntityRegistryStateEntry[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
         .map((entity) => ({
           ...entity,
-          stateName: this._computeEntityName(entity),
+          stateName: states[entity.entity_id]
+            ? formatEntityName(states[entity.entity_id], { type: "entity" })
+            : entity.name,
         }))
         .sort((ent1, ent2) =>
           stringCompare(
@@ -69,7 +72,9 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     }
     const entities = this._deviceEntities(
       this.device.device_reg_id,
-      this._entities
+      this._entities,
+      this.hass.states,
+      this.hass.formatEntityName
     );
 
     return html`
@@ -131,7 +136,12 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     if (!oldDeviceName || !newDeviceName || oldDeviceName === newDeviceName) {
       return;
     }
-    const entities = this._deviceEntities(device.device_reg_id, this._entities);
+    const entities = this._deviceEntities(
+      device.device_reg_id,
+      this._entities,
+      this.hass.states,
+      this.hass.formatEntityName
+    );
 
     const entityIdsMapping = await getAutomaticEntityIds(
       this.hass,
@@ -139,29 +149,14 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     );
 
     const updateProms = entities.map((entity) => {
-      const name = entity.name;
       const newEntityId = entityIdsMapping[entity.entity_id];
-      let newName: string | null | undefined;
 
-      if (entity.has_entity_name && !entity.name) {
-        newName = undefined;
-      } else if (
-        entity.has_entity_name &&
-        (entity.name === oldDeviceName || entity.name === newDeviceName)
-      ) {
-        // Use the device name when the entity name matches it
-        newName = "";
-      } else if (name && name.includes(oldDeviceName)) {
-        newName = name.replace(oldDeviceName, newDeviceName);
-      }
-
-      if (newName !== undefined && !newEntityId) {
+      if (!newEntityId || newEntityId === entity.entity_id) {
         return undefined;
       }
 
       return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-        name: newName,
-        new_entity_id: newEntityId || undefined,
+        new_entity_id: newEntityId,
       });
     });
     await Promise.all(updateProms);
@@ -171,13 +166,6 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     fireEvent(this, "hass-more-info", {
       entityId: (ev.currentTarget as any).stateObj.entity_id,
     });
-  }
-
-  private _computeEntityName(entity: EntityRegistryEntry): string | null {
-    if (this.hass.states[entity.entity_id]) {
-      return computeStateName(this.hass.states[entity.entity_id]);
-    }
-    return entity.name;
   }
 
   private async _areaPicked(ev: CustomEvent) {

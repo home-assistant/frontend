@@ -2,6 +2,18 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import {
+  array,
+  assert,
+  assign,
+  literal,
+  object,
+  optional,
+  record,
+  string,
+  union,
+  unknown,
+} from "superstruct";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import {
   sortWeekdays,
@@ -9,17 +21,35 @@ import {
 } from "../../../../../common/datetime/sort_weekdays";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
+import { hasTemplate } from "../../../../../common/string/has-template";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { TimeTrigger } from "../../../../../data/automation";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import type { HomeAssistant } from "../../../../../types";
+import { baseTriggerStruct } from "../../structs";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 
 const MODE_TIME = "time";
 const MODE_ENTITY = "entity";
 const VALID_DOMAINS = ["sensor", "input_datetime"];
+
+const timeTriggerStruct = assign(
+  baseTriggerStruct,
+  object({
+    alias: optional(string()),
+    trigger: literal("time"),
+    variables: optional(record(string(), unknown())),
+    at: optional(
+      union([
+        string(),
+        object({ entity_id: string(), offset: optional(string()) }),
+      ])
+    ),
+    weekday: optional(union([string(), array(string())])),
+  })
+);
 
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
@@ -34,6 +64,25 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
   public static get defaultConfig(): TimeTrigger {
     return { trigger: "time", at: "" };
+  }
+
+  public static checkUiSupport(
+    localize: LocalizeFunc,
+    trigger: TimeTrigger
+  ): Error | undefined {
+    // We don't support multiple times atm.
+    if (Array.isArray(trigger.at)) {
+      return Error(localize("ui.errors.config.editor_not_supported"));
+    }
+    if (hasTemplate(trigger.at) || hasTemplate(trigger.weekday)) {
+      return Error(localize("ui.errors.config.no_template_editor_support"));
+    }
+    try {
+      assert(trigger, timeTriggerStruct);
+    } catch (err: any) {
+      return err;
+    }
+    return undefined;
   }
 
   private _schema = memoizeOne(
@@ -96,18 +145,16 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
     }
   );
 
-  public willUpdate(changedProperties: PropertyValues<this>) {
+  public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("trigger")) {
-      return;
+      return true;
     }
-    // We don't support multiple times atm.
-    if (this.trigger && Array.isArray(this.trigger.at)) {
-      fireEvent(
-        this,
-        "ui-mode-not-available",
-        Error(this.hass.localize("ui.errors.config.editor_not_supported"))
-      );
+    const err = HaTimeTrigger.checkUiSupport(this.hass.localize, this.trigger);
+    if (err) {
+      fireEvent(this, "ui-mode-not-available", err);
+      return false;
     }
+    return true;
   }
 
   private _data = memoizeOne(

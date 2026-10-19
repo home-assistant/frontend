@@ -3,7 +3,6 @@ import { createCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { debounce } from "../../common/util/debounce";
 import type { HomeAssistant } from "../../types";
@@ -259,14 +258,11 @@ export const computeEntityRegistryName = (
   hass: HomeAssistant,
   entry: EntityRegistryEntry
 ): string | null => {
-  if (entry.name) {
-    return entry.name;
-  }
   const state = hass.states[entry.entity_id];
   if (state) {
-    return computeStateName(state);
+    return hass.formatEntityName(state);
   }
-  return entry.original_name ? entry.original_name : entry.entity_id;
+  return entry.name || entry.original_name || entry.entity_id;
 };
 
 export const getExtendedEntityRegistryEntry = (

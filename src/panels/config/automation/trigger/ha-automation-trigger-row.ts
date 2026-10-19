@@ -56,7 +56,11 @@ import type {
   TriggerList,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
-import { isTrigger, subscribeTrigger } from "../../../../data/automation";
+import {
+  getRowNote,
+  isTrigger,
+  subscribeTrigger,
+} from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -75,6 +79,7 @@ import "../ha-automation-editor-warning";
 import "../ha-automation-row-options";
 import "../ha-automation-row-threshold";
 import { overflowStyles, rowStyles } from "../styles";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
 import "../target/ha-automation-row-targets";
@@ -103,6 +108,7 @@ import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import { scrollRowIntoView } from "../scroll-row-into-view";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -244,12 +250,10 @@ export default class HaAutomationTriggerRow extends LitElement {
             ?.target
         : undefined;
 
-    const noteTooltipText = truncateWithEllipsis(
-      (type !== "list" &&
-        (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()) ||
-        "",
-      250
-    );
+    const note =
+      type !== "list"
+        ? getRowNote((this.trigger as Exclude<Trigger, TriggerList>).note)
+        : undefined;
 
     return html`
       <div slot="leading-icon" class="trigger-leading">
@@ -290,7 +294,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                 .path=${TRIGGER_ICONS[type]}
               ></ha-svg-icon>`
             : html`<ha-trigger-icon
-                .hass=${this.hass}
                 .trigger=${
                   (this.trigger as Exclude<Trigger, TriggerList>).trigger
                 }
@@ -327,8 +330,7 @@ export default class HaAutomationTriggerRow extends LitElement {
             : nothing
         }
         ${
-          type !== "list" &&
-          (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()
+          note
             ? html`
                 <ha-svg-icon
                   tabindex="0"
@@ -340,7 +342,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                   class="note-indicator"
                 ></ha-svg-icon>
                 <ha-tooltip for="note-icon"
-                  ><p>${noteTooltipText}</p></ha-tooltip
+                  ><p>${truncateWithEllipsis(note, 250)}</p></ha-tooltip
                 >
               `
             : nothing
@@ -357,7 +359,9 @@ export default class HaAutomationTriggerRow extends LitElement {
         class="event-chip"
         aria-live="polite"
       >
-        ${this.hass.localize("ui.panel.config.automation.editor.actions.disabled")}
+        ${this.hass.localize(
+          "ui.panel.config.automation.editor.actions.disabled"
+        )}
       </ha-automation-row-event-chip>
 
       <ha-automation-row-event-chip
@@ -666,6 +670,19 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (changedProperties.has("yamlMode")) {
       this._warnings = undefined;
     }
+    if (
+      changedProperties.has("trigger") &&
+      this._warnings &&
+      this._yamlMode &&
+      isConfigObject(this.trigger) &&
+      !isTriggerList(this.trigger)
+    ) {
+      this._warnings = getUiSupportWarnings(
+        this.hass.localize,
+        `ha-automation-trigger-${this.trigger.trigger}`,
+        this.trigger
+      );
+    }
   }
 
   protected override updated(changedProps: PropertyValues<this>): void {
@@ -746,7 +763,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }, 5000);
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    this._warnings = handleStructError(this.hass.localize, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
     }
@@ -790,8 +807,10 @@ export default class HaAutomationTriggerRow extends LitElement {
         this._renameTrigger();
       },
       editNote: this._editNoteTrigger,
-      toggleYamlMode: () => {
-        this._toggleYamlMode();
+      toggleYamlMode: (yamlMode?: boolean) => {
+        if (yamlMode === undefined || yamlMode !== this._yamlMode) {
+          this._toggleYamlMode();
+        }
         this.openSidebar();
       },
       disable: this._onDisable,
@@ -816,10 +835,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180);
     }
   }

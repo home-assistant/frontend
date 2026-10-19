@@ -337,6 +337,7 @@ export class HaControlScrubber extends LitElement {
       display: block;
       --control-scrubber-color: var(--primary-color);
       --control-scrubber-background: var(--disabled-color);
+      --control-scrubber-background-opacity: 1;
       --control-scrubber-rail-color: var(--disabled-color);
       --control-scrubber-rail-opacity: 0.2;
       --control-scrubber-thickness: 40px;
@@ -394,6 +395,7 @@ export class HaControlScrubber extends LitElement {
       left: 50%;
       width: var(--track-width);
       background: var(--control-scrubber-background);
+      opacity: var(--control-scrubber-background-opacity);
       transform: translate3d(calc(var(--value, 0) * -100%), 0, 0);
       transition: transform 180ms ease-in-out;
     }

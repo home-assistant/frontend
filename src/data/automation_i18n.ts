@@ -13,7 +13,6 @@ import {
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { sortWeekdays } from "../common/datetime/sort_weekdays";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
-import { computeStateName } from "../common/entity/compute_state_name";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import {
   formatListWithAnds,
@@ -143,7 +142,7 @@ const formatNumericLimitValue = (
   }
 
   return hass.states[value]
-    ? computeStateName(hass.states[value]) || value
+    ? hass.formatEntityName(hass.states[value]) || value
     : value;
 };
 
@@ -442,7 +441,7 @@ const describeLegacyTrigger = (
     return entity
       ? hass.localize(
           `${triggerTranslationBaseKey}.tag.description.known_tag`,
-          { tag_name: computeStateName(entity) }
+          { tag_name: hass.formatEntityName(entity) }
         )
       : hass.localize(`${triggerTranslationBaseKey}.tag.description.full`);
   }
@@ -452,11 +451,11 @@ const describeLegacyTrigger = (
     const result = ensureArray(trigger.at).map((at) => {
       if (typeof at === "string") {
         if (isValidEntityId(at)) {
-          return `entity ${hass.states[at] ? computeStateName(hass.states[at]) : at}`;
+          return `entity ${hass.states[at] ? hass.formatEntityName(hass.states[at]) : at}`;
         }
         return localizeTimeString(at, hass.locale, hass.config);
       }
-      const entityStr = `entity ${hass.states[at.entity_id] ? computeStateName(hass.states[at.entity_id]) : at.entity_id}`;
+      const entityStr = `entity ${hass.states[at.entity_id] ? hass.formatEntityName(hass.states[at.entity_id]) : at.entity_id}`;
       const offsetStr = at.offset
         ? " " +
           hass.localize(`${triggerTranslationBaseKey}.time.offset_by`, {
@@ -673,13 +672,13 @@ const describeLegacyTrigger = (
     if (Array.isArray(trigger.entity_id)) {
       for (const entity of trigger.entity_id.values()) {
         if (states[entity]) {
-          entities.push(computeStateName(states[entity]) || entity);
+          entities.push(hass.formatEntityName(states[entity]) || entity);
         }
       }
     } else {
       entities.push(
         states[trigger.entity_id]
-          ? computeStateName(states[trigger.entity_id])
+          ? hass.formatEntityName(states[trigger.entity_id])
           : trigger.entity_id
       );
     }
@@ -687,13 +686,13 @@ const describeLegacyTrigger = (
     if (Array.isArray(trigger.zone)) {
       for (const zone of trigger.zone.values()) {
         if (states[zone]) {
-          zones.push(computeStateName(states[zone]) || zone);
+          zones.push(hass.formatEntityName(states[zone]) || zone);
         }
       }
     } else {
       zones.push(
         states[trigger.zone]
-          ? computeStateName(states[trigger.zone])
+          ? hass.formatEntityName(states[trigger.zone])
           : trigger.zone
       );
     }
@@ -723,13 +722,13 @@ const describeLegacyTrigger = (
     if (Array.isArray(trigger.zone)) {
       for (const zone of trigger.zone.values()) {
         if (states[zone]) {
-          zones.push(computeStateName(states[zone]) || zone);
+          zones.push(hass.formatEntityName(states[zone]) || zone);
         }
       }
     } else {
       zones.push(
         states[trigger.zone]
-          ? computeStateName(states[trigger.zone])
+          ? hass.formatEntityName(states[trigger.zone])
           : trigger.zone
       );
     }
@@ -810,6 +809,7 @@ const describeLegacyTrigger = (
     const localized = localizeDeviceAutomationTrigger(
       hass.localize,
       hass.states,
+      hass.formatEntityName,
       entityRegistry,
       config
     );
@@ -818,7 +818,7 @@ const describeLegacyTrigger = (
     }
     const stateObj = hass.states[config.entity_id as string] as
       HassEntity | undefined;
-    return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
+    return `${stateObj ? hass.formatEntityName(stateObj) : config.entity_id} ${
       config.type
     }`;
   }
@@ -826,7 +826,7 @@ const describeLegacyTrigger = (
   // Calendar Trigger
   if (trigger.trigger === "calendar") {
     const calendarEntity = hass.states[trigger.entity_id]
-      ? computeStateName(hass.states[trigger.entity_id])
+      ? hass.formatEntityName(hass.states[trigger.entity_id])
       : trigger.entity_id;
 
     let offsetChoice = "other";
@@ -1151,7 +1151,7 @@ const describeLegacyCondition = (
           : condition.before.includes(".")
             ? `entity ${
                 hass.states[condition.before]
-                  ? computeStateName(hass.states[condition.before])
+                  ? hass.formatEntityName(hass.states[condition.before])
                   : condition.before
               }`
             : localizeTimeString(condition.before, hass.locale, hass.config);
@@ -1162,7 +1162,7 @@ const describeLegacyCondition = (
           : condition.after.includes(".")
             ? `entity ${
                 hass.states[condition.after]
-                  ? computeStateName(hass.states[condition.after])
+                  ? hass.formatEntityName(hass.states[condition.after])
                   : condition.after
               }`
             : localizeTimeString(condition.after, hass.locale, hass.config);
@@ -1245,13 +1245,13 @@ const describeLegacyCondition = (
     if (Array.isArray(condition.entity_id)) {
       for (const entity of condition.entity_id.values()) {
         if (states[entity]) {
-          entities.push(computeStateName(states[entity]) || entity);
+          entities.push(hass.formatEntityName(states[entity]) || entity);
         }
       }
     } else {
       entities.push(
         states[condition.entity_id]
-          ? computeStateName(states[condition.entity_id])
+          ? hass.formatEntityName(states[condition.entity_id])
           : condition.entity_id
       );
     }
@@ -1259,13 +1259,13 @@ const describeLegacyCondition = (
     if (Array.isArray(condition.zone)) {
       for (const zone of condition.zone.values()) {
         if (states[zone]) {
-          zones.push(computeStateName(states[zone]) || zone);
+          zones.push(hass.formatEntityName(states[zone]) || zone);
         }
       }
     } else {
       zones.push(
         states[condition.zone]
-          ? computeStateName(states[condition.zone])
+          ? hass.formatEntityName(states[condition.zone])
           : condition.zone
       );
     }
@@ -1288,6 +1288,7 @@ const describeLegacyCondition = (
     const localized = localizeDeviceAutomationCondition(
       hass.localize,
       hass.states,
+      hass.formatEntityName,
       entityRegistry,
       config
     );
@@ -1296,7 +1297,7 @@ const describeLegacyCondition = (
     }
     const stateObj = hass.states[config.entity_id as string] as
       HassEntity | undefined;
-    return `${stateObj ? computeStateName(stateObj) : config.entity_id} ${
+    return `${stateObj ? hass.formatEntityName(stateObj) : config.entity_id} ${
       config.type
     }`;
   }

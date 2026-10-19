@@ -188,8 +188,8 @@ const sortData = (
       : b[column.valueColumn || sortColumn];
 
     if (column.type === "numeric") {
-      valA = isNaN(valA) ? undefined : Number(valA);
-      valB = isNaN(valB) ? undefined : Number(valB);
+      valA = valA == null || isNaN(valA) ? undefined : Number(valA);
+      valB = valB == null || isNaN(valB) ? undefined : Number(valB);
     } else if (column.type === "ip") {
       return sort * ipCompare(valA, valB);
     } else if (typeof valA === "string" && typeof valB === "string") {

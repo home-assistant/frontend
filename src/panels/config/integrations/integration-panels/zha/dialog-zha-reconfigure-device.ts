@@ -422,11 +422,20 @@ class DialogZHAReconfigureDevice extends LitElement {
     if (!this.hass) {
       return;
     }
-    this._subscribed = reconfigureNode(
+    const subscription = reconfigureNode(
       this.hass,
       params.device.ieee,
-      this._handleMessage.bind(this)
+      (message) => {
+        // Messages of an earlier run can still arrive while its unsubscribe
+        // is in flight, also after the dialog was reopened. Only handle the
+        // messages of the current run.
+        if (this._subscribed !== subscription) {
+          return;
+        }
+        this._handleMessage(message);
+      }
     );
+    this._subscribed = subscription;
   }
 
   private _toggleDetails() {

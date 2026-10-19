@@ -27,6 +27,8 @@ export interface LogbookEntry {
   icon?: string;
   source?: string; // The trigger source (English phrase, parsed for the cause)
   domain?: string;
+  item_id?: string; // The automation or script of a run row, with run_id
+  run_id?: string; // The run of a run row, for its trace
   state?: string; // The state of the entity
   attributes?: { event_type?: string }; // Selected attributes the backend surfaces
   // Context data

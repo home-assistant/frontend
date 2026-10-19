@@ -43,6 +43,8 @@ export interface MarkerLocation {
   icon?: string;
   iconPath?: string;
   radius_color?: string;
+  /** Draw as a zone marker, without a radius */
+  zone_marker?: boolean;
   location_editable?: boolean;
   radius_editable?: boolean;
   /** Clicking or activating the marker fires marker-clicked */
@@ -52,6 +54,9 @@ export interface MarkerLocation {
 }
 
 const ICON_SIZE = 24;
+
+const isZoneMarker = (location: MarkerLocation): boolean =>
+  !!location.radius || !!location.zone_marker;
 
 /**
  * A map with draggable markers and zone circles, drawn by ha-map. Without
@@ -190,7 +195,7 @@ export class HaLocationsEditor extends LitElement {
         location: [location.latitude, location.longitude],
         radius: location.radius,
         element: this._elementFor(location),
-        elementSize: location.radius
+        elementSize: isZoneMarker(location)
           ? [ZONE_CIRCLE_SIZE, ZONE_CIRCLE_SIZE]
           : [ICON_SIZE, ICON_SIZE],
         title: location.name,
@@ -209,7 +214,7 @@ export class HaLocationsEditor extends LitElement {
   private _elementsThemes?: Themes;
 
   private _elementFor(location: MarkerLocation): HTMLElement | undefined {
-    const isZone = !!location.radius;
+    const isZone = isZoneMarker(location);
     const key = JSON.stringify([
       isZone,
       location.icon,

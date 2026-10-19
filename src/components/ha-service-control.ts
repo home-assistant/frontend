@@ -79,6 +79,10 @@ const isFullWidthSelector = (selector?: Selector): boolean =>
     FULL_WIDTH_SELECTOR_TYPES.has(selectorType)
   );
 
+// A switch fits next to its label, even when the editor is narrow.
+const isBooleanSelector = (selector?: Selector): boolean =>
+  !!selector && "boolean" in selector;
+
 interface Field extends Omit<HassService["fields"][string], "selector"> {
   key: string;
   selector?: Selector;
@@ -506,7 +510,6 @@ export class HaServiceControl extends LitElement {
       this.hidePicker
         ? nothing
         : html`<ha-service-picker
-            .hass=${this.hass}
             .value=${this._value?.action}
             .disabled=${this.disabled}
             @value-changed=${this._serviceChanged}
@@ -611,7 +614,6 @@ export class HaServiceControl extends LitElement {
                 >
                   <ha-service-section-icon
                     slot="icons"
-                    .hass=${this.hass}
                     .service=${this._value!.action}
                     .section=${dataField.key}
                   ></ha-service-section-icon>
@@ -693,7 +695,10 @@ export class HaServiceControl extends LitElement {
 
     return dataField.selector
       ? html`<ha-settings-row
-          .narrow=${this.narrow || isFullWidthSelector(selector)}
+          .narrow=${
+            (this.narrow && !isBooleanSelector(selector)) ||
+            isFullWidthSelector(selector)
+          }
         >
           ${
             !showOptional
@@ -768,12 +773,16 @@ export class HaServiceControl extends LitElement {
     filter_entity: targetEntities || undefined,
   }));
 
-  private _localizeValueCallback = (key: string) => {
+  private _localizeValueCallback = (
+    key: string,
+    values?: Record<string, string>
+  ) => {
     if (!this._value?.action) {
       return "";
     }
     return this.hass.localize(
-      `component.${computeDomain(this._value.action)}.selector.${key}`
+      `component.${computeDomain(this._value.action)}.selector.${key}`,
+      values
     );
   };
 

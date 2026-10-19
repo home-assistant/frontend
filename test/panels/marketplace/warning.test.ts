@@ -1,4 +1,5 @@
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
+import { goBack } from "../../../src/common/navigate";
 import { acceptMarketplaceWarning } from "../../../src/data/marketplace/websocket";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { provideHass } from "../../../src/fake_data/provide_hass";
@@ -11,16 +12,25 @@ const stubElement = vi.hoisted(() => (tag: string) => {
   return {};
 });
 
-vi.mock("../../../src/layouts/hass-subpage", () => stubElement("hass-subpage"));
 vi.mock("../../../src/components/ha-alert", () => stubElement("ha-alert"));
 vi.mock("../../../src/components/ha-button", () => stubElement("ha-button"));
-vi.mock("../../../src/components/ha-card", () => stubElement("ha-card"));
 vi.mock("../../../src/components/ha-checkbox", () =>
   stubElement("ha-checkbox")
+);
+vi.mock("../../../src/components/ha-dialog", () => stubElement("ha-dialog"));
+vi.mock("../../../src/components/ha-dialog-footer", () =>
+  stubElement("ha-dialog-footer")
 );
 vi.mock("../../../src/components/ha-svg-icon", () =>
   stubElement("ha-svg-icon")
 );
+vi.mock("../../../src/components/item/ha-list-item-base", () =>
+  stubElement("ha-list-item-base")
+);
+vi.mock("../../../src/components/list/ha-list-base", () =>
+  stubElement("ha-list-base")
+);
+vi.mock("../../../src/common/navigate", () => ({ goBack: vi.fn() }));
 vi.mock("../../../src/data/marketplace/websocket", async (importOriginal) => ({
   ...(await importOriginal<object>()),
   acceptMarketplaceWarning: vi.fn(async () => undefined),
@@ -38,40 +48,9 @@ const openWarning = async () => {
   return warning;
 };
 
-// Only the countdown is faked, Lit renders on microtasks
-beforeEach(() => {
-  vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "Date"] });
-});
-
 afterEach(() => {
   document.body.replaceChildren();
-  vi.useRealTimers();
-});
-
-const waitOut = async (
-  warning: HTMLElement & { updateComplete: Promise<boolean> }
-) => {
-  vi.advanceTimersByTime(30_000);
-  await warning.updateComplete;
-};
-
-const countdown = (warning: HTMLElement) =>
-  warning.shadowRoot!.querySelector(".card-actions .countdown");
-
-const continueButton = (warning: HTMLElement) =>
-  warning.shadowRoot!.querySelector(
-    ".card-actions ha-button"
-  ) as HTMLElement & {
-    disabled: boolean;
-  };
-
-it("shows its title from the translations of the Marketplace itself", async () => {
-  const warning = await openWarning();
-  const subpage = warning.shadowRoot!.querySelector("hass-subpage") as
-    (HTMLElement & { header: string }) | null;
-
-  // A direct visit loads the Marketplace translations, not those of Settings
-  expect(subpage!.header).toBe("ui.panel.marketplace.title");
+  vi.clearAllMocks();
 });
 
 it("sends the acceptance, and can be continued again after it", async () => {
@@ -83,7 +62,6 @@ it("sends the acceptance, and can be continued again after it", async () => {
       })
   );
   const warning = await openWarning();
-  await waitOut(warning);
   const internals = warning as unknown as Record<string, any>;
   internals._understood = true;
 
@@ -96,84 +74,39 @@ it("sends the acceptance, and can be continued again after it", async () => {
   accepted();
   await accepting;
 
-  // The panel swaps the screen once its refetch works, until then it stays usable
+  // The panel removes the warning once its refetch works, until then it stays usable
   expect(internals._accepting).toBe(false);
   expect(internals._error).toBeUndefined();
 });
 
 it("sends nothing until the risks are understood", async () => {
   const warning = await openWarning();
-  await waitOut(warning);
 
   await (warning as unknown as Record<string, any>)._accept();
 
   expect(acceptMarketplaceWarning).not.toHaveBeenCalled();
 });
 
-it("shows a failure above the warning, on an outlined card", async () => {
+it("shows why accepting failed, and can be tried again", async () => {
   vi.mocked(acceptMarketplaceWarning).mockRejectedValueOnce(new Error("Busy"));
   const warning = await openWarning();
-  await waitOut(warning);
   const internals = warning as unknown as Record<string, any>;
   internals._understood = true;
 
   await internals._accept();
-  await warning.updateComplete;
 
-  const content = warning.shadowRoot!.querySelector(".card-content")!;
-  expect(content.firstElementChild?.getAttribute("alert-type")).toBe("error");
-  expect(content.firstElementChild?.textContent).toContain("Busy");
+  expect(internals._error).toContain("Busy");
   expect(internals._accepting).toBe(false);
-  expect(
-    warning.shadowRoot!.querySelector("ha-card")!.hasAttribute("outlined")
-  ).toBe(true);
 });
 
-it("counts down 30 seconds before it can be continued", async () => {
+it("goes back only once, however often it is asked to", async () => {
   const warning = await openWarning();
   const internals = warning as unknown as Record<string, any>;
-  internals._understood = true;
-  await warning.updateComplete;
 
-  expect(continueButton(warning).disabled).toBe(true);
-  // A disabled button is hard to read, the countdown stands next to it
-  expect(continueButton(warning).textContent!.trim()).toBe(
-    "ui.panel.marketplace.warning.continue"
-  );
-  expect(countdown(warning)?.textContent!.trim()).toBe(
-    "ui.panel.marketplace.warning.continue_in"
-  );
-  await internals._accept();
-  expect(acceptMarketplaceWarning).not.toHaveBeenCalled();
+  internals._goBack();
+  internals._goBack();
 
-  vi.advanceTimersByTime(29_000);
-  await warning.updateComplete;
-  expect(continueButton(warning).disabled).toBe(true);
-
-  vi.advanceTimersByTime(1_000);
-  await warning.updateComplete;
-  expect(continueButton(warning).disabled).toBe(false);
-  expect(countdown(warning)).toBeNull();
-  await internals._accept();
-  expect(acceptMarketplaceWarning).toHaveBeenCalled();
-});
-
-it("stops counting down once it is gone", async () => {
-  const warning = await openWarning();
-  expect(vi.getTimerCount()).toBe(1);
-
-  warning.remove();
-
-  expect(vi.getTimerCount()).toBe(0);
-});
-
-it("asks to understand the risks, without a reminder", async () => {
-  const warning = await openWarning();
-
-  expect(
-    warning.shadowRoot!.querySelector("ha-checkbox")!.textContent!.trim()
-  ).toBe("ui.panel.marketplace.warning.understand");
-  expect(
-    warning.shadowRoot!.querySelector('ha-alert[alert-type="info"]')
-  ).toBeNull();
+  // A second history step would leave the page before the Marketplace too
+  expect(goBack).toHaveBeenCalledTimes(1);
+  expect(goBack).toHaveBeenCalledWith("/config");
 });

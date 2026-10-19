@@ -33,9 +33,9 @@ import { stopPropagation } from "../../common/dom/stop_propagation";
 import { consume } from "../../common/decorators/consume";
 import { computeDomain } from "../../common/entity/compute_domain";
 import {
-  computeEntityEntryNameList,
-  computeEntityNameList,
-  type EntityNameItem,
+  computeEntityEntryNameParts,
+  computeEntityNameParts,
+  type EntityNameType,
 } from "../../common/entity/compute_entity_name_display";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import {
@@ -131,11 +131,11 @@ declare global {
 
 const DEFAULT_VIEW: MoreInfoView = "info";
 
-const BREADCRUMB_NAME: EntityNameItem[] = [
-  { type: "area" },
-  { type: "parent_device" },
-  { type: "device" },
-  { type: "entity" },
+const BREADCRUMB_NAME: EntityNameType[] = [
+  "area",
+  "parent_device",
+  "device",
+  "entity",
 ];
 
 @customElement("ha-more-info-dialog")
@@ -608,26 +608,13 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const showCloseIcon =
       isDefaultView && this._parentEntityIds.length === 0 && !this._childView;
 
+    const nameParts = stateObj
+      ? computeEntityNameParts(stateObj, this.hass)
+      : this._entry
+        ? computeEntityEntryNameParts(this._entry, this.hass)
+        : undefined;
     const breadcrumb = (
-      stateObj
-        ? computeEntityNameList(
-            stateObj,
-            BREADCRUMB_NAME,
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.floors
-          )
-        : this._entry
-          ? computeEntityEntryNameList(
-              this._entry,
-              BREADCRUMB_NAME,
-              this.hass.entities,
-              this.hass.devices,
-              this.hass.areas,
-              this.hass.floors
-            )
-          : [entityId]
+      nameParts ? BREADCRUMB_NAME.map((type) => nameParts[type]) : [entityId]
     ).filter((v): v is string => Boolean(v));
     const addToMenuItem = this.hass.localize(
       "ui.dialogs.more_info_control.add_to.item"
@@ -870,12 +857,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                                       }
                                     ></ha-svg-icon>
                                     ${this.hass.localize(
-                                      "ui.dialogs.more_info_control.device_or_service_info",
-                                      {
-                                        type: this.hass.localize(
-                                          `ui.dialogs.more_info_control.device_type.${deviceType}`
-                                        ),
-                                      }
+                                      `ui.dialogs.more_info_control.${deviceType}_info`
                                     )}
                                   </ha-dropdown-item>
                                 `

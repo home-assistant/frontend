@@ -103,6 +103,7 @@ export default [
           "entity-button-card",
           "entity-filter-card",
           "glance-card",
+          "sensor-card",
           "tile-card",
           "area-card",
         ],
