@@ -68,7 +68,7 @@ export class HuiHistoryGraphCardEditor
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, hasTimeline: boolean) =>
       [
         { name: "title", selector: { text: {} } },
         {
@@ -98,22 +98,28 @@ export class HuiHistoryGraphCardEditor
             },
           ],
         },
-        {
-          name: "label_position",
-          required: false,
-          visible: [{ field: "show_names", operator: "not_eq", value: false }],
-          selector: {
-            select: {
-              mode: "dropdown",
-              options: ["side", "below"].map((value) => ({
-                value,
-                label: localize(
-                  `ui.panel.lovelace.editor.card.history-graph.label_position_options.${value}`
-                ),
-              })),
-            },
-          },
-        },
+        ...(hasTimeline
+          ? ([
+              {
+                name: "label_position",
+                required: false,
+                visible: [
+                  { field: "show_names", operator: "not_eq", value: false },
+                ],
+                selector: {
+                  select: {
+                    mode: "dropdown",
+                    options: ["side", "below"].map((value) => ({
+                      value,
+                      label: localize(
+                        `ui.panel.lovelace.editor.card.history-graph.label_position_options.${value}`
+                      ),
+                    })),
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
         {
           name: "",
           type: "grid",
@@ -162,7 +168,7 @@ export class HuiHistoryGraphCardEditor
       },
       {
         name: "color",
-        disabled: this._shouldDisableColorOption(entityId),
+        disabled: this._isTimelineEntity(entityId),
         selector: { ui_color: {} },
       },
     ] as const,
@@ -200,12 +206,16 @@ export class HuiHistoryGraphCardEditor
     const configEntities = this._config.entities
       ? (processEditorEntities(this._config.entities) as GraphEntityConfig[])
       : [];
+    const hasTimeline = configEntities.some((entityConf) =>
+      this._isTimelineEntity(entityConf.entity)
+    );
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${this._schema(this.hass.localize)}
+        .schema=${this._schema(this.hass.localize, hasTimeline)}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
       <hui-entity-editor
@@ -232,7 +242,7 @@ export class HuiHistoryGraphCardEditor
     // get updated entity config
     let newEntityConfig = ev.detail.config as GraphEntityConfig;
     const entityId = newEntityConfig.entity;
-    if (this._shouldDisableColorOption(entityId)) {
+    if (this._isTimelineEntity(entityId)) {
       // remove unused "color" option
       newEntityConfig = this._deleteColorOption(newEntityConfig);
     }
@@ -270,10 +280,9 @@ export class HuiHistoryGraphCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  // a rough assumption about a numerical entity
-  // which may use state-history-chart-line
-  // where "color" option may be used
-  private _shouldDisableColorOption = (entityId: string) => {
+  // a rough assumption that a non-numerical entity is drawn as
+  // state-history-chart-timeline, where the "color" option is unused
+  private _isTimelineEntity = (entityId: string) => {
     const domain = computeDomain(entityId);
     const isNumberDomain =
       domain === "counter" || domain === "number" || domain === "input_number";
@@ -298,6 +307,15 @@ export class HuiHistoryGraphCardEditor
       cardConfigStruct
     ) as HistoryGraphCardConfig;
   }
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) =>
+    schema.name === "label_position"
+      ? this.hass!.localize(
+          "ui.panel.lovelace.editor.card.history-graph.label_position_helper"
+        )
+      : undefined;
 
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>

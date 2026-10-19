@@ -10670,6 +10670,7 @@
                 "side": "Beside the graph",
                 "below": "Below each bar"
               },
+              "label_position_helper": "Applies only to entities shown as bars.",
               "logarithmic_scale": "Logarithmic scale",
               "expand_legend": "Expand legend",
               "min_y_axis": "Y axis minimum",
