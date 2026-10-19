@@ -322,6 +322,7 @@
       "update": {
         "installing": "Installing",
         "installing_with_progress": "Installing ({progress}%)",
+        "preparing": "Preparing",
         "up_to_date": "Up-to-date"
       },
       "text": {
