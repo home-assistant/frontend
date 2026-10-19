@@ -1,15 +1,24 @@
 import { describe, expect, it } from "vitest";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
 import type { DataTableRowData } from "../../../src/components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../src/data/marketplace/repository";
+import type { HomeAssistant } from "../../../src/types";
 import {
+  applySkippedUpdates,
   browseLinkFromUrl,
   browseUrl,
   filterRepositories,
   filtersOfTab,
+  skippedUpdateRepositories,
   statusesOfTab,
   statusFilterOfTab,
 } from "../../../src/panels/marketplace/dashboards/dashboard-repositories";
+import {
+  mockDevice,
+  mockEntity,
+  mockStateObj,
+} from "../../common/entity/context/context-mock";
 
 const localize = ((key: string) => key) as LocalizeFunc;
 
@@ -164,7 +173,12 @@ describe("browseUrl", () => {
       browseUrl({
         search: "mushroom card",
         sorting: { column: "stars", direction: "desc" },
-        filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+        filters: {
+          status: ["new"],
+          type: ["theme"],
+          source: ["custom"],
+          updates: ["skipped"],
+        },
       }),
       "http://localhost"
     );
@@ -174,7 +188,12 @@ describe("browseUrl", () => {
     expect(url.searchParams.get("direction")).toBe("desc");
     expect(browseLinkFromUrl(url.search)).toEqual({
       search: "mushroom card",
-      filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+      filters: {
+        status: ["new"],
+        type: ["theme"],
+        source: ["custom"],
+        updates: ["skipped"],
+      },
     });
   });
 
@@ -189,7 +208,12 @@ describe("browseLinkFromUrl", () => {
   it("replaces the search and filters for a link that only sorts", () => {
     expect(browseLinkFromUrl("?sort=stars&direction=desc")).toEqual({
       search: "",
-      filters: { status: undefined, type: undefined, source: undefined },
+      filters: {
+        status: undefined,
+        type: undefined,
+        source: undefined,
+        updates: undefined,
+      },
     });
   });
 
@@ -234,5 +258,114 @@ describe("filtersOfTab", () => {
     expect(statusFilterOfTab(filters, "browse", ["default"])).toEqual([
       "default",
     ]);
+  });
+});
+
+describe("skippedUpdateRepositories", () => {
+  const entities: HomeAssistant["entities"] = {
+    "update.mushroom": mockEntity({
+      entity_id: "update.mushroom",
+      platform: "marketplace",
+      device_id: "mushroom_device",
+    }),
+    "update.older": mockEntity({
+      entity_id: "update.older",
+      platform: "marketplace",
+      device_id: "older_device",
+    }),
+    "update.other": mockEntity({
+      entity_id: "update.other",
+      platform: "esphome",
+      device_id: "other_device",
+    }),
+  };
+
+  const devices: HomeAssistant["devices"] = {
+    mushroom_device: mockDevice({
+      id: "mushroom_device",
+      identifiers: [["marketplace", "444350375"]],
+    }),
+    older_device: mockDevice({
+      id: "older_device",
+      identifiers: [["marketplace", "1"]],
+    }),
+    other_device: mockDevice({
+      id: "other_device",
+      identifiers: [["esphome", "2"]],
+    }),
+  };
+
+  const update = (
+    entityId: string,
+    latest: string,
+    skipped: string | null
+  ): HassEntity =>
+    mockStateObj({
+      entity_id: entityId,
+      state: "off",
+      attributes: { latest_version: latest, skipped_version: skipped },
+    });
+
+  it("finds the repositories of Marketplace update entities whose latest version is skipped", () => {
+    const states: HassEntities = {
+      "update.mushroom": update("update.mushroom", "v5.0.0", "v5.0.0"),
+      // A newer release than the one skipped is an update again
+      "update.older": update("update.older", "v2.0.0", "v1.0.0"),
+      "update.other": update("update.other", "2026.10.0", "2026.10.0"),
+    };
+
+    expect(skippedUpdateRepositories(entities, devices, states)).toEqual([
+      "444350375",
+    ]);
+  });
+});
+
+describe("applySkippedUpdates", () => {
+  const repositories = [
+    repository("Skipped", {
+      status: "pending-upgrade",
+      installed: true,
+      pending_upgrade: true,
+    }),
+    repository("Restart", {
+      status: "pending-restart",
+      installed: true,
+      pending_upgrade: true,
+    }),
+    repository("Outdated", {
+      status: "pending-upgrade",
+      installed: true,
+      pending_upgrade: true,
+    }),
+  ];
+
+  it("shows a skipped update as installed while skipped updates are hidden", () => {
+    const [skipped, restart, outdated] = applySkippedUpdates(
+      repositories,
+      ["Skipped", "Restart"],
+      false
+    );
+
+    expect(skipped).toMatchObject({
+      status: "installed",
+      pending_upgrade: false,
+      update_skipped: true,
+    });
+    // It still needs the restart
+    expect(restart).toMatchObject({
+      status: "pending-restart",
+      pending_upgrade: false,
+    });
+    expect(outdated).toBe(repositories[2]);
+  });
+
+  it("keeps a skipped update as an update while skipped updates are shown", () => {
+    const [skipped] = applySkippedUpdates(repositories, ["Skipped"], true);
+
+    expect(skipped).toMatchObject({
+      status: "pending-upgrade",
+      pending_upgrade: true,
+      update_skipped: true,
+    });
   });
 });

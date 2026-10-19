@@ -1,3 +1,5 @@
+import type { HassEntities } from "home-assistant-js-websocket";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { dataTableQueryParamConfig } from "../../../common/url/data-table-query-params";
 import {
@@ -13,6 +15,7 @@ import {
 } from "../../../common/url/query-params";
 import type { DataTableRowData } from "../../../components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
+import type { HomeAssistant } from "../../../types";
 import type { MarketplaceTab } from "./ha-marketplace-dashboard";
 
 export const STATUS_ORDER = [
@@ -35,6 +38,10 @@ export const TYPE_FILTER = "type";
 
 export const SOURCE_FILTER = "source";
 
+// Skipped updates show as installed, unless this is picked in the updates pane
+export const UPDATES_FILTER = "updates";
+export const SHOW_SKIPPED = "skipped";
+
 // Where a repository comes from, the community catalog or added from a link
 export const SOURCE_ORDER = ["catalog", "custom"] as const;
 
@@ -46,10 +53,77 @@ const repositorySource = (repository: RepositoryBase): RepositorySource =>
 // What the filter panes picked, nothing picked in a pane shows everything
 export type RepositoryFilters = Partial<
   Record<
-    typeof STATUS_FILTER | typeof TYPE_FILTER | typeof SOURCE_FILTER,
+    | typeof STATUS_FILTER
+    | typeof TYPE_FILTER
+    | typeof SOURCE_FILTER
+    | typeof UPDATES_FILTER,
     string[]
   >
 >;
+
+export interface MarketplaceRepository extends RepositoryBase {
+  update_skipped?: boolean;
+}
+
+// The skip is kept on the update entity, its device names the repository
+export const skippedUpdateRepositories = (
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  states: HassEntities
+): string[] =>
+  Object.values(entities)
+    .flatMap((entity) => {
+      if (
+        entity.platform !== "marketplace" ||
+        computeDomain(entity.entity_id) !== "update" ||
+        !entity.device_id
+      ) {
+        return [];
+      }
+
+      const attributes = states[entity.entity_id]?.attributes;
+
+      if (
+        !attributes?.latest_version ||
+        attributes.skipped_version !== attributes.latest_version
+      ) {
+        return [];
+      }
+
+      const repositoryId = devices[entity.device_id]?.identifiers.find(
+        ([domain]) => domain === "marketplace"
+      )?.[1];
+
+      return repositoryId ? [repositoryId] : [];
+    })
+    .sort();
+
+// A skipped update leaves the repository installed. A restart it waits for
+// is still needed, so that status stays.
+export const applySkippedUpdates = (
+  repositories: RepositoryBase[],
+  skipped: string[],
+  showSkipped: boolean
+): MarketplaceRepository[] =>
+  skipped.length
+    ? repositories.map((repository): MarketplaceRepository => {
+        if (!repository.pending_upgrade || !skipped.includes(repository.id)) {
+          return repository;
+        }
+
+        return showSkipped
+          ? { ...repository, update_skipped: true }
+          : {
+              ...repository,
+              update_skipped: true,
+              pending_upgrade: false,
+              status:
+                repository.status === "pending-upgrade"
+                  ? "installed"
+                  : repository.status,
+            };
+      })
+    : repositories;
 
 export const statusesOfTab = (
   tab: MarketplaceTab
@@ -218,6 +292,7 @@ export const browseLinkFromUrl = (
       [STATUS_FILTER]: lists.status?.filter(Boolean),
       [TYPE_FILTER]: lists.type?.filter(Boolean),
       [SOURCE_FILTER]: lists.source?.filter(Boolean),
+      [UPDATES_FILTER]: lists.updates?.filter(Boolean),
     },
   };
 };

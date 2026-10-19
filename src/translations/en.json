@@ -12661,7 +12661,9 @@
         "filters": {
           "status": "Status",
           "type": "Type",
-          "source": "Source"
+          "source": "Source",
+          "updates": "Updates",
+          "show_skipped": "Show skipped updates"
         },
         "dialog_custom_repositories": {
           "title": "Add from a GitHub link",
@@ -12779,7 +12781,8 @@
           "pending-upgrade": "Update available",
           "installed": "Installed",
           "new": "New",
-          "default": "Available"
+          "default": "Available",
+          "update_skipped": "Update skipped"
         },
         "menu": {
           "custom_repositories": "Custom repositories",

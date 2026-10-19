@@ -11,7 +11,7 @@ import {
   mdiStore,
   mdiViewGridOutline,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoize from "memoize-one";
@@ -27,6 +27,7 @@ import { QueryParamsController } from "../../../common/controllers/query-params-
 import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
 import { marketplaceFilterQueryParamConfig } from "../../../common/url/marketplace-query-params";
+import { shallowEqual } from "../../../common/util/shallow-equal";
 import type {
   DataTableColumnContainer,
   SelectionChangedEvent,
@@ -68,7 +69,10 @@ import type { MarketplaceData } from "../../../data/marketplace/marketplace";
 import {
   apiContext,
   configContext,
+  devicesContext,
+  entitiesContext,
   internationalizationContext,
+  statesContext,
   uiContext,
 } from "../../../data/context";
 import type {
@@ -82,9 +86,12 @@ import {
 } from "../../../data/marketplace/repository";
 import { haStyle } from "../../../resources/styles";
 import {
+  applySkippedUpdates,
   browseLinkFromUrl,
   filterRepositories,
   filtersOfTab,
+  SHOW_SKIPPED,
+  skippedUpdateRepositories,
   SOURCE_FILTER,
   SOURCE_ORDER,
   STATUS_FILTER,
@@ -92,8 +99,12 @@ import {
   statusesOfTab,
   statusFilterOfTab,
   TYPE_FILTER,
+  UPDATES_FILTER,
 } from "./dashboard-repositories";
-import type { RepositoryFilters } from "./dashboard-repositories";
+import type {
+  MarketplaceRepository,
+  RepositoryFilters,
+} from "./dashboard-repositories";
 import { documentationUrl } from "../../../util/documentation-url";
 import { renderRepositoryIcon } from "../tools/repository-icon";
 import {
@@ -176,6 +187,20 @@ export class HaMarketplaceDashboard extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
+
+  @state() private _skippedUpdates: string[] = [];
+
   @storage({
     storage: "sessionStorage",
     key: "marketplace-dashboard-table-filters",
@@ -254,9 +279,26 @@ export class HaMarketplaceDashboard extends LitElement {
   );
 
   // Stored settings ignore what is set before the first update
-  protected willUpdate() {
+  protected willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this._applyLink();
+    }
+
+    if (
+      changedProps.has("_states") ||
+      changedProps.has("_entities") ||
+      changedProps.has("_devices")
+    ) {
+      const skipped = skippedUpdateRepositories(
+        this._entities,
+        this._devices,
+        this._states
+      );
+
+      // Most state changes are not about these, the table is left as it is
+      if (!shallowEqual(skipped, this._skippedUpdates)) {
+        this._skippedUpdates = skipped;
+      }
     }
   }
 
@@ -286,11 +328,15 @@ export class HaMarketplaceDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const marketplaceRepositories = this._applySkippedUpdates(
+      this.marketplace.repositories,
+      this._skippedUpdates,
+      Boolean(this._filters[UPDATES_FILTER]?.includes(SHOW_SKIPPED))
+    );
     const tabs = this._tabs(
       this._i18n.localize,
-      this.marketplace.repositories.filter(
-        (repository) => repository.pending_upgrade
-      ).length
+      marketplaceRepositories.filter((repository) => repository.pending_upgrade)
+        .length
     );
 
     if (this.tab === "discover") {
@@ -310,7 +356,7 @@ export class HaMarketplaceDashboard extends LitElement {
 
     const filters = this._filtersOfTab(this._filters, this.tab);
     const repositories = this._filterRepositories(
-      this._repositoriesOfTab(this.marketplace.repositories, this.tab),
+      this._repositoriesOfTab(marketplaceRepositories, this.tab),
       this._i18n.localize,
       filters
     );
@@ -426,6 +472,14 @@ export class HaMarketplaceDashboard extends LitElement {
           .narrow=${this.narrow}
           @data-table-filter-changed=${this._sourceFilterChanged}
         ></ha-filter-states>
+        <ha-filter-states
+          slot="filter-pane"
+          .label=${this._i18n.localize("ui.panel.marketplace.filters.updates")}
+          .value=${this._filters[UPDATES_FILTER]}
+          .states=${this._updatesStates(this._i18n.localize)}
+          .narrow=${this.narrow}
+          @data-table-filter-changed=${this._updatesFilterChanged}
+        ></ha-filter-states>
       </hass-tabs-subpage-data-table>
       <ha-dropdown
         id="repository-overflow-menu"
@@ -503,6 +557,8 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _repositoriesOfTab = memoize(repositoriesOfTab);
 
+  private _applySkippedUpdates = memoize(applySkippedUpdates);
+
   private _filterRepositories = memoize(filterRepositories);
 
   private _filtersOfTab = memoize(filtersOfTab);
@@ -513,7 +569,7 @@ export class HaMarketplaceDashboard extends LitElement {
       narrow: boolean,
       darkMode: boolean | undefined,
       markInstalled: boolean
-    ): DataTableColumnContainer<RepositoryBase> => ({
+    ): DataTableColumnContainer<MarketplaceRepository> => ({
       icon: {
         title: "",
         label: localizeFunc("ui.panel.marketplace.column.icon"),
@@ -521,7 +577,7 @@ export class HaMarketplaceDashboard extends LitElement {
         hidden: false,
         moveable: false,
         showNarrow: true,
-        template: (repository: RepositoryBase) =>
+        template: (repository: MarketplaceRepository) =>
           renderRepositoryIcon(repository, {
             darkMode,
             hassUrl: this._config.auth.data.hassUrl,
@@ -530,6 +586,9 @@ export class HaMarketplaceDashboard extends LitElement {
               : undefined,
             updateLabel: localizeFunc(
               "ui.panel.marketplace.repository_status.pending-upgrade"
+            ),
+            skippedLabel: localizeFunc(
+              "ui.panel.marketplace.repository_status.update_skipped"
             ),
           }),
       },
@@ -925,6 +984,13 @@ export class HaMarketplaceDashboard extends LitElement {
     }))
   );
 
+  private _updatesStates = memoize((localize: LocalizeFunc) => [
+    {
+      value: SHOW_SKIPPED,
+      label: localize("ui.panel.marketplace.filters.show_skipped"),
+    },
+  ]);
+
   // Statuses and sources group in the order of their filters, not alphabetically
   private _groupOrder = memoize(
     (grouping: string | undefined, localize: LocalizeFunc) => {
@@ -968,6 +1034,11 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _sourceFilterChanged(ev: CustomEvent<{ value: string[] }>) {
     this._filters = { ...this._filters, [SOURCE_FILTER]: ev.detail.value };
+    this._writeFilters();
+  }
+
+  private _updatesFilterChanged(ev: CustomEvent<{ value: string[] }>) {
+    this._filters = { ...this._filters, [UPDATES_FILTER]: ev.detail.value };
     this._writeFilters();
   }
 
