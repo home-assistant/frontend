@@ -41,6 +41,25 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       }
     };
 
+    private _isEventInScope(event: KeyboardEvent): boolean {
+      const path = event.composedPath();
+
+      if (path.includes(this)) {
+        return true;
+      }
+
+      const insideOtherDialog = path.some(
+        (el) =>
+          el instanceof HTMLElement &&
+          (el.localName === "dialog" ||
+            el.localName.endsWith("-dialog") ||
+            el.getAttribute("role") === "dialog" ||
+            el.getAttribute("aria-modal") === "true")
+      );
+
+      return !insideOtherDialog;
+    }
+
     private _keydownCaptureEvent = (event: KeyboardEvent) => {
       const supportedShortcuts = this.supportedShortcuts();
       const key = event.shiftKey ? event.key.toUpperCase() : event.key;
@@ -48,7 +67,8 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
         (event.ctrlKey || event.metaKey) &&
         !event.altKey &&
         key in supportedShortcuts &&
-        this.supportedShortcutsInInput().includes(key)
+        this.supportedShortcutsInInput().includes(key) &&
+        this._isEventInScope(event)
       ) {
         event.preventDefault();
         event.stopPropagation();
