@@ -1,7 +1,11 @@
 import { timeZonesNames } from "@vvo/tzdb";
 import { TimeZone } from "../../data/translation";
 
-const RESOLVED_RAW = Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
+// The FormatJS polyfill reports the canonical zone (Europe/Amsterdam becomes
+// Europe/Brussels), so prefer the name the polyfill loader read before it
+const RESOLVED_RAW =
+  (globalThis as { __haNativeTimeZone?: string }).__haNativeTimeZone ??
+  Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
 
 // Some environments (e.g. Android emulator) return a UTC offset like "+00:00"
 // instead of an IANA zone name. Only accept values that are known IANA zones,

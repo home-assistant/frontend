@@ -24,11 +24,12 @@ if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
     rank(type) >= 0 && rank(type) <= RANKS.day;
   const isTimePart = ({ type }: Intl.DateTimeFormatPart) =>
     rank(type) > RANKS.day;
-  const SEPARATOR: Intl.DateTimeRangeFormatPart = {
+  // FullCalendar edits the returned parts in place, so every range gets its own
+  const separator = (): Intl.DateTimeRangeFormatPart => ({
     type: "literal",
     value: " – ",
     source: "shared",
-  };
+  });
 
   const tag = (
     parts: Intl.DateTimeFormatPart[],
@@ -36,22 +37,37 @@ if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
   ): Intl.DateTimeRangeFormatPart[] =>
     parts.map(({ type, value }) => ({ type, value, source }));
 
-  // The literal a locale puts between a date and a time, like ", "
-  const dateTimeGlue = (
-    locale: string,
-    timeZone: string
-  ): Intl.DateTimeFormatPart => {
-    const parts = new Intl.DateTimeFormat(locale, {
-      timeZone,
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "numeric",
-    }).formatToParts(0);
-    const before = parts[parts.findIndex((part) => part.type === "hour") - 1];
-    return before?.type === "literal"
-      ? before
-      : { type: "literal", value: " " };
+  interface DayFormat {
+    format: Intl.DateTimeFormat;
+    // The literal the locale puts between a date and a time, like ", "
+    glue: string;
+  }
+  const dayFormats = new Map<string, DayFormat>();
+
+  const getDayFormat = (locale: string, timeZone: string): DayFormat => {
+    const key = `${locale}|${timeZone}`;
+    let dayFormat = dayFormats.get(key);
+    if (!dayFormat) {
+      const parts = new Intl.DateTimeFormat(locale, {
+        timeZone,
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "numeric",
+      }).formatToParts(0);
+      const before = parts[parts.findIndex((part) => part.type === "hour") - 1];
+      dayFormat = {
+        format: new Intl.DateTimeFormat(locale, {
+          timeZone,
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        }),
+        glue: before?.type === "literal" ? before.value : " ",
+      };
+      dayFormats.set(key, dayFormat);
+    }
+    return dayFormat;
   };
 
   const isSamePart = (
@@ -73,21 +89,15 @@ if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
       // Like ICU, a time-only range that crosses days shows both dates
       if (!start.some(isDatePart)) {
         const { locale, timeZone } = this.resolvedOptions();
-        const dayFormat = new Intl.DateTimeFormat(locale, {
-          timeZone,
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-        });
-        if (dayFormat.format(startDate) !== dayFormat.format(endDate)) {
-          const glue = dateTimeGlue(locale, timeZone);
+        const { format, glue } = getDayFormat(locale, timeZone);
+        if (format.format(startDate) !== format.format(endDate)) {
           return [
-            ...tag(dayFormat.formatToParts(startDate), "startRange"),
-            { ...glue, source: "startRange" },
+            ...tag(format.formatToParts(startDate), "startRange"),
+            { type: "literal", value: glue, source: "startRange" },
             ...tag(start, "startRange"),
-            SEPARATOR,
-            ...tag(dayFormat.formatToParts(endDate), "endRange"),
-            { ...glue, source: "endRange" },
+            separator(),
+            ...tag(format.formatToParts(endDate), "endRange"),
+            { type: "literal", value: glue, source: "endRange" },
             ...tag(end, "endRange"),
           ];
         }
@@ -114,7 +124,7 @@ if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
       if (largestChange <= RANKS.day && start.some(isTimePart)) {
         return [
           ...tag(start, "startRange"),
-          SEPARATOR,
+          separator(),
           ...tag(end, "endRange"),
         ];
       }
@@ -161,7 +171,7 @@ if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
       return [
         ...tag(start.slice(0, head), "shared"),
         ...tag(start.slice(head, start.length - tail), "startRange"),
-        SEPARATOR,
+        separator(),
         ...tag(end.slice(head, end.length - tail), "endRange"),
         ...tag(start.slice(start.length - tail), "shared"),
       ];

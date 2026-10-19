@@ -125,7 +125,26 @@ describe("Intl.DateTimeFormat formatRangeToParts polyfill", () => {
       "2026-03-14",
       "de"
     );
-    expect(text(polyfill)).toBe("8. März – 14. März 2026");
+    // ICU gives "8.–14. März 2026"
+    expect(text(polyfill)).toMatch(/^8\.( März)? – 14\. März 2026$/);
+  });
+
+  it("returns a new separator for every range", () => {
+    const { polyfill: first } = format(
+      { hour: "numeric", minute: "2-digit" },
+      "2026-03-10T10:00Z",
+      "2026-03-10T11:30Z"
+    );
+    // FullCalendar trims the literal before a day period in place
+    for (const part of first) {
+      part.value = part.value.trimEnd();
+    }
+    const { polyfill } = format(
+      { year: "numeric", month: "short", day: "numeric" },
+      "2026-03-29",
+      "2026-04-04"
+    );
+    expect(text(polyfill)).toBe("Mar 29 – Apr 4, 2026");
   });
 
   it("shows both dates for a time range across days in German", () => {

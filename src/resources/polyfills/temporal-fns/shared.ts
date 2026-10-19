@@ -96,6 +96,9 @@ export const zoned = (
 export const wallToEpochMs = (wall: number, timeZone: string) => {
   const offsetBefore = offsetMs(timeZone, wall - DAY_MS);
   const offsetAfter = offsetMs(timeZone, wall + DAY_MS);
+  if (offsetBefore === offsetAfter) {
+    return wall - offsetBefore;
+  }
   const matches = [wall - offsetBefore, wall - offsetAfter].filter(
     (epochMs) => offsetMs(timeZone, epochMs) === wall - epochMs
   );
