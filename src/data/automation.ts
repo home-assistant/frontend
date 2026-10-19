@@ -2,7 +2,6 @@ import type {
   Connection,
   HassEntityAttributeBase,
   HassEntityBase,
-  HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import type { WeekdayShort } from "../common/datetime/weekday";
@@ -18,6 +17,7 @@ import type {
   DeviceTrigger,
 } from "./device/device_automation";
 import type { Action, Field, MODES, Option } from "./script";
+import type { HassServiceTargetWithExclude } from "./target";
 import { migrateAutomationAction } from "./script";
 import type { TriggerDescription } from "./trigger";
 
@@ -106,7 +106,7 @@ export interface BaseTrigger {
 
 export interface PlatformTrigger extends BaseTrigger {
   trigger: Exclude<string, LegacyTrigger["trigger"]>;
-  target?: HassServiceTarget;
+  target?: HassServiceTargetWithExclude;
 }
 
 export interface StateTrigger extends BaseTrigger {
@@ -251,7 +251,7 @@ interface BaseCondition {
 
 export interface PlatformCondition extends BaseCondition {
   condition: Exclude<string, LegacyCondition["condition"]>;
-  target?: HassServiceTarget;
+  target?: HassServiceTargetWithExclude;
 }
 
 export interface LogicalCondition extends BaseCondition {
