@@ -778,6 +778,13 @@
         "time_pattern": "time pattern",
         "homeassistant_stopping": "Home Assistant stopping",
         "homeassistant_starting": "Home Assistant starting",
+        "cause_filter": {
+          "caption": "Triggered by",
+          "automation": "Automations",
+          "script": "Scripts",
+          "integration": "Integrations",
+          "other": "Other"
+        },
         "cause": {
           "by": "By {name}",
           "by_automation": "By automation: {name}",
