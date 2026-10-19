@@ -66,6 +66,28 @@ type EventTimeFormatter = Extract<
   (...args: any[]) => string
 >;
 
+// FullCalendar sorts events by these fields, with times in calendar time
+interface EventSortFields {
+  allDay: number;
+  start: number;
+  end: number;
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+// FullCalendar draws a timed event within one day as a dot
+const isDotEvent = ({ allDay, start, end }: EventSortFields) =>
+  !allDay &&
+  Math.floor(start / DAY_MS) === Math.floor(Math.max(start, end - 1) / DAY_MS);
+
+const defaultEventOrder = "start,-duration,allDay,title";
+
+const narrowMonthEventOrder = [
+  (a: EventSortFields, b: EventSortFields) =>
+    Number(isDotEvent(a)) - Number(isDotEvent(b)),
+  ...defaultEventOrder.split(","),
+] as CalendarOptions["eventOrder"];
+
 const weekTitleFormat: CalendarOptions["titleFormat"] = {
   year: "numeric",
   month: "short",
@@ -86,6 +108,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
   dayCellTopClass: "ha-fc-day-top",
   dayCellTopInnerClass: ({ isToday }) =>
     joinClassNames("ha-fc-day-number", isToday && "ha-fc-day-number-today"),
+  dayCellInnerClass: "ha-fc-day-events",
   eventClass: "ha-fc-event",
   rowEventClass: "ha-fc-row-event",
   rowEventInnerClass: "ha-fc-row-event-inner",
@@ -354,6 +377,15 @@ export class HAFullCalendar extends LitElement {
       this.calendar!.setOption("eventDisplay", this.eventDisplay);
     }
 
+    const eventOrder = this._eventOrderOptions(this._activeView!);
+    if (
+      this.calendar.getOption("eventOrderStrict") !==
+      eventOrder.eventOrderStrict
+    ) {
+      this.calendar.setOption("eventOrder", eventOrder.eventOrder);
+      this.calendar.setOption("eventOrderStrict", eventOrder.eventOrderStrict);
+    }
+
     if (changedProps.has("autoHeight")) {
       this.calendar.setOption("height", this._height);
       this.calendar.setOption("dayMaxEventRows", !this.autoHeight);
@@ -386,6 +418,7 @@ export class HAFullCalendar extends LitElement {
       dayMaxEventRows: !this.autoHeight,
       eventDisplay: this.eventDisplay,
       eventTimeFormat: this._formatEventTime,
+      ...this._eventOrderOptions(initialView),
     };
 
     config.dateClick = (info) => this._handleDateClick(info);
@@ -401,6 +434,16 @@ export class HAFullCalendar extends LitElement {
 
   private get _height(): CalendarOptions["height"] {
     return this.autoHeight ? "auto" : defaultFullCalendarConfig.height;
+  }
+
+  // Narrow month dots wrap below the bars, so every bar is placed before them
+  // and no event fills a gap above an earlier one
+  private _eventOrderOptions(view: FullCalendarView) {
+    const narrowMonth = this.narrow && view === "dayGridMonth";
+    return {
+      eventOrder: narrowMonth ? narrowMonthEventOrder : defaultEventOrder,
+      eventOrderStrict: narrowMonth,
+    };
   }
 
   // Return if there are calendars that support creating events
@@ -890,6 +933,75 @@ export class HAFullCalendar extends LitElement {
 
         :host([narrow]) .ha-fc-dayGridMonth .ha-fc-dot-event-text {
           display: none;
+        }
+
+        :host([narrow]) .ha-fc-dayGridMonth .ha-fc-more-link {
+          justify-content: center;
+          border-color: transparent;
+        }
+
+        /* Dots sit 4 to a 12px line. FullCalendar stacks each dot 3px below
+           the one before it, so a line takes the height it reserves for 4
+           dots, and a margin lifts each dot back up to the start of its line.
+           Without these selectors the dots stay stacked. */
+        @supports selector(:nth-child(1 of :has(*))) {
+          :host([narrow]) .ha-fc-dayGridMonth .ha-fc-day-events {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: flex-start;
+          }
+
+          :host([narrow])
+            .ha-fc-dayGridMonth
+            .ha-fc-day-events
+            > :has(> .ha-fc-dot-event) {
+            height: 3px;
+          }
+
+          /* FullCalendar hides a dot it has not placed or that does not fit */
+          :host([narrow])
+            .ha-fc-dayGridMonth
+            .ha-fc-day-events
+            > :has(> .ha-fc-dot-event):not([style*="hidden"]) {
+            position: relative !important;
+            width: 25% !important;
+            margin-top: calc(var(--dot-column, 0) * -3px);
+            margin-bottom: -3px;
+          }
+
+          :host([narrow])
+            .ha-fc-dayGridMonth
+            .ha-fc-day-events
+            > :nth-child(4n + 2 of :has(> .ha-fc-dot-event)) {
+            --dot-column: 1;
+          }
+
+          :host([narrow])
+            .ha-fc-dayGridMonth
+            .ha-fc-day-events
+            > :nth-child(4n + 3 of :has(> .ha-fc-dot-event)) {
+            --dot-column: 2;
+          }
+
+          :host([narrow])
+            .ha-fc-dayGridMonth
+            .ha-fc-day-events
+            > :nth-child(4n of :has(> .ha-fc-dot-event)) {
+            --dot-column: 3;
+          }
+
+          /* A last line that is not full still needs the room of 3 dots */
+          :host([narrow])
+            .ha-fc-dayGridMonth
+            .ha-fc-day-events
+            > :nth-last-child(1 of :has(> .ha-fc-dot-event)) {
+            height: 9px;
+          }
+
+          :host([narrow]) .ha-fc-dayGridMonth .ha-fc-more-link {
+            padding-top: 6px;
+          }
         }
       `,
     ];
