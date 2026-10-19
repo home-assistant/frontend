@@ -100,7 +100,12 @@ export class DialogManageCloudhook extends LitElement {
             )}
             <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this.closeDialog}>
+          <ha-button
+            slot="primaryAction"
+            appearance="plain"
+            variant="neutral"
+            @click=${this.closeDialog}
+          >
             ${this.hass!.localize(
               "ui.panel.config.cloud.dialog_cloudhook.close"
             )}

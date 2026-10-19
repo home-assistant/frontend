@@ -297,12 +297,22 @@ class DialogZWaveJSRebuildNetworkRoutes extends DialogMixin<ZWaveJSRebuildNetwor
                         "ui.panel.config.zwave_js.rebuild_network_routes.stop_rebuilding_routes"
                       )}
                     </ha-button>
-                    <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    <ha-button
+                      slot="primaryAction"
+                      appearance="plain"
+                      variant="neutral"
+                      @click=${this.closeDialog}
+                    >
                       ${this._i18n.localize("ui.common.close")}
                     </ha-button>
                   `
                 : html`
-                    <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                    <ha-button
+                      slot="primaryAction"
+                      appearance="plain"
+                      variant="neutral"
+                      @click=${this.closeDialog}
+                    >
                       ${this._i18n.localize("ui.common.close")}
                     </ha-button>
                   `

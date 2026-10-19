@@ -64,6 +64,7 @@ class DialogLoRaWANDevice extends DialogMixin<{ device: LoRaWANDevice }>(
         ><ha-button
           slot="primaryAction"
           appearance="plain"
+          variant="neutral"
           @click=${this.closeDialog}
           >${this._i18n.localize("ui.common.close")}</ha-button
         ></ha-dialog-footer

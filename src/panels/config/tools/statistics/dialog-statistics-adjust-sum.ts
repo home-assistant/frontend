@@ -154,7 +154,12 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
             "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.outliers"
           )}
         </ha-button>
-        <ha-button slot="primaryAction" data-dialog="close">
+        <ha-button
+          slot="primaryAction"
+          appearance="plain"
+          variant="neutral"
+          data-dialog="close"
+        >
           ${this.hass.localize("ui.common.close")}
         </ha-button>
       `;

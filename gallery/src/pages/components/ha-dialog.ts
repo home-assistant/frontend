@@ -254,6 +254,12 @@ export class DemoHaDialog extends LitElement {
           </tbody>
         </table>
 
+        <p>
+          A button that only dismisses the dialog (Cancel, Close, Back) uses
+          <code>appearance="plain"</code> and <code>variant="neutral"</code> in
+          either slot, even when it is the only button.
+        </p>
+
         <h2>Implementation</h2>
 
         <h3>Example Usage</h3>

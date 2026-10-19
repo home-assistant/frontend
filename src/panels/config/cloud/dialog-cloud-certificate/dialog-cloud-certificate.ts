@@ -80,7 +80,12 @@ class DialogCloudCertificate extends LitElement {
         </div>
 
         <ha-dialog-footer slot="footer">
-          <ha-button slot="primaryAction" @click=${this.closeDialog}>
+          <ha-button
+            slot="primaryAction"
+            appearance="plain"
+            variant="neutral"
+            @click=${this.closeDialog}
+          >
             ${this.hass!.localize(
               "ui.panel.config.cloud.dialog_certificate.close"
             )}

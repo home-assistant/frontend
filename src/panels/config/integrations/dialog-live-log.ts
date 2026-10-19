@@ -404,7 +404,12 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
           >
             ${this._i18n.localize("ui.common.download")}
           </ha-button>
-          <ha-button slot="primaryAction" @click=${this.closeDialog}>
+          <ha-button
+            slot="primaryAction"
+            appearance="plain"
+            variant="neutral"
+            @click=${this.closeDialog}
+          >
             ${this._i18n.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>

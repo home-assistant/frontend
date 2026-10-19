@@ -61,7 +61,12 @@ class DialogESPHomeEncryptionKey extends LitElement {
           </div>
         </div>
         <ha-dialog-footer slot="footer">
-          <ha-button slot="primaryAction" data-dialog="close">
+          <ha-button
+            slot="primaryAction"
+            appearance="plain"
+            variant="neutral"
+            data-dialog="close"
+          >
             ${this.hass.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>

@@ -18,6 +18,7 @@ import { customElement } from "lit/decorators";
  * **Button Styling Guidance:**
  * - `primaryAction` slot: Use the default `appearance="accent"`, with `variant="danger"` or `variant="warning"` for risky actions
  * - `secondaryAction` slot: Use `appearance="plain"`, with `variant="neutral"` for actions that dismiss the dialog
+ * - A button that only dismisses the dialog stays `appearance="plain"` and `variant="neutral"` in the `primaryAction` slot too, even when it is the only button
  */
 @customElement("ha-dialog-footer")
 export class HaDialogFooter extends LitElement {

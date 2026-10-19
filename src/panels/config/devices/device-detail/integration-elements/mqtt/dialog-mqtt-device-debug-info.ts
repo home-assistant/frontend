@@ -113,7 +113,12 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           }
         </ul>
         <ha-dialog-footer slot="footer">
-          <ha-button slot="primaryAction" @click=${this._close}>
+          <ha-button
+            slot="primaryAction"
+            appearance="plain"
+            variant="neutral"
+            @click=${this._close}
+          >
             ${this.hass!.localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>

@@ -161,7 +161,12 @@ export class HuiSaveConfig
               `
             : html`
                 <ha-dialog-footer slot="footer">
-                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                  <ha-button
+                    slot="primaryAction"
+                    appearance="plain"
+                    variant="neutral"
+                    @click=${this.closeDialog}
+                  >
                     ${this.hass!.localize(
                       "ui.panel.lovelace.editor.save_config.close"
                     )}

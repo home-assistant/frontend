@@ -205,7 +205,12 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                   </ha-button>
                 `
               : html`
-                  <ha-button slot="primaryAction" @click=${this.closeDialog}>
+                  <ha-button
+                    slot="primaryAction"
+                    appearance="plain"
+                    variant="neutral"
+                    @click=${this.closeDialog}
+                  >
                     ${this.hass.localize("ui.common.close")}
                   </ha-button>
                 `

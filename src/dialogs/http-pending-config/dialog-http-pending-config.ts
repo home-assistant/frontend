@@ -249,7 +249,12 @@ export class DialogHttpPendingConfig
           ${
             this._reverted
               ? html`
-                  <ha-button slot="primaryAction" @click=${this._close}>
+                  <ha-button
+                    slot="primaryAction"
+                    appearance="plain"
+                    variant="neutral"
+                    @click=${this._close}
+                  >
                     ${this.hass.localize("ui.dialogs.http_pending_config.close")}
                   </ha-button>
                 `
