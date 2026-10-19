@@ -119,7 +119,9 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   protected async firstUpdated() {
     if (this.hass) {
-      this._subscribeS2Inclusion();
+      if (this.isConnected) {
+        this._subscribeS2Inclusion();
+      }
       await this._fetchData();
       if (!this.isConnected) {
         return;
