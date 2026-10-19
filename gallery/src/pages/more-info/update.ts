@@ -224,7 +224,44 @@ const ENTITIES = [
         base_attributes.supported_features + UpdateEntityFeature.PROGRESS,
     },
   },
+  {
+    entity_id: "update.update22",
+    state: "on",
+    attributes: {
+      ...base_attributes,
+      friendly_name: "Update that fails to install",
+    },
+  },
+  {
+    entity_id: "update.update23",
+    platform: "hassio",
+    state: "on",
+    attributes: {
+      ...base_attributes,
+      title: "Mosquitto",
+      installed_version: "7.1.1",
+      latest_version: "7.1.9",
+      friendly_name: "App update that fails to install",
+    },
+  },
 ];
+
+const FAILING_UPDATES = {
+  "update.update22": "Could not download the firmware: connection timed out",
+  "update.update23":
+    "Error updating Mosquitto: An unknown error occurred with app core_mosquitto. Check Supervisor logs for details",
+};
+
+const SUPERVISOR_LOG = [
+  "2026-10-19 10:50:59.454 ERROR (MainThread) [supervisor.resolution.check] Check of unhealthy system failed",
+  "2026-10-19 10:53:48.226 INFO (MainThread) [supervisor.docker.app] Updating image homeassistant/amd64-addon-mosquitto:7.1.1 to homeassistant/amd64-addon-mosquitto:7.1.9",
+  "2026-10-19 10:53:48.828 WARNING (MainThread) [supervisor.docker.manifest] Failed to fetch manifest for docker.io/homeassistant/amd64-addon-mosquitto:7.1.9 - 404",
+  "2026-10-19 10:53:48.828 INFO (MainThread) [supervisor.docker.interface] Downloading docker image homeassistant/amd64-addon-mosquitto with tag 7.1.9.",
+  `2026-10-19 10:53:49.364 ERROR (MainThread) [supervisor.docker.interface] Can't install homeassistant/amd64-addon-mosquitto:7.1.9: [404] failed to resolve reference "docker.io/homeassistant/amd64-addon-mosquitto:7.1.9": not found`,
+  "2026-10-19 10:53:49.364 ERROR (MainThread) [supervisor.apps.app] Could not pull image to update app core_mosquitto: Can't install homeassistant/amd64-addon-mosquitto:7.1.9",
+  "2026-10-19 10:53:49.365 WARNING (MainThread) [supervisor.jobs] Background job app_manager_update failed: An unknown error occurred with app core_mosquitto. Check Supervisor logs for details",
+  "",
+].join("\n");
 
 @customElement("demo-more-info-update")
 class DemoMoreInfoUpdate extends LitElement {
@@ -264,6 +301,16 @@ class DemoMoreInfoUpdate extends LitElement {
         return null;
       }
     );
+    hass.mockService("update", "install", async (data) => {
+      const error = FAILING_UPDATES[data?.entity_id];
+      if (error) {
+        await new Promise((resolve) => {
+          setTimeout(resolve, 1500);
+        });
+        throw { code: "home_assistant_error", message: error };
+      }
+    });
+    hass.mockAPI("hassio/supervisor/logs?no_colors", () => SUPERVISOR_LOG);
   }
 }
 

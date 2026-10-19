@@ -1868,6 +1868,13 @@
             "backups_link": "View backups"
           },
           "install_failed": "The update could not be started: {error}",
+          "install_error": {
+            "title": "Update failed",
+            "supervisor_logs": "Supervisor logs",
+            "show_full_logs": "Show full logs",
+            "no_log_warnings": "No warnings or errors were logged during the update.",
+            "logs_failed": "The logs could not be loaded."
+          },
           "create_backup": {
             "automatic": "Automatic backup before update",
             "automatic_description_last": "Last automatic backup {relative_time}.",

@@ -47,6 +47,7 @@ import { showAlertDialog } from "../../generic/show-dialog-box";
 import { showToast } from "../../../util/toast";
 import "../components/update/ha-more-info-update-backup";
 import type { HaMoreInfoUpdateBackup } from "../components/update/ha-more-info-update-backup";
+import "../components/update/ha-more-info-update-error";
 
 // Dialogs that reflect their open state to the `open` attribute.
 const DIALOG_ELEMENTS = new Set(["ha-adaptive-dialog", "ha-dialog"]);
@@ -82,11 +83,18 @@ class MoreInfoUpdate extends LitElement {
   })
   private _config!: HassConfig;
 
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, boolean>({
+    transformer: ({ user }) => Boolean(user?.is_admin),
+  })
+  private _isAdmin = false;
+
   @state() private _releaseNotes?: string | null;
 
   @state() private _error?: string;
 
-  @state() private _installError?: string;
+  @state() private _installError?: { message: string; started: number };
 
   @state() private _backupState: ManagerState = "idle";
 
@@ -174,6 +182,9 @@ class MoreInfoUpdate extends LitElement {
 
     const releaseUrl = sanitizeHttpUrl(this.stateObj.attributes.release_url);
     const backupInProgressMessage = this._backupInProgressMessage();
+    // Only admins can read the logs of the Supervisor, which runs these updates.
+    const showSupervisorLogs =
+      this._entityEntry?.platform === "hassio" && this._isAdmin;
 
     return html`
       <div class="content">
@@ -281,12 +292,12 @@ class MoreInfoUpdate extends LitElement {
                 ${backupInProgressMessage}
               </ha-alert>`
             : this._installError
-              ? html`<ha-alert alert-type="error">
-                  ${this._localize(
-                    "ui.dialogs.more_info_control.update.install_failed",
-                    { error: this._installError }
-                  )}
-                </ha-alert>`
+              ? html`<ha-more-info-update-error
+                  .error=${this._installError.message}
+                  .logsSince=${
+                    showSupervisorLogs ? this._installError.started : undefined
+                  }
+                ></ha-more-info-update-error>`
               : nothing
         }
         <div class="actions">
@@ -388,6 +399,7 @@ class MoreInfoUpdate extends LitElement {
     }
 
     this._installError = undefined;
+    const started = Date.now();
 
     try {
       await this._api.callService(
@@ -401,7 +413,7 @@ class MoreInfoUpdate extends LitElement {
       const message = await this._localizeInstallError(err);
 
       if (this._isShown()) {
-        this._installError = message;
+        this._installError = { message, started };
 
         return;
       }
@@ -530,7 +542,8 @@ class MoreInfoUpdate extends LitElement {
       z-index: 10;
     }
 
-    .footer ha-alert {
+    .footer ha-alert,
+    .footer ha-more-info-update-error {
       display: block;
       width: 100%;
       box-sizing: border-box;
