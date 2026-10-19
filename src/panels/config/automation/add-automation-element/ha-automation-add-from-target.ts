@@ -3,7 +3,7 @@ import type WaTreeItem from "@home-assistant/webawesome/dist/components/tree-ite
 import "@home-assistant/webawesome/dist/components/tree/tree";
 import type { WaSelectionChangeEvent } from "@home-assistant/webawesome/dist/events/selection-change";
 import type { ContextType } from "@lit/context";
-import { mdiTextureBox } from "@mdi/js";
+import { mdiAccountMultiple, mdiTextureBox } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -20,7 +20,8 @@ import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
-import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { computeEntityNameParts } from "../../../../common/entity/compute_entity_name_display";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-floor-icon";
@@ -70,10 +71,15 @@ import type { AddAutomationElementListItem } from "../add-automation-element-dia
 import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
 import "./ha-automation-add-element-paste";
 
+// All person entities are also listed under "People" in the "Other" section
+// next to time and sun (triggers/conditions only), wherever they are assigned.
+const PERSON_TARGET = `person${TARGET_SEPARATOR}`;
+
 interface Level1Entries {
   open: boolean;
   areas?: Record<string, Level2Entries>;
   devices?: Record<string, Level3Entries>;
+  entities?: string[];
 }
 
 interface Level2Entries {
@@ -214,9 +220,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
               ${this._renderFloors(this.narrow, this._entries, this.value)}
               ${this._renderTimeLocation(
                 this.narrow,
+                this._entries,
                 this.timeLocationLabel,
                 this.timeLocationGroups,
-                this.selectedGroup
+                this.selectedGroup,
+                this.value
               )}
               ${this._renderUnassigned(this.narrow, this._entries, this.value)}
               ${this._renderLabels(
@@ -299,6 +307,10 @@ export default class HaAutomationAddFromTarget extends LitElement {
               : nothing
           }
         `;
+      }
+
+      if (valueType === "person" && !valueId) {
+        return this._renderEntities(entries[PERSON_TARGET]?.entities, false);
       }
 
       if (valueType === "device" || valueType === "helper") {
@@ -390,42 +402,83 @@ export default class HaAutomationAddFromTarget extends LitElement {
   private _renderTimeLocation = memoizeOne(
     (
       narrow: boolean,
+      entries: Record<string, Level1Entries>,
       label?: string,
       groups?: AddAutomationElementListItem[],
-      selectedGroup?: string
+      selectedGroup?: string,
+      // only used to invalidate the memoized selected state of the people
+      _value?: SingleHassServiceTarget
     ) => {
-      if (!label || !groups?.length) {
+      const people = entries[PERSON_TARGET];
+      if (!label || (!groups?.length && !people)) {
         return nothing;
       }
 
-      return html`<ha-section-title>${label}</ha-section-title>
-        <ha-list-base>
-          ${groups.map(
-            (group) =>
-              html`<ha-list-item-button
-                .value=${group.key}
-                @click=${this._selectTimeLocationGroup}
-                class=${group.key === selectedGroup ? "selected" : ""}
-              >
-                ${
-                  group.icon
-                    ? html`<span slot="start">${group.icon}</span>`
-                    : group.iconPath
-                      ? html`<ha-svg-icon
-                          slot="start"
-                          .path=${group.iconPath}
-                        ></ha-svg-icon>`
-                      : nothing
-                }
-                <div slot="headline">${group.name}</div>
-                ${
-                  narrow
-                    ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                    : nothing
-                }
-              </ha-list-item-button>`
-          )}
-        </ha-list-base>`;
+      const peopleItem = people
+        ? this._renderItem(
+            this._i18n.localize("ui.panel.config.person.caption"),
+            PERSON_TARGET,
+            true,
+            false,
+            !people.open && !!people.entities!.length,
+            people.open,
+            (slot) =>
+              html`<ha-svg-icon
+                slot=${ifDefined(slot)}
+                .path=${mdiAccountMultiple}
+              ></ha-svg-icon>`,
+            people.open ? this._renderEntities(people.entities!) : undefined
+          )
+        : nothing;
+
+      // With an expandable item in the section, render everything as one
+      // tree so the leaf rows reserve the chevron space and icons line up.
+      const asTree = !narrow && !!people;
+
+      const groupItems = groups?.map((group) => {
+        const icon = group.icon
+          ? html`<span slot=${ifDefined(asTree ? undefined : "start")}
+              >${group.icon}</span
+            >`
+          : group.iconPath
+            ? html`<ha-svg-icon
+                slot=${ifDefined(asTree ? undefined : "start")}
+                .path=${group.iconPath}
+              ></ha-svg-icon>`
+            : nothing;
+
+        return asTree
+          ? html`<wa-tree-item
+              .value=${group.key}
+              .selected=${group.key === selectedGroup}
+              .title=${group.name}
+            >
+              ${icon} ${group.name}
+            </wa-tree-item>`
+          : html`<ha-list-item-button
+              .value=${group.key}
+              @click=${this._selectTimeLocationGroup}
+              class=${group.key === selectedGroup ? "selected" : ""}
+            >
+              ${icon}
+              <div slot="headline">${group.name}</div>
+              ${
+                narrow
+                  ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                  : nothing
+              }
+            </ha-list-item-button>`;
+      });
+
+      return html`<ha-section-title>${label}</ha-section-title> ${
+          asTree
+            ? html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
+                ${groupItems} ${peopleItem}
+              </wa-tree>`
+            : html`<ha-list-base>
+                ${groupItems} ${narrow ? peopleItem : nothing}
+              </ha-list-base>`
+        }`;
     }
   );
 
@@ -761,7 +814,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
     return renderedDomains;
   }
 
-  private _renderEntities(entities: string[] = []) {
+  private _renderEntities(entities: string[] = [], showTitle = true) {
     if (!entities.length) {
       return nothing;
     }
@@ -771,14 +824,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
       .map((entityId) => {
         const stateObj = this.states[entityId];
 
-        const [entityName, deviceName] = computeEntityNameList(
-          stateObj,
-          [{ type: "entity" }, { type: "device" }, { type: "area" }],
-          this._registries.entities,
-          this._registries.devices,
-          this._registries.areas,
-          this._registries.floors
-        );
+        const { entity: entityName, device: deviceName } =
+          computeEntityNameParts(stateObj, this._registries);
 
         let label = entityName || deviceName || entityId;
 
@@ -805,12 +852,15 @@ export default class HaAutomationAddFromTarget extends LitElement {
       );
 
     if (this.narrow) {
-      return html`<ha-section-title
-          >${this._i18n.localize(
-            "ui.components.target-picker.type.entities"
-          )}</ha-section-title
-        >
-        <ha-list-base>${renderedEntites}</ha-list-base>`;
+      return html`${
+          showTitle
+            ? html`<ha-section-title
+                >${this._i18n.localize(
+                  "ui.components.target-picker.type.entities"
+                )}</ha-section-title
+              >`
+            : nothing
+        } <ha-list-base>${renderedEntites}</ha-list-base>`;
     }
 
     return renderedEntites;
@@ -980,10 +1030,20 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     this._loadUnassignedDevices();
     this._loadUnassignedEntities();
+    this._loadPeople();
     this._entries = { ...this._entries };
 
     if (this.value) {
       this._valueChanged(this._getSelectedTargetId(this.value)!, !this.narrow);
+    }
+  }
+
+  private _loadPeople() {
+    const people = Object.keys(this._registries.entities).filter(
+      (entityId) => computeDomain(entityId) === "person"
+    );
+    if (people.length) {
+      this._entries[PERSON_TARGET] = { open: false, entities: people };
     }
   }
 
@@ -1266,6 +1326,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     if (type === "entity") {
+      if (computeDomain(id) === "person" && this._entries[PERSON_TARGET]) {
+        this._entries = {
+          ...this._entries,
+          [PERSON_TARGET]: { ...this._entries[PERSON_TARGET], open: true },
+        };
+      }
+
       const deviceId = this._registries.entities[id]?.device_id;
       if (deviceId && this._registries.devices[deviceId]) {
         this._setDeviceOpen(deviceId, true, true);
@@ -1342,7 +1409,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _handleSelectionChange(ev: WaSelectionChangeEvent) {
     const treeItem = ev.detail.selection[0] as unknown as
-      { target?: string } | undefined;
+      { target?: string; value?: string } | undefined;
+
+    if (treeItem?.value) {
+      fireEvent(this, "time-location-group-selected", {
+        value: treeItem.value,
+      });
+      return;
+    }
 
     if (treeItem?.target) {
       this._valueChanged(treeItem.target);
@@ -1392,6 +1466,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _toggleItem(targetId: string, open: boolean) {
     const [type, id] = targetId.split(TARGET_SEPARATOR, 2);
+
+    if (type === "person") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: { ...this._entries[targetId], open },
+      };
+      return;
+    }
 
     if (type === "floor") {
       this._entries = {
@@ -1577,7 +1659,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       font-weight: var(--ha-font-weight-medium);
       overflow: hidden;
     }
-    ha-list-item-button::part(label) {
+    ha-list-item-button::part(headline) {
       font-weight: var(--ha-font-weight-medium);
       font-family: var(--ha-font-family-heading);
     }

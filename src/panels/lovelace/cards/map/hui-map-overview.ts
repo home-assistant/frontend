@@ -27,8 +27,10 @@ import type {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { getEntityLocation } from "../../../../common/entity/get_entity_location";
+import {
+  findFirstActiveZone,
+  getEntityLocation,
+} from "../../../../common/entity/get_entity_location";
 import {
   HOME_ZONE_ENTITY_ID,
   zoneColor,
@@ -59,6 +61,7 @@ import type { EntityRegistryEntry } from "../../../../data/entity/entity_registr
 import type { HistoryStates } from "../../../../data/history";
 import { fetchDateWS } from "../../../../data/history";
 import { computeUserInitials } from "../../../../data/user";
+import { computeZoneTrackerState } from "../../../../data/zone";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import type {
   CurrentUser,
@@ -426,7 +429,8 @@ export class HuiMapOverview extends LitElement {
         { states: this._states, callWS: this._api.callWS },
         new Date(since),
         new Date(),
-        entityIds
+        entityIds,
+        { minimalResponse: false }
       );
     } catch (_err) {
       return null;
@@ -485,10 +489,7 @@ export class HuiMapOverview extends LitElement {
       this._activity = [];
       return;
     }
-    // A person's state is "home" for the home zone, the zone name otherwise
-    const zoneState =
-      entityId === "zone.home" ? "home" : computeStateName(zone);
-    this._activity = zoneActivity(history, personIds, zoneState, since);
+    this._activity = zoneActivity(history, personIds, entityId, since);
   }
 
   protected render() {
@@ -604,13 +605,11 @@ export class HuiMapOverview extends LitElement {
     if (entityState === "not_home" || entityState === "unknown") {
       return undefined;
     }
-    return entityState === "home"
-      ? this._states[HOME_ZONE_ENTITY_ID]
-      : Object.values(this._states).find(
-          (candidate) =>
-            computeStateDomain(candidate) === "zone" &&
-            computeStateName(candidate) === entityState
-        );
+    return Object.values(this._states).find(
+      (candidate) =>
+        computeStateDomain(candidate) === "zone" &&
+        computeZoneTrackerState(candidate) === entityState
+    );
   }
 
   // The same color as the zone's marker on the map
@@ -655,7 +654,10 @@ export class HuiMapOverview extends LitElement {
         ? this._personName(person)
         : entry.personId
       : this._formatters.formatEntityState(stateObj, entry.state);
-    const zone = entry.personId ? undefined : this._zoneForState(entry.state);
+    const zone = entry.personId
+      ? undefined
+      : ((entry.inZones && findFirstActiveZone(entry.inZones, this._states)) ??
+        this._zoneForState(entry.state));
     const tile = zone
       ? this._renderZoneAvatar(zone)
       : person

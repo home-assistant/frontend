@@ -1,5 +1,4 @@
 import type { Connection } from "home-assistant-js-websocket";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { HomeAssistant } from "../../types";
 import type { ConfigEntry } from "../config_entries";
@@ -230,20 +229,6 @@ export const fetchLinkedDevices = (
       device_id: deviceId,
     })
     .then((result) => result.linked_devices);
-
-export const fallbackDeviceName = (
-  hass: HomeAssistant,
-  entities: EntityRegistryEntry[] | EntityRegistryDisplayEntry[] | string[]
-) => {
-  for (const entity of entities || []) {
-    const entityId = typeof entity === "string" ? entity : entity.entity_id;
-    const stateObj = hass.states[entityId];
-    if (stateObj) {
-      return computeStateName(stateObj);
-    }
-  }
-  return undefined;
-};
 
 export const devicesInArea = (devices: DeviceRegistryEntry[], areaId: string) =>
   devices.filter((device) => device.area_id === areaId);

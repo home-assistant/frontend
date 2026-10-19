@@ -18,9 +18,15 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { canShowPage } from "../common/config/can_show_page";
+import { QueryParamsController } from "../common/controllers/query-params-controller";
 import { consume } from "../common/decorators/consume";
 import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
+import {
+  dataTableQueryParamConfig,
+  dataTableQueryParamsFromState,
+  dataTableQueryStateFromUrl,
+} from "../common/url/data-table-query-params";
 import "../components/chips/ha-assist-chip";
 import "../components/data-table/ha-data-table";
 import type {
@@ -217,6 +223,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   @property({ attribute: false }) public hiddenColumns?: string[];
 
+  /**
+   * Keep search, sorting and grouping in the URL (`search`, `sort`,
+   * `direction` and `group`). Params in the URL win over the initial values.
+   * Opt in per page, as some pages use query params for other things.
+   */
+  @property({ attribute: "sync-url", type: Boolean }) public syncUrl = false;
+
   @state() private _sortColumn?: string;
 
   @state() private _sortDirection: SortingDirection = null;
@@ -239,6 +252,27 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
 
+  // The URL is read once the table is opted in and has its columns, and only
+  // written after that, so a link isn't overwritten before it is applied
+  private _urlRead = false;
+
+  private _urlWritePending = false;
+
+  private _typedSearch?: string;
+
+  private _queryParams = new QueryParamsController(
+    this,
+    dataTableQueryParamConfig,
+    {
+      enabled: () => this.syncUrl,
+      navigated: () => {
+        if (this._urlRead) {
+          this._applyUrl();
+        }
+      },
+    }
+  );
+
   public clearSelection() {
     this._dataTable.clearSelection();
   }
@@ -255,15 +289,41 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         ).length > 1;
     }
 
-    if (this.hasUpdated) {
+    if (!this.hasUpdated) {
+      if (this.initialGroupColumn && this.columns[this.initialGroupColumn]) {
+        this._setGroupColumn(this.initialGroupColumn);
+      }
+
+      if (this.initialSorting && this.columns[this.initialSorting.column]) {
+        this._sortColumn = this.initialSorting.column;
+        this._sortDirection = this.initialSorting.direction;
+      }
+    }
+
+    if (this.syncUrl && !this._urlRead && Object.keys(this.columns).length) {
+      this._urlRead = true;
+      this._applyUrl();
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    const typed = this.filter === this._typedSearch;
+    this._typedSearch = undefined;
+    if (!this.syncUrl || !this._urlRead) {
+      this._urlWritePending = false;
       return;
     }
-    if (this.initialGroupColumn && this.columns[this.initialGroupColumn]) {
-      this._setGroupColumn(this.initialGroupColumn);
-    }
-    if (this.initialSorting && this.columns[this.initialSorting.column]) {
-      this._sortColumn = this.initialSorting.column;
-      this._sortDirection = this.initialSorting.direction;
+    const sortingOrGroupingChanged =
+      this._urlWritePending ||
+      changedProperties.has("_sortColumn") ||
+      changedProperties.has("_sortDirection") ||
+      changedProperties.has("_groupColumn");
+
+    this._urlWritePending = false;
+    if (sortingOrGroupingChanged || changedProperties.has("filter")) {
+      // Typing is written once it pauses, a search set by the page or a link
+      // straight away
+      this._writeUrl(!sortingOrGroupingChanged && typed);
     }
   }
 
@@ -298,6 +358,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       appearance="outlined"
       .value=${this.filter}
       @input=${this._handleSearchChange}
+      @blur=${this._flushUrl}
       .placeholder=${this.searchLabel}
     >
     </ha-input-search>`;
@@ -647,6 +708,54 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     fireEvent(this, "clear-filter");
   }
 
+  // A link with table params wins over what was picked before, the page is
+  // told so it keeps the same
+  private _applyUrl() {
+    const searchParams = this._queryParams.searchParams();
+    const linked = searchParams
+      ? dataTableQueryStateFromUrl(searchParams, this.columns)
+      : undefined;
+
+    if (linked) {
+      if (linked.search !== this.filter) {
+        this.filter = linked.search;
+        fireEvent(this, "search-changed", { value: this.filter });
+      }
+      if (
+        linked.sorting &&
+        (linked.sorting.column !== this._sortColumn ||
+          linked.sorting.direction !== this._sortDirection)
+      ) {
+        this._sortColumn = linked.sorting.column;
+        this._sortDirection = linked.sorting.direction;
+        fireEvent(this, "sorting-changed", linked.sorting);
+      }
+      if (linked.groupColumn && linked.groupColumn !== this._groupColumn) {
+        this._setGroupColumn(linked.groupColumn);
+      }
+    }
+
+    this._urlWritePending = true;
+    this.requestUpdate();
+  }
+
+  private _flushUrl() {
+    this._queryParams.flush();
+  }
+
+  private _writeUrl(debounced = false) {
+    this._queryParams.write(
+      dataTableQueryParamsFromState(
+        this.columns,
+        this.filter,
+        this._sortColumn,
+        this._sortDirection,
+        this._groupColumn
+      ),
+      debounced
+    );
+  }
+
   private _toggleFilters() {
     this.showFilters = !this.showFilters;
   }
@@ -773,6 +882,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     this.filter = target.value ?? "";
+    this._typedSearch = this.filter;
     fireEvent(this, "search-changed", { value: this.filter });
   }
 

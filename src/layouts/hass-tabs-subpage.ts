@@ -396,7 +396,7 @@ export class HassTabsSubpage extends LitElement {
         }
 
         :host(:not([narrow])) #toolbar-icon {
-          min-width: 40px;
+          min-width: 48px;
         }
 
         ha-menu-button,

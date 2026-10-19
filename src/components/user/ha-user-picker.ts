@@ -125,7 +125,6 @@ class HaUserPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
         .placeholder=${placeholder}

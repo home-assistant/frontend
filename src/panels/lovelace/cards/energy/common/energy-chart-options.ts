@@ -119,7 +119,8 @@ export function getCommonOptions(
   compareEnd?: Date,
   formatTotal?: (total: number) => string,
   detailedDailyData = false,
-  yAxisFractionDigits = 1
+  yAxisFractionDigits = 1,
+  getSeriesArea?: (seriesId: string) => string | undefined
 ): HaECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
   let suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
@@ -225,7 +226,8 @@ export function getCommonOptions(
                 compare,
                 showCompareYear,
                 unit,
-                formatTotal
+                formatTotal,
+                getSeriesArea
               )
             )
             .filter((s): s is TemplateResult => s !== nothing);
@@ -243,7 +245,8 @@ export function getCommonOptions(
           compare,
           showCompareYear,
           unit,
-          formatTotal
+          formatTotal,
+          getSeriesArea
         );
       },
     },
@@ -259,7 +262,8 @@ function formatTooltip(
   compare: boolean | null,
   showCompareYear: boolean,
   unit?: string,
-  formatTotal?: (total: number) => string
+  formatTotal?: (total: number) => string,
+  getSeriesArea?: (seriesId: string) => string | undefined
 ): TemplateResult | typeof nothing {
   if (!params[0]?.value) {
     return nothing;
@@ -307,11 +311,19 @@ function formatTooltip(
       sumPositive += y;
       countPositive++;
     }
+    const area = param.seriesId ? getSeriesArea?.(param.seriesId) : undefined;
     rows.push(
       html`<ha-chart-tooltip-marker
           .color=${String(param.color ?? "")}
         ></ha-chart-tooltip-marker>
-        ${param.seriesName}:
+        ${param.seriesName}${
+          area
+            ? html` ·
+                <span style="color: var(--secondary-text-color);"
+                  >${area}</span
+                >`
+            : nothing
+        }:
         <div style="direction:ltr; display: inline;">${value} ${unit}</div>`
     );
   }

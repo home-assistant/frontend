@@ -93,7 +93,6 @@ export class HaConditionAction extends LitElement implements ActionElement {
         this.inSidebar || (!this.inSidebar && !this.indent)
           ? html`
               <ha-generic-picker
-                .hass=${this.hass}
                 .label=${this.hass.localize(
                   "ui.panel.config.automation.editor.conditions.type_select"
                 )}
@@ -156,7 +155,6 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
     return html`<ha-condition-icon
         slot="start"
-        .hass=${this.hass}
         .condition=${condition}
       ></ha-condition-icon
       ><span slot="headline">${label}</span>`;
@@ -166,7 +164,6 @@ export class HaConditionAction extends LitElement implements ActionElement {
     <ha-combo-box-item>
       <ha-condition-icon
         slot="start"
-        .hass=${this.hass}
         .condition=${item.search_labels!.condition || undefined}
       ></ha-condition-icon>
       <span slot="headline">${item.primary}</span>

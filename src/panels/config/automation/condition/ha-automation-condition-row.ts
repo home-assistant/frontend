@@ -87,6 +87,7 @@ import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import { scrollRowIntoView } from "../scroll-row-into-view";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -184,11 +185,9 @@ export default class HaAutomationConditionRow extends LitElement {
           ? html`<ha-automation-condition-live-test
               id="condition-icon"
               slot="leading-icon"
-              .hass=${this.hass}
               .condition=${this.condition}
             >
               <ha-condition-icon
-                .hass=${this.hass}
                 .condition=${this.condition.condition}
               ></ha-condition-icon>
             </ha-automation-condition-live-test>`
@@ -198,7 +197,6 @@ export default class HaAutomationConditionRow extends LitElement {
               slot="leading-icon"
             >
               <ha-condition-icon
-                .hass=${this.hass}
                 .condition=${this.condition.condition}
               ></ha-condition-icon>
             </div>`
@@ -954,10 +952,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180); // duration of transition of added padding for bottom sheet
     }
   }

@@ -38,7 +38,6 @@ class SupervisorAppLogDashboard extends LitElement {
       </div>
       <div class="content">
         <error-log-card
-          .hass=${this.hass}
           .header=${this.addon.name}
           .provider=${this.addon.slug}
           .filter=${this._filter}

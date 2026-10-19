@@ -735,6 +735,7 @@ class AddIntegrationDialog extends LitElement {
     }
 
     if (
+      !this._integrationFilter &&
       (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
         integration.domain
       ) &&
@@ -792,7 +793,10 @@ class AddIntegrationDialog extends LitElement {
   }
 
   private async _createFlow(domain: string) {
-    const flowsInProgress = this._getFlowsInProgressForDomains([domain]);
+    // A filtered dialog sets up a given port, not a discovered device
+    const flowsInProgress = this._integrationFilter
+      ? []
+      : this._getFlowsInProgressForDomains([domain]);
 
     if (flowsInProgress.length) {
       this._pickedBrand = domain;

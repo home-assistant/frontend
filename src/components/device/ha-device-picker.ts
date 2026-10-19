@@ -429,7 +429,6 @@ export class HaDevicePicker extends LitElement {
     return html`
       <ha-generic-picker
         .noUnknownState=${canReplace}
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .disabled=${this.disabled}
         .helper=${this.helper}

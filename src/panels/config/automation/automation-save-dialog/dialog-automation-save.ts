@@ -403,6 +403,7 @@ class DialogAutomationSave
       await buildEntityMetadataInspirations(
         this.hass.connection,
         this.hass.states,
+        this.hass.formatEntityName,
         this._params.domain
       )
     );

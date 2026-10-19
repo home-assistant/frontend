@@ -26,7 +26,14 @@ export class HaTab extends LitElement {
         @keydown=${this._handleKeyDown}
       >
         <span class="content">
-          <slot name="icon"></slot>
+          <span class="icon">
+            <slot name="icon"></slot>
+            ${
+              this.badge && this.narrow
+                ? html`<span class="dot"></span>`
+                : nothing
+            }
+          </span>
           <span class="name">${this.name}</span>
           ${
             this.badge
@@ -88,8 +95,34 @@ export class HaTab extends LitElement {
       font-size: var(--ha-font-size-s);
       line-height: var(--ha-line-height-normal);
       white-space: nowrap;
-      color: var(--text-primary-color);
-      background-color: var(--warning-color);
+      color: var(--ha-color-on-primary-normal);
+      background-color: var(--ha-color-fill-primary-normal-resting);
+    }
+
+    .icon {
+      position: relative;
+      display: inline-flex;
+    }
+
+    /* Narrow tabs have no room for the badge, a dot on the icon marks it */
+    .dot {
+      position: absolute;
+      top: 0;
+      inset-inline-end: calc(-1 * var(--ha-space-1));
+      width: var(--ha-space-2);
+      height: var(--ha-space-2);
+      border-radius: var(--ha-border-radius-pill);
+      background-color: var(--ha-color-fill-primary-loud-resting);
+    }
+
+    /* Hidden from view but still read out through aria-describedby */
+    :host([narrow]) .badge {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
     }
 
     .name {

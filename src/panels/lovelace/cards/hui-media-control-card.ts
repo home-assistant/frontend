@@ -156,12 +156,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       entityState !== UNKNOWN;
     const isUnavailable =
       entityState === UNAVAILABLE ||
-      entityState === UNKNOWN ||
       (isOffState &&
         !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON));
     const hasNoImage = !this._image;
     const controls = computeMediaControls(stateObj, false);
     const showControls =
+      !isUnavailable &&
       controls &&
       (!this._veryNarrow ||
         isOffState ||
@@ -532,7 +532,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private get _stateObj(): MediaPlayerEntity | undefined {
-    return this.hass!.states[this._config!.entity] as MediaPlayerEntity;
+    // The card can update with hass before setConfig is called
+    if (!this._config) {
+      return undefined;
+    }
+    return this.hass!.states[this._config.entity] as MediaPlayerEntity;
   }
 
   private _handleSeek(): void {

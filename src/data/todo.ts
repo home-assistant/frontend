@@ -1,5 +1,4 @@
 import { computeDomain } from "../common/entity/compute_domain";
-import { computeStateName } from "../common/entity/compute_state_name";
 import { stringCompare } from "../common/string/compare";
 import type { HomeAssistant, ServiceCallResponse } from "../types";
 import { UNAVAILABLE } from "./entity/entity";
@@ -55,7 +54,7 @@ export const getTodoLists = (
     .map((entityId) => ({
       ...hass.states[entityId],
       entity_id: entityId,
-      name: computeStateName(hass.states[entityId]),
+      name: hass.formatEntityName(hass.states[entityId]),
     }))
     .sort((a, b) => stringCompare(a.name, b.name, hass.locale.language));
 
