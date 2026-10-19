@@ -574,12 +574,12 @@ export const migrateAutomationTrigger = (
     delete trigger.platform;
   }
 
-  if ("options" in trigger) {
-    if (
-      typeof trigger.options === "object" &&
-      trigger.options !== null &&
-      "behavior" in trigger.options
-    ) {
+  if (
+    "options" in trigger &&
+    typeof trigger.options === "object" &&
+    trigger.options !== null
+  ) {
+    if ("behavior" in trigger.options) {
       // Deprecated behavior values renamed in 2026; the backend raises a repair
       // when they are still used, so flag the migration to offer saving.
       if (trigger.options.behavior === "any") {
@@ -595,7 +595,6 @@ export const migrateAutomationTrigger = (
       }
     }
     if (
-      trigger.options &&
       "offset_type" in trigger.options &&
       OFFSET_TYPE_TRIGGER_DOMAINS.includes(computeDomain(trigger.trigger))
     ) {
