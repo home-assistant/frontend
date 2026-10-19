@@ -1,6 +1,5 @@
 import type { ContextType } from "@lit/context";
 import { mdiCheck, mdiChevronDown, mdiOpenInNew } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -20,11 +19,7 @@ import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
 import "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-nav";
-import {
-  fetchConfigFlowInProgress,
-  subscribeConfigFlowInProgress,
-  type ConfigFlowInProgressMessage,
-} from "../../data/config_flow";
+import { fetchConfigFlowInProgress } from "../../data/config_flow";
 import {
   apiContext,
   configContext,
@@ -51,19 +46,12 @@ import {
   getESPHomeAudioControls,
   getESPHomeSetupCapabilityIds,
   isESPHomeSerialConfigured,
-  MUSIC_ASSISTANT_ADDON_SLUG,
   MUSIC_ASSISTANT_DOCS_URL,
   type ESPHomeAudioControls,
   type ESPHomeCapabilityId,
   type ESPHomeCapabilityStatus,
   type ESPHomeSetupStatus,
 } from "../../data/esphome_setup";
-import {
-  fetchHassioAddonsInfo,
-  installHassioAddon,
-  startHassioAddon,
-} from "../../data/hassio/addon";
-import { extractApiErrorMessage } from "../../data/hassio/common";
 import {
   listSerialIntegrations,
   listSerialPortsWithUsage,
@@ -74,9 +62,11 @@ import { haStyle, haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant, HomeAssistantUI } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { getWsErrorMessage } from "../../util/ws-error";
-import { showConfigFlowDialog } from "../config-flow/show-dialog-config-flow";
+import {
+  loadConfigFlowDialog,
+  showConfigFlowDialog,
+} from "../config-flow/show-dialog-config-flow";
 import { DialogMixin } from "../dialog-mixin";
-import { showAlertDialog } from "../generic/show-dialog-box";
 import type { ESPHomeDeviceSetupDialogParams } from "./show-dialog-esphome-device-setup";
 
 type SetupView =
@@ -88,9 +78,6 @@ const SERIAL_PORT_TYPE_LABELS: Record<ESPHomeSerialPortType, LocalizeKeys> = {
   RS485: "ui.panel.config.devices.esphome.setup_serial_port_rs485",
   USB_SERIAL: "ui.panel.config.devices.esphome.setup_serial_port_usb_serial",
 };
-
-/** Add-on discovery on slow hardware can take longer than a few seconds. */
-const MUSIC_ASSISTANT_DISCOVERY_TIMEOUT_MS = 60_000;
 
 /** Same delay ha-entity-toggle uses to resync a switch the state did not follow. */
 const SWITCH_RESYNC_MS = 2000;
@@ -110,21 +97,6 @@ const CAPABILITY_DESCRIPTION_KEYS: Record<ESPHomeCapabilityId, LocalizeKeys> = {
   connectivity:
     "ui.panel.config.devices.esphome.setup_capability_connectivity_description",
   serial: "ui.panel.config.devices.esphome.setup_capability_serial_description",
-};
-
-const hassioMusicAssistantFlow = (
-  messages: ConfigFlowInProgressMessage[]
-): DataEntryFlowProgress | undefined => {
-  for (const message of messages) {
-    if (
-      message.type !== "removed" &&
-      message.flow.handler === "music_assistant" &&
-      message.flow.context.source === "hassio"
-    ) {
-      return message.flow;
-    }
-  }
-  return undefined;
 };
 
 @customElement("dialog-esphome-device-setup")
@@ -208,14 +180,9 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   private _loadStarted = false;
 
-  private _musicAssistantDiscovery?: {
-    unsub?: UnsubscribeFunc;
-    timer?: number;
-    resolve?: (flow: DataEntryFlowProgress | undefined) => void;
-  };
+  private _openingMusicAssistantFlow = false;
 
   public disconnectedCallback() {
-    this._finishMusicAssistantDiscovery(undefined);
     this.params?.dialogClosedCallback?.();
     super.disconnectedCallback();
   }
@@ -516,7 +483,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
               ? html`
                   <ha-button
                     slot="primaryAction"
-                    @click=${this._installMusicAssistant}
+                    @click=${this._setupMusicAssistant}
                   >
                     ${localize(
                       "ui.panel.config.devices.esphome.setup_install_music_assistant"
@@ -865,7 +832,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   private _showChecklist = () => {
     this._audioFlowId += 1;
-    this._finishMusicAssistantDiscovery(undefined);
     this._view = "checklist";
     this._installingAudio = false;
     this._installStatus = undefined;
@@ -985,143 +951,32 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     }
   }
 
-  private _installMusicAssistant = async (ev: Event) => {
+  /** The integration's config flow installs and starts the Music Assistant app. */
+  private _setupMusicAssistant = async (ev: Event) => {
     ev.stopPropagation();
-    if (!this._api || !this._i18n || !this._connection) {
+    if (this._openingMusicAssistantFlow) {
       return;
     }
     const flowId = this._audioFlowId;
-    this._view = "audio-working";
-    this._installingAudio = true;
-    this._error = undefined;
-    this._installStatus = this._i18n.localize(
-      "ui.panel.config.devices.esphome.setup_installing_music_assistant"
-    );
+    // The flow dialog only covers this button once its chunk has loaded
+    this._openingMusicAssistantFlow = true;
     try {
-      const { addons } = await fetchHassioAddonsInfo(this._api);
-      if (!this._audioFlowCurrent(flowId)) {
-        return;
-      }
-      const addon = addons.find(
-        (item) => item.slug === MUSIC_ASSISTANT_ADDON_SLUG
-      );
-      if (!addon) {
-        await installHassioAddon(this._api.callWS, MUSIC_ASSISTANT_ADDON_SLUG);
-      }
-      if (!this._audioFlowCurrent(flowId)) {
-        return;
-      }
-      if (!addon || addon.state !== "started") {
-        this._installStatus = this._i18n.localize(
-          "ui.panel.config.devices.esphome.setup_starting_music_assistant"
-        );
-        await startHassioAddon(this._api.callWS, MUSIC_ASSISTANT_ADDON_SLUG);
-      }
-      if (!this._audioFlowCurrent(flowId)) {
-        return;
-      }
-      this._installStatus = this._i18n.localize(
-        "ui.panel.config.devices.esphome.setup_discovering_music_assistant"
-      );
-      await this._openMusicAssistantFlow(flowId);
-    } catch (err: unknown) {
-      if (!this._audioFlowCurrent(flowId) || !this._i18n) {
-        return;
-      }
-      this._view = "audio-offer";
-      await showAlertDialog(this, {
-        title: this._i18n.localize(
-          "ui.panel.config.devices.esphome.setup_error_music_assistant"
-        ),
-        text: extractApiErrorMessage(err),
-      });
+      await loadConfigFlowDialog();
     } finally {
-      if (this._audioFlowCurrent(flowId)) {
-        this._installingAudio = false;
-      }
+      this._openingMusicAssistantFlow = false;
     }
-  };
-
-  private async _openMusicAssistantFlow(flowId: number) {
-    if (!this._connection) {
-      return;
-    }
-    const flow = await this._waitForHassioMusicAssistantFlow();
-    if (!this._audioFlowCurrent(flowId)) {
-      return;
-    }
-    const continueSetup = ({ flowFinished }: { flowFinished: boolean }) => {
-      if (!this._audioFlowCurrent(flowId)) {
-        return;
-      }
-      if (!flowFinished) {
-        this._installingAudio = false;
-        this._installStatus = undefined;
-        this._view = "audio-offer";
-        return;
-      }
-      void this._continueAfterMusicAssistant(flowId);
-    };
-    if (flow) {
-      showConfigFlowDialog(this, {
-        continueFlowId: flow.flow_id,
-        dialogClosedCallback: continueSetup,
-      });
+    if (!this._audioFlowCurrent(flowId) || this._view !== "audio-offer") {
       return;
     }
     showConfigFlowDialog(this, {
       startFlowHandler: "music_assistant",
-      dialogClosedCallback: continueSetup,
-    });
-  }
-
-  private _finishMusicAssistantDiscovery(
-    flow: DataEntryFlowProgress | undefined
-  ) {
-    const pending = this._musicAssistantDiscovery;
-    if (!pending) {
-      return;
-    }
-    this._musicAssistantDiscovery = undefined;
-    if (pending.timer !== undefined) {
-      window.clearTimeout(pending.timer);
-    }
-    pending.unsub?.();
-    pending.resolve?.(flow);
-  }
-
-  private _waitForHassioMusicAssistantFlow(): Promise<
-    DataEntryFlowProgress | undefined
-  > {
-    const connection = this._connection;
-    if (!connection) {
-      return Promise.resolve(undefined);
-    }
-    return new Promise((resolve) => {
-      const pending: NonNullable<typeof this._musicAssistantDiscovery> = {
-        resolve,
-      };
-      this._musicAssistantDiscovery = pending;
-      pending.timer = window.setTimeout(
-        () => this._finishMusicAssistantDiscovery(undefined),
-        MUSIC_ASSISTANT_DISCOVERY_TIMEOUT_MS
-      );
-      void subscribeConfigFlowInProgress(connection, (messages) => {
-        const flow = hassioMusicAssistantFlow(messages);
-        if (flow) {
-          this._finishMusicAssistantDiscovery(flow);
+      dialogClosedCallback: ({ entryId }) => {
+        if (entryId) {
+          void this._continueAfterMusicAssistant(flowId);
         }
-      })
-        .then((unsub) => {
-          if (this._musicAssistantDiscovery !== pending) {
-            unsub();
-            return;
-          }
-          pending.unsub = unsub;
-        })
-        .catch(() => this._finishMusicAssistantDiscovery(undefined));
+      },
     });
-  }
+  };
 
   private async _refreshZWaveFlows() {
     if (!this._connection) {

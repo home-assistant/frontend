@@ -164,17 +164,30 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
     `;
   }
 
+  private _formatTarget = (temperature: number) =>
+    this._formatters.formatEntityAttributeValue(
+      this.stateObj,
+      "temperature",
+      temperature
+    );
+
   private _renderButtons() {
     return html`
       <div class="buttons">
         <ha-outlined-icon-button
           .step=${-this._step}
+          .label=${this._localize(
+            "ui.components.climate-control.temperature_down"
+          )}
           @click=${this._handleButton}
         >
           <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
         </ha-outlined-icon-button>
         <ha-outlined-icon-button
           .step=${this._step}
+          .label=${this._localize(
+            "ui.components.climate-control.temperature_up"
+          )}
           @click=${this._handleButton}
         >
           <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
@@ -250,6 +263,8 @@ export class HaStateControlWaterHeaterTemperature extends LitElement {
             .max=${this._max}
             .step=${this._step}
             .current=${this.stateObj.attributes.current_temperature}
+            .label=${this._localize("ui.card.water_heater.target_temperature")}
+            .formatValue=${this._formatTarget}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >

@@ -147,17 +147,28 @@ export class HaStateControlClimateHumidity extends LitElement {
     `;
   }
 
+  private _formatTarget = (humidity: number) =>
+    this._formatters.formatEntityAttributeValue(
+      this.stateObj,
+      "humidity",
+      humidity
+    );
+
   private _renderButtons() {
     return html`
       <div class="buttons">
         <ha-outlined-icon-button
           .step=${-this._step}
+          .label=${this._localize(
+            "ui.components.climate-control.humidity_down"
+          )}
           @click=${this._handleButton}
         >
           <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
         </ha-outlined-icon-button>
         <ha-outlined-icon-button
           .step=${this._step}
+          .label=${this._localize("ui.components.climate-control.humidity_up")}
           @click=${this._handleButton}
         >
           <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
@@ -243,6 +254,11 @@ export class HaStateControlClimateHumidity extends LitElement {
             .max=${this._max}
             .step=${this._step}
             .current=${currentHumidity}
+            .label=${this._formatters.formatEntityAttributeName(
+              this.stateObj,
+              "humidity"
+            )}
+            .formatValue=${this._formatTarget}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >

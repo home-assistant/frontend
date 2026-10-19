@@ -333,6 +333,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
     const configUrl = `/history?${createSearchParam({
       entity_id: this._entityIds.join(","),
+      back: "1",
       start_date: start.toISOString(),
     })}`;
 
