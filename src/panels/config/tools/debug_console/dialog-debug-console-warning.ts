@@ -119,6 +119,7 @@ export class DialogDebugConsoleWarning extends DialogMixin<DebugConsoleWarningDi
         </ha-alert>
         <ha-checkbox
           autofocus
+          variant="warning"
           .checked=${this._understood}
           .disabled=${this._accepting}
           @change=${this._understoodChanged}
@@ -139,6 +140,7 @@ export class DialogDebugConsoleWarning extends DialogMixin<DebugConsoleWarningDi
           </ha-button>
           <ha-button
             slot="primaryAction"
+            variant="warning"
             .disabled=${!this._understood || this._secondsLeft > 0}
             .loading=${this._accepting}
             @click=${this._accept}
