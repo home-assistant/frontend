@@ -7,6 +7,7 @@ import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { consume } from "../../common/decorators/consume";
 import { transform } from "../../common/decorators/transform";
+import { debounce } from "../../common/util/debounce";
 import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
@@ -32,6 +33,7 @@ import {
   uiContext,
 } from "../../data/context";
 import type { DataEntryFlowProgress } from "../../data/data_entry_flow";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import {
   fetchESPHomeDeviceCapabilities,
   type ESPHomeDeviceCapabilities,
@@ -206,12 +208,19 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       this._loadStarted = true;
       this._capabilities = this.params.capabilities;
       this._load();
-    } else if (
-      this._loadStarted &&
-      changedProps.has("_configEntries") &&
-      this._capabilities?.serial_proxies.length
-    ) {
-      this._refreshSerialPorts();
+    } else if (this._loadStarted && this._capabilities?.serial_proxies.length) {
+      if (changedProps.has("_configEntries")) {
+        this._refreshSerialPorts();
+      } else if (
+        changedProps.has("_states") &&
+        this._unavailableEntityCount(this._states) !==
+          this._unavailableEntityCount(
+            changedProps.get("_states") as ContextType<typeof statesContext>
+          )
+      ) {
+        // The device reconnected or dropped, which changes its scanned ports
+        this._refreshSerialPortsDebounced();
+      }
     }
   }
 
@@ -579,14 +588,25 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     return this._configEntries.find((entry) => entry.entry_id === entryId);
   }
 
-  /** Undefined when USB usage has not been loaded. An empty array is a real scan. */
-  private _serialConsumers(url: string) {
+  /**
+   * Undefined when USB usage has not been loaded. A port of a connected device
+   * is always in the scan, so a missing or absent port means it is offline.
+   * Without the usb integration nothing is scanned, so a missing port says nothing.
+   */
+  private _serialPortUsage(url: string) {
     if (!this._serialPorts) {
       return undefined;
     }
-    return (
-      this._serialPorts.find((port) => port.device === url)?.consumers ?? []
-    );
+    const usage = this._serialPorts.find((port) => port.device === url);
+    return {
+      consumers: usage?.consumers ?? [],
+      offline: usage
+        ? !usage.present
+        : Boolean(
+            this._hassConfig &&
+            isComponentLoaded(this._hassConfig.config, "usb")
+          ),
+    };
   }
 
   private _renderSerialPortList() {
@@ -598,7 +618,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     return html`
       <ul class="ports">
         ${ports.map((port) => {
-          const consumers = this._serialConsumers(port.url);
+          const usage = this._serialPortUsage(port.url);
+          const consumers = usage?.consumers;
           return html`
             <li>
               <span class="port-text">
@@ -619,23 +640,31 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                 }
               </span>
               ${
-                consumers === undefined
+                usage === undefined
                   ? nothing
-                  : consumers.length
+                  : usage.offline
                     ? html`
-                        <span class="chip active">
+                        <span class="chip">
                           ${localize(
-                            "ui.panel.config.devices.esphome.setup_serial_configured"
+                            "ui.panel.config.devices.esphome.setup_serial_offline"
                           )}
                         </span>
                       `
-                    : html`
-                        <ha-button size="s" @click=${this._setupSerialPort}>
-                          ${localize(
-                            "ui.panel.config.devices.esphome.setup_action"
-                          )}
-                        </ha-button>
-                      `
+                    : usage.consumers.length
+                      ? html`
+                          <span class="chip active">
+                            ${localize(
+                              "ui.panel.config.devices.esphome.setup_serial_configured"
+                            )}
+                          </span>
+                        `
+                      : html`
+                          <ha-button size="s" @click=${this._setupSerialPort}>
+                            ${localize(
+                              "ui.panel.config.devices.esphome.setup_action"
+                            )}
+                          </ha-button>
+                        `
               }
             </li>
           `;
@@ -799,6 +828,27 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       return { ok: false, error: err };
     }
   }
+
+  /** ESPHome marks the entities of a disconnected device unavailable. */
+  private _unavailableEntityCount(
+    states: ContextType<typeof statesContext> | undefined
+  ): number {
+    if (!this.params || !this._entities || !states) {
+      return 0;
+    }
+    const deviceId = this.params.deviceId;
+    return Object.values(this._entities).filter(
+      (entity) =>
+        entity.device_id === deviceId &&
+        states[entity.entity_id]?.state === UNAVAILABLE
+    ).length;
+  }
+
+  private _refreshSerialPortsDebounced = debounce(() => {
+    if (this.isConnected) {
+      this._refreshSerialPorts();
+    }
+  }, 1000);
 
   private async _refreshSerialPorts() {
     const capabilities = this._capabilities;
@@ -1215,6 +1265,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           font-size: var(--ha-font-size-xs);
           font-weight: var(--ha-font-weight-medium);
           line-height: 1;
+          background: var(--ha-color-fill-neutral-normal-resting);
+          color: var(--primary-text-color);
         }
         .chip.active {
           background: var(--success-color);
