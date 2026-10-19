@@ -21,6 +21,7 @@ import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import "../../../components/item/ha-row-item";
+import type { ConfigEntry } from "../../../data/config_entries";
 import { ERROR_STATES } from "../../../data/config_entries";
 import {
   configContext,
@@ -38,6 +39,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistantConfig, HomeAssistantUI } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
+import type { IntegrationCardSummary } from "./integration-card-summary";
 import {
   computeIntegrationCardState,
   computeIntegrationCardSummary,
@@ -49,6 +51,19 @@ interface IntegrationCardStatus {
   icon?: string;
   message: string;
 }
+
+// Status shown for card states that need attention or are in progress.
+const STATE_STATUS: Partial<
+  Record<ConfigEntry["state"], Omit<IntegrationCardStatus, "message">>
+> = {
+  setup_error: { level: "error", icon: mdiAlertCircle },
+  setup_retry: { level: "error", icon: mdiAlertCircle },
+  migration_error: { level: "error", icon: mdiAlertCircle },
+  not_loaded: { level: "warning", icon: mdiAlertCircle },
+  failed_unload: { level: "warning", icon: mdiAlertCircle },
+  setup_in_progress: { level: "progress" },
+  unload_in_progress: { level: "progress" },
+};
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
@@ -96,42 +111,7 @@ export class HaIntegrationCard extends LitElement {
     const isError = ERROR_STATES.includes(entryState);
     const debugLoggingEnabled = this.logInfo?.level === LogSeverity.DEBUG;
 
-    let status: IntegrationCardStatus | undefined;
-    if (isError) {
-      status = {
-        level: "error",
-        icon: mdiAlertCircle,
-        message: this._localize(
-          `ui.panel.config.integrations.config_entry.state.${entryState}`
-        ),
-      };
-    } else if (entryState === "not_loaded" || entryState === "failed_unload") {
-      status = {
-        level: "warning",
-        icon: mdiAlertCircle,
-        message: this._localize(
-          `ui.panel.config.integrations.config_entry.state.${entryState}`
-        ),
-      };
-    } else if (
-      entryState === "setup_in_progress" ||
-      entryState === "unload_in_progress"
-    ) {
-      status = {
-        level: "progress",
-        message: this._localize(
-          `ui.panel.config.integrations.config_entry.state.${entryState}`
-        ),
-      };
-    } else if (debugLoggingEnabled) {
-      status = {
-        level: "warning",
-        icon: mdiBugOutline,
-        message: this._localize(
-          "ui.panel.config.integrations.config_entry.debug_logging_enabled"
-        ),
-      };
-    }
+    const status = this._computeStatus(entryState, debugLoggingEnabled);
 
     const domainName =
       this.items[0].localized_domain_name ||
@@ -182,6 +162,61 @@ export class HaIntegrationCard extends LitElement {
     `;
   }
 
+  private _computeStatus(
+    entryState: ConfigEntry["state"],
+    debugLoggingEnabled: boolean
+  ): IntegrationCardStatus | undefined {
+    const stateStatus = STATE_STATUS[entryState];
+    if (stateStatus) {
+      return {
+        ...stateStatus,
+        message: this._localize(
+          `ui.panel.config.integrations.config_entry.state.${entryState}`
+        ),
+      };
+    }
+    if (debugLoggingEnabled) {
+      return {
+        level: "warning",
+        icon: mdiBugOutline,
+        message: this._localize(
+          "ui.panel.config.integrations.config_entry.debug_logging_enabled"
+        ),
+      };
+    }
+    return undefined;
+  }
+
+  private _computeSupportingText(
+    summary?: IntegrationCardSummary,
+    status?: IntegrationCardStatus
+  ): string | undefined {
+    if (!summary) {
+      return status?.message;
+    }
+    if (!summary.attention) {
+      return this._localize(
+        `ui.panel.config.integrations.config_entry.${summary.unit}`,
+        { count: summary.count }
+      );
+    }
+    const attentionState = summary.attentionState ?? "other";
+    if (summary.attention >= summary.count) {
+      return this._localize(
+        `ui.panel.config.integrations.config_entry.attention.${summary.unit}_all`,
+        { count: summary.count, state: attentionState }
+      );
+    }
+    return this._localize(
+      `ui.panel.config.integrations.config_entry.attention.${summary.unit}_some`,
+      {
+        count: summary.count,
+        attention: summary.attention,
+        state: attentionState,
+      }
+    );
+  }
+
   private _renderSupportingText(
     status?: IntegrationCardStatus
   ): TemplateResult | typeof nothing {
@@ -205,29 +240,7 @@ export class HaIntegrationCard extends LitElement {
       return nothing;
     }
 
-    let text: string | undefined;
-    if (!summary) {
-      text = status?.message;
-    } else if (!summary.attention) {
-      text = this._localize(
-        `ui.panel.config.integrations.config_entry.${summary.unit}`,
-        { count: summary.count }
-      );
-    } else if (summary.attention >= summary.count) {
-      text = this._localize(
-        `ui.panel.config.integrations.config_entry.attention.${summary.unit}_all`,
-        { count: summary.count, state: summary.attentionState ?? "other" }
-      );
-    } else {
-      text = this._localize(
-        `ui.panel.config.integrations.config_entry.attention.${summary.unit}_some`,
-        {
-          count: summary.count,
-          attention: summary.attention,
-          state: summary.attentionState ?? "other",
-        }
-      );
-    }
+    const text = this._computeSupportingText(summary, status);
 
     return html`<span slot="supporting-text" class="supporting-text">
       ${
