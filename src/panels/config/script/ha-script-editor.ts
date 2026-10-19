@@ -1075,10 +1075,19 @@ export class HaScriptEditor extends SubscribeMixin(
       z: () => this._undo(),
       Z: () => this._redo(),
       y: () => this._redo(),
-      Y: () =>
-        this._sidebarConfig
-          ? this._sidebarConfig.toggleYamlMode()
-          : this._toggleYamlMode(),
+      Y: () => {
+        if (this._sidebarConfig) {
+          if (
+            "uiSupported" in this._sidebarConfig &&
+            !this._sidebarConfig.uiSupported
+          ) {
+            return;
+          }
+          this._sidebarConfig.toggleYamlMode();
+          return;
+        }
+        this._toggleYamlMode();
+      },
     };
   }
 

@@ -6,13 +6,21 @@ declare global {
   type SupportedShortcuts = Record<string, () => void>;
 }
 
+const normalizeShortcutKey = (event: KeyboardEvent): string => {
+  const { key } = event;
+  if (key.length !== 1) {
+    return key;
+  }
+  return event.shiftKey ? key.toUpperCase() : key.toLowerCase();
+};
+
 export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
   superClass: T
 ) =>
   class extends superClass {
     private _keydownEvent = (event: KeyboardEvent) => {
       const supportedShortcuts = this.supportedShortcuts();
-      const key = event.shiftKey ? event.key.toUpperCase() : event.key;
+      const key = normalizeShortcutKey(event);
       if (
         (event.ctrlKey || event.metaKey) &&
         !event.altKey &&
@@ -62,7 +70,7 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
 
     private _keydownCaptureEvent = (event: KeyboardEvent) => {
       const supportedShortcuts = this.supportedShortcuts();
-      const key = event.shiftKey ? event.key.toUpperCase() : event.key;
+      const key = normalizeShortcutKey(event);
       if (
         (event.ctrlKey || event.metaKey) &&
         !event.altKey &&
