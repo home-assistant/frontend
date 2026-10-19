@@ -1530,7 +1530,15 @@
       },
       "climate-control": {
         "temperature_up": "Increase temperature",
-        "temperature_down": "Decrease temperature"
+        "temperature_down": "Decrease temperature",
+        "lower_temperature_up": "Increase lower target temperature",
+        "lower_temperature_down": "Decrease lower target temperature",
+        "upper_temperature_up": "Increase upper target temperature",
+        "upper_temperature_down": "Decrease upper target temperature"
+      },
+      "number-buttons": {
+        "increment": "Increment",
+        "decrement": "Decrement"
       },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",

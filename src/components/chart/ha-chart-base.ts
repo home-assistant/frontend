@@ -883,13 +883,14 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         const sankeySeries = series?.find((s: any) => s.type === "sankey");
         const zoomed = Math.abs(sankeySeries.zoom - 1) > 1e-6;
         this._isZoomed = zoomed;
+        // Before setOption, which lays the labels out again
+        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
         if (!zoomed) {
           // Reset center when fully zoomed out
           this.chart!.setOption({
             series: [{ id: sankeySeries.id, center: null }],
           });
         }
-        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
         // Clear cached emphasis states so labels don't revert to pre-zoom sizes
         this.chart!.dispatchAction({ type: "downplay" });
       });
@@ -1458,6 +1459,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (this._isZoomed) {
         this._handleZoomReset();
       } else {
+        fireEvent(this, "chart-sankeyroam", { zoom: 2 });
         this.chart.setOption({
           series: sankeySeries.map((s: any) => ({
             id: s.id,
@@ -1502,15 +1504,19 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   }
 
   private _handleZoomReset() {
+    const option = this.chart?.getOption();
+    const sankeySeries = (option?.series as any[])?.filter(
+      (s: any) => s.type === "sankey"
+    );
+    // Before the dataZoom action and setOption, which lay the labels out again
+    if (sankeySeries?.length) {
+      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
+    }
     // A dataZoom action reruns the layout of every series, graphs included
     if (this._isZoomed) {
       this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
     }
     // Reset sankey roam zoom
-    const option = this.chart?.getOption();
-    const sankeySeries = (option?.series as any[])?.filter(
-      (s: any) => s.type === "sankey"
-    );
     if (sankeySeries?.length) {
       this.chart?.setOption({
         series: sankeySeries.map((s: any) => ({
@@ -1520,7 +1526,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         })),
       });
       this._isZoomed = false;
-      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
     }
     this._getGraphRoams().forEach(({ series, zoom, x, y }) => {
       this.chart!.dispatchAction({
