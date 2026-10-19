@@ -237,7 +237,9 @@ class HuiEnergySankeyCard
         label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
-        value: types.grid ? totalFromGrid : consumption.total.used_grid,
+        value: summedData.from_grid
+          ? totalFromGrid
+          : consumption.total.used_grid,
         color: computedStyle
           .getPropertyValue("--energy-grid-consumption-color")
           .trim(),

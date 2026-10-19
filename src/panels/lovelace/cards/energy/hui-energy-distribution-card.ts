@@ -236,7 +236,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     );
 
     const hasGrid = hasGridMeter || consumption.total.used_grid > 0;
-    const totalFromGrid = hasGridMeter
+    const totalFromGrid = summedData.from_grid
       ? (summedData.total.from_grid ?? 0)
       : consumption.total.used_grid;
 
