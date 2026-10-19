@@ -280,7 +280,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _pendingUpdate?: Set<PropertyKey>;
 
-  private _pendingOptions?: HaECOption;
+  private _legendItemCount?: number;
 
   private _pendingZoom?: [number, number, boolean];
 
@@ -292,7 +292,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this._tooltipHiddenWhilePanning = false;
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
-    this._pendingOptions = undefined;
     this._pendingZoom = undefined;
     // The observers are about to be torn down, so nothing would correct a stale
     // value if this element is reattached inside a hidden container.
@@ -445,11 +444,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (!this._pendingUpdate) {
         this._pendingUpdate = new Set();
       }
-      if (prop === "options" && !this._pendingUpdate.has(prop)) {
-        // The one previous value a replay reads, and it has to stay the options
-        // the chart currently renders, not those of a later deferred change.
-        this._pendingOptions = changedProps.get(prop) as HaECOption | undefined;
-      }
       this._pendingUpdate.add(prop);
     }
   }
@@ -466,10 +460,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       return;
     }
     const pending = this._pendingUpdate!;
-    const previousOptions = this._pendingOptions;
     this._pendingUpdate = undefined;
-    this._pendingOptions = undefined;
-    this._applyChartUpdate(pending, previousOptions);
+    this._applyChartUpdate(pending);
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -485,7 +477,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (invisible) {
         this._pendingSetup = true;
         this._pendingUpdate = undefined;
-        this._pendingOptions = undefined;
       } else {
         this._setupChart();
       }
@@ -503,16 +494,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
       return;
     }
-    this._applyChartUpdate(
-      changedProps,
-      changedProps.get("options") as HaECOption | undefined
-    );
+    this._applyChartUpdate(changedProps);
   }
 
-  private _applyChartUpdate(
-    changedProps: { has: (prop: string) => boolean },
-    previousOptions: HaECOption | undefined
-  ) {
+  private _applyChartUpdate(changedProps: { has: (prop: string) => boolean }) {
     let chartOptions: ECOption = {};
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
@@ -532,19 +517,27 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
       this._disposeSonification();
-      if (this._compareCustomLegendOptions(previousOptions, this.options)) {
-        // custom legend changes may require a resize to layout properly
-        this._shouldResizeChart = true;
-        this._resizeAnimationDuration = 250;
-      }
     } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
       chartOptions.dataZoom = this._getDataZoomConfig();
+    }
+    let legendChanged = false;
+    if (changedProps.has("options") || changedProps.has("data")) {
+      const legendItemCount = this._getLegendItems()?.length;
+      legendChanged = legendItemCount !== this._legendItemCount;
+      this._legendItemCount = legendItemCount;
     }
     if (Object.keys(chartOptions).length > 0) {
       this._setChartOptions(chartOptions);
       if (chartOptions.series || changedProps.has("_isZoomed")) {
         this._updateSankeyRoam();
       }
+    }
+    if (legendChanged) {
+      // Within a fixed height the host does not resize when the legend grows.
+      // Without animation, setOption has already fired "finished" by now.
+      this._shouldResizeChart = true;
+      this._resizeAnimationDuration = 250;
+      this.updateComplete.then(() => this._resizeChartIfNeeded());
     }
   }
 
@@ -832,7 +825,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this._loading = true;
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
-    this._pendingOptions = undefined;
     try {
       // The connection holds a reference to the chart instance, so it cannot
       // outlive it. Focusing the chart again reconnects.
@@ -883,13 +875,14 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         const sankeySeries = series?.find((s: any) => s.type === "sankey");
         const zoomed = Math.abs(sankeySeries.zoom - 1) > 1e-6;
         this._isZoomed = zoomed;
+        // Before setOption, which lays the labels out again
+        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
         if (!zoomed) {
           // Reset center when fully zoomed out
           this.chart!.setOption({
             series: [{ id: sankeySeries.id, center: null }],
           });
         }
-        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
         // Clear cached emphasis states so labels don't revert to pre-zoom sizes
         this.chart!.dispatchAction({ type: "downplay" });
       });
@@ -1002,6 +995,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         ...this._createOptions(),
         series: this._getSeries(),
       });
+      this._legendItemCount = this._getLegendItems()?.length;
       this._updateSankeyRoam();
       if (this._pendingZoom) {
         const [start, end, silent] = this._pendingZoom;
@@ -1458,6 +1452,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (this._isZoomed) {
         this._handleZoomReset();
       } else {
+        fireEvent(this, "chart-sankeyroam", { zoom: 2 });
         this.chart.setOption({
           series: sankeySeries.map((s: any) => ({
             id: s.id,
@@ -1502,15 +1497,19 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   }
 
   private _handleZoomReset() {
+    const option = this.chart?.getOption();
+    const sankeySeries = (option?.series as any[])?.filter(
+      (s: any) => s.type === "sankey"
+    );
+    // Before the dataZoom action and setOption, which lay the labels out again
+    if (sankeySeries?.length) {
+      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
+    }
     // A dataZoom action reruns the layout of every series, graphs included
     if (this._isZoomed) {
       this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
     }
     // Reset sankey roam zoom
-    const option = this.chart?.getOption();
-    const sankeySeries = (option?.series as any[])?.filter(
-      (s: any) => s.type === "sankey"
-    );
     if (sankeySeries?.length) {
       this.chart?.setOption({
         series: sankeySeries.map((s: any) => ({
@@ -1520,7 +1519,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         })),
       });
       this._isZoomed = false;
-      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
     }
     this._getGraphRoams().forEach(({ series, zoom, x, y }) => {
       this.chart!.dispatchAction({
@@ -1870,22 +1868,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     });
     this._shouldResizeChart = false;
     this._resizeAnimationDuration = undefined;
-  }
-
-  private _compareCustomLegendOptions(
-    oldOptions: HaECOption | undefined,
-    newOptions: HaECOption | undefined
-  ): boolean {
-    const oldLegends = ensureArray(
-      oldOptions?.legend || []
-    ) as LegendComponentOption[];
-    const newLegends = ensureArray(
-      newOptions?.legend || []
-    ) as LegendComponentOption[];
-    return (
-      oldLegends.some((l) => l.show && l.type === "custom") !==
-      newLegends.some((l) => l.show && l.type === "custom")
-    );
   }
 
   static styles = css`

@@ -196,9 +196,10 @@ const DYNAMIC_TO_GENERIC = new Set([`${DYNAMIC_PREFIX}event`]);
 
 const MAX_RECENT_ELEMENTS = 4;
 
-// Group keys surfaced as their own section in the "by target" tab because
+// Group keys surfaced in the "Other" section of the "by target" tab because
 // their elements have no target (time/calendar/schedule, sun). Picking one
 // drills into its items, like selecting the matching group in the "by type" tab.
+// People are shown in the same section by ha-automation-add-from-target.
 const TIME_LOCATION_GROUPS = ["time", "sun"];
 
 type CollectionGroupType = "helper" | "dynamic" | "integration";
@@ -2173,7 +2174,7 @@ class DialogAddAutomationElement
     if (type !== "trigger" && type !== "condition") {
       return undefined;
     }
-    return this.hass.localize("ui.panel.config.automation.editor.time_sun");
+    return this.hass.localize("ui.panel.config.automation.editor.other");
   }
 
   private _getTimeLocationGroups = memoizeOne(
@@ -2391,6 +2392,10 @@ class DialogAddAutomationElement
 
       if (targetId === undefined && targetType === "service") {
         return this.hass.localize("ui.panel.config.automation.editor.services");
+      }
+
+      if (targetId === undefined && targetType === "person") {
+        return this.hass.localize("ui.panel.config.person.caption");
       }
 
       if (targetId === undefined && targetType === "device") {

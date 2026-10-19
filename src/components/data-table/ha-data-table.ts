@@ -79,6 +79,8 @@ export interface DataTableSortColumnData {
   valueColumn?: string;
   direction?: SortingDirection;
   groupable?: boolean;
+  // Name in the `sort` and `group` URL params, grouping is only kept with one
+  urlName?: string;
   moveable?: boolean;
   hideable?: boolean;
   defaultHidden?: boolean;
@@ -1760,10 +1762,6 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell--numeric {
           text-align: var(--float-end);
         }
-        .mdc-data-table__header-cell--numeric.sortable:hover,
-        .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) {
-          text-align: var(--float-start);
-        }
 
         /* custom from here */
 
@@ -1837,8 +1835,8 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell > * {
           transition: var(--float-start) 0.2s ease;
         }
-        .mdc-data-table__header-cell--numeric > span {
-          transition: none;
+        .mdc-data-table__header-cell--numeric ha-svg-icon {
+          transition: var(--float-end) 0.2s ease;
         }
         .mdc-data-table__header-cell ha-svg-icon {
           top: -3px;
@@ -1859,6 +1857,25 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell.sortable:hover.not-sorted ha-svg-icon {
           left: 12px;
           inset-inline-start: 12px;
+          inset-inline-end: initial;
+        }
+        .mdc-data-table__header-cell--numeric.not-sorted ha-svg-icon {
+          right: -20px;
+          inset-inline-end: -20px;
+          inset-inline-start: initial;
+        }
+        .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted)
+          ha-svg-icon,
+        .mdc-data-table__header-cell--numeric.sortable:hover.not-sorted
+          ha-svg-icon {
+          right: 12px;
+          inset-inline-end: 12px;
+          inset-inline-start: initial;
+        }
+        .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) span,
+        .mdc-data-table__header-cell--numeric.sortable:hover.not-sorted span {
+          left: -24px;
+          inset-inline-start: -24px;
           inset-inline-end: initial;
         }
         .table-header {

@@ -5,10 +5,12 @@ import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
 import { stateColorCss } from "../../common/entity/state_color";
 import { clamp } from "../../common/number/clamp";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import { PendingValueSync } from "../../common/util/pending-value-sync";
 import "../../components/ha-big-number";
@@ -39,6 +41,10 @@ export class HaStateControlHumidifierHumidity extends LitElement {
   @state()
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: ContextType<typeof formattersContext>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: "show-secondary", type: Boolean })
   public showSecondary = false;
@@ -156,17 +162,28 @@ export class HaStateControlHumidifierHumidity extends LitElement {
     `;
   }
 
+  private _formatTarget = (humidity: number) =>
+    this._formatters.formatEntityAttributeValue(
+      this.stateObj,
+      "humidity",
+      humidity
+    );
+
   private _renderButtons() {
     return html`
       <div class="buttons">
         <ha-outlined-icon-button
           .step=${-this._step}
+          .label=${this._localize(
+            "ui.components.climate-control.humidity_down"
+          )}
           @click=${this._handleButton}
         >
           <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
         </ha-outlined-icon-button>
         <ha-outlined-icon-button
           .step=${this._step}
+          .label=${this._localize("ui.components.climate-control.humidity_up")}
           @click=${this._handleButton}
         >
           <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
@@ -324,6 +341,11 @@ export class HaStateControlHumidifierHumidity extends LitElement {
             .max=${this._max}
             .step=${this._step}
             .current=${currentHumidity}
+            .label=${this._formatters.formatEntityAttributeName(
+              this.stateObj,
+              "humidity"
+            )}
+            .formatValue=${this._formatTarget}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >
