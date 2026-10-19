@@ -10665,6 +10665,12 @@
               "name": "History graph",
               "description": "This card allows you to display a graph for each of the entities listed.",
               "show_names": "Show entity names",
+              "label_position": "Label position",
+              "label_position_options": {
+                "side": "Beside the graph",
+                "below": "Below each bar"
+              },
+              "label_position_helper": "Applies only to entities shown as bars.",
               "logarithmic_scale": "Logarithmic scale",
               "expand_legend": "Expand legend",
               "min_y_axis": "Y axis minimum",

@@ -1,5 +1,10 @@
 import { describe, it, assert, expect, vi } from "vitest";
-import { HistoryStream, computeHistory } from "../../src/data/history";
+import { computeDomain } from "../../src/common/entity/compute_domain";
+import {
+  HistoryStream,
+  computeHistory,
+  isTimelineEntity,
+} from "../../src/data/history";
 import type { HomeAssistant } from "../../src/types";
 import { mockDevice, mockEntity } from "../common/entity/context/context-mock";
 import {
@@ -256,5 +261,47 @@ describe("computeHistory entity names", () => {
       mockLocalize
     );
     expect(result.timeline[0]?.name).toBe("Caméra Allée ◂ Battery state");
+  });
+});
+
+describe("isTimelineEntity", () => {
+  it("matches how computeHistory splits timeline and line entities", () => {
+    const states = Object.fromEntries(
+      (
+        [
+          ["binary_sensor.door", "on", {}],
+          ["light.hallway", "off", {}],
+          ["sensor.power", "12", { unit_of_measurement: "W" }],
+          ["counter.visits", "3", {}],
+          ["climate.bedroom", "heat", {}],
+          ["humidifier.bedroom", "on", {}],
+          ["water_heater.tank", "eco", {}],
+          ["zone.home", "1", {}],
+        ] as const
+      ).map(([entityId, state, attributes]) => [
+        entityId,
+        createMockEntityState(entityId, state, attributes),
+      ])
+    );
+    const result = computeHistory(
+      createMockHass(states),
+      Object.fromEntries(
+        Object.values(states).map((stateObj) => [
+          stateObj.entity_id,
+          [{ s: stateObj.state, a: stateObj.attributes, lu: 1_700_000_000 }],
+        ])
+      ),
+      [],
+      mockLocalize
+    );
+    const timelineIds = result.timeline.map((entity) => entity.entity_id);
+
+    for (const [entityId, stateObj] of Object.entries(states)) {
+      expect(
+        isTimelineEntity(computeDomain(entityId), stateObj),
+        entityId
+      ).toBe(timelineIds.includes(entityId));
+    }
+    expect(timelineIds).toEqual(["binary_sensor.door", "light.hallway"]);
   });
 });
