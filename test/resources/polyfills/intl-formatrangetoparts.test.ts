@@ -79,9 +79,53 @@ describe("Intl.DateTimeFormat formatRangeToParts polyfill", () => {
       "2026-03-10T00:00Z",
       "2026-03-11T00:00Z",
     ],
-  ] as const)("matches ICU for a %s title", (_name, options, start, end) => {
-    const result = format(options, start, end);
-    expect(text(result.polyfill)).toBe(text(result.native));
+    [
+      "numeric week",
+      { year: "numeric", month: "numeric", day: "numeric" },
+      "2026-03-08",
+      "2026-03-14",
+    ],
+    [
+      "numeric same day across months",
+      { year: "numeric", month: "numeric", day: "numeric" },
+      "2026-03-10",
+      "2026-04-10",
+    ],
+    [
+      "same day across months",
+      { year: "numeric", month: "long", day: "numeric" },
+      "2026-03-10",
+      "2026-04-10",
+      "en-GB",
+    ],
+    [
+      "date with time",
+      { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" },
+      "2026-03-10T10:00Z",
+      "2026-03-10T11:30Z",
+    ],
+    [
+      "date with time across days",
+      { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" },
+      "2026-03-10T10:00Z",
+      "2026-03-11T10:00Z",
+    ],
+  ] as const)(
+    "matches ICU for a %s range",
+    (_name, options, start, end, locale?: string) => {
+      const result = format(options, start, end, locale);
+      expect(text(result.polyfill)).toBe(text(result.native));
+    }
+  );
+
+  it("keeps the ordinal dot of a German start day", () => {
+    const { polyfill } = format(
+      { year: "numeric", month: "short", day: "numeric" },
+      "2026-03-08",
+      "2026-03-14",
+      "de"
+    );
+    expect(text(polyfill)).toBe("8. März – 14. März 2026");
   });
 
   it("shows both dates for a time range across days in German", () => {

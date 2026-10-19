@@ -1,9 +1,27 @@
-// Approximates ICU: shares the parts both ends have in common and joins the
-// rest with " – ". Only formatRangeToParts is added, so the FormatJS
+// Approximates ICU: shares the larger units both ends have in common and joins
+// the rest with " – ". Only formatRangeToParts is added, so the FormatJS
 // DateTimeFormat polyfill still loads where formatRange is missing.
 if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
-  const TIME_PARTS = ["hour", "minute", "second", "fractionalSecond"];
-  const DATE_PARTS = ["era", "year", "month", "day", "weekday"];
+  // Largest unit first. Unknown fields, like timeZoneName, rank above all.
+  const RANKS: Record<string, number> = {
+    era: 0,
+    relatedYear: 1,
+    yearName: 1,
+    year: 1,
+    month: 2,
+    weekday: 3,
+    day: 3,
+    dayPeriod: 4,
+    hour: 5,
+    minute: 6,
+    second: 7,
+    fractionalSecond: 8,
+  };
+  const rank = (type: string) => RANKS[type] ?? -1;
+  const isDatePart = ({ type }: Intl.DateTimeFormatPart) =>
+    rank(type) >= 0 && rank(type) <= RANKS.day;
+  const isTimePart = ({ type }: Intl.DateTimeFormatPart) =>
+    rank(type) > RANKS.day;
   const SEPARATOR: Intl.DateTimeRangeFormatPart = {
     type: "literal",
     value: " – ",
@@ -51,7 +69,7 @@ if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
       const end = this.formatToParts(endDate);
 
       // Like ICU, a time-only range that crosses days shows both dates
-      if (!start.some((part) => DATE_PARTS.includes(part.type))) {
+      if (!start.some(isDatePart)) {
         const { locale, timeZone } = this.resolvedOptions();
         const dayFormat = new Intl.DateTimeFormat(locale, {
           timeZone,
@@ -73,42 +91,68 @@ if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
         }
       }
 
+      const changed = (
+        parts: Intl.DateTimeFormatPart[],
+        others: Intl.DateTimeFormatPart[]
+      ) =>
+        parts.filter(
+          (part) =>
+            part.type !== "literal" &&
+            !others.some((other) => isSamePart(part, other))
+        );
+      const largestChange = Math.min(
+        ...[...changed(start, end), ...changed(end, start)].map(({ type }) =>
+          rank(type)
+        )
+      );
+      if (largestChange === Infinity) {
+        return tag(start, "shared");
+      }
+      // Like ICU, a range across days that shows a time keeps both dates
+      if (largestChange <= RANKS.day && start.some(isTimePart)) {
+        return [
+          ...tag(start, "startRange"),
+          SEPARATOR,
+          ...tag(end, "endRange"),
+        ];
+      }
+
+      // Split only at a space or comma, so no end loses punctuation that
+      // belongs to its own fields, like "3/10" or "8."
+      const isShared = (index: number, endIndex: number) =>
+        isSamePart(start[index], end[endIndex]) &&
+        (start[index].type === "literal" ||
+          rank(start[index].type) < largestChange);
+
       let head = 0;
-      while (
-        head < start.length &&
-        head < end.length &&
-        isSamePart(start[head], end[head])
-      ) {
+      while (head < start.length && head < end.length && isShared(head, head)) {
         head++;
       }
-      if (head === start.length && head === end.length) {
-        return tag(start, "shared");
+      while (
+        head > 0 &&
+        !(
+          start[head - 1].type === "literal" &&
+          /\s$/.test(start[head - 1].value)
+        )
+      ) {
+        head--;
       }
 
       let tail = 0;
       while (
         tail < start.length - head &&
         tail < end.length - head &&
-        isSamePart(start[start.length - 1 - tail], end[end.length - 1 - tail])
+        isShared(start.length - 1 - tail, end.length - 1 - tail)
       ) {
         tail++;
       }
-
-      // Never split a clock time ("10:00 – 30")
-      const timeIndexes = start
-        .map((part, index) => (TIME_PARTS.includes(part.type) ? index : -1))
-        .filter((index) => index !== -1);
-      if (timeIndexes.length) {
-        head = Math.min(head, timeIndexes[0]);
-        tail = Math.min(
-          tail,
-          start.length - 1 - timeIndexes[timeIndexes.length - 1]
-        );
-      }
-      while (head > 0 && start[head - 1].type !== "literal") {
-        head--;
-      }
-      while (tail > 0 && start[start.length - tail].type !== "literal") {
+      while (
+        tail > 0 &&
+        !(
+          start[start.length - tail].type === "literal" &&
+          /^[\s,]/.test(start[start.length - tail].value)
+        )
+      ) {
         tail--;
       }
 
