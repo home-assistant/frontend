@@ -1623,7 +1623,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       font-weight: var(--ha-font-weight-medium);
       overflow: hidden;
     }
-    ha-list-item-button::part(label) {
+    ha-list-item-button::part(headline) {
       font-weight: var(--ha-font-weight-medium);
       font-family: var(--ha-font-family-heading);
     }
