@@ -292,6 +292,7 @@ export class HaAutomationTrace extends LitElement {
                           : html`
                               <ha-split-panel
                                 class="split"
+                                dir=${this._isRTL ? "rtl" : "ltr"}
                                 .position=${
                                   this._isRTL
                                     ? 100 - this._splitPosition
