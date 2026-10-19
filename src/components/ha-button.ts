@@ -187,10 +187,6 @@ export class HaButton extends Button {
           );
         }
 
-        :host([variant="neutral"][appearance~="plain"]) {
-          --wa-color-on-normal: var(--ha-color-text-primary);
-        }
-
         :host([appearance~="plain"]) .button {
           color: var(--wa-color-on-normal);
           background-color: transparent;
