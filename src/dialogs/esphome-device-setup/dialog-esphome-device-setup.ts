@@ -7,6 +7,7 @@ import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { consume } from "../../common/decorators/consume";
 import { transform } from "../../common/decorators/transform";
+import { debounce } from "../../common/util/debounce";
 import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
@@ -32,6 +33,7 @@ import {
   uiContext,
 } from "../../data/context";
 import type { DataEntryFlowProgress } from "../../data/data_entry_flow";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import {
   fetchESPHomeDeviceCapabilities,
   type ESPHomeDeviceCapabilities,
@@ -206,12 +208,19 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       this._loadStarted = true;
       this._capabilities = this.params.capabilities;
       this._load();
-    } else if (
-      this._loadStarted &&
-      changedProps.has("_configEntries") &&
-      this._capabilities?.serial_proxies.length
-    ) {
-      this._refreshSerialPorts();
+    } else if (this._loadStarted && this._capabilities?.serial_proxies.length) {
+      if (changedProps.has("_configEntries")) {
+        this._refreshSerialPorts();
+      } else if (
+        changedProps.has("_states") &&
+        this._unavailableEntityCount(this._states) !==
+          this._unavailableEntityCount(
+            changedProps.get("_states") as ContextType<typeof statesContext>
+          )
+      ) {
+        // The device reconnected or dropped, which changes its scanned ports
+        this._refreshSerialPortsDebounced();
+      }
     }
   }
 
@@ -819,6 +828,27 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       return { ok: false, error: err };
     }
   }
+
+  /** ESPHome marks the entities of a disconnected device unavailable. */
+  private _unavailableEntityCount(
+    states: ContextType<typeof statesContext> | undefined
+  ): number {
+    if (!this.params || !this._entities || !states) {
+      return 0;
+    }
+    const deviceId = this.params.deviceId;
+    return Object.values(this._entities).filter(
+      (entity) =>
+        entity.device_id === deviceId &&
+        states[entity.entity_id]?.state === UNAVAILABLE
+    ).length;
+  }
+
+  private _refreshSerialPortsDebounced = debounce(() => {
+    if (this.isConnected) {
+      this._refreshSerialPorts();
+    }
+  }, 1000);
 
   private async _refreshSerialPorts() {
     const capabilities = this._capabilities;
