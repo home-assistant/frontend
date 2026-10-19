@@ -158,6 +158,7 @@ export class DialogStatisticsFix extends LitElement {
             issue.type !== "entity_not_recorded"
               ? html`<ha-button
                     appearance="plain"
+                    variant="neutral"
                     slot="secondaryAction"
                     @click=${this._cancel}
                   >

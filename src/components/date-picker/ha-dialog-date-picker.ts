@@ -157,6 +157,7 @@ export class HaDialogDatePicker extends DialogMixin<DatePickerDialogParams>(
       <ha-dialog-footer slot="footer">
         <ha-button
           appearance="plain"
+          variant="neutral"
           slot="secondaryAction"
           @click=${this.closeDialog}
         >

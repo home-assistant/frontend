@@ -132,6 +132,7 @@ export class DialogDebugConsoleWarning extends DialogMixin<DebugConsoleWarningDi
           <ha-button
             slot="secondaryAction"
             appearance="plain"
+            variant="neutral"
             @click=${this._decline}
           >
             ${this._i18n.localize(

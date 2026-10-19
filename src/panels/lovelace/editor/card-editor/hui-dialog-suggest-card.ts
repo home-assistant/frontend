@@ -150,6 +150,7 @@ export class HuiDialogSuggestCard extends LitElement {
             slot="secondaryAction"
             @click=${this.closeDialog}
             appearance="plain"
+            variant="neutral"
             autofocus
           >
             ${

@@ -96,6 +96,7 @@ class AppsRegistriesDialog extends DirtyStateProviderMixin<RegistryInput>()(
             slot="secondaryAction"
             @click=${this.closeDialog}
             appearance="plain"
+            variant="neutral"
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>

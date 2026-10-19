@@ -128,6 +128,7 @@ export class HaMarketplaceWarning extends LitElement {
           <ha-button
             slot="secondaryAction"
             appearance="plain"
+            variant="neutral"
             @click=${this._goBack}
           >
             ${this._i18n.localize("ui.panel.marketplace.warning.go_back")}

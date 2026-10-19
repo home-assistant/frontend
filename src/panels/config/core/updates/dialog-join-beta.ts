@@ -76,6 +76,7 @@ export class DialogJoinBeta
           <ha-button
             slot="secondaryAction"
             appearance="plain"
+            variant="neutral"
             @click=${this._cancel}
           >
             ${this.hass.localize("ui.common.cancel")}

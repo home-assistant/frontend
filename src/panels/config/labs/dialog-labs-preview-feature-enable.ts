@@ -181,6 +181,7 @@ export class DialogLabsPreviewFeatureEnable
           <ha-button
             slot="secondaryAction"
             appearance="plain"
+            variant="neutral"
             @click=${this._handleCancel}
           >
             ${this.hass.localize("ui.common.cancel")}

@@ -339,6 +339,7 @@ export class DialogEnergyGasSettings
         <ha-dialog-footer slot="footer">
           <ha-button
             appearance="plain"
+            variant="neutral"
             @click=${this.closeDialog}
             slot="secondaryAction"
           >

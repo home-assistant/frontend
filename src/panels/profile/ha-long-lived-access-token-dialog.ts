@@ -168,6 +168,7 @@ export class HaLongLivedAccessTokenDialog extends DirtyStateProviderMixin<string
               : html`<ha-button
                   slot="secondaryAction"
                   appearance="plain"
+                  variant="neutral"
                   @click=${this.closeDialog}
                 >
                   ${this.hass.localize("ui.common.cancel")}

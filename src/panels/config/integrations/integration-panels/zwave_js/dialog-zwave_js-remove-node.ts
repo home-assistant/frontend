@@ -264,6 +264,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
       return html`
         <ha-button
           appearance="plain"
+          variant="neutral"
           slot="secondaryAction"
           @click=${this.closeDialog}
         >
@@ -283,6 +284,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
       return html`
         <ha-button
           appearance="plain"
+          variant="neutral"
           slot="secondaryAction"
           @click=${this.closeDialog}
         >

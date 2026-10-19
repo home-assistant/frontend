@@ -101,6 +101,7 @@ export class HuiDialogSelectDashboard extends LitElement {
           <ha-button
             slot="secondaryAction"
             appearance="plain"
+            variant="neutral"
             @click=${this.closeDialog}
             .disabled=${this._saving}
           >

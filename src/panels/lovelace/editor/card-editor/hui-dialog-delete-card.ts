@@ -74,6 +74,7 @@ export class HuiDialogDeleteCard extends LitElement {
           <ha-button
             slot="secondaryAction"
             appearance="plain"
+            variant="neutral"
             @click=${this.closeDialog}
             autofocus
           >

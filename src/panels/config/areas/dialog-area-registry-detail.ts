@@ -406,6 +406,7 @@ class DialogAreaDetail
                 `
               : html`<ha-button
                   appearance="plain"
+                  variant="neutral"
                   slot="secondaryAction"
                   @click=${this.closeDialog}
                 >

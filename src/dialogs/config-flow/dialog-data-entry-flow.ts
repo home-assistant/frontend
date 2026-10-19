@@ -546,6 +546,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
                 <ha-button
                   slot="secondaryAction"
                   appearance="plain"
+                  variant="neutral"
                   @click=${this._closeAbortStep}
                 >
                   ${this.hass.localize(

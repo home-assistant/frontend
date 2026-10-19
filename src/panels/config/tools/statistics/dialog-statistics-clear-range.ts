@@ -158,6 +158,7 @@ class DialogStatisticsClearRange extends DialogMixin<DialogStatisticsClearRangeP
           <ha-button
             slot="secondaryAction"
             appearance="plain"
+            variant="neutral"
             .disabled=${this._busy}
             @click=${this.closeDialog}
           >

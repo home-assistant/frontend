@@ -115,6 +115,7 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
           <ha-button
             slot="secondaryAction"
             appearance="plain"
+            variant="neutral"
             @click=${this.closeDialog}
           >
             ${this._i18n.localize("ui.common.cancel")}

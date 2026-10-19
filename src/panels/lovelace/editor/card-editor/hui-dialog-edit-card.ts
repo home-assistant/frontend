@@ -299,6 +299,7 @@ export class HuiDialogEditCard
           }
           <ha-button
             appearance="plain"
+            variant="neutral"
             slot="secondaryAction"
             @click=${this._cancel}
           >

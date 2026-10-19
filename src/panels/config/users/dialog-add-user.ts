@@ -234,6 +234,7 @@ export class DialogAddUser extends DirtyStateProviderMixin<AddUserFormState>()(
           <ha-button
             slot="secondaryAction"
             appearance="plain"
+            variant="neutral"
             @click=${this._close}
           >
             ${this.hass!.localize("ui.common.cancel")}

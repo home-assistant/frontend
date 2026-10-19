@@ -142,6 +142,7 @@ export class DialogEnterCode
             <ha-button
               slot="secondaryAction"
               appearance="plain"
+              variant="neutral"
               @click=${this._cancel}
             >
               ${

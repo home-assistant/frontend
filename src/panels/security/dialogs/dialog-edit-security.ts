@@ -94,6 +94,7 @@ export class DialogEditSecurity extends DirtyStateProviderMixin<SecurityFrontend
           <ha-button
             autofocus
             appearance="plain"
+            variant="neutral"
             slot="secondaryAction"
             @click=${this.closeDialog}
             .disabled=${this._submitting}

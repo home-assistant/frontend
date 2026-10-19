@@ -115,6 +115,7 @@ export class DialogLovelaceResourceDetail extends DirtyStateProviderMixin<
         <ha-dialog-footer slot="footer">
           <ha-button
             appearance="plain"
+            variant="neutral"
             slot="secondaryAction"
             @click=${this.closeDialog}
           >

@@ -210,6 +210,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
               : html`<ha-button
                   slot="secondaryAction"
                   appearance="plain"
+                  variant="neutral"
                   @click=${this._goBack}
                   .disabled=${this._submitting}
                 >

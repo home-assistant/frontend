@@ -417,6 +417,7 @@ export class DialogForm
           <ha-button
             slot="secondaryAction"
             appearance="plain"
+            variant="neutral"
             @click=${this._cancel}
           >
             ${params.cancelText || this.hass.localize("ui.common.cancel")}

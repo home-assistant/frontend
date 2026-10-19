@@ -174,6 +174,7 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
             @click=${this.closeDialog}
             .disabled=${this._submitting}
             appearance="plain"
+            variant="neutral"
           >
             ${this.hass.localize("ui.common.cancel")}
           </ha-button>

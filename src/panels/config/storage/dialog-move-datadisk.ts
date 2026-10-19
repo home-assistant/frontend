@@ -180,6 +180,7 @@ class MoveDatadiskDialog extends DirtyStateProviderMixin<MoveDatadiskFormState>(
                   <ha-button
                     slot="secondaryAction"
                     appearance="plain"
+                    variant="neutral"
                     @click=${this.closeDialog}
                   >
                     ${this.hass.localize(

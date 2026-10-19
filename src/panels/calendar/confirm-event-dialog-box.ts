@@ -70,6 +70,7 @@ class ConfirmEventDialogBox extends LitElement {
         <ha-dialog-footer slot="footer">
           <ha-button
             appearance="plain"
+            variant="neutral"
             @click=${this._dismiss}
             ?autofocus=${!recurring && destructive}
             slot="secondaryAction"
