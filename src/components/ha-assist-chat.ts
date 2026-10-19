@@ -16,13 +16,15 @@ import { transform } from "../common/decorators/transform";
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { LocalizeFunc } from "../common/translations/localize";
 import {
+  createAssistMessageProcessor,
+  type AssistMessage,
+  type AssistMessageProcessor,
+} from "../data/assist_chat";
+import {
   runAssistPipeline,
   type AssistPipeline,
-  type ConversationChatLogAssistantDelta,
-  type ConversationChatLogToolResultDelta,
   type PipelineRunEvent,
 } from "../data/assist_pipeline";
-import type { ChatLogToolResult } from "../data/chat_log";
 import {
   configContext,
   connectionContext,
@@ -51,22 +53,6 @@ import "./ha-alert";
 import "./ha-markdown";
 import "./input/ha-input";
 import type { HaInput } from "./input/ha-input";
-
-interface AssistMessage {
-  who: string;
-  text: string;
-  thinking: string;
-  thinking_expanded?: boolean;
-  tool_calls: Record<
-    string,
-    {
-      tool_name: string;
-      tool_args: Record<string, unknown>;
-      result?: ChatLogToolResult;
-    }
-  >;
-  error?: boolean;
-}
 
 export const initialPromptToSubmit = (
   prompt: string | undefined,
@@ -653,6 +639,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
             hassMessageProcesser.addMessage();
           } else if (event.type.startsWith("intent-")) {
             hassMessageProcesser.processEvent(event);
+            if (event.type === "intent-end") {
+              this._conversationId = event.data.intent_output.conversation_id;
+            }
           } else if (event.type === "run-end") {
             this._stt_binary_handler_id = undefined;
             unsub();
@@ -744,6 +733,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
         (event) => {
           if (event.type.startsWith("intent-")) {
             hassMessageProcesser.processEvent(event);
+            if (event.type === "intent-end") {
+              this._conversationId = event.data.intent_output.conversation_id;
+            }
           }
           if (event.type === "intent-end") {
             unsub();
@@ -770,118 +762,11 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
     }
   }
 
-  private _createAddHassMessageProcessor() {
-    let currentDeltaRole = "";
-
-    const progressToNextMessage = () => {
-      if (
-        progress.hassMessage.text === "…" &&
-        !progress.hassMessage.thinking &&
-        (!progress.hassMessage.tool_calls ||
-          Object.keys(progress.hassMessage.tool_calls).length === 0)
-      ) {
-        return;
-      }
-      if (progress.hassMessage.text?.endsWith("…")) {
-        progress.hassMessage.text = progress.hassMessage.text.slice(0, -1);
-      }
-
-      progress.hassMessage = {
-        who: "hass",
-        text: "…",
-        thinking: "",
-        tool_calls: {},
-        error: false,
-      };
-      this._addMessage(progress.hassMessage);
-    };
-
-    const isAssistantDelta = (
-      _delta: any
-    ): _delta is Partial<ConversationChatLogAssistantDelta> =>
-      currentDeltaRole === "assistant";
-
-    const isToolResult = (
-      _delta: any
-    ): _delta is ConversationChatLogToolResultDelta =>
-      currentDeltaRole === "tool_result";
-
-    const progress = {
-      continueConversation: false,
-      hassMessage: {
-        who: "hass",
-        text: "…",
-        thinking: "",
-        tool_calls: {},
-        error: false,
-      },
-      addMessage: () => {
-        this._addMessage(progress.hassMessage);
-      },
-      setError: (error: string) => {
-        progressToNextMessage();
-        progress.hassMessage.text = error;
-        progress.hassMessage.error = true;
-        this.requestUpdate("_conversation");
-      },
-      processEvent: (event: PipelineRunEvent) => {
-        if (event.type === "intent-progress" && event.data.chat_log_delta) {
-          const delta = event.data.chat_log_delta;
-
-          // new message
-          if (delta.role) {
-            currentDeltaRole = delta.role;
-          }
-
-          if (isAssistantDelta(delta)) {
-            if (delta.content) {
-              if (progress.hassMessage.text.endsWith("…")) {
-                progress.hassMessage.text =
-                  progress.hassMessage.text.substring(
-                    0,
-                    progress.hassMessage.text.length - 1
-                  ) +
-                  delta.content +
-                  "…";
-              } else {
-                progress.hassMessage.text += delta.content + "…";
-              }
-            }
-            if (delta.thinking_content) {
-              progress.hassMessage.thinking += delta.thinking_content;
-            }
-            if (delta.tool_calls) {
-              for (const toolCall of delta.tool_calls) {
-                progress.hassMessage.tool_calls[toolCall.id] = toolCall;
-              }
-            }
-            this.requestUpdate("_conversation");
-          } else if (isToolResult(delta)) {
-            if (progress.hassMessage.tool_calls[delta.tool_call_id]) {
-              progress.hassMessage.tool_calls[delta.tool_call_id].result =
-                delta.result;
-              this.requestUpdate("_conversation");
-            }
-          }
-        } else if (event.type === "intent-end") {
-          this._conversationId = event.data.intent_output.conversation_id;
-          progress.continueConversation =
-            event.data.intent_output.continue_conversation;
-          const response =
-            event.data.intent_output.response.speech.plain?.speech;
-          if (!response) {
-            return;
-          }
-          if (event.data.intent_output.response.response_type === "error") {
-            progress.setError(response);
-          } else {
-            progress.hassMessage.text = response;
-            this.requestUpdate("_conversation");
-          }
-        }
-      },
-    };
-    return progress;
+  private _createAddHassMessageProcessor(): AssistMessageProcessor {
+    return createAssistMessageProcessor({
+      addMessage: (message) => this._addMessage(message),
+      requestUpdate: () => this.requestUpdate("_conversation"),
+    });
   }
 
   static get styles(): CSSResultGroup {
