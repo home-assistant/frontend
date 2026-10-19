@@ -25,6 +25,7 @@ import type {
   TriggerList,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
+import { getRowNote } from "../../../../data/automation";
 import {
   getTriggerDomain,
   getTriggerObjectId,
@@ -81,6 +82,10 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     const type = isTriggerList(this.config.config)
       ? "list"
       : this.config.config.trigger;
+
+    const note = !isTriggerList(this.config.config)
+      ? getRowNote(this.config.config.note)
+      : undefined;
 
     const subtitle = this.hass.localize(
       "ui.panel.config.automation.editor.triggers.trigger"
@@ -309,12 +314,10 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           ></ha-automation-trigger-editor>`
         )}
         ${
-          !isTriggerList(this.config.config) &&
-          this.config.config.note?.trim() &&
-          !this.yamlMode
+          note && !this.yamlMode
             ? html`<ha-automation-note
                 @edit-note=${this.config.editNote}
-                .note=${this.config.config.note}
+                .note=${note}
               ></ha-automation-note>`
             : nothing
         }

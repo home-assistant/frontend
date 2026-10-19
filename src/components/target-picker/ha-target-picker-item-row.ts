@@ -662,11 +662,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
       return {
         name: device
-          ? computeDeviceNameDisplay(
-              device,
-              this.hass.localize,
-              this.hass.states
-            )
+          ? computeDeviceNameDisplay(device, this.hass.localize)
           : item,
         context,
         fallbackIconPath: mdiDevices,
@@ -805,14 +801,6 @@ export class HaTargetPickerItemRow extends LitElement {
 
   static styles = [
     css`
-      :host {
-        --md-list-item-top-space: 0;
-        --md-list-item-bottom-space: 0;
-        --md-list-item-leading-space: var(--ha-space-2);
-        --md-list-item-trailing-space: var(--ha-space-2);
-        --md-list-item-two-line-container-height: 56px;
-      }
-
       .error {
         background: var(--ha-color-fill-warning-quiet-resting);
       }

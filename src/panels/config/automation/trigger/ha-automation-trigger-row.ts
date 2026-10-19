@@ -56,7 +56,11 @@ import type {
   TriggerList,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
-import { isTrigger, subscribeTrigger } from "../../../../data/automation";
+import {
+  getRowNote,
+  isTrigger,
+  subscribeTrigger,
+} from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
@@ -104,6 +108,7 @@ import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import { scrollRowIntoView } from "../scroll-row-into-view";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -245,12 +250,10 @@ export default class HaAutomationTriggerRow extends LitElement {
             ?.target
         : undefined;
 
-    const noteTooltipText = truncateWithEllipsis(
-      (type !== "list" &&
-        (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()) ||
-        "",
-      250
-    );
+    const note =
+      type !== "list"
+        ? getRowNote((this.trigger as Exclude<Trigger, TriggerList>).note)
+        : undefined;
 
     return html`
       <div slot="leading-icon" class="trigger-leading">
@@ -291,7 +294,6 @@ export default class HaAutomationTriggerRow extends LitElement {
                 .path=${TRIGGER_ICONS[type]}
               ></ha-svg-icon>`
             : html`<ha-trigger-icon
-                .hass=${this.hass}
                 .trigger=${
                   (this.trigger as Exclude<Trigger, TriggerList>).trigger
                 }
@@ -328,8 +330,7 @@ export default class HaAutomationTriggerRow extends LitElement {
             : nothing
         }
         ${
-          type !== "list" &&
-          (this.trigger as Exclude<Trigger, TriggerList>).note?.trim()
+          note
             ? html`
                 <ha-svg-icon
                   tabindex="0"
@@ -341,7 +342,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                   class="note-indicator"
                 ></ha-svg-icon>
                 <ha-tooltip for="note-icon"
-                  ><p>${noteTooltipText}</p></ha-tooltip
+                  ><p>${truncateWithEllipsis(note, 250)}</p></ha-tooltip
                 >
               `
             : nothing
@@ -834,10 +835,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180);
     }
   }

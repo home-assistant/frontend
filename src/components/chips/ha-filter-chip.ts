@@ -64,11 +64,11 @@ export class HaFilterChip extends HaChipBase {
         }
         :host([selected]) {
           --ha-chip-outline-width: var(
-            --md-filter-chip-selected-outline-width,
+            --ha-filter-chip-selected-outline-width,
             0px
           );
           --ha-chip-container-color: var(
-            --md-filter-chip-selected-container-color,
+            --ha-filter-chip-selected-container-color,
             rgba(var(--rgb-primary-text-color), 0.15)
           );
         }

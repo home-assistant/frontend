@@ -30,6 +30,7 @@ import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/entity/state-badge";
 import { showTargetDetailsDialog } from "../../../../components/target-picker/dialog/show-dialog-target-details";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
@@ -53,6 +54,7 @@ import {
 } from "../../../../data/selector";
 import { extractFromTarget, type TargetType } from "../../../../data/target";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
+import { isConfigObject } from "../ui-support";
 import { getTargetIcon } from "./get_target_icon";
 import { getTargetText } from "./get_target_text";
 
@@ -261,7 +263,17 @@ export class HaAutomationRowTargets extends LitElement {
   }
 
   protected render() {
-    const length = Object.keys(this.target || {}).length;
+    // In actions, the whole target can be a template
+    if (typeof this.target === "string" && isTemplate(this.target)) {
+      return html`<span class="target-wrapper">
+        ${this._renderTarget("entity", this.target)}
+      </span>`;
+    }
+
+    // Any other value that isn't a mapping is invalid. Without this, the
+    // characters of a string or the items of a list would count as targets.
+    const target = isConfigObject(this.target) ? this.target : undefined;
+    const length = Object.keys(target || {}).length;
     if (!length) {
       return this._renderTargetBadge(
         this.targetRequired
@@ -274,13 +286,13 @@ export class HaAutomationRowTargets extends LitElement {
         this.targetRequired
       );
     }
-    const totalLength = Object.values(this.target || {}).reduce(
+    const totalLength = Object.values(target || {}).reduce(
       (acc, val) => acc + ensureArray(val).length,
       0
     );
 
     if (totalLength <= 5) {
-      const targets = Object.entries(this.target!).reduce<
+      const targets = Object.entries(target!).reduce<
         ["floor" | "area" | "device" | "entity" | "label", string][]
       >((acc, [targetType, targetId]) => {
         const type = targetType.replace("_id", "") as
@@ -302,7 +314,7 @@ export class HaAutomationRowTargets extends LitElement {
       );
     }
 
-    const rows = Object.entries(this.target!)
+    const rows = Object.entries(target!)
       .reduce<["floor" | "area" | "device" | "entity" | "label", string][]>(
         (acc, [targetType, targetId]) => {
           const type = targetType.replace("_id", "") as
@@ -669,6 +681,12 @@ export class HaAutomationRowTargets extends LitElement {
       padding: var(--ha-space-1) 0;
     }
 
+    .target state-badge,
+    ha-dropdown-item state-badge {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
     .target ha-floor-icon {
       display: flex;
       height: 32px;
@@ -678,18 +696,25 @@ export class HaAutomationRowTargets extends LitElement {
     :host([size="s"]) {
       min-height: 24px;
     }
+
     :host([size="s"]) .target {
       height: 24px;
     }
-    /* A default 24px icon would fill the whole small chip. */
+
+    :host([size="s"]) .target ha-floor-icon {
+      height: 24px;
+    }
+
     :host([size="s"]) .target ha-icon,
     :host([size="s"]) .target ha-svg-icon,
     :host([size="s"]) .target ha-domain-icon,
     :host([size="s"]) .target ha-floor-icon {
       --mdc-icon-size: 16px;
     }
-    :host([size="s"]) .target ha-floor-icon {
-      height: 24px;
+    :host([size="s"]) .target state-badge {
+      width: 16px;
+      height: 16px;
+      --mdc-icon-size: 16px;
     }
 
     button.target {

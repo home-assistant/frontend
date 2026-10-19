@@ -208,6 +208,7 @@ export interface TargetHumidityCardFeatureConfig {
 
 export interface TargetTemperatureCardFeatureConfig {
   type: "target-temperature";
+  style?: "buttons" | "slider";
 }
 
 export interface ToggleCardFeatureConfig {

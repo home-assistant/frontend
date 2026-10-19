@@ -174,7 +174,6 @@ export class HuiBadgeSuggestionPicker extends LitElement {
           stateObj
             ? html`<state-badge
                 slot="start"
-                .hass=${this.hass}
                 .stateObj=${stateObj}
               ></state-badge>`
             : nothing

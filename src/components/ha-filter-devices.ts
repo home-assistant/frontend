@@ -20,7 +20,6 @@ import {
   apiContext,
   devicesContext,
   internationalizationContext,
-  statesContext,
 } from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
@@ -41,10 +40,6 @@ export class HaFilterDevices extends LitElement {
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
-
-  @consume({ context: statesContext, subscribe: true })
-  @state()
-  private _states!: ContextType<typeof statesContext>;
 
   @consume({ context: devicesContext, subscribe: true })
   @state()
@@ -125,7 +120,6 @@ export class HaFilterDevices extends LitElement {
                   this._devicesReg,
                   this._filter || "",
                   this._localize,
-                  this._states,
                   this._i18n.locale.language
                 )}
                 .rowRenderer=${this._renderItem}
@@ -158,7 +152,6 @@ export class HaFilterDevices extends LitElement {
         this._devicesReg,
         this._filter || "",
         this._localize,
-        this._states,
         this._i18n.locale.language
       )[ev.detail].id,
     ];
@@ -169,7 +162,6 @@ export class HaFilterDevices extends LitElement {
       this._devicesReg,
       this._filter || "",
       this._localize,
-      this._states,
       this._i18n.locale.language
     )[ev.detail].id;
     this.value = (this.value ?? []).filter((deviceId) => deviceId !== id);
@@ -196,7 +188,6 @@ export class HaFilterDevices extends LitElement {
       devices: ContextType<typeof devicesContext>,
       filter: string,
       localize: LocalizeFunc,
-      states: ContextType<typeof statesContext>,
       language: string | undefined
     ): HaFilterDevicesItem[] => {
       const values = Object.values(devices);
@@ -204,7 +195,7 @@ export class HaFilterDevices extends LitElement {
         .map((device) => ({
           id: device.id,
           interactive: true,
-          name: computeDeviceNameDisplay(device, localize, states),
+          name: computeDeviceNameDisplay(device, localize),
         }))
         .filter(
           ({ name }) =>

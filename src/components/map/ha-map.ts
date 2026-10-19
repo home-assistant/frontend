@@ -17,8 +17,10 @@ import { UNIT_KM } from "../../common/const";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { getEntityLocation } from "../../common/entity/get_entity_location";
+import {
+  findFirstActiveZone,
+  getEntityLocation,
+} from "../../common/entity/get_entity_location";
 import { supportsVectorMaps } from "../../common/map/base-layer";
 import type {
   MapCircleHandle,
@@ -67,6 +69,7 @@ import {
   statesContext,
   uiContext,
 } from "../../data/context";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { ensureMapTilesToken } from "../../data/map_tiles";
 import "../ha-tooltip";
@@ -528,8 +531,19 @@ export class HaMap extends ReactiveElement {
     } else if (this._loaded && oldStates && this.entities) {
       // Check if any state has changed
       for (const entity of this.entities) {
+        const entityId = getEntityId(entity);
+        const stateObj = this._states[entityId];
+        const inZones: string[] | undefined = stateObj?.attributes.in_zones;
         if (
-          oldStates[getEntityId(entity)] !== this._states[getEntityId(entity)]
+          oldStates[entityId] !== stateObj ||
+          (stateObj &&
+            ["person", "device_tracker"].includes(
+              computeStateDomain(stateObj)
+            ) &&
+            Array.isArray(inZones) &&
+            inZones.some(
+              (zoneId) => oldStates[zoneId] !== this._states[zoneId]
+            ))
         ) {
           this._drawEntities();
           autoFitRequired = !this._pauseAutoFit;
@@ -538,7 +552,11 @@ export class HaMap extends ReactiveElement {
       }
     }
 
-    if (changedProps.has("clusterMarkers") || changedProps.has("_entityReg")) {
+    if (
+      changedProps.has("clusterMarkers") ||
+      changedProps.has("_entityReg") ||
+      changedProps.has("_formatters")
+    ) {
       this._drawEntities();
     }
 
@@ -1320,7 +1338,7 @@ export class HaMap extends ReactiveElement {
     const states = this._states;
     const engine = this._engine;
 
-    if (!states || !engine) {
+    if (!states || !engine || !this._formatters) {
       return;
     }
 
@@ -1343,8 +1361,6 @@ export class HaMap extends ReactiveElement {
     this._watchRegistry();
 
     const computedStyles = getComputedStyle(this);
-    // A person's state is "home" for the home zone, the zone name otherwise
-    const zoneByState: Record<string, string> = {};
     this._zonePositions = {};
     this._zoneRadii = {};
     for (const entity of this.entities) {
@@ -1355,11 +1371,6 @@ export class HaMap extends ReactiveElement {
         computeStateDomain(stateObj) === "zone" &&
         (this.renderPassive || !stateObj.attributes.passive)
       ) {
-        zoneByState[
-          stateObj.entity_id === "zone.home"
-            ? "home"
-            : computeStateName(stateObj)
-        ] = stateObj.entity_id;
         if (
           typeof stateObj.attributes.latitude === "number" &&
           typeof stateObj.attributes.longitude === "number"
@@ -1382,7 +1393,7 @@ export class HaMap extends ReactiveElement {
         continue;
       }
       const customTitle = typeof entity !== "string" ? entity.name : undefined;
-      const title = customTitle ?? computeStateName(stateObj);
+      const title = customTitle ?? this._formatters.formatEntityName(stateObj);
       const {
         passive,
         icon,
@@ -1518,6 +1529,22 @@ export class HaMap extends ReactiveElement {
         typeof entity !== "string" && (entity.selected ?? false);
       entityMarker.floating = true;
 
+      let zoneId: string | undefined;
+      if (["person", "device_tracker"].includes(computeStateDomain(stateObj))) {
+        const inZones: string[] | undefined = stateObj.attributes.in_zones;
+        if (Array.isArray(inZones) && inZones.length > 0) {
+          const activeZone = findFirstActiveZone(inZones, states);
+          if (activeZone && this._zonePositions[activeZone.entity_id]) {
+            zoneId = activeZone.entity_id;
+          }
+        } else if (
+          !Array.isArray(inZones) ||
+          !["not_home", UNKNOWN, UNAVAILABLE].includes(stateObj.state)
+        ) {
+          zoneId = this._zoneContaining(position, gpsAccuracy);
+        }
+      }
+
       const clusterData: ClusterData = {
         entityId,
         title,
@@ -1527,11 +1554,7 @@ export class HaMap extends ReactiveElement {
         unit: entityMarker.entityUnit ?? "",
         color: entityColor,
         selected: entityMarker.selected,
-        zoneId: ["person", "device_tracker"].includes(
-          computeStateDomain(stateObj)
-        )
-          ? (zoneByState[stateObj.state] ?? this._zoneContaining(position))
-          : undefined,
+        zoneId,
       };
 
       const accuracy =
@@ -1591,16 +1614,26 @@ export class HaMap extends ReactiveElement {
     );
   }
 
-  private _zoneContaining(position: MapLatLng): string | undefined {
+  private _zoneContaining(
+    position: MapLatLng,
+    gpsAccuracy = 0
+  ): string | undefined {
     let found: string | undefined;
     let foundRadius = Infinity;
+    let foundDistance = Infinity;
     for (const [zoneId, radius] of Object.entries(this._zoneRadii)) {
+      if (this._states[zoneId]?.attributes.passive) {
+        continue;
+      }
+      const distance = distanceMeters(position, this._zonePositions[zoneId]);
       if (
-        radius < foundRadius &&
-        distanceMeters(position, this._zonePositions[zoneId]) <= radius
+        distance - gpsAccuracy < radius &&
+        (radius < foundRadius ||
+          (radius === foundRadius && distance < foundDistance))
       ) {
         found = zoneId;
         foundRadius = radius;
+        foundDistance = distance;
       }
     }
     return found;
@@ -1987,13 +2020,8 @@ export class HaMap extends ReactiveElement {
       font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
     }
-    /* Markers are rounded squares to match the cluster bubble avatars */
-    ha-entity-marker {
-      --ha-marker-border-radius: var(--ha-border-radius-lg);
-    }
     .cluster-bubble ha-entity-marker {
       flex: none;
-      --ha-marker-border-radius: 10px;
     }
     ${unsafeCSS(zoneMarkerStyles)}
     .leaflet-bottom {
@@ -2051,10 +2079,6 @@ export class HaMap extends ReactiveElement {
       border-radius: var(--ha-border-radius-sm);
       box-shadow: none !important;
       text-align: center;
-    }
-
-    ha-icon {
-      --mdc-icon-size: calc(var(--ha-marker-size, 48px) / 2);
     }
   `;
 }

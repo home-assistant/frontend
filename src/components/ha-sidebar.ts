@@ -879,13 +879,16 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           pointer-events: none;
         }
 
+        /* Keep the rounded-square avatar clear of the row edges and
+           centered in the collapsed item: 8px + 32px + 8px = 48px */
         ha-user-badge {
-          width: 40px;
-          height: 40px;
+          width: var(--ha-space-8);
+          height: var(--ha-space-8);
+          flex-shrink: 0;
         }
 
         ha-list-item-button.user {
-          --ha-row-item-padding-inline: var(--ha-space-1) 0;
+          --ha-row-item-padding-inline: var(--ha-space-2) 0;
         }
 
         .spacer {

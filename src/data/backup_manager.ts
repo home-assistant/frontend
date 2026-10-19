@@ -91,7 +91,7 @@ export type ManagerStateEvent =
 export type BackupSubscriptionEvent = ManagerStateEvent | UploadBackupEvent;
 
 export const subscribeBackupEvents = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   callback: (event: BackupSubscriptionEvent) => void,
   preCheck?: () => boolean | Promise<boolean>
 ) =>

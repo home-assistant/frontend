@@ -141,6 +141,10 @@ export const coreCards: Card[] = [
     type: "shortcut",
     showElement: true,
   },
+  {
+    type: "alert",
+    showElement: true,
+  },
 ];
 
 export const energyCards: Card[] = [

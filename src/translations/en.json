@@ -529,6 +529,19 @@
       "last": "Last"
     },
     "components": {
+      "safe_area_tool": {
+        "title": "Safe area",
+        "presets": {
+          "none": "None",
+          "portrait": "Portrait",
+          "landscape": "Landscape"
+        },
+        "top": "Top",
+        "bottom": "Bottom",
+        "left": "Left",
+        "right": "Right",
+        "highlight": "Highlight"
+      },
       "input": {
         "clear": "Clear",
         "show_password": "Show password",
@@ -820,7 +833,9 @@
           "mode_custom": "Custom",
           "add": "Add",
           "search": "Search name",
-          "custom_name": "Custom name"
+          "custom_name": "Custom name",
+          "no_more_parts": "Nothing left to add",
+          "restore": "[%key:ui::dialogs::entity_registry::editor::restore_name%]"
         },
         "entity-attribute-picker": {
           "attribute": "Attribute",
@@ -913,7 +928,8 @@
       },
       "conversation-agent-picker": {
         "conversation_agent": "Conversation agent",
-        "none": "None"
+        "none": "None",
+        "settings": "Agent settings"
       },
       "country-picker": {
         "country": "Country",
@@ -1479,11 +1495,20 @@
         }
       },
       "attributes": {
-        "expansion_header": "Attributes"
+        "expansion_header": "Attributes",
+        "names": {
+          "assumed_state": "Assumed state",
+          "attribution": "Attribution",
+          "device_class": "Device class",
+          "entity_picture": "Entity picture",
+          "friendly_name": "Friendly name",
+          "icon": "Icon",
+          "supported_features": "Supported features",
+          "unit_of_measurement": "Unit of measurement"
+        }
       },
       "qr-scanner": {
         "select_camera": "Select camera",
-        "only_https_supported": "You can only use your camera to scan a QR code when using HTTPS.",
         "not_supported": "Your browser doesn't support QR scanning.",
         "manual_input": "You can scan the QR code with another QR scanner and paste the code in the input below",
         "enter_qr_code": "Enter QR code value",
@@ -1496,9 +1521,26 @@
           "alternativeOptionLabel": "More options"
         }
       },
+      "secure_connection_required": {
+        "microphone": "Your browser blocks the microphone because your connection to Home Assistant is not secured using HTTPS.",
+        "camera": "Your browser blocks the camera because your connection to Home Assistant is not secured using HTTPS.",
+        "push_notifications": "Your browser blocks push notifications because your connection to Home Assistant is not secured using HTTPS.",
+        "learn_more": "Use the Home Assistant app, or {documentation_link} to learn how to set up a secure connection.",
+        "documentation_link": "read the documentation"
+      },
       "climate-control": {
         "temperature_up": "Increase temperature",
-        "temperature_down": "Decrease temperature"
+        "temperature_down": "Decrease temperature",
+        "lower_temperature_up": "Increase lower target temperature",
+        "lower_temperature_down": "Decrease lower target temperature",
+        "upper_temperature_up": "Increase upper target temperature",
+        "upper_temperature_down": "Decrease upper target temperature",
+        "humidity_up": "Increase humidity",
+        "humidity_down": "Decrease humidity"
+      },
+      "number-buttons": {
+        "increment": "Increment",
+        "decrement": "Decrement"
       },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
@@ -1730,9 +1772,12 @@
         "send_text": "Send text",
         "start_listening": "Start listening",
         "manage_assistants": "Manage assistants",
-        "not_supported_microphone_browser": "Your connection to Home Assistant is not secured using HTTPS. This causes browsers to block Home Assistant from accessing the microphone.",
-        "not_supported_microphone_documentation": "Use the Home Assistant app or visit {documentation_link} to learn how to use a secure URL",
-        "not_supported_microphone_documentation_link": "the documentation",
+        "microphone_permission_denied": "Home Assistant doesn't have permission to use your microphone. Allow microphone access in your browser settings and try again.",
+        "microphone_not_found": "No microphone was found. Connect a microphone and try again.",
+        "microphone_in_use": "Your microphone could not be started. It may be in use by another app.",
+        "microphone_unknown": "Your microphone could not be started.",
+        "error_playing_audio": "The response could not be played",
+        "error_starting_pipeline": "Assist could not start",
         "unknown_error_load_assist": "Loading the Assist pipeline failed",
         "not_found_error_load_assist": "Cannot find the Assist pipeline",
         "show_details": "Show details"
@@ -1776,11 +1821,8 @@
         "history": "History",
         "aggregate": "5-minute aggregated",
         "logbook": "Activity",
-        "device_or_service_info": "[%key:ui::panel::config::devices::device_info%]",
-        "device_type": {
-          "device": "[%key:ui::panel::config::devices::type::device_heading%]",
-          "service": "[%key:ui::panel::config::devices::type::service_heading%]"
-        },
+        "device_info": "[%key:ui::panel::config::devices::device_info_heading%]",
+        "service_info": "[%key:ui::panel::config::devices::service_info_heading%]",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
         "show_more": "Show more",
@@ -1819,6 +1861,13 @@
           "update": "Update",
           "auto_update_enabled_title": "Cannot skip version",
           "auto_update_enabled_text": "Automatic updates for this item have been enabled; skipping it is, therefore, unavailable. You can either install this update now or wait for Home Assistant to do it automatically.",
+          "backup_in_progress": {
+            "create_backup": "Home Assistant is creating a backup, so updates are paused until it finishes. You can update once it is done. {backups_link}",
+            "receive_backup": "Home Assistant is uploading a backup, so updates are paused until it finishes. You can update once it is done. {backups_link}",
+            "restore_backup": "Home Assistant is restoring a backup, so updates are paused until it finishes. You can update once it is done. {backups_link}",
+            "backups_link": "View backups"
+          },
+          "install_failed": "The update could not be started: {error}",
           "create_backup": {
             "automatic": "Automatic backup before update",
             "automatic_description_last": "Last automatic backup {relative_time}.",
@@ -2647,7 +2696,8 @@
         "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
         "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
         "no_template_editor_support": "Templates not supported in visual editor",
-        "media_query_not_supported": "This media query is not supported by the visual editor."
+        "media_query_not_supported": "This media query is not supported by the visual editor.",
+        "location_locations_combined": "Zone names (locations) can't be combined with target or match_mode."
       },
       "supervisor": {
         "title": "Could not load the Supervisor panel!",
@@ -2916,6 +2966,10 @@
           "insteon": {
             "main": "Insteon",
             "secondary": "Dual-mesh home automation"
+          },
+          "lorawan": {
+            "main": "LoRaWAN",
+            "secondary": "Long-range wireless devices and connections"
           }
         },
         "common": {
@@ -2968,7 +3022,18 @@
           "leave_beta": "Leave beta channel",
           "skipped": "Skipped",
           "update_in_progress": "Update in progress",
-          "no_area": "No area"
+          "no_area": "No area",
+          "backup_in_progress": {
+            "title": {
+              "create_backup": "[%key:ui::panel::config::backup::overview::progress::heading::create_backup%]",
+              "receive_backup": "[%key:ui::panel::config::backup::overview::progress::heading::receive_backup%]",
+              "restore_backup": "[%key:ui::panel::config::backup::overview::progress::heading::restore_backup%]"
+            },
+            "create_backup": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::create_backup%]",
+            "receive_backup": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::receive_backup%]",
+            "restore_backup": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::restore_backup%]",
+            "backups_link": "[%key:ui::dialogs::more_info_control::update::backup_in_progress::backups_link%]"
+          }
         },
         "repairs": {
           "caption": "Repairs",
@@ -3023,7 +3088,14 @@
           "gen_data_header": "Data generation tasks",
           "gen_data_description": "Suggest automation names.",
           "gen_image_header": "Image generation tasks",
-          "gen_image_description": "Generate images."
+          "gen_image_description": "Generate images.",
+          "gen_data_settings": "Data generation settings",
+          "gen_image_settings": "Image generation settings",
+          "evaluate_header": "Decisions",
+          "evaluate_description": "Evaluate questions.",
+          "evaluate_settings": "Decision settings",
+          "allow_automatic_evaluation": "Use decisions in Home Assistant features",
+          "allow_automatic_evaluation_description": "Allow Home Assistant to automatically use the selected decision model to improve built-in features."
         },
         "mcp": {
           "header": "Model Context Protocol",
@@ -3352,8 +3424,13 @@
           "no_labels": "You don't have any labels",
           "introduction": "Labels can help you organize your areas, devices, and entities. They can be used to filter in the UI, or use them as a target in automations.",
           "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
-          "confirm_remove_title": "Remove label?",
-          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities."
+          "confirm_delete_title": "Delete label?",
+          "confirm_delete": "Are you sure you want to delete label {label}? It will be removed from all areas, devices, and entities.",
+          "delete_selected": "Delete selected",
+          "confirm_delete_selected_title": "Delete selected labels?",
+          "confirm_delete_selected": "{count, plural,\n  one {The selected label will be removed from all areas, devices, and entities.}\n  other {The {count} selected labels will be removed from all areas, devices, and entities.}\n}",
+          "delete_failed_title": "Delete failed",
+          "delete_failed": "Some labels could not be deleted. Check system logs for more information."
         },
         "areas": {
           "caption": "Areas",
@@ -3633,7 +3710,7 @@
           "agents": {
             "cloud_agent_description": "Note: It stores only the most recent backup, regardless of your retention settings, with a maximum size of 5 GB.",
             "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
-            "network_mount_agent_description": "Network storage",
+            "network_mount_agent_description": "Additional storage",
             "unavailable_agents": "Unavailable locations",
             "no_agents": "No locations configured",
             "encryption_turned_off": "Encryption turned off",
@@ -3918,7 +3995,7 @@
               "no_location": "No location selected",
               "no_location_description": "You have to select at least one location to create a backup.",
               "more_locations": "Explore more locations",
-              "manage_network_storage": "Manage network storage",
+              "manage_network_storage": "Manage storage",
               "ha_cloud_backup": "{home_assistant_cloud} backup",
               "ha_cloud_description": "Stores an encrypted backup offsite. This is ideal in case your local backup becomes inaccessible. The cloud stores one backup with a maximum size of 5 GB, and older backups are automatically deleted."
             },
@@ -4009,6 +4086,11 @@
           "create_automation": "Create automation",
           "confirm_delete_title": "Delete tag?",
           "confirm_delete": "The tag ''{tag}'' will be permanently deleted.",
+          "delete_selected": "Delete selected",
+          "confirm_delete_selected_title": "Delete selected tags?",
+          "confirm_delete_selected": "{count, plural,\n  one {The selected tag will be permanently deleted.}\n  other {The {count} selected tags will be permanently deleted.}\n}",
+          "delete_failed_title": "Delete failed",
+          "delete_failed": "Some tags could not be deleted. Check system logs for more information.",
           "automation_title": "Tag {name} is scanned",
           "qr_code_image": "QR code for tag {name}",
           "headers": {
@@ -4054,6 +4136,10 @@
               "debug_connection": {
                 "title": "Debug connection",
                 "description": "Observe requests to the server and responses from the server in browser console."
+              },
+              "safe_area_tool": {
+                "title": "Debug safe area",
+                "description": "Show a floating tool to simulate the parts of the screen a device can't use, like a notch or a camera cutout. Only applies to this browser."
               },
               "disable_view_transition": {
                 "title": "Disable view transitions",
@@ -4184,6 +4270,39 @@
               "domain": "Domain",
               "keyboard_tip": "Press {autocomplete} to trigger autocomplete, when your cursor is inside a function that supports it."
             },
+            "debug_console": {
+              "title": "Debug console",
+              "intro": "This Python console runs inside Home Assistant itself. It is meant for development and for debugging the live internals of a running instance.",
+              "event_loop": "Code runs in the event loop, so blocking calls freeze Home Assistant until they finish.",
+              "placeholder": "Python code. Enter to run, Shift+Enter for a new line.",
+              "clear": "Clear console",
+              "stop": "Stop running code",
+              "output": "Console output",
+              "evaluate_property": "Evaluate {property}",
+              "prompt": "Python code",
+              "output_truncated": "The output was cut short, only the first lines are shown.",
+              "disabled": "The debug console is not enabled. To enable it, add debug_console to your configuration.yaml file and restart Home Assistant.",
+              "failed": "The debug console could not be reached.",
+              "retry": "[%key:ui::panel::app::retry%]",
+              "truncated": "Only the first {count} items are shown.",
+              "paste_blocked": "Pasting is blocked. Do not paste code you do not understand or have not checked yourself. People who ask you to paste code here may be trying to take over your Home Assistant or steal your data. To allow pasting, type {phrase} and press Enter.",
+              "paste_phrase": "allow pasting",
+              "paste_allowed": "Pasting is now allowed.",
+              "warning": {
+                "title": "Before you use the debug console",
+                "intro": "The debug console runs Python code inside Home Assistant itself, with full access to its live internals. It is meant for development and debugging.",
+                "risks": {
+                  "access": "Code runs with the same access as Home Assistant. It can read and change everything, including your configuration, passwords, and tokens.",
+                  "safety": "There are no safety checks. Code can change or delete data, and blocking code freezes Home Assistant until it finishes.",
+                  "scams": "People who ask you to run or paste code here may be trying to take over your Home Assistant or steal your data.",
+                  "logged": "Everything you run is written to the Home Assistant log."
+                },
+                "understand": "I understand the risks, and only run code I understand myself",
+                "go_back": "Go back",
+                "continue": "Continue",
+                "continue_in": "Continue in {seconds}"
+              }
+            },
             "statistics": {
               "title": "Statistics",
               "entity": "Entity",
@@ -4273,10 +4392,18 @@
                   "adjust": "Adjust",
                   "outliers": "Outliers",
                   "sum_adjusted": "Statistic sum adjusted",
-                  "error_sum_adjusted": "Error adjusting sum: {message}"
+                  "error_sum_adjusted": "Error adjusting sum: {message}",
+                  "error_loading_statistics": "Error loading statistics: {message}"
                 }
               },
               "adjust_sum": "Adjust sum",
+              "clear_range": {
+                "title": "Delete statistics in a time range",
+                "info_text": "Delete the statistics of {name} between the start and end time. Use this to remove bad measurements from your graphs. Deleted statistics cannot be restored.",
+                "invalid_range": "The end time must be after the start time.",
+                "no_statistics_found": "No statistics found for this period.",
+                "deleted": "Statistics deleted"
+              },
               "data_table": {
                 "select_all_issues": "Select all with issues",
                 "name": "Name",
@@ -4791,6 +4918,7 @@
             "environment": "Debug logging has been disabled, but no log file was downloaded because HA_DISABLE_LOG_FILE is set and Home Assistant is not writing a log file."
           },
           "scroll_down_button": "New logs - Click to scroll",
+          "live": "Live",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
           "haos_boots_title": "Logs of HAOS startup",
@@ -4898,6 +5026,12 @@
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
+            "delete_selected": "Delete selected",
+            "confirm_delete_selected_title": "Delete selected dashboards?",
+            "confirm_delete_selected": "{count, plural,\n  one {The selected dashboard will be permanently deleted.}\n  other {The {count} selected dashboards will be permanently deleted.}\n}",
+            "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} dashboards. The others are built-in or configured in YAML.",
+            "delete_failed_title": "Delete failed",
+            "delete_failed": "Some dashboards could not be deleted. Check system logs for more information.",
             "cant_edit_yaml": "Dashboards created in YAML cannot be edited from the UI. Change them in configuration.yaml.",
             "cant_edit_lovelace": "The Overview dashboard title and icon cannot be changed. You can create a new dashboard to get more customization options.",
             "detail": {
@@ -5406,6 +5540,7 @@
             },
             "edit_yaml": "Edit in YAML",
             "edit_ui": "Edit in visual editor",
+            "sidebar_label": "Item editor",
             "copy_to_clipboard": "Copy to clipboard",
             "unknown_entity": "unknown entity",
             "edit_unknown_device": "Editor not available for unknown device",
@@ -6302,6 +6437,8 @@
               "disabled_step": "This step was disabled and skipped during execution so no further trace information is available.",
               "iteration": "Iteration {number}",
               "executed": "Executed: {time}",
+              "view_child_trace": "View trace of {name}",
+              "view_child_trace_unnamed": "[%key:ui::components::logbook::view_trace%]",
               "error": "Error: {error}",
               "template_errors": "Template errors:",
               "result": "Result:",
@@ -6381,6 +6518,16 @@
             "blueprint_in_use_view_script": "View scripts",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
+            "delete_selected": "Delete selected",
+            "confirm_delete_selected_title": "Delete selected blueprints?",
+            "confirm_delete_selected": "{count, plural,\n  one {The selected blueprint will be permanently deleted.}\n  other {The {count} selected blueprints will be permanently deleted.}\n}",
+            "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} blueprints. The others are in use by automations or scripts.",
+            "delete_none_deletable_title": "Blueprints in use",
+            "delete_none_deletable": "None of the selected blueprints can be deleted because they are all in use.",
+            "delete_failed_title": "Delete failed",
+            "delete_failed": "Some blueprints could not be deleted. Check system logs for more information.",
+            "delete_check_failed_title": "Unable to check blueprints",
+            "delete_check_failed": "The usage of some selected blueprints could not be verified. Check system logs for more information.",
             "add_blueprint": "Import blueprint",
             "no_blueprints": "[%key:ui::panel::config::automation::editor::blueprint::no_blueprints%]",
             "create_automation": "Create automation",
@@ -7017,7 +7164,8 @@
           "description": "Manage configured devices",
           "filtering_by_config_entry": "[%key:ui::panel::config::entities::picker::filtering_by_config_entry%]",
           "config_entries_load_failed": "An unknown error occurred while loading integrations for your devices.",
-          "device_info": "{type} info",
+          "device_info_heading": "Device info",
+          "service_info_heading": "Service info",
           "edit_settings": "Edit settings",
           "restore_entity_ids": "Recreate entity IDs",
           "quick_links": {
@@ -7186,9 +7334,9 @@
             "setup_capability_audio_title": "Stream audio via Sendspin",
             "setup_capability_audio_short": "Synchronized multi-room sound with Music Assistant",
             "setup_capability_audio_description": "Turn the speaker on this device into a synchronized, multi-room player with Music Assistant, a free media library manager that works with Home Assistant. Stream your library, Spotify, and dozens of other sources in sync across every room.",
-            "setup_capability_connectivity_title": "Connect a Zigbee or Z-Wave adapter",
-            "setup_capability_connectivity_short": "Network connectivity for ZBT-2 or ZWA-2",
-            "setup_capability_connectivity_description": "Plug a Connect ZBT-2 or ZWA-2 into the USB port to enable Zigbee or Z-Wave connectivity over Ethernet or Wi-Fi. Get your antenna in an optimal location for better device responsiveness.",
+            "setup_capability_connectivity_title": "Connect a Z-Wave adapter",
+            "setup_capability_connectivity_short": "Network connectivity for ZWA-2",
+            "setup_capability_connectivity_description": "Plug a Connect ZWA-2 into the USB port to enable Z-Wave connectivity over Ethernet or Wi-Fi. Get your antenna in an optimal location for better device responsiveness.",
             "setup_capability_serial_title": "Control a device over serial",
             "setup_capability_serial_short": "AV receivers, amplifiers, and more",
             "setup_capability_serial_description": "Add serial devices into Home Assistant, allowing for control of A/V receivers and multi-zone amplifiers.",
@@ -7204,21 +7352,15 @@
             "setup_audio_benefit_lossless": "Lossless, high-resolution audio",
             "setup_audio_benefit_album_art": "Album art on every screen",
             "setup_install_music_assistant": "Install Music Assistant",
-            "setup_installing_music_assistant": "Installing Music Assistant",
-            "setup_starting_music_assistant": "Starting Music Assistant",
-            "setup_discovering_music_assistant": "Waiting for Music Assistant discovery",
-            "setup_error_music_assistant": "Couldn't install Music Assistant",
             "setup_error_capabilities": "Couldn't load device capabilities",
             "setup_error_defer": "Couldn't save setup for later",
             "setup_error_zwave": "Z-Wave setup for this device isn't available right now. Try again in a moment.",
             "setup_status_completed": "Completed",
             "setup_zwave": "Set up Z-Wave",
             "setup_zwave_configured": "Configured",
-            "setup_what_are_adapters": "What are these adapters?",
-            "setup_adapters_title": "Add Zigbee or Z-Wave",
-            "setup_adapters_intro": "Plug a Home Assistant Connect adapter into your proxy's USB port to add wireless radios:",
-            "setup_adapter_zbt2": "Connect ZBT-2",
-            "setup_adapter_zbt2_description": "Adds a Zigbee radio.",
+            "setup_what_are_adapters": "What is this adapter?",
+            "setup_adapters_title": "Add Z-Wave",
+            "setup_adapters_intro": "Plug a Home Assistant Connect adapter into your proxy's USB port to add a wireless radio:",
             "setup_adapter_zwa2": "Connect ZWA-2",
             "setup_adapter_zwa2_description": "Adds a Z-Wave radio.",
             "setup_serial_configured": "Configured",
@@ -7527,6 +7669,14 @@
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
+            "debug_logging_enabled_description": "Extra detail from this integration is being written to the logs. Reproduce the problem, then disable it. Home Assistant will download the log for your issue report if log file downloads are available. Leaving it on can slow Home Assistant down and fill up the logs.",
+            "show_logs": "Show logs",
+            "live_log": {
+              "title": "Live log",
+              "waiting": "Waiting for log messages from {integration}…",
+              "unsupported": "This version of Home Assistant can't stream the log.",
+              "no_matches": "No log lines match the search"
+            },
             "state": {
               "loaded": "Loaded",
               "setup_error": "Failed to set up",
@@ -7700,6 +7850,9 @@
           "option_flow_description": "Set discovery options",
           "config_flow": "Connection",
           "config_flow_description": "Broker connection settings",
+          "not_configured_title": "MQTT is not set up",
+          "not_configured_description": "Connect Home Assistant to an MQTT broker to publish and listen to messages.",
+          "set_up": "Set up MQTT",
           "status_online": "Online",
           "status_offline": "Offline",
           "my_network_title": "My network",
@@ -7908,7 +8061,20 @@
           "change_channel_multiprotocol_enabled_text": "To change channel when the Thread adapter has multiprotocol enabled, please use the hardware settings menu.",
           "change_channel_range": "Channel must be in the range 11 to 26",
           "change_channel_text": "Initiating a channel change for your Home Assistant Thread network should be performed with caution. Some Thread devices may not migrate to the new channel automatically and, if the new channel is congested, your Thread devices may become intermittently unavailable. Some devices may need to be manually re-joined to your Thread network before they show in Home Assistant again. This action cannot be reversed (without performing another channel change).",
-          "thread_network_info": "Thread network information",
+          "network_info": {
+            "title": "Network information",
+            "description": "View channel and dataset details",
+            "nav_label": "Network information for {name}",
+            "network_name": "Network name",
+            "channel": "Channel",
+            "pan_id": "PAN ID",
+            "extended_pan_id": "Extended PAN ID",
+            "dataset_id": "Dataset ID",
+            "otbr_url": "OpenThread border router URL",
+            "active_dataset_tlvs": "Active dataset TLVs",
+            "loading_otbr": "Loading border router details…",
+            "not_found": "Network not found"
+          },
           "thread_network_delete_credentials": "Delete Thread network credentials",
           "thread_network_send_credentials_ha": "Send credentials to Home Assistant",
           "thread_network_send_credentials_ha_description": "Import Thread network credentials from your phone to Home Assistant. Use this if you already have a Thread network set up through another platform, like Apple Home or Google Home.",
@@ -8443,7 +8609,6 @@
             "check_logs": "Please check the logs for more information.",
             "timeout_error": "No device found after {minutes} minutes. Please check the device and try again.",
             "select_method": {
-              "webcam_unsupported": "You can only use your camera to scan a QR code when using a secure connection with the app or over HTTPS.",
               "qr_code_webcam": "Scan QR code using webcam",
               "qr_code_webcam_description": "Find and scan the code on your device.",
               "qr_code_manual": "Enter QR code manually",
@@ -9056,7 +9221,7 @@
           "join_chat": "Chat",
           "join_blog": "Blog",
           "join_newsletter": "Newsletter",
-          "media_storage": "You can add network storage to your Home Assistant instance in the {storage} panel."
+          "media_storage": "You can add additional storage to your Home Assistant instance in the {storage} panel."
         },
         "analytics": {
           "caption": "Analytics",
@@ -9247,8 +9412,14 @@
               "text": "The address changed. Once Home Assistant has restarted, you can reach it at:",
               "note": "Depending on your network setup, this address may not be reachable from this device."
             },
-            "ssl_profile_modern": "Modern",
-            "ssl_profile_intermediate": "Intermediate",
+            "ssl_profile_modern_v6": "Modern v6",
+            "ssl_profile_modern_v6_description": "TLS 1.3 only. Recommended for most setups. Browsers and apps have supported it since around 2018.",
+            "ssl_profile_intermediate_v6": "Intermediate v6",
+            "ssl_profile_intermediate_v6_description": "TLS 1.2 and newer with current ciphers. Choose this if older devices or apps cannot connect.",
+            "ssl_profile_modern_v4": "Modern v4 (outdated)",
+            "ssl_profile_modern_v4_description": "TLS 1.2 and newer with older ciphers, following the 2016 Mozilla guidelines. Kept for existing setups.",
+            "ssl_profile_intermediate_v4": "Intermediate v4 (outdated)",
+            "ssl_profile_intermediate_v4_description": "TLS 1.2 and newer with legacy ciphers, following the 2016 Mozilla guidelines. Kept for existing setups.",
             "sections": {
               "ssl": "SSL/TLS",
               "reverse_proxy": "Reverse proxy",
@@ -9276,7 +9447,7 @@
               "ssl_certificate": "Absolute path to your TLS certificate (for example, /ssl/fullchain.pem).",
               "ssl_key": "Absolute path to your TLS private key (for example, /ssl/privkey.pem).",
               "ssl_peer_certificate": "Absolute path to a client certificate Home Assistant should require for secure connections.",
-              "ssl_profile": "Mozilla SSL profile. Use 'Intermediate' only if integrations have SSL handshake issues.",
+              "ssl_profile": "Mozilla server side TLS profile, named after the guideline version it follows.",
               "cors_allowed_origins": "Origins that may make cross-origin requests. Include the scheme, for example https://example.com.",
               "use_x_forwarded_for": "Trust the X-Forwarded-For header behind a reverse proxy. Requires the trusted proxies list below.",
               "trusted_proxies": "Reverse-proxy IP addresses or CIDR networks allowed to set X-Forwarded-For. Use a network address, not a host.",
@@ -9334,15 +9505,16 @@
             "move": "Move"
           },
           "network_mounts": {
-            "title": "Network storage",
-            "add_title": "Add network storage",
-            "update_title": "Update network storage",
-            "no_mounts": "No connected network storage",
+            "title": "Additional storage",
+            "add_title": "Add storage",
+            "update_title": "Update storage",
+            "no_mounts": "No additional storage configured",
+            "no_disks": "No suitable disks were found. Connect a disk with a supported file system, then reopen this dialog.",
             "documentation": "Documentation",
             "not_supported": {
-              "title": "The operating system does not support network storage",
-              "supervised": "Network storage is not supported on this host",
-              "os": "To use network storage you need to run at least Home Assistant OS {version}",
+              "title": "The operating system does not support additional storage",
+              "supervised": "Additional storage is not supported on this host",
+              "os": "To use additional storage you need to run at least Home Assistant OS {version}",
               "navigate_to_updates": "Go to updates"
             },
             "mount_usage": {
@@ -9352,7 +9524,8 @@
             },
             "mount_type": {
               "nfs": "Network File System (NFS)",
-              "cifs": "Samba/Windows (CIFS)"
+              "cifs": "Samba/Windows (CIFS)",
+              "disk": "Local disk"
             },
             "cifs_versions": {
               "auto": "Auto (2.1+)",
@@ -9380,12 +9553,24 @@
                 "description": "This is the path of the remote share on your storage server"
               },
               "type": {
-                "title": "Protocol",
-                "description": "This determines how to communicate with the storage server"
+                "title": "Type",
+                "description": "This determines the kind of storage you want to add"
               },
               "usage": {
                 "title": "Usage",
                 "description": "This determines how the share is intended to be used"
+              },
+              "device": {
+                "title": "Disk",
+                "description": "This is the disk connected to your system that you want to use"
+              },
+              "device_identity": {
+                "title": "Disk",
+                "description": "This is the disk this storage was set up with, which cannot be changed"
+              },
+              "read_only": {
+                "title": "Read-only",
+                "description": "Home Assistant will not be able to write to this storage. Backup storage cannot be read-only"
               },
               "version": {
                 "title": "Samba/Windows (CIFS) version",
@@ -9422,6 +9607,63 @@
         },
         "system_dashboard": {
           "restart_homeassistant": "Restart Home Assistant"
+        },
+        "lorawan": {
+          "devices": "Devices",
+          "all_connections": "All connections",
+          "overview": {
+            "network": "My network",
+            "show_map": "Show map",
+            "connections": "Connections",
+            "total_connections": "{count} {count, plural, one {connection} other {connections}}",
+            "devices_count": "{count} {count, plural, one {device} other {devices}}",
+            "view_devices": "View devices",
+            "no_connections": "No LoRaWAN connections available.",
+            "load_error": "Could not load LoRaWAN connections."
+          },
+          "topology": {
+            "title": "LoRaWAN network",
+            "connection": "Connection",
+            "gateway": "Gateway",
+            "device": "Device",
+            "unobserved": "No gateway observed",
+            "no_connections": "No LoRaWAN connections available.",
+            "load_error": "Could not load the LoRaWAN network.",
+            "search": "Find a device or gateway"
+          },
+          "title": "LoRaWAN",
+          "rssi": "RSSI",
+          "snr": "SNR",
+          "add_device": "Add device",
+          "add_device_dialog": {
+            "choose_connection": "Choose a connection",
+            "instructions": "To add a device to this connection, please visit the management console.",
+            "no_console": "This connection does not provide a management console URL.",
+            "open_console": "Open management console"
+          },
+          "caption": "LoRaWAN",
+          "description": "Devices across your LoRaWAN connections",
+          "device": "Device",
+          "connection": "Connection",
+          "dev_eui": "DevEUI",
+          "application": "Application",
+          "last_uplink": "Last uplink",
+          "last_join": "Last join",
+          "last_status": "Last status report",
+          "battery": "Battery",
+          "external_power": "External power",
+          "downlink_margin": "Downlink margin",
+          "gateways": "Gateways on last uplink",
+          "gateway": "Gateway",
+          "not_observed": "Not observed",
+          "no_devices": "No LoRaWAN devices found",
+          "search": "Search devices or connections",
+          "device_info": "LoRaWAN info",
+          "support": {
+            "missing_identity": "The device type could not be identified.",
+            "integration_not_configured": "Set up the device integration to add this device to Home Assistant.",
+            "unsupported_model": "This device model is not supported by a configured integration."
+          }
         }
       },
       "lovelace": {
@@ -9575,7 +9817,6 @@
               "me": "Me",
               "activity": "Activity",
               "show_more": "Show more",
-              "more_info": "More info",
               "no_activity": "No recent activity",
               "activity_unavailable": "Activity couldn't be loaded",
               "entered": "Entered",
@@ -10036,6 +10277,13 @@
           "section": {
             "automatic": "Automatic section",
             "edit_automatic": "Edit automatic section",
+            "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
+            "paste_above": "Paste above",
+            "paste_below": "Paste below",
+            "copied_to_clipboard": "Section copied to clipboard",
+            "cut_to_clipboard": "Section cut to clipboard",
+            "cut_error": "Error while cutting section",
+            "paste_error": "Error while pasting section",
             "add_badge": "Add badge",
             "add_card": "[%key:ui::panel::lovelace::editor::edit_card::add%]",
             "drop_card_create_section": "Drop card here to create a new section",
@@ -10178,8 +10426,23 @@
               },
               "location": {
                 "label": "Location",
-                "locations": "Locations",
-                "locations_helper": "This condition will be true if the person entity of the user viewing this dashboard has a state matching any of the selected zones."
+                "migrated": "This condition used zone names, and is now shown with zones instead. It matches the same way as before. Zones that could not be found are kept and marked as not found. The new format is saved when you change this condition.",
+                "target": "Zones",
+                "target_helper": "This condition will be true if the person entity of the user viewing this dashboard is in one of the selected zones, or in a zone with the selected labels, areas, or floors. Match sets which zones count.",
+                "match_mode": "Match",
+                "match_mode_options": {
+                  "any_zone": {
+                    "label": "Any zone they are in",
+                    "description": "True when the person is in any of these zones, even if another zone is shown as their state. Includes passive zones."
+                  },
+                  "active_zone": {
+                    "label": "Zone shown as their state",
+                    "description": "True only when one of these zones is shown as the person's state. Passive zones never match."
+                  }
+                },
+                "passive_zones": "{zones} {count, plural,\n one {is a passive zone, so it never matches}\n other {are passive zones, so they never match}\n}. Passive zones never become a person's state.",
+                "away": "Away",
+                "away_helper": "This condition will also be true if the person entity of the user viewing this dashboard is away. Passive zones don't change this, so a person who is only in passive zones is away."
               },
               "user": {
                 "label": "User"
@@ -10219,6 +10482,16 @@
               "name": "Alarm panel",
               "available_states": "Available states",
               "description": "This card allows you to arm and disarm your alarm control panel integrations."
+            },
+            "alert": {
+              "name": "Alert",
+              "description": "This card highlights an entity that needs attention, with an optional color and pulsing background.",
+              "alert_color": "Alert color",
+              "alert_color_helper": "Used while the entity is in an alert state, such as a binary sensor that is on or an unlocked lock.",
+              "clear_color": "Clear color",
+              "clear_color_helper": "Used when the entity isn't in an alert state. The background doesn't pulse.",
+              "pulse": "Pulse",
+              "pulse_helper": "Animates the colored background while the entity is in an alert state. When reduced motion is on, the background stays tinted instead."
             },
             "area": {
               "name": "Area",
@@ -11014,6 +11287,10 @@
             "state_filter": "[%key:ui::panel::lovelace::editor::card::picture-elements::state_filter%]"
           },
           "badge": {
+            "alert": {
+              "name": "Alert",
+              "description": "A badge that highlights an entity that needs attention, with an optional color and pulsing background."
+            },
             "entity": {
               "name": "Entity",
               "description": "The Entity badge gives you a quick overview of an entity.",
@@ -11314,18 +11591,29 @@
                 "style": "Style",
                 "style_list": {
                   "buttons": "Buttons",
-                  "slider": "Slider"
+                  "buttons_description": "Change the value step by step with minus and plus",
+                  "slider": "Slider",
+                  "slider_description": "Drag to set the value"
                 }
               },
               "target-temperature": {
-                "label": "Target temperature"
+                "label": "Target temperature",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "buttons_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons_description%]",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]",
+                  "slider_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider_description%]"
+                }
               },
               "target-humidity": {
                 "label": "Target humidity",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
                 "style_list": {
                   "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
-                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]"
+                  "buttons_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons_description%]",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]",
+                  "slider_description": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider_description%]"
                 }
               },
               "water-heater-operation-modes": {
@@ -11643,7 +11931,7 @@
           "header": "Receive notifications",
           "description": "Enable HTML5 browser notifications on this device.",
           "error_load_platform": "Configure notify.html5.",
-          "error_use_https": "Requires SSL enabled for frontend.",
+          "error_not_supported": "Your browser doesn't support push notifications.",
           "push_notifications": "Push notifications",
           "link_promo": "Learn more",
           "add_device_prompt": {
@@ -12292,19 +12580,23 @@
         "not_loaded": "The Marketplace is not available. It does not load in recovery mode or when it failed to start, check the Home Assistant logs for more information.",
         "load_failed": "The Marketplace could not load its data: {error}",
         "warning": {
-          "title": "Before you use the Marketplace",
-          "intro": "Everything in the Marketplace is made and published by the community. What you install runs inside Home\u00a0Assistant, with full access to your home, your data, and the system Home\u00a0Assistant runs on.",
-          "risks_title": "Serious risks are involved",
+          "title": "Before you install from the Marketplace",
+          "intro": "Marketplace items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
+          "risks_title": "Anything you install can",
           "risks": {
-            "not_supported": "Nothing published in the Marketplace is tested, audited, or supported by the Home\u00a0Assistant project.",
-            "own_risk": "You use everything you install from the Marketplace at your own risk.",
-            "privacy": "It can violate your privacy, for example by sending your data to others.",
-            "security": "It can compromise the security of Home\u00a0Assistant, your home, and your network.",
-            "stability": "It can degrade the stability and performance of Home\u00a0Assistant."
+            "internet": "Connect to the internet",
+            "data": "Share your data with others",
+            "stability": "Slow down or crash Home\u00a0Assistant"
           },
-          "understand": "I understand the risks",
-          "continue": "Continue",
-          "continue_in": "You can continue in {seconds, plural,\n  one {# second}\n  other {# seconds}\n}"
+          "mindful_title": "So be mindful",
+          "mindful": {
+            "read": "Read the documentation and understand what the item changes.",
+            "monitor": "Keep an eye on your system after installing.",
+            "uninstall": "If something goes wrong, uninstall it right away."
+          },
+          "understand": "I understand the risks and agree",
+          "go_back": "Go back",
+          "continue": "Continue"
         },
         "common": {
           "install": "Install",
@@ -12327,7 +12619,8 @@
           "empty_header": "Nothing in the Marketplace yet",
           "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
-          "repository_not_found": "Repository not found"
+          "repository_not_found": "Repository not found",
+          "uninstall_selected": "Uninstall selected"
         },
         "entry": {
           "disabled": "The Marketplace is disabled. Enable it on the integration page to use it.",
@@ -12484,7 +12777,8 @@
           "pending-upgrade": "Update available",
           "installed": "Installed",
           "new": "New",
-          "default": "Available"
+          "default": "Available",
+          "update_skipped": "Update skipped"
         },
         "menu": {
           "custom_repositories": "Custom repositories",
@@ -12501,7 +12795,14 @@
           },
           "uninstall": {
             "title": "Uninstall {name}?",
-            "message": "This removes the files the Marketplace installed for it."
+            "message": "This removes the files the Marketplace installed for it.",
+            "selected_title": "Uninstall selected repositories?",
+            "selected": "{count, plural,\n  one {The selected repository will be uninstalled. This removes the files the Marketplace installed for it.}\n  other {The {count} selected repositories will be uninstalled. This removes the files the Marketplace installed for them.}\n}",
+            "selected_in_use": "{count, plural, one {The selected repository} other {The {count} selected repositories}} will be uninstalled. {in_use, plural, one {The setup of one of them} other {The setups of # of them}} will be deleted with their devices and entities. This cannot be undone.",
+            "check_failed_title": "Unable to check repositories",
+            "check_failed": "The setups of some selected repositories could not be verified.",
+            "failed_title": "Uninstall failed",
+            "failed": "Some repositories could not be uninstalled."
           },
           "disabled": {
             "title": "The Marketplace is disabled",

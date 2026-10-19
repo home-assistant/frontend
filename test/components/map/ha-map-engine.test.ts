@@ -9,11 +9,17 @@ import type {
   MapEngineOptions,
   MapMarkerHandle,
 } from "../../../src/common/map/map-engine";
+import { computeEntityNameDisplayWithoutContext } from "../../../src/common/entity/compute_entity_name_display";
 import "../../../src/components/map/ha-map";
 import type {
   HaMap,
   HaMapEditableLocation,
 } from "../../../src/components/map/ha-map";
+import { createMockEntityState } from "../../fixtures/hass";
+
+const FORMATTERS = {
+  formatEntityName: computeEntityNameDisplayWithoutContext,
+};
 
 // ha-map picks its engine at runtime: MapLibre GL where WebGL2 is available,
 // Leaflet otherwise or after MapLibre fails. jsdom has no WebGL2 and cannot
@@ -182,6 +188,21 @@ const STATES = {
   },
 } as unknown as HassEntities;
 
+const ZONES = {
+  "zone.paulus": createMockEntityState("zone.paulus", "0", {
+    friendly_name: "Work",
+    latitude: 52.372,
+    longitude: 4.89,
+    radius: 100,
+  }),
+  "zone.anne_therese": createMockEntityState("zone.anne_therese", "0", {
+    friendly_name: "Work",
+    latitude: 52.377,
+    longitude: 4.895,
+    radius: 100,
+  }),
+};
+
 const leafletMap = (el: HaMap) => (el as any)._engine?.leafletMap;
 const container = (el: HaMap) => el.shadowRoot!.getElementById("map")!;
 const isRevealed = (el: HaMap) => container(el).classList.contains("drawn");
@@ -189,11 +210,15 @@ const isLoaded = (el: HaMap) => (el as any)._loaded as boolean;
 const entityHandles = (el: HaMap) =>
   (el as any)._entityHandles as MapMarkerHandle[];
 
-const createMap = async (): Promise<HaMap> => {
+const createMap = async (
+  states: HassEntities = STATES,
+  entities: string[] = Object.keys(states)
+): Promise<HaMap> => {
   const el = document.createElement("ha-map");
-  el.entities = ["device_tracker.paulus", "device_tracker.anne_therese"];
+  el.entities = entities;
   el.clusterMarkers = false;
-  (el as any)._states = STATES;
+  (el as any)._states = states;
+  (el as any)._formatters = FORMATTERS;
   (el as any)._config = {
     config: { latitude: 52.3731339, longitude: 4.8903147 },
   };
@@ -230,11 +255,116 @@ describe("ha-map engine selection", () => {
     expect(entityHandles(el)).toHaveLength(2);
   });
 
+  it("groups same-named zones by reported IDs", async () => {
+    const states: HassEntities = {
+      ...ZONES,
+      "person.paulus": createMockEntityState("person.paulus", "Work", {
+        in_zones: ["zone.paulus"],
+      }),
+      "device_tracker.anne_therese": createMockEntityState(
+        "device_tracker.anne_therese",
+        "Work",
+        {
+          latitude: ZONES["zone.paulus"].attributes.latitude,
+          longitude: ZONES["zone.paulus"].attributes.longitude,
+          in_zones: ["zone.anne_therese"],
+        }
+      ),
+    };
+    const el = await createMap(states);
+
+    expect(entityHandles(el).map((marker) => marker.clusterData)).toMatchObject(
+      [
+        { entityId: "person.paulus", zoneId: "zone.paulus" },
+        {
+          entityId: "device_tracker.anne_therese",
+          zoneId: "zone.anne_therese",
+        },
+      ]
+    );
+  });
+
+  it.each([
+    {
+      entityId: "device_tracker.paulus",
+      state: "Work",
+      inZones: undefined,
+      expectedZoneId: "zone.paulus",
+    },
+    {
+      entityId: "person.paulus",
+      state: "Work",
+      inZones: [],
+      expectedZoneId: "zone.paulus",
+    },
+    {
+      entityId: "person.paulus",
+      state: "not_home",
+      inZones: [],
+      expectedZoneId: undefined,
+    },
+  ])(
+    "handles zone membership for $entityId ($state, in_zones: $inZones)",
+    async ({ entityId, state, inZones, expectedZoneId }) => {
+      const el = await createMap({
+        ...ZONES,
+        [entityId]: createMockEntityState(entityId, state, {
+          latitude: ZONES["zone.paulus"].attributes.latitude,
+          longitude: ZONES["zone.paulus"].attributes.longitude,
+          in_zones: inZones,
+        }),
+      });
+
+      expect(entityHandles(el)).toMatchObject([
+        { clusterData: { entityId, zoneId: expectedZoneId } },
+      ]);
+    }
+  );
+
+  it("updates grouping when a hidden active zone becomes passive and is restored", async () => {
+    const hiddenZone = ZONES["zone.paulus"];
+    const states: HassEntities = {
+      ...ZONES,
+      "zone.enclosing": createMockEntityState("zone.enclosing", "0", {
+        ...hiddenZone.attributes,
+        friendly_name: "City",
+        radius: 1000,
+      }),
+      "person.paulus": createMockEntityState("person.paulus", "Work", {
+        in_zones: [hiddenZone.entity_id, "zone.enclosing"],
+      }),
+    };
+    const el = await createMap(states, ["zone.enclosing", "person.paulus"]);
+    expect(entityHandles(el)[0].clusterData).toMatchObject({
+      zoneId: undefined,
+    });
+
+    (el as any)._states = {
+      ...states,
+      [hiddenZone.entity_id]: createMockEntityState(
+        hiddenZone.entity_id,
+        hiddenZone.state,
+        { ...hiddenZone.attributes, passive: true }
+      ),
+    };
+    await el.updateComplete;
+    expect(entityHandles(el)[0].clusterData).toMatchObject({
+      zoneId: "zone.enclosing",
+    });
+
+    (el as any)._states = states;
+    await el.updateComplete;
+    expect(entityHandles(el)[0].clusterData).toMatchObject({
+      zoneId: undefined,
+    });
+  });
+
   it("sets up while themes are not loaded yet, as during onboarding", async () => {
     const el = document.createElement("ha-map");
     el.themeMode = "auto";
     (el as any)._ui = { themes: null };
     (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
     (el as any)._config = {
       config: { latitude: 52.3731339, longitude: 4.8903147 },
     };
@@ -275,6 +405,7 @@ describe("ha-map engine selection", () => {
     el.entities = ["device_tracker.paulus", "device_tracker.anne_therese"];
     el.clusterMarkers = false;
     (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
     (el as any)._config = {
       config: { latitude: 52.3731339, longitude: 4.8903147 },
     };
@@ -305,6 +436,7 @@ describe("ha-map engine selection", () => {
     el.entities = ["device_tracker.paulus"];
     el.clusterMarkers = false;
     (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
     (el as any)._config = {
       config: { latitude: 52.3731339, longitude: 4.8903147 },
     };
@@ -405,6 +537,7 @@ describe("ha-map readiness", () => {
     const el = document.createElement("ha-map");
     el.entities = ["device_tracker.paulus"];
     (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
     (el as any)._config = {
       config: { latitude: 52.3731339, longitude: 4.8903147 },
     };

@@ -196,7 +196,6 @@ class DialogZwaveCredentialUserEdit extends DirtyStateProviderMixin<CredentialFo
 
     return html`
       <ha-dialog
-        .hass=${this.hass}
         .open=${this._open}
         header-title=${title}
         .preventScrimClose=${this.isDirtyState}
