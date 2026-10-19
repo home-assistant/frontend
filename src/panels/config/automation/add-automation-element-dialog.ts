@@ -2205,6 +2205,10 @@ class DialogAddAutomationElement
         return this.hass.localize("ui.panel.config.automation.editor.services");
       }
 
+      if (targetId === undefined && targetType === "person") {
+        return this.hass.localize("ui.panel.config.person.caption");
+      }
+
       if (targetId === undefined && targetType === "device") {
         return this.hass.localize(
           "ui.panel.config.automation.editor.unassigned_entities"

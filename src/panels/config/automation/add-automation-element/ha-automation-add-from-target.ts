@@ -73,6 +73,9 @@ import "./ha-automation-add-element-paste";
 // Person entities are also shown in the "Other" section next to time and sun
 // (triggers/conditions only), in addition to the unassigned entities list.
 const PERSON_GROUP = `entity_person${TARGET_SEPARATOR}`;
+// Target id of the People item; it shares the PERSON_GROUP entries but gets
+// its own label and drill-down in narrow mode.
+const PERSON_TARGET = `person${TARGET_SEPARATOR}`;
 
 interface Level1Entries {
   open: boolean;
@@ -306,6 +309,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
         `;
       }
 
+      if (valueType === "person" && !valueId) {
+        return this._renderEntities(
+          entries[`device${TARGET_SEPARATOR}`]?.devices?.[PERSON_GROUP]
+            ?.entities,
+          false
+        );
+      }
+
       if (valueType === "device" || valueType === "helper") {
         const { devices } = entries[`${valueType}${TARGET_SEPARATOR}`];
         return this._renderDomains(
@@ -409,7 +420,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       const peopleItem = people
         ? this._renderItem(
             this._i18n.localize("ui.panel.config.person.caption"),
-            PERSON_GROUP,
+            PERSON_TARGET,
             true,
             false,
             !people.open && !!people.entities.length,
@@ -790,7 +801,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
     return renderedDomains;
   }
 
-  private _renderEntities(entities: string[] = []) {
+  private _renderEntities(entities: string[] = [], showTitle = true) {
     if (!entities.length) {
       return nothing;
     }
@@ -828,12 +839,15 @@ export default class HaAutomationAddFromTarget extends LitElement {
       );
 
     if (this.narrow) {
-      return html`<ha-section-title
-          >${this._i18n.localize(
-            "ui.components.target-picker.type.entities"
-          )}</ha-section-title
-        >
-        <ha-list-base>${renderedEntites}</ha-list-base>`;
+      return html`${
+          showTitle
+            ? html`<ha-section-title
+                >${this._i18n.localize(
+                  "ui.components.target-picker.type.entities"
+                )}</ha-section-title
+              >`
+            : nothing
+        } <ha-list-base>${renderedEntites}</ha-list-base>`;
     }
 
     return renderedEntites;
@@ -1414,6 +1428,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private _toggleItem(targetId: string, open: boolean) {
+    if (targetId === PERSON_TARGET) {
+      this._toggleItem(PERSON_GROUP, open);
+      return;
+    }
+
     const [type, id] = targetId.split(TARGET_SEPARATOR, 2);
 
     if (type === "floor") {
