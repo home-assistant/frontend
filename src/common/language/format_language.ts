@@ -10,19 +10,25 @@ import type { FrontendLocaleData } from "../../data/translation";
 const ZH_TW_NAME_HANS = "中文（中国台湾）";
 const ZH_TW_NAME_HANT = "中文（中國台灣）";
 
-// Only the UI locales shipped by the frontend are listed. Regional tags such as
-// zh-Hant-TW or zh-HK (which can reach the picker through the navigator.language
-// fallback) are intentionally left to Intl.DisplayNames, so the entry always
-// follows the script of whatever locale produced the rest of the list.
+const ZH_HANS_OVERRIDES: Record<string, string> = { "zh-tw": ZH_TW_NAME_HANS };
+const ZH_HANT_OVERRIDES: Record<string, string> = { "zh-tw": ZH_TW_NAME_HANT };
+
+// Only the UI locales shipped by the frontend are listed, plus the bare "zh"
+// that a browser can report through the navigator.language fallback in the
+// picker. A bare "zh" resolves to Simplified, which is what Intl.Locale
+// maximizes it to as well.
 //
-// Keys are lowercase: BCP 47 tags are case-insensitive, so the lookup normalizes
-// both the UI locale and the language code.
+// Regional tags such as zh-Hant-TW or zh-HK are intentionally left to
+// Intl.DisplayNames, so the entry always follows the script of whatever locale
+// produced the rest of the list. Keys are lowercase because BCP 47 tags are
+// case-insensitive.
 const LANGUAGE_NAME_OVERRIDES: Record<
   string,
   Record<string, string> | undefined
 > = {
-  "zh-hans": { "zh-tw": ZH_TW_NAME_HANS },
-  "zh-hant": { "zh-tw": ZH_TW_NAME_HANT },
+  zh: ZH_HANS_OVERRIDES,
+  "zh-hans": ZH_HANS_OVERRIDES,
+  "zh-hant": ZH_HANT_OVERRIDES,
 };
 
 const hasOwn = (object: object, key: string): boolean =>
