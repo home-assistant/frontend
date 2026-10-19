@@ -7366,6 +7366,7 @@
             "setup_adapter_zwa2": "Connect ZWA-2",
             "setup_adapter_zwa2_description": "Adds a Z-Wave radio.",
             "setup_serial_configured": "Configured",
+            "setup_serial_offline": "Offline",
             "setup_serial_port_ttl": "TTL",
             "setup_serial_port_rs232": "RS-232",
             "setup_serial_port_rs485": "RS-485",

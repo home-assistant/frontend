@@ -579,14 +579,19 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     return this._configEntries.find((entry) => entry.entry_id === entryId);
   }
 
-  /** Undefined when USB usage has not been loaded. An empty array is a real scan. */
-  private _serialConsumers(url: string) {
+  /**
+   * Undefined when USB usage has not been loaded. A port of a connected device
+   * is always in the scan, so a missing or absent port means it is offline.
+   */
+  private _serialPortUsage(url: string) {
     if (!this._serialPorts) {
       return undefined;
     }
-    return (
-      this._serialPorts.find((port) => port.device === url)?.consumers ?? []
-    );
+    const usage = this._serialPorts.find((port) => port.device === url);
+    return {
+      consumers: usage?.consumers ?? [],
+      offline: !usage?.present,
+    };
   }
 
   private _renderSerialPortList() {
@@ -598,7 +603,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     return html`
       <ul class="ports">
         ${ports.map((port) => {
-          const consumers = this._serialConsumers(port.url);
+          const usage = this._serialPortUsage(port.url);
+          const consumers = usage?.consumers;
           return html`
             <li>
               <span class="port-text">
@@ -619,23 +625,31 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                 }
               </span>
               ${
-                consumers === undefined
+                usage === undefined
                   ? nothing
-                  : consumers.length
+                  : usage.offline
                     ? html`
-                        <span class="chip active">
+                        <span class="chip">
                           ${localize(
-                            "ui.panel.config.devices.esphome.setup_serial_configured"
+                            "ui.panel.config.devices.esphome.setup_serial_offline"
                           )}
                         </span>
                       `
-                    : html`
-                        <ha-button size="s" @click=${this._setupSerialPort}>
-                          ${localize(
-                            "ui.panel.config.devices.esphome.setup_action"
-                          )}
-                        </ha-button>
-                      `
+                    : usage.consumers.length
+                      ? html`
+                          <span class="chip active">
+                            ${localize(
+                              "ui.panel.config.devices.esphome.setup_serial_configured"
+                            )}
+                          </span>
+                        `
+                      : html`
+                          <ha-button size="s" @click=${this._setupSerialPort}>
+                            ${localize(
+                              "ui.panel.config.devices.esphome.setup_action"
+                            )}
+                          </ha-button>
+                        `
               }
             </li>
           `;
@@ -1215,6 +1229,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           font-size: var(--ha-font-size-xs);
           font-weight: var(--ha-font-weight-medium);
           line-height: 1;
+          background: var(--ha-color-fill-neutral-normal-resting);
+          color: var(--primary-text-color);
         }
         .chip.active {
           background: var(--success-color);
