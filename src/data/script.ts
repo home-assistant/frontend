@@ -51,10 +51,13 @@ const targetIncludeFields = {
   label_id: optional(union([string(), array(string())])),
 };
 
+// A target without an exclude.
+export const targetIncludeStruct = object(targetIncludeFields);
+
 export const targetStruct = object({
   ...targetIncludeFields,
   // Same shape as the target, without nesting another exclude.
-  exclude: optional(object(targetIncludeFields)),
+  exclude: optional(targetIncludeStruct),
 });
 
 export const serviceActionStruct: Describe<ServiceActionWithTemplate> = assign(

@@ -602,7 +602,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
     const val = { ...value }!;
     delete val[typeId];
-    if (Object.keys(val).length) {
+    // An exclude on its own is not a target.
+    if (Object.keys(val).some((key) => key !== "exclude")) {
       return val;
     }
     return undefined;

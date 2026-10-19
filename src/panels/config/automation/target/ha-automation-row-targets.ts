@@ -312,7 +312,9 @@ export class HaAutomationRowTargets extends LitElement {
     if (cached instanceof Promise) {
       return until(
         cached.then((count) => {
-          this._countCache.set(key, count);
+          if (this._countCache.get(key) === cached) {
+            this._countCache.set(key, count);
+          }
           return count === undefined ? nothing : this._formatCount(count);
         }),
         fallback
