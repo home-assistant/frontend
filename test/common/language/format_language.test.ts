@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { formatLanguageCode } from "../../../src/common/language/format_language";
 import type { FrontendLocaleData } from "../../../src/data/translation";
 
-const zhLocale = { language: "zh" } as FrontendLocaleData;
 const zhHansLocale = { language: "zh-Hans" } as FrontendLocaleData;
 const zhHantLocale = { language: "zh-Hant" } as FrontendLocaleData;
 const enLocale = { language: "en" } as FrontendLocaleData;
@@ -14,13 +13,22 @@ const intlName = (languageCode: string, uiLanguage: string) =>
   }).of(languageCode);
 
 describe("formatLanguageCode", () => {
-  it("returns the Simplified Chinese display name for zh-TW in Simplified Chinese UI locales", () => {
-    expect(formatLanguageCode("zh-TW", zhLocale)).toBe("中文（中国台湾）");
+  it("returns the Simplified Chinese display name for zh-TW in a Simplified Chinese UI", () => {
     expect(formatLanguageCode("zh-TW", zhHansLocale)).toBe("中文（中国台湾）");
   });
 
-  it("returns the Traditional Chinese display name for zh-TW in Traditional Chinese UI locales", () => {
+  it("returns the Traditional Chinese display name for zh-TW in a Traditional Chinese UI", () => {
     expect(formatLanguageCode("zh-TW", zhHantLocale)).toBe("中文（中國台灣）");
+  });
+
+  it("leaves regional Chinese UI locales to Intl.DisplayNames", () => {
+    for (const uiLanguage of ["zh-TW", "zh-HK", "zh-Hant-TW"]) {
+      expect(
+        formatLanguageCode("zh-TW", {
+          language: uiLanguage,
+        } as FrontendLocaleData)
+      ).toBe(intlName("zh-TW", uiLanguage));
+    }
   });
 
   it("does not apply the Chinese override for other UI languages", () => {
