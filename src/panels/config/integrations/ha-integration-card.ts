@@ -7,7 +7,7 @@ import {
   mdiWeb,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
@@ -191,8 +191,13 @@ export class HaIntegrationCard extends LitElement {
     summary?: IntegrationCardSummary,
     status?: IntegrationCardStatus
   ): string | undefined {
+    // Initializing, unloading and debug logging have no attention count,
+    // so their message is shown instead of the plain count.
+    if (status && !summary?.attention) {
+      return status.message;
+    }
     if (!summary) {
-      return status?.message;
+      return undefined;
     }
     if (!summary.attention) {
       return this._localize(
@@ -245,30 +250,20 @@ export class HaIntegrationCard extends LitElement {
     return html`<span slot="supporting-text" class="supporting-text">
       ${
         status
-          ? html`<span
-                id="status"
-                class="status status-${status.level}"
-                @pointerdown=${this._handleTooltipPointerDown}
-                @click=${this._handleTooltipClick}
-              >
-                ${
-                  status.icon
-                    ? html`<ha-svg-icon
-                        .path=${status.icon}
-                        role="img"
-                        aria-label=${status.message}
-                      ></ha-svg-icon>`
-                    : html`<ha-spinner
-                        size="tiny"
-                        role="img"
-                        aria-label=${status.message}
-                      ></ha-spinner>`
-                }
-                ${text ? html`<span class="text">${text}</span>` : nothing}
-              </span>
-              <ha-tooltip for="status" trigger="hover focus click"
-                >${status.message}</ha-tooltip
-              >`
+          ? html`<span class="status status-${status.level}">
+              ${
+                status.icon
+                  ? html`<ha-svg-icon
+                      .path=${status.icon}
+                      aria-hidden="true"
+                    ></ha-svg-icon>`
+                  : html`<ha-spinner
+                      size="tiny"
+                      aria-hidden="true"
+                    ></ha-spinner>`
+              }
+              ${text ? html`<span class="text">${text}</span>` : nothing}
+            </span>`
           : text
             ? html`<span class="text">${text}</span>`
             : nothing
@@ -525,12 +520,14 @@ export class HaIntegrationCard extends LitElement {
         .icons {
           display: flex;
           flex-shrink: 0;
-          gap: var(--ha-space-1);
           margin-inline-start: auto;
-          padding-inline-start: var(--ha-space-1);
+          margin-inline-end: calc(var(--ha-space-1) * -1);
         }
         .icon {
           display: flex;
+          padding: var(--ha-space-1);
+          /* 24px touch target around the 16px icon */
+          margin-block: calc(var(--ha-space-1) * -1);
           color: var(--label-badge-grey);
           --mdc-icon-size: 16px;
         }
