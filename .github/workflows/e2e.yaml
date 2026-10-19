@@ -78,7 +78,7 @@ jobs:
           is-test: true
 
       - name: Upload demo build
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: demo-dist
           path: demo/dist/
@@ -109,7 +109,7 @@ jobs:
           is-test: true
 
       - name: Upload e2e test app build
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: e2e-test-app-dist
           path: test/e2e/app/dist/
@@ -140,7 +140,7 @@ jobs:
           is-test: true
 
       - name: Upload gallery build
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: gallery-dist
           path: gallery/dist/
@@ -192,7 +192,7 @@ jobs:
         timeout-minutes: 15
 
       - name: Upload demo blob report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: blob-report-demo-${{ matrix.shardIndex }}
@@ -246,7 +246,7 @@ jobs:
         timeout-minutes: 15
 
       - name: Upload app blob report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: blob-report-app-${{ matrix.shardIndex }}
@@ -300,7 +300,7 @@ jobs:
         timeout-minutes: 15
 
       - name: Upload gallery blob report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: blob-report-gallery-${{ matrix.shardIndex }}
@@ -359,7 +359,7 @@ jobs:
 
       - name: Upload merged HTML report
         id: upload-report
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: playwright-report
           path: test/e2e/reports/combined/
