@@ -11,8 +11,8 @@ import "../ha-svg-icon";
 
 // The slider takes the shape of ha-switch: a track, and the visible range as a
 // pill with a drag handle at each end.
-export const ZOOM_SLIDER_HEIGHT = 32;
-const THUMB_SIZE = 24;
+export const ZOOM_SLIDER_HEIGHT = 24;
+const THUMB_SIZE = 20;
 const THUMB_INSET = (ZOOM_SLIDER_HEIGHT - THUMB_SIZE) / 2;
 // The smallest visible range the thumbs can be dragged to, in percent.
 const MIN_RANGE = 1;
@@ -214,11 +214,27 @@ export class HaChartZoomSlider extends LitElement {
       top: 0;
       bottom: 0;
       border-radius: var(--ha-border-radius-pill);
-      background-color: var(--ha-color-fill-neutral-normal-resting);
+      /* The colour of the ha-switch thumb, which stands out in both themes. */
+      background-color: var(--ha-color-on-neutral-normal);
       cursor: grab;
+    }
+    .track,
+    .range {
+      transition: background-color var(--ha-animation-duration-fast, 150ms)
+        ease-in-out;
+    }
+    @media (hover: hover) {
+      .track:hover {
+        background-color: var(--ha-color-fill-neutral-quiet-hover);
+      }
+      .range:hover,
+      .track:has(.thumb:hover) .range {
+        background-color: var(--ha-color-on-neutral-quiet);
+      }
     }
     .range:active {
       cursor: grabbing;
+      background-color: var(--ha-color-on-neutral-normal);
     }
     /* The drag handle icon used across the frontend, turned upright. */
     .thumb {
@@ -228,7 +244,7 @@ export class HaChartZoomSlider extends LitElement {
       width: ${THUMB_SIZE}px;
       height: ${THUMB_SIZE}px;
       border-radius: var(--ha-border-radius-sm);
-      color: var(--ha-color-on-neutral-normal);
+      color: var(--ha-color-on-neutral-loud);
       --mdc-icon-size: ${THUMB_SIZE}px;
       cursor: ew-resize;
     }

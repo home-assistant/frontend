@@ -349,9 +349,7 @@ export class HaChipBase extends HaButton {
             transparent
           );
         }
-        /* Fills the chip when it is given more width than its content. */
         .container {
-          flex: 1;
           display: flex;
           align-items: center;
           min-width: 0;

@@ -568,6 +568,13 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         this._updateDragToZoom();
       }
     }
+    if (
+      changedProps.has("_isZoomed") &&
+      !changedProps.has("options") &&
+      this._hasZoomSlider()
+    ) {
+      this.chart?.setOption({ grid: this._getGridOption() });
+    }
     if (chartOptions.series || changedProps.has("_isZoomed")) {
       this._updateSankeyRoam();
     }
@@ -577,23 +584,15 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     const sonifiable =
       !this._sonificationUnavailable &&
       canSonifyChart(this.data, this._hiddenDatasets);
-    const sliderGrowth = this._getZoomSliderGrowth();
     return html`
       <div
         class="container ${classMap({ "has-height": !!this.height })}"
-        style=${styleMap({
-          height:
-            this.height && sliderGrowth
-              ? `calc(${this.height} + ${sliderGrowth}px)`
-              : this.height,
-        })}
+        style=${styleMap({ height: this.height })}
       >
         <div
           class="chart-container"
           style=${styleMap({
-            height: this.height
-              ? undefined
-              : `${this._getDefaultHeight() + sliderGrowth}px`,
+            height: this.height ? undefined : `${this._getDefaultHeight()}px`,
           })}
         >
           <div
@@ -1087,8 +1086,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     return { left, width: this.chart.getWidth() - left };
   }
 
-  // The chart keeps room for the slider, so it does not jump when the slider
-  // appears; the slider itself only shows while the axis is zoomed.
+  // The slider only shows while the axis is zoomed, in room the plot gives up
+  // at its bottom, so the chart keeps its height.
   private _hasZoomSlider() {
     return !this.hideZoomSlider && this._hasZoomableXAxis();
   }
@@ -1141,18 +1140,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this._setZoomWindow(ev.detail.start, ev.detail.end);
   }
 
-  // The chart grows by the slider's room so the plot keeps its size, unless it
-  // fills a share of a fixed-size card, where the plot gives up the room.
-  private _getZoomSliderGrowth() {
-    return this._hasZoomSlider() && !this.height?.endsWith("%")
-      ? ZOOM_SLIDER_SPACE
-      : 0;
-  }
-
-  // Makes room for the zoom slider below the plot.
+  // Makes room for the zoom slider below the plot while it shows.
   private _getGridOption() {
     const grid = this.options?.grid;
-    if (!grid || !this._hasZoomSlider()) {
+    if (!grid || !this._showZoomSlider()) {
       return grid;
     }
     const [first, ...rest] = ensureArray(grid);
@@ -2056,6 +2047,17 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       position: absolute;
       bottom: ${ZOOM_SLIDER_BOTTOM}px;
       z-index: 1;
+    }
+    /* Fades in as the plot shrinks to make room. */
+    .slider-reset,
+    .zoom-slider {
+      animation: zoom-slider-fade-in var(--ha-animation-duration-normal, 250ms)
+        ease-out;
+    }
+    @keyframes zoom-slider-fade-in {
+      from {
+        opacity: 0;
+      }
     }
     .has-height .chart-container {
       flex: 1;

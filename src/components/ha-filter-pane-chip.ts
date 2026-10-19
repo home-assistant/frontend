@@ -45,10 +45,6 @@ export class HaFilterPaneChip extends LitElement {
       --ha-assist-chip-container-shape: 10px;
     }
 
-    ha-assist-chip {
-      width: 100%;
-    }
-
     .badge {
       position: absolute;
       top: -4px;
