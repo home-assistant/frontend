@@ -29,7 +29,6 @@ import { QueryParamsController } from "../../../common/controllers/query-params-
 import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
 import { marketplaceFilterQueryParamConfig } from "../../../common/url/marketplace-query-params";
-import { shallowEqual } from "../../../common/util/shallow-equal";
 import type {
   DataTableColumnContainer,
   SelectionChangedEvent,
@@ -199,8 +198,6 @@ export class HaMarketplaceDashboard extends LitElement {
   @consume({ context: devicesContext, subscribe: true })
   private _devices!: ContextType<typeof devicesContext>;
 
-  @state() private _skippedUpdates: string[] = [];
-
   @state() private _marketplaceUpdateEntityIds: string[] = [];
 
   @storage({
@@ -286,29 +283,12 @@ export class HaMarketplaceDashboard extends LitElement {
       this._applyLink();
     }
 
+    // The states of these are only selected after this runs, so the skipped
+    // updates are worked out in render
     if (changedProps.has("_entities")) {
       this._marketplaceUpdateEntityIds = marketplaceUpdateEntityIds(
         this._entities
       );
-    }
-
-    if (
-      changedProps.has("_states") ||
-      changedProps.has("_marketplaceUpdateEntityIds") ||
-      changedProps.has("_entities") ||
-      changedProps.has("_devices")
-    ) {
-      const skipped = skippedUpdateRepositories(
-        this._marketplaceUpdateEntityIds,
-        this._entities,
-        this._devices,
-        this._states ?? {}
-      );
-
-      // Most state changes are not about these, the table is left as it is
-      if (!shallowEqual(skipped, this._skippedUpdates)) {
-        this._skippedUpdates = skipped;
-      }
     }
   }
 
@@ -340,7 +320,12 @@ export class HaMarketplaceDashboard extends LitElement {
   protected render(): TemplateResult {
     const marketplaceRepositories = this._applySkippedUpdates(
       this.marketplace.repositories,
-      this._skippedUpdates
+      this._skippedUpdateRepositories(
+        this._marketplaceUpdateEntityIds,
+        this._entities,
+        this._devices,
+        this._states ?? {}
+      )
     );
     const tabs = this._tabs(
       this._i18n.localize,
@@ -557,6 +542,8 @@ export class HaMarketplaceDashboard extends LitElement {
   private _tabs = memoize(marketplaceTabs);
 
   private _repositoriesOfTab = memoize(repositoriesOfTab);
+
+  private _skippedUpdateRepositories = memoize(skippedUpdateRepositories);
 
   private _applySkippedUpdates = memoize(applySkippedUpdates);
 
