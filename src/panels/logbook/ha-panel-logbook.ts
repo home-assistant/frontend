@@ -9,11 +9,15 @@ import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fromUnixTime } from "date-fns";
 import { ensureArray } from "../../common/array/ensure-array";
 import { storage } from "../../common/decorators/storage";
-import type { HASSDomEvent } from "../../common/dom/fire_event";
+import type {
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
@@ -34,6 +38,8 @@ import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-empty-state";
+import "../../components/ha-filter-entity-types";
+import "../../components/ha-filter-integrations";
 import "../../components/ha-filter-pane-chip";
 import "../../components/ha-filter-pane";
 import type { HaFilterPane } from "../../components/ha-filter-pane";
@@ -41,6 +47,8 @@ import "../../components/ha-icon-button";
 import {
   applySourceFilters,
   countSourceFilters,
+  setSourceFilter,
+  sourceFiltersStyles,
   countTargets,
 } from "../../components/ha-sources-picker";
 import type { SourceFilters } from "../../components/ha-sources-picker";
@@ -78,6 +86,10 @@ export class HaPanelLogbook extends LitElement {
   private _showBack?: boolean;
 
   @state() private _filters: SourceFilters = {};
+
+  // Only one filter is expanded at a time, so that it can use the height
+  // that is left in the pane.
+  @state() private _expandedFilter?: string;
 
   @state() private _showSources?: boolean;
 
@@ -167,8 +179,30 @@ export class HaPanelLogbook extends LitElement {
                         "ui.panel.logbook.no_targets"
                       )}
                       @value-changed=${this._targetsChanged}
-                      @source-filters-changed=${this._filtersChanged}
                     ></ha-sources-picker>
+                    <div
+                      class=${classMap({
+                        filters: true,
+                        expanded: !!this._expandedFilter,
+                      })}
+                    >
+                      <ha-filter-entity-types
+                        .value=${this._filters.types}
+                        .expanded=${
+                          this._expandedFilter === "ha-filter-entity-types"
+                        }
+                        @data-table-filter-changed=${this._typesChanged}
+                        @expanded-changed=${this._filterExpanded}
+                      ></ha-filter-entity-types>
+                      <ha-filter-integrations
+                        .value=${this._filters.integrations}
+                        .expanded=${
+                          this._expandedFilter === "ha-filter-integrations"
+                        }
+                        @data-table-filter-changed=${this._integrationsChanged}
+                        @expanded-changed=${this._filterExpanded}
+                      ></ha-filter-integrations>
+                    </div>
                   </ha-filter-pane>`
                 : nothing
             }
@@ -253,11 +287,35 @@ export class HaPanelLogbook extends LitElement {
     this._showSources = false;
   }
 
-  private _filtersChanged(
-    ev: HASSDomEvent<HASSDomEvents["source-filters-changed"]>
+  private _typesChanged(
+    ev: HASSDomEvent<HASSDomEvents["data-table-filter-changed"]>
   ) {
-    this._filters = ev.detail.value;
+    this._setFilter("types", ev);
+  }
+
+  private _integrationsChanged(
+    ev: HASSDomEvent<HASSDomEvents["data-table-filter-changed"]>
+  ) {
+    this._setFilter("integrations", ev);
+  }
+
+  private _setFilter(
+    key: keyof SourceFilters,
+    ev: HASSDomEvent<HASSDomEvents["data-table-filter-changed"]>
+  ) {
+    this._filters = setSourceFilter(this._filters, key, ev.detail.value);
     this._storedFilters = this._filters;
+  }
+
+  private _filterExpanded(
+    ev: HASSDomEvent<HASSDomEvents["expanded-changed"]> &
+      HASSDomTargetEvent<HTMLElement>
+  ) {
+    if (ev.detail.expanded) {
+      this._expandedFilter = ev.target.localName;
+    } else if (this._expandedFilter === ev.target.localName) {
+      this._expandedFilter = undefined;
+    }
   }
 
   private _clearSources() {
@@ -288,6 +346,8 @@ export class HaPanelLogbook extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
+    // The filters label themselves with keys from the config panel.
+    this.hass.loadFragmentTranslation("config");
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
@@ -580,6 +640,7 @@ export class HaPanelLogbook extends LitElement {
   static get styles() {
     return [
       haStyle,
+      sourceFiltersStyles,
       css`
         :host {
           --ha-generic-picker-width: min(400px, calc(100vw - 32px));
