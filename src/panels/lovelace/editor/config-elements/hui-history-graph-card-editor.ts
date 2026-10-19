@@ -24,6 +24,7 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
+import { isTimelineEntity } from "../../../../data/history";
 import type { HomeAssistant } from "../../../../types";
 import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-history-graph-card";
 import type {
@@ -168,7 +169,7 @@ export class HuiHistoryGraphCardEditor
       },
       {
         name: "color",
-        disabled: this._isTimelineEntity(entityId),
+        disabled: this._shouldDisableColorOption(entityId),
         selector: { ui_color: {} },
       },
     ] as const,
@@ -207,7 +208,10 @@ export class HuiHistoryGraphCardEditor
       ? (processEditorEntities(this._config.entities) as GraphEntityConfig[])
       : [];
     const hasTimeline = configEntities.some((entityConf) =>
-      this._isTimelineEntity(entityConf.entity)
+      isTimelineEntity(
+        computeDomain(entityConf.entity),
+        this.hass!.states[entityConf.entity]
+      )
     );
     return html`
       <ha-form
@@ -242,7 +246,7 @@ export class HuiHistoryGraphCardEditor
     // get updated entity config
     let newEntityConfig = ev.detail.config as GraphEntityConfig;
     const entityId = newEntityConfig.entity;
-    if (this._isTimelineEntity(entityId)) {
+    if (this._shouldDisableColorOption(entityId)) {
       // remove unused "color" option
       newEntityConfig = this._deleteColorOption(newEntityConfig);
     }
@@ -280,9 +284,10 @@ export class HuiHistoryGraphCardEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  // a rough assumption that a non-numerical entity is drawn as
-  // state-history-chart-timeline, where the "color" option is unused
-  private _isTimelineEntity = (entityId: string) => {
+  // a rough assumption about a numerical entity
+  // which may use state-history-chart-line
+  // where "color" option may be used
+  private _shouldDisableColorOption = (entityId: string) => {
     const domain = computeDomain(entityId);
     const isNumberDomain =
       domain === "counter" || domain === "number" || domain === "input_number";
