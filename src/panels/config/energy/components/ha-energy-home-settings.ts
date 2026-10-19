@@ -13,7 +13,6 @@ import type {
   HomeSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { saveEnergyPreferences } from "../../../../data/energy";
-import type { StatisticsMetaData } from "../../../../data/recorder";
 import {
   showConfirmationDialog,
   showAlertDialog,
@@ -30,9 +29,6 @@ export class EnergyHomeSettings extends LitElement {
 
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
-
-  @property({ attribute: false })
-  public statsMetadata?: Record<string, StatisticsMetaData>;
 
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
@@ -139,7 +135,6 @@ export class EnergyHomeSettings extends LitElement {
   private _addSource() {
     showEnergySettingsHomeDialog(this, {
       hass: this.hass,
-      statsMetadata: this.statsMetadata,
       saveCallback: async (source) => {
         await this._savePreferences({
           ...this.preferences,
@@ -154,7 +149,6 @@ export class EnergyHomeSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsHomeDialog(this, {
       hass: this.hass,
-      statsMetadata: this.statsMetadata,
       source: { ...origSource },
       saveCallback: async (newSource) => {
         await this._savePreferences({

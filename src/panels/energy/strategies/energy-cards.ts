@@ -42,7 +42,7 @@ export const hasBattery = (prefs: EnergyPreferences): boolean =>
 /** Any electricity-relevant source: grid, solar, or battery. */
 export const hasEnergySource = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) =>
-    ["grid", "solar", "battery"].includes(source.type)
+    ["grid", "solar", "battery", "home"].includes(source.type)
   );
 
 export const hasGasSource = (prefs: EnergyPreferences): boolean =>
@@ -145,7 +145,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "overview",
     "energy-usage-graph",
     "ui.panel.energy.cards.energy_usage_graph_title",
-    (p) => hasGridSource(p) || hasBattery(p)
+    (p) => hasEnergySource(p)
   ),
   entry(
     "overview",
@@ -203,7 +203,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "electricity",
     "energy-usage-graph",
     "ui.panel.energy.cards.energy_usage_graph_title",
-    (p) => hasGridSource(p) || hasBattery(p)
+    (p) => hasEnergySource(p)
   ),
   entry(
     "electricity",

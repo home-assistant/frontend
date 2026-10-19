@@ -1411,20 +1411,18 @@ const getEnergyWaterUnit = (
 
 export const reconcileUsageWithHome = (
   home: number,
-  usage: { used_grid: number; used_solar: number; used_battery: number }
+  usage: { used_grid: number; used_solar: number; used_battery: number },
+  hasGridImport: boolean
 ) => {
   const used_total = Math.max(home, 0);
-  let excess =
-    usage.used_grid + usage.used_solar + usage.used_battery - used_total;
-  if (excess <= 0) {
-    return { used_total, ...usage, used_grid: usage.used_grid - excess };
+  if (hasGridImport) {
+    return { used_total, ...usage };
   }
-  const used_grid = Math.max(0, usage.used_grid - excess);
-  excess -= usage.used_grid - used_grid;
-  const used_battery = Math.max(0, usage.used_battery - excess);
-  excess -= usage.used_battery - used_battery;
-  const used_solar = Math.max(0, usage.used_solar - excess);
-  return { used_total, used_grid, used_solar, used_battery };
+  const used_grid = Math.max(
+    0,
+    used_total - usage.used_solar - usage.used_battery
+  );
+  return { used_total, ...usage, used_grid };
 };
 
 export const energyStatisticHelpUrl =
@@ -1639,11 +1637,11 @@ const computeConsumptionDataPartial = (
     const homeUsed = data.home?.[t];
     const usage =
       homeUsed !== undefined && homeUsed !== null
-        ? reconcileUsageWithHome(homeUsed, {
-            used_grid,
-            used_solar,
-            used_battery,
-          })
+        ? reconcileUsageWithHome(
+            homeUsed,
+            { used_grid, used_solar, used_battery },
+            !!data.from_grid
+          )
         : { used_total, used_grid, used_solar, used_battery };
 
     outData.used_total[t] = usage.used_total;

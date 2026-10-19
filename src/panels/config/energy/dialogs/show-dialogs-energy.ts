@@ -31,7 +31,6 @@ export interface EnergySettingsSolarDialogParams {
 export interface EnergySettingsHomeDialogParams {
   hass: HomeAssistant;
   source?: HomeSourceTypeEnergyPreference;
-  statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (source: HomeSourceTypeEnergyPreference) => Promise<void>;
 }
 

@@ -12,12 +12,11 @@ import {
   internationalizationContext,
   statesContext,
 } from "../../../../data/context";
-import type {
-  EnergyData,
-  EnergyPreferences,
-  HomeSourceTypeEnergyPreference,
+import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
+import {
+  energySourcesByType,
+  getPowerFromState,
 } from "../../../../data/energy";
-import { getPowerFromState } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import type { HomeAssistantInternationalization } from "../../../../types";
 import type { LovelaceBadge } from "../../types";
@@ -96,9 +95,8 @@ export class HuiPowerTotalBadge extends LitElement implements LovelaceBadge {
       }
     });
 
-    const homeRate = prefs.energy_sources.find(
-      (source): source is HomeSourceTypeEnergyPreference =>
-        source.type === "home" && !!source.stat_rate
+    const homeRate = energySourcesByType(prefs).home?.find(
+      (source) => source.stat_rate
     )?.stat_rate;
     const homePower = homeRate
       ? getPowerFromState(this._states[homeRate])

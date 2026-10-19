@@ -175,7 +175,6 @@ class HaConfigEnergy extends LitElement {
           <ha-energy-home-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
-            .statsMetadata=${this._statsMetadata}
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-home-settings>

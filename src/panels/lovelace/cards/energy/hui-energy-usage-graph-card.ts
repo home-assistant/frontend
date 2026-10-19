@@ -642,16 +642,10 @@ export class HuiEnergyUsageGraphCard
       }
     }
 
-    if (summedData.to_battery || summedData.home) {
-      const gridNotUsed: Record<number, number> = {};
-      for (const start of summedData.timestamps) {
-        gridNotUsed[start] =
-          (summedData.from_grid?.[start] ?? 0) -
-          consumptionData.used_grid[start];
-      }
+    if (combinedData.from_grid && summedData.to_battery) {
       const used_grid = buildCombinedUsed(
-        combinedData.from_grid ?? {},
-        gridNotUsed,
+        combinedData.from_grid,
+        consumptionData.grid_to_battery,
         consumptionData.used_grid
       );
       if (used_grid) {

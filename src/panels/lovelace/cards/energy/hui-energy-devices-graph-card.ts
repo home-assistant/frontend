@@ -480,7 +480,8 @@ export class HuiEnergyDevicesGraphCard
       const showUntracked =
         "from_grid" in summedData ||
         "solar" in summedData ||
-        "from_battery" in summedData;
+        "from_battery" in summedData ||
+        "home" in summedData;
       const untracked = showUntracked
         ? totalUsed -
           pieChartData.reduce(

@@ -27,8 +27,9 @@ import {
   EMPTY_PREFERENCES,
   CompareMode,
   reconcileUsageWithHome,
+  computeConsumptionData,
 } from "../../src/data/energy";
-import type { EnergySource } from "../../src/data/energy";
+import type { EnergySource, EnergySumData } from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
 import { StatisticMeanType } from "../../src/data/recorder";
@@ -1851,8 +1852,26 @@ describe("computeEnergyDeviceLabels", () => {
 describe("reconcileUsageWithHome", () => {
   const usage = { used_grid: 4, used_solar: 3, used_battery: 0 };
 
-  it("lets grid absorb a higher meter reading", () => {
-    assert.deepEqual(reconcileUsageWithHome(9, usage), {
+  it("keeps the measured grid when a grid meter exists", () => {
+    assert.deepEqual(reconcileUsageWithHome(9, usage, true), {
+      used_total: 9,
+      used_grid: 4,
+      used_solar: 3,
+      used_battery: 0,
+    });
+  });
+
+  it("keeps measured values even when home is lower", () => {
+    assert.deepEqual(reconcileUsageWithHome(5, usage, true), {
+      used_total: 5,
+      used_grid: 4,
+      used_solar: 3,
+      used_battery: 0,
+    });
+  });
+
+  it("infers grid when there is no grid meter", () => {
+    assert.deepEqual(reconcileUsageWithHome(9, usage, false), {
       used_total: 9,
       used_grid: 6,
       used_solar: 3,
@@ -1860,30 +1879,51 @@ describe("reconcileUsageWithHome", () => {
     });
   });
 
-  it("reduces grid first when the meter is lower", () => {
-    assert.deepEqual(reconcileUsageWithHome(5, usage), {
-      used_total: 5,
-      used_grid: 2,
+  it("never reduces solar, inferred grid floors at zero", () => {
+    assert.deepEqual(reconcileUsageWithHome(2, usage, false), {
+      used_total: 2,
+      used_grid: 0,
       used_solar: 3,
       used_battery: 0,
     });
   });
 
-  it("reduces solar after grid and battery", () => {
-    assert.deepEqual(reconcileUsageWithHome(2, usage), {
-      used_total: 2,
-      used_grid: 0,
-      used_solar: 2,
+  it("keeps a real zero reading", () => {
+    assert.deepEqual(reconcileUsageWithHome(0, usage, true), {
+      used_total: 0,
+      used_grid: 4,
+      used_solar: 3,
       used_battery: 0,
     });
   });
+});
+
+describe("computeConsumptionData with a home meter", () => {
+  const summed: EnergySumData = {
+    from_grid: { 1: 4, 2: 4, 3: 4 },
+    solar: { 1: 3, 2: 3, 3: 3 },
+    home: { 1: 9, 2: 0 },
+    total: { from_grid: 12, solar: 9, home: 9 },
+    timestamps: [1, 2, 3],
+  };
+  const { home: _home, ...withoutHome } = summed;
+  const baseline = computeConsumptionData(withoutHome, undefined).consumption;
+  const { consumption } = computeConsumptionData(summed, undefined);
+
+  it("uses the home reading as used_total", () => {
+    assert.equal(consumption.used_total[1], 9);
+  });
 
   it("keeps a real zero reading", () => {
-    assert.deepEqual(reconcileUsageWithHome(0, usage), {
-      used_total: 0,
-      used_grid: 0,
-      used_solar: 0,
-      used_battery: 0,
-    });
+    assert.equal(consumption.used_total[2], 0);
+  });
+
+  it("falls back to the calculated value when a bucket has no reading", () => {
+    assert.equal(consumption.used_total[3], baseline.used_total[3]);
+    assert.equal(consumption.used_grid[3], baseline.used_grid[3]);
+  });
+
+  it("never changes the measured grid value", () => {
+    assert.equal(consumption.used_grid[1], baseline.used_grid[1]);
   });
 });

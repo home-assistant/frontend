@@ -14,10 +14,6 @@ import {
   emptyHomeEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
-import {
-  getStatisticMetadata,
-  isExternalStatistic,
-} from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
@@ -153,22 +149,8 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
     `;
   }
 
-  private async _statisticChanged(ev: ValueChangedEvent<string>) {
+  private _statisticChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
-    if (
-      ev.detail.value &&
-      isExternalStatistic(ev.detail.value) &&
-      this.params?.statsMetadata &&
-      !(ev.detail.value in this.params.statsMetadata)
-    ) {
-      const [metadata] = await getStatisticMetadata(this.params.hass.callWS, [
-        ev.detail.value,
-      ]);
-      if (metadata) {
-        this.params.statsMetadata[ev.detail.value] = metadata;
-        this.requestUpdate();
-      }
-    }
     this._updateDirtyState(this._source);
   }
 

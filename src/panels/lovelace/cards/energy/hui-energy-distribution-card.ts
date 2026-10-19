@@ -207,8 +207,9 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
+    const homeName = types.home?.[0]?.name || this._locationName;
 
-    const hasGrid = types.grid?.some(
+    const hasGridMeter = types.grid?.some(
       (g) => g.stat_energy_from || g.stat_energy_to
     );
     const hasSolarProduction = types.solar !== undefined;
@@ -234,7 +235,10 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       undefined
     );
 
-    const totalFromGrid = summedData.total.from_grid ?? 0;
+    const hasGrid = hasGridMeter || consumption.total.used_grid > 0;
+    const totalFromGrid = hasGridMeter
+      ? (summedData.total.from_grid ?? 0)
+      : consumption.total.used_grid;
 
     let waterUsage: number | null = null;
     if (hasWater) {
@@ -704,7 +708,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
               ${
                 hasGas && hasWater
                   ? ""
-                  : html`<span class="label">${this._locationName}</span>`
+                  : html`<span class="label">${homeName}</span>`
               }
             </div>
           </div>

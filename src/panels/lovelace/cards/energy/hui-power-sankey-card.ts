@@ -14,13 +14,10 @@ import {
   registriesContext,
   statesContext,
 } from "../../../../data/context";
-import type {
-  EnergyData,
-  EnergyPreferences,
-  HomeSourceTypeEnergyPreference,
-} from "../../../../data/energy";
+import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
   computeEnergyDeviceLabels,
+  energySourcesByType,
   formatPowerShort,
   getPowerFromState,
   reconcileUsageWithHome,
@@ -189,6 +186,7 @@ class HuiPowerSankeyCard
     const prefs = this._data.prefs;
     const powerData = this._computePowerData(prefs);
     const computedStyle = getComputedStyle(this);
+    const types = energySourcesByType(prefs);
 
     // Calculate dynamic threshold based on total consumption
     const minPowerThreshold =
@@ -200,12 +198,12 @@ class HuiPowerSankeyCard
     // Create home node
     const homeNode: Node = {
       id: "home",
-      label:
-        prefs.energy_sources.find(
-          (source): source is HomeSourceTypeEnergyPreference =>
-            source.type === "home"
-        )?.name || this._hassConfig.location_name,
-      value: Math.max(0, powerData.used_total),
+      label: types.home?.[0]?.name || this._hassConfig.location_name,
+      value: Math.max(
+        0,
+        powerData.used_total,
+        powerData.used_grid + powerData.used_solar + powerData.used_battery
+      ),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
     };
@@ -526,13 +524,14 @@ class HuiPowerSankeyCard
     // Grid_In -> Consumption
     const used_grid = Math.min(used_total_remaining, grid_remaining);
 
-    const home = prefs.energy_sources.find(
-      (source): source is HomeSourceTypeEnergyPreference =>
-        source.type === "home"
-    );
+    const home = energySourcesByType(prefs).home?.[0];
     const homePower = home?.stat_rate
       ? getPowerFromState(this._states[home.stat_rate])
       : undefined;
+
+    const hasGridPower = prefs.energy_sources.some(
+      (source) => source.type === "grid" && !!source.stat_rate
+    );
     const usage =
       homePower === undefined
         ? {
@@ -541,11 +540,11 @@ class HuiPowerSankeyCard
             used_grid,
             used_battery,
           }
-        : reconcileUsageWithHome(homePower, {
-            used_grid,
-            used_solar,
-            used_battery,
-          });
+        : reconcileUsageWithHome(
+            homePower,
+            { used_grid, used_solar, used_battery },
+            hasGridPower
+          );
 
     return {
       solar,

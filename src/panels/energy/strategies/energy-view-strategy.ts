@@ -63,7 +63,7 @@ export class EnergyViewStrategy extends ReactiveElement {
     if (
       !prefs ||
       (prefs.device_consumption.length === 0 &&
-        prefs.energy_sources.every((source) => source.type === "home"))
+        prefs.energy_sources.length === 0)
     ) {
       return view;
     }
