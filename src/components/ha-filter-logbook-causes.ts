@@ -95,6 +95,9 @@ export class HaFilterLogbookCauses extends LitElement {
               ? html`<div class="badge">${count}</div>
                   <ha-icon-button
                     .path=${mdiFilterVariantRemove}
+                    .label=${this._localize(
+                      "ui.components.subpage-data-table.clear_filter"
+                    )}
                     @click=${this._clearFilter}
                   ></ha-icon-button>`
               : nothing

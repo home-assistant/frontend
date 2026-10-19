@@ -247,18 +247,26 @@ export class HaLogbook extends LitElement {
 
     if (changed) {
       this.refresh(true);
+    } else if (changedProps.has("causeFilter")) {
+      // A filter without matches removes the renderer, which is what resumes
+      // the live updates paused while scrolled down.
+      this._setLiveUpdates(true);
     }
   }
 
   private _handleLogbookLive(ev: CustomEvent) {
-    if (ev.detail.enable && !this._liveUpdatesEnabled) {
+    this._setLiveUpdates(ev.detail.enable);
+  }
+
+  private _setLiveUpdates(enable: boolean) {
+    if (enable && !this._liveUpdatesEnabled) {
       // Process everything we queued up while we were scrolled down
       this._pendingStreamMessages.forEach((msg) =>
         this._processStreamMessage(msg)
       );
       this._pendingStreamMessages = [];
     }
-    this._liveUpdatesEnabled = ev.detail.enable;
+    this._liveUpdatesEnabled = enable;
   }
 
   private get _filterAlwaysEmptyResults(): boolean {
