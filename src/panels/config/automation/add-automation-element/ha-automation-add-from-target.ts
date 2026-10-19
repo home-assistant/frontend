@@ -434,41 +434,53 @@ export default class HaAutomationAddFromTarget extends LitElement {
           )
         : nothing;
 
-      return html`<ha-section-title>${label}</ha-section-title>
-        <ha-list-base>
-          ${groups?.map(
-            (group) =>
-              html`<ha-list-item-button
-                .value=${group.key}
-                @click=${this._selectTimeLocationGroup}
-                class=${group.key === selectedGroup ? "selected" : ""}
-              >
-                ${
-                  group.icon
-                    ? html`<span slot="start">${group.icon}</span>`
-                    : group.iconPath
-                      ? html`<ha-svg-icon
-                          slot="start"
-                          .path=${group.iconPath}
-                        ></ha-svg-icon>`
-                      : nothing
-                }
-                <div slot="headline">${group.name}</div>
-                ${
-                  narrow
-                    ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                    : nothing
-                }
-              </ha-list-item-button>`
-          )}
-          ${narrow ? peopleItem : nothing}
-        </ha-list-base>
-        ${
-          !narrow && people
+      // With an expandable item in the section, render everything as one
+      // tree so the leaf rows reserve the chevron space and icons line up.
+      const asTree = !narrow && !!people;
+
+      const groupItems = groups?.map((group) => {
+        const icon = group.icon
+          ? html`<span slot=${ifDefined(asTree ? undefined : "start")}
+              >${group.icon}</span
+            >`
+          : group.iconPath
+            ? html`<ha-svg-icon
+                slot=${ifDefined(asTree ? undefined : "start")}
+                .path=${group.iconPath}
+              ></ha-svg-icon>`
+            : nothing;
+
+        return asTree
+          ? html`<wa-tree-item
+              .value=${group.key}
+              .selected=${group.key === selectedGroup}
+              .title=${group.name}
+            >
+              ${icon} ${group.name}
+            </wa-tree-item>`
+          : html`<ha-list-item-button
+              .value=${group.key}
+              @click=${this._selectTimeLocationGroup}
+              class=${group.key === selectedGroup ? "selected" : ""}
+            >
+              ${icon}
+              <div slot="headline">${group.name}</div>
+              ${
+                narrow
+                  ? html`<ha-icon-next slot="end"></ha-icon-next>`
+                  : nothing
+              }
+            </ha-list-item-button>`;
+      });
+
+      return html`<ha-section-title>${label}</ha-section-title> ${
+          asTree
             ? html`<wa-tree @wa-selection-change=${this._handleSelectionChange}>
-                ${peopleItem}
+                ${groupItems} ${peopleItem}
               </wa-tree>`
-            : nothing
+            : html`<ha-list-base>
+                ${groupItems} ${narrow ? peopleItem : nothing}
+              </ha-list-base>`
         }`;
     }
   );
@@ -1383,7 +1395,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _handleSelectionChange(ev: WaSelectionChangeEvent) {
     const treeItem = ev.detail.selection[0] as unknown as
-      { target?: string } | undefined;
+      { target?: string; value?: string } | undefined;
+
+    if (treeItem?.value) {
+      fireEvent(this, "time-location-group-selected", {
+        value: treeItem.value,
+      });
+      return;
+    }
 
     if (treeItem?.target) {
       this._valueChanged(treeItem.target);
