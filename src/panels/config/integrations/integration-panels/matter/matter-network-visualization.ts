@@ -306,6 +306,16 @@ export class MatterNetworkVisualization extends LitElement {
       ? this.hass.devices[node.ha_device_id]
       : undefined;
     attributes.push(...this._getDeviceSearchableAttributes(device));
+    if (node.is_bridge && node.ha_device_id) {
+      getBridgedDevices(node.ha_device_id, this.hass.devices).forEach(
+        (bridged) => {
+          const name = computeDeviceName(bridged);
+          if (name) {
+            attributes.push(name);
+          }
+        }
+      );
+    }
     return attributes;
   };
 
