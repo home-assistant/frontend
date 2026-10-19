@@ -1483,7 +1483,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   }
 
-  // Like a target picked from search, the tree opens and scrolls to it
   private _selectRecentTarget(
     ev: HASSDomCurrentTargetEvent<HTMLElement & { target: string }>
   ) {

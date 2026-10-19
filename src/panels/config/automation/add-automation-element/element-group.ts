@@ -18,7 +18,6 @@ export const findElementGroupKey = (
   collections: AutomationElementGroupCollection[],
   key: string
 ): string => {
-  // Backend elements are prefixed, like "__DYNAMIC__sun.sunrise"
   const value = isDynamic(key) ? getValueFromDynamic(key) : key;
 
   const domain =
@@ -28,7 +27,6 @@ export const findElementGroupKey = (
         ? getConditionDomain(value)
         : computeDomain(value);
 
-  // A curated group lists the element as a member or claims its domain
   for (const collection of collections) {
     for (const [groupKey, options] of Object.entries(collection.groups)) {
       if (
@@ -40,6 +38,5 @@ export const findElementGroupKey = (
     }
   }
 
-  // Otherwise it is in a generated domain group
   return `${DYNAMIC_PREFIX}${domain}`;
 };

@@ -22,7 +22,6 @@ describe("targetExists", () => {
     expect(targetExists(registries, states, [], "device", "enabled")).toBe(
       true
     );
-    // Disabled devices are not part of the target tree
     expect(targetExists(registries, states, [], "device", "disabled")).toBe(
       false
     );

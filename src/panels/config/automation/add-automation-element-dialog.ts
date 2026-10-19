@@ -2020,8 +2020,6 @@ class DialogAddAutomationElement
     );
   }
 
-  // Resolved against the current items, so removed elements drop out and the
-  // category is shown to tell apart elements with the same name.
   private _getRecentElements = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"],
@@ -2071,7 +2069,7 @@ class DialogAddAutomationElement
   private _rememberSelection(key: string, target?: SingleHassServiceTarget) {
     const type = this._params!.type;
 
-    // Building blocks are rarely reused, they are not remembered
+    // Building blocks are rarely reused
     const blocks =
       type === "action"
         ? ACTION_BUILDING_BLOCKS_GROUP

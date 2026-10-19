@@ -11,7 +11,6 @@ describe("parseRecentTarget", () => {
       "area",
       "kitchen",
     ]);
-    // Malformed entries and structural buckets are rejected
     expect(parseRecentTarget(null)).toBeUndefined();
     expect(parseRecentTarget("device________")).toBeUndefined();
     expect(parseRecentTarget("entity_light________")).toBeUndefined();

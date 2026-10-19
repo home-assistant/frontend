@@ -145,8 +145,6 @@ export default class HaAutomationConditionEditor extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  // Targets picked in the editor, like with an entity or device picker, are
-  // also offered as recent targets in the add dialog
   private _rememberTargets(oldConfig: unknown, newConfig: unknown) {
     const recentTargets = addRecentTargets(
       this._recentTargets,
