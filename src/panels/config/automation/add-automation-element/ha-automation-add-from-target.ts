@@ -20,6 +20,7 @@ import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeEntityNameParts } from "../../../../common/entity/compute_entity_name_display";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { stringCompare } from "../../../../common/string/compare";
@@ -70,17 +71,15 @@ import type { AddAutomationElementListItem } from "../add-automation-element-dia
 import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
 import "./ha-automation-add-element-paste";
 
-// Person entities are also shown in the "Other" section next to time and sun
-// (triggers/conditions only), in addition to the unassigned entities list.
-const PERSON_GROUP = `entity_person${TARGET_SEPARATOR}`;
-// Target id of the People item; it shares the PERSON_GROUP entries but gets
-// its own label and drill-down in narrow mode.
+// All person entities are also listed under "People" in the "Other" section
+// next to time and sun (triggers/conditions only), wherever they are assigned.
 const PERSON_TARGET = `person${TARGET_SEPARATOR}`;
 
 interface Level1Entries {
   open: boolean;
   areas?: Record<string, Level2Entries>;
   devices?: Record<string, Level3Entries>;
+  entities?: string[];
 }
 
 interface Level2Entries {
@@ -224,7 +223,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 this._entries,
                 this.timeLocationLabel,
                 this.timeLocationGroups,
-                this.selectedGroup
+                this.selectedGroup,
+                this.value
               )}
               ${this._renderUnassigned(this.narrow, this._entries, this.value)}
               ${this._renderLabels(
@@ -310,11 +310,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       }
 
       if (valueType === "person" && !valueId) {
-        return this._renderEntities(
-          entries[`device${TARGET_SEPARATOR}`]?.devices?.[PERSON_GROUP]
-            ?.entities,
-          false
-        );
+        return this._renderEntities(entries[PERSON_TARGET]?.entities, false);
       }
 
       if (valueType === "device" || valueType === "helper") {
@@ -409,10 +405,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
       entries: Record<string, Level1Entries>,
       label?: string,
       groups?: AddAutomationElementListItem[],
-      selectedGroup?: string
+      selectedGroup?: string,
+      // only used to invalidate the memoized selected state of the people
+      _value?: SingleHassServiceTarget
     ) => {
-      const people =
-        entries[`device${TARGET_SEPARATOR}`]?.devices?.[PERSON_GROUP];
+      const people = entries[PERSON_TARGET];
       if (!label || (!groups?.length && !people)) {
         return nothing;
       }
@@ -423,14 +420,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
             PERSON_TARGET,
             true,
             false,
-            !people.open && !!people.entities.length,
+            !people.open && !!people.entities!.length,
             people.open,
             (slot) =>
               html`<ha-svg-icon
                 slot=${ifDefined(slot)}
                 .path=${mdiAccountMultiple}
               ></ha-svg-icon>`,
-            people.open ? this._renderEntities(people.entities) : undefined
+            people.open ? this._renderEntities(people.entities!) : undefined
           )
         : nothing;
 
@@ -1033,10 +1030,20 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
     this._loadUnassignedDevices();
     this._loadUnassignedEntities();
+    this._loadPeople();
     this._entries = { ...this._entries };
 
     if (this.value) {
       this._valueChanged(this._getSelectedTargetId(this.value)!, !this.narrow);
+    }
+  }
+
+  private _loadPeople() {
+    const people = Object.keys(this._registries.entities).filter(
+      (entityId) => computeDomain(entityId) === "person"
+    );
+    if (people.length) {
+      this._entries[PERSON_TARGET] = { open: false, entities: people };
     }
   }
 
@@ -1319,6 +1326,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
 
     if (type === "entity") {
+      if (computeDomain(id) === "person" && this._entries[PERSON_TARGET]) {
+        this._entries = {
+          ...this._entries,
+          [PERSON_TARGET]: { ...this._entries[PERSON_TARGET], open: true },
+        };
+      }
+
       const deviceId = this._registries.entities[id]?.device_id;
       if (deviceId && this._registries.devices[deviceId]) {
         this._setDeviceOpen(deviceId, true, true);
@@ -1451,12 +1465,15 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private _toggleItem(targetId: string, open: boolean) {
-    if (targetId === PERSON_TARGET) {
-      this._toggleItem(PERSON_GROUP, open);
+    const [type, id] = targetId.split(TARGET_SEPARATOR, 2);
+
+    if (type === "person") {
+      this._entries = {
+        ...this._entries,
+        [targetId]: { ...this._entries[targetId], open },
+      };
       return;
     }
-
-    const [type, id] = targetId.split(TARGET_SEPARATOR, 2);
 
     if (type === "floor") {
       this._entries = {
