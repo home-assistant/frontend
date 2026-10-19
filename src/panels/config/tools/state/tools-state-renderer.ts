@@ -11,20 +11,22 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
-import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-svg-icon";
 import {
+  formattersContext,
   internationalizationContext,
   registriesContext,
 } from "../../../../data/context";
 import { haStyle } from "../../../../resources/styles";
 import { loadVirtualizer } from "../../../../resources/virtualizer";
 import { showToast } from "../../../../util/toast";
+import type { HomeAssistantFormatters } from "../../../../types";
 
 @customElement("tools-state-renderer")
 class HaPanelDevStateRenderer extends LitElement {
@@ -52,6 +54,16 @@ class HaPanelDevStateRenderer extends LitElement {
   @state()
   @consume({ context: registriesContext, subscribe: true })
   private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -169,9 +181,6 @@ class HaPanelDevStateRenderer extends LitElement {
     const areaId = entry?.area_id || device?.area_id;
     const area = areaId ? this._registries?.areas?.[areaId] : undefined;
 
-    const displayName = entry
-      ? computeEntityEntryName(entry, this._registries.devices, item)
-      : undefined;
     const deviceName = device ? computeDeviceName(device) : undefined;
     const areaName = area ? computeAreaName(area) : undefined;
 
@@ -217,7 +226,7 @@ class HaPanelDevStateRenderer extends LitElement {
                   .path=${mdiInformationOutline}
                 ></ha-svg-icon>
                 <span class="secondary">
-                  ${displayName || deviceName || item.attributes.friendly_name}
+                  ${this._formatEntityName(item, { type: "entity" })}
                 </span>
               </div>
             </div>

@@ -429,6 +429,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   auto_fit?: boolean;
   fit_zones?: boolean;
+  show_zone_radius?: boolean;
   default_zoom?: number;
   show_all?: boolean;
   entities?: (MapEntityConfig | string)[];
@@ -738,7 +739,8 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
 export interface AlertCardConfig extends LovelaceCardConfig {
   type: "alert";
   entity: string;
-  color?: string;
+  alert_color?: string;
+  clear_color?: string;
   pulse?: boolean;
 }
 

@@ -21,6 +21,16 @@ import { documentationUrl } from "../../util/documentation-url";
 // That's why redirects should be sorted with more specific ones first
 // Or else pressing "M" will link to the higher level page.
 
+// The Marketplace tabs with a table read these from the link
+const marketplaceTableParams = {
+  search: "string?",
+  type: "string?",
+  status: "string?",
+  source: "string?",
+  sort: "string?",
+  direction: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -468,6 +478,24 @@ export const getMyRedirects = (): Redirects => ({
       repository: "string",
       category: "string?",
     },
+  },
+  marketplace_discover: {
+    component: "marketplace",
+    redirect: "/marketplace/discover",
+  },
+  marketplace_browse: {
+    component: "marketplace",
+    redirect: "/marketplace/browse",
+    params: marketplaceTableParams,
+  },
+  marketplace_installed: {
+    component: "marketplace",
+    redirect: "/marketplace/installed",
+    params: marketplaceTableParams,
+  },
+  marketplace_repositories: {
+    component: "marketplace",
+    redirect: "/marketplace/repositories",
   },
 });
 

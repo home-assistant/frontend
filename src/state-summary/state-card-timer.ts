@@ -25,7 +25,6 @@ class StateCardTimer extends LitElement {
         ></state-info>
         <div class="state">
           <ha-timer-remaining-time
-            .hass=${this.hass}
             .stateObj=${this.stateObj}
           ></ha-timer-remaining-time>
         </div>

@@ -16,7 +16,7 @@ import {
   marketplaceErrorMessage,
 } from "../../../data/marketplace/websocket";
 
-// Pages pass their hass, dialogs the API they get from their context.
+// The API pages and dialogs get from their context.
 export type MarketplaceApi = Pick<HomeAssistant, "callApi" | "callWS">;
 
 // Resolves with whether GitHub is connected once the flow dialog closes.

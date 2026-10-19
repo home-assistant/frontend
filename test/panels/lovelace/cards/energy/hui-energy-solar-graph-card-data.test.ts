@@ -10,7 +10,6 @@ import type {
   EnergySolarForecasts,
   SolarSourceTypeEnergyPreference,
 } from "../../../../../src/data/energy";
-import type { HomeAssistant } from "../../../../../src/types";
 import { createMockComputedStyle } from "../../../../fixtures/computed-style";
 import { digestResult } from "../../../../fixtures/digest";
 import { createMockHass } from "../../../../fixtures/hass";
@@ -24,10 +23,8 @@ const computedStyles = createMockComputedStyle({
   "--primary-text-color": "#212121",
 });
 
-const hass = {
-  ...createMockHass(),
-  themes: { darkMode: false },
-} as unknown as HomeAssistant;
+const { localize, states, formatEntityName } = createMockHass();
+const baseParams = { localize, states, formatEntityName, darkMode: false };
 
 const now = new Date(FIXED_EPOCH_MS + dayMs);
 
@@ -84,7 +81,7 @@ describe("generateEnergySolarGraphData", () => {
       },
     });
     const result = generateEnergySolarGraphData({
-      hass,
+      ...baseParams,
       energyData,
       forecasts: undefined,
       computedStyles,
@@ -102,7 +99,7 @@ describe("generateEnergySolarGraphData", () => {
     });
     expect(
       generateEnergySolarGraphData({
-        hass,
+        ...baseParams,
         energyData,
         forecasts: undefined,
         computedStyles,
@@ -119,7 +116,7 @@ describe("generateEnergySolarGraphData", () => {
       prefs: solarPrefs({ sources: 2 }),
     });
     const result = generateEnergySolarGraphData({
-      hass,
+      ...baseParams,
       energyData,
       forecasts: undefined,
       computedStyles,
@@ -140,7 +137,7 @@ describe("generateEnergySolarGraphData", () => {
     });
     expect(
       generateEnergySolarGraphData({
-        hass,
+        ...baseParams,
         energyData,
         forecasts: undefined,
         computedStyles,
@@ -157,7 +154,7 @@ describe("generateEnergySolarGraphData", () => {
     });
     const forecasts = buildForecasts(2 * 24, 60 * 60 * 1000, ["entry_0"]);
     const result = generateEnergySolarGraphData({
-      hass,
+      ...baseParams,
       energyData,
       forecasts,
       computedStyles,
@@ -181,7 +178,7 @@ describe("generateEnergySolarGraphData", () => {
     ]);
     expect(
       generateEnergySolarGraphData({
-        hass,
+        ...baseParams,
         energyData,
         forecasts,
         computedStyles,
@@ -200,7 +197,7 @@ describe("generateEnergySolarGraphData", () => {
     expect(
       digestResult(
         generateEnergySolarGraphData({
-          hass,
+          ...baseParams,
           energyData,
           forecasts: undefined,
           computedStyles,
@@ -232,7 +229,7 @@ describe("generateEnergySolarGraphData", () => {
     };
     const forecasts = buildForecasts(24, HOUR, ["entry_0"]);
     const result = generateEnergySolarGraphData({
-      hass,
+      ...baseParams,
       energyData,
       forecasts,
       computedStyles,

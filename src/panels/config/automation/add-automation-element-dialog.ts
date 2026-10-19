@@ -1462,7 +1462,6 @@ class DialogAddAutomationElement
           result.push({
             icon: html`
               <ha-service-icon
-                .hass=${this.hass}
                 .service=${`${dmn}.${service}`}
               ></ha-service-icon>
             `,
@@ -1775,12 +1774,7 @@ class DialogAddAutomationElement
   ): AddAutomationElementListItem {
     const triggerName = getTriggerObjectId(trigger);
     return {
-      icon: html`
-        <ha-trigger-icon
-          .hass=${this.hass}
-          .trigger=${trigger}
-        ></ha-trigger-icon>
-      `,
+      icon: html` <ha-trigger-icon .trigger=${trigger}></ha-trigger-icon> `,
       key: `${DYNAMIC_PREFIX}${trigger}`,
       name:
         localize(`component.${domain}.triggers.${triggerName}.name`) || trigger,
@@ -1798,10 +1792,7 @@ class DialogAddAutomationElement
     const conditionName = getConditionObjectId(condition);
     return {
       icon: html`
-        <ha-condition-icon
-          .hass=${this.hass}
-          .condition=${condition}
-        ></ha-condition-icon>
+        <ha-condition-icon .condition=${condition}></ha-condition-icon>
       `,
       key: `${DYNAMIC_PREFIX}${condition}`,
       name:
@@ -1835,7 +1826,6 @@ class DialogAddAutomationElement
       items[domain].items.push({
         icon: html`
           <ha-service-icon
-            .hass=${this.hass}
             .service=${`${domain}.${serviceName}`}
           ></ha-service-icon>
         `,
@@ -2420,22 +2410,16 @@ class DialogAddAutomationElement
           display: none;
         }
 
-        .groups {
-          --md-list-item-leading-space: var(--ha-space-3);
-          --md-list-item-trailing-space: var(--md-list-item-leading-space);
-          --md-list-item-bottom-space: var(--ha-space-1);
-          --md-list-item-top-space: var(--md-list-item-bottom-space);
-          --md-list-item-supporting-text-font: var(--ha-font-family-body);
-          --md-list-item-one-line-container-height: var(--ha-space-10);
-        }
         ha-bottom-sheet .groups,
         ha-bottom-sheet ha-automation-add-from-target {
           margin: var(--ha-space-3);
         }
         .groups .selected {
           background-color: var(--ha-color-fill-primary-normal-active);
-          --md-list-item-label-text-color: var(--ha-color-on-primary-normal);
           --icon-primary-color: var(--ha-color-on-primary-normal);
+        }
+        .groups .selected::part(headline) {
+          color: var(--ha-color-on-primary-normal);
         }
         .groups .selected ha-svg-icon {
           color: var(--ha-color-on-primary-normal);

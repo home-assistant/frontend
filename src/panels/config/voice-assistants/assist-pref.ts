@@ -415,6 +415,10 @@ export class AssistPref extends LitElement {
     a {
       color: var(--primary-color);
     }
+    ha-row-item::part(headline),
+    ha-row-item::part(supporting-text) {
+      white-space: normal;
+    }
     .header-actions {
       position: absolute;
       right: 0px;

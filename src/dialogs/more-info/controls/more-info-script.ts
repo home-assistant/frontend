@@ -76,7 +76,6 @@ class MoreInfoScript extends LitElement {
     return html`
       <ha-more-info-state-header
         .stateObj=${stateObj}
-        .hass=${this.hass}
         .stateOverride=${
           current > 0
             ? isParallel && current > 1

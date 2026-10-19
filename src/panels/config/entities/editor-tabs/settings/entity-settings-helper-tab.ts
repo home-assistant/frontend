@@ -5,7 +5,7 @@ import { consume } from "../../../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name_display";
 import "../../../../../components/ha-button";
 import {
   dirtyStateContext,
@@ -186,7 +186,7 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private async _confirmDeleteItem(): Promise<void> {
-    const name = computeEntityEntryName(this.entry, this.hass.devices);
+    const name = computeEntityEntryName(this.entry);
     const confirmationText = await getDeleteConfirmationText(
       this.hass,
       this.entry,

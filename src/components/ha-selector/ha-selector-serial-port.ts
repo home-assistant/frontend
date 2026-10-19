@@ -515,7 +515,6 @@ export class HaSerialPortSelector extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}

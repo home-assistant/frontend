@@ -220,7 +220,7 @@ export class HuiStatisticCardEditor
       return;
     }
     this._metadata = (
-      await getStatisticMetadata(this.hass, [this._config.entity])
+      await getStatisticMetadata(this.hass.callWS, [this._config.entity])
     )[0];
   }
 
@@ -234,7 +234,7 @@ export class HuiStatisticCardEditor
       config.entity !== this._metadata?.statistic_id
     ) {
       const metadata = (
-        await getStatisticMetadata(this.hass!, [config.entity])
+        await getStatisticMetadata(this.hass!.callWS, [config.entity])
       )?.[0];
       if (metadata && !metadata.has_sum && config.stat_type === "change") {
         config.stat_type = "mean";
@@ -250,7 +250,7 @@ export class HuiStatisticCardEditor
 
     if (!config.stat_type && config.entity) {
       const metadata = (
-        await getStatisticMetadata(this.hass!, [config.entity])
+        await getStatisticMetadata(this.hass!.callWS, [config.entity])
       )?.[0];
       config.stat_type = metadata?.has_sum ? "change" : "mean";
     }

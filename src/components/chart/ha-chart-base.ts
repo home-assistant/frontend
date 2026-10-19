@@ -30,6 +30,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import type { HassConfig } from "home-assistant-js-websocket";
 import { consume } from "../../common/decorators/consume";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
@@ -42,7 +43,11 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
 import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
-import { uiContext } from "../../data/context";
+import {
+  configContext,
+  internationalizationContext,
+  uiContext,
+} from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
 import type {
   ECOption,
@@ -51,7 +56,11 @@ import type {
   HaECSeriesItem,
   HaTooltipOption,
 } from "../../resources/echarts/echarts";
-import type { HomeAssistant, HomeAssistantUI } from "../../types";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+  HomeAssistantUI,
+} from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
@@ -137,8 +146,6 @@ export type CustomLegendOption = ECOption["legend"] & {
 export class HaChartBase extends MobileAwareMixin(LitElement) {
   public chart?: EChartsType;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public data: HaECSeries = [];
 
   @property({ attribute: false }) public options?: HaECOption;
@@ -173,10 +180,23 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   })
   private _themes!: Themes;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
   @property({ attribute: "click-label-for-more-info", type: Boolean })
   public clickLabelForMoreInfo = false;
 
   @state() private _isZoomed = false;
+
+  // Separate from _isZoomed, whose touch handling reruns graph layouts
+  @state() private _isGraphRoamed = false;
 
   @state() private _zoomRatio = 1;
 
@@ -274,7 +294,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _pendingUpdate?: Set<PropertyKey>;
 
-  private _pendingOptions?: HaECOption;
+  private _legendItemCount?: number;
 
   private _pendingZoom?: [number, number, boolean];
 
@@ -294,7 +314,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this._tooltipHiddenWhilePanning = false;
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
-    this._pendingOptions = undefined;
     this._pendingZoom = undefined;
     if (this._wheelPanFrame !== undefined) {
       cancelAnimationFrame(this._wheelPanFrame);
@@ -470,11 +489,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (!this._pendingUpdate) {
         this._pendingUpdate = new Set();
       }
-      if (prop === "options" && !this._pendingUpdate.has(prop)) {
-        // The one previous value a replay reads, and it has to stay the options
-        // the chart currently renders, not those of a later deferred change.
-        this._pendingOptions = changedProps.get(prop) as HaECOption | undefined;
-      }
       this._pendingUpdate.add(prop);
     }
   }
@@ -491,10 +505,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       return;
     }
     const pending = this._pendingUpdate!;
-    const previousOptions = this._pendingOptions;
     this._pendingUpdate = undefined;
-    this._pendingOptions = undefined;
-    this._applyChartUpdate(pending, previousOptions);
+    this._applyChartUpdate(pending);
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -510,7 +522,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (invisible) {
         this._pendingSetup = true;
         this._pendingUpdate = undefined;
-        this._pendingOptions = undefined;
       } else {
         this._setupChart();
       }
@@ -528,16 +539,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
       return;
     }
-    this._applyChartUpdate(
-      changedProps,
-      changedProps.get("options") as HaECOption | undefined
-    );
+    this._applyChartUpdate(changedProps);
   }
 
-  private _applyChartUpdate(
-    changedProps: { has: (prop: string) => boolean },
-    previousOptions: HaECOption | undefined
-  ) {
+  private _applyChartUpdate(changedProps: { has: (prop: string) => boolean }) {
     let chartOptions: ECOption = {};
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
@@ -556,11 +561,13 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
-      if (this._compareCustomLegendOptions(previousOptions, this.options)) {
-        // custom legend changes may require a resize to layout properly
-        this._shouldResizeChart = true;
-        this._resizeAnimationDuration = 250;
-      }
+      this._disposeSonification();
+    }
+    let legendChanged = false;
+    if (changedProps.has("options") || changedProps.has("data")) {
+      const legendItemCount = this._getLegendItems()?.length;
+      legendChanged = legendItemCount !== this._legendItemCount;
+      this._legendItemCount = legendItemCount;
     }
     if (Object.keys(chartOptions).length > 0) {
       this._setChartOptions(chartOptions);
@@ -577,6 +584,13 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     if (chartOptions.series || changedProps.has("_isZoomed")) {
       this._updateSankeyRoam();
+    }
+    if (legendChanged) {
+      // Within a fixed height the host does not resize when the legend grows.
+      // Without animation, setOption has already fired "finished" by now.
+      this._shouldResizeChart = true;
+      this._resizeAnimationDuration = 250;
+      this.updateComplete.then(() => this._resizeChartIfNeeded());
     }
   }
 
@@ -606,7 +620,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             )}
             aria-label=${ifDefined(
               sonifiable
-                ? this.hass.localize("ui.components.history_charts.chart")
+                ? this._i18n.localize("ui.components.history_charts.chart")
                 : undefined
             )}
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
@@ -626,12 +640,14 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             class="chart-controls ${classMap({ small: this.smallControls })}"
           >
             ${
-              this._isZoomed && !this.hideResetButton && !this._showZoomSlider()
+              (this._isZoomed || this._isGraphRoamed) &&
+              !this.hideResetButton &&
+              !this._showZoomSlider()
                 ? html`<ha-icon-button
                     class="zoom-reset"
                     .path=${mdiRestart}
                     @click=${this._handleZoomReset}
-                    title=${this.hass.localize(
+                    title=${this._i18n.localize(
                       "ui.components.history_charts.zoom_reset"
                     )}
                   ></ha-icon-button>`
@@ -731,7 +747,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
               class="legend-toggle"
               data-id=${id}
               aria-pressed=${!this._hiddenDatasets.has(id)}
-              .title=${this.hass.localize(
+              .title=${this._i18n.localize(
                 "ui.components.history_charts.toggle_visibility"
               )}
               @click=${this._toggleDataset}
@@ -767,10 +783,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
                   filled
                   label=${
                     this.expandLegend
-                      ? this.hass.localize(
+                      ? this._i18n.localize(
                           "ui.components.history_charts.collapse_legend"
                         )
-                      : `${this.hass.localize(
+                      : `${this._i18n.localize(
                           "ui.components.history_charts.expand_legend"
                         )} (${items.length - overflowLimit})`
                   }
@@ -812,9 +828,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     try {
       const sonification = await sonifyChart(this.chart, {
         cc: this._sonificationOutput!,
-        localize: this.hass.localize,
-        locale: this.hass.locale,
-        config: this.hass.config,
+        localize: this._i18n.localize,
+        locale: this._i18n.locale,
+        config: this._hassConfig,
         formatLabel: this.sonificationLabelFormatter,
         onError: () => {
           // Charts the extension cannot describe stay silent rather than
@@ -856,8 +872,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _formatTimeLabel = (value: number | Date) =>
     formatTimeLabel(
       value,
-      this.hass.locale,
-      this.hass.config,
+      this._i18n.locale,
+      this._hassConfig,
       this._minutesDifference * this._zoomRatio
     );
 
@@ -869,7 +885,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this._loading = true;
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
-    this._pendingOptions = undefined;
     try {
       // The connection holds a reference to the chart instance, so it cannot
       // outlive it. Focusing the chart again reconnects.
@@ -895,6 +910,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         this._zoomRatio = 1;
         fireEvent(this, "chart-sankeyroam", { zoom: 1 });
       }
+      this._isGraphRoamed = false;
       this.chart.on("datazoom", (e: any) => {
         this._handleDataZoomEvent(e);
       });
@@ -918,15 +934,23 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         const sankeySeries = series?.find((s: any) => s.type === "sankey");
         const zoomed = Math.abs(sankeySeries.zoom - 1) > 1e-6;
         this._isZoomed = zoomed;
+        // Before setOption, which lays the labels out again
+        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
         if (!zoomed) {
           // Reset center when fully zoomed out
           this.chart!.setOption({
             series: [{ id: sankeySeries.id, center: null }],
           });
         }
-        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
         // Clear cached emphasis states so labels don't revert to pre-zoom sizes
         this.chart!.dispatchAction({ type: "downplay" });
+      });
+
+      this.chart.on("graphroam", () => {
+        this._isGraphRoamed = this._getGraphRoams().some(
+          ({ zoom, x, y }) =>
+            Math.abs(zoom - 1) > 1e-6 || Math.abs(x) > 0.5 || Math.abs(y) > 0.5
+        );
       });
 
       if (!this.options?.dataZoom) {
@@ -966,6 +990,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         ...this._createOptions(),
         series: this._getSeries(),
       });
+      this._legendItemCount = this._getLegendItems()?.length;
       this._updateSankeyRoam();
       this._updateDragToZoom();
       if (this._pendingZoom) {
@@ -1007,6 +1032,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (!options) return;
     const legend = ensureArray(this.options?.legend || [])[0] as
       LegendComponentOption | undefined;
+    const hiddenCount = this._hiddenDatasets.size;
     Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
       if (selected === false) {
         this._getAllIdsFromLegend(options, stat).forEach((id) =>
@@ -1014,7 +1040,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         );
       }
     });
-    this.requestUpdate("_hiddenDatasets");
+    // Flagging this rebuilds and downsamples every series, so only when needed
+    if (this._hiddenDatasets.size !== hiddenCount) {
+      this.requestUpdate("_hiddenDatasets");
+    }
   }
 
   // A mouse drag selects a range to zoom into, but only on charts with a
@@ -1104,7 +1133,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (!placement) {
       return nothing;
     }
-    const localize = this.hass.localize;
+    const localize = this._i18n.localize;
     const resetLabel = localize("ui.components.history_charts.zoom_reset");
     return html`
       ${
@@ -1538,6 +1567,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (this._isZoomed) {
         this._handleZoomReset();
       } else {
+        fireEvent(this, "chart-sankeyroam", { zoom: 2 });
         this.chart.setOption({
           series: sankeySeries.map((s: any) => ({
             id: s.id,
@@ -1664,12 +1694,19 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   }
 
   private _handleZoomReset() {
-    this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
-    // Reset sankey roam zoom
     const option = this.chart?.getOption();
     const sankeySeries = (option?.series as any[])?.filter(
       (s: any) => s.type === "sankey"
     );
+    // Before the dataZoom action and setOption, which lay the labels out again
+    if (sankeySeries?.length) {
+      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
+    }
+    // A dataZoom action reruns the layout of every series, graphs included
+    if (this._isZoomed) {
+      this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    }
+    // Reset sankey roam zoom
     if (sankeySeries?.length) {
       this.chart?.setOption({
         series: sankeySeries.map((s: any) => ({
@@ -1679,8 +1716,36 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         })),
       });
       this._isZoomed = false;
-      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
     }
+    this._getGraphRoams().forEach(({ series, zoom, x, y }) => {
+      this.chart!.dispatchAction({
+        type: "graphRoam",
+        seriesId: series.id,
+        dx: -x,
+        dy: -y,
+        zoom: 1 / zoom,
+        originX: 0,
+        originY: 0,
+      });
+      // The action stores an absolute center, which a later re-fit would keep
+      series.option.center = null;
+      series.option.zoom = 1;
+    });
+  }
+
+  private _getGraphRoams(): {
+    series: any;
+    zoom: number;
+    x: number;
+    y: number;
+  }[] {
+    const graphSeries: any[] =
+      // @ts-ignore private method but no other way to get the roam transform
+      this.chart?.getModel().getSeriesByType("graph") ?? [];
+    return graphSeries.flatMap((series) => {
+      const roam = series.coordinateSystem?.getRoamTransform?.();
+      return roam ? [{ series, zoom: roam[0], x: roam[4], y: roam[5] }] : [];
+    });
   }
 
   private _updateSankeyRoam() {
@@ -1989,22 +2054,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this._resizeAnimationDuration = undefined;
   }
 
-  private _compareCustomLegendOptions(
-    oldOptions: HaECOption | undefined,
-    newOptions: HaECOption | undefined
-  ): boolean {
-    const oldLegends = ensureArray(
-      oldOptions?.legend || []
-    ) as LegendComponentOption[];
-    const newLegends = ensureArray(
-      newOptions?.legend || []
-    ) as LegendComponentOption[];
-    return (
-      oldLegends.some((l) => l.show && l.type === "custom") !==
-      newLegends.some((l) => l.show && l.type === "custom")
-    );
-  }
-
   static styles = css`
     :host {
       display: block;
@@ -2244,9 +2293,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       height: 100%;
       --ha-button-height: 24px;
       --ha-chip-label-weight: 500;
-      --md-assist-chip-leading-space: var(--ha-space-2);
-      --md-assist-chip-trailing-space: var(--ha-space-2);
-      --md-assist-chip-icon-label-space: var(--ha-space-1);
+      --ha-assist-chip-leading-space: var(--ha-space-2);
+      --ha-assist-chip-trailing-space: var(--ha-space-2);
+      --ha-assist-chip-icon-label-space: var(--ha-space-1);
     }
   `;
 }

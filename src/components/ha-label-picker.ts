@@ -218,7 +218,6 @@ export class HaLabelPicker extends LitElement {
     return html`
       <ha-generic-picker
         .disabled=${this.disabled}
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
         .helper=${this.helper}

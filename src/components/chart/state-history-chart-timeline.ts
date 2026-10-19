@@ -77,7 +77,6 @@ export class StateHistoryChartTimeline extends LitElement {
   protected render() {
     return html`
       <ha-chart-base
-        .hass=${this.hass}
         .options=${this._chartOptions}
         .height=${`${
           this.data.length *
@@ -217,7 +216,7 @@ export class StateHistoryChartTimeline extends LitElement {
     const labelWidth =
       showNames && !insideLabels
         ? Math.max(this.paddingYAxis, this._yWidth)
-        : 0;
+        : this.paddingYAxis;
     const labelMargin = 5;
     const rtl = computeRTL(
       this.hass.language,

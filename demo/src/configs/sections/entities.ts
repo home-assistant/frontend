@@ -140,6 +140,18 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
         friendly_name: "Outdoor humidity",
       },
     },
+    // Used by the automation for when the car leaves home
+    "zone.home": {
+      entity_id: "zone.home",
+      state: "0",
+      attributes: {
+        latitude: 52.3731339,
+        longitude: 4.8903147,
+        radius: 100,
+        friendly_name: "Home",
+        icon: "mdi:home",
+      },
+    },
     "device_tracker.car": {
       entity_id: "device_tracker.car",
       state: "not_home",
@@ -512,19 +524,6 @@ export const demoEntitiesSections: DemoConfig["entities"] = (localize) =>
         unit_of_measurement: "lx",
         device_class: "illuminance",
         friendly_name: "Outdoor motion sensor Illuminance",
-      },
-    },
-    "automation.home_assistant_auto_update": {
-      entity_id: "automation.home_assistant_auto_update",
-      state: "off",
-      attributes: {
-        id: "1700669321947",
-        last_triggered: "2024-02-29T18:02:05.343139+00:00",
-        mode: "queued",
-        current: 0,
-        max: 50,
-        icon: "mdi:auto-mode",
-        friendly_name: "Home Assistant Auto-update",
       },
     },
     "update.home_assistant_operating_system_update": {

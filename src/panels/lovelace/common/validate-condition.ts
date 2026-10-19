@@ -1,3 +1,7 @@
+import type {
+  HassEntity,
+  HassServiceTarget,
+} from "home-assistant-js-websocket";
 import { ensureArray } from "../../../common/array/ensure-array";
 import {
   checkTimeInRange,
@@ -7,6 +11,7 @@ import {
   WEEKDAYS_SHORT,
   type WeekdayShort,
 } from "../../../common/datetime/weekday";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import type {
   NumericStateCondition as CoreNumericStateCondition,
@@ -19,6 +24,7 @@ import type {
 import type { DeviceCondition } from "../../../data/device/device_automation";
 import { UNKNOWN } from "../../../data/entity/entity";
 import { getUserPerson } from "../../../data/person";
+import { resolveEntityIDs } from "../../../data/selector";
 import type { HomeAssistant } from "../../../types";
 
 export type Condition =
@@ -55,9 +61,25 @@ export interface ViewColumnsCondition extends BaseCondition {
   max?: number;
 }
 
+export const LOCATION_MATCH_MODES = ["any_zone", "active_zone"] as const;
+
+export type LocationMatchMode = (typeof LOCATION_MATCH_MODES)[number];
+
 export interface LocationCondition extends BaseCondition {
   condition: "location";
+  /** Legacy: matches the person state (active zone name). */
   locations?: string[];
+  /** Zones selected directly or through a label, area or floor. */
+  target?: HassServiceTarget;
+  /**
+   * `any_zone` (default) matches the zones in the person `in_zones`.
+   * `active_zone` matches only the zone shown as the person state, like
+   * `locations`, so passive zones never match. Both match the state when
+   * `in_zones` is empty, as it is for legacy device trackers.
+   */
+  match_mode?: LocationMatchMode;
+  /** Matches the person state `not_home`, which passive zones don't change. */
+  away?: boolean;
 }
 
 export interface NumericStateCondition extends BaseCondition {
@@ -284,7 +306,148 @@ function checkLocationCondition(
   if (!stateObj) {
     return false;
   }
-  return condition.locations?.includes(stateObj.state);
+  if (condition.locations?.includes(stateObj.state)) {
+    return true;
+  }
+  // Passive zones don't change the state, so this can match while `in_zones`
+  // lists one.
+  if (condition.away === true && stateObj.state === "not_home") {
+    return true;
+  }
+  if (!isValidTarget(condition.target)) {
+    return false;
+  }
+  const zones = resolveLocationZones(hass, condition.target);
+  const inZones = stateObj.attributes.in_zones;
+  // Legacy device trackers don't report `in_zones` (person only adds
+  // zone.home for them), so their state, the active zone name, is all there
+  // is. Trackers that do report it have an empty list only when `not_home`.
+  if (!Array.isArray(inZones) || inZones.length === 0) {
+    // A zone can be named "not_home", but that state means away.
+    return (
+      stateObj.state !== "not_home" &&
+      zones.some((zoneId) => activeZoneState(hass, zoneId) === stateObj.state)
+    );
+  }
+  if (condition.match_mode === "active_zone") {
+    // Zone names aren't unique, so find the zone the person is in that set
+    // their state, rather than comparing the selected zones' names.
+    const activeZone = inZones.find(
+      (zoneId) => activeZoneState(hass, zoneId) === stateObj.state
+    );
+    return activeZone !== undefined && zones.includes(activeZone);
+  }
+  return inZones.some((zone) => zones.includes(zone));
+}
+
+/**
+ * The person state while a zone is their active zone: `home` for zone.home,
+ * otherwise the zone name. Passive zones never become the state.
+ */
+function activeZoneState(
+  hass: HomeAssistant,
+  zoneId: string
+): string | undefined {
+  const stateObj = hass.states[zoneId];
+  if (!stateObj || stateObj.attributes.passive) {
+    return undefined;
+  }
+  return zoneId === "zone.home" ? "home" : stateObj.attributes.friendly_name;
+}
+
+const TARGET_KEYS = [
+  "entity_id",
+  "device_id",
+  "area_id",
+  "floor_id",
+  "label_id",
+] as const;
+
+const isIdList = (value: unknown): boolean =>
+  typeof value === "string" ||
+  (Array.isArray(value) && value.every((id) => typeof id === "string"));
+
+/**
+ * YAML can hold anything here. Like `targetStruct`, only a mapping of target
+ * keys to IDs is usable; anything else would throw while resolving zones.
+ */
+const isValidTarget = (target: unknown): target is HassServiceTarget =>
+  typeof target === "object" &&
+  target !== null &&
+  !Array.isArray(target) &&
+  Object.entries(target).every(
+    ([key, value]) =>
+      (TARGET_KEYS as readonly string[]).includes(key) && isIdList(value)
+  );
+
+const ZONE_TARGET_SELECTOR = { target: { entity: { domain: "zone" } } };
+
+interface ResolvedZones {
+  entities: HomeAssistant["entities"];
+  devices: HomeAssistant["devices"];
+  areas: HomeAssistant["areas"];
+  zones: string[];
+}
+
+// Keyed by target so each card keeps its own entry. Resolving scans the
+// registries, so only redo it when one of them changes.
+const resolvedZonesCache = new WeakMap<HassServiceTarget, ResolvedZones>();
+
+/**
+ * Zone entity IDs selected directly or through a label, area or floor, that
+ * currently have a state.
+ */
+export function resolveLocationZones(
+  hass: HomeAssistant,
+  target: HassServiceTarget
+): string[] {
+  // Checked on every call rather than cached, so a zone that loses its state
+  // is dropped and a directly selected zone that appears later is picked up.
+  return resolveTargetZones(hass, target).filter(
+    (zoneId) => zoneId in hass.states
+  );
+}
+
+function resolveTargetZones(
+  hass: HomeAssistant,
+  target: HassServiceTarget
+): string[] {
+  const cached = resolvedZonesCache.get(target);
+  if (
+    cached &&
+    cached.entities === hass.entities &&
+    cached.devices === hass.devices &&
+    cached.areas === hass.areas
+  ) {
+    return cached.zones;
+  }
+  // Resolving skips entities without a state, such as zones while they
+  // reload. Give registered zones a placeholder state so the result only
+  // depends on the registries; zones without a state are left out per check.
+  let states = hass.states;
+  for (const entityId of Object.keys(hass.entities)) {
+    if (computeDomain(entityId) === "zone" && !(entityId in states)) {
+      if (states === hass.states) {
+        states = { ...hass.states };
+      }
+      states[entityId] = { entity_id: entityId, attributes: {} } as HassEntity;
+    }
+  }
+  const zones = resolveEntityIDs(
+    states === hass.states ? hass : { ...hass, states },
+    target,
+    hass.entities,
+    hass.devices,
+    hass.areas,
+    ZONE_TARGET_SELECTOR
+  ).filter((entityId) => computeDomain(entityId) === "zone");
+  resolvedZonesCache.set(target, {
+    entities: hass.entities,
+    devices: hass.devices,
+    areas: hass.areas,
+    zones,
+  });
+  return zones;
 }
 
 function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
@@ -448,7 +611,31 @@ function validateUserCondition(condition: UserCondition) {
 }
 
 function validateLocationCondition(condition: LocationCondition) {
-  return condition.locations != null;
+  if (condition.target != null && !isValidTarget(condition.target)) {
+    return false;
+  }
+  if (condition.away != null && typeof condition.away !== "boolean") {
+    return false;
+  }
+  if (
+    condition.match_mode != null &&
+    !LOCATION_MATCH_MODES.includes(condition.match_mode)
+  ) {
+    return false;
+  }
+  // `locations` matches the person state while `target` defaults to
+  // `in_zones`, so mixing them can't keep both when the editor converts it.
+  if (
+    condition.locations != null &&
+    (condition.target != null || condition.match_mode != null)
+  ) {
+    return false;
+  }
+  return (
+    condition.locations != null ||
+    condition.target != null ||
+    condition.away === true
+  );
 }
 
 function validateAndCondition(condition: AndCondition) {

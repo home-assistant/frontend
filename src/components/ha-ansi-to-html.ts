@@ -372,6 +372,16 @@ export class HaAnsiToHtml extends LitElement {
     return !!numberOfFoundLines;
   }
 
+  public trimLines(maxLines: number) {
+    const pre = this._pre;
+    if (!pre) {
+      return;
+    }
+    while (pre.childElementCount > maxLines && pre.firstElementChild) {
+      pre.firstElementChild.remove();
+    }
+  }
+
   public clear() {
     if (this._pre) {
       this._pre.innerHTML = "";

@@ -375,8 +375,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._entityId)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
@@ -851,7 +851,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     return this._input;
   }
 
-  private async _addItem(ev): Promise<void> {
+  private _addItem(ev) {
     const newItem = this._newItem;
     if (newItem.value!.length > 0) {
       if (this._config?.due_date_period) {
@@ -859,7 +859,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           summary: newItem.value!,
           status: TodoItemStatus.NeedsAction,
         };
-        await showTodoItemEditDialog(this, {
+        showTodoItemEditDialog(this, {
           entity: this._entityId!,
           item,
         });

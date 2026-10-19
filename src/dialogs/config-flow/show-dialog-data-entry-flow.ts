@@ -81,7 +81,8 @@ export interface FlowConfig {
   renderShowFormStepFieldLocalizeValue(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm,
-    key: string
+    key: string,
+    values?: Record<string, string>
   ): string;
 
   renderShowFormStepSubmitButton(

@@ -9,17 +9,21 @@ import {
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { storage } from "../../../../common/decorators/storage";
+import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import { stringCompare } from "../../../../common/string/compare";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { hasRejectedItems } from "../../../../common/util/promise-all-settled-results";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
+  SelectionChangedEvent,
   SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
+import "../../../../components/chips/ha-assist-chip";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dropdown";
@@ -60,6 +64,7 @@ import {
 import type { WindowWithPreloads } from "../../../../data/preloads";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../../types";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 import { loadDashboardStrategyWithCreateSuggestions } from "../../../lovelace/strategies/get-strategy";
@@ -104,6 +109,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
   @state() private _loading = true;
 
   @state() private _loadFailed = false;
+
+  @state() private _selected: string[] = [];
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
 
   @state()
   @storage({
@@ -431,6 +441,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         @row-click=${this._handleRowClicked}
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
         .loadError=${
           this._loadFailed
             ? this.hass.localize(
@@ -457,6 +470,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
             </ha-dropdown-item>
           </a>
         </ha-dropdown>
+        <ha-assist-chip
+          slot="selection-bar"
+          .label=${this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.delete_selected"
+          )}
+          .disabled=${!this._deletableSelected().length}
+          @click=${this._removeSelected}
+        ></ha-assist-chip>
         <ha-button slot="fab" size="l" @click=${this._addDashboard}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
@@ -717,6 +738,71 @@ export class HaConfigLovelaceDashboards extends LitElement {
       return false;
     }
   }
+
+  private _deletableSelected = () =>
+    this._dashboards.filter(
+      (dashboard) =>
+        this._selected.includes(dashboard.url_path) &&
+        dashboard.mode === "storage"
+    );
+
+  private _handleSelectionChanged = (
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void => {
+    this._selected = ev.detail.value;
+  };
+
+  private _removeSelected = () => {
+    const deletable = this._deletableSelected();
+    const allDeletable = deletable.length === this._selected.length;
+    let deleteFailed = false;
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.lovelace.dashboards.confirm_delete_selected_title"
+      ),
+      text: this.hass.localize(
+        allDeletable
+          ? "ui.panel.config.lovelace.dashboards.confirm_delete_selected"
+          : "ui.panel.config.lovelace.dashboards.confirm_delete_selected_partly",
+        allDeletable
+          ? { count: deletable.length }
+          : { deletable: deletable.length, selected: this._selected.length }
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+      action: async () => {
+        const results = await Promise.allSettled(
+          deletable.map((dashboard) =>
+            deleteDashboard(this.hass!, dashboard.id)
+          )
+        );
+        const deletedUrlPaths = new Set(
+          deletable
+            .filter(
+              (_dashboard, index) => results[index].status === "fulfilled"
+            )
+            .map((dashboard) => dashboard.url_path)
+        );
+        this._dashboards = this._dashboards.filter(
+          (dashboard) => !deletedUrlPaths.has(dashboard.url_path)
+        );
+        deleteFailed = hasRejectedItems(results);
+        this._dataTable.clearSelection();
+      },
+    }).then((confirmed) => {
+      if (confirmed && deleteFailed) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.delete_failed_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.lovelace.dashboards.delete_failed"
+          ),
+        });
+      }
+    });
+  };
 
   private _handleSortingChanged(ev: CustomEvent) {
     this._activeSorting = ev.detail;
