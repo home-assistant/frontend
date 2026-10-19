@@ -85,9 +85,6 @@ export class HUIViewBackground extends LitElement {
 
   private _applyTheme() {
     const computedStyles = getComputedStyle(this);
-    const themeBackground = computedStyles.getPropertyValue(
-      "--lovelace-background"
-    );
     const themeBackground =
       computedStyles.getPropertyValue("--lovelace-background") ||
       computedStyles.getPropertyValue("--ha-panel-background");
