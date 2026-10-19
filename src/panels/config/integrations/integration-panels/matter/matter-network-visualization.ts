@@ -509,7 +509,11 @@ export class MatterNetworkVisualization extends LitElement {
           ${relativeTime(new Date(node.last_seen), this.hass.locale)}`
       );
     }
-    if (node.is_bridge && node.ha_device_id) {
+    if (
+      node.is_bridge &&
+      node.ha_device_id &&
+      getBridgedDevices(node.ha_device_id, this.hass.devices).length
+    ) {
       lines.push(
         html`<br /><i
             >${this.hass.localize(
