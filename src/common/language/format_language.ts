@@ -14,12 +14,15 @@ const ZH_TW_NAME_HANT = "中文（中國台灣）";
 // zh-Hant-TW or zh-HK (which can reach the picker through the navigator.language
 // fallback) are intentionally left to Intl.DisplayNames, so the entry always
 // follows the script of whatever locale produced the rest of the list.
+//
+// Keys are lowercase: BCP 47 tags are case-insensitive, so the lookup normalizes
+// both the UI locale and the language code.
 const LANGUAGE_NAME_OVERRIDES: Record<
   string,
   Record<string, string> | undefined
 > = {
-  "zh-hans": { "zh-TW": ZH_TW_NAME_HANS },
-  "zh-hant": { "zh-TW": ZH_TW_NAME_HANT },
+  "zh-hans": { "zh-tw": ZH_TW_NAME_HANS },
+  "zh-hant": { "zh-tw": ZH_TW_NAME_HANT },
 };
 
 const hasOwn = (object: object, key: string): boolean =>
@@ -35,11 +38,10 @@ const getLanguageNameOverride = (
   }
 
   const table = LANGUAGE_NAME_OVERRIDES[uiKey];
+  const codeKey = languageCode.toLowerCase();
   // Both lookups are restricted to own properties, so language codes such as
   // "toString" or "__proto__" can never resolve to an inherited Object member.
-  return table && hasOwn(table, languageCode)
-    ? table[languageCode]
-    : undefined;
+  return table && hasOwn(table, codeKey) ? table[codeKey] : undefined;
 };
 
 export const formatLanguageCode = (
