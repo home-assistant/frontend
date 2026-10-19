@@ -40,6 +40,7 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-empty-state";
 import "../../components/ha-filter-entity-types";
 import "../../components/ha-filter-integrations";
+import "../../components/ha-filter-logbook-causes";
 import "../../components/ha-filter-pane-chip";
 import "../../components/ha-filter-pane";
 import type { HaFilterPane } from "../../components/ha-filter-pane";
@@ -67,6 +68,11 @@ import { csvDownload, csvSafeString } from "../../util/csv";
 
 const EMPTY_STATES: HomeAssistant["states"] = {};
 
+interface LogbookFilters extends SourceFilters {
+  /** Keys from `computeLogbookCauseKey`. */
+  causes?: string[];
+}
+
 interface LogbookState {
   time: { range: [Date, Date] };
   targetPickerValue: HassServiceTarget;
@@ -85,7 +91,7 @@ export class HaPanelLogbook extends LitElement {
   @state()
   private _showBack?: boolean;
 
-  @state() private _filters: SourceFilters = {};
+  @state() private _filters: LogbookFilters = {};
 
   // Only one filter is expanded at a time, so that it can use the height
   // that is left in the pane.
@@ -114,7 +120,7 @@ export class HaPanelLogbook extends LitElement {
     state: false,
     subscribe: false,
   })
-  private _storedFilters?: SourceFilters;
+  private _storedFilters?: LogbookFilters;
 
   public constructor() {
     super();
@@ -125,7 +131,7 @@ export class HaPanelLogbook extends LitElement {
     const entityIds = this._getEntityIds();
     const filterCount = countSourceFilters(this._filters);
     const sourceCount = countTargets(this._targetPickerValue) + filterCount;
-    const sourcesLabel = sourceCount
+    const sourcesLabel = entityIds
       ? this.hass.localize("ui.panel.logbook.sources_count", {
           count: entityIds?.length ?? 0,
         })
@@ -202,6 +208,14 @@ export class HaPanelLogbook extends LitElement {
                         @data-table-filter-changed=${this._integrationsChanged}
                         @expanded-changed=${this._filterExpanded}
                       ></ha-filter-integrations>
+                      <ha-filter-logbook-causes
+                        .value=${this._filters.causes}
+                        .expanded=${
+                          this._expandedFilter === "ha-filter-logbook-causes"
+                        }
+                        @data-table-filter-changed=${this._causesChanged}
+                        @expanded-changed=${this._filterExpanded}
+                      ></ha-filter-logbook-causes>
                     </div>
                   </ha-filter-pane>`
                 : nothing
@@ -232,6 +246,7 @@ export class HaPanelLogbook extends LitElement {
                 .hass=${this.hass}
                 .time=${this._time}
                 .entityIds=${this._shownEntityIds}
+                .causeFilter=${this._shownCauses}
                 .narrow=${this.narrow}
                 show-cause
                 virtualize
@@ -299,8 +314,14 @@ export class HaPanelLogbook extends LitElement {
     this._setFilter("integrations", ev);
   }
 
+  private _causesChanged(
+    ev: HASSDomEvent<HASSDomEvents["data-table-filter-changed"]>
+  ) {
+    this._setFilter("causes", ev);
+  }
+
   private _setFilter(
-    key: keyof SourceFilters,
+    key: keyof LogbookFilters,
     ev: HASSDomEvent<HASSDomEvents["data-table-filter-changed"]>
   ) {
     this._filters = setSourceFilter(this._filters, key, ev.detail.value);
@@ -340,6 +361,7 @@ export class HaPanelLogbook extends LitElement {
     // the sources once it is closed instead of on every source change.
     if (!this.narrow || !this._sourcesShown()) {
       this._shownEntityIds = this._getEntityIds();
+      this._shownCauses = this._filters.causes;
     }
   }
 
@@ -392,7 +414,7 @@ export class HaPanelLogbook extends LitElement {
         )
       : undefined;
 
-    if (!countSourceFilters(this._filters)) {
+    if (!this._filters.types?.length && !this._filters.integrations?.length) {
       return targetEntities;
     }
 
@@ -457,6 +479,8 @@ export class HaPanelLogbook extends LitElement {
   private _lastEntityIds?: string[];
 
   private _shownEntityIds?: string[];
+
+  private _shownCauses?: string[];
 
   // A list keyed on the states must keep its identity or ha-logbook resubscribes.
   private _stableEntityIds(entityIds: string[]): string[] {
