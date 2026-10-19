@@ -2,7 +2,6 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
-import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   ACTION_ROW_CONFIG_KEYS,
@@ -19,11 +18,6 @@ import type { HomeAssistant } from "../../../../types";
 import "../ha-automation-editor-warning";
 import { editorStyles, indentStyle } from "../styles";
 import type { ActionElement } from "./ha-automation-action-row";
-import {
-  addRecentTargets,
-  configTargets,
-  RECENT_TARGETS_STORAGE_KEY,
-} from "../target/recent_targets";
 
 @customElement("ha-automation-action-editor")
 export default class HaAutomationActionEditor extends LitElement {
@@ -50,9 +44,6 @@ export default class HaAutomationActionEditor extends LitElement {
 
   @query(COLLAPSIBLE_ACTION_ELEMENTS.join(", "))
   private _collapsibleElement?: ActionElement;
-
-  @storage({ key: RECENT_TARGETS_STORAGE_KEY, state: false, subscribe: false })
-  private _recentTargets?: string[];
 
   protected render() {
     const yamlMode = this.yamlMode || !this.uiSupported;
@@ -123,19 +114,7 @@ export default class HaAutomationActionEditor extends LitElement {
       ...ev.detail.value,
       ...pickRowConfig(this.action, ACTION_ROW_CONFIG_KEYS),
     };
-    this._rememberTargets(this.action, value);
     fireEvent(this, "value-changed", { value });
-  }
-
-  private _rememberTargets(oldConfig: unknown, newConfig: unknown) {
-    const recentTargets = addRecentTargets(
-      this._recentTargets,
-      configTargets(oldConfig),
-      configTargets(newConfig)
-    );
-    if (recentTargets !== this._recentTargets) {
-      this._recentTargets = recentTargets;
-    }
   }
 
   public expandAll() {

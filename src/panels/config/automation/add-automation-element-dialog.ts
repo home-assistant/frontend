@@ -129,7 +129,7 @@ import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
 import {
-  addRecentTargets,
+  addRecentTarget,
   RECENT_TARGETS_STORAGE_KEY,
 } from "./target/recent_targets";
 import { findElementGroupKey } from "./add-automation-element/element-group";
@@ -2089,7 +2089,7 @@ class DialogAddAutomationElement
     }
 
     if (target) {
-      this._recentTargets = addRecentTargets(this._recentTargets, [], [target]);
+      this._recentTargets = addRecentTarget(this._recentTargets, target);
     }
   }
 

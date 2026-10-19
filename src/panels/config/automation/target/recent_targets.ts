@@ -1,9 +1,9 @@
-import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { addRecent } from "../../../../common/array/add-recent";
-import { ensureArray } from "../../../../common/array/ensure-array";
-import { isValidEntityId } from "../../../../common/entity/valid_entity_id";
-import { hasTemplate } from "../../../../common/string/has-template";
-import { TARGET_SEPARATOR, type TargetType } from "../../../../data/target";
+import {
+  TARGET_SEPARATOR,
+  type SingleHassServiceTarget,
+  type TargetType,
+} from "../../../../data/target";
 
 export const RECENT_TARGETS_STORAGE_KEY = "automation-recent-targets";
 
@@ -34,53 +34,21 @@ export const parseRecentTarget = (
   return [type as TargetType, id];
 };
 
-const targetIds = (target: HassServiceTarget | undefined): string[] =>
-  RECENT_TARGET_TYPES.flatMap((type) =>
-    (ensureArray(target?.[`${type}_id`]) ?? [])
-      .filter(
-        (id): id is string =>
-          typeof id === "string" &&
-          !!id &&
-          !hasTemplate(id) &&
-          // Device automations can reference an entity by its registry id,
-          // and "all" or "none" are no entities
-          (type !== "entity" || isValidEntityId(id))
-      )
-      .map((id) => `${type}${TARGET_SEPARATOR}${id}`)
-  );
-
 /**
- * The places a trigger, condition or action config holds targets: its
- * `target`, top level ids like those of entity and device pickers, and the
- * legacy service `data` ids.
+ * Add a target picked in the add automation element dialog to the recent
+ * targets.
  */
-export const configTargets = (config: unknown): HassServiceTarget[] => {
-  if (!config || typeof config !== "object") {
-    return [];
-  }
-  const { target, data } = config as Record<string, unknown>;
-  return [config, target, data].filter(
-    (value): value is HassServiceTarget => !!value && typeof value === "object"
-  );
-};
-
-/**
- * Add the targets that are in `newTargets` but in none of `oldTargets` to the
- * recent targets. Returns the given list unchanged when nothing was added.
- */
-export const addRecentTargets = (
+export const addRecentTarget = (
   recents: string[] | undefined,
-  oldTargets: HassServiceTarget[],
-  newTargets: HassServiceTarget[]
-): string[] | undefined => {
-  const oldIds = new Set(oldTargets.flatMap(targetIds));
-  return [...new Set(newTargets.flatMap(targetIds))]
-    .filter((id) => !oldIds.has(id))
-    .reduce<string[] | undefined>(
-      (list, id) =>
-        addRecent(list, id, MAX_RECENT_TARGETS, (item) =>
-          Boolean(parseRecentTarget(item))
-        ),
-      recents
-    );
-};
+  target: SingleHassServiceTarget
+): string[] | undefined =>
+  RECENT_TARGET_TYPES.flatMap((type) => {
+    const id = target[`${type}_id`];
+    return id ? [`${type}${TARGET_SEPARATOR}${id}`] : [];
+  }).reduce<string[] | undefined>(
+    (list, id) =>
+      addRecent(list, id, MAX_RECENT_TARGETS, (item) =>
+        Boolean(parseRecentTarget(item))
+      ),
+    recents
+  );
