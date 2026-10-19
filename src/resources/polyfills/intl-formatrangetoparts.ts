@@ -1,6 +1,8 @@
-// Approximates ICU: shares the larger units both ends have in common and joins
-// the rest with " – ". Only formatRangeToParts is added, so the FormatJS
-// DateTimeFormat polyfill still loads where formatRange is missing.
+// The FormatJS DateTimeFormat polyfill needs BigInt, so it can't load on
+// Safari 12–13 and Chrome 59–66, and FullCalendar calls formatRangeToParts
+// for every title. Approximates ICU: shares the larger units both ends have in
+// common and joins the rest with " – ". Only formatRangeToParts is added, so
+// FormatJS still loads where formatRange is missing.
 if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
   // Largest unit first. Unknown fields, like timeZoneName, rank above all.
   const RANKS: Record<string, number> = {
