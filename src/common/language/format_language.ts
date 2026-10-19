@@ -10,11 +10,14 @@ import type { FrontendLocaleData } from "../../data/translation";
 const ZH_TW_NAME_HANS = "中文（中国台湾）";
 const ZH_TW_NAME_HANT = "中文（中國台灣）";
 
+// Only the UI locales shipped by the frontend are listed. Regional tags such as
+// zh-Hant-TW or zh-HK (which can reach the picker through the navigator.language
+// fallback) are intentionally left to Intl.DisplayNames, so the entry always
+// follows the script of whatever locale produced the rest of the list.
 const LANGUAGE_NAME_OVERRIDES: Record<
   string,
   Record<string, string> | undefined
 > = {
-  zh: { "zh-TW": ZH_TW_NAME_HANS },
   "zh-hans": { "zh-TW": ZH_TW_NAME_HANS },
   "zh-hant": { "zh-TW": ZH_TW_NAME_HANT },
 };
@@ -26,26 +29,17 @@ const getLanguageNameOverride = (
   languageCode: string,
   uiLanguage: string
 ): string | undefined => {
-  const normalized = uiLanguage.toLowerCase();
-  const base = normalized.split("-")[0];
-
-  // Prefer the table registered for the exact UI locale, then the one for its
-  // base language. Every lookup is restricted to own properties, so language
-  // codes such as "toString" or "__proto__" can never resolve to an inherited
-  // Object member.
-  const tables = [normalized, base].map((key) =>
-    hasOwn(LANGUAGE_NAME_OVERRIDES, key)
-      ? LANGUAGE_NAME_OVERRIDES[key]
-      : undefined
-  );
-
-  for (const table of tables) {
-    if (table && hasOwn(table, languageCode)) {
-      return table[languageCode];
-    }
+  const uiKey = uiLanguage.toLowerCase();
+  if (!hasOwn(LANGUAGE_NAME_OVERRIDES, uiKey)) {
+    return undefined;
   }
 
-  return undefined;
+  const table = LANGUAGE_NAME_OVERRIDES[uiKey];
+  // Both lookups are restricted to own properties, so language codes such as
+  // "toString" or "__proto__" can never resolve to an inherited Object member.
+  return table && hasOwn(table, languageCode)
+    ? table[languageCode]
+    : undefined;
 };
 
 export const formatLanguageCode = (
