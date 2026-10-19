@@ -9,6 +9,7 @@ import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import SankeyChart from "../../resources/echarts/components/sankey/install";
 import type { HaECOption } from "../../resources/echarts/echarts";
 import { measureTextWidth } from "../../util/text";
+import { fitLabelFontSize } from "./fit-label-font-size";
 import "./ha-chart-base";
 import "./ha-chart-tooltip-marker";
 import "../ha-alert";
@@ -279,13 +280,14 @@ export class HaSankeyChart extends LitElement {
         }
 
         const availableHeight = params.rect.height + 8 * this._currentZoom; // account for the margin
-        const fontSize = Math.min(
-          (availableHeight / params.labelRect.height) * FONT_SIZE,
-          FONT_SIZE
-        );
         return {
-          fontSize,
-          lineHeight: fontSize,
+          // labelRect is measured before the width is applied, so unwrapped
+          fontSize: fitLabelFontSize(params.text, {
+            fontSize: FONT_SIZE,
+            width: labelSpace,
+            height: availableHeight,
+            unwrappedHeight: params.labelRect.height,
+          }),
           width: labelSpace,
           height: params.rect.height,
         };
