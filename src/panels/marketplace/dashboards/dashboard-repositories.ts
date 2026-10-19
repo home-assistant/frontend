@@ -58,25 +58,32 @@ export interface MarketplaceRepository extends RepositoryBase {
   update_skipped?: boolean;
 }
 
+export const marketplaceUpdateEntityIds = (
+  entities: HomeAssistant["entities"]
+): string[] =>
+  Object.values(entities)
+    .filter(
+      (entity) =>
+        entity.platform === "marketplace" &&
+        computeDomain(entity.entity_id) === "update" &&
+        entity.device_id
+    )
+    .map((entity) => entity.entity_id);
+
 // The skip is kept on the update entity, its device names the repository
 export const skippedUpdateRepositories = (
+  entityIds: string[],
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   states: HassEntities
 ): string[] =>
-  Object.values(entities)
-    .flatMap((entity) => {
-      if (
-        entity.platform !== "marketplace" ||
-        computeDomain(entity.entity_id) !== "update" ||
-        !entity.device_id
-      ) {
-        return [];
-      }
-
-      const attributes = states[entity.entity_id]?.attributes;
+  entityIds
+    .flatMap((entityId) => {
+      const entity = entities[entityId];
+      const attributes = states[entityId]?.attributes;
 
       if (
+        !entity?.device_id ||
         !attributes?.latest_version ||
         attributes.skipped_version !== attributes.latest_version
       ) {

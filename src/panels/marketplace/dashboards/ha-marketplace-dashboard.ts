@@ -1,5 +1,6 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { ContextType } from "@lit/context";
+import type { HassEntities } from "home-assistant-js-websocket";
 import {
   mdiCheckCircleOutline,
   mdiCompassOutline,
@@ -21,6 +22,7 @@ import type {
   HASSDomEvent,
 } from "../../../common/dom/fire_event";
 import { consume } from "../../../common/decorators/consume";
+import { consumeEntityStates } from "../../../common/decorators/consume-context-entry";
 import { storage } from "../../../common/decorators/storage";
 import { transform } from "../../../common/decorators/transform";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
@@ -72,7 +74,6 @@ import {
   devicesContext,
   entitiesContext,
   internationalizationContext,
-  statesContext,
   uiContext,
 } from "../../../data/context";
 import type {
@@ -90,6 +91,7 @@ import {
   browseLinkFromUrl,
   filterRepositories,
   filtersOfTab,
+  marketplaceUpdateEntityIds,
   skippedUpdateRepositories,
   SOURCE_FILTER,
   SOURCE_ORDER,
@@ -186,8 +188,8 @@ export class HaMarketplaceDashboard extends LitElement {
   private _api!: ContextType<typeof apiContext>;
 
   @state()
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
+  @consumeEntityStates({ entityIdPath: ["_marketplaceUpdateEntityIds"] })
+  private _states?: HassEntities;
 
   @state()
   @consume({ context: entitiesContext, subscribe: true })
@@ -198,6 +200,8 @@ export class HaMarketplaceDashboard extends LitElement {
   private _devices!: ContextType<typeof devicesContext>;
 
   @state() private _skippedUpdates: string[] = [];
+
+  @state() private _marketplaceUpdateEntityIds: string[] = [];
 
   @storage({
     storage: "sessionStorage",
@@ -282,15 +286,23 @@ export class HaMarketplaceDashboard extends LitElement {
       this._applyLink();
     }
 
+    if (changedProps.has("_entities")) {
+      this._marketplaceUpdateEntityIds = marketplaceUpdateEntityIds(
+        this._entities
+      );
+    }
+
     if (
       changedProps.has("_states") ||
+      changedProps.has("_marketplaceUpdateEntityIds") ||
       changedProps.has("_entities") ||
       changedProps.has("_devices")
     ) {
       const skipped = skippedUpdateRepositories(
+        this._marketplaceUpdateEntityIds,
         this._entities,
         this._devices,
-        this._states
+        this._states ?? {}
       );
 
       // Most state changes are not about these, the table is left as it is

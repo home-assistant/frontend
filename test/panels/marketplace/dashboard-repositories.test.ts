@@ -10,6 +10,7 @@ import {
   browseUrl,
   filterRepositories,
   filtersOfTab,
+  marketplaceUpdateEntityIds,
   skippedUpdateRepositories,
   statusesOfTab,
   statusFilterOfTab,
@@ -299,9 +300,12 @@ describe("skippedUpdateRepositories", () => {
       "update.other": update("update.other", "2026.10.0", "2026.10.0"),
     };
 
-    expect(skippedUpdateRepositories(entities, devices, states)).toEqual([
-      "444350375",
-    ]);
+    const updateEntityIds = marketplaceUpdateEntityIds(entities);
+
+    expect(updateEntityIds).toEqual(["update.mushroom", "update.older"]);
+    expect(
+      skippedUpdateRepositories(updateEntityIds, entities, devices, states)
+    ).toEqual(["444350375"]);
   });
 });
 
