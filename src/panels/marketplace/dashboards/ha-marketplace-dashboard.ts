@@ -29,6 +29,7 @@ import { QueryParamsController } from "../../../common/controllers/query-params-
 import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
 import { marketplaceFilterQueryParamConfig } from "../../../common/url/marketplace-query-params";
+import { shallowEqual } from "../../../common/util/shallow-equal";
 import type {
   DataTableColumnContainer,
   SelectionChangedEvent,
@@ -545,7 +546,13 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _skippedUpdateRepositories = memoize(skippedUpdateRepositories);
 
-  private _applySkippedUpdates = memoize(applySkippedUpdates);
+  // Registry changes give a new list of the same skipped updates, the table is
+  // left as it is
+  private _applySkippedUpdates = memoize(
+    applySkippedUpdates,
+    ([repositories, skipped], [lastRepositories, lastSkipped]) =>
+      repositories === lastRepositories && shallowEqual(skipped, lastSkipped)
+  );
 
   private _filterRepositories = memoize(filterRepositories);
 
