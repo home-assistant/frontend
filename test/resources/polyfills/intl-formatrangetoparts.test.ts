@@ -67,9 +67,31 @@ describe("Intl.DateTimeFormat formatRangeToParts polyfill", () => {
       "2026-03-10T10:00Z",
       "2026-03-10T11:30Z",
     ],
+    [
+      "time across days",
+      { hour: "numeric", minute: "2-digit" },
+      "2026-03-10T09:00Z",
+      "2026-03-11T10:00Z",
+    ],
+    [
+      "full day",
+      { hour: "numeric", minute: "2-digit" },
+      "2026-03-10T00:00Z",
+      "2026-03-11T00:00Z",
+    ],
   ] as const)("matches ICU for a %s title", (_name, options, start, end) => {
     const result = format(options, start, end);
     expect(text(result.polyfill)).toBe(text(result.native));
+  });
+
+  it("shows both dates for a time range across days in German", () => {
+    const { polyfill } = format(
+      { hour: "numeric", minute: "2-digit" },
+      "2026-03-10T00:00Z",
+      "2026-03-11T00:00Z",
+      "de"
+    );
+    expect(text(polyfill)).toMatch(/^10\.3\.2026, .+ – 11\.3\.2026, .+$/);
   });
 
   it("tags the parts of each end", () => {

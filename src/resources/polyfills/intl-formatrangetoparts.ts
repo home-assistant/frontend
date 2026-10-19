@@ -3,12 +3,36 @@
 // DateTimeFormat polyfill still loads where formatRange is missing.
 if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
   const TIME_PARTS = ["hour", "minute", "second", "fractionalSecond"];
+  const DATE_PARTS = ["era", "year", "month", "day", "weekday"];
+  const SEPARATOR: Intl.DateTimeRangeFormatPart = {
+    type: "literal",
+    value: " – ",
+    source: "shared",
+  };
 
   const tag = (
     parts: Intl.DateTimeFormatPart[],
     source: Intl.DateTimeRangeFormatPart["source"]
   ): Intl.DateTimeRangeFormatPart[] =>
     parts.map(({ type, value }) => ({ type, value, source }));
+
+  // The literal a locale puts between a date and a time, like ", "
+  const dateTimeGlue = (
+    locale: string,
+    timeZone: string
+  ): Intl.DateTimeFormatPart => {
+    const parts = new Intl.DateTimeFormat(locale, {
+      timeZone,
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+    }).formatToParts(0);
+    const before = parts[parts.findIndex((part) => part.type === "hour") - 1];
+    return before?.type === "literal"
+      ? before
+      : { type: "literal", value: " " };
+  };
 
   const isSamePart = (
     a: Intl.DateTimeFormatPart | undefined,
@@ -25,6 +49,29 @@ if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
     ): Intl.DateTimeRangeFormatPart[] {
       const start = this.formatToParts(startDate);
       const end = this.formatToParts(endDate);
+
+      // Like ICU, a time-only range that crosses days shows both dates
+      if (!start.some((part) => DATE_PARTS.includes(part.type))) {
+        const { locale, timeZone } = this.resolvedOptions();
+        const dayFormat = new Intl.DateTimeFormat(locale, {
+          timeZone,
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+        });
+        if (dayFormat.format(startDate) !== dayFormat.format(endDate)) {
+          const glue = dateTimeGlue(locale, timeZone);
+          return [
+            ...tag(dayFormat.formatToParts(startDate), "startRange"),
+            { ...glue, source: "startRange" },
+            ...tag(start, "startRange"),
+            SEPARATOR,
+            ...tag(dayFormat.formatToParts(endDate), "endRange"),
+            { ...glue, source: "endRange" },
+            ...tag(end, "endRange"),
+          ];
+        }
+      }
 
       let head = 0;
       while (
@@ -68,7 +115,7 @@ if (!Intl.DateTimeFormat.prototype.formatRangeToParts) {
       return [
         ...tag(start.slice(0, head), "shared"),
         ...tag(start.slice(head, start.length - tail), "startRange"),
-        { type: "literal", value: " – ", source: "shared" },
+        SEPARATOR,
         ...tag(end.slice(head, end.length - tail), "endRange"),
         ...tag(start.slice(start.length - tail), "shared"),
       ];
