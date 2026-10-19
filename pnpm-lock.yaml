@@ -353,7 +353,7 @@ importers:
         version: 3.0.2
       fullcalendar:
         specifier: 7.1.1
-        version: 7.1.1(temporal-polyfill@1.0.5)
+        version: 7.1.1(temporal-polyfill@1.0.6)
       fuse.js:
         specifier: 7.5.0
         version: 7.5.0
@@ -427,8 +427,8 @@ importers:
         specifier: 2.0.2
         version: 2.0.2
       temporal-polyfill:
-        specifier: 1.0.5
-        version: 1.0.5
+        specifier: 1.0.6
+        version: 1.0.6
       tinykeys:
         specifier: 4.0.1
         version: 4.0.1(patch_hash=cdc7ece96d53357d38ff3c124a2553f86e3a5dc333d641d223eb6f07e28275f0)
@@ -7071,8 +7071,8 @@ packages:
     resolution: {integrity: sha512-aoBAniQmmwtcKp/7BzsH8Cxzv8OL736p7v1ihGb5e9DJ9kTwGWHrQrVB5+lfVDzfGrdRzXch+ig7LHaY1JTOrg==}
     engines: {node: '>=8'}
 
-  temporal-polyfill@1.0.5:
-    resolution: {integrity: sha512-+H/mmY74i6wXCMcjIhGuSnODcyZnc4eois2myhOyX0UqRAKNXQY5m9iB1en5jQ/n4SXtjLXo1ElBI5bmn8tZwQ==}
+  temporal-polyfill@1.0.6:
+    resolution: {integrity: sha512-tYyEry1HLGUDbm2356W3iYD0OZdo7rlP7h98Zr/EnjqLZQwTAfcBDUvJnJbfA15v/vQad57hJZScG5O0W2oKEA==}
 
   temporal-spec@1.0.1:
     resolution: {integrity: sha512-wxVoanmDeavXie1vu2JaQ3WIc3JZnWAOYFBsJyATaVsXsycKYUflGsyBmrRSnoCpZJpwPyr38VpgSUlQ8CbFxg==}
@@ -9452,14 +9452,14 @@ snapshots:
     optionalDependencies:
       typescript: 6.0.3
 
-  '@full-ui/headless-calendar@7.1.1(temporal-polyfill@1.0.5)':
+  '@full-ui/headless-calendar@7.1.1(temporal-polyfill@1.0.6)':
     dependencies:
-      temporal-polyfill: 1.0.5
+      temporal-polyfill: 1.0.6
 
-  '@fullcalendar/core@7.1.1(@full-ui/headless-calendar@7.1.1(temporal-polyfill@1.0.5))(temporal-polyfill@1.0.5)':
+  '@fullcalendar/core@7.1.1(@full-ui/headless-calendar@7.1.1(temporal-polyfill@1.0.6))(temporal-polyfill@1.0.6)':
     dependencies:
-      '@full-ui/headless-calendar': 7.1.1(temporal-polyfill@1.0.5)
-      temporal-polyfill: 1.0.5
+      '@full-ui/headless-calendar': 7.1.1(temporal-polyfill@1.0.6)
+      temporal-polyfill: 1.0.6
 
   '@gar/promise-retry@1.0.3': {}
 
@@ -12707,12 +12707,12 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  fullcalendar@7.1.1(temporal-polyfill@1.0.5):
+  fullcalendar@7.1.1(temporal-polyfill@1.0.6):
     dependencies:
-      '@full-ui/headless-calendar': 7.1.1(temporal-polyfill@1.0.5)
-      '@fullcalendar/core': 7.1.1(@full-ui/headless-calendar@7.1.1(temporal-polyfill@1.0.5))(temporal-polyfill@1.0.5)
+      '@full-ui/headless-calendar': 7.1.1(temporal-polyfill@1.0.6)
+      '@fullcalendar/core': 7.1.1(@full-ui/headless-calendar@7.1.1(temporal-polyfill@1.0.6))(temporal-polyfill@1.0.6)
       preact: 10.29.8
-      temporal-polyfill: 1.0.5
+      temporal-polyfill: 1.0.6
     transitivePeerDependencies:
       - preact-render-to-string
 
@@ -15014,7 +15014,7 @@ snapshots:
 
   temp-dir@2.0.0: {}
 
-  temporal-polyfill@1.0.5:
+  temporal-polyfill@1.0.6:
     dependencies:
       temporal-spec: 1.0.1
       temporal-utils: 1.0.3
