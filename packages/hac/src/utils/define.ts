@@ -1,15 +1,17 @@
 /**
- * Registers a custom element unless the tag name is already taken.
+ * Registers a custom element unless the tag name is already taken in the
+ * registry.
  *
- * The custom element registry is global to the page. Home Assistant and custom
- * cards can each ship a copy of this library, so registering the same tag name
- * twice must not throw. The first registration wins.
+ * Home Assistant and custom cards can each ship a copy of this library, so
+ * registering the same tag name twice must not throw. The first registration
+ * wins.
  */
 export const define = (
   tagName: string,
-  elementClass: CustomElementConstructor
+  elementClass: CustomElementConstructor,
+  registry: CustomElementRegistry = customElements
 ): void => {
-  if (!customElements.get(tagName)) {
-    customElements.define(tagName, elementClass);
+  if (!registry.get(tagName)) {
+    registry.define(tagName, elementClass);
   }
 };

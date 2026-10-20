@@ -9,8 +9,9 @@ subtitle: First component of the HAC component library
 and no required class names. `hac-header` is a separate part that can be used
 inside a card or any other container.
 
-Both live in the `@home-assistant/hac` package in `packages/hac`. Register them
-with `import "@home-assistant/hac/card"` and
+Both live in the `@home-assistant/hac` package in `packages/hac`, which also
+documents the scoped and dynamic loading modes for custom cards. Register them
+globally with `import "@home-assistant/hac/card"` and
 `import "@home-assistant/hac/header"`.
 
 ## `hac-card`
