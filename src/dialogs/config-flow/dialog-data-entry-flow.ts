@@ -513,6 +513,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
 
   private get _preventScrimClose(): boolean {
     return (
+      // Form edits only, the override is always true while open
       super.isDirtyState ||
       this._flowHasProgressed ||
       this._loading !== undefined ||
