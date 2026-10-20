@@ -3,6 +3,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 export interface LogsDialogParams {
   provider: string;
   title: string;
+  filter?: string;
 }
 
 export const showLogsDialog = (
