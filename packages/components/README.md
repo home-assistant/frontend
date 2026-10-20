@@ -135,6 +135,10 @@ src/components/button/         <hac-button>        -> @home-assistant/components
     version.ts, global.ts, scoped.ts, dynamic.ts, CHANGELOG.md
 ```
 
+Shared code lives in `src/utils/`: `registration/` for defining elements
+(global, scoped and dynamic) and `element/` for helpers that components use
+themselves, like slot checks.
+
 A variant's tag name is `hac-<group>-<variant>`. `scoped`, `dynamic` and
 `version` are reserved and cannot be variant names.
 

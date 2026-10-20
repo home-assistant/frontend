@@ -1,6 +1,9 @@
 import { LitElement } from "lit";
 import { describe, expect, it } from "vitest";
-import { defineGlobal, scopedVariant } from "../src/utils/dependencies";
+import {
+  defineGlobal,
+  scopedVariant,
+} from "../src/utils/registration/dependencies";
 
 // Entry points decide where a component's dependencies are registered. These
 // cases guard that global mode registers them globally and scoped mode never

@@ -1,6 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
-import { hasAssignedContent, hasAssignedElements } from "../../utils/slot";
+import {
+  hasAssignedContent,
+  hasAssignedElements,
+} from "../../utils/element/slot";
 
 /**
  * Container that groups related content.

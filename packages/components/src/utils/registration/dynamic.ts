@@ -1,4 +1,4 @@
-import { getProvidedComponent } from "../provider";
+import { getProvidedComponent } from "../../provider";
 import { isCompatible } from "./version";
 
 /** Resolves the class to register for a tag name, possibly asynchronously. */

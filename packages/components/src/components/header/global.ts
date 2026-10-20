@@ -1,4 +1,4 @@
-import { defineGlobal } from "../../utils/dependencies";
+import { defineGlobal } from "../../utils/registration/dependencies";
 import { HacHeader } from "./hac-header";
 
 // Registers <hac-header> and its dependencies in the global registry, as used by

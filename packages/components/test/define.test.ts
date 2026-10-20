@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { define } from "../src/utils/define";
+import { define } from "../src/utils/registration/define";
 
 // Home Assistant and custom cards can each ship a copy of the library, so a
 // second registration of the same tag must be ignored instead of throwing.

@@ -1,4 +1,4 @@
-import { createDynamicLoader } from "../../../utils/dynamic";
+import { createDynamicLoader } from "../../../utils/registration/dynamic";
 import { VERSION } from "./version";
 
 /**

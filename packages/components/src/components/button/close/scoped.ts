@@ -1,4 +1,4 @@
-import { scopedVariant } from "../../../utils/dependencies";
+import { scopedVariant } from "../../../utils/registration/dependencies";
 import { HacButtonClose } from "./hac-button-close";
 
 export { HacButtonClose };

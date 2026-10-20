@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isCompatible } from "../src/utils/version";
+import { isCompatible } from "../src/utils/registration/version";
 
 // Decides whether a custom card may use Home Assistant's copy of a component.
 // A wrong answer either breaks cards with an incompatible copy or needlessly
