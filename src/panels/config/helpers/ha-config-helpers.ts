@@ -37,7 +37,6 @@ import {
   helpersFilterQueryParams,
   helpersLinkFromUrl,
 } from "../../../common/url/helpers-query-params";
-import { extractSearchParam } from "../../../common/url/search-params";
 import { debounce } from "../../../common/util/debounce";
 import {
   hasRejectedItems,
@@ -999,8 +998,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     // connect, so this reads the URL. navigate() would only replace it after
     // the table params are written, and drop them.
     if (currentPath() === "/config/helpers/add") {
-      this._addDomain = extractSearchParam("domain") ?? undefined;
-      replaceCurrentUrl("/config/helpers");
+      const params = new URLSearchParams(mainWindow.location.search);
+      this._addDomain = params.get("domain") ?? undefined;
+      params.delete("domain");
+      const query = params.toString() ? `?${params}` : "";
+      replaceCurrentUrl(
+        __DEMO__
+          ? `${mainWindow.location.pathname}${query}#/config/helpers`
+          : `/config/helpers${query}`
+      );
       fireEvent(mainWindow, "location-changed", { replace: true });
 
       if (this.hasUpdated) {
