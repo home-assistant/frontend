@@ -58,10 +58,10 @@ export class HaLogViewer extends LitElement {
       return;
     }
     const follow = this._isScrolledToBottom();
-    this._renderLines(newLines);
     if (overflow) {
-      this._trimLines();
+      this._trimLines(this._lines.length - newLines.length);
     }
+    this._renderLines(newLines);
     if (follow) {
       this._followBottom();
     } else {
@@ -158,11 +158,11 @@ export class HaLogViewer extends LitElement {
       this._lines.length > 0 && !this._ansiToHtml.filterLines(this.filter);
   }
 
-  private _trimLines() {
+  private _trimLines(keptLines: number) {
     const logElement = this._logElement;
     const scrollTopBeforeTrim = logElement.scrollTop;
     const scrollHeightBeforeTrim = logElement.scrollHeight;
-    this._ansiToHtml.trimLines(this.maxLines);
+    this._ansiToHtml.trimLines(keptLines);
     const removedHeight = scrollHeightBeforeTrim - logElement.scrollHeight;
     logElement.scrollTop = Math.max(0, scrollTopBeforeTrim - removedHeight);
   }

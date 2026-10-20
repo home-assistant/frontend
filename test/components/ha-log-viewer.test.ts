@@ -309,6 +309,18 @@ describe("ha-log-viewer search", () => {
     ]);
   });
 
+  it("reports no matches when the only matching line is evicted", async () => {
+    const { renderedLog } = await openLogViewer();
+    viewer.addLines(["match", ...createLogLines(1, MAX_RETAINED_LINES - 1)]);
+    await search("match");
+    expect(viewer["_noMatches"]).toBe(false);
+
+    viewer.addLines(createLogLines(MAX_RETAINED_LINES, 1));
+
+    expect(getVisibleLines(renderedLog)).toEqual([]);
+    expect(viewer["_noMatches"]).toBe(true);
+  });
+
   it("keeps the reading position while searching and scrolls down when cleared", async () => {
     const { scrollContainer } = await openViewerWithFullLog();
 
