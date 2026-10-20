@@ -13,13 +13,15 @@ import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "./ha-icon-button";
 
+export const GRID_SIZE_PICKER_ROWS = 8;
+
 @customElement("ha-grid-size-picker")
 export class HaGridSizeEditor extends LitElement {
   @property({ attribute: false }) public value?: CardGridSize;
 
   @property({ attribute: false }) public autoRows?: number;
 
-  @property({ attribute: false }) public rows = 8;
+  @property({ attribute: false }) public rows = GRID_SIZE_PICKER_ROWS;
 
   @property({ attribute: false }) public columns = 12;
 

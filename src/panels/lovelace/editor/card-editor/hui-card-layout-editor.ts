@@ -8,7 +8,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { conditionalClamp } from "../../../../common/number/clamp";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-grid-size-picker";
+import { GRID_SIZE_PICKER_ROWS } from "../../../../components/ha-grid-size-picker";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/item/ha-row-item";
@@ -255,7 +255,10 @@ export class HuiCardLayoutEditor extends LitElement {
     if (config !== this.config) {
       return;
     }
-    this._contentRows = cardSizeToGridRows(cardSize);
+    this._contentRows = Math.min(
+      cardSizeToGridRows(cardSize),
+      GRID_SIZE_PICKER_ROWS
+    );
   }
 
   protected updated(changedProps: PropertyValues<this>): void {
