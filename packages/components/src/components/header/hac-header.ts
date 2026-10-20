@@ -1,6 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
-import { hasAssignedElements } from "../../utils/slot";
+import { hasAssignedElements } from "../../utils/element/slot";
 import { HacButtonClose } from "../button/close/hac-button-close";
 
 /**

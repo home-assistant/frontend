@@ -1,5 +1,5 @@
 import type { LitElement } from "lit";
-import { ScopedElementsMixin } from "../scoped";
+import { ScopedElementsMixin } from "../../scoped";
 import { define } from "./define";
 
 /**

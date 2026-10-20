@@ -1,16 +1,16 @@
 import type { LitElement } from "lit";
-import { define } from "./utils/define";
-import type { HacElementLoader } from "./utils/dynamic";
+import { define } from "./utils/registration/define";
+import type { HacElementLoader } from "./utils/registration/dynamic";
 import {
   createScopedRegistry,
   scopedCreationScope,
   scopedRegistrySupport,
   scopedShadowRootInit,
-} from "./utils/scoped-registry";
+} from "./utils/registration/scoped-registry";
 
-export type { HacElementLoader } from "./utils/dynamic";
-export { scopedRegistrySupport } from "./utils/scoped-registry";
-export type { ScopedRegistrySupport } from "./utils/scoped-registry";
+export type { HacElementLoader } from "./utils/registration/dynamic";
+export { scopedRegistrySupport } from "./utils/registration/scoped-registry";
+export type { ScopedRegistrySupport } from "./utils/registration/scoped-registry";
 
 /**
  * Elements to register in a scoped registry, by tag name: classes from

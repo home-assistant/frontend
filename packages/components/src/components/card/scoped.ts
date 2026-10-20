@@ -1,4 +1,4 @@
-import { scopedVariant } from "../../utils/dependencies";
+import { scopedVariant } from "../../utils/registration/dependencies";
 import { HacCard } from "./hac-card";
 
 export { HacCard };

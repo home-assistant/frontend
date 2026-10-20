@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { hasAssignedContent, hasAssignedElements } from "../src/utils/slot";
+import {
+  hasAssignedContent,
+  hasAssignedElements,
+} from "../src/utils/element/slot";
 
 // Components hide wrappers of empty slots, e.g. the padding of an empty card.
 // Whitespace between tags must not count as content.
