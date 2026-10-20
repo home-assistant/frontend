@@ -2,8 +2,10 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-spinner";
 import type { Calendar } from "../../../data/calendar";
 import { getCalendarColors } from "../../../data/calendar";
 import { CalendarEventsController } from "../../../data/calendar-events-controller";
@@ -60,8 +62,13 @@ class MoreInfoCalendar extends LitElement {
       return nothing;
     }
 
+    // Hidden until every calendar has answered, so the list view does not
+    // show "No events to display" while the events are still loading.
+    const loading = !this._events.loaded;
+
     return html`
       <ha-full-calendar
+        class=${classMap({ loading })}
         narrow
         auto-height
         .hass=${this.hass}
@@ -76,6 +83,11 @@ class MoreInfoCalendar extends LitElement {
         }
         @view-changed=${this._handleViewChanged}
       ></ha-full-calendar>
+      ${
+        loading
+          ? html`<div class="loading"><ha-spinner></ha-spinner></div>`
+          : nothing
+      }
     `;
   }
 
@@ -110,6 +122,23 @@ class MoreInfoCalendar extends LitElement {
   }
 
   static styles = css`
+    :host {
+      display: block;
+      position: relative;
+    }
+
+    ha-full-calendar.loading {
+      visibility: hidden;
+    }
+
+    .loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
     ha-full-calendar {
       --calendar-title-font-size: var(--ha-font-size-l);
     }

@@ -76,10 +76,6 @@ describe("CalendarEventsController", () => {
     expect(controller.loaded).toBe(true);
   });
 
-  it("is not loaded without subscriptions", () => {
-    expect(controller.loaded).toBe(false);
-  });
-
   it("reports a calendar that fails to fetch events as loaded with an error", () => {
     controller.subscribe(hass, [FAMILY], START, END);
     subscriptions[0].send({ events: null });

@@ -5,6 +5,7 @@ import allLocales from "@fullcalendar/core/locales-all";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
+import type { ContextType } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import {
   mdiPlus,
@@ -18,6 +19,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoize from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { useAmPm } from "../../common/datetime/use_am_pm";
@@ -33,6 +35,7 @@ import type {
   CalendarEvent,
 } from "../../data/calendar";
 import { CalendarEntityFeature } from "../../data/calendar";
+import { internationalizationContext } from "../../data/context";
 import { TimeZone } from "../../data/translation";
 import { haStyle } from "../../resources/styles";
 import type {
@@ -72,7 +75,11 @@ const defaultFullCalendarConfig: CalendarOptions = {
 
 @customElement("ha-full-calendar")
 export class HAFullCalendar extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -138,7 +145,7 @@ export class HAFullCalendar extends LitElement {
   protected render() {
     const viewToggleButtons = this._viewToggleButtons(
       this.views,
-      this.hass.localize
+      this._i18n.localize
     );
 
     return html`
@@ -162,18 +169,18 @@ export class HAFullCalendar extends LitElement {
                             size="s"
                             class="today"
                             @click=${this._handleToday}
-                            >${this.hass.localize(
+                            >${this._i18n.localize(
                               "ui.components.calendar.today"
                             )}</ha-button
                           >
                           <ha-icon-button-prev
-                            .label=${this.hass.localize("ui.common.previous")}
+                            .label=${this._i18n.localize("ui.common.previous")}
                             class="prev"
                             @click=${this._handlePrev}
                           >
                           </ha-icon-button-prev>
                           <ha-icon-button-next
-                            .label=${this.hass.localize("ui.common.next")}
+                            .label=${this._i18n.localize("ui.common.next")}
                             class="next"
                             @click=${this._handleNext}
                           >
@@ -195,7 +202,7 @@ export class HAFullCalendar extends LitElement {
                               ? html`<ha-button
                                   size="s"
                                   class="fab-header"
-                                  aria-label=${this.hass.localize(
+                                  aria-label=${this._i18n.localize(
                                     "ui.components.calendar.event.add"
                                   )}
                                   @click=${this._createEvent}
@@ -214,13 +221,13 @@ export class HAFullCalendar extends LitElement {
                           <h1>${this.calendar.view.title}</h1>
                           <div>
                             <ha-icon-button-prev
-                              .label=${this.hass.localize("ui.common.previous")}
+                              .label=${this._i18n.localize("ui.common.previous")}
                               class="prev"
                               @click=${this._handlePrev}
                             >
                             </ha-icon-button-prev>
                             <ha-icon-button-next
-                              .label=${this.hass.localize("ui.common.next")}
+                              .label=${this._i18n.localize("ui.common.next")}
                               class="next"
                               @click=${this._handleNext}
                             >
@@ -233,7 +240,7 @@ export class HAFullCalendar extends LitElement {
                             size="s"
                             class="today"
                             @click=${this._handleToday}
-                            >${this.hass.localize(
+                            >${this._i18n.localize(
                               "ui.components.calendar.today"
                             )}</ha-button
                           >
@@ -252,7 +259,7 @@ export class HAFullCalendar extends LitElement {
                                 ? html`<ha-button
                                     size="s"
                                     class="fab-header"
-                                    aria-label=${this.hass.localize(
+                                    aria-label=${this._i18n.localize(
                                       "ui.components.calendar.event.add"
                                     )}
                                     @click=${this._createEvent}
@@ -285,14 +292,14 @@ export class HAFullCalendar extends LitElement {
               @click=${this._createEvent}
             >
               <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-              ${this.hass.localize("ui.components.calendar.event.add")}
+              ${this._i18n.localize("ui.components.calendar.event.add")}
             </ha-button>`
           : nothing
       }
     `;
   }
 
-  public willUpdate(changedProps: PropertyValues<this>): void {
+  public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
     if (!this.calendar) {
@@ -321,10 +328,11 @@ export class HAFullCalendar extends LitElement {
       this.calendar.setOption("height", this._height);
     }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant;
+    const oldI18n = changedProps.get("_i18n") as
+      ContextType<typeof internationalizationContext> | undefined;
 
-    if (oldHass && oldHass.language !== this.hass.language) {
-      this.calendar.setOption("locale", this.hass.language);
+    if (oldI18n && oldI18n.language !== this._i18n.language) {
+      this.calendar.setOption("locale", this._i18n.language);
     }
   }
 
