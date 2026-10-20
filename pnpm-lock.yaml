@@ -478,6 +478,12 @@ importers:
       '@babel/helper-define-polyfill-provider':
         specifier: 1.0.0
         version: 1.0.0(@babel/core@8.0.7)
+      '@babel/plugin-transform-class-properties':
+        specifier: 8.0.1
+        version: 8.0.1(@babel/core@8.0.7)
+      '@babel/plugin-transform-private-methods':
+        specifier: 8.0.1
+        version: 8.0.1(@babel/core@8.0.7)
       '@babel/plugin-transform-runtime':
         specifier: 8.0.6
         version: 8.0.6(@babel/core@8.0.7)
