@@ -274,6 +274,15 @@ describe("buildTargetRow", () => {
       ],
     });
   });
+
+  it("gives an area only the entities in it", () => {
+    expect(row("area:kitchen").entities).toEqual([
+      "light.table",
+      "light.main",
+      "light.lamp",
+    ]);
+    expect(row("area:hallway").entities).toEqual(["light.hall"]);
+  });
 });
 
 describe("targetRowState", () => {

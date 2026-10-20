@@ -119,11 +119,10 @@ export const computeTargetSubRows = (
                 if (!entity) {
                   return false;
                 }
-                return (
-                  entity.area_id === rowItem ||
-                  !entity.device_id ||
-                  areaDevices.includes(entity.device_id)
-                );
+                return entity.area_id
+                  ? entity.area_id === rowItem
+                  : !!entity.device_id &&
+                      areaDevices.includes(entity.device_id);
               });
 
             return nextEntries;

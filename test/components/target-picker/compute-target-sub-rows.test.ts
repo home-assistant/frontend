@@ -98,6 +98,28 @@ describe("computeTargetSubRows", () => {
     expect(subRows.rowEntries?.[0].referenced_entities).toEqual(allEntities);
   });
 
+  it("keeps an entity without a device only under its own area", () => {
+    const areaEntities = {
+      "light.lamp": mockEntity({ entity_id: "light.lamp", area_id: "kitchen" }),
+      "light.hall": mockEntity({ entity_id: "light.hall", area_id: "hallway" }),
+    };
+    const subRows = computeTargetSubRows(
+      "floor",
+      "ground",
+      entries({
+        referenced_areas: ["kitchen", "hallway"],
+        referenced_entities: Object.keys(areaEntities),
+      }),
+      areaEntities,
+      {}
+    );
+
+    expect(subRows.rowEntries?.map((e) => e.referenced_entities)).toEqual([
+      ["light.lamp"],
+      ["light.hall"],
+    ]);
+  });
+
   it("does not duplicate a labeled child device under its labeled parent", () => {
     const labeled = {
       strip: mockDevice({ id: "strip", labels: ["power"] }),
