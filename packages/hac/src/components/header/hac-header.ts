@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
+import { VERSION } from "./version";
 
 /**
  * Header with an optional icon, a title, a subtitle and actions.
@@ -7,8 +8,9 @@ import { property, state } from "lit/decorators.js";
  * Reusable in any container, e.g. `hac-card`. The title is exposed to
  * assistive technology as a heading of the given `level`.
  *
- * Importing this module does not register the element. Import
- * `@home-assistant/hac/header` to register `<hac-header>`.
+ * Importing this module does not register the element. Use
+ * `@home-assistant/hac/header` to register `<hac-header>` globally, or the `scoped`
+ * and `dynamic` entry points next to it.
  *
  * @slot - Title of the header.
  * @slot icon - Icon displayed before the title.
@@ -22,6 +24,9 @@ import { property, state } from "lit/decorators.js";
  * @cssprop --hac-header-padding - Padding of the header.
  */
 export class HacHeader extends LitElement {
+  /** Version of the component, read by `dynamic` loaders at runtime. */
+  static readonly version = VERSION;
+
   /** Heading level of the title for assistive technology. */
   @property({ type: Number }) public level: 1 | 2 | 3 | 4 | 5 | 6 = 2;
 

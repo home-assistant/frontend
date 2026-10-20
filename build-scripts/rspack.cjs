@@ -60,14 +60,27 @@ const CONFIG_FILES = [
 // node_modules snapshot checks, so their contents go into the version too.
 // Resolve @home-assistant/hac entry points to their sources, so the package
 // needs no build step during development. The entry points are read from the
-// "hac-source" export condition of the package.
+// "hac-source" export condition of the package; subpath patterns are expanded
+// for every component directory.
+const HAC_DIR = path.join(paths.root_dir, "packages", "hac");
+const hacComponents = fs
+  .readdirSync(path.join(HAC_DIR, "src", "components"), {
+    withFileTypes: true,
+  })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name);
 const hacSourceAliases = Object.fromEntries(
   Object.entries(require("../packages/hac/package.json").exports)
     .filter(([, target]) => target["hac-source"])
-    .map(([subpath, target]) => [
-      `${path.posix.join("@home-assistant/hac", subpath)}$`,
-      path.resolve(paths.root_dir, "packages/hac", target["hac-source"]),
-    ])
+    .flatMap(([subpath, target]) =>
+      (subpath.includes("*") ? hacComponents : [undefined]).map((name) => [
+        `${path.posix.join("@home-assistant/hac", name ? subpath.replace("*", name) : subpath)}$`,
+        path.join(
+          HAC_DIR,
+          name ? target["hac-source"].replace("*", name) : target["hac-source"]
+        ),
+      ])
+    )
 );
 
 const PATCHES_DIR = path.join(paths.root_dir, "patches");

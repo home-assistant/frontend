@@ -11,9 +11,9 @@
   "type": "module",
   "sideEffects": [
     "./dist/all.js",
-    "./dist/*/define.js",
+    "./dist/components/*/global.js",
     "./src/all.ts",
-    "./src/*/define.ts"
+    "./src/components/*/global.ts"
   ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -28,20 +28,41 @@
       "types": "./dist/all.d.ts",
       "import": "./dist/all.js"
     },
-    "./card": {
-      "hac-source": "./src/card/define.ts",
-      "types": "./dist/card/define.d.ts",
-      "import": "./dist/card/define.js"
+    "./scoped": {
+      "hac-source": "./src/scoped.ts",
+      "types": "./dist/scoped.d.ts",
+      "import": "./dist/scoped.js"
     },
-    "./header": {
-      "hac-source": "./src/header/define.ts",
-      "types": "./dist/header/define.d.ts",
-      "import": "./dist/header/define.js"
+    "./provider": {
+      "hac-source": "./src/provider.ts",
+      "types": "./dist/provider.d.ts",
+      "import": "./dist/provider.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./*/scoped": {
+      "hac-source": "./src/components/*/scoped.ts",
+      "types": "./dist/components/*/scoped.d.ts",
+      "import": "./dist/components/*/scoped.js"
+    },
+    "./*/dynamic": {
+      "hac-source": "./src/components/*/dynamic.ts",
+      "types": "./dist/components/*/dynamic.d.ts",
+      "import": "./dist/components/*/dynamic.js"
+    },
+    "./*/version": {
+      "hac-source": "./src/components/*/version.ts",
+      "types": "./dist/components/*/version.d.ts",
+      "import": "./dist/components/*/version.js"
+    },
+    "./*": {
+      "hac-source": "./src/components/*/global.ts",
+      "types": "./dist/components/*/global.d.ts",
+      "import": "./dist/components/*/global.js"
+    }
   },
   "files": [
-    "dist"
+    "dist",
+    "src/components/*/CHANGELOG.md"
   ],
   "publishConfig": {
     "access": "public"
