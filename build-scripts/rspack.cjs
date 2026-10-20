@@ -387,6 +387,14 @@ const createRspackConfig = ({
     resolve: {
       extensions: [".ts", ".js", ".json"],
       alias: {
+        // @formatjs/bigdecimal uses BigInt (Safari 14, Chrome 67), which
+        // breaks the NumberFormat and PluralRules polyfills
+        ...(!latestBuild && {
+          "@formatjs/bigdecimal$": path.join(
+            paths.root_dir,
+            "src/resources/polyfills/bigdecimal.ts"
+          ),
+        }),
         ...(!latestBuild && {
           "temporal-polyfill/fns/Instant$": path.join(
             temporalFnsShim,

@@ -346,7 +346,7 @@ export class HaControlSelect extends LitElement {
       line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      text-overflow: ellipsis;
+      text-overflow: clip;
       hyphens: manual;
       line-height: var(--ha-line-height-condensed);
     }

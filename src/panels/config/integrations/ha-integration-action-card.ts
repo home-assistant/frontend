@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import {
   domainToName,
@@ -25,6 +25,10 @@ export class HaIntegrationActionCard extends LitElement {
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   protected render(): TemplateResult {
+    const integrationName =
+      this.localizedDomainName && this.localizedDomainName !== this.domain
+        ? this.localizedDomainName
+        : domainToName(this.hass.localize, this.domain, this.manifest);
     return html`
       <ha-card outlined>
         <div class="card-content">
@@ -44,14 +48,11 @@ export class HaIntegrationActionCard extends LitElement {
             @load=${this._onImageLoad}
           />
           <h2>${this.label}</h2>
-          <h3>
-            ${
-              this.localizedDomainName &&
-              this.localizedDomainName !== this.domain
-                ? this.localizedDomainName
-                : domainToName(this.hass.localize, this.domain, this.manifest)
-            }
-          </h3>
+          ${
+            integrationName !== this.label
+              ? html`<h3>${integrationName}</h3>`
+              : nothing
+          }
         </div>
         <div class="filler"></div>
         <div class="card-actions"><slot></slot></div>

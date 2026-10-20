@@ -18,6 +18,9 @@ let polyfilled = false;
 
 const _polyfillTimeZoneData = polyfillTimeZoneData;
 
+// The DateTimeFormat and DurationFormat polyfills call BigInt() when formatting
+const hasBigInt = typeof BigInt !== "undefined";
+
 // The FormatJS DateTimeFormat polyfill defaults to UTC instead of the
 // device's time zone. Both legacy bundles run this file, so the zone is read
 // once, while Intl.DateTimeFormat is still native.
@@ -56,14 +59,14 @@ const polyfillIntl = async () => {
   if (shouldPolyfillLocale()) {
     await import("@formatjs/intl-locale/polyfill-force");
   }
-  if (shouldPolyfillDateTimeFormat(locale)) {
+  if (hasBigInt && shouldPolyfillDateTimeFormat(locale)) {
     polyfills.push(
       import("@formatjs/intl-datetimeformat/polyfill-force")
         .then(() => _polyfillTimeZoneData())
         .then(setDefaultTimeZone)
     );
   }
-  if (shouldPolyfillDurationFormat()) {
+  if (hasBigInt && shouldPolyfillDurationFormat()) {
     polyfills.push(import("@formatjs/intl-durationformat/polyfill-force"));
   }
   if (shouldPolyfillDisplayNames(locale)) {

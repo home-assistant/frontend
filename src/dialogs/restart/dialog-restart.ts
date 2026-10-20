@@ -21,8 +21,10 @@ import "../../components/item/ha-list-item-button";
 import type { HaListItemButton } from "../../components/item/ha-list-item-button";
 import "../../components/list/ha-list-base";
 import "../../components/progress/ha-progress-bar";
-import { fetchBackupInfo } from "../../data/backup";
-import type { BackupManagerState } from "../../data/backup_manager";
+import {
+  getBackupState,
+  type BackupManagerState,
+} from "../../data/backup_manager";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
@@ -74,8 +76,7 @@ class DialogRestart extends LitElement {
 
   private async _loadBackupState() {
     try {
-      const { state: backupState } = await fetchBackupInfo(this.hass);
-      return backupState;
+      return await getBackupState(this.hass);
     } catch (_err) {
       // Do nothing
       return "idle";

@@ -1206,8 +1206,6 @@ class HUIRoot extends LitElement {
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
       this._navigateToView(path);
-    } else if (!this._editMode) {
-      scrollTo({ behavior: "smooth", top: 0 });
     }
   }
 
