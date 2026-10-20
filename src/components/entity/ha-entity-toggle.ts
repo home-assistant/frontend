@@ -89,7 +89,7 @@ export class HaEntityToggle extends LitElement {
     }
 
     return html`<ha-switch
-      accessible-label=${this._isOn ? turnOffLabel : turnOnLabel}
+      .accessibleLabel=${this._isOn ? turnOffLabel : turnOnLabel}
       .checked=${this._isOn}
       .disabled=${this.stateObj.state === UNAVAILABLE}
       @change=${this._toggleChanged}
