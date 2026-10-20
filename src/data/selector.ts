@@ -299,6 +299,7 @@ interface EntitySelectorFilter {
   device_class?: string | readonly string[];
   supported_features?: number | [number];
   unit_of_measurement?: string | readonly string[];
+  translation_key?: string | readonly string[];
 }
 
 interface EntitySelectorEntityFilter extends EntitySelectorFilter {
@@ -1003,6 +1004,7 @@ export const filterSelectorEntities = (
     device_class: filterDeviceClass,
     supported_features: filterSupportedFeature,
     unit_of_measurement: filterUnitOfMeasurement,
+    translation_key: filterTranslationKey,
     integration: filterIntegration,
     device: filterDevice,
   } = filterEntity;
@@ -1046,6 +1048,18 @@ export const filterSelectorEntities = (
       (Array.isArray(filterUnitOfMeasurement)
         ? !filterUnitOfMeasurement.includes(entityUnitOfMeasurement)
         : entityUnitOfMeasurement !== filterUnitOfMeasurement)
+    ) {
+      return false;
+    }
+  }
+
+  if (filterTranslationKey) {
+    const translationKey = entityRegistry?.[entity.entity_id]?.translation_key;
+    if (
+      !translationKey ||
+      (Array.isArray(filterTranslationKey)
+        ? !filterTranslationKey.includes(translationKey)
+        : translationKey !== filterTranslationKey)
     ) {
       return false;
     }

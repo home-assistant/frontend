@@ -14,7 +14,10 @@ const entity = {
 } as HassEntity;
 
 const entityRegistry = {
-  "light.living_room": { device_id: "device_1" },
+  "light.living_room": {
+    device_id: "device_1",
+    translation_key: "living_room_light",
+  },
 } as unknown as HomeAssistant["entities"];
 
 const devices = {
@@ -131,6 +134,83 @@ describe("filterSelectorEntities device filter", () => {
         undefined,
         entityRegistry,
         devices
+      )
+    ).toBe(false);
+  });
+});
+
+describe("filterSelectorEntities translation key filter", () => {
+  it("matches when the registry translation key matches", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: "living_room_light" },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(true);
+  });
+
+  it("matches when the translation key is in the list", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: ["kitchen_light", "living_room_light"] },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(true);
+  });
+
+  it("does not match a different translation key", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: "kitchen_light" },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(false);
+  });
+
+  it("does not match an entity without a registry entry", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: "living_room_light" },
+        entity,
+        undefined,
+        {} as HomeAssistant["entities"]
+      )
+    ).toBe(false);
+  });
+
+  it("does not match a registry entry without a translation key", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: "living_room_light" },
+        entity,
+        undefined,
+        { "light.living_room": {} } as unknown as HomeAssistant["entities"]
+      )
+    ).toBe(false);
+  });
+
+  it("combines the translation key with other conditions (AND)", () => {
+    expect(
+      filterSelectorEntities(
+        { domain: "light", translation_key: "living_room_light" },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(true);
+
+    expect(
+      filterSelectorEntities(
+        { domain: "switch", translation_key: "living_room_light" },
+        entity,
+        undefined,
+        entityRegistry
       )
     ).toBe(false);
   });
