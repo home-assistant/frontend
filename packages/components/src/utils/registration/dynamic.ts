@@ -1,6 +1,6 @@
 import { getProvidedComponent } from "../../provider";
-import type { HacElementLoader } from "./definition";
-import { isCompatible } from "./version";
+import type { ElementLoader } from "./definition";
+import { isCompatible } from "./compatibility";
 
 /**
  * Loader that prefers the host's copy of a component when its version is
@@ -17,7 +17,7 @@ export const createDynamicLoader = (
   tagName: string,
   bundledVersion: string,
   loadScoped: () => Promise<CustomElementConstructor>
-): HacElementLoader => {
+): ElementLoader => {
   let loaded: Promise<CustomElementConstructor> | undefined;
 
   const load = async (): Promise<CustomElementConstructor> => {

@@ -1,4 +1,4 @@
-import type { HacElementDefinition } from "../../utils/registration/definition";
+import type { ElementDefinition } from "../../utils/registration/definition";
 import { scopedVariant } from "../../utils/registration/dependencies";
 import { HacCard } from "./hac-card";
 import { TAG_NAME } from "./info";
@@ -10,7 +10,7 @@ export { HacCard };
  * `ScopedElementsMixin(LitElement, [hacCard])` or
  * `createScopedElementRegistry([hacCard])`.
  */
-export const hacCard: HacElementDefinition<typeof HacCard> = {
+export const hacCard: ElementDefinition<typeof HacCard> = {
   tagName: TAG_NAME,
   element: scopedVariant(HacCard),
 };

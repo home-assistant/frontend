@@ -1,6 +1,6 @@
 import type { LitElement } from "lit";
 import { define } from "./utils/registration/define";
-import type { HacElementDefinition } from "./utils/registration/definition";
+import type { ElementDefinition } from "./utils/registration/definition";
 import {
   createScopedRegistry,
   scopedCreationScope,
@@ -9,11 +9,9 @@ import {
 } from "./utils/registration/scoped-registry";
 
 export type {
-  HacElementDefinition,
-  HacElementLoader,
+  ElementDefinition,
+  ElementLoader,
 } from "./utils/registration/definition";
-export { scopedRegistrySupport } from "./utils/registration/scoped-registry";
-export type { ScopedRegistrySupport } from "./utils/registration/scoped-registry";
 
 /**
  * Creates a registry with the given elements, for `attachScopedShadow`:
@@ -28,7 +26,7 @@ export type { ScopedRegistrySupport } from "./utils/registration/scoped-registry
  * taken there, and the global registry is returned.
  */
 export const createScopedElementRegistry = (
-  elements: readonly HacElementDefinition[]
+  elements: readonly ElementDefinition[]
 ): CustomElementRegistry => {
   // Checked as unknown: Array.isArray would narrow the list to any[]
   if (!Array.isArray(elements as unknown)) {
@@ -102,12 +100,6 @@ export const createScopedElement = <K extends keyof HTMLElementTagNameMap>(
 
 type LitElementConstructor = abstract new (...args: any[]) => LitElement;
 
-/** Static API added by `ScopedElementsMixin`. */
-export interface ScopedElementsHostConstructor {
-  /** The registry of the class, created on first use. */
-  readonly scopedRegistry: CustomElementRegistry;
-}
-
 /**
  * Renders a Lit element into a shadow root with its own custom element
  * registry, containing `elements`:
@@ -120,7 +112,7 @@ export interface ScopedElementsHostConstructor {
  */
 export const ScopedElementsMixin = <T extends LitElementConstructor>(
   superClass: T,
-  elements: readonly HacElementDefinition[]
+  elements: readonly ElementDefinition[]
 ) => {
   // Created on first use, so defining the class has no side effects
   let registry: CustomElementRegistry | undefined;
@@ -130,10 +122,6 @@ export const ScopedElementsMixin = <T extends LitElementConstructor>(
   };
 
   abstract class ScopedElementsHost extends superClass {
-    static get scopedRegistry(): CustomElementRegistry {
-      return getRegistry();
-    }
-
     public attachShadow(init: ShadowRootInit): ShadowRoot {
       const root = super.attachShadow(shadowRootInit(init, getRegistry()));
       registries.set(root, getRegistry());
@@ -149,5 +137,6 @@ export const ScopedElementsMixin = <T extends LitElementConstructor>(
       return root;
     }
   }
-  return ScopedElementsHost as unknown as T & ScopedElementsHostConstructor;
+  // Typed as the base class: the overrides add no public API
+  return ScopedElementsHost as unknown as T;
 };

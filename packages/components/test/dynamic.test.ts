@@ -1,6 +1,6 @@
 import { LitElement } from "lit";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { HAC_PROVIDER_KEY, provideComponents } from "../src/provider";
+import { PROVIDER_KEY, provideComponents } from "../src/provider";
 import { createDynamicLoader } from "../src/utils/registration/dynamic";
 
 // `dynamic` entry points pick between the host's copy of a component and the
@@ -17,7 +17,7 @@ const loader = (loadScoped = vi.fn(async () => Bundled)) => ({
 });
 
 afterEach(() => {
-  delete global[HAC_PROVIDER_KEY];
+  delete global[PROVIDER_KEY];
 });
 
 describe("createDynamicLoader", () => {

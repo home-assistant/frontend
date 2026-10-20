@@ -1,4 +1,4 @@
-import type { HacElementDefinition } from "../../../utils/registration/definition";
+import type { ElementDefinition } from "../../../utils/registration/definition";
 import { createDynamicLoader } from "../../../utils/registration/dynamic";
 import { TAG_NAME, VERSION } from "./info";
 
@@ -15,7 +15,7 @@ const loadScoped = async () =>
  * `ScopedElementsMixin(LitElement, [hacButtonClose])` or
  * `createScopedElementRegistry([hacButtonClose])`.
  */
-export const hacButtonClose: HacElementDefinition = {
+export const hacButtonClose: ElementDefinition = {
   tagName: TAG_NAME,
   element: createDynamicLoader(TAG_NAME, VERSION, loadScoped),
 };
