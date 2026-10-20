@@ -16,16 +16,20 @@ import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { storage } from "../../../common/decorators/storage";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import type {
   FlattenObjectKeys,
   LocalizeFunc,
 } from "../../../common/translations/localize";
+import { hasRejectedItems } from "../../../common/util/promise-all-settled-results";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
+  SelectionChangedEvent,
   SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-dropdown";
 import type {
   HaDropdown,
@@ -52,6 +56,7 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route, TranslationDict } from "../../../types";
 import {
   getCreatedAtTableColumn,
@@ -145,6 +150,11 @@ export class HaConfigLabels extends LitElement {
   private _overflowLabel!: LabelRegistryEntry;
 
   private _openingOverflow = false;
+
+  @state() private _selected: string[] = [];
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
 
   private _columns = memoizeOne((localize: LocalizeFunc, narrow: boolean) => {
     const columns: DataTableColumnContainer<LabelRegistryEntry> = {
@@ -273,6 +283,9 @@ export class HaConfigLabels extends LitElement {
         @row-click=${this._editLabel}
         clickable
         id="label_id"
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -280,6 +293,12 @@ export class HaConfigLabels extends LitElement {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
+        <ha-assist-chip
+          slot="selection-bar"
+          .label=${this.hass.localize("ui.panel.config.labels.delete_selected")}
+          .disabled=${!this._selected.length}
+          @click=${this._deleteSelected}
+        ></ha-assist-chip>
         <ha-button slot="fab" size="l" @click=${this._addLabel}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.labels.add_label")}
@@ -300,7 +319,7 @@ export class HaConfigLabels extends LitElement {
           `
         )}
         <wa-divider></wa-divider>
-        <ha-dropdown-item variant="danger" value="remove">
+        <ha-dropdown-item variant="danger" value="delete">
           <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
           ${this.hass.localize("ui.common.delete")}
         </ha-dropdown-item>
@@ -342,7 +361,7 @@ export class HaConfigLabels extends LitElement {
       updateEntry: entry
         ? (values) => this._updateLabel(entry, values)
         : undefined,
-      removeEntry: entry ? () => this._removeLabel(entry) : undefined,
+      removeEntry: entry ? () => this._deleteLabel(entry) : undefined,
     });
   }
 
@@ -369,21 +388,21 @@ export class HaConfigLabels extends LitElement {
     return updated;
   }
 
-  private _handleRemoveLabelClick = () => {
-    this._removeLabel(this._overflowLabel);
+  private _handleDeleteLabelClick = () => {
+    this._deleteLabel(this._overflowLabel);
   };
 
-  private async _removeLabel(selectedLabel: LabelRegistryEntry) {
+  private async _deleteLabel(selectedLabel: LabelRegistryEntry) {
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass!.localize(
-          "ui.panel.config.labels.confirm_remove_title"
+          "ui.panel.config.labels.confirm_delete_title"
         ),
-        text: this.hass.localize("ui.panel.config.labels.confirm_remove", {
+        text: this.hass.localize("ui.panel.config.labels.confirm_delete", {
           label: selectedLabel.name || selectedLabel.label_id,
         }),
         dismissText: this.hass!.localize("ui.common.cancel"),
-        confirmText: this.hass!.localize("ui.common.remove"),
+        confirmText: this.hass!.localize("ui.common.delete"),
         destructive: true,
       }))
     ) {
@@ -399,6 +418,54 @@ export class HaConfigLabels extends LitElement {
       return false;
     }
   }
+
+  private _handleSelectionChanged = (
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void => {
+    this._selected = ev.detail.value;
+  };
+
+  private _deleteSelected = () => {
+    let deleteFailed = false;
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.labels.confirm_delete_selected_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.labels.confirm_delete_selected",
+        { count: this._selected.length }
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+      action: async () => {
+        const results = await Promise.allSettled(
+          this._selected.map((labelId) =>
+            deleteLabelRegistryEntry(this.hass, labelId)
+          )
+        );
+        const deletedIds = new Set(
+          this._selected.filter(
+            (_id, index) => results[index].status === "fulfilled"
+          )
+        );
+        this._labels = this._labels.filter(
+          (label) => !deletedIds.has(label.label_id)
+        );
+        deleteFailed = hasRejectedItems(results);
+        this._dataTable.clearSelection();
+      },
+    }).then((confirmed) => {
+      if (confirmed && deleteFailed) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.labels.delete_failed_title"
+          ),
+          text: this.hass.localize("ui.panel.config.labels.delete_failed"),
+        });
+      }
+    });
+  };
 
   private _handleOverflowAction = (ev: HaDropdownSelectEvent) => {
     const action = ev.detail.item.value;
@@ -422,8 +489,8 @@ export class HaConfigLabels extends LitElement {
       case "navigate-scripts":
         this._navigateConfig("/config/script/dashboard");
         break;
-      case "remove":
-        this._handleRemoveLabelClick();
+      case "delete":
+        this._handleDeleteLabelClick();
         break;
     }
   };

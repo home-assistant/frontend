@@ -507,6 +507,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;
+  label_position?: "side" | "below";
   logarithmic_scale?: boolean;
   min_y_axis?: number;
   max_y_axis?: number;
@@ -739,7 +740,8 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
 export interface AlertCardConfig extends LovelaceCardConfig {
   type: "alert";
   entity: string;
-  color?: string;
+  alert_color?: string;
+  clear_color?: string;
   pulse?: boolean;
 }
 

@@ -12,8 +12,6 @@ import type { ESPHomeDeviceCapabilities, ESPHomeSerialProxy } from "./esphome";
 import type { ESPHomeFrontendUserData } from "./frontend";
 import type { SerialPortUsage } from "./usb";
 
-export const MUSIC_ASSISTANT_ADDON_SLUG = "d5369777_music_assistant";
-
 export const MUSIC_ASSISTANT_DOCS_URL = "https://music-assistant.io/";
 
 export type ESPHomeCapabilityId =

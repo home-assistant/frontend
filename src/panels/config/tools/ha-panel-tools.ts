@@ -11,6 +11,7 @@ import "../../../components/ha-icon-button-arrow-prev";
 import "../../../components/ha-tab-group";
 import "../../../components/ha-tab-group-tab";
 import "../../../components/ha-top-app-bar-fixed";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type { HomeAssistant, Route } from "../../../types";
 import "./tools-router";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -35,6 +36,10 @@ const TOOLS_TABS = [
   {
     panel: "event",
     translationKey: "ui.panel.config.tools.tabs.events.title",
+  },
+  {
+    panel: "debug-console",
+    translationKey: "ui.panel.config.tools.tabs.debug_console.title",
   },
   {
     panel: "statistics",
@@ -81,7 +86,12 @@ class PanelTools extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
         <ha-tab-group @wa-tab-show=${this._handlePageSelected} slot="subRow">
-          ${TOOLS_TABS.map(
+          ${TOOLS_TABS.filter(
+            (tab) =>
+              tab.panel !== "debug-console" ||
+              // Only loaded when enabled in YAML.
+              isComponentLoaded(this.hass.config, "debug_console")
+          ).map(
             (tab) => html`
               <ha-tab-group-tab
                 slot="nav"

@@ -20,6 +20,7 @@ import "./ha-button";
 import "./ha-dropdown";
 import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
+import "./ha-secure-connection-alert";
 import "./ha-spinner";
 import "./input/ha-input";
 import type { HaInput } from "./input/ha-input";
@@ -163,15 +164,15 @@ class HaQrScanner extends LitElement {
                   : nothing
               }
             </div>`
-        : html`<ha-alert alert-type="warning">
-              ${
-                !window.isSecureContext
-                  ? this._localize(
-                      "ui.components.qr-scanner.only_https_supported"
-                    )
-                  : this._localize("ui.components.qr-scanner.not_supported")
-              }
-            </ha-alert>
+        : html`${
+              !window.isSecureContext
+                ? html`<ha-secure-connection-alert
+                    feature="camera"
+                  ></ha-secure-connection-alert>`
+                : html`<ha-alert alert-type="warning">
+                    ${this._localize("ui.components.qr-scanner.not_supported")}
+                  </ha-alert>`
+            }
             <p>${this._localize("ui.components.qr-scanner.manual_input")}</p>
             <div class="row">
               <ha-input

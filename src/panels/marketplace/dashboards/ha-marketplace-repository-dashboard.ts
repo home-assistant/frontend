@@ -19,6 +19,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { consume } from "../../../common/decorators/consume";
+import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { formatNumber } from "../../../common/number/format_number";
@@ -39,9 +40,10 @@ import {
   apiContext,
   configContext,
   internationalizationContext,
-  statesContext,
   uiContext,
 } from "../../../data/context";
+import type { UpdateEntity } from "../../../data/update";
+import { latestVersionIsSkipped } from "../../../data/update";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
@@ -147,8 +149,9 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
+  @state()
+  @consumeEntityState({ entityIdPath: ["_repository", "update_entity_id"] })
+  private _updateEntity?: UpdateEntity;
 
   @state() private _repository?: RepositoryInfo;
 
@@ -601,7 +604,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     }
 
     // Installing and updating are the main actions, a reinstall stays in the menu
-    if (repository.pending_upgrade) {
+    const updateSkipped =
+      this._updateEntity !== undefined &&
+      latestVersionIsSkipped(this._updateEntity);
+
+    if (repository.pending_upgrade && !updateSkipped) {
       return {
         kind: "update",
         icon: mdiArrowUpBoldCircleOutline,
@@ -630,8 +637,39 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         detail: localize("ui.panel.marketplace.repository.next_step.restart", {
           name,
         }),
-        action: html`<ha-button appearance="filled" @click=${this._restart}>
+        action: html`<ha-button
+          variant="warning"
+          appearance="filled"
+          @click=${this._restart}
+        >
+          <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
           ${localize("ui.panel.marketplace.repository.next_step.restart_button")}
+        </ha-button>`,
+      };
+    }
+
+    // A skipped update can still be installed or unskipped from its entity
+    if (repository.pending_upgrade) {
+      return {
+        kind: "installed",
+        icon: mdiCheckCircle,
+        title: localize(
+          "ui.panel.marketplace.repository_status.update_skipped"
+        ),
+        detail: localize("ui.panel.marketplace.repository.version_skipped", {
+          installed: repository.installed_version,
+          version: repository.available_version,
+        }),
+        action: html`<ha-button
+          variant="neutral"
+          appearance="outlined"
+          @click=${this._update}
+        >
+          <ha-svg-icon
+            slot="start"
+            .path=${mdiArrowUpBoldCircleOutline}
+          ></ha-svg-icon>
+          ${localize("ui.common.update")}
         </ha-button>`,
       };
     }
@@ -921,10 +959,10 @@ type: module</pre>`,
   // Updates are installed from their update entity everywhere else too, the
   // install dialog is for when there is none
   private _update() {
-    const entityId = this._repository!.update_entity_id;
-
-    if (entityId && this._states[entityId]) {
-      fireEvent(this, "hass-more-info", { entityId });
+    if (this._updateEntity) {
+      fireEvent(this, "hass-more-info", {
+        entityId: this._updateEntity.entity_id,
+      });
       return;
     }
 

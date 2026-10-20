@@ -16,13 +16,15 @@ import { transform } from "../common/decorators/transform";
 import { supportsFeature } from "../common/entity/supports-feature";
 import type { LocalizeFunc } from "../common/translations/localize";
 import {
+  createAssistMessageProcessor,
+  type AssistMessage,
+  type AssistMessageProcessor,
+} from "../data/assist_chat";
+import {
   runAssistPipeline,
   type AssistPipeline,
-  type ConversationChatLogAssistantDelta,
-  type ConversationChatLogToolResultDelta,
   type PipelineRunEvent,
 } from "../data/assist_pipeline";
-import type { ChatLogToolResult } from "../data/chat_log";
 import {
   configContext,
   connectionContext,
@@ -43,27 +45,14 @@ import {
   findAvailableLanguage,
   getTranslation,
 } from "../util/common-translation";
-import { documentationUrl } from "../util/documentation-url";
+import {
+  documentationUrl,
+  SECURE_CONNECTION_DOCUMENTATION_PATH,
+} from "../util/documentation-url";
 import "./ha-alert";
 import "./ha-markdown";
 import "./input/ha-input";
 import type { HaInput } from "./input/ha-input";
-
-interface AssistMessage {
-  who: string;
-  text: string | TemplateResult;
-  thinking: string;
-  thinking_expanded?: boolean;
-  tool_calls: Record<
-    string,
-    {
-      tool_name: string;
-      tool_args: Record<string, unknown>;
-      result?: ChatLogToolResult;
-    }
-  >;
-  error?: boolean;
-}
 
 export const initialPromptToSubmit = (
   prompt: string | undefined,
@@ -539,31 +528,18 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
     this._conversation = [...this._conversation!, message];
   }
 
-  private async _showNotSupportedMessage() {
+  private _showNotSupportedMessage() {
+    const documentationLink = `[${this._localize(
+      "ui.components.secure_connection_required.documentation_link"
+    )}](${documentationUrl(this._config, SECURE_CONNECTION_DOCUMENTATION_PATH)})`;
     this._addMessage({
       who: "hass",
-      text:
-        // New lines matter for messages
-        // prettier-ignore
-        html`${this._localize(
-          "ui.dialogs.voice_command.not_supported_microphone_browser"
-        )}
-
-        ${this._localize(
-          "ui.dialogs.voice_command.not_supported_microphone_documentation",
-          {
-            documentation_link: html`<a
-                target="_blank"
-                rel="noopener noreferrer"
-                href=${documentationUrl(
-                  this._config,
-                  "/docs/configuration/securing/#remote-access"
-                )}
-              >${this._localize(
-                  "ui.dialogs.voice_command.not_supported_microphone_documentation_link"
-                )}</a>`,
-          }
-          )}`,
+      text: `${this._localize(
+        "ui.components.secure_connection_required.microphone"
+      )}\n\n${this._localize(
+        "ui.components.secure_connection_required.learn_more",
+        { documentation_link: documentationLink }
+      )}`,
       thinking: "",
       tool_calls: {},
     });
@@ -583,13 +559,31 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
     }
     this._stt_binary_handler_id = undefined;
     this._audioBuffer = [];
+
+    const microphoneError = await this._audioRecorder.start();
+
+    if (microphoneError) {
+      this._audioBuffer = undefined;
+      this._processing = false;
+      this._addMessage({
+        who: "hass",
+        text: this._localize(
+          `ui.dialogs.voice_command.microphone_${microphoneError}`
+        ),
+        thinking: "",
+        tool_calls: {},
+        error: true,
+      });
+
+      return;
+    }
+
     const userMessage: AssistMessage = {
       who: "user",
       text: "…",
       thinking: "",
       tool_calls: {},
     };
-    await this._audioRecorder.start();
 
     this._addMessage(userMessage);
 
@@ -602,7 +596,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
           if (event.type === "run-start") {
             this._stt_binary_handler_id =
               event.data.runner_data.stt_binary_handler_id;
-            this._audio = new Audio(event.data.tts_output!.url);
+            this._audio = new Audio(
+              this._connection.hassUrl(event.data.tts_output!.url)
+            );
             this._audio.play();
             this._audio.addEventListener("ended", () => {
               this._unloadAudio();
@@ -616,7 +612,11 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
             );
             this._audio.addEventListener("error", () => {
               this._unloadAudio();
-              showAlertDialog(this, { title: "Error playing audio." });
+              showAlertDialog(this, {
+                title: this._localize(
+                  "ui.dialogs.voice_command.error_playing_audio"
+                ),
+              });
             });
           }
 
@@ -639,6 +639,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
             hassMessageProcesser.addMessage();
           } else if (event.type.startsWith("intent-")) {
             hassMessageProcesser.processEvent(event);
+            if (event.type === "intent-end") {
+              this._conversationId = event.data.intent_output.conversation_id;
+            }
           } else if (event.type === "run-end") {
             this._stt_binary_handler_id = undefined;
             unsub();
@@ -666,7 +669,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
       );
     } catch (err: any) {
       await showAlertDialog(this, {
-        title: "Error starting pipeline",
+        title: this._localize(
+          "ui.dialogs.voice_command.error_starting_pipeline"
+        ),
         text: err.message || err,
       });
       this._stopListening();
@@ -728,6 +733,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
         (event) => {
           if (event.type.startsWith("intent-")) {
             hassMessageProcesser.processEvent(event);
+            if (event.type === "intent-end") {
+              this._conversationId = event.data.intent_output.conversation_id;
+            }
           }
           if (event.type === "intent-end") {
             unsub();
@@ -754,118 +762,11 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
     }
   }
 
-  private _createAddHassMessageProcessor() {
-    let currentDeltaRole = "";
-
-    const progressToNextMessage = () => {
-      if (
-        progress.hassMessage.text === "…" &&
-        !progress.hassMessage.thinking &&
-        (!progress.hassMessage.tool_calls ||
-          Object.keys(progress.hassMessage.tool_calls).length === 0)
-      ) {
-        return;
-      }
-      if (progress.hassMessage.text?.endsWith("…")) {
-        progress.hassMessage.text = progress.hassMessage.text.slice(0, -1);
-      }
-
-      progress.hassMessage = {
-        who: "hass",
-        text: "…",
-        thinking: "",
-        tool_calls: {},
-        error: false,
-      };
-      this._addMessage(progress.hassMessage);
-    };
-
-    const isAssistantDelta = (
-      _delta: any
-    ): _delta is Partial<ConversationChatLogAssistantDelta> =>
-      currentDeltaRole === "assistant";
-
-    const isToolResult = (
-      _delta: any
-    ): _delta is ConversationChatLogToolResultDelta =>
-      currentDeltaRole === "tool_result";
-
-    const progress = {
-      continueConversation: false,
-      hassMessage: {
-        who: "hass",
-        text: "…",
-        thinking: "",
-        tool_calls: {},
-        error: false,
-      },
-      addMessage: () => {
-        this._addMessage(progress.hassMessage);
-      },
-      setError: (error: string) => {
-        progressToNextMessage();
-        progress.hassMessage.text = error;
-        progress.hassMessage.error = true;
-        this.requestUpdate("_conversation");
-      },
-      processEvent: (event: PipelineRunEvent) => {
-        if (event.type === "intent-progress" && event.data.chat_log_delta) {
-          const delta = event.data.chat_log_delta;
-
-          // new message
-          if (delta.role) {
-            currentDeltaRole = delta.role;
-          }
-
-          if (isAssistantDelta(delta)) {
-            if (delta.content) {
-              if (progress.hassMessage.text.endsWith("…")) {
-                progress.hassMessage.text =
-                  progress.hassMessage.text.substring(
-                    0,
-                    progress.hassMessage.text.length - 1
-                  ) +
-                  delta.content +
-                  "…";
-              } else {
-                progress.hassMessage.text += delta.content + "…";
-              }
-            }
-            if (delta.thinking_content) {
-              progress.hassMessage.thinking += delta.thinking_content;
-            }
-            if (delta.tool_calls) {
-              for (const toolCall of delta.tool_calls) {
-                progress.hassMessage.tool_calls[toolCall.id] = toolCall;
-              }
-            }
-            this.requestUpdate("_conversation");
-          } else if (isToolResult(delta)) {
-            if (progress.hassMessage.tool_calls[delta.tool_call_id]) {
-              progress.hassMessage.tool_calls[delta.tool_call_id].result =
-                delta.result;
-              this.requestUpdate("_conversation");
-            }
-          }
-        } else if (event.type === "intent-end") {
-          this._conversationId = event.data.intent_output.conversation_id;
-          progress.continueConversation =
-            event.data.intent_output.continue_conversation;
-          const response =
-            event.data.intent_output.response.speech.plain?.speech;
-          if (!response) {
-            return;
-          }
-          if (event.data.intent_output.response.response_type === "error") {
-            progress.setError(response);
-          } else {
-            progress.hassMessage.text = response;
-            this.requestUpdate("_conversation");
-          }
-        }
-      },
-    };
-    return progress;
+  private _createAddHassMessageProcessor(): AssistMessageProcessor {
+    return createAssistMessageProcessor({
+      addMessage: (message) => this._addMessage(message),
+      requestUpdate: () => this.requestUpdate("_conversation"),
+    });
   }
 
   static get styles(): CSSResultGroup {

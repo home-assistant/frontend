@@ -773,12 +773,16 @@ export class HaServiceControl extends LitElement {
     filter_entity: targetEntities || undefined,
   }));
 
-  private _localizeValueCallback = (key: string) => {
+  private _localizeValueCallback = (
+    key: string,
+    values?: Record<string, string>
+  ) => {
     if (!this._value?.action) {
       return "";
     }
     return this.hass.localize(
-      `component.${computeDomain(this._value.action)}.selector.${key}`
+      `component.${computeDomain(this._value.action)}.selector.${key}`,
+      values
     );
   };
 
