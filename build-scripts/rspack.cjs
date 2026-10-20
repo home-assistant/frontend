@@ -40,6 +40,21 @@ const TOOLCHAIN_PACKAGES = [
   "caniuse-lite",
 ];
 
+// Not direct dependencies: read the copy the package that loads them uses.
+const TOOLCHAIN_PACKAGE_PARENTS = {
+  terser: "terser-webpack-plugin",
+  "caniuse-lite": "browserslist",
+};
+
+const toolchainVersion = (pkg) => {
+  const parent = TOOLCHAIN_PACKAGE_PARENTS[pkg];
+  const lookup = parent && [
+    path.dirname(require.resolve(`${parent}/package.json`)),
+  ];
+  return require(require.resolve(`${pkg}/package.json`, { paths: lookup }))
+    .version;
+};
+
 // Our own build logic — the config, loaders and babel plugins. Their contents
 // (not their paths) go into the cache version, so a change invalidates the
 // cache the same way `buildDependencies` would, but without tying validity to
@@ -63,9 +78,7 @@ const PATCHES_DIR = path.join(paths.root_dir, "patches");
 // stays valid when reused on a different machine or checkout path.
 const cacheVersion = () => {
   const parts = [
-    ...TOOLCHAIN_PACKAGES.map(
-      (pkg) => `${pkg}@${require(`${pkg}/package.json`).version}`
-    ),
+    ...TOOLCHAIN_PACKAGES.map((pkg) => `${pkg}@${toolchainVersion(pkg)}`),
     ...CONFIG_FILES.map(
       (file) => `${path.basename(file)}:${fs.readFileSync(file, "utf8")}`
     ),
