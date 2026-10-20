@@ -5,12 +5,8 @@ import { defineGlobal, scopedVariant } from "../src/utils/dependencies";
 // Entry points decide where a component's dependencies are registered. These
 // cases guard that global mode registers them globally and scoped mode never
 // shares classes with the global registry.
-class Leaf extends LitElement {
-  static readonly version = "1.0.0";
-}
+class Leaf extends LitElement {}
 class Parent extends LitElement {
-  static readonly version = "1.0.0";
-
   static readonly dependencies = { "hac-test-leaf": Leaf };
 }
 

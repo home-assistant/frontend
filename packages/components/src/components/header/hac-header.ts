@@ -1,7 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
 import { HacButtonClose } from "../button/close/hac-button-close";
-import { VERSION } from "./version";
 
 /**
  * Header with an optional icon, a title, a subtitle and actions.
@@ -27,9 +26,6 @@ import { VERSION } from "./version";
  * @cssprop --hac-header-padding - Padding of the header.
  */
 export class HacHeader extends LitElement {
-  /** Version of the component, read by `dynamic` loaders at runtime. */
-  static readonly version = VERSION;
-
   static readonly dependencies = { "hac-button-close": HacButtonClose };
 
   /** Heading level of the title for assistive technology. */

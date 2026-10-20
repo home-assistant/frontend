@@ -2,7 +2,6 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { property } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { VERSION } from "./version";
 
 /**
  * Button.
@@ -23,9 +22,6 @@ import { VERSION } from "./version";
  * @cssprop --hac-button-height - Height.
  */
 export class HacButton extends LitElement {
-  /** Version of the component, read by `dynamic` loaders at runtime. */
-  static readonly version = VERSION;
-
   static shadowRootOptions: ShadowRootInit = {
     ...LitElement.shadowRootOptions,
     delegatesFocus: true,

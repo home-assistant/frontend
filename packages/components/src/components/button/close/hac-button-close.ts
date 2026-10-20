@@ -1,6 +1,5 @@
 import { css, html } from "lit";
 import { HacButton } from "../hac-button";
-import { VERSION } from "./version";
 
 // mdiClose from Material Design Icons (Apache-2.0)
 const CLOSE_ICON =
@@ -21,9 +20,6 @@ const CLOSE_ICON =
  * @cssprop --hac-button-height - Width and height.
  */
 export class HacButtonClose extends HacButton {
-  /** Version of the component, read by `dynamic` loaders at runtime. */
-  static readonly version = VERSION;
-
   constructor() {
     super();
     this.appearance = "plain";

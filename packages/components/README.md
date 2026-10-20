@@ -81,6 +81,12 @@ known. Home Assistant's copy is used when its version is compatible with the
 bundled one: same major version and at least the same minor and patch (for
 `0.x` versions the minor version must match).
 
+`dynamic` imports only the element's version up front. The bundled copy is a
+dynamic import, which bundlers split into a separate chunk that is only
+downloaded when Home Assistant cannot provide a compatible copy. Builds that
+inline dynamic imports into a single file still work, but then always contain
+the bundled copy.
+
 Scoped registries need native support (Chrome 146+, Safari 26) or
 `@webcomponents/scoped-custom-element-registry`, which Home Assistant loads.
 Without either, elements are registered globally instead, and an already
@@ -119,7 +125,7 @@ import paths:
 ```
 src/components/button/         <hac-button>        -> @home-assistant/components/button
   hac-button.ts                class, does not register itself
-  version.ts                   version, also exposed as `static version`
+  version.ts                   version, the only module `dynamic` loads up front
   global.ts                    registers globally
   scoped.ts                    elements for a scoped registry  -> …/scoped
   dynamic.ts                   host's or bundled copy, scoped  -> …/dynamic

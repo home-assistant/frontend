@@ -1,6 +1,5 @@
 import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
-import { VERSION } from "./version";
 
 /**
  * Container that groups related content.
@@ -23,9 +22,6 @@ import { VERSION } from "./version";
  * @cssprop --hac-card-footer-padding - Padding of the footer.
  */
 export class HacCard extends LitElement {
-  /** Version of the component, read by `dynamic` loaders at runtime. */
-  static readonly version = VERSION;
-
   /** Visual style of the card. */
   @property({ reflect: true }) public appearance: "outlined" | "raised" =
     "outlined";
