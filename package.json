@@ -63,7 +63,7 @@
     "@formatjs/intl-numberformat": "9.4.3",
     "@formatjs/intl-pluralrules": "6.3.15",
     "@formatjs/intl-relativetimeformat": "12.3.15",
-    "@home-assistant/webawesome": "3.14.0-ha.0",
+    "@home-assistant/webawesome": "3.14.0-ha.1",
     "@lezer/common": "1.5.3",
     "@lezer/highlight": "1.2.5",
     "@lit-labs/motion": "1.1.0",
