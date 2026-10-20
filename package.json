@@ -133,8 +133,7 @@
     "workbox-routing": "7.4.1",
     "workbox-strategies": "7.4.1",
     "xss": "1.0.15",
-    "zrender": "6.1.0",
-    "zxing-wasm": "3.1.5"
+    "zrender": "6.1.0"
   },
   "devDependencies": {
     "@ampproject/remapping": "2.3.0",
