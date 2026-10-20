@@ -162,6 +162,17 @@ describe("filterSelectorEntities translation key filter", () => {
     ).toBe(true);
   });
 
+  it("does not match when the translation key is not in the list", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: ["kitchen_light", "hallway_light"] },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(false);
+  });
+
   it("does not match a different translation key", () => {
     expect(
       filterSelectorEntities(
