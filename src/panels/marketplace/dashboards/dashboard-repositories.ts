@@ -1,3 +1,5 @@
+import type { HassEntities } from "home-assistant-js-websocket";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { dataTableQueryParamConfig } from "../../../common/url/data-table-query-params";
 import {
@@ -13,6 +15,7 @@ import {
 } from "../../../common/url/query-params";
 import type { DataTableRowData } from "../../../components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
+import type { HomeAssistant } from "../../../types";
 import type { MarketplaceTab } from "./ha-marketplace-dashboard";
 
 export const STATUS_ORDER = [
@@ -50,6 +53,74 @@ export type RepositoryFilters = Partial<
     string[]
   >
 >;
+
+export interface MarketplaceRepository extends RepositoryBase {
+  update_skipped?: boolean;
+}
+
+export const marketplaceUpdateEntityIds = (
+  entities: HomeAssistant["entities"]
+): string[] =>
+  Object.values(entities)
+    .filter(
+      (entity) =>
+        entity.platform === "marketplace" &&
+        computeDomain(entity.entity_id) === "update" &&
+        entity.device_id
+    )
+    .map((entity) => entity.entity_id);
+
+// The skip is kept on the update entity, its device names the repository
+export const skippedUpdateRepositories = (
+  entityIds: string[],
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  states: HassEntities
+): string[] =>
+  entityIds
+    .flatMap((entityId) => {
+      const entity = entities[entityId];
+      const attributes = states[entityId]?.attributes;
+
+      if (
+        !entity?.device_id ||
+        !attributes?.latest_version ||
+        attributes.skipped_version !== attributes.latest_version
+      ) {
+        return [];
+      }
+
+      const repositoryId = devices[entity.device_id]?.identifiers.find(
+        ([domain]) => domain === "marketplace"
+      )?.[1];
+
+      return repositoryId ? [repositoryId] : [];
+    })
+    .sort();
+
+// A skipped update leaves the repository installed. A restart it waits for
+// is still needed, so that status stays.
+export const applySkippedUpdates = (
+  repositories: RepositoryBase[],
+  skipped: string[]
+): MarketplaceRepository[] =>
+  skipped.length
+    ? repositories.map((repository): MarketplaceRepository => {
+        if (!repository.pending_upgrade || !skipped.includes(repository.id)) {
+          return repository;
+        }
+
+        return {
+          ...repository,
+          update_skipped: true,
+          pending_upgrade: false,
+          status:
+            repository.status === "pending-upgrade"
+              ? "installed"
+              : repository.status,
+        };
+      })
+    : repositories;
 
 export const statusesOfTab = (
   tab: MarketplaceTab

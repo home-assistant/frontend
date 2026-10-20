@@ -961,7 +961,10 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       padding-right: calc(16px + var(--data-table-inset-right, 0px));
       gap: var(--ha-space-4);
       box-sizing: border-box;
-      background: var(--primary-background-color);
+      background: var(
+        --ha-panel-toolbar-background,
+        var(--primary-background-color)
+      );
       border-bottom: 1px solid var(--divider-color);
       overflow-x: auto;
       scrollbar-width: none;

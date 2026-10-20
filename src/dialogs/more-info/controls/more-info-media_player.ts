@@ -424,7 +424,7 @@ class MoreInfoMediaPlayer extends LitElement {
                   min="0"
                   max=${duration}
                   step="1"
-                  aria-label=${this._localize(
+                  .accessibleLabel=${this._localize(
                     "ui.card.media_player.track_position"
                   )}
                   @change=${this._handleMediaSeekChanged}

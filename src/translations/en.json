@@ -322,6 +322,7 @@
       "update": {
         "installing": "Installing",
         "installing_with_progress": "Installing ({progress}%)",
+        "preparing": "Preparing",
         "up_to_date": "Up-to-date"
       },
       "text": {
@@ -499,6 +500,7 @@
       "submit": "Submit",
       "rename": "Rename",
       "reset": "Reset",
+      "retry": "Retry",
       "search": "[%key:ui::components::data-table::search%]",
       "ok": "OK",
       "yes": "Yes",
@@ -778,6 +780,13 @@
         "time_pattern": "time pattern",
         "homeassistant_stopping": "Home Assistant stopping",
         "homeassistant_starting": "Home Assistant starting",
+        "cause_filter": {
+          "caption": "Triggered by",
+          "automation": "Automations",
+          "script": "Scripts",
+          "integration": "Integrations",
+          "other": "Other"
+        },
         "cause": {
           "by": "By {name}",
           "by_automation": "By automation: {name}",
@@ -848,6 +857,11 @@
         "entity-state-content-picker": {
           "add": "Add",
           "custom_attribute": "Custom attribute"
+        },
+        "entity-toggle": {
+          "toggle": "Toggle {name}",
+          "turn_on": "Turn {name} on",
+          "turn_off": "Turn {name} off"
         }
       },
       "target-picker": {
@@ -1306,6 +1320,10 @@
           "search_placeholder": "Search {name}",
           "no_results": "No results found"
         },
+        "filter": {
+          "filter_placeholder": "Filter {name}",
+          "no_matches": "No items match your filter"
+        },
         "filter_media_type": "Filter by media type",
         "no_items": "No items",
         "not_shown": "{count} {count, plural,\n  one {item}\n  other {items}\n} incompatible with the currently selected player {count, plural,\n  one {is}\n  other {are}\n} hidden",
@@ -1530,7 +1548,17 @@
       },
       "climate-control": {
         "temperature_up": "Increase temperature",
-        "temperature_down": "Decrease temperature"
+        "temperature_down": "Decrease temperature",
+        "lower_temperature_up": "Increase lower target temperature",
+        "lower_temperature_down": "Decrease lower target temperature",
+        "upper_temperature_up": "Increase upper target temperature",
+        "upper_temperature_down": "Decrease upper target temperature",
+        "humidity_up": "Increase humidity",
+        "humidity_down": "Decrease humidity"
+      },
+      "number-buttons": {
+        "increment": "Increment",
+        "decrement": "Decrement"
       },
       "yaml-editor": {
         "copy_to_clipboard": "[%key:ui::panel::config::automation::editor::copy_to_clipboard%]",
@@ -1858,6 +1886,7 @@
             "backups_link": "View backups"
           },
           "install_failed": "The update could not be started: {error}",
+          "supervisor_logs": "[%key:ui::panel::config::logs::supervisor_logs%]",
           "create_backup": {
             "automatic": "Automatic backup before update",
             "automatic_description_last": "Last automatic backup {relative_time}.",
@@ -3420,8 +3449,13 @@
           "no_labels": "You don't have any labels",
           "introduction": "Labels can help you organize your areas, devices, and entities. They can be used to filter in the UI, or use them as a target in automations.",
           "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
-          "confirm_remove_title": "Remove label?",
-          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities."
+          "confirm_delete_title": "Delete label?",
+          "confirm_delete": "Are you sure you want to delete label {label}? It will be removed from all areas, devices, and entities.",
+          "delete_selected": "Delete selected",
+          "confirm_delete_selected_title": "Delete selected labels?",
+          "confirm_delete_selected": "{count, plural,\n  one {The selected label will be removed from all areas, devices, and entities.}\n  other {The {count} selected labels will be removed from all areas, devices, and entities.}\n}",
+          "delete_failed_title": "Delete failed",
+          "delete_failed": "Some labels could not be deleted. Check system logs for more information."
         },
         "areas": {
           "caption": "Areas",
@@ -4877,6 +4911,8 @@
           "search": "Search logs",
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
+          "no_matches_showing_all": "Nothing in the recent logs mentions ''{term}'', so all lines are shown.",
+          "show_hidden_lines": "Show {count} hidden {count, plural,\n one {line}\n other {lines}\n}",
           "load_logs": "Load logs",
           "nr_of_lines": "Number of lines",
           "loading_log": "Loading log…",
@@ -4897,6 +4933,7 @@
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This log entry is from a custom integration.",
           "show_full_logs": "Show raw logs",
+          "supervisor_logs": "Supervisor logs",
           "show_condensed_logs": "Show condensed logs",
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
@@ -5017,6 +5054,12 @@
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
+            "delete_selected": "Delete selected",
+            "confirm_delete_selected_title": "Delete selected dashboards?",
+            "confirm_delete_selected": "{count, plural,\n  one {The selected dashboard will be permanently deleted.}\n  other {The {count} selected dashboards will be permanently deleted.}\n}",
+            "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} dashboards. The others are built-in or configured in YAML.",
+            "delete_failed_title": "Delete failed",
+            "delete_failed": "Some dashboards could not be deleted. Check system logs for more information.",
             "cant_edit_yaml": "Dashboards created in YAML cannot be edited from the UI. Change them in configuration.yaml.",
             "cant_edit_lovelace": "The Overview dashboard title and icon cannot be changed. You can create a new dashboard to get more customization options.",
             "detail": {
@@ -5547,7 +5590,7 @@
             "select_target": "Select a target",
             "home": "Home",
             "unassigned": "Unassigned",
-            "time_sun": "Time and sun",
+            "other": "Other",
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",
@@ -6505,6 +6548,16 @@
             "blueprint_in_use_view_script": "View scripts",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
+            "delete_selected": "Delete selected",
+            "confirm_delete_selected_title": "Delete selected blueprints?",
+            "confirm_delete_selected": "{count, plural,\n  one {The selected blueprint will be permanently deleted.}\n  other {The {count} selected blueprints will be permanently deleted.}\n}",
+            "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} blueprints. The others are in use by automations or scripts.",
+            "delete_none_deletable_title": "Blueprints in use",
+            "delete_none_deletable": "None of the selected blueprints can be deleted because they are all in use.",
+            "delete_failed_title": "Delete failed",
+            "delete_failed": "Some blueprints could not be deleted. Check system logs for more information.",
+            "delete_check_failed_title": "Unable to check blueprints",
+            "delete_check_failed": "The usage of some selected blueprints could not be verified. Check system logs for more information.",
             "add_blueprint": "Import blueprint",
             "no_blueprints": "[%key:ui::panel::config::automation::editor::blueprint::no_blueprints%]",
             "create_automation": "Create automation",
@@ -7329,10 +7382,6 @@
             "setup_audio_benefit_lossless": "Lossless, high-resolution audio",
             "setup_audio_benefit_album_art": "Album art on every screen",
             "setup_install_music_assistant": "Install Music Assistant",
-            "setup_installing_music_assistant": "Installing Music Assistant",
-            "setup_starting_music_assistant": "Starting Music Assistant",
-            "setup_discovering_music_assistant": "Waiting for Music Assistant discovery",
-            "setup_error_music_assistant": "Couldn't install Music Assistant",
             "setup_error_capabilities": "Couldn't load device capabilities",
             "setup_error_defer": "Couldn't save setup for later",
             "setup_error_zwave": "Z-Wave setup for this device isn't available right now. Try again in a moment.",
@@ -7345,6 +7394,7 @@
             "setup_adapter_zwa2": "Connect ZWA-2",
             "setup_adapter_zwa2_description": "Adds a Z-Wave radio.",
             "setup_serial_configured": "Configured",
+            "setup_serial_offline": "Offline",
             "setup_serial_port_ttl": "TTL",
             "setup_serial_port_rs232": "RS-232",
             "setup_serial_port_rs485": "RS-485",
@@ -10464,6 +10514,16 @@
               "available_states": "Available states",
               "description": "This card allows you to arm and disarm your alarm control panel integrations."
             },
+            "alert": {
+              "name": "Alert",
+              "description": "This card highlights an entity that needs attention, with an optional color and pulsing background.",
+              "alert_color": "Alert color",
+              "alert_color_helper": "Used while the entity is in an alert state, such as a binary sensor that is on or an unlocked lock.",
+              "clear_color": "Clear color",
+              "clear_color_helper": "Used when the entity isn't in an alert state. The background doesn't pulse.",
+              "pulse": "Pulse",
+              "pulse_helper": "Animates the colored background while the entity is in an alert state. When reduced motion is on, the background stays tinted instead."
+            },
             "area": {
               "name": "Area",
               "color": "[%key:ui::panel::lovelace::editor::card::tile::color%]",
@@ -10625,6 +10685,12 @@
               "name": "History graph",
               "description": "This card allows you to display a graph for each of the entities listed.",
               "show_names": "Show entity names",
+              "label_position": "Label position",
+              "label_position_options": {
+                "side": "Beside the graph",
+                "below": "Below each bar"
+              },
+              "label_position_helper": "Applies only to entities shown as bars.",
               "logarithmic_scale": "Logarithmic scale",
               "expand_legend": "Expand legend",
               "min_y_axis": "Y axis minimum",
@@ -11258,6 +11324,10 @@
             "state_filter": "[%key:ui::panel::lovelace::editor::card::picture-elements::state_filter%]"
           },
           "badge": {
+            "alert": {
+              "name": "Alert",
+              "description": "A badge that highlights an entity that needs attention, with an optional color and pulsing background."
+            },
             "entity": {
               "name": "Entity",
               "description": "The Entity badge gives you a quick overview of an entity.",
@@ -12586,7 +12656,8 @@
           "empty_header": "Nothing in the Marketplace yet",
           "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
-          "repository_not_found": "Repository not found"
+          "repository_not_found": "Repository not found",
+          "uninstall_selected": "Uninstall selected"
         },
         "entry": {
           "disabled": "The Marketplace is disabled. Enable it on the integration page to use it.",
@@ -12723,6 +12794,7 @@
           },
           "version_installed": "Version {version} installed",
           "version_update": "Version {installed} installed, {version} available",
+          "version_skipped": "Version {installed} installed, {version} skipped",
           "requires_homeassistant": "The newest version needs Home Assistant {version} or newer.",
           "requires_newer_homeassistant": "The newest version needs a newer version of Home Assistant.",
           "earlier_version_hint": "Update Home Assistant, or select an earlier version with Install another version in the menu."
@@ -12743,7 +12815,8 @@
           "pending-upgrade": "Update available",
           "installed": "Installed",
           "new": "New",
-          "default": "Available"
+          "default": "Available",
+          "update_skipped": "Update skipped"
         },
         "menu": {
           "custom_repositories": "Custom repositories",
@@ -12760,7 +12833,14 @@
           },
           "uninstall": {
             "title": "Uninstall {name}?",
-            "message": "This removes the files the Marketplace installed for it."
+            "message": "This removes the files the Marketplace installed for it.",
+            "selected_title": "Uninstall selected repositories?",
+            "selected": "{count, plural,\n  one {The selected repository will be uninstalled. This removes the files the Marketplace installed for it.}\n  other {The {count} selected repositories will be uninstalled. This removes the files the Marketplace installed for them.}\n}",
+            "selected_in_use": "{count, plural, one {The selected repository} other {The {count} selected repositories}} will be uninstalled. {in_use, plural, one {The setup of one of them} other {The setups of # of them}} will be deleted with their devices and entities. This cannot be undone.",
+            "check_failed_title": "Unable to check repositories",
+            "check_failed": "The setups of some selected repositories could not be verified.",
+            "failed_title": "Uninstall failed",
+            "failed": "Some repositories could not be uninstalled."
           },
           "disabled": {
             "title": "The Marketplace is disabled",

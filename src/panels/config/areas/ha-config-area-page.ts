@@ -656,7 +656,9 @@ class HaConfigAreaPage extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          ${NAVIGATION_ACTIONS.map(
+          ${NAVIGATION_ACTIONS.filter(
+            (action) => quickLinkCounts[action.countKey]
+          ).map(
             (action) => html`
               <ha-dropdown-item value=${action.value}>
                 <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
@@ -668,8 +670,13 @@ class HaConfigAreaPage extends LitElement {
               </ha-dropdown-item>
             `
           )}
-
-          <wa-divider></wa-divider>
+          ${
+            NAVIGATION_ACTIONS.some(
+              (action) => quickLinkCounts[action.countKey]
+            )
+              ? html`<wa-divider></wa-divider>`
+              : nothing
+          }
 
           <ha-dropdown-item value="edit" .data=${area}>
             <ha-svg-icon slot="icon" .path=${mdiPencil}> </ha-svg-icon>

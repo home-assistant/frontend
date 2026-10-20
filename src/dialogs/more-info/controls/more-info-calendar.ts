@@ -1,5 +1,5 @@
 import { TZDate } from "@date-fns/tz";
-import type { CalendarOptions } from "@fullcalendar/core";
+import type { CalendarOptions } from "fullcalendar";
 import { addDays, isSameDay } from "date-fns";
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -147,7 +147,7 @@ class MoreInfoCalendar extends LitElement {
       const timeZone = resolveTimeZone(locale.time_zone, config.time_zone);
       return {
         displayEventEnd: false,
-        listDaySideFormat: false,
+        listDayAltFormat: false,
         listDayFormat: ({ date }) => {
           const day = new TZDate(date.year, date.month, date.day, timeZone);
           const today = TZDate.tz(timeZone);

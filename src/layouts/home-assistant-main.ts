@@ -198,6 +198,20 @@ export class HomeAssistantMain extends LitElement {
       /* allow a light tap highlight on the actual interface elements  */
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
     }
+    partial-panel-resolver {
+      display: block;
+      height: 100%;
+      isolation: isolate;
+    }
+    partial-panel-resolver::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: var(--ha-panel-background, var(--primary-background-color));
+      background-attachment: scroll !important;
+    }
   `;
 }
 

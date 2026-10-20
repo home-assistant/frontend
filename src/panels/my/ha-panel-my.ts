@@ -29,6 +29,7 @@ const marketplaceTableParams = {
   source: "string?",
   sort: "string?",
   direction: "string?",
+  group: "string?",
 } satisfies Redirect["params"];
 
 export const getMyRedirects = (): Redirects => ({

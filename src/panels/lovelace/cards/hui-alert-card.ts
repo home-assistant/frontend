@@ -8,6 +8,12 @@ import { consume } from "../../../common/decorators/consume";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  ALERT_DOMAINS,
+  DEFAULT_ALERT_COLOR,
+  isAlertActive,
+} from "../../../common/entity/alert_active";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
 import "../../../components/ha-relative-time";
@@ -17,12 +23,40 @@ import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
 import { formattersContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { LovelaceCard, LovelaceGridOptions } from "../types";
+import type { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entities";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
 import type { AlertCardConfig } from "./types";
 
 @customElement("hui-alert-card")
 export class HuiAlertCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import("../editor/config-elements/hui-alert-card-editor");
+
+    return document.createElement("hui-alert-card-editor");
+  }
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ): AlertCardConfig {
+    const [entity] = findEntities(
+      hass,
+      1,
+      entities,
+      entitiesFallback,
+      ALERT_DOMAINS
+    );
+
+    return { type: "alert", entity: entity || "" };
+  }
+
   @state() private _config?: AlertCardConfig;
 
   @state()
@@ -36,10 +70,19 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
   public setConfig(config: AlertCardConfig): void {
     if (
       !isValidEntityId(config.entity) ||
-      (config.color !== undefined && typeof config.color !== "string") ||
+      (config.alert_color !== undefined &&
+        typeof config.alert_color !== "string") ||
+      (config.clear_color !== undefined &&
+        typeof config.clear_color !== "string") ||
       (config.pulse !== undefined && typeof config.pulse !== "boolean")
     ) {
       throw new Error("Invalid configuration");
+    }
+
+    if (!ALERT_DOMAINS.includes(computeDomain(config.entity))) {
+      throw new Error(
+        `Specify an entity from within the ${ALERT_DOMAINS.join(", ")} domains`
+      );
     }
     this._config = config;
   }
@@ -71,18 +114,22 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
     const areaName = this._formatters.formatEntityName(stateObj, {
       type: "area",
     });
-    const pulse = this._config.pulse === true;
-    const hasColor =
-      this._config.color !== undefined && this._config.color !== "none";
+
+    const active = isAlertActive(stateObj);
+
+    const color = active
+      ? (this._config.alert_color ?? DEFAULT_ALERT_COLOR)
+      : this._config.clear_color;
+
+    const pulse = active && this._config.pulse === true;
+    const hasColor = color !== undefined && color !== "none";
 
     return html`
       <ha-card
         class=${classMap({ pulse, "no-color": !hasColor })}
         style=${styleMap({
           "--ha-alert-color":
-            this._config.color && hasColor
-              ? computeCssColor(this._config.color)
-              : undefined,
+            color && hasColor ? computeCssColor(color) : undefined,
           "--ha-alert-static-opacity": pulse
             ? undefined
             : "var(--ha-alert-pulse-opacity)",
@@ -169,7 +216,8 @@ export class HuiAlertCard extends LitElement implements LovelaceCard {
         position: relative;
       }
       @media (prefers-reduced-motion: reduce) {
-        ha-card::before {
+        ha-card::before,
+        ha-card.pulse::before {
           animation: none;
           opacity: var(--ha-alert-pulse-opacity);
         }
