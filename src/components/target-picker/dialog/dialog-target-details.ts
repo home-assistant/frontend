@@ -24,6 +24,8 @@ import "../../ha-icon-next";
 import "../../ha-svg-icon";
 import "../../list/ha-list-base";
 import "../ha-target-picker-item-row";
+import type { TargetExclusion } from "../target-exclusions";
+import { resolveItemExclusions } from "../target-exclusions";
 import type { TargetDetailsDialogParams } from "./show-dialog-target-details";
 
 @customElement("ha-dialog-target-details")
@@ -38,6 +40,10 @@ class DialogTargetDetails extends LitElement implements HassDialog {
 
   @state() private _entitySourcesLoaded = false;
 
+  @state() private _exclusions: TargetExclusion[] = [];
+
+  private _exclusionsRequest = 0;
+
   private _deviceIntegrationLookup = memoizeOne(
     (entities: HomeAssistant["entities"]) =>
       getDeviceIntegrationLookup(Object.values(entities))
@@ -45,7 +51,33 @@ class DialogTargetDetails extends LitElement implements HassDialog {
 
   public showDialog(params: TargetDetailsDialogParams): void {
     this._params = params;
+    this._exclusions = params.exclusions ?? [];
     this._opened = true;
+    if (!params.exclusions && params.exclude) {
+      this._resolveExclusions(params);
+    }
+  }
+
+  private async _resolveExclusions(params: TargetDetailsDialogParams) {
+    const request = ++this._exclusionsRequest;
+    let exclusions: TargetExclusion[];
+    try {
+      exclusions = await resolveItemExclusions(
+        this.hass,
+        { type: params.type, id: params.itemId },
+        params.exclude,
+        params.selector
+          ? params.selector.target?.primary_entities_only
+          : params.primaryEntitiesOnly
+      );
+    } catch (_err) {
+      // The details still show the target, only without what is excluded.
+      return;
+    }
+    if (request !== this._exclusionsRequest || this._params !== params) {
+      return;
+    }
+    this._exclusions = exclusions;
   }
 
   public closeDialog() {
@@ -58,6 +90,7 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     this._params = undefined;
     this._entitySources = undefined;
     this._entitySourcesLoaded = false;
+    this._exclusions = [];
   }
 
   private _hasIntegration(selector: TargetSelector) {
@@ -160,6 +193,8 @@ class DialogTargetDetails extends LitElement implements HassDialog {
       entityFilter = this._combinedFilter(entityFilter, activeFilter);
     }
 
+    const showExclusions = !!this._params.exclusions || !!this._params.exclude;
+
     const waitingForSources =
       this._params.selector &&
       this._hasIntegration(this._params.selector) &&
@@ -196,6 +231,7 @@ class DialogTargetDetails extends LitElement implements HassDialog {
                       .includeDomains=${includeDomains}
                       .includeDeviceClasses=${includeDeviceClasses}
                       .primaryEntitiesOnly=${primaryEntitiesOnly}
+                      .exclusions=${showExclusions ? this._exclusions : undefined}
                       expand
                     ></ha-target-picker-item-row>
                   `

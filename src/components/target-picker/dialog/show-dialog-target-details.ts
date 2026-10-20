@@ -1,8 +1,10 @@
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HaEntityPickerEntityFilterFunc } from "../../../data/entity/entity";
 import type { TargetSelector } from "../../../data/selector";
 import type { TargetType } from "../../../data/target";
 import type { HaDevicePickerDeviceFilterFunc } from "../../device/ha-device-picker";
+import type { TargetExclusion } from "../target-exclusions";
 
 export interface TargetDetailsDialogParams {
   title: string;
@@ -15,6 +17,13 @@ export interface TargetDetailsDialogParams {
   includeDomains?: string[];
   includeDeviceClasses?: string[];
   primaryEntitiesOnly?: boolean;
+  /** The exclusions that take entities out of this target. */
+  exclusions?: TargetExclusion[];
+  /**
+   * The `exclude` of the target value, to work out `exclusions` from when
+   * they aren't given.
+   */
+  exclude?: HassServiceTarget;
 }
 
 export const loadTargetDetailsDialog = () => import("./dialog-target-details");

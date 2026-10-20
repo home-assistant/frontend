@@ -21,3 +21,9 @@ filters, so in practice usually a single device matches:
 
 All samples below reference the removed composite device `old_composite`, which
 was split into a light device and a switch device.
+
+The target sample with exclusions shows how `exclude` in a target is
+displayed. Each included target lists the exclusions that take entities out of
+it, with how many they remove, and its count says how many are excluded. An
+exclusion that takes nothing out, like one of a deleted area, is listed under
+**Exclusions with no effect**. **Exclude** adds an exclusion.

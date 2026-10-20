@@ -1,3 +1,4 @@
+import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -5,6 +6,7 @@ import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
+import { ensureArray } from "../../../../src/common/array/ensure-array";
 import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-selector/ha-selector";
 import "../../../../src/components/ha-settings-row";
@@ -88,6 +90,16 @@ const ENTITIES = [
     state: "off",
     attributes: { friendly_name: "Garden socket" },
   },
+  {
+    entity_id: "light.bedside",
+    state: "off",
+    attributes: { friendly_name: "Bedside light" },
+  },
+  {
+    entity_id: "light.night_light",
+    state: "on",
+    attributes: { friendly_name: "Night light" },
+  },
 ];
 
 // Registry display entries link the demo entities to the split devices so the
@@ -109,6 +121,55 @@ const ENTITY_REGISTRY: Record<string, EntityRegistryDisplayEntry> = {
     platform: "demo",
     labels: [],
   },
+  "light.bedside": {
+    entity_id: "light.bedside",
+    name: "Bedside light",
+    area_id: "bedroom",
+    platform: "demo",
+    labels: [],
+  },
+  "light.night_light": {
+    entity_id: "light.night_light",
+    name: "Night light",
+    area_id: "bedroom",
+    platform: "demo",
+    labels: [],
+  },
+};
+
+// Resolves a target against the demo registries, like core's
+// extract_from_target does, so the target picker can show what each
+// exclusion takes out.
+const extractFromTarget = ({ target }: { target: HassServiceTarget }) => {
+  const ids = (key: keyof HassServiceTarget): string[] =>
+    target[key] ? ensureArray(target[key]) : [];
+  const areaIds = ids("area_id").filter((id) =>
+    AREAS.some((area) => area.area_id === id)
+  );
+  const deviceIds = [
+    ...ids("device_id").filter((id) => DEVICES.some((d) => d.id === id)),
+    ...DEVICES.filter(
+      (device) => device.area_id && areaIds.includes(device.area_id)
+    ).map((device) => device.id),
+  ];
+  const entityIds = new Set(ids("entity_id"));
+  Object.values(ENTITY_REGISTRY).forEach((entity) => {
+    if (
+      (entity.device_id && deviceIds.includes(entity.device_id)) ||
+      (entity.area_id && areaIds.includes(entity.area_id))
+    ) {
+      entityIds.add(entity.entity_id);
+    }
+  });
+  return {
+    referenced_entities: [...entityIds],
+    referenced_devices: [...new Set(deviceIds)],
+    referenced_areas: areaIds,
+    missing_areas: [],
+    missing_devices: [],
+    missing_floors: [],
+    missing_labels: [],
+  };
 };
 
 const AREAS: AreaRegistryEntry[] = [
@@ -164,6 +225,20 @@ const SAMPLES: Sample[] = [
     value: { device_id: ["old_composite"] },
   },
   {
+    name: "Target with exclusions",
+    description:
+      "Each target lists what is excluded from it. An exclusion of an area that no longer exists has no effect and is listed apart.",
+    selector: { target: {} },
+    value: {
+      area_id: ["bedroom", "backyard"],
+      exclude: {
+        entity_id: ["light.night_light"],
+        device_id: ["device_switch"],
+        area_id: ["deleted_area"],
+      },
+    },
+  },
+  {
     name: "Device (unfiltered, multiple matches)",
     description:
       "Both replacement devices qualify, so Replace opens a dialog to pick one.",
@@ -216,11 +291,7 @@ class DemoHaSelectorReplacedDevice
       "config/device_registry/list_composite_splits",
       () => COMPOSITE_SPLITS
     );
-    hass.mockWS("extract_from_target", () => ({
-      referenced_entities: [],
-      referenced_devices: [],
-      referenced_areas: [],
-    }));
+    hass.mockWS("extract_from_target", extractFromTarget);
     hass.mockWS("auth/sign_path", (params) => params);
   }
 

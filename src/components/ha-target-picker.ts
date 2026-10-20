@@ -1,5 +1,5 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
-import { mdiPlus, mdiTextureBox } from "@mdi/js";
+import { mdiPlaylistMinus, mdiPlus, mdiTextureBox } from "@mdi/js";
 import Fuse from "fuse.js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
@@ -41,7 +41,9 @@ import { domainToName } from "../data/integration";
 import { getLabels, labelComboBoxKeys } from "../data/label/label_picker";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import {
+  entityRegMeetsFilter,
   getTargetComboBoxItemType,
+  type HassServiceTargetWithExclude,
   type TargetItem,
   type TargetType,
   type TargetTypeFloorless,
@@ -57,12 +59,28 @@ import {
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import "./ha-button";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import "./ha-svg-icon";
 import "./ha-tree-indicator";
+import "./list/ha-list-base";
 import "./target-picker/ha-target-picker-item-group";
+import "./target-picker/ha-target-picker-item-row";
+import {
+  addToExclude,
+  computeExclusionsPerTarget,
+  hasIncludedTargets,
+  removeFromExclude,
+  resolveTargetItemEntities,
+  TARGET_TYPES,
+  targetItemKey,
+  targetItems,
+  withExclude,
+  type ResolvedTargetItem,
+  type TargetExclusions,
+} from "./target-picker/target-exclusions";
 
 const SEPARATOR = "________";
 const CREATE_ID = "___create-new-entity___";
@@ -77,7 +95,7 @@ const isTargetType = (value: string): value is TargetType =>
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public value?: HassServiceTarget;
+  @property({ attribute: false }) public value?: HassServiceTargetWithExclude;
 
   @property() public helper?: string;
 
@@ -117,7 +135,28 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  /**
+   * Offer to exclude things from the target again, stored in `exclude`.
+   * Exclusions already in the value are shown either way.
+   */
+  @property({ type: Boolean, attribute: "allow-exclude" })
+  public allowExclude = false;
+
   @state() private _selectedSection?: TargetTypeFloorless;
+
+  @state() private _excludeSection?: TargetTypeFloorless;
+
+  @state() private _exclusions?: TargetExclusions;
+
+  // Every entity the included targets resolve to, so the exclude picker only
+  // offers what would take something out.
+  private _includedEntities?: string[];
+
+  private _resolveRequest = 0;
+
+  // What each target item resolves to, so a change only asks core about the
+  // items it adds.
+  private _itemEntities = new Map<string, Promise<string[]>>();
 
   @state() private _replaceTarget?: TargetItem;
 
@@ -134,6 +173,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private _labelRegistry!: LabelRegistryEntry[];
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
+
+  @query("ha-generic-picker.exclude") private _excludePicker?: HaGenericPicker;
 
   private _newTarget?: TargetItem;
 
@@ -237,6 +278,25 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this._loadCompositeSplits();
     }
 
+    const registriesChanged =
+      changedProps.has("hass") &&
+      (devicesChanged ||
+        this.hass.entities !== changedProps.get("hass")?.entities ||
+        this.hass.areas !== changedProps.get("hass")?.areas);
+    if (registriesChanged || changedProps.has("primaryEntitiesOnly")) {
+      this._itemEntities.clear();
+    }
+    if (
+      changedProps.has("value") ||
+      changedProps.has("primaryEntitiesOnly") ||
+      changedProps.has("includeDomains") ||
+      changedProps.has("includeDeviceClasses") ||
+      changedProps.has("entityFilter") ||
+      registriesChanged
+    ) {
+      this._resolveExclusions();
+    }
+
     if (
       this._pendingEntityId &&
       changedProps.has("hass") &&
@@ -270,18 +330,34 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       ? ensureArray(this.value?.label_id)
       : [];
 
+    const noEffect = this._exclusions?.noEffect ?? [];
+    const unplaced = this._unplacedExclusions(
+      this.value?.exclude,
+      this._exclusions
+    );
+    const perTarget =
+      this._exclusions?.perTarget ??
+      (this.allowExclude && !hasIncludedTargets(this.value?.exclude)
+        ? {}
+        : undefined);
+
     if (
       !entityIds.length &&
       !deviceIds.length &&
       !areaIds.length &&
       !floorIds.length &&
-      !labelIds.length
+      !labelIds.length &&
+      !noEffect.length &&
+      !unplaced.length
     ) {
       return nothing;
     }
 
     return html`
-      <div class="item-groups">
+      <div
+        class="item-groups"
+        @remove-target-exclusion=${this._handleRemoveExclusion}
+      >
         ${
           entityIds.length
             ? html`
@@ -290,6 +366,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @replace-target-item=${this._handleReplace}
                   type="entity"
                   .hass=${this.hass}
+                  .exclusions=${perTarget}
                   .items=${{ entity: entityIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
@@ -311,6 +388,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @migrate-target-item=${this._handleMigrate}
                   type="device"
                   .hass=${this.hass}
+                  .exclusions=${perTarget}
                   .items=${{ device: deviceIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
@@ -332,6 +410,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @replace-target-item=${this._handleReplace}
                   type="area"
                   .hass=${this.hass}
+                  .exclusions=${perTarget}
                   .items=${{
                     floor: floorIds,
                     area: areaIds,
@@ -355,6 +434,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @replace-target-item=${this._handleReplace}
                   type="label"
                   .hass=${this.hass}
+                  .exclusions=${perTarget}
                   .items=${{ label: labelIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
@@ -367,37 +447,74 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               `
             : nothing
         }
+        ${this._renderExclusionList(
+          "ui.components.target-picker.exclusions",
+          unplaced
+        )}
+        ${this._renderExclusionList(
+          "ui.components.target-picker.exclusions_no_effect",
+          noEffect
+        )}
       </div>
     `;
   }
+
+  private _renderExclusionList(
+    label:
+      | "ui.components.target-picker.exclusions"
+      | "ui.components.target-picker.exclusions_no_effect",
+    items: TargetItem[]
+  ) {
+    if (!items.length) {
+      return nothing;
+    }
+    return html`
+      <div class="exclusion-list-label">${this.hass.localize(label)}</div>
+      <ha-list-base>
+        ${items.map(
+          (item) =>
+            html`<ha-target-picker-item-row
+              exclusion
+              .hass=${this.hass}
+              .type=${item.type}
+              .itemId=${item.id}
+            ></ha-target-picker-item-row>`
+        )}
+      </ha-list-base>
+    `;
+  }
+
+  // Excludes that aren't listed under a target or as having no effect,
+  // because they are still being resolved or resolving them failed.
+  private _unplacedExclusions = memoizeOne(
+    (
+      exclude: HassServiceTarget | undefined,
+      exclusions: TargetExclusions | undefined
+    ): TargetItem[] => {
+      const placed = new Set([
+        ...Object.values(exclusions?.perTarget ?? {}).flatMap((list) =>
+          list.map(targetItemKey)
+        ),
+        ...(exclusions?.noEffect ?? []).map(targetItemKey),
+      ]);
+      return targetItems(exclude).filter(
+        (item) => !placed.has(targetItemKey(item))
+      );
+    }
+  );
 
   private _renderItems() {
     return html` ${this._renderValueGroups()} `;
   }
 
   private _renderPicker() {
-    const sections = [
-      {
-        id: "entity",
-        label: this.hass.localize("ui.components.target-picker.type.entities"),
-      },
-      {
-        id: "device",
-        label: this.hass.localize("ui.components.target-picker.type.devices"),
-      },
-      {
-        id: "area",
-        label: this.hass.localize("ui.components.target-picker.type.areas"),
-      },
-      "separator" as const,
-      {
-        id: "label",
-        label: this.hass.localize("ui.components.target-picker.type.labels"),
-      },
-    ];
+    const sections = this._sections();
+    const showExclude = this.allowExclude && hasIncludedTargets(this.value);
 
     return html`
-      <div class="add-target-wrapper">
+      <div
+        class=${showExclude ? "add-target-wrapper exclude-shown" : "add-target-wrapper"}
+      >
         <ha-generic-picker
           popover-placement="bottom-start"
           .disabled=${this.disabled}
@@ -420,9 +537,286 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           .getAdditionalItems=${this._getAdditionalItems}
         >
         </ha-generic-picker>
+        ${
+          showExclude
+            ? html`
+                <ha-generic-picker
+                  class="exclude"
+                  popover-placement="bottom-start"
+                  .disabled=${this.disabled}
+                  .sections=${sections}
+                  .notFoundLabel=${this._noTargetFoundLabel}
+                  .emptyLabel=${this.hass.localize(
+                    "ui.components.target-picker.no_targets"
+                  )}
+                  .selectedSection=${this._excludeSection}
+                  .rowRenderer=${this._renderRow}
+                  .getItems=${this._getExcludeItems}
+                  @value-changed=${this._excludePicked}
+                >
+                  <ha-button
+                    slot="field"
+                    size="s"
+                    appearance="plain"
+                    .disabled=${this.disabled}
+                    @click=${this._openExcludePicker}
+                  >
+                    <ha-svg-icon
+                      .path=${mdiPlaylistMinus}
+                      slot="start"
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.components.target-picker.exclude_target"
+                    )}
+                  </ha-button>
+                </ha-generic-picker>
+              `
+            : nothing
+        }
       </div>
     `;
   }
+
+  private _sections() {
+    return [
+      {
+        id: "entity",
+        label: this.hass.localize("ui.components.target-picker.type.entities"),
+      },
+      {
+        id: "device",
+        label: this.hass.localize("ui.components.target-picker.type.devices"),
+      },
+      {
+        id: "area",
+        label: this.hass.localize("ui.components.target-picker.type.areas"),
+      },
+      "separator" as const,
+      {
+        id: "label",
+        label: this.hass.localize("ui.components.target-picker.type.labels"),
+      },
+    ];
+  }
+
+  private _resolveItem(item: TargetItem): Promise<string[]> {
+    if (item.type === "entity") {
+      return resolveTargetItemEntities(
+        this.hass,
+        item,
+        this.primaryEntitiesOnly
+      );
+    }
+    const key = targetItemKey(item);
+    let entities = this._itemEntities.get(key);
+    if (!entities) {
+      entities = resolveTargetItemEntities(
+        this.hass,
+        item,
+        this.primaryEntitiesOnly
+      );
+      this._itemEntities.set(key, entities);
+      const cached = entities;
+      cached.catch(() => {
+        if (this._itemEntities.get(key) === cached) {
+          this._itemEntities.delete(key);
+        }
+      });
+    }
+    return entities;
+  }
+
+  private async _resolveExclusions() {
+    const request = ++this._resolveRequest;
+    this._includedEntities = undefined;
+    const value = this.value;
+    const excludes = targetItems(value?.exclude);
+    if (!this.hass || !excludes.length) {
+      this._exclusions = undefined;
+      return;
+    }
+    const includes = targetItems(value);
+
+    // Each item on its own, so it is known which exclusion takes out what
+    // from which target. One that fails only loses its own part.
+    const resolve = (item: TargetItem) => this._resolveItem(item);
+    const [includeResults, excludeResults] = await Promise.all([
+      Promise.allSettled(includes.map(resolve)),
+      Promise.allSettled(excludes.map(resolve)),
+    ]);
+    if (request !== this._resolveRequest) {
+      return;
+    }
+    const resolvedIncludes: ResolvedTargetItem[] = [];
+    includes.forEach((item, index) => {
+      const result = includeResults[index];
+      if (result.status === "fulfilled") {
+        resolvedIncludes.push({
+          ...item,
+          entities:
+            item.type === "entity"
+              ? result.value
+              : this._entitiesMeetingFilters(
+                  result.value,
+                  item.type === "label"
+                ),
+        });
+      }
+    });
+    const resolvedExcludes: ResolvedTargetItem[] = [];
+    excludes.forEach((item, index) => {
+      const result = excludeResults[index];
+      if (result.status === "fulfilled") {
+        resolvedExcludes.push({ ...item, entities: result.value });
+      }
+    });
+    const allIncluded = resolvedIncludes.length === includes.length;
+    const exclusions = computeExclusionsPerTarget(
+      resolvedIncludes,
+      resolvedExcludes
+    );
+    if (!allIncluded) {
+      // Without every target, no effect can't be told from not known.
+      exclusions.noEffect = [];
+    }
+    this._exclusions = exclusions;
+    this._includedEntities = allIncluded
+      ? [
+          ...new Set(
+            includeResults.flatMap((result) =>
+              result.status === "fulfilled" ? result.value : []
+            )
+          ),
+        ]
+      : undefined;
+  }
+
+  // Without an exclude yet, what the target includes is only needed once the
+  // exclude picker opens.
+  private async _resolveIncludedEntities() {
+    const request = this._resolveRequest;
+    try {
+      const included = await Promise.all(
+        targetItems(this.value).map((item) => this._resolveItem(item))
+      );
+      if (request !== this._resolveRequest) {
+        return;
+      }
+      this._includedEntities = [...new Set(included.flat())];
+      this._excludePicker?.refreshItems();
+    } catch (_err) {
+      // The picker then offers everything instead.
+    }
+  }
+
+  // The entities a target row counts, so what an exclusion takes out matches
+  // what the row shows.
+  private _entitiesMeetingFilters(
+    entityIds: string[],
+    includeSecondary = false
+  ) {
+    return entityIds.filter((entityId) => {
+      const entity = this.hass.entities[entityId];
+      return (
+        !!entity &&
+        entityRegMeetsFilter(
+          entity,
+          includeSecondary || !this.primaryEntitiesOnly,
+          this.includeDomains,
+          this.includeDeviceClasses,
+          this.hass.states,
+          this.entityFilter
+        )
+      );
+    });
+  }
+
+  private _openExcludePicker(ev: Event) {
+    this._excludePicker?.open(ev);
+    if (!this._includedEntities) {
+      this._resolveIncludedEntities();
+    }
+  }
+
+  private _excludePicked(ev: ValueChangedEvent<string>) {
+    ev.stopPropagation();
+    const [rawType, id] = ev.detail.value.split(SEPARATOR);
+    if (!id || !isTargetType(rawType)) {
+      return;
+    }
+    const value = withExclude(
+      this.value,
+      addToExclude(this.value?.exclude, { type: rawType, id })
+    );
+    if (value) {
+      fireEvent(this, "value-changed", { value });
+    }
+  }
+
+  private _handleRemoveExclusion(
+    ev: HASSDomEvent<HASSDomEvents["remove-target-exclusion"]>
+  ) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: withExclude(
+        this.value,
+        removeFromExclude(this.value?.exclude, ev.detail)
+      ),
+    });
+  }
+
+  private _excludePickerHidden = memoizeOne(
+    (value?: HassServiceTargetWithExclude): HassServiceTarget => {
+      const hidden: HassServiceTarget = {};
+      TARGET_TYPES.forEach((type) => {
+        const key = `${type}_id` as const;
+        const ids = [
+          ...(key === "floor_id" || !value?.[key]
+            ? []
+            : ensureArray(value[key])),
+          ...(value?.exclude?.[key] ? ensureArray(value.exclude[key]) : []),
+        ];
+        if (ids.length) {
+          hidden[key] = ids;
+        }
+      });
+      return hidden;
+    }
+  );
+
+  // Only offers what overlaps with what the target includes.
+  private _excludeEntityFilter = memoizeOne(
+    (
+      entityFilter: HaEntityPickerEntityFilterFunc | undefined,
+      included: string[] | undefined
+    ): HaEntityPickerEntityFilterFunc | undefined => {
+      if (!included) {
+        return entityFilter;
+      }
+      const includedSet = new Set(included);
+      return (stateObj) =>
+        includedSet.has(stateObj.entity_id) &&
+        (!entityFilter || entityFilter(stateObj));
+    }
+  );
+
+  private _getExcludeItems = (searchString: string, section: string) => {
+    this._excludeSection = section as TargetTypeFloorless | undefined;
+
+    return this._getItemsMemoized(
+      this.hass.localize,
+      this._excludeEntityFilter(this.entityFilter, this._includedEntities),
+      this.deviceFilter,
+      this.includeDomains,
+      this.includeDeviceClasses,
+      this._excludePickerHidden(this.value),
+      undefined,
+      searchString,
+      this._configEntryLookup,
+      this.hass.entities,
+      this._excludeSection
+    );
+  };
 
   private _targetPicked(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();
@@ -515,14 +909,19 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return value;
     }
 
-    return value
-      ? {
-          ...value,
-          [typeId]: value[typeId]
-            ? [...ensureArray(value[typeId]), target.id]
-            : target.id,
-        }
-      : { [typeId]: target.id };
+    if (!value) {
+      return { [typeId]: target.id };
+    }
+    const newValue = {
+      ...value,
+      [typeId]: value[typeId]
+        ? [...ensureArray(value[typeId]), target.id]
+        : target.id,
+    };
+    // Something added on purpose shouldn't stay excluded.
+    return newValue.exclude
+      ? withExclude(newValue, removeFromExclude(newValue.exclude, target))
+      : newValue;
   }
 
   private _createNewDomainElement = (domain: string) => {
@@ -596,14 +995,12 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     const newVal = ensureArray(value![typeId])!.filter(
       (val) => String(val) !== id
     );
-    if (newVal.length) {
-      return {
-        ...value,
-        [typeId]: newVal,
-      };
-    }
     const val = { ...value }!;
-    delete val[typeId];
+    if (newVal.length) {
+      val[typeId] = newVal;
+    } else {
+      delete val[typeId];
+    }
     return val;
   }
 
@@ -1125,6 +1522,24 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       width: 100%;
     }
 
+    .add-target-wrapper.exclude-shown {
+      flex-wrap: wrap;
+      gap: var(--ha-space-2);
+      container-type: inline-size;
+    }
+
+    .add-target-wrapper.exclude-shown ha-generic-picker {
+      width: auto;
+      --ha-generic-picker-width: max(100cqw, 250px);
+    }
+
+    .exclusion-list-label {
+      padding: var(--ha-space-1) var(--ha-space-2);
+      background-color: var(--ha-color-surface-low);
+      font-weight: var(--ha-font-weight-bold);
+      color: var(--secondary-text-color);
+    }
+
     .item-groups {
       overflow: hidden;
       border: var(--ha-border-width-sm) solid var(--divider-color);
@@ -1143,5 +1558,6 @@ declare global {
     "replace-target-item": TargetItem;
     "migrate-target-item": { id: string; replacements: string[] };
     "remove-target-group": string;
+    "remove-target-exclusion": TargetItem;
   }
 }
