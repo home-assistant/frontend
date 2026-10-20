@@ -8,7 +8,10 @@ import {
   mdiSwapHorizontal,
   mdiTextureBox,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type {
+  HassEntity,
+  HassServiceTarget,
+} from "home-assistant-js-websocket";
 import {
   css,
   html,
@@ -143,6 +146,13 @@ export class HaTargetPickerItemRow extends LitElement {
    */
   @property({ attribute: false })
   public exclusions?: TargetExclusion[];
+
+  /**
+   * The `exclude` of the target value. The details work out the exclusions
+   * from it while `exclusions` isn't resolved yet.
+   */
+  @property({ attribute: false })
+  public exclude?: HassServiceTarget;
 
   @state() private _iconImg?: string;
 
@@ -837,6 +847,7 @@ export class HaTargetPickerItemRow extends LitElement {
       includeDeviceClasses: this.includeDeviceClasses,
       primaryEntitiesOnly: this.primaryEntitiesOnly,
       exclusions: this.exclusions,
+      exclude: this.exclude,
     });
   }
 

@@ -370,6 +370,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   type="entity"
                   .hass=${this.hass}
                   .exclusions=${perTarget}
+                  .exclude=${this.value?.exclude}
                   .items=${{ entity: entityIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
@@ -392,6 +393,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   type="device"
                   .hass=${this.hass}
                   .exclusions=${perTarget}
+                  .exclude=${this.value?.exclude}
                   .items=${{ device: deviceIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
@@ -414,6 +416,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   type="area"
                   .hass=${this.hass}
                   .exclusions=${perTarget}
+                  .exclude=${this.value?.exclude}
                   .items=${{
                     floor: floorIds,
                     area: areaIds,
@@ -438,6 +441,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   type="label"
                   .hass=${this.hass}
                   .exclusions=${perTarget}
+                  .exclude=${this.value?.exclude}
                   .items=${{ label: labelIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
