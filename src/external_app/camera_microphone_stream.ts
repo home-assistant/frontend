@@ -13,7 +13,7 @@ import type {
 import { WEBRTC_STREAM_ERROR_CODES } from "./external_messaging";
 
 export const canAppStreamMicrophone = (external?: ExternalMessaging) =>
-  Boolean(external?.config.webrtcCapabilities?.includes("microphone"));
+  Boolean(external?.config.webrtc?.hasCameraMicrophoneStream);
 
 export const isWebRtcStreamErrorCode = (
   code: string

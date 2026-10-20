@@ -456,7 +456,9 @@ export interface ExternalConfig {
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
   hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
-  webrtcCapabilities?: WebRtcStreamType[]; // Streams the app can send to a camera itself with webrtc/stream/start, used when the frontend has no secure context
+  webrtc?: {
+    hasCameraMicrophoneStream?: boolean; // App streams the microphone to a camera itself with webrtc/stream/start, used when the frontend has no secure context
+  };
 }
 
 export interface ExternalEntityAddToAction {
