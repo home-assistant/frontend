@@ -1,6 +1,6 @@
 import type { LitElement } from "lit";
 import { define } from "./utils/registration/define";
-import type { HacElementLoader } from "./utils/registration/dynamic";
+import type { HacElementDefinition } from "./utils/registration/definition";
 import {
   createScopedRegistry,
   scopedCreationScope,
@@ -8,21 +8,16 @@ import {
   scopedShadowRootInit,
 } from "./utils/registration/scoped-registry";
 
-export type { HacElementLoader } from "./utils/registration/dynamic";
+export type {
+  HacElementDefinition,
+  HacElementLoader,
+} from "./utils/registration/definition";
 export { scopedRegistrySupport } from "./utils/registration/scoped-registry";
 export type { ScopedRegistrySupport } from "./utils/registration/scoped-registry";
 
 /**
- * Elements to register in a scoped registry, by tag name: classes from
- * `<name>/scoped` entry points or loaders from `<name>/dynamic` ones.
- */
-export type ScopedElements = Record<
-  string,
-  CustomElementConstructor | HacElementLoader
->;
-
-/**
- * Creates a registry with the given elements, for `attachScopedShadow`.
+ * Creates a registry with the given elements, for `attachScopedShadow`:
+ * definitions from `scoped` or `dynamic` entry points, e.g. `[hacCard]`.
  * Create it once, e.g. at module level, and share it between instances.
  *
  * Loaders of `dynamic` entry points register their element once it is
@@ -33,19 +28,20 @@ export type ScopedElements = Record<
  * taken there, and the global registry is returned.
  */
 export const createScopedElementRegistry = (
-  elements: ScopedElements
+  elements: readonly HacElementDefinition[]
 ): CustomElementRegistry => {
-  if (typeof elements !== "object" || elements === null) {
+  // Checked as unknown: Array.isArray would narrow the list to any[]
+  if (!Array.isArray(elements as unknown)) {
     throw new TypeError(
-      "@home-assistant/components: pass the elements to register, e.g. { ...hacCardElements }"
+      "@home-assistant/components: pass the elements to register, e.g. [hacCard]"
     );
   }
   const registry = createScopedRegistry() ?? customElements;
-  for (const [tagName, element] of Object.entries(elements)) {
-    if ("load" in element) {
-      element.load().then((loaded) => define(tagName, loaded, registry));
-    } else {
+  for (const { tagName, element } of elements) {
+    if (typeof element === "function") {
       define(tagName, element, registry);
+    } else {
+      element.load().then((loaded) => define(tagName, loaded, registry));
     }
   }
   return registry;
@@ -117,14 +113,14 @@ export interface ScopedElementsHostConstructor {
  * registry, containing `elements`:
  *
  * ```ts
- * class MyCard extends ScopedElementsMixin(LitElement, { ...hacCardElements }) {}
+ * class MyCard extends ScopedElementsMixin(LitElement, [hacCard]) {}
  * ```
  *
  * See `createScopedElementRegistry` and `attachScopedShadow` for the details.
  */
 export const ScopedElementsMixin = <T extends LitElementConstructor>(
   superClass: T,
-  elements: ScopedElements
+  elements: readonly HacElementDefinition[]
 ) => {
   // Created on first use, so defining the class has no side effects
   let registry: CustomElementRegistry | undefined;

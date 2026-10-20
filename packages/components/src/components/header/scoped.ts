@@ -1,11 +1,16 @@
+import type { HacElementDefinition } from "../../utils/registration/definition";
 import { scopedVariant } from "../../utils/registration/dependencies";
 import { HacHeader } from "./hac-header";
+import { TAG_NAME } from "./info";
 
 export { HacHeader };
 
 /**
- * Registers the bundled <hac-header> in a scoped registry:
- * `ScopedElementsMixin(LitElement, { ...hacHeaderElements })` or
- * `createScopedElementRegistry({ ...hacHeaderElements })`.
+ * The bundled <hac-header> for a scoped registry:
+ * `ScopedElementsMixin(LitElement, [hacHeader])` or
+ * `createScopedElementRegistry([hacHeader])`.
  */
-export const hacHeaderElements = { "hac-header": scopedVariant(HacHeader) };
+export const hacHeader: HacElementDefinition<typeof HacHeader> = {
+  tagName: TAG_NAME,
+  element: scopedVariant(HacHeader),
+};

@@ -1,10 +1,6 @@
 import { getProvidedComponent } from "../../provider";
+import type { HacElementLoader } from "./definition";
 import { isCompatible } from "./version";
-
-/** Resolves the class to register for a tag name, possibly asynchronously. */
-export interface HacElementLoader {
-  load(): Promise<CustomElementConstructor>;
-}
 
 /**
  * Loader that prefers the host's copy of a component when its version is

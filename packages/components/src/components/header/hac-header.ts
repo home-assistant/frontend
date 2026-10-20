@@ -2,6 +2,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
 import { hasAssignedElements } from "../../utils/element/slot";
 import { HacButtonClose } from "../button/close/hac-button-close";
+import { TAG_NAME as BUTTON_CLOSE_TAG_NAME } from "../button/close/info";
 
 /**
  * Header with an optional icon, a title, a subtitle and actions.
@@ -23,7 +24,9 @@ import { HacButtonClose } from "../button/close/hac-button-close";
  * @cssprop --hac-header-padding - Padding of the header.
  */
 export class HacHeader extends LitElement {
-  static readonly dependencies = { "hac-button-close": HacButtonClose };
+  static readonly dependencies = [
+    { tagName: BUTTON_CLOSE_TAG_NAME, element: HacButtonClose },
+  ];
 
   /** Heading level of the title for assistive technology. */
   @property({ type: Number }) public level: 1 | 2 | 3 | 4 | 5 | 6 = 2;

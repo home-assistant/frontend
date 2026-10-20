@@ -1,10 +1,11 @@
 import type { LitElement } from "lit";
 import { ScopedElementsMixin } from "../../scoped";
 import { define } from "./define";
+import type { HacElementDefinition } from "./definition";
 
 /**
  * A hac component class. Components list the elements they render in their
- * shadow root in `dependencies`, by tag name, without registering them. The
+ * shadow root in `dependencies`, without registering them. The
  * entry point a component is loaded through decides where those are
  * registered:
  *
@@ -13,7 +14,7 @@ import { define } from "./define";
  *   so its internals always use the bundled, same-version dependencies
  */
 export type HacElementClass = (new () => LitElement) & {
-  readonly dependencies?: Readonly<Record<string, HacElementClass>>;
+  readonly dependencies?: readonly HacElementDefinition<HacElementClass>[];
 };
 
 /** Registers a component and its dependencies in the global registry. */
@@ -21,10 +22,8 @@ export const defineGlobal = (
   tagName: string,
   elementClass: HacElementClass
 ): void => {
-  for (const [dependencyTag, dependency] of Object.entries(
-    elementClass.dependencies ?? {}
-  )) {
-    defineGlobal(dependencyTag, dependency);
+  for (const dependency of elementClass.dependencies ?? []) {
+    defineGlobal(dependency.tagName, dependency.element);
   }
   define(tagName, elementClass);
 };
@@ -39,7 +38,7 @@ const variants = new WeakMap<HacElementClass, HacElementClass>();
 export const scopedVariant = <T extends HacElementClass>(
   elementClass: T
 ): T => {
-  const dependencies = Object.entries(elementClass.dependencies ?? {});
+  const dependencies = elementClass.dependencies ?? [];
   if (dependencies.length === 0) {
     return elementClass;
   }
@@ -48,12 +47,10 @@ export const scopedVariant = <T extends HacElementClass>(
     variant = class extends (
       ScopedElementsMixin(
         elementClass,
-        Object.fromEntries(
-          dependencies.map(([tagName, dependency]) => [
-            tagName,
-            scopedVariant(dependency),
-          ])
-        )
+        dependencies.map(({ tagName, element }) => ({
+          tagName,
+          element: scopedVariant(element),
+        }))
       )
     ) {};
     variants.set(elementClass, variant);
