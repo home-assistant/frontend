@@ -16,7 +16,7 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { consume } from "../../../common/decorators/consume";
@@ -114,6 +114,7 @@ import {
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
@@ -271,6 +272,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   _entityReg?: EntityRegistryEntry[];
 
   @state() private _filteredHelperEntityIds?: string[] | null;
+
+  // Not cached, the table only renders once the helpers have loaded
+  @query("hass-tabs-subpage-data-table")
+  private _dataTable?: HaTabsSubpageDataTable;
 
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
@@ -1001,17 +1006,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       const params = new URLSearchParams(mainWindow.location.search);
       this._addDomain = params.get("domain") ?? undefined;
       params.delete("domain");
-      const query = params.toString() ? `?${params}` : "";
+      const queryString = params.toString() ? `?${params}` : "";
       replaceCurrentUrl(
         __DEMO__
-          ? `${mainWindow.location.pathname}${query}#/config/helpers`
-          : `/config/helpers${query}`
+          ? `${mainWindow.location.pathname}${queryString}#/config/helpers`
+          : `/config/helpers${queryString}`
       );
       fireEvent(mainWindow, "location-changed", { replace: true });
-
-      if (this.hasUpdated) {
-        this._handleAdd();
-      }
+      // Opened once the table is there, see updated()
+      this.requestUpdate();
     }
     super.connectedCallback();
   }
@@ -1164,8 +1167,14 @@ ${rejected
         this._diagnosticHandlers = handlers;
       });
     }
+  }
 
-    this._handleAdd();
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+
+    if (this._addDomain && this._dataTable) {
+      this._handleAdd(this._dataTable);
+    }
   }
 
   private async _fetchEntitySources() {
@@ -1203,12 +1212,18 @@ ${rejected
     this._entitySource = entityDomains;
   }
 
-  private async _handleAdd() {
+  private async _handleAdd(dataTable: HaTabsSubpageDataTable) {
     const domain = this._addDomain;
     this._addDomain = undefined;
     if (!domain) {
       return;
     }
+
+    // The dialog adds a history entry. Let the table write its search,
+    // sorting and grouping first, or they would only be on that entry and
+    // be lost when it closes.
+    await dataTable.updateComplete;
+
     if (isHelperDomain(domain)) {
       showHelperDetailDialog(this, {
         domain,
