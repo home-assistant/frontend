@@ -18,17 +18,25 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { storage } from "../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
+import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { getHistoryState, navigate } from "../../../common/navigate";
+import { navigate, replaceCurrentUrl } from "../../../common/navigate";
+import { currentPath } from "../../../common/url/current-path";
 import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
+import {
+  helpersFilterQueryParamConfig,
+  helpersFilterQueryParams,
+  helpersLinkFromUrl,
+} from "../../../common/url/helpers-query-params";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { debounce } from "../../../common/util/debounce";
 import {
@@ -237,8 +245,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _diagnosticHandlers?: Record<string, boolean>;
 
-  @state() private _searchParms = new URLSearchParams(window.location.search);
-
   @state()
   private _filters: DataTableFiltersValues = {};
 
@@ -270,6 +276,17 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
   });
+
+  // The filters are kept in the URL by the page, the search, sorting and
+  // grouping by the table
+  private _filterParams = new QueryParamsController(
+    this,
+    helpersFilterQueryParamConfig,
+    {
+      enabled: () => true,
+      navigated: () => this._applyLink(),
+    }
+  );
 
   private get _availableAssistants() {
     return getAvailableAssistants(this.cloudStatus, this.hass);
@@ -367,6 +384,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
+        urlName: "type",
       },
       editable: getEditableTableColumn(
         localize,
@@ -682,6 +700,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         .activeFilters=${this._activeFilters}
         @clear-filter=${this._clearFilter}
         @row-click=${this._openEditDialog}
+        sync-url
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         has-fab
@@ -854,9 +873,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
     this._filters = { ...this._filters, [type]: ev.detail.value };
     this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
-    if (!this._fromUrl) {
-      this._storageFilters = this._filters;
-    }
+    this._storageFilters = this._filters;
+    this._writeFilters();
     this._applyFilters();
   }
 
@@ -972,63 +990,51 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._filteredHelperEntityIds = items ? [...items] : undefined;
   }
 
-  private _fromUrl = false;
+  // The domain an add link asked for, started once the page has hass
+  private _addDomain?: string;
 
   public connectedCallback() {
+    // Leave the add path before the URL is read, so the table params are kept
+    // on the helpers page itself. The route isn't set yet on the first
+    // connect, so this reads the URL. navigate() would only replace it after
+    // the table params are written, and drop them.
+    if (currentPath() === "/config/helpers/add") {
+      this._addDomain = extractSearchParam("domain") ?? undefined;
+      replaceCurrentUrl("/config/helpers");
+      fireEvent(mainWindow, "location-changed", { replace: true });
+
+      if (this.hasUpdated) {
+        this._handleAdd();
+      }
+    }
     super.connectedCallback();
-    window.addEventListener("location-changed", this._locationChanged);
-    window.addEventListener("popstate", this._popState);
   }
 
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("location-changed", this._locationChanged);
-    window.removeEventListener("popstate", this._popState);
+  // Links, like the ones on a device page, say in the URL what to show. The
+  // router keeps the page open, so a link can land on it.
+  private _applyLink() {
+    const searchParams = this._filterParams.searchParams();
+    const link = searchParams ? helpersLinkFromUrl(searchParams) : undefined;
+
+    if (link) {
+      this._filter = link.search;
+      this._filters = link.filters;
+      this._storageFilters = link.filters;
+      this._applyFilters();
+    }
+
+    this._writeFilters();
   }
 
-  private _locationChanged = () => {
-    if (window.location.search.substring(1) !== this._searchParms.toString()) {
-      this._searchParms = new URLSearchParams(window.location.search);
-      this._setFiltersFromUrl();
-    }
-  };
-
-  private _popState = () => {
-    if (window.location.search.substring(1) !== this._searchParms.toString()) {
-      this._searchParms = new URLSearchParams(window.location.search);
-      this._setFiltersFromUrl();
-    }
-  };
-
-  private _setFiltersFromUrl() {
-    const area = this._searchParms.get("area");
-    const device = this._searchParms.get("device");
-    const label = this._searchParms.get("label");
-    const category = this._searchParms.get("category");
-    const voiceAssistant = this._searchParms.get("voice_assistant");
-
-    if (!area && !category && !label && !device && !voiceAssistant) {
-      return;
-    }
-
-    this._fromUrl = true;
-    this._filter = getHistoryState()?.filter || "";
-
-    this._filters = {
-      "ha-filter-floor-areas": area ? { areas: [area] } : undefined,
-      "ha-filter-devices": device ? [device] : [],
-      "ha-filter-labels": label ? [label] : [],
-      "ha-filter-categories": category ? [category] : [],
-      "ha-filter-voice-assistants": voiceAssistant ? [voiceAssistant] : [],
-    };
+  private _writeFilters() {
+    this._filterParams.write(helpersFilterQueryParams(this._filters));
   }
 
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
-    if (!this._fromUrl) {
-      this._storageFilters = {};
-    }
+    this._storageFilters = {};
+    this._writeFilters();
     this._applyFilters();
   }
 
@@ -1141,7 +1147,6 @@ ${rejected
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    this._setFiltersFromUrl();
     this._fetchEntitySources();
 
     if (isComponentLoaded(this.hass.config, "diagnostics")) {
@@ -1154,9 +1159,7 @@ ${rejected
       });
     }
 
-    if (this.route.path === "/add") {
-      this._handleAdd();
-    }
+    this._handleAdd();
   }
 
   private async _fetchEntitySources() {
@@ -1195,8 +1198,8 @@ ${rejected
   }
 
   private async _handleAdd() {
-    const domain = extractSearchParam("domain");
-    navigate("/config/helpers", { replace: true });
+    const domain = this._addDomain;
+    this._addDomain = undefined;
     if (!domain) {
       return;
     }
@@ -1254,7 +1257,7 @@ ${rejected
 
     if (!this.hasUpdated) {
       this._filters = this._storageFilters;
-      this._setFiltersFromUrl();
+      this._applyLink();
     }
 
     if (
