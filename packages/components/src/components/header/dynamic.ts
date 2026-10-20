@@ -1,4 +1,4 @@
-import type { HacElementDefinition } from "../../utils/registration/definition";
+import type { ElementDefinition } from "../../utils/registration/definition";
 import { createDynamicLoader } from "../../utils/registration/dynamic";
 import { TAG_NAME, VERSION } from "./info";
 
@@ -14,7 +14,7 @@ const loadScoped = async () => (await import("./scoped")).hacHeader.element;
  * `ScopedElementsMixin(LitElement, [hacHeader])` or
  * `createScopedElementRegistry([hacHeader])`.
  */
-export const hacHeader: HacElementDefinition = {
+export const hacHeader: ElementDefinition = {
   tagName: TAG_NAME,
   element: createDynamicLoader(TAG_NAME, VERSION, loadScoped),
 };

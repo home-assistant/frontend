@@ -8,34 +8,32 @@
  * possible; consumers that ask before that use their bundled copies.
  */
 
-export interface HacProvidedComponent {
+export interface ProvidedComponent {
   /** Version of the component, see the component's `info.ts`. */
   version: string;
   /** Loads the host's class of the component. */
   load: () => Promise<CustomElementConstructor>;
 }
 
-export type HacProvidedComponents = Record<string, HacProvidedComponent>;
+export type ProvidedComponents = Record<string, ProvidedComponent>;
 
 /** Key on `globalThis`, shared by all copies of this library in the page. */
-export const HAC_PROVIDER_KEY = Symbol.for(
-  "@home-assistant/components/provider"
-);
+export const PROVIDER_KEY = Symbol.for("@home-assistant/components/provider");
 
 type GlobalWithProvider = typeof globalThis & {
-  [HAC_PROVIDER_KEY]?: HacProvidedComponents;
+  [PROVIDER_KEY]?: ProvidedComponents;
 };
 
 /** Called by the host app to publish the components it provides. */
-export const provideComponents = (components: HacProvidedComponents): void => {
-  (globalThis as GlobalWithProvider)[HAC_PROVIDER_KEY] = components;
+export const provideComponents = (components: ProvidedComponents): void => {
+  (globalThis as GlobalWithProvider)[PROVIDER_KEY] = components;
 };
 
 /** The component provided by the host for a tag name, if any. */
 export const getProvidedComponent = (
   tagName: string
-): HacProvidedComponent | undefined => {
-  const components = (globalThis as GlobalWithProvider)[HAC_PROVIDER_KEY];
+): ProvidedComponent | undefined => {
+  const components = (globalThis as GlobalWithProvider)[PROVIDER_KEY];
   return components && Object.prototype.hasOwnProperty.call(components, tagName)
     ? components[tagName]
     : undefined;
