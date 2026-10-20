@@ -53,6 +53,9 @@ export class HaAnsiToHtml extends LitElement {
   // Hidden lines the user chose to show while a filter is set.
   private _expandedLines = new WeakSet<HTMLDivElement>();
 
+  // The hidden lines each expand row shows when clicked.
+  private _expandGaps = new WeakMap<HTMLElement, HTMLDivElement[]>();
+
   protected render(): TemplateResult {
     return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
   }
@@ -351,7 +354,6 @@ export class HaAnsiToHtml extends LitElement {
       this._expandedLines = new WeakSet();
     }
     this._filter = filter;
-    this._pre?.querySelectorAll(".expand").forEach((button) => button.remove());
     const lines = this._divs;
     let numberOfFoundLines = 0;
     if (!filter) {
@@ -449,14 +451,27 @@ export class HaAnsiToHtml extends LitElement {
       }
 
       if (this.contextLines && numberOfFoundLines) {
-        this._addExpandButtons(lineList, visible);
+        this._updateExpandButtons(lineList, visible);
+
+        return true;
       }
     }
+
+    this._updateExpandButtons([], []);
 
     return !!numberOfFoundLines;
   }
 
-  private _addExpandButtons(lines: HTMLDivElement[], visible: boolean[]) {
+  // Filtering runs again for every new log line, so rows for unchanged gaps
+  // are kept rather than recreated, which would drop keyboard focus.
+  private _updateExpandButtons(lines: HTMLDivElement[], visible: boolean[]) {
+    const rows = new Map<Element | null, HTMLSpanElement>();
+    this._pre?.querySelectorAll(".expand").forEach((row) => {
+      if (row instanceof HTMLSpanElement) {
+        rows.set(row.nextElementSibling, row);
+      }
+    });
+
     let hidden: HTMLDivElement[] = [];
 
     lines.forEach((line, lineIndex) => {
@@ -468,26 +483,55 @@ export class HaAnsiToHtml extends LitElement {
         hidden.length &&
         (visible[lineIndex] || lineIndex === lines.length - 1)
       ) {
-        const gap = hidden;
-        const row = document.createElement("span");
-        row.className = "expand";
-        const button = document.createElement("ha-button");
-        button.setAttribute("appearance", "filled");
-        button.setAttribute("variant", "neutral");
-        button.setAttribute("size", "s");
-        const icon = document.createElement("ha-svg-icon");
-        icon.slot = "start";
-        icon.path = mdiUnfoldMoreHorizontal;
-        button.append(icon, this.expandLabel?.(gap.length) ?? `${gap.length}`);
-        button.addEventListener("click", () => {
-          gap.forEach((hiddenLine) => this._expandedLines.add(hiddenLine));
-          this.filterLines(this._filter);
-        });
-        row.append(button);
-        gap[0].before(row);
+        const label = this.expandLabel?.(hidden.length) ?? `${hidden.length}`;
+        let row = rows.get(hidden[0]);
+
+        if (row) {
+          rows.delete(hidden[0]);
+          const text = row.querySelector("ha-button")?.lastChild;
+
+          if (text instanceof Text && text.data !== label) {
+            text.data = label;
+          }
+        } else {
+          row = this._createExpandRow(label);
+          hidden[0].before(row);
+        }
+
+        this._expandGaps.set(row, hidden);
         hidden = [];
       }
     });
+
+    rows.forEach((row) => row.remove());
+  }
+
+  private _createExpandRow(label: string): HTMLSpanElement {
+    const row = document.createElement("span");
+    row.className = "expand";
+    const button = document.createElement("ha-button");
+    button.setAttribute("appearance", "filled");
+    button.setAttribute("variant", "neutral");
+    button.setAttribute("size", "s");
+    const icon = document.createElement("ha-svg-icon");
+    icon.slot = "start";
+    icon.path = mdiUnfoldMoreHorizontal;
+    button.append(icon, label);
+    button.addEventListener("click", () => {
+      const gap = this._expandGaps.get(row) ?? [];
+      const hadFocus = row.matches(":focus-within");
+      gap.forEach((hiddenLine) => this._expandedLines.add(hiddenLine));
+      this.filterLines(this._filter);
+
+      // The row is gone once its lines show, so keep focus on the first of them.
+      if (hadFocus && gap[0]) {
+        gap[0].tabIndex = -1;
+        gap[0].focus({ preventScroll: true });
+      }
+    });
+    row.append(button);
+
+    return row;
   }
 
   public trimLines(maxLines: number) {
