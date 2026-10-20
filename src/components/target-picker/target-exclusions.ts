@@ -60,8 +60,6 @@ export const resolveTargetItemEntities = async (
 export interface TargetExclusion extends TargetItem {
   /** Entities it takes out of that target. */
   removed: string[];
-  /** It also takes entities out of another included target. */
-  shared: boolean;
 }
 
 export interface TargetExclusions {
@@ -108,7 +106,6 @@ export const computeExclusionsPerTarget = (
         type: exclude.type,
         id: exclude.id,
         removed,
-        shared: hits.length > 1,
       });
     });
   });

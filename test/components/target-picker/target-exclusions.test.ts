@@ -49,20 +49,17 @@ describe("computeExclusionsPerTarget", () => {
       ]
     );
 
-    // The label cuts from both areas, so it shows under both and can't be
-    // rewritten from either one alone.
+    // The label cuts from both areas, so it shows under both.
     expect(perTarget["area:kitchen"]).toEqual([
       {
         type: "label",
         id: "nightlights",
         removed: ["light.night"],
-        shared: true,
       },
       {
         type: "entity",
         id: "light.main",
         removed: ["light.main"],
-        shared: false,
       },
     ]);
     expect(perTarget["area:hallway"]).toEqual([
@@ -70,7 +67,6 @@ describe("computeExclusionsPerTarget", () => {
         type: "label",
         id: "nightlights",
         removed: ["light.night_hall"],
-        shared: true,
       },
     ]);
     expect(noEffect).toEqual([]);
