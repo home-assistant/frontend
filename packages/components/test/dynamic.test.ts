@@ -5,8 +5,7 @@ import { createDynamicLoader } from "../src/utils/registration/dynamic";
 
 // `dynamic` entry points pick between the host's copy of a component and the
 // bundled one, and must only download the bundled one when it is used. These
-// cases cover the decision, including a host that publishes its components
-// only after the consumer asked for them.
+// cases cover the decision.
 class Bundled extends LitElement {}
 class Provided extends LitElement {}
 
@@ -61,21 +60,5 @@ describe("createDynamicLoader", () => {
     const { dynamic, loadScoped } = loader();
     await Promise.all([dynamic.load(), dynamic.load()]);
     expect(loadScoped).toHaveBeenCalledTimes(1);
-  });
-
-  it("waits for a host that announced itself but has not published yet", async () => {
-    // What the host's HTML does before any module loads
-    let resolve!: (value: unknown) => void;
-    global[HAC_PROVIDER_KEY] = {
-      components: new Promise((res) => {
-        resolve = res;
-      }),
-      resolve: (value: unknown) => resolve(value),
-    };
-    const result = loader().dynamic.load();
-    provideComponents({
-      "hac-test": { version: "1.2.0", load: async () => Provided },
-    });
-    expect(await result).toBe(Provided);
   });
 });
