@@ -56,8 +56,6 @@ const CONFIG_FILES = [
   path.join(__dirname, "..", "packages", "hac", "package.json"),
 ];
 
-// Patches change a package's files but not its version, which is all the
-// node_modules snapshot checks, so their contents go into the version too.
 // Resolve @home-assistant/hac entry points to their sources, so the package
 // needs no build step during development. The entry points are read from the
 // "hac-source" export condition of the package; subpath patterns are expanded
@@ -83,6 +81,8 @@ const hacSourceAliases = Object.fromEntries(
     )
 );
 
+// Patches change a package's files but not its version, which is all the
+// node_modules snapshot checks, so their contents go into the version too.
 const PATCHES_DIR = path.join(paths.root_dir, "patches");
 
 // Content hash of the toolchain versions and our own build files, used as the
