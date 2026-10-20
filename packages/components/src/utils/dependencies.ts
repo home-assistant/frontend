@@ -13,7 +13,6 @@ import { define } from "./define";
  *   so its internals always use the bundled, same-version dependencies
  */
 export type HacElementClass = (new () => LitElement) & {
-  readonly version: string;
   readonly dependencies?: Readonly<Record<string, HacElementClass>>;
 };
 
