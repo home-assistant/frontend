@@ -12,14 +12,13 @@ test("resolveTimeZone", () => {
 });
 
 test("prefers the time zone read before the Intl polyfill loaded", async () => {
-  const scope = globalThis as { __haNativeTimeZone?: string };
-  scope.__haNativeTimeZone = "Europe/Amsterdam";
+  globalThis.__haNativeTimeZone = "Europe/Amsterdam";
   vi.resetModules();
   try {
     const { LOCAL_TIME_ZONE: zone } =
       await import("../../../src/common/datetime/resolve-time-zone");
     expect(zone).toBe("Europe/Amsterdam");
   } finally {
-    delete scope.__haNativeTimeZone;
+    globalThis.__haNativeTimeZone = undefined;
   }
 });

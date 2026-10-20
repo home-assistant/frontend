@@ -125,7 +125,8 @@ const createRspackConfig = ({
     "lit-disable-dev-mode-loader.cjs"
   );
   // temporal-polyfill needs BigInt (Safari 14, Chrome 67). FullCalendar only
-  // uses a few time zone conversions from it, which Intl covers.
+  // uses a few time zone conversions from it, which Intl covers, so the whole
+  // legacy bundle uses this shim, also on browsers that have BigInt.
   const temporalFnsShim = path.join(
     paths.root_dir,
     "src/resources/polyfills/temporal-fns"

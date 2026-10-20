@@ -4,7 +4,7 @@ import { TimeZone } from "../../data/translation";
 // The FormatJS polyfill reports the canonical zone (Europe/Amsterdam becomes
 // Europe/Brussels), so prefer the name the polyfill loader read before it
 const RESOLVED_RAW =
-  (globalThis as { __haNativeTimeZone?: string }).__haNativeTimeZone ??
+  globalThis.__haNativeTimeZone ??
   Intl.DateTimeFormat?.().resolvedOptions?.().timeZone;
 
 // Some environments (e.g. Android emulator) return a UTC offset like "+00:00"

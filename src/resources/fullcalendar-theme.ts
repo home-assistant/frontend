@@ -91,14 +91,31 @@ export const fullCalendarStyles = [
       text-transform: uppercase;
     }
 
+    /* Margins instead of flex gap, which needs Safari 14.1 and Chrome 84 */
+    .ha-fc-list-event {
+      gap: 0;
+    }
+
+    .ha-fc-list-event > .ha-fc-dot {
+      margin-inline: 12px;
+    }
+
     /* Chrome < 65 has no display: contents, so a list event's time and
-       title would stack */
+       title share one box after the dot */
     @supports not (display: contents) {
+      .ha-fc-list-event > .ha-fc-dot {
+        margin-inline-start: 0;
+      }
+
       .ha-fc-list-event > :not(.ha-fc-dot) {
         display: flex;
         flex-grow: 1;
         min-width: 0;
         align-items: center;
+      }
+
+      .ha-fc-list-event-time {
+        margin-inline-end: 12px;
       }
     }
   `,

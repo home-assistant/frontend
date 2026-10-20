@@ -30,9 +30,7 @@ const readNativeTimeZone = (): string | undefined => {
   }
 };
 
-const nativeTimeZone: string | undefined = ((
-  globalThis as any
-).__haNativeTimeZone ??= readNativeTimeZone());
+const nativeTimeZone = (globalThis.__haNativeTimeZone ??= readNativeTimeZone());
 
 const setDefaultTimeZone = () => {
   if (!nativeTimeZone) {

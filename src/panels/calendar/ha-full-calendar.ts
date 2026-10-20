@@ -106,6 +106,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
     list: {
       listItemEventClass: "ha-fc-list-event",
       listItemEventBeforeClass: "ha-fc-dot ha-fc-dot-large",
+      listItemEventTimeClass: "ha-fc-list-event-time",
     },
     listWeek: {
       type: "list",
