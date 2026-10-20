@@ -10,7 +10,7 @@ import { VERSION } from "./version";
  * and `dynamic` entry points next to it.
  *
  * @slot header - Header of the card, usually a `hac-header`.
- * @slot - Content of the card.
+ * @slot - Content of the card. Its padding is omitted when empty.
  * @slot footer - Footer of the card, e.g. actions. Hidden when empty.
  *
  * @cssprop --hac-card-background - Background of the card.
@@ -34,11 +34,16 @@ export class HacCard extends LitElement {
 
   @state() private _hasFooter = false;
 
+  @state() private _hasContent = false;
+
   protected render() {
     return html`
       <slot name="header" @slotchange=${this._headerChanged}></slot>
-      <div class="content ${this._hasHeader ? "below-header" : ""}">
-        <slot></slot>
+      <div
+        class="content ${this._hasHeader ? "below-header" : ""}"
+        ?hidden=${!this._hasContent}
+      >
+        <slot @slotchange=${this._contentChanged}></slot>
       </div>
       <div class="footer" ?hidden=${!this._hasFooter}>
         <slot name="footer" @slotchange=${this._footerChanged}></slot>
@@ -48,6 +53,16 @@ export class HacCard extends LitElement {
 
   private _headerChanged(ev: Event) {
     this._hasHeader = _hasAssignedElements(ev);
+  }
+
+  private _contentChanged(ev: Event) {
+    // Whitespace between tags is not content
+    this._hasContent = (ev.target as HTMLSlotElement)
+      .assignedNodes()
+      .some(
+        (node) =>
+          node.nodeType === Node.ELEMENT_NODE || node.textContent?.trim()
+      );
   }
 
   private _footerChanged(ev: Event) {
@@ -102,6 +117,7 @@ export class HacCard extends LitElement {
       border-block-start: 1px solid var(--divider-color, #e0e0e0);
     }
 
+    .content[hidden],
     .footer[hidden] {
       display: none;
     }

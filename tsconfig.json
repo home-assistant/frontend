@@ -34,6 +34,10 @@
       {
         "name": "ts-lit-plugin",
         "strict": true,
+        // Follows imports of @home-assistant/hac entry points (workspace
+        // packages resolve through node_modules) to the component classes
+        // that declare their tags
+        "maxNodeModuleImportDepth": 2,
         "rules": {
           // Custom elements
           "no-unknown-tag-name": "error",

@@ -1,7 +1,9 @@
 import { mdiCellphone, mdiEarth, mdiLock, mdiMonitor, mdiTune } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import "@home-assistant/hac/card";
+import "@home-assistant/hac/header";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
@@ -24,6 +26,8 @@ class HaProfileDashboard extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public route!: Route;
+
+  @state() private _greetingDismissed = false;
 
   protected render(): TemplateResult {
     const pages: PageNavigation[] = [
@@ -71,6 +75,20 @@ class HaProfileDashboard extends LitElement {
         .header=${this.hass.localize("panel.profile")}
       >
         <div class="container">
+          ${
+            this._greetingDismissed
+              ? nothing
+              : html`<hac-card>
+                  <hac-header
+                    slot="header"
+                    show-close
+                    .closeLabel=${this.hass.localize("ui.common.close")}
+                    @hac-close=${this._dismissGreeting}
+                  >
+                    ${this.hass.localize("ui.panel.profile.greeting_title")}
+                  </hac-header>
+                </hac-card>`
+          }
           <ha-card>
             <div class="card-content">
               <div class="heading">
@@ -145,6 +163,10 @@ class HaProfileDashboard extends LitElement {
     });
   }
 
+  private _dismissGreeting() {
+    this._greetingDismissed = true;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -158,7 +180,8 @@ class HaProfileDashboard extends LitElement {
             calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
         }
 
-        ha-card {
+        ha-card,
+        hac-card {
           margin: 0 auto var(--ha-space-4);
           max-width: 600px;
         }

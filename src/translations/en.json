@@ -11899,6 +11899,7 @@
           "security": "Security"
         },
         "is_owner": "You are an owner.",
+        "greeting_title": "Have a great day!",
         "user_preferences_header": "Appearance",
         "user_preferences_description": "Default dashboard and sidebar",
         "user_preferences_detail": "The following settings are tied to your account and will persist across all sessions and devices.",
