@@ -354,24 +354,29 @@ export class HaConfigDeviceDashboard extends LitElement {
           Array.isArray(filter.value) &&
           filter.value.length
         ) {
-          if (!(
-            Array.isArray(this._filters.config_entry?.value) &&
-            this._filters.config_entry.value.length === 1
-          )) {
+          const configEntryIds = this._filters.config_entry?.value;
+          const subEntryIds = filter.value;
+
+          if (
+            !Array.isArray(configEntryIds) ||
+            !configEntryIds.length ||
+            !Array.isArray(subEntryIds)
+          ) {
             return;
           }
-          const configEntryId = this._filters.config_entry.value[0];
-          outputDevices = outputDevices.filter(
-            (device) =>
-              device.config_entries_subentries[configEntryId] &&
-              (filter.value as string[]).some((subEntryId) =>
-                device.config_entries_subentries[configEntryId].includes(
-                  subEntryId
-                )
+
+          outputDevices = outputDevices.filter((device) =>
+            configEntryIds.some((configEntryId) =>
+              device.config_entries_subentries[configEntryId]?.some(
+                (subEntryId) =>
+                  subEntryId !== null && subEntryIds.includes(subEntryId)
               )
+            )
           );
-          if (!this._subEntries) {
-            this._loadSubEntries(configEntryId);
+
+          // The titles shown in the filter chip need a single config entry
+          if (configEntryIds.length === 1 && !this._subEntries) {
+            this._loadSubEntries(configEntryIds[0]);
           }
         } else if (
           key === "ha-filter-integrations" &&
