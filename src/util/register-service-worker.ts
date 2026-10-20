@@ -29,16 +29,6 @@ export const registerServiceWorker = async (
       }
     };
     window.addEventListener("dirty-state-changed", reloadWhenClean);
-    if (notifyUpdate) {
-      showToast(rootEl, {
-        id: UPDATE_TOAST_ID,
-        message: {
-          translationKey: "ui.notification_toast.new_version_available_reload",
-        },
-        duration: -1,
-        dismissable: false,
-      });
-    }
   });
 
   const reg = await navigator.serviceWorker.register(`/sw-${__BUILD__}.js`);

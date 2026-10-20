@@ -159,14 +159,7 @@ describe("registerServiceWorker", () => {
     serviceWorker.dispatchEvent(new Event("controllerchange"));
 
     expect(reload).not.toHaveBeenCalled();
-    expect(latestNotification()).toMatchObject({
-      id: "frontend-update-available",
-      message: {
-        translationKey: "ui.notification_toast.new_version_available_reload",
-      },
-      duration: -1,
-      dismissable: false,
-    });
+    expect(notifications).toHaveLength(0);
 
     setDirtyState(false);
     expect(reload).toHaveBeenCalledOnce();
