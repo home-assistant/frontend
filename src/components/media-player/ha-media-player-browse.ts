@@ -458,20 +458,17 @@ export class HaMediaPlayerBrowse extends LitElement {
       });
     }
 
-    // Search is available on non-root pages that opt in via can_search, aside
-    // from the manual-entry and TTS pseudo-sources.
-    const isBrowsable =
+    // Search and filter are available on non-root pages, aside from the
+    // manual-entry and TTS pseudo-sources.
+    const allowsSearchOrFilter =
       this.navigateIds.length > 1 &&
       !isManualMediaSourceContentId(currentItem.media_content_id) &&
       !isTTSMediaSource(currentItem.media_content_id);
-    const showSearch = isBrowsable && currentItem.can_search;
-    // A source that cannot search still gets a filter once a folder is long
-    // enough to need one: a TV's channel list, an album with many tracks. It
-    // narrows what is already loaded, so it needs nothing from the backend.
+    const showSearch = allowsSearchOrFilter && currentItem.can_search;
     const showFilter =
-      isBrowsable &&
+      allowsSearchOrFilter &&
       !currentItem.can_search &&
-      (currentItem.children?.length ?? 0) >= FILTER_MIN_CHILDREN;
+      children.length >= FILTER_MIN_CHILDREN;
     const filterQuery = showFilter ? normalizeForFilter(this._filterQuery) : "";
     const isFiltering = filterQuery !== "";
     if (isFiltering) {
@@ -896,6 +893,8 @@ export class HaMediaPlayerBrowse extends LitElement {
 
   private _handleFilterInput(ev: InputEvent): void {
     this._filterQuery = (ev.target as HaInputSearch).value ?? "";
+    this._virtualizer?.scrollTo(0, 0);
+    this._content?.scrollTo(0, 0);
   }
 
   private _handleSearchKeydown(ev: KeyboardEvent): void {
