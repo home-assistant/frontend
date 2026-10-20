@@ -4,10 +4,6 @@ import { property, state } from "lit/decorators.js";
 /**
  * Container that groups related content.
  *
- * Importing this module does not register the element. Use
- * `@home-assistant/components/card` to register `<hac-card>` globally, or the `scoped`
- * and `dynamic` entry points next to it.
- *
  * @slot header - Header of the card, usually a `hac-header`.
  * @slot - Content of the card. Its padding is omitted when empty.
  * @slot footer - Footer of the card, e.g. actions. Hidden when empty.
