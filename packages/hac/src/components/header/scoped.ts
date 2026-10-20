@@ -4,6 +4,7 @@ export { HacHeader };
 
 /**
  * Registers the bundled <hac-header> in a scoped registry:
- * `static scopedElements = { ...hacHeaderElements }` with `ScopedElementsMixin`.
+ * `ScopedElementsMixin(LitElement, { ...hacHeaderElements })` or
+ * `createScopedElementRegistry({ ...hacHeaderElements })`.
  */
 export const hacHeaderElements = { "hac-header": HacHeader };
