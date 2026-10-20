@@ -101,13 +101,6 @@ class MoreInfoCalendar extends LitElement {
             this.hass.config,
             this._events.errorCalendars.length > 0
           )}
-          .error=${
-            this._events.errorCalendars.length
-              ? this.hass.localize(
-                  "ui.components.calendar.event_retrieval_error"
-                )
-              : undefined
-          }
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
         ${
@@ -147,7 +140,8 @@ class MoreInfoCalendar extends LitElement {
       const timeZone = resolveTimeZone(locale.time_zone, config.time_zone);
       return {
         displayEventEnd: false,
-        listDayAltFormat: false,
+        // FullCalendar 7 shows the default date for `false`, so format it empty
+        listDayAltFormat: () => "",
         listDayFormat: ({ date }) => {
           const day = new TZDate(date.year, date.month, date.day, timeZone);
           const today = TZDate.tz(timeZone);
@@ -159,10 +153,12 @@ class MoreInfoCalendar extends LitElement {
           }
           return formatDateWeekdayDay(day, locale, config);
         },
-        // The warning already explains the missing events
-        noEventsContent: error
-          ? ""
-          : localize("ui.dialogs.more_info_control.calendar.no_events"),
+        // The dialog shows one calendar, so an error means it has no events
+        noEventsContent: localize(
+          error
+            ? "ui.components.calendar.event_retrieval_error"
+            : "ui.dialogs.more_info_control.calendar.no_events"
+        ),
       };
     }
   );

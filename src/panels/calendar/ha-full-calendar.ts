@@ -109,6 +109,8 @@ const defaultFullCalendarConfig: CalendarOptions = {
     list: {
       listItemEventClass: "ha-fc-list-event",
       listItemEventBeforeClass: "ha-fc-dot ha-fc-dot-large",
+      listItemEventTimeClass: "ha-fc-list-event-time",
+      listItemEventTitleClass: "ha-fc-list-event-title",
     },
     listWeek: {
       type: "list",
@@ -908,6 +910,17 @@ export class HAFullCalendar extends LitElement {
         .ha-fc-list-event {
           padding-block: 12px;
           border-top-style: none;
+        }
+
+        /* The theme gives the time half the width and cuts titles off, which
+           leaves little room for titles on narrow calendars */
+        :host([narrow]) .ha-fc-list-event-time {
+          width: 25%;
+        }
+
+        :host([narrow]) .ha-fc-list-event-title {
+          white-space: normal;
+          overflow-wrap: anywhere;
         }
 
         :host([narrow]) .ha-fc-dayGridMonth .ha-fc-dot-event {
