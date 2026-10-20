@@ -96,6 +96,9 @@ export class HAFullCalendar extends LitElement {
   @property({ attribute: "hide-header", type: Boolean, reflect: true })
   public hideHeader = false;
 
+  // Extra FullCalendar options, such as list formats for a fixed view
+  @property({ attribute: false }) public options?: CalendarOptions;
+
   @property({ attribute: false }) public events: CalendarEvent[] = [];
 
   @property({ attribute: false }) public calendars: CalendarData[] = [];
@@ -324,6 +327,12 @@ export class HAFullCalendar extends LitElement {
       this._fireViewChanged();
     }
 
+    if (changedProps.has("options") && this.options) {
+      Object.entries(this.options).forEach(([name, value]) =>
+        this.calendar!.setOption(name as keyof CalendarOptions, value)
+      );
+    }
+
     if (changedProps.has("eventDisplay")) {
       this.calendar!.setOption("eventDisplay", this.eventDisplay);
     }
@@ -371,6 +380,7 @@ export class HAFullCalendar extends LitElement {
         minute: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
         hour12: useAmPm(this.hass.locale),
       },
+      ...this.options,
     };
 
     config.dateClick = (info) => this._handleDateClick(info);

@@ -2014,7 +2014,10 @@
           }
         },
         "calendar": {
-          "upcoming_events": "Upcoming events"
+          "upcoming_events": "Upcoming events",
+          "no_events": "No events in the next 7 days",
+          "today": "[%key:ui::components::calendar::today%]",
+          "tomorrow": "[%key:ui::components::selectors::period::periods::tomorrow%]"
         },
         "camera": {
           "download_snapshot": "Download snapshot",

@@ -1,15 +1,22 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import { TZDate } from "@date-fns/tz";
+import type { CalendarOptions } from "@fullcalendar/core";
+import { addDays, isSameDay } from "date-fns";
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { formatDateWeekdayDay } from "../../../common/datetime/format_date";
+import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-spinner";
 import type { Calendar } from "../../../data/calendar";
 import { getCalendarColors } from "../../../data/calendar";
 import { CalendarEventsController } from "../../../data/calendar-events-controller";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import type { FrontendLocaleData } from "../../../data/translation";
 import "../../../panels/calendar/ha-full-calendar";
 import { haStyle } from "../../../resources/styles";
 import type {
@@ -88,6 +95,12 @@ class MoreInfoCalendar extends LitElement {
           .calendars=${this._calendars}
           .views=${VIEWS}
           .initialView=${VIEWS[0]}
+          .options=${this._calendarOptions(
+            this.hass.localize,
+            this.hass.locale,
+            this.hass.config,
+            this._events.errorCalendars.length > 0
+          )}
           .error=${
             this._events.errorCalendars.length
               ? this.hass.localize(
@@ -120,6 +133,38 @@ class MoreInfoCalendar extends LitElement {
         ...getCalendarColors(color, 0, getComputedStyle(this)),
       },
     ]
+  );
+
+  // Days are titled "Today", "Tomorrow" and then by weekday and date, with
+  // only the start time of events to leave room for their titles.
+  private _calendarOptions = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      locale: FrontendLocaleData,
+      config: HassConfig,
+      error: boolean
+    ): CalendarOptions => {
+      const timeZone = resolveTimeZone(locale.time_zone, config.time_zone);
+      return {
+        displayEventEnd: false,
+        listDaySideFormat: false,
+        listDayFormat: ({ date }) => {
+          const day = new TZDate(date.year, date.month, date.day, timeZone);
+          const today = TZDate.tz(timeZone);
+          if (isSameDay(day, today)) {
+            return localize("ui.dialogs.more_info_control.calendar.today");
+          }
+          if (isSameDay(day, addDays(today, 1))) {
+            return localize("ui.dialogs.more_info_control.calendar.tomorrow");
+          }
+          return formatDateWeekdayDay(day, locale, config);
+        },
+        // The warning already explains the missing events
+        noEventsContent: error
+          ? ""
+          : localize("ui.dialogs.more_info_control.calendar.no_events"),
+      };
+    }
   );
 
   private _handleViewChanged(ev: HASSDomEvent<CalendarViewChanged>): void {
