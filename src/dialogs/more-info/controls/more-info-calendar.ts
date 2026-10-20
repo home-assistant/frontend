@@ -11,15 +11,15 @@ import { getCalendarColors } from "../../../data/calendar";
 import { CalendarEventsController } from "../../../data/calendar-events-controller";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
 import "../../../panels/calendar/ha-full-calendar";
+import { haStyle } from "../../../resources/styles";
 import type {
   CalendarViewChanged,
   FullCalendarView,
   HomeAssistant,
 } from "../../../types";
 
-// Same views as the calendar card, opening on the upcoming events
-const VIEWS: FullCalendarView[] = ["dayGridMonth", "dayGridDay", "listWeek"];
-const INITIAL_VIEW: FullCalendarView = "listWeek";
+// A fixed list of the next 7 days, the calendar panel has the other views
+const VIEWS: FullCalendarView[] = ["listWeek"];
 
 @customElement("more-info-calendar")
 class MoreInfoCalendar extends LitElement {
@@ -67,27 +67,42 @@ class MoreInfoCalendar extends LitElement {
     const loading = !this._events.loaded;
 
     return html`
-      <ha-full-calendar
-        class=${classMap({ loading })}
-        narrow
-        auto-height
-        .hass=${this.hass}
-        .events=${this._events.events}
-        .calendars=${this._calendars}
-        .views=${VIEWS}
-        .initialView=${INITIAL_VIEW}
-        .error=${
-          this._events.errorCalendars.length
-            ? this.hass.localize("ui.components.calendar.event_retrieval_error")
-            : undefined
+      <div class="header">
+        <h2>
+          ${this.hass.localize(
+            "ui.dialogs.more_info_control.calendar.upcoming_events"
+          )}
+        </h2>
+        <a href="/calendar"
+          >${this.hass.localize("ui.dialogs.more_info_control.show_more")}</a
+        >
+      </div>
+      <div class="content">
+        <ha-full-calendar
+          class=${classMap({ loading })}
+          narrow
+          auto-height
+          hide-header
+          .hass=${this.hass}
+          .events=${this._events.events}
+          .calendars=${this._calendars}
+          .views=${VIEWS}
+          .initialView=${VIEWS[0]}
+          .error=${
+            this._events.errorCalendars.length
+              ? this.hass.localize(
+                  "ui.components.calendar.event_retrieval_error"
+                )
+              : undefined
+          }
+          @view-changed=${this._handleViewChanged}
+        ></ha-full-calendar>
+        ${
+          loading
+            ? html`<div class="loading"><ha-spinner></ha-spinner></div>`
+            : nothing
         }
-        @view-changed=${this._handleViewChanged}
-      ></ha-full-calendar>
-      ${
-        loading
-          ? html`<div class="loading"><ha-spinner></ha-spinner></div>`
-          : nothing
-      }
+      </div>
     `;
   }
 
@@ -121,28 +136,41 @@ class MoreInfoCalendar extends LitElement {
     this._events.subscribe(this.hass, this._calendars, this._start, this._end);
   }
 
-  static styles = css`
-    :host {
-      display: block;
-      position: relative;
-    }
+  static styles = [
+    haStyle,
+    css`
+      .content {
+        position: relative;
+      }
 
-    ha-full-calendar.loading {
-      visibility: hidden;
-    }
+      ha-full-calendar.loading {
+        visibility: hidden;
+      }
 
-    .loading {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+      .loading {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-    ha-full-calendar {
-      --calendar-title-font-size: var(--ha-font-size-l);
-    }
-  `;
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--ha-space-2);
+      }
+
+      h2 {
+        margin: 0;
+      }
+
+      a {
+        color: var(--primary-color);
+      }
+    `,
+  ];
 }
 
 declare global {

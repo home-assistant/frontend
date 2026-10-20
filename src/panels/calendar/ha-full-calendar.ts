@@ -92,6 +92,10 @@ export class HAFullCalendar extends LitElement {
   @property({ attribute: "auto-height", type: Boolean }) public autoHeight =
     false;
 
+  // Hides the title, navigation and view selection, for a fixed view
+  @property({ attribute: "hide-header", type: Boolean, reflect: true })
+  public hideHeader = false;
+
   @property({ attribute: false }) public events: CalendarEvent[] = [];
 
   @property({ attribute: false }) public calendars: CalendarData[] = [];
@@ -594,6 +598,10 @@ export class HAFullCalendar extends LitElement {
           padding-bottom: 8px;
         }
 
+        :host([hide-header]) .header {
+          display: none;
+        }
+
         :host([narrow]) .header {
           padding-right: 8px;
           padding-left: 8px;
@@ -609,10 +617,6 @@ export class HAFullCalendar extends LitElement {
           padding-left: var(--calendar-header-padding);
           padding-inline-start: var(--calendar-header-padding);
           padding-inline-end: var(--calendar-header-padding);
-        }
-
-        h1 {
-          font-size: var(--calendar-title-font-size, var(--ha-font-size-2xl));
         }
 
         .navigation {
