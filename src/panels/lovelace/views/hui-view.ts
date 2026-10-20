@@ -233,14 +233,16 @@ export class HUIView extends ReactiveElement {
     );
     this.addEventListener(
       "ll-cut-card",
-      (ev: HASSDomEvent<HASSDomEvents["ll-cut-card"]>) => {
+      async (ev: HASSDomEvent<HASSDomEvents["ll-cut-card"]>) => {
         fireEvent(this, "ll-copy-card", {
           path: ev.detail.path!,
           silent: true,
         });
-        fireEvent(this, "ll-delete-card", {
-          path: ev.detail.path!,
+
+        await performDeleteCard(this.hass, this.lovelace, {
+          ...ev.detail,
           silent: true,
+          path: normalizeCardPath(ev.detail.path),
         });
 
         this.lovelace.showToast({
