@@ -19,6 +19,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
+import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -37,9 +38,13 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { getHistoryState, updateHistoryState } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  entitiesFilterQueryParamConfig,
+  entitiesFilterQueryParams,
+  entitiesLinkFromUrl,
+} from "../../../common/url/entities-query-params";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -190,9 +195,7 @@ export class HaConfigEntities extends LitElement {
     state: true,
     subscribe: false,
   })
-  private _filter: string = getHistoryState()?.filter || "";
-
-  @state() private _searchParms = new URLSearchParams(window.location.search);
+  private _filter = "";
 
   @state()
   private _filters: DataTableFiltersValues = {};
@@ -251,12 +254,19 @@ export class HaConfigEntities extends LitElement {
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
-  private _fromUrl = false;
+  // The filters are kept in the URL by the page, the search, sorting and
+  // grouping by the table
+  private _filterParams = new QueryParamsController(
+    this,
+    entitiesFilterQueryParamConfig,
+    {
+      enabled: () => true,
+      navigated: () => this._applyLink(),
+    }
+  );
 
   public connectedCallback() {
     super.connectedCallback();
-    window.addEventListener("location-changed", this._locationChanged);
-    window.addEventListener("popstate", this._popState);
     window.addEventListener(
       "exposed-entities-changed",
       this._fetchExposedEntities
@@ -265,27 +275,11 @@ export class HaConfigEntities extends LitElement {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    window.removeEventListener("location-changed", this._locationChanged);
-    window.removeEventListener("popstate", this._popState);
     window.removeEventListener(
       "exposed-entities-changed",
       this._fetchExposedEntities
     );
   }
-
-  private _locationChanged = () => {
-    if (window.location.search.substring(1) !== this._searchParms.toString()) {
-      this._searchParms = new URLSearchParams(window.location.search);
-      this._setFiltersFromUrl();
-    }
-  };
-
-  private _popState = () => {
-    if (window.location.search.substring(1) !== this._searchParms.toString()) {
-      this._searchParms = new URLSearchParams(window.location.search);
-      this._setFiltersFromUrl();
-    }
-  };
 
   private _states = memoize((localize: LocalizeFunc) => [
     {
@@ -368,6 +362,7 @@ export class HaConfigEntities extends LitElement {
         title: localize("ui.panel.config.entities.picker.headers.device"),
         filterable: true,
         groupable: true,
+        urlName: "device",
         hidden: true,
       },
       area: getAreaTableColumn(localize),
@@ -376,6 +371,7 @@ export class HaConfigEntities extends LitElement {
         title: localize("ui.panel.config.entities.picker.headers.integration"),
         sortable: true,
         groupable: true,
+        urlName: "integration",
         filterable: true,
       },
       domain: getDomainTableColumn(localize),
@@ -462,18 +458,21 @@ export class HaConfigEntities extends LitElement {
         title: localize("ui.panel.config.entities.picker.headers.availability"),
         sortable: true,
         groupable: true,
+        urlName: "available",
         hidden: true,
       },
       visible: {
         title: localize("ui.panel.config.entities.picker.headers.visibility"),
         sortable: true,
         groupable: true,
+        urlName: "visible",
         hidden: true,
       },
       enabled: {
         title: localize("ui.panel.config.entities.picker.headers.enabled"),
         sortable: true,
         groupable: true,
+        urlName: "enabled",
         hidden: true,
       },
       labels: getLabelsTableColumn(),
@@ -840,6 +839,7 @@ export class HaConfigEntities extends LitElement {
         @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
         clickable
+        sync-url
         @clear-filter=${this._clearFilter}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
@@ -1072,59 +1072,41 @@ export class HaConfigEntities extends LitElement {
 
     this._filters = { ...this._filters, [type]: ev.detail.value };
     this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
-    if (!this._fromUrl) {
-      this._storageFilters = this._filters;
-    }
+    this._storageFilters = this._filters;
+    this._writeFilters();
   }
 
   protected firstUpdated() {
-    this._setFiltersFromUrl();
     this._fetchExposedEntities();
     fetchEntitySourcesWithCache(this.hass).then((sources) => {
       this._entitySources = sources;
     });
-    if (Object.keys(this._filters).length) {
-      return;
-    }
-    this._filters = {
-      "ha-filter-states": ["enabled"],
-    };
   }
 
-  private _setFiltersFromUrl() {
-    const area = this._searchParms.get("area");
-    const domain = this._searchParms.get("domain");
-    const configEntry = this._searchParms.get("config_entry");
-    const subEntry = this._searchParms.get("sub_entry");
-    const device = this._searchParms.get("device");
-    const label = this._searchParms.get("label");
-    const voiceAssistant = this._searchParms.get("voice_assistant");
+  // Links, like the ones on a device or integration page, say in the URL what
+  // to show. The router keeps the page open, so a link can land on it.
+  private _applyLink() {
+    const searchParams = this._filterParams.searchParams();
+    const link = searchParams ? entitiesLinkFromUrl(searchParams) : undefined;
 
-    if (!area && !domain && !configEntry && !label && !device) {
-      return;
+    if (link) {
+      this._filter = link.search;
+      this._filters = link.filters;
+      this._storageFilters = link.filters;
     }
 
-    this._fromUrl = true;
-    this._filter = getHistoryState()?.filter || "";
+    this._writeFilters();
+  }
 
-    this._filters = {
-      "ha-filter-states": [],
-      "ha-filter-floor-areas": area ? { areas: [area] } : undefined,
-      "ha-filter-integrations": domain ? [domain] : [],
-      "ha-filter-devices": device ? [device] : [],
-      "ha-filter-labels": label ? [label] : [],
-      "ha-filter-voice-assistants": voiceAssistant ? [voiceAssistant] : [],
-      config_entry: configEntry ? [configEntry] : [],
-      sub_entry: subEntry ? [subEntry] : [],
-    };
+  private _writeFilters() {
+    this._filterParams.write(entitiesFilterQueryParams(this._filters));
   }
 
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
-    if (!this._fromUrl) {
-      this._storageFilters = {};
-    }
+    this._storageFilters = {};
+    this._writeFilters();
   }
 
   private _fetchExposedEntities = async () => {
@@ -1165,8 +1147,10 @@ export class HaConfigEntities extends LitElement {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
-      this._filters = this._storageFilters;
-      this._setFiltersFromUrl();
+      this._filters = Object.keys(this._storageFilters).length
+        ? this._storageFilters
+        : { "ha-filter-states": ["enabled"] };
+      this._applyLink();
     }
 
     const oldHass = changedProps.get("hass");
@@ -1240,7 +1224,6 @@ export class HaConfigEntities extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this._filter = ev.detail.value;
-    updateHistoryState({ filter: this._filter });
   }
 
   private _handleSelectionChanged(
@@ -1555,8 +1538,13 @@ ${rejected
       });
       return;
     }
+
+    const integrations = this._filters["ha-filter-integrations"];
     showAddIntegrationDialog(this, {
-      domain: this._searchParms.get("domain") || undefined,
+      domain:
+        Array.isArray(integrations) && integrations.length === 1
+          ? integrations[0]
+          : undefined,
       navigateToResult: true,
     });
   }
