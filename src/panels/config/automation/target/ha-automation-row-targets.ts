@@ -126,6 +126,9 @@ export class HaAutomationRowTargets extends LitElement {
   // What the target's `exclude` resolves to, shared by every count.
   private _excludedEntities?: Promise<Set<string>>;
 
+  // The same, once resolved, to mark excluded entity targets.
+  @state() private _excludedEntityIds = new Set<string>();
+
   private _rerenderCount = true;
 
   protected willUpdate(changedProps: PropertyValues) {
@@ -137,6 +140,7 @@ export class HaAutomationRowTargets extends LitElement {
     ) {
       this._rerenderCount = true;
       this._excludedEntities = undefined;
+      this._resolveExcludedEntityIds();
     }
 
     if (
@@ -231,6 +235,19 @@ export class HaAutomationRowTargets extends LitElement {
     return isConfigObject(exclude) && !hasTemplate(exclude)
       ? exclude
       : undefined;
+  }
+
+  private async _resolveExcludedEntityIds() {
+    if (!this._api || !this._getExclude()) {
+      this._excludedEntityIds = new Set();
+      return;
+    }
+    const request = this._getExcludedEntities();
+    const excluded = await request;
+    // A newer target started its own lookup in the meantime.
+    if (request === this._excludedEntities) {
+      this._excludedEntityIds = excluded;
+    }
   }
 
   private _getExcludedEntities(): Promise<Set<string>> {
@@ -360,6 +377,9 @@ export class HaAutomationRowTargets extends LitElement {
       (acc, val) => acc + ensureArray(val).length,
       0
     );
+    const excludedEntityTargets = ensureArray(target.entity_id ?? []).filter(
+      (entityId) => this._excludedEntityIds.has(entityId)
+    ).length;
 
     if (totalLength <= 5) {
       const targets = Object.entries(target).reduce<
@@ -429,7 +449,7 @@ export class HaAutomationRowTargets extends LitElement {
             ${this._i18n.localize(
               "ui.panel.config.automation.editor.target_summary.targets",
               {
-                count: totalLength,
+                count: totalLength - excludedEntityTargets,
               }
             )}
           </div>
@@ -491,7 +511,8 @@ export class HaAutomationRowTargets extends LitElement {
     targetId?: string,
     targetType?: string,
     countTemplate: unknown = nothing,
-    title?: string
+    title?: string,
+    excluded = false
   ) {
     if (!this.interactive || !targetId || !targetType) {
       return html`<div
@@ -499,6 +520,7 @@ export class HaAutomationRowTargets extends LitElement {
           target: true,
           warning,
           error,
+          excluded,
         })}
         title=${title ?? nothing}
         .targetId=${targetId}
@@ -515,6 +537,7 @@ export class HaAutomationRowTargets extends LitElement {
         target: true,
         warning,
         error,
+        excluded,
       })}
       title=${title ?? nothing}
       .targetId=${targetId}
@@ -540,6 +563,9 @@ export class HaAutomationRowTargets extends LitElement {
     let badgeTargetId: string | undefined = targetId;
     let badgeTargetType: string | undefined = targetType;
     let countTemplate: unknown = nothing;
+    // An entity target that the exclude block takes out again.
+    const excluded =
+      targetType === "entity" && this._excludedEntityIds.has(targetId);
 
     if (targetType === "entity" && ["all", "none"].includes(targetId)) {
       icon = mdiShape;
@@ -600,6 +626,11 @@ export class HaAutomationRowTargets extends LitElement {
         if (targetType !== "entity" && this.interactive) {
           countTemplate = this._renderCount(targetType, targetId);
         }
+        if (excluded) {
+          title = this._i18n.localize(
+            "ui.panel.config.automation.editor.target_summary.excluded"
+          );
+        }
       }
     }
 
@@ -628,6 +659,7 @@ export class HaAutomationRowTargets extends LitElement {
         title=${title ?? nothing}
         class=${classMap({
           warning,
+          excluded,
         })}
         >${iconTemplate} ${label}${countTemplate}</ha-dropdown-item
       >`;
@@ -641,7 +673,8 @@ export class HaAutomationRowTargets extends LitElement {
       badgeTargetId,
       badgeTargetType,
       countTemplate,
-      title
+      title,
+      excluded
     );
   }
 
@@ -797,6 +830,11 @@ export class HaAutomationRowTargets extends LitElement {
 
     ha-dropdown-item {
       padding: 0 var(--ha-space-2);
+    }
+    .target.excluded .label,
+    ha-dropdown-item.excluded {
+      color: var(--secondary-text-color);
+      text-decoration: line-through;
     }
     ha-dropdown-item.warning {
       background-color: var(--ha-color-fill-warning-quiet-resting);

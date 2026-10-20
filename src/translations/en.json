@@ -5663,6 +5663,7 @@
               "device_replaced": "Replaced device",
               "device_replaced_description": "This device was replaced by one or more new devices. Update this automation to use them.",
               "count_excluded": "({count}, {excluded} excluded)",
+              "excluded": "Excluded from the target",
               "types": {
                 "entity": "[%key:ui::components::target-picker::type::entities%]",
                 "device": "[%key:ui::components::target-picker::type::devices%]",
