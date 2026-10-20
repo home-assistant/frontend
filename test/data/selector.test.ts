@@ -226,6 +226,39 @@ describe("filterSelectorEntities translation key filter", () => {
       )
     ).toBe(false);
   });
+
+  it("matches every entity when the translation key list is empty", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: [] },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(true);
+  });
+
+  it("matches without a registry entry when the translation key list is empty", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: [] },
+        entity,
+        undefined,
+        {} as HomeAssistant["entities"]
+      )
+    ).toBe(true);
+  });
+
+  it("does not match when the translation key filter is an empty string", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: "" },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(false);
+  });
 });
 
 describe("resolveEntityIDs", () => {

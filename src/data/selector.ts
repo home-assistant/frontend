@@ -1039,14 +1039,10 @@ export const filterSelectorEntities = (
     }
   }
 
-  if (filterTranslationKey) {
+  const filterTranslationKeys = ensureArray(filterTranslationKey) ?? [];
+  if (filterTranslationKeys.length) {
     const translationKey = entityRegistry?.[entity.entity_id]?.translation_key;
-    if (
-      !translationKey ||
-      (Array.isArray(filterTranslationKey)
-        ? !filterTranslationKey.includes(translationKey)
-        : translationKey !== filterTranslationKey)
-    ) {
+    if (!translationKey || !filterTranslationKeys.includes(translationKey)) {
       return false;
     }
   }
