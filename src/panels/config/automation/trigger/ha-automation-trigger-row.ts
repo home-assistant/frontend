@@ -1001,19 +1001,22 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (result === null) {
       return;
     }
-    const id = result.trim();
-    if (id === (trigger.id ?? "")) {
+    const id = result.trim() === "" ? undefined : result;
+    if (id === trigger.id) {
       return;
     }
     const value = { ...trigger };
-    if (id === "") {
+    if (id === undefined) {
       delete value.id;
     } else {
       value.id = id;
     }
-    fireEvent(this, "value-changed", {
-      value,
-    });
+    // Bypass the editor's generated ID cleanup so references to the old ID dangle
+    if (!this._triggers?.updateTriggerId(trigger, value)) {
+      fireEvent(this, "value-changed", {
+        value,
+      });
+    }
 
     if (this._selected && this.optionsInSidebar) {
       this.openSidebar(value); // refresh sidebar
