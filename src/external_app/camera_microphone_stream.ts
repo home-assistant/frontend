@@ -5,14 +5,25 @@ no secure context, where browsers block microphone access.
 */
 
 import type { HASSDomEvent } from "../common/dom/fire_event";
-import type { ExternalMessaging } from "./external_messaging";
+import type {
+  ExternalMessaging,
+  WebRtcStreamErrorCode,
+  WebRtcStreamStopped,
+} from "./external_messaging";
+import { WEBRTC_STREAM_ERROR_CODES } from "./external_messaging";
 
 export const canAppStreamMicrophone = (external?: ExternalMessaging) =>
-  Boolean(external?.config.hasCameraMicrophoneStream);
+  Boolean(external?.config.webrtcCapabilities?.includes("microphone"));
+
+export const isWebRtcStreamErrorCode = (
+  code: string
+): code is WebRtcStreamErrorCode =>
+  (WEBRTC_STREAM_ERROR_CODES as readonly string[]).includes(code);
 
 /**
  * Asks the app to stream the microphone to the camera.
- * Resolves with the session ID once connected, rejects with `{ code, message }`.
+ * Resolves with the session ID once connected, rejects with `{ code, message }`
+ * where `code` is a `WebRtcStreamErrorCode`.
  */
 export const startAppMicrophoneStream = async (
   external: ExternalMessaging,
@@ -42,10 +53,10 @@ export const stopAppMicrophoneStream = (
  * Returns a function to unsubscribe.
  */
 export const subscribeAppStreamStopped = (
-  callback: (sessionId: string) => void
+  callback: (stopped: WebRtcStreamStopped) => void
 ): (() => void) => {
   const listener = (ev: HASSDomEvent<HASSDomEvents["webrtc-stream-stopped"]>) =>
-    callback(ev.detail.session_id);
+    callback(ev.detail);
   window.addEventListener("webrtc-stream-stopped", listener);
   return () => window.removeEventListener("webrtc-stream-stopped", listener);
 };

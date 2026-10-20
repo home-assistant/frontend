@@ -21,10 +21,15 @@ import { configContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   canAppStreamMicrophone,
+  isWebRtcStreamErrorCode,
   startAppMicrophoneStream,
   stopAppMicrophoneStream,
   subscribeAppStreamStopped,
 } from "../../../external_app/camera_microphone_stream";
+import type {
+  EMError,
+  WebRtcStreamStopped,
+} from "../../../external_app/external_messaging";
 import { showToast } from "../../../util/toast";
 
 @customElement("more-info-camera")
@@ -225,13 +230,20 @@ class MoreInfoCamera extends LitElement {
       this._microphoneState = "on";
     } catch (err: unknown) {
       this._microphoneState = "off";
-      showToast(this, {
-        message: this._localize(
-          "ui.dialogs.more_info_control.camera.microphone_app_failed",
-          { message: (err as { message?: string }).message ?? "" }
-        ),
-      });
+      showToast(this, { message: this._appErrorMessage(err as EMError) });
     }
+  }
+
+  private _appErrorMessage({ code, message }: EMError): string {
+    if (code === "unknown" || !isWebRtcStreamErrorCode(code)) {
+      return this._localize(
+        "ui.dialogs.more_info_control.camera.app_microphone_error.unknown",
+        { message }
+      );
+    }
+    return this._localize(
+      `ui.dialogs.more_info_control.camera.app_microphone_error.${code}`
+    );
   }
 
   private _stopAppMicrophone() {
@@ -253,17 +265,16 @@ class MoreInfoCamera extends LitElement {
     this._unsubAppStreamStopped = undefined;
   }
 
-  private _appStreamStopped = (sessionId: string) => {
-    if (sessionId !== this._appMicrophoneSession) {
+  private _appStreamStopped = (stopped: WebRtcStreamStopped) => {
+    if (stopped.session_id !== this._appMicrophoneSession) {
       return;
     }
     this._clearAppMicrophoneSession();
     this._microphoneState = "off";
-    showToast(this, {
-      message: this._localize(
-        "ui.dialogs.more_info_control.camera.microphone_app_stopped"
-      ),
-    });
+    if (stopped.code === "interrupted") {
+      return;
+    }
+    showToast(this, { message: this._appErrorMessage(stopped) });
   };
 
   private _streamTypeChanged(
