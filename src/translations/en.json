@@ -1876,6 +1876,7 @@
             "backups_link": "View backups"
           },
           "install_failed": "The update could not be started: {error}",
+          "supervisor_logs": "[%key:ui::panel::config::logs::supervisor_logs%]",
           "create_backup": {
             "automatic": "Automatic backup before update",
             "automatic_description_last": "Last automatic backup {relative_time}.",
@@ -4914,6 +4915,7 @@
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This log entry is from a custom integration.",
           "show_full_logs": "Show raw logs",
+          "supervisor_logs": "Supervisor logs",
           "show_condensed_logs": "Show condensed logs",
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",

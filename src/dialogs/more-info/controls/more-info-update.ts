@@ -39,12 +39,14 @@ import {
   updateReleaseNotes,
 } from "../../../data/update";
 import type {
+  CurrentUser,
   HomeAssistantApi,
   HomeAssistantConfig,
   HomeAssistantFormatters,
 } from "../../../types";
 import { showAlertDialog } from "../../generic/show-dialog-box";
 import { showToast } from "../../../util/toast";
+import { showLogsDialog } from "../../../panels/config/logs/show-dialog-logs";
 import "../components/update/ha-more-info-update-backup";
 import type { HaMoreInfoUpdateBackup } from "../components/update/ha-more-info-update-backup";
 
@@ -81,6 +83,13 @@ class MoreInfoUpdate extends LitElement {
     transformer: ({ config }) => config,
   })
   private _config!: HassConfig;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, CurrentUser | undefined>({
+    transformer: ({ user }) => user,
+  })
+  private _user?: CurrentUser;
 
   @state() private _releaseNotes?: string | null;
 
@@ -286,6 +295,20 @@ class MoreInfoUpdate extends LitElement {
                     "ui.dialogs.more_info_control.update.install_failed",
                     { error: this._installError }
                   )}
+                  ${
+                    this._canShowSupervisorLogs()
+                      ? html`<ha-button
+                          slot="action"
+                          appearance="plain"
+                          size="small"
+                          @click=${this._handleShowSupervisorLogs}
+                        >
+                          ${this._localize(
+                            "ui.dialogs.more_info_control.update.supervisor_logs"
+                          )}
+                        </ha-button>`
+                      : nothing
+                  }
                 </ha-alert>`
               : nothing
         }
@@ -416,9 +439,39 @@ class MoreInfoUpdate extends LitElement {
             { error: message }
           ),
           duration: 10000,
+          action: this._canShowSupervisorLogs()
+            ? {
+                text: this._localize(
+                  "ui.dialogs.more_info_control.update.supervisor_logs"
+                ),
+                action: () =>
+                  this._showSupervisorLogs(toastHost as HTMLElement),
+              }
+            : undefined,
         });
       }
     }
+  }
+
+  // Supervisor errors only say "Check Supervisor logs for details".
+  private _canShowSupervisorLogs(): boolean {
+    return (
+      this._entityEntry?.platform === "hassio" && Boolean(this._user?.is_admin)
+    );
+  }
+
+  private _handleShowSupervisorLogs(): void {
+    this._showSupervisorLogs(this);
+  }
+
+  // The toast outlives this element, so it opens the dialog from its own host.
+  private _showSupervisorLogs(host: HTMLElement): void {
+    showLogsDialog(host, {
+      provider: "supervisor",
+      title: this._localize(
+        "ui.dialogs.more_info_control.update.supervisor_logs"
+      ),
+    });
   }
 
   private _isShown(): boolean {
