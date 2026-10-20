@@ -78,7 +78,7 @@ export class HaAnsiToHtml extends LitElement {
       overflow-wrap: break-word;
     }
     .context {
-      opacity: 0.6;
+      color: var(--secondary-text-color);
     }
     .expand {
       display: block;
