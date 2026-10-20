@@ -16,7 +16,7 @@ export type {
 /**
  * Creates a registry with the given elements, for `attachScopedShadow`:
  * definitions from `scoped` or `dynamic` entry points, e.g. `[hacCard]`.
- * Create it once, e.g. at module level, and share it between instances.
+ * Create it once, outside the class, so all instances of a card share it.
  *
  * Loaders of `dynamic` entry points register their element once it is
  * loaded; elements rendered before that upgrade then.

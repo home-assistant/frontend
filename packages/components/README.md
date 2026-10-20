@@ -59,7 +59,7 @@ import {
 } from "@home-assistant/components/scoped";
 import { hacCard } from "@home-assistant/components/card/dynamic";
 
-// Once per module, shared by all instances
+// Create the registry once, outside the class: all instances of the card share it
 const registry = createScopedElementRegistry([hacCard]);
 
 class MyCard extends HTMLElement {
