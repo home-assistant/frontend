@@ -25,6 +25,7 @@ import {
   apiContext,
   configContext,
   connectionContext,
+  devicesContext,
   formattersContext,
   internationalizationContext,
 } from "../../../data/context";
@@ -53,6 +54,8 @@ import type { HaMoreInfoUpdateBackup } from "../components/update/ha-more-info-u
 // Dialogs that reflect their open state to the `open` attribute.
 const DIALOG_ELEMENTS = new Set(["ha-adaptive-dialog", "ha-dialog"]);
 
+const NON_APP_HASSIO_DEVICES = new Set(["core", "supervisor", "OS", "host"]);
+
 @customElement("more-info-update")
 class MoreInfoUpdate extends LitElement {
   @property({ attribute: false }) public stateObj?: UpdateEntity;
@@ -74,6 +77,9 @@ class MoreInfoUpdate extends LitElement {
   @state()
   @consumeEntityRegistryEntry({ entityIdPath: ["stateObj", "entity_id"] })
   private _entityEntry?: EntityRegistryDisplayEntry;
+
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
 
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: ContextType<typeof connectionContext>;
@@ -432,7 +438,9 @@ class MoreInfoUpdate extends LitElement {
       // The dialog was closed, or is closing, while the update was installing.
       const toastHost = document.querySelector("home-assistant");
 
-      if (toastHost) {
+      if (toastHost instanceof HTMLElement) {
+        const filter = this._appSlug();
+
         showToast(toastHost, {
           message: this._localize(
             "ui.dialogs.more_info_control.update.install_failed",
@@ -444,8 +452,7 @@ class MoreInfoUpdate extends LitElement {
                 text: this._localize(
                   "ui.dialogs.more_info_control.update.supervisor_logs"
                 ),
-                action: () =>
-                  this._showSupervisorLogs(toastHost as HTMLElement),
+                action: () => this._showSupervisorLogs(toastHost, filter),
               }
             : undefined,
         });
@@ -460,17 +467,37 @@ class MoreInfoUpdate extends LitElement {
     );
   }
 
+  // Supervisor names the app by its slug in log lines; other hassio devices aren't apps.
+  private _appSlug(): string | undefined {
+    const deviceId = this._entityEntry?.device_id;
+
+    if (!deviceId) {
+      return undefined;
+    }
+
+    const id = this._devices[deviceId]?.identifiers.find(
+      ([domain]) => domain === "hassio"
+    )?.[1];
+
+    if (!id || NON_APP_HASSIO_DEVICES.has(id) || id.startsWith("mount_")) {
+      return undefined;
+    }
+
+    return id;
+  }
+
   private _handleShowSupervisorLogs(): void {
-    this._showSupervisorLogs(this);
+    this._showSupervisorLogs(this, this._appSlug());
   }
 
   // The toast outlives this element, so it opens the dialog from its own host.
-  private _showSupervisorLogs(host: HTMLElement): void {
+  private _showSupervisorLogs(host: HTMLElement, filter?: string): void {
     showLogsDialog(host, {
       provider: "supervisor",
       title: this._localize(
         "ui.dialogs.more_info_control.update.supervisor_logs"
       ),
+      filter,
     });
   }
 

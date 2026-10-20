@@ -857,6 +857,11 @@
         "entity-state-content-picker": {
           "add": "Add",
           "custom_attribute": "Custom attribute"
+        },
+        "entity-toggle": {
+          "toggle": "Toggle {name}",
+          "turn_on": "Turn {name} on",
+          "turn_off": "Turn {name} off"
         }
       },
       "target-picker": {
@@ -1314,6 +1319,10 @@
         "search": {
           "search_placeholder": "Search {name}",
           "no_results": "No results found"
+        },
+        "filter": {
+          "filter_placeholder": "Filter {name}",
+          "no_matches": "No items match your filter"
         },
         "filter_media_type": "Filter by media type",
         "no_items": "No items",
@@ -4896,6 +4905,8 @@
           "search": "Search logs",
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
+          "no_matches_showing_all": "Nothing in the recent logs mentions ''{term}'', so all lines are shown.",
+          "show_hidden_lines": "Show {count} hidden {count, plural,\n one {line}\n other {lines}\n}",
           "load_logs": "Load logs",
           "nr_of_lines": "Number of lines",
           "loading_log": "Loading log…",
