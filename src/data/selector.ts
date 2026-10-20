@@ -18,10 +18,6 @@ import {
   devicesInEffectiveArea,
   getDeviceIntegrationLookup,
 } from "./device/device_registry";
-import type {
-  EntityRegistryDisplayEntry,
-  EntityRegistryEntry,
-} from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
 
 export type ThresholdMode = "crossed" | "changed" | "is";
@@ -747,12 +743,7 @@ export const expandLabelTarget = (
   Object.values(devices).forEach((device) => {
     if (
       device.labels.includes(labelId) &&
-      deviceMeetsTargetSelector(
-        hass.states,
-        Object.values(entities),
-        device,
-        targetSelector
-      )
+      deviceMeetsTargetSelector(hass.states, entities, device, targetSelector)
     ) {
       newDevices.push(device.id);
     }
@@ -813,12 +804,7 @@ export const expandAreaTarget = (
   // this area counts, a child with a different explicit area does not.
   devicesInEffectiveArea(devices, areaId).forEach((device) => {
     if (
-      deviceMeetsTargetSelector(
-        hass.states,
-        Object.values(entities),
-        device,
-        targetSelector
-      )
+      deviceMeetsTargetSelector(hass.states, entities, device, targetSelector)
     ) {
       newDevices.push(device.id);
     }
@@ -873,12 +859,7 @@ export const areaMeetsTargetSelector = (
 ): boolean => {
   const hasMatchingdevice = devicesInEffectiveArea(devices, areaId).some(
     (device) =>
-      deviceMeetsTargetSelector(
-        hass.states,
-        Object.values(entities),
-        device,
-        targetSelector
-      )
+      deviceMeetsTargetSelector(hass.states, entities, device, targetSelector)
   );
   if (hasMatchingdevice) {
     return true;
@@ -902,7 +883,7 @@ export const areaMeetsTargetSelector = (
 
 export const deviceMeetsTargetSelector = (
   states: HomeAssistant["states"],
-  entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
+  entityRegistry: HomeAssistant["entities"],
   device: DeviceRegistryEntry,
   targetSelector: TargetSelector
 ): boolean => {
@@ -911,7 +892,7 @@ export const deviceMeetsTargetSelector = (
     const deviceIntegrationLookup = filterDevices.some(
       (filterDevice) => filterDevice.integration
     )
-      ? getDeviceIntegrationLookup(entityRegistry)
+      ? getDeviceIntegrationLookup(Object.values(entityRegistry))
       : undefined;
     if (
       !filterDevices.some((filterDevice) =>
@@ -924,12 +905,17 @@ export const deviceMeetsTargetSelector = (
   if (targetSelector.target?.entity) {
     // Only the device's own entities: a child device is reached through the
     // device target itself, so a parent must not match on a child's behalf.
-    const entities = entityRegistry.filter(
+    const entities = Object.values(entityRegistry).filter(
       (reg) => reg.device_id === device.id
     );
     return entities.some((entity) => {
       const entityState = states[entity.entity_id];
-      return entityMeetsTargetSelector(entityState, targetSelector);
+      return entityMeetsTargetSelector(
+        entityState,
+        targetSelector,
+        undefined,
+        entityRegistry
+      );
     });
   }
   return true;

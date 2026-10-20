@@ -478,7 +478,17 @@ class DialogAddAutomationElement
           if (active.has(domain)) {
             continue;
           }
-          if (filters.some((f) => filterSelectorEntities(f, entity))) {
+          if (
+            filters.some((f) =>
+              filterSelectorEntities(
+                f,
+                entity,
+                undefined,
+                this.hass.entities,
+                this.hass.devices
+              )
+            )
+          ) {
             active.add(domain);
           }
         }

@@ -5,6 +5,7 @@ import {
   filterSelectorEntities,
   resolveEntityIDs,
 } from "../../src/data/selector";
+import type { TargetSelector } from "../../src/data/selector";
 import type { HomeAssistant } from "../../src/types";
 
 const entity = {
@@ -242,6 +243,7 @@ describe("resolveEntityIDs", () => {
       "sensor.kitchen_hub_temp": {
         entity_id: "sensor.kitchen_hub_temp",
         device_id: "hub",
+        translation_key: "epex_current_hour",
       },
       "sensor.hallway_probe": {
         entity_id: "sensor.hallway_probe",
@@ -253,13 +255,14 @@ describe("resolveEntityIDs", () => {
     areas: { kitchen: { area_id: "kitchen" }, hallway: { area_id: "hallway" } },
   } as unknown as HomeAssistant;
 
-  const resolve = (target) =>
+  const resolve = (target, targetSelector?: TargetSelector) =>
     resolveEntityIDs(
       areaHass,
       target,
       areaHass.entities,
       areaHass.devices,
-      areaHass.areas
+      areaHass.areas,
+      targetSelector
     ).sort();
 
   it("skips entities of an area device that are assigned to another area", () => {
@@ -283,5 +286,20 @@ describe("resolveEntityIDs", () => {
       "sensor.hallway_probe",
       "sensor.kitchen_hub_temp",
     ]);
+  });
+
+  it("resolves an area through a device whose entity matches a translation key filter", () => {
+    expect(
+      resolve(
+        { area_id: "kitchen" },
+        {
+          target: {
+            entity: [
+              { domain: "sensor", translation_key: "epex_current_hour" },
+            ],
+          },
+        }
+      )
+    ).toEqual(["sensor.kitchen_hub_temp"]);
   });
 });

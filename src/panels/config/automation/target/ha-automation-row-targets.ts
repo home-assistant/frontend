@@ -181,14 +181,18 @@ export class HaAutomationRowTargets extends LitElement {
       return referencedEntities.length;
     }
 
-    const entityRegistry = hasDeviceFilter
-      ? Object.values(this._registries.entities)
-      : [];
-
     return referencedEntities.filter((entityId) => {
       if (hasEntityFilter) {
         const stateObj = this._states[entityId];
-        if (!entityMeetsTargetSelector(stateObj, targetSelector!)) {
+        if (
+          !entityMeetsTargetSelector(
+            stateObj,
+            targetSelector!,
+            undefined,
+            this._registries.entities,
+            this._registries.devices
+          )
+        ) {
           return false;
         }
       }
@@ -200,7 +204,7 @@ export class HaAutomationRowTargets extends LitElement {
             device &&
             !deviceMeetsTargetSelector(
               this._states,
-              entityRegistry,
+              this._registries.entities,
               device,
               targetSelector!
             )
