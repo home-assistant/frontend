@@ -1024,6 +1024,7 @@ class AddIntegrationDialog extends LitElement {
                     (subcategory, index, all) => html`
                       <ha-list-item-button
                         class=${classMap({
+                          subcategory: true,
                           selected:
                             isCurrent && subcategory.slug === this._subcategory,
                         })}
@@ -1462,6 +1463,11 @@ class AddIntegrationDialog extends LitElement {
         width: 24px;
         height: 40px;
         margin-inline-start: 20px;
+      }
+      /* The tree line is as tall as the row, padding would make the
+         subcategories taller than the categories */
+      .groups .subcategory {
+        --ha-row-item-padding-block: 0;
       }
       .groups ha-section-title {
         position: sticky;
