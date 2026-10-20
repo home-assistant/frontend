@@ -112,7 +112,7 @@ class MoreInfoCalendar extends LitElement {
         ></ha-full-calendar>
         ${
           loading
-            ? html`<div class="loading"><ha-spinner></ha-spinner></div>`
+            ? html`<div class="spinner"><ha-spinner></ha-spinner></div>`
             : nothing
         }
       </div>
@@ -192,7 +192,7 @@ class MoreInfoCalendar extends LitElement {
         visibility: hidden;
       }
 
-      .loading {
+      .spinner {
         position: absolute;
         inset: 0;
         display: flex;
