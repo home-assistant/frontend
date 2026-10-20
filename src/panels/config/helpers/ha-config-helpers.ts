@@ -934,16 +934,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       ) {
         const categoryItems = new Set<string>();
         this._helperEntities
-          .filter(
-            (stateItem) =>
-              filter[0] ===
-              entityRegistryByEntityId(this._entityReg || [])[
-                stateItem.entity_id
-              ]?.categories.helpers
-          )
+          .filter((stateItem) => {
+            const category = entityRegistryByEntityId(this._entityReg || [])[
+              stateItem.entity_id
+            ]?.categories.helpers;
+
+            return category !== undefined && filter.includes(category);
+          })
           .forEach((stateItem) => categoryItems.add(stateItem.entity_id));
         (this._disabledEntityEntries || [])
-          .filter((entry) => filter[0] === entry.categories.helpers)
+          .filter((entry) => filter.includes(entry.categories.helpers))
           .forEach((entry) => categoryItems.add(entry.entity_id));
         if (!items) {
           items = categoryItems;
