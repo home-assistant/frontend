@@ -3,13 +3,14 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-dialog";
 import "../../../components/input/ha-input-search";
-import { internationalizationContext } from "../../../data/context";
+import { apiContext, internationalizationContext } from "../../../data/context";
+import { fetchHassioLogsLegacy } from "../../../data/hassio/supervisor";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyleDialog } from "../../../resources/styles";
+import type { HomeAssistantApi } from "../../../types";
 import "./error-log-card";
 import type { LogsDialogParams } from "./show-dialog-logs";
 
@@ -19,23 +20,24 @@ class LogsDialog extends DialogMixin<LogsDialogParams>(LitElement) {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
   @state() private _filter = "";
 
   // Set when the filter the dialog opened with matched none of the loaded lines.
   @state() private _unmatchedFilter?: string;
 
-  private _checkInitialFilter = false;
-
   public connectedCallback() {
     super.connectedCallback();
     this._filter = this.params?.filter ?? "";
-    this._checkInitialFilter = Boolean(this.params?.filter);
   }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     // The log card's strings live in the config fragment, which isn't loaded on dashboards.
     this._i18n.loadFragmentTranslation("config");
+    this._checkInitialFilter();
   }
 
   protected render() {
@@ -66,7 +68,6 @@ class LogsDialog extends DialogMixin<LogsDialogParams>(LitElement) {
           .provider=${this.params.provider}
           .filter=${this._filter}
           class=${this._unmatchedFilter ? "with-alert" : ""}
-          @log-search-result=${this._handleSearchResult}
         ></error-log-card>
       </ha-dialog>
     `;
@@ -74,23 +75,31 @@ class LogsDialog extends DialogMixin<LogsDialogParams>(LitElement) {
 
   private _filterChanged(ev: InputEvent) {
     this._filter = (ev.target as HTMLInputElement).value;
-    this._checkInitialFilter = false;
     this._unmatchedFilter = undefined;
   }
 
-  // Lines for a failed update don't always name the app, so fall back to all lines.
-  private _handleSearchResult(
-    ev: HASSDomEvent<HASSDomEvents["log-search-result"]>
-  ) {
-    const { filter, found } = ev.detail;
+  // Lines for a failed update don't always name the app, so fall back to all
+  // lines. The card's stream never completes, so check a snapshot instead: the
+  // Supervisor's default of 100 lines, the same as the card loads.
+  private async _checkInitialFilter() {
+    const filter = this.params?.filter;
 
-    if (!this._checkInitialFilter || filter !== this._filter) {
+    if (!filter || !this.params) {
       return;
     }
 
-    this._checkInitialFilter = false;
+    let logs: string;
 
-    if (!found) {
+    try {
+      logs = await fetchHassioLogsLegacy(this._api, this.params.provider);
+    } catch {
+      return;
+    }
+
+    if (
+      this._filter === filter &&
+      !logs.toLowerCase().includes(filter.toLowerCase())
+    ) {
       this._unmatchedFilter = filter;
       this._filter = "";
     }

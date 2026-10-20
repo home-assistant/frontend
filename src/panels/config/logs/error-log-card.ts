@@ -424,6 +424,12 @@ class ErrorLogCard extends LitElement {
         this.filter)
     ) {
       this._debounceSearch();
+    } else if (
+      (changedProps.has("_localize") || changedProps.has("localizeFunc")) &&
+      this.filter
+    ) {
+      // The hidden lines buttons are built outside Lit, so relabel them.
+      this._ansiToHtmlElement?.filterLines(this.filter);
     }
 
     if (
@@ -647,13 +653,6 @@ class ErrorLogCard extends LitElement {
 
   private _debounceSearch = debounce(() => {
     this._noSearchResults = !this._ansiToHtmlElement?.filterLines(this.filter);
-
-    if (this._loadingState === "loaded") {
-      fireEvent(this, "log-search-result", {
-        filter: this.filter,
-        found: !this._noSearchResults,
-      });
-    }
 
     if (!this.filter) {
       this._scrollToBottom();
@@ -963,9 +962,5 @@ class ErrorLogCard extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "error-log-card": ErrorLogCard;
-  }
-
-  interface HASSDomEvents {
-    "log-search-result": { filter: string; found: boolean };
   }
 }
