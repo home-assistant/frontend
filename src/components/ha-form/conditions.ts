@@ -71,6 +71,22 @@ export const isVisible = (
   return conditions.every((condition) => evaluateCondition(condition, data));
 };
 
+export const combineVisible = (
+  ...options: (HaFormVisible | undefined)[]
+): HaFormVisible => {
+  const conditions: HaFormCondition[] = [];
+  for (const visible of options) {
+    if (visible === undefined || visible === true) {
+      continue;
+    }
+    if (visible === false) {
+      return false;
+    }
+    conditions.push(...(Array.isArray(visible) ? visible : [visible]));
+  }
+  return conditions;
+};
+
 // Hiding a field drops its value, which can flip another field's condition, so
 // resolve the set to a fixpoint. Fields are given in order as name and visible.
 export const getHiddenFields = (

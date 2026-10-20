@@ -5,9 +5,11 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
-import { getHiddenFields } from "../../../components/ha-form/conditions";
+import {
+  combineVisible,
+  getHiddenFields,
+} from "../../../components/ha-form/conditions";
 import type {
-  HaFormCondition,
   HaFormDataContainer,
   HaFormVisible,
 } from "../../../components/ha-form/types";
@@ -19,6 +21,7 @@ import type { BlueprintAutomationConfig } from "../../../data/automation";
 import type {
   BlueprintInput,
   BlueprintInputSection,
+  BlueprintMetaData,
   BlueprintOrError,
   Blueprints,
 } from "../../../data/blueprint";
@@ -52,13 +55,12 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
   }
 
   // Values of all inputs, including those inside sections, falling back to
-  // their defaults, so a selector context can name any other input
+  // their defaults, so selector contexts and visible conditions can name any
+  // other input
   private _inputValues = memoizeOne(
     (
       input: HaFormDataContainer | undefined,
-      metadataInput:
-        | Record<string, BlueprintInput | BlueprintInputSection | null>
-        | undefined
+      metadataInput: BlueprintMetaData["input"]
     ): HaFormDataContainer => {
       const values: HaFormDataContainer = {};
       const addInputs = (inputs: Record<string, BlueprintInput | null>) => {
@@ -81,9 +83,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
   private _hiddenInputs = memoizeOne(
     (
       values: HaFormDataContainer,
-      metadataInput:
-        | Record<string, BlueprintInput | BlueprintInputSection | null>
-        | undefined
+      metadataInput: BlueprintMetaData["input"]
     ): Set<string> => {
       const fields: [string, HaFormVisible | undefined][] = [];
       for (const [key, value] of Object.entries(metadataInput ?? {})) {
@@ -414,19 +414,3 @@ declare global {
     "blueprint-generic-editor": HaBlueprintGenericEditor;
   }
 }
-
-const combineVisible = (
-  ...options: (HaFormVisible | undefined)[]
-): HaFormVisible => {
-  const conditions: HaFormCondition[] = [];
-  for (const visible of options) {
-    if (visible === undefined || visible === true) {
-      continue;
-    }
-    if (visible === false) {
-      return false;
-    }
-    conditions.push(...(Array.isArray(visible) ? visible : [visible]));
-  }
-  return conditions;
-};
