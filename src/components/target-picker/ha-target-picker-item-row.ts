@@ -30,10 +30,7 @@ import {
 } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
-import {
-  getDeviceArea,
-  getDeviceAreaId,
-} from "../../common/entity/context/get_device_context";
+import { getDeviceArea } from "../../common/entity/context/get_device_context";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { AreaRegistryEntry } from "../../data/area/area_registry";
 import { getConfigEntry } from "../../data/config_entries";
@@ -47,9 +44,7 @@ import type { FloorRegistryEntry } from "../../data/floor_registry";
 import { domainToName } from "../../data/integration";
 import type { LabelRegistryEntry } from "../../data/label/label_registry";
 import {
-  areaMeetsFilter,
   deviceMeetsFilter,
-  entityRegMeetsFilter,
   extractFromTarget,
   type ExtractFromTargetResult,
   type ExtractFromTargetResultReferenced,
@@ -71,6 +66,7 @@ import "../item/ha-list-item-base";
 import "../item/ha-list-item-button";
 import { computeTargetSubRows } from "./compute-target-sub-rows";
 import { showTargetDetailsDialog } from "./dialog/show-dialog-target-details";
+import { filterTargetEntries } from "./filter-target-entries";
 import type { TargetExclusion } from "./target-exclusions";
 
 @customElement("ha-target-picker-item-row")
@@ -640,135 +636,18 @@ export class HaTargetPickerItemRow extends LitElement {
         false,
         this.primaryEntitiesOnly
       );
-
-      let referencedAreas = entries.referenced_areas;
-      const hiddenAreaIds: string[] = [];
-      if (this.type === "floor" || this.type === "label") {
-        referencedAreas = referencedAreas.filter((area_id) => {
-          const area = this.hass.areas[area_id];
-          // Absent from the registry is not a filter decision: drop the id
-          // without marking it hidden, so entities targeted through their
-          // own area or label are not dropped along with it.
-          if (!area) {
-            return false;
-          }
-          if (
-            (this.type === "floor" || area.labels.includes(this.itemId)) &&
-            areaMeetsFilter(
-              area,
-              this.hass.devices,
-              this.hass.entities,
-              this.deviceFilter,
-              this.includeDomains,
-              this.includeDeviceClasses,
-              this.hass.states,
-              this.entityFilter,
-              !this.primaryEntitiesOnly
-            )
-          ) {
-            return true;
-          }
-
-          hiddenAreaIds.push(area_id);
-          return false;
-        });
-      }
-
-      let referencedDevices = entries.referenced_devices;
-      const hiddenDeviceIds: string[] = [];
-      // Parents kept only so a matching child device can nest under them;
-      // their own entities stay filtered out like a hidden device's.
-      const groupOnlyDeviceIds = new Set<string>();
-      if (
-        this.type === "floor" ||
-        this.type === "area" ||
-        this.type === "label"
-      ) {
-        const matchingDeviceIds = new Set(
-          referencedDevices.filter((device_id) => {
-            const device = this.hass.devices[device_id];
-            return (
-              !!device &&
-              !hiddenAreaIds.includes(
-                getDeviceAreaId(device, this.hass.devices) || ""
-              ) &&
-              deviceMeetsFilter(
-                device,
-                this.hass.entities,
-                this.deviceFilter,
-                this.includeDomains,
-                this.includeDeviceClasses,
-                this.hass.states,
-                this.entityFilter,
-                !this.primaryEntitiesOnly
-              )
-            );
-          })
-        );
-        const parentsOfMatching = new Set(
-          [...matchingDeviceIds].map(
-            (device_id) => this.hass.devices[device_id].parent_device_id
-          )
-        );
-        referencedDevices = referencedDevices.filter((device_id) => {
-          // Absent from the registry is not a filter decision: drop the id
-          // without marking it hidden, like the area filtering above.
-          if (!this.hass.devices[device_id]) {
-            return false;
-          }
-          if (matchingDeviceIds.has(device_id)) {
-            return true;
-          }
-          if (parentsOfMatching.has(device_id)) {
-            groupOnlyDeviceIds.add(device_id);
-            return true;
-          }
-          hiddenDeviceIds.push(device_id);
-          return false;
-        });
-      }
-
-      const referencedEntities = entries.referenced_entities.filter(
-        (entity_id) => {
-          const entity = this.hass.entities[entity_id];
-          // Core can reference entities that are absent from the display
-          // registry (e.g. disabled ones expanded from an area).
-          if (!entity) {
-            return false;
-          }
-          if (
-            hiddenDeviceIds.includes(entity.device_id || "") ||
-            groupOnlyDeviceIds.has(entity.device_id || "")
-          ) {
-            return false;
-          }
-          if (
-            (this.type === "area" && entity.area_id === this.itemId) ||
-            (this.type === "floor" &&
-              entity.area_id &&
-              referencedAreas.includes(entity.area_id)) ||
-            (this.type === "label" && entity.labels.includes(this.itemId)) ||
-            referencedDevices.includes(entity.device_id || "")
-          ) {
-            return entityRegMeetsFilter(
-              entity,
-              this.type === "label" || !this.primaryEntitiesOnly,
-              this.includeDomains,
-              this.includeDeviceClasses,
-              this.hass.states,
-              this.entityFilter
-            );
-          }
-          return false;
+      this._entries = filterTargetEntries(
+        this.hass,
+        { type: this.type, id: this.itemId },
+        entries,
+        {
+          deviceFilter: this.deviceFilter,
+          entityFilter: this.entityFilter,
+          includeDomains: this.includeDomains,
+          includeDeviceClasses: this.includeDeviceClasses,
+          primaryEntitiesOnly: this.primaryEntitiesOnly,
         }
       );
-
-      this._entries = {
-        ...entries,
-        referenced_areas: referencedAreas,
-        referenced_devices: referencedDevices,
-        referenced_entities: referencedEntities,
-      };
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("Failed to extract target", e);

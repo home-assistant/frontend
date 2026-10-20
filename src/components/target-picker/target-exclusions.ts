@@ -124,11 +124,15 @@ export const resolveItemExclusions = async (
   if (!excludes.length) {
     return [];
   }
-  const resolve = (target: TargetItem) =>
-    resolveTargetItemEntities(hass, target, primaryEntitiesOnly);
+  // Like core, an exclude takes out every entity of an item, not only the
+  // primary ones.
   const [entities, excludeEntities] = await Promise.all([
-    resolve(item),
-    Promise.all(excludes.map(resolve)),
+    resolveTargetItemEntities(hass, item, primaryEntitiesOnly),
+    Promise.all(
+      excludes.map((exclusion) =>
+        resolveTargetItemEntities(hass, exclusion, false)
+      )
+    ),
   ]);
   return (
     computeExclusionsPerTarget(

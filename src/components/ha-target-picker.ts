@@ -41,8 +41,9 @@ import { domainToName } from "../data/integration";
 import { getLabels, labelComboBoxKeys } from "../data/label/label_picker";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import {
-  entityRegMeetsFilter,
+  extractFromTarget,
   getTargetComboBoxItemType,
+  type ExtractFromTargetResult,
   type HassServiceTargetWithExclude,
   type TargetItem,
   type TargetType,
@@ -68,6 +69,7 @@ import "./ha-tree-indicator";
 import "./list/ha-list-base";
 import "./target-picker/ha-target-picker-item-group";
 import "./target-picker/ha-target-picker-item-row";
+import { filterTargetEntries } from "./target-picker/filter-target-entries";
 import {
   addToExclude,
   computeExclusionsPerTarget,
@@ -156,7 +158,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   // What each target item resolves to, so a change only asks core about the
   // items it adds.
-  private _itemEntities = new Map<string, Promise<string[]>>();
+  private _itemEntries = new Map<string, Promise<ExtractFromTargetResult>>();
 
   @state() private _replaceTarget?: TargetItem;
 
@@ -283,12 +285,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       (devicesChanged ||
         this.hass.entities !== changedProps.get("hass")?.entities ||
         this.hass.areas !== changedProps.get("hass")?.areas);
-    if (registriesChanged || changedProps.has("primaryEntitiesOnly")) {
-      this._itemEntities.clear();
+    if (registriesChanged) {
+      this._itemEntries.clear();
     }
     if (
       changedProps.has("value") ||
       changedProps.has("primaryEntitiesOnly") ||
+      changedProps.has("deviceFilter") ||
       changedProps.has("includeDomains") ||
       changedProps.has("includeDeviceClasses") ||
       changedProps.has("entityFilter") ||
@@ -599,31 +602,56 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  private _resolveItem(item: TargetItem): Promise<string[]> {
-    if (item.type === "entity") {
-      return resolveTargetItemEntities(
-        this.hass,
-        item,
-        this.primaryEntitiesOnly
+  private _extractItem(
+    item: TargetItem,
+    primaryEntitiesOnly: boolean
+  ): Promise<ExtractFromTargetResult> {
+    const key = `${primaryEntitiesOnly}:${targetItemKey(item)}`;
+    let entries = this._itemEntries.get(key);
+    if (!entries) {
+      entries = extractFromTarget(
+        this.hass.callWS,
+        { [`${item.type}_id`]: [item.id] },
+        false,
+        primaryEntitiesOnly
       );
-    }
-    const key = targetItemKey(item);
-    let entities = this._itemEntities.get(key);
-    if (!entities) {
-      entities = resolveTargetItemEntities(
-        this.hass,
-        item,
-        this.primaryEntitiesOnly
-      );
-      this._itemEntities.set(key, entities);
-      const cached = entities;
+      this._itemEntries.set(key, entries);
+      const cached = entries;
       cached.catch(() => {
-        if (this._itemEntities.get(key) === cached) {
-          this._itemEntities.delete(key);
+        if (this._itemEntries.get(key) === cached) {
+          this._itemEntries.delete(key);
         }
       });
     }
-    return entities;
+    return entries;
+  }
+
+  // The entities an included item adds, filtered like its row so what an
+  // exclusion takes out matches what the row counts.
+  private async _resolveInclude(item: TargetItem): Promise<string[]> {
+    if (item.type === "entity") {
+      return resolveTargetItemEntities(this.hass, item);
+    }
+    const entries = await this._extractItem(
+      item,
+      this.primaryEntitiesOnly ?? true
+    );
+    return filterTargetEntries(this.hass, item, entries, {
+      deviceFilter: this.deviceFilter,
+      entityFilter: this.entityFilter,
+      includeDomains: this.includeDomains,
+      includeDeviceClasses: this.includeDeviceClasses,
+      primaryEntitiesOnly: this.primaryEntitiesOnly,
+    }).referenced_entities;
+  }
+
+  // Like core, an exclude takes out every entity of an item, not only the
+  // primary ones, and isn't narrowed by the filters.
+  private async _resolveExclude(item: TargetItem): Promise<string[]> {
+    if (item.type === "entity") {
+      return resolveTargetItemEntities(this.hass, item);
+    }
+    return (await this._extractItem(item, false)).referenced_entities;
   }
 
   private async _resolveExclusions() {
@@ -639,10 +667,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     // Each item on its own, so it is known which exclusion takes out what
     // from which target. One that fails only loses its own part.
-    const resolve = (item: TargetItem) => this._resolveItem(item);
     const [includeResults, excludeResults] = await Promise.all([
-      Promise.allSettled(includes.map(resolve)),
-      Promise.allSettled(excludes.map(resolve)),
+      Promise.allSettled(includes.map((item) => this._resolveInclude(item))),
+      Promise.allSettled(excludes.map((item) => this._resolveExclude(item))),
     ]);
     if (request !== this._resolveRequest) {
       return;
@@ -651,16 +678,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     includes.forEach((item, index) => {
       const result = includeResults[index];
       if (result.status === "fulfilled") {
-        resolvedIncludes.push({
-          ...item,
-          entities:
-            item.type === "entity"
-              ? result.value
-              : this._entitiesMeetingFilters(
-                  result.value,
-                  item.type === "label"
-                ),
-        });
+        resolvedIncludes.push({ ...item, entities: result.value });
       }
     });
     const resolvedExcludes: ResolvedTargetItem[] = [];
@@ -697,7 +715,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     const request = this._resolveRequest;
     try {
       const included = await Promise.all(
-        targetItems(this.value).map((item) => this._resolveItem(item))
+        targetItems(this.value).map((item) => this._resolveInclude(item))
       );
       if (request !== this._resolveRequest) {
         return;
@@ -707,28 +725,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     } catch (_err) {
       // The picker then offers everything instead.
     }
-  }
-
-  // The entities a target row counts, so what an exclusion takes out matches
-  // what the row shows.
-  private _entitiesMeetingFilters(
-    entityIds: string[],
-    includeSecondary = false
-  ) {
-    return entityIds.filter((entityId) => {
-      const entity = this.hass.entities[entityId];
-      return (
-        !!entity &&
-        entityRegMeetsFilter(
-          entity,
-          includeSecondary || !this.primaryEntitiesOnly,
-          this.includeDomains,
-          this.includeDeviceClasses,
-          this.hass.states,
-          this.entityFilter
-        )
-      );
-    });
   }
 
   private _openExcludePicker(ev: Event) {

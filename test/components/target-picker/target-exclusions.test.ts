@@ -3,9 +3,11 @@ import {
   addToExclude,
   computeExclusionsPerTarget,
   removeFromExclude,
+  resolveItemExclusions,
   targetItems,
   withExclude,
 } from "../../../src/components/target-picker/target-exclusions";
+import type { HomeAssistant } from "../../../src/types";
 
 describe("targetItems", () => {
   it("lists what a target includes, not what it excludes", () => {
@@ -123,5 +125,39 @@ describe("exclude editing", () => {
     expect(
       withExclude({ exclude: { entity_id: "light.a" } }, { entity_id: "x" })
     ).toBeUndefined();
+  });
+});
+
+describe("resolveItemExclusions", () => {
+  it("resolves excludes with every entity, like core", async () => {
+    // The device has a primary light and a config switch; only resolving
+    // without primary_entities_only finds the switch.
+    const callWS = async ({
+      target,
+      primary_entities_only,
+    }: {
+      target: { device_id?: string[]; area_id?: string[] };
+      primary_entities_only: boolean;
+    }) => ({
+      referenced_entities: target.device_id
+        ? primary_entities_only
+          ? ["light.lamp"]
+          : ["light.lamp", "switch.lamp_config"]
+        : ["switch.lamp_config"],
+      referenced_devices: [],
+      referenced_areas: [],
+    });
+    const hass = { callWS, states: {} } as unknown as HomeAssistant;
+
+    expect(
+      await resolveItemExclusions(
+        hass,
+        { type: "entity", id: "switch.lamp_config" },
+        { device_id: ["lamp"] },
+        true
+      )
+    ).toEqual([
+      { type: "device", id: "lamp", removed: ["switch.lamp_config"] },
+    ]);
   });
 });
