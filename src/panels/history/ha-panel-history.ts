@@ -864,6 +864,7 @@ class HaPanelHistory extends LitElement {
           /* The target picker chips need more room than a plain filter list. */
           --ha-filter-pane-width: 340px;
         }
+
         ha-top-app-bar-fixed {
           height: 100vh;
           overflow-x: hidden;
@@ -915,7 +916,6 @@ class HaPanelHistory extends LitElement {
           height: 56px;
           flex-shrink: 0;
           padding: 0 16px;
-          background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
           overflow-x: auto;

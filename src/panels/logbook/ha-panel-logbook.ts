@@ -707,7 +707,6 @@ export class HaPanelLogbook extends LitElement {
           height: 56px;
           flex-shrink: 0;
           padding: 0 16px;
-          background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
           overflow-x: auto;
