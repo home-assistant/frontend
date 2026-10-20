@@ -553,19 +553,21 @@ export class HaConfigEntities extends LitElement {
           Array.isArray(filter) &&
           filter.length
         ) {
-          if (!(
-            Array.isArray(this._filters.config_entry) &&
-            this._filters.config_entry.length === 1
-          )) {
+          const configEntryIds = this._filters.config_entry;
+
+          if (!Array.isArray(configEntryIds) || !configEntryIds.length) {
             return;
           }
+
           filteredEntities = filteredEntities.filter(
             (entity) =>
               entity.config_subentry_id &&
               (filter as string[]).includes(entity.config_subentry_id)
           );
-          if (!this._subEntries) {
-            this._loadSubEntries(this._filters.config_entry[0]);
+
+          // The titles shown in the filter chip need a single config entry
+          if (configEntryIds.length === 1 && !this._subEntries) {
+            this._loadSubEntries(configEntryIds[0]);
           }
         } else if (
           key === "ha-filter-integrations" &&
