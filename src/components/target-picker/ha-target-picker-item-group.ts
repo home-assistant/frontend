@@ -68,6 +68,10 @@ export class HaTargetPickerItemGroup extends LitElement {
   @property({ attribute: false })
   public exclude?: HassServiceTarget;
 
+  /** Whether the target details can change what is excluded. */
+  @property({ attribute: false })
+  public exclusionsEditable = false;
+
   protected render() {
     let count = 0;
     Object.values(this.items).forEach((items) => {
@@ -111,6 +115,7 @@ export class HaTargetPickerItemGroup extends LitElement {
                     .compositeSplits=${this.compositeSplits}
                     .exclusions=${exclusions}
                     .exclude=${this.exclude}
+                    .exclusionsEditable=${this.exclusionsEditable}
                   ></ha-target-picker-item-row>
                   ${(exclusions ?? []).map(
                     (exclusion) =>

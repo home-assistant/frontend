@@ -72,6 +72,7 @@ import "./target-picker/ha-target-picker-item-row";
 import { filterTargetEntries } from "./target-picker/filter-target-entries";
 import {
   addToExclude,
+  applyExclusionChanges,
   computeExclusionsPerTarget,
   hasIncludedTargets,
   removeFromExclude,
@@ -81,6 +82,7 @@ import {
   targetItems,
   withExclude,
   type ResolvedTargetItem,
+  type TargetExclusion,
   type TargetExclusions,
 } from "./target-picker/target-exclusions";
 
@@ -148,6 +150,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _excludeSection?: TargetTypeFloorless;
 
+  // What each exclusion takes out of each target, worked out from the value.
   @state() private _exclusions?: TargetExclusions;
 
   // Every entity the included targets resolve to, so the exclude picker only
@@ -360,6 +363,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       <div
         class="item-groups"
         @remove-target-exclusion=${this._handleRemoveExclusion}
+        @target-exclusions-changed=${this._handleExclusionsChanged}
       >
         ${
           entityIds.length
@@ -371,6 +375,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   .exclusions=${perTarget}
                   .exclude=${this.value?.exclude}
+                  .exclusionsEditable=${this.allowExclude}
                   .items=${{ entity: entityIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
@@ -394,6 +399,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   .exclusions=${perTarget}
                   .exclude=${this.value?.exclude}
+                  .exclusionsEditable=${this.allowExclude}
                   .items=${{ device: deviceIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
@@ -417,6 +423,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   .exclusions=${perTarget}
                   .exclude=${this.value?.exclude}
+                  .exclusionsEditable=${this.allowExclude}
                   .items=${{
                     floor: floorIds,
                     area: areaIds,
@@ -442,6 +449,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   .hass=${this.hass}
                   .exclusions=${perTarget}
                   .exclude=${this.value?.exclude}
+                  .exclusionsEditable=${this.allowExclude}
                   .items=${{ label: labelIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
@@ -761,6 +769,22 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       value: withExclude(
         this.value,
         removeFromExclude(this.value?.exclude, ev.detail)
+      ),
+    });
+  }
+
+  private _handleExclusionsChanged(
+    ev: HASSDomEvent<HASSDomEvents["target-exclusions-changed"]>
+  ) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: withExclude(
+        this.value,
+        applyExclusionChanges(
+          this.value?.exclude,
+          ev.detail.initial,
+          ev.detail.current
+        )
       ),
     });
   }
@@ -1537,6 +1561,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       width: 100%;
     }
 
+    /* Side by side, both pickers shrink to their buttons. Their popovers
+       still take the full width, which the section chips need. */
     .add-target-wrapper.exclude-shown {
       flex-wrap: wrap;
       gap: var(--ha-space-2);
@@ -1574,5 +1600,9 @@ declare global {
     "migrate-target-item": { id: string; replacements: string[] };
     "remove-target-group": string;
     "remove-target-exclusion": TargetItem;
+    "target-exclusions-changed": {
+      initial: TargetExclusion[];
+      current: TargetExclusion[];
+    };
   }
 }

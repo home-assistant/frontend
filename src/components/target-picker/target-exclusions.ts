@@ -2,11 +2,13 @@ import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { ensureArray } from "../../common/array/ensure-array";
 import {
   extractFromTarget,
+  type ExtractFromTargetResultReferenced,
   type HassServiceTargetWithExclude,
   type TargetItem,
   type TargetType,
 } from "../../data/target";
 import type { HomeAssistant } from "../../types";
+import { computeTargetSubRows } from "./compute-target-sub-rows";
 
 // Helpers for `target.exclude`. The target value is the only place
 // exclusions live; everything here derives from it or returns a new one.
@@ -60,6 +62,8 @@ export const resolveTargetItemEntities = async (
 export interface TargetExclusion extends TargetItem {
   /** Entities it takes out of that target. */
   removed: string[];
+  /** It also takes entities out of another included target. */
+  shared: boolean;
 }
 
 export interface TargetExclusions {
@@ -106,6 +110,7 @@ export const computeExclusionsPerTarget = (
         type: exclude.type,
         id: exclude.id,
         removed,
+        shared: hits.length > 1,
       });
     });
   });
@@ -199,4 +204,203 @@ export const withExclude = (
     return undefined;
   }
   return exclude && hasIncludedTargets(exclude) ? { ...rest, exclude } : rest;
+};
+
+/** A row of the target details, with the rows shown under it. */
+export interface TargetRow extends TargetItem {
+  entities: string[];
+  children: TargetRow[];
+}
+
+/**
+ * The rows the target details show for an item, built the same way the rows
+ * lay themselves out. Rows without entities aren't shown, so they are left
+ * out.
+ */
+export const buildTargetRow = (
+  type: TargetType,
+  id: string,
+  entries: ExtractFromTargetResultReferenced | undefined,
+  entityRegistry: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"]
+): TargetRow => {
+  if (type === "entity") {
+    return { type, id, entities: [id], children: [] };
+  }
+  if (!entries) {
+    return { type, id, entities: [], children: [] };
+  }
+  const sub = computeTargetSubRows(type, id, entries, entityRegistry, devices);
+  const build = (
+    rowType: TargetType,
+    rowId: string,
+    rowEntries?: ExtractFromTargetResultReferenced
+  ) => buildTargetRow(rowType, rowId, rowEntries, entityRegistry, devices);
+  const children = [
+    ...sub.rows.map((rowId, index) =>
+      build(sub.nextType, rowId, sub.rowEntries?.[index])
+    ),
+    ...sub.deviceRows.map((rowId, index) =>
+      build("device", rowId, sub.deviceRowEntries?.[index])
+    ),
+    ...sub.entityRows.map((rowId) => build("entity", rowId)),
+  ].filter((row) => row.entities.length > 0);
+  return { type, id, entities: entries.referenced_entities, children };
+};
+
+const rowKeysBelow = (row: TargetRow, keys = new Set<string>()) => {
+  row.children.forEach((child) => {
+    keys.add(targetItemKey(child));
+    rowKeysBelow(child, keys);
+  });
+  return keys;
+};
+
+/**
+ * Whether a row's checkbox can take an exclusion away: the row's own one,
+ * or one of a row below it. Labels have no row, an exclusion of something
+ * above the row or outside the details isn't the row's to undo, and one that
+ * also affects another target is only undone from its own row. The target
+ * can't be excluded from itself, so it has no own exclusion.
+ */
+const canUndo = (row: TargetRow, isTarget: boolean) => {
+  const rowKey = targetItemKey(row);
+  let below: Set<string> | undefined;
+  return (exclusion: TargetExclusion): boolean => {
+    const key = targetItemKey(exclusion);
+    if (key === rowKey) {
+      return !isTarget;
+    }
+    if (exclusion.shared || exclusion.type === "label") {
+      return false;
+    }
+    if (exclusion.type === "entity") {
+      return row.entities.includes(exclusion.id);
+    }
+    below ??= rowKeysBelow(row);
+    return below.has(key);
+  };
+};
+
+const affects = (row: TargetRow) => {
+  const entities = new Set(row.entities);
+  return (exclusion: TargetExclusion) =>
+    exclusion.removed.some((entityId) => entities.has(entityId));
+};
+
+export interface TargetRowState {
+  checked: boolean;
+  indeterminate: boolean;
+  /** Everything in the row is out through exclusions it can't undo. */
+  disabled: boolean;
+  /** When disabled: the exclusions that keep it out. */
+  lockedBy: TargetItem[];
+}
+
+/** How a row's checkbox shows `exclusions`. */
+export const targetRowState = (
+  row: TargetRow,
+  isTarget: boolean,
+  exclusions: TargetExclusion[]
+): TargetRowState => {
+  const entities = new Set(row.entities);
+  const undoable = canUndo(row, isTarget);
+  const out = new Set<string>();
+  const locked = new Set<string>();
+  const lockedBy: TargetItem[] = [];
+  exclusions.forEach((exclusion) => {
+    const removed = exclusion.removed.filter((entityId) =>
+      entities.has(entityId)
+    );
+    if (!removed.length) {
+      return;
+    }
+    removed.forEach((entityId) => out.add(entityId));
+    if (!undoable(exclusion)) {
+      removed.forEach((entityId) => locked.add(entityId));
+      lockedBy.push({ type: exclusion.type, id: exclusion.id });
+    }
+  });
+  const disabled = entities.size > 0 && locked.size === entities.size;
+  return {
+    checked: out.size === 0,
+    indeterminate: out.size > 0 && out.size < entities.size,
+    disabled,
+    lockedBy: disabled ? lockedBy : [],
+  };
+};
+
+/**
+ * The exclusions after a row's checkbox was changed. Checking a row takes
+ * away the exclusions it can undo; what others keep out stays out.
+ * Unchecking it excludes the row itself, so an area or device stays
+ * excluded as such, including what is added to it later. The target can't
+ * be excluded from itself, so unchecking it unchecks its rows instead.
+ * `initial` gives back an exclusion that was there before as it was.
+ */
+export const toggleTargetRow = ({
+  row,
+  isTarget,
+  selected,
+  exclusions,
+  initial,
+}: {
+  row: TargetRow;
+  isTarget: boolean;
+  selected: boolean;
+  exclusions: TargetExclusion[];
+  initial: TargetExclusion[];
+}): TargetExclusion[] => {
+  if (!selected && isTarget) {
+    return row.children
+      .filter((child) => !targetRowState(child, false, exclusions).disabled)
+      .reduce(
+        (result, child) =>
+          toggleTargetRow({
+            row: child,
+            isTarget: false,
+            selected: false,
+            exclusions: result,
+            initial,
+          }),
+        exclusions
+      );
+  }
+  const touches = affects(row);
+  const undoable = canUndo(row, isTarget);
+  const kept = exclusions.filter(
+    (exclusion) => !(touches(exclusion) && undoable(exclusion))
+  );
+  if (selected) {
+    return kept;
+  }
+  const key = targetItemKey(row);
+  return [
+    ...kept,
+    initial.find((exclusion) => targetItemKey(exclusion) === key) ?? {
+      type: row.type,
+      id: row.id,
+      removed: row.entities,
+      shared: false,
+    },
+  ];
+};
+
+/**
+ * The new `exclude` once the details are applied: what was taken away is
+ * removed, what was added is added, and everything else stays as it was.
+ */
+export const applyExclusionChanges = (
+  exclude: HassServiceTarget | undefined,
+  initial: TargetExclusion[],
+  current: TargetExclusion[]
+): HassServiceTarget | undefined => {
+  const before = new Set(initial.map(targetItemKey));
+  const after = new Set(current.map(targetItemKey));
+  const withoutRemoved = initial
+    .filter((exclusion) => !after.has(targetItemKey(exclusion)))
+    .reduce<HassServiceTarget | undefined>(removeFromExclude, exclude);
+  return current
+    .filter((exclusion) => !before.has(targetItemKey(exclusion)))
+    .reduce<HassServiceTarget | undefined>(addToExclude, withoutRemoved);
 };
