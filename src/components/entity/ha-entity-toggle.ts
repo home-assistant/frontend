@@ -89,7 +89,10 @@ export class HaEntityToggle extends LitElement {
     }
 
     return html`<ha-switch
-      .accessibleLabel=${this._isOn ? turnOffLabel : turnOnLabel}
+      .accessibleLabel=${this._localize(
+        "ui.components.entity.entity-toggle.toggle",
+        { name }
+      )}
       .checked=${this._isOn}
       .disabled=${this.stateObj.state === UNAVAILABLE}
       @change=${this._toggleChanged}

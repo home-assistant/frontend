@@ -858,6 +858,7 @@
           "custom_attribute": "Custom attribute"
         },
         "entity-toggle": {
+          "toggle": "Toggle {name}",
           "turn_on": "Turn {name} on",
           "turn_off": "Turn {name} off"
         }
