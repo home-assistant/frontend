@@ -65,8 +65,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
       const values: HaFormDataContainer = {};
       const addInputs = (inputs: Record<string, BlueprintInput | null>) => {
         for (const [key, value] of Object.entries(inputs)) {
-          values[key] =
-            input && key in input ? input[key] : (value?.default ?? undefined);
+          values[key] = input && key in input ? input[key] : value?.default;
         }
       };
       for (const [key, value] of Object.entries(metadataInput ?? {})) {
