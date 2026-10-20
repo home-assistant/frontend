@@ -38,7 +38,7 @@ export function getDomainTableColumn<T>(
     title: localize("ui.panel.config.generic.headers.domain"),
     hidden: true,
     groupable: true,
-    urlName: "domain",
+    urlName: "entity_domain",
     filterable: true,
     sortable: false,
   };
