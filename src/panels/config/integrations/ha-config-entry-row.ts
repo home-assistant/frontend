@@ -253,7 +253,7 @@ export class HaConfigEntryRow extends LitElement {
                     href=${
                       allDevices.length === 1
                         ? `/config/devices/device/${allDevices[0].id}`
-                        : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`
+                        : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}&status=disabled`
                     }
                   >
                     <ha-dropdown-item value="devices">
@@ -278,7 +278,7 @@ export class HaConfigEntryRow extends LitElement {
                     href=${
                       allServices.length === 1
                         ? `/config/devices/device/${allServices[0].id}`
-                        : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`
+                        : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}&status=disabled`
                     }
                   >
                     <ha-dropdown-item value="services">
