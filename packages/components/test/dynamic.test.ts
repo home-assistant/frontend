@@ -12,9 +12,9 @@ class Provided extends LitElement {}
 
 const global = globalThis as Record<symbol, unknown>;
 
-const loader = (loadBundled = vi.fn(async () => Bundled)) => ({
-  loadBundled,
-  dynamic: createDynamicLoader("hac-test", "1.2.0", loadBundled),
+const loader = (loadScoped = vi.fn(async () => Bundled)) => ({
+  loadScoped,
+  dynamic: createDynamicLoader("hac-test", "1.2.0", loadScoped),
 });
 
 afterEach(() => {
@@ -30,9 +30,9 @@ describe("createDynamicLoader", () => {
     provideComponents({
       "hac-test": { version: "1.3.0", load: async () => Provided },
     });
-    const { dynamic, loadBundled } = loader();
+    const { dynamic, loadScoped } = loader();
     expect(await dynamic.load()).toBe(Provided);
-    expect(loadBundled).not.toHaveBeenCalled();
+    expect(loadScoped).not.toHaveBeenCalled();
   });
 
   it("uses the bundled class when the host's version is incompatible", async () => {
@@ -58,9 +58,9 @@ describe("createDynamicLoader", () => {
   });
 
   it("loads only once", async () => {
-    const { dynamic, loadBundled } = loader();
+    const { dynamic, loadScoped } = loader();
     await Promise.all([dynamic.load(), dynamic.load()]);
-    expect(loadBundled).toHaveBeenCalledTimes(1);
+    expect(loadScoped).toHaveBeenCalledTimes(1);
   });
 
   it("waits for a host that announced itself but has not published yet", async () => {
