@@ -49,6 +49,7 @@ export function getAreaTableColumn<T>(
   return {
     title: localize("ui.panel.config.generic.headers.area"),
     groupable: true,
+    urlName: "area",
     filterable: true,
     sortable: true,
     minWidth: "120px",
@@ -62,6 +63,7 @@ export function getFloorTableColumn<T>(
     title: localize("ui.panel.config.generic.headers.floor"),
     defaultHidden: true,
     groupable: true,
+    urlName: "floor",
     filterable: true,
     sortable: true,
     minWidth: "120px",
@@ -75,6 +77,7 @@ export function getCategoryTableColumn<T>(
     title: localize("ui.panel.config.generic.headers.category"),
     defaultHidden: true,
     groupable: true,
+    urlName: "category",
     filterable: true,
     sortable: true,
   };
