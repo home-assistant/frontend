@@ -52,30 +52,38 @@ const CONFIG_FILES = [
   path.join(__dirname, "lit-disable-dev-mode-loader.cjs"),
   path.join(__dirname, "babel-plugins", "custom-polyfill-plugin.js"),
   path.join(__dirname, "babel-plugins", "inline-constants-plugin.cjs"),
-  // Its exports define the hac source aliases below
-  path.join(__dirname, "..", "packages", "hac", "package.json"),
+  // Its exports define the components source aliases below
+  path.join(__dirname, "..", "packages", "components", "package.json"),
 ];
 
-// Resolve @home-assistant/hac entry points to their sources, so the package
+// Resolve @home-assistant/components entry points to their sources, so the package
 // needs no build step during development. The entry points are read from the
-// "hac-source" export condition of the package; subpath patterns are expanded
+// "ha-source" export condition of the package; subpath patterns are expanded
 // for every element, i.e. every directory with a global.ts, like "button" and
 // "button/close".
-const HAC_DIR = path.join(paths.root_dir, "packages", "hac");
-const HAC_COMPONENTS_DIR = path.join(HAC_DIR, "src", "components");
-const hacComponents = fs
-  .readdirSync(HAC_COMPONENTS_DIR, { recursive: true })
+const COMPONENTS_PACKAGE_DIR = path.join(
+  paths.root_dir,
+  "packages",
+  "components"
+);
+const COMPONENTS_SRC_DIR = path.join(
+  COMPONENTS_PACKAGE_DIR,
+  "src",
+  "components"
+);
+const componentElements = fs
+  .readdirSync(COMPONENTS_SRC_DIR, { recursive: true })
   .filter((file) => path.basename(file) === "global.ts")
   .map((file) => path.dirname(file).split(path.sep).join("/"));
-const hacSourceAliases = Object.fromEntries(
-  Object.entries(require("../packages/hac/package.json").exports)
-    .filter(([, target]) => target["hac-source"])
+const componentsSourceAliases = Object.fromEntries(
+  Object.entries(require("../packages/components/package.json").exports)
+    .filter(([, target]) => target["ha-source"])
     .flatMap(([subpath, target]) =>
-      (subpath.includes("*") ? hacComponents : [undefined]).map((name) => [
-        `${path.posix.join("@home-assistant/hac", name ? subpath.replace("*", name) : subpath)}$`,
+      (subpath.includes("*") ? componentElements : [undefined]).map((name) => [
+        `${path.posix.join("@home-assistant/components", name ? subpath.replace("*", name) : subpath)}$`,
         path.join(
-          HAC_DIR,
-          name ? target["hac-source"].replace("*", name) : target["hac-source"]
+          COMPONENTS_PACKAGE_DIR,
+          name ? target["ha-source"].replace("*", name) : target["ha-source"]
         ),
       ])
     )
@@ -407,7 +415,7 @@ const createRspackConfig = ({
     resolve: {
       extensions: [".ts", ".js", ".json"],
       alias: {
-        ...hacSourceAliases,
+        ...componentsSourceAliases,
         "lit/static-html$": "lit/static-html.js",
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",

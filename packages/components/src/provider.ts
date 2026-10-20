@@ -25,7 +25,7 @@ export type HacProvidedComponents = Record<string, HacProvidedComponent>;
  *
  * ```js
  * var r, p = new Promise(function (resolve) { r = resolve; });
- * window[Symbol.for("@home-assistant/hac/provider")] = { components: p, resolve: r };
+ * window[Symbol.for("@home-assistant/components/provider")] = { components: p, resolve: r };
  * ```
  */
 export interface HacProviderSlot {
@@ -33,7 +33,9 @@ export interface HacProviderSlot {
   resolve: (components: HacProvidedComponents) => void;
 }
 
-export const HAC_PROVIDER_KEY = Symbol.for("@home-assistant/hac/provider");
+export const HAC_PROVIDER_KEY = Symbol.for(
+  "@home-assistant/components/provider"
+);
 
 type GlobalWithProvider = typeof globalThis & {
   [HAC_PROVIDER_KEY]?: HacProviderSlot;

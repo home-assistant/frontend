@@ -10,7 +10,7 @@ import { VERSION } from "./version";
  * assistive technology as a heading of the given `level`.
  *
  * Importing this module does not register the element. Use
- * `@home-assistant/hac/header` to register `<hac-header>` globally, or the `scoped`
+ * `@home-assistant/components/header` to register `<hac-header>` globally, or the `scoped`
  * and `dynamic` entry points next to it.
  *
  * @slot - Title of the header.

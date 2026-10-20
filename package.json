@@ -145,7 +145,7 @@
     "@bundle-stats/plugin-webpack-filter": "4.22.3",
     "@eslint/js": "10.0.1",
     "@gfx/zopfli": "1.0.15",
-    "@home-assistant/hac": "workspace:*",
+    "@home-assistant/components": "workspace:*",
     "@html-eslint/eslint-plugin": "0.67.0",
     "@lokalise/node-api": "16.6.0",
     "@octokit/auth-oauth-device": "8.0.5",

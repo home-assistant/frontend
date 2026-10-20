@@ -1,6 +1,6 @@
 // Classes, types and helpers only. Importing them does not register any
 // element. Register each element through its own entry point:
-// `@home-assistant/hac/<group>[/<variant>]` (global), or with `/scoped` or
+// `@home-assistant/components/<group>[/<variant>]` (global), or with `/scoped` or
 // `/dynamic` appended.
 export { HacButton } from "./components/button/hac-button";
 export { HacButtonClose } from "./components/button/close/hac-button-close";

@@ -8,8 +8,8 @@
     // Modules
     "module": "ESNext",
     "moduleResolution": "bundler",
-    // Resolve workspace packages to their sources, see packages/hac
-    "customConditions": ["hac-source"],
+    // Resolve workspace packages to their sources, see packages/components
+    "customConditions": ["ha-source"],
     "resolveJsonModule": true,
     // Babel handles transpiling and no need for declaration files
     "noEmit": true,
@@ -34,7 +34,7 @@
       {
         "name": "ts-lit-plugin",
         "strict": true,
-        // Follows imports of @home-assistant/hac entry points (workspace
+        // Follows imports of @home-assistant/components entry points (workspace
         // packages resolve through node_modules) to the component classes
         // that declare their tags
         "maxNodeModuleImportDepth": 2,

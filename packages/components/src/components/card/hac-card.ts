@@ -6,7 +6,7 @@ import { VERSION } from "./version";
  * Container that groups related content.
  *
  * Importing this module does not register the element. Use
- * `@home-assistant/hac/card` to register `<hac-card>` globally, or the `scoped`
+ * `@home-assistant/components/card` to register `<hac-card>` globally, or the `scoped`
  * and `dynamic` entry points next to it.
  *
  * @slot header - Header of the card, usually a `hac-header`.
