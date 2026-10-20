@@ -1,3 +1,4 @@
+import { mdiUnfoldMoreHorizontal } from "@mdi/js";
 import {
   css,
   html,
@@ -13,6 +14,10 @@ import {
   state as litState,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import "./ha-button";
+import "./ha-svg-icon";
+
+const LINE_TIMESTAMP = /^\d{4}-\d{2}-\d{2}[ T]\d{2}:\d{2}:\d{2}/;
 
 interface State {
   bold: boolean;
@@ -30,11 +35,23 @@ export class HaAnsiToHtml extends LitElement {
   @property({ type: Boolean, attribute: "wrap-disabled" }) public wrapDisabled =
     false;
 
+  // Lines to show before and after each line that matches the filter.
+  @property({ type: Number, attribute: "context-lines" }) public contextLines =
+    0;
+
+  // Text for the button that shows a run of hidden lines between matches.
+  @property({ attribute: false }) public expandLabel?: (
+    count: number
+  ) => string;
+
   @query("pre") private _pre?: HTMLPreElement;
 
   @queryAll("div") private _divs!: NodeListOf<HTMLDivElement>;
 
   @litState() private _filter = "";
+
+  // Hidden lines the user chose to show while a filter is set.
+  private _expandedLines = new WeakSet<HTMLDivElement>();
 
   protected render(): TemplateResult {
     return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
@@ -56,6 +73,15 @@ export class HaAnsiToHtml extends LitElement {
     pre.wrap {
       white-space: pre-wrap;
       overflow-wrap: break-word;
+    }
+    .context {
+      opacity: 0.6;
+    }
+    .expand {
+      display: block;
+      margin: var(--ha-space-1) 0;
+      font-family: var(--ha-font-family-body);
+      white-space: normal;
     }
     .bold {
       font-weight: var(--ha-font-weight-bold);
@@ -119,8 +145,7 @@ export class HaAnsiToHtml extends LitElement {
     }
 
     ::highlight(search-results) {
-      background-color: var(--primary-color);
-      color: var(--text-primary-color);
+      background-color: var(--ha-color-fill-primary-normal-resting);
     }
   `;
 
@@ -322,12 +347,17 @@ export class HaAnsiToHtml extends LitElement {
    * @returns true if there are lines to display
    */
   filterLines(filter: string): boolean {
+    if (filter !== this._filter) {
+      this._expandedLines = new WeakSet();
+    }
     this._filter = filter;
+    this._pre?.querySelectorAll(".expand").forEach((button) => button.remove());
     const lines = this._divs;
     let numberOfFoundLines = 0;
     if (!filter) {
       lines.forEach((line) => {
         line.style.display = "";
+        line.classList.remove("context");
       });
       numberOfFoundLines = lines.length;
       if (CSS.highlights) {
@@ -335,9 +365,59 @@ export class HaAnsiToHtml extends LitElement {
       }
     } else {
       const highlightRanges: Range[] = [];
-      lines.forEach((line) => {
-        if (!line.textContent?.toLowerCase().includes(filter.toLowerCase())) {
+
+      const lineList = Array.from(lines);
+
+      const matches = lineList.map(
+        (line) =>
+          line.textContent?.toLowerCase().includes(filter.toLowerCase()) ??
+          false
+      );
+
+      // A line without a timestamp continues the entry above it, such as a
+      // build's output, so a matching entry shows all of its lines.
+      let entryStart = -1;
+
+      const entryOf = lineList.map((line, lineIndex) => {
+        if (LINE_TIMESTAMP.test(line.textContent ?? "")) {
+          entryStart = lineIndex;
+        }
+
+        return entryStart === -1 ? lineIndex : entryStart;
+      });
+
+      const matchedEntries = new Set(
+        entryOf.filter((_entry, lineIndex) => matches[lineIndex])
+      );
+
+      const inMatch = entryOf.map(
+        (entry, lineIndex) =>
+          matches[lineIndex] ||
+          (this.contextLines > 0 && matchedEntries.has(entry))
+      );
+
+      // Like a diff, also show the lines around each match.
+      const visible = inMatch.map(
+        (_match, lineIndex) =>
+          this._expandedLines.has(lineList[lineIndex]) ||
+          inMatch
+            .slice(
+              Math.max(0, lineIndex - this.contextLines),
+              lineIndex + this.contextLines + 1
+            )
+            .some(Boolean)
+      );
+
+      lineList.forEach((line, lineIndex) => {
+        line.classList.toggle(
+          "context",
+          visible[lineIndex] && !inMatch[lineIndex]
+        );
+
+        if (!visible[lineIndex]) {
           line.style.display = "none";
+        } else if (!matches[lineIndex]) {
+          line.style.display = "";
         } else {
           line.style.display = "";
           numberOfFoundLines++;
@@ -367,18 +447,62 @@ export class HaAnsiToHtml extends LitElement {
       if (CSS.highlights) {
         CSS.highlights.set("search-results", new Highlight(...highlightRanges));
       }
+
+      if (this.contextLines && numberOfFoundLines) {
+        this._addExpandButtons(lineList, visible);
+      }
     }
 
     return !!numberOfFoundLines;
   }
 
+  private _addExpandButtons(lines: HTMLDivElement[], visible: boolean[]) {
+    let hidden: HTMLDivElement[] = [];
+
+    lines.forEach((line, lineIndex) => {
+      if (!visible[lineIndex]) {
+        hidden.push(line);
+      }
+
+      if (
+        hidden.length &&
+        (visible[lineIndex] || lineIndex === lines.length - 1)
+      ) {
+        const gap = hidden;
+        const row = document.createElement("span");
+        row.className = "expand";
+        const button = document.createElement("ha-button");
+        button.setAttribute("appearance", "filled");
+        button.setAttribute("variant", "neutral");
+        button.setAttribute("size", "s");
+        const icon = document.createElement("ha-svg-icon");
+        icon.slot = "start";
+        icon.path = mdiUnfoldMoreHorizontal;
+        button.append(icon, this.expandLabel?.(gap.length) ?? `${gap.length}`);
+        button.addEventListener("click", () => {
+          gap.forEach((hiddenLine) => this._expandedLines.add(hiddenLine));
+          this.filterLines(this._filter);
+        });
+        row.append(button);
+        gap[0].before(row);
+        hidden = [];
+      }
+    });
+  }
+
   public trimLines(maxLines: number) {
-    const pre = this._pre;
-    if (!pre) {
+    const lines = this._divs;
+
+    if (lines.length <= maxLines) {
       return;
     }
-    while (pre.childElementCount > maxLines && pre.firstElementChild) {
-      pre.firstElementChild.remove();
+
+    Array.from(lines)
+      .slice(0, lines.length - maxLines)
+      .forEach((line) => line.remove());
+
+    if (this._filter) {
+      this.filterLines(this._filter);
     }
   }
 

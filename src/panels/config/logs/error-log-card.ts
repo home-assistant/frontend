@@ -68,10 +68,15 @@ import {
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
 import type { HomeAssistantApi, HomeAssistantConfig } from "../../../types";
+import { haStyleScrollbar } from "../../../resources/styles";
 import { fileDownload } from "../../../util/file_download";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 
 const NUMBER_OF_LINES = 100;
+
+// Lines shown around each search match, as a failure's cause is often logged
+// on the lines next to its summary.
+const SEARCH_CONTEXT_LINES = 3;
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
@@ -295,7 +300,7 @@ class ErrorLogCard extends LitElement {
               }
             </div>
           </div>
-          <div class="card-content error-log">
+          <div class="card-content error-log ha-scrollbar">
             <div id="scroll-top-marker"></div>
             ${
               this._loadingPrevState === "loading"
@@ -334,6 +339,8 @@ class ErrorLogCard extends LitElement {
             }
             <ha-ansi-to-html
               ?wrap-disabled=${!this._wrapLines}
+              .contextLines=${SEARCH_CONTEXT_LINES}
+              .expandLabel=${this._expandLabel}
             ></ha-ansi-to-html>
             <div id="scroll-bottom-marker"></div>
           </div>
@@ -410,7 +417,12 @@ class ErrorLogCard extends LitElement {
       this._newLogsIndicator = false;
     }
 
-    if (changedProps.has("filter")) {
+    if (
+      changedProps.has("filter") ||
+      (changedProps.has("_loadingState") &&
+        this._loadingState === "loaded" &&
+        this.filter)
+    ) {
       this._debounceSearch();
     }
 
@@ -636,10 +648,23 @@ class ErrorLogCard extends LitElement {
   private _debounceSearch = debounce(() => {
     this._noSearchResults = !this._ansiToHtmlElement?.filterLines(this.filter);
 
+    if (this._loadingState === "loaded") {
+      fireEvent(this, "log-search-result", {
+        filter: this.filter,
+        found: !this._noSearchResults,
+      });
+    }
+
     if (!this.filter) {
       this._scrollToBottom();
     }
   }, 150);
+
+  private _expandLabel = (count: number) =>
+    (this.localizeFunc || this._localize)(
+      "ui.panel.config.logs.show_hidden_lines",
+      { count }
+    );
 
   private _debounceScrollToBottom = debounce(() => {
     this._logElement!.scrollTop = this._logElement!.scrollHeight;
@@ -793,12 +818,14 @@ class ErrorLogCard extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
+    ${haStyleScrollbar}
+
     :host {
       direction: var(--direction);
     }
     .error-log-intro {
       text-align: center;
-      margin: 16px;
+      margin: var(--error-log-card-margin, 16px);
     }
 
     ha-card {
@@ -936,5 +963,9 @@ class ErrorLogCard extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "error-log-card": ErrorLogCard;
+  }
+
+  interface HASSDomEvents {
+    "log-search-result": { filter: string; found: boolean };
   }
 }
