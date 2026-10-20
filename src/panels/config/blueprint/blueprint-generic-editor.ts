@@ -5,6 +5,15 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
+import type { HaFormVisibleField } from "../../../components/ha-form/conditions";
+import {
+  getHiddenFields,
+  isFieldVisible,
+} from "../../../components/ha-form/conditions";
+import type {
+  HaFormBaseSchema,
+  HaFormDataContainer,
+} from "../../../components/ha-form/types";
 import "../../../components/ha-spinner";
 import "../../../components/ha-markdown";
 import "../../../components/ha-selector/ha-selector";
@@ -72,6 +81,48 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
     }
   );
 
+  private _hiddenInputs = memoizeOne(
+    (
+      values: Record<string, unknown>,
+      metadataInput:
+        | Record<string, BlueprintInput | BlueprintInputSection | null>
+        | undefined
+    ): Set<string> => {
+      const fields: HaFormVisibleField[] = [];
+      for (const [key, value] of Object.entries(metadataInput ?? {})) {
+        if (value && "input" in value) {
+          for (const [inputKey, input] of Object.entries(value.input ?? {})) {
+            fields.push({
+              name: inputKey,
+              visible: combineVisible(value.visible, input?.visible),
+            });
+          }
+        } else {
+          fields.push({ name: key, visible: value?.visible });
+        }
+      }
+      return getHiddenFields(fields, values as HaFormDataContainer);
+    }
+  );
+
+  private get _metadataInput() {
+    return this._blueprint && "metadata" in this._blueprint
+      ? this._blueprint.metadata.input
+      : undefined;
+  }
+
+  private get _values() {
+    return this._inputValues(
+      // The input holds the values of the inputs by key
+      this._config.use_blueprint.input as Record<string, unknown> | undefined,
+      this._metadataInput
+    );
+  }
+
+  private get _hidden() {
+    return this._hiddenInputs(this._values, this._metadataInput);
+  }
+
   protected abstract get _config():
     BlueprintAutomationConfig | BlueprintScriptConfig;
 
@@ -130,9 +181,15 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
                     ? Object.entries(blueprint.metadata.input).map(
                         ([key, value]) => {
                           if (value && "input" in value) {
+                            if (!this._isSectionVisible(key, value)) {
+                              return nothing;
+                            }
                             const section = this._renderSection(key, value);
                             border = false;
                             return section;
+                          }
+                          if (this._hidden.has(key)) {
+                            return nothing;
                           }
                           const row = this._renderSettingRow(
                             key,
@@ -155,12 +212,28 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
     `;
   }
 
+  private _isSectionVisible(
+    sectionKey: string,
+    section: BlueprintInputSection
+  ): boolean {
+    const hidden = this._hidden;
+    const values = Object.fromEntries(
+      Object.entries(this._values).filter(([key]) => !hidden.has(key))
+    ) as HaFormDataContainer;
+    return isFieldVisible(
+      { name: sectionKey, visible: section.visible },
+      values
+    );
+  }
+
   private _renderSection(sectionKey: string, section: BlueprintInputSection) {
     const title = section?.name || sectionKey;
+    const hidden = this._hidden;
     const anyRequired =
       section.input &&
-      Object.values(section.input).some(
-        (item) => item === null || item.default === undefined
+      Object.entries(section.input).some(
+        ([key, item]) =>
+          !hidden.has(key) && (item === null || item.default === undefined)
       );
     const expanded = !section.collapsed || anyRequired;
 
@@ -192,7 +265,9 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         ${
           section.input
             ? Object.entries(section.input).map(([key, value]) =>
-                this._renderSettingRow(key, value, true)
+                hidden.has(key)
+                  ? nothing
+                  : this._renderSettingRow(key, value, true)
               )
             : nothing
         }
@@ -223,17 +298,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
         .selector=${selector}
         .context=${
           value?.selector
-            ? resolveSelectorContext(
-                value.selector,
-                this._inputValues(
-                  // The input holds the values of the inputs by key
-                  this._config.use_blueprint.input as
-                    Record<string, unknown> | undefined,
-                  this._blueprint && "metadata" in this._blueprint
-                    ? this._blueprint.metadata.input
-                    : undefined
-                )
-              )
+            ? resolveSelectorContext(value.selector, this._values)
             : undefined
         }
         .key=${key}
@@ -365,3 +430,22 @@ declare global {
     "blueprint-generic-editor": HaBlueprintGenericEditor;
   }
 }
+
+const combineVisible = (
+  ...options: HaFormBaseSchema["visible"][]
+): HaFormBaseSchema["visible"] => {
+  const conditions: Exclude<
+    HaFormBaseSchema["visible"],
+    boolean | undefined
+  >[] = [];
+  for (const visible of options) {
+    if (visible === undefined || visible === true) {
+      continue;
+    }
+    if (visible === false) {
+      return false;
+    }
+    conditions.push(visible);
+  }
+  return conditions.flat();
+};

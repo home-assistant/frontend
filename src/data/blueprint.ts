@@ -1,3 +1,4 @@
+import type { HaFormBaseSchema } from "../components/ha-form/types";
 import type { HomeAssistant } from "../types";
 import type { ManualAutomationConfig } from "./automation";
 import type { ManualScriptConfig } from "./script";
@@ -27,6 +28,7 @@ export interface BlueprintInput {
   description?: string;
   selector?: Selector;
   default?: any;
+  visible?: HaFormBaseSchema["visible"];
 }
 
 export interface BlueprintInputSection {
@@ -34,6 +36,7 @@ export interface BlueprintInputSection {
   icon?: string;
   description?: string;
   collapsed?: boolean;
+  visible?: HaFormBaseSchema["visible"];
   input: Record<string, BlueprintInput | null>;
 }
 

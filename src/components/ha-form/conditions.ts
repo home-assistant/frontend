@@ -57,11 +57,13 @@ export const evaluateCondition = (
   return matchFieldCondition(condition, data);
 };
 
+export type HaFormVisibleField = Pick<HaFormBaseSchema, "name" | "visible">;
+
 export const isFieldVisible = (
-  schema: HaFormSchema,
+  schema: HaFormSchema | HaFormVisibleField,
   data: HaFormDataContainer | undefined
 ): boolean => {
-  const { visible } = schema as HaFormBaseSchema;
+  const { visible } = schema as HaFormVisibleField;
   if (visible === undefined || visible === true) {
     return true;
   }
@@ -75,7 +77,7 @@ export const isFieldVisible = (
 // Hiding a field drops its value, which can flip another field's condition, so
 // resolve the set to a fixpoint.
 export const getHiddenFields = (
-  schema: readonly HaFormSchema[],
+  schema: readonly (HaFormSchema | HaFormVisibleField)[],
   data: HaFormDataContainer | undefined
 ): Set<string> => {
   const hidden = new Set<string>();
