@@ -3,29 +3,21 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
-import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dialog";
 import "../../../components/input/ha-input-search";
 import { internationalizationContext } from "../../../data/context";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyleDialog } from "../../../resources/styles";
 import "./error-log-card";
 import type { LogsDialogParams } from "./show-dialog-logs";
 
 @customElement("dialog-logs")
-class LogsDialog extends LitElement {
+class LogsDialog extends DialogMixin<LogsDialogParams>(LitElement) {
+  @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
-  @state() private _dialogParams?: LogsDialogParams;
-
-  @state() private _open = false;
-
   @state() private _filter = "";
-
-  public showDialog(dialogParams: LogsDialogParams) {
-    this._dialogParams = dialogParams;
-    this._open = true;
-  }
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
@@ -33,28 +25,13 @@ class LogsDialog extends LitElement {
     this._i18n.loadFragmentTranslation("config");
   }
 
-  public closeDialog() {
-    this._open = false;
-  }
-
-  private _dialogClosed() {
-    this._dialogParams = undefined;
-    this._filter = "";
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
   protected render() {
-    if (!this._dialogParams) {
+    if (!this.params) {
       return nothing;
     }
 
     return html`
-      <ha-dialog
-        .open=${this._open}
-        header-title=${this._dialogParams.title}
-        width="large"
-        @closed=${this._dialogClosed}
-      >
+      <ha-dialog open header-title=${this.params.title} width="large">
         <ha-input-search
           appearance="outlined"
           .value=${this._filter}
@@ -62,8 +39,8 @@ class LogsDialog extends LitElement {
           @input=${this._filterChanged}
         ></ha-input-search>
         <error-log-card
-          .header=${this._dialogParams.title}
-          .provider=${this._dialogParams.provider}
+          .header=${this.params.title}
+          .provider=${this.params.provider}
           .filter=${this._filter}
         ></error-log-card>
       </ha-dialog>
