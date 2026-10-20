@@ -26,6 +26,9 @@ import { MediaProgressController } from "../../../common/controllers/media-progr
 import { VolumeSliderController } from "../../../common/util/volume-slider";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-generic-picker";
 import type { HaGenericPicker } from "../../../components/ha-generic-picker";
 import "../../../components/ha-icon-button";
@@ -63,20 +66,17 @@ import type {
   ValueChangedEvent,
 } from "../../../types";
 
+const DROPDOWN_MAX_ITEMS = 4;
+
 const computeAttributeItems = (
   stateObj: MediaPlayerEntity,
   attribute: "source" | "sound_mode",
-  options: string[] | undefined,
   formatters: HomeAssistantFormatters
 ): PickerComboBoxItem[] =>
-  (options ?? []).map((option) => {
-    const primary = formatters.formatEntityAttributeValue(
-      stateObj,
-      attribute,
-      option
-    );
-    return { id: option, primary, sorting_label: primary };
-  });
+  (stateObj.attributes[`${attribute}_list`] ?? []).map((option) => ({
+    id: option,
+    primary: formatters.formatEntityAttributeValue(stateObj, attribute, option),
+  }));
 
 @customElement("more-info-media_player")
 class MoreInfoMediaPlayer extends LitElement {
@@ -247,33 +247,42 @@ class MoreInfoMediaPlayer extends LitElement {
   protected _renderSourceControl() {
     if (
       !this.stateObj ||
-      !supportsFeature(this.stateObj, MediaPlayerEntityFeature.SELECT_SOURCE) ||
-      !this.stateObj.attributes.source_list?.length
+      !supportsFeature(this.stateObj, MediaPlayerEntityFeature.SELECT_SOURCE)
     ) {
       return nothing;
+    }
+
+    const sourceList = this.stateObj.attributes.source_list || [];
+
+    if (sourceList.length > DROPDOWN_MAX_ITEMS) {
+      return this._renderSourcePicker();
     }
 
     return html`<ha-tooltip for="source-button">
         ${this._localize(`ui.card.media_player.source`)}
       </ha-tooltip>
-      <ha-generic-picker
-        id="source-picker"
-        .label=${this._localize(`ui.card.media_player.source`)}
-        .value=${this.stateObj.attributes.source}
-        .getItems=${this._getSourceItems}
-        .notFoundLabel=${this._localize("ui.components.combo-box.no_match")}
-        no-sort
-        @value-changed=${this._handleSourceChange}
-      >
+      <ha-dropdown @wa-select=${this._handleSourceChange}>
         <ha-icon-button
           id="source-button"
-          slot="field"
+          slot="trigger"
           .label=${this._localize(`ui.card.media_player.source`)}
           .path=${mdiLoginVariant}
-          @click=${this._openSourcePicker}
         >
         </ha-icon-button>
-      </ha-generic-picker>`;
+        ${sourceList.map(
+          (source) =>
+            html`<ha-dropdown-item
+              .value=${source}
+              .selected=${source === this.stateObj?.attributes.source}
+            >
+              ${this._formatters.formatEntityAttributeValue(
+                this.stateObj!,
+                "source",
+                source
+              )}
+            </ha-dropdown-item>`
+        )}
+      </ha-dropdown>`;
   }
 
   protected _renderSoundMode() {
@@ -288,22 +297,76 @@ class MoreInfoMediaPlayer extends LitElement {
       return nothing;
     }
 
+    if (this.stateObj.attributes.sound_mode_list.length > DROPDOWN_MAX_ITEMS) {
+      return this._renderSoundModePicker();
+    }
+
+    return html`<ha-tooltip for="sound-mode-button">
+        ${this._localize(`ui.card.media_player.sound_mode`)}
+      </ha-tooltip>
+      <ha-dropdown @wa-select=${this._handleSoundModeChange}>
+        <ha-icon-button
+          slot="trigger"
+          id="sound-mode-button"
+          .path=${mdiMusicNoteEighth}
+          hide-title
+        >
+        </ha-icon-button>
+        ${this.stateObj.attributes.sound_mode_list!.map(
+          (soundMode) =>
+            html`<ha-dropdown-item
+              .value=${soundMode}
+              .selected=${soundMode === this.stateObj?.attributes.sound_mode}
+            >
+              ${this._formatters.formatEntityAttributeValue(
+                this.stateObj!,
+                "sound_mode",
+                soundMode
+              )}
+            </ha-dropdown-item>`
+        )}
+      </ha-dropdown>`;
+  }
+
+  private _renderSourcePicker() {
+    return html`<ha-tooltip for="source-button">
+        ${this._localize(`ui.card.media_player.source`)}
+      </ha-tooltip>
+      <ha-generic-picker
+        id="source-picker"
+        .label=${this._localize(`ui.card.media_player.source`)}
+        .value=${this.stateObj!.attributes.source}
+        .getItems=${this._getSourceItems}
+        no-sort
+        @value-changed=${this._handleSourcePicked}
+      >
+        <ha-icon-button
+          id="source-button"
+          slot="field"
+          .label=${this._localize(`ui.card.media_player.source`)}
+          .path=${mdiLoginVariant}
+          @click=${this._openSourcePicker}
+        >
+        </ha-icon-button>
+      </ha-generic-picker>`;
+  }
+
+  private _renderSoundModePicker() {
     return html`<ha-tooltip for="sound-mode-button">
         ${this._localize(`ui.card.media_player.sound_mode`)}
       </ha-tooltip>
       <ha-generic-picker
         id="sound-mode-picker"
         .label=${this._localize(`ui.card.media_player.sound_mode`)}
-        .value=${this.stateObj.attributes.sound_mode}
+        .value=${this.stateObj!.attributes.sound_mode}
         .getItems=${this._getSoundModeItems}
-        .notFoundLabel=${this._localize("ui.components.combo-box.no_match")}
         no-sort
-        @value-changed=${this._handleSoundModeChange}
+        @value-changed=${this._handleSoundModePicked}
       >
         <ha-icon-button
-          id="sound-mode-button"
           slot="field"
-          .label=${this._localize("ui.card.media_player.sound_mode")}
+          id="sound-mode-button"
+          .label=${this._localize(`ui.card.media_player.sound_mode`)}
           .path=${mdiMusicNoteEighth}
           hide-title
           @click=${this._openSoundModePicker}
@@ -317,20 +380,10 @@ class MoreInfoMediaPlayer extends LitElement {
   private _computeSoundModeItems = memoizeOne(computeAttributeItems);
 
   private _getSourceItems = (): PickerComboBoxItem[] =>
-    this._computeSourceItems(
-      this.stateObj!,
-      "source",
-      this.stateObj!.attributes.source_list,
-      this._formatters
-    );
+    this._computeSourceItems(this.stateObj!, "source", this._formatters);
 
   private _getSoundModeItems = (): PickerComboBoxItem[] =>
-    this._computeSoundModeItems(
-      this.stateObj!,
-      "sound_mode",
-      this.stateObj!.attributes.sound_mode_list,
-      this._formatters
-    );
+    this._computeSoundModeItems(this.stateObj!, "sound_mode", this._formatters);
 
   protected _renderGrouping() {
     if (
@@ -812,6 +865,30 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
+  private _handleSourceChange(e: HaDropdownSelectEvent) {
+    const source = e.detail.item.value;
+    if (!source || this.stateObj!.attributes.source === source) {
+      return;
+    }
+
+    this._api.callService("media_player", "select_source", {
+      entity_id: this.stateObj!.entity_id,
+      source,
+    });
+  }
+
+  private _handleSoundModeChange(ev: HaDropdownSelectEvent) {
+    const soundMode = ev.detail.item.value;
+    if (!soundMode || this.stateObj!.attributes.sound_mode === soundMode) {
+      return;
+    }
+
+    this._api.callService("media_player", "select_sound_mode", {
+      entity_id: this.stateObj!.entity_id,
+      sound_mode: soundMode,
+    });
+  }
+
   private _openSourcePicker(ev: Event) {
     this._sourcePicker?.open(ev);
   }
@@ -820,7 +897,7 @@ class MoreInfoMediaPlayer extends LitElement {
     this._soundModePicker?.open(ev);
   }
 
-  private _handleSourceChange(ev: ValueChangedEvent<string | undefined>) {
+  private _handleSourcePicked(ev: ValueChangedEvent<string | undefined>) {
     ev.stopPropagation();
     const source = ev.detail.value;
     if (!source || this.stateObj!.attributes.source === source) {
@@ -833,7 +910,7 @@ class MoreInfoMediaPlayer extends LitElement {
     });
   }
 
-  private _handleSoundModeChange(ev: ValueChangedEvent<string | undefined>) {
+  private _handleSoundModePicked(ev: ValueChangedEvent<string | undefined>) {
     ev.stopPropagation();
     const soundMode = ev.detail.value;
     if (!soundMode || this.stateObj!.attributes.sound_mode === soundMode) {
