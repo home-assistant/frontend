@@ -500,6 +500,7 @@
       "submit": "Submit",
       "rename": "Rename",
       "reset": "Reset",
+      "retry": "Retry",
       "search": "[%key:ui::components::data-table::search%]",
       "ok": "OK",
       "yes": "Yes",
