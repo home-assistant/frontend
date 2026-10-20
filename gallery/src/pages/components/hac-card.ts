@@ -1,13 +1,15 @@
 import { mdiFire } from "@mdi/js";
-import { css, html, LitElement } from "lit";
-import { customElement } from "lit/decorators";
-import "../../../../src/components/ha-button";
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, state } from "lit/decorators";
 import "../../../../src/components/ha-svg-icon";
+import "@home-assistant/hac/button";
 import "@home-assistant/hac/card";
 import "@home-assistant/hac/header";
 
 @customElement("demo-components-hac-card")
 export class DemoHacCard extends LitElement {
+  @state() private _closed = false;
+
   protected render() {
     return html`
       <div class="grid">
@@ -27,11 +29,26 @@ export class DemoHacCard extends LitElement {
             <span slot="subtitle">Consumption and costs</span>
           </hac-header>
           <p>Raised card with header icon, subtitle and footer.</p>
-          <ha-button slot="footer" appearance="plain">Cancel</ha-button>
-          <ha-button slot="footer">Save</ha-button>
+          <hac-button slot="footer" appearance="plain">Cancel</hac-button>
+          <hac-button slot="footer">Save</hac-button>
         </hac-card>
+
+        ${
+          this._closed
+            ? nothing
+            : html`<hac-card>
+                <hac-header slot="header" show-close @hac-close=${this._close}>
+                  Closable
+                </hac-header>
+                <p>Header with a close button. Click it to remove this card.</p>
+              </hac-card>`
+        }
       </div>
     `;
+  }
+
+  private _close() {
+    this._closed = true;
   }
 
   static styles = css`

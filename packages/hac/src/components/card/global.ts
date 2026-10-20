@@ -1,7 +1,8 @@
-import { define } from "../../utils/define";
+import { defineGlobal } from "../../utils/dependencies";
 import { HacCard } from "./hac-card";
 
-// Registers <hac-card> in the global registry, as used by Home Assistant
-define("hac-card", HacCard);
+// Registers <hac-card> and its dependencies in the global registry, as used by
+// Home Assistant
+defineGlobal("hac-card", HacCard);
 
 export { HacCard };

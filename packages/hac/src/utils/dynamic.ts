@@ -1,4 +1,6 @@
 import { getProvidedComponent } from "../provider";
+import type { HacElementClass } from "./dependencies";
+import { scopedVariant } from "./dependencies";
 import { isCompatible } from "./version";
 
 /** Resolves the class to register for a tag name, possibly asynchronously. */
@@ -8,11 +10,13 @@ export interface HacElementLoader {
 
 /**
  * Loader that prefers the host's copy of a component when its version is
- * compatible with the bundled one, and uses the bundled one otherwise.
+ * compatible with the bundled one, and uses the scoped variant of the bundled
+ * one otherwise. The host's copy brings the host's dependencies, the bundled
+ * one the bundled dependencies, so they are never mixed.
  */
 export const createDynamicLoader = (
   tagName: string,
-  bundled: CustomElementConstructor & { readonly version: string }
+  bundled: HacElementClass
 ): HacElementLoader => {
   let loaded: Promise<CustomElementConstructor> | undefined;
 
@@ -25,7 +29,7 @@ export const createDynamicLoader = (
         // The host failed to load its copy, use the bundled one
       }
     }
-    return bundled;
+    return scopedVariant(bundled);
   };
 
   return {

@@ -35,6 +35,8 @@ globally with `import "@home-assistant/hac/card"` and
 | `subtitle` | Secondary text below the title.   |
 | `actions`  | Actions at the end of the header. |
 
-| Property | Description                                                     |
-| -------- | --------------------------------------------------------------- |
-| `level`  | Heading level of the title for assistive technology, default 2. |
+| Property      | Description                                                     |
+| ------------- | --------------------------------------------------------------- |
+| `level`       | Heading level of the title for assistive technology, default 2. |
+| `show-close`  | Shows a close button at the end, which fires `hac-close`.       |
+| `close-label` | Accessible label of the close button, "Close" by default.       |
