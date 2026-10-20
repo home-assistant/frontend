@@ -11,10 +11,6 @@ const CLOSE_ICON =
  * The accessible label defaults to "Close". Set `label` to a translated
  * text when the page is not in English.
  *
- * Importing this module does not register the element. Use
- * `@home-assistant/components/button/close` to register `<hac-button-close>`
- * globally, or the `scoped` and `dynamic` entry points next to it.
- *
  * @csspart base - The native button.
  * @cssprop --hac-button-color - Icon color.
  * @cssprop --hac-button-height - Width and height.

@@ -8,10 +8,6 @@ import { HacButtonClose } from "../button/close/hac-button-close";
  * Reusable in any container, e.g. `hac-card`. The title is exposed to
  * assistive technology as a heading of the given `level`.
  *
- * Importing this module does not register the element. Use
- * `@home-assistant/components/header` to register `<hac-header>` globally, or the `scoped`
- * and `dynamic` entry points next to it.
- *
  * @slot - Title of the header.
  * @slot icon - Icon displayed before the title.
  * @slot subtitle - Secondary text displayed below the title.
