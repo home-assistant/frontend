@@ -102,6 +102,7 @@ describe("registerServiceWorker", () => {
 
   afterEach(() => {
     latestNotification()?.secondaryAction?.action();
+    vi.unstubAllGlobals();
     vi.clearAllTimers();
     vi.useRealTimers();
     window.isDirtyState = false;
@@ -137,6 +138,38 @@ describe("registerServiceWorker", () => {
     expect(addEventListener.mock.invocationCallOrder[0]).toBeLessThan(
       serviceWorker.register.mock.invocationCallOrder[0]
     );
+  });
+
+  it("reloads when the controller changes on a clean page", async () => {
+    const reload = vi.fn();
+    vi.stubGlobal("location", { ...window.location, reload });
+    await registerServiceWorker(root);
+
+    serviceWorker.dispatchEvent(new Event("controllerchange"));
+
+    expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("defers the controller change reload until the page is clean", async () => {
+    const reload = vi.fn();
+    vi.stubGlobal("location", { ...window.location, reload });
+    await registerServiceWorker(root);
+    setDirtyState(true);
+
+    serviceWorker.dispatchEvent(new Event("controllerchange"));
+
+    expect(reload).not.toHaveBeenCalled();
+    expect(latestNotification()).toMatchObject({
+      id: "frontend-update-available",
+      message: {
+        translationKey: "ui.notification_toast.new_version_available_reload",
+      },
+      duration: -1,
+      dismissable: false,
+    });
+
+    setDirtyState(false);
+    expect(reload).toHaveBeenCalledOnce();
   });
 
   it.each([

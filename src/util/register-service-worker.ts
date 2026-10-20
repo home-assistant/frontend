@@ -15,9 +15,30 @@ export const registerServiceWorker = async (
     return;
   }
 
-  // If the active service worker changes, refresh the page because the cache has changed
+  // If the active service worker changes, refresh the page because the cache has changed.
+  // Another tab can activate the new worker, so wait until this page has no unsaved work.
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    location.reload();
+    if (!window.isDirtyState) {
+      location.reload();
+      return;
+    }
+    const reloadWhenClean = () => {
+      if (!window.isDirtyState) {
+        window.removeEventListener("dirty-state-changed", reloadWhenClean);
+        location.reload();
+      }
+    };
+    window.addEventListener("dirty-state-changed", reloadWhenClean);
+    if (notifyUpdate) {
+      showToast(rootEl, {
+        id: UPDATE_TOAST_ID,
+        message: {
+          translationKey: "ui.notification_toast.new_version_available_reload",
+        },
+        duration: -1,
+        dismissable: false,
+      });
+    }
   });
 
   const reg = await navigator.serviceWorker.register(`/sw-${__BUILD__}.js`);

@@ -505,6 +505,27 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
     `;
   }
 
+  // A flow cannot be resumed after a page reload, so once the user has
+  // interacted with it, report dirty to hold off automatic frontend reloads.
+  public override get isDirtyState(): boolean {
+    if (super.isDirtyState || this._createEntryHasPendingUpdates) {
+      return true;
+    }
+    if (!this._params) {
+      return false;
+    }
+    // `_step` is cleared while the next step loads, so it only counts as
+    // finished once a create_entry or abort step is shown.
+    if (this._step && ["create_entry", "abort"].includes(this._step.type)) {
+      return false;
+    }
+    return (
+      this._flowHasProgressed ||
+      this._step?.type === "external" ||
+      this._step?.type === "progress"
+    );
+  }
+
   private get _preventScrimClose(): boolean {
     return (
       this.isDirtyState ||
