@@ -1154,6 +1154,7 @@ export const computeCreateDomains = (
     !entityFilter.device_class &&
     !entityFilter.supported_features &&
     !entityFilter.device &&
+    !ensureArray(entityFilter.translation_key)?.length &&
     entityFilter.domain
       ? ensureArray(entityFilter.domain).filter((domain) =>
           isHelperDomain(domain)

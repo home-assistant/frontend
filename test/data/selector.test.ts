@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import {
+  computeCreateDomains,
   filterSelectorEntities,
   resolveEntityIDs,
 } from "../../src/data/selector";
@@ -258,6 +259,30 @@ describe("filterSelectorEntities translation key filter", () => {
         entityRegistry
       )
     ).toBe(false);
+  });
+});
+
+describe("computeCreateDomains translation key filter", () => {
+  it("offers helper creation for a domain only filter", () => {
+    expect(
+      computeCreateDomains({ entity: { filter: { domain: "counter" } } })
+    ).toEqual(["counter"]);
+  });
+
+  it("skips helper creation when the filter carries a translation key", () => {
+    expect(
+      computeCreateDomains({
+        entity: { filter: { domain: "counter", translation_key: "epex" } },
+      })
+    ).toEqual([]);
+  });
+
+  it("keeps helper creation for an empty translation key list", () => {
+    expect(
+      computeCreateDomains({
+        entity: { filter: { domain: "counter", translation_key: [] } },
+      })
+    ).toEqual(["counter"]);
   });
 });
 
