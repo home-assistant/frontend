@@ -37,6 +37,9 @@ interface MatchValue {
   is_not?: string[];
 }
 
+// Stable reference, so the memoized schema is not rebuilt on every render.
+const NO_STATES: string[] = [];
+
 const stateTriggerStruct = assign(
   baseTriggerStruct,
   object({
@@ -236,6 +239,20 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       fireEvent(this, "ui-mode-not-available", e);
       return false;
     }
+    // "from" and "not_from" (and "to" and "not_to") are mutually exclusive,
+    // the editor can only show one of them and would drop the other.
+    if (
+      (this.trigger.from !== undefined &&
+        this.trigger.not_from !== undefined) ||
+      (this.trigger.to !== undefined && this.trigger.not_to !== undefined)
+    ) {
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(this.hass.localize("ui.errors.config.editor_not_supported"))
+      );
+      return false;
+    }
     return true;
   }
 
@@ -278,8 +295,8 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     const schema = this._schema(
       this.hass.localize,
       this.trigger.attribute,
-      bothPositive ? (to?.is ?? []) : [],
-      bothPositive ? (from?.is ?? []) : []
+      bothPositive ? (to?.is ?? NO_STATES) : NO_STATES,
+      bothPositive ? (from?.is ?? NO_STATES) : NO_STATES
     );
 
     return html`

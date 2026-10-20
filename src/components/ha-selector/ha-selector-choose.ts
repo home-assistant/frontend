@@ -75,6 +75,7 @@ export class HaChooseSelector extends LitElement {
             this._localize
           )}
           .active=${this._activeChoice}
+          .disabled=${this.disabled}
           @value-changed=${this._choiceChanged}
         ></ha-button-toggle-group>
       </div>
