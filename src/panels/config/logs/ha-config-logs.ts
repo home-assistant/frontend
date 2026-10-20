@@ -27,6 +27,7 @@ import {
   updateHistoryState,
 } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
+import { currentPath } from "../../../common/url/current-path";
 import { deepEqual } from "../../../common/util/deep-equal";
 import {
   DEFAULT_LOG_PROVIDER,
@@ -331,7 +332,8 @@ export class HaConfigLogs extends LitElement {
       }),
       logsQueryParamConfig
     );
-    navigate(`/config/logs${search ? `?${search}` : ""}`, {
+    // From the current path, so a trailing slash still matches the controller
+    navigate(`${currentPath()}${search ? `?${search}` : ""}`, {
       data: { [LOGS_HISTORY_STATE]: true },
     });
   }
