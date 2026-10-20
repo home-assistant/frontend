@@ -31,6 +31,20 @@ const marketplaceTableParams = {
   direction: "string?",
 } satisfies Redirect["params"];
 
+// The helpers table reads these from the link
+const helpersTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  label: "string?",
+  category: "string?",
+  assistants: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -259,6 +273,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   helpers: {
     redirect: "/config/helpers",
+    params: helpersTableParams,
   },
   labs: {
     redirect: "/config/labs",
