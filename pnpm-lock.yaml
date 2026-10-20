@@ -301,8 +301,8 @@ importers:
         specifier: 4.4.0
         version: 4.4.0
       '@versatiles/style':
-        specifier: 6.4.1
-        version: 6.4.1(maplibre-gl@6.14.0)
+        specifier: 7.0.1
+        version: 7.0.1(maplibre-gl@6.14.0)
       '@vibrant/color':
         specifier: 4.0.4
         version: 4.0.4
@@ -3665,11 +3665,11 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@versatiles/style@6.4.1':
-    resolution: {integrity: sha512-0FpDO6PTEUBeWkvkSRt6l9N+EC9+rK8wuGgsxrzjVAMTSCoWG/t4zYjRzYYDkjgVpPXKB02s3/WbuGJiYUw8AA==}
+  '@versatiles/style@7.0.1':
+    resolution: {integrity: sha512-ArZ09BwFWthylcvChgm8rwQ2FhIvvL4rRAOy1z+qn2tniOyEkEItBeQIJRTJlh09Wn8HsRgcMw9hFIfDLgWhSw==}
     engines: {node: '>=20'}
     peerDependencies:
-      maplibre-gl: '>=5.0.0'
+      maplibre-gl: '>=5.5.0'
     peerDependenciesMeta:
       maplibre-gl:
         optional: true
@@ -11269,7 +11269,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
     optional: true
 
-  '@versatiles/style@6.4.1(maplibre-gl@6.14.0)':
+  '@versatiles/style@7.0.1(maplibre-gl@6.14.0)':
     dependencies:
       '@maplibre/maplibre-gl-style-spec': 26.4.4
     optionalDependencies:
