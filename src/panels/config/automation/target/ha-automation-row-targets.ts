@@ -260,7 +260,7 @@ export class HaAutomationRowTargets extends LitElement {
         this._api.callWS,
         exclude,
         false,
-        this.selector?.target?.primary_entities_only
+        false
       )
         .then((result) => new Set(result.referenced_entities))
         // Counts then leave the exclude out rather than failing altogether.
