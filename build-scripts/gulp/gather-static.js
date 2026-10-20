@@ -2,6 +2,7 @@
 
 import fs from "fs-extra";
 import gulp from "gulp";
+import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
 import path from "path";
 import paths from "../paths.cjs";
@@ -90,7 +91,21 @@ function copyZXingWasm(staticDir) {
   const zxingWasm = createRequire(require.resolve("barcode-detector")).resolve(
     "zxing-wasm/reader/zxing_reader.wasm"
   );
-  copyFileDir(zxingWasm, staticPath("js"));
+  const {
+    ZXING_WASM_SHA256,
+    ZXING_WASM_VERSION,
+  } = require("barcode-detector/pure");
+  const wasm = fs.readFileSync(zxingWasm);
+  if (createHash("sha256").update(wasm).digest("hex") !== ZXING_WASM_SHA256) {
+    throw new Error(
+      `${zxingWasm} does not match the zxing-wasm ${ZXING_WASM_VERSION} bundled in barcode-detector`
+    );
+  }
+  // Versioned file name, see locateFile in ha-qr-scanner
+  fs.outputFileSync(
+    staticPath("js", `zxing_reader-${ZXING_WASM_VERSION}.wasm`),
+    wasm
+  );
 }
 
 gulp.task("copy-locale-data", async () => {
