@@ -8,10 +8,15 @@ import {
 
 export const DEFAULT_LOG_PROVIDER = "core";
 
-// `filter` is the search, links from an integration's error count set it.
+// `filter` is the name the search had before, still read until 2027.5. It is
+// in the configs so writing the search replaces it.
+export const logSearchQueryParamConfig = {
+  string: ["search", "filter"],
+} as const satisfies QueryParamConfig;
+
 // `raw` shows the full Home Assistant Core log instead of the errors.
 export const logsQueryParamConfig = {
-  string: ["provider", "filter"],
+  string: ["provider", "search", "filter"],
   list: ["integration"],
   boolean: [{ key: "raw", trueValue: "1" }],
 } as const satisfies QueryParamConfig;
@@ -20,7 +25,7 @@ export type LogsQueryParams = QueryParamValues<typeof logsQueryParamConfig>;
 
 export interface LogsState {
   provider: string;
-  filter: string;
+  search: string;
   // Only apply to the Home Assistant Core log
   integrations: string[];
   raw: boolean;
@@ -28,15 +33,24 @@ export interface LogsState {
 
 export const DEFAULT_LOGS_STATE: LogsState = {
   provider: DEFAULT_LOG_PROVIDER,
-  filter: "",
+  search: "",
   integrations: [],
   raw: false,
+};
+
+export const logSearchFromUrl = (searchParams: SearchParamsSource): string => {
+  const { search, filter } = decodeQueryParams(
+    searchParams,
+    logSearchQueryParamConfig
+  );
+
+  return search ?? filter ?? "";
 };
 
 export const logsQueryParams = (state: LogsState): LogsQueryParams => ({
   provider:
     state.provider === DEFAULT_LOG_PROVIDER ? undefined : state.provider,
-  filter: state.filter,
+  search: state.search,
   integration:
     state.provider === DEFAULT_LOG_PROVIDER ? state.integrations : undefined,
   raw: state.provider === DEFAULT_LOG_PROVIDER && state.raw,
@@ -55,7 +69,7 @@ export const logsLinkFromUrl = (
   const core = provider === DEFAULT_LOG_PROVIDER;
   return {
     provider,
-    filter: params.filter ?? "",
+    search: params.search ?? params.filter ?? "",
     integrations: core ? (params.integration?.filter(Boolean) ?? []) : [],
     raw: core && !!params.raw,
   };

@@ -315,7 +315,7 @@ export class HaConfigLogs extends LitElement {
     const search = createQueryString(
       logsQueryParams({
         provider,
-        filter: "",
+        search: "",
         integrations: [],
         raw: this._detail,
       }),
@@ -362,7 +362,7 @@ export class HaConfigLogs extends LitElement {
     this._queryParams.write(
       logsQueryParams({
         provider: this._selectedLogProvider,
-        filter: this._filter,
+        search: this._filter,
         integrations: this._integrations,
         raw: this._detail,
       }),
@@ -416,7 +416,7 @@ export class HaConfigLogs extends LitElement {
       }
       const loaded = this._getLoadedIntegrations(this.hass.config.components);
       this._selectedLogProvider = link.provider;
-      this._filter = link.filter;
+      this._filter = link.search;
       if (link.provider === DEFAULT_LOG_PROVIDER) {
         this._detail = link.raw;
       }
