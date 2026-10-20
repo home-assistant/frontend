@@ -9,7 +9,8 @@ import { VERSION } from "./version";
  *
  * Importing this module does not register the element. Use
  * `@home-assistant/hac/button` to register `<hac-button>` globally, or the
- * `scoped` and `dynamic` entry points next to it.
+ * `scoped` and `dynamic` entry points next to it. Variants, like
+ * `hac-button-close`, are separate elements in subdirectories.
  *
  * @slot - Label of the button.
  * @slot icon - Icon displayed before the label.

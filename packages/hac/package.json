@@ -10,10 +10,8 @@
   },
   "type": "module",
   "sideEffects": [
-    "./dist/all.js",
-    "./dist/components/*/global.js",
-    "./src/all.ts",
-    "./src/components/*/global.ts"
+    "./dist/components/**/global.js",
+    "./src/components/**/global.ts"
   ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,11 +20,6 @@
       "hac-source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    },
-    "./all": {
-      "hac-source": "./src/all.ts",
-      "types": "./dist/all.d.ts",
-      "import": "./dist/all.js"
     },
     "./scoped": {
       "hac-source": "./src/scoped.ts",

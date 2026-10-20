@@ -1,16 +1,14 @@
 import { createDynamicLoader } from "../../utils/dynamic";
 import { HacButton } from "./hac-button";
-import { HacButtonClose } from "./hac-button-close";
 
-export { HacButton, HacButtonClose };
+export { HacButton };
 
 /**
- * Registers the button group in a scoped registry, using Home Assistant's
- * copies when their version is compatible and the bundled ones otherwise:
+ * Registers <hac-button> in a scoped registry, using Home Assistant's copy
+ * when its version is compatible and the bundled one otherwise:
  * `ScopedElementsMixin(LitElement, { ...hacButtonElements })` or
  * `createScopedElementRegistry({ ...hacButtonElements })`.
  */
 export const hacButtonElements = {
   "hac-button": createDynamicLoader("hac-button", HacButton),
-  "hac-button-close": createDynamicLoader("hac-button-close", HacButtonClose),
 };

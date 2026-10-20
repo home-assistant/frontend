@@ -7,13 +7,16 @@ with [Lit](https://lit.dev).
 
 ## Loading modes
 
-Every component can be loaded in three ways:
+Every element is imported on its own, in one of three ways:
 
-| Import                               | Registers in         | Uses                                               |
-| ------------------------------------ | -------------------- | -------------------------------------------------- |
-| `@home-assistant/hac/<name>`         | Global registry      | The bundled copy. Used by Home Assistant itself.   |
-| `@home-assistant/hac/<name>/scoped`  | Your scoped registry | The bundled copy, isolated from other copies.      |
-| `@home-assistant/hac/<name>/dynamic` | Your scoped registry | Home Assistant's copy if compatible, else bundled. |
+| Import                                  | Registers in         | Uses                                               |
+| --------------------------------------- | -------------------- | -------------------------------------------------- |
+| `@home-assistant/hac/<element>`         | Global registry      | The bundled copy. Used by Home Assistant itself.   |
+| `@home-assistant/hac/<element>/scoped`  | Your scoped registry | The bundled copy, isolated from other copies.      |
+| `@home-assistant/hac/<element>/dynamic` | Your scoped registry | Home Assistant's copy if compatible, else bundled. |
+
+`<element>` is the group, like `button` for `hac-button`, or the group and a
+variant, like `button/close` for `hac-button-close`.
 
 Global registration skips tag names that are already registered, so the first
 registration wins and nothing throws.
@@ -21,7 +24,8 @@ registration wins and nothing throws.
 ### Global
 
 ```ts
-import "@home-assistant/hac/card";
+import "@home-assistant/hac/button";
+import "@home-assistant/hac/button/close";
 ```
 
 ### Scoped and dynamic
@@ -108,22 +112,30 @@ own `--hac-*` custom properties, documented in its source.
 
 ## Structure
 
+Elements are organized in groups. A group's directory holds its default
+element, and variants live in subdirectories, so the directories mirror the
+import paths:
+
 ```
-src/components/<group>/
-  hac-<name>.ts   component classes, do not register themselves
-  version.ts      version of the group, also exposed as `static version`
-  global.ts       registers globally                 -> @home-assistant/hac/<group>
-  scoped.ts       elements for a scoped registry     -> @home-assistant/hac/<group>/scoped
-  dynamic.ts      host's or bundled copy, scoped     -> @home-assistant/hac/<group>/dynamic
-  CHANGELOG.md    changes, by group version
+src/components/button/         <hac-button>        -> @home-assistant/hac/button
+  hac-button.ts                class, does not register itself
+  version.ts                   version, also exposed as `static version`
+  global.ts                    registers globally
+  scoped.ts                    elements for a scoped registry  -> …/scoped
+  dynamic.ts                   host's or bundled copy, scoped  -> …/dynamic
+  CHANGELOG.md                 changes, by version
+  close/                       <hac-button-close>  -> @home-assistant/hac/button/close
+    hac-button-close.ts
+    version.ts, global.ts, scoped.ts, dynamic.ts, CHANGELOG.md
 ```
 
-A group holds one or more related components that share a version, like
-`button` with `hac-button` and `hac-button-close`.
+A variant's tag name is `hac-<group>-<variant>`. `scoped`, `dynamic` and
+`version` are reserved and cannot be variant names.
 
-Bump `version.ts` and add a `CHANGELOG.md` entry with every change to a
-group. A breaking change needs a new major version (minor in `0.x`), or
-custom cards using `dynamic` would receive an incompatible copy.
+Every element has its own version. Bump `version.ts` and add a `CHANGELOG.md`
+entry with every change to an element. A breaking change needs a new major
+version (minor in `0.x`), or custom cards using `dynamic` would receive an
+incompatible copy.
 
 ### Dependencies
 
@@ -149,8 +161,8 @@ place: Home Assistant's header uses Home Assistant's close button, the
 bundled header the bundled one.
 
 Entry points are mapped with subpath patterns in `package.json`, so a new
-group directory needs no `package.json` change. Only `global.ts` files and
-`all.ts` have side effects, which `sideEffects` relies on for tree shaking.
+element directory needs no `package.json` change. Only `global.ts` files have
+side effects, which `sideEffects` relies on for tree shaking.
 
 ## Development
 

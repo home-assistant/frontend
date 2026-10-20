@@ -1,5 +1,6 @@
 import { css, html } from "lit";
-import { HacButton } from "./hac-button";
+import { HacButton } from "../hac-button";
+import { VERSION } from "./version";
 
 // mdiClose from Material Design Icons (Apache-2.0)
 const CLOSE_ICON =
@@ -12,14 +13,17 @@ const CLOSE_ICON =
  * text when the page is not in English.
  *
  * Importing this module does not register the element. Use
- * `@home-assistant/hac/button` to register `<hac-button-close>` globally, or
- * the `scoped` and `dynamic` entry points next to it.
+ * `@home-assistant/hac/button/close` to register `<hac-button-close>`
+ * globally, or the `scoped` and `dynamic` entry points next to it.
  *
  * @csspart base - The native button.
  * @cssprop --hac-button-color - Icon color.
  * @cssprop --hac-button-height - Width and height.
  */
 export class HacButtonClose extends HacButton {
+  /** Version of the component, read by `dynamic` loaders at runtime. */
+  static readonly version = VERSION;
+
   constructor() {
     super();
     this.appearance = "plain";
