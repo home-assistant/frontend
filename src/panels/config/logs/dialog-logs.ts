@@ -1,22 +1,18 @@
 import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dialog";
 import "../../../components/input/ha-input-search";
 import { internationalizationContext } from "../../../data/context";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
 import "./error-log-card";
 import type { LogsDialogParams } from "./show-dialog-logs";
 
 @customElement("dialog-logs")
 class LogsDialog extends LitElement {
-  // Only for error-log-card, which still takes hass (see #55062).
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
@@ -66,7 +62,6 @@ class LogsDialog extends LitElement {
           @input=${this._filterChanged}
         ></ha-input-search>
         <error-log-card
-          .hass=${this.hass}
           .header=${this._dialogParams.title}
           .provider=${this._dialogParams.provider}
           .filter=${this._filter}
