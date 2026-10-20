@@ -232,7 +232,7 @@ export class HAFullCalendar extends LitElement {
                               ? html`<ha-button
                                   size="s"
                                   class="fab-header"
-                                  aria-label=${this.hass.localize(
+                                  accessible-label=${this.hass.localize(
                                     "ui.components.calendar.event.add"
                                   )}
                                   @click=${this._createEvent}
@@ -289,7 +289,7 @@ export class HAFullCalendar extends LitElement {
                                 ? html`<ha-button
                                     size="s"
                                     class="fab-header"
-                                    aria-label=${this.hass.localize(
+                                    accessible-label=${this.hass.localize(
                                       "ui.components.calendar.event.add"
                                     )}
                                     @click=${this._createEvent}

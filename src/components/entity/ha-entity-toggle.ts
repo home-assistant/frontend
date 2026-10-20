@@ -75,7 +75,7 @@ export class HaEntityToggle extends LitElement {
     }
 
     return html`<ha-switch
-      aria-label=${`Toggle ${name} ${this._isOn ? "off" : "on"}`}
+      accessible-label=${`Toggle ${name} ${this._isOn ? "off" : "on"}`}
       .checked=${this._isOn}
       .disabled=${this.stateObj.state === UNAVAILABLE}
       @change=${this._toggleChanged}
