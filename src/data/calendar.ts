@@ -22,10 +22,9 @@ export interface CalendarEvent {
   title: string;
   start: string;
   end?: string;
-  backgroundColor?: string;
-  borderColor?: string;
-  textColor?: string;
-  classNames?: string[];
+  color?: string;
+  contrastColor?: string;
+  className?: string;
   calendar: string;
   eventData: CalendarEventData;
   [key: string]: any;
@@ -289,12 +288,12 @@ export const normalizeSubscriptionEventData = (
     start: eventStart,
     end: eventEnd,
     title: eventData.summary,
-    backgroundColor: calendar.backgroundColor,
-    borderColor: calendar.backgroundColor,
-    textColor: calendar.textColor,
+    color: calendar.backgroundColor,
+    // FullCalendar reads undefined as the text "undefined", and empty as unset
+    contrastColor: calendar.textColor ?? "",
     // Only a tentative event is drawn differently. A confirmed event and one
     // without a status look the same, as most integrations report none.
-    classNames: eventData.status === "tentative" ? ["tentative"] : undefined,
+    className: eventData.status === "tentative" ? "tentative" : undefined,
     calendar: calendar.entity_id,
     eventData: normalizedEventData,
   };

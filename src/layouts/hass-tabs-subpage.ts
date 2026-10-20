@@ -309,7 +309,6 @@ export class HassTabsSubpage extends LitElement {
         :host {
           display: block;
           height: 100%;
-          background-color: var(--primary-background-color);
         }
 
         :host([narrow]) {

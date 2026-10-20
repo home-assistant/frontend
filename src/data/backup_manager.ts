@@ -103,6 +103,20 @@ export const subscribeBackupEvents = (
     { preCheck }
   );
 
+export const getBackupState = async (
+  hass: Pick<HomeAssistant, "connection">
+): Promise<BackupManagerState> => {
+  let state: BackupManagerState = "idle";
+  const unsub = await subscribeBackupEvents(hass, (event) => {
+    // Skip replayed upload progress events, only the manager state matters
+    if (!("agent_id" in event)) {
+      state = event.manager_state;
+    }
+  });
+  unsub();
+  return state;
+};
+
 export const DEFAULT_MANAGER_STATE: ManagerStateEvent = {
   manager_state: "idle",
 };

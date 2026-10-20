@@ -322,6 +322,7 @@
       "update": {
         "installing": "Installing",
         "installing_with_progress": "Installing ({progress}%)",
+        "preparing": "Preparing",
         "up_to_date": "Up-to-date"
       },
       "text": {
@@ -778,6 +779,13 @@
         "time_pattern": "time pattern",
         "homeassistant_stopping": "Home Assistant stopping",
         "homeassistant_starting": "Home Assistant starting",
+        "cause_filter": {
+          "caption": "Triggered by",
+          "automation": "Automations",
+          "script": "Scripts",
+          "integration": "Integrations",
+          "other": "Other"
+        },
         "cause": {
           "by": "By {name}",
           "by_automation": "By automation: {name}",
@@ -5564,7 +5572,7 @@
             "select_target": "Select a target",
             "home": "Home",
             "unassigned": "Unassigned",
-            "time_sun": "Time and sun",
+            "other": "Other",
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",
@@ -7368,6 +7376,7 @@
             "setup_adapter_zwa2": "Connect ZWA-2",
             "setup_adapter_zwa2_description": "Adds a Z-Wave radio.",
             "setup_serial_configured": "Configured",
+            "setup_serial_offline": "Offline",
             "setup_serial_port_ttl": "TTL",
             "setup_serial_port_rs232": "RS-232",
             "setup_serial_port_rs485": "RS-485",
@@ -10658,6 +10667,12 @@
               "name": "History graph",
               "description": "This card allows you to display a graph for each of the entities listed.",
               "show_names": "Show entity names",
+              "label_position": "Label position",
+              "label_position_options": {
+                "side": "Beside the graph",
+                "below": "Below each bar"
+              },
+              "label_position_helper": "Applies only to entities shown as bars.",
               "logarithmic_scale": "Logarithmic scale",
               "expand_legend": "Expand legend",
               "min_y_axis": "Y axis minimum",
@@ -12761,6 +12776,7 @@
           },
           "version_installed": "Version {version} installed",
           "version_update": "Version {installed} installed, {version} available",
+          "version_skipped": "Version {installed} installed, {version} skipped",
           "requires_homeassistant": "The newest version needs Home Assistant {version} or newer.",
           "requires_newer_homeassistant": "The newest version needs a newer version of Home Assistant.",
           "earlier_version_hint": "Update Home Assistant, or select an earlier version with Install another version in the menu."
@@ -12781,7 +12797,8 @@
           "pending-upgrade": "Update available",
           "installed": "Installed",
           "new": "New",
-          "default": "Available"
+          "default": "Available",
+          "update_skipped": "Update skipped"
         },
         "menu": {
           "custom_repositories": "Custom repositories",

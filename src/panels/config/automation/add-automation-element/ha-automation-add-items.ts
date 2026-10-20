@@ -316,6 +316,12 @@ export class HaAutomationAddItems extends LitElement {
         white-space: nowrap;
       }
 
+      .selected-target state-badge {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+      }
+
       .selected-target ha-icon,
       .selected-target ha-svg-icon,
       .selected-target ha-domain-icon {
