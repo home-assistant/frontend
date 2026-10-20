@@ -82,7 +82,7 @@ export default [
       },
       {
         header: "Layout",
-        pages: ["hac-card"],
+        pages: ["hac-card", "hac-button"],
       },
       {
         header: "Labels and text",

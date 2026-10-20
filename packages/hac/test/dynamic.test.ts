@@ -1,3 +1,4 @@
+import { LitElement } from "lit";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { HAC_PROVIDER_KEY, provideComponents } from "../src/provider";
 import { createDynamicLoader } from "../src/utils/dynamic";
@@ -5,10 +6,10 @@ import { createDynamicLoader } from "../src/utils/dynamic";
 // `dynamic` entry points pick between the host's copy of a component and the
 // bundled one. These cases cover the decision, including a host that
 // publishes its components only after the consumer asked for them.
-class Bundled extends HTMLElement {
+class Bundled extends LitElement {
   static readonly version = "1.2.0";
 }
-class Provided extends HTMLElement {}
+class Provided extends LitElement {}
 
 const global = globalThis as Record<symbol, unknown>;
 

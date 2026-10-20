@@ -1,5 +1,6 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
+import { HacButtonClose } from "../button/hac-button-close";
 import { VERSION } from "./version";
 
 /**
@@ -17,6 +18,8 @@ import { VERSION } from "./version";
  * @slot subtitle - Secondary text displayed below the title.
  * @slot actions - Actions displayed at the end of the header.
  *
+ * @fires hac-close - The close button was clicked, see `showClose`.
+ *
  * @cssprop --hac-header-color - Title color.
  * @cssprop --hac-header-secondary-color - Color of the icon and subtitle.
  * @cssprop --hac-header-font-family - Title font family.
@@ -27,8 +30,17 @@ export class HacHeader extends LitElement {
   /** Version of the component, read by `dynamic` loaders at runtime. */
   static readonly version = VERSION;
 
+  static readonly dependencies = { "hac-button-close": HacButtonClose };
+
   /** Heading level of the title for assistive technology. */
   @property({ type: Number }) public level: 1 | 2 | 3 | 4 | 5 | 6 = 2;
+
+  /** Shows a close button at the end, which fires `hac-close`. */
+  @property({ type: Boolean, reflect: true, attribute: "show-close" })
+  public showClose = false;
+
+  /** Accessible label of the close button, "Close" by default. */
+  @property({ attribute: "close-label" }) public closeLabel?: string;
 
   @state() private _hasIcon = false;
 
@@ -52,7 +64,21 @@ export class HacHeader extends LitElement {
       <div class="actions" ?hidden=${!this._hasActions}>
         <slot name="actions" @slotchange=${this._actionsChanged}></slot>
       </div>
+      ${
+        this.showClose
+          ? html`<hac-button-close
+              .label=${this.closeLabel}
+              @click=${this._close}
+            ></hac-button-close>`
+          : nothing
+      }
     `;
+  }
+
+  private _close() {
+    this.dispatchEvent(
+      new CustomEvent("hac-close", { bubbles: true, composed: true })
+    );
   }
 
   private _iconChanged(ev: Event) {
@@ -123,6 +149,11 @@ export class HacHeader extends LitElement {
       align-items: center;
       gap: var(--ha-space-2, 8px);
     }
+
+    hac-button-close {
+      flex: none;
+      margin-inline-end: calc(var(--ha-space-2, 8px) * -1);
+    }
   `;
 }
 
@@ -132,5 +163,9 @@ const _hasAssignedElements = (ev: Event) =>
 declare global {
   interface HTMLElementTagNameMap {
     "hac-header": HacHeader;
+  }
+
+  interface HTMLElementEventMap {
+    "hac-close": CustomEvent<undefined>;
   }
 }

@@ -163,5 +163,5 @@
     }
   },
   // Exclude e2e tests — they have their own tsconfig that adds node types.
-  "exclude": ["test/e2e"]
+  "exclude": ["test/e2e", "packages/*/dist"]
 }

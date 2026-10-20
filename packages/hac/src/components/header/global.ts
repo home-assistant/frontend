@@ -1,7 +1,8 @@
-import { define } from "../../utils/define";
+import { defineGlobal } from "../../utils/dependencies";
 import { HacHeader } from "./hac-header";
 
-// Registers <hac-header> in the global registry, as used by Home Assistant
-define("hac-header", HacHeader);
+// Registers <hac-header> and its dependencies in the global registry, as used by
+// Home Assistant
+defineGlobal("hac-header", HacHeader);
 
 export { HacHeader };

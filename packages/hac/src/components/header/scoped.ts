@@ -1,3 +1,4 @@
+import { scopedVariant } from "../../utils/dependencies";
 import { HacHeader } from "./hac-header";
 
 export { HacHeader };
@@ -7,4 +8,4 @@ export { HacHeader };
  * `ScopedElementsMixin(LitElement, { ...hacHeaderElements })` or
  * `createScopedElementRegistry({ ...hacHeaderElements })`.
  */
-export const hacHeaderElements = { "hac-header": HacHeader };
+export const hacHeaderElements = { "hac-header": scopedVariant(HacHeader) };

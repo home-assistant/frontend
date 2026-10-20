@@ -1,3 +1,4 @@
+import { scopedVariant } from "../../utils/dependencies";
 import { HacCard } from "./hac-card";
 
 export { HacCard };
@@ -7,4 +8,4 @@ export { HacCard };
  * `ScopedElementsMixin(LitElement, { ...hacCardElements })` or
  * `createScopedElementRegistry({ ...hacCardElements })`.
  */
-export const hacCardElements = { "hac-card": HacCard };
+export const hacCardElements = { "hac-card": scopedVariant(HacCard) };

@@ -109,21 +109,47 @@ own `--hac-*` custom properties, documented in its source.
 ## Structure
 
 ```
-src/components/<name>/
-  hac-<name>.ts   component class, does not register itself
-  version.ts      version of the component, also exposed as `static version`
-  global.ts       registers globally                 -> @home-assistant/hac/<name>
-  scoped.ts       elements for a scoped registry     -> @home-assistant/hac/<name>/scoped
-  dynamic.ts      host's or bundled copy, scoped     -> @home-assistant/hac/<name>/dynamic
-  CHANGELOG.md    changes, by component version
+src/components/<group>/
+  hac-<name>.ts   component classes, do not register themselves
+  version.ts      version of the group, also exposed as `static version`
+  global.ts       registers globally                 -> @home-assistant/hac/<group>
+  scoped.ts       elements for a scoped registry     -> @home-assistant/hac/<group>/scoped
+  dynamic.ts      host's or bundled copy, scoped     -> @home-assistant/hac/<group>/dynamic
+  CHANGELOG.md    changes, by group version
 ```
 
+A group holds one or more related components that share a version, like
+`button` with `hac-button` and `hac-button-close`.
+
 Bump `version.ts` and add a `CHANGELOG.md` entry with every change to a
-component. A breaking change needs a new major version (minor in `0.x`), or
+group. A breaking change needs a new major version (minor in `0.x`), or
 custom cards using `dynamic` would receive an incompatible copy.
 
+### Dependencies
+
+A component that renders other hac components in its shadow root lists them
+in `static dependencies`, by tag name, and imports only their classes:
+
+```ts
+export class HacHeader extends LitElement {
+  static readonly dependencies = { "hac-button-close": HacButtonClose };
+}
+```
+
+Never register a dependency yourself. The entry point decides where it goes:
+
+- `global` registers dependencies globally, like the component. Inside Home
+  Assistant everything stays in the global registry.
+- `scoped` and `dynamic` (when the bundled copy is used) register a variant of
+  the component whose shadow root has its own registry with the bundled
+  dependencies. Its internals never pick up another copy from the page.
+
+With `dynamic`, a component and its dependencies always come from the same
+place: Home Assistant's header uses Home Assistant's close button, the
+bundled header the bundled one.
+
 Entry points are mapped with subpath patterns in `package.json`, so a new
-component directory needs no `package.json` change. Only `global.ts` files and
+group directory needs no `package.json` change. Only `global.ts` files and
 `all.ts` have side effects, which `sideEffects` relies on for tree shaking.
 
 ## Development
