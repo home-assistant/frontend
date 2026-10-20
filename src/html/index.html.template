@@ -145,7 +145,7 @@
     <%= renderTemplate("_preload_roboto.html.template") %>
     <script>
       // Slot for the hac components this app provides (see
-      // packages/hac/src/provider.ts). Created before any module loads, so
+      // packages/components/src/provider.ts). Created before any module loads, so
       // extra modules that load in parallel can wait for the app to fill it.
       if (typeof Symbol !== "undefined" && typeof Promise !== "undefined") {
         (function () {
@@ -153,7 +153,7 @@
           var components = new Promise(function (res) {
             resolve = res;
           });
-          window[Symbol.for("@home-assistant/hac/provider")] = {
+          window[Symbol.for("@home-assistant/components/provider")] = {
             components: components,
             resolve: resolve,
           };

@@ -1,12 +1,12 @@
 {
-  "name": "@home-assistant/hac",
+  "name": "@home-assistant/components",
   "version": "0.0.0",
-  "description": "Home Assistant Components: framework-agnostic web components built with Lit",
+  "description": "Home Assistant web components (hac-* elements) built with Lit",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/home-assistant/frontend.git",
-    "directory": "packages/hac"
+    "directory": "packages/components"
   },
   "type": "module",
   "sideEffects": [
@@ -17,38 +17,38 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "hac-source": "./src/index.ts",
+      "ha-source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
     "./scoped": {
-      "hac-source": "./src/scoped.ts",
+      "ha-source": "./src/scoped.ts",
       "types": "./dist/scoped.d.ts",
       "import": "./dist/scoped.js"
     },
     "./provider": {
-      "hac-source": "./src/provider.ts",
+      "ha-source": "./src/provider.ts",
       "types": "./dist/provider.d.ts",
       "import": "./dist/provider.js"
     },
     "./package.json": "./package.json",
     "./*/scoped": {
-      "hac-source": "./src/components/*/scoped.ts",
+      "ha-source": "./src/components/*/scoped.ts",
       "types": "./dist/components/*/scoped.d.ts",
       "import": "./dist/components/*/scoped.js"
     },
     "./*/dynamic": {
-      "hac-source": "./src/components/*/dynamic.ts",
+      "ha-source": "./src/components/*/dynamic.ts",
       "types": "./dist/components/*/dynamic.d.ts",
       "import": "./dist/components/*/dynamic.js"
     },
     "./*/version": {
-      "hac-source": "./src/components/*/version.ts",
+      "ha-source": "./src/components/*/version.ts",
       "types": "./dist/components/*/version.d.ts",
       "import": "./dist/components/*/version.js"
     },
     "./*": {
-      "hac-source": "./src/components/*/global.ts",
+      "ha-source": "./src/components/*/global.ts",
       "types": "./dist/components/*/global.d.ts",
       "import": "./dist/components/*/global.js"
     }

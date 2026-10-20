@@ -13,7 +13,7 @@ const CLOSE_ICON =
  * text when the page is not in English.
  *
  * Importing this module does not register the element. Use
- * `@home-assistant/hac/button/close` to register `<hac-button-close>`
+ * `@home-assistant/components/button/close` to register `<hac-button-close>`
  * globally, or the `scoped` and `dynamic` entry points next to it.
  *
  * @csspart base - The native button.

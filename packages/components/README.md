@@ -1,4 +1,4 @@
-# @home-assistant/hac
+# @home-assistant/components
 
 Home Assistant Components (`hac-*`): framework-agnostic web components built
 with [Lit](https://lit.dev).
@@ -9,11 +9,11 @@ with [Lit](https://lit.dev).
 
 Every element is imported on its own, in one of three ways:
 
-| Import                                  | Registers in         | Uses                                               |
-| --------------------------------------- | -------------------- | -------------------------------------------------- |
-| `@home-assistant/hac/<element>`         | Global registry      | The bundled copy. Used by Home Assistant itself.   |
-| `@home-assistant/hac/<element>/scoped`  | Your scoped registry | The bundled copy, isolated from other copies.      |
-| `@home-assistant/hac/<element>/dynamic` | Your scoped registry | Home Assistant's copy if compatible, else bundled. |
+| Import                                         | Registers in         | Uses                                               |
+| ---------------------------------------------- | -------------------- | -------------------------------------------------- |
+| `@home-assistant/components/<element>`         | Global registry      | The bundled copy. Used by Home Assistant itself.   |
+| `@home-assistant/components/<element>/scoped`  | Your scoped registry | The bundled copy, isolated from other copies.      |
+| `@home-assistant/components/<element>/dynamic` | Your scoped registry | Home Assistant's copy if compatible, else bundled. |
 
 `<element>` is the group, like `button` for `hac-button`, or the group and a
 variant, like `button/close` for `hac-button-close`.
@@ -24,8 +24,8 @@ registration wins and nothing throws.
 ### Global
 
 ```ts
-import "@home-assistant/hac/button";
-import "@home-assistant/hac/button/close";
+import "@home-assistant/components/button";
+import "@home-assistant/components/button/close";
 ```
 
 ### Scoped and dynamic
@@ -39,8 +39,8 @@ Lit:
 
 ```ts
 import { LitElement, html } from "lit";
-import { ScopedElementsMixin } from "@home-assistant/hac/scoped";
-import { hacCardElements } from "@home-assistant/hac/card/dynamic";
+import { ScopedElementsMixin } from "@home-assistant/components/scoped";
+import { hacCardElements } from "@home-assistant/components/card/dynamic";
 
 class MyCard extends ScopedElementsMixin(LitElement, { ...hacCardElements }) {
   render() {
@@ -56,8 +56,8 @@ import {
   attachScopedShadow,
   createScopedElement,
   createScopedElementRegistry,
-} from "@home-assistant/hac/scoped";
-import { hacCardElements } from "@home-assistant/hac/card/dynamic";
+} from "@home-assistant/components/scoped";
+import { hacCardElements } from "@home-assistant/components/card/dynamic";
 
 // Once per module, shared by all instances
 const registry = createScopedElementRegistry({ ...hacCardElements });
@@ -95,7 +95,7 @@ written in.
 ## Providing components (host apps)
 
 A host app such as Home Assistant publishes the components it can share with
-`provideComponents()` from `@home-assistant/hac/provider`. It publishes only
+`provideComponents()` from `@home-assistant/components/provider`. It publishes only
 versions and loaders, so nothing loads until a consumer asks.
 
 Code that loads in parallel with the host, like Home Assistant's extra
@@ -117,14 +117,14 @@ element, and variants live in subdirectories, so the directories mirror the
 import paths:
 
 ```
-src/components/button/         <hac-button>        -> @home-assistant/hac/button
+src/components/button/         <hac-button>        -> @home-assistant/components/button
   hac-button.ts                class, does not register itself
   version.ts                   version, also exposed as `static version`
   global.ts                    registers globally
   scoped.ts                    elements for a scoped registry  -> …/scoped
   dynamic.ts                   host's or bundled copy, scoped  -> …/dynamic
   CHANGELOG.md                 changes, by version
-  close/                       <hac-button-close>  -> @home-assistant/hac/button/close
+  close/                       <hac-button-close>  -> @home-assistant/components/button/close
     hac-button-close.ts
     version.ts, global.ts, scoped.ts, dynamic.ts, CHANGELOG.md
 ```
@@ -167,11 +167,11 @@ side effects, which `sideEffects` relies on for tree shaking.
 ## Development
 
 ```bash
-pnpm --filter @home-assistant/hac build   # ESM + type declarations to dist/
-pnpm --filter @home-assistant/hac dev     # rebuild on change
+pnpm --filter @home-assistant/components build   # ESM + type declarations to dist/
+pnpm --filter @home-assistant/components dev     # rebuild on change
 ```
 
 Inside this repository the app uses the sources directly through
-the `hac-source` export condition, so no build is needed during development.
+the `ha-source` export condition, so no build is needed during development.
 The package is built with [Rslib](https://rslib.rs) in bundleless mode: every
 source file becomes its own ES module.

@@ -37,7 +37,7 @@ export const createScopedElementRegistry = (
 ): CustomElementRegistry => {
   if (typeof elements !== "object" || elements === null) {
     throw new TypeError(
-      "hac: pass the elements to register, e.g. { ...hacCardElements }"
+      "@home-assistant/components: pass the elements to register, e.g. { ...hacCardElements }"
     );
   }
   const registry = createScopedRegistry() ?? customElements;
