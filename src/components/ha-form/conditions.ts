@@ -1,3 +1,4 @@
+import { deepEqual } from "../../common/util/deep-equal";
 import type {
   HaFormBaseSchema,
   HaFormCondition,
@@ -9,6 +10,11 @@ import type {
 const isEmpty = (value: unknown): boolean =>
   value === undefined || value === null || value === "";
 
+// Same result as the backend, which compares with Python equality: a missing
+// value equals null, and lists compare by content.
+const isEqual = (a: unknown, b: unknown): boolean =>
+  (a ?? null) === (b ?? null) || deepEqual(a, b);
+
 const matchFieldCondition = (
   condition: HaFormFieldCondition,
   data: HaFormDataContainer | undefined
@@ -16,18 +22,18 @@ const matchFieldCondition = (
   const actual = data?.[condition.field];
   switch (condition.operator ?? "eq") {
     case "eq":
-      return actual === condition.value;
+      return isEqual(actual, condition.value);
     case "not_eq":
-      return actual !== condition.value;
+      return !isEqual(actual, condition.value);
     case "in":
       return (
         Array.isArray(condition.value) &&
-        condition.value.includes(actual as any)
+        condition.value.some((item) => isEqual(actual, item))
       );
     case "not_in":
       return (
         Array.isArray(condition.value) &&
-        !condition.value.includes(actual as any)
+        !condition.value.some((item) => isEqual(actual, item))
       );
     case "exists":
       return !isEmpty(actual);

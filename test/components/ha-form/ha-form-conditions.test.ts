@@ -64,6 +64,24 @@ describe("isFieldVisible", () => {
       expect(isFieldVisible(schema, { a: null } as any)).toBe(true);
       expect(isFieldVisible(schema, { a: "x" })).toBe(false);
     });
+
+    it("treats a missing value as null", () => {
+      const schema = field({ field: "a" });
+      expect(isFieldVisible(schema, {})).toBe(true);
+      expect(isFieldVisible(schema, { a: null } as any)).toBe(true);
+      expect(isFieldVisible(schema, { a: "x" })).toBe(false);
+    });
+
+    it("compares lists by content", () => {
+      expect(
+        isFieldVisible(field({ field: "a", value: ["x"] }), { a: ["x"] })
+      ).toBe(true);
+      expect(
+        isFieldVisible(field({ field: "a", operator: "in", value: [["x"]] }), {
+          a: ["x"],
+        })
+      ).toBe(true);
+    });
   });
 
   describe("combinators", () => {
