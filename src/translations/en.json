@@ -856,6 +856,10 @@
         "entity-state-content-picker": {
           "add": "Add",
           "custom_attribute": "Custom attribute"
+        },
+        "entity-toggle": {
+          "turn_on": "Turn {name} on",
+          "turn_off": "Turn {name} off"
         }
       },
       "target-picker": {

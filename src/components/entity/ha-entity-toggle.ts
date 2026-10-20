@@ -7,7 +7,11 @@ import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../common/decorators/consume";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { apiContext, formattersContext } from "../../data/context";
+import {
+  apiContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
 import "../ha-icon-button";
@@ -37,6 +41,10 @@ export class HaEntityToggle extends LitElement {
   @consume({ context: formattersContext, subscribe: true })
   private _formatters?: ContextType<typeof formattersContext>;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
+
   @property({ attribute: false }) public stateObj?: HassEntity;
 
   @property() public label?: string;
@@ -49,6 +57,14 @@ export class HaEntityToggle extends LitElement {
     }
 
     const name = this._formatters?.formatEntityName(this.stateObj) ?? "";
+    const turnOnLabel = this._i18n?.localize(
+      "ui.components.entity.entity-toggle.turn_on",
+      { name }
+    );
+    const turnOffLabel = this._i18n?.localize(
+      "ui.components.entity.entity-toggle.turn_off",
+      { name }
+    );
 
     if (
       this.stateObj.attributes.assumed_state ||
@@ -56,7 +72,7 @@ export class HaEntityToggle extends LitElement {
     ) {
       return html`
         <ha-icon-button
-          .label=${`Turn ${name} off`}
+          .label=${turnOffLabel}
           .path=${mdiFlashOff}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOff}
@@ -65,7 +81,7 @@ export class HaEntityToggle extends LitElement {
           }
         ></ha-icon-button>
         <ha-icon-button
-          .label=${`Turn ${name} on`}
+          .label=${turnOnLabel}
           .path=${mdiFlash}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOn}
@@ -75,7 +91,7 @@ export class HaEntityToggle extends LitElement {
     }
 
     return html`<ha-switch
-      accessible-label=${name}
+      accessible-label=${(this._isOn ? turnOffLabel : turnOnLabel) ?? name}
       .checked=${this._isOn}
       .disabled=${this.stateObj.state === UNAVAILABLE}
       @change=${this._toggleChanged}
