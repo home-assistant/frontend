@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
+import { hasAssignedContent, hasAssignedElements } from "../../utils/slot";
 
 /**
  * Container that groups related content.
@@ -44,21 +45,15 @@ export class HacCard extends LitElement {
   }
 
   private _headerChanged(ev: Event) {
-    this._hasHeader = _hasAssignedElements(ev);
+    this._hasHeader = hasAssignedElements(ev);
   }
 
   private _contentChanged(ev: Event) {
-    // Whitespace between tags is not content
-    this._hasContent = (ev.target as HTMLSlotElement)
-      .assignedNodes()
-      .some(
-        (node) =>
-          node.nodeType === Node.ELEMENT_NODE || node.textContent?.trim()
-      );
+    this._hasContent = hasAssignedContent(ev);
   }
 
   private _footerChanged(ev: Event) {
-    this._hasFooter = _hasAssignedElements(ev);
+    this._hasFooter = hasAssignedElements(ev);
   }
 
   static styles = css`
@@ -115,9 +110,6 @@ export class HacCard extends LitElement {
     }
   `;
 }
-
-const _hasAssignedElements = (ev: Event) =>
-  (ev.target as HTMLSlotElement).assignedElements().length > 0;
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators.js";
+import { hasAssignedElements } from "../../utils/slot";
 import { HacButtonClose } from "../button/close/hac-button-close";
 
 /**
@@ -74,15 +75,15 @@ export class HacHeader extends LitElement {
   }
 
   private _iconChanged(ev: Event) {
-    this._hasIcon = _hasAssignedElements(ev);
+    this._hasIcon = hasAssignedElements(ev);
   }
 
   private _subtitleChanged(ev: Event) {
-    this._hasSubtitle = _hasAssignedElements(ev);
+    this._hasSubtitle = hasAssignedElements(ev);
   }
 
   private _actionsChanged(ev: Event) {
-    this._hasActions = _hasAssignedElements(ev);
+    this._hasActions = hasAssignedElements(ev);
   }
 
   static styles = css`
@@ -148,9 +149,6 @@ export class HacHeader extends LitElement {
     }
   `;
 }
-
-const _hasAssignedElements = (ev: Event) =>
-  (ev.target as HTMLSlotElement).assignedElements().length > 0;
 
 declare global {
   interface HTMLElementTagNameMap {
