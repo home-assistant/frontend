@@ -17,6 +17,7 @@ import type {
   EMIncomingMessageCommands,
   ImprovDiscoveredDevice,
   MatterCommissionFinish,
+  WebRtcStreamStopped,
 } from "./external_messaging";
 
 const barCodeListeners = new Set<
@@ -120,7 +121,7 @@ declare global {
     "improv-discovered-device": ImprovDiscoveredDevice;
     "improv-device-setup-done": undefined;
     "matter-commission-finish": MatterCommissionFinish;
-    "webrtc-stream-stopped": { session_id: string };
+    "webrtc-stream-stopped": WebRtcStreamStopped;
   }
 
   interface GlobalEventHandlersEventMap {

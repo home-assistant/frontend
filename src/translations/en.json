@@ -2032,8 +2032,16 @@
           "microphone_not_secure": "[%key:ui::components::secure_connection_required::microphone%]",
           "microphone_webrtc_only": "Talking to this camera is only possible when the stream uses WebRTC.",
           "microphone_denied": "Microphone access was denied. Allow it in your browser settings to talk to this camera.",
-          "microphone_app_failed": "Could not start talking to the camera: {message}",
-          "microphone_app_stopped": "Talking to the camera stopped unexpectedly."
+          "app_microphone_error": {
+            "microphone_denied": "Microphone access is needed to talk to the camera. You can allow it in your device settings.",
+            "server_unavailable": "Unable to connect to Home Assistant.",
+            "signaling_failed": "The camera could not start the microphone stream.",
+            "connection_failed": "Unable to connect the microphone to the camera.",
+            "timeout": "The camera took too long to respond.",
+            "interrupted": "The microphone stream was stopped.",
+            "unsupported_stream_type": "This version of the Home Assistant app doesn't support talking to cameras. Update the app and try again.",
+            "unknown": "Home Assistant app error: {message}"
+          }
         },
         "timer": {
           "edit_mode": "Edit presets",
