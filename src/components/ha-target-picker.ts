@@ -761,13 +761,16 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     });
   }
 
+  // What the exclude picker hides along with its children: what is already
+  // excluded, and what is included except devices, whose child devices can
+  // still be excluded on their own (see `_excludePickerIncludedDevices`).
   private _excludePickerHidden = memoizeOne(
     (value?: HassServiceTargetWithExclude): HassServiceTarget => {
       const hidden: HassServiceTarget = {};
       TARGET_TYPES.forEach((type) => {
         const key = `${type}_id` as const;
         const ids = [
-          ...(key === "floor_id" || !value?.[key]
+          ...(key === "floor_id" || key === "device_id" || !value?.[key]
             ? []
             : ensureArray(value[key])),
           ...(value?.exclude?.[key] ? ensureArray(value.exclude[key]) : []),
@@ -778,6 +781,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       });
       return hidden;
     }
+  );
+
+  private _excludePickerIncludedDevices = memoizeOne(
+    (value?: HassServiceTargetWithExclude): string[] | undefined =>
+      value?.device_id ? ensureArray(value.device_id) : undefined
   );
 
   // Only offers what overlaps with what the target includes.
@@ -810,7 +818,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       searchString,
       this._configEntryLookup,
       this.hass.entities,
-      this._excludeSection
+      this._excludeSection,
+      this._excludePickerIncludedDevices(this.value)
     );
   };
 
@@ -1038,7 +1047,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       searchTerm: string,
       configEntryLookup: Record<string, ConfigEntry>,
       _entities: HomeAssistant["entities"],
-      filterType?: TargetTypeFloorless
+      filterType?: TargetTypeFloorless,
+      // Hidden without hiding their child devices.
+      hiddenDeviceIds?: string[]
     ) => {
       const replacingEntityId =
         replaceTarget?.type === "entity" ? replaceTarget.id : undefined;
@@ -1105,18 +1116,22 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         // A selected parent device already targets its children, so exclude
         // those children from the picker too (mirrors selecting a floor
         // removing its areas from the list).
-        const excludeDeviceIds = selectedDeviceIds
-          ? [
-              ...selectedDeviceIds,
-              ...Object.values(this.hass.devices)
-                .filter(
-                  (device) =>
-                    device.parent_device_id !== null &&
-                    selectedDeviceIds.includes(device.parent_device_id)
-                )
-                .map((device) => device.id),
-            ]
-          : undefined;
+        const excludeDeviceIds =
+          selectedDeviceIds || hiddenDeviceIds
+            ? [
+                ...(hiddenDeviceIds ?? []),
+                ...(selectedDeviceIds ?? []),
+                ...(selectedDeviceIds
+                  ? Object.values(this.hass.devices)
+                      .filter(
+                        (device) =>
+                          device.parent_device_id !== null &&
+                          selectedDeviceIds.includes(device.parent_device_id)
+                      )
+                      .map((device) => device.id)
+                  : []),
+              ]
+            : undefined;
         let deviceItems = this._getDevicesMemoized(
           this.hass,
           configEntryLookup,
