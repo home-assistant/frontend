@@ -159,6 +159,16 @@ export interface EntityRow extends StateEntity {
   available: string;
 }
 
+// Local variant of data/expose/getExposedEntityVoiceAssistantIds, which works
+// for entities both with and without a unique ID
+const getVoiceAssistantIds = (
+  exposedEntities: Record<string, ExposeEntitySettings> | undefined,
+  entityId: string
+) =>
+  Object.keys(voiceAssistants).filter(
+    (vaId) => exposedEntities?.[entityId]?.[vaId]
+  );
+
 @customElement("ha-config-entities")
 export class HaConfigEntities extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -494,6 +504,7 @@ export class HaConfigEntities extends LitElement {
       entitiesWithoutUniqueId: StateEntity[],
       filters: DataTableFiltersValues,
       filteredItems: DataTableFiltersItems,
+      exposedEntities?: Record<string, ExposeEntitySettings>,
       entries?: ConfigEntry[],
       labelReg?: LabelRegistryEntry[]
     ) => {
@@ -633,8 +644,8 @@ export class HaConfigEntities extends LitElement {
           filter.length
         ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            this._getExposedEntityVoiceAssistantIds(entity.entity_id).some(
-              (va) => (filter as string[]).includes(va)
+            getVoiceAssistantIds(exposedEntities, entity.entity_id).some((va) =>
+              (filter as string[]).includes(va)
             )
           );
         }
@@ -690,7 +701,9 @@ export class HaConfigEntities extends LitElement {
             ? `${deviceName} (${areaName})`
             : deviceName
           : undefined;
-        const assistants = this._getExposedEntityVoiceAssistantIds(
+
+        const assistants = getVoiceAssistantIds(
+          exposedEntities,
           entry.entity_id
         );
 
@@ -794,6 +807,7 @@ export class HaConfigEntities extends LitElement {
         this._entitiesWithoutUniqueId,
         this._filters,
         this._filteredItems,
+        this._exposedEntities,
         this._entries,
         this._labels
       );
@@ -1122,14 +1136,6 @@ export class HaConfigEntities extends LitElement {
       this._exposedEntities = {};
     }
   };
-
-  // local variant of data/expose/getExposedEntityVoiceAssistantIds
-  // which works for both entities with and without unique id
-  private _getExposedEntityVoiceAssistantIds(entityId: string) {
-    return Object.keys(voiceAssistants).filter(
-      (vaId) => this._exposedEntities?.[entityId]?.[vaId]
-    );
-  }
 
   private _getExposedEntitySettingsAsOptions(
     entityId: string
@@ -1526,6 +1532,7 @@ ${rejected
         this._entitiesWithoutUniqueId,
         this._filters,
         this._filteredItems,
+        this._exposedEntities,
         this._entries,
         this._labels
       );
