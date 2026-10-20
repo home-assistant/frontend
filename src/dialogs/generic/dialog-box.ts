@@ -176,7 +176,6 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
               ? html`
                   <ha-button
                     slot="secondaryAction"
-                    variant="neutral"
                     @click=${this._dismiss}
                     ?autofocus=${!this._params.prompt && this._params.destructive}
                     ?disabled=${this._loading}
