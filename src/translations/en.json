@@ -10213,6 +10213,8 @@
             "delete": "Delete",
             "copy": "Copy",
             "cut": "Cut",
+            "copied_to_clipboard": "Card copied to clipboard",
+            "cut_to_clipboard": "Card cut to clipboard",
             "duplicate": "Duplicate",
             "move": "Move to view",
             "move_before": "Move card before",
