@@ -13,14 +13,7 @@
     "./dist/components/**/global.js",
     "./src/components/**/global.ts"
   ],
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
-    ".": {
-      "ha-source": "./src/index.ts",
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
     "./scoped": {
       "ha-source": "./src/scoped.ts",
       "types": "./dist/scoped.d.ts",
