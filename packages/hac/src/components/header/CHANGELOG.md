@@ -4,4 +4,4 @@
 
 - Initial version.
 - `show-close` option with a close button that fires `hac-close`. Depends on
-  the button group.
+  `hac-button-close`.

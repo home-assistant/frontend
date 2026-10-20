@@ -59,14 +59,14 @@ const CONFIG_FILES = [
 // Resolve @home-assistant/hac entry points to their sources, so the package
 // needs no build step during development. The entry points are read from the
 // "hac-source" export condition of the package; subpath patterns are expanded
-// for every component directory.
+// for every element, i.e. every directory with a global.ts, like "button" and
+// "button/close".
 const HAC_DIR = path.join(paths.root_dir, "packages", "hac");
+const HAC_COMPONENTS_DIR = path.join(HAC_DIR, "src", "components");
 const hacComponents = fs
-  .readdirSync(path.join(HAC_DIR, "src", "components"), {
-    withFileTypes: true,
-  })
-  .filter((entry) => entry.isDirectory())
-  .map((entry) => entry.name);
+  .readdirSync(HAC_COMPONENTS_DIR, { recursive: true })
+  .filter((file) => path.basename(file) === "global.ts")
+  .map((file) => path.dirname(file).split(path.sep).join("/"));
 const hacSourceAliases = Object.fromEntries(
   Object.entries(require("../packages/hac/package.json").exports)
     .filter(([, target]) => target["hac-source"])

@@ -1,3 +1,4 @@
+import { VERSION as BUTTON_CLOSE_VERSION } from "@home-assistant/hac/button/close/version";
 import { VERSION as BUTTON_VERSION } from "@home-assistant/hac/button/version";
 import { VERSION as CARD_VERSION } from "@home-assistant/hac/card/version";
 import { VERSION as HEADER_VERSION } from "@home-assistant/hac/header/version";
@@ -12,9 +13,9 @@ provideComponents({
     load: () => import("@home-assistant/hac/button").then((m) => m.HacButton),
   },
   "hac-button-close": {
-    version: BUTTON_VERSION,
+    version: BUTTON_CLOSE_VERSION,
     load: () =>
-      import("@home-assistant/hac/button").then((m) => m.HacButtonClose),
+      import("@home-assistant/hac/button/close").then((m) => m.HacButtonClose),
   },
   "hac-card": {
     version: CARD_VERSION,
