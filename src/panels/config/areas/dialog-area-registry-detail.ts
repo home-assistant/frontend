@@ -50,6 +50,7 @@ import type { AreaRegistryDetailDialogParams } from "./show-dialog-area-registry
 
 const cropOptions: CropOptions = {
   round: false,
+  aspectRatio: 16 / 9,
 };
 
 const SENSOR_DOMAINS = ["sensor"];
