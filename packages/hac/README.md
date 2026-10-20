@@ -26,23 +26,51 @@ import "@home-assistant/hac/card";
 
 ### Scoped and dynamic
 
-Use `ScopedElementsMixin` and spread the component's elements into
-`scopedElements`. Switching between `scoped` and `dynamic` only changes the
-import path:
+Pass the component's elements to `ScopedElementsMixin` for Lit, or to
+`createScopedElementRegistry` for plain custom elements. Switching between
+`scoped` and `dynamic` only changes the import path. Forgetting the elements
+is a TypeScript error, and a runtime error in plain JavaScript.
+
+Lit:
 
 ```ts
 import { LitElement, html } from "lit";
 import { ScopedElementsMixin } from "@home-assistant/hac/scoped";
 import { hacCardElements } from "@home-assistant/hac/card/dynamic";
 
-class MyCard extends ScopedElementsMixin(LitElement) {
-  static scopedElements = { ...hacCardElements };
-
+class MyCard extends ScopedElementsMixin(LitElement, { ...hacCardElements }) {
   render() {
     return html`<hac-card>…</hac-card>`;
   }
 }
 ```
+
+Plain custom elements:
+
+```js
+import {
+  attachScopedShadow,
+  createScopedElement,
+  createScopedElementRegistry,
+} from "@home-assistant/hac/scoped";
+import { hacCardElements } from "@home-assistant/hac/card/dynamic";
+
+// Once per module, shared by all instances
+const registry = createScopedElementRegistry({ ...hacCardElements });
+
+class MyCard extends HTMLElement {
+  constructor() {
+    super();
+    const root = attachScopedShadow(this, { mode: "open" }, registry);
+    root.innerHTML = "<hac-card>…</hac-card>";
+    // or: root.append(createScopedElement(root, "hac-card"));
+  }
+}
+```
+
+`innerHTML`, `insertAdjacentHTML` and `createScopedElement` use the scoped
+registry. `document.createElement` uses the global one, so avoid it for
+scoped elements.
 
 With `dynamic`, the element renders right away and upgrades once the class is
 known. Home Assistant's copy is used when its version is compatible with the

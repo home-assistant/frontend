@@ -4,6 +4,7 @@ export { HacCard };
 
 /**
  * Registers the bundled <hac-card> in a scoped registry:
- * `static scopedElements = { ...hacCardElements }` with `ScopedElementsMixin`.
+ * `ScopedElementsMixin(LitElement, { ...hacCardElements })` or
+ * `createScopedElementRegistry({ ...hacCardElements })`.
  */
 export const hacCardElements = { "hac-card": HacCard };
