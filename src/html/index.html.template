@@ -143,23 +143,6 @@
     <home-assistant></home-assistant>
     <%= renderTemplate("_js_base.html.template") %>
     <%= renderTemplate("_preload_roboto.html.template") %>
-    <script>
-      // Slot for the hac components this app provides (see
-      // packages/components/src/provider.ts). Created before any module loads, so
-      // extra modules that load in parallel can wait for the app to fill it.
-      if (typeof Symbol !== "undefined" && typeof Promise !== "undefined") {
-        (function () {
-          var resolve;
-          var components = new Promise(function (res) {
-            resolve = res;
-          });
-          window[Symbol.for("@home-assistant/components/provider")] = {
-            components: components,
-            resolve: resolve,
-          };
-        })();
-      }
-    </script>
     <script crossorigin="use-credentials">
       if (isModern) {
         <% for (const entry of latestEntryJS) { %>

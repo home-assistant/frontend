@@ -104,11 +104,8 @@ A host app such as Home Assistant publishes the components it can share with
 `provideComponents()` from `@home-assistant/components/provider`. It publishes only
 versions and loaders, so nothing loads until a consumer asks.
 
-Code that loads in parallel with the host, like Home Assistant's extra
-modules, may ask before the host has published. The host prevents that race by
-creating a pending slot in its HTML before any module loads; see
-`HacProviderSlot` in `src/provider.ts`. Without a slot, `dynamic` uses the
-bundled copy right away.
+The host publishes its list as early as possible. A consumer that asks before
+that, which is rare, uses its bundled copies.
 
 ## Theming
 

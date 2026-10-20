@@ -21,7 +21,7 @@ export const createDynamicLoader = (
   let loaded: Promise<CustomElementConstructor> | undefined;
 
   const load = async (): Promise<CustomElementConstructor> => {
-    const provided = await getProvidedComponent(tagName);
+    const provided = getProvidedComponent(tagName);
     if (provided && isCompatible(provided.version, bundledVersion)) {
       try {
         return await provided.load();
