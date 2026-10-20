@@ -34,11 +34,14 @@ export const registerServiceWorker = async (
 
   if (!notifyUpdate || __DEV__ || __DEMO__) {
     // No update toast here, so reload as soon as the page is clean.
-    window.addEventListener("dirty-state-changed", () => {
+    const reloadWhenClean = () => {
       if (reloadPending && !window.isDirtyState) {
         location.reload();
       }
-    });
+    };
+    window.addEventListener("dirty-state-changed", reloadWhenClean);
+    // The page may have become clean while registering.
+    reloadWhenClean();
     return;
   }
 
@@ -155,5 +158,8 @@ export const registerServiceWorker = async (
 
   if (reg.waiting && navigator.serviceWorker.controller) {
     updateReady(reg.waiting);
+  } else if (reloadPending && !window.isDirtyState) {
+    // The page became clean while registering, before the listener above.
+    startUpdateCountdown();
   }
 };

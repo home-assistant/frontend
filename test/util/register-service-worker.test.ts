@@ -230,6 +230,33 @@ describe("registerServiceWorker", () => {
   });
 
   it.each([
+    { notifyUpdate: true, toast: true },
+    { notifyUpdate: false, toast: false },
+  ])(
+    "handles a page that became clean while registering (notifyUpdate=$notifyUpdate)",
+    async ({ notifyUpdate, toast }) => {
+      const reload = vi.fn();
+      vi.stubGlobal("location", { ...window.location, reload });
+      let resolveRegistration!: (value: FakeRegistration) => void;
+      serviceWorker.register.mockReturnValue(
+        new Promise((resolve) => {
+          resolveRegistration = resolve;
+        })
+      );
+      setDirtyState(true);
+
+      const registered = registerServiceWorker(root, notifyUpdate);
+      serviceWorker.dispatchEvent(new Event("controllerchange"));
+      setDirtyState(false);
+      resolveRegistration(registration);
+      await registered;
+
+      expect(reload).toHaveBeenCalledTimes(toast ? 0 : 1);
+      expect(notifications.length > 0).toBe(toast);
+    }
+  );
+
+  it.each([
     { notifyUpdate: false, dev: false, demo: false },
     { notifyUpdate: true, dev: true, demo: false },
     { notifyUpdate: true, dev: false, demo: true },
