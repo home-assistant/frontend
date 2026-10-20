@@ -13,6 +13,8 @@ export interface Integration {
   is_built_in?: boolean;
   overwrites_built_in?: boolean;
   single_config_entry?: boolean;
+  // Like `energy` or `energy.ev_charging`
+  categories?: string[];
 }
 
 export type Integrations = Record<string, Integration>;
