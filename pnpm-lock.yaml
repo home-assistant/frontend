@@ -490,9 +490,9 @@ importers:
       '@gfx/zopfli':
         specifier: 1.0.15
         version: 1.0.15
-      '@home-assistant/hac':
+      '@home-assistant/components':
         specifier: workspace:*
-        version: link:packages/hac
+        version: link:packages/components
       '@html-eslint/eslint-plugin':
         specifier: 0.67.0
         version: 0.67.0(eslint@10.13.0(supports-color@8.1.1))
@@ -716,7 +716,7 @@ importers:
         specifier: 7.4.1
         version: 7.4.1(patch_hash=75e6346ad8d8af554c167f77ac7d9b9652f010398efdc6b399925a4795133099)(supports-color@8.1.1)
 
-  packages/hac:
+  packages/components:
     devDependencies:
       '@rslib/core':
         specifier: 1.0.3
