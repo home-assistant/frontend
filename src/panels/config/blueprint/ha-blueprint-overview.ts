@@ -303,12 +303,12 @@ class HaBlueprintOverview extends LitElement {
     })
   );
 
-  protected firstUpdated(changedProps: PropertyValues<this>) {
+  protected async firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadUsageCounts();
     if (this.route.path === "/import") {
       const url = extractSearchParam("blueprint_url");
-      navigate("/config/blueprint/dashboard", { replace: true });
+      await navigate("/config/blueprint/dashboard", { replace: true });
       if (url) {
         this._addBlueprint(url);
       }
