@@ -275,8 +275,7 @@ class MoreInfoCamera extends LitElement {
   private _capabilitiesChanged(
     ev: HASSDomEvent<HASSDomEvents["camera-capabilities-changed"]>
   ) {
-    this._supportsTwoWayAudio =
-      ev.detail.capabilities?.supports_two_way_audio ?? false;
+    this._supportsTwoWayAudio = ev.detail.capabilities?.two_way_audio ?? false;
   }
 
   private _microphoneChanged(

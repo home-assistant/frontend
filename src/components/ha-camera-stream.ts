@@ -241,7 +241,7 @@ export class HaCameraStream extends LitElement {
     if (!supportsFeature(this.stateObj!, CameraEntityFeature.STREAM)) {
       this._capabilities = {
         frontend_stream_types: [],
-        supports_two_way_audio: false,
+        two_way_audio: false,
       };
       return;
     }

@@ -204,7 +204,7 @@ export const getEntityIdFromCameraMediaSource = (mediaContentId: string) =>
 
 export interface CameraCapabilities {
   frontend_stream_types: StreamType[];
-  supports_two_way_audio: boolean;
+  two_way_audio: boolean;
 }
 
 export const fetchCameraCapabilities = async (
