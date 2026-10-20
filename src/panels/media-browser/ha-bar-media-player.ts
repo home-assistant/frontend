@@ -277,7 +277,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                           step="1"
                           .withTooltip=${false}
                           size="s"
-                          aria-label=${this.hass.localize(
+                          .accessibleLabel=${this.hass.localize(
                             "ui.card.media_player.track_position"
                           )}
                           ?disabled=${!supportsFeature(
@@ -300,7 +300,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                               step="1"
                               .withTooltip=${false}
                               size="s"
-                              aria-label=${this.hass.localize(
+                              .accessibleLabel=${this.hass.localize(
                                 "ui.card.media_player.track_position"
                               )}
                               ?disabled=${!supportsFeature(
