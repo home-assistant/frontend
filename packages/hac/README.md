@@ -159,7 +159,7 @@ pnpm --filter @home-assistant/hac build   # ESM + type declarations to dist/
 pnpm --filter @home-assistant/hac dev     # rebuild on change
 ```
 
-Inside this repository the app and gallery use the sources directly through
+Inside this repository the app uses the sources directly through
 the `hac-source` export condition, so no build is needed during development.
 The package is built with [Rslib](https://rslib.rs) in bundleless mode: every
 source file becomes its own ES module.
