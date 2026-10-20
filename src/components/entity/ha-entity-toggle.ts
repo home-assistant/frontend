@@ -5,18 +5,16 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import {
-  apiContext,
-  formattersContext,
-  internationalizationContext,
-} from "../../data/context";
+import { apiContext, formattersContext } from "../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import { forwardHaptic } from "../../data/haptics";
 import "../ha-icon-button";
 import "../ha-switch";
 import { getToggleAction } from "../../common/entity/get_toggle_action";
+import type { LocalizeFunc } from "../../common/translations/localize";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
@@ -42,8 +40,8 @@ export class HaEntityToggle extends LitElement {
   private _formatters?: ContextType<typeof formattersContext>;
 
   @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n?: ContextType<typeof internationalizationContext>;
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ attribute: false }) public stateObj?: HassEntity;
 
@@ -57,11 +55,11 @@ export class HaEntityToggle extends LitElement {
     }
 
     const name = this._formatters?.formatEntityName(this.stateObj) ?? "";
-    const turnOnLabel = this._i18n?.localize(
+    const turnOnLabel = this._localize(
       "ui.components.entity.entity-toggle.turn_on",
       { name }
     );
-    const turnOffLabel = this._i18n?.localize(
+    const turnOffLabel = this._localize(
       "ui.components.entity.entity-toggle.turn_off",
       { name }
     );
@@ -91,7 +89,7 @@ export class HaEntityToggle extends LitElement {
     }
 
     return html`<ha-switch
-      accessible-label=${(this._isOn ? turnOffLabel : turnOnLabel) ?? name}
+      accessible-label=${this._isOn ? turnOffLabel : turnOnLabel}
       .checked=${this._isOn}
       .disabled=${this.stateObj.state === UNAVAILABLE}
       @change=${this._toggleChanged}
