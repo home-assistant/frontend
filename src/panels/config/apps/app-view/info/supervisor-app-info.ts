@@ -1574,6 +1574,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
     showLogsDialog(this, {
       provider: "supervisor",
       title: this.i18n.localize("ui.panel.config.logs.supervisor_logs"),
+      filter: this.addon.slug,
     });
   }
 
