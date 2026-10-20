@@ -98,6 +98,21 @@ written in.
 
 `lit` is a peer dependency.
 
+### TypeScript
+
+Each element's entry points declare its tag in `HTMLElementTagNameMap`, so
+`document.querySelector("hac-card")` and templates are typed once the element
+is imported. For the class itself, import its type from the `scoped` entry
+point; `import type` loads nothing at runtime:
+
+```ts
+import type { HacCard } from "@home-assistant/components/card/scoped";
+```
+
+The package has no root entry point: elements, the scoped helpers
+(`@home-assistant/components/scoped`) and the provider
+(`@home-assistant/components/provider`) each have their own.
+
 ## Providing components (host apps)
 
 A host app such as Home Assistant publishes the components it can share with
