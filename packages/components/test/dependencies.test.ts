@@ -10,7 +10,7 @@ import {
 // shares classes with the global registry.
 class Leaf extends LitElement {}
 class Parent extends LitElement {
-  static readonly dependencies = { "hac-test-leaf": Leaf };
+  static readonly dependencies = [{ tagName: "hac-test-leaf", element: Leaf }];
 }
 
 describe("defineGlobal", () => {

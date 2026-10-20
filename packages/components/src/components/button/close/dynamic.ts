@@ -1,23 +1,21 @@
+import type { HacElementDefinition } from "../../../utils/registration/definition";
 import { createDynamicLoader } from "../../../utils/registration/dynamic";
-import { VERSION } from "./version";
+import { TAG_NAME, VERSION } from "./info";
 
 /**
- * The bundled <hac-button-close> from the scoped entry point. Loaded only
- * when Home Assistant cannot provide a compatible copy.
+ * The bundled <hac-button-close> from the scoped entry point. Loaded only when Home
+ * Assistant cannot provide a compatible copy.
  */
 const loadScoped = async () =>
-  (await import("./scoped")).hacButtonCloseElements["hac-button-close"];
+  (await import("./scoped")).hacButtonClose.element;
 
 /**
- * Registers <hac-button-close> in a scoped registry, using Home Assistant's
- * copy when its version is compatible and the bundled one otherwise:
- * `ScopedElementsMixin(LitElement, { ...hacButtonCloseElements })` or
- * `createScopedElementRegistry({ ...hacButtonCloseElements })`.
+ * <hac-button-close> for a scoped registry, using Home Assistant's copy when its version
+ * is compatible and the bundled one otherwise:
+ * `ScopedElementsMixin(LitElement, [hacButtonClose])` or
+ * `createScopedElementRegistry([hacButtonClose])`.
  */
-export const hacButtonCloseElements = {
-  "hac-button-close": createDynamicLoader(
-    "hac-button-close",
-    VERSION,
-    loadScoped
-  ),
+export const hacButtonClose: HacElementDefinition = {
+  tagName: TAG_NAME,
+  element: createDynamicLoader(TAG_NAME, VERSION, loadScoped),
 };

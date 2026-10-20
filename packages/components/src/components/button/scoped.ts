@@ -1,11 +1,16 @@
+import type { HacElementDefinition } from "../../utils/registration/definition";
 import { scopedVariant } from "../../utils/registration/dependencies";
 import { HacButton } from "./hac-button";
+import { TAG_NAME } from "./info";
 
 export { HacButton };
 
 /**
- * Registers the bundled <hac-button> in a scoped registry:
- * `ScopedElementsMixin(LitElement, { ...hacButtonElements })` or
- * `createScopedElementRegistry({ ...hacButtonElements })`.
+ * The bundled <hac-button> for a scoped registry:
+ * `ScopedElementsMixin(LitElement, [hacButton])` or
+ * `createScopedElementRegistry([hacButton])`.
  */
-export const hacButtonElements = { "hac-button": scopedVariant(HacButton) };
+export const hacButton: HacElementDefinition<typeof HacButton> = {
+  tagName: TAG_NAME,
+  element: scopedVariant(HacButton),
+};

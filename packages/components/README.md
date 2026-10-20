@@ -40,9 +40,9 @@ Lit:
 ```ts
 import { LitElement, html } from "lit";
 import { ScopedElementsMixin } from "@home-assistant/components/scoped";
-import { hacCardElements } from "@home-assistant/components/card/dynamic";
+import { hacCard } from "@home-assistant/components/card/dynamic";
 
-class MyCard extends ScopedElementsMixin(LitElement, { ...hacCardElements }) {
+class MyCard extends ScopedElementsMixin(LitElement, [hacCard]) {
   render() {
     return html`<hac-card>…</hac-card>`;
   }
@@ -57,10 +57,10 @@ import {
   createScopedElement,
   createScopedElementRegistry,
 } from "@home-assistant/components/scoped";
-import { hacCardElements } from "@home-assistant/components/card/dynamic";
+import { hacCard } from "@home-assistant/components/card/dynamic";
 
 // Once per module, shared by all instances
-const registry = createScopedElementRegistry({ ...hacCardElements });
+const registry = createScopedElementRegistry([hacCard]);
 
 class MyCard extends HTMLElement {
   constructor() {
@@ -125,14 +125,14 @@ import paths:
 ```
 src/components/button/         <hac-button>        -> @home-assistant/components/button
   hac-button.ts                class, does not register itself
-  version.ts                   version, the only module `dynamic` loads up front
+  info.ts                      tag name and version, all `dynamic` loads up front
   global.ts                    registers globally
   scoped.ts                    elements for a scoped registry  -> …/scoped
   dynamic.ts                   host's or bundled copy, scoped  -> …/dynamic
   CHANGELOG.md                 changes, by version
   close/                       <hac-button-close>  -> @home-assistant/components/button/close
     hac-button-close.ts
-    version.ts, global.ts, scoped.ts, dynamic.ts, CHANGELOG.md
+    info.ts, global.ts, scoped.ts, dynamic.ts, CHANGELOG.md
 ```
 
 Shared code lives in `src/utils/`: `registration/` for defining elements
@@ -140,9 +140,9 @@ Shared code lives in `src/utils/`: `registration/` for defining elements
 themselves, like slot checks.
 
 A variant's tag name is `hac-<group>-<variant>`. `scoped`, `dynamic` and
-`version` are reserved and cannot be variant names.
+`info` are reserved and cannot be variant names.
 
-Every element has its own version. Bump `version.ts` and add a `CHANGELOG.md`
+Every element has its own version. Bump `VERSION` in `info.ts` and add a `CHANGELOG.md`
 entry with every change to an element. A breaking change needs a new major
 version (minor in `0.x`), or custom cards using `dynamic` would receive an
 incompatible copy.
@@ -150,11 +150,14 @@ incompatible copy.
 ### Dependencies
 
 A component that renders other hac components in its shadow root lists them
-in `static dependencies`, by tag name, and imports only their classes:
+in `static dependencies`, with the tag name from its `info.ts`, and imports
+only their classes:
 
 ```ts
 export class HacHeader extends LitElement {
-  static readonly dependencies = { "hac-button-close": HacButtonClose };
+  static readonly dependencies = [
+    { tagName: BUTTON_CLOSE_TAG_NAME, element: HacButtonClose },
+  ];
 }
 ```
 

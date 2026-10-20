@@ -10,5 +10,8 @@ export { define } from "./utils/registration/define";
 export { defineGlobal, scopedVariant } from "./utils/registration/dependencies";
 export type { HacElementClass } from "./utils/registration/dependencies";
 export { createDynamicLoader } from "./utils/registration/dynamic";
-export type { HacElementLoader } from "./utils/registration/dynamic";
+export type {
+  HacElementDefinition,
+  HacElementLoader,
+} from "./utils/registration/definition";
 export { isCompatible } from "./utils/registration/version";

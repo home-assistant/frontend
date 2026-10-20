@@ -42,10 +42,10 @@
       "types": "./dist/components/*/dynamic.d.ts",
       "import": "./dist/components/*/dynamic.js"
     },
-    "./*/version": {
-      "ha-source": "./src/components/*/version.ts",
-      "types": "./dist/components/*/version.d.ts",
-      "import": "./dist/components/*/version.js"
+    "./*/info": {
+      "ha-source": "./src/components/*/info.ts",
+      "types": "./dist/components/*/info.d.ts",
+      "import": "./dist/components/*/info.js"
     },
     "./*": {
       "ha-source": "./src/components/*/global.ts",

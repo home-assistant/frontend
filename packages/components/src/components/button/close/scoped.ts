@@ -1,13 +1,16 @@
+import type { HacElementDefinition } from "../../../utils/registration/definition";
 import { scopedVariant } from "../../../utils/registration/dependencies";
 import { HacButtonClose } from "./hac-button-close";
+import { TAG_NAME } from "./info";
 
 export { HacButtonClose };
 
 /**
- * Registers the bundled <hac-button-close> in a scoped registry:
- * `ScopedElementsMixin(LitElement, { ...hacButtonCloseElements })` or
- * `createScopedElementRegistry({ ...hacButtonCloseElements })`.
+ * The bundled <hac-button-close> for a scoped registry:
+ * `ScopedElementsMixin(LitElement, [hacButtonClose])` or
+ * `createScopedElementRegistry([hacButtonClose])`.
  */
-export const hacButtonCloseElements = {
-  "hac-button-close": scopedVariant(HacButtonClose),
+export const hacButtonClose: HacElementDefinition<typeof HacButtonClose> = {
+  tagName: TAG_NAME,
+  element: scopedVariant(HacButtonClose),
 };
