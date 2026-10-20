@@ -505,16 +505,15 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
     `;
   }
 
-  // A flow cannot be resumed after a page reload, so report dirty for as long
+  // A flow cannot be resumed after a page reload, so block reloads for as long
   // as the dialog is open. This freezes and hides the frontend update prompt.
-  public override get isDirtyState(): boolean {
-    return super.isDirtyState || this._params !== undefined;
+  protected override get _blocksReload(): boolean {
+    return this.isDirtyState || this._params !== undefined;
   }
 
   private get _preventScrimClose(): boolean {
     return (
-      // Form edits only, the override is always true while open
-      super.isDirtyState ||
+      this.isDirtyState ||
       this._flowHasProgressed ||
       this._loading !== undefined ||
       this._formStepLoading ||

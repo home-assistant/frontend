@@ -15,25 +15,30 @@ export const registerServiceWorker = async (
     return;
   }
 
+  // Set when the active worker changed while this page could not reload.
+  let reloadPending = false;
+
   // If the active service worker changes, refresh the page because the cache has changed.
   // Another tab can activate the new worker, so wait until this page has no unsaved work.
+  // Until then this page runs the old build under the new worker, so its lazy imports can
+  // fail and go through stale build recovery instead.
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (!window.isDirtyState) {
       location.reload();
       return;
     }
-    const reloadWhenClean = () => {
-      if (!window.isDirtyState) {
-        window.removeEventListener("dirty-state-changed", reloadWhenClean);
-        location.reload();
-      }
-    };
-    window.addEventListener("dirty-state-changed", reloadWhenClean);
+    reloadPending = true;
   });
 
   const reg = await navigator.serviceWorker.register(`/sw-${__BUILD__}.js`);
 
   if (!notifyUpdate || __DEV__ || __DEMO__) {
+    // No update toast here, so reload as soon as the page is clean.
+    window.addEventListener("dirty-state-changed", () => {
+      if (reloadPending && !window.isDirtyState) {
+        location.reload();
+      }
+    });
     return;
   }
 
@@ -54,6 +59,12 @@ export const registerServiceWorker = async (
   };
 
   const activateUpdate = () => {
+    if (reloadPending) {
+      clearUpdateCountdown();
+      hideUpdateToast();
+      location.reload();
+      return;
+    }
     if (!pendingWorker) {
       return;
     }
@@ -89,6 +100,7 @@ export const registerServiceWorker = async (
       secondaryAction: {
         action: () => {
           pendingWorker = undefined;
+          reloadPending = false;
           clearUpdateCountdown();
         },
         text: { translationKey: "ui.common.cancel" },
@@ -104,7 +116,7 @@ export const registerServiceWorker = async (
   };
 
   window.addEventListener("dirty-state-changed", () => {
-    if (!pendingWorker) {
+    if (!pendingWorker && !reloadPending) {
       return;
     }
     if (window.isDirtyState) {
