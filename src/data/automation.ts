@@ -709,6 +709,7 @@ export interface BaseSidebarConfig {
 export interface TriggerSidebarConfig extends BaseSidebarConfig {
   save: (value: Trigger) => void;
   rename: () => void;
+  editId: () => void;
   disable: () => void;
   duplicate: () => void;
   cut: () => void;
