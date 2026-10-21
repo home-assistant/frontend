@@ -1,11 +1,44 @@
 import { describe, expect, it, vi } from "vitest";
 import "../../../../src/panels/lovelace/cards/hui-tile-card";
+import "../../../../src/panels/lovelace/editor/config-elements/hui-tile-card-editor";
 import type { LovelaceCardFeatureConfig } from "../../../../src/panels/lovelace/card-features/types";
 import type {
   LovelaceCard,
   LovelaceGridOptions,
 } from "../../../../src/panels/lovelace/types";
 import type { TileCardConfig } from "../../../../src/panels/lovelace/cards/types";
+import { createMockEntityState, createMockHass } from "../../../fixtures/hass";
+
+vi.mock("../../../../src/components/ha-expansion-panel", () => {
+  if (!customElements.get("ha-expansion-panel")) {
+    customElements.define("ha-expansion-panel", class extends HTMLElement {});
+  }
+  return {};
+});
+vi.mock("../../../../src/components/ha-form/ha-form", () => {
+  if (!customElements.get("ha-form")) {
+    customElements.define("ha-form", class extends HTMLElement {});
+  }
+  return {};
+});
+vi.mock("../../../../src/components/ha-svg-icon", () => {
+  if (!customElements.get("ha-svg-icon")) {
+    customElements.define("ha-svg-icon", class extends HTMLElement {});
+  }
+  return {};
+});
+vi.mock(
+  "../../../../src/panels/lovelace/editor/config-elements/hui-card-features-editor",
+  () => {
+    if (!customElements.get("hui-card-features-editor")) {
+      customElements.define(
+        "hui-card-features-editor",
+        class extends HTMLElement {}
+      );
+    }
+    return { getSupportedFeaturesType: () => [] };
+  }
+);
 
 // getCardSize() and getGridOptions() drive how much space the tile card claims
 // in masonry and sections views. In "inline" mode the first feature shares the
@@ -168,5 +201,76 @@ describe("hui-tile-card getGridOptions", () => {
       min_columns: 3,
       min_rows: 4,
     });
+  });
+});
+
+describe("hui-tile-card color", () => {
+  it.each(["on", "off"])(
+    "keeps the icon color constant when the entity is %s",
+    async (state) => {
+      const card = makeCard({ color: "none" }) as unknown as HTMLElement & {
+        hass: ReturnType<typeof createMockHass>;
+        updateComplete: Promise<boolean>;
+      };
+      document.body.append(card);
+      card.hass = createMockHass({
+        "light.test": createMockEntityState("light.test", state),
+      });
+
+      await card.updateComplete;
+
+      expect(
+        card.shadowRoot
+          ?.querySelector("ha-card")
+          ?.style.getPropertyValue("--tile-color")
+      ).toBe("var(--state-icon-color)");
+
+      card.remove();
+    }
+  );
+});
+
+describe("hui-tile-card editor", () => {
+  it("includes the none color option", async () => {
+    const editor = document.createElement(
+      "hui-tile-card-editor"
+    ) as HTMLElement & {
+      hass: ReturnType<typeof createMockHass>;
+      setConfig: (config: TileCardConfig) => void;
+    };
+    const hass = createMockHass({
+      "light.test": createMockEntityState("light.test", "on"),
+    });
+    editor.hass = hass;
+    editor.setConfig({ type: "tile", entity: "light.test" });
+    document.body.append(editor);
+
+    await editor.updateComplete;
+
+    const form = editor.shadowRoot?.querySelector("ha-form") as HTMLElement & {
+      schema: readonly {
+        name: string;
+        schema?: readonly {
+          name: string;
+          selector?: { ui_color?: { include_none?: boolean } };
+        }[];
+      }[];
+    };
+    const content = form.schema.find((item) => item.name === "content");
+    const grid = content?.schema?.find(
+      (item) => "type" in item && item.type === "grid"
+    ) as
+      | {
+          schema?: readonly {
+            name: string;
+            selector?: { ui_color?: { include_none?: boolean } };
+          }[];
+        }
+      | undefined;
+    const color = grid?.schema?.find((item) => item.name === "color");
+
+    expect(color?.selector?.ui_color?.include_none).toBe(true);
+
+    editor.remove();
   });
 });
