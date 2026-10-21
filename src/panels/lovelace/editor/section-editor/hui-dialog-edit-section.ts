@@ -179,6 +179,7 @@ export class HuiDialogEditSection
     this._currTab = TABS[0];
     this._strategyError = false;
     this._yamlError = false;
+    this._discardDirtyStateChanges();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 

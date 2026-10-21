@@ -252,7 +252,7 @@ export class HuiDialogSelectSectionStrategy
     .options {
       display: grid;
       gap: var(--ha-space-4);
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
     }
     .option {
       position: relative;
