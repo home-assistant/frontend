@@ -682,6 +682,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       return;
     }
     const includes = targetItems(value);
+    // Until the targets resolve, the exclusions shown are from before and
+    // may not say which ones are shared now.
+    this._exclusionsComplete = false;
 
     // Each item on its own, so it is known which exclusion takes out what
     // from which target. One that fails only loses its own part.

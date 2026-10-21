@@ -318,10 +318,14 @@ describe("targetRowState", () => {
       disabled: true,
       lockedBy: [{ type: "label", id: "xmas" }],
     });
+    // Checked, so a click unticks the area instead of asking to bring back
+    // what only the label can.
     expect(stateOf("area:kitchen", [xmas])).toMatchObject({
+      checked: true,
       indeterminate: true,
       disabled: false,
     });
+    expect(toggle("area:kitchen", false, [xmas])).toEqual([xmas, kitchenOut]);
   });
 
   it("leaves an excluded entity editable", () => {

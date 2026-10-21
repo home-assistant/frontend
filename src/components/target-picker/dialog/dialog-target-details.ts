@@ -28,7 +28,11 @@ import "../../ha-svg-icon";
 import "../../list/ha-list-base";
 import "../ha-target-picker-item-row";
 import type { TargetExclusion } from "../target-exclusions";
-import { resolveItemExclusions, toggleTargetRow } from "../target-exclusions";
+import {
+  resolveItemExclusions,
+  resolveTargetItemEntities,
+  toggleTargetRow,
+} from "../target-exclusions";
 import type { TargetDetailsDialogParams } from "./show-dialog-target-details";
 
 @customElement("ha-dialog-target-details")
@@ -276,11 +280,35 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     ev: HASSDomEvent<HASSDomEvents["target-selection-changed"]>
   ) {
     ev.stopPropagation();
+    const before = this._exclusions;
     this._exclusions = toggleTargetRow({
       ...ev.detail,
-      exclusions: this._exclusions,
+      exclusions: before,
       initial: this._initialExclusions,
     });
+    this._exclusions
+      .filter(
+        (exclusion) =>
+          exclusion.type !== "entity" &&
+          !before.includes(exclusion) &&
+          !this._initialExclusions.includes(exclusion)
+      )
+      .forEach((exclusion) => this._resolveRemoved(exclusion));
+  }
+
+  private async _resolveRemoved(exclusion: TargetExclusion) {
+    let removed: string[];
+    try {
+      removed = await resolveTargetItemEntities(this.hass, exclusion, false);
+    } catch (_err) {
+      return;
+    }
+    if (!this._exclusions.includes(exclusion)) {
+      return;
+    }
+    this._exclusions = this._exclusions.map((current) =>
+      current === exclusion ? { ...exclusion, removed } : current
+    );
   }
 
   private _apply() {

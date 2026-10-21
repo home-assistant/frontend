@@ -306,6 +306,7 @@ export const targetRowState = (
   const entities = new Set(row.entities);
   const undoable = canUndo(row, isTarget);
   const out = new Set<string>();
+  const undoableOut = new Set<string>();
   const locked = new Set<string>();
   const lockedBy: TargetItem[] = [];
   exclusions.forEach((exclusion) => {
@@ -316,14 +317,16 @@ export const targetRowState = (
       return;
     }
     removed.forEach((entityId) => out.add(entityId));
-    if (!undoable(exclusion)) {
+    if (undoable(exclusion)) {
+      removed.forEach((entityId) => undoableOut.add(entityId));
+    } else {
       removed.forEach((entityId) => locked.add(entityId));
       lockedBy.push({ type: exclusion.type, id: exclusion.id });
     }
   });
   const disabled = entities.size > 0 && locked.size === entities.size;
   return {
-    checked: out.size === 0,
+    checked: !disabled && undoableOut.size === 0,
     indeterminate: out.size > 0 && out.size < entities.size,
     disabled,
     lockedBy: disabled ? lockedBy : [],
