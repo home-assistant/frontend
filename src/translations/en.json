@@ -5585,6 +5585,8 @@
             "home": "Home",
             "unassigned": "Unassigned",
             "other": "Other",
+            "recently_used": "Recently used",
+            "clear_recently_used": "Clear recently used",
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",
