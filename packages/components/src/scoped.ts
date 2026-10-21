@@ -8,18 +8,12 @@ import {
   scopedShadowRootInit,
 } from "./utils/registration/scoped-registry";
 
-export type {
-  ElementDefinition,
-  ElementLoader,
-} from "./utils/registration/definition";
+export type { ElementDefinition } from "./utils/registration/definition";
 
 /**
  * Creates a registry with the given elements, for `attachScopedShadow`:
- * definitions from `scoped` or `dynamic` entry points, e.g. `[hacCard]`.
+ * definitions from `scoped` entry points, e.g. `[hacCard]`.
  * Create it once, outside the class, so all instances of a card share it.
- *
- * Loaders of `dynamic` entry points register their element once it is
- * loaded; elements rendered before that upgrade then.
  *
  * Without scoped registry support (native or polyfill), the elements are
  * registered in the global registry instead, unless their tag name is already
@@ -36,11 +30,7 @@ export const createScopedElementRegistry = (
   }
   const registry = createScopedRegistry() ?? customElements;
   for (const { tagName, element } of elements) {
-    if (typeof element === "function") {
-      define(tagName, element, registry);
-    } else {
-      element.load().then((loaded) => define(tagName, loaded, registry));
-    }
+    define(tagName, element, registry);
   }
   return registry;
 };

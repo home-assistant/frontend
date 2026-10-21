@@ -19,21 +19,11 @@
       "types": "./dist/scoped.d.ts",
       "import": "./dist/scoped.js"
     },
-    "./provider": {
-      "ha-source": "./src/provider.ts",
-      "types": "./dist/provider.d.ts",
-      "import": "./dist/provider.js"
-    },
     "./package.json": "./package.json",
     "./*/scoped": {
       "ha-source": "./src/components/*/scoped.ts",
       "types": "./dist/components/*/scoped.d.ts",
       "import": "./dist/components/*/scoped.js"
-    },
-    "./*/dynamic": {
-      "ha-source": "./src/components/*/dynamic.ts",
-      "types": "./dist/components/*/dynamic.d.ts",
-      "import": "./dist/components/*/dynamic.js"
     },
     "./*/info": {
       "ha-source": "./src/components/*/info.ts",
