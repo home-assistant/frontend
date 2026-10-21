@@ -163,7 +163,11 @@ class AddIntegrationDialog extends LitElement {
 
   @state() private _open = false;
 
+  // One pane, the list with a filter button, instead of the tree next to it
   @state() private _narrow = false;
+
+  // The dialog fills the screen
+  @state() private _fullscreen = false;
 
   @query("ha-list-virtualized") private _listElement?: HaListVirtualized;
 
@@ -174,6 +178,8 @@ class AddIntegrationDialog extends LitElement {
   private _loadId = 0;
 
   private _narrowQuery?: MediaQueryList;
+
+  private _fullscreenQuery?: MediaQueryList;
 
   public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
     if (params?.category) {
@@ -216,13 +222,33 @@ class AddIntegrationDialog extends LitElement {
     this._initialFilter = params?.initialFilter;
     this._integrationFilter = params?.integrationFilter;
     this._navigateToResult = params?.navigateToResult ?? false;
-    this._narrowQuery?.removeEventListener("change", this._narrowChanged);
+    this._removeMediaListeners();
+    // Below this, the tree leaves too little room for the integrations
     this._narrowQuery = matchMedia(
-      "all and (max-width: 450px), all and (max-height: 500px)"
+      "all and (max-width: 700px), all and (max-height: 500px)"
     );
     this._narrowQuery.addEventListener("change", this._narrowChanged);
     this._narrow = this._narrowQuery.matches;
+    this._fullscreenQuery = matchMedia(
+      "all and (max-width: 450px), all and (max-height: 500px)"
+    );
+    this._fullscreenQuery.addEventListener("change", this._fullscreenChanged);
+    this._fullscreen = this._fullscreenQuery.matches;
   }
+
+  private _removeMediaListeners() {
+    this._narrowQuery?.removeEventListener("change", this._narrowChanged);
+    this._narrowQuery = undefined;
+    this._fullscreenQuery?.removeEventListener(
+      "change",
+      this._fullscreenChanged
+    );
+    this._fullscreenQuery = undefined;
+  }
+
+  private _fullscreenChanged = (ev: MediaQueryListEvent) => {
+    this._fullscreen = ev.matches;
+  };
 
   // Turning a tablet or resizing the window switches between the phone list
   // and the category tree
@@ -242,8 +268,7 @@ class AddIntegrationDialog extends LitElement {
 
   private _dialogClosed() {
     this._open = false;
-    this._narrowQuery?.removeEventListener("change", this._narrowChanged);
-    this._narrowQuery = undefined;
+    this._removeMediaListeners();
     this._integrations = undefined;
     this._helpers = undefined;
     this._pickedBrand = undefined;
@@ -758,10 +783,7 @@ class AddIntegrationDialog extends LitElement {
     // Wide screens browse with the tree, phones filter with a button next
     // to the search.
     const browseByCategory = !this._integrationFilter;
-    const rows =
-      this._narrow && integrations
-        ? [...this._getPhoneShortcuts(), ...integrations]
-        : integrations;
+    const rows = integrations && this._getRows(integrations);
 
     if (this._pickingCategory) {
       return html`<div class="content picking">
@@ -798,7 +820,12 @@ class AddIntegrationDialog extends LitElement {
         <div class="items">
           ${
             this._showDiscoveredView && !this._filter
-              ? this._renderBrandView(undefined, this._flowsInProgress || [])
+              ? html`<div
+                  class="discovered"
+                  style=${styleMap({ height: this._listHeight() })}
+                >
+                  ${this._renderBrandView(undefined, this._flowsInProgress || [])}
+                </div>`
               : rows
                 ? html`<ha-list-virtualized
                     .rows=${rows}
@@ -812,6 +839,13 @@ class AddIntegrationDialog extends LitElement {
           }
         </div>
       </div>`;
+  }
+
+  // The rows of the list, what Enter picks the first of
+  private _getRows(integrations: IntegrationListItem[]): IntegrationListItem[] {
+    return this._narrow
+      ? [...this._getPhoneShortcuts(), ...integrations]
+      : integrations;
   }
 
   // On a phone, what was found and adding a device to a protocol you use
@@ -871,7 +905,7 @@ class AddIntegrationDialog extends LitElement {
   // only the list scrolls. The category picker has no search to make room for.
   private _listHeight() {
     const reserved = this._pickingCategory ? 96 : 184;
-    return this._narrow
+    return this._fullscreen
       ? `calc(100vh - ${reserved}px - var(--safe-area-inset-top, 0px) - var(--safe-area-inset-bottom, 0px))`
       : "min(600px, calc(var(--safe-height) - var(--ha-space-20) - 184px))";
   }
@@ -958,10 +992,15 @@ class AddIntegrationDialog extends LitElement {
             </ha-section-title>`
           : nothing
       }
-      <ha-list-base>
+      <ha-list-base
+        role="tree"
+        aria-label=${this.hass.localize("ui.panel.config.integrations.browse")}
+      >
         <ha-list-item-button
           class=${classMap({ selected: browsingAll })}
-          aria-current=${browsingAll ? "true" : nothing}
+          role="treeitem"
+          aria-level="1"
+          aria-selected=${String(browsingAll)}
           @click=${this._allPicked}
         >
           <ha-svg-icon
@@ -986,7 +1025,9 @@ class AddIntegrationDialog extends LitElement {
               class=${classMap({
                 selected: isCurrent && !this._subcategory,
               })}
-              aria-current=${isCurrent && !this._subcategory ? "true" : nothing}
+              role="treeitem"
+              aria-level="1"
+              aria-selected=${String(isCurrent && !this._subcategory)}
               aria-expanded=${
                 category.subcategories.length ? String(expanded) : nothing
               }
@@ -1028,11 +1069,11 @@ class AddIntegrationDialog extends LitElement {
                           selected:
                             isCurrent && subcategory.slug === this._subcategory,
                         })}
-                        aria-current=${
+                        role="treeitem"
+                        aria-level="2"
+                        aria-selected=${String(
                           isCurrent && subcategory.slug === this._subcategory
-                            ? "true"
-                            : nothing
-                        }
+                        )}
                         .category=${category.slug}
                         .subcategory=${subcategory.slug}
                         @click=${this._subcategoryPicked}
@@ -1148,14 +1189,21 @@ class AddIntegrationDialog extends LitElement {
 
   private async _load(integrationFilter?: IntegrationFilter) {
     const loadId = ++this._loadId;
-    this.hass.loadBackendTranslation("integration_category", "homeassistant");
     getIntegrationCategoryIcons(this.hass.connection).then((icons) => {
       this._categoryIcons = icons;
     });
+    // `hass` doesn't render this dialog again, so the category names have to
+    // be there before the integrations are
     const [descriptions, flowsInProgress] = await Promise.all([
       getIntegrationDescriptions(this.hass),
       fetchConfigFlowInProgress(this.hass.connection),
+      this.hass.loadBackendTranslation("integration_category", "homeassistant"),
     ]);
+
+    // Closed, or opened again, while this loaded
+    if (loadId !== this._loadId) {
+      return;
+    }
 
     // Filter discovered flows
     this._flowsInProgress = flowsInProgress.filter((flow) =>
@@ -1393,10 +1441,10 @@ class AddIntegrationDialog extends LitElement {
       return;
     }
 
-    const integrations = this._getIntegrations();
+    const rows = this._getRows(this._getIntegrations());
 
-    if (integrations.length > 0) {
-      this._handleIntegrationPicked(integrations[0]);
+    if (rows.length > 0) {
+      this._handleIntegrationPicked(rows[0]);
     }
   }
 
@@ -1448,6 +1496,9 @@ class AddIntegrationDialog extends LitElement {
       .items {
         flex: 1;
         min-width: 0;
+      }
+      .discovered {
+        overflow: auto;
       }
       .groups ha-list-item-button {
         --ha-row-item-padding-block: var(--ha-space-1);
