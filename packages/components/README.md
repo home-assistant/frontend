@@ -141,10 +141,9 @@ src/components/button/         <hac-button>        -> @home-assistant/components
   global.ts                    registers globally
   scoped.ts                    elements for a scoped registry  -> …/scoped
   dynamic.ts                   host's or bundled copy, scoped  -> …/dynamic
-  CHANGELOG.md                 changes, by version
   close/                       <hac-button-close>  -> @home-assistant/components/button/close
     hac-button-close.ts
-    info.ts, global.ts, scoped.ts, dynamic.ts, CHANGELOG.md
+    info.ts, global.ts, scoped.ts, dynamic.ts
 ```
 
 Shared code lives in `src/utils/`: `registration/` for defining elements
@@ -154,10 +153,9 @@ themselves, like slot checks.
 A variant's tag name is `hac-<group>-<variant>`. `scoped`, `dynamic` and
 `info` are reserved and cannot be variant names.
 
-Every element has its own version. Bump `VERSION` in `info.ts` and add a `CHANGELOG.md`
-entry with every change to an element. A breaking change needs a new major
-version (minor in `0.x`), or custom cards using `dynamic` would receive an
-incompatible copy.
+Every element has its own version. Bump `VERSION` in `info.ts` with every
+change to an element. A breaking change needs a new major version (minor in
+`0.x`), or custom cards using `dynamic` would receive an incompatible copy.
 
 ### Dependencies
 
