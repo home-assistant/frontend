@@ -14,6 +14,7 @@ import {
   getESPHomeBluetoothSwitch,
   getESPHomeSetupBannerState,
   getESPHomeSetupCapabilityIds,
+  hasESPHomeBluetoothSwitch,
   hasESPHomeSetupCapabilities,
   hasStartedNonBluetoothESPHomeSetup,
   isESPHomeSerialConfigured,
@@ -90,15 +91,23 @@ describe("hasESPHomeSetupCapabilities", () => {
     expect(hasESPHomeSetupCapabilities(undefined)).toBe(false);
   });
 
-  it("is true for Bluetooth alone", () => {
-    expect(
-      hasESPHomeSetupCapabilities(
-        capabilities({
-          bluetooth_proxy: { supported: true },
-        })
-      )
-    ).toBe(true);
-  });
+  it.each([
+    [true, true, true],
+    [false, true, false],
+    [false, false, true],
+  ])(
+    "is %s for Bluetooth alone with capability %s and switch %s",
+    (expected, supported, bluetoothSwitch) => {
+      expect(
+        hasESPHomeSetupCapabilities(
+          capabilities({
+            bluetooth_proxy: { supported },
+          }),
+          { bluetoothSwitch }
+        )
+      ).toBe(expected);
+    }
+  );
 
   it("is false for a device with no advertised capabilities", () => {
     expect(hasESPHomeSetupCapabilities(capabilities())).toBe(false);
@@ -575,6 +584,20 @@ describe("getESPHomeBluetoothSwitch", () => {
         "switch.other_bluetooth": { state: "on" },
       })
     ).toEqual({ entityId: "switch.garage_proxy_bluetooth", on: false });
+  });
+
+  it("counts an offline switch as present, but not a disabled one", () => {
+    expect(hasESPHomeBluetoothSwitch("dev-1", entities)).toBe(true);
+    expect(
+      hasESPHomeBluetoothSwitch("dev-3", [
+        {
+          entity_id: "switch.disabled_bluetooth",
+          device_id: "dev-3",
+          platform: "esphome",
+          disabled_by: "integration",
+        },
+      ])
+    ).toBe(false);
   });
 
   it.each([

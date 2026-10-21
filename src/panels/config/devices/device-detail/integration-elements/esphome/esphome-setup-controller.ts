@@ -13,6 +13,7 @@ import {
   deriveESPHomeSetupStatus,
   getESPHomeAudioControls,
   getESPHomeBluetoothSwitch,
+  hasESPHomeBluetoothSwitch,
   getESPHomeSetupCapabilityIds,
   hasESPHomeSetupCapabilities,
   isESPHomeSerialConfigured,
@@ -190,6 +191,10 @@ export class ESPHomeSetupController implements ReactiveController {
     );
     if (
       !hasESPHomeSetupCapabilities(this._capabilities, {
+        bluetoothSwitch: hasESPHomeBluetoothSwitch(
+          deviceId,
+          this._getEntities()
+        ),
         mediaPlayerSupported: audio.supported,
       })
     ) {

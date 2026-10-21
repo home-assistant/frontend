@@ -30,6 +30,7 @@ export interface ESPHomeDeviceEntityRef {
   entity_id: string;
   device_id?: string | null;
   platform?: string;
+  disabled_by?: string | null;
 }
 
 export interface ESPHomeEntityStateRef {
@@ -101,8 +102,10 @@ const findESPHomeSwitch = (
   objectId: string
 ): string | undefined => {
   for (const entity of entities) {
+    // The device page passes full registry entries, including disabled ones
     if (
       entity.device_id !== deviceId ||
+      entity.disabled_by ||
       computeDomain(entity.entity_id) !== "switch" ||
       (entity.platform && entity.platform !== "esphome")
     ) {
@@ -158,6 +161,13 @@ export const getESPHomeAudioControls = (
   };
 };
 
+/** Whether the device has an enabled Bluetooth switch, whatever its state. */
+export const hasESPHomeBluetoothSwitch = (
+  deviceId: string,
+  entities: Iterable<ESPHomeDeviceEntityRef>
+): boolean =>
+  findESPHomeSwitch(deviceId, entities, BLUETOOTH_OBJECT_ID) !== undefined;
+
 /** The device's Bluetooth switch, if it exposes one that can be switched now. */
 export const getESPHomeBluetoothSwitch = (
   deviceId: string,
@@ -174,16 +184,17 @@ export const getESPHomeBluetoothSwitch = (
 
 /**
  * Whether the device page should show the setup wizard: the device supports
- * at least one of its parts. Zigbee has no separate capability bit; the
- * Z-Wave proxy row covers it.
+ * at least one of its parts. Bluetooth only counts with its switch, since
+ * without one there is nothing to set up on older Bluetooth proxies. Zigbee
+ * has no separate capability bit; the Z-Wave proxy row covers it.
  */
 export const hasESPHomeSetupCapabilities = (
   capabilities: ESPHomeDeviceCapabilities | undefined | null,
-  options: { mediaPlayerSupported?: boolean } = {}
+  options: { mediaPlayerSupported?: boolean; bluetoothSwitch?: boolean } = {}
 ): boolean =>
   Boolean(
     capabilities &&
-    (capabilities.bluetooth_proxy.supported ||
+    ((capabilities.bluetooth_proxy.supported && options.bluetoothSwitch) ||
       options.mediaPlayerSupported ||
       capabilities.zwave_proxy.supported ||
       capabilities.serial_proxies.length > 0)
