@@ -21,6 +21,14 @@ import { documentationUrl } from "../../util/documentation-url";
 // That's why redirects should be sorted with more specific ones first
 // Or else pressing "M" will link to the higher level page.
 
+// The users table reads these from the link
+const usersTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
 // The Marketplace tabs with a table read these from the link
 const marketplaceTableParams = {
   search: "string?",
@@ -317,6 +325,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   users: {
     redirect: "/config/users",
+    params: usersTableParams,
   },
   general: {
     redirect: "/config/general",
