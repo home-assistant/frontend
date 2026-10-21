@@ -32,6 +32,7 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/item/ha-row-item";
 import "../../../components/list/ha-list-base";
+import "../../../components/list/ha-list-virtualized";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
@@ -47,6 +48,7 @@ import {
   reloadConfigEntry,
   updateConfigEntry,
 } from "../../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { groupDevicesByParent } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
@@ -74,7 +76,9 @@ import {
 import "./ha-config-entry-device-row";
 import {
   renderConfigEntryError,
+  toDeviceRows,
   type ConfigEntryData,
+  type DeviceRow,
 } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
 import { offerMarketplaceUninstall } from "./offer-marketplace-uninstall";
@@ -486,18 +490,7 @@ export class HaConfigEntryRow extends LitElement {
                         </ha-list-item-button>
                         ${
                           this._devicesExpanded
-                            ? groupDevicesByParent(ownDevices).map(
-                                ({ device, isChild, isLastChild }) =>
-                                  html`<ha-config-entry-device-row
-                                    .hass=${this.hass}
-                                    .narrow=${this.narrow}
-                                    .entry=${item}
-                                    .device=${device}
-                                    .entities=${entities}
-                                    .isChild=${isChild}
-                                    .isLastChild=${isLastChild}
-                                  ></ha-config-entry-device-row>`
-                              )
+                            ? this._renderDeviceRows(entities)
                             : nothing
                         }
                       </div>`
@@ -517,24 +510,36 @@ export class HaConfigEntryRow extends LitElement {
                     ></ha-config-sub-entry-row>
                   `
                 )}`
-              : html`
-                  ${groupDevicesByParent(ownDevices).map(
-                    ({ device, isChild, isLastChild }) =>
-                      html`<ha-config-entry-device-row
-                        .hass=${this.hass}
-                        .narrow=${this.narrow}
-                        .entry=${item}
-                        .device=${device}
-                        .entities=${entities}
-                        .isChild=${isChild}
-                        .isLastChild=${isLastChild}
-                      ></ha-config-entry-device-row>`
-                  )}
-                `
+              : this._renderDeviceRows(entities)
             : nothing
         }
       </ha-list-base>
     </div>`;
+  }
+
+  private _deviceRows = memoizeOne(
+    (devices: DeviceRegistryEntry[], services: DeviceRegistryEntry[]) =>
+      toDeviceRows(groupDevicesByParent([...devices, ...services]))
+  );
+
+  // Only the device rows near the viewport are in the DOM
+  private _renderDeviceRows(entities: EntityRegistryEntry[]) {
+    // A new renderer per update lets the rendered rows pick up hass changes
+    const renderRow = ({ device, isChild, isLastChild }: DeviceRow) =>
+      html`<ha-config-entry-device-row
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .entry=${this.data.entry}
+        .device=${device}
+        .entities=${entities}
+        .isChild=${isChild}
+        .isLastChild=${isLastChild}
+      ></ha-config-entry-device-row>`;
+    return html`<ha-list-virtualized
+      auto-height
+      .rows=${this._deviceRows(this.data.devices, this.data.services)}
+      .rowRenderer=${renderRow}
+    ></ha-list-virtualized>`;
   }
 
   private _configPanel = memoizeOne(getConfigPanelPath);

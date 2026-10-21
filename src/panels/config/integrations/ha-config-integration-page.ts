@@ -32,6 +32,7 @@ import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import type { HaListVirtualizedItem } from "../../../components/list/ha-list-virtualized";
 import "../../../components/item/ha-list-item-base";
 import "../../../components/list/ha-list-base";
 import { getSignedPath } from "../../../data/auth";
@@ -42,7 +43,10 @@ import {
   getSubEntries,
 } from "../../../data/config_entries";
 import { ATTENTION_SOURCES } from "../../../data/config_flow";
-import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
+import type {
+  DeviceRegistryEntry,
+  DeviceRowItem,
+} from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { fetchDiagnosticHandler } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -95,6 +99,12 @@ export interface ConfigEntryData {
   services: DeviceRegistryEntry[];
   subEntries: SubEntryData[];
 }
+
+/** A row of the virtualized device lists, keyed by the device id. */
+export interface DeviceRow extends HaListVirtualizedItem, DeviceRowItem {}
+
+export const toDeviceRows = (items: DeviceRowItem[]): DeviceRow[] =>
+  items.map((item) => ({ id: item.device.id, interactive: true, ...item }));
 
 export const renderConfigEntryError = (
   hass: HomeAssistant,
