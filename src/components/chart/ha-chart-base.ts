@@ -1665,6 +1665,18 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         });
       }
     }
+    // zrender only follows a drag outside the chart once it has moved inside
+    // it, so a quick drag out would lose the release and its selection
+    if (
+      ev.type === "pointerdown" &&
+      this._dragToZoom &&
+      this._isZoomPress(ev)
+    ) {
+      this.chart
+        ?.getZr()
+        .painter.getViewportRoot()
+        .setPointerCapture(ev.pointerId);
+    }
     // A finger drag along a time axis moves the tooltip, which touch opens on tap
     if (
       touchInput &&
@@ -1692,9 +1704,13 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   // Only a primary press starts a drag to zoom; a context menu leaves it stuck
   @eventOptions({ capture: true })
   private _handleChartMouseDown(ev: MouseEvent) {
-    if (ev.button !== 0 || (isMac && ev.ctrlKey)) {
+    if (!this._isZoomPress(ev)) {
       ev.stopPropagation();
     }
+  }
+
+  private _isZoomPress(ev: MouseEvent) {
+    return ev.button === 0 && !(isMac && ev.ctrlKey);
   }
 
   private _addOutsideTapListener = () => {
