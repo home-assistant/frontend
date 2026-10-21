@@ -186,7 +186,6 @@ module.exports.babelOptions = ({ latestBuild, isTestBuild, sw, worker }) => ({
         path.join(paths.root_dir, "src/resources/polyfills"),
         ...[
           "@formatjs/(?:ecma402-abstract|intl-\\w+)",
-          "@lit-labs/virtualizer/polyfills",
           "@webcomponents/scoped-custom-element-registry",
           "element-internals-polyfill",
         ].map((p) => new RegExp(`/node_modules/${p}/`)),

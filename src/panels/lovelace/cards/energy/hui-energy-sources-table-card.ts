@@ -984,7 +984,6 @@ export class HuiEnergySourcesTableCard
       width: 100%;
     }
     .mdc-data-table__table-container {
-      -webkit-overflow-scrolling: touch;
       overflow-x: auto;
       width: 100%;
     }

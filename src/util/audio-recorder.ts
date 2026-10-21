@@ -42,11 +42,7 @@ export class AudioRecorder {
   }
 
   public static get isSupported() {
-    return (
-      window.isSecureContext &&
-      // @ts-ignore-next-line
-      (window.AudioContext || window.webkitAudioContext)
-    );
+    return window.isSecureContext && "AudioContext" in window;
   }
 
   public async start(): Promise<MicrophoneError | undefined> {
@@ -92,8 +88,7 @@ export class AudioRecorder {
   }
 
   private async _createContext() {
-    // @ts-expect-error webkitAudioContext is not recognized
-    const context = new (AudioContext || webkitAudioContext)();
+    const context = new AudioContext();
     this._context = context;
     this._stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     // Syntax here must match an item of `parser.worker` in Webpack config in
