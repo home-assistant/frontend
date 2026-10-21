@@ -1,15 +1,15 @@
 {
   "_comment": "Initial JS budget (raw/uncompressed bytes) for the cold-load critical entrypoints. Enforced by build-scripts/check-bundle-size.cjs in CI. Re-seed after an intentional change with `--update --headroom=<percent>`.",
   "frontend-modern": {
-    "app": 624240,
-    "core": 55144,
-    "authorize": 594400,
-    "onboarding": 705499
+    "app": 628152,
+    "core": 55147,
+    "authorize": 595665,
+    "onboarding": 709643
   },
   "frontend-legacy": {
-    "app": 776696,
-    "core": 188309,
-    "authorize": 763316,
-    "onboarding": 879807
+    "app": 726261,
+    "core": 157414,
+    "authorize": 697017,
+    "onboarding": 814214
   }
 }
