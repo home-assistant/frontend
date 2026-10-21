@@ -9,7 +9,7 @@ import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { storage } from "../../../common/decorators/storage";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { hasRejectedItems } from "../../../common/util/promise-all-settled-results";
@@ -76,14 +76,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     return this.hass.auth.external?.config.canWriteTag;
   }
 
-  @state()
-  @storage({
-    storage: "sessionStorage",
-    key: "tags-table-search",
-    state: true,
-    subscribe: false,
-  })
-  private _filter = "";
+  private _tableSettings = new DataTableSettingsController(this, {
+    search: "tags-table-search",
+  });
 
   private _columns = memoizeOne((localize: LocalizeFunc) => {
     const columns: DataTableColumnContainer<TagRowData> = {
@@ -220,8 +215,8 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
             : undefined
         }
         @retry-load=${this._retryFetchTags}
-        .filter=${this._filter}
-        @search-changed=${this._handleSearchChange}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         sync-url
         selectable
         .selected=${this._selected.length}
@@ -420,10 +415,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       }
     });
   };
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
-  }
 }
 
 declare global {
