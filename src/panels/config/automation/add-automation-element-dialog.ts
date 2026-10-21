@@ -467,7 +467,9 @@ class DialogAddAutomationElement
           : type === "condition"
             ? getConditionDomain(value)
             : computeDomain(value);
-      if (!domains.includes(domain)) {
+      // Descriptions come from a context, which only reaches the dialog once
+      // it's attached, after its first showDialog. Until then, trust the key.
+      if (domains.length && !domains.includes(domain)) {
         return { tab: "groups" };
       }
       if (!this._getExclusiveDomains(type).has(domain)) {
