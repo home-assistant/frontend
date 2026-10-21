@@ -60,6 +60,18 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       return view;
     }
 
+    view.sections!.push({
+      type: "grid",
+      column_span: 3,
+      cards: [
+        {
+          type: "energy-compare",
+          collection_key: collectionKey,
+          grid_options: { columns: "full" },
+        },
+      ],
+    });
+
     if (isEnergyCardVisible("overview", "energy-distribution", prefs, hidden)) {
       view.sections!.push({
         type: "grid",
