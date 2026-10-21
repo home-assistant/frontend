@@ -67,8 +67,6 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
-import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
-import "./ha-automation-add-element-paste";
 
 interface Level1Entries {
   open: boolean;
@@ -109,11 +107,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
   public timeLocationGroups?: AddAutomationElementListItem[];
 
   @property({ attribute: false }) public selectedGroup?: string;
-
-  @property({ attribute: false }) public clipboardItem?: string;
-
-  @property({ attribute: "automation-element-type" })
-  public automationElementType!: AddAutomationElementDialogParams["type"];
 
   // #endregion properties
 
@@ -220,10 +213,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 this._labelRegistry,
                 this.value
               )}
-              <ha-automation-add-element-paste
-                .automationElementType=${this.automationElementType}
-                .clipboardItem=${this.clipboardItem}
-              ></ha-automation-add-element-paste>
             `
       }
       ${

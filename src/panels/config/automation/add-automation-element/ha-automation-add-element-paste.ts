@@ -10,8 +10,14 @@ import { internationalizationContext } from "../../../../data/context";
 import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
 
 /**
- * Contextual action bar pinned to the bottom of the dialog's list pane.
- * Place it as the last child of a scrolling container.
+ * @element ha-automation-add-element-paste
+ *
+ * @summary Paste bar at the bottom of the add automation element dialog's list pane.
+ * Place it below the scrolling list.
+ *
+ * @attr clipboard-item - Type of the element on the clipboard. Nothing is shown when empty.
+ *
+ * @fires paste-element - Fired when the paste button is clicked.
  */
 @customElement("ha-automation-add-element-paste")
 export class HaAutomationAddElementPaste extends LitElement {
@@ -44,16 +50,9 @@ export class HaAutomationAddElementPaste extends LitElement {
 
   static styles = css`
     :host {
-      position: sticky;
-      bottom: 0;
-      /* In a flex column shorter than its box, sit at the bottom anyway. */
-      margin-top: auto;
-      z-index: 3;
       display: flex;
-      gap: var(--ha-space-2);
       align-items: center;
       padding: var(--ha-space-3);
-      padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
       background-color: var(--ha-color-surface-low);
     }
     :host(:not([clipboard-item])) {

@@ -1,4 +1,3 @@
-import "@home-assistant/webawesome/dist/components/divider/divider";
 import { mdiClose, mdiHelpCircleOutline } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
@@ -7,8 +6,8 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
-import { consume } from "../../../common/decorators/consume";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { consume } from "../../../common/decorators/consume";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
@@ -611,6 +610,18 @@ class DialogAddAutomationElement
       this._tab === "targets" ||
       (this._narrow && this._selectedGroup);
 
+    const addFromTargetHidden =
+      !!this._getAddFromTargetHidden(this._narrow, this._selectedTarget) ||
+      (this._narrow && !!this._selectedGroup);
+
+    const listColumnHidden =
+      this._tab === "targets" ? addFromTargetHidden : !!hideCollections;
+
+    // The narrow target details have no paste bar, like the other details views.
+    const showPasteFooter =
+      this._tab !== "blocks" &&
+      !(this._tab === "targets" && this._narrow && this._selectedTarget);
+
     const collections = hideCollections
       ? []
       : this._getCollections(
@@ -690,101 +701,108 @@ class DialogAddAutomationElement
                 @search-element-picked=${this._searchItemSelected}
               >
               </ha-automation-add-search>`
-            : this._tab === "targets"
-              ? html`<ha-automation-add-from-target
-                  .hass=${this.hass}
-                  .value=${this._selectedTarget}
-                  @value-changed=${this._handleTargetSelected}
-                  @time-location-group-selected=${
-                    this._handleTimeLocationGroupSelected
-                  }
-                  .narrow=${this._narrow}
-                  .timeLocationLabel=${this._getTimeLocationLabel(
-                    automationElementType
-                  )}
-                  .timeLocationGroups=${this._getTimeLocationGroups(
-                    automationElementType,
-                    this.hass.localize,
-                    automationElementType === "condition"
-                      ? this._conditionDescriptions
-                      : this._triggerDescriptions
-                  )}
-                  .selectedGroup=${this._selectedGroup}
-                  class=${classMap({
-                    "ha-scrollbar": true,
-                    hidden:
-                      !!this._getAddFromTargetHidden(
-                        this._narrow,
-                        this._selectedTarget
-                      ) ||
-                      (this._narrow && !!this._selectedGroup),
-                  })}
-                  .manifests=${this._manifests}
-                  .clipboardItem=${this._params!.clipboardItem}
-                  .automationElementType=${automationElementType}
-                  @paste-element=${this._paste}
-                ></ha-automation-add-from-target>`
-              : html`
-                  <ha-list-base
-                    class=${classMap({
-                      groups: true,
-                      hidden: hideCollections,
-                      "ha-scrollbar": true,
-                    })}
-                  >
-                    ${collections.map(
-                      (collection) => html`
-                        ${
-                          collection.titleKey && collection.groups.length
-                            ? html`<ha-section-title>
-                                ${this.hass.localize(collection.titleKey)}
-                              </ha-section-title>`
-                            : nothing
+            : html`<div
+                class=${classMap({
+                  "list-column": true,
+                  hidden: listColumnHidden,
+                })}
+              >
+                ${
+                  this._tab === "targets"
+                    ? html`<ha-automation-add-from-target
+                        .hass=${this.hass}
+                        .value=${this._selectedTarget}
+                        @value-changed=${this._handleTargetSelected}
+                        @time-location-group-selected=${
+                          this._handleTimeLocationGroupSelected
                         }
-                        ${repeat(
-                          collection.groups,
-                          (item) => item.key,
-                          (item) => html`
-                            <ha-list-item-button
-                              .value=${item.key}
-                              .index=${collection.collectionIndex}
-                              @click=${this._groupSelected}
-                              class=${
-                                item.key === this._selectedGroup
-                                  ? "selected"
-                                  : ""
-                              }
-                            >
-                              <div slot="headline">${item.name}</div>
+                        .narrow=${this._narrow}
+                        .timeLocationLabel=${this._getTimeLocationLabel(
+                          automationElementType
+                        )}
+                        .timeLocationGroups=${this._getTimeLocationGroups(
+                          automationElementType,
+                          this.hass.localize,
+                          automationElementType === "condition"
+                            ? this._conditionDescriptions
+                            : this._triggerDescriptions
+                        )}
+                        .selectedGroup=${this._selectedGroup}
+                        class=${classMap({
+                          "ha-scrollbar": true,
+                          hidden: addFromTargetHidden,
+                        })}
+                        .manifests=${this._manifests}
+                      ></ha-automation-add-from-target>`
+                    : html`
+                        <ha-list-base
+                          class=${classMap({
+                            groups: true,
+                            hidden: hideCollections,
+                            "ha-scrollbar": true,
+                          })}
+                        >
+                          ${collections.map(
+                            (collection) => html`
                               ${
-                                item.icon
-                                  ? html`<span slot="start">${item.icon}</span>`
-                                  : item.iconPath
-                                    ? html`<ha-svg-icon
-                                        slot="start"
-                                        .path=${item.iconPath}
-                                      ></ha-svg-icon>`
-                                    : nothing
-                              }
-                              ${
-                                this._narrow
-                                  ? html`<ha-icon-next
-                                      slot="end"
-                                    ></ha-icon-next>`
+                                collection.titleKey && collection.groups.length
+                                  ? html`<ha-section-title>
+                                      ${this.hass.localize(collection.titleKey)}
+                                    </ha-section-title>`
                                   : nothing
                               }
-                            </ha-list-item-button>
-                          `
-                        )}
+                              ${repeat(
+                                collection.groups,
+                                (item) => item.key,
+                                (item) => html`
+                                  <ha-list-item-button
+                                    .value=${item.key}
+                                    .index=${collection.collectionIndex}
+                                    @click=${this._groupSelected}
+                                    class=${
+                                      item.key === this._selectedGroup
+                                        ? "selected"
+                                        : ""
+                                    }
+                                  >
+                                    <div slot="headline">${item.name}</div>
+                                    ${
+                                      item.icon
+                                        ? html`<span slot="start"
+                                            >${item.icon}</span
+                                          >`
+                                        : item.iconPath
+                                          ? html`<ha-svg-icon
+                                              slot="start"
+                                              .path=${item.iconPath}
+                                            ></ha-svg-icon>`
+                                          : nothing
+                                    }
+                                    ${
+                                      this._narrow
+                                        ? html`<ha-icon-next
+                                            slot="end"
+                                          ></ha-icon-next>`
+                                        : nothing
+                                    }
+                                  </ha-list-item-button>
+                                `
+                              )}
+                            `
+                          )}
+                        </ha-list-base>
                       `
-                    )}
-                    <ha-automation-add-element-paste
-                      .automationElementType=${automationElementType}
-                      .clipboardItem=${this._params!.clipboardItem}
-                      @paste-element=${this._paste}
-                    ></ha-automation-add-element-paste>
-                  </ha-list-base>
-                `
+                }
+                ${
+                  showPasteFooter
+                    ? html`<ha-automation-add-element-paste
+                        .automationElementType=${automationElementType}
+                        .clipboardItem=${this._params!.clipboardItem}
+                        @paste-element=${this._paste}
+                      ></ha-automation-add-element-paste>`
+                    : nothing
+                }
+              </div>`
         }
         ${
           !this._filter
@@ -792,7 +810,7 @@ class DialogAddAutomationElement
                 <ha-automation-add-items
                   .hass=${this.hass}
                   .items=${this._getItems()}
-                  .scrollable=${!this._narrow}
+                  .scrollable=${!this._narrow || this._tab === "blocks"}
                   .error=${
                     this._tab === "targets" && this._loadItemsError
                       ? this.hass.localize(
@@ -834,6 +852,15 @@ class DialogAddAutomationElement
                   }
                   @value-changed=${this._selected}
                 >
+                  ${
+                    this._tab === "blocks"
+                      ? html`<ha-automation-add-element-paste
+                          .automationElementType=${automationElementType}
+                          .clipboardItem=${this._params!.clipboardItem}
+                          @paste-element=${this._paste}
+                        ></ha-automation-add-element-paste>`
+                      : nothing
+                  }
                 </ha-automation-add-items>
               `
             : nothing
@@ -2328,6 +2355,16 @@ class DialogAddAutomationElement
           --ha-bottom-sheet-surface-background: var(--card-background-color);
         }
 
+        ha-bottom-sheet
+          .list-column:has(> ha-automation-add-element-paste[clipboard-item]) {
+          margin-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
+        }
+        ha-bottom-sheet
+          ha-automation-add-items
+          > ha-automation-add-element-paste {
+          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
+        }
+
         ha-dialog {
           --dialog-content-padding: 0;
           --ha-dialog-min-height: min(
@@ -2388,43 +2425,46 @@ class DialogAddAutomationElement
           color: var(--ha-color-on-neutral-quiet);
         }
 
-        ha-automation-add-from-target,
-        .groups {
+        .list-column,
+        .content.column ha-automation-add-from-target {
           border-radius: var(--ha-border-radius-xl);
           border: 1px solid var(--ha-color-border-neutral-quiet);
           margin: var(--ha-space-3);
-          overflow: auto;
-          /* No rubber band: the paste bar is pinned to the bottom and would
-             bounce away from it on macOS. */
-          overscroll-behavior: none;
           flex: 0 0 360px;
           margin-inline-end: 0;
         }
 
-        /* Fill the column so the paste bar can sit at its bottom edge, and
-           don't be a scroll container (ha-scrollbar sets overflow-y: auto,
-           the list hides x): that pins the bar to the list's end rather than
-           the column's. */
-        .groups::part(base) {
-          box-sizing: border-box;
-          min-height: 100%;
-          overflow-x: clip;
-          overflow-y: visible;
+        .list-column {
+          display: flex;
+          flex-direction: column;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .list-column > ha-automation-add-from-target,
+        .list-column > .groups {
+          flex: 1;
+          min-height: 0;
+          overflow: auto;
+        }
+
+        .content.column .list-column {
+          display: contents;
         }
 
         @media (max-width: 870px), (max-height: 500px) {
-          ha-automation-add-from-target,
-          .groups {
+          .list-column {
             flex: 1 1 auto;
           }
         }
 
+        .list-column.hidden,
         ha-automation-add-from-target.hidden {
           display: none;
         }
 
-        ha-bottom-sheet .groups,
-        ha-bottom-sheet ha-automation-add-from-target {
+        ha-bottom-sheet .list-column,
+        ha-bottom-sheet .content.column ha-automation-add-from-target {
           margin: var(--ha-space-3);
         }
         .groups .selected {
@@ -2476,11 +2516,14 @@ class DialogAddAutomationElement
         .groups {
           padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
         }
-        /* A sticky bar stops at the scroller's padding, which would leave a
-           strip of list showing under it. The bar clears the home indicator
-           itself instead. */
-        .groups:has(> ha-automation-add-element-paste[clipboard-item]) {
-          padding-bottom: 0;
+        .list-column:has(> ha-automation-add-element-paste[clipboard-item])
+          > .groups {
+          padding-bottom: var(--ha-space-3);
+        }
+        ha-automation-add-items:has(
+          > ha-automation-add-element-paste[clipboard-item]
+        ) {
+          --ha-automation-add-items-padding-bottom: var(--ha-space-3);
         }
 
         ha-icon-next {
