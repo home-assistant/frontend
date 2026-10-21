@@ -12,6 +12,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
@@ -24,6 +25,7 @@ import {
   BACKUP_TYPE_FILTER,
   backupsFilterQueryParamConfig,
   backupsFilterQueryParams,
+  backupsFilterQueryString,
   backupsLinkFromUrl,
 } from "../../../common/url/backups-query-params";
 import type {
@@ -63,7 +65,10 @@ import {
 } from "../../../data/backup";
 import type { ManagerStateEvent } from "../../../data/backup_manager";
 import type { CloudStatus } from "../../../data/cloud";
-import type { DataTableFiltersValues } from "../../../data/data_table_filters";
+import type {
+  DataTableFiltersValue,
+  DataTableFiltersValues,
+} from "../../../data/data_table_filters";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
   showAlertDialog,
@@ -118,10 +123,11 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   })
   private _storageFilters: DataTableFiltersValues = {};
 
-  @state() private _search = "";
-
-  @storage({ key: "backups-table-grouping", state: false, subscribe: false })
-  private _activeGrouping?: string = "formatted_type";
+  private _tableSettings = new DataTableSettingsController(
+    this,
+    { grouping: "backups-table-grouping" },
+    { defaultGrouping: "formatted_type" }
+  );
 
   @storage({
     key: "backups-table-collapsed",
@@ -327,10 +333,6 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     this._overflowMenu.anchorElement = undefined;
   };
 
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
-  }
-
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
   }
@@ -446,21 +448,21 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         }
         selectable
         .selected=${this._selected.length}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .groupOrder=${this._groupOrder(
-          this._activeGrouping,
+          this._tableSettings.grouping,
           this.hass.localize,
           isHassio
         )}
-        @grouping-changed=${this._handleGroupingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @selection-changed=${this._handleSelectionChanged}
         @clear-filter=${this._clearFilter}
         .route=${this.route}
         sync-url
-        .filter=${this._search}
-        @search-changed=${this._handleSearchChange}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize, maxDisplayedAgents)}
         .data=${data}
@@ -588,17 +590,25 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   );
 
   private _typeFilterChanged(ev) {
-    this._filters = { ...this._filters, [BACKUP_TYPE_FILTER]: ev.detail.value };
-    this._storageFilters = this._filters;
-    this._writeFilters();
+    this._filterChanged(BACKUP_TYPE_FILTER, ev.detail.value);
   }
 
   private _locationsFilterChanged(ev) {
-    this._filters = {
-      ...this._filters,
-      [BACKUP_LOCATIONS_FILTER]: ev.detail.value,
-    };
-    this._storageFilters = this._filters;
+    this._filterChanged(BACKUP_LOCATIONS_FILTER, ev.detail.value);
+  }
+
+  private _filterChanged(type: string, value: DataTableFiltersValue) {
+    const filters = { ...this._filters, [type]: value };
+
+    // Only a change to what the URL holds is the user's, so a link isn't stored
+    if (
+      backupsFilterQueryString(filters) !==
+      backupsFilterQueryString(this._filters)
+    ) {
+      this._storageFilters = { ...this._storageFilters, [type]: value };
+    }
+
+    this._filters = filters;
     this._writeFilters();
   }
 
@@ -608,22 +618,23 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
     this._writeFilters();
   }
 
-  private _handleSearchChange(
-    ev: HASSDomEvent<HASSDomEvents["search-changed"]>
-  ) {
-    this._search = ev.detail.value;
-  }
-
   // Links, like the ones on the backups overview, say in the URL what to show.
   // The router keeps the page open, so a link can land on it.
   private _applyLink() {
     const searchParams = this._filterParams.searchParams();
     const link = searchParams ? backupsLinkFromUrl(searchParams) : undefined;
 
+    // Shown, but not stored as the user's choice
     if (link) {
-      this._search = link.search;
+      this._tableSettings.showSearch(link.search);
       this._filters = link.filters;
-      this._storageFilters = link.filters;
+    } else if (searchParams?.toString() === "") {
+      // Opened again without params, like from the sidebar. Written once the
+      // table has seen the URL without params, so it restores what it stored
+      this._filters = this._storageFilters;
+      queueMicrotask(() => this._writeFilters());
+
+      return;
     }
 
     this._writeFilters();
