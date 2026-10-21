@@ -94,6 +94,7 @@ export const getActionPickerKey = (action: Action): string | undefined => {
 };
 
 const isLogicalCondition = (condition: object) =>
+  Array.isArray((condition as { condition?: unknown }).condition) ||
   CONDITION_BUILDING_BLOCKS.some(
     (key) => key in condition || (condition as Condition).condition === key
   );

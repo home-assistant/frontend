@@ -4,6 +4,7 @@ import type {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import { createDurationData } from "../common/datetime/create_duration_data";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { hasTemplate } from "../common/string/has-template";
@@ -12,6 +13,7 @@ import type { HomeAssistant } from "../types";
 import { getAutomationActionType } from "./action";
 import type {
   Condition,
+  ForDict,
   PlatformCondition,
   PlatformTrigger,
   Trigger,
@@ -32,6 +34,7 @@ import {
   expandFloorTarget,
   expandLabelTarget,
   filterSelectorEntities,
+  getDurationSelectorMode,
   handleLegacyEntitySelector,
 } from "./selector";
 import type { TriggerDescriptions } from "./trigger";
@@ -54,9 +57,22 @@ type TargetFilter = NonNullable<TargetSelector["target"]> | undefined;
 const keptKeys = (keys: readonly string[]) =>
   keys.filter((key) => key !== "alias");
 
-const TIME_REGEX = /^\d{1,2}:\d{2}(:\d{2})?$/;
+const TIME_REGEX = /^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/;
 
 const DURATION_KEYS = ["days", "hours", "minutes", "seconds", "milliseconds"];
+
+// Same base and default as the number input, with a margin for float division.
+const matchesStep = (
+  value: number,
+  step: number | "any" | undefined,
+  min: number | undefined
+) => {
+  if (step === "any") {
+    return true;
+  }
+  const steps = (value - (min ?? 0)) / (step ?? 1);
+  return Math.abs(steps - Math.round(steps)) < 1e-9;
+};
 
 // Same semantics as the HTML `pattern` attribute the text selector uses.
 const matchesPattern = (value: string, pattern: string) => {
@@ -86,7 +102,8 @@ const fitsSelector = (
       typeof value === "number" &&
       oldUnit === config?.unit_of_measurement &&
       (config?.min === undefined || value >= config.min) &&
-      (config?.max === undefined || value <= config.max)
+      (config?.max === undefined || value <= config.max) &&
+      matchesStep(value, config?.step, config?.min)
     );
   }
   if ("text" in selector) {
@@ -110,16 +127,24 @@ const fitsSelector = (
     );
   }
   if ("duration" in selector) {
-    if (!value || typeof value !== "object" || Array.isArray(value)) {
+    if (
+      !["string", "number", "object"].includes(typeof value) ||
+      value === null ||
+      Array.isArray(value)
+    ) {
       return false;
     }
+    const data = createDurationData(value as string | number | ForDict);
     const allowNegative =
-      selector.duration?.allow_negative || selector.duration?.mode === "signed";
-    return Object.entries(value).every(
-      ([key, item]) =>
-        DURATION_KEYS.includes(key) &&
-        typeof item === "number" &&
-        (allowNegative || item >= 0)
+      getDurationSelectorMode(selector.duration) !== "positive";
+    return (
+      data !== undefined &&
+      Object.entries(data).every(
+        ([key, item]) =>
+          DURATION_KEYS.includes(key) &&
+          Number.isFinite(item) &&
+          (allowNegative || item >= 0)
+      )
     );
   }
   if ("time" in selector) {
@@ -130,11 +155,13 @@ const fitsSelector = (
     const values = config?.multiple ? ensureArray(value) : [value];
     return values.every((item) => {
       const stateObj = typeof item === "string" ? hass.states[item] : undefined;
-      if (!stateObj || config?.exclude_entities?.includes(stateObj.entity_id)) {
+      if (
+        !stateObj ||
+        config?.exclude_entities?.includes(stateObj.entity_id) ||
+        (config?.include_entities &&
+          !config.include_entities.includes(stateObj.entity_id))
+      ) {
         return false;
-      }
-      if (config?.include_entities) {
-        return config.include_entities.includes(stateObj.entity_id);
       }
       return (
         !config?.filter ||
@@ -508,7 +535,7 @@ const getServiceTarget = (
     return target;
   }
   const result: HassServiceTarget = { ...target };
-  (["entity_id", "device_id", "area_id"] as const).forEach((key) => {
+  TARGET_KEYS.forEach((key) => {
     const legacy =
       action.data?.[key] ??
       (key === "entity_id" ? action.entity_id : undefined);
