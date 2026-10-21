@@ -4,7 +4,6 @@ import type {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
-import { createDurationData } from "../common/datetime/create_duration_data";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { hasTemplate } from "../common/string/has-template";
@@ -13,7 +12,6 @@ import type { HomeAssistant } from "../types";
 import { getAutomationActionType } from "./action";
 import type {
   Condition,
-  ForDict,
   PlatformCondition,
   PlatformTrigger,
   Trigger,
@@ -33,9 +31,6 @@ import {
   entityMeetsTargetSelector,
   expandFloorTarget,
   expandLabelTarget,
-  filterSelectorEntities,
-  getDurationSelectorMode,
-  handleLegacyEntitySelector,
 } from "./selector";
 import type { TriggerDescriptions } from "./trigger";
 import { isTriggerList } from "./trigger";
@@ -57,184 +52,21 @@ type TargetFilter = NonNullable<TargetSelector["target"]> | undefined;
 const keptKeys = (keys: readonly string[]) =>
   keys.filter((key) => key !== "alias");
 
-const TIME_REGEX = /^([01]?\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/;
-
-const DURATION_KEYS = ["days", "hours", "minutes", "seconds", "milliseconds"];
-
-// Same base and default as the number input, with a margin for float division.
-const matchesStep = (
-  value: number,
-  step: number | "any" | undefined,
-  min: number | undefined
-) => {
-  if (step === "any") {
-    return true;
-  }
-  const steps = (value - (min ?? 0)) / (step ?? 1);
-  return Math.abs(steps - Math.round(steps)) < 1e-9;
-};
-
-// Same semantics as the HTML `pattern` attribute the text selector uses.
-const matchesPattern = (value: string, pattern: string) => {
-  try {
-    return new RegExp(`^(?:${pattern})$`, "v").test(value);
-  } catch (_err) {
-    return false;
-  }
-};
-
-const fitsSelector = (
-  value: unknown,
-  selector: Selector,
-  oldSelector: Selector | undefined,
-  hass: HomeAssistant
-): boolean => {
-  if ("boolean" in selector) {
-    return typeof value === "boolean";
-  }
-  if ("number" in selector) {
-    const config = selector.number;
-    const oldUnit =
-      oldSelector && "number" in oldSelector
-        ? oldSelector.number?.unit_of_measurement
-        : undefined;
-    return (
-      typeof value === "number" &&
-      oldUnit === config?.unit_of_measurement &&
-      (config?.min === undefined || value >= config.min) &&
-      (config?.max === undefined || value <= config.max) &&
-      matchesStep(value, config?.step, config?.min)
-    );
-  }
-  if ("text" in selector) {
-    const values = selector.text?.multiple ? ensureArray(value) : [value];
-    const pattern = selector.text?.pattern;
-    return values.every(
-      (item) =>
-        typeof item === "string" && (!pattern || matchesPattern(item, pattern))
-    );
-  }
-  if ("select" in selector) {
-    const config = selector.select;
-    const options = (config?.options ?? []).map((option) =>
-      typeof option === "string" ? option : option.value
-    );
-    const values = config?.multiple ? ensureArray(value) : [value];
-    return values.every(
-      (item) =>
-        typeof item === "string" &&
-        (config?.custom_value || options.includes(item))
-    );
-  }
-  if ("duration" in selector) {
-    if (
-      !["string", "number", "object"].includes(typeof value) ||
-      value === null ||
-      Array.isArray(value)
-    ) {
-      return false;
-    }
-    const data = createDurationData(value as string | number | ForDict);
-    const allowNegative =
-      getDurationSelectorMode(selector.duration) !== "positive";
-    return (
-      data !== undefined &&
-      Object.entries(data).every(
-        ([key, item]) =>
-          DURATION_KEYS.includes(key) &&
-          Number.isFinite(item) &&
-          (allowNegative || item >= 0)
-      )
-    );
-  }
-  if ("time" in selector) {
-    return typeof value === "string" && TIME_REGEX.test(value);
-  }
-  if ("entity" in selector) {
-    const config = handleLegacyEntitySelector(selector).entity;
-    const values = config?.multiple ? ensureArray(value) : [value];
-    return values.every((item) => {
-      const stateObj = typeof item === "string" ? hass.states[item] : undefined;
-      if (
-        !stateObj ||
-        config?.exclude_entities?.includes(stateObj.entity_id) ||
-        (config?.include_entities &&
-          !config.include_entities.includes(stateObj.entity_id))
-      ) {
-        return false;
-      }
-      return (
-        !config?.filter ||
-        ensureArray(config.filter).some((filter) =>
-          filterSelectorEntities(
-            filter,
-            stateObj,
-            undefined,
-            hass.entities,
-            hass.devices
-          )
-        )
-      );
-    });
-  }
-  if ("color_rgb" in selector) {
-    return (
-      Array.isArray(value) &&
-      value.length === 3 &&
-      value.every((item) => Number.isInteger(item) && item >= 0 && item <= 255)
-    );
-  }
-  if ("color_temp" in selector) {
-    const config = selector.color_temp;
-    const unit = config?.unit ?? "mired";
-    const oldUnit =
-      oldSelector && "color_temp" in oldSelector
-        ? (oldSelector.color_temp?.unit ?? "mired")
-        : undefined;
-    const min =
-      unit === "kelvin" ? config?.min : (config?.min ?? config?.min_mireds);
-    const max =
-      unit === "kelvin" ? config?.max : (config?.max ?? config?.max_mireds);
-    return (
-      typeof value === "number" &&
-      oldUnit === unit &&
-      (min === undefined || value >= min) &&
-      (max === undefined || value <= max)
-    );
-  }
-  // Without a check for this selector type, the value can't be shown to fit.
-  return false;
-};
-
-const valueFitsField = (
-  value: unknown,
-  selector: Selector,
-  oldSelector: Selector | undefined,
-  hass: HomeAssistant
-): boolean => {
-  // The value was set through an identical field, templates included.
-  if (oldSelector && deepEqual(oldSelector, selector)) {
-    return true;
-  }
-  if (hasTemplate(value)) {
-    return false;
-  }
-  return fitsSelector(value, selector, oldSelector, hass);
-};
-
+// Only an identical field is known to accept the value, templates included.
 const portFields = (
   values: Record<string, unknown> | undefined,
   fields: Fields,
-  oldFields: Fields | undefined,
-  hass: HomeAssistant
+  oldFields: Fields | undefined
 ): Record<string, unknown> => {
   const result: Record<string, unknown> = {};
   Object.entries(fields).forEach(([key, field]) => {
     const value = values?.[key];
+    const oldSelector = oldFields?.[key]?.selector;
     if (
       value !== undefined &&
       field.selector &&
-      valueFitsField(value, field.selector, oldFields?.[key]?.selector, hass)
+      oldSelector &&
+      deepEqual(oldSelector, field.selector)
     ) {
       result[key] = deepClone(value);
     }
@@ -419,12 +251,7 @@ const portPlatformItem = <T extends PlatformTrigger | PlatformCondition>(
       hass
     );
   const fields = description.fields ?? {};
-  const options = portFields(
-    old?.options,
-    fields,
-    old?.description?.fields,
-    hass
-  );
+  const options = portFields(old?.options, fields, old?.description?.fields);
   fillDefaults(
     options,
     fields,
@@ -578,8 +405,7 @@ export const portAction = (
   const data = portFields(
     oldService?.data,
     fields,
-    oldDescription ? getServiceFields(oldDescription) : undefined,
-    hass
+    oldDescription ? getServiceFields(oldDescription) : undefined
   );
   fillDefaults(data, fields);
 
