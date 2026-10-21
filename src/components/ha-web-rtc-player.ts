@@ -92,6 +92,9 @@ export class HaWebRtcPlayer extends LitElement {
 
   private _microphoneDenied = false;
 
+  // Increased on every start, stop and clean up, so older starts are ignored
+  private _microphoneRequest = 0;
+
   public get microphoneState(): WebRtcMicrophoneState {
     if (this._microphoneDenied) {
       return "denied";
@@ -109,6 +112,7 @@ export class HaWebRtcPlayer extends LitElement {
   public async toggleMicrophone() {
     if (this._localReturnAudioTrack || this._microphoneConnecting) {
       // Stop (not disable) so the browser releases the microphone, also cancels connecting
+      this._microphoneRequest++;
       this._localReturnAudioTrack?.stop();
       this._localReturnAudioTrack = undefined;
       this._microphoneConnecting = false;
@@ -120,11 +124,12 @@ export class HaWebRtcPlayer extends LitElement {
       return;
     }
 
+    const request = ++this._microphoneRequest;
     this._microphoneConnecting = true;
     this._fireMicrophoneChanged();
     const track = await this._getMicrophoneTrack();
-    // Cleaned up (closed, hidden or entity changed) while asking for it
-    if (!this._microphoneConnecting || !this.isConnected) {
+    // Cancelled or cleaned up (closed, hidden or entity changed) while asking
+    if (request !== this._microphoneRequest || !this.isConnected) {
       track?.stop();
       return;
     }
@@ -142,14 +147,16 @@ export class HaWebRtcPlayer extends LitElement {
         await sender.replaceTrack(track);
       } catch (_err: unknown) {
         track.stop();
-        this._microphoneConnecting = false;
-        this._fireMicrophoneChanged();
+        if (request === this._microphoneRequest) {
+          this._microphoneConnecting = false;
+          this._fireMicrophoneChanged();
+        }
         return;
       }
-      // Cancelled or cleaned up while swapping
-      if (!this._microphoneConnecting) {
+      // Cancelled or cleaned up while swapping. Only stop the track, the
+      // cancel already queued replaceTrack(null) and a newer start its track.
+      if (request !== this._microphoneRequest) {
         track.stop();
-        await sender.replaceTrack(null).catch(() => undefined);
         return;
       }
       this._localReturnAudioTrack = track;
@@ -597,6 +604,7 @@ export class HaWebRtcPlayer extends LitElement {
 
   private _cleanUp() {
     this._cleanUpCount++;
+    this._microphoneRequest++;
     if (this._remoteStream) {
       this._remoteStream.getTracks().forEach((track) => {
         track.stop();
@@ -659,7 +667,8 @@ export class HaWebRtcPlayer extends LitElement {
     this._logEvent("loadedData", data);
     this._stopTimer();
 
-    if (this._microphoneConnecting) {
+    // Without a track the microphone is still waiting for permission
+    if (this._microphoneConnecting && this._localReturnAudioTrack) {
       this._microphoneConnecting = false;
       this._fireMicrophoneChanged();
     }
