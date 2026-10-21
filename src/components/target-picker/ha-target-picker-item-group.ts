@@ -1,4 +1,3 @@
-import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { DeviceCompositeSplits } from "../../data/device/device_registry";
@@ -64,14 +63,6 @@ export class HaTargetPickerItemGroup extends LitElement {
   @property({ attribute: false })
   public exclusions?: Record<string, TargetExclusion[]>;
 
-  /** The `exclude` of the target value, for the details. */
-  @property({ attribute: false })
-  public exclude?: HassServiceTarget;
-
-  /** Whether the target details can change what is excluded. */
-  @property({ attribute: false })
-  public exclusionsEditable = false;
-
   protected render() {
     let count = 0;
     Object.values(this.items).forEach((items) => {
@@ -114,8 +105,6 @@ export class HaTargetPickerItemGroup extends LitElement {
                     .primaryEntitiesOnly=${this.primaryEntitiesOnly}
                     .compositeSplits=${this.compositeSplits}
                     .exclusions=${exclusions}
-                    .exclude=${this.exclude}
-                    .exclusionsEditable=${this.exclusionsEditable}
                   ></ha-target-picker-item-row>
                   ${(exclusions ?? []).map(
                     (exclusion) =>

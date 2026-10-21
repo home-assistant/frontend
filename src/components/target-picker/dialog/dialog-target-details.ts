@@ -29,6 +29,7 @@ import "../../list/ha-list-base";
 import "../ha-target-picker-item-row";
 import type { TargetExclusion } from "../target-exclusions";
 import {
+  isShared,
   resolveItemExclusions,
   resolveTargetItemEntities,
   toggleTargetRow,
@@ -52,6 +53,10 @@ class DialogTargetDetails extends LitElement implements HassDialog {
   @state() private _exclusions: TargetExclusion[] = [];
 
   private _exclusionsRequest = 0;
+
+  private _otherTargetEntities = memoizeOne(
+    (entities?: string[]) => new Set(entities)
+  );
 
   private _deviceIntegrationLookup = memoizeOne(
     (entities: HomeAssistant["entities"]) =>
@@ -285,6 +290,9 @@ class DialogTargetDetails extends LitElement implements HassDialog {
       ...ev.detail,
       exclusions: before,
       initial: this._initialExclusions,
+      otherTargetEntities: this._otherTargetEntities(
+        this._params?.otherTargetEntities
+      ),
     });
     this._exclusions
       .filter(
@@ -306,8 +314,13 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     if (!this._exclusions.includes(exclusion)) {
       return;
     }
+
+    const shared = isShared(
+      removed,
+      this._otherTargetEntities(this._params?.otherTargetEntities)
+    );
     this._exclusions = this._exclusions.map((current) =>
-      current === exclusion ? { ...exclusion, removed } : current
+      current === exclusion ? { ...exclusion, removed, shared } : current
     );
   }
 

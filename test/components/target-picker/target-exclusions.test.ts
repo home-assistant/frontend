@@ -242,7 +242,8 @@ const toggle = (
   key: string,
   selected: boolean,
   exclusions: TargetExclusion[],
-  initial: TargetExclusion[] = exclusions
+  initial: TargetExclusion[] = exclusions,
+  otherTargetEntities?: ReadonlySet<string>
 ) =>
   toggleTargetRow({
     row: row(key),
@@ -250,6 +251,7 @@ const toggle = (
     selected,
     exclusions,
     initial,
+    otherTargetEntities,
   });
 
 describe("buildTargetRow", () => {
@@ -404,6 +406,18 @@ describe("toggleTargetRow", () => {
     expect(
       toggle("floor:ground", false, []).map(({ type, id }) => `${type}:${id}`)
     ).toEqual(["area:kitchen", "area:hallway"]);
+  });
+
+  it("marks a new exclusion shared when another target holds its entities", () => {
+    // The kitchen is also selected on its own next to the floor.
+    const kitchen = new Set(row("area:kitchen").entities);
+    const [lampOut] = toggle("entity:light.lamp", false, [], [], kitchen);
+    expect(lampOut.shared).toBe(true);
+    // So ticking a parent doesn't take it out of the other target too.
+    expect(toggle("floor:ground", true, [lampOut], [])).toEqual([lampOut]);
+    expect(toggle("entity:light.hall", false, [], [], kitchen)[0].shared).toBe(
+      false
+    );
   });
 
   it("gives an exclusion back as it was when it is unticked again", () => {

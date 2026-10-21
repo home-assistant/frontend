@@ -71,6 +71,8 @@ export interface TargetExclusions {
   perTarget: Record<string, TargetExclusion[]>;
   /** Exclusions that take nothing out of any included target. */
   noEffect: TargetItem[];
+  /** The entities of each included target, by its `type:id`. */
+  included: Record<string, string[]>;
 }
 
 /**
@@ -115,7 +117,10 @@ export const computeExclusionsPerTarget = (
     });
   });
 
-  return { perTarget, noEffect };
+  const included = Object.fromEntries(
+    includes.map((include) => [targetItemKey(include), include.entities])
+  );
+  return { perTarget, noEffect, included };
 };
 
 /** The exclusions that take entities out of one item of a target. */
@@ -339,7 +344,8 @@ export const targetRowState = (
  * Unchecking it excludes the row itself, so an area or device stays
  * excluded as such, including what is added to it later. The target can't
  * be excluded from itself, so unchecking it unchecks its rows instead.
- * `initial` gives back an exclusion that was there before as it was.
+ * `initial` gives back an exclusion that was there before as it was. A new
+ * one is shared when it takes out any of `otherTargetEntities`.
  */
 export const toggleTargetRow = ({
   row,
@@ -347,12 +353,14 @@ export const toggleTargetRow = ({
   selected,
   exclusions,
   initial,
+  otherTargetEntities,
 }: {
   row: TargetRow;
   isTarget: boolean;
   selected: boolean;
   exclusions: TargetExclusion[];
   initial: TargetExclusion[];
+  otherTargetEntities?: ReadonlySet<string>;
 }): TargetExclusion[] => {
   if (!selected && isTarget) {
     return row.children
@@ -365,6 +373,7 @@ export const toggleTargetRow = ({
             selected: false,
             exclusions: result,
             initial,
+            otherTargetEntities,
           }),
         exclusions
       );
@@ -384,10 +393,18 @@ export const toggleTargetRow = ({
       type: row.type,
       id: row.id,
       removed: row.entities,
-      shared: false,
+      shared: isShared(row.entities, otherTargetEntities),
     },
   ];
 };
+
+/** Whether an exclusion taking out `removed` also affects another target. */
+export const isShared = (
+  removed: string[],
+  otherTargetEntities?: ReadonlySet<string>
+): boolean =>
+  !!otherTargetEntities &&
+  removed.some((entityId) => otherTargetEntities.has(entityId));
 
 /**
  * The new `exclude` once the details are applied: what was taken away is

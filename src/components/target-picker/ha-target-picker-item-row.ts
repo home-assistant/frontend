@@ -8,10 +8,7 @@ import {
   mdiSwapHorizontal,
   mdiTextureBox,
 } from "@mdi/js";
-import type {
-  HassEntity,
-  HassServiceTarget,
-} from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   html,
@@ -73,7 +70,6 @@ import "../ha-svg-icon";
 import "../item/ha-list-item-base";
 import "../item/ha-list-item-button";
 import { computeTargetSubRows } from "./compute-target-sub-rows";
-import { showTargetDetailsDialog } from "./dialog/show-dialog-target-details";
 import { filterTargetEntries } from "./filter-target-entries";
 import {
   buildTargetRow,
@@ -157,17 +153,6 @@ export class HaTargetPickerItemRow extends LitElement {
    */
   @property({ attribute: false })
   public exclusions?: TargetExclusion[];
-
-  /**
-   * The `exclude` of the target value. The details work out the exclusions
-   * from it while `exclusions` isn't resolved yet.
-   */
-  @property({ attribute: false })
-  public exclude?: HassServiceTarget;
-
-  /** On a target row: whether its details can change `exclusions`. */
-  @property({ attribute: false })
-  public exclusionsEditable = false;
 
   /** In the target details: rows get a checkbox to exclude what they hold. */
   @property({ type: Boolean })
@@ -910,30 +895,14 @@ export class HaTargetPickerItemRow extends LitElement {
     });
   };
 
+  // The target picker opens the details, as it knows what is excluded from
+  // the whole target.
   private _openDetails(ev: MouseEvent) {
     ev.stopPropagation();
-    const exclusions = this.exclusions;
-    showTargetDetailsDialog(this, {
-      title: this._itemData(this.type, this.itemId).name,
+    fireEvent(this, "open-target-details", {
       type: this.type,
-      itemId: this.itemId,
-      deviceFilter: this.deviceFilter,
-      entityFilter: this.entityFilter,
-      activeFilter: this.activeFilter,
-      includeDomains: this.includeDomains,
-      includeDeviceClasses: this.includeDeviceClasses,
-      primaryEntitiesOnly: this.primaryEntitiesOnly,
-      exclusions,
-      exclude: this.exclude,
-      exclusionsChanged:
-        exclusions && this.exclusionsEditable
-          ? (initial, current) => {
-              fireEvent(this, "target-exclusions-changed", {
-                initial,
-                current,
-              });
-            }
-          : undefined,
+      id: this.itemId,
+      title: this._itemData(this.type, this.itemId).name,
     });
   }
 
@@ -1075,6 +1044,7 @@ declare global {
   }
 
   interface HASSDomEvents {
+    "open-target-details": { type: TargetType; id: string; title: string };
     "target-selection-changed": {
       row: TargetRow;
       isTarget: boolean;
