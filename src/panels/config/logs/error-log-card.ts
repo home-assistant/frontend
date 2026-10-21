@@ -72,6 +72,8 @@ import {
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
 import { domainToName } from "../../../data/integration";
+import { mergeLogBacklogs } from "../../../data/log_backlog";
+import { formatListWithAnds } from "../../../common/string/format-list";
 import { haStyleScrollbar } from "../../../resources/styles";
 import type {
   HomeAssistantApi,
@@ -99,7 +101,7 @@ class ErrorLogCard extends LitElement {
 
   @property() public provider?: string;
 
-  @property() public integration?: string;
+  @property({ attribute: false }) public integrations?: string[];
 
   @property({ attribute: "allow-switch", type: Boolean }) public allowSwitch =
     false;
@@ -171,7 +173,7 @@ class ErrorLogCard extends LitElement {
 
   @state() private _integrationLive = false;
 
-  private _integrationUnsub?: Promise<UnsubscribeFunc>;
+  private _integrationUnsubs?: Promise<UnsubscribeFunc>[];
 
   private _integrationLines: string[] = [];
 
@@ -356,9 +358,11 @@ class ErrorLogCard extends LitElement {
                             ? localize(
                                 "ui.panel.config.logs.integration_log_waiting",
                                 {
-                                  integration: domainToName(
-                                    this._localize,
-                                    this.integration!
+                                  integration: formatListWithAnds(
+                                    this._i18n.locale,
+                                    this.integrations!.map((domain) =>
+                                      domainToName(this._localize, domain)
+                                    )
                                   ),
                                 }
                               )
@@ -436,7 +440,7 @@ class ErrorLogCard extends LitElement {
       this._i18n.loadFragmentTranslation("config");
     }
 
-    if (changedProps.has("provider") || changedProps.has("integration")) {
+    if (changedProps.has("provider") || changedProps.has("integrations")) {
       this._boot = 0;
       this._loadLogs();
     }
@@ -484,6 +488,19 @@ class ErrorLogCard extends LitElement {
     }
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    // The settings panel is kept while away, the log stopped when it was
+    // detached
+    if (this.hasUpdated) {
+      window.addEventListener(
+        "connection-status",
+        this._handleConnectionStatus
+      );
+      this._loadLogs();
+    }
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -501,7 +518,10 @@ class ErrorLogCard extends LitElement {
 
   private async _downloadLogs(): Promise<void> {
     if (this._isIntegrationLog()) {
-      downloadIntegrationLog(this.integration!, this._integrationLines);
+      downloadIntegrationLog(
+        this.integrations!.join("_"),
+        this._integrationLines
+      );
       return;
     }
 
@@ -723,7 +743,10 @@ class ErrorLogCard extends LitElement {
   }
 
   private _isIntegrationLog(): boolean {
-    return !!this.integration && (!this.provider || this.provider === "core");
+    return (
+      !!this.integrations?.length &&
+      (!this.provider || this.provider === "core")
+    );
   }
 
   private _subscribeIntegrationLog() {
@@ -731,19 +754,46 @@ class ErrorLogCard extends LitElement {
     this._integrationLines = [];
     this._ansiToHtmlElement?.clear();
 
-    const unsub = subscribeIntegrationLog(
-      this._connection.connection,
-      this.integration!,
-      (lines) => {
-        if (this._integrationUnsub === unsub) {
-          this._addIntegrationLines(lines);
-        }
-      }
+    // Each subscription starts with the integration's backlog. They are merged
+    // in time order once all arrived, followed by the lines sent meanwhile.
+    const integrations = this.integrations!;
+    const backlogs: (string[] | undefined)[] = integrations.map(
+      () => undefined
     );
-    this._integrationUnsub = unsub;
-    unsub.then(
+    let pending: string[] | undefined = [];
+
+    const unsubs = integrations.map((integration, index) =>
+      subscribeIntegrationLog(
+        this._connection.connection,
+        integration,
+        (lines) => {
+          if (this._integrationUnsubs !== unsubs) {
+            return;
+          }
+          if (!pending) {
+            this._addIntegrationLines(lines);
+            return;
+          }
+          if (backlogs[index] === undefined) {
+            backlogs[index] = lines;
+          } else {
+            pending.push(...lines);
+          }
+          if (backlogs.every((backlog) => backlog !== undefined)) {
+            const merged = [
+              ...mergeLogBacklogs(backlogs as string[][]),
+              ...pending,
+            ];
+            pending = undefined;
+            this._addIntegrationLines(merged);
+          }
+        }
+      )
+    );
+    this._integrationUnsubs = unsubs;
+    Promise.all(unsubs).then(
       () => {
-        if (this._integrationUnsub !== unsub) {
+        if (this._integrationUnsubs !== unsubs) {
           return;
         }
         this._integrationLive = true;
@@ -752,10 +802,10 @@ class ErrorLogCard extends LitElement {
         }
       },
       () => {
-        if (this._integrationUnsub !== unsub) {
+        if (this._integrationUnsubs !== unsubs) {
           return;
         }
-        this._integrationUnsub = undefined;
+        this._unsubscribeIntegrationLog();
         this._loadingState = "loaded";
         this._error = (this.localizeFunc || this._localize)(
           "ui.panel.config.logs.integration_log_unsupported"
@@ -765,8 +815,10 @@ class ErrorLogCard extends LitElement {
   }
 
   private _unsubscribeIntegrationLog() {
-    this._integrationUnsub?.then((unsub) => unsub()).catch(() => undefined);
-    this._integrationUnsub = undefined;
+    this._integrationUnsubs?.forEach((unsub) =>
+      unsub.then((unsubscribe) => unsubscribe()).catch(() => undefined)
+    );
+    this._integrationUnsubs = undefined;
     this._integrationLive = false;
   }
 
@@ -836,9 +888,9 @@ class ErrorLogCard extends LitElement {
       this._logStreamAborter.abort();
       this._loadingState = "loading";
     }
-    if (ev.detail === "disconnected" && this._integrationUnsub) {
-      // The subscription ended with the connection
-      this._integrationUnsub = undefined;
+    if (ev.detail === "disconnected" && this._integrationUnsubs) {
+      // The subscriptions ended with the connection
+      this._integrationUnsubs = undefined;
       this._integrationLive = false;
       this._loadingState = "loading";
     }

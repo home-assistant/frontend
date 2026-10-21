@@ -334,6 +334,9 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/logs",
     params: {
       provider: "string?",
+      filter: "string?",
+      integration: "string?",
+      raw: "string?",
     },
   },
   repairs: {

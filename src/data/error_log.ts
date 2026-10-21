@@ -7,6 +7,7 @@ import type {
   LogFileDisabledReason,
 } from "../types";
 import { fileDownload } from "../util/file_download";
+import { ANSI_ESCAPE } from "./log_backlog";
 import type { HassioAddonInfo } from "./hassio/addon";
 import { supervisorUrl } from "./hassio/common";
 
@@ -35,9 +36,6 @@ export const subscribeIntegrationLog = (
     // subscribe again themselves when the connection is ready
     { resubscribe: false }
   );
-
-// eslint-disable-next-line no-control-regex
-const ANSI_ESCAPE = /\x1b\[[0-9;]*m/g;
 
 export const downloadIntegrationLog = (
   integration: string,

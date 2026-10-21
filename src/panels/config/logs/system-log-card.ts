@@ -21,6 +21,7 @@ import {
   getErrorLogDownloadUrl,
 } from "../../../data/error_log";
 import { domainToName } from "../../../data/integration";
+import { formatListWithAnds } from "../../../common/string/format-list";
 import type { LoggedError } from "../../../data/system_log";
 import {
   fetchSystemLog,
@@ -41,7 +42,7 @@ export class SystemLogCard extends LitElement {
 
   @property() public header?: string;
 
-  @property() public integration?: string;
+  @property({ attribute: false }) public integrations?: string[];
 
   @property({ attribute: false }) public integrationLoggers?: string[];
 
@@ -118,7 +119,7 @@ export class SystemLogCard extends LitElement {
           this.hass.localize,
           this._items,
           this.filter.toLowerCase(),
-          this.integration ? this.integrationLoggers : undefined
+          this.integrations?.length ? this.integrationLoggers : undefined
         )
       : [];
     const integrations = filteredItems.length
@@ -161,7 +162,8 @@ export class SystemLogCard extends LitElement {
                       ></ha-icon-button>
 
                       ${
-                        logFileDownloadUnavailableReason && !this.integration
+                        logFileDownloadUnavailableReason &&
+                        !this.integrations?.length
                           ? nothing
                           : html`<ha-dropdown
                               @wa-select=${this._handleOverflowAction}
@@ -201,7 +203,7 @@ export class SystemLogCard extends LitElement {
                           </div>
                         `
                       : filteredItems.length === 0 &&
-                          (this.filter || this.integration)
+                          (this.filter || this.integrations?.length)
                         ? html`<div class="card-content">
                             ${
                               this.filter
@@ -212,9 +214,14 @@ export class SystemLogCard extends LitElement {
                                 : this.hass.localize(
                                     "ui.panel.config.logs.no_issues_integration",
                                     {
-                                      integration: domainToName(
-                                        this.hass.localize,
-                                        this.integration!
+                                      integration: formatListWithAnds(
+                                        this.hass.locale,
+                                        this.integrations!.map((domain) =>
+                                          domainToName(
+                                            this.hass.localize,
+                                            domain
+                                          )
+                                        )
                                       ),
                                     }
                                   )

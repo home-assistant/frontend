@@ -4906,7 +4906,6 @@
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
           "no_issues_integration": "No issues found for {integration}",
-          "filter_integration": "[%key:ui::components::related-items::integration%]",
           "integration_log_waiting": "[%key:ui::panel::config::integrations::config_entry::live_log::waiting%]",
           "integration_log_unsupported": "[%key:ui::panel::config::integrations::config_entry::live_log::unsupported%]",
           "no_matches_showing_all": "Nothing in the recent logs mentions ''{term}'', so all lines are shown.",
