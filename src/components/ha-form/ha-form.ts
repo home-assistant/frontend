@@ -7,7 +7,7 @@ import { resolveSelectorContext } from "../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import "../ha-alert";
 import "../ha-selector/ha-selector";
-import { getHiddenFields } from "./conditions";
+import { getHiddenSchemaFields } from "./conditions";
 import type {
   HaFormData,
   HaFormDataContainer,
@@ -136,7 +136,7 @@ export class HaForm extends LitElement implements HaFormElement {
     let isValid = true;
     let firstInvalidElement: HTMLElement | undefined;
 
-    const hiddenFields = getHiddenFields(this.schema, this.data);
+    const hiddenFields = getHiddenSchemaFields(this.schema, this.data);
     const visibleSchema = this.schema.filter(
       (item) => !hiddenFields.has(item.name)
     );
@@ -195,7 +195,7 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
-    const renderHiddenFields = getHiddenFields(this.schema, this.data);
+    const renderHiddenFields = getHiddenSchemaFields(this.schema, this.data);
 
     return html`
       <div class="root" part="root">
