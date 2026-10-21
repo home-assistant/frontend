@@ -737,6 +737,8 @@ export interface BaseSidebarConfig {
 
 export interface TriggerSidebarConfig extends BaseSidebarConfig {
   save: (value: Trigger) => void;
+  // Not set for containers.
+  replace?: () => void;
   rename: () => void;
   editId: () => void;
   disable: () => void;
@@ -755,6 +757,8 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
 
 export interface ConditionSidebarConfig extends BaseSidebarConfig {
   save: (value: Condition) => void;
+  // Not set for containers.
+  replace?: () => void;
   rename: () => void;
   disable: () => void;
   test: () => void;
@@ -773,6 +777,8 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
 
 export interface ActionSidebarConfig extends BaseSidebarConfig {
   save: (value: Action) => void;
+  // Not set for containers.
+  replace?: () => void;
   rename: () => void;
   disable: () => void;
   continueOnError: () => void;
