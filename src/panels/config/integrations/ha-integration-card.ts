@@ -47,12 +47,10 @@ import {
 
 interface IntegrationCardStatus {
   level: "error" | "warning" | "progress";
-  /** Icon path; omitted for "progress", which shows a spinner. */
   icon?: string;
   message: string;
 }
 
-// Status shown for card states that need attention or are in progress.
 const STATE_STATUS: Partial<
   Record<ConfigEntry["state"], Omit<IntegrationCardStatus, "message">>
 > = {

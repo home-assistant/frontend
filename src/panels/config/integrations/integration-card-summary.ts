@@ -8,7 +8,6 @@ export type IntegrationCardSummaryUnit =
 
 export interface IntegrationCardSummary {
   unit: IntegrationCardSummaryUnit;
-  /** Total number of items of `unit`. */
   count: number;
   /** Number of items of `unit` that belong to a config entry needing attention. */
   attention: number;
@@ -53,10 +52,6 @@ export const computeIntegrationCardState = (
 };
 
 /**
- * Compute what the integration card shows as supporting text: the number of
- * devices, services, entities or entries, and how many of those belong to a
- * config entry that needs attention.
- *
  * When an entry needing attention owns none of the counted items (for
  * example an entry that never set up and has no devices yet), the summary
  * counts entries instead so the problem is never hidden.
