@@ -472,6 +472,9 @@ export class HaIntegrationCard extends LitElement {
         ha-row-item::part(headline) {
           font-size: var(--ha-font-size-l);
         }
+        ha-row-item::part(supporting-text) {
+          overflow: visible;
+        }
         .name {
           display: block;
           overflow: hidden;

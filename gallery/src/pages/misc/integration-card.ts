@@ -109,7 +109,6 @@ const disabledFailedUnloadEntry = createConfigEntry(
   }
 );
 
-// Other brands to compare how status badges look on different icons.
 const brandEntries: ConfigEntryExtended[] = (
   [
     ["hue", "Philips Hue", "loaded"],
