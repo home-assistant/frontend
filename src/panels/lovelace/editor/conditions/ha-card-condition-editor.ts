@@ -354,7 +354,7 @@ export class HaCardConditionEditor extends LitElement {
             this._uiWarnings = [];
           } catch (err) {
             this._uiWarnings = handleStructError(
-              this.hass,
+              this.hass.localize,
               err as Error
             ).warnings;
             this._uiAvailable = false;
@@ -762,7 +762,10 @@ export class HaCardConditionEditor extends LitElement {
   // Automation editors emit this when UI mode can't handle the config.
   private _handleUiModeNotAvailable(ev: CustomEvent) {
     ev.stopPropagation();
-    this._uiWarnings = handleStructError(this.hass, ev.detail).warnings;
+    this._uiWarnings = handleStructError(
+      this.hass.localize,
+      ev.detail
+    ).warnings;
     this._uiAvailable = false;
     if (!this._yamlMode) {
       this._yamlMode = true;

@@ -16,7 +16,6 @@ import type {
   HaFormDataContainer,
   HaFormSchema,
 } from "../../../../../components/ha-form/types";
-import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-yaml-editor";
@@ -345,18 +344,14 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
         </div>
         ${
           hasHiddenOptions
-            ? html`<ha-formfield
+            ? html`<ha-switch
+                @change=${this._toggleOptional}
+                .checked=${this._showOptional}
                 class="show-additional"
-                .label=${this.hass.localize(
+                >${this.hass.localize(
                   "ui.panel.config.apps.configuration.options.show_unused_optional"
-                )}
-              >
-                <ha-switch
-                  @change=${this._toggleOptional}
-                  .checked=${this._showOptional}
-                >
-                </ha-switch>
-              </ha-formfield>`
+                )}</ha-switch
+              >`
             : ""
         }
         <div class="card-actions right">
@@ -446,7 +441,7 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
       text: this.hass.localize(
         "ui.panel.config.apps.configuration.confirm.reset_options.text"
       ),
-      confirmText: this.hass.localize("ui.common.reset_options"),
+      confirmText: this.hass.localize("ui.common.reset"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
     });

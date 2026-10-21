@@ -58,6 +58,8 @@ export class DialogEnergyGasSettings
 
   @state() private _costs?: CostType;
 
+  @state() private _numberPriceText = "";
+
   @state() private _pickedDisplayUnit?: string | null;
 
   @state() private _energy_units?: string[];
@@ -88,11 +90,15 @@ export class DialogEnergyGasSettings
     );
     this._costs = this._source.entity_energy_price
       ? "entity"
-      : this._source.number_energy_price
+      : typeof this._source.number_energy_price === "number"
         ? "number"
         : this._source.stat_cost
           ? "statistic"
           : "no-costs";
+    this._numberPriceText =
+      typeof this._source.number_energy_price === "number"
+        ? String(this._source.number_energy_price)
+        : "";
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
@@ -316,12 +322,10 @@ export class DialogEnergyGasSettings
                     class="price-options"
                     step="any"
                     type="number"
-                    .value=${
-                      this._source.number_energy_price !== null
-                        ? String(this._source.number_energy_price)
-                        : ""
-                    }
-                    @change=${this._numberPriceChanged}
+                    required
+                    auto-validate
+                    .value=${this._numberPriceText}
+                    @input=${this._numberPriceChanged}
                   >
                     ${
                       unitPrice
@@ -344,6 +348,8 @@ export class DialogEnergyGasSettings
             @click=${this._save}
             .disabled=${
               !this._source!.stat_energy_from ||
+              (this._costs === "number" &&
+                typeof this._source!.number_energy_price !== "number") ||
               (!!this._params?.source && !this.isDirtyState)
             }
             slot="primaryAction"
@@ -360,10 +366,14 @@ export class DialogEnergyGasSettings
     this._updateFormDirtyState();
   }
 
-  private _numberPriceChanged(ev: InputEvent) {
+  private _numberPriceChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    // Render the typed text so partial input such as "0." is not rewritten
+    this._numberPriceText = ev.currentTarget.value ?? "";
     this._source = {
       ...this._source!,
-      number_energy_price: Number((ev.target as HTMLInputElement).value),
+      number_energy_price: this._numberPriceText
+        ? parseFloat(this._numberPriceText)
+        : null,
       entity_energy_price: null,
       stat_cost: null,
     };
@@ -371,6 +381,7 @@ export class DialogEnergyGasSettings
   }
 
   private _priceStatChanged(ev: CustomEvent) {
+    this._numberPriceText = "";
     this._source = {
       ...this._source!,
       entity_energy_price: null,
@@ -381,6 +392,7 @@ export class DialogEnergyGasSettings
   }
 
   private _priceEntityChanged(ev: CustomEvent) {
+    this._numberPriceText = "";
     this._source = {
       ...this._source!,
       entity_energy_price: ev.detail.value,
@@ -451,6 +463,7 @@ export class DialogEnergyGasSettings
         this._source!.entity_energy_price = null;
         this._source!.number_energy_price = null;
         this._source!.stat_cost = null;
+        this._numberPriceText = "";
       }
       await this._params!.saveCallback(this._source!);
       this._markDirtyStateClean();

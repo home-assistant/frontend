@@ -17,8 +17,10 @@ import { UNIT_KM } from "../../common/const";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { getEntityLocation } from "../../common/entity/get_entity_location";
+import {
+  findFirstActiveZone,
+  getEntityLocation,
+} from "../../common/entity/get_entity_location";
 import { supportsVectorMaps } from "../../common/map/base-layer";
 import type {
   MapCircleHandle,
@@ -36,6 +38,7 @@ import type {
   MapEditableCircleHandle,
   MapEditableMarkerHandle,
   MapEditingSupport,
+  MapView,
 } from "../../common/map/map-engine";
 import {
   circleBoundsPoints,
@@ -66,8 +69,10 @@ import {
   statesContext,
   uiContext,
 } from "../../data/context";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { ensureMapTilesToken } from "../../data/map_tiles";
+import "../ha-tooltip";
 import type {
   HomeAssistantConfig,
   HomeAssistantConnection,
@@ -76,7 +81,7 @@ import type {
   HomeAssistantUI,
   ThemeMode,
 } from "../../types";
-import "./ha-entity-marker";
+import { FLOATING_LIFT, floatingMarkerFootprint } from "./ha-entity-marker";
 
 declare global {
   // for fire event
@@ -128,6 +133,8 @@ export interface HaMapEditableLocation {
   radiusEditable?: boolean;
   /** Activating the marker fires editable-location-clicked; otherwise it is not a button */
   activatable?: boolean;
+  /** Counts toward the map fit; defaults to true */
+  fit?: boolean;
 }
 
 // Geometry is updated in place; a change to anything else rebuilds the marker
@@ -199,6 +206,7 @@ const staticEditing = (engine: MapEngine): MapEditingSupport => ({
           size: options.centerSize ?? [16, 16],
           interactive: !!options.onClick,
           title: options.title,
+          nativeTitle: options.nativeTitle,
         }),
       ];
     };
@@ -276,6 +284,10 @@ const CLUSTER_RADIUS = 40;
 // Same-zone markers share the zone's bubble while they span at most this many
 // pixels; further apart they show their actual positions
 const ZONE_GROUP_RADIUS = 160;
+// Circle radius (meters) for a selected marker without a reported accuracy
+const NOMINAL_ACCURACY = 2.5;
+// Fixes this good (meters) draw a soft disc without an outline
+const PRECISE_GPS_ACCURACY = 10;
 
 type EntityMarkerElement = HTMLElementTagNameMap["ha-entity-marker"];
 
@@ -414,6 +426,8 @@ export class HaMap extends ReactiveElement {
 
   private _entityHandles: MapMarkerHandle[] = [];
 
+  private _tooltipCount = 0;
+
   // Marker elements survive redraws so unchanged entities keep their DOM
   private _entityMarkers = new Map<string, EntityMarkerElement>();
 
@@ -517,8 +531,19 @@ export class HaMap extends ReactiveElement {
     } else if (this._loaded && oldStates && this.entities) {
       // Check if any state has changed
       for (const entity of this.entities) {
+        const entityId = getEntityId(entity);
+        const stateObj = this._states[entityId];
+        const inZones: string[] | undefined = stateObj?.attributes.in_zones;
         if (
-          oldStates[getEntityId(entity)] !== this._states[getEntityId(entity)]
+          oldStates[entityId] !== stateObj ||
+          (stateObj &&
+            ["person", "device_tracker"].includes(
+              computeStateDomain(stateObj)
+            ) &&
+            Array.isArray(inZones) &&
+            inZones.some(
+              (zoneId) => oldStates[zoneId] !== this._states[zoneId]
+            ))
         ) {
           this._drawEntities();
           autoFitRequired = !this._pauseAutoFit;
@@ -527,7 +552,11 @@ export class HaMap extends ReactiveElement {
       }
     }
 
-    if (changedProps.has("clusterMarkers") || changedProps.has("_entityReg")) {
+    if (
+      changedProps.has("clusterMarkers") ||
+      changedProps.has("_entityReg") ||
+      changedProps.has("_formatters")
+    ) {
       this._drawEntities();
     }
 
@@ -904,8 +933,10 @@ export class HaMap extends ReactiveElement {
 
     const points = [...this._focusPoints, ...zonePoints];
 
-    // Editable locations contribute their bounds, radius included
-    this.editableLocations?.forEach((editable) => {
+    // Opted-out locations only count when nothing else would be fitted
+    const editables = this.editableLocations ?? [];
+    const fitted = editables.filter((editable) => editable.fit !== false);
+    (fitted.length ? fitted : editables).forEach((editable) => {
       if (editable.radius) {
         points.push(...circleBoundsPoints(editable.location, editable.radius));
       } else {
@@ -963,9 +994,18 @@ export class HaMap extends ReactiveElement {
     this._engine.setView(center, zoom);
   }
 
+  public getView(): MapView | undefined {
+    return this._engine?.getView();
+  }
+
   public fitBounds(
     boundingbox: MapLatLng[],
-    options?: { zoom?: number; pad?: number; padding?: MapFitPadding }
+    options?: {
+      zoom?: number;
+      pad?: number;
+      padding?: MapFitPadding;
+      fly?: boolean;
+    }
   ) {
     // An explicit fit is user intent, even while it waits for the engine or
     // a size; an auto-fit must not take its place in the meantime
@@ -984,6 +1024,7 @@ export class HaMap extends ReactiveElement {
         pad: options?.pad ?? 0.5,
         animate: this._hasFitted,
         padding: options?.padding,
+        fly: options?.fly,
       });
     });
     this._hasFitted = true;
@@ -1017,6 +1058,7 @@ export class HaMap extends ReactiveElement {
       // Markers are buttons, so an unnamed location still gets a name
       const title =
         editable.title ?? this._i18n?.localize("ui.components.map.location");
+      const tooltip = !!editable.element && !!editable.title;
       const existing = this._editableHandles.get(id);
       const kind = editable.radius ? "circle" : "marker";
 
@@ -1041,30 +1083,35 @@ export class HaMap extends ReactiveElement {
       }
 
       if (kind === "circle") {
+        const handle = editing.addEditableCircle(editable.location, {
+          radius: editable.radius!,
+          color: editable.color || defaultColor,
+          centerElement: editable.element,
+          centerSize: editable.elementSize,
+          title,
+          nativeTitle: !tooltip,
+          moveable: editable.locationEditable,
+          resizable: editable.radiusEditable,
+          resizeLabel: editable.title
+            ? this._i18n?.localize("ui.components.map.radius_of", {
+                name: editable.title,
+              })
+            : this._i18n?.localize("ui.components.map.radius"),
+          onMove: (location) =>
+            fireEvent(this, "editable-location-moved", { id, location }),
+          onResize: (radius) =>
+            fireEvent(this, "editable-location-resized", { id, radius }),
+          onClick: editable.activatable
+            ? () => fireEvent(this, "editable-location-clicked", { id })
+            : undefined,
+        });
         this._editableHandles.set(id, {
           kind,
           source: editable,
-          handle: editing.addEditableCircle(editable.location, {
-            radius: editable.radius!,
-            color: editable.color || defaultColor,
-            centerElement: editable.element,
-            centerSize: editable.elementSize,
-            title,
-            moveable: editable.locationEditable,
-            resizable: editable.radiusEditable,
-            resizeLabel: editable.title
-              ? this._i18n?.localize("ui.components.map.radius_of", {
-                  name: editable.title,
-                })
-              : this._i18n?.localize("ui.components.map.radius"),
-            onMove: (location) =>
-              fireEvent(this, "editable-location-moved", { id, location }),
-            onResize: (radius) =>
-              fireEvent(this, "editable-location-resized", { id, radius }),
-            onClick: editable.activatable
-              ? () => fireEvent(this, "editable-location-clicked", { id })
-              : undefined,
-          }),
+          handle,
+          cleanup: tooltip
+            ? this._attachTooltip(editable.element!, editable.title!)
+            : undefined,
         });
         continue;
       }
@@ -1103,23 +1150,40 @@ export class HaMap extends ReactiveElement {
       }
       // A location that cannot be dragged is static on any engine
       const support = editable.locationEditable ? editing : staticSupport;
+      const handle = support.addDraggableMarker(element, editable.location, {
+        size: editable.elementSize ?? [16, 16],
+        interactive: true,
+        focusable: !!editable.activatable,
+        title,
+        nativeTitle: !tooltip,
+        onDragEnd: (location) => {
+          dragged = true;
+          fireEvent(this, "editable-location-moved", { id, location });
+        },
+      });
+      const removeTooltip = tooltip
+        ? this._attachTooltip(editable.element!, editable.title!)
+        : undefined;
       this._editableHandles.set(id, {
         kind,
         source: editable,
-        cleanup,
-        handle: support.addDraggableMarker(element, editable.location, {
-          size: editable.elementSize ?? [16, 16],
-          interactive: true,
-          focusable: !!editable.activatable,
-          title,
-          onDragEnd: (location) => {
-            dragged = true;
-            fireEvent(this, "editable-location-moved", { id, location });
-          },
-        }),
+        cleanup: () => {
+          cleanup?.();
+          removeTooltip?.();
+        },
+        handle,
       });
     }
     return changed;
+  }
+
+  private _attachTooltip(element: HTMLElement, title: string): () => void {
+    element.id ||= `ha-map-editable-${this._tooltipCount++}`;
+    const tooltip = document.createElement("ha-tooltip");
+    tooltip.for = element.id;
+    tooltip.textContent = title;
+    this.shadowRoot!.append(tooltip);
+    return () => tooltip.remove();
   }
 
   // One by one, so the listeners on the caller's elements are detached too
@@ -1274,7 +1338,7 @@ export class HaMap extends ReactiveElement {
     const states = this._states;
     const engine = this._engine;
 
-    if (!states || !engine) {
+    if (!states || !engine || !this._formatters) {
       return;
     }
 
@@ -1297,8 +1361,6 @@ export class HaMap extends ReactiveElement {
     this._watchRegistry();
 
     const computedStyles = getComputedStyle(this);
-    // A person's state is "home" for the home zone, the zone name otherwise
-    const zoneByState: Record<string, string> = {};
     this._zonePositions = {};
     this._zoneRadii = {};
     for (const entity of this.entities) {
@@ -1309,11 +1371,6 @@ export class HaMap extends ReactiveElement {
         computeStateDomain(stateObj) === "zone" &&
         (this.renderPassive || !stateObj.attributes.passive)
       ) {
-        zoneByState[
-          stateObj.entity_id === "zone.home"
-            ? "home"
-            : computeStateName(stateObj)
-        ] = stateObj.entity_id;
         if (
           typeof stateObj.attributes.latitude === "number" &&
           typeof stateObj.attributes.longitude === "number"
@@ -1336,7 +1393,7 @@ export class HaMap extends ReactiveElement {
         continue;
       }
       const customTitle = typeof entity !== "string" ? entity.name : undefined;
-      const title = customTitle ?? computeStateName(stateObj);
+      const title = customTitle ?? this._formatters.formatEntityName(stateObj);
       const {
         passive,
         icon,
@@ -1470,6 +1527,23 @@ export class HaMap extends ReactiveElement {
       entityMarker.entityColor = entityColor;
       entityMarker.selected =
         typeof entity !== "string" && (entity.selected ?? false);
+      entityMarker.floating = true;
+
+      let zoneId: string | undefined;
+      if (["person", "device_tracker"].includes(computeStateDomain(stateObj))) {
+        const inZones: string[] | undefined = stateObj.attributes.in_zones;
+        if (Array.isArray(inZones) && inZones.length > 0) {
+          const activeZone = findFirstActiveZone(inZones, states);
+          if (activeZone && this._zonePositions[activeZone.entity_id]) {
+            zoneId = activeZone.entity_id;
+          }
+        } else if (
+          !Array.isArray(inZones) ||
+          !["not_home", UNKNOWN, UNAVAILABLE].includes(stateObj.state)
+        ) {
+          zoneId = this._zoneContaining(position, gpsAccuracy);
+        }
+      }
 
       const clusterData: ClusterData = {
         entityId,
@@ -1480,25 +1554,31 @@ export class HaMap extends ReactiveElement {
         unit: entityMarker.entityUnit ?? "",
         color: entityColor,
         selected: entityMarker.selected,
-        zoneId: ["person", "device_tracker"].includes(
-          computeStateDomain(stateObj)
-        )
-          ? (zoneByState[stateObj.state] ?? this._zoneContaining(position))
-          : undefined,
+        zoneId,
       };
 
+      const accuracy =
+        gpsAccuracy || (entityMarker.selected ? NOMINAL_ACCURACY : 0);
       const showAccuracy =
-        !!gpsAccuracy && !(typeof entity !== "string" && entity.hide_accuracy);
+        accuracy > 0 && !(typeof entity !== "string" && entity.hide_accuracy);
 
-      const markerSize = this._getMarkerSize(computedStyles);
       this._entityHandles.push(
         engine.addMarker(entityMarker, position, {
-          size: [markerSize, markerSize],
+          ...floatingMarkerFootprint(
+            this._getMarkerSize(computedStyles),
+            entityMarker.selected
+          ),
           title,
-          cluster: true,
+          // Selected, it leaves its bubble
+          cluster: !entityMarker.selected,
+          raised: entityMarker.selected,
           clusterData,
           decoration: showAccuracy
-            ? { radius: gpsAccuracy!, color: entityColor }
+            ? {
+                radius: accuracy,
+                color: entityColor,
+                outline: accuracy > PRECISE_GPS_ACCURACY,
+              }
             : undefined,
         })
       );
@@ -1534,16 +1614,26 @@ export class HaMap extends ReactiveElement {
     );
   }
 
-  private _zoneContaining(position: MapLatLng): string | undefined {
+  private _zoneContaining(
+    position: MapLatLng,
+    gpsAccuracy = 0
+  ): string | undefined {
     let found: string | undefined;
     let foundRadius = Infinity;
+    let foundDistance = Infinity;
     for (const [zoneId, radius] of Object.entries(this._zoneRadii)) {
+      if (this._states[zoneId]?.attributes.passive) {
+        continue;
+      }
+      const distance = distanceMeters(position, this._zonePositions[zoneId]);
       if (
-        radius < foundRadius &&
-        distanceMeters(position, this._zonePositions[zoneId]) <= radius
+        distance - gpsAccuracy < radius &&
+        (radius < foundRadius ||
+          (radius === foundRadius && distance < foundDistance))
       ) {
         found = zoneId;
         foundRadius = radius;
+        foundDistance = distance;
       }
     }
     return found;
@@ -1631,37 +1721,30 @@ export class HaMap extends ReactiveElement {
       width += CLUSTER_MORE_WIDTH + CLUSTER_BUBBLE_GAP;
     }
 
-    // A cluster of one zone's occupants attaches to that zone's marker
-    const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
-    const atZone = !!zonePosition;
-
-    let height =
+    const height =
       rows * CLUSTER_AVATAR_SIZE +
       (rows - 1) * CLUSTER_BUBBLE_GAP +
-      2 * CLUSTER_BUBBLE_PADDING;
-    let root: HTMLElement = bubble;
-    if (atZone) {
-      root = document.createElement("div");
-      root.className = "cluster-marker";
-      const tail = document.createElement("div");
-      tail.className = "cluster-bubble-tail";
-      root.append(bubble, tail);
-      height += CLUSTER_TAIL_HEIGHT;
-    }
+      2 * CLUSTER_BUBBLE_PADDING +
+      CLUSTER_TAIL_HEIGHT;
+    const root = document.createElement("div");
+    root.className = "cluster-marker";
+    const tail = document.createElement("div");
+    tail.className = "cluster-bubble-tail";
+    root.append(bubble, tail);
 
+    // A cluster of one zone's occupants floats above that zone's circle
+    const zonePosition = zoneId ? this._zonePositions[zoneId] : undefined;
     return {
       element: root,
       size: [width, height],
-      // Float above the zone circle, tail pointing at it
-      ...(atZone && zonePosition
-        ? {
-            location: zonePosition,
-            anchor: [
-              width / 2,
-              height + ZONE_CIRCLE_SIZE / 2 + CLUSTER_ZONE_SPACING,
-            ] as [number, number],
-          }
-        : {}),
+      location: zonePosition,
+      anchor: [
+        width / 2,
+        height +
+          (zonePosition
+            ? ZONE_CIRCLE_SIZE / 2 + CLUSTER_ZONE_SPACING
+            : FLOATING_LIFT),
+      ],
     };
   };
 
@@ -1828,6 +1911,23 @@ export class HaMap extends ReactiveElement {
     .dark .maplibregl-ctrl button .maplibregl-ctrl-icon {
       filter: invert(1);
     }
+    /* Not inherited from the page, which may be in the other mode */
+    .maplibregl-ctrl.maplibregl-ctrl-attrib {
+      color: #000000;
+    }
+    .dark .maplibregl-ctrl.maplibregl-ctrl-attrib {
+      background-color: rgba(28, 28, 28, 0.6);
+      color: #ffffff;
+    }
+    .dark .maplibregl-ctrl-attrib.maplibregl-compact {
+      background-color: #1c1c1c;
+    }
+    .dark .maplibregl-ctrl-attrib a {
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .dark .maplibregl-ctrl-attrib-button {
+      filter: invert(1);
+    }
     /* MapLibre's stylesheet, linked into this root, wins on equal specificity */
     .maplibregl-popup-content {
       padding: 8px !important;
@@ -1900,9 +2000,9 @@ export class HaMap extends ReactiveElement {
       border-radius: 14px;
       filter: var(--ha-cluster-shadow);
       --ha-marker-size: ${CLUSTER_AVATAR_SIZE}px;
+      --ha-marker-selected-scale: 1;
       --ha-marker-color: transparent;
       --ha-marker-border-width: 1px;
-      --ha-marker-shadow: none;
       --ha-marker-font-size: var(--ha-font-size-s);
       /* distinguish letter tiles from the bubble background */
       --ha-marker-background: var(--ha-color-fill-neutral-quiet-resting);
@@ -1920,13 +2020,8 @@ export class HaMap extends ReactiveElement {
       font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
     }
-    /* Markers are rounded squares to match the cluster bubble avatars */
-    ha-entity-marker {
-      --ha-marker-border-radius: var(--ha-border-radius-lg);
-    }
     .cluster-bubble ha-entity-marker {
       flex: none;
-      --ha-marker-border-radius: 10px;
     }
     ${unsafeCSS(zoneMarkerStyles)}
     .leaflet-bottom {
@@ -1984,10 +2079,6 @@ export class HaMap extends ReactiveElement {
       border-radius: var(--ha-border-radius-sm);
       box-shadow: none !important;
       text-align: center;
-    }
-
-    ha-icon {
-      --mdc-icon-size: calc(var(--ha-marker-size, 48px) / 2);
     }
   `;
 }

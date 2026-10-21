@@ -141,12 +141,6 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
             mode === "moved")
         ) {
           row.openSidebar();
-          if (this.narrow) {
-            row.scrollIntoView({
-              block: "start",
-              behavior: "smooth",
-            });
-          }
         }
 
         if (mode === "new") {

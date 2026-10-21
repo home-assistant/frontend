@@ -13,10 +13,7 @@ import { consume } from "../../../../common/decorators/consume";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-adaptive-dialog";
-import {
-  internationalizationContext,
-  statesContext,
-} from "../../../../data/context";
+import { internationalizationContext } from "../../../../data/context";
 import { showSceneEditor } from "../../../../data/scene";
 import "../../../../dialogs/add-to/ha-add-to-action-list";
 import type {
@@ -44,10 +41,6 @@ export class DialogDeviceAddTo extends LitElement {
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
-
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
 
   @state() private _params?: DeviceAddToDialogParams;
 
@@ -78,8 +71,7 @@ export class DialogDeviceAddTo extends LitElement {
 
     const deviceName = computeDeviceNameDisplay(
       this._params.device,
-      this._i18n.localize,
-      this._states
+      this._i18n.localize
     );
 
     return html`

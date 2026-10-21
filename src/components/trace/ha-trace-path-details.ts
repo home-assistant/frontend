@@ -28,7 +28,12 @@ import type {
   TraceExtended,
 } from "../../data/trace";
 import type { TargetSelector } from "../../data/selector";
-import { getDataFromPath, isTriggerPath } from "../../data/trace";
+import {
+  getDataFromPath,
+  getNestedStepConfig,
+  getTracedEntityId,
+  isTriggerPath,
+} from "../../data/trace";
 import { getTraceTriggers } from "../../data/trace-tree";
 import type { TriggerDescriptions } from "../../data/trigger";
 import { getDeviceTarget } from "../../panels/config/automation/target/get_device_target";
@@ -46,6 +51,7 @@ import "../ha-code-editor";
 import "../ha-icon-button";
 import "../ha-tab-group";
 import "../ha-tab-group-tab";
+import { childTraceLinkStyles, renderChildTraceLink } from "./trace-child-link";
 import "./hat-logbook-note";
 import type { NodeInfo } from "./hat-script-graph";
 
@@ -219,20 +225,12 @@ export class HaTracePathDetails extends LitElement {
       const data: ActionTraceStep[] = paths[curPath];
 
       // Extract details from this.selected.config child properties used to add 'alias' (to headline), describeCondition and 'entity_id' (to result)
-      const nestPath = curPath
-        .substring(this.selected.path.length + 1)
-        .split("/");
-      let currentDetail: unknown = this.selected.config;
-      for (const part of nestPath) {
-        if (typeof currentDetail !== "object" || currentDetail === null) {
-          break;
-        }
-        const child = (currentDetail as Record<string, unknown>)[part];
-        if (child === undefined || typeof child === "string") {
-          break;
-        }
-        currentDetail = child;
-      }
+      const nestedPath = curPath.substring(this.selected.path.length + 1);
+      const currentDetail = getNestedStepConfig(
+        this.selected.config,
+        nestedPath
+      );
+      const tracedEntityId = getTracedEntityId(currentDetail, nestedPath);
 
       parts.push(
         data.map((trace, idx) => {
@@ -243,6 +241,7 @@ export class HaTracePathDetails extends LitElement {
             error,
             template_errors,
             changed_variables,
+            child_id,
             ...rest
           } = trace as any;
 
@@ -276,6 +275,15 @@ export class HaTracePathDetails extends LitElement {
               }
             )}
             <br />
+            ${
+              child_id
+                ? html`${renderChildTraceLink(
+                      this.hass,
+                      this._entityReg,
+                      child_id
+                    )}<br />`
+                : nothing
+            }
             ${
               error
                 ? html`<div class="error">
@@ -317,14 +325,8 @@ export class HaTracePathDetails extends LitElement {
                 : html`<pre>${dump(rest)}</pre>`
             }
             ${
-              typeof currentDetail === "object" &&
-              currentDetail !== null &&
-              "entity_id" in currentDetail &&
-              currentDetail.entity_id &&
-              curPath
-                .substring(this.selected.path.length + 1)
-                .includes("entity_id")
-                ? html`<pre>entity: ${currentDetail.entity_id}</pre>`
+              tracedEntityId
+                ? html`<pre>entity: ${tracedEntityId}</pre>`
                 : nothing
             }
           `;
@@ -605,6 +607,7 @@ export class HaTracePathDetails extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      childTraceLinkStyles,
       css`
         .padded-box {
           margin: 16px;
@@ -664,7 +667,10 @@ export class HaTracePathDetails extends LitElement {
         }
 
         ha-tab-group {
-          background-color: var(--primary-background-color);
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--ha-panel-background, var(--primary-background-color))
+          );
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
         }

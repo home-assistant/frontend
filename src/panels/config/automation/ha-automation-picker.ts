@@ -32,7 +32,6 @@ import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
@@ -267,6 +266,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       automations: AutomationEntity[],
       entityReg: EntityRegistryEntry[],
       areas: HomeAssistant["areas"],
+      formatEntityName: HomeAssistant["formatEntityName"],
       categoryReg?: CategoryRegistryEntry[],
       labelReg?: LabelRegistryEntry[],
       filteredAutomations?: string[] | null
@@ -301,7 +301,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         );
         return {
           ...automation,
-          name: computeStateName(automation),
+          name: formatEntityName(automation),
           area: entityRegEntry?.area_id
             ? areas[entityRegEntry?.area_id]?.name
             : undefined,
@@ -489,6 +489,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
       this.automations,
       this._entityReg,
       this.hass.areas,
+      this.hass.formatEntityName,
       this._categories,
       this._labels,
       this._filteredEntityIds
@@ -869,7 +870,9 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (changedProps.has("_entityReg")) {
+    // The filtered list holds entity IDs, so also refresh it when automations
+    // are added or removed
+    if (changedProps.has("_entityReg") || changedProps.has("automations")) {
       this._applyFilters();
     }
   }
@@ -1634,7 +1637,7 @@ ${rejected
           --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
-          --md-assist-chip-trailing-space: 8px;
+          --ha-assist-chip-trailing-space: 8px;
         }
       `,
     ];

@@ -16,20 +16,27 @@ import {
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { storage } from "../../../common/decorators/storage";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
+import { mainWindow } from "../../../common/dom/get_main_window";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { getHistoryState, navigate } from "../../../common/navigate";
+import { navigate, replaceCurrentUrl } from "../../../common/navigate";
+import { currentPath } from "../../../common/url/current-path";
 import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../common/translations/localize";
-import { extractSearchParam } from "../../../common/url/search-params";
+import {
+  helpersFilterQueryParamConfig,
+  helpersFilterQueryParams,
+  helpersLinkFromUrl,
+} from "../../../common/url/helpers-query-params";
 import { debounce } from "../../../common/util/debounce";
 import {
   hasRejectedItems,
@@ -107,6 +114,7 @@ import {
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
@@ -133,18 +141,15 @@ import { isHelperDomain, type HelperDomain } from "./const";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
-interface LimitedEntity {
-  entity_id: HassEntity["entity_id"];
-  attributes: {
-    friendly_name?: HassEntity["attributes"]["friendly_name"];
-    editable?: HassEntity["attributes"]["editable"];
-  };
-}
-function equalLimitedEntity(a: LimitedEntity, b: LimitedEntity): boolean {
+function equalHelperEntity(
+  a: HassEntity,
+  b: HassEntity,
+  formatEntityName: HomeAssistant["formatEntityName"]
+): boolean {
   return (
     a === b ||
     (a.entity_id === b.entity_id &&
-      a.attributes?.friendly_name === b.attributes?.friendly_name &&
+      formatEntityName(a) === formatEntityName(b) &&
       a.attributes?.editable === b.attributes?.editable)
   );
 }
@@ -157,7 +162,7 @@ interface HelperItem {
   editable?: boolean;
   type: string;
   configEntry?: ConfigEntry;
-  entity?: LimitedEntity;
+  entity?: HassEntity;
   category: string | undefined;
   area?: string;
   label_entries: LabelRegistryEntry[];
@@ -224,7 +229,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeHiddenColumns?: string[];
 
-  @state() private _helperEntities?: LimitedEntity[];
+  @state() private _helperEntities?: HassEntity[];
 
   @state() private _disabledEntityEntries?: EntityRegistryEntry[];
 
@@ -239,8 +244,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   @state() private _helperManifests?: Record<string, IntegrationManifest>;
 
   @state() private _diagnosticHandlers?: Record<string, boolean>;
-
-  @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state()
   private _filters: DataTableFiltersValues = {};
@@ -270,9 +273,24 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @state() private _filteredHelperEntityIds?: string[] | null;
 
+  // Not cached, the table only renders once the helpers have loaded
+  @query("hass-tabs-subpage-data-table")
+  private _dataTable?: HaTabsSubpageDataTable;
+
   private _sizeController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width,
   });
+
+  // The filters are kept in the URL by the page, the search, sorting and
+  // grouping by the table
+  private _filterParams = new QueryParamsController(
+    this,
+    helpersFilterQueryParamConfig,
+    {
+      enabled: () => true,
+      navigated: () => this._applyLink(),
+    }
+  );
 
   private get _availableAssistants() {
     return getAvailableAssistants(this.cloudStatus, this.hass);
@@ -370,6 +388,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
+        urlName: "type",
       },
       editable: getEditableTableColumn(
         localize,
@@ -489,7 +508,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   private _getItems = memoizeOne(
     (
       localize: LocalizeFunc,
-      stateItems: LimitedEntity[],
+      stateItems: HassEntity[],
+      formatEntityName: HomeAssistant["formatEntityName"],
       disabledEntries: EntityRegistryEntry[],
       configEntries: Record<string, ConfigEntry>,
       entityReg: EntityRegistryEntry[],
@@ -516,7 +536,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
         return {
           id: entityState.entity_id,
-          name: entityState.attributes.friendly_name || "",
+          name: formatEntityName(entityState),
           entity_id: entityState.entity_id,
           editable:
             configEntry !== undefined || entityState.attributes.editable,
@@ -637,6 +657,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const helpers = this._getItems(
       this.hass.localize,
       this._helperEntities,
+      this.hass.formatEntityName,
       this._disabledEntityEntries || [],
       this._configEntries,
       this._entityReg,
@@ -683,6 +704,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         .activeFilters=${this._activeFilters}
         @clear-filter=${this._clearFilter}
         @row-click=${this._openEditDialog}
+        sync-url
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
         has-fab
@@ -855,9 +877,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
     this._filters = { ...this._filters, [type]: ev.detail.value };
     this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
-    if (!this._fromUrl) {
-      this._storageFilters = this._filters;
-    }
+    this._storageFilters = this._filters;
+    this._writeFilters();
     this._applyFilters();
   }
 
@@ -917,16 +938,16 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       ) {
         const categoryItems = new Set<string>();
         this._helperEntities
-          .filter(
-            (stateItem) =>
-              filter[0] ===
-              entityRegistryByEntityId(this._entityReg || [])[
-                stateItem.entity_id
-              ]?.categories.helpers
-          )
+          .filter((stateItem) => {
+            const category = entityRegistryByEntityId(this._entityReg || [])[
+              stateItem.entity_id
+            ]?.categories.helpers;
+
+            return category !== undefined && filter.includes(category);
+          })
           .forEach((stateItem) => categoryItems.add(stateItem.entity_id));
         (this._disabledEntityEntries || [])
-          .filter((entry) => filter[0] === entry.categories.helpers)
+          .filter((entry) => filter.includes(entry.categories.helpers))
           .forEach((entry) => categoryItems.add(entry.entity_id));
         if (!items) {
           items = categoryItems;
@@ -973,63 +994,56 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._filteredHelperEntityIds = items ? [...items] : undefined;
   }
 
-  private _fromUrl = false;
+  // The domain an add link asked for, started once the page has hass
+  private _addDomain?: string;
 
   public connectedCallback() {
+    // Leave the add path before the URL is read, so the table params are kept
+    // on the helpers page itself. The route isn't set yet on the first
+    // connect, so this reads the URL. navigate() would only replace it after
+    // the table params are written, and drop them.
+    if (currentPath() === "/config/helpers/add") {
+      const params = new URLSearchParams(mainWindow.location.search);
+      this._addDomain = params.get("domain") ?? undefined;
+      params.delete("domain");
+      const queryString = params.toString() ? `?${params}` : "";
+      replaceCurrentUrl(
+        __DEMO__
+          ? `${mainWindow.location.pathname}${queryString}#/config/helpers`
+          : `/config/helpers${queryString}`
+      );
+      fireEvent(mainWindow, "location-changed", { replace: true });
+      // Opened once the table is there, see updated()
+      this.requestUpdate();
+    }
     super.connectedCallback();
-    window.addEventListener("location-changed", this._locationChanged);
-    window.addEventListener("popstate", this._popState);
   }
 
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("location-changed", this._locationChanged);
-    window.removeEventListener("popstate", this._popState);
+  // Links, like the ones on a device page, say in the URL what to show. The
+  // router keeps the page open, so a link can land on it.
+  private _applyLink() {
+    const searchParams = this._filterParams.searchParams();
+    const link = searchParams ? helpersLinkFromUrl(searchParams) : undefined;
+
+    if (link) {
+      this._filter = link.search;
+      this._filters = link.filters;
+      this._storageFilters = link.filters;
+      this._applyFilters();
+    }
+
+    this._writeFilters();
   }
 
-  private _locationChanged = () => {
-    if (window.location.search.substring(1) !== this._searchParms.toString()) {
-      this._searchParms = new URLSearchParams(window.location.search);
-      this._setFiltersFromUrl();
-    }
-  };
-
-  private _popState = () => {
-    if (window.location.search.substring(1) !== this._searchParms.toString()) {
-      this._searchParms = new URLSearchParams(window.location.search);
-      this._setFiltersFromUrl();
-    }
-  };
-
-  private _setFiltersFromUrl() {
-    const area = this._searchParms.get("area");
-    const device = this._searchParms.get("device");
-    const label = this._searchParms.get("label");
-    const category = this._searchParms.get("category");
-    const voiceAssistant = this._searchParms.get("voice_assistant");
-
-    if (!area && !category && !label && !device && !voiceAssistant) {
-      return;
-    }
-
-    this._fromUrl = true;
-    this._filter = getHistoryState()?.filter || "";
-
-    this._filters = {
-      "ha-filter-floor-areas": area ? { areas: [area] } : undefined,
-      "ha-filter-devices": device ? [device] : [],
-      "ha-filter-labels": label ? [label] : [],
-      "ha-filter-categories": category ? [category] : [],
-      "ha-filter-voice-assistants": voiceAssistant ? [voiceAssistant] : [],
-    };
+  private _writeFilters() {
+    this._filterParams.write(helpersFilterQueryParams(this._filters));
   }
 
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
-    if (!this._fromUrl) {
-      this._storageFilters = {};
-    }
+    this._storageFilters = {};
+    this._writeFilters();
     this._applyFilters();
   }
 
@@ -1142,7 +1156,6 @@ ${rejected
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    this._setFiltersFromUrl();
     this._fetchEntitySources();
 
     if (isComponentLoaded(this.hass.config, "diagnostics")) {
@@ -1154,9 +1167,13 @@ ${rejected
         this._diagnosticHandlers = handlers;
       });
     }
+  }
 
-    if (this.route.path === "/add") {
-      this._handleAdd();
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+
+    if (this._addDomain && this._dataTable) {
+      this._handleAdd(this._dataTable);
     }
   }
 
@@ -1195,12 +1212,18 @@ ${rejected
     this._entitySource = entityDomains;
   }
 
-  private async _handleAdd() {
-    const domain = extractSearchParam("domain");
-    navigate("/config/helpers", { replace: true });
+  private async _handleAdd(dataTable: HaTabsSubpageDataTable) {
+    const domain = this._addDomain;
+    this._addDomain = undefined;
     if (!domain) {
       return;
     }
+
+    // The dialog adds a history entry. Let the table write its search,
+    // sorting and grouping first, or they would only be on that entry and
+    // be lost when it closes.
+    await dataTable.updateComplete;
+
     if (isHelperDomain(domain)) {
       showHelperDetailDialog(this, {
         domain,
@@ -1255,7 +1278,7 @@ ${rejected
 
     if (!this.hasUpdated) {
       this._filters = this._storageFilters;
-      this._setFiltersFromUrl();
+      this._applyLink();
     }
 
     if (
@@ -1311,7 +1334,7 @@ ${rejected
       !this._helperEntities ||
       this._helperEntities.length !== newHelpers.length ||
       !this._helperEntities.every((val, idx) =>
-        equalLimitedEntity(newHelpers[idx], val)
+        equalHelperEntity(newHelpers[idx], val, this.hass.formatEntityName)
       )
     ) {
       this._helperEntities = newHelpers;
@@ -1592,7 +1615,7 @@ ${rejected
           --auto-size-available-width: calc(50vw - var(--ha-space-4));
         }
         ha-dropdown ha-assist-chip {
-          --md-assist-chip-trailing-space: 8px;
+          --ha-assist-chip-trailing-space: 8px;
         }
       `,
     ];

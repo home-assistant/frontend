@@ -5,6 +5,7 @@ import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { LineSeriesOption } from "echarts/charts";
+import type { PropertyValues } from "lit";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import "../../../../components/chart/ha-chart-base";
@@ -15,7 +16,10 @@ import {
   statesContext,
 } from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
-import { validateEnergyCollectionKey } from "../../../../data/energy";
+import {
+  validateEnergyCollectionKey,
+  formatPowerShort,
+} from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
@@ -28,7 +32,10 @@ import type { PowerSourcesGraphCardConfig } from "../types";
 import { getCommonOptions } from "./common/energy-chart-options";
 import type { HaECOption } from "../../../../resources/echarts/echarts";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
-import { generatePowerSourcesGraphData } from "./power-sources-graph-data";
+import {
+  generatePowerSourcesGraphData,
+  getPowerLegendValues,
+} from "./power-sources-graph-data";
 
 @customElement("hui-power-sources-graph-card")
 export class HuiPowerSourcesGraphCard
@@ -56,6 +63,12 @@ export class HuiPowerSourcesGraphCard
 
   @state() private _yAxisFractionDigits = 1;
 
+  private _energyData?: EnergyData;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HassEntities;
+
   @state() private _legendData?: CustomLegendOption["data"];
 
   @state() private _start = startOfToday();
@@ -77,9 +90,6 @@ export class HuiPowerSourcesGraphCard
   })
   private _hassConfig!: HassConfig;
 
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: HassEntities;
-
   constructor() {
     super();
     new EnergyCollectionController(this, {
@@ -98,6 +108,60 @@ export class HuiPowerSourcesGraphCard
     }
     this._config = config;
   }
+
+  private _statRateIds = memoizeOne(
+    (energyData?: EnergyData) =>
+      energyData?.prefs.energy_sources.flatMap((s) =>
+        (s.type === "solar" || s.type === "grid" || s.type === "battery") &&
+        s.stat_rate
+          ? [s.stat_rate]
+          : []
+      ) ?? []
+  );
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size !== 1 || !changedProps.has("_states")) {
+      return true;
+    }
+    const oldStates = changedProps.get("_states") as HassEntities | undefined;
+    return (
+      !oldStates ||
+      this._statRateIds(this._energyData).some(
+        (id) => oldStates[id] !== this._states[id]
+      )
+    );
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    if (
+      (changedProps.has("_states") || changedProps.has("_i18n")) &&
+      !changedProps.has("_legendData")
+    ) {
+      this._refreshLegendValues();
+    }
+  }
+
+  private _refreshLegendValues(): boolean {
+    if (!this._energyData || !this._legendData) {
+      return false;
+    }
+    const values = getPowerLegendValues(
+      this._energyData,
+      this._states,
+      this._formatPower
+    );
+    if (this._legendData.every((item) => item.value === values[item.id!])) {
+      return false;
+    }
+    this._legendData = this._legendData.map((item) => ({
+      ...item,
+      value: values[item.id!],
+    }));
+    return true;
+  }
+
+  private _formatPower = (powerWatts: number) =>
+    formatPowerShort(this._i18n.locale, powerWatts);
 
   protected render() {
     if (!this._config) {
@@ -188,6 +252,7 @@ export class HuiPowerSourcesGraphCard
 
     const result = generatePowerSourcesGraphData({
       localize: this._i18n.localize,
+      formatPower: this._formatPower,
       states: this._states,
       energyData,
       computedStyles: getComputedStyle(this),
@@ -196,6 +261,7 @@ export class HuiPowerSourcesGraphCard
       now: Date.now(),
     });
 
+    this._energyData = energyData;
     this._legendData = result.legendData;
     this._start = result.start;
     this._end = result.end;

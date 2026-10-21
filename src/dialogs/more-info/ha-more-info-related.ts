@@ -92,14 +92,10 @@ class HaMoreInfoRelated extends LitElement {
     const floorName = floor ? computeFloorName(floor) : undefined;
     const areaName = area ? (computeAreaName(area) ?? area.area_id) : undefined;
     const parentDeviceName = parentDevice
-      ? computeDeviceNameDisplay(
-          parentDevice,
-          this.hass.localize,
-          this.hass.states
-        )
+      ? computeDeviceNameDisplay(parentDevice, this.hass.localize)
       : undefined;
     const deviceName = device
-      ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
+      ? computeDeviceNameDisplay(device, this.hass.localize)
       : undefined;
     const integrationName = this.entry?.platform
       ? this.hass.localize(`component.${this.entry.platform}.title`) ||

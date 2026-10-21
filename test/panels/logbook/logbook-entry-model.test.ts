@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   computeLogbookItem,
+  computeRunTraceLink,
   computeTraceLink,
   classifyLogbookEntry,
   entityDisplay,
@@ -505,6 +506,93 @@ describe("computeTraceLink", () => {
     expect(computeTraceLink(traceContexts, undefined)).toBeUndefined();
     expect(computeTraceLink({}, "ctx_1")).toBeUndefined();
   });
+
+  it("encodes the item id, which is free-form for automations", () => {
+    expect(
+      computeTraceLink(
+        {
+          ctx_1: {
+            run_id: "run_9",
+            domain: "automation",
+            item_id: "lights?evening #2",
+          },
+        },
+        "ctx_1"
+      )
+    ).toBe("/config/automation/trace/lights%3Fevening%20%232?run_id=run_9");
+  });
+});
+
+describe("computeRunTraceLink", () => {
+  // An automation that called a script: both runs share the context, and the
+  // trace contexts keep only the script's run for it.
+  const traceContexts = {
+    ctx_1: { run_id: "run_script", domain: "script", item_id: "child_a" },
+  };
+  const runRow = (partial: Partial<LogbookEntry>): LogbookEntry => ({
+    when: 1,
+    context_id: "ctx_1",
+    ...partial,
+  });
+
+  it("links the run a row names, not the last run of its context", () => {
+    expect(
+      computeRunTraceLink(
+        traceContexts,
+        runRow({
+          domain: "automation",
+          item_id: "parent",
+          run_id: "run_parent",
+        })
+      )
+    ).toBe("/config/automation/trace/parent?run_id=run_parent");
+  });
+
+  it("encodes the item id, which is free-form for automations", () => {
+    expect(
+      computeRunTraceLink(
+        traceContexts,
+        runRow({
+          domain: "automation",
+          item_id: "1700000000000 lights/on",
+          run_id: "run_1",
+        })
+      )
+    ).toBe("/config/automation/trace/1700000000000%20lights%2Fon?run_id=run_1");
+  });
+
+  it("falls back to the context for entries recorded without a run", () => {
+    expect(
+      computeRunTraceLink(traceContexts, runRow({ domain: "script" }))
+    ).toBe("/config/script/trace/child_a?run_id=run_script");
+  });
+
+  it("does not link a run without trace contexts, as for non-admins", () => {
+    expect(
+      computeRunTraceLink(
+        {},
+        runRow({
+          domain: "automation",
+          item_id: "parent",
+          run_id: "run_parent",
+        })
+      )
+    ).toBeUndefined();
+  });
+
+  it("does not link a run whose context has no stored trace", () => {
+    expect(
+      computeRunTraceLink(
+        traceContexts,
+        runRow({
+          context_id: "ctx_2",
+          domain: "automation",
+          item_id: "parent",
+          run_id: "run_parent",
+        })
+      )
+    ).toBeUndefined();
+  });
 });
 
 describe("computeLogbookItem cause", () => {
@@ -600,5 +688,94 @@ describe("computeLogbookItem run rows", () => {
       {}
     );
     expect(model.value).toEqual({ text: "Backup finished", type: "message" });
+  });
+
+  it("uses the run label for a run with a trigger source", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+    });
+    const model = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "automation.wake_up",
+        domain: "automation",
+        name: "Wake up",
+        message: "triggered by time pattern",
+      }),
+      {}
+    );
+    expect(model.value).toEqual({
+      text: "ui.components.logbook.automation_triggered",
+      type: "state",
+    });
+  });
+
+  it("uses the run label for a started script", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+    });
+    const model = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "script.backup",
+        domain: "script",
+        name: "Backup",
+        message: "started",
+      }),
+      {}
+    );
+    expect(model.value).toEqual({
+      text: "ui.components.logbook.script_ran",
+      type: "state",
+    });
+  });
+
+  // logbook.log with an automation entity_id used to show "Triggered" (#53746)
+  it("keeps a custom message logged for an automation", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+    });
+    const model = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "automation.wake_up",
+        domain: "automation",
+        name: "Wake up",
+        message: "skipped, nobody home",
+      }),
+      {}
+    );
+    expect(model.value).toEqual({
+      text: "skipped, nobody home",
+      type: "message",
+    });
+  });
+
+  it("only treats the domain's own run message as a run", () => {
+    const hass = baseHass({
+      localize: ((key: string) => key) as HomeAssistant["localize"],
+    });
+    const automation = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "automation.wake_up",
+        domain: "automation",
+        name: "Wake up",
+        message: "started",
+      }),
+      {}
+    );
+    const script = computeLogbookItem(
+      hass,
+      entry({
+        entity_id: "script.backup",
+        domain: "script",
+        name: "Backup",
+        message: "triggered",
+      }),
+      {}
+    );
+    expect(automation.value).toEqual({ text: "started", type: "message" });
+    expect(script.value).toEqual({ text: "triggered", type: "message" });
   });
 });

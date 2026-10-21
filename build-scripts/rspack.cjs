@@ -40,6 +40,21 @@ const TOOLCHAIN_PACKAGES = [
   "caniuse-lite",
 ];
 
+// Not direct dependencies: read the copy the package that loads them uses.
+const TOOLCHAIN_PACKAGE_PARENTS = {
+  terser: "terser-webpack-plugin",
+  "caniuse-lite": "browserslist",
+};
+
+const toolchainVersion = (pkg) => {
+  const parent = TOOLCHAIN_PACKAGE_PARENTS[pkg];
+  const lookup = parent && [
+    path.dirname(require.resolve(`${parent}/package.json`)),
+  ];
+  return require(require.resolve(`${pkg}/package.json`, { paths: lookup }))
+    .version;
+};
+
 // Our own build logic — the config, loaders and babel plugins. Their contents
 // (not their paths) go into the cache version, so a change invalidates the
 // cache the same way `buildDependencies` would, but without tying validity to
@@ -63,9 +78,7 @@ const PATCHES_DIR = path.join(paths.root_dir, "patches");
 // stays valid when reused on a different machine or checkout path.
 const cacheVersion = () => {
   const parts = [
-    ...TOOLCHAIN_PACKAGES.map(
-      (pkg) => `${pkg}@${require(`${pkg}/package.json`).version}`
-    ),
+    ...TOOLCHAIN_PACKAGES.map((pkg) => `${pkg}@${toolchainVersion(pkg)}`),
     ...CONFIG_FILES.map(
       (file) => `${path.basename(file)}:${fs.readFileSync(file, "utf8")}`
     ),
@@ -115,7 +128,10 @@ const createRspackConfig = ({
     dontHash = new Set();
   }
   const ignorePackages = bundle.ignorePackages({ latestBuild });
-  const litHtmlRoot = path.resolve(__dirname, "../node_modules/lit-html");
+  // pnpm links node_modules/lit-html into its store; rspack compares real paths
+  const litHtmlRoot = fs.realpathSync(
+    path.resolve(__dirname, "../node_modules/lit-html")
+  );
   const litHtmlDevelopmentRoot = path.join(litHtmlRoot, "development");
   const litDisableDevModeLoader = path.join(
     __dirname,
@@ -377,6 +393,14 @@ const createRspackConfig = ({
     resolve: {
       extensions: [".ts", ".js", ".json"],
       alias: {
+        // @formatjs/bigdecimal uses BigInt (Safari 14, Chrome 67), which
+        // breaks the NumberFormat and PluralRules polyfills
+        ...(!latestBuild && {
+          "@formatjs/bigdecimal$": path.join(
+            paths.root_dir,
+            "src/resources/polyfills/bigdecimal.ts"
+          ),
+        }),
         "lit/static-html$": "lit/static-html.js",
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",

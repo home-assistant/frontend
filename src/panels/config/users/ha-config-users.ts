@@ -101,6 +101,7 @@ export class HaConfigUsers extends LitElement {
           sortable: true,
           filterable: true,
           groupable: true,
+          urlName: "group",
         },
         is_active: {
           title: this.hass.localize(
@@ -202,6 +203,7 @@ export class HaConfigUsers extends LitElement {
         @collapsed-changed=${this._handleCollapseChanged}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
+        sync-url
         @row-click=${this._editUser}
         has-fab
         clickable

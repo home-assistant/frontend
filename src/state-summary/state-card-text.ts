@@ -3,7 +3,6 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { stopPropagation } from "../common/dom/stop_propagation";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
-import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
 import "../components/input/ha-input";
 import type { HaInput } from "../components/input/ha-input";
@@ -22,7 +21,7 @@ class StateCardText extends LitElement {
     return html`
       <state-badge .stateObj=${this.stateObj}></state-badge>
       <ha-input
-        .label=${computeStateName(this.stateObj)}
+        .label=${this.hass.formatEntityName(this.stateObj, { type: "entity" })}
         .disabled=${this.stateObj.state === UNAVAILABLE}
         .value=${this.stateObj.state}
         .minlength=${this.stateObj.attributes.min}
