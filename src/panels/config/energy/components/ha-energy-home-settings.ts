@@ -89,8 +89,7 @@ export class EnergyHomeSettings extends LitElement {
               ? html`
                   <div class="items-container">
                     ${homeSources.map((source) => {
-                      const entityState =
-                        this._states.states[source.stat_energy_from];
+                      const entityState = this._states[source.stat_energy_from];
                       return html`
                         <div class="row" .source=${source}>
                           ${
