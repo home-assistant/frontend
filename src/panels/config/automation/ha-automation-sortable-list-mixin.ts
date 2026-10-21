@@ -201,6 +201,18 @@ export const AutomationSortableListMixin = <T extends object>(
       fireEvent(this, "value-changed", { value: items });
     }
 
+    protected replaceItem(ev: CustomEvent) {
+      ev.stopPropagation();
+      const index = (ev.target as any).index;
+      // Unlike itemChanged, don't keep the row key: the new item gets a new
+      // row, so no state of the replaced row carries over.
+      this.focusItemIndexOnChange = index;
+      fireEvent(this, "value-changed", {
+        // @ts-expect-error Requires library bump to ES2023
+        value: this.items.toSpliced(index, 1, ev.detail.value),
+      });
+    }
+
     protected duplicateItem(ev: CustomEvent) {
       ev.stopPropagation();
       const index = (ev.target as any).index;

@@ -1,4 +1,4 @@
-import { mdiInformationOutline, mdiPlus } from "@mdi/js";
+import { mdiInformationOutline, mdiPlus, mdiSwapHorizontal } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import {
   customElement,
@@ -55,6 +55,8 @@ export class HaAutomationAddItems extends LitElement {
   public tooltipDescription = false;
 
   @property({ type: Boolean, reflect: true }) scrollable = false;
+
+  @property({ type: Boolean }) public replacing = false;
 
   @state() private _itemsScrolled = false;
 
@@ -150,7 +152,7 @@ export class HaAutomationAddItems extends LitElement {
               <ha-svg-icon
                 slot="end"
                 class="plus"
-                .path=${mdiPlus}
+                .path=${this.replacing ? mdiSwapHorizontal : mdiPlus}
               ></ha-svg-icon>
             </ha-list-item-button>
           `
