@@ -107,6 +107,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           ),
           sortable: true,
           filterable: true,
+          urlName: "integration",
         },
         actions: {
           lastFixed: true,
@@ -182,6 +183,7 @@ export class HaConfigApplicationCredentials extends LitElement {
         @sorting-changed=${this._handleSortingChanged}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
+        sync-url
       >
         <div class="header-btns" slot="selection-bar">
           ${
