@@ -1,4 +1,4 @@
-import { mdiMenu, mdiSwapVertical } from "@mdi/js";
+import { mdiMenu, mdiSpeedometer, mdiSwapVertical } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,9 +6,13 @@ import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/ha-control-select-menu";
+import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
+import "../../../components/ha-svg-icon";
 import { formattersContext } from "../../../data/context";
+import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   shouldShowFavoriteOptions,
   type ExtEntityRegistryEntry,
@@ -27,6 +31,7 @@ import "../../../state-control/cover/ha-state-control-cover-tilt-position";
 import "../../../state-control/cover/ha-state-control-cover-toggle";
 import type { HomeAssistantFormatters } from "../../../types";
 import "../components/covers/ha-more-info-cover-favorite-positions";
+import "../components/ha-more-info-control-select-container";
 import "../components/ha-more-info-state-header";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
 
@@ -50,6 +55,8 @@ class MoreInfoCover extends LitElement {
 
   @state() private _mode?: Mode;
 
+  @state() private _speed?: string;
+
   private _setMode(ev) {
     this._mode = ev.currentTarget.mode;
   }
@@ -63,6 +70,9 @@ class MoreInfoCover extends LitElement {
         this._mode = coverSupportsAnyPosition(this.stateObj)
           ? "position"
           : "button";
+      }
+      if (entityId !== oldEntityId) {
+        this._speed = undefined;
       }
     }
   }
@@ -113,6 +123,13 @@ class MoreInfoCover extends LitElement {
       supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT) ||
       supportsFeature(this.stateObj, CoverEntityFeature.STOP_TILT);
 
+    const supportedSpeeds = supportsFeature(
+      this.stateObj,
+      CoverEntityFeature.SPEED
+    )
+      ? this.stateObj.attributes.supported_speeds
+      : undefined;
+
     const supportsOpenCloseOnly =
       supportsFeature(this.stateObj, CoverEntityFeature.OPEN) &&
       supportsFeature(this.stateObj, CoverEntityFeature.CLOSE) &&
@@ -136,6 +153,7 @@ class MoreInfoCover extends LitElement {
                       ? html`
                           <ha-state-control-cover-position
                             .stateObj=${this.stateObj}
+                            .speed=${this._speed}
                           ></ha-state-control-cover-position>
                         `
                       : nothing
@@ -160,12 +178,14 @@ class MoreInfoCover extends LitElement {
                       ? html`
                           <ha-state-control-cover-toggle
                             .stateObj=${this.stateObj}
+                            .speed=${this._speed}
                           ></ha-state-control-cover-toggle>
                         `
                       : supportsOpenClose || supportsTilt
                         ? html`
                             <ha-state-control-cover-buttons
                               .stateObj=${this.stateObj}
+                              .speed=${this._speed}
                             ></ha-state-control-cover-buttons>
                           `
                         : nothing
@@ -173,35 +193,34 @@ class MoreInfoCover extends LitElement {
                 `
               : nothing
           }
-            </div>
-          ${
-            (supportsPosition || supportsTiltPosition) &&
-            (supportsOpenClose || supportsTilt)
-              ? html`
-                  <ha-icon-button-group>
-                    <ha-icon-button-toggle
-                      .label=${this._localize(
-                        `ui.dialogs.more_info_control.cover.switch_mode.position`
-                      )}
-                      .selected=${this._mode === "position"}
-                      .path=${mdiMenu}
-                      .mode=${"position"}
-                      @click=${this._setMode}
-                    ></ha-icon-button-toggle>
-                    <ha-icon-button-toggle
-                      .label=${this._localize(
-                        `ui.dialogs.more_info_control.cover.switch_mode.button`
-                      )}
-                      .selected=${this._mode === "button"}
-                      .path=${mdiSwapVertical}
-                      .mode=${"button"}
-                      @click=${this._setMode}
-                    ></ha-icon-button-toggle>
-                  </ha-icon-button-group>
-                `
-              : nothing
-          }
         </div>
+        ${
+          (supportsPosition || supportsTiltPosition) &&
+          (supportsOpenClose || supportsTilt)
+            ? html`
+                <ha-icon-button-group>
+                  <ha-icon-button-toggle
+                    .label=${this._localize(
+                      `ui.dialogs.more_info_control.cover.switch_mode.position`
+                    )}
+                    .selected=${this._mode === "position"}
+                    .path=${mdiMenu}
+                    .mode=${"position"}
+                    @click=${this._setMode}
+                  ></ha-icon-button-toggle>
+                  <ha-icon-button-toggle
+                    .label=${this._localize(
+                      `ui.dialogs.more_info_control.cover.switch_mode.button`
+                    )}
+                    .selected=${this._mode === "button"}
+                    .path=${mdiSwapVertical}
+                    .mode=${"button"}
+                    @click=${this._setMode}
+                  ></ha-icon-button-toggle>
+                </ha-icon-button-group>
+              `
+            : nothing
+        }
         ${
           showFavoriteControls
             ? html`
@@ -209,12 +228,49 @@ class MoreInfoCover extends LitElement {
                   .stateObj=${this.stateObj}
                   .entry=${this.entry}
                   .editMode=${this.editMode}
+                  .speed=${this._speed}
                 ></ha-more-info-cover-favorite-positions>
               `
             : nothing
         }
       </div>
+      ${
+        supportedSpeeds?.length
+          ? html`
+              <div>
+                <ha-more-info-control-select-container>
+                  <ha-control-select-menu
+                    .label=${this._formatters.formatEntityAttributeName(
+                      this.stateObj,
+                      "speed"
+                    )}
+                    .value=${this._speed}
+                    .disabled=${this.stateObj.state === UNAVAILABLE}
+                    @wa-select=${this._handleSpeed}
+                    .options=${supportedSpeeds.map((speed) => ({
+                      value: speed,
+                      label: this._formatters.formatEntityAttributeValue(
+                        this.stateObj!,
+                        "speed",
+                        speed
+                      ),
+                    }))}
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiSpeedometer}
+                    ></ha-svg-icon>
+                  </ha-control-select-menu>
+                </ha-more-info-control-select-container>
+              </div>
+            `
+          : nothing
+      }
     `;
+  }
+
+  private _handleSpeed(ev: HaDropdownSelectEvent) {
+    this._speed = ev.detail.item.value;
   }
 
   static get styles(): CSSResultGroup {

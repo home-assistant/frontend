@@ -112,10 +112,13 @@ export class HaStateControlCoverButtons extends LitElement {
 
   @property({ attribute: false }) public stateObj!: CoverEntity;
 
+  @property({ attribute: false }) public speed?: string;
+
   private _onOpenTap(ev): void {
     ev.stopPropagation();
     this._api.callService("cover", "open_cover", {
       entity_id: this.stateObj!.entity_id,
+      ...(this.speed ? { speed: this.speed } : {}),
     });
   }
 
@@ -123,6 +126,7 @@ export class HaStateControlCoverButtons extends LitElement {
     ev.stopPropagation();
     this._api.callService("cover", "close_cover", {
       entity_id: this.stateObj!.entity_id,
+      ...(this.speed ? { speed: this.speed } : {}),
     });
   }
 

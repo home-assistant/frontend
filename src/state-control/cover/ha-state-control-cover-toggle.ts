@@ -29,6 +29,8 @@ export class HaStateControlCoverToggle extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
+  @property({ attribute: false }) public speed?: string;
+
   private _valueChanged(ev) {
     const checked = ev.target.checked as boolean;
 
@@ -58,6 +60,7 @@ export class HaStateControlCoverToggle extends LitElement {
       turnOn ? "open_cover" : "close_cover",
       {
         entity_id: this.stateObj.entity_id,
+        ...(this.speed ? { speed: this.speed } : {}),
       }
     );
   }

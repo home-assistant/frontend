@@ -76,6 +76,8 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
   @property({ attribute: false }) public editMode?: boolean;
 
+  @property({ attribute: false }) public speed?: string;
+
   @state() private _favoritePositions: number[] = [];
 
   @state() private _favoriteTiltPositions: number[] = [];
@@ -194,6 +196,7 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       this._api.callService("cover", "set_cover_position", {
         entity_id: this.stateObj.entity_id,
         position: favorite,
+        ...(this.speed ? { speed: this.speed } : {}),
       });
       return;
     }

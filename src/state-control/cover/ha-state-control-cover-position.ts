@@ -41,6 +41,8 @@ export class HaStateControlCoverPosition extends LitElement {
 
   @property({ attribute: false }) public stateObj!: CoverEntity;
 
+  @property({ attribute: false }) public speed?: string;
+
   @state() value?: number;
 
   protected updated(changedProp: PropertyValues<this>): void {
@@ -58,6 +60,7 @@ export class HaStateControlCoverPosition extends LitElement {
     this._api.callService("cover", "set_cover_position", {
       entity_id: this.stateObj!.entity_id,
       position: value,
+      ...(this.speed ? { speed: this.speed } : {}),
     });
   }
 
