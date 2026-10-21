@@ -356,8 +356,8 @@ export const isPlatformCondition = (
 ): condition is PlatformCondition =>
   condition.condition in descriptions || condition.condition.includes(".");
 
-// Platform triggers once kept their options at the top level. The editor
-// still moves them into `options`, so read them from there too.
+// Platform triggers once kept their options at the top level, and the editor
+// only moves them into `options` when it opens them, so read both.
 const PLATFORM_TRIGGER_KEYS: readonly string[] = [
   ...TRIGGER_ROW_CONFIG_KEYS,
   "trigger",
