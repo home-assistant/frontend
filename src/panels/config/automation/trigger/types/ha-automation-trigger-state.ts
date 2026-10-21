@@ -328,8 +328,9 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
     newTrigger.for = this._unwrapForValue(newTrigger.for);
 
-    this._applyMatchValue(newTrigger, "from", "not_from");
-    this._applyMatchValue(newTrigger, "to", "not_to");
+    const { from, to } = newTrigger;
+    this._applyMatchValue(newTrigger, "from", "not_from", to);
+    this._applyMatchValue(newTrigger, "to", "not_to", from);
 
     Object.keys(newTrigger).forEach((key) => {
       const val = newTrigger[key];
@@ -363,16 +364,14 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   private _applyMatchValue(
     trigger: Record<string, any>,
     key: "from" | "to",
-    notKey: "not_from" | "not_to"
+    notKey: "not_from" | "not_to",
+    other: Partial<MatchValue> | undefined
   ): void {
     const match: Partial<MatchValue> | undefined = trigger[key];
-    delete trigger[key];
     delete trigger[notKey];
-    if (!match?.active_choice) {
-      return;
-    }
 
-    if (match.active_choice === "is_not") {
+    if (match?.active_choice === "is_not") {
+      delete trigger[key];
       // Keep the selected states when switching from "is" to "is not".
       const states = (match.is_not ?? match.is ?? []).filter(
         (state) => state !== ANY_STATE_VALUE
@@ -383,12 +382,19 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       return;
     }
 
+    // When switching back from "is not", drop the states the other field
+    // matches, "from A to A" never triggers.
+    const otherStates = other?.active_choice === "is" ? (other.is ?? []) : [];
     const states = this._applyAnyStateExclusive(
-      match.is ?? match.is_not,
+      match?.is ??
+        match?.is_not?.filter((state) => !otherStates.includes(state)),
       trigger.attribute
     );
-    if (!Array.isArray(states) || states.length) {
+    if (match?.active_choice && (!Array.isArray(states) || states.length)) {
+      // Assign in place, so editing doesn't move the key in the saved config.
       trigger[key] = states;
+    } else {
+      delete trigger[key];
     }
   }
 
