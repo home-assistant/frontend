@@ -86,7 +86,7 @@ export class HaWebRtcPlayer extends LitElement {
 
   private _microphoneSender?: RTCRtpSender;
 
-  private _timer_running = false;
+  private _timerRunning = false;
 
   private _microphoneConnecting = false;
 
@@ -107,16 +107,16 @@ export class HaWebRtcPlayer extends LitElement {
   }
 
   public async toggleMicrophone() {
-    if (this._localReturnAudioTrack) {
-      // Stop instead of disabling the track, so the browser releases the
-      // microphone, the connection keeps running without it
-      this._localReturnAudioTrack.stop();
+    if (this._localReturnAudioTrack || this._microphoneConnecting) {
+      // Stop (not disable) so the browser releases the microphone, also cancels connecting
+      this._localReturnAudioTrack?.stop();
       this._localReturnAudioTrack = undefined;
+      this._microphoneConnecting = false;
       this._fireMicrophoneChanged();
       await this._microphoneSender?.replaceTrack(null).catch(() => undefined);
       return;
     }
-    if (this._microphoneConnecting || this._microphoneDenied) {
+    if (this._microphoneDenied) {
       return;
     }
 
@@ -137,12 +137,22 @@ export class HaWebRtcPlayer extends LitElement {
     this._logEvent("found microphone to use for audio return track");
     if (this._microphoneSender) {
       // The connection was already set up with a microphone, swap it back in
+      const sender = this._microphoneSender;
       try {
-        await this._microphoneSender.replaceTrack(track);
-        this._localReturnAudioTrack = track;
+        await sender.replaceTrack(track);
       } catch (_err: unknown) {
         track.stop();
+        this._microphoneConnecting = false;
+        this._fireMicrophoneChanged();
+        return;
       }
+      // Cancelled or cleaned up while swapping
+      if (!this._microphoneConnecting) {
+        track.stop();
+        await sender.replaceTrack(null).catch(() => undefined);
+        return;
+      }
+      this._localReturnAudioTrack = track;
       this._microphoneConnecting = false;
       this._fireMicrophoneChanged();
       return;
@@ -303,8 +313,7 @@ export class HaWebRtcPlayer extends LitElement {
       );
     } catch (err: any) {
       if (cleanUpCountAtStart === this._cleanUpCount) {
-        this._error = { type: "start_failed", message: err.message };
-        this._cleanUp();
+        this._failStart({ type: "start_failed", message: err.message });
       }
       return;
     }
@@ -418,8 +427,7 @@ export class HaWebRtcPlayer extends LitElement {
         return;
       }
       this._unsub = undefined;
-      this._error = { type: "start_failed", message: err.message };
-      this._cleanUp();
+      this._failStart({ type: "start_failed", message: err.message });
     });
   };
 
@@ -480,8 +488,7 @@ export class HaWebRtcPlayer extends LitElement {
       }
     }
     if (event.type === "error") {
-      this._error = { type: "start_failed", message: event.message };
-      this._cleanUp();
+      this._failStart({ type: "start_failed", message: event.message });
     }
   }
 
@@ -545,8 +552,7 @@ export class HaWebRtcPlayer extends LitElement {
       if (this._peerConnection !== peerConnection) {
         return;
       }
-      this._error = { type: "connect_failed", message: err.message };
-      this._cleanUp();
+      this._failStart({ type: "connect_failed", message: err.message });
     }
     this._logEvent("end setRemoteDescription");
   }
@@ -571,6 +577,22 @@ export class HaWebRtcPlayer extends LitElement {
       });
       return undefined;
     }
+  }
+
+  private _failStart(error: WebRtcPlayerError) {
+    // The camera can reject the microphone, keep the video running without it
+    if (this._localReturnAudioTrack && this._microphoneConnecting) {
+      showToast(this, {
+        message: this._localize(
+          "ui.components.web-rtc-player.microphone_connect_failed",
+          { message: error.message ?? "" }
+        ),
+      });
+      this._startWebRtc();
+      return;
+    }
+    this._error = error;
+    this._cleanUp();
   }
 
   private _cleanUp() {
@@ -655,14 +677,14 @@ export class HaWebRtcPlayer extends LitElement {
     }
     // eslint-disable-next-line no-console
     console.time("WebRTC");
-    this._timer_running = true;
+    this._timerRunning = true;
   }
 
   private _stopTimer() {
     if (!__DEV__) {
       return;
     }
-    this._timer_running = false;
+    this._timerRunning = false;
     // eslint-disable-next-line no-console
     console.timeEnd("WebRTC");
   }
@@ -671,7 +693,7 @@ export class HaWebRtcPlayer extends LitElement {
     if (!__DEV__) {
       return;
     }
-    if (!this._timer_running) {
+    if (!this._timerRunning) {
       // eslint-disable-next-line no-console
       console.log("WebRTC:", msg, ...args);
       return;

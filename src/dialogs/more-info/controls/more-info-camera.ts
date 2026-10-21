@@ -2,6 +2,7 @@ import type { ContextType } from "@lit/context";
 import { mdiMicrophone, mdiMicrophoneOff } from "@mdi/js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { watchAudioLevel } from "../../../common/audio/watch-audio-level";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
@@ -13,6 +14,7 @@ import type {
   CameraStreamType,
   HaCameraStream,
 } from "../../../components/ha-camera-stream";
+import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import type { WebRtcMicrophoneState } from "../../../components/ha-web-rtc-player";
@@ -60,6 +62,9 @@ class MoreInfoCamera extends LitElement {
 
   private _appMicrophoneSession?: string;
 
+  // Increased on every start and stop, so replies to older starts are ignored
+  private _appMicrophoneRequest = 0;
+
   private _unsubAppStreamStopped?: () => void;
 
   public connectedCallback() {
@@ -71,15 +76,21 @@ class MoreInfoCamera extends LitElement {
     super.disconnectedCallback();
     this._attached = false;
     this._stopMicrophoneMeter();
-    this._stopAppMicrophone();
+    this._resetMicrophone();
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
     const oldStateObj = changedProps.get("stateObj");
     if (oldStateObj && oldStateObj.entity_id !== this.stateObj?.entity_id) {
-      this._stopAppMicrophone();
+      this._resetMicrophone();
     }
+  }
+
+  // A removed player can't fire microphone-changed anymore, so reset it here
+  private _resetMicrophone() {
+    this._stopAppMicrophone();
+    this._microphoneState = "off";
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -160,26 +171,36 @@ class MoreInfoCamera extends LitElement {
     const microphoneOn =
       this._microphoneState === "on" || this._microphoneState === "connecting";
 
+    // Stopping is always possible, so the microphone is never stuck on
+    const disabled =
+      !microphoneOn &&
+      (disabledReason !== undefined || this.stateObj!.state === UNAVAILABLE);
+
     const button = html`
       <ha-button
         .appearance=${microphoneOn ? "accent" : "filled"}
-        .loading=${this._microphoneState === "connecting"}
-        .disabled=${
-          disabledReason !== undefined || this.stateObj!.state === UNAVAILABLE
-        }
+        .disabled=${disabled}
         @click=${this._toggleMicrophone}
       >
-        <ha-svg-icon
-          slot="start"
-          .path=${microphoneOn ? mdiMicrophone : mdiMicrophoneOff}
-        ></ha-svg-icon>
+        ${
+          this._microphoneState === "connecting"
+            ? html`<ha-spinner slot="start" size="tiny"></ha-spinner>`
+            : html`<ha-svg-icon
+                slot="start"
+                .path=${microphoneOn ? mdiMicrophone : mdiMicrophoneOff}
+              ></ha-svg-icon>`
+        }
         ${this._localize(`ui.dialogs.more_info_control.camera.${microphoneOn ? "stop_talking" : "start_talking"}`)}
       </ha-button>
     `;
 
     return html`
       <div class="buttons">
-        <div id="microphone-button" class="microphone-meter">
+        <div
+          id="microphone-button"
+          class="microphone-meter"
+          tabindex=${ifDefined(disabled && disabledReason ? "0" : undefined)}
+        >
           ${
             this._microphoneState === "on"
               ? html`<span class="microphone-waves"></span>`
@@ -188,7 +209,7 @@ class MoreInfoCamera extends LitElement {
           ${button}
         </div>
         ${
-          disabledReason
+          disabled && disabledReason
             ? html`<ha-tooltip for="microphone-button"
                 >${disabledReason}</ha-tooltip
               >`
@@ -207,18 +228,20 @@ class MoreInfoCamera extends LitElement {
   }
 
   private async _toggleAppMicrophone() {
-    if (this._appMicrophoneSession) {
+    // Stops a connected session, or cancels one the app is connecting
+    if (this._appMicrophoneSession || this._microphoneState === "connecting") {
       this._stopAppMicrophone();
       return;
     }
+    const request = ++this._appMicrophoneRequest;
     this._microphoneState = "connecting";
     try {
       const sessionId = await startAppMicrophoneStream(
         this._config.auth.external!,
         this.stateObj!.entity_id
       );
-      // Stopped or closed while the app was connecting
-      if (this._microphoneState !== "connecting" || !this.isConnected) {
+      // Cancelled, closed or replaced while the app was connecting
+      if (request !== this._appMicrophoneRequest) {
         stopAppMicrophoneStream(this._config.auth.external!, sessionId);
         return;
       }
@@ -229,6 +252,9 @@ class MoreInfoCamera extends LitElement {
       );
       this._microphoneState = "on";
     } catch (err: unknown) {
+      if (request !== this._appMicrophoneRequest) {
+        return;
+      }
       this._microphoneState = "off";
       showToast(this, { message: this._appErrorMessage(err as EMError) });
     }
@@ -247,6 +273,7 @@ class MoreInfoCamera extends LitElement {
   }
 
   private _stopAppMicrophone() {
+    this._appMicrophoneRequest++;
     if (this._appMicrophoneSession) {
       stopAppMicrophoneStream(
         this._config.auth.external!,
@@ -312,6 +339,10 @@ class MoreInfoCamera extends LitElement {
     .microphone-meter {
       position: relative;
       isolation: isolate;
+    }
+
+    ha-spinner {
+      --ha-spinner-indicator-color: currentColor;
     }
 
     .microphone-waves {
