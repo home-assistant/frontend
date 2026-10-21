@@ -92,6 +92,14 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     } catch (err: any) {
       return err;
     }
+    // "from" and "not_from" (and "to" and "not_to") are mutually exclusive,
+    // the editor can only show one of them and would drop the other.
+    if (
+      (trigger.from !== undefined && trigger.not_from !== undefined) ||
+      (trigger.to !== undefined && trigger.not_to !== undefined)
+    ) {
+      return Error(localize("ui.errors.config.editor_not_supported"));
+    }
     return undefined;
   }
 
@@ -253,20 +261,6 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     const err = HaStateTrigger.checkUiSupport(this.hass.localize, this.trigger);
     if (err) {
       fireEvent(this, "ui-mode-not-available", err);
-      return false;
-    }
-    // "from" and "not_from" (and "to" and "not_to") are mutually exclusive,
-    // the editor can only show one of them and would drop the other.
-    if (
-      (this.trigger.from !== undefined &&
-        this.trigger.not_from !== undefined) ||
-      (this.trigger.to !== undefined && this.trigger.not_to !== undefined)
-    ) {
-      fireEvent(
-        this,
-        "ui-mode-not-available",
-        Error(this.hass.localize("ui.errors.config.editor_not_supported"))
-      );
       return false;
     }
     return true;
