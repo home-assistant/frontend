@@ -275,7 +275,7 @@ export class HaSnapBottomSheet extends LitElement {
     if (ev.touches.length !== 1) {
       return;
     }
-    // A touch whose target left the DOM never ended here
+    // The previous touch never ended here if its target was removed
     this._pendingTouch = undefined;
     this._endDrag();
     const touch = ev.touches[0];
@@ -303,8 +303,6 @@ export class HaSnapBottomSheet extends LitElement {
     this._pendingTouch = { x: touch.clientX, y: touch.clientY };
   };
 
-  // On the sheet rather than the document, so touches elsewhere scroll without
-  // waiting for it; a touch's events keep going to where it started
   private _handleTouchMove = (ev: TouchEvent) => {
     const touch = ev.touches[0];
     if (this._pendingTouch) {
