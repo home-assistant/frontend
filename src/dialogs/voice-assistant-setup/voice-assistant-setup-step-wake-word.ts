@@ -92,7 +92,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
 
     const entityState = this.hass.states[this.assistEntityId];
 
-    if (entityState.state !== "idle") {
+    if (entityState?.state !== "idle") {
       return html`<ha-spinner></ha-spinner>`;
     }
 
