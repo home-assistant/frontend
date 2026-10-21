@@ -16,7 +16,6 @@ export interface AddAutomationElementDialogParams {
   add: (key: string, target?: HassServiceTarget) => void;
   clipboardItem: string | undefined;
   clipboardPasteToastBottomOffset?: number;
-  /** The key of the item being replaced. Opens the dialog in replace mode. */
   replacing?: string;
 }
 

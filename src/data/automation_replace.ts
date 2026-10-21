@@ -37,10 +37,7 @@ import {
 import type { TriggerDescriptions } from "./trigger";
 import { isTriggerList } from "./trigger";
 
-// Replacing an item swaps it for one of another type and carries over the
-// configuration that is valid for the new type. Values are only carried over
-// when the new type declares a field with the same key and the value fits that
-// field. Everything else is dropped, even if that leaves the new item
+// Values that don't fit the new item are dropped, even if that leaves it
 // incomplete: an incomplete item is visible, an invalid value might not be.
 
 interface Field {
@@ -51,7 +48,6 @@ interface Field {
 
 type Fields = Record<string, Field>;
 
-// `undefined` when the item doesn't take a target.
 type TargetFilter = NonNullable<TargetSelector["target"]> | undefined;
 
 // The alias describes what the old item did, so it would mislabel the new one.

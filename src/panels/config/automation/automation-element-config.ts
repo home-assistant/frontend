@@ -18,7 +18,6 @@ import type { Action } from "../../../data/script";
 import type { TriggerDescriptions } from "../../../data/trigger";
 import { isTriggerList } from "../../../data/trigger";
 
-// Turn a key picked in the add element dialog into a new item.
 export const createTrigger = (
   key: string,
   target?: HassServiceTarget
@@ -66,8 +65,7 @@ export const createAction = (
   return elClass ? { ...elClass.defaultConfig } : { [key]: {} };
 };
 
-// The inverse of the create functions: the dialog key an existing item was
-// created from. Ids with a dot are platforms even before descriptions load.
+// Ids with a dot are platforms even before descriptions load.
 export const getTriggerPickerKey = (
   trigger: Exclude<Trigger, TriggerList>,
   descriptions: TriggerDescriptions

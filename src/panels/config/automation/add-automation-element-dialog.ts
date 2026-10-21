@@ -414,8 +414,6 @@ class DialogAddAutomationElement
     return true;
   }
 
-  // Open the group the item being replaced is listed in, so its alternatives
-  // are in view.
   private _getReplacingView(
     type: AddAutomationElementDialogParams["type"],
     key: string
