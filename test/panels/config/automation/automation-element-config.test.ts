@@ -6,6 +6,7 @@ import {
   isConditionReplaceable,
   isTriggerReplaceable,
 } from "../../../../src/panels/config/automation/automation-element-config";
+import type { Condition } from "../../../../src/data/automation";
 import type { Action } from "../../../../src/data/script";
 import type { TriggerDescriptions } from "../../../../src/data/trigger";
 
@@ -15,6 +16,9 @@ describe("replaceable items", () => {
     expect(isConditionReplaceable({ condition: "and", conditions: [] })).toBe(
       false
     );
+    expect(
+      isConditionReplaceable({ condition: [] } as unknown as Condition)
+    ).toBe(false);
 
     const containers = [
       { choose: [] },
@@ -28,6 +32,7 @@ describe("replaceable items", () => {
       { repeat: { sequence: [] } },
       { condition: "or", conditions: [] },
       { and: [] },
+      { condition: [] },
     ] as unknown as Action[];
     containers.forEach((action) =>
       expect(isActionReplaceable(action), JSON.stringify(action)).toBe(false)

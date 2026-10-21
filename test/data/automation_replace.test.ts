@@ -72,6 +72,48 @@ const services = {
     first: { fields: {}, response: { optional: true } },
     second: { fields: {}, response: { optional: true } },
   },
+  test: {
+    before: {
+      fields: {
+        early: { selector: { text: null } },
+        late: { selector: { text: null } },
+        tenths: { selector: { number: { min: 0, step: 0.1 } } },
+        whole: { selector: { number: { min: 0, step: 0.1 } } },
+        as_string: { selector: { text: null } },
+        as_seconds: { selector: { number: { min: 0 } } },
+        signed: { selector: { duration: { mode: "signed" } } },
+        light: { selector: { text: null } },
+        switch: { selector: { text: null } },
+      },
+    },
+    after: {
+      fields: {
+        early: { selector: { time: {} } },
+        late: { selector: { time: {} } },
+        tenths: { selector: { number: { min: 0, step: 1 } } },
+        whole: { selector: { number: { min: 0, step: 1 } } },
+        as_string: { selector: { duration: { enable_day: true } } },
+        as_seconds: { selector: { duration: { enable_day: true } } },
+        signed: { selector: { duration: { mode: "offset" } } },
+        light: {
+          selector: {
+            entity: {
+              include_entities: ["light.kitchen", "switch.kettle"],
+              filter: { domain: "switch" },
+            },
+          },
+        },
+        switch: {
+          selector: {
+            entity: {
+              include_entities: ["light.kitchen", "switch.kettle"],
+              filter: { domain: "switch" },
+            },
+          },
+        },
+      },
+    },
+  },
 } as unknown as HassServices;
 
 const hass = {
@@ -137,6 +179,54 @@ describe("portAction", () => {
 
     expect(result).toMatchObject({
       data: { transition: "{{ transition }}", flash: "short" },
+    });
+  });
+
+  it("checks values against what the new field accepts", () => {
+    const result = portAction(
+      {
+        action: "test.before",
+        data: {
+          early: "07:30",
+          late: "25:00",
+          tenths: 1.5,
+          whole: 2,
+          as_string: "00:05:00",
+          as_seconds: 300,
+          signed: { minutes: -5 },
+          light: "light.kitchen",
+          switch: "switch.kettle",
+        },
+      },
+      { action: "test.after", metadata: {} },
+      hass
+    );
+
+    expect(result).toMatchObject({
+      data: {
+        early: "07:30",
+        whole: 2,
+        as_string: "00:05:00",
+        as_seconds: 300,
+        signed: { minutes: -5 },
+        switch: "switch.kettle",
+      },
+    });
+    expect(Object.keys((result as { data: object }).data)).toHaveLength(6);
+  });
+
+  it("reads targets stored in data", () => {
+    const result = portAction(
+      {
+        action: "light.turn_on",
+        data: { floor_id: "ground_floor", label_id: "evening" },
+      },
+      { action: "light.turn_off", metadata: {} },
+      hass
+    );
+
+    expect(result).toMatchObject({
+      target: { floor_id: "ground_floor", label_id: "evening" },
     });
   });
 
