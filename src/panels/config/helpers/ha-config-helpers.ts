@@ -35,6 +35,7 @@ import type {
 import {
   helpersFilterQueryParamConfig,
   helpersFilterQueryParams,
+  helpersFilterQueryString,
   helpersLinkFromUrl,
 } from "../../../common/url/helpers-query-params";
 import { debounce } from "../../../common/util/debounce";
@@ -206,14 +207,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   })
   private _activeCollapsed?: string;
 
-  @state()
+  @state() private _filter = "";
+
   @storage({
     storage: "sessionStorage",
     key: "helpers-table-search",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _filter = "";
+  private _storageFilter = "";
 
   @storage({
     key: "helpers-table-column-order",
@@ -874,10 +876,22 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
+    const filters = { ...this._filters, [type]: ev.detail.value };
 
-    this._filters = { ...this._filters, [type]: ev.detail.value };
+    // A filter also sends the value it was given, once it has found its items.
+    // Only a change to what the URL holds is the user's, so a link isn't stored.
+    if (
+      helpersFilterQueryString(filters) !==
+      helpersFilterQueryString(this._filters)
+    ) {
+      this._storageFilters = {
+        ...this._storageFilters,
+        [type]: ev.detail.value,
+      };
+    }
+
+    this._filters = filters;
     this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
-    this._storageFilters = this._filters;
     this._writeFilters();
     this._applyFilters();
   }
@@ -1025,10 +1039,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const searchParams = this._filterParams.searchParams();
     const link = searchParams ? helpersLinkFromUrl(searchParams) : undefined;
 
+    // Shown, but not stored as the user's choice
     if (link) {
       this._filter = link.search;
       this._filters = link.filters;
-      this._storageFilters = link.filters;
       this._applyFilters();
     }
 
@@ -1277,6 +1291,7 @@ ${rejected
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
+      this._filter = this._storageFilter;
       this._filters = this._storageFilters;
       this._applyLink();
     }
@@ -1573,20 +1588,33 @@ ${rejected
     }
   };
 
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
+  // What a link applied is shown, only what the user picks is stored
+  private _handleSortingChanged(ev: HASSDomEvent<SortingChangedEvent>) {
+    if (!ev.detail.link) {
+      this._activeSorting = ev.detail;
+    }
   }
 
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value ?? "";
+  private _handleGroupingChanged(
+    ev: HASSDomEvent<HASSDomEvents["grouping-changed"]>
+  ) {
+    if (!ev.detail.link) {
+      this._activeGrouping = ev.detail.value ?? "";
+    }
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
+  private _handleSearchChange(
+    ev: HASSDomEvent<HASSDomEvents["search-changed"]>
+  ) {
     this._filter = ev.detail.value;
+
+    if (!ev.detail.link) {
+      this._storageFilter = ev.detail.value;
+    }
   }
 
   private _handleColumnsChanged(ev: CustomEvent) {

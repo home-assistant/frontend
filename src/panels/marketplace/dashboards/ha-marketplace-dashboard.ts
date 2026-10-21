@@ -28,11 +28,15 @@ import { transform } from "../../../common/decorators/transform";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
-import { marketplaceFilterQueryParamConfig } from "../../../common/url/marketplace-query-params";
+import {
+  createMarketplaceFilterQueryString,
+  marketplaceFilterQueryParamConfig,
+} from "../../../common/url/marketplace-query-params";
 import { shallowEqual } from "../../../common/util/shallow-equal";
 import type {
   DataTableColumnContainer,
   SelectionChangedEvent,
+  SortingChangedEvent,
   SortingDirection,
 } from "../../../components/data-table/ha-data-table";
 import "../../../layouts/hass-tabs-subpage";
@@ -201,13 +205,15 @@ export class HaMarketplaceDashboard extends LitElement {
 
   @state() private _marketplaceUpdateEntityIds: string[] = [];
 
+  @state() private _filters: RepositoryFilters = {};
+
   @storage({
     storage: "sessionStorage",
     key: "marketplace-dashboard-table-filters",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _filters: RepositoryFilters = {};
+  private _storageFilters: RepositoryFilters = {};
 
   @storage({
     key: "marketplace-dashboard-table-sorting",
@@ -216,12 +222,14 @@ export class HaMarketplaceDashboard extends LitElement {
   })
   private _activeSorting?: { column: string; direction: SortingDirection };
 
+  @state() private _activeGrouping?: string;
+
   @storage({
     key: "marketplace-dashboard-table-grouping",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _activeGrouping?: string = "translated_status";
+  private _storageGrouping?: string = "translated_status";
 
   @storage({
     key: "marketplace-dashboard-table-collapsed",
@@ -230,13 +238,15 @@ export class HaMarketplaceDashboard extends LitElement {
   })
   private _activeCollapsed: string[] = [];
 
+  @state() private _activeSearch?: string;
+
   @storage({
     storage: "sessionStorage",
     key: "marketplace-dashboard-table-search",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _activeSearch?: string;
+  private _storageSearch?: string;
 
   @storage({
     key: "marketplace-dashboard-table-hidden-columns",
@@ -281,6 +291,9 @@ export class HaMarketplaceDashboard extends LitElement {
   // Stored settings ignore what is set before the first update
   protected willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
+      this._filters = this._storageFilters;
+      this._activeGrouping = this._storageGrouping;
+      this._activeSearch = this._storageSearch;
       this._applyLink();
     }
 
@@ -299,6 +312,7 @@ export class HaMarketplaceDashboard extends LitElement {
     const searchParams = this._filterParams.searchParams();
     const link = searchParams ? browseLinkFromUrl(searchParams) : undefined;
 
+    // Shown, but not stored as the user's choice
     if (link) {
       this._activeSearch = link.search;
       this._filters = {
@@ -1002,9 +1016,18 @@ export class HaMarketplaceDashboard extends LitElement {
     navigate(`/marketplace/repository/${ev.detail.id}`);
   }
 
+  // A filter can also send the value it was given. Only a change to what the
+  // URL holds is the user's, so what a link applied isn't stored.
+  private _isUserChange(filters: RepositoryFilters): boolean {
+    return (
+      createMarketplaceFilterQueryString(filtersOfTab(filters, this.tab)) !==
+      createMarketplaceFilterQueryString(filtersOfTab(this._filters, this.tab))
+    );
+  }
+
   // The pane's own clear button sends no value
   private _statusFilterChanged(ev: HASSDomEvent<{ value?: string[] }>) {
-    this._filters = {
+    const filters = {
       ...this._filters,
       [STATUS_FILTER]: statusFilterOfTab(
         this._filters,
@@ -1012,31 +1035,75 @@ export class HaMarketplaceDashboard extends LitElement {
         ev.detail.value
       ),
     };
+
+    if (this._isUserChange(filters)) {
+      this._storageFilters = {
+        ...this._storageFilters,
+        [STATUS_FILTER]: statusFilterOfTab(
+          this._storageFilters,
+          this.tab,
+          ev.detail.value
+        ),
+      };
+    }
+
+    this._filters = filters;
     this._writeFilters();
   }
 
   private _typeFilterChanged(ev: CustomEvent<{ value: string[] }>) {
-    this._filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
+    const filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
+
+    if (this._isUserChange(filters)) {
+      this._storageFilters = {
+        ...this._storageFilters,
+        [TYPE_FILTER]: ev.detail.value,
+      };
+    }
+
+    this._filters = filters;
     this._writeFilters();
   }
 
   private _sourceFilterChanged(ev: CustomEvent<{ value: string[] }>) {
-    this._filters = { ...this._filters, [SOURCE_FILTER]: ev.detail.value };
+    const filters = { ...this._filters, [SOURCE_FILTER]: ev.detail.value };
+
+    if (this._isUserChange(filters)) {
+      this._storageFilters = {
+        ...this._storageFilters,
+        [SOURCE_FILTER]: ev.detail.value,
+      };
+    }
+
+    this._filters = filters;
     this._writeFilters();
   }
 
-  private _handleSearchFilterChanged(ev: CustomEvent) {
+  // What a link applied is shown, only what the user picks is stored
+  private _handleSearchFilterChanged(
+    ev: HASSDomEvent<HASSDomEvents["search-changed"]>
+  ) {
     this._activeSearch = ev.detail.value;
+
+    if (!ev.detail.link) {
+      this._storageSearch = ev.detail.value;
+    }
   }
 
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
+  private _handleSortingChanged(ev: HASSDomEvent<SortingChangedEvent>) {
+    if (!ev.detail.link) {
+      this._activeSorting = ev.detail;
+    }
   }
 
   private _handleGroupingChanged(
     ev: HASSDomEvent<HASSDomEvents["grouping-changed"]>
   ) {
     this._activeGrouping = ev.detail.value;
+
+    if (!ev.detail.link) {
+      this._storageGrouping = ev.detail.value;
+    }
   }
 
   private _handleCollapseChanged(
@@ -1052,6 +1119,7 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _handleClearFilter() {
     this._filters = {};
+    this._storageFilters = {};
     this._writeFilters();
   }
 

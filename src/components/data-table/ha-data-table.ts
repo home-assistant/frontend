@@ -63,6 +63,8 @@ export interface CollapsedChangedEvent {
 export interface SortingChangedEvent {
   column: string;
   direction: SortingDirection;
+  // Set when a link sorted the table, not the user
+  link?: boolean;
 }
 
 export type SortingDirection = "desc" | "asc" | null;

@@ -708,8 +708,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     fireEvent(this, "clear-filter");
   }
 
-  // A link with table params wins over what was picked before, the page is
-  // told so it keeps the same
+  // A link with table params wins over what was picked before. The page is
+  // told with `link` set, so it shows it without storing it as the user's
+  // choice.
   private _applyUrl() {
     const searchParams = this._queryParams.searchParams();
     const linked = searchParams
@@ -719,7 +720,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     if (linked) {
       if (linked.search !== this.filter) {
         this.filter = linked.search;
-        fireEvent(this, "search-changed", { value: this.filter });
+        fireEvent(this, "search-changed", { value: this.filter, link: true });
       }
       if (
         linked.sorting &&
@@ -728,10 +729,10 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       ) {
         this._sortColumn = linked.sorting.column;
         this._sortDirection = linked.sorting.direction;
-        fireEvent(this, "sorting-changed", linked.sorting);
+        fireEvent(this, "sorting-changed", { ...linked.sorting, link: true });
       }
       if (linked.groupColumn && linked.groupColumn !== this._groupColumn) {
-        this._setGroupColumn(linked.groupColumn);
+        this._setGroupColumn(linked.groupColumn, true);
       }
     }
 
@@ -807,9 +808,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._setGroupColumn(group);
   }
 
-  private _setGroupColumn(columnId: string) {
+  private _setGroupColumn(columnId: string, link = false) {
     this._groupColumn = columnId;
-    fireEvent(this, "grouping-changed", { value: columnId });
+    fireEvent(this, "grouping-changed", { value: columnId, link });
   }
 
   private _openSettings() {
@@ -1126,8 +1127,9 @@ declare global {
 
   // for fire event
   interface HASSDomEvents {
-    "search-changed": { value: string };
-    "grouping-changed": { value: string };
+    // `link` is set when a link changed it, not the user
+    "search-changed": { value: string; link?: boolean };
+    "grouping-changed": { value: string; link?: boolean };
     "columns-changed": {
       columnOrder: string[] | undefined;
       hiddenColumns: string[] | undefined;

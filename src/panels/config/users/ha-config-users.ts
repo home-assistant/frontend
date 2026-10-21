@@ -64,13 +64,15 @@ export class HaConfigUsers extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
+  @state() private _filter = "";
+
   @storage({
     storage: "sessionStorage",
     key: "users-table-search",
-    state: true,
+    state: false,
     subscribe: false,
   })
-  private _filter = "";
+  private _storageFilter = "";
 
   @storage({
     key: "users-table-collapsed",
@@ -169,6 +171,14 @@ export class HaConfigUsers extends LitElement {
       return columns;
     }
   );
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (!this.hasUpdated) {
+      this._filter = this._storageFilter;
+    }
+  }
 
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -308,20 +318,33 @@ export class HaConfigUsers extends LitElement {
     });
   }
 
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
+  // What a link applied is shown, only what the user picks is stored
+  private _handleSortingChanged(ev: HASSDomEvent<SortingChangedEvent>) {
+    if (!ev.detail.link) {
+      this._activeSorting = ev.detail;
+    }
   }
 
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
+  private _handleGroupingChanged(
+    ev: HASSDomEvent<HASSDomEvents["grouping-changed"]>
+  ) {
+    if (!ev.detail.link) {
+      this._activeGrouping = ev.detail.value;
+    }
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
   }
 
-  private _handleSearchChange(ev: CustomEvent) {
+  private _handleSearchChange(
+    ev: HASSDomEvent<HASSDomEvents["search-changed"]>
+  ) {
     this._filter = ev.detail.value;
+
+    if (!ev.detail.link) {
+      this._storageFilter = ev.detail.value;
+    }
   }
 
   private _handleColumnsChanged(ev: CustomEvent) {
