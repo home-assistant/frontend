@@ -943,64 +943,67 @@ export class HAFullCalendar extends LitElement {
         /* Dots sit 4 to a 12px line. FullCalendar stacks each dot 3px below
            the one before it, so a line takes the height it reserves for 4
            dots, and a margin lifts each dot back up to the start of its line.
-           Without these selectors the dots stay stacked. */
-        @supports selector(:nth-child(1 of :has(*))) {
-          :host([narrow]) .ha-fc-dayGridMonth .ha-fc-day-events {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-content: flex-start;
-          }
+           Without these selectors the dots stay stacked. Print lays events
+           out in normal flow, so this is for screens only. */
+        @media screen {
+          @supports selector(:nth-child(1 of :has(*))) {
+            :host([narrow]) .ha-fc-dayGridMonth .ha-fc-day-events {
+              display: flex;
+              flex-wrap: wrap;
+              justify-content: center;
+              align-content: flex-start;
+            }
 
-          :host([narrow])
-            .ha-fc-dayGridMonth
-            .ha-fc-day-events
-            > :has(> .ha-fc-dot-event) {
-            height: 3px;
-          }
+            :host([narrow])
+              .ha-fc-dayGridMonth
+              .ha-fc-day-events
+              > :has(> .ha-fc-dot-event) {
+              height: 3px;
+            }
 
-          /* FullCalendar hides a dot it has not placed or that does not fit */
-          :host([narrow])
-            .ha-fc-dayGridMonth
-            .ha-fc-day-events
-            > :has(> .ha-fc-dot-event):not([style*="hidden"]) {
-            position: relative !important;
-            width: 25% !important;
-            margin-top: calc(var(--dot-column, 0) * -3px);
-            margin-bottom: -3px;
-          }
+            /* FullCalendar hides a dot it has not placed or that does not fit */
+            :host([narrow])
+              .ha-fc-dayGridMonth
+              .ha-fc-day-events
+              > :has(> .ha-fc-dot-event):not([style*="hidden"]) {
+              position: relative !important;
+              width: 25% !important;
+              margin-top: calc(var(--dot-column, 0) * -3px);
+              margin-bottom: -3px;
+            }
 
-          :host([narrow])
-            .ha-fc-dayGridMonth
-            .ha-fc-day-events
-            > :nth-child(4n + 2 of :has(> .ha-fc-dot-event)) {
-            --dot-column: 1;
-          }
+            :host([narrow])
+              .ha-fc-dayGridMonth
+              .ha-fc-day-events
+              > :nth-child(4n + 2 of :has(> .ha-fc-dot-event)) {
+              --dot-column: 1;
+            }
 
-          :host([narrow])
-            .ha-fc-dayGridMonth
-            .ha-fc-day-events
-            > :nth-child(4n + 3 of :has(> .ha-fc-dot-event)) {
-            --dot-column: 2;
-          }
+            :host([narrow])
+              .ha-fc-dayGridMonth
+              .ha-fc-day-events
+              > :nth-child(4n + 3 of :has(> .ha-fc-dot-event)) {
+              --dot-column: 2;
+            }
 
-          :host([narrow])
-            .ha-fc-dayGridMonth
-            .ha-fc-day-events
-            > :nth-child(4n of :has(> .ha-fc-dot-event)) {
-            --dot-column: 3;
-          }
+            :host([narrow])
+              .ha-fc-dayGridMonth
+              .ha-fc-day-events
+              > :nth-child(4n of :has(> .ha-fc-dot-event)) {
+              --dot-column: 3;
+            }
 
-          /* A last line that is not full still needs the room of 3 dots */
-          :host([narrow])
-            .ha-fc-dayGridMonth
-            .ha-fc-day-events
-            > :nth-last-child(1 of :has(> .ha-fc-dot-event)) {
-            height: 9px;
-          }
+            /* A last line that is not full still needs the room of 3 dots */
+            :host([narrow])
+              .ha-fc-dayGridMonth
+              .ha-fc-day-events
+              > :nth-last-child(1 of :has(> .ha-fc-dot-event)) {
+              height: 9px;
+            }
 
-          :host([narrow]) .ha-fc-dayGridMonth .ha-fc-more-link {
-            padding-top: 6px;
+            :host([narrow]) .ha-fc-dayGridMonth .ha-fc-more-link {
+              padding-top: 6px;
+            }
           }
         }
       `,
