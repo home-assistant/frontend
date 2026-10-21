@@ -18,3 +18,9 @@ export const repositoryAuthors = (repository: RepositoryBase): string[] => {
 
 export const isCommunityOrganization = (author: string): boolean =>
   COMMUNITY_ORGANIZATIONS.includes(author);
+
+// The people who made it, a community organization's name says nothing
+export const repositoryMakers = (repository: RepositoryBase): string[] =>
+  repositoryAuthors(repository).filter(
+    (author) => !isCommunityOrganization(author)
+  );

@@ -35,6 +35,7 @@ const marketplaceTableParams = {
   type: "string?",
   status: "string?",
   source: "string?",
+  author: "string?",
   sort: "string?",
   direction: "string?",
   group: "string?",

@@ -89,7 +89,7 @@ import { marketplaceBrandsUrl } from "../../../util/brands-url";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
 import { installBlockedReason } from "../tools/install-blocked-reason";
 import { typeIcon } from "../tools/type-icon";
-import { isCommunityOrganization, repositoryAuthors } from "../tools/authors";
+import { repositoryMakers } from "../tools/authors";
 import {
   markdownWithRepositoryContext,
   repositoryUrl,
@@ -429,11 +429,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   // The same function while the repository stays, a new one renders it again
   private _readmeUrl = memoizeOne(repositoryUrl);
 
-  private _getAuthors = memoizeOne((repository: RepositoryInfo) =>
-    repositoryAuthors(repository).filter(
-      (author) => !isCommunityOrganization(author)
-    )
-  );
+  private _getAuthors = memoizeOne(repositoryMakers);
 
   protected render(): TemplateResult {
     if (this._error) {

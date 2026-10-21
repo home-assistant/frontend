@@ -1,5 +1,6 @@
 import type { HassEntities } from "home-assistant-js-websocket";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { stringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { dataTableQueryParamConfig } from "../../../common/url/data-table-query-params";
 import {
@@ -16,7 +17,7 @@ import {
 import type { DataTableRowData } from "../../../components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
 import type { HomeAssistant } from "../../../types";
-import { isCommunityOrganization, repositoryAuthors } from "../tools/authors";
+import { repositoryMakers } from "../tools/authors";
 import type { MarketplaceTab } from "./ha-marketplace-dashboard";
 
 export const STATUS_ORDER = [
@@ -39,6 +40,8 @@ export const TYPE_FILTER = "type";
 
 export const SOURCE_FILTER = "source";
 
+export const AUTHOR_FILTER = "author";
+
 // Where a repository comes from, the community catalog or added from a link
 export const SOURCE_ORDER = ["catalog", "custom"] as const;
 
@@ -47,10 +50,16 @@ type RepositorySource = (typeof SOURCE_ORDER)[number];
 const repositorySource = (repository: RepositoryBase): RepositorySource =>
   repository.custom ? "custom" : "catalog";
 
+// GitHub names are the same person whatever their case
+const authorKey = (author: string): string => author.toLowerCase();
+
 // What the filter panes picked, nothing picked in a pane shows everything
 export type RepositoryFilters = Partial<
   Record<
-    typeof STATUS_FILTER | typeof TYPE_FILTER | typeof SOURCE_FILTER,
+    | typeof STATUS_FILTER
+    | typeof TYPE_FILTER
+    | typeof SOURCE_FILTER
+    | typeof AUTHOR_FILTER,
     string[]
   >
 >;
@@ -186,7 +195,45 @@ const matchesFilters = (
     return false;
   }
 
+  const authors = filters[AUTHOR_FILTER];
+
+  if (
+    authors?.length &&
+    !repositoryMakers(repository).some((author) =>
+      authors.includes(authorKey(author))
+    )
+  ) {
+    return false;
+  }
+
   return true;
+};
+
+export interface AuthorOption {
+  value: string;
+  label: string;
+}
+
+// Everyone who made something, once each, in the order of their names
+export const repositoryAuthorOptions = (
+  repositories: RepositoryBase[],
+  language?: string
+): AuthorOption[] => {
+  const options = new Map<string, AuthorOption>();
+
+  for (const repository of repositories) {
+    for (const author of repositoryMakers(repository)) {
+      const value = authorKey(author);
+
+      if (!options.has(value)) {
+        options.set(value, { value, label: author });
+      }
+    }
+  }
+
+  return [...options.values()].sort((a, b) =>
+    stringCompare(a.label, b.label, language)
+  );
 };
 
 // Downloaded first, then new ones, then the most starred.
@@ -227,10 +274,7 @@ export const filterRepositories = (
       translated_source: localize(
         `ui.panel.marketplace.repository_source.${repositorySource(repository)}`
       ),
-      // A community organization's name says nothing about who made it
-      author: repositoryAuthors(repository)
-        .filter((author) => !isCommunityOrganization(author))
-        .join(", "),
+      author: repositoryMakers(repository).join(", "),
       // A date as text or 0 without one, only numbers sort among each other
       last_updated_timestamp: timestamp(repository.last_updated),
     }));
@@ -294,6 +338,7 @@ export const browseLinkFromUrl = (
       [STATUS_FILTER]: lists.status?.filter(Boolean),
       [TYPE_FILTER]: lists.type?.filter(Boolean),
       [SOURCE_FILTER]: lists.source?.filter(Boolean),
+      [AUTHOR_FILTER]: lists.author?.filter(Boolean).map(authorKey),
     },
   };
 };

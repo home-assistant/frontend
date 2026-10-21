@@ -57,6 +57,7 @@ import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-
 import type { HomeAssistantUI, Route } from "../../../types";
 import { showMarketplaceAddFromLink } from "../tools/add-from-link";
 import "../components/ha-marketplace-discover";
+import "../components/ha-marketplace-filter-authors";
 import type { MarketplaceRepositoryMenuItem } from "../components/ha-marketplace-repository-overflow-menu";
 import {
   renderRepositoryMenuEntry,
@@ -88,10 +89,12 @@ import {
 import { haStyle } from "../../../resources/styles";
 import {
   applySkippedUpdates,
+  AUTHOR_FILTER,
   browseLinkFromUrl,
   filterRepositories,
   filtersOfTab,
   marketplaceUpdateEntityIds,
+  repositoryAuthorOptions,
   skippedUpdateRepositories,
   SOURCE_FILTER,
   SOURCE_ORDER,
@@ -467,6 +470,17 @@ export class HaMarketplaceDashboard extends LitElement {
           .narrow=${this.narrow}
           @data-table-filter-changed=${this._sourceFilterChanged}
         ></ha-filter-states>
+        <ha-marketplace-filter-authors
+          slot="filter-pane"
+          .label=${this._i18n.localize("ui.panel.marketplace.filters.author")}
+          .value=${this._filters[AUTHOR_FILTER]}
+          .authors=${this._authorOptions(
+            this.marketplace.repositories,
+            this._i18n.locale.language
+          )}
+          .narrow=${this.narrow}
+          @data-table-filter-changed=${this._authorFilterChanged}
+        ></ha-marketplace-filter-authors>
       </hass-tabs-subpage-data-table>
       <ha-dropdown
         id="repository-overflow-menu"
@@ -986,6 +1000,9 @@ export class HaMarketplaceDashboard extends LitElement {
     }))
   );
 
+  // From every repository, so an author picked on one tab can be unpicked on another
+  private _authorOptions = memoize(repositoryAuthorOptions);
+
   // Statuses and sources group in the order of their filters, not alphabetically
   private _groupOrder = memoize(
     (grouping: string | undefined, localize: LocalizeFunc) => {
@@ -1029,6 +1046,11 @@ export class HaMarketplaceDashboard extends LitElement {
 
   private _sourceFilterChanged(ev: CustomEvent<{ value: string[] }>) {
     this._filters = { ...this._filters, [SOURCE_FILTER]: ev.detail.value };
+    this._writeFilters();
+  }
+
+  private _authorFilterChanged(ev: CustomEvent<{ value?: string[] }>) {
+    this._filters = { ...this._filters, [AUTHOR_FILTER]: ev.detail.value };
     this._writeFilters();
   }
 

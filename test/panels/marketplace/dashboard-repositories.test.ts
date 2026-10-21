@@ -11,6 +11,7 @@ import {
   filterRepositories,
   filtersOfTab,
   marketplaceUpdateEntityIds,
+  repositoryAuthorOptions,
   skippedUpdateRepositories,
   statusesOfTab,
   statusFilterOfTab,
@@ -90,6 +91,29 @@ describe("filterRepositories", () => {
           activeFilters
         )
       )
+    ).toEqual(expected);
+  });
+
+  it.each([
+    [{ author: ["alice"] }, ["Shared", "Theirs"]],
+    [{ author: ["bob"] }, ["Shared"]],
+    [{ author: ["owner"] }, ["Owned"]],
+    [{ author: ["custom-cards"] }, []],
+    [{ author: ["alice"], type: ["theme"] }, ["Theirs"]],
+  ])("keeps what is made by %j", (activeFilters, expected) => {
+    expect(
+      names(
+        filterRepositories(
+          [
+            repository("Shared", { authors: ["@Alice", "bob"] }),
+            repository("Theirs", { authors: ["alice"], category: "theme" }),
+            repository("Owned"),
+            repository("Community", { full_name: "custom-cards/card" }),
+          ],
+          localize,
+          activeFilters
+        )
+      ).sort()
     ).toEqual(expected);
   });
 
@@ -184,13 +208,38 @@ describe("filterRepositories", () => {
   });
 });
 
+describe("repositoryAuthorOptions", () => {
+  it("lists everyone who made something once, by name", () => {
+    expect(
+      repositoryAuthorOptions(
+        [
+          repository("One", { authors: ["@bob", "Alice"] }),
+          repository("Two", { authors: ["alice"] }),
+          repository("Three", { full_name: "custom-cards/three" }),
+          repository("Four", { full_name: "carol/four" }),
+        ],
+        "en"
+      )
+    ).toEqual([
+      { value: "alice", label: "Alice" },
+      { value: "bob", label: "bob" },
+      { value: "carol", label: "carol" },
+    ]);
+  });
+});
+
 describe("browseUrl", () => {
   it("links to what browseLinkFromUrl and the table read back", () => {
     const url = new URL(
       browseUrl({
         search: "mushroom card",
         sorting: { column: "stars", direction: "desc" },
-        filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+        filters: {
+          status: ["new"],
+          type: ["theme"],
+          source: ["custom"],
+          author: ["clooos"],
+        },
       }),
       "http://localhost"
     );
@@ -200,8 +249,19 @@ describe("browseUrl", () => {
     expect(url.searchParams.get("direction")).toBe("desc");
     expect(browseLinkFromUrl(url.search)).toEqual({
       search: "mushroom card",
-      filters: { status: ["new"], type: ["theme"], source: ["custom"] },
+      filters: {
+        status: ["new"],
+        type: ["theme"],
+        source: ["custom"],
+        author: ["clooos"],
+      },
     });
+  });
+
+  it("reads an author of a link whatever its case", () => {
+    expect(browseLinkFromUrl("?author=Clooos")?.filters.author).toEqual([
+      "clooos",
+    ]);
   });
 
   it("leaves the direction out when sorting ascending", () => {

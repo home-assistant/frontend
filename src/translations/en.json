@@ -12694,7 +12694,8 @@
         "filters": {
           "status": "Status",
           "type": "Type",
-          "source": "Source"
+          "source": "Source",
+          "author": "Author"
         },
         "dialog_custom_repositories": {
           "title": "Add from a GitHub link",
