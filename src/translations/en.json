@@ -500,6 +500,7 @@
       "submit": "Submit",
       "rename": "Rename",
       "reset": "Reset",
+      "retry": "Retry",
       "search": "[%key:ui::components::data-table::search%]",
       "ok": "OK",
       "yes": "Yes",
@@ -856,6 +857,11 @@
         "entity-state-content-picker": {
           "add": "Add",
           "custom_attribute": "Custom attribute"
+        },
+        "entity-toggle": {
+          "toggle": "Toggle {name}",
+          "turn_on": "Turn {name} on",
+          "turn_off": "Turn {name} off"
         }
       },
       "target-picker": {
@@ -1313,6 +1319,10 @@
         "search": {
           "search_placeholder": "Search {name}",
           "no_results": "No results found"
+        },
+        "filter": {
+          "filter_placeholder": "Filter {name}",
+          "no_matches": "No items match your filter"
         },
         "filter_media_type": "Filter by media type",
         "no_items": "No items",
@@ -4899,6 +4909,8 @@
           "filter_integration": "[%key:ui::components::related-items::integration%]",
           "integration_log_waiting": "[%key:ui::panel::config::integrations::config_entry::live_log::waiting%]",
           "integration_log_unsupported": "[%key:ui::panel::config::integrations::config_entry::live_log::unsupported%]",
+          "no_matches_showing_all": "Nothing in the recent logs mentions ''{term}'', so all lines are shown.",
+          "show_hidden_lines": "Show {count} hidden {count, plural,\n one {line}\n other {lines}\n}",
           "load_logs": "Load logs",
           "nr_of_lines": "Number of lines",
           "loading_log": "Loading log…",
@@ -5577,6 +5589,8 @@
             "home": "Home",
             "unassigned": "Unassigned",
             "other": "Other",
+            "recently_used": "Recently used",
+            "clear_recently_used": "Clear recently used",
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",
@@ -10295,8 +10309,7 @@
             "automatic": "Automatic section",
             "edit_automatic": "Edit automatic section",
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
-            "paste_above": "Paste above",
-            "paste_below": "Paste below",
+            "paste": "Paste",
             "copied_to_clipboard": "Section copied to clipboard",
             "cut_to_clipboard": "Section cut to clipboard",
             "cut_error": "Error while cutting section",
@@ -10508,7 +10521,8 @@
               "clear_color": "Clear color",
               "clear_color_helper": "Used when the entity isn't in an alert state. The background doesn't pulse.",
               "pulse": "Pulse",
-              "pulse_helper": "Animates the colored background while the entity is in an alert state. When reduced motion is on, the background stays tinted instead."
+              "pulse_helper": "Animates the colored background while the entity is in an alert state. When reduced motion is on, the background stays tinted instead.",
+              "alert_section": "Alert"
             },
             "area": {
               "name": "Area",

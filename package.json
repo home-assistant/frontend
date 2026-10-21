@@ -63,7 +63,7 @@
     "@formatjs/intl-numberformat": "9.4.3",
     "@formatjs/intl-pluralrules": "6.3.15",
     "@formatjs/intl-relativetimeformat": "12.3.15",
-    "@home-assistant/webawesome": "3.14.0-ha.0",
+    "@home-assistant/webawesome": "3.14.0-ha.1",
     "@lezer/common": "1.5.3",
     "@lezer/highlight": "1.2.5",
     "@lit-labs/motion": "1.1.0",
@@ -133,14 +133,15 @@
     "workbox-routing": "7.4.1",
     "workbox-strategies": "7.4.1",
     "xss": "1.0.15",
-    "zrender": "6.1.0",
-    "zxing-wasm": "3.1.5"
+    "zrender": "6.1.0"
   },
   "devDependencies": {
     "@ampproject/remapping": "2.3.0",
     "@babel/core": "8.0.7",
     "@babel/helper-compilation-targets": "8.0.7",
     "@babel/helper-define-polyfill-provider": "1.0.0",
+    "@babel/plugin-transform-class-properties": "8.0.1",
+    "@babel/plugin-transform-private-methods": "8.0.1",
     "@babel/plugin-transform-runtime": "8.0.6",
     "@babel/preset-env": "8.0.7",
     "@bundle-stats/plugin-webpack-filter": "4.22.3",

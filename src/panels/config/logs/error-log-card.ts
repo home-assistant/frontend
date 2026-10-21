@@ -72,6 +72,7 @@ import {
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
 import { domainToName } from "../../../data/integration";
+import { haStyleScrollbar } from "../../../resources/styles";
 import type {
   HomeAssistantApi,
   HomeAssistantConfig,
@@ -83,6 +84,10 @@ import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 const NUMBER_OF_LINES = 100;
 // Matches the live log dialog on the integration page
 const INTEGRATION_LOG_LINE_LIMIT = 5000;
+
+// Lines shown around each search match, as a failure's cause is often logged
+// on the lines next to its summary.
+const SEARCH_CONTEXT_LINES = 3;
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
@@ -324,7 +329,7 @@ class ErrorLogCard extends LitElement {
               }
             </div>
           </div>
-          <div class="card-content error-log">
+          <div class="card-content error-log ha-scrollbar">
             <div id="scroll-top-marker"></div>
             ${
               this._loadingPrevState === "loading"
@@ -375,6 +380,8 @@ class ErrorLogCard extends LitElement {
             }
             <ha-ansi-to-html
               ?wrap-disabled=${!this._wrapLines}
+              .contextLines=${SEARCH_CONTEXT_LINES}
+              .expandLabel=${this._expandLabel}
             ></ha-ansi-to-html>
             <div id="scroll-bottom-marker"></div>
           </div>
@@ -451,8 +458,19 @@ class ErrorLogCard extends LitElement {
       this._newLogsIndicator = false;
     }
 
-    if (changedProps.has("filter")) {
+    if (
+      changedProps.has("filter") ||
+      (changedProps.has("_loadingState") &&
+        this._loadingState === "loaded" &&
+        this.filter)
+    ) {
       this._debounceSearch();
+    } else if (
+      (changedProps.has("_localize") || changedProps.has("localizeFunc")) &&
+      this.filter
+    ) {
+      // The hidden lines buttons are built outside Lit, so relabel them.
+      this._ansiToHtmlElement?.filterLines(this.filter);
     }
 
     if (
@@ -792,6 +810,12 @@ class ErrorLogCard extends LitElement {
     }
   }, 150);
 
+  private _expandLabel = (count: number) =>
+    (this.localizeFunc || this._localize)(
+      "ui.panel.config.logs.show_hidden_lines",
+      { count }
+    );
+
   private _debounceScrollToBottom = debounce(() => {
     this._logElement!.scrollTop = this._logElement!.scrollHeight;
   }, 300);
@@ -957,12 +981,14 @@ class ErrorLogCard extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
+    ${haStyleScrollbar}
+
     :host {
       direction: var(--direction);
     }
     .error-log-intro {
       text-align: center;
-      margin: 16px;
+      margin: var(--error-log-card-margin, 16px);
     }
 
     ha-card {
