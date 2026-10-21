@@ -99,6 +99,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         title: localize("ui.panel.config.tag.headers.name"),
         main: true,
         sortable: true,
+        urlName: "name",
         filterable: true,
         flex: 2,
       },
@@ -111,6 +112,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       last_scanned_datetime: {
         title: localize("ui.panel.config.tag.headers.last_scanned"),
         sortable: true,
+        urlName: "last_scanned",
         direction: "desc",
         template: (tag) => html`
           ${
@@ -220,6 +222,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         @retry-load=${this._retryFetchTags}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
+        sync-url
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
