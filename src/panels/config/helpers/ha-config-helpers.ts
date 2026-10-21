@@ -18,6 +18,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -47,7 +48,6 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
-  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
@@ -194,11 +194,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @storage({ key: "helpers-table-sort", state: false, subscribe: false })
-  private _activeSorting?: SortingChangedEvent;
-
-  @storage({ key: "helpers-table-grouping", state: false, subscribe: false })
-  private _activeGrouping?: string;
+  private _tableSettings = new DataTableSettingsController(
+    this,
+    {
+      search: "helpers-table-search",
+      sorting: "helpers-table-sort",
+      grouping: "helpers-table-grouping",
+    },
+    { defaultGrouping: "category" }
+  );
 
   @storage({
     key: "helpers-table-collapsed",
@@ -206,16 +210,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     subscribe: false,
   })
   private _activeCollapsed?: string;
-
-  @state() private _filter = "";
-
-  @storage({
-    storage: "sessionStorage",
-    key: "helpers-table-search",
-    state: false,
-    subscribe: false,
-  })
-  private _storageFilter = "";
 
   @storage({
     key: "helpers-table-column-order",
@@ -694,21 +688,21 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         }
         .columns=${this._columns(this.hass.localize, helpers)}
         .data=${helpers}
-        .initialGroupColumn=${this._activeGrouping ?? "category"}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
+        .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
-        @sorting-changed=${this._handleSortingChanged}
-        @grouping-changed=${this._handleGroupingChanged}
+        @sorting-changed=${this._tableSettings.sortingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         .activeFilters=${this._activeFilters}
         @clear-filter=${this._clearFilter}
         @row-click=${this._openEditDialog}
         sync-url
-        .filter=${this._filter}
-        @search-changed=${this._handleSearchChange}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         has-fab
         clickable
         .noDataText=${this.hass.localize(
@@ -1041,7 +1035,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
     // Shown, but not stored as the user's choice
     if (link) {
-      this._filter = link.search;
+      this._tableSettings.showSearch(link.search);
       this._filters = link.filters;
       this._applyFilters();
     }
@@ -1291,7 +1285,6 @@ ${rejected
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
-      this._filter = this._storageFilter;
       this._filters = this._storageFilters;
       this._applyLink();
     }
@@ -1588,33 +1581,8 @@ ${rejected
     }
   };
 
-  // What a link applied is shown, only what the user picks is stored
-  private _handleSortingChanged(ev: HASSDomEvent<SortingChangedEvent>) {
-    if (!ev.detail.link) {
-      this._activeSorting = ev.detail;
-    }
-  }
-
-  private _handleGroupingChanged(
-    ev: HASSDomEvent<HASSDomEvents["grouping-changed"]>
-  ) {
-    if (!ev.detail.link) {
-      this._activeGrouping = ev.detail.value ?? "";
-    }
-  }
-
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
-  }
-
-  private _handleSearchChange(
-    ev: HASSDomEvent<HASSDomEvents["search-changed"]>
-  ) {
-    this._filter = ev.detail.value;
-
-    if (!ev.detail.link) {
-      this._storageFilter = ev.detail.value;
-    }
   }
 
   private _handleColumnsChanged(ev: CustomEvent) {

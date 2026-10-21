@@ -3,12 +3,12 @@ import type { PropertyValues } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
-  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-icon";
 import "../../../components/ha-button";
@@ -44,11 +44,11 @@ export class HaConfigUsers extends LitElement {
 
   @state() private _loadFailed = false;
 
-  @storage({ key: "users-table-sort", state: false, subscribe: false })
-  private _activeSorting?: SortingChangedEvent;
-
-  @storage({ key: "users-table-grouping", state: false, subscribe: false })
-  private _activeGrouping?: string;
+  private _tableSettings = new DataTableSettingsController(this, {
+    search: "users-table-search",
+    sorting: "users-table-sort",
+    grouping: "users-table-grouping",
+  });
 
   @storage({
     key: "users-table-column-order",
@@ -63,16 +63,6 @@ export class HaConfigUsers extends LitElement {
     subscribe: false,
   })
   private _activeHiddenColumns?: string[];
-
-  @state() private _filter = "";
-
-  @storage({
-    storage: "sessionStorage",
-    key: "users-table-search",
-    state: false,
-    subscribe: false,
-  })
-  private _storageFilter = "";
 
   @storage({
     key: "users-table-collapsed",
@@ -172,14 +162,6 @@ export class HaConfigUsers extends LitElement {
     }
   );
 
-  protected willUpdate(changedProperties: PropertyValues<this>) {
-    super.willUpdate(changedProperties);
-
-    if (!this.hasUpdated) {
-      this._filter = this._storageFilter;
-    }
-  }
-
   protected firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this._fetchUsers();
@@ -205,14 +187,14 @@ export class HaConfigUsers extends LitElement {
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
-        @sorting-changed=${this._handleSortingChanged}
-        @grouping-changed=${this._handleGroupingChanged}
+        .initialSorting=${this._tableSettings.sorting}
+        @sorting-changed=${this._tableSettings.sortingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        .filter=${this._filter}
-        @search-changed=${this._handleSearchChange}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         sync-url
         @row-click=${this._editUser}
         has-fab
@@ -318,33 +300,8 @@ export class HaConfigUsers extends LitElement {
     });
   }
 
-  // What a link applied is shown, only what the user picks is stored
-  private _handleSortingChanged(ev: HASSDomEvent<SortingChangedEvent>) {
-    if (!ev.detail.link) {
-      this._activeSorting = ev.detail;
-    }
-  }
-
-  private _handleGroupingChanged(
-    ev: HASSDomEvent<HASSDomEvents["grouping-changed"]>
-  ) {
-    if (!ev.detail.link) {
-      this._activeGrouping = ev.detail.value;
-    }
-  }
-
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
-  }
-
-  private _handleSearchChange(
-    ev: HASSDomEvent<HASSDomEvents["search-changed"]>
-  ) {
-    this._filter = ev.detail.value;
-
-    if (!ev.detail.link) {
-      this._storageFilter = ev.detail.value;
-    }
   }
 
   private _handleColumnsChanged(ev: CustomEvent) {

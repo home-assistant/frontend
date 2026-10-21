@@ -25,6 +25,7 @@ import { consume } from "../../../common/decorators/consume";
 import { consumeEntityStates } from "../../../common/decorators/consume-context-entry";
 import { storage } from "../../../common/decorators/storage";
 import { transform } from "../../../common/decorators/transform";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
@@ -36,8 +37,6 @@ import { shallowEqual } from "../../../common/util/shallow-equal";
 import type {
   DataTableColumnContainer,
   SelectionChangedEvent,
-  SortingChangedEvent,
-  SortingDirection,
 } from "../../../components/data-table/ha-data-table";
 import "../../../layouts/hass-tabs-subpage";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -215,21 +214,15 @@ export class HaMarketplaceDashboard extends LitElement {
   })
   private _storageFilters: RepositoryFilters = {};
 
-  @storage({
-    key: "marketplace-dashboard-table-sorting",
-    state: false,
-    subscribe: false,
-  })
-  private _activeSorting?: { column: string; direction: SortingDirection };
-
-  @state() private _activeGrouping?: string;
-
-  @storage({
-    key: "marketplace-dashboard-table-grouping",
-    state: false,
-    subscribe: false,
-  })
-  private _storageGrouping?: string = "translated_status";
+  private _tableSettings = new DataTableSettingsController(
+    this,
+    {
+      search: "marketplace-dashboard-table-search",
+      sorting: "marketplace-dashboard-table-sorting",
+      grouping: "marketplace-dashboard-table-grouping",
+    },
+    { defaultGrouping: "translated_status" }
+  );
 
   @storage({
     key: "marketplace-dashboard-table-collapsed",
@@ -237,16 +230,6 @@ export class HaMarketplaceDashboard extends LitElement {
     subscribe: false,
   })
   private _activeCollapsed: string[] = [];
-
-  @state() private _activeSearch?: string;
-
-  @storage({
-    storage: "sessionStorage",
-    key: "marketplace-dashboard-table-search",
-    state: false,
-    subscribe: false,
-  })
-  private _storageSearch?: string;
 
   @storage({
     key: "marketplace-dashboard-table-hidden-columns",
@@ -292,8 +275,6 @@ export class HaMarketplaceDashboard extends LitElement {
   protected willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this._filters = this._storageFilters;
-      this._activeGrouping = this._storageGrouping;
-      this._activeSearch = this._storageSearch;
       this._applyLink();
     }
 
@@ -314,7 +295,7 @@ export class HaMarketplaceDashboard extends LitElement {
 
     // Shown, but not stored as the user's choice
     if (link) {
-      this._activeSearch = link.search;
+      this._tableSettings.showSearch(link.search);
       this._filters = {
         ...link.filters,
         [STATUS_FILTER]: statusFilterOfTab(
@@ -391,32 +372,32 @@ export class HaMarketplaceDashboard extends LitElement {
         back-path="/config"
         clickable
         sync-url
-        .filter=${this._activeSearch || ""}
+        .filter=${this._tableSettings.search}
         has-filters
         .filters=${
           Object.values(filters).filter((values) => values?.length).length
         }
         .noDataText=${this._i18n.localize("ui.panel.marketplace.dashboard.no_data")}
         .empty=${!this.marketplace.repositories.length}
-        .initialSorting=${this._activeSorting}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialSorting=${this._tableSettings.sorting}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .groupOrder=${this._groupOrder(
-          this._activeGrouping,
+          this._tableSettings.grouping,
           this._i18n.localize
         )}
         .columnOrder=${this._orderTableColumns}
         .hiddenColumns=${this._hiddenTableColumns}
         @columns-changed=${this._handleColumnsChanged}
-        @grouping-changed=${this._handleGroupingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @row-click=${this._handleRowClicked}
         ?selectable=${this.tab === "installed"}
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
         @clear-filter=${this._handleClearFilter}
-        @search-changed=${this._handleSearchFilterChanged}
-        @sorting-changed=${this._handleSortingChanged}
+        @search-changed=${this._tableSettings.searchChanged}
+        @sorting-changed=${this._tableSettings.sortingChanged}
       >
         ${this._renderToolbar()}
         ${
@@ -1077,33 +1058,6 @@ export class HaMarketplaceDashboard extends LitElement {
 
     this._filters = filters;
     this._writeFilters();
-  }
-
-  // What a link applied is shown, only what the user picks is stored
-  private _handleSearchFilterChanged(
-    ev: HASSDomEvent<HASSDomEvents["search-changed"]>
-  ) {
-    this._activeSearch = ev.detail.value;
-
-    if (!ev.detail.link) {
-      this._storageSearch = ev.detail.value;
-    }
-  }
-
-  private _handleSortingChanged(ev: HASSDomEvent<SortingChangedEvent>) {
-    if (!ev.detail.link) {
-      this._activeSorting = ev.detail;
-    }
-  }
-
-  private _handleGroupingChanged(
-    ev: HASSDomEvent<HASSDomEvents["grouping-changed"]>
-  ) {
-    this._activeGrouping = ev.detail.value;
-
-    if (!ev.detail.link) {
-      this._storageGrouping = ev.detail.value;
-    }
   }
 
   private _handleCollapseChanged(
