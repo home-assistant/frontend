@@ -4,6 +4,7 @@ import type {
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
+  createQueryString,
   decodeQueryParams,
   hasQueryParams,
   type QueryParamConfig,
@@ -56,6 +57,16 @@ export const entitiesFilterQueryParams = (
   config_entry: list(filters.config_entry),
   sub_entry: list(filters.sub_entry),
 });
+
+// The filters as the URL holds them, so values that filter the same, such as
+// no list and an empty one, compare equal
+export const entitiesFilterQueryString = (
+  filters: DataTableFiltersValues
+): string =>
+  createQueryString(
+    entitiesFilterQueryParams(filters),
+    entitiesFilterQueryParamConfig
+  );
 
 // What a link says to show, undefined when it has no table params so what was
 // picked before stays. A link replaces the search and the filters, ones left
