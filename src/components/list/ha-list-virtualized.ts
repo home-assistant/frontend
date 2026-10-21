@@ -93,6 +93,9 @@ export class HaListVirtualized extends HaListBase {
   private _activeItemFocus = false;
   private _scrollToActiveItem = false;
 
+  // Items that registered from inside a wrapping virtualizer child.
+  private _itemByChild = new WeakMap<Element, HaListItemBase>();
+
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this._loadVirtualizer();
@@ -205,7 +208,7 @@ export class HaListVirtualized extends HaListBase {
     }
     if (this.virtualizerElement && this.rangeStart > -1) {
       Array.from(this.virtualizerElement.children).forEach((child, index) => {
-        const el = child as HTMLElement;
+        const el = this._rowItem(child);
         if (index + this.rangeStart === this.activeItemIndex) {
           el.tabIndex = 0;
           if (focusItem) {
@@ -218,12 +221,17 @@ export class HaListVirtualized extends HaListBase {
     }
   }
 
+  // The list item of a virtualizer child, or the child when it is the row.
+  private _rowItem(child: Element): HTMLElement {
+    return this._itemByChild.get(child) ?? (child as HTMLElement);
+  }
+
   private _applyVirtualActive(reveal: boolean) {
     if (!this.virtualizerElement || this.rangeStart < 0) {
       return;
     }
     Array.from(this.virtualizerElement.children).forEach((child, index) => {
-      const el = child as HTMLElement;
+      const el = this._rowItem(child);
       const active = index + this.rangeStart === this.activeItemIndex;
       el.removeAttribute("tabindex");
       el.toggleAttribute("active", active);
@@ -277,7 +285,7 @@ export class HaListVirtualized extends HaListBase {
     }
     const total = this.rows?.length ?? 0;
     Array.from(this.virtualizerElement.children).forEach((child, index) => {
-      const el = child as HTMLElement;
+      const el = this._rowItem(child);
       el.setAttribute("aria-setsize", String(total));
       el.setAttribute("aria-posinset", String(this.rangeStart + index + 1));
     });
@@ -322,10 +330,10 @@ export class HaListVirtualized extends HaListBase {
       this.activeItemIndex >= this.rangeStart &&
       this.activeItemIndex <= this.rangeEnd
     ) {
-      const active = this.virtualizerElement?.children[
-        this.activeItemIndex - this.rangeStart
-      ] as HaListItemBase | undefined;
-      if (active && active instanceof HaListItemBase) {
+      const active = this._rowItem(
+        this.virtualizerElement.children[this.activeItemIndex - this.rangeStart]
+      );
+      if (active instanceof HaListItemBase) {
         ev.preventDefault();
         active.activate();
         fireEvent(this, "ha-list-activated", {
@@ -383,6 +391,12 @@ export class HaListVirtualized extends HaListBase {
     ev: HASSDomEvent<HaListItemRegistrationDetail>
   ) => {
     ev.stopPropagation();
+    const child = ev
+      .composedPath()
+      .find((node) => (node as Node).parentNode === this.virtualizerElement);
+    if (child && child !== ev.detail.item) {
+      this._itemByChild.set(child as Element, ev.detail.item);
+    }
   };
 
   protected override onItemUnregister = (
