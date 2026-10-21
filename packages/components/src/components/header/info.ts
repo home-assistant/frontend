@@ -1,5 +1,5 @@
 /** Tag name of the element. */
 export const TAG_NAME = "hac-header";
 
-/** Version of <hac-header>, see CHANGELOG.md next to this file. */
+/** Version of <hac-header>. */
 export const VERSION = "0.1.0";
