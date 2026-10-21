@@ -32,6 +32,7 @@ export interface NetworkNode {
     borderColor?: string;
     borderWidth?: number;
   };
+  label?: { position: "left" | "right" | "top" | "bottom" };
   fixed?: boolean;
   /**
    * Distance from the center, where 0 is the center and 1 is the edge
@@ -315,6 +316,7 @@ export class HaNetworkGraph extends LitElement {
             symbolSize: node.symbolSize || 30,
             symbol: node.symbol || "circle",
             itemStyle: node.itemStyle || {},
+            label: node.label,
             fixed: node.fixed,
             x: node.x,
             y: node.y,

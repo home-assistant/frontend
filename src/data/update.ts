@@ -229,6 +229,7 @@ export const checkForEntityUpdates = async (
 };
 
 // When updating, and entity does not support % show "Installing"
+// When updating, and entity does support % but has not reported it yet, show "Preparing"
 // When updating, and entity does support % show "Installing (xx%)"
 // When update available, show "Update available"
 // When the latest version is skipped, show the latest version
@@ -245,6 +246,14 @@ export const computeUpdateStateDisplay = (
   // downgrading firmware (installed_version is newer than latest_version).
   // Show the installing status regardless of state in that case.
   if (updateIsInstalling(stateObj)) {
+    // The install has not started yet, for example while a backup is
+    // created before the update.
+    if (
+      supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
+      attributes.update_percentage == null
+    ) {
+      return options.localize("ui.card.update.preparing");
+    }
     const supportsProgress =
       supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
       attributes.update_percentage !== null;

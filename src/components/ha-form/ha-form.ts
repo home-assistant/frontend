@@ -106,7 +106,8 @@ export class HaForm extends LitElement implements HaFormElement {
   ) => string | undefined;
 
   @property({ attribute: false }) public localizeValue?: (
-    key: string
+    key: string,
+    values?: Record<string, string>
   ) => string;
 
   @property({ attribute: false }) public context?: Record<string, any>;

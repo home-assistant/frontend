@@ -93,7 +93,10 @@ export class HaSelector extends LitElement {
   @property() public helper?: string;
 
   @property({ attribute: false })
-  public localizeValue?: (key: string) => string;
+  public localizeValue?: (
+    key: string,
+    values?: Record<string, string>
+  ) => string;
 
   @property() public placeholder?: any;
 

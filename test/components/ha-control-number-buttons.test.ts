@@ -30,8 +30,13 @@ describe("ha-control-number-buttons step bounds", () => {
     return el;
   };
 
-  const stepButton = (el: HaControlNumberButton, label: string) =>
-    el.shadowRoot!.querySelector<HTMLButtonElement>(`[aria-label="${label}"]`)!;
+  const stepButton = (
+    el: HaControlNumberButton,
+    direction: "increment" | "decrement"
+  ) =>
+    el.shadowRoot!.querySelector<HTMLButtonElement>(
+      direction === "increment" ? "button.plus" : "button.minus"
+    )!;
 
   const changedValues = (el: HaControlNumberButton) => {
     const values: (number | undefined)[] = [];

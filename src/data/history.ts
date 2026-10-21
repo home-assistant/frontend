@@ -104,13 +104,16 @@ export const fetchDateWS = (
   hass: Pick<HomeAssistant, "states" | "callWS">,
   startTime: Date,
   endTime: Date,
-  entityIds: string[]
+  entityIds: string[],
+  options: {
+    minimalResponse?: boolean;
+  } = {}
 ) => {
   const params = {
     type: "history/history_during_period",
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
-    minimal_response: true,
+    minimal_response: options.minimalResponse ?? true,
     no_attributes: !entityIds.some((entityId) =>
       entityIdHistoryNeedsAttributes(hass, entityId)
     ),
@@ -706,6 +709,16 @@ export const isNumericEntity = (
     domain === "sensor" &&
     isNumericSensorDeviceClass(currentState.attributes.device_class)) ||
   numericStateFromHistory != null;
+
+// Non-numeric domains that computeHistory gives a unit, so they get a line chart
+const LINE_CHART_DOMAINS = ["climate", "humidifier", "water_heater", "zone"];
+
+export const isTimelineEntity = (
+  domain: string,
+  currentState: HassEntity | undefined
+): boolean =>
+  !isNumericEntity(domain, currentState, undefined) &&
+  !LINE_CHART_DOMAINS.includes(domain);
 
 export const mergeHistoryResults = (
   historyResult: HistoryResult,

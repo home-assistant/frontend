@@ -365,7 +365,6 @@ export default class HaAutomationActionRow extends LitElement {
             ? html`<ha-automation-condition-live-test
                 id="condition-icon"
                 slot="leading-icon"
-                .hass=${this.hass}
                 .condition=${liveTestCondition}
               >
                 <ha-svg-icon
