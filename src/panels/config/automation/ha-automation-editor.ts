@@ -1189,6 +1189,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     };
   }
 
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    if (!this._manualEditor?.sidebarOpen) {
+      return {};
+    }
+    return {
+      Escape: () => this._manualEditor?.triggerCloseSidebar(),
+    };
+  }
+
   // @ts-ignore
   private _collapseAll() {
     this._manualEditor?.collapseAll();

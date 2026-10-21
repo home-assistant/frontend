@@ -228,6 +228,10 @@ export const ManualEditorMixin = <TConfig>(
       );
     }
 
+    public get sidebarOpen(): boolean {
+      return !!this.sidebarConfig;
+    }
+
     public triggerCloseSidebar() {
       if (this.sidebarConfig) {
         if (this.sidebarElement) {
