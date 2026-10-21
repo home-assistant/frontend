@@ -145,7 +145,11 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "overview",
     "energy-usage-graph",
     "ui.panel.energy.cards.energy_usage_graph_title",
-    (p) => hasEnergySource(p)
+    (p) =>
+      hasGridSource(p) ||
+      hasBattery(p) ||
+      (p.energy_sources.some((s) => s.type === "home") &&
+        p.energy_sources.some((s) => s.type === "solar"))
   ),
   entry(
     "overview",
@@ -203,7 +207,11 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "electricity",
     "energy-usage-graph",
     "ui.panel.energy.cards.energy_usage_graph_title",
-    (p) => hasEnergySource(p)
+    (p) =>
+      hasGridSource(p) ||
+      hasBattery(p) ||
+      (p.energy_sources.some((s) => s.type === "home") &&
+        p.energy_sources.some((s) => s.type === "solar"))
   ),
   entry(
     "electricity",

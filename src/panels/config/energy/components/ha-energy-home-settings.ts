@@ -1,11 +1,18 @@
 import { mdiDelete, mdiHome, mdiPencil, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import type { ContextType } from "@lit/context";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
+import { consume } from "../../../../common/decorators/consume";
+import {
+  configContext,
+  internationalizationContext,
+  statesContext,
+} from "../../../../data/context";
 import type {
   EnergyPreferences,
   EnergyPreferencesValidation,
@@ -26,6 +33,18 @@ import { energyCardStyles } from "./styles";
 @customElement("ha-energy-home-settings")
 export class EnergyHomeSettings extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig!: ContextType<typeof configContext>;
 
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
@@ -52,11 +71,11 @@ export class EnergyHomeSettings extends LitElement {
       <ha-card>
         <h1 class="card-header">
           <ha-svg-icon .path=${mdiHome}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.home.title")}
+          ${this._i18n.localize("ui.panel.config.energy.home.title")}
         </h1>
 
         <div class="card-content">
-          <p>${this.hass.localize("ui.panel.config.energy.home.sub")}</p>
+          <p>${this._i18n.localize("ui.panel.config.energy.home.sub")}</p>
           ${homeValidation.map(
             (result) => html`
               <ha-energy-validation-result
@@ -71,7 +90,7 @@ export class EnergyHomeSettings extends LitElement {
                   <div class="items-container">
                     ${homeSources.map((source) => {
                       const entityState =
-                        this.hass.states[source.stat_energy_from];
+                        this._states.states[source.stat_energy_from];
                       return html`
                         <div class="row" .source=${source}>
                           ${
@@ -85,18 +104,19 @@ export class EnergyHomeSettings extends LitElement {
                           }
                           <span class="content"
                             >${
-                              source.name || this.hass.config.location_name
+                              source.name ||
+                              this._hassConfig.config.location_name
                             }</span
                           >
                           <ha-icon-button
-                            .label=${this.hass.localize(
+                            .label=${this._i18n.localize(
                               "ui.panel.config.energy.home.edit_home_meter"
                             )}
                             @click=${this._editSource}
                             .path=${mdiPencil}
                           ></ha-icon-button>
                           <ha-icon-button
-                            .label=${this.hass.localize(
+                            .label=${this._i18n.localize(
                               "ui.panel.config.energy.home.remove_home_meter"
                             )}
                             @click=${this._deleteSource}
@@ -119,7 +139,7 @@ export class EnergyHomeSettings extends LitElement {
                       size="s"
                     >
                       <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                      ${this.hass.localize(
+                      ${this._i18n.localize(
                         "ui.panel.config.energy.home.add_home_meter"
                       )}
                     </ha-button>
@@ -167,7 +187,7 @@ export class EnergyHomeSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: this.hass.localize("ui.panel.config.energy.delete_source"),
+        title: this._i18n.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
       return;
