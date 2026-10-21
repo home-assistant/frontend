@@ -625,7 +625,7 @@ class AddIntegrationDialog extends LitElement {
                 this._pickingCategory
                   ? html`<ha-icon-button-prev
                       slot="headerNavigationIcon"
-                      @click=${this._closeCategoryPicker}
+                      @click=${this._leaveCategoryPicker}
                     ></ha-icon-button-prev>`
                   : nothing
               }
@@ -716,7 +716,7 @@ class AddIntegrationDialog extends LitElement {
       .integration=${integration}
       .flowsInProgress=${flowsInProgress}
       .navigateToResult=${this._navigateToResult}
-      .showManageLink=${this._showDiscovered}
+      .showManageLink=${this._showDiscovered || this._showDiscoveredView}
       style=${styleMap({
         minWidth: `${this._width}px`,
         minHeight: `581px`,
@@ -805,7 +805,10 @@ class AddIntegrationDialog extends LitElement {
         ${
           this._narrow && browseByCategory
             ? html`<ha-icon-button
-                class=${classMap({ "filter-active": !!this._category })}
+                class=${classMap({
+                  "filter-button": true,
+                  "filter-active": !!this._category,
+                })}
                 .label=${this.hass.localize(
                   "ui.panel.config.integrations.filter_category"
                 )}
@@ -889,16 +892,33 @@ class AddIntegrationDialog extends LitElement {
     return shortcuts;
   }
 
-  private _openCategoryPicker() {
+  private async _openCategoryPicker() {
     this._pickingCategory = true;
     // Show where the current filter sits
     if (this._category) {
       this._expanded = new Set([...this._expanded, this._category]);
     }
+
+    // The filter button is gone, keyboard users continue on the current pick
+    await this.updateComplete;
+    this.shadowRoot!.querySelector<HTMLElement>(
+      ".picking [role=treeitem][aria-selected=true]"
+    )?.focus();
   }
 
-  private _closeCategoryPicker() {
+  // Back on the list, keyboard users continue on the filter button
+  private async _leaveCategoryPicker() {
+    if (!this._pickingCategory) {
+      return;
+    }
+
     this._pickingCategory = false;
+    await this.updateComplete;
+    // A new button, it renders the element that takes the focus itself
+    const filterButton =
+      this.shadowRoot!.querySelector<LitElement>(".filter-button");
+    await filterButton?.updateComplete;
+    filterButton?.focus();
   }
 
   // Leave room for the dialog margin, header and search on short screens, so
@@ -1155,7 +1175,7 @@ class AddIntegrationDialog extends LitElement {
     this._showDiscoveredView = false;
     this._category = undefined;
     this._subcategory = undefined;
-    this._pickingCategory = false;
+    this._leaveCategoryPicker();
   }
 
   private _categoryPicked(ev: Event) {
@@ -1164,14 +1184,14 @@ class AddIntegrationDialog extends LitElement {
     this._category = category;
     this._subcategory = undefined;
     this._expanded = new Set([...this._expanded, category]);
-    this._pickingCategory = false;
+    this._leaveCategoryPicker();
   }
 
   private _subcategoryPicked(ev: Event) {
     this._showDiscoveredView = false;
     this._category = (ev.currentTarget as any).category as string;
     this._subcategory = (ev.currentTarget as any).subcategory as string;
-    this._pickingCategory = false;
+    this._leaveCategoryPicker();
   }
 
   private _renderRow = (integration: IntegrationListItem) => {
