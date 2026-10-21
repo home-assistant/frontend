@@ -118,9 +118,7 @@ export class AssistPipelineRunDebug extends LitElement {
                         appearance="filled"
                         @click=${this._runAudioPipeline}
                         .disabled=${
-                          !window.isSecureContext ||
-                          // @ts-ignore-next-line
-                          !(window.AudioContext || window.webkitAudioContext)
+                          !window.isSecureContext || !("AudioContext" in window)
                         }
                       >
                         ${this.hass.localize(
@@ -131,9 +129,7 @@ export class AssistPipelineRunDebug extends LitElement {
                         appearance="filled"
                         @click=${this._runAudioWakeWordPipeline}
                         .disabled=${
-                          !window.isSecureContext ||
-                          // @ts-ignore-next-line
-                          !(window.AudioContext || window.webkitAudioContext)
+                          !window.isSecureContext || !("AudioContext" in window)
                         }
                       >
                         ${this.hass.localize(
