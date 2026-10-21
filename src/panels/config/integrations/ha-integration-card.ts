@@ -188,14 +188,16 @@ export class HaIntegrationCard extends LitElement {
   private _computeSupportingText(
     summary?: IntegrationCardSummary,
     status?: IntegrationCardStatus
-  ): string | undefined {
+  ): string {
     // Initializing, unloading and debug logging have no attention count,
     // so their message is shown instead of the plain count.
     if (status && !summary?.attention) {
       return status.message;
     }
     if (!summary) {
-      return undefined;
+      return this._localize(
+        "ui.panel.config.integrations.config_entry.no_devices_or_entities"
+      );
     }
     if (!summary.attention) {
       return this._localize(
@@ -222,7 +224,7 @@ export class HaIntegrationCard extends LitElement {
 
   private _renderSupportingText(
     status?: IntegrationCardStatus
-  ): TemplateResult | typeof nothing {
+  ): TemplateResult {
     const devices = this._getDevices(this.items, this._devices);
     const summary = computeIntegrationCardSummary(
       this.items,
@@ -235,12 +237,6 @@ export class HaIntegrationCard extends LitElement {
             this.domainEntities
           )
     );
-
-    const icons = this._renderIcons();
-
-    if (!summary && !status && icons === nothing) {
-      return nothing;
-    }
 
     const text = this._computeSupportingText(summary, status);
 
@@ -259,13 +255,11 @@ export class HaIntegrationCard extends LitElement {
                       aria-hidden="true"
                     ></ha-spinner>`
               }
-              ${text ? html`<span class="text">${text}</span>` : nothing}
+              <span class="text">${text}</span>
             </span>`
-          : text
-            ? html`<span class="text">${text}</span>`
-            : nothing
+          : html`<span class="text">${text}</span>`
       }
-      ${icons}
+      ${this._renderIcons()}
     </span>`;
   }
 
