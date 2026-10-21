@@ -283,6 +283,8 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     this._loadError = undefined;
     // The panel translates the errors of the backend itself
     this.hass.loadBackendTranslation("exceptions", "marketplace");
+    // The categories of custom integrations, the names come with Home Assistant
+    this.hass.loadBackendTranslation("integration_category", "homeassistant");
     this._subscribeMarketplace();
     this._refreshInfo();
     this._refreshRepositories();
