@@ -12,6 +12,7 @@ import {
   type ESPHomeDeviceEntityRef,
   deriveESPHomeSetupStatus,
   getESPHomeAudioControls,
+  getESPHomeBluetoothSwitch,
   getESPHomeSetupCapabilityIds,
   hasESPHomeSetupCapabilities,
   isESPHomeSerialConfigured,
@@ -195,6 +196,11 @@ export class ESPHomeSetupController implements ReactiveController {
       return undefined;
     }
     let status = deriveESPHomeSetupStatus(this._capabilities, {
+      bluetoothEnabled: getESPHomeBluetoothSwitch(
+        deviceId,
+        this._getEntities(),
+        hass.states
+      )?.on,
       mediaPlayerSupported: audio.supported,
       sendspinSupported: Boolean(audio.sendspinEntityId),
       sendspinEnabled: audio.sendspinOn,

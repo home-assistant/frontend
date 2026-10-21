@@ -46,6 +46,7 @@ import {
   ESPHOME_CAPABILITY_TITLE_KEYS,
   findESPHomeZWaveFlow,
   getESPHomeAudioControls,
+  getESPHomeBluetoothSwitch,
   getESPHomeSetupCapabilityIds,
   isESPHomeSerialConfigured,
   MUSIC_ASSISTANT_DOCS_URL,
@@ -173,6 +174,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   @state() private _installingAudio = false;
 
   @state() private _installStatus?: string;
+
+  @state() private _switchingBluetooth = false;
 
   /** True until the Sendspin switch state catches up after we turn it on. */
   @state() private _sendspinOptimisticOn = false;
@@ -365,6 +368,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                       : nothing
                   }
                   <p>${localize(CAPABILITY_DESCRIPTION_KEYS[id])}</p>
+                  ${id === "bluetooth" ? this._renderBluetoothActions() : nothing}
                   ${id === "audio" ? this._renderAudioActions(status) : nothing}
                   ${
                     id === "connectivity"
@@ -394,6 +398,28 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       >
         <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
       </span>
+    `;
+  }
+
+  private _renderBluetoothActions() {
+    const bluetoothSwitch = this._bluetoothSwitch();
+    if (!bluetoothSwitch) {
+      return nothing;
+    }
+    return html`
+      <div class="actions">
+        <ha-button
+          appearance=${bluetoothSwitch.on ? "plain" : "accent"}
+          .disabled=${this._switchingBluetooth}
+          @click=${this._toggleBluetooth}
+        >
+          ${this._i18n!.localize(
+            bluetoothSwitch.on
+              ? "ui.panel.config.devices.esphome.setup_bluetooth_turn_off"
+              : "ui.panel.config.devices.esphome.setup_bluetooth_turn_on"
+          )}
+        </ha-button>
+      </div>
     `;
   }
 
@@ -736,6 +762,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     }
     const audio = this._audioControls();
     const status = deriveESPHomeSetupStatus(this._capabilities, {
+      bluetoothEnabled: this._bluetoothSwitch()?.on,
       mediaPlayerSupported:
         Boolean(this.params.mediaPlayerSupported) || audio.supported,
       sendspinSupported: Boolean(audio.sendspinEntityId),
@@ -891,6 +918,37 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
   private _showZWaveAdapters = (ev: Event) => {
     ev.stopPropagation();
     this._view = "zwave-adapters";
+  };
+
+  private _bluetoothSwitch() {
+    if (!this.params) {
+      return undefined;
+    }
+    return getESPHomeBluetoothSwitch(
+      this.params.deviceId,
+      this._entities ? Object.values(this._entities) : [],
+      this._states ?? {}
+    );
+  }
+
+  private _toggleBluetooth = async (ev: Event) => {
+    ev.stopPropagation();
+    const bluetoothSwitch = this._bluetoothSwitch();
+    if (!bluetoothSwitch || !this._api) {
+      return;
+    }
+    this._switchingBluetooth = true;
+    try {
+      await this._api.callService(
+        "switch",
+        bluetoothSwitch.on ? "turn_off" : "turn_on",
+        { entity_id: bluetoothSwitch.entityId }
+      );
+    } catch {
+      // callService already shows the failure toast.
+    } finally {
+      this._switchingBluetooth = false;
+    }
   };
 
   private _audioControls(): ESPHomeAudioControls {
