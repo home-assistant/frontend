@@ -1039,9 +1039,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       this._filters = link.filters;
       this._applyFilters();
     } else if (searchParams?.toString() === "") {
-      // Opened again without params, like from the sidebar
+      // Opened again without params, like from the sidebar. Written once the
+      // table has seen the URL without params, so it restores what it stored
       this._filters = this._storageFilters;
       this._applyFilters();
+      queueMicrotask(() => this._writeFilters());
+
+      return;
     }
 
     this._writeFilters();
