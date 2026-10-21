@@ -72,6 +72,18 @@ describe("isFieldVisible", () => {
       expect(isFieldVisible(schema, { a: "x" })).toBe(false);
     });
 
+    it("matches a boolean with its number", () => {
+      expect(isFieldVisible(field({ field: "a", value: 1 }), { a: true })).toBe(
+        true
+      );
+      expect(
+        isFieldVisible(field({ field: "a", value: false }), { a: 0 })
+      ).toBe(true);
+      expect(isFieldVisible(field({ field: "a", value: true }), { a: 2 })).toBe(
+        false
+      );
+    });
+
     it("compares lists by content", () => {
       expect(
         isFieldVisible(field({ field: "a", value: ["x"] }), { a: ["x"] })

@@ -11,9 +11,16 @@ const isEmpty = (value: unknown): boolean =>
   value === undefined || value === null || value === "";
 
 // Same result as the backend, which compares with Python equality: a missing
-// value equals null, and lists compare by content.
-const isEqual = (a: unknown, b: unknown): boolean =>
-  (a ?? null) === (b ?? null) || deepEqual(a, b);
+// value equals null, a boolean equals its number, and lists compare by content.
+const isEqual = (a: unknown, b: unknown): boolean => {
+  if (typeof a === "boolean" && typeof b === "number") {
+    return Number(a) === b;
+  }
+  if (typeof a === "number" && typeof b === "boolean") {
+    return a === Number(b);
+  }
+  return (a ?? null) === (b ?? null) || deepEqual(a, b);
+};
 
 const matchFieldCondition = (
   condition: HaFormFieldCondition,
