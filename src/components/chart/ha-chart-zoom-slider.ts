@@ -132,7 +132,7 @@ export class HaChartZoomSlider extends LitElement {
   private _handlePointerDown(
     ev: PointerEvent & HASSDomCurrentTargetEvent<HTMLElement>
   ) {
-    if (ev.button !== 0 || this._drag) {
+    if (ev.button !== 0 || !ev.isPrimary) {
       return;
     }
     ev.currentTarget.setPointerCapture(ev.pointerId);
@@ -146,6 +146,11 @@ export class HaChartZoomSlider extends LitElement {
 
   private _handlePointerMove(ev: PointerEvent) {
     if (ev.pointerId !== this._drag?.pointerId) {
+      return;
+    }
+    // The release can be missed, so a move without a pressed button ends it
+    if (!ev.buttons) {
+      this._drag = undefined;
       return;
     }
     const { part, x, range } = this._drag;
