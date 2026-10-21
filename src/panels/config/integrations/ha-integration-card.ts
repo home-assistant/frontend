@@ -39,29 +39,28 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistantConfig, HomeAssistantUI } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
-import type { IntegrationCardSummary } from "./integration-card-summary";
+import type {
+  IntegrationCardStatusLevel,
+  IntegrationCardSummary,
+} from "./integration-card-summary";
 import {
+  CARD_STATE_LEVEL,
   computeIntegrationCardState,
   computeIntegrationCardSummary,
 } from "./integration-card-summary";
 
 interface IntegrationCardStatus {
-  level: "error" | "warning" | "progress";
+  level: IntegrationCardStatusLevel;
   icon?: string;
   message: string;
 }
 
-const STATE_STATUS: Partial<
-  Record<ConfigEntry["state"], Omit<IntegrationCardStatus, "message">>
-> = {
-  setup_error: { level: "error", icon: mdiAlertCircle },
-  setup_retry: { level: "error", icon: mdiAlertCircle },
-  migration_error: { level: "error", icon: mdiAlertCircle },
-  not_loaded: { level: "warning", icon: mdiAlertCircle },
-  failed_unload: { level: "warning", icon: mdiAlertCircle },
-  setup_in_progress: { level: "progress" },
-  unload_in_progress: { level: "progress" },
-};
+interface IntegrationCardIcon {
+  id: string;
+  path: string;
+  label: string;
+  className?: string;
+}
 
 @customElement("ha-integration-card")
 export class HaIntegrationCard extends LitElement {
@@ -164,10 +163,11 @@ export class HaIntegrationCard extends LitElement {
     entryState: ConfigEntry["state"],
     debugLoggingEnabled: boolean
   ): IntegrationCardStatus | undefined {
-    const stateStatus = STATE_STATUS[entryState];
-    if (stateStatus) {
+    const level = CARD_STATE_LEVEL[entryState];
+    if (level) {
       return {
-        ...stateStatus,
+        level,
+        icon: level === "progress" ? undefined : mdiAlertCircle,
         message: this._localize(
           `ui.panel.config.integrations.config_entry.state.${entryState}`
         ),
@@ -206,12 +206,12 @@ export class HaIntegrationCard extends LitElement {
     const attentionState = summary.attentionState ?? "other";
     if (summary.attention >= summary.count) {
       return this._localize(
-        `ui.panel.config.integrations.config_entry.attention.${summary.unit}_all`,
+        "ui.panel.config.integrations.config_entry.attention.all",
         { count: summary.count, state: attentionState }
       );
     }
     return this._localize(
-      `ui.panel.config.integrations.config_entry.attention.${summary.unit}_some`,
+      "ui.panel.config.integrations.config_entry.attention.some",
       {
         count: summary.count,
         attention: summary.attention,
@@ -227,7 +227,6 @@ export class HaIntegrationCard extends LitElement {
     const summary = computeIntegrationCardSummary(
       this.items,
       devices,
-      this.entityRegistryEntries,
       devices.length
         ? 0
         : this._getEntityCount(
@@ -276,75 +275,67 @@ export class HaIntegrationCard extends LitElement {
       return nothing;
     }
 
-    const isCustom = !manifest.is_built_in;
-    const isCloud = Boolean(manifest.iot_class?.startsWith("cloud_"));
-    const isYaml =
-      !manifest.config_flow &&
-      !this.items.every((itm) => itm.source === "system");
+    const icons: IntegrationCardIcon[] = [];
 
-    if (!isCustom && !isCloud && !isYaml) {
+    if (!manifest.is_built_in) {
+      icons.push({
+        id: "icon-custom",
+        path: mdiPackageVariant,
+        label: this._localize(
+          manifest.overwrites_built_in
+            ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
+            : "ui.panel.config.integrations.config_entry.custom_integration"
+        ),
+        className: manifest.overwrites_built_in ? "overwrites" : "custom",
+      });
+    }
+    if (manifest.iot_class?.startsWith("cloud_")) {
+      icons.push({
+        id: "icon-cloud",
+        path: mdiWeb,
+        label: this._localize(
+          "ui.panel.config.integrations.config_entry.depends_on_cloud"
+        ),
+      });
+    }
+    if (
+      !manifest.config_flow &&
+      !this.items.every((itm) => itm.source === "system")
+    ) {
+      icons.push({
+        id: "icon-yaml",
+        path: mdiFileCodeOutline,
+        label: this._localize(
+          "ui.panel.config.integrations.config_entry.no_config_flow"
+        ),
+      });
+    }
+
+    if (!icons.length) {
       return nothing;
     }
 
     return html`
       <span class="icons">
-        ${
-          isCustom
-            ? this._renderIcon(
-                "icon-custom",
-                mdiPackageVariant,
-                this._localize(
-                  manifest.overwrites_built_in
-                    ? "ui.panel.config.integrations.config_entry.custom_overwrites_core"
-                    : "ui.panel.config.integrations.config_entry.custom_integration"
-                ),
-                manifest.overwrites_built_in ? "overwrites" : "custom"
-              )
-            : nothing
-        }
-        ${
-          isCloud
-            ? this._renderIcon(
-                "icon-cloud",
-                mdiWeb,
-                this._localize(
-                  "ui.panel.config.integrations.config_entry.depends_on_cloud"
-                )
-              )
-            : nothing
-        }
-        ${
-          isYaml
-            ? this._renderIcon(
-                "icon-yaml",
-                mdiFileCodeOutline,
-                this._localize(
-                  "ui.panel.config.integrations.config_entry.no_config_flow"
-                )
-              )
-            : nothing
-        }
+        ${icons.map(
+          ({ id, path, label, className }) => html`
+            <span
+              id=${id}
+              class="icon ${className ?? ""}"
+              role="img"
+              aria-label=${label}
+              @pointerdown=${this._handleTooltipPointerDown}
+              @click=${this._handleTooltipClick}
+            >
+              <ha-svg-icon .path=${path}></ha-svg-icon>
+            </span>
+            <ha-tooltip for=${id} trigger="hover focus click"
+              >${label}</ha-tooltip
+            >
+          `
+        )}
       </span>
     `;
-  }
-
-  private _renderIcon(
-    id: string,
-    path: string,
-    label: string,
-    className = ""
-  ): TemplateResult {
-    return html`<span
-        id=${id}
-        class="icon ${className}"
-        role="img"
-        aria-label=${label}
-        @pointerdown=${this._handleTooltipPointerDown}
-        @click=${this._handleTooltipClick}
-      >
-        <ha-svg-icon .path=${path}></ha-svg-icon>
-      </span>
-      <ha-tooltip for=${id} trigger="hover focus click">${label}</ha-tooltip>`;
   }
 
   private _handleTooltipPointerDown(ev: PointerEvent) {
@@ -455,17 +446,9 @@ export class HaIntegrationCard extends LitElement {
           opacity: 0.08;
         }
         ha-row-item {
-          flex: 1;
-          display: flex;
           --ha-row-item-padding-block: var(--ha-space-4);
           --ha-row-item-padding-inline: var(--ha-space-4);
           --ha-row-item-gap: var(--ha-space-4);
-        }
-        /* Fill the card height so content stays centered when a neighboring
-           card in the grid row is taller */
-        ha-row-item::part(base) {
-          flex: 1;
-          min-width: 0;
         }
         ha-row-item::part(headline) {
           font-size: var(--ha-font-size-l);

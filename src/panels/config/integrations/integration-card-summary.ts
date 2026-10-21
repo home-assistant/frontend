@@ -1,7 +1,6 @@
 import type { ConfigEntry } from "../../../data/config_entries";
 import { ERROR_STATES } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
-import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 
 export type IntegrationCardSummaryUnit =
   "devices" | "services" | "entities" | "entries";
@@ -9,7 +8,7 @@ export type IntegrationCardSummaryUnit =
 export interface IntegrationCardSummary {
   unit: IntegrationCardSummaryUnit;
   count: number;
-  /** Number of items of `unit` that belong to a config entry needing attention. */
+  /** Number of config entries needing attention, counted in `entries`. */
   attention: number;
   /**
    * The state shared by all config entries needing attention, or `undefined`
@@ -32,6 +31,20 @@ const CARD_STATE_PRIORITY: ConfigEntry["state"][] = [
   "unload_in_progress",
 ];
 
+export type IntegrationCardStatusLevel = "error" | "warning" | "progress";
+
+export const CARD_STATE_LEVEL: Partial<
+  Record<ConfigEntry["state"], IntegrationCardStatusLevel>
+> = {
+  setup_error: "error",
+  setup_retry: "error",
+  migration_error: "error",
+  not_loaded: "warning",
+  failed_unload: "warning",
+  setup_in_progress: "progress",
+  unload_in_progress: "progress",
+};
+
 export const configEntryNeedsAttention = (entry: ConfigEntry): boolean =>
   ATTENTION_STATES.includes(entry.state);
 
@@ -52,80 +65,44 @@ export const computeIntegrationCardState = (
 };
 
 /**
- * When an entry needing attention owns none of the counted items (for
- * example an entry that never set up and has no devices yet), the summary
- * counts entries instead so the problem is never hidden.
+ * Entries needing attention are always counted as entries, not devices or
+ * entities: a failing entry may own none of them, and only entries are what
+ * the user retries or reconfigures.
  */
 export const computeIntegrationCardSummary = (
   entries: ConfigEntry[],
   devices: DeviceRegistryEntry[],
-  entityRegistryEntries: EntityRegistryEntry[],
   entityCount: number
 ): IntegrationCardSummary | undefined => {
   const attentionEntries = entries.filter(configEntryNeedsAttention);
-  const attentionEntryIds = new Set(
-    attentionEntries.map((entry) => entry.entry_id)
-  );
-  const attentionStates = new Set(attentionEntries.map((entry) => entry.state));
-  const attentionState =
-    attentionStates.size === 1 ? [...attentionStates][0] : undefined;
   const uiEntries = entries.filter((entry) => entry.source !== "yaml");
 
-  // Attention entries that own at least one of the counted items.
-  const representedEntryIds = new Set<string>();
-  let summary: IntegrationCardSummary | undefined;
-
+  if (attentionEntries.length) {
+    const attentionStates = new Set(
+      attentionEntries.map((entry) => entry.state)
+    );
+    return {
+      unit: "entries",
+      count: Math.max(uiEntries.length, attentionEntries.length),
+      attention: attentionEntries.length,
+      attentionState:
+        attentionStates.size === 1 ? [...attentionStates][0] : undefined,
+    };
+  }
   if (devices.length) {
-    let attention = 0;
-    for (const device of devices) {
-      const deviceAttentionIds = device.config_entries.filter((id) =>
-        attentionEntryIds.has(id)
-      );
-      if (deviceAttentionIds.length) {
-        attention++;
-        deviceAttentionIds.forEach((id) => representedEntryIds.add(id));
-      }
-    }
-    summary = {
+    return {
       unit: devices.every((device) => device.entry_type === "service")
         ? "services"
         : "devices",
       count: devices.length,
-      attention,
-    };
-  } else if (entityCount > 0) {
-    let attention = 0;
-    for (const entity of entityRegistryEntries) {
-      if (
-        entity.config_entry_id &&
-        attentionEntryIds.has(entity.config_entry_id)
-      ) {
-        attention++;
-        representedEntryIds.add(entity.config_entry_id);
-      }
-    }
-    summary = {
-      unit: "entities",
-      count: entityCount,
-      attention: Math.min(entityCount, attention),
-    };
-  } else if (uiEntries.length) {
-    return {
-      unit: "entries",
-      count: uiEntries.length,
-      attention: attentionEntryIds.size,
-      attentionState,
+      attention: 0,
     };
   }
-
-  if (representedEntryIds.size < attentionEntryIds.size) {
-    return {
-      unit: "entries",
-      count: Math.max(uiEntries.length, attentionEntryIds.size),
-      attention: attentionEntryIds.size,
-      attentionState,
-    };
+  if (entityCount > 0) {
+    return { unit: "entities", count: entityCount, attention: 0 };
   }
-
-  return summary && { ...summary, attentionState };
+  if (uiEntries.length) {
+    return { unit: "entries", count: uiEntries.length, attention: 0 };
+  }
+  return undefined;
 };
