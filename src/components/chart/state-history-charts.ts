@@ -206,8 +206,7 @@ export class StateHistoryCharts extends LitElement {
           @chart-zoom-with-index=${this._handleTimelineSync}
           .height=${this.virtualize ? undefined : this.height}
           .expandLegend=${this.expandLegend}
-          ?hide-reset-button=${this.syncCharts}
-          ?hide-zoom-slider=${this.syncCharts}
+          ?hide-zoom-controls=${this.syncCharts}
         ></state-history-chart-line>
       </div> `;
     }
@@ -227,8 +226,7 @@ export class StateHistoryCharts extends LitElement {
         .clickForMoreInfo=${this.clickForMoreInfo}
         @y-width-changed=${this._yWidthChanged}
         @chart-zoom-with-index=${this._handleTimelineSync}
-        ?hide-reset-button=${this.syncCharts}
-        ?hide-zoom-slider=${this.syncCharts}
+        ?hide-zoom-controls=${this.syncCharts}
       ></state-history-chart-timeline>
     </div> `;
   };
@@ -358,27 +356,8 @@ export class StateHistoryCharts extends LitElement {
     });
   }
 
-  /** Zooms all synced charts, as the page's shared zoom slider does. */
   public zoom(start: number, end: number) {
     this._syncZoomToAllCharts(start, end);
-  }
-
-  /** Resets the zoom of all synced charts. */
-  public resetZoom() {
-    fireEvent(this, "history-charts-zoom", { start: 0, end: 100 });
-    this._isSyncing = true;
-
-    requestAnimationFrame(() => {
-      this._chartComponents.forEach((chartComponent: any) => {
-        const chartBase =
-          chartComponent.renderRoot?.querySelector("ha-chart-base");
-
-        if (chartBase) {
-          chartBase.zoom(0, 100, true);
-        }
-      });
-      this._isSyncing = false;
-    });
   }
 
   private _newestStateTime(): number {

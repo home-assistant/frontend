@@ -45,6 +45,7 @@ import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/date-picker/ha-date-range-nav";
 import "../../components/ha-button";
+import "../../components/ha-card";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
@@ -113,7 +114,7 @@ class HaPanelHistory extends LitElement {
 
   @state() private _isLoading = false;
 
-  // The zoom window shared by all charts, in percent of the date range.
+  // The zoom window shared by all charts, in percent of their x-axis
   @state() private _zoomRange: [number, number] = [0, 100];
 
   @state() private _filters: SourceFilters = {};
@@ -196,6 +197,7 @@ class HaPanelHistory extends LitElement {
       !!this._mungedStateHistory &&
       (this._mungedStateHistory.line.length > 0 ||
         this._mungedStateHistory.timeline.length > 0);
+    const showZoomBar = !loading && hasTargets && hasResults;
     const sourcesLabel = sourceCount
       ? this.hass.localize("ui.panel.history.sources_count", {
           count: entityIds.length,
@@ -302,7 +304,11 @@ class HaPanelHistory extends LitElement {
                   @value-changed=${this._dateRangeChanged}
                 ></ha-date-range-nav>
               </div>
-              <div class="results ha-scrollbar">
+              <div
+                class="results ha-scrollbar ${classMap({
+                  "has-zoom-bar": showZoomBar,
+                })}"
+              >
                 ${
                   loading
                     ? html`<div class="progress-wrapper">
@@ -326,10 +332,8 @@ class HaPanelHistory extends LitElement {
                 }
               </div>
               ${
-                // One slider for all charts, in a bar floating over the
-                // bottom of the results, as on the energy dashboard
-                !loading && hasTargets && hasResults
-                  ? html`<div class="zoom-bar">
+                showZoomBar
+                  ? html`<ha-card class="zoom-bar">
                       <ha-icon-button
                         .disabled=${!this._isZoomed()}
                         .label=${this.hass.localize(
@@ -343,7 +347,7 @@ class HaPanelHistory extends LitElement {
                         .end=${this._zoomRange[1]}
                         @zoom-slider-changed=${this._zoomSliderChanged}
                       ></ha-chart-zoom-slider>
-                    </div>`
+                    </ha-card>`
                   : nothing
               }
             </div>
@@ -373,7 +377,8 @@ class HaPanelHistory extends LitElement {
   }
 
   private _resetZoom() {
-    this._stateHistoryCharts?.resetZoom();
+    this._zoomRange = [0, 100];
+    this._stateHistoryCharts?.zoom(0, 100);
   }
 
   private _renderEmptyState(hasTargets: boolean) {
@@ -959,6 +964,10 @@ class HaPanelHistory extends LitElement {
           flex-direction: column;
           flex: 1;
           min-width: 0;
+          --zoom-bar-bottom: var(--ha-space-10);
+        }
+        :host([narrow]) .content-column {
+          --zoom-bar-bottom: var(--ha-space-2);
         }
 
         .toolbar {
@@ -988,39 +997,32 @@ class HaPanelHistory extends LitElement {
           min-width: 0;
           overflow: hidden auto;
           padding: var(--ha-space-4);
-          /* Room to scroll the last chart out from under the zoom bar */
+        }
+
+        /* Room to scroll the last chart out from under the zoom bar */
+        .results.has-zoom-bar {
           padding-bottom: calc(
-            56px + var(--ha-space-10) + var(--ha-space-4) +
-              var(--safe-area-inset-bottom, 0px)
+            56px + var(--zoom-bar-bottom) + var(--ha-space-4)
           );
         }
 
-        /* Floats over the bottom of the results like the energy
-           dashboard's date bar: a card with the same shadow, 40px above the
-           bottom edge on a larger screen. */
+        /* Floats like the energy dashboard's date bar */
         .zoom-bar {
           position: absolute;
           inset-inline: var(--ha-space-4);
-          bottom: calc(var(--ha-space-10) + var(--safe-area-inset-bottom, 0px));
+          bottom: var(--zoom-bar-bottom);
           z-index: 1;
-          box-sizing: border-box;
           max-width: 600px;
+          height: 56px;
           margin-inline: auto;
           display: flex;
           align-items: center;
           gap: var(--ha-space-2);
-          min-height: 56px;
-          padding: var(--ha-space-2) var(--ha-space-4);
-          border-radius: var(
-            --ha-card-border-radius,
-            var(--ha-border-radius-lg)
-          );
-          background: var(--ha-card-background, var(--card-background-color));
-          box-shadow: var(--ha-box-shadow-l);
+          padding: 0 var(--ha-space-4);
+          --ha-card-box-shadow: var(--ha-box-shadow-l);
         }
         :host([narrow]) .zoom-bar {
           inset-inline: var(--ha-space-2);
-          bottom: calc(var(--ha-space-2) + var(--safe-area-inset-bottom, 0px));
         }
         .zoom-bar ha-chart-zoom-slider {
           flex: 1;

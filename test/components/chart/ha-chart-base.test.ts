@@ -18,11 +18,7 @@ const createChart = () => {
       ],
     },
   ];
-  internals.chart = {
-    setOption: vi.fn(),
-    getOption: vi.fn(() => ({})),
-    dispatchAction: vi.fn(),
-  };
+  internals.chart = { setOption: vi.fn(), getOption: vi.fn(() => ({})) };
   internals._createOptions = vi.fn(() => ({ title: {} }));
   const dispose = vi.fn();
   internals._sonification = { update: vi.fn(), dispose };

@@ -3,34 +3,26 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
+import { preventDefault } from "../../common/dom/prevent_default";
+import { formatNumber } from "../../common/number/format_number";
 import { internationalizationContext } from "../../data/context";
 import type { HomeAssistantInternationalization } from "../../types";
-import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import "../ha-svg-icon";
 
-// The slider takes the shape of ha-switch: a track, and the visible range as a
-// pill with a drag handle at each end.
+// Shaped like ha-switch: a track, and the visible range as a pill with a drag
+// handle at each end
 export const ZOOM_SLIDER_HEIGHT = 24;
 const THUMB_SIZE = 20;
 const THUMB_INSET = (ZOOM_SLIDER_HEIGHT - THUMB_SIZE) / 2;
-// The smallest visible range the thumbs can be dragged to, in percent.
+// Leaves room to grab the range between its thumbs, however small it gets
+const RANGE_MIN_WIDTH = 2 * (THUMB_INSET + THUMB_SIZE) + ZOOM_SLIDER_HEIGHT;
+// The smallest visible range the thumbs can be dragged to, in percent
 const MIN_RANGE = 1;
 
 type SliderPart = "start" | "end" | "range";
 
-declare global {
-  interface HASSDomEvents {
-    "zoom-slider-changed": { start: number; end: number };
-  }
-}
-
-/**
- * A horizontal zoom window over a chart's full range, in percent. Drag the
- * range to pan, drag its ends to resize, or press the track to centre the
- * range there.
- */
-// ponytail: assumes an x-axis that runs left to right; no chart inverts it.
 @customElement("ha-chart-zoom-slider")
 export class HaChartZoomSlider extends LitElement {
   @property({ type: Number }) public start = 0;
@@ -39,19 +31,31 @@ export class HaChartZoomSlider extends LitElement {
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n?: HomeAssistantInternationalization;
+  private _i18n!: HomeAssistantInternationalization;
 
-  private _drag?: { part: SliderPart; x: number; range: [number, number] };
+  private _drag?: {
+    pointerId: number;
+    part: SliderPart;
+    x: number;
+    range: [number, number];
+  };
 
   protected render() {
     const { start, end } = this;
-    const localize = this._i18n?.localize;
-    // Thumb centres run from one thumb radius in from each end of the track,
-    // so the visible range pill always holds both thumbs, like ha-switch.
+    const { localize, locale } = this._i18n;
     const at = (percent: number) =>
-      `calc((100% - ${ZOOM_SLIDER_HEIGHT}px) * ${percent / 100})`;
+      `calc((100% - ${RANGE_MIN_WIDTH}px) * ${percent / 100})`;
+    const percent = (value: number) =>
+      formatNumber(value / 100, locale, {
+        style: "percent",
+        maximumFractionDigits: 1,
+      });
     return html`
-      <div class="track" @pointerdown=${this._handleTrackPointerDown}>
+      <div
+        class="track"
+        @pointerdown=${this._handleTrackPointerDown}
+        @selectstart=${preventDefault}
+      >
         <div
           class="range"
           data-part="range"
@@ -60,13 +64,12 @@ export class HaChartZoomSlider extends LitElement {
           aria-valuemin="0"
           aria-valuemax="100"
           aria-valuenow=${Math.round(start)}
-          aria-label=${
-            localize?.("ui.components.history_charts.zoom_range") ?? ""
-          }
+          aria-valuetext=${`${percent(start)} – ${percent(end)}`}
+          aria-label=${localize("ui.components.history_charts.zoom_range")}
           tabindex="0"
           style=${styleMap({
             left: at(start),
-            width: `calc(${at(end - start)} + ${ZOOM_SLIDER_HEIGHT}px)`,
+            width: `calc(${at(end - start)} + ${RANGE_MIN_WIDTH}px)`,
           })}
           @pointerdown=${this._handlePointerDown}
           @pointermove=${this._handlePointerMove}
@@ -84,12 +87,14 @@ export class HaChartZoomSlider extends LitElement {
               aria-valuemin="0"
               aria-valuemax="100"
               aria-valuenow=${Math.round(part === "start" ? start : end)}
-              aria-label=${
-                localize?.(`ui.components.history_charts.zoom_${part}`) ?? ""
-              }
+              aria-valuetext=${percent(part === "start" ? start : end)}
+              aria-label=${localize(`ui.components.history_charts.zoom_${part}`)}
               tabindex="0"
               style=${styleMap({
-                left: `calc(${at(part === "start" ? start : end)} + ${THUMB_INSET}px)`,
+                left:
+                  part === "start"
+                    ? `calc(${at(start)} + ${THUMB_INSET}px)`
+                    : `calc(${at(end)} + ${RANGE_MIN_WIDTH - THUMB_INSET - THUMB_SIZE}px)`,
               })}
               @pointerdown=${this._handlePointerDown}
               @pointermove=${this._handlePointerMove}
@@ -104,19 +109,19 @@ export class HaChartZoomSlider extends LitElement {
     `;
   }
 
-  // Percent of the full range per pixel along the track.
+  // Percent of the full range per pixel along the track
   private _getScale() {
-    return 100 / Math.max(this.clientWidth - ZOOM_SLIDER_HEIGHT, 1);
+    return 100 / Math.max(this.clientWidth - RANGE_MIN_WIDTH, 1);
   }
 
-  // Pressing the track beside the visible range centres the range there.
+  // Pressing the track beside the visible range centers the range there
   private _handleTrackPointerDown(
     ev: PointerEvent & HASSDomCurrentTargetEvent<HTMLElement>
   ) {
     if (ev.button !== 0 || ev.target !== ev.currentTarget) {
       return;
     }
-    const position = (ev.offsetX - ZOOM_SLIDER_HEIGHT / 2) * this._getScale();
+    const position = (ev.offsetX - RANGE_MIN_WIDTH / 2) * this._getScale();
     this._move(
       "range",
       [this.start, this.end],
@@ -127,11 +132,12 @@ export class HaChartZoomSlider extends LitElement {
   private _handlePointerDown(
     ev: PointerEvent & HASSDomCurrentTargetEvent<HTMLElement>
   ) {
-    if (ev.button !== 0) {
+    if (ev.button !== 0 || this._drag) {
       return;
     }
     ev.currentTarget.setPointerCapture(ev.pointerId);
     this._drag = {
+      pointerId: ev.pointerId,
       part: ev.currentTarget.dataset.part as SliderPart,
       x: ev.clientX,
       range: [this.start, this.end],
@@ -139,21 +145,30 @@ export class HaChartZoomSlider extends LitElement {
   }
 
   private _handlePointerMove(ev: PointerEvent) {
-    if (!this._drag) {
+    if (ev.pointerId !== this._drag?.pointerId) {
       return;
     }
     const { part, x, range } = this._drag;
     this._move(part, range, (ev.clientX - x) * this._getScale());
   }
 
-  private _handlePointerUp() {
-    this._drag = undefined;
+  private _handlePointerUp(ev: PointerEvent) {
+    if (ev.pointerId === this._drag?.pointerId) {
+      this._drag = undefined;
+    }
   }
 
   private _handleKeyDown(
     ev: KeyboardEvent & HASSDomCurrentTargetEvent<HTMLElement>
   ) {
-    const step = (this.end - this.start) / 10;
+    const part = ev.currentTarget.dataset.part as SliderPart;
+    const span = this.end - this.start;
+    const decrease = ev.key === "ArrowLeft" || ev.key === "ArrowDown";
+    // A ninth of a shrunk span undoes a tenth of the original one
+    const step =
+      part !== "range" && (part === "start") === decrease
+        ? span / 9
+        : span / 10;
     const shift = {
       ArrowLeft: -step,
       ArrowDown: -step,
@@ -166,14 +181,10 @@ export class HaChartZoomSlider extends LitElement {
       return;
     }
     ev.preventDefault();
-    this._move(
-      ev.currentTarget.dataset.part as SliderPart,
-      [this.start, this.end],
-      shift
-    );
+    this._move(part, [this.start, this.end], shift);
   }
 
-  // Moves the whole range, or one end of it, by a percentage of the full range.
+  // Moves the whole range, or one end of it, by a percentage of the full range
   private _move(
     part: SliderPart,
     [start, end]: [number, number],
@@ -186,9 +197,15 @@ export class HaChartZoomSlider extends LitElement {
       newStart += clamped;
       newEnd += clamped;
     } else if (part === "start") {
-      newStart = Math.min(Math.max(start + shift, 0), end - MIN_RANGE);
+      newStart = Math.min(
+        Math.max(start + shift, 0),
+        Math.max(end - MIN_RANGE, start)
+      );
     } else {
-      newEnd = Math.max(Math.min(end + shift, 100), start + MIN_RANGE);
+      newEnd = Math.max(
+        Math.min(end + shift, 100),
+        Math.min(start + MIN_RANGE, end)
+      );
     }
     if (newStart === this.start && newEnd === this.end) {
       return;
@@ -214,14 +231,13 @@ export class HaChartZoomSlider extends LitElement {
       top: 0;
       bottom: 0;
       border-radius: var(--ha-border-radius-pill);
-      /* The colour of the ha-switch thumb, which stands out in both themes. */
+      /* The ha-switch thumb color, which stands out in both themes */
       background-color: var(--ha-color-on-neutral-normal);
       cursor: grab;
     }
     .track,
     .range {
-      transition: background-color var(--ha-animation-duration-fast, 150ms)
-        ease-in-out;
+      transition: background-color var(--ha-animation-duration-fast) ease-in-out;
     }
     @media (hover: hover) {
       .track:hover {
@@ -236,7 +252,6 @@ export class HaChartZoomSlider extends LitElement {
       cursor: grabbing;
       background-color: var(--ha-color-on-neutral-normal);
     }
-    /* The drag handle icon used across the frontend, turned upright. */
     .thumb {
       position: absolute;
       top: ${THUMB_INSET}px;
@@ -257,6 +272,9 @@ export class HaChartZoomSlider extends LitElement {
 }
 
 declare global {
+  interface HASSDomEvents {
+    "zoom-slider-changed": { start: number; end: number };
+  }
   interface HTMLElementTagNameMap {
     "ha-chart-zoom-slider": HaChartZoomSlider;
   }

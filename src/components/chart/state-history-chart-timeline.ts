@@ -60,11 +60,8 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false }) public chartIndex?;
 
-  @property({ attribute: "hide-reset-button", type: Boolean })
-  public hideResetButton?: boolean;
-
-  @property({ attribute: "hide-zoom-slider", type: Boolean })
-  public hideZoomSlider = false;
+  @property({ attribute: "hide-zoom-controls", type: Boolean })
+  public hideZoomControls = false;
 
   @state() private _chartData: CustomSeriesOption[] = [];
 
@@ -89,8 +86,7 @@ export class StateHistoryChartTimeline extends LitElement {
         small-controls
         @chart-click=${this._handleChartClick}
         @chart-zoom=${this._handleDataZoom}
-        .hideResetButton=${this.hideResetButton}
-        .hideZoomSlider=${this.hideZoomSlider}
+        .hideZoomControls=${this.hideZoomControls}
       ></ha-chart-base>
     `;
   }
