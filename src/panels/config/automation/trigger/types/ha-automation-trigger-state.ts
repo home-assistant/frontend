@@ -324,7 +324,9 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newTrigger = ev.detail.value;
+    // Copy, this is ha-form's own data, it can fire again before new data
+    // is passed down and must still hold the match values then.
+    const newTrigger = { ...ev.detail.value };
 
     newTrigger.for = this._unwrapForValue(newTrigger.for);
 
