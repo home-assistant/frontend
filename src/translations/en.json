@@ -2045,6 +2045,7 @@
         "calendar": {
           "upcoming_events": "Upcoming events",
           "no_events": "No events in the next 7 days",
+          "event_retrieval_error": "Could not load events for this calendar",
           "today": "[%key:ui::components::calendar::today%]",
           "tomorrow": "[%key:ui::components::selectors::period::periods::tomorrow%]"
         },

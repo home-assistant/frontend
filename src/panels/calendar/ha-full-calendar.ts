@@ -913,9 +913,11 @@ export class HAFullCalendar extends LitElement {
         }
 
         /* The theme gives the time half the width and cuts titles off, which
-           leaves little room for titles on narrow calendars */
+           leaves little room for titles on narrow calendars. Times wrap
+           instead, so ranges stay readable in the narrower column */
         :host([narrow]) .ha-fc-list-event-time {
           width: 25%;
+          white-space: normal;
         }
 
         :host([narrow]) .ha-fc-list-event-title {

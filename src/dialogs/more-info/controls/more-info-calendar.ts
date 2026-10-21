@@ -156,7 +156,7 @@ class MoreInfoCalendar extends LitElement {
         // The dialog shows one calendar, so an error means it has no events
         noEventsContent: localize(
           error
-            ? "ui.components.calendar.event_retrieval_error"
+            ? "ui.dialogs.more_info_control.calendar.event_retrieval_error"
             : "ui.dialogs.more_info_control.calendar.no_events"
         ),
       };
