@@ -12,6 +12,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
@@ -31,6 +32,7 @@ import { deepEqual } from "../../../common/util/deep-equal";
 import {
   devicesFilterQueryParamConfig,
   devicesFilterQueryParams,
+  devicesFilterQueryString,
   devicesLinkFromUrl,
 } from "../../../common/url/devices-query-params";
 import {
@@ -41,7 +43,6 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
-  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
@@ -142,14 +143,11 @@ export class HaConfigDeviceDashboard extends LitElement {
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
-  @state()
-  @storage({
-    storage: "sessionStorage",
-    key: "devices-table-search",
-    state: true,
-    subscribe: false,
-  })
-  private _filter = "";
+  private _tableSettings = new DataTableSettingsController(this, {
+    search: "devices-table-search",
+    sorting: "devices-table-sort",
+    grouping: "devices-table-grouping",
+  });
 
   @state()
   private _filters: DataTableFilters = {};
@@ -169,12 +167,6 @@ export class HaConfigDeviceDashboard extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   @state()
   _labels?: LabelRegistryEntry[];
-
-  @storage({ key: "devices-table-sort", state: false, subscribe: false })
-  private _activeSorting?: SortingChangedEvent;
-
-  @storage({ key: "devices-table-grouping", state: false, subscribe: false })
-  private _activeGrouping?: string;
 
   @storage({ key: "devices-table-collapsed", state: false, subscribe: false })
   private _activeCollapsed?: string;
@@ -240,6 +232,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     const searchParams = this._filterParams.searchParams();
     const link = searchParams ? devicesLinkFromUrl(searchParams) : undefined;
 
+    // Shown, but not stored as the user's choice
     if (link) {
       // The filters only work out their items again when their value changes,
       // so keep the items of the ones the link leaves as they are
@@ -256,9 +249,15 @@ export class HaConfigDeviceDashboard extends LitElement {
         })
       );
 
-      this._filter = link.search;
+      this._tableSettings.showSearch(link.search);
       this._filters = filters;
-      this._storageFilters = filters;
+    } else if (searchParams?.toString() === "") {
+      // Opened again without params, like from the sidebar. Written once the
+      // table has seen the URL without params, so it restores what it stored
+      this._filters = this._storageFilters;
+      queueMicrotask(() => this._writeFilters());
+
+      return;
     }
 
     this._writeFilters();
@@ -838,7 +837,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        .filter=${this._filter}
+        .filter=${this._tableSettings.search}
         has-filters
         .filters=${
           Object.values(this._filters).filter((filter) =>
@@ -850,16 +849,16 @@ export class HaConfigDeviceDashboard extends LitElement {
                 )
           ).length
         }
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
+        .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
         @clear-filter=${this._clearFilter}
-        @search-changed=${this._handleSearchChange}
-        @sorting-changed=${this._handleSortingChanged}
-        @grouping-changed=${this._handleGroupingChanged}
+        @search-changed=${this._tableSettings.searchChanged}
+        @sorting-changed=${this._tableSettings.sortingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @row-click=${this._handleRowClicked}
         clickable
@@ -1057,8 +1056,18 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
-    this._filters = { ...this._filters, [type]: ev.detail };
-    this._storageFilters = this._filters;
+    const filters = { ...this._filters, [type]: ev.detail };
+
+    // A filter also sends the value it was given, once it has found its items.
+    // Only a change to what the URL holds is the user's, so a link isn't stored.
+    if (
+      devicesFilterQueryString(filters) !==
+      devicesFilterQueryString(this._filters)
+    ) {
+      this._storageFilters = { ...this._storageFilters, [type]: ev.detail };
+    }
+
+    this._filters = filters;
     this._writeFilters();
   }
 
@@ -1087,10 +1096,6 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const deviceId = ev.detail.id;
     navigate(`/config/devices/device/${deviceId}`);
-  }
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
   }
 
   private _addDevice() {
@@ -1283,14 +1288,6 @@ ${rejected
 
   private _clearSelection() {
     this._dataTable.clearSelection();
-  }
-
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
-  }
-
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {
