@@ -416,6 +416,7 @@ export const getMyRedirects = (): Redirects => ({
   backup_list: {
     component: "backup",
     redirect: "/config/backup/backups",
+    params: backupsTableParams,
   },
   backup_config: {
     component: "backup",
@@ -529,6 +530,16 @@ export const getMyRedirects = (): Redirects => ({
 
 const getRedirect = (path: string): Redirect | undefined =>
   getMyRedirects()?.[path];
+
+// The backups table reads these from the link
+const backupsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  type: "string?",
+  location: "string?",
+} satisfies Redirect["params"];
 
 export type ParamType = "url" | "string" | "string?";
 
