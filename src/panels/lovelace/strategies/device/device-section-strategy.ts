@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators";
 import { STRINGS_SEPARATOR_DOT } from "../../../../common/const";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import { getDeviceArea } from "../../../../common/entity/context/get_device_context";
 import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name_display";
 import { stringCompare } from "../../../../common/string/compare";
@@ -101,6 +102,30 @@ export class DeviceSectionStrategy extends ReactiveElement {
   public static async getConfigElement(): Promise<LovelaceStrategyEditor> {
     await import("./hui-device-section-strategy-editor");
     return document.createElement("hui-device-section-strategy-editor");
+  }
+
+  public static getStubConfig(
+    hass: HomeAssistant
+  ): DeviceSectionStrategyConfig {
+    const categories: readonly DeviceEntityCategory[] =
+      DEFAULT_DEVICE_SECTION_CATEGORIES;
+    const shownEntries = Object.values(hass.entities).filter(
+      (entry) =>
+        entry.device_id &&
+        !entry.hidden &&
+        hass.devices[entry.device_id]?.entry_type !== "service" &&
+        categories.includes(computeDeviceEntityCategory(entry))
+    );
+    const climateSensor = shownEntries.find((entry) => {
+      if (computeDomain(entry.entity_id) !== "sensor") {
+        return false;
+      }
+      const deviceClass = hass.states[entry.entity_id]?.attributes.device_class;
+      return deviceClass === "temperature" || deviceClass === "humidity";
+    });
+    const previewEntry = climateSensor ?? shownEntries[0];
+
+    return { type: "device", device_id: previewEntry?.device_id };
   }
 
   static async generate(
