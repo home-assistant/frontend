@@ -49,6 +49,8 @@ export interface HaListVirtualizedItem {
  * renders. Cleared once the user scrolls.
  * @attr {string} pin-block - Block alignment for `pin-index`: `start`,
  * `center` (default), `end`, or `nearest`.
+ * @attr {boolean} auto-height - Size the list to its rows and let the page
+ * scroll, instead of the list owning a scroll area.
  *
  * @fires ha-list-activated - Fired when a row is activated via Enter/Space. `detail: { index, item }`.
  * @cssprop --ha-list-scroll-padding-block-start - Space at the top of the scroll area that revealed rows stay below, like for an overlaid header. Defaults to `0px`.
@@ -77,6 +79,10 @@ export class HaListVirtualized extends HaListBase {
   @property({ attribute: "pin-block" }) public pinBlock:
     "start" | "center" | "end" | "nearest" = "center";
 
+  /** Size the list to its rows and let the page scroll. */
+  @property({ attribute: "auto-height", type: Boolean, reflect: true })
+  public autoHeight = false;
+
   @state() private _unpinned = false;
 
   @query("lit-virtualizer")
@@ -98,9 +104,12 @@ export class HaListVirtualized extends HaListBase {
     }
   }
 
-  /** The element that scrolls the rows, once the virtualizer has rendered. */
+  /**
+   * The element that scrolls the rows, once the virtualizer has rendered.
+   * Undefined with `auto-height`, since the page scrolls then.
+   */
   public get scrollElement(): HTMLElement | undefined {
-    return this.virtualizerElement ?? undefined;
+    return this.autoHeight ? undefined : (this.virtualizerElement ?? undefined);
   }
 
   /** Scroll the row at `index` into view. */
@@ -126,7 +135,7 @@ export class HaListVirtualized extends HaListBase {
         class="ha-scrollbar"
         .keyFunction=${this._keyFunction}
         tabindex="-1"
-        scroller
+        ?scroller=${!this.autoHeight}
         .items=${this.rows}
         .renderItem=${this.rowRenderer}
         style="min-height: 36px; height: 100%;"
@@ -403,6 +412,11 @@ export class HaListVirtualized extends HaListBase {
           --ha-list-scroll-padding-block-start,
           0px
         );
+      }
+      /* With auto-height the rows size the list and the page scrolls */
+      :host([auto-height]) .base {
+        height: auto;
+        flex: none;
       }
       /* The virtualizer positions rows absolutely, so they would otherwise
          shrink to their content. */
