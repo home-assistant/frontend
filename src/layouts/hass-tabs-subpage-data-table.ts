@@ -753,10 +753,21 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _restoreInitialState() {
+    // Without a stored sort, use the column's default like a fresh load does
+    const defaultColumn = Object.keys(this.columns).find(
+      (columnId) => this.columns[columnId].direction
+    );
+
+    const defaultDirection = defaultColumn
+      ? this.columns[defaultColumn].direction
+      : undefined;
+
     const sorting =
       this.initialSorting && this.columns[this.initialSorting.column]
         ? this.initialSorting
-        : undefined;
+        : defaultColumn && defaultDirection
+          ? { column: defaultColumn, direction: defaultDirection }
+          : undefined;
 
     this._sortColumn = sorting?.column;
     this._sortDirection = sorting?.direction ?? null;
