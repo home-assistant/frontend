@@ -1,6 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { live } from "lit/directives/live";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-blueprint-picker";
@@ -65,7 +66,8 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
       const values: HaFormDataContainer = {};
       const addInputs = (inputs: Record<string, BlueprintInput | null>) => {
         for (const [key, value] of Object.entries(inputs)) {
-          values[key] = input && key in input ? input[key] : value?.default;
+          values[key] =
+            input?.[key] !== undefined ? input[key] : value?.default;
         }
       };
       for (const [key, value] of Object.entries(metadataInput ?? {})) {
@@ -230,7 +232,7 @@ export abstract class HaBlueprintGenericEditor extends LitElement {
 
     return html`<ha-expansion-panel
       outlined
-      .expanded=${expanded}
+      .expanded=${anyRequired ? live(true) : expanded}
       .noCollapse=${anyRequired}
     >
       ${
