@@ -2,7 +2,7 @@ import { expose } from "comlink";
 import type { MarkedOptions } from "marked";
 import { marked } from "marked";
 import type { IWhiteList } from "xss";
-import { filterXSS, getDefaultWhiteList } from "xss";
+import { filterXSS, getDefaultWhiteList, safeAttrValue } from "xss";
 
 let whiteListNormal: IWhiteList | undefined;
 let whiteListSvg: IWhiteList | undefined;
@@ -21,6 +21,9 @@ const renderMarkdown = async (
       ...getDefaultWhiteList(),
       table: [...(getDefaultWhiteList().table ?? []), "role"],
       input: ["type", "disabled", "checked"],
+      // Allows <picture>, and <video>/<audio> that have <source> children.
+      picture: [],
+      source: ["src", "srcset", "sizes", "media", "type"],
       "ha-icon": ["icon"],
       "ha-svg-icon": ["path"],
       "ha-alert": ["alert-type", "title"],
@@ -90,6 +93,21 @@ const renderMarkdown = async (
             return undefined;
           }
           return "";
+        }
+        if (tag === "source" && name === "srcset") {
+          // xss only checks the protocol of `src` and `href`. Apply the same
+          // check to every URL in the comma separated list of `srcset`.
+          const allowed = value.split(/,\s+/).every(
+            (candidate) =>
+              safeAttrValue(
+                "img",
+                "src",
+                candidate.trim().split(/\s+/)[0],
+                // The CSS filter is only used for `style` attributes
+                { process: (css) => css }
+              ) !== ""
+          );
+          return allowed ? undefined : "";
         }
         if (
           hassOptions.allowDataUrl &&
