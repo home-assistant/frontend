@@ -199,11 +199,7 @@ class HuiPowerSankeyCard
     const homeNode: Node = {
       id: "home",
       label: types.home?.[0]?.name || this._hassConfig.location_name,
-      value: Math.max(
-        0,
-        powerData.used_total,
-        powerData.used_grid + powerData.used_solar + powerData.used_battery
-      ),
+      value: Math.max(0, powerData.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
     };

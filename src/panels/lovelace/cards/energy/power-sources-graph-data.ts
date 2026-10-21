@@ -80,6 +80,7 @@ export function getPowerLegendValues(
 ): Record<string, string> {
   const watts: Record<string, number> = {};
   let homeWatts: number | undefined;
+  let hasGridRate = false;
   for (const source of energyData.prefs.energy_sources) {
     if (source.type === "home") {
       if (source.stat_rate) {
@@ -89,6 +90,9 @@ export function getPowerLegendValues(
         }
       }
       continue;
+    }
+    if (source.type === "grid" && source.stat_rate) {
+      hasGridRate = true;
     }
     if (
       (source.type === "solar" ||
@@ -113,6 +117,11 @@ export function getPowerLegendValues(
     total += watts[key];
   }
   values.usage = formatPower(Math.max(0, homeWatts ?? total));
+  if (!hasGridRate && homeWatts !== undefined) {
+    values.grid = formatPower(
+      Math.max(0, homeWatts - (watts.solar ?? 0) - (watts.battery ?? 0))
+    );
+  }
   return values;
 }
 
@@ -244,6 +253,45 @@ export function generatePowerSourcesGraphData(
       seriesData[key] = { colorHex, rgb, positive, negative };
     }
   });
+
+  if (!statIds.grid.stats.length && homeStatId) {
+    const sumByX = (key: string) => {
+      const map = new Map<number, number>();
+      for (const [x, v] of seriesData[key]?.positive ?? []) {
+        map.set(x, (map.get(x) ?? 0) + v);
+      }
+      for (const [x, v] of seriesData[key]?.negative ?? []) {
+        map.set(x, (map.get(x) ?? 0) + v);
+      }
+      return map;
+    };
+    const solarByX = sumByX("solar");
+    const batteryByX = sumByX("battery");
+    const gridPositive: [number, number][] = [];
+    const gridNegative: [number, number][] = [];
+    for (const stat of getStatsWithCurrent(homeStatId)) {
+      if (stat.mean == null) {
+        continue;
+      }
+      const x = (stat.start + stat.end) / 2;
+      const inferred = Math.max(
+        0,
+        stat.mean - (solarByX.get(x) ?? 0) - (batteryByX.get(x) ?? 0)
+      );
+      gridPositive.push([x, inferred]);
+      gridNegative.push([x, 0]);
+      trackY(inferred);
+    }
+    if (gridPositive.length) {
+      const colorHex = computedStyles.getPropertyValue(statIds.grid.color);
+      seriesData.grid = {
+        colorHex,
+        rgb: hex2rgb(colorHex),
+        positive: gridPositive,
+        negative: gridNegative,
+      };
+    }
+  }
 
   const pushSeries = (
     key: string,

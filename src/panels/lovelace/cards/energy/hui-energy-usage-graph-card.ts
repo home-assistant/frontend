@@ -644,9 +644,9 @@ export class HuiEnergyUsageGraphCard
       );
       if (used_grid) {
         combinedData.used_grid = { used_grid };
-      } else if (!statIdsByCat.from_grid && statIdsByCat.home) {
-        combinedData.used_grid = { used_grid: consumptionData.used_grid };
       }
+    } else if (!statIdsByCat.from_grid && statIdsByCat.home) {
+      combinedData.used_grid = { used_grid: consumptionData.used_grid };
     }
 
     const uniqueKeys = summedData.timestamps;

@@ -162,16 +162,20 @@ class HuiEnergySankeyCard
     const nodes: Node[] = [];
     const links: Link[] = [];
 
+    const homeTotal = types.home?.length
+      ? Math.max(0, consumption.total.used_total)
+      : Math.max(
+          0,
+          consumption.total.used_total,
+          consumption.total.used_grid +
+            consumption.total.used_solar +
+            consumption.total.used_battery
+        );
+
     const homeNode: Node = {
       id: "home",
       label: types.home?.[0]?.name || this._hassConfig.location_name,
-      value: Math.max(
-        0,
-        consumption.total.used_total,
-        consumption.total.used_grid +
-          consumption.total.used_solar +
-          consumption.total.used_battery
-      ),
+      value: homeTotal,
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
     };
