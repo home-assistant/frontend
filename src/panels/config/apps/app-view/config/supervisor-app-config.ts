@@ -441,7 +441,7 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
       text: this.hass.localize(
         "ui.panel.config.apps.configuration.confirm.reset_options.text"
       ),
-      confirmText: this.hass.localize("ui.common.reset_options"),
+      confirmText: this.hass.localize("ui.common.reset"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
     });

@@ -9,6 +9,7 @@ import { domainToName } from "../../data/integration";
 import type { LogbookEntry } from "../../data/logbook";
 import {
   createHistoricState,
+  logbookUserCauseKey,
   localizeStateMessage,
   parseTriggerSource,
 } from "../../data/logbook";
@@ -305,6 +306,46 @@ export const computeLogbookCause = (
 export const isRunCause = (cause?: LogbookCause): boolean =>
   cause?.type === "automation" || cause?.type === "script";
 
+// A row shows the run over the user who started it; the dialog shows both.
+export const computeRowCause = (
+  hass: HomeAssistant,
+  item: LogbookEntry,
+  userIdToName: Record<string, string>,
+  systemUserIds?: Set<string>
+): LogbookCause | undefined => {
+  const contextCause = computeContextCause(hass, item);
+  if (isRunCause(contextCause)) {
+    return contextCause;
+  }
+  return computeUserCause(item, userIdToName, systemUserIds) ?? contextCause;
+};
+
+// Only the users linked to a person can be picked. The other users are
+// accounts for tools like Node-RED, so they count as integrations. A service
+// call without a user carries the domain of the service, not the integration
+// that acted, so it is left in other.
+export const computeLogbookCauseKey = (
+  item: LogbookEntry,
+  cause: LogbookCause | undefined,
+  personUserIds: Set<string>
+): string => {
+  if (cause?.type === "user") {
+    return personUserIds.has(cause.userId!)
+      ? logbookUserCauseKey(cause.userId!)
+      : "integration";
+  }
+  if (cause?.type === "automation" || cause?.type === "script") {
+    return cause.type;
+  }
+  if (
+    cause?.type === "integration" &&
+    item.context_event_type !== "call_service"
+  ) {
+    return "integration";
+  }
+  return "other";
+};
+
 export type LogbookGlyph =
   | { type: "state"; stateObj: HassEntity; icon?: string }
   | { type: "automation"; script: boolean }
@@ -412,13 +453,6 @@ export const computeLogbookItem = (
     ? entityDisplay(hass, entry.entity_id, opts.nameDetail)
     : undefined;
 
-  const userCause = computeUserCause(
-    entry,
-    opts.userIdToName ?? {},
-    opts.systemUserIds
-  );
-  const contextCause = computeContextCause(hass, entry);
-
   return {
     category,
     glyph: computeLogbookGlyph(entry, category, historicStateObj, domain),
@@ -426,10 +460,12 @@ export const computeLogbookItem = (
     name: display?.primary ?? entry.name,
     context: display?.secondary,
     value: computeLogbookValue(hass, entry, domain, historicStateObj),
-    // A row shows the run over the user who started it; the dialog shows both.
-    cause: isRunCause(contextCause)
-      ? contextCause
-      : (userCause ?? contextCause),
+    cause: computeRowCause(
+      hass,
+      entry,
+      opts.userIdToName ?? {},
+      opts.systemUserIds
+    ),
     when: entry.when * 1000,
   };
 };

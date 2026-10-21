@@ -1219,19 +1219,21 @@ ${rejected
   };
 
   private async _handleBulkLabel(ev: HaDropdownSelectEvent) {
+    ev.preventDefault(); // Prevent the dropdown from closing
+
     const label = ev.detail.item.value;
+
+    if (!label) {
+      return;
+    }
 
     if (label === "label_create") {
       this._bulkCreateLabel();
       return;
     }
 
-    if (!label) {
-      return;
-    }
-
     const action = (ev.detail.item as any).action;
-    this._bulkLabel(label.substring(6), action);
+    await this._bulkLabel(label.substring(6), action);
   }
 
   private async _bulkLabel(label: string, action: "add" | "remove") {

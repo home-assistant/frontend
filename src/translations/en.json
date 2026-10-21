@@ -322,6 +322,7 @@
       "update": {
         "installing": "Installing",
         "installing_with_progress": "Installing ({progress}%)",
+        "preparing": "Preparing",
         "up_to_date": "Up-to-date"
       },
       "text": {
@@ -499,6 +500,7 @@
       "submit": "Submit",
       "rename": "Rename",
       "reset": "Reset",
+      "retry": "Retry",
       "search": "[%key:ui::components::data-table::search%]",
       "ok": "OK",
       "yes": "Yes",
@@ -778,6 +780,13 @@
         "time_pattern": "time pattern",
         "homeassistant_stopping": "Home Assistant stopping",
         "homeassistant_starting": "Home Assistant starting",
+        "cause_filter": {
+          "caption": "Triggered by",
+          "automation": "Automations",
+          "script": "Scripts",
+          "integration": "Integrations",
+          "other": "Other"
+        },
         "cause": {
           "by": "By {name}",
           "by_automation": "By automation: {name}",
@@ -848,6 +857,11 @@
         "entity-state-content-picker": {
           "add": "Add",
           "custom_attribute": "Custom attribute"
+        },
+        "entity-toggle": {
+          "toggle": "Toggle {name}",
+          "turn_on": "Turn {name} on",
+          "turn_off": "Turn {name} off"
         }
       },
       "target-picker": {
@@ -1308,6 +1322,10 @@
         "search": {
           "search_placeholder": "Search {name}",
           "no_results": "No results found"
+        },
+        "filter": {
+          "filter_placeholder": "Filter {name}",
+          "no_matches": "No items match your filter"
         },
         "filter_media_type": "Filter by media type",
         "no_items": "No items",
@@ -1871,6 +1889,7 @@
             "backups_link": "View backups"
           },
           "install_failed": "The update could not be started: {error}",
+          "supervisor_logs": "[%key:ui::panel::config::logs::supervisor_logs%]",
           "create_backup": {
             "automatic": "Automatic backup before update",
             "automatic_description_last": "Last automatic backup {relative_time}.",
@@ -4890,6 +4909,8 @@
           "search": "Search logs",
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
+          "no_matches_showing_all": "Nothing in the recent logs mentions ''{term}'', so all lines are shown.",
+          "show_hidden_lines": "Show {count} hidden {count, plural,\n one {line}\n other {lines}\n}",
           "load_logs": "Load logs",
           "nr_of_lines": "Number of lines",
           "loading_log": "Loading log…",
@@ -4910,6 +4931,7 @@
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This log entry is from a custom integration.",
           "show_full_logs": "Show raw logs",
+          "supervisor_logs": "Supervisor logs",
           "show_condensed_logs": "Show condensed logs",
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
@@ -5566,7 +5588,7 @@
             "select_target": "Select a target",
             "home": "Home",
             "unassigned": "Unassigned",
-            "time_sun": "Time and sun",
+            "other": "Other",
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",
@@ -7370,6 +7392,7 @@
             "setup_adapter_zwa2": "Connect ZWA-2",
             "setup_adapter_zwa2_description": "Adds a Z-Wave radio.",
             "setup_serial_configured": "Configured",
+            "setup_serial_offline": "Offline",
             "setup_serial_port_ttl": "TTL",
             "setup_serial_port_rs232": "RS-232",
             "setup_serial_port_rs485": "RS-485",
@@ -10660,6 +10683,12 @@
               "name": "History graph",
               "description": "This card allows you to display a graph for each of the entities listed.",
               "show_names": "Show entity names",
+              "label_position": "Label position",
+              "label_position_options": {
+                "side": "Beside the graph",
+                "below": "Below each bar"
+              },
+              "label_position_helper": "Applies only to entities shown as bars.",
               "logarithmic_scale": "Logarithmic scale",
               "expand_legend": "Expand legend",
               "min_y_axis": "Y axis minimum",
@@ -12764,6 +12793,7 @@
           },
           "version_installed": "Version {version} installed",
           "version_update": "Version {installed} installed, {version} available",
+          "version_skipped": "Version {installed} installed, {version} skipped",
           "requires_homeassistant": "The newest version needs Home Assistant {version} or newer.",
           "requires_newer_homeassistant": "The newest version needs a newer version of Home Assistant.",
           "earlier_version_hint": "Update Home Assistant, or select an earlier version with Install another version in the menu."
@@ -12784,7 +12814,8 @@
           "pending-upgrade": "Update available",
           "installed": "Installed",
           "new": "New",
-          "default": "Available"
+          "default": "Available",
+          "update_skipped": "Update skipped"
         },
         "menu": {
           "custom_repositories": "Custom repositories",

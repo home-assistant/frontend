@@ -18,6 +18,9 @@ let polyfilled = false;
 
 const _polyfillTimeZoneData = polyfillTimeZoneData;
 
+// The DateTimeFormat and DurationFormat polyfills call BigInt() when formatting
+const hasBigInt = typeof BigInt !== "undefined";
+
 const polyfillIntl = async () => {
   if (polyfilled) {
     return;
@@ -31,14 +34,14 @@ const polyfillIntl = async () => {
   if (shouldPolyfillLocale()) {
     await import("@formatjs/intl-locale/polyfill-force");
   }
-  if (shouldPolyfillDateTimeFormat(locale)) {
+  if (hasBigInt && shouldPolyfillDateTimeFormat(locale)) {
     polyfills.push(
       import("@formatjs/intl-datetimeformat/polyfill-force").then(() =>
         _polyfillTimeZoneData()
       )
     );
   }
-  if (shouldPolyfillDurationFormat()) {
+  if (hasBigInt && shouldPolyfillDurationFormat()) {
     polyfills.push(import("@formatjs/intl-durationformat/polyfill-force"));
   }
   if (shouldPolyfillDisplayNames(locale)) {

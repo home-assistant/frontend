@@ -1,11 +1,14 @@
 import { TZDate } from "@date-fns/tz";
-import type { CalendarOptions } from "@fullcalendar/core";
-import { Calendar } from "@fullcalendar/core";
-import allLocales from "@fullcalendar/core/locales-all";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import listPlugin from "@fullcalendar/list";
-import { ResizeController } from "@lit-labs/observers/resize-controller";
+import type {
+  CalendarOptions,
+  DateClickInfo,
+  EventClickInfo,
+} from "fullcalendar";
+import { Calendar, joinClassNames } from "fullcalendar";
+import allLocales from "fullcalendar/locales-all";
+import dayGridPlugin from "fullcalendar/daygrid";
+import interactionPlugin from "fullcalendar/interaction";
+import listPlugin from "fullcalendar/list";
 import {
   mdiPlus,
   mdiViewAgenda,
@@ -15,7 +18,7 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoize from "memoize-one";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
@@ -34,6 +37,10 @@ import type {
 } from "../../data/calendar";
 import { CalendarEntityFeature } from "../../data/calendar";
 import { TimeZone } from "../../data/translation";
+import {
+  fullCalendarStyles,
+  fullCalendarTheme,
+} from "../../resources/fullcalendar-theme";
 import { haStyle } from "../../resources/styles";
 import type {
   CalendarViewChanged,
@@ -54,18 +61,56 @@ declare global {
   }
 }
 
+type EventTimeFormatter = Extract<
+  NonNullable<CalendarOptions["eventTimeFormat"]>,
+  (...args: any[]) => string
+>;
+
+const weekTitleFormat: CalendarOptions["titleFormat"] = {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+};
+
 const defaultFullCalendarConfig: CalendarOptions = {
   headerToolbar: false,
-  plugins: [dayGridPlugin, listPlugin, interactionPlugin],
+  plugins: [fullCalendarTheme, dayGridPlugin, listPlugin, interactionPlugin],
   initialView: "dayGridMonth",
-  dayMaxEventRows: true,
-  height: "parent",
-  handleWindowResize: false,
+  height: "var(--calendar-height)",
   locales: allLocales,
+  viewClass: ({ view }) => `ha-fc-${view.type}`,
+  dayHeaderClass: ({ inPopover }) => (inPopover ? "ha-fc-popover-header" : ""),
+  dayRowClass: "ha-fc-day-row",
+  dayCellClass: ({ isPast, inPopover }) =>
+    isPast && !inPopover ? "ha-fc-day-past" : "",
+  dayCellTopClass: "ha-fc-day-top",
+  dayCellTopInnerClass: ({ isToday }) =>
+    joinClassNames("ha-fc-day-number", isToday && "ha-fc-day-number-today"),
+  eventClass: "ha-fc-event",
+  rowEventClass: "ha-fc-row-event",
+  rowEventInnerClass: "ha-fc-row-event-inner",
+  moreLinkClass: "ha-fc-more-link",
+  popoverClass: "ha-fc-popover",
+  listDayClass: "ha-fc-list-day",
+  listDayHeaderClass: "ha-fc-list-day-header",
+  listDayHeaderInnerClass: "ha-fc-list-day-text",
   views: {
+    dayGrid: {
+      listItemEventClass: "ha-fc-dot-event",
+      listItemEventBeforeClass: "ha-fc-dot",
+      listItemEventInnerClass: "ha-fc-dot-event-text",
+    },
+    dayGridWeek: {
+      titleFormat: weekTitleFormat,
+    },
+    list: {
+      listItemEventClass: "ha-fc-list-event",
+      listItemEventBeforeClass: "ha-fc-dot ha-fc-dot-large",
+    },
     listWeek: {
       type: "list",
       duration: { days: 7 },
+      titleFormat: weekTitleFormat,
     },
   },
 };
@@ -111,19 +156,11 @@ export class HAFullCalendar extends LitElement {
 
   @state() private _activeView = this.initialView;
 
-  @query("style[data-fullcalendar]") private _fullCalendarStyle?: HTMLElement;
-
-  // @ts-ignore
-  private _resizeController = new ResizeController(this, {
-    callback: () => this.calendar?.updateSize(),
-  });
-
   disconnectedCallback(): void {
     this._clearMidnightRefreshTimeout();
     super.disconnectedCallback();
     this.calendar?.destroy();
     this.calendar = undefined;
-    this._fullCalendarStyle?.remove();
   }
 
   connectedCallback(): void {
@@ -195,7 +232,7 @@ export class HAFullCalendar extends LitElement {
                               ? html`<ha-button
                                   size="s"
                                   class="fab-header"
-                                  aria-label=${this.hass.localize(
+                                  .accessibleLabel=${this.hass.localize(
                                     "ui.components.calendar.event.add"
                                   )}
                                   @click=${this._createEvent}
@@ -252,7 +289,7 @@ export class HAFullCalendar extends LitElement {
                                 ? html`<ha-button
                                     size="s"
                                     class="fab-header"
-                                    aria-label=${this.hass.localize(
+                                    .accessibleLabel=${this.hass.localize(
                                       "ui.components.calendar.event.add"
                                     )}
                                     @click=${this._createEvent}
@@ -319,6 +356,7 @@ export class HAFullCalendar extends LitElement {
 
     if (changedProps.has("autoHeight")) {
       this.calendar.setOption("height", this._height);
+      this.calendar.setOption("dayMaxEventRows", !this.autoHeight);
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant;
@@ -333,18 +371,9 @@ export class HAFullCalendar extends LitElement {
     this._activeView = this.initialView;
   }
 
-  private async _loadCalendar(initialView: FullCalendarView) {
-    const luxonPlugin =
-      this.hass.locale.time_zone === TimeZone.local
-        ? undefined
-        : (await import("@fullcalendar/luxon3")).default;
-
+  private _loadCalendar(initialView: FullCalendarView) {
     const config: CalendarOptions = {
       ...defaultFullCalendarConfig,
-      plugins:
-        this.hass.locale.time_zone === TimeZone.local
-          ? defaultFullCalendarConfig.plugins
-          : [...defaultFullCalendarConfig.plugins!, luxonPlugin!],
       locale: this.hass.language,
       timeZone:
         this.hass.locale.time_zone === TimeZone.local
@@ -353,21 +382,14 @@ export class HAFullCalendar extends LitElement {
       firstDay: firstWeekdayIndex(this.hass.locale),
       initialView,
       height: this._height,
+      // Rows grow to fit all events when the height is automatic
+      dayMaxEventRows: !this.autoHeight,
       eventDisplay: this.eventDisplay,
-      eventTimeFormat: {
-        hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
-        minute: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
-        hour12: useAmPm(this.hass.locale),
-      },
+      eventTimeFormat: this._formatEventTime,
     };
 
     config.dateClick = (info) => this._handleDateClick(info);
     config.eventClick = (info) => this._handleEventClick(info);
-    // fullcalendar sets the event colors only inline, where styles cannot mix them
-    config.eventDidMount = ({ el, event }) => {
-      el.style.setProperty("--event-color", event.borderColor);
-      el.style.setProperty("--event-text-color", event.textColor);
-    };
 
     this.calendar = new Calendar(
       this.shadowRoot!.getElementById("calendar")!,
@@ -411,7 +433,7 @@ export class HAFullCalendar extends LitElement {
     });
   }
 
-  private _handleEventClick(info): void {
+  private _handleEventClick(info: EventClickInfo): void {
     const entityStateObj = this.hass.states[info.event.extendedProps.calendar];
     const canEdit =
       entityStateObj &&
@@ -422,7 +444,7 @@ export class HAFullCalendar extends LitElement {
     showCalendarEventDetailDialog(this, {
       calendarId: info.event.extendedProps.calendar,
       entry: info.event.extendedProps.eventData,
-      color: info.event.backgroundColor,
+      color: info.event.color,
       updated: () => {
         this._fireViewChanged();
       },
@@ -431,7 +453,7 @@ export class HAFullCalendar extends LitElement {
     });
   }
 
-  private _handleDateClick(info): void {
+  private _handleDateClick(info: DateClickInfo): void {
     if (info.view.type !== "dayGridMonth") {
       return;
     }
@@ -522,6 +544,34 @@ export class HAFullCalendar extends LitElement {
     );
   }
 
+  // FullCalendar 7 drops the space before AM/PM and shortens time ranges
+  private _formatEventTime: EventTimeFormatter = ({
+    start,
+    end,
+    localeCodes,
+    timeZone,
+  }) => {
+    const formatter = this._eventTimeFormatter(
+      localeCodes,
+      timeZone,
+      useAmPm(this.hass.locale)
+    );
+    const startText = formatter.format(start.instantMs);
+    return end
+      ? `${startText} - ${formatter.format(end.instantMs)}`
+      : startText;
+  };
+
+  private _eventTimeFormatter = memoize(
+    (localeCodes: string[], timeZone: string, amPm: boolean) =>
+      new Intl.DateTimeFormat(localeCodes, {
+        hour: amPm ? "numeric" : "2-digit",
+        minute: amPm ? "numeric" : "2-digit",
+        hour12: amPm,
+        timeZone: timeZone === "local" ? undefined : timeZone,
+      })
+  );
+
   private _calendarTimeZone(): string {
     return resolveTimeZone(
       this.hass.locale.time_zone,
@@ -572,11 +622,12 @@ export class HAFullCalendar extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      fullCalendarStyles,
       css`
         :host {
           display: flex;
           flex-direction: column;
-          --fc-theme-standard-border-color: var(--divider-color);
+          --fc-classic-today: transparent;
         }
 
         .header {
@@ -607,10 +658,6 @@ export class HAFullCalendar extends LitElement {
           display: flex;
           align-items: center;
           flex-grow: 0;
-        }
-
-        a {
-          color: var(--primary-color);
         }
 
         .controls {
@@ -669,116 +716,65 @@ export class HAFullCalendar extends LitElement {
             --ha-card-background,
             var(--card-background-color, white)
           );
-          height: var(--calendar-height);
-          --fc-neutral-bg-color: var(
-            --ha-card-background,
-            var(--card-background-color, white)
-          );
-          --fc-list-event-hover-bg-color: var(
-            --ha-card-background,
-            var(--card-background-color, white)
-          );
-          --fc-theme-standard-border-color: var(--divider-color);
-          --fc-border-color: var(--divider-color);
-          --fc-page-bg-color: var(
-            --ha-card-background,
-            var(--card-background-color, white)
-          );
+          font-size: inherit;
+          line-height: inherit;
         }
 
-        a {
-          color: inherit !important;
+        .ha-fc-listWeek {
+          border-style: none;
         }
 
-        .fc-theme-standard .fc-scrollgrid {
-          border: 1px solid var(--divider-color);
-          border-width: var(--calendar-border-width, 1px);
-          border-radius: var(
-            --calendar-border-radius,
-            var(--mdc-shape-small, 4px)
-          );
-        }
-
-        .fc-theme-standard td {
-          border-bottom-left-radius: var(--mdc-shape-small, 4px);
-          border-bottom-right-radius: var(--mdc-shape-small, 4px);
-        }
-
-        .fc-scrollgrid-section-header td {
-          border: none;
-        }
-
-        th.fc-col-header-cell.fc-day {
-          background-color: var(--table-header-background-color);
-          color: var(--primary-text-color);
-          font-size: var(--ha-font-size-xs);
-          font-weight: var(--ha-font-weight-bold);
-          text-transform: uppercase;
-        }
-
-        .fc-daygrid-dot-event:hover {
-          background-color: inherit;
-        }
-
-        .fc-daygrid-day-top {
-          text-align: center;
-          padding-top: 5px;
+        .ha-fc-day-top {
           justify-content: center;
+          padding-top: 5px;
+          padding-bottom: 4px;
         }
 
-        table.fc-scrollgrid-sync-table
-          tbody
-          tr:first-child
-          .fc-daygrid-day-top {
+        .ha-fc-day-top:empty,
+        .ha-fc-day-row:first-child .ha-fc-day-top {
           padding-top: 0;
         }
 
-        a.fc-daygrid-day-number {
-          float: none !important;
+        .ha-fc-day-number {
+          margin: 0;
+          padding: 3px;
           font-size: var(--ha-font-size-s);
-          cursor: pointer;
-        }
-
-        .fc .fc-daygrid-day-number {
-          padding: 3px !important;
-        }
-
-        .fc .fc-daygrid-day.fc-day-today {
-          background: inherit;
-        }
-
-        td.fc-day-today .fc-daygrid-day-number {
-          height: 26px;
-          color: var(--text-primary-color) !important;
-          background-color: var(--primary-color);
-          border-radius: var(--ha-border-radius-circle);
-          display: inline-block;
-          text-align: center;
-          white-space: nowrap;
-          width: max-content;
-          min-width: 24px;
-        }
-
-        .fc-daygrid-day-events {
-          margin-top: 4px;
-        }
-
-        .fc-event {
-          border-radius: var(--ha-border-radius-sm);
           line-height: var(--ha-line-height-normal);
           cursor: pointer;
         }
 
-        .fc-daygrid-block-event .fc-event-main {
-          padding: 0 1px;
+        .ha-fc-day-number-today {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 26px;
+          min-width: 24px;
+          box-sizing: border-box;
+          color: var(--text-primary-color);
+          background-color: var(--primary-color);
+          border-radius: var(--ha-border-radius-circle);
+        }
+
+        .ha-fc-day-past .ha-fc-event,
+        .ha-fc-day-past .ha-fc-more-link {
+          opacity: 0.5;
+        }
+
+        .ha-fc-event {
+          cursor: pointer;
+        }
+
+        .ha-fc-row-event-inner,
+        .ha-fc-dot-event-text {
+          line-height: var(--ha-line-height-normal);
+        }
+
+        .ha-fc-dot-event:hover,
+        .ha-fc-list-event:hover {
+          background-color: transparent;
         }
 
         .tentative {
-          --tentative-tint: color-mix(
-            in srgb,
-            var(--event-color) 25%,
-            transparent
-          );
           /* In the text color, so the stripes show on every calendar color */
           --tentative-stripe: color-mix(
             in srgb,
@@ -789,16 +785,18 @@ export class HAFullCalendar extends LitElement {
 
         /* A dot keeps its size and color and gets stripes in the color that
            contrasts with it, 1.5px wide every 4px */
-        .tentative .fc-daygrid-event-dot,
-        .tentative .fc-list-event-dot {
+        .tentative > .ha-fc-dot {
           --tentative-dot-stripe: color-mix(
             in srgb,
-            var(--event-text-color, #fff) 80%,
+            var(--fc-event-contrast-color) 80%,
             transparent
           );
+          /* A long title would otherwise squeeze the dot into an oval */
+          flex-shrink: 0;
+          width: var(--fc-classic-small-dot-width);
+          height: var(--fc-classic-small-dot-width);
           border: none;
-          border-radius: 50%;
-          background-color: var(--event-color);
+          background-color: var(--fc-event-color);
           background-image: linear-gradient(
             45deg,
             var(--tentative-dot-stripe) 0 9.375%,
@@ -812,21 +810,18 @@ export class HAFullCalendar extends LitElement {
           background-position: 2px 0;
         }
 
-        .tentative .fc-daygrid-event-dot {
-          /* A long title would otherwise squeeze the dot into an oval */
-          flex-shrink: 0;
-          width: var(--fc-daygrid-event-dot-width, 8px);
-          height: var(--fc-daygrid-event-dot-width, 8px);
+        .tentative > .ha-fc-dot-large {
+          width: var(--fc-classic-large-dot-width);
+          height: var(--fc-classic-large-dot-width);
         }
 
-        .tentative .fc-list-event-dot {
-          width: var(--fc-list-event-dot-width, 10px);
-          height: var(--fc-list-event-dot-width, 10px);
-        }
-
-        /* fullcalendar sets the colors as inline styles */
-        .fc-h-event.tentative {
-          background-color: var(--tentative-tint) !important;
+        .ha-fc-row-event.tentative {
+          border-color: var(--fc-event-color);
+          background-color: color-mix(
+            in srgb,
+            var(--fc-event-color) 25%,
+            transparent
+          );
           /* A tile of whole pixels puts every stripe on the same pixels,
              2.8px wide every 14px */
           background-image: linear-gradient(
@@ -840,113 +835,61 @@ export class HAFullCalendar extends LitElement {
           background-size: 14px 14px;
         }
 
-        .fc-h-event.tentative .fc-event-main {
-          color: var(--primary-text-color) !important;
+        .tentative > .ha-fc-row-event-inner {
+          color: var(--primary-text-color);
         }
 
         /* Forced colors drop the stripes and the fill of a dot, so a tentative
            event falls back to its outline */
         @media (forced-colors: active) {
-          .fc-h-event.tentative {
+          .ha-fc-row-event.tentative {
             border-style: dashed;
           }
 
-          .tentative .fc-daygrid-event-dot,
-          .tentative .fc-list-event-dot {
+          .tentative > .ha-fc-dot {
             box-sizing: border-box;
             border-style: solid;
             border-width: 2px;
           }
         }
 
-        .fc-day-past .fc-daygrid-day-events {
-          opacity: 0.5;
+        .ha-fc-popover {
+          background-color: var(--primary-background-color);
+          font-size: inherit;
+          line-height: inherit;
         }
 
-        .fc-icon-x:before {
-          font-family: var(--ha-font-family-body);
-          content: "X";
+        .ha-fc-popover-header {
+          background-color: var(--secondary-background-color);
         }
 
-        .fc-popover {
-          background-color: var(--primary-background-color) !important;
+        .ha-fc-list-day {
+          border-bottom-style: none;
         }
 
-        .fc-popover-header {
-          background-color: var(--secondary-background-color) !important;
+        .ha-fc-list-day-header {
+          margin-bottom: 0;
+          border-bottom-style: none;
+          border-top: 1px solid var(--divider-color);
+          background: var(--fc-classic-background);
         }
 
-        .fc-theme-standard .fc-list-day-frame {
-          background-color: transparent;
-        }
-
-        .fc-list.fc-view,
-        .fc-list-event.fc-event td {
-          border: none;
-        }
-
-        .fc-list-day.fc-day th {
-          border-bottom: none;
-          border-top: 1px solid var(--fc-theme-standard-border-color, #ddd) !important;
-        }
-
-        .fc-list-day-text {
+        .ha-fc-list-day-text {
           font-size: var(--ha-font-size-l);
           font-weight: var(--ha-font-weight-normal);
         }
 
-        .fc-list-day-side-text {
-          font-size: var(--ha-font-size-l);
-          font-weight: var(--ha-font-weight-normal);
-          color: var(--primary-color);
+        .ha-fc-list-event {
+          padding-block: 12px;
+          border-top-style: none;
         }
 
-        .fc-list-table td,
-        .fc-list-day-frame {
-          padding-top: 12px;
-          padding-bottom: 12px;
-        }
-
-        :host([narrow])
-          .fc-dayGridMonth-view
-          .fc-daygrid-dot-event
-          .fc-event-time,
-        :host([narrow])
-          .fc-dayGridMonth-view
-          .fc-daygrid-dot-event
-          .fc-event-title {
-          display: none;
-        }
-
-        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-event-harness {
-          margin-top: 0 !important;
-        }
-
-        :host([narrow]) .fc-dayGridMonth-view .fc-daygrid-day-events {
-          display: flex;
-          align-items: center;
+        :host([narrow]) .ha-fc-dayGridMonth .ha-fc-dot-event {
           justify-content: center;
-          flex-wrap: wrap;
         }
 
-        :host([narrow]) .fc-dayGridMonth-view .fc-scrollgrid-sync-table {
-          overflow: hidden;
-        }
-
-        .fc-scroller::-webkit-scrollbar {
-          width: 0.4rem;
-          height: 0.4rem;
-        }
-
-        .fc-scroller::-webkit-scrollbar-thumb {
-          border-radius: var(--ha-border-radius-sm);
-          background: var(--scrollbar-thumb-color);
-        }
-
-        .fc-scroller {
-          overflow-y: auto;
-          scrollbar-color: var(--scrollbar-thumb-color) transparent;
-          scrollbar-width: thin;
+        :host([narrow]) .ha-fc-dayGridMonth .ha-fc-dot-event-text {
+          display: none;
         }
       `,
     ];

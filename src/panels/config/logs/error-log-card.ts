@@ -23,6 +23,7 @@ import {
 import { classMap } from "lit/directives/class-map";
 
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
+import type { ContextType } from "@lit/context";
 import { customElement, property, query, state } from "lit/decorators";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-alert";
@@ -40,11 +41,18 @@ import { getSignedPath } from "../../../data/auth";
 
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { atLeastVersion } from "../../../common/config/version";
+import { consume } from "../../../common/decorators/consume";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { debounce } from "../../../common/util/debounce";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import type { ConnectionStatus } from "../../../data/connection-status";
+import {
+  apiContext,
+  configContext,
+  internationalizationContext,
+} from "../../../data/context";
 import {
   fetchErrorLog,
   getCoreLogFileDownloadUnavailableReason,
@@ -59,16 +67,19 @@ import {
   fetchHassioLogsLegacy,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantApi, HomeAssistantConfig } from "../../../types";
+import { haStyleScrollbar } from "../../../resources/styles";
 import { fileDownload } from "../../../util/file_download";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 
 const NUMBER_OF_LINES = 100;
 
+// Lines shown around each search match, as a failure's cause is often logged
+// on the lines next to its summary.
+const SEARCH_CONTEXT_LINES = 3;
+
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public localizeFunc?: LocalizeFunc<any>;
 
   @property() public filter = "";
@@ -79,6 +90,20 @@ class ErrorLogCard extends LitElement {
 
   @property({ attribute: "allow-switch", type: Boolean }) public allowSwitch =
     false;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: HomeAssistantConfig;
 
   @query(".error-log") private _logElement?: HTMLElement;
 
@@ -129,15 +154,15 @@ class ErrorLogCard extends LitElement {
     const streaming =
       this._streamSupported &&
       this.provider &&
-      isComponentLoaded(this.hass.config, "hassio") &&
+      isComponentLoaded(this._config.config, "hassio") &&
       this._loadingState !== "loading";
 
     const hasBoots = this._streamSupported && Array.isArray(this._boots);
 
-    const localize = this.localizeFunc || this.hass.localize;
+    const localize = this.localizeFunc || this._localize;
     const logFileDownloadUnavailableReason =
       !this.provider || this.provider === "core"
-        ? getCoreLogFileDownloadUnavailableReason(this.hass)
+        ? getCoreLogFileDownloadUnavailableReason(this._config)
         : undefined;
 
     return html`
@@ -250,7 +275,7 @@ class ErrorLogCard extends LitElement {
                                   slot="icon"
                                   .path=${mdiFolderTextOutline}
                                 ></ha-svg-icon>
-                                ${this.hass.localize(
+                                ${this._localize(
                                   "ui.panel.config.logs.show_condensed_logs"
                                 )}
                               </ha-dropdown-item>`
@@ -275,7 +300,7 @@ class ErrorLogCard extends LitElement {
               }
             </div>
           </div>
-          <div class="card-content error-log">
+          <div class="card-content error-log ha-scrollbar">
             <div id="scroll-top-marker"></div>
             ${
               this._loadingPrevState === "loading"
@@ -314,6 +339,8 @@ class ErrorLogCard extends LitElement {
             }
             <ha-ansi-to-html
               ?wrap-disabled=${!this._wrapLines}
+              .contextLines=${SEARCH_CONTEXT_LINES}
+              .expandLabel=${this._expandLabel}
             ></ha-ansi-to-html>
             <div id="scroll-bottom-marker"></div>
           </div>
@@ -352,7 +379,7 @@ class ErrorLogCard extends LitElement {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       this._streamSupported = atLeastVersion(
-        this.hass.config.version,
+        this._config.config.version,
         2024,
         11
       );
@@ -365,7 +392,7 @@ class ErrorLogCard extends LitElement {
         this._handleConnectionStatus
       );
 
-      this.hass.loadFragmentTranslation("config");
+      this._i18n.loadFragmentTranslation("config");
     }
 
     if (changedProps.has("provider")) {
@@ -390,8 +417,19 @@ class ErrorLogCard extends LitElement {
       this._newLogsIndicator = false;
     }
 
-    if (changedProps.has("filter")) {
+    if (
+      changedProps.has("filter") ||
+      (changedProps.has("_loadingState") &&
+        this._loadingState === "loaded" &&
+        this.filter)
+    ) {
       this._debounceSearch();
+    } else if (
+      (changedProps.has("_localize") || changedProps.has("localizeFunc")) &&
+      this.filter
+    ) {
+      // The hidden lines buttons are built outside Lit, so relabel them.
+      this._ansiToHtmlElement?.filterLines(this.filter);
     }
 
     if (
@@ -421,7 +459,7 @@ class ErrorLogCard extends LitElement {
   private async _downloadLogs(): Promise<void> {
     if (
       (!this.provider || this.provider === "core") &&
-      getCoreLogFileDownloadUnavailableReason(this.hass)
+      getCoreLogFileDownloadUnavailableReason(this._config)
     ) {
       return;
     }
@@ -438,12 +476,13 @@ class ErrorLogCard extends LitElement {
       const downloadUrl =
         this.provider && this.provider !== "core"
           ? getHassioLogDownloadUrl(this.provider)
-          : getErrorLogDownloadUrl(this.hass);
+          : getErrorLogDownloadUrl(this._config);
       const logFileName =
         this.provider && this.provider !== "core"
           ? `${this.provider}_${timeString}.log`
           : `home-assistant_${timeString}.log`;
-      const signedUrl = await getSignedPath(this.hass, downloadUrl);
+
+      const signedUrl = await getSignedPath(this._api, downloadUrl);
       fileDownload(signedUrl.path, logFileName);
     }
   }
@@ -461,7 +500,7 @@ class ErrorLogCard extends LitElement {
 
     if (
       (!this.provider || this.provider === "core") &&
-      getCoreLogFileDownloadUnavailableReason(this.hass)
+      getCoreLogFileDownloadUnavailableReason(this._config)
     ) {
       this._loadingState = "loaded";
       return;
@@ -469,7 +508,7 @@ class ErrorLogCard extends LitElement {
 
     const streamLogs =
       this._streamSupported &&
-      isComponentLoaded(this.hass.config, "hassio") &&
+      isComponentLoaded(this._config.config, "hassio") &&
       this.provider;
 
     try {
@@ -484,7 +523,7 @@ class ErrorLogCard extends LitElement {
         if (!retry) {
           // check if there are any logs at all
           const testResponse = await fetchHassioLogs(
-            this.hass,
+            this._api,
             this.provider!,
             `entries=:-1:`,
             this._boot
@@ -499,7 +538,7 @@ class ErrorLogCard extends LitElement {
 
         if (retry && this._firstCursor) {
           response = await fetchHassioLogsFollowSkip(
-            this.hass,
+            this._api,
             this.provider!,
             this._logStreamAborter.signal,
             this._firstCursor,
@@ -509,7 +548,7 @@ class ErrorLogCard extends LitElement {
           );
         } else {
           response = await fetchHassioLogsFollow(
-            this.hass,
+            this._api,
             this.provider!,
             this._logStreamAborter.signal,
             NUMBER_OF_LINES,
@@ -578,10 +617,11 @@ class ErrorLogCard extends LitElement {
         // fallback to old method
         this._streamSupported = false;
         let logs = "";
-        if (isComponentLoaded(this.hass.config, "hassio") && this.provider) {
-          logs = await fetchHassioLogsLegacy(this.hass, this.provider);
+
+        if (isComponentLoaded(this._config.config, "hassio") && this.provider) {
+          logs = await fetchHassioLogsLegacy(this._api, this.provider);
         } else {
-          logs = await fetchErrorLog(this.hass);
+          logs = await fetchErrorLog(this._api);
         }
 
         if (logs) {
@@ -601,7 +641,7 @@ class ErrorLogCard extends LitElement {
         return;
       }
 
-      this._error = (this.localizeFunc || this.hass.localize)(
+      this._error = (this.localizeFunc || this._localize)(
         "ui.panel.config.logs.failed_get_logs",
         {
           provider: this.provider,
@@ -618,6 +658,12 @@ class ErrorLogCard extends LitElement {
       this._scrollToBottom();
     }
   }, 150);
+
+  private _expandLabel = (count: number) =>
+    (this.localizeFunc || this._localize)(
+      "ui.panel.config.logs.show_hidden_lines",
+      { count }
+    );
 
   private _debounceScrollToBottom = debounce(() => {
     this._logElement!.scrollTop = this._logElement!.scrollHeight;
@@ -659,7 +705,7 @@ class ErrorLogCard extends LitElement {
       this._logElement.scrollHeight - this._logElement.scrollTop;
     this._loadingPrevState = "loading";
     const response = await fetchHassioLogs(
-      this.hass,
+      this._api,
       this.provider,
       `entries=${this._firstCursor}:-100:100`,
       this._boot
@@ -715,10 +761,10 @@ class ErrorLogCard extends LitElement {
   private async _loadBoots() {
     if (
       this._streamSupported &&
-      isComponentLoaded(this.hass.config, "hassio")
+      isComponentLoaded(this._config.config, "hassio")
     ) {
       try {
-        const { data } = await fetchHassioBoots(this.hass);
+        const { data } = await fetchHassioBoots(this._api);
         const boots = Object.keys(data.boots)
           .map(Number)
           .sort((a, b) => b - a);
@@ -771,12 +817,14 @@ class ErrorLogCard extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
+    ${haStyleScrollbar}
+
     :host {
       direction: var(--direction);
     }
     .error-log-intro {
       text-align: center;
-      margin: 16px;
+      margin: var(--error-log-card-margin, 16px);
     }
 
     ha-card {

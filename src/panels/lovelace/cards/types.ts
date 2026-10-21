@@ -507,6 +507,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;
+  label_position?: "side" | "below";
   logarithmic_scale?: boolean;
   min_y_axis?: number;
   max_y_axis?: number;

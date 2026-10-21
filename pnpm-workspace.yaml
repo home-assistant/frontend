@@ -26,7 +26,6 @@ overrides:
   lit-html: 3.3.3
   clean-css: 5.3.3
   "@lit/reactive-element": 2.1.2
-  "@fullcalendar/daygrid": 6.1.22
   tslib: 2.8.1
 
 patchedDependencies:
