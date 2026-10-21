@@ -77,6 +77,10 @@ class StorageClass {
   }
 
   public getValue<T = any>(storageKey: string): T | undefined {
+    if (!(storageKey in this._storage)) {
+      this.addFromStorage(storageKey);
+    }
+
     return this._storage[storageKey];
   }
 
