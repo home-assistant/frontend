@@ -101,6 +101,7 @@ export class HomeAssistantMain extends LitElement {
   protected firstUpdated() {
     import(/* webpackPreload: true */ "../components/ha-sidebar");
     import("../components/ha-snowflakes");
+    import("../panels/config/integrations/demo-add-integration"); // DEMO
 
     if (this.hass.auth.external) {
       this._externalSidebar =

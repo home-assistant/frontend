@@ -6019,6 +6019,10 @@
               "target": "By target",
               "type": "By type"
             },
+            "browse_by": {
+              "category": "Category",
+              "brand": "Brand"
+            },
             "show_more": "Show more",
             "unassigned_entities": "Unassigned entities",
             "unassigned_devices": "Unassigned devices",
@@ -8010,7 +8014,6 @@
           "description": "Manage integrations with services or devices",
           "integration": "integration",
           "discovered": "Discovered",
-          "discovered_devices": "{count, plural,\n one {# discovered device}\n other {# discovered devices}\n}",
           "manage_discovered": "Manage discovered devices",
           "manage_discovered_description": "Ignore or configure previously discovered devices",
           "disabled": "Disabled",
@@ -8018,7 +8021,7 @@
           "new_flow": "Set up another instance of {integration}",
           "attention": "Attention required",
           "configured": "Configured",
-          "new": "Select brand",
+          "new": "Add device or integration",
           "confirm_new": "Do you want to set up {integration}?",
           "add_integration": "Add integration",
           "no_integrations": "Seems like you don't have any integrations configured yet. Press the button below to add your first integration!",
@@ -8040,11 +8043,39 @@
           "filters": "[%key:ui::components::subpage-data-table::filters%]",
           "filters_disabled_hidden": "Filters, {number} disabled {number, plural,\n one {integration}\n other {integrations}\n} hidden",
           "all_integrations": "All integrations",
-          "found_for_you": "Found for you",
           "add_a_device": "Add a device",
           "browse": "Browse",
-          "filter_category": "Filter by category",
-          "search_brand": "Search for a brand name",
+          "browse_by": {
+            "label": "Browse by: {value}",
+            "brand": "Brand",
+            "category": "Category"
+          },
+          "all_brands": "All brands",
+          "featured": "Featured",
+          "works_with": "Works with Home Assistant",
+          "search_brand": "Search all brands and integrations",
+          "search_section": {
+            "brand": "Brands",
+            "category": "Categories",
+            "integration": "Integrations",
+            "helper": "Helpers"
+          },
+          "search_show_more": "Show {count} more",
+          "subcategories": "Subcategories",
+          "kind": {
+            "label": "Type: {value}",
+            "all": "All",
+            "device": "Device",
+            "hub": "Hub",
+            "service": "Service"
+          },
+          "connection": {
+            "label": "Connection: {value}",
+            "all": "All",
+            "local": "Local",
+            "cloud": "Cloud"
+          },
+          "search_no_results": "No results for “{term}”",
           "search_helper": "Search for a helper",
           "add_zwave_js_device": "Add Z-Wave device",
           "add_zha_device": "Add Zigbee device",
@@ -10593,7 +10624,7 @@
           "exit_edit_mode": "Done",
           "close": "Close",
           "add": "Add to Home Assistant",
-          "add_device": "Add device",
+          "add_device": "Add device or integration",
           "create_automation": "Create automation",
           "create_area": "Create area",
           "create_area_success": "Area created",

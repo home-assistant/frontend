@@ -1,7 +1,7 @@
 import {
-  mdiDevices,
   mdiFileCodeOutline,
   mdiPackageVariant,
+  mdiPlus,
   mdiWeb,
 } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
@@ -10,7 +10,9 @@ import { customElement, property, state } from "lit/decorators";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-domain-icon";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-label";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import { HaListItemButton } from "../../../components/item/ha-list-item-button";
@@ -21,6 +23,17 @@ import type { IntegrationListItem } from "./dialog-add-integration";
 export class HaIntegrationListItem extends HaListItemButton {
   @property({ attribute: false }) public integration!: IntegrationListItem;
 
+  // A bordered card with room around it, like the automation editor's items.
+  // The room is padding, not margin, so a virtualized list measures it.
+  @property({ type: Boolean, reflect: true }) public card = false;
+
+  // Picking it closes the dialog and starts adding, instead of a next step
+  @property({ type: Boolean, attribute: "opens-flow" }) public opensFlow =
+    false;
+
+  // Something of it was found, so picking it shows that first
+  @property({ type: Boolean }) public discovered = false;
+
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -30,11 +43,8 @@ export class HaIntegrationListItem extends HaListItemButton {
     return html`
       <div part="start" class="start">
         ${
-          integration.is_discovered
-            ? html`<ha-svg-icon
-                class="discovered-icon"
-                .path=${mdiDevices}
-              ></ha-svg-icon>`
+          integration.icon
+            ? html`<ha-icon .icon=${integration.icon}></ha-icon>`
             : html`<ha-domain-icon
                 brand-fallback
                 .domain=${integration.domain}
@@ -58,6 +68,13 @@ export class HaIntegrationListItem extends HaListItemButton {
               : nothing
           }
         </div>
+        ${
+          integration.description
+            ? html`<div part="supporting-text" class="supporting">
+                ${integration.description}
+              </div>`
+            : nothing
+        }
       </div>
     `;
   }
@@ -71,8 +88,19 @@ export class HaIntegrationListItem extends HaListItemButton {
     return html`
       <div part="end" class="end">
         ${
+          this.discovered
+            ? html`<ha-label dense>
+                ${this._localize("ui.panel.config.integrations.discovered")}
+              </ha-label>`
+            : nothing
+        }
+        ${
           integration.cloud
-            ? html`<ha-svg-icon id="icon-cloud" .path=${mdiWeb}></ha-svg-icon>
+            ? html`<ha-svg-icon
+                  id="icon-cloud"
+                  class="status"
+                  .path=${mdiWeb}
+                ></ha-svg-icon>
                 <ha-tooltip for="icon-cloud" placement="left">
                   ${this._localize(
                     "ui.panel.config.integrations.config_entry.depends_on_cloud"
@@ -84,9 +112,9 @@ export class HaIntegrationListItem extends HaListItemButton {
           !integration.is_built_in
             ? html`<ha-svg-icon
                   id="icon-custom"
-                  class=${
+                  class=${`status ${
                     integration.overwrites_built_in ? "overwrites" : "custom"
-                  }
+                  }`}
                   .path=${mdiPackageVariant}
                 ></ha-svg-icon>
                 <ha-tooltip for="icon-custom" placement="left">
@@ -103,14 +131,19 @@ export class HaIntegrationListItem extends HaListItemButton {
             ? html`<ha-svg-icon
                   id="icon-yaml"
                   .path=${mdiFileCodeOutline}
-                  class="open-in-new"
+                  class="open-in-new action"
                 ></ha-svg-icon>
                 <ha-tooltip for="icon-yaml" placement="left">
                   ${this._localize(
                     "ui.panel.config.integrations.config_entry.yaml_only"
                   )}
                 </ha-tooltip>`
-            : html`<ha-icon-next></ha-icon-next>`
+            : this.opensFlow
+              ? html`<ha-svg-icon
+                  class="add action"
+                  .path=${mdiPlus}
+                ></ha-svg-icon>`
+              : html`<ha-icon-next class="action"></ha-icon-next>`
         }
       </div>
     `;
@@ -119,26 +152,56 @@ export class HaIntegrationListItem extends HaListItemButton {
   static styles: CSSResultGroup = [
     HaListItemButton.styles,
     css`
+      :host([card]) {
+        padding: 0 var(--ha-space-4) var(--ha-space-2);
+        box-sizing: border-box;
+        --ha-list-item-focus-radius: var(--ha-border-radius-lg);
+      }
+      :host([card]) .base {
+        border: 1px solid var(--ha-color-border-neutral-quiet);
+        border-radius: var(--ha-border-radius-lg);
+        overflow: hidden;
+      }
       .start {
         --mdc-icon-size: 32px;
         height: 32px;
+      }
+      /* The brand image is inline, its line box would push it off center */
+      .start ha-domain-icon {
+        display: flex;
       }
       .end {
         color: var(--ha-color-text-secondary);
         display: flex;
         align-items: center;
-        gap: var(--ha-space-2);
+        gap: var(--ha-space-1);
       }
       /* Raise the icons above the row's hit area so their tooltips open */
       .end ha-svg-icon {
         position: relative;
         z-index: 1;
       }
-      /* The chevron is decorative, keep it below the row's hit area */
+      /* Small notes on the integration, apart from what picking it does */
+      .end .status {
+        --mdc-icon-size: 20px;
+      }
+      .end .action {
+        margin-inline-start: var(--ha-space-2);
+      }
+      /* Decorative, below the row's hit area; like the tree chevrons of the
+         automation editor */
       .end ha-icon-next {
         z-index: -1;
+        color: var(--ha-color-on-neutral-quiet);
       }
-      .discovered-icon {
+      .end ha-label {
+        border: none;
+        --ha-label-background-color: var(
+          --ha-color-fill-primary-normal-resting
+        );
+        --ha-label-text-color: var(--ha-color-on-primary-normal);
+      }
+      .end .add {
         color: var(--primary-color);
       }
       .open-in-new {
