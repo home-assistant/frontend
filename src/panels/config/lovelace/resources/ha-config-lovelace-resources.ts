@@ -191,6 +191,7 @@ export class HaConfigLovelaceResources extends LitElement {
         @sorting-changed=${this._handleSortingChanged}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
+        sync-url
         @row-click=${this._editResource}
         has-fab
         clickable
