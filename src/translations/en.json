@@ -7373,6 +7373,8 @@
             "setup_capability_serial_title": "Control a device over serial",
             "setup_capability_serial_short": "AV receivers, amplifiers, and more",
             "setup_capability_serial_description": "Add serial devices into Home Assistant, allowing for control of A/V receivers and multi-zone amplifiers.",
+            "setup_bluetooth_turn_on": "Turn on",
+            "setup_bluetooth_turn_off": "Turn off",
             "setup_audio_music_assistant": "Music Assistant",
             "setup_audio_byline": "By the Open Home Foundation",
             "setup_audio_offer_title": "Enhance your music experience",

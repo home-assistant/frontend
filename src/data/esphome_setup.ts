@@ -20,7 +20,7 @@ export type ESPHomeCapabilityId =
 export type ESPHomeCapabilityStatus = "not-started" | "detected" | "completed";
 
 export interface ESPHomeSetupStatus {
-  bluetooth?: "completed";
+  bluetooth?: "not-started" | "completed";
   audio?: "not-started" | "completed";
   connectivity?: "not-started" | "detected" | "completed";
   serial?: "not-started" | "completed";
@@ -30,6 +30,7 @@ export interface ESPHomeDeviceEntityRef {
   entity_id: string;
   device_id?: string | null;
   platform?: string;
+  disabled_by?: string | null;
 }
 
 export interface ESPHomeEntityStateRef {
@@ -89,12 +90,36 @@ export const ESPHOME_CAPABILITY_TITLE_KEYS: Record<
  */
 const SENDSPIN_ENABLED_OBJECT_ID = "sendspin_enabled";
 
-const isSendspinEnabledSwitch = (entityId: string): boolean => {
-  const objectId = computeObjectId(entityId);
-  return (
-    objectId === SENDSPIN_ENABLED_OBJECT_ID ||
-    objectId.endsWith(`_${SENDSPIN_ENABLED_OBJECT_ID}`)
-  );
+/**
+ * Object id of the Bluetooth switch, a template switch named "Bluetooth"
+ * that runs ble.enable and ble.disable. Device capabilities do not report it.
+ */
+const BLUETOOTH_OBJECT_ID = "bluetooth";
+
+const findESPHomeSwitch = (
+  deviceId: string,
+  entities: Iterable<ESPHomeDeviceEntityRef>,
+  objectId: string
+): string | undefined => {
+  for (const entity of entities) {
+    // The device page passes full registry entries, including disabled ones
+    if (
+      entity.device_id !== deviceId ||
+      entity.disabled_by ||
+      computeDomain(entity.entity_id) !== "switch" ||
+      (entity.platform && entity.platform !== "esphome")
+    ) {
+      continue;
+    }
+    const entityObjectId = computeObjectId(entity.entity_id);
+    if (
+      entityObjectId === objectId ||
+      entityObjectId.endsWith(`_${objectId}`)
+    ) {
+      return entity.entity_id;
+    }
+  }
+  return undefined;
 };
 
 export const deviceHasMediaPlayerEntity = (
@@ -117,20 +142,11 @@ export const getESPHomeAudioControls = (
   entities: Iterable<ESPHomeDeviceEntityRef>,
   states: Readonly<Record<string, ESPHomeEntityStateRef>> = {}
 ): ESPHomeAudioControls => {
-  let sendspinEntityId: string | undefined;
-
-  for (const entity of entities) {
-    if (
-      entity.device_id !== deviceId ||
-      computeDomain(entity.entity_id) !== "switch" ||
-      (entity.platform && entity.platform !== "esphome") ||
-      !isSendspinEnabledSwitch(entity.entity_id)
-    ) {
-      continue;
-    }
-    sendspinEntityId = entity.entity_id;
-    break;
-  }
+  const sendspinEntityId = findESPHomeSwitch(
+    deviceId,
+    entities,
+    SENDSPIN_ENABLED_OBJECT_ID
+  );
 
   const sendspinState = sendspinEntityId
     ? states[sendspinEntityId]?.state
@@ -145,18 +161,41 @@ export const getESPHomeAudioControls = (
   };
 };
 
+/** Whether the device has an enabled Bluetooth switch, whatever its state. */
+export const hasESPHomeBluetoothSwitch = (
+  deviceId: string,
+  entities: Iterable<ESPHomeDeviceEntityRef>
+): boolean =>
+  findESPHomeSwitch(deviceId, entities, BLUETOOTH_OBJECT_ID) !== undefined;
+
+/** The device's Bluetooth switch, if it exposes one that can be switched now. */
+export const getESPHomeBluetoothSwitch = (
+  deviceId: string,
+  entities: Iterable<ESPHomeDeviceEntityRef>,
+  states: Readonly<Record<string, ESPHomeEntityStateRef>> = {}
+): { entityId: string; on: boolean } | undefined => {
+  const entityId = findESPHomeSwitch(deviceId, entities, BLUETOOTH_OBJECT_ID);
+  // Disabled has no state and unavailable cannot be switched, so neither counts as off
+  const state = entityId ? states[entityId]?.state : undefined;
+  return entityId && (state === "on" || state === "off")
+    ? { entityId, on: state === "on" }
+    : undefined;
+};
+
 /**
- * Whether the device page should show the setup banner.
- * Bluetooth is status inside the wizard and is not enough on its own.
- * Zigbee has no separate capability bit; the Z-Wave proxy row covers it.
+ * Whether the device page should show the setup wizard: the device supports
+ * at least one of its parts. Bluetooth only counts with its switch, since
+ * without one there is nothing to set up on older Bluetooth proxies. Zigbee
+ * has no separate capability bit; the Z-Wave proxy row covers it.
  */
 export const hasESPHomeSetupCapabilities = (
   capabilities: ESPHomeDeviceCapabilities | undefined | null,
-  options: { mediaPlayerSupported?: boolean } = {}
+  options: { mediaPlayerSupported?: boolean; bluetoothSwitch?: boolean } = {}
 ): boolean =>
   Boolean(
     capabilities &&
-    (options.mediaPlayerSupported ||
+    ((capabilities.bluetooth_proxy.supported && options.bluetoothSwitch) ||
+      options.mediaPlayerSupported ||
       capabilities.zwave_proxy.supported ||
       capabilities.serial_proxies.length > 0)
   );
@@ -174,6 +213,8 @@ export const deriveESPHomeSetupStatus = (
   options: {
     mediaPlayerSupported: boolean;
     musicAssistantLoaded: boolean;
+    /** Undefined when the device has no Bluetooth switch to turn it off. */
+    bluetoothEnabled?: boolean;
     sendspinSupported?: boolean;
     sendspinEnabled?: boolean;
     serialConfigured?: boolean;
@@ -183,7 +224,8 @@ export const deriveESPHomeSetupStatus = (
   const status: ESPHomeSetupStatus = {};
 
   if (capabilities.bluetooth_proxy.supported) {
-    status.bluetooth = "completed";
+    status.bluetooth =
+      options.bluetoothEnabled === false ? "not-started" : "completed";
   }
 
   if (options.mediaPlayerSupported || options.sendspinSupported) {
