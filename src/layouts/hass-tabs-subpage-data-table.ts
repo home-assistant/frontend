@@ -260,6 +260,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   private _typedSearch?: string;
 
+  private _restoreInitial = false;
+
   private _queryParams = new QueryParamsController(
     this,
     dataTableQueryParamConfig,
@@ -267,6 +269,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       enabled: () => this.syncUrl,
       navigated: () => {
         if (this._urlRead) {
+          // Opened again without params, like from the sidebar
+          this._restoreInitial =
+            this._queryParams.searchParams()?.toString() === "";
           this._applyUrl();
         }
       },
@@ -298,6 +303,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         this._sortColumn = this.initialSorting.column;
         this._sortDirection = this.initialSorting.direction;
       }
+    }
+
+    // Done here, after the page has set the initial sorting and grouping it
+    // stored
+    if (this._restoreInitial) {
+      this._restoreInitial = false;
+      this._restoreInitialState();
     }
 
     if (this.syncUrl && !this._urlRead && Object.keys(this.columns).length) {
@@ -738,6 +750,25 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     this._urlWritePending = true;
     this.requestUpdate();
+  }
+
+  private _restoreInitialState() {
+    const sorting =
+      this.initialSorting && this.columns[this.initialSorting.column]
+        ? this.initialSorting
+        : undefined;
+
+    this._sortColumn = sorting?.column;
+    this._sortDirection = sorting?.direction ?? null;
+
+    const groupColumn =
+      this.initialGroupColumn && this.columns[this.initialGroupColumn]
+        ? this.initialGroupColumn
+        : "";
+
+    if (groupColumn !== (this._groupColumn ?? "")) {
+      this._setGroupColumn(groupColumn, true);
+    }
   }
 
   private _flushUrl() {

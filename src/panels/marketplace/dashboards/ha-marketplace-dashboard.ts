@@ -304,6 +304,9 @@ export class HaMarketplaceDashboard extends LitElement {
           link.filters[STATUS_FILTER]
         ),
       };
+    } else if (searchParams?.toString() === "") {
+      // Opened again without params, like from the sidebar
+      this._filters = this._storageFilters;
     }
 
     this._writeFilters();

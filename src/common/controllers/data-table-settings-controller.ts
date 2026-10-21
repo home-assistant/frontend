@@ -3,8 +3,10 @@ import type {
   ReactiveControllerHost,
 } from "@lit/reactive-element/reactive-controller";
 import type { SortingChangedEvent } from "../../components/data-table/ha-data-table";
-import { getStorage, type StorageName } from "../decorators/storage";
+import { getStorage } from "../decorators/storage";
 import type { HASSDomEvent } from "../dom/fire_event";
+import type { QueryParamConfig } from "../url/query-params";
+import { QueryParamsController } from "./query-params-controller";
 
 export interface DataTableSettingsKeys {
   /** Session storage key for the search. */
@@ -34,20 +36,37 @@ export class DataTableSettingsController implements ReactiveController {
   /** The grouping shown, which can be a link's. */
   public grouping?: string;
 
+  // The search is kept for the session, sorting and grouping for good
+  private _sessionStorage = getStorage("sessionStorage");
+
+  private _localStorage = getStorage("localStorage");
+
+  // Only used to know when the page is opened again
+  private _queryParams: QueryParamsController<QueryParamConfig>;
+
   constructor(
     private _host: ReactiveControllerHost,
     private _keys: DataTableSettingsKeys,
-    options: DataTableSettingsOptions = {}
+    private _options: DataTableSettingsOptions = {}
   ) {
     this._host.addController(this);
-    this.search = this._get<string>(this._keys.search, "sessionStorage") ?? "";
-    this.grouping =
-      this._get<string>(this._keys.grouping) ?? options.defaultGrouping;
+    this._queryParams = new QueryParamsController(
+      this._host,
+      {},
+      {
+        enabled: () => true,
+        navigated: () => this._navigated(),
+      }
+    );
+    this.search = this._storedSearch();
+    this.grouping = this._storedGrouping();
   }
 
   /** The stored sorting, for the table to start with. */
   public get sorting(): SortingChangedEvent | undefined {
-    return this._get<SortingChangedEvent>(this._keys.sorting);
+    return this._keys.sorting
+      ? this._localStorage.getValue<SortingChangedEvent>(this._keys.sorting)
+      : undefined;
   }
 
   /** Show a search, like one a page reads from a link, without storing it. */
@@ -61,15 +80,15 @@ export class DataTableSettingsController implements ReactiveController {
   ) => {
     this.showSearch(ev.detail.value);
 
-    if (!ev.detail.link) {
-      this._set(this._keys.search, ev.detail.value, "sessionStorage");
+    if (this._keys.search && !ev.detail.link) {
+      this._sessionStorage.setValue(this._keys.search, ev.detail.value);
     }
   };
 
   public sortingChanged = (ev: HASSDomEvent<SortingChangedEvent>) => {
-    if (!ev.detail.link) {
+    if (this._keys.sorting && !ev.detail.link) {
       const { column, direction } = ev.detail;
-      this._set(this._keys.sorting, { column, direction });
+      this._localStorage.setValue(this._keys.sorting, { column, direction });
     }
   };
 
@@ -79,32 +98,36 @@ export class DataTableSettingsController implements ReactiveController {
     this.grouping = ev.detail.value;
     this._host.requestUpdate();
 
-    if (!ev.detail.link) {
-      this._set(this._keys.grouping, ev.detail.value);
+    if (this._keys.grouping && !ev.detail.link) {
+      this._localStorage.setValue(this._keys.grouping, ev.detail.value);
     }
   };
 
-  private _get<T>(
-    key: string | undefined,
-    storageName?: StorageName
-  ): T | undefined {
-    if (!key) {
-      return undefined;
+  // A page opened again without params, like from the sidebar, shows what
+  // the user stored rather than what a link showed before
+  private _navigated() {
+    if (this._queryParams.searchParams()?.toString() !== "") {
+      return;
     }
 
-    const storage = getStorage(storageName);
-    storage.addFromStorage(key);
-
-    return storage.getValue<T>(key);
+    this.search = this._storedSearch();
+    this.grouping = this._storedGrouping();
+    this._host.requestUpdate();
   }
 
-  private _set<T>(
-    key: string | undefined,
-    value: T,
-    storageName?: StorageName
-  ) {
-    if (key) {
-      getStorage(storageName).setValue<T>(key, value);
-    }
+  private _storedSearch(): string {
+    return (
+      (this._keys.search
+        ? this._sessionStorage.getValue<string>(this._keys.search)
+        : undefined) ?? ""
+    );
+  }
+
+  private _storedGrouping(): string | undefined {
+    return (
+      (this._keys.grouping
+        ? this._localStorage.getValue<string>(this._keys.grouping)
+        : undefined) ?? this._options.defaultGrouping
+    );
   }
 }

@@ -1038,6 +1038,10 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       this._tableSettings.showSearch(link.search);
       this._filters = link.filters;
       this._applyFilters();
+    } else if (searchParams?.toString() === "") {
+      // Opened again without params, like from the sidebar
+      this._filters = this._storageFilters;
+      this._applyFilters();
     }
 
     this._writeFilters();
