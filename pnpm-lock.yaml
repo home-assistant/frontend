@@ -278,7 +278,7 @@ importers:
         version: 1.0.3
       '@maplibre/maplibre-gl-leaflet':
         specifier: 0.1.4
-        version: 0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.14.0)
+        version: 0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.15.0)
       '@material/mwc-list':
         specifier: 0.27.0
         version: 0.27.0(patch_hash=9450e509a86887d8f68ca9cf3f81e6ed70e94e49de13c5f6f20f94519ad4a987)
@@ -302,7 +302,7 @@ importers:
         version: 4.4.0
       '@versatiles/style':
         specifier: 7.0.1
-        version: 7.0.1(maplibre-gl@6.14.0)
+        version: 7.0.1(maplibre-gl@6.15.0)
       '@vibrant/color':
         specifier: 4.0.4
         version: 4.0.4
@@ -388,8 +388,8 @@ importers:
         specifier: 3.3.3
         version: 3.3.3
       maplibre-gl:
-        specifier: 6.14.0
-        version: 6.14.0
+        specifier: 6.15.0
+        version: 6.15.0
       marked:
         specifier: 18.1.1
         version: 18.1.1
@@ -2232,8 +2232,8 @@ packages:
   '@mapbox/point-geometry@1.1.0':
     resolution: {integrity: sha512-YGcBz1cg4ATXDCM/71L9xveh4dynfGmcLDqufR+nQQy3fKwsAZsWd/x4621/6uJaeB9mwOHE6hPeDgXz9uViUQ==}
 
-  '@mapbox/tiny-sdf@2.2.0':
-    resolution: {integrity: sha512-LVL4wgI9YAum5V+LNVQO6QgFBPw7/MIIY4XJPNsPDMrjEwcE+JfKk1LuIl8GnF197ejVdC9QdPaxrx5gfgdGXg==}
+  '@mapbox/tiny-sdf@2.3.0':
+    resolution: {integrity: sha512-gBvcNDBBB66bgQYvnaJ6Jk+VCaMmVq5+IZR2kWPisT88Z8s0kBQt6hfVi8QgRW8Vpg0UWZzBA4ZSyzHHC+VeRA==}
 
   '@mapbox/unitbezier@1.0.0':
     resolution: {integrity: sha512-fqd515fjBmANKGGsQ286E2Wvj/XvDFpGzwJxq4CI6jMQue6Oy04uCKp+JWKF00xRTmk6cEu1jPJ9p3xqH8YWqQ==}
@@ -2241,8 +2241,8 @@ packages:
   '@mapbox/vector-tile@3.0.0':
     resolution: {integrity: sha512-Qf10S1uIHMk20ri/IVBnpS+esUEkVaR5Hftmz88jTInrpmWgPGJfPe3LVjjlE77trLx8tH6qjTG7uWH9hIq/0Q==}
 
-  '@maplibre/geojson-vt@6.1.2':
-    resolution: {integrity: sha512-2ZYhobdAY+y4/P/z1xe0698165LywD0yDdWugdu3NRUrajgVWut+tLkcz7i/RJguMTURwK7gxwmwYMFJbgbQFw==}
+  '@maplibre/geojson-vt@6.3.0':
+    resolution: {integrity: sha512-3Zw2jsU9pIJG3G2CQFbLjWj2MlAHodhD7cSY+15iywUuLmmkgzcKRnueVRZ4AcC/5wOtfhidcJAAzBpoBNs3Xg==}
 
   '@maplibre/maplibre-gl-leaflet@0.1.4':
     resolution: {integrity: sha512-k57wcndZIvq3m08g2je4pjUPGr43ffNW3j+gXbymt8Vi2l1lUERUi1UmdTZcTPN8LuDDYOMWRNBaSLwpAu02ew==}
@@ -5893,8 +5893,8 @@ packages:
   map-stream@0.0.7:
     resolution: {integrity: sha512-C0X0KQmGm3N2ftbTGBhSyuydQ+vV1LC3f3zPvT3RXHXNZrvfPZcoXp/N5DOa8vedX/rTMm2CjTtivFg2STJMRQ==}
 
-  maplibre-gl@6.14.0:
-    resolution: {integrity: sha512-L7U9y9TyPJ3P/JJbW+eH+A3FzdPq+3fnZFqqeCwf/S6cRGganHwVI5b/C8/zOYzreUzsloDPZVVaMQA94wOt4A==}
+  maplibre-gl@6.15.0:
+    resolution: {integrity: sha512-kxFetbvUHDOVaAP1CYb226Mdk2QhzIPddqM0xJTFD35wu78Mpd6NM7+H68ALjc6Oa0kAOX5EAdMKyvD2u3qfcg==}
     engines: {node: '>=16.14.0', npm: '>=8.1.0'}
 
   marked@11.2.0:
@@ -9763,7 +9763,7 @@ snapshots:
 
   '@mapbox/point-geometry@1.1.0': {}
 
-  '@mapbox/tiny-sdf@2.2.0': {}
+  '@mapbox/tiny-sdf@2.3.0': {}
 
   '@mapbox/unitbezier@1.0.0': {}
 
@@ -9773,15 +9773,15 @@ snapshots:
       '@types/geojson': 7946.0.16
       pbf: 5.1.2
 
-  '@maplibre/geojson-vt@6.1.2':
+  '@maplibre/geojson-vt@6.3.0':
     dependencies:
       kdbush: 4.1.0
 
-  '@maplibre/maplibre-gl-leaflet@0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.14.0)':
+  '@maplibre/maplibre-gl-leaflet@0.1.4(@types/leaflet@1.9.22)(leaflet@1.9.4)(maplibre-gl@6.15.0)':
     dependencies:
       '@types/leaflet': 1.9.22
       leaflet: 1.9.4
-      maplibre-gl: 6.14.0
+      maplibre-gl: 6.15.0
 
   '@maplibre/maplibre-gl-style-spec@26.4.4':
     dependencies:
@@ -11272,11 +11272,11 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
     optional: true
 
-  '@versatiles/style@7.0.1(maplibre-gl@6.14.0)':
+  '@versatiles/style@7.0.1(maplibre-gl@6.15.0)':
     dependencies:
       '@maplibre/maplibre-gl-style-spec': 26.4.4
     optionalDependencies:
-      maplibre-gl: 6.14.0
+      maplibre-gl: 6.15.0
 
   '@vibrant/color@4.0.4': {}
 
@@ -13659,13 +13659,13 @@ snapshots:
 
   map-stream@0.0.7: {}
 
-  maplibre-gl@6.14.0:
+  maplibre-gl@6.15.0:
     dependencies:
       '@mapbox/point-geometry': 1.1.0
-      '@mapbox/tiny-sdf': 2.2.0
+      '@mapbox/tiny-sdf': 2.3.0
       '@mapbox/unitbezier': 1.0.0
       '@mapbox/vector-tile': 3.0.0
-      '@maplibre/geojson-vt': 6.1.2
+      '@maplibre/geojson-vt': 6.3.0
       '@maplibre/maplibre-gl-style-spec': 26.4.4
       '@maplibre/mlt': 1.3.0
       '@maplibre/vt-pbf': 4.3.2
