@@ -6,6 +6,7 @@ import { mkdir, readFile, symlink, writeFile } from "node:fs/promises";
 import { basename, join, relative } from "node:path";
 import { injectManifest } from "workbox-build";
 import paths from "../paths.cjs";
+import { SCOPED_REGISTRY_POLYFILL_GLOB } from "./scoped-registry-polyfill.js";
 
 const SW_MAP = {
   [paths.app_output_latest]: "modern",
@@ -43,6 +44,10 @@ const genServiceWorker = (builds) =>
       const swSrc = join(paths.app_output_root, manifest["service-worker.js"]);
       const swDest = join(paths.app_output_root, `sw-${build}.js`);
       const buildDir = relative(paths.app_output_root, outPath);
+      const latestDir = relative(
+        paths.app_output_root,
+        paths.app_output_latest
+      );
       const { warnings } = await injectManifest({
         swSrc,
         swDest,
@@ -55,6 +60,11 @@ const genServiceWorker = (builds) =>
         globDirectory: paths.app_output_root,
         globPatterns: [
           `${buildDir}/*.js`,
+          // Every build's index page loads the scoped registry polyfill from
+          // the modern output folder.
+          ...(buildDir === latestDir
+            ? []
+            : [`${latestDir}/${SCOPED_REGISTRY_POLYFILL_GLOB}`]),
           // Cache all English translations because we catch them as fallback
           // Using pattern to match hash instead of * to avoid caching en-GB
           // 'v' added as valid hash letter because in dev we hash with 'dev'
