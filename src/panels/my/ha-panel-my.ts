@@ -301,10 +301,12 @@ export const getMyRedirects = (): Redirects => ({
   lovelace_dashboards: {
     component: "lovelace",
     redirect: "/config/lovelace/dashboards",
+    params: dashboardsTableParams,
   },
   lovelace_resources: {
     component: "lovelace",
     redirect: "/config/lovelace/resources",
+    params: dashboardResourcesTableParams,
   },
   oauth: {
     redirect: "/auth/external/callback",
@@ -541,6 +543,21 @@ export interface Redirect {
   params?: Record<string, ParamType>;
   optional_params?: Record<string, ParamType>;
 }
+
+// The dashboards table reads these from the link
+const dashboardsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
+// The dashboard resources table reads these from the link
+const dashboardResourcesTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+} satisfies Redirect["params"];
 
 @customElement("ha-panel-my")
 class HaPanelMy extends LitElement {
