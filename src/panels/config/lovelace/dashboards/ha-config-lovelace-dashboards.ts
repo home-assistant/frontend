@@ -441,7 +441,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         @sorting-changed=${this._handleSortingChanged}
         .filter=${this._filter}
         @search-changed=${this._handleSearchChange}
-        sync-url
+        ?sync-url=${!this._loading && !this._loadFailed}
         @row-click=${this._handleRowClicked}
         selectable
         .selected=${this._selected.length}
