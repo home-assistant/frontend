@@ -28,7 +28,7 @@ export interface ConfirmationDialogParams extends BaseDialogBoxParams {
 export interface PromptDialogParams extends BaseDialogBoxParams {
   inputLabel?: string;
   inputSuffix?: string;
-  textAfterInput?: string | TemplateResult;
+  textBelowInput?: string | TemplateResult;
   dismissText?: string;
   inputType?: string;
   defaultValue?: string;

@@ -170,9 +170,9 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
                 : nothing
           }
           ${
-            this._params.prompt && this._params.textAfterInput
+            this._params.prompt && this._params.textBelowInput
               ? html`<div class="after-input">
-                  ${this._params.textAfterInput}
+                  ${this._params.textBelowInput}
                 </div>`
               : nothing
           }

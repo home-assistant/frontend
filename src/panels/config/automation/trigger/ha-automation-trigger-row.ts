@@ -969,7 +969,7 @@ export default class HaAutomationTriggerRow extends LitElement {
       title: this.hass.localize(
         "ui.panel.config.automation.editor.triggers.edit_id_title"
       ),
-      textAfterInput: html`<ha-alert alert-type="info">
+      textBelowInput: html`<ha-alert alert-type="info">
         ${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.edit_id_info",
           {
