@@ -245,6 +245,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   protected firstUpdated() {
     this._registerKeyboardShortcuts();
+    // The virtualized list pins the selected row itself.
+    if (this._plainList) {
+      this._scrollToSelectedRow();
+    }
   }
 
   public willUpdate() {
@@ -263,6 +267,28 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     if (changedProps.has("_items") && this._search) {
       this._highlightTopMatch();
     }
+  }
+
+  // Scroll before the surface animates in, so the list does not jump at the
+  // end of the animation. Wait a frame for the surface to be positioned.
+  private async _scrollToSelectedRow() {
+    await this._list?.updateComplete;
+    await new Promise(requestAnimationFrame);
+    if (!this._list || !this.value || this._search) {
+      return;
+    }
+    const row = this._list.items[this._getInitialSelectedIndex()];
+    const listRect = this._list.getBoundingClientRect();
+    if (!row || !listRect.height) {
+      return;
+    }
+    // The surface scales in, so convert the measured offset to unscaled pixels.
+    const scale = this._list.offsetHeight / listRect.height;
+    const rowRect = row.getBoundingClientRect();
+    // Center the row, like the virtualized list does.
+    this._list.scrollTop +=
+      (rowRect.top - listRect.top) * scale -
+      (this._list.clientHeight - row.offsetHeight) / 2;
   }
 
   // The list resets its active row when it takes new rows, so wait for that

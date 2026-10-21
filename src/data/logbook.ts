@@ -329,3 +329,15 @@ export const filterLogbookCompatibleEntities = (entity) => {
     (domain === "sensor" && isNumericEntity(domain, entity, undefined));
   return !continuous;
 };
+
+export type LogbookCauseGroup =
+  "automation" | "script" | "integration" | "other";
+
+export const LOGBOOK_CAUSE_GROUPS: LogbookCauseGroup[] = [
+  "automation",
+  "script",
+  "integration",
+  "other",
+];
+
+export const logbookUserCauseKey = (userId: string) => `user/${userId}`;

@@ -38,6 +38,10 @@ class ToolsRouter extends HassRouterPage {
         tag: "tools-template",
         load: () => import("./template/tools-template"),
       },
+      "debug-console": {
+        tag: "tools-debug-console",
+        load: () => import("./debug_console/tools-debug-console"),
+      },
       statistics: {
         tag: "tools-statistics",
         load: () => import("./statistics/tools-statistics"),

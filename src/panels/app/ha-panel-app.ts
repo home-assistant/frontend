@@ -241,6 +241,10 @@ class HaPanelApp extends LitElement {
       return;
     }
 
+    if (this._getAddonSlug() !== addonSlug || !this.isConnected) {
+      return;
+    }
+
     if (!addon.version) {
       await this._showErrorAndNavigateHome(
         addon.name,
@@ -324,7 +328,7 @@ class HaPanelApp extends LitElement {
     }
 
     // Check if user navigated away while we were fetching
-    if (this._getAddonSlug() !== addonSlug) {
+    if (this._getAddonSlug() !== addonSlug || !this.isConnected) {
       return;
     }
 

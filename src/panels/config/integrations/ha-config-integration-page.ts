@@ -162,7 +162,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @state() private _logInfo?: IntegrationLogInfo;
 
   @state() private _searchParms = new URLSearchParams(
-    window.location.hash.substring(1)
+    __DEMO__ ? window.location.search : window.location.hash.substring(1)
   );
 
   @state() private _filter = "";
@@ -177,7 +177,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private _configEntryRows!: NodeListOf<HaConfigEntryRow>;
 
   private _handleHashChange = () => {
-    this._searchParms = new URLSearchParams(window.location.hash.substring(1));
+    this._searchParms = new URLSearchParams(
+      __DEMO__ ? window.location.search : window.location.hash.substring(1)
+    );
   };
 
   private _domainConfigEntries = memoizeOne(

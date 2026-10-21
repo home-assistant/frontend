@@ -43,7 +43,8 @@ export class HaObjectSelector extends LitElement {
   @property({ type: Boolean }) public required = true;
 
   @property({ attribute: false }) public localizeValue?: (
-    key: string
+    key: string,
+    values?: Record<string, string>
   ) => string;
 
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
@@ -79,37 +80,45 @@ export class HaObjectSelector extends LitElement {
     return this.selector.object?.fields?.[schema.name]?.description || "";
   };
 
+  private _formatField(item: any, field: string): string {
+    const fields = this.selector.object!.fields!;
+    const value = formatSelectorValue(
+      this.hass,
+      item[field],
+      fields[field]?.selector
+    );
+    const translationKey = this.selector.object!.translation_key;
+    if (!value || !this.localizeValue || !translationKey) {
+      return value;
+    }
+    return (
+      this.localizeValue(`${translationKey}.fields.${field}.overview_label`, {
+        value,
+      }) || value
+    );
+  }
+
   private _renderItem(item: any, index: number) {
     const fields = this.selector.object!.fields!;
     const preferredLabel = this.selector.object!.label_field;
     const hasValidLabelField = preferredLabel && preferredLabel in fields;
 
     const label = hasValidLabelField
-      ? formatSelectorValue(
-          this.hass,
-          item[preferredLabel!],
-          fields[preferredLabel!]?.selector
-        )
-      : Object.entries(fields)
-          .map(([key, field]) =>
-            formatSelectorValue(this.hass, item[key], field.selector)
-          )
+      ? this._formatField(item, preferredLabel!)
+      : Object.keys(fields)
+          .map((key) => this._formatField(item, key))
           .filter(Boolean)
           .join(" · ");
 
     let description = "";
 
     const descriptionField = this.selector.object!.description_field;
-    if (descriptionField && descriptionField in fields) {
-      const descriptionSelector = fields[descriptionField]?.selector;
-
-      description = descriptionSelector
-        ? formatSelectorValue(
-            this.hass,
-            item[descriptionField],
-            descriptionSelector
-          )
-        : "";
+    if (
+      descriptionField &&
+      descriptionField in fields &&
+      fields[descriptionField]?.selector
+    ) {
+      description = this._formatField(item, descriptionField);
     }
 
     const reorderable = this.selector.object!.multiple || false;

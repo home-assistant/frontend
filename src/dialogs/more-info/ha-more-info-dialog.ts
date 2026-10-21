@@ -811,12 +811,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                                       }
                                     ></ha-svg-icon>
                                     ${this.hass.localize(
-                                      "ui.dialogs.more_info_control.device_or_service_info",
-                                      {
-                                        type: this.hass.localize(
-                                          `ui.dialogs.more_info_control.device_type.${deviceType}`
-                                        ),
-                                      }
+                                      `ui.dialogs.more_info_control.${deviceType}_info`
                                     )}
                                   </ha-dropdown-item>
                                 `

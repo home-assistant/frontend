@@ -1080,8 +1080,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
             minmax(min(300px, 100%), 1fr)
           );
           gap: var(--ha-space-4);
-          padding: var(--ha-space-4);
-          margin: var(--ha-space-2);
+          padding: var(--ha-space-6) var(--ha-space-4) 0;
+          margin: 0;
         }
         .empty-message {
           margin: auto;
@@ -1109,7 +1109,10 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           position: sticky;
           top: 0;
           z-index: 2;
-          background-color: var(--primary-background-color);
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--primary-background-color)
+          );
           padding: 0 16px;
           gap: var(--ha-space-4);
           box-sizing: border-box;
@@ -1166,10 +1169,7 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           position: relative;
         }
         h1 {
-          margin-top: 8px;
-          margin-left: 16px;
-          margin-inline-start: 16px;
-          margin-inline-end: initial;
+          margin: var(--ha-space-6) var(--ha-space-4) 0;
         }
         ha-dropdown ha-icon-button {
           color: var(--primary-text-color);

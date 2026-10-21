@@ -710,6 +710,16 @@ export const isNumericEntity = (
     isNumericSensorDeviceClass(currentState.attributes.device_class)) ||
   numericStateFromHistory != null;
 
+// Non-numeric domains that computeHistory gives a unit, so they get a line chart
+const LINE_CHART_DOMAINS = ["climate", "humidifier", "water_heater", "zone"];
+
+export const isTimelineEntity = (
+  domain: string,
+  currentState: HassEntity | undefined
+): boolean =>
+  !isNumericEntity(domain, currentState, undefined) &&
+  !LINE_CHART_DOMAINS.includes(domain);
+
 export const mergeHistoryResults = (
   historyResult: HistoryResult,
   ltsResult?: HistoryResult,
