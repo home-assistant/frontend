@@ -143,6 +143,17 @@ export class HuiDialogSelectSectionStrategy
           slot="headerNavigationIcon"
           @click=${this._back}
         ></ha-icon-button-arrow-prev>
+        ${
+          customOptions.length
+            ? html`
+                <h3>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.editor.select_section_strategy.built_in"
+                  )}
+                </h3>
+              `
+            : nothing
+        }
         <div class="options">
           ${this._builtInOptions().map((option) => this._renderOption(option))}
         </div>
@@ -231,9 +242,12 @@ export class HuiDialogSelectSectionStrategy
 
   static styles = css`
     h3 {
-      margin: var(--ha-space-6) 0 var(--ha-space-3) 0;
+      margin: 0 0 var(--ha-space-3) 0;
       font-size: var(--ha-font-size-l);
       font-weight: var(--ha-font-weight-medium);
+    }
+    .options + h3 {
+      margin-top: var(--ha-space-6);
     }
     .options {
       display: grid;

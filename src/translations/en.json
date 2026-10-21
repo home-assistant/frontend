@@ -10446,6 +10446,7 @@
           },
           "select_section_strategy": {
             "header": "Choose an automatic section",
+            "built_in": "Built-in sections",
             "custom": "Community sections"
           },
           "edit_section": {
