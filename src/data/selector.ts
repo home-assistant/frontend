@@ -718,8 +718,10 @@ export const resolveSelectorContext = (
   return context;
 };
 
+export type TargetHass = Pick<HomeAssistant, "states" | "entities" | "devices">;
+
 export const expandLabelTarget = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   labelId: string,
   areas: HomeAssistant["areas"],
   devices: HomeAssistant["devices"],
@@ -778,7 +780,7 @@ export const expandLabelTarget = (
 };
 
 export const expandFloorTarget = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   floorId: string,
   areas: HomeAssistant["areas"],
   targetSelector: TargetSelector
@@ -802,7 +804,7 @@ export const expandFloorTarget = (
 };
 
 export const expandAreaTarget = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   areaId: string,
   devices: HomeAssistant["devices"],
   entities: HomeAssistant["entities"],
@@ -842,7 +844,7 @@ export const expandAreaTarget = (
 };
 
 export const expandDeviceTarget = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   deviceId: string,
   entities: HomeAssistant["entities"],
   targetSelector: TargetSelector
@@ -866,7 +868,7 @@ export const expandDeviceTarget = (
 };
 
 export const areaMeetsTargetSelector = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areaId: string,
@@ -1171,7 +1173,7 @@ export const computeCreateDomains = (
 };
 
 export const resolveEntityIDs = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   targetPickerValue: HassServiceTargetWithExclude,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
@@ -1212,7 +1214,7 @@ export const resolveEntityIDs = (
 };
 
 const resolveIncludedEntityIDs = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   targetPickerValue: HassServiceTarget,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
