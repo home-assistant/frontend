@@ -1,18 +1,11 @@
 import type { LitElement } from "lit";
 
-/** Resolves the class to register for a tag name, possibly asynchronously. */
-export interface ElementLoader {
-  load(): Promise<CustomElementConstructor>;
-}
-
 /**
- * An element to register: its tag name and its class, or a loader for it
- * from a `dynamic` entry point. The `scoped` and `dynamic` entry point of an
- * element export one, e.g. `hacCard`.
+ * An element to register: its tag name and its class. The `scoped` entry
+ * point of an element exports one, e.g. `hacCard`.
  */
 export interface ElementDefinition<
-  E extends CustomElementConstructor | ElementLoader =
-    CustomElementConstructor | ElementLoader,
+  E extends CustomElementConstructor = CustomElementConstructor,
 > {
   readonly tagName: string;
   readonly element: E;
@@ -24,8 +17,8 @@ export interface ElementDefinition<
  * component is loaded through decides where those are registered:
  *
  * - global: in the global registry, like the component itself
- * - scoped and dynamic: in a scoped registry of the component's shadow root,
- *   so its internals always use the bundled, same-version dependencies
+ * - scoped: in a scoped registry of the component's shadow root, so its
+ *   internals always use the bundled, same-version dependencies
  */
 export type ComponentClass = (new () => LitElement) & {
   readonly dependencies?: readonly ElementDefinition<ComponentClass>[];

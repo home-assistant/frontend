@@ -7,13 +7,12 @@ with [Lit](https://lit.dev).
 
 ## Loading modes
 
-Every element is imported on its own, in one of three ways:
+Every element is imported on its own, in one of two ways:
 
-| Import                                         | Registers in         | Uses                                               |
-| ---------------------------------------------- | -------------------- | -------------------------------------------------- |
-| `@home-assistant/components/<element>`         | Global registry      | The bundled copy. Used by Home Assistant itself.   |
-| `@home-assistant/components/<element>/scoped`  | Your scoped registry | The bundled copy, isolated from other copies.      |
-| `@home-assistant/components/<element>/dynamic` | Your scoped registry | Home Assistant's copy if compatible, else bundled. |
+| Import                                        | Registers in         | Uses                                             |
+| --------------------------------------------- | -------------------- | ------------------------------------------------ |
+| `@home-assistant/components/<element>`        | Global registry      | The bundled copy. Used by Home Assistant itself. |
+| `@home-assistant/components/<element>/scoped` | Your scoped registry | The bundled copy, isolated from other copies.    |
 
 `<element>` is the group, like `button` for `hac-button`, or the group and a
 variant, like `button/close` for `hac-button-close`.
@@ -28,19 +27,18 @@ import "@home-assistant/components/button";
 import "@home-assistant/components/button/close";
 ```
 
-### Scoped and dynamic
+### Scoped
 
 Pass the component's elements to `ScopedElementsMixin` for Lit, or to
-`createScopedElementRegistry` for plain custom elements. Switching between
-`scoped` and `dynamic` only changes the import path. Forgetting the elements
-is a TypeScript error, and a runtime error in plain JavaScript.
+`createScopedElementRegistry` for plain custom elements. Forgetting the
+elements is a TypeScript error, and a runtime error in plain JavaScript.
 
 Lit:
 
 ```ts
 import { LitElement, html } from "lit";
 import { ScopedElementsMixin } from "@home-assistant/components/scoped";
-import { hacCard } from "@home-assistant/components/card/dynamic";
+import { hacCard } from "@home-assistant/components/card/scoped";
 
 class MyCard extends ScopedElementsMixin(LitElement, [hacCard]) {
   render() {
@@ -57,7 +55,7 @@ import {
   createScopedElement,
   createScopedElementRegistry,
 } from "@home-assistant/components/scoped";
-import { hacCard } from "@home-assistant/components/card/dynamic";
+import { hacCard } from "@home-assistant/components/card/scoped";
 
 // Create the registry once, outside the class: all instances of the card share it
 const registry = createScopedElementRegistry([hacCard]);
@@ -75,17 +73,6 @@ class MyCard extends HTMLElement {
 `innerHTML`, `insertAdjacentHTML` and `createScopedElement` use the scoped
 registry. `document.createElement` uses the global one, so avoid it for
 scoped elements.
-
-With `dynamic`, the element renders right away and upgrades once the class is
-known. Home Assistant's copy is used when its version is compatible with the
-bundled one: same major version and at least the same minor and patch (for
-`0.x` versions the minor version must match).
-
-`dynamic` imports only the element's version up front. The bundled copy is a
-dynamic import, which bundlers split into a separate chunk that is only
-downloaded when Home Assistant cannot provide a compatible copy. Builds that
-inline dynamic imports into a single file still work, but then always contain
-the bundled copy.
 
 Scoped registries need native support (Chrome 146+, Safari 26) or
 `@webcomponents/scoped-custom-element-registry`, which Home Assistant loads.
@@ -109,18 +96,8 @@ point; `import type` loads nothing at runtime:
 import type { HacCard } from "@home-assistant/components/card/scoped";
 ```
 
-The package has no root entry point: elements, the scoped helpers
-(`@home-assistant/components/scoped`) and the provider
-(`@home-assistant/components/provider`) each have their own.
-
-## Providing components (host apps)
-
-A host app such as Home Assistant publishes the components it can share with
-`provideComponents()` from `@home-assistant/components/provider`. It publishes only
-versions and loaders, so nothing loads until a consumer asks.
-
-The host publishes its list as early as possible. A consumer that asks before
-that, which is rare, uses its bundled copies.
+The package has no root entry point: each element and the scoped helpers
+(`@home-assistant/components/scoped`) have their own.
 
 ## Theming
 
@@ -137,25 +114,22 @@ import paths:
 ```
 src/components/button/         <hac-button>        -> @home-assistant/components/button
   hac-button.ts                class, does not register itself
-  info.ts                      tag name and version, all `dynamic` loads up front
+  info.ts                      tag name and version
   global.ts                    registers globally
   scoped.ts                    elements for a scoped registry  -> …/scoped
-  dynamic.ts                   host's or bundled copy, scoped  -> …/dynamic
   close/                       <hac-button-close>  -> @home-assistant/components/button/close
     hac-button-close.ts
-    info.ts, global.ts, scoped.ts, dynamic.ts
+    info.ts, global.ts, scoped.ts
 ```
 
 Shared code lives in `src/utils/`: `registration/` for defining elements
-(global, scoped and dynamic) and `element/` for helpers that components use
+(global and scoped) and `element/` for helpers that components use
 themselves, like slot checks.
 
-A variant's tag name is `hac-<group>-<variant>`. `scoped`, `dynamic` and
-`info` are reserved and cannot be variant names.
+A variant's tag name is `hac-<group>-<variant>`. `scoped` and `info` are
+reserved and cannot be variant names.
 
-Every element has its own version. Bump `VERSION` in `info.ts` with every
-change to an element. A breaking change needs a new major version (minor in
-`0.x`), or custom cards using `dynamic` would receive an incompatible copy.
+Every element has its own version in `info.ts`.
 
 ### Dependencies
 
@@ -175,13 +149,9 @@ Never register a dependency yourself. The entry point decides where it goes:
 
 - `global` registers dependencies globally, like the component. Inside Home
   Assistant everything stays in the global registry.
-- `scoped` and `dynamic` (when the bundled copy is used) register a variant of
-  the component whose shadow root has its own registry with the bundled
-  dependencies. Its internals never pick up another copy from the page.
-
-With `dynamic`, a component and its dependencies always come from the same
-place: Home Assistant's header uses Home Assistant's close button, the
-bundled header the bundled one.
+- `scoped` registers a variant of the component whose shadow root has its own
+  registry with the bundled dependencies. Its internals never pick up another
+  copy from the page.
 
 Entry points are mapped with subpath patterns in `package.json`, so a new
 element directory needs no `package.json` change. Only `global.ts` files have
