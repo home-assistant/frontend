@@ -629,6 +629,10 @@ export default class HaAutomationConditionRow extends LitElement {
   };
 
   private _replaceCondition = () => {
+    // The sidebar keeps its callback when YAML turns the condition into a group.
+    if (!isConditionReplaceable(this.condition)) {
+      return;
+    }
     if (this.narrow) {
       fireEvent(this, "request-close-sidebar");
     }

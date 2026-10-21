@@ -1011,6 +1011,10 @@ export default class HaAutomationActionRow extends LitElement {
   };
 
   private _replaceAction = () => {
+    // The sidebar keeps its callback when YAML turns the action into a block.
+    if (!isActionReplaceable(this.action)) {
+      return;
+    }
     if (this.narrow) {
       fireEvent(this, "request-close-sidebar");
     }
