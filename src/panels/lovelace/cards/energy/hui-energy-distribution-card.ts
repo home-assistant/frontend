@@ -235,10 +235,12 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       undefined
     );
 
-    const hasGrid = hasGridMeter || consumption.total.used_grid > 0;
+    const hasGrid =
+      hasGridMeter ||
+      consumption.total.used_grid + consumption.total.grid_to_battery > 0;
     const totalFromGrid = summedData.from_grid
       ? (summedData.total.from_grid ?? 0)
-      : consumption.total.used_grid;
+      : consumption.total.used_grid + consumption.total.grid_to_battery;
 
     let waterUsage: number | null = null;
     if (hasWater) {

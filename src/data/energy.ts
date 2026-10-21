@@ -1720,6 +1720,19 @@ const computeConsumptionDataPartial = (
   const total = outData.total;
 
   data.timestamps.forEach((t) => {
+    const homeUsed = data.home?.[t];
+    const hasHome = homeUsed !== undefined && homeUsed !== null;
+    const inferredFromGrid =
+      hasHome && !fromGrid
+        ? Math.max(
+            0,
+            homeUsed +
+              (toGrid?.[t] ?? 0) +
+              (toBattery?.[t] ?? 0) -
+              (solarData?.[t] ?? 0) -
+              (fromBattery?.[t] ?? 0)
+          )
+        : undefined;
     const {
       grid_to_battery,
       battery_to_grid,
@@ -1730,22 +1743,22 @@ const computeConsumptionDataPartial = (
       solar_to_battery,
       solar_to_grid,
     } = computeConsumptionSingle({
-      from_grid: fromGrid && (fromGrid[t] ?? 0),
+      from_grid:
+        inferredFromGrid !== undefined
+          ? inferredFromGrid
+          : fromGrid && (fromGrid[t] ?? 0),
       to_grid: toGrid && (toGrid[t] ?? 0),
       solar: solarData && (solarData[t] ?? 0),
       to_battery: toBattery && (toBattery[t] ?? 0),
       from_battery: fromBattery && (fromBattery[t] ?? 0),
     });
-
-    const homeUsed = data.home?.[t];
-    const usage =
-      homeUsed !== undefined && homeUsed !== null
-        ? reconcileUsageWithHome(
-            homeUsed,
-            { used_grid, used_solar, used_battery },
-            !!data.from_grid
-          )
-        : { used_total, used_grid, used_solar, used_battery };
+    const usage = hasHome
+      ? reconcileUsageWithHome(
+          homeUsed,
+          { used_grid, used_solar, used_battery },
+          !!data.from_grid
+        )
+      : { used_total, used_grid, used_solar, used_battery };
 
     outData.used_total[t] = usage.used_total;
     total.used_total += usage.used_total;

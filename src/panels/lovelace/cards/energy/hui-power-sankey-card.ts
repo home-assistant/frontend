@@ -465,6 +465,20 @@ class HuiPowerSankeyCard
       to_battery = Math.abs(net_battery);
     }
 
+    const home = energySourcesByType(prefs).home?.[0];
+    const homePower = home?.stat_rate
+      ? getPowerFromState(this._states[home.stat_rate])
+      : undefined;
+    const hasGridPower = prefs.energy_sources.some(
+      (source) => source.type === "grid" && !!source.stat_rate
+    );
+    if (homePower !== undefined && !hasGridPower) {
+      from_grid = Math.max(
+        0,
+        homePower + to_grid + to_battery - solar - from_battery
+      );
+    }
+
     // Calculate total consumption
     const used_total = from_grid + solar + from_battery - to_grid - to_battery;
 
@@ -520,14 +534,6 @@ class HuiPowerSankeyCard
     // Grid_In -> Consumption
     const used_grid = Math.min(used_total_remaining, grid_remaining);
 
-    const home = energySourcesByType(prefs).home?.[0];
-    const homePower = home?.stat_rate
-      ? getPowerFromState(this._states[home.stat_rate])
-      : undefined;
-
-    const hasGridPower = prefs.energy_sources.some(
-      (source) => source.type === "grid" && !!source.stat_rate
-    );
     const usage =
       homePower === undefined
         ? {
