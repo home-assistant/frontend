@@ -300,6 +300,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._removeOutsideTapListener();
     this._legendPointerCancel();
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
@@ -359,23 +360,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         }
       })
     );
-
-    if (this._isTouchDevice) {
-      // A tapped tooltip otherwise stays until the chart is tapped again
-      const handleOutsidePointerDown = (ev: PointerEvent) => {
-        if (ev.pointerType !== "mouse" && !ev.composedPath().includes(this)) {
-          this._hideTooltip();
-        }
-      };
-      document.addEventListener("pointerdown", handleOutsidePointerDown, true);
-      this._listeners.push(() =>
-        document.removeEventListener(
-          "pointerdown",
-          handleOutsidePointerDown,
-          true
-        )
-      );
-    }
 
     const handleLayoutTransition: EventListener = (ev) => {
       const event = ev as HASSDomEvent<HASSDomEvents["hass-layout-transition"]>;
@@ -843,6 +827,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       // The connection holds a reference to the chart instance, so it cannot
       // outlive it. Focusing the chart again reconnects.
       this._disposeSonification();
+      // the new chart starts with its tooltip hidden, so nothing would remove it
+      this._removeOutsideTapListener();
       if (this.chart) {
         this.chart.dispose();
         this.chart = undefined;
@@ -924,6 +910,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             this._lastTapTime = this._doubleTapped ? undefined : Date.now();
           }
         });
+        // the tooltip only opens on a tap, so a tap anywhere else closes it
+        this.chart.on("showTip", this._addOutsideTapListener);
+        this.chart.on("hideTip", this._removeOutsideTapListener);
       }
 
       this._updateHiddenStatsFromOptions(this.options);
@@ -1707,6 +1696,28 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       ev.stopPropagation();
     }
   }
+
+  private _addOutsideTapListener = () => {
+    document.addEventListener("pointerdown", this._handleOutsideTap, {
+      capture: true,
+      passive: true,
+    });
+  };
+
+  private _removeOutsideTapListener = () => {
+    document.removeEventListener("pointerdown", this._handleOutsideTap, {
+      capture: true,
+    });
+  };
+
+  // A pen does not reliably fire touch events, so this listens to pointer
+  // events. The mouse is left out: echarts already hides the tooltip when it
+  // leaves the chart, even when the tooltip only opens on click.
+  private _handleOutsideTap = (ev: PointerEvent) => {
+    if (ev.pointerType !== "mouse" && !ev.composedPath().includes(this)) {
+      this._hideTooltip();
+    }
+  };
 
   private _hideTooltip() {
     this.chart?.dispatchAction({ type: "hideTip" });
