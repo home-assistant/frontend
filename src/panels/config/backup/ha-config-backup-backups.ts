@@ -12,12 +12,20 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  BACKUP_LOCATIONS_FILTER,
+  BACKUP_TYPE_FILTER,
+  backupsFilterQueryParamConfig,
+  backupsFilterQueryParams,
+  backupsLinkFromUrl,
+} from "../../../common/url/backups-query-params";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
@@ -79,9 +87,6 @@ interface BackupRow extends DataTableRowData, BackupContent {
   agent_ids: string[];
 }
 
-const TYPE_FILTER = "ha-filter-states";
-const LOCATIONS_FILTER = "backup-locations";
-
 @customElement("ha-config-backup-backups")
 class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -113,7 +118,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   })
   private _storageFilters: DataTableFiltersValues = {};
 
-  private _fromUrl = false;
+  @state() private _search = "";
 
   @storage({ key: "backups-table-grouping", state: false, subscribe: false })
   private _activeGrouping?: string = "formatted_type";
@@ -134,37 +139,24 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
   private _overflowBackup?: BackupRow;
 
+  // The filters are kept in the URL by the page, the search, sorting and
+  // grouping by the table
+  private _filterParams = new QueryParamsController(
+    this,
+    backupsFilterQueryParamConfig,
+    {
+      enabled: () => true,
+      navigated: () => this._applyLink(),
+    }
+  );
+
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       this._filters = this._storageFilters;
-      this._setFiltersFromUrl();
+      this._applyLink();
     }
   }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    // Re-apply the type filter from the URL when the page is (re)displayed,
-    // e.g. when navigating back to a cached instance of this page with a
-    // different `type` query param.
-    this._setFiltersFromUrl();
-    window.addEventListener("location-changed", this._locationChanged);
-    window.addEventListener("popstate", this._popState);
-  }
-
-  disconnectedCallback(): void {
-    super.disconnectedCallback();
-    window.removeEventListener("location-changed", this._locationChanged);
-    window.removeEventListener("popstate", this._popState);
-  }
-
-  private _locationChanged = () => {
-    this._setFiltersFromUrl();
-  };
-
-  private _popState = () => {
-    this._setFiltersFromUrl();
-  };
 
   private _columns = memoizeOne(
     (
@@ -197,6 +189,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         filterable: true,
         sortable: true,
         groupable: true,
+        urlName: "type",
       },
       locations: {
         title: localize("ui.panel.config.backup.locations"),
@@ -355,16 +348,19 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
       localize: LocalizeFunc,
       isHassio: boolean
     ): BackupRow[] => {
-      const typeFilter = filters[TYPE_FILTER] as string[] | undefined;
-      const locationFilter = filters[LOCATIONS_FILTER] as string[] | undefined;
+      const typeFilter = filters[BACKUP_TYPE_FILTER];
+      const locationFilter = filters[BACKUP_LOCATIONS_FILTER];
+
       let filteredBackups = backups;
-      if (typeFilter?.length) {
+
+      if (Array.isArray(typeFilter) && typeFilter.length) {
         filteredBackups = filteredBackups.filter((backup) => {
           const type = computeBackupType(backup, isHassio);
           return typeFilter.includes(type);
         });
       }
-      if (locationFilter?.length) {
+
+      if (Array.isArray(locationFilter) && locationFilter.length) {
         filteredBackups = filteredBackups.filter((backup) =>
           Object.keys(backup.agents).some((agentId) =>
             locationFilter.includes(agentId)
@@ -462,6 +458,9 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         @selection-changed=${this._handleSelectionChanged}
         @clear-filter=${this._clearFilter}
         .route=${this.route}
+        sync-url
+        .filter=${this._search}
+        @search-changed=${this._handleSearchChange}
         @row-click=${this._showBackupDetails}
         .columns=${this._columns(this.hass.localize, maxDisplayedAgents)}
         .data=${data}
@@ -518,7 +517,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
 
         <ha-filter-states
           .label=${this.hass.localize("ui.panel.config.backup.backup_type")}
-          .value=${this._filters[TYPE_FILTER]}
+          .value=${this._filters[BACKUP_TYPE_FILTER]}
           .states=${this._states(this.hass.localize, isHassio)}
           @data-table-filter-changed=${this._typeFilterChanged}
           slot="filter-pane"
@@ -526,7 +525,7 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
         ></ha-filter-states>
         <ha-filter-states
           .label=${this.hass.localize("ui.panel.config.backup.locations")}
-          .value=${this._filters[LOCATIONS_FILTER]}
+          .value=${this._filters[BACKUP_LOCATIONS_FILTER]}
           .states=${this._locations(
             this.hass.localize,
             this.agents,
@@ -589,38 +588,49 @@ class HaConfigBackupBackups extends SubscribeMixin(LitElement) {
   );
 
   private _typeFilterChanged(ev) {
-    this._filters = { ...this._filters, [TYPE_FILTER]: ev.detail.value };
-    if (!this._fromUrl) {
-      this._storageFilters = this._filters;
-    }
+    this._filters = { ...this._filters, [BACKUP_TYPE_FILTER]: ev.detail.value };
+    this._storageFilters = this._filters;
+    this._writeFilters();
   }
 
   private _locationsFilterChanged(ev) {
-    this._filters = { ...this._filters, [LOCATIONS_FILTER]: ev.detail.value };
-    if (!this._fromUrl) {
-      this._storageFilters = this._filters;
-    }
+    this._filters = {
+      ...this._filters,
+      [BACKUP_LOCATIONS_FILTER]: ev.detail.value,
+    };
+    this._storageFilters = this._filters;
+    this._writeFilters();
   }
 
   private _clearFilter() {
     this._filters = {};
-    if (!this._fromUrl) {
-      this._storageFilters = {};
-    }
+    this._storageFilters = {};
+    this._writeFilters();
   }
 
-  private _setFiltersFromUrl() {
-    const searchParams = new URLSearchParams(window.location.search);
-    const type = searchParams.get("type");
+  private _handleSearchChange(
+    ev: HASSDomEvent<HASSDomEvents["search-changed"]>
+  ) {
+    this._search = ev.detail.value;
+  }
 
-    if (!type) {
-      return;
+  // Links, like the ones on the backups overview, say in the URL what to show.
+  // The router keeps the page open, so a link can land on it.
+  private _applyLink() {
+    const searchParams = this._filterParams.searchParams();
+    const link = searchParams ? backupsLinkFromUrl(searchParams) : undefined;
+
+    if (link) {
+      this._search = link.search;
+      this._filters = link.filters;
+      this._storageFilters = link.filters;
     }
 
-    this._fromUrl = true;
-    this._filters = {
-      [TYPE_FILTER]: type === "all" ? [] : [type],
-    };
+    this._writeFilters();
+  }
+
+  private _writeFilters() {
+    this._filterParams.write(backupsFilterQueryParams(this._filters));
   }
 
   private get _needsOnboarding() {
