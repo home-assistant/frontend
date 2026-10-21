@@ -117,6 +117,13 @@ const blueprintsTableParams = {
   group: "string?",
 } satisfies Redirect["params"];
 
+// The tags table reads these from the link
+const tagsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -372,6 +379,7 @@ export const getMyRedirects = (): Redirects => ({
   tags: {
     component: "tag",
     redirect: "/config/tags",
+    params: tagsTableParams,
   },
   voice_assistants: {
     redirect: "/config/voice-assistants",
