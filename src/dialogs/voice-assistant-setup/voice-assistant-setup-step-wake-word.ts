@@ -135,7 +135,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
                 )}</ha-alert
               >`
             : this._muteSwitchEntity &&
-                this.hass.states[this._muteSwitchEntity].state === "on"
+                this.hass.states[this._muteSwitchEntity]?.state === "on"
               ? html`<ha-alert
                   alert-type="warning"
                   .title=${this.hass.localize(
