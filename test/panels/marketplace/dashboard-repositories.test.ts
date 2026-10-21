@@ -30,6 +30,8 @@ const repository = (
   ({
     id: name,
     name,
+    full_name: `owner/${name}`,
+    authors: [],
     category: "integration",
     status: "default",
     installed: false,
@@ -157,6 +159,20 @@ describe("filterRepositories", () => {
     );
 
     expect(row.translated_status).toBe("installed");
+  });
+
+  it.each([
+    [["@alice", "@bob"], "owner/Plain", "alice, bob"],
+    [[], "owner/Plain", "owner"],
+    [[], "custom-cards/Plain", ""],
+    [["@custom-cards", "@alice"], "custom-cards/Plain", "alice"],
+  ])("shows %j of %s as made by %j", (authors, fullName, author) => {
+    const [row] = filterRepositories(
+      [repository("Plain", { authors, full_name: fullName })],
+      localize
+    );
+
+    expect(row.author).toBe(author);
   });
 
   it("leaves the list it was handed alone", () => {

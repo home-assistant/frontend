@@ -599,6 +599,14 @@ export class HaMarketplaceDashboard extends LitElement {
             ? html`<div class="secondary">${repository.description}</div>`
             : nothing,
       },
+      author: {
+        ...defaultKeyData,
+        title: localizeFunc("ui.panel.marketplace.column.author"),
+        sortable: true,
+        defaultHidden: true,
+        hidden: false,
+        flex: 2,
+      },
       downloads: {
         ...defaultKeyData,
         title: localizeFunc("ui.panel.marketplace.column.downloads"),
@@ -698,7 +706,6 @@ export class HaMarketplaceDashboard extends LitElement {
         defaultHidden: true,
       },
       description: defaultKeyData,
-      authors: defaultKeyData,
       domain: defaultKeyData,
       full_name: defaultKeyData,
       id: defaultKeyData,

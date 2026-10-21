@@ -12671,6 +12671,7 @@
         },
         "column": {
           "name": "Repository name",
+          "author": "Author",
           "downloads": "Downloads",
           "stars": "Stars",
           "icon": "Icon",

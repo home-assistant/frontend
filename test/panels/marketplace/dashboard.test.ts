@@ -79,8 +79,8 @@ const resetBulkUninstallMocks = () => {
 
 beforeEach(resetBulkUninstallMocks);
 
-const openDashboard = async (
-  repositories: unknown[] = [],
+const openDashboard = async <T extends { id: string; full_name?: string }>(
+  repositories: T[] = [],
   tab: "discover" | "browse" | "installed" = "browse"
 ) => {
   host = document.createElement("div");
@@ -88,6 +88,11 @@ const openDashboard = async (
   document.body.append(host);
   const dashboard = document.createElement("ha-marketplace-dashboard");
   dashboard.tab = tab;
+
+  // Every repository has a full name, the fixtures only set what they test
+  for (const repository of repositories) {
+    repository.full_name ??= "owner/repository";
+  }
   dashboard.marketplace = {
     repositories,
     info: { categories: [] },

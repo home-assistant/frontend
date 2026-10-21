@@ -16,6 +16,7 @@ import {
 import type { DataTableRowData } from "../../../components/data-table/ha-data-table";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
 import type { HomeAssistant } from "../../../types";
+import { isCommunityOrganization, repositoryAuthors } from "../tools/authors";
 import type { MarketplaceTab } from "./ha-marketplace-dashboard";
 
 export const STATUS_ORDER = [
@@ -226,6 +227,10 @@ export const filterRepositories = (
       translated_source: localize(
         `ui.panel.marketplace.repository_source.${repositorySource(repository)}`
       ),
+      // A community organization's name says nothing about who made it
+      author: repositoryAuthors(repository)
+        .filter((author) => !isCommunityOrganization(author))
+        .join(", "),
       // A date as text or 0 without one, only numbers sort among each other
       last_updated_timestamp: timestamp(repository.last_updated),
     }));
