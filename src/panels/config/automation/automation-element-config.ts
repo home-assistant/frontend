@@ -14,10 +14,9 @@ import {
 } from "../../../data/automation";
 import type { ConditionDescriptions } from "../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../data/condition";
-import type { Action, RepeatAction } from "../../../data/script";
+import type { Action } from "../../../data/script";
 import type { TriggerDescriptions } from "../../../data/trigger";
 import { isTriggerList } from "../../../data/trigger";
-import { getRepeatType } from "./action/types/ha-automation-action-repeat";
 
 // Turn a key picked in the add element dialog into a new item.
 export const createTrigger = (
@@ -85,14 +84,13 @@ export const getConditionPickerKey = (
     ? `${DYNAMIC_PREFIX}${condition.condition}`
     : condition.condition;
 
+// Repeat actions are containers and never replaced, so this doesn't need the
+// dialog's per-variant repeat keys.
 export const getActionPickerKey = (action: Action): string | undefined => {
   const type = getAutomationActionType(action);
   if (type === "service") {
     const service = (action as { action?: string }).action;
     return service?.includes(".") ? `${DYNAMIC_PREFIX}${service}` : type;
-  }
-  if (type === "repeat") {
-    return `repeat_${getRepeatType((action as RepeatAction).repeat)}`;
   }
   return type;
 };
@@ -110,12 +108,14 @@ export const isConditionReplaceable = (condition: Condition) =>
   !isLogicalCondition(condition);
 
 export const isActionReplaceable = (action: Action) => {
-  const key = getActionPickerKey(action);
-  if (key === "condition") {
+  const type = getAutomationActionType(action);
+  if (type === "condition") {
     return !isLogicalCondition(action);
   }
+  // Every repeat holds a sequence, also one without a valid repeat type.
   return (
-    key !== undefined &&
-    ![...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(key)
+    type !== undefined &&
+    type !== "repeat" &&
+    ![...ACTION_BUILDING_BLOCKS, ...ACTION_COMBINED_BLOCKS].includes(type)
   );
 };
