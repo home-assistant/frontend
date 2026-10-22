@@ -109,6 +109,14 @@ const scriptsTableParams = {
   blueprint: "string?",
 } satisfies Redirect["params"];
 
+// The blueprints table reads these from the link
+const blueprintsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -334,6 +342,7 @@ export const getMyRedirects = (): Redirects => ({
   blueprints: {
     component: "blueprint",
     redirect: "/config/blueprint/dashboard",
+    params: blueprintsTableParams,
   },
   automations: {
     component: "automation",
