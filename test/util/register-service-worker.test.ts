@@ -60,7 +60,7 @@ describe("supportsServiceWorker", () => {
 
 describe("reloadOnControllerChange", () => {
   let serviceWorker: FakeServiceWorkerContainer;
-  let reload: ReturnType<typeof vi.fn<() => void>>;
+  let reload: ReturnType<typeof vi.fn<() => boolean>>;
 
   const changeController = () => {
     serviceWorker.controller = new FakeWorker() as unknown as ServiceWorker;
@@ -69,7 +69,7 @@ describe("reloadOnControllerChange", () => {
 
   beforeEach(() => {
     serviceWorker = new FakeServiceWorkerContainer();
-    reload = vi.fn<() => void>();
+    reload = vi.fn<() => boolean>(() => true);
   });
 
   it("reloads once when a new worker takes over a controlled page", () => {
@@ -83,6 +83,21 @@ describe("reloadOnControllerChange", () => {
     changeController();
 
     expect(reload).toHaveBeenCalledOnce();
+  });
+
+  it("keeps reloading on later changes while the reload is deferred", () => {
+    serviceWorker.controller = new FakeWorker() as unknown as ServiceWorker;
+    reload.mockReturnValueOnce(false);
+    reloadOnControllerChange(
+      serviceWorker as unknown as ServiceWorkerContainer,
+      reload
+    );
+
+    changeController();
+    changeController();
+    changeController();
+
+    expect(reload).toHaveBeenCalledTimes(2);
   });
 
   it("does not reload for the first install's claim", () => {
@@ -341,8 +356,11 @@ describe("registerServiceWorker", () => {
     vi.advanceTimersByTime(60_000);
     setDirtyState(true);
     setDirtyState(false);
-
     expect(reload).not.toHaveBeenCalled();
+
+    serviceWorker.dispatchEvent(new Event("controllerchange"));
+
+    expect(reload).toHaveBeenCalledOnce();
   });
 
   it("reloads once clean after a deferred controller change without the update toast", async () => {
