@@ -2,8 +2,9 @@ import type {
   ReactiveController,
   ReactiveControllerHost,
 } from "@lit/reactive-element/reactive-controller";
+import type { HASSDomEvent } from "../dom/fire_event";
 import { mainWindow } from "../dom/get_main_window";
-import { replaceCurrentUrl } from "../navigate";
+import { replaceCurrentUrl, type NavigateOptions } from "../navigate";
 import { constructUrlCurrentPath } from "../url/construct-url";
 import { currentPath } from "../url/current-path";
 import {
@@ -122,14 +123,15 @@ export class QueryParamsController<
     return this._options.enabled() && currentPath() === this._path;
   }
 
-  private _navigated = (ev?: Event) => {
+  private _navigated = (ev?: Event | HASSDomEvent<NavigateOptions>) => {
     this._cancelPending();
     // A router sends a path without a page, like /config/automation, on to
     // its default page after the host is connected, so it follows that
     const path = currentPath();
 
     if (
-      ev instanceof CustomEvent &&
+      ev &&
+      "detail" in ev &&
       ev.detail?.replace &&
       path.startsWith(`${this._path}/`)
     ) {

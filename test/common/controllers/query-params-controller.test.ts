@@ -9,6 +9,7 @@ import {
   type Mock,
 } from "vitest";
 import { QueryParamsController } from "../../../src/common/controllers/query-params-controller";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 
 const config = { string: ["search", "sort"] } as const;
 
@@ -137,9 +138,7 @@ describe("QueryParamsController", () => {
 
   it("follows a router sending its path on to the default page", () => {
     setUrl("/page/dashboard?other=1");
-    window.dispatchEvent(
-      new CustomEvent("location-changed", { detail: { replace: true } })
-    );
+    fireEvent(window, "location-changed", { replace: true });
     expect(navigated).toHaveBeenCalledOnce();
 
     controller.write({ search: "abc" });
@@ -148,9 +147,7 @@ describe("QueryParamsController", () => {
 
   it("does not follow a new entry for a page below its own", () => {
     setUrl("/page/detail");
-    window.dispatchEvent(
-      new CustomEvent("location-changed", { detail: { replace: false } })
-    );
+    fireEvent(window, "location-changed", { replace: false });
     controller.write({ search: "abc" });
     expect(currentUrl()).toBe("/page/detail");
   });
