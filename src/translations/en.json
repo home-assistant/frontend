@@ -248,7 +248,9 @@
       "toggle-group": {
         "all_off": "All off",
         "all_on": "All on",
-        "some_on": "{on_count} of {total_count} {on_count, plural, one {on} other {on}}"
+        "some_on": "{on_count} of {total_count} {on_count, plural, one {on} other {on}}",
+        "turn_all_on": "Turn all on",
+        "turn_all_off": "Turn all off"
       },
       "discovered-devices": {
         "title": "Devices discovered",
@@ -9831,7 +9833,9 @@
             "lights": "Lights",
             "other_lights": "Other lights",
             "on": "On",
-            "off": "Off"
+            "off": "Off",
+            "turn_on_area": "Turn on lights in {area}",
+            "turn_off_area": "Turn off lights in {area}"
           },
           "security": {
             "devices": "Devices",
