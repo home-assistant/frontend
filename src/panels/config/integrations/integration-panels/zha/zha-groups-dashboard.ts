@@ -129,6 +129,7 @@ export class ZHAGroupsDashboard extends LitElement {
         @row-click=${this._handleRowClicked}
         clickable
         has-fab
+        sync-url
       >
         <ha-button href="/config/zha/group-add" slot="fab" size="l">
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
