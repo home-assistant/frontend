@@ -20,6 +20,8 @@ const THUMB_INSET = (ZOOM_SLIDER_HEIGHT - THUMB_SIZE) / 2;
 const RANGE_MIN_WIDTH = 2 * (THUMB_INSET + THUMB_SIZE) + ZOOM_SLIDER_HEIGHT;
 // The smallest visible range the thumbs can be dragged to, in percent
 const MIN_RANGE = 1;
+// A second press within this many milliseconds shows the full range again
+const DOUBLE_PRESS_TIME = 300;
 
 type SliderPart = "start" | "end" | "range";
 
@@ -32,6 +34,8 @@ export class HaChartZoomSlider extends LitElement {
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: HomeAssistantInternationalization;
+
+  private _lastPressTime?: number;
 
   private _drag?: {
     pointerId: number;
@@ -122,11 +126,28 @@ export class HaChartZoomSlider extends LitElement {
     return 100 / Math.max(this.clientWidth - RANGE_MIN_WIDTH, 1);
   }
 
-  // Pressing the track beside the visible range centers the range there
+  // Pressing the track beside the visible range centers the range there.
+  // Double pressing anywhere on the slider resets it to the full range; this
+  // times presses itself, as touch browsers do not reliably fire dblclick.
   private _handleTrackPointerDown(
     ev: PointerEvent & HASSDomCurrentTargetEvent<HTMLElement>
   ) {
-    if (ev.button !== 0 || ev.target !== ev.currentTarget) {
+    if (ev.button !== 0 || !ev.isPrimary) {
+      return;
+    }
+    if (
+      this._lastPressTime !== undefined &&
+      ev.timeStamp - this._lastPressTime < DOUBLE_PRESS_TIME
+    ) {
+      this._lastPressTime = undefined;
+      this._drag = undefined;
+      // The press ends here, so the chart does not keep holding the slider open
+      ev.stopPropagation();
+      fireEvent(this, "zoom-slider-reset");
+      return;
+    }
+    this._lastPressTime = ev.timeStamp;
+    if (ev.target !== ev.currentTarget) {
       return;
     }
     const position = (ev.offsetX - RANGE_MIN_WIDTH / 2) * this._getScale();
@@ -287,6 +308,7 @@ export class HaChartZoomSlider extends LitElement {
 declare global {
   interface HASSDomEvents {
     "zoom-slider-changed": { start: number; end: number };
+    "zoom-slider-reset": undefined;
   }
   interface HTMLElementTagNameMap {
     "ha-chart-zoom-slider": HaChartZoomSlider;
