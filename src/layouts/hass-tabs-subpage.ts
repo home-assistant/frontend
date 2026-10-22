@@ -9,6 +9,7 @@ import {
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
 import { canShowPage } from "../common/config/can_show_page";
@@ -16,7 +17,10 @@ import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { getHistoryState, navigate } from "../common/navigate";
-import type { LocalizeFunc } from "../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../common/translations/localize";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
 import { handleBackClick } from "./back-navigation";
 import "../components/ha-icon-button-arrow-prev";
@@ -144,7 +148,13 @@ export class HassTabsSubpage extends LitElement {
       this.showTabs = true;
       return shownTabs.map(
         (page) => html`
-          <a href=${page.path} @click=${this._tabClicked}>
+          <a
+            href=${page.path}
+            aria-current=${ifDefined(
+              page.path === activeTab?.path ? "page" : undefined
+            )}
+            @click=${this._tabClicked}
+          >
             <ha-tab
               .active=${page.path === activeTab?.path}
               .narrow=${this._narrow}
@@ -194,6 +204,14 @@ export class HassTabsSubpage extends LitElement {
       this._entities
     );
     const backPath = sanitizeNavigationPath(this.backPath);
+    const title = this.showTabs
+      ? this._activeTab &&
+        (this._activeTab.translationKey
+          ? (this.localizeFunc || this._i18n.localize)(
+              this._activeTab.translationKey as LocalizeKeys
+            )
+          : this._activeTab.name)
+      : tabs[0];
 
     return html`
       <div class="toolbar ${classMap({ narrow: this._narrow })}">
@@ -212,7 +230,13 @@ export class HassTabsSubpage extends LitElement {
             ${
               this._narrow || !this.showTabs
                 ? html`<div class="main-title">
-                    <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
+                    <slot name="header"
+                      >${
+                        !this.showTabs
+                          ? html`<span aria-hidden="true">${tabs[0]}</span>`
+                          : ""
+                      }</slot
+                    >
                   </div>`
                 : ""
             }
@@ -244,6 +268,7 @@ export class HassTabsSubpage extends LitElement {
             : nothing
         }
         <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
+          ${title ? html`<h1 class="visually-hidden">${title}</h1>` : nothing}
           <slot></slot>
           ${this.hasFab ? html`<div class="fab-bottom-space"></div>` : nothing}
         </div>
@@ -371,6 +396,25 @@ export class HassTabsSubpage extends LitElement {
         #tabbar > a {
           overflow: hidden;
           max-width: 45%;
+          outline: none;
+        }
+
+        #tabbar > a:focus-visible {
+          background-color: color-mix(
+            in srgb,
+            var(--secondary-text-color) 8%,
+            transparent
+          );
+        }
+
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          margin: -1px;
+          overflow: hidden;
+          clip-path: inset(50%);
+          white-space: nowrap;
         }
 
         #tabbar.bottom-bar {
