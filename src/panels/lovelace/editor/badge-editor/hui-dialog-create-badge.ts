@@ -1,14 +1,13 @@
-import { mdiClose, mdiContentPaste } from "@mdi/js";
+import { mdiClose } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-header";
-import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-paste-bar";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -165,12 +164,12 @@ export class HuiCreateDialogBadge
       return nothing;
     }
 
-    return html`<div class="paste-bar">
-      <ha-button appearance="filled" size="s" @click=${this._paste}>
-        <ha-svg-icon slot="start" .path=${mdiContentPaste}></ha-svg-icon>
-        ${this.hass.localize("ui.panel.lovelace.editor.badge_picker.paste_badge")}
-      </ha-button>
-    </div>`;
+    return html`<ha-paste-bar
+      .label=${this.hass.localize(
+        "ui.panel.lovelace.editor.badge_picker.paste_badge"
+      )}
+      @paste-element=${this._paste}
+    ></ha-paste-bar>`;
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {
@@ -200,24 +199,17 @@ export class HuiCreateDialogBadge
         ha-dialog::part(body) {
           overflow: hidden;
         }
-        .paste-bar {
-          display: flex;
-          align-items: center;
-          padding: var(--ha-space-3);
-          border-top: var(--ha-border-width-sm) solid var(--divider-color);
-        }
-
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-dialog {
             --safe-area-inset-bottom: 0px;
           }
-          .paste-bar {
+          ha-paste-bar {
             padding-bottom: max(
               var(--dialog-safe-area-inset-bottom),
               var(--ha-space-3)
             );
           }
-          hui-badge-picker:not(:has(> .paste-bar)) {
+          hui-badge-picker:not(:has(> ha-paste-bar)) {
             --ha-badge-picker-content-padding-bottom: var(
               --dialog-safe-area-inset-bottom
             );
@@ -227,7 +219,7 @@ export class HuiCreateDialogBadge
               --dialog-safe-area-inset-bottom
             );
           }
-          hui-badge-suggestion-picker:not(:has(> .paste-bar)) {
+          hui-badge-suggestion-picker:not(:has(> ha-paste-bar)) {
             --ha-suggestion-picker-tree-padding-bottom: var(
               --dialog-safe-area-inset-bottom
             );
