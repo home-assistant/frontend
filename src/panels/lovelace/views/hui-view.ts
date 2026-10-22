@@ -186,7 +186,7 @@ export class HUIView extends ReactiveElement {
       "ll-delete-card",
       (ev: HASSDomEvent<HASSDomEvents["ll-delete-card"]>) => {
         if (!this.lovelace) return;
-        performDeleteCard(this.hass, this.lovelace, {
+        performDeleteCard(this.hass.localize, this.lovelace, {
           ...ev.detail,
           path: normalizeCardPath(ev.detail.path),
         });
@@ -225,7 +225,7 @@ export class HUIView extends ReactiveElement {
       (ev: HASSDomEvent<HASSDomEvents["ll-copy-card"]>) => {
         const params = this._getCardClipboardParams(ev.detail.path);
         if (params) {
-          performCopy(this.hass, this.lovelace, params);
+          performCopy(this.hass.localize, this.lovelace, params);
         }
       }
     );
@@ -234,7 +234,7 @@ export class HUIView extends ReactiveElement {
       (ev: HASSDomEvent<HASSDomEvents["ll-cut-card"]>) => {
         const params = this._getCardClipboardParams(ev.detail.path);
         if (params) {
-          performCut(this.hass, this.lovelace, params);
+          performCut(this.hass.localize, this.lovelace, params);
         }
       }
     );
@@ -277,7 +277,7 @@ export class HUIView extends ReactiveElement {
       "ll-delete-badge",
       (ev: HASSDomEvent<HASSDomEvents["ll-delete-badge"]>) => {
         if (!this.lovelace) return;
-        performDeleteBadge(this.hass, this.lovelace, ev.detail);
+        performDeleteBadge(this.hass.localize, this.lovelace, ev.detail);
       }
     );
     this.addEventListener(
@@ -285,7 +285,7 @@ export class HUIView extends ReactiveElement {
       (ev: HASSDomEvent<HASSDomEvents["ll-copy-badge"]>) => {
         const params = this._getBadgeClipboardParams(ev.detail.path);
         if (params) {
-          performCopy(this.hass, this.lovelace, params);
+          performCopy(this.hass.localize, this.lovelace, params);
         }
       }
     );
@@ -294,7 +294,7 @@ export class HUIView extends ReactiveElement {
       (ev: HASSDomEvent<HASSDomEvents["ll-cut-badge"]>) => {
         const params = this._getBadgeClipboardParams(ev.detail.path);
         if (params) {
-          performCut(this.hass, this.lovelace, params);
+          performCut(this.hass.localize, this.lovelace, params);
         }
       }
     );

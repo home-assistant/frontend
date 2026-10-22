@@ -1,6 +1,6 @@
 import deepClone from "deep-clone-simple";
 import { fireEvent } from "../../../common/dom/fire_event";
-import type { HomeAssistant } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { Lovelace } from "../types";
 import { LOVELACE_EDIT_TOAST_ID } from "../types";
 import { performDeleteBadge } from "./delete-badge";
@@ -22,25 +22,25 @@ export interface ClipboardActionParams<T> {
 }
 
 export function performCopy<T>(
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
   lovelace: Lovelace,
   { type, config, setClipboard }: ClipboardActionParams<T>
 ): void {
   setClipboard(deepClone(config));
   lovelace.showToast({
     id: LOVELACE_EDIT_TOAST_ID,
-    message: hass.localize(
+    message: localize(
       `ui.panel.lovelace.editor.edit_${type}.copied_to_clipboard`
     ),
   });
 }
 
 export async function performCut<T>(
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
   lovelace: Lovelace,
   { type, path, config, setClipboard }: ClipboardActionParams<T>
 ): Promise<void> {
-  const deleted = await DELETE_FUNCTIONS[type](hass, lovelace, {
+  const deleted = await DELETE_FUNCTIONS[type](localize, lovelace, {
     path,
     silent: true,
   });
@@ -52,13 +52,11 @@ export async function performCut<T>(
   setClipboard(deepClone(config));
   lovelace.showToast({
     id: LOVELACE_EDIT_TOAST_ID,
-    message: hass.localize(
-      `ui.panel.lovelace.editor.edit_${type}.cut_to_clipboard`
-    ),
+    message: localize(`ui.panel.lovelace.editor.edit_${type}.cut_to_clipboard`),
     duration: 8000,
     action: {
       action: () => fireEvent(window, "undo-change"),
-      text: hass.localize("ui.common.undo"),
+      text: localize("ui.common.undo"),
     },
   });
 }
