@@ -1151,7 +1151,8 @@ export class HaConfigEntities extends LitElement {
   private _clearFilter() {
     this._filters = {};
     this._filteredItems = {};
-    this._storageFilters = {};
+    // Not empty, so the cleared status is kept instead of the default
+    this._storageFilters = { "ha-filter-states": [] };
     this._writeFilters();
   }
 
