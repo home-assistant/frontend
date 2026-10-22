@@ -3,8 +3,6 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { listenMediaQuery } from "../../../../common/dom/media_query";
-import { clamp } from "../../../../common/number/clamp";
 import { slugify } from "../../../../common/string/slugify";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
@@ -35,35 +33,7 @@ const VALID_PATH_REGEX = /^[a-zA-Z0-9_-]+$/;
 const INTEGER_REGEX = /^[0-9]+$/;
 
 const MAX_COLUMNS_PRESETS = [1, 2, 3, 4] as const;
-const MAX_COLUMNS_MORE = "more";
-const MIN_CUSTOM_MAX_COLUMNS = MAX_COLUMNS_PRESETS.length + 1;
-const MAX_CUSTOM_MAX_COLUMNS = 10;
-
-interface MaxColumnsFormData {
-  max_columns: string;
-  max_columns_custom?: number;
-}
-
-const maxColumnsToFormData = (maxColumns: number): MaxColumnsFormData => {
-  if (maxColumns <= MAX_COLUMNS_PRESETS.length) {
-    return {
-      max_columns: String(maxColumns),
-      max_columns_custom: MIN_CUSTOM_MAX_COLUMNS,
-    };
-  }
-  return { max_columns: MAX_COLUMNS_MORE, max_columns_custom: maxColumns };
-};
-
-const maxColumnsFromFormData = (data: MaxColumnsFormData): number => {
-  if (data.max_columns !== MAX_COLUMNS_MORE) {
-    return Number(data.max_columns);
-  }
-  return clamp(
-    data.max_columns_custom ?? MIN_CUSTOM_MAX_COLUMNS,
-    MIN_CUSTOM_MAX_COLUMNS,
-    MAX_CUSTOM_MAX_COLUMNS
-  );
-};
+const MAX_COLUMNS_CUSTOM = "custom";
 
 @customElement("hui-view-editor")
 export class HuiViewEditor extends LitElement {
@@ -76,27 +46,14 @@ export class HuiViewEditor extends LitElement {
 
   @state() private _error: Record<string, string> | undefined;
 
-  @state() private _narrow = false;
-
-  private _unsubMql?: () => void;
+  // Stays on while the custom number is typed, so a first digit that matches a
+  // preset does not switch the field away.
+  @state() private _customMaxColumns?: boolean;
 
   private _suggestedPath = false;
 
-  connectedCallback(): void {
-    super.connectedCallback();
-    this._unsubMql = listenMediaQuery("(max-width: 600px)", (matches) => {
-      this._narrow = matches;
-    });
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    this._unsubMql?.();
-    this._unsubMql = undefined;
-  }
-
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, narrow: boolean) =>
+    (localize: LocalizeFunc) =>
       [
         {
           name: "type",
@@ -151,19 +108,24 @@ export class HuiViewEditor extends LitElement {
           schema: [
             {
               name: "max_columns",
+              required: true,
               selector: {
                 select: {
-                  mode: "box",
-                  box_max_columns: narrow ? 3 : 5,
+                  mode: "dropdown",
                   options: [
                     ...MAX_COLUMNS_PRESETS.map((count) => ({
                       value: String(count),
-                      label: String(count),
+                      label: localize(
+                        count === DEFAULT_MAX_COLUMNS
+                          ? "ui.panel.lovelace.editor.edit_view.max_columns_option_default"
+                          : "ui.panel.lovelace.editor.edit_view.max_columns_option",
+                        { count }
+                      ),
                     })),
                     {
-                      value: MAX_COLUMNS_MORE,
+                      value: MAX_COLUMNS_CUSTOM,
                       label: localize(
-                        "ui.panel.lovelace.editor.edit_view.max_columns_more"
+                        "ui.panel.lovelace.editor.edit_view.max_columns_custom_option"
                       ),
                     },
                   ],
@@ -172,11 +134,10 @@ export class HuiViewEditor extends LitElement {
             },
             {
               name: "max_columns_custom",
-              visible: { field: "max_columns", value: MAX_COLUMNS_MORE },
+              visible: { field: "max_columns", value: MAX_COLUMNS_CUSTOM },
               selector: {
                 number: {
-                  min: MIN_CUSTOM_MAX_COLUMNS,
-                  max: MAX_CUSTOM_MAX_COLUMNS,
+                  min: 1,
                   mode: "box",
                 },
               },
@@ -206,6 +167,12 @@ export class HuiViewEditor extends LitElement {
     return this._config.max_columns ?? DEFAULT_MAX_COLUMNS;
   }
 
+  private get _isCustomMaxColumns(): boolean {
+    return (
+      this._customMaxColumns ?? this._maxColumns > MAX_COLUMNS_PRESETS.length
+    );
+  }
+
   get _type(): string {
     return getViewType(this._config);
   }
@@ -213,7 +180,10 @@ export class HuiViewEditor extends LitElement {
   protected render() {
     const data = {
       ...this._config,
-      ...maxColumnsToFormData(this._maxColumns),
+      max_columns: this._isCustomMaxColumns
+        ? MAX_COLUMNS_CUSTOM
+        : String(this._maxColumns),
+      max_columns_custom: this._maxColumns,
       type: this._type,
       theme:
         this._config.theme?.toLowerCase() === "backend-selected"
@@ -224,7 +194,7 @@ export class HuiViewEditor extends LitElement {
     return html`
       <ha-form
         .data=${data}
-        .schema=${this._schema(this._localize, this._narrow)}
+        .schema=${this._schema(this._localize)}
         .computeLabel=${this._computeLabel}
         .computeHelper=${this._computeHelper}
         .computeError=${this._computeError}
@@ -239,15 +209,17 @@ export class HuiViewEditor extends LitElement {
       max_columns: maxColumnsChoice,
       max_columns_custom: maxColumnsCustom,
       ...rest
-    } = ev.detail.value as Omit<LovelaceViewConfig, "max_columns"> &
-      MaxColumnsFormData;
+    } = ev.detail.value as Omit<LovelaceViewConfig, "max_columns"> & {
+      max_columns: string;
+      max_columns_custom?: number;
+    };
     const config: LovelaceViewConfig = rest;
 
-    const maxColumns = maxColumnsFromFormData({
-      max_columns: maxColumnsChoice,
-      max_columns_custom: maxColumnsCustom,
-    });
-    if (maxColumns !== this._maxColumns) {
+    this._customMaxColumns = maxColumnsChoice === MAX_COLUMNS_CUSTOM;
+    const maxColumns = this._customMaxColumns
+      ? maxColumnsCustom
+      : Number(maxColumnsChoice);
+    if (maxColumns && maxColumns >= 1 && maxColumns !== this._maxColumns) {
       config.max_columns = maxColumns;
     } else if (this._config.max_columns !== undefined) {
       config.max_columns = this._config.max_columns;
