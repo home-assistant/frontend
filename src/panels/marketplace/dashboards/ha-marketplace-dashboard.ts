@@ -337,7 +337,6 @@ export class HaMarketplaceDashboard extends LitElement {
     if (this.tab === "discover") {
       return html`<hass-tabs-subpage
         .tabs=${tabs}
-        .localizeFunc=${this._i18n.localize}
         .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"
@@ -371,7 +370,6 @@ export class HaMarketplaceDashboard extends LitElement {
           { number: repositories.length }
         )}
         .isWide=${this.isWide}
-        .localizeFunc=${this._i18n.localize}
         .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"

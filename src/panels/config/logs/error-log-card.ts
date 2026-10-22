@@ -80,8 +80,6 @@ const SEARCH_CONTEXT_LINES = 3;
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
-  @property({ attribute: false }) public localizeFunc?: LocalizeFunc<any>;
-
   @property() public filter = "";
 
   @property() public header?: string;
@@ -159,7 +157,7 @@ class ErrorLogCard extends LitElement {
 
     const hasBoots = this._streamSupported && Array.isArray(this._boots);
 
-    const localize = this.localizeFunc || this._localize;
+    const localize = this._localize;
     const logFileDownloadUnavailableReason =
       !this.provider || this.provider === "core"
         ? getCoreLogFileDownloadUnavailableReason(this._config)
@@ -424,10 +422,7 @@ class ErrorLogCard extends LitElement {
         this.filter)
     ) {
       this._debounceSearch();
-    } else if (
-      (changedProps.has("_localize") || changedProps.has("localizeFunc")) &&
-      this.filter
-    ) {
+    } else if (changedProps.has("_localize") && this.filter) {
       // The hidden lines buttons are built outside Lit, so relabel them.
       this._ansiToHtmlElement?.filterLines(this.filter);
     }
@@ -641,13 +636,10 @@ class ErrorLogCard extends LitElement {
         return;
       }
 
-      this._error = (this.localizeFunc || this._localize)(
-        "ui.panel.config.logs.failed_get_logs",
-        {
-          provider: this.provider,
-          error: extractApiErrorMessage(err),
-        }
-      );
+      this._error = this._localize("ui.panel.config.logs.failed_get_logs", {
+        provider: this.provider,
+        error: extractApiErrorMessage(err),
+      });
     }
   }
 
@@ -660,10 +652,7 @@ class ErrorLogCard extends LitElement {
   }, 150);
 
   private _expandLabel = (count: number) =>
-    (this.localizeFunc || this._localize)(
-      "ui.panel.config.logs.show_hidden_lines",
-      { count }
-    );
+    this._localize("ui.panel.config.logs.show_hidden_lines", { count });
 
   private _debounceScrollToBottom = debounce(() => {
     this._logElement!.scrollTop = this._logElement!.scrollHeight;
