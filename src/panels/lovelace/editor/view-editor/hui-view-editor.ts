@@ -46,9 +46,12 @@ export class HuiViewEditor extends LitElement {
 
   @state() private _error: Record<string, string> | undefined;
 
-  // Stays on while the custom number is typed, so a first digit that matches a
-  // preset does not switch the field away.
+  // Once the custom field is used, it keeps its own value apart from the
+  // config: a first digit matching a preset does not switch the list, and a
+  // cleared or invalid number stays as typed.
   @state() private _customMaxColumns?: boolean;
+
+  @state() private _customMaxColumnsDraft?: number;
 
   private _suggestedPath = false;
 
@@ -183,7 +186,9 @@ export class HuiViewEditor extends LitElement {
       max_columns: this._isCustomMaxColumns
         ? MAX_COLUMNS_CUSTOM
         : String(this._maxColumns),
-      max_columns_custom: this._maxColumns,
+      max_columns_custom: this._customMaxColumns
+        ? this._customMaxColumnsDraft
+        : this._maxColumns,
       type: this._type,
       theme:
         this._config.theme?.toLowerCase() === "backend-selected"
@@ -216,6 +221,7 @@ export class HuiViewEditor extends LitElement {
     const config: LovelaceViewConfig = rest;
 
     this._customMaxColumns = maxColumnsChoice === MAX_COLUMNS_CUSTOM;
+    this._customMaxColumnsDraft = maxColumnsCustom;
     const maxColumns = this._customMaxColumns
       ? maxColumnsCustom
       : Number(maxColumnsChoice);
