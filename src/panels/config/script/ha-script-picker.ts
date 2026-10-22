@@ -308,6 +308,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           extraTemplate: (script) =>
             script.label_entries.length
               ? html`<ha-data-table-labels
+                  clickable
                   @label-clicked=${this._labelClicked}
                   .labels=${script.label_entries}
                 ></ha-data-table-labels>`
