@@ -102,6 +102,7 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
           "ui.panel.config.dhcp.no_devices_found"
         )}
         filter=${this._macAddress || ""}
+        sync-url
       ></hass-tabs-subpage-data-table>
     `;
   }

@@ -37,6 +37,14 @@ const bluetoothTableParams = {
   group: "string?",
 } satisfies Redirect["params"];
 
+// The DHCP, SSDP and Zeroconf discovery tables read these from the link
+const discoveryTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
 // The Marketplace tabs with a table read these from the link
 const marketplaceTableParams = {
   search: "string?",
@@ -294,6 +302,7 @@ export const getMyRedirects = (): Redirects => ({
   config_dhcp: {
     component: "dhcp",
     redirect: "/config/dhcp",
+    params: discoveryTableParams,
   },
   config_energy: {
     component: "energy",
@@ -317,10 +326,12 @@ export const getMyRedirects = (): Redirects => ({
   config_ssdp: {
     component: "ssdp",
     redirect: "/config/ssdp",
+    params: discoveryTableParams,
   },
   config_zeroconf: {
     component: "zeroconf",
     redirect: "/config/zeroconf",
+    params: discoveryTableParams,
   },
   devices: {
     redirect: "/config/devices/dashboard",
