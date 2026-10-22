@@ -27,12 +27,9 @@ const DELETE_FUNCTIONS: Record<ClipboardItemType, DeleteFunction> = {
   badge: performDeleteBadge,
 };
 
-// Bumped on every copy and cut, so a cut that finishes saving after a newer
-// clipboard action does not overwrite it.
-const clipboardVersions: Record<ClipboardItemType, number> = {
-  card: 0,
-  badge: 0,
-};
+// Stops a slow cut from overwriting a newer copy or cut.
+let lastVersion = 0;
+const clipboardVersions = { card: 0, badge: 0 };
 
 export interface ClipboardActionParams<K extends ClipboardItemType> {
   type: K;
@@ -46,7 +43,7 @@ export function performCopy<K extends ClipboardItemType>(
   lovelace: Lovelace,
   { type, config, setClipboard }: ClipboardActionParams<K>
 ): void {
-  clipboardVersions[type]++;
+  clipboardVersions[type] = ++lastVersion;
   setClipboard(deepClone(config));
   lovelace.showToast({
     id: LOVELACE_EDIT_TOAST_ID,
@@ -61,16 +58,17 @@ export async function performCut<K extends ClipboardItemType>(
   lovelace: Lovelace,
   { type, path, config, setClipboard }: ClipboardActionParams<K>
 ): Promise<void> {
-  const version = ++clipboardVersions[type];
+  const version = ++lastVersion;
   const deleted = await DELETE_FUNCTIONS[type](localize, lovelace, {
     path,
     silent: true,
   });
   // The clipboard is only replaced once the item is gone, so a failed cut
   // does not turn into a copy.
-  if (!deleted || clipboardVersions[type] !== version) {
+  if (!deleted || clipboardVersions[type] > version) {
     return;
   }
+  clipboardVersions[type] = version;
   setClipboard(deepClone(config));
   lovelace.showToast({
     id: LOVELACE_EDIT_TOAST_ID,

@@ -79,4 +79,43 @@ describe("performCut", () => {
 
     expect(clipboard).toEqual(CARD_B);
   });
+
+  it("does not let a newer failed cut block an older successful one", async () => {
+    let finishSaveA!: () => void;
+    let failSaveB!: () => void;
+    const lovelaceA = createLovelace(
+      () =>
+        new Promise<void>((resolve) => {
+          finishSaveA = resolve;
+        })
+    );
+    const lovelaceB = createLovelace(
+      () =>
+        new Promise<void>((_resolve, reject) => {
+          failSaveB = () => reject(new Error("save failed"));
+        })
+    );
+    let clipboard: LovelaceCardConfig | undefined;
+    const setClipboard = (config: LovelaceCardConfig) => {
+      clipboard = config;
+    };
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+    const cutA = performCut(
+      localize,
+      lovelaceA,
+      cardParams(CARD_A, 0, setClipboard)
+    );
+    const cutB = performCut(
+      localize,
+      lovelaceB,
+      cardParams(CARD_B, 1, setClipboard)
+    );
+    failSaveB();
+    await cutB;
+    finishSaveA();
+    await cutA;
+
+    expect(clipboard).toEqual(CARD_A);
+  });
 });
