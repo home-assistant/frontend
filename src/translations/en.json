@@ -7581,6 +7581,8 @@
           "rename_dialog": "Edit the name of this config entry",
           "rename_input_label": "Entry name",
           "search": "Search integrations",
+          "filters": "[%key:ui::components::subpage-data-table::filters%]",
+          "filters_disabled_hidden": "Filters, {number} disabled {number, plural,\n one {integration}\n other {integrations}\n} hidden",
           "search_brand": "Search for a brand name",
           "search_helper": "Search for a helper",
           "add_zwave_js_device": "Add Z-Wave device",

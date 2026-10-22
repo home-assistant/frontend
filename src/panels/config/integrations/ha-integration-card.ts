@@ -149,7 +149,7 @@ export class HaIntegrationCard extends LitElement {
               @error=${this._onImageError}
               @load=${this._onImageLoad}
             />
-            <span slot="headline" class="name" role="heading" aria-level="1"
+            <span slot="headline" class="name" role="heading" aria-level="3"
               >${domainName}</span
             >
             ${this._renderSupportingText(status)}
@@ -438,6 +438,10 @@ export class HaIntegrationCard extends LitElement {
           inset: 0;
           background-color: var(--secondary-text-color);
           opacity: 0.08;
+        }
+        ha-card:has(.ripple-anchor:focus-visible) {
+          outline: var(--ha-border-width-md) solid var(--primary-color);
+          outline-offset: 2px;
         }
         ha-row-item {
           --ha-row-item-padding-block: var(--ha-space-4);
