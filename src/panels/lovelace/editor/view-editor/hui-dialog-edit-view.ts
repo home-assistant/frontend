@@ -60,6 +60,7 @@ import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
+import { LOVELACE_EDIT_TOAST_ID } from "../../types";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
@@ -452,6 +453,7 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
       });
     } else {
       this._lovelace!.showToast({
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass!.localize(
           "ui.panel.lovelace.editor.select_dashboard.success"
         ),

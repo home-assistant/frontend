@@ -721,7 +721,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         this.columnOrder = columnOrder;
         this.hiddenColumns = hiddenColumns;
       },
-      localizeFunc: this._i18n.localize,
     });
   }
 
@@ -912,10 +911,13 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           );
           gap: var(--ha-space-4);
           box-sizing: border-box;
-          background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
           overflow-x: auto;
           scrollbar-width: none;
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--ha-panel-background, var(--primary-background-color))
+          );
         }
         ha-input-search {
           flex: 1;

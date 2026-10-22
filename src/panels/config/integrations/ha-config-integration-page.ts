@@ -128,7 +128,7 @@ export const renderConfigEntryError = (
   }
   return html`
     <br />
-    <a href=${`/config/logs?filter=${encodeURIComponent(entry.domain)}`}>
+    <a href=${`/config/logs?search=${encodeURIComponent(entry.domain)}`}>
       ${hass.localize(
         "ui.panel.config.integrations.config_entry.check_the_logs"
       )}
@@ -441,7 +441,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ${
                   this._logInfo
                     ? html`<a
-                          href=${`/config/logs?filter=${encodeURIComponent(this.domain)}`}
+                          href=${`/config/logs?search=${encodeURIComponent(this.domain)}`}
                         >
                           <ha-dropdown-item>
                             <ha-svg-icon

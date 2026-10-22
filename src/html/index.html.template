@@ -164,10 +164,23 @@
     <% } %>
     <script>
         if (!window.latestJS) {
-          window.customPanelJS = "<%= es5CustomPanelJS %>";
-          <% for (const entry of es5EntryJS) { %>
-            _ls("<%= entry %>", true);
-          <% } %>
+          // Below the [legacy] browserslist floor the entry bundles cannot be
+          // parsed, or dialogs cannot open, and nothing would ever leave the
+          // launch screen. Test the features that set the floors: BigInt for
+          // Chrome 67, native <dialog> for Safari 15.4 and Firefox 98. Not
+          // transpiled, so keep this ES5.
+          if (
+            typeof BigInt === "undefined" ||
+            typeof document.createElement("dialog").showModal !== "function"
+          ) {
+            document.getElementById("ha-launch-screen-info-box").textContent =
+              "This browser is too old to run Home Assistant.";
+          } else {
+            window.customPanelJS = "<%= es5CustomPanelJS %>";
+            <% for (const entry of es5EntryJS) { %>
+              _ls("<%= entry %>", true);
+            <% } %>
+          }
         }
     </script>
 

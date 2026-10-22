@@ -7,6 +7,7 @@ import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { consume } from "../../common/decorators/consume";
 import { transform } from "../../common/decorators/transform";
+import { debounce } from "../../common/util/debounce";
 import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
@@ -17,8 +18,6 @@ import "../../components/ha-domain-icon";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
-import "../../components/item/ha-list-item-button";
-import "../../components/list/ha-list-nav";
 import { fetchConfigFlowInProgress } from "../../data/config_flow";
 import {
   apiContext,
@@ -32,6 +31,7 @@ import {
   uiContext,
 } from "../../data/context";
 import type { DataEntryFlowProgress } from "../../data/data_entry_flow";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import {
   fetchESPHomeDeviceCapabilities,
   type ESPHomeDeviceCapabilities,
@@ -44,6 +44,7 @@ import {
   ESPHOME_CAPABILITY_TITLE_KEYS,
   findESPHomeZWaveFlow,
   getESPHomeAudioControls,
+  getESPHomeBluetoothSwitch,
   getESPHomeSetupCapabilityIds,
   isESPHomeSerialConfigured,
   MUSIC_ASSISTANT_DOCS_URL,
@@ -69,8 +70,7 @@ import {
 import { DialogMixin } from "../dialog-mixin";
 import type { ESPHomeDeviceSetupDialogParams } from "./show-dialog-esphome-device-setup";
 
-type SetupView =
-  "checklist" | "zwave-adapters" | "audio-offer" | "audio-working";
+type SetupView = "checklist" | "audio-offer" | "audio-working";
 
 const SERIAL_PORT_TYPE_LABELS: Record<ESPHomeSerialPortType, LocalizeKeys> = {
   TTL: "ui.panel.config.devices.esphome.setup_serial_port_ttl",
@@ -172,6 +172,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   @state() private _installStatus?: string;
 
+  @state() private _switchingBluetooth = false;
+
   /** True until the Sendspin switch state catches up after we turn it on. */
   @state() private _sendspinOptimisticOn = false;
 
@@ -206,12 +208,19 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       this._loadStarted = true;
       this._capabilities = this.params.capabilities;
       this._load();
-    } else if (
-      this._loadStarted &&
-      changedProps.has("_configEntries") &&
-      this._capabilities?.serial_proxies.length
-    ) {
-      this._refreshSerialPorts();
+    } else if (this._loadStarted && this._capabilities?.serial_proxies.length) {
+      if (changedProps.has("_configEntries")) {
+        this._refreshSerialPorts();
+      } else if (
+        changedProps.has("_states") &&
+        this._unavailableEntityCount(this._states) !==
+          this._unavailableEntityCount(
+            changedProps.get("_states") as ContextType<typeof statesContext>
+          )
+      ) {
+        // The device reconnected or dropped, which changes its scanned ports
+        this._refreshSerialPortsDebounced();
+      }
     }
   }
 
@@ -255,9 +264,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       return nothing;
     }
 
-    if (this._view === "zwave-adapters") {
-      return this._renderZWaveAdapters();
-    }
     // Footer hides Install and Skip while this flag is set. Progress is the body.
     if (this._installingAudio || this._view === "audio-working") {
       return this._renderAudioWorking();
@@ -356,6 +362,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                       : nothing
                   }
                   <p>${localize(CAPABILITY_DESCRIPTION_KEYS[id])}</p>
+                  ${id === "bluetooth" ? this._renderBluetoothActions() : nothing}
                   ${id === "audio" ? this._renderAudioActions(status) : nothing}
                   ${
                     id === "connectivity"
@@ -385,6 +392,28 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       >
         <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
       </span>
+    `;
+  }
+
+  private _renderBluetoothActions() {
+    const bluetoothSwitch = this._bluetoothSwitch();
+    if (!bluetoothSwitch) {
+      return nothing;
+    }
+    return html`
+      <div class="actions">
+        <ha-button
+          appearance=${bluetoothSwitch.on ? "plain" : "accent"}
+          .disabled=${this._switchingBluetooth}
+          @click=${this._toggleBluetooth}
+        >
+          ${this._i18n!.localize(
+            bluetoothSwitch.on
+              ? "ui.panel.config.devices.esphome.setup_bluetooth_turn_off"
+              : "ui.panel.config.devices.esphome.setup_bluetooth_turn_on"
+          )}
+        </ha-button>
+      </div>
     `;
   }
 
@@ -536,10 +565,16 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     if (status === "not-started") {
       return html`
         <div class="actions">
-          <ha-button appearance="outlined" @click=${this._showZWaveAdapters}>
+          <ha-button
+            appearance="outlined"
+            href=${documentationUrl(this._hassConfig!, "/connect/zwa-2/")}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
             ${localize(
               "ui.panel.config.devices.esphome.setup_what_are_adapters"
             )}
+            <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-button>
         </div>
       `;
@@ -579,14 +614,25 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     return this._configEntries.find((entry) => entry.entry_id === entryId);
   }
 
-  /** Undefined when USB usage has not been loaded. An empty array is a real scan. */
-  private _serialConsumers(url: string) {
+  /**
+   * Undefined when USB usage has not been loaded. A port of a connected device
+   * is always in the scan, so a missing or absent port means it is offline.
+   * Without the usb integration nothing is scanned, so a missing port says nothing.
+   */
+  private _serialPortUsage(url: string) {
     if (!this._serialPorts) {
       return undefined;
     }
-    return (
-      this._serialPorts.find((port) => port.device === url)?.consumers ?? []
-    );
+    const usage = this._serialPorts.find((port) => port.device === url);
+    return {
+      consumers: usage?.consumers ?? [],
+      offline: usage
+        ? !usage.present
+        : Boolean(
+            this._hassConfig &&
+            isComponentLoaded(this._hassConfig.config, "usb")
+          ),
+    };
   }
 
   private _renderSerialPortList() {
@@ -598,7 +644,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     return html`
       <ul class="ports">
         ${ports.map((port) => {
-          const consumers = this._serialConsumers(port.url);
+          const usage = this._serialPortUsage(port.url);
+          const consumers = usage?.consumers;
           return html`
             <li>
               <span class="port-text">
@@ -619,52 +666,36 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                 }
               </span>
               ${
-                consumers === undefined
+                usage === undefined
                   ? nothing
-                  : consumers.length
+                  : usage.offline
                     ? html`
-                        <span class="chip active">
+                        <span class="chip">
                           ${localize(
-                            "ui.panel.config.devices.esphome.setup_serial_configured"
+                            "ui.panel.config.devices.esphome.setup_serial_offline"
                           )}
                         </span>
                       `
-                    : html`
-                        <ha-button size="s" @click=${this._setupSerialPort}>
-                          ${localize(
-                            "ui.panel.config.devices.esphome.setup_action"
-                          )}
-                        </ha-button>
-                      `
+                    : usage.consumers.length
+                      ? html`
+                          <span class="chip active">
+                            ${localize(
+                              "ui.panel.config.devices.esphome.setup_serial_configured"
+                            )}
+                          </span>
+                        `
+                      : html`
+                          <ha-button size="s" @click=${this._setupSerialPort}>
+                            ${localize(
+                              "ui.panel.config.devices.esphome.setup_action"
+                            )}
+                          </ha-button>
+                        `
               }
             </li>
           `;
         })}
       </ul>
-    `;
-  }
-
-  private _renderZWaveAdapters() {
-    const localize = this._i18n!.localize;
-    return html`
-      <p>${localize("ui.panel.config.devices.esphome.setup_adapters_intro")}</p>
-      <ha-list-nav>
-        <ha-list-item-button
-          href=${documentationUrl(this._hassConfig!, "/connect/zwa-2/")}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <span slot="headline">
-            ${localize("ui.panel.config.devices.esphome.setup_adapter_zwa2")}
-          </span>
-          <span slot="supporting-text">
-            ${localize(
-              "ui.panel.config.devices.esphome.setup_adapter_zwa2_description"
-            )}
-          </span>
-          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-        </ha-list-item-button>
-      </ha-list-nav>
     `;
   }
 
@@ -687,9 +718,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   private _dialogTitle(): string {
     const localize = this._i18n!.localize;
-    if (this._view === "zwave-adapters") {
-      return localize("ui.panel.config.devices.esphome.setup_adapters_title");
-    }
     if (this._installingAudio || this._view === "audio-working") {
       return localize(ESPHOME_CAPABILITY_TITLE_KEYS.audio);
     }
@@ -707,6 +735,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     }
     const audio = this._audioControls();
     const status = deriveESPHomeSetupStatus(this._capabilities, {
+      bluetoothEnabled: this._bluetoothSwitch()?.on,
       mediaPlayerSupported:
         Boolean(this.params.mediaPlayerSupported) || audio.supported,
       sendspinSupported: Boolean(audio.sendspinEntityId),
@@ -800,6 +829,27 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     }
   }
 
+  /** ESPHome marks the entities of a disconnected device unavailable. */
+  private _unavailableEntityCount(
+    states: ContextType<typeof statesContext> | undefined
+  ): number {
+    if (!this.params || !this._entities || !states) {
+      return 0;
+    }
+    const deviceId = this.params.deviceId;
+    return Object.values(this._entities).filter(
+      (entity) =>
+        entity.device_id === deviceId &&
+        states[entity.entity_id]?.state === UNAVAILABLE
+    ).length;
+  }
+
+  private _refreshSerialPortsDebounced = debounce(() => {
+    if (this.isConnected) {
+      this._refreshSerialPorts();
+    }
+  }, 1000);
+
   private async _refreshSerialPorts() {
     const capabilities = this._capabilities;
     if (!capabilities) {
@@ -838,9 +888,35 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     this._error = undefined;
   };
 
-  private _showZWaveAdapters = (ev: Event) => {
+  private _bluetoothSwitch() {
+    if (!this.params) {
+      return undefined;
+    }
+    return getESPHomeBluetoothSwitch(
+      this.params.deviceId,
+      this._entities ? Object.values(this._entities) : [],
+      this._states ?? {}
+    );
+  }
+
+  private _toggleBluetooth = async (ev: Event) => {
     ev.stopPropagation();
-    this._view = "zwave-adapters";
+    const bluetoothSwitch = this._bluetoothSwitch();
+    if (!bluetoothSwitch || !this._api) {
+      return;
+    }
+    this._switchingBluetooth = true;
+    try {
+      await this._api.callService(
+        "switch",
+        bluetoothSwitch.on ? "turn_off" : "turn_on",
+        { entity_id: bluetoothSwitch.entityId }
+      );
+    } catch {
+      // callService already shows the failure toast.
+    } finally {
+      this._switchingBluetooth = false;
+    }
   };
 
   private _audioControls(): ESPHomeAudioControls {
@@ -1215,6 +1291,8 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           font-size: var(--ha-font-size-xs);
           font-weight: var(--ha-font-weight-medium);
           line-height: 1;
+          background: var(--ha-color-fill-neutral-normal-resting);
+          color: var(--primary-text-color);
         }
         .chip.active {
           background: var(--success-color);

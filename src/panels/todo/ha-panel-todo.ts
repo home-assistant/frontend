@@ -83,13 +83,13 @@ class PanelTodo extends LitElement {
     this._mql = window.matchMedia(
       "(max-width: 450px), all and (max-height: 500px)"
     );
-    this._mql.addListener(this._setIsMobile);
+    this._mql.addEventListener("change", this._setIsMobile);
     this.mobile = this._mql.matches;
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._mql?.removeListener(this._setIsMobile!);
+    this._mql?.removeEventListener("change", this._setIsMobile!);
     this._mql = undefined;
   }
 

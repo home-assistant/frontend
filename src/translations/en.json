@@ -240,6 +240,7 @@
         "count_media_playing": "{count} {count, plural,\n one {playing}\n other {playing}\n}",
         "count_maintenance_low_battery_issues": "{count} {count, plural,\n one {low battery}\n other {low batteries}\n}",
         "count_maintenance_issues_unavailable_battery_entities": "{count} {count, plural,\n one {unavailable device}\n other {unavailable devices}\n}",
+        "count_maintenance_problem_issues": "{count} {count, plural,\n one {problem}\n other {problems}\n}",
         "all_maintenance_good": "All good",
         "count_persons_home": "{count} {count, plural,\n one {person}\n other {people}\n} home",
         "nobody_home": "No one home"
@@ -322,6 +323,7 @@
       "update": {
         "installing": "Installing",
         "installing_with_progress": "Installing ({progress}%)",
+        "preparing": "Preparing",
         "up_to_date": "Up-to-date"
       },
       "text": {
@@ -499,6 +501,7 @@
       "submit": "Submit",
       "rename": "Rename",
       "reset": "Reset",
+      "retry": "Retry",
       "search": "[%key:ui::components::data-table::search%]",
       "ok": "OK",
       "yes": "Yes",
@@ -778,6 +781,13 @@
         "time_pattern": "time pattern",
         "homeassistant_stopping": "Home Assistant stopping",
         "homeassistant_starting": "Home Assistant starting",
+        "cause_filter": {
+          "caption": "Triggered by",
+          "automation": "Automations",
+          "script": "Scripts",
+          "integration": "Integrations",
+          "other": "Other"
+        },
         "cause": {
           "by": "By {name}",
           "by_automation": "By automation: {name}",
@@ -848,10 +858,22 @@
         "entity-state-content-picker": {
           "add": "Add",
           "custom_attribute": "Custom attribute"
+        },
+        "entity-toggle": {
+          "toggle": "Toggle {name}",
+          "turn_on": "Turn {name} on",
+          "turn_off": "Turn {name} off"
         }
       },
       "target-picker": {
         "add_target": "Add target",
+        "exclude_target": "Exclude",
+        "remove_exclusion": "Remove exclusion",
+        "removes_count": "Removes {count} {count, plural,\n one {entity}\n other {entities}\n}",
+        "excluded_by": "Excluded by",
+        "exclusions": "Exclusions",
+        "exclusions_no_effect": "Exclusions with no effect",
+        "excluded": "Excluded",
         "remove": "Remove",
         "remove_floor_id": "Remove floor",
         "remove_area_id": "Remove area",
@@ -870,6 +892,8 @@
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
         "entities_count_filtered": "{count}/{total} {total, plural,\n one {entity}\n other {entities}\n}",
+        "entities_count_excluded": "{count} {count, plural,\n one {entity}\n other {entities}\n} ({excluded} excluded)",
+        "entities_count_filtered_excluded": "{count}/{total} {total, plural,\n one {entity}\n other {entities}\n} ({excluded} excluded)",
         "target_details": "Target details",
         "no_targets": "No targets",
         "no_target_found": "No target found for {term}",
@@ -1182,9 +1206,14 @@
         }
       },
       "grid-size-picker": {
-        "reset_default": "Reset to default size",
-        "columns": "Number of columns",
-        "rows": "Number of rows"
+        "columns": "Width",
+        "rows": "Height",
+        "columns_value": "{count, plural, one {# column} other {# columns}}",
+        "rows_value": "{count, plural, one {# row} other {# rows}}",
+        "full_width": "Full width",
+        "fit_content": "Fit content",
+        "enter_precise_mode": "Enter precise mode",
+        "exit_precise_mode": "Exit precise mode"
       },
       "relative_time": {
         "never": "Never"
@@ -1201,6 +1230,9 @@
         "source_history": "Source: History",
         "source_stats": "Source: Long term statistics",
         "zoom_reset": "Reset zoom",
+        "zoom_range": "Visible part of the chart",
+        "zoom_start": "Start of the visible part",
+        "zoom_end": "End of the visible part",
         "expand_legend": "More",
         "collapse_legend": "Less",
         "toggle_visibility": "Toggle visibility",
@@ -1305,6 +1337,10 @@
         "search": {
           "search_placeholder": "Search {name}",
           "no_results": "No results found"
+        },
+        "filter": {
+          "filter_placeholder": "Filter {name}",
+          "no_matches": "No items match your filter"
         },
         "filter_media_type": "Filter by media type",
         "no_items": "No items",
@@ -1534,7 +1570,9 @@
         "lower_temperature_up": "Increase lower target temperature",
         "lower_temperature_down": "Decrease lower target temperature",
         "upper_temperature_up": "Increase upper target temperature",
-        "upper_temperature_down": "Decrease upper target temperature"
+        "upper_temperature_down": "Decrease upper target temperature",
+        "humidity_up": "Increase humidity",
+        "humidity_down": "Decrease humidity"
       },
       "number-buttons": {
         "increment": "Increment",
@@ -1549,7 +1587,23 @@
         "exit_fullscreen": "Exit fullscreen",
         "find_and_replace": "Find and replace",
         "test_on": "Turn on testing",
-        "test_off": "Turn off testing"
+        "test_off": "Turn off testing",
+        "search": {
+          "find": "Find",
+          "select_all": "All",
+          "match_case": "Match case",
+          "regexp": "Regexp",
+          "by_word": "By word",
+          "replace_all": "Replace all",
+          "current_match": "Current match",
+          "on_line": "on line",
+          "replaced_match_on_line": "Replaced match on line {line}",
+          "replaced_matches": "Replaced {count} matches"
+        },
+        "go_to_line": {
+          "label": "Go to line",
+          "go": "Go"
+        }
       },
       "state-class-picker": {
         "state_class": "State class",
@@ -1866,6 +1920,7 @@
             "backups_link": "View backups"
           },
           "install_failed": "The update could not be started: {error}",
+          "supervisor_logs": "[%key:ui::panel::config::logs::supervisor_logs%]",
           "create_backup": {
             "automatic": "Automatic backup before update",
             "automatic_description_last": "Last automatic backup {relative_time}.",
@@ -2020,6 +2075,13 @@
             "edit_title": "[%key:ui::dialogs::more_info_control::cover::favorite_position::edit_title%]",
             "add_title": "[%key:ui::dialogs::more_info_control::cover::favorite_position::add_title%]"
           }
+        },
+        "calendar": {
+          "upcoming_events": "Upcoming events",
+          "no_events": "No events in the next 7 days",
+          "event_retrieval_error": "Could not load events for this calendar",
+          "today": "[%key:ui::components::calendar::today%]",
+          "tomorrow": "[%key:ui::components::selectors::period::periods::tomorrow%]"
         },
         "camera": {
           "download_snapshot": "Download snapshot",
@@ -2661,6 +2723,7 @@
           "title": "Charts",
           "drag_to_zoom": "to zoom in part of a chart",
           "scroll_to_zoom": "to zoom in or out",
+          "scroll_to_pan": "to move through a zoomed-in chart",
           "double_click": "to zoom in on part of the chart",
           "click_legend_solo": "on a chart legend item to show only that series"
         },
@@ -2729,7 +2792,7 @@
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
       "new_version_available": "A new version of the frontend is available. This page will update in {seconds, plural, one {# second} other {# seconds}}.",
-      "new_version_available_reload": "A new version of the frontend is available. It will be applied once you have saved or discarded your changes.",
+      "new_version_available_reload": "A new version of the frontend is available. It will be applied once you have finished what you are working on.",
       "update_now": "Update now",
       "theme_save_failed": "Unable to save theme settings to your user profile.",
       "theme_preferences_unavailable": "Unable to load user profile theme settings.",
@@ -3422,8 +3485,13 @@
           "no_labels": "You don't have any labels",
           "introduction": "Labels can help you organize your areas, devices, and entities. They can be used to filter in the UI, or use them as a target in automations.",
           "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
-          "confirm_remove_title": "Remove label?",
-          "confirm_remove": "Are you sure you want to remove label {label}? It will be removed from all areas, devices, and entities."
+          "confirm_delete_title": "Delete label?",
+          "confirm_delete": "Are you sure you want to delete label {label}? It will be removed from all areas, devices, and entities.",
+          "delete_selected": "Delete selected",
+          "confirm_delete_selected_title": "Delete selected labels?",
+          "confirm_delete_selected": "{count, plural,\n  one {The selected label will be removed from all areas, devices, and entities.}\n  other {The {count} selected labels will be removed from all areas, devices, and entities.}\n}",
+          "delete_failed_title": "Delete failed",
+          "delete_failed": "Some labels could not be deleted. Check system logs for more information."
         },
         "areas": {
           "caption": "Areas",
@@ -4879,6 +4947,11 @@
           "search": "Search logs",
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
+          "no_issues_integration": "No issues found for {integration}",
+          "integration_log_waiting": "[%key:ui::panel::config::integrations::config_entry::live_log::waiting%]",
+          "integration_log_unsupported": "[%key:ui::panel::config::integrations::config_entry::live_log::unsupported%]",
+          "no_matches_showing_all": "Nothing in the recent logs mentions ''{term}'', so all lines are shown.",
+          "show_hidden_lines": "Show {count} hidden {count, plural,\n one {line}\n other {lines}\n}",
           "load_logs": "Load logs",
           "nr_of_lines": "Number of lines",
           "loading_log": "Loading log…",
@@ -4899,6 +4972,7 @@
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This log entry is from a custom integration.",
           "show_full_logs": "Show raw logs",
+          "supervisor_logs": "Supervisor logs",
           "show_condensed_logs": "Show condensed logs",
           "select_number_of_lines": "Select number of lines to download",
           "lines": "Lines",
@@ -5555,7 +5629,9 @@
             "select_target": "Select a target",
             "home": "Home",
             "unassigned": "Unassigned",
-            "time_sun": "Time and sun",
+            "other": "Other",
+            "recently_used": "Recently used",
+            "clear_recently_used": "Clear recently used",
             "blocks": "Blocks",
             "tabs": {
               "target": "By target",
@@ -5592,6 +5668,8 @@
               "template": "Template",
               "device_replaced": "Replaced device",
               "device_replaced_description": "This device was replaced by one or more new devices. Update this automation to use them.",
+              "count_excluded": "({count}, {excluded} excluded)",
+              "excluded": "Excluded from the target",
               "types": {
                 "entity": "[%key:ui::components::target-picker::type::entities%]",
                 "device": "[%key:ui::components::target-picker::type::devices%]",
@@ -5615,12 +5693,17 @@
               "id": "Trigger ID",
               "optional": "Optional",
               "edit_id": "Edit ID",
+              "edit_id_title": "Edit trigger ID",
+              "edit_id_info": "Trigger IDs are generated automatically, so you usually don't need to set one yourself. {link}",
+              "edit_id_learn_more": "Learn more about trigger IDs",
+              "edit_id_placeholder": "e.g. sun_has_set",
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "Re-order",
               "rename": "Rename",
               "cut": "Cut",
               "copy": "Copy",
               "paste": "Paste",
+              "paste_element": "Paste trigger",
               "change_alias": "Rename trigger",
               "alias": "Trigger name",
               "delete": "[%key:ui::common::delete%]",
@@ -5709,7 +5792,13 @@
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
                     "picker": "Triggers when the state of an entity (or attribute) changes.",
-                    "changed": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n}{anyChange, select, \n true { or any attribute} \n other {}\n} changed{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
+                    "changed": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n}{anyChange, select, \n true { or any attribute} \n other {}\n} changed{fromChoice, select, \n fromUsed { from {fromString}}\n fromNotUsed { from any state except {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n toNotUsed { to any state except {toString}}\n null { to any state} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
+                  },
+                  "match_type": {
+                    "choices": {
+                      "is": "Is",
+                      "is_not": "Is not"
+                    }
                   },
                   "for_type": {
                     "choices": {
@@ -5933,6 +6022,7 @@
               "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
               "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
               "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
+              "paste_element": "Paste condition",
               "change_alias": "Rename condition",
               "alias": "Condition name",
               "delete": "[%key:ui::common::delete%]",
@@ -6121,6 +6211,7 @@
               "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
               "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
               "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
+              "paste_element": "Paste action",
               "change_alias": "Rename action",
               "alias": "Action name",
               "enable": "Enable",
@@ -7313,15 +7404,15 @@
             "show_encryption_key": "Show encryption key",
             "encryption_key_title": "ESPHome Encryption Key",
             "encryption_key_description": "This is the encryption key for your ESPHome device. Keep it in a safe place, as you may need it when transferring devices between Home Assistant instances.",
-            "setup_title": "Set up your ESPHome proxy",
+            "setup_title": "Set up your ESPHome device",
             "setup_continue_title": "Continue setup for {name}",
-            "setup_intro": "{count, plural,\n  one {This adapter unlocks one capability in Home Assistant. Set it up now, or come back to this checklist any time.}\n  other {This adapter unlocks {count} simultaneous capabilities in Home Assistant. Set them up now, or come back to this checklist any time.}\n}",
+            "setup_intro": "{count, plural,\n  one {This device unlocks one capability in Home Assistant. Set it up now, or come back to this checklist any time.}\n  other {This device unlocks {count} simultaneous capabilities in Home Assistant. Set them up now, or come back to this checklist any time.}\n}",
             "setup_action": "Set up",
             "setup_later": "Later",
             "setup_learn_more": "Learn more",
             "setup_reminder_remaining": "Set up {count} more {count, plural,\n  one {capability}\n  other {capabilities}\n}",
             "setup_reminder_done": "Everything is set up",
-            "setup_reminder_intro": "{count, plural,\n  one {This adapter unlocks one capability in Home Assistant.}\n  other {This adapter unlocks {count} simultaneous capabilities in Home Assistant.}\n}",
+            "setup_reminder_intro": "{count, plural,\n  one {This device unlocks one capability in Home Assistant.}\n  other {This device unlocks {count} simultaneous capabilities in Home Assistant.}\n}",
             "setup_reminder_done_intro": "{count, plural,\n  one {This capability is configured.}\n  other {All {count} simultaneous capabilities are configured.}\n}",
             "setup_capability_bluetooth_title": "Bluetooth proxy",
             "setup_capability_bluetooth_short": "Extend Bluetooth range",
@@ -7335,6 +7426,8 @@
             "setup_capability_serial_title": "Control a device over serial",
             "setup_capability_serial_short": "AV receivers, amplifiers, and more",
             "setup_capability_serial_description": "Add serial devices into Home Assistant, allowing for control of A/V receivers and multi-zone amplifiers.",
+            "setup_bluetooth_turn_on": "Turn on",
+            "setup_bluetooth_turn_off": "Turn off",
             "setup_audio_music_assistant": "Music Assistant",
             "setup_audio_byline": "By the Open Home Foundation",
             "setup_audio_offer_title": "Enhance your music experience",
@@ -7354,11 +7447,8 @@
             "setup_zwave": "Set up Z-Wave",
             "setup_zwave_configured": "Configured",
             "setup_what_are_adapters": "What is this adapter?",
-            "setup_adapters_title": "Add Z-Wave",
-            "setup_adapters_intro": "Plug a Home Assistant Connect adapter into your proxy's USB port to add a wireless radio:",
-            "setup_adapter_zwa2": "Connect ZWA-2",
-            "setup_adapter_zwa2_description": "Adds a Z-Wave radio.",
             "setup_serial_configured": "Configured",
+            "setup_serial_offline": "Offline",
             "setup_serial_port_ttl": "TTL",
             "setup_serial_port_rs232": "RS-232",
             "setup_serial_port_rs485": "RS-485",
@@ -7533,6 +7623,8 @@
           "rename_dialog": "Edit the name of this config entry",
           "rename_input_label": "Entry name",
           "search": "Search integrations",
+          "filters": "[%key:ui::components::subpage-data-table::filters%]",
+          "filters_disabled_hidden": "Filters, {number} disabled {number, plural,\n one {integration}\n other {integrations}\n} hidden",
           "search_brand": "Search for a brand name",
           "search_helper": "Search for a helper",
           "add_zwave_js_device": "Add Z-Wave device",
@@ -7601,6 +7693,10 @@
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
             "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
+            "attention": {
+              "some": "{attention} of {count} {count, plural,\n  one {entry}\n  other {entries}\n} {state, select,\n  setup_error {failed to set up}\n  setup_retry {failed to set up, retrying}\n  migration_error {failed to migrate}\n  failed_unload {failed to unload}\n  not_loaded {{attention, plural,\n    one {is}\n    other {are}\n  } not loaded}\n  other {{attention, plural,\n    one {needs}\n    other {need}\n  } attention}\n}",
+              "all": "{count} {count, plural,\n  one {entry}\n  other {entries}\n} {state, select,\n  setup_error {failed to set up}\n  setup_retry {failed to set up, retrying}\n  migration_error {failed to migrate}\n  failed_unload {failed to unload}\n  not_loaded {{count, plural,\n    one {is}\n    other {are}\n  } not loaded}\n  other {{count, plural,\n    one {needs}\n    other {need}\n  } attention}\n}"
+            },
             "no_devices_or_entities": "No devices or entities",
             "devices_without_subentry": "Devices that don't belong to a sub-entry",
             "copy": "Copy entry ID",
@@ -9714,6 +9810,17 @@
             "not_loaded": "Usage Prediction integration is not loaded.",
             "no_data": "This place will soon fill up with the entities you use most often, based on your activity."
           },
+          "device": {
+            "no_device": "Select a device to show its entities.",
+            "device_not_found": "This device no longer exists.",
+            "categories": {
+              "control": "[%key:ui::panel::config::devices::entities::control%]",
+              "sensor": "[%key:ui::panel::config::devices::entities::sensor%]",
+              "event": "[%key:ui::panel::config::devices::entities::event%]",
+              "config": "[%key:ui::panel::config::devices::entities::config%]",
+              "diagnostic": "[%key:ui::panel::config::devices::entities::diagnostic%]"
+            }
+          },
           "light": {
             "lights": "Lights",
             "other_lights": "Other lights",
@@ -10183,6 +10290,8 @@
             "delete": "Delete",
             "copy": "Copy",
             "cut": "Cut",
+            "copied_to_clipboard": "Card copied to clipboard",
+            "cut_to_clipboard": "Card cut to clipboard",
             "duplicate": "Duplicate",
             "move": "Move to view",
             "move_before": "Move card before",
@@ -10197,12 +10306,12 @@
             "tab_layout": "Layout",
             "paste_condition": "Paste condition",
             "layout": {
+              "recommended_size": "Use recommended size",
+              "size": "{width} × {height}",
               "full_width": "Full width",
-              "full_width_helper": "Take up the full width of the section whatever its size",
-              "auto_height": "Auto height",
-              "auto_height_helper": "Adjust the card height based on its content",
-              "precise_mode": "Precise mode",
-              "precise_mode_helper": "Change the card width with more precision",
+              "full_width_helper": "Always fill the section, whatever its width",
+              "fit_content": "Fit height to content",
+              "fit_content_helper": "Make the card as tall as its content",
               "no_grid_support": "This card does not fully support resizing yet and may not display correctly with custom sizes."
             }
           },
@@ -10225,6 +10334,8 @@
             "delete": "[%key:ui::panel::lovelace::editor::edit_card::delete%]",
             "copy": "[%key:ui::panel::lovelace::editor::edit_card::copy%]",
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
+            "copied_to_clipboard": "Badge copied to clipboard",
+            "cut_to_clipboard": "Badge cut to clipboard",
             "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
             "tab_config": "[%key:ui::panel::lovelace::editor::edit_card::tab_config%]",
             "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]"
@@ -10273,8 +10384,7 @@
             "automatic": "Automatic section",
             "edit_automatic": "Edit automatic section",
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
-            "paste_above": "Paste above",
-            "paste_below": "Paste below",
+            "paste": "Paste",
             "copied_to_clipboard": "Section copied to clipboard",
             "cut_to_clipboard": "Section cut to clipboard",
             "cut_error": "Error while cutting section",
@@ -10486,7 +10596,8 @@
               "clear_color": "Clear color",
               "clear_color_helper": "Used when the entity isn't in an alert state. The background doesn't pulse.",
               "pulse": "Pulse",
-              "pulse_helper": "Animates the colored background while the entity is in an alert state. When reduced motion is on, the background stays tinted instead."
+              "pulse_helper": "Animates the colored background while the entity is in an alert state. When reduced motion is on, the background stays tinted instead.",
+              "alert_section": "Alert"
             },
             "area": {
               "name": "Area",
@@ -10649,6 +10760,12 @@
               "name": "History graph",
               "description": "This card allows you to display a graph for each of the entities listed.",
               "show_names": "Show entity names",
+              "label_position": "Label position",
+              "label_position_options": {
+                "side": "Beside the graph",
+                "below": "Below each bar"
+              },
+              "label_position_helper": "Applies only to entities shown as bars.",
               "logarithmic_scale": "Logarithmic scale",
               "expand_legend": "Expand legend",
               "min_y_axis": "Y axis minimum",
@@ -11282,6 +11399,10 @@
             "state_filter": "[%key:ui::panel::lovelace::editor::card::picture-elements::state_filter%]"
           },
           "badge": {
+            "alert": {
+              "name": "Alert",
+              "description": "A badge that highlights an entity that needs attention, with an optional color and pulsing background."
+            },
             "entity": {
               "name": "Entity",
               "description": "The Entity badge gives you a quick overview of an entity.",
@@ -11727,6 +11848,29 @@
               "exclude_entities": "Exclude from suggestions",
               "exclude_entities_helper": "These entities will not be suggested based on your activity",
               "hide_empty": "Hide when empty"
+            },
+            "device": {
+              "device_id": "Device",
+              "categories": "Categories",
+              "display": "Display",
+              "display_options": {
+                "tiles": "Tiles",
+                "tiles_description": "One card per entity",
+                "list": "List",
+                "list_description": "All entities in a single card"
+              },
+              "group_by_category": "Group by category",
+              "group_by_category_helper": "Adds a subtitle above each category",
+              "heading": "Heading",
+              "heading_helper": "When shown, the heading includes the battery level",
+              "heading_options": {
+                "none": "No heading",
+                "device": "Device name",
+                "area": "Area and device name"
+              },
+              "entities": "Entities",
+              "exclude_entities": "Exclude entities",
+              "exclude_entities_helper": "Not shown in this section, even if their category is selected"
             },
             "original-states": {
               "areas": "Areas to display",
@@ -12748,6 +12892,7 @@
           },
           "version_installed": "Version {version} installed",
           "version_update": "Version {installed} installed, {version} available",
+          "version_skipped": "Version {installed} installed, {version} skipped",
           "requires_homeassistant": "The newest version needs Home Assistant {version} or newer.",
           "requires_newer_homeassistant": "The newest version needs a newer version of Home Assistant.",
           "earlier_version_hint": "Update Home Assistant, or select an earlier version with Install another version in the menu."
@@ -12768,7 +12913,8 @@
           "pending-upgrade": "Update available",
           "installed": "Installed",
           "new": "New",
-          "default": "Available"
+          "default": "Available",
+          "update_skipped": "Update skipped"
         },
         "menu": {
           "custom_repositories": "Custom repositories",

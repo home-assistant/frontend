@@ -151,7 +151,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   protected domainHooks: EditorDomainHooks<AutomationConfig> = {
     domain: "automation",
     fetchFileConfig: fetchAutomationFileConfig,
-    normalizeConfig: normalizeAutomationConfig,
+    // The YAML editor hides the id and puts it back first, so load it first
+    // too. Otherwise the key order check marks unchanged YAML as dirty.
+    normalizeConfig: (config, report) => {
+      const { id, ...rest } = normalizeAutomationConfig(config, report);
+      return { id, ...rest };
+    },
     checkValidation: () => this._checkValidation(),
   };
 
@@ -713,7 +718,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         ...(initData ? normalizeAutomationConfig(initData) : initData),
       } as AutomationConfig;
       this._initDirtyTracking(
-        { type: "deep" },
+        { type: "deep", compareKeyOrder: true },
         {
           config: baseConfig as AutomationConfig,
           entityRegistryUpdate: this.entityRegistryUpdate,
@@ -731,7 +736,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       getAutomationStateConfig(this.hass, this.entityId).then((c) => {
         this.config = normalizeAutomationConfig(c.config);
         this._initDirtyTracking(
-          { type: "deep" },
+          { type: "deep", compareKeyOrder: true },
           {
             config: this.config,
             entityRegistryUpdate: this.entityRegistryUpdate,
@@ -1216,6 +1221,15 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     } else {
       this.switchUiMode();
     }
+  }
+
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    if (!this._manualEditor?.sidebarOpen) {
+      return {};
+    }
+    return {
+      Escape: () => this._manualEditor?.triggerCloseSidebar(),
+    };
   }
 
   // @ts-ignore

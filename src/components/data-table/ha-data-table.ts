@@ -63,6 +63,8 @@ export interface CollapsedChangedEvent {
 export interface SortingChangedEvent {
   column: string;
   direction: SortingDirection;
+  // Set when a link sorted the table, not the user
+  link?: boolean;
 }
 
 export type SortingDirection = "desc" | "asc" | null;
@@ -1504,7 +1506,10 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table {
-          background-color: var(--data-table-background-color);
+          background: var(
+            --ha-data-table-background,
+            var(--data-table-background-color)
+          );
           border-radius: var(--ha-border-radius-sm);
           border-width: 1px;
           border-style: solid;
@@ -1776,7 +1781,6 @@ export class HaDataTable extends LitElement {
           display: flex;
           align-items: center;
           cursor: pointer;
-          background-color: var(--primary-background-color);
         }
 
         .group-header ha-icon-button {
@@ -1927,7 +1931,10 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__row:has(.group-header) {
-          background-color: var(--primary-background-color);
+          background: var(
+            --ha-data-table-background,
+            var(--primary-background-color)
+          );
         }
 
         .mdc-data-table__table.auto-height .scroller {

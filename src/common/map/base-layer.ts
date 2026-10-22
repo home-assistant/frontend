@@ -70,13 +70,10 @@ export const supportsWebGL2 = (): boolean => {
 
 // The one gate for MapLibre, whether through the Leaflet adapter or the
 // engine `ha-map` drives directly. Its worker is bundled per build target
-// like the rest of it, so wherever the page runs, the worker runs too - with
-// one exception. Babel transpiles everything MapLibre is written in except
-// BigInt literals, which have no ES2017 spelling. A browser without BigInt
-// (Chromium below 67, such as Fire OS 5 tablets) cannot parse the chunk, and
-// a worker that cannot parse never reports back, hence the check up front.
-export const supportsVectorMaps = (): boolean =>
-  supportsWebGL2() && typeof BigInt === "function";
+// like the rest of it, so wherever the page runs, the worker runs too: the
+// legacy floor (Chrome 67 / Safari 15) guarantees the BigInt literals MapLibre
+// uses, which Babel cannot transpile.
+export const supportsVectorMaps = (): boolean => supportsWebGL2();
 
 // The demo has no core to proxy through. OSM sets CORS on its tiles but not on
 // its glyphs, which is why those come from VersaTiles.

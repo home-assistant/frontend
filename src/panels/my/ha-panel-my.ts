@@ -21,6 +21,22 @@ import { documentationUrl } from "../../util/documentation-url";
 // That's why redirects should be sorted with more specific ones first
 // Or else pressing "M" will link to the higher level page.
 
+// The users table reads these from the link
+const usersTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
+// The Bluetooth monitor tables read these from the link
+const bluetoothTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
 // The Marketplace tabs with a table read these from the link
 const marketplaceTableParams = {
   search: "string?",
@@ -29,6 +45,37 @@ const marketplaceTableParams = {
   source: "string?",
   sort: "string?",
   direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
+// The labels table reads these from the link
+const labelsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+} satisfies Redirect["params"];
+
+// The helpers table reads these from the link
+const helpersTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  label: "string?",
+  category: "string?",
+  assistants: "string?",
+} satisfies Redirect["params"];
+
+// The LoRaWAN devices table reads these from the link
+const lorawanDevicesParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  connection: "string?",
 } satisfies Redirect["params"];
 
 export const getMyRedirects = (): Redirects => ({
@@ -150,6 +197,15 @@ export const getMyRedirects = (): Redirects => ({
     component: "thread",
     redirect: "/config/thread",
   },
+  config_lorawan: {
+    component: "lorawan",
+    redirect: "/config/lorawan/overview",
+  },
+  lorawan_devices: {
+    component: "lorawan",
+    redirect: "/config/lorawan/devices",
+    params: lorawanDevicesParams,
+  },
   add_zigbee_device: {
     component: "zha",
     redirect: "/config/zha/add",
@@ -165,10 +221,12 @@ export const getMyRedirects = (): Redirects => ({
   bluetooth_advertisement_monitor: {
     component: "bluetooth",
     redirect: "/config/bluetooth/advertisement-monitor",
+    params: bluetoothTableParams,
   },
   bluetooth_connection_monitor: {
     component: "bluetooth",
     redirect: "/config/bluetooth/connection-monitor",
+    params: bluetoothTableParams,
   },
   bluetooth_visualization: {
     component: "bluetooth",
@@ -226,6 +284,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   labels: {
     redirect: "/config/labels",
+    params: labelsTableParams,
   },
   energy: {
     component: "energy",
@@ -259,6 +318,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   helpers: {
     redirect: "/config/helpers",
+    params: helpersTableParams,
   },
   labs: {
     redirect: "/config/labs",
@@ -277,10 +337,12 @@ export const getMyRedirects = (): Redirects => ({
   lovelace_dashboards: {
     component: "lovelace",
     redirect: "/config/lovelace/dashboards",
+    params: dashboardsTableParams,
   },
   lovelace_resources: {
     component: "lovelace",
     redirect: "/config/lovelace/resources",
+    params: dashboardResourcesTableParams,
   },
   oauth: {
     redirect: "/auth/external/callback",
@@ -301,6 +363,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   users: {
     redirect: "/config/users",
+    params: usersTableParams,
   },
   general: {
     redirect: "/config/general",
@@ -309,6 +372,9 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/logs",
     params: {
       provider: "string?",
+      search: "string?",
+      integration: "string?",
+      raw: "string?",
     },
   },
   repairs: {
@@ -388,6 +454,7 @@ export const getMyRedirects = (): Redirects => ({
   backup_list: {
     component: "backup",
     redirect: "/config/backup/backups",
+    params: backupsTableParams,
   },
   backup_config: {
     component: "backup",
@@ -502,6 +569,16 @@ export const getMyRedirects = (): Redirects => ({
 const getRedirect = (path: string): Redirect | undefined =>
   getMyRedirects()?.[path];
 
+// The backups table reads these from the link
+const backupsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  type: "string?",
+  location: "string?",
+} satisfies Redirect["params"];
+
 export type ParamType = "url" | "string" | "string?";
 
 export type Redirects = Record<string, Redirect>;
@@ -513,6 +590,21 @@ export interface Redirect {
   params?: Record<string, ParamType>;
   optional_params?: Record<string, ParamType>;
 }
+
+// The dashboards table reads these from the link
+const dashboardsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
+// The dashboard resources table reads these from the link
+const dashboardResourcesTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+} satisfies Redirect["params"];
 
 @customElement("ha-panel-my")
 class HaPanelMy extends LitElement {
