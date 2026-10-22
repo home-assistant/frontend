@@ -9,6 +9,9 @@ type RespondParam = Parameters<
   NonNullable<WorkboxPlugin["handlerWillRespond"]>
 >[0];
 type KeyParam = Parameters<NonNullable<WorkboxPlugin["cacheKeyWillBeUsed"]>>[0];
+type CachedParam = Parameters<
+  NonNullable<WorkboxPlugin["cachedResponseWillBeUsed"]>
+>[0];
 
 const CACHE_NAME = "navigation-cache";
 const ORIGIN = "https://ha.example";
@@ -23,6 +26,12 @@ describe("service-worker-navigation", () => {
       request: new Request(`${ORIGIN}${path}`),
       response: new Response(null, { status }),
     } as RespondParam);
+
+  const cacheMatch = (path: string) =>
+    plugin.cachedResponseWillBeUsed!({
+      request: new Request(`${ORIGIN}${path}`),
+      cachedResponse: store.get(`${ORIGIN}${path}`) ?? null,
+    } as CachedParam);
 
   beforeEach(() => {
     store = new Map();
@@ -103,6 +112,28 @@ describe("service-worker-navigation", () => {
     store.set(`${ORIGIN}/local/page.html`, page);
 
     await expect(respond("/local/page.html", 502)).resolves.toBe(page);
+  });
+
+  it("serves the cached root shell when a deep link misses the cache", async () => {
+    const shell = new Response("root");
+    store.set(`${ORIGIN}/`, shell);
+
+    await expect(cacheMatch("/config/devices")).resolves.toBe(shell);
+  });
+
+  it("keeps the cached copy of the path over the root shell", async () => {
+    const page = new Response("history");
+    store.set(`${ORIGIN}/history`, page);
+    store.set(`${ORIGIN}/`, new Response("root"));
+
+    await expect(cacheMatch("/history")).resolves.toBe(page);
+  });
+
+  it("does not use the root shell for a cache miss on a path that has no fallback", async () => {
+    store.set(`${ORIGIN}/`, new Response("root"));
+
+    await expect(cacheMatch("/local/page.html")).resolves.toBeNull();
+    expect(match).not.toHaveBeenCalled();
   });
 
   it("returns the 404 for a path that was never cached", async () => {
