@@ -48,6 +48,13 @@ const marketplaceTableParams = {
   group: "string?",
 } satisfies Redirect["params"];
 
+// The labels table reads these from the link
+const labelsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+} satisfies Redirect["params"];
+
 // The helpers table reads these from the link
 const helpersTableParams = {
   search: "string?",
@@ -277,6 +284,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   labels: {
     redirect: "/config/labels",
+    params: labelsTableParams,
   },
   energy: {
     component: "energy",
