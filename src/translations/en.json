@@ -2042,6 +2042,13 @@
             "add_title": "[%key:ui::dialogs::more_info_control::cover::favorite_position::add_title%]"
           }
         },
+        "calendar": {
+          "upcoming_events": "Upcoming events",
+          "no_events": "No events in the next 7 days",
+          "event_retrieval_error": "Could not load events for this calendar",
+          "today": "[%key:ui::components::calendar::today%]",
+          "tomorrow": "[%key:ui::components::selectors::period::periods::tomorrow%]"
+        },
         "camera": {
           "download_snapshot": "Download snapshot",
           "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
