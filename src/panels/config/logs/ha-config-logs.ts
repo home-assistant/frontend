@@ -1,7 +1,9 @@
+import type { ContextType } from "@lit/context";
 import {
   mdiChevronDown,
   mdiChip,
   mdiDns,
+  mdiFilterVariant,
   mdiPackageVariant,
   mdiPuzzle,
   mdiRadar,
@@ -13,17 +15,40 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { atLeastVersion } from "../../../common/config/version";
-import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { QueryParamsController } from "../../../common/controllers/query-params-controller";
+import { consume } from "../../../common/decorators/consume";
+import type {
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
+import {
+  getHistoryState,
+  navigate,
+  updateHistoryState,
+} from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
-import { extractSearchParam } from "../../../common/url/search-params";
+import { deepEqual } from "../../../common/util/deep-equal";
+import {
+  DEFAULT_LOG_PROVIDER,
+  DEFAULT_LOGS_STATE,
+  logsLinkFromUrl,
+  logsQueryParamConfig,
+  logsQueryParams,
+} from "../../../common/url/logs-query-params";
+import { createQueryString } from "../../../common/url/query-params";
 import "../../../components/ha-app-icon";
 import "../../../components/ha-button";
+import "../../../components/ha-combo-box-item";
+import "../../../components/ha-filter-integrations";
+import "../../../components/ha-filter-pane";
+import "../../../components/ha-filter-pane-chip";
 import "../../../components/ha-generic-picker";
 import type { HaGenericPicker } from "../../../components/ha-generic-picker";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import { manifestsContext } from "../../../data/context";
+import type { DataTableFiltersValue } from "../../../data/data_table_filters";
 import type { LogProvider } from "../../../data/error_log";
 import {
   fetchHassioAddonsInfo,
@@ -37,6 +62,8 @@ import type { HomeAssistant, Route, ValueChangedEvent } from "../../../types";
 import "./error-log-card";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
+
+const NO_INTEGRATIONS: string[] = [];
 
 const logProviders: LogProvider[] = [
   {
@@ -65,6 +92,8 @@ const logProviders: LogProvider[] = [
   },
 ];
 
+const LOGS_HISTORY_STATE = "logsPage";
+
 interface LogProviderPickerItem extends PickerComboBoxItem {
   addon?: HassioAddonInfo;
   hasAppIcon?: boolean;
@@ -80,17 +109,36 @@ export class HaConfigLogs extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _filter = extractSearchParam("filter") || "";
+  @state() private _filter = "";
 
   @state() private _detail = false;
 
   @query("system-log-card") private systemLog?: SystemLogCard;
 
-  @query("ha-generic-picker") private providerPicker?: HaGenericPicker;
+  @query("#provider-picker") private providerPicker?: HaGenericPicker;
 
-  @state() private _selectedLogProvider = "core";
+  @state() private _selectedLogProvider = DEFAULT_LOG_PROVIDER;
+
+  @state() private _integrations: string[] = [];
 
   @state() private _logProviders = logProviders;
+
+  @state() private _showFilters?: boolean;
+
+  @state() private _integrationsExpanded = true;
+
+  @state()
+  @consume({ context: manifestsContext, subscribe: true })
+  private _manifests?: ContextType<typeof manifestsContext>;
+
+  // The add-on providers are only known after loading them, links are applied
+  // once they are
+  private _providersLoaded = false;
+
+  private _queryParams = new QueryParamsController(this, logsQueryParamConfig, {
+    enabled: () => true,
+    navigated: () => this._applyUrl(),
+  });
 
   public connectedCallback() {
     super.connectedCallback();
@@ -105,21 +153,22 @@ export class HaConfigLogs extends LitElement {
     this._init();
   }
 
-  private async _filterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
+  private _filterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
     this._filter = ev.target.value ?? "";
+    this._writeUrl(true);
+  }
+
+  private _flushUrl() {
+    this._queryParams.flush();
   }
 
   protected render(): TemplateResult {
-    const search = html`
-      <div class="search">
-        <ha-input-search
-          appearance="outlined"
-          @input=${this._filterChanged}
-          .value=${this._filter}
-          .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
-        ></ha-input-search>
-      </div>
-    `;
+    const core = this._selectedLogProvider === DEFAULT_LOG_PROVIDER;
+    const integrations = core ? this._integrations : NO_INTEGRATIONS;
+    const filtersShown = core && this._filtersShown();
+    const filtersLabel = this.hass.localize(
+      "ui.components.subpage-data-table.filters"
+    );
 
     const selectedProvider = this._getActiveProvider(this._selectedLogProvider);
 
@@ -134,6 +183,7 @@ export class HaConfigLogs extends LitElement {
           isComponentLoaded(this.hass.config, "hassio") && this._logProviders
             ? html`
                 <ha-generic-picker
+                  id="provider-picker"
                   slot="toolbar-icon"
                   .getItems=${this._getLogProviderItems}
                   value=""
@@ -160,34 +210,81 @@ export class HaConfigLogs extends LitElement {
               `
             : nothing
         }
-        ${search}
-        <div class="content">
+        <div class="main">
           ${
-            this._selectedLogProvider === "core" && !this._detail
-              ? html`
-                  <system-log-card
-                    .hass=${this.hass}
-                    .header=${
-                      this._logProviders.find(
-                        (p) => p.key === this._selectedLogProvider
-                      )!.name
-                    }
-                    .filter=${this._filter}
-                    @switch-log-view=${this._showDetail}
-                  ></system-log-card>
-                `
-              : html`<error-log-card
-                  .header=${
-                    this._logProviders.find(
-                      (p) => p.key === this._selectedLogProvider
-                    )!.name
-                  }
-                  .filter=${this._filter}
-                  .provider=${this._selectedLogProvider}
-                  @switch-log-view=${this._showDetail}
-                  allow-switch
-                ></error-log-card>`
+            filtersShown
+              ? html`<ha-filter-pane
+                  .narrow=${this.narrow}
+                  .count=${this._integrations.length}
+                  @close-filter-pane=${this._closeFilters}
+                  @clear-filter=${this._clearIntegrations}
+                >
+                  <ha-filter-integrations
+                    .narrow=${this.narrow}
+                    .value=${this._integrations}
+                    .expanded=${this._integrationsExpanded}
+                    @data-table-filter-changed=${this._integrationsChanged}
+                    @expanded-changed=${this._integrationsExpandedChanged}
+                  ></ha-filter-integrations>
+                </ha-filter-pane>`
+              : nothing
           }
+          <div class="content-column">
+            <div class="toolbar">
+              ${
+                core && (!filtersShown || this.narrow)
+                  ? html`<ha-filter-pane-chip
+                      .label=${filtersLabel}
+                      .path=${mdiFilterVariant}
+                      .count=${this._integrations.length}
+                      .active=${this._integrations.length > 0}
+                      @click=${this._toggleFilters}
+                    ></ha-filter-pane-chip>`
+                  : nothing
+              }
+              <ha-input-search
+                appearance="outlined"
+                @input=${this._filterChanged}
+                @blur=${this._flushUrl}
+                .value=${this._filter}
+                .placeholder=${this.hass.localize("ui.panel.config.logs.search")}
+              ></ha-input-search>
+            </div>
+            <div class="content">
+              ${
+                core && !this._detail
+                  ? html`
+                      <system-log-card
+                        .hass=${this.hass}
+                        .header=${
+                          this._logProviders.find(
+                            (p) => p.key === this._selectedLogProvider
+                          )!.name
+                        }
+                        .filter=${this._filter}
+                        .integrations=${integrations}
+                        .integrationLoggers=${this._getIntegrationLoggers(
+                          integrations,
+                          this._manifests
+                        )}
+                        @switch-log-view=${this._showDetail}
+                      ></system-log-card>
+                    `
+                  : html`<error-log-card
+                      .header=${
+                        this._logProviders.find(
+                          (p) => p.key === this._selectedLogProvider
+                        )!.name
+                      }
+                      .filter=${this._filter}
+                      .provider=${this._selectedLogProvider}
+                      .integrations=${integrations}
+                      @switch-log-view=${this._showDetail}
+                      allow-switch
+                    ></error-log-card>`
+              }
+            </div>
+          </div>
         </div>
       </hass-subpage>
     `;
@@ -195,6 +292,7 @@ export class HaConfigLogs extends LitElement {
 
   private _showDetail() {
     this._detail = !this._detail;
+    this._writeUrl();
   }
 
   private _openPicker(ev: Event) {
@@ -209,37 +307,128 @@ export class HaConfigLogs extends LitElement {
     }
     this._selectedLogProvider = provider;
     this._filter = "";
-    navigate(`/config/logs?provider=${this._selectedLogProvider}`);
+    this._integrations = [];
+    // Picking another provider is a navigation of its own, so Back returns
+    // to the previous one. Both entries are marked, so going back to one
+    // without params shows the default view instead of keeping the provider.
+    updateHistoryState({ [LOGS_HISTORY_STATE]: true });
+    const search = createQueryString(
+      logsQueryParams({
+        provider,
+        filter: "",
+        integrations: [],
+        raw: this._detail,
+      }),
+      logsQueryParamConfig
+    );
+    navigate(`/config/logs${search ? `?${search}` : ""}`, {
+      data: { [LOGS_HISTORY_STATE]: true },
+    });
+  }
+
+  private _filtersShown(): boolean {
+    return this._showFilters ?? !this.narrow;
+  }
+
+  private _toggleFilters() {
+    this._showFilters = !this._filtersShown();
+  }
+
+  private _closeFilters() {
+    this._showFilters = false;
+  }
+
+  private _integrationsChanged(
+    ev: HASSDomEvent<{ value: DataTableFiltersValue }>
+  ) {
+    ev.stopPropagation();
+    const value = ev.detail.value;
+    this._integrations = Array.isArray(value) ? value : [];
+    this._writeUrl();
+  }
+
+  private _clearIntegrations() {
+    this._integrations = [];
+    this._writeUrl();
+  }
+
+  private _integrationsExpandedChanged(
+    ev: HASSDomEvent<{ expanded: boolean }>
+  ) {
+    this._integrationsExpanded = ev.detail.expanded;
+  }
+
+  private _writeUrl(debounced = false) {
+    this._queryParams.write(
+      logsQueryParams({
+        provider: this._selectedLogProvider,
+        filter: this._filter,
+        integrations: this._integrations,
+        raw: this._detail,
+      }),
+      debounced
+    );
   }
 
   private async _init() {
     if (isComponentLoaded(this.hass.config, "hassio")) {
       await this._getInstalledAddons();
     }
-    const providerKey = extractSearchParam("provider");
-    if (providerKey) {
+    this._providersLoaded = true;
+    this._applyUrl();
+  }
+
+  private _applyUrl() {
+    if (!this._providersLoaded) {
+      return;
+    }
+    const searchParams = this._queryParams.searchParams();
+    if (!searchParams) {
+      return;
+    }
+    const link =
+      logsLinkFromUrl(searchParams) ??
+      (getHistoryState()?.[LOGS_HISTORY_STATE]
+        ? DEFAULT_LOGS_STATE
+        : undefined);
+    if (link) {
       if (
-        isComponentLoaded(this.hass.config, "hassio") &&
-        this._logProviders.find((p) => p.key === providerKey)
+        link.provider !== DEFAULT_LOG_PROVIDER &&
+        !(
+          isComponentLoaded(this.hass.config, "hassio") &&
+          this._logProviders.some((p) => p.key === link.provider)
+        )
       ) {
-        this._selectedLogProvider = providerKey;
-      } else {
-        navigate("/config/logs", { replace: true });
+        this._selectedLogProvider = DEFAULT_LOG_PROVIDER;
+        this._filter = "";
+        this._integrations = [];
+        this._writeUrl();
         showAlertDialog(this, {
           title:
             this.hass.localize("ui.panel.config.logs.provider_not_found") ||
             "Log provider not found",
           text: this.hass.localize(
             "ui.panel.config.logs.provider_not_available",
-            {
-              provider:
-                this._logProviders.find((p) => p.key === providerKey)?.name ||
-                providerKey,
-            }
+            { provider: link.provider }
           ),
         });
+        return;
+      }
+      const loaded = this._getLoadedIntegrations(this.hass.config.components);
+      this._selectedLogProvider = link.provider;
+      this._filter = link.filter;
+      if (link.provider === DEFAULT_LOG_PROVIDER) {
+        this._detail = link.raw;
+      }
+      const integrations = link.integrations.filter((domain) =>
+        loaded.includes(domain)
+      );
+      // A new list restarts the log streams, so keep the current one if equal
+      if (!deepEqual(integrations, this._integrations)) {
+        this._integrations = integrations;
       }
     }
+    this._writeUrl();
   }
 
   private async _getInstalledAddons() {
@@ -261,6 +450,26 @@ export class HaConfigLogs extends LitElement {
       // Ignore, nothing the user can do anyway
     }
   }
+
+  // Integrations that only provide a platform are only listed with it, like
+  // `other.device_tracker`
+  private _getLoadedIntegrations = memoizeOne((components: string[]) => [
+    ...new Set(components.map((component) => component.split(".")[0])),
+  ]);
+
+  private _getIntegrationLoggers = memoizeOne(
+    (
+      integrations: string[],
+      manifests: ContextType<typeof manifestsContext> | undefined
+    ): string[] | undefined =>
+      integrations.length
+        ? integrations.flatMap((domain) => [
+            `homeassistant.components.${domain}`,
+            `custom_components.${domain}`,
+            ...(manifests?.[domain]?.loggers ?? []),
+          ])
+        : undefined
+  );
 
   private _getLogProviderItems = (): LogProviderPickerItem[] =>
     this._logProviders.map((provider) => ({
@@ -351,15 +560,39 @@ export class HaConfigLogs extends LitElement {
         :host {
           user-select: initial;
         }
-        .search {
+        .main {
+          display: flex;
+          height: 100%;
+        }
+        .content-column {
+          flex: 1;
+          min-width: 0;
+          overflow-y: auto;
+        }
+        .toolbar {
           position: sticky;
           top: 0;
           z-index: 2;
-        }
-        .search ha-input-search {
-          padding: var(--ha-space-3);
-          background: var(--sidebar-background-color);
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-4);
+          box-sizing: border-box;
+          height: 56px;
+          padding: 0 var(--ha-space-4);
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--primary-background-color)
+          );
           border-bottom: 1px solid var(--divider-color);
+        }
+        .toolbar ha-input-search {
+          flex: 1;
+        }
+        @media (min-width: 871px) {
+          .toolbar ha-input-search {
+            --ha-input-search-height: 32px;
+            --ha-input-search-border-radius: 10px;
+          }
         }
         .content {
           direction: ltr;
