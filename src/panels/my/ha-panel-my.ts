@@ -78,6 +78,21 @@ const lorawanDevicesParams = {
   connection: "string?",
 } satisfies Redirect["params"];
 
+// The scenes table reads these from the link
+const scenesTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  entity: "string?",
+  label: "string?",
+  category: "string?",
+  assistants: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -311,6 +326,7 @@ export const getMyRedirects = (): Redirects => ({
   scenes: {
     component: "scene",
     redirect: "/config/scene/dashboard",
+    params: scenesTableParams,
   },
   scripts: {
     component: "script",
