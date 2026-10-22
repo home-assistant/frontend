@@ -92,8 +92,7 @@ class DialogZWaveJSUpdateFirmwareNode extends DirtyStateProviderMixin<FirmwareFo
   public showDialog(params: ZWaveJSUpdateFirmwareNodeDialogParams): void {
     this._deviceName = computeDeviceNameDisplay(
       params.device,
-      this.hass!.localize,
-      this.hass!.states
+      this.hass!.localize
     );
     this.device = params.device;
     this._open = true;

@@ -1,3 +1,21 @@
+export type MicrophoneError =
+  "permission_denied" | "not_found" | "in_use" | "unknown";
+
+const microphoneErrorFromName = (name?: string): MicrophoneError => {
+  switch (name) {
+    case "NotAllowedError":
+    case "SecurityError":
+      return "permission_denied";
+    case "NotFoundError":
+    case "OverconstrainedError":
+      return "not_found";
+    case "NotReadableError":
+      return "in_use";
+    default:
+      return "unknown";
+  }
+};
+
 export class AudioRecorder {
   private _active = false;
 
@@ -24,27 +42,27 @@ export class AudioRecorder {
   }
 
   public static get isSupported() {
-    return (
-      window.isSecureContext &&
-      // @ts-ignore-next-line
-      (window.AudioContext || window.webkitAudioContext)
-    );
+    return window.isSecureContext && "AudioContext" in window;
   }
 
-  public async start() {
+  public async start(): Promise<MicrophoneError | undefined> {
     if (!this._context || !this._stream || !this._source || !this._recorder) {
       try {
         await this._createContext();
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error(err);
-        this._active = false;
+        this.close();
+
+        return microphoneErrorFromName(
+          err instanceof DOMException ? err.name : undefined
+        );
       }
     } else {
       this._stream.getTracks()[0].enabled = true;
       await this._context.resume();
       this._active = true;
     }
+
+    return undefined;
   }
 
   public async stop() {
@@ -70,8 +88,8 @@ export class AudioRecorder {
   }
 
   private async _createContext() {
-    // @ts-expect-error webkitAudioContext is not recognized
-    const context = new (AudioContext || webkitAudioContext)();
+    const context = new AudioContext();
+    this._context = context;
     this._stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     // Syntax here must match an item of `parser.worker` in Webpack config in
     // order for module to be parsed and a chunk to be properly created.
@@ -79,7 +97,6 @@ export class AudioRecorder {
       /* webpackChunkName: "recorder-worklet" */
       new URL("./recorder-worklet.js", import.meta.url)
     );
-    this._context = context;
     this._source = this._context.createMediaStreamSource(this._stream);
     this._recorder = new AudioWorkletNode(this._context, "recorder-worklet");
     this._recorder.port.onmessage = (e) => {

@@ -7,7 +7,6 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import "../../components/ha-button";
 import "../../components/ha-card";
 import "../../components/ha-dropdown";
@@ -85,13 +84,13 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
     this._mql = window.matchMedia(
       "(max-width: 450px), all and (max-height: 500px)"
     );
-    this._mql.addListener(this._setIsMobile);
+    this._mql.addEventListener("change", this._setIsMobile);
     this.mobile = this._mql.matches;
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._mql?.removeListener(this._setIsMobile!);
+    this._mql?.removeEventListener("change", this._setIsMobile!);
     this._mql = undefined;
     this._unsubscribeAll();
   }
@@ -381,7 +380,7 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
       const nameList = error_entity_ids
         .map((error_entity_id) =>
           this.hass!.states[error_entity_id]
-            ? computeStateName(this.hass!.states[error_entity_id])
+            ? this.hass!.formatEntityName(this.hass!.states[error_entity_id])
             : error_entity_id
         )
         .join(", ");

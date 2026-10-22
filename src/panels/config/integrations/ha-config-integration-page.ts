@@ -68,6 +68,7 @@ import { QUALITY_SCALE_MAP } from "../../../data/integration_quality_scale";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showSubConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-sub-config-flow";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showLiveLogDialog } from "./show-dialog-live-log";
 import "../../../layouts/hass-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { multiTermSearch } from "../../../resources/fuseMultiTerm";
@@ -161,7 +162,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @state() private _logInfo?: IntegrationLogInfo;
 
   @state() private _searchParms = new URLSearchParams(
-    window.location.hash.substring(1)
+    __DEMO__ ? window.location.search : window.location.hash.substring(1)
   );
 
   @state() private _filter = "";
@@ -176,7 +177,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   private _configEntryRows!: NodeListOf<HaConfigEntryRow>;
 
   private _handleHashChange = () => {
-    this._searchParms = new URLSearchParams(window.location.hash.substring(1));
+    this._searchParms = new URLSearchParams(
+      __DEMO__ ? window.location.search : window.location.hash.substring(1)
+    );
   };
 
   private _domainConfigEntries = memoizeOne(
@@ -728,19 +731,37 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           ${
             this._logInfo?.level === LogSeverity.DEBUG
               ? html`<div class="section">
-                  <ha-alert alert-type="warning">
-                    <ha-svg-icon slot="icon" .path=${mdiBugPlay}></ha-svg-icon>
-                    ${this.hass.localize(
+                  <ha-alert
+                    alert-type="warning"
+                    .narrow=${this.narrow}
+                    .title=${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.debug_logging_enabled"
                     )}
-                    <ha-button
-                      size="s"
-                      variant="warning"
-                      slot="action"
-                      @click=${this._handleDisableDebugLogging}
-                    >
-                      ${this.hass.localize("ui.common.disable")}
-                    </ha-button>
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiBugPlay}></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.debug_logging_enabled_description"
+                    )}
+                    <div slot="action" class="debug-actions">
+                      <ha-button
+                        size="s"
+                        variant="warning"
+                        appearance="plain"
+                        @click=${this._showLiveLog}
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.show_logs"
+                        )}
+                      </ha-button>
+                      <ha-button
+                        size="s"
+                        variant="warning"
+                        appearance="filled"
+                        @click=${this._handleDisableDebugLogging}
+                      >
+                        ${this.hass.localize("ui.common.disable")}
+                      </ha-button>
+                    </div>
                   </ha-alert>
                 </div>`
               : nothing
@@ -998,8 +1019,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     // and we want to avoid unnecessary recomputations when states change
     const sortDevices = (a: DeviceRegistryEntry, b: DeviceRegistryEntry) =>
       caseInsensitiveStringCompare(
-        computeDeviceNameDisplay(a, localize, this.hass.states) || "",
-        computeDeviceNameDisplay(b, localize, this.hass.states) || "",
+        computeDeviceNameDisplay(a, localize) || "",
+        computeDeviceNameDisplay(b, localize) || "",
         language
       );
 
@@ -1247,6 +1268,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     );
   }
 
+  private _showLiveLog() {
+    showLiveLogDialog(this, {
+      domain: this.domain,
+      name: domainToName(this.hass.localize, this.domain, this._manifest),
+    });
+  }
+
   private async _handleDisableDebugLogging(ev: Event) {
     // Stop propagation since otherwise we end up here twice while we await the log level change
     // and trigger two identical debug log downloads.
@@ -1470,6 +1498,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         .section {
           width: 100%;
+        }
+        .debug-actions {
+          display: flex;
+          gap: var(--ha-space-2);
+        }
+        .debug-actions ha-button::part(label) {
+          white-space: nowrap;
         }
         .section-header {
           margin-inline-start: 16px;

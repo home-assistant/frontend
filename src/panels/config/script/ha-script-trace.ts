@@ -130,7 +130,8 @@ export class HaScriptTrace extends LitElement {
       ? this.hass.states[this._entityId]
       : undefined;
 
-    const title = stateObj?.attributes.friendly_name || this._entityId;
+    const title =
+      (stateObj && this.hass.formatEntityName(stateObj)) || this._entityId;
 
     let devButtons: TemplateResult | string = "";
     if (__DEV__) {
@@ -226,7 +227,6 @@ export class HaScriptTrace extends LitElement {
                     .path=${mdiRayEndArrow}
                   ></ha-icon-button>
                   <ha-trace-picker
-                    .hass=${this.hass}
                     .traces=${this._traces}
                     .value=${this._runId}
                     @value-changed=${this._pickTrace}
@@ -681,7 +681,6 @@ export class HaScriptTrace extends LitElement {
           align-items: center;
           justify-content: center;
           height: var(--header-height);
-          background-color: var(--primary-background-color);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;
@@ -692,7 +691,6 @@ export class HaScriptTrace extends LitElement {
           min-height: 0;
           display: flex;
           overflow: hidden;
-          background-color: var(--card-background-color);
         }
 
         :host([narrow]) .main {
@@ -716,7 +714,10 @@ export class HaScriptTrace extends LitElement {
         }
 
         .graph {
-          background-color: var(--primary-background-color);
+          background: var(
+            --ha-panel-background,
+            var(--primary-background-color)
+          );
           box-sizing: border-box;
           display: flex;
           flex-direction: column;
@@ -743,10 +744,13 @@ export class HaScriptTrace extends LitElement {
           min-width: 0;
           min-height: 0;
           overflow-y: auto;
-          background-color: var(--card-background-color);
+          background: var(--ha-card-background, var(--card-background-color));
         }
         ha-tab-group {
-          background-color: var(--primary-background-color);
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--ha-panel-background, var(--primary-background-color))
+          );
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
         }

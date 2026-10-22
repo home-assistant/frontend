@@ -3,6 +3,8 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { ALERT_DOMAINS } from "../../../common/entity/alert_active";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import {
   findEntities,
   generateEntityFilter,
@@ -118,7 +120,7 @@ const processAreasForSecurity = (
     const areaSecurityEntities = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+    const computeTileCard = computeAreaTileCardConfig(hass, false);
 
     for (const entityId of areaSecurityEntities) {
       areaCards.push(computeTileCard(entityId));
@@ -159,7 +161,7 @@ const processUnassignedEntities = (
   );
   const unassignedLights = entities.filter(unassignedFilter);
   const areaCards: LovelaceCardConfig[] = [];
-  const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+  const computeTileCard = computeAreaTileCardConfig(hass, false);
 
   for (const entityId of unassignedLights) {
     areaCards.push(computeTileCard(entityId));
@@ -313,12 +315,16 @@ export class SecurityViewStrategy extends ReactiveElement {
 
     const sidebarSections: LovelaceSectionConfig[] = [];
 
-    const alertCards = config.alert_entities?.map((alertEntity) =>
-      computeSecurityAlertCardConfig(
-        hass.states[alertEntity.entity],
-        alertEntity
+    const alertCards = config.alert_entities
+      ?.filter((alertEntity) =>
+        ALERT_DOMAINS.includes(computeDomain(alertEntity.entity))
       )
-    );
+      .map((alertEntity) =>
+        computeSecurityAlertCardConfig(
+          hass.states[alertEntity.entity],
+          alertEntity
+        )
+      );
 
     if (alertCards?.length) {
       sidebarSections.push({

@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
@@ -37,6 +38,11 @@ interface CombinedStat {
   fiveMin: StatisticValue[];
 }
 
+interface FetchedStats {
+  hour: StatisticValue[];
+  fiveMin: StatisticValue[];
+}
+
 interface AdjustState {
   amount: number | undefined;
 }
@@ -61,9 +67,17 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
 
   @state() private _chosenStat?: StatisticValue;
 
-  private _origAmount?: number;
-
   @state() private _amount?: number;
+
+  private _showingOutliers = false;
+
+  // Adjustments made while the dialog is open, keyed by period. The recorder
+  // processes adjustments asynchronously, so a fetch right after adjusting can
+  // still return the old values.
+  private _adjustedChanges = new Map<string, number>();
+
+  // Incremented for every fetch, so results of outdated fetches are ignored
+  private _fetchId = 0;
 
   private _dateTimeSelector: DateTimeSelector = {
     datetime: {},
@@ -92,7 +106,9 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     const now = new Date();
     now.setMinutes(now.getMinutes() - (now.getMinutes() % 5), 0);
     this._moment = formatISO9075(now);
-    this._fetchStats();
+    this._showingOutliers = false;
+    this._adjustedChanges.clear();
+    this._refreshStats();
 
     const entry = this.hass.entities[params.statistic.statistic_id];
     this._precision = Math.max(entry?.display_precision ?? 0, 2);
@@ -108,10 +124,13 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     this._moment = undefined;
     this._stats5min = undefined;
     this._statsHour = undefined;
-    this._origAmount = undefined;
     this._amount = undefined;
     this._chosenStat = undefined;
+    this._initDirtyTracking({ type: "deep" }, { amount: undefined });
     this._busy = false;
+    this._showingOutliers = false;
+    this._adjustedChanges.clear();
+    this._fetchId++;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -129,7 +148,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         <ha-button
           slot="secondaryAction"
           appearance="plain"
-          @click=${this._fetchOutliers}
+          @click=${this._showOutliers}
         >
           ${this.hass.localize(
             "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.outliers"
@@ -181,9 +200,13 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     if (changedProps.size !== 1 || !changedProps.has("hass")) {
       return true;
     }
-    // We only respond to hass changes if the translations changed
+    // We only respond to hass changes if the translations or locale changed
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    return !oldHass || oldHass.localize !== this.hass.localize;
+    return (
+      !oldHass ||
+      oldHass.localize !== this.hass.localize ||
+      oldHass.locale !== this.hass.locale
+    );
   }
 
   private _renderPickStatistic() {
@@ -207,8 +230,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       );
       const rows: TemplateResult[] = [];
       for (const stat of data) {
-        const multiple = 10 ** this._precision;
-        const growth = Math.round(stat.change! * multiple) / multiple;
+        const digits = this._fractionDigits(stat.change);
         rows.push(html`
           <ha-list-item
             twoline
@@ -216,7 +238,13 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
             .stat=${stat}
             @click=${this._setChosenStatistic}
           >
-            <span>${growth} ${unit}</span>
+            <span
+              >${formatNumber(stat.change!, this.hass.locale, {
+                minimumFractionDigits: digits,
+                maximumFractionDigits: digits,
+              })}
+              ${unit}</span
+            >
             <span slot="secondary">
               ${formatDateTime(
                 new Date(stat.start),
@@ -249,7 +277,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         .label=${this.hass.localize(
           "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.pick_a_time"
         )}
-        .hass=${this.hass}
         .selector=${this._dateTimeSelector}
         .value=${this._moment}
         @value-changed=${this._dateTimeSelectorChanged}
@@ -263,20 +290,71 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     this._initDirtyTracking({ type: "deep" }, { amount: undefined });
   }
 
+  // Small changes get more digits, so they do not round to zero.
+  private _fractionDigits(value: number | null | undefined): number {
+    if (!value || Math.abs(value) >= 10 ** -this._precision) {
+      return this._precision;
+    }
+    return Math.min(Math.ceil(-Math.log10(Math.abs(value))) + 1, 20);
+  }
+
   private _setChosenStatistic(ev) {
     const stat = ev.currentTarget.stat;
-    const multiple = 10 ** this._precision;
+    const multiple = 10 ** this._fractionDigits(stat.change);
     const growth = Math.round(stat.change! * multiple) / multiple;
 
     this._chosenStat = stat;
-    this._origAmount = growth;
     this._amount = growth;
-    this._initDirtyTracking({ type: "deep" }, { amount: this._origAmount });
+    this._initDirtyTracking({ type: "deep" }, { amount: growth });
   }
 
   private _dateTimeSelectorChanged(ev) {
     this._moment = ev.detail.value;
-    this._fetchStats();
+    this._showingOutliers = false;
+    this._refreshStats();
+  }
+
+  private _showOutliers() {
+    this._showingOutliers = true;
+    this._refreshStats();
+  }
+
+  private async _refreshStats(): Promise<void> {
+    const fetchId = ++this._fetchId;
+    this._stats5min = undefined;
+    this._statsHour = undefined;
+    try {
+      const stats = this._showingOutliers
+        ? await this._fetchOutliers()
+        : await this._fetchStats();
+      if (fetchId !== this._fetchId) {
+        return;
+      }
+      this._statsHour = stats.hour;
+      this._stats5min = stats.fiveMin;
+    } catch (err: any) {
+      if (fetchId !== this._fetchId) {
+        return;
+      }
+      this._stats5min = [];
+      this._statsHour = [];
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.error_loading_statistics",
+          { message: err.message || err }
+        ),
+      });
+    }
+  }
+
+  private _applyAdjustedChanges(stats: StatisticValue[]): StatisticValue[] {
+    if (!this._adjustedChanges.size) {
+      return stats;
+    }
+    return stats.map((stat) => {
+      const change = this._adjustedChanges.get(`${stat.start}-${stat.end}`);
+      return change === undefined ? stat : { ...stat, change };
+    });
   }
 
   private _renderAdjustStat() {
@@ -329,8 +407,10 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         .label=${this.hass.localize(
           "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.new_value"
         )}
-        .hass=${this.hass}
-        .selector=${this._amountSelector(unit || undefined, this._precision)}
+        .selector=${this._amountSelector(
+          unit || undefined,
+          this._fractionDigits(this._chosenStat!.change)
+        )}
         .value=${this._amount}
         .disabled=${this._busy}
         @value-changed=${this._amountChanged}
@@ -343,9 +423,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     this._updateDirtyState({ amount: this._amount });
   }
 
-  private async _fetchStats(): Promise<void> {
-    this._stats5min = undefined;
-    this._statsHour = undefined;
+  private async _fetchStats(): Promise<FetchedStats> {
     const statId = this._params!.statistic.statistic_id;
 
     // moment is in format YYYY-MM-DD HH:mm:ss because of selector
@@ -365,13 +443,14 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       [statId],
       "hour"
     );
-    this._statsHour =
-      statId in statsHourData ? statsHourData[statId].slice(0, 5) : [];
+    const statsHour =
+      statId in statsHourData
+        ? this._applyAdjustedChanges(statsHourData[statId].slice(0, 5))
+        : [];
 
     // Can't have 5 min data if no hourly data
-    if (this._statsHour.length === 0) {
-      this._stats5min = [];
-      return;
+    if (statsHour.length === 0) {
+      return { hour: [], fiveMin: [] };
     }
 
     // Search 10 minutes before and 15 minutes after chosen time
@@ -388,13 +467,16 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       "5minute"
     );
 
-    this._stats5min =
-      statId in stats5MinData ? stats5MinData[statId].slice(0, 5) : [];
+    return {
+      hour: statsHour,
+      fiveMin:
+        statId in stats5MinData
+          ? this._applyAdjustedChanges(stats5MinData[statId].slice(0, 5))
+          : [],
+    };
   }
 
-  private async _fetchOutliers(): Promise<void> {
-    this._stats5min = undefined;
-    this._statsHour = undefined;
+  private async _fetchOutliers(): Promise<FetchedStats> {
     const statId = this._params!.statistic.statistic_id;
 
     // Get all the data
@@ -409,9 +491,12 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       "hour"
     );
 
-    const statsHour = statId in statsHourData ? statsHourData[statId] : [];
+    const statsHour =
+      statId in statsHourData
+        ? this._applyAdjustedChanges(statsHourData[statId])
+        : [];
     if (statsHour.length === 0) {
-      return;
+      return { hour: [], fiveMin: [] };
     }
 
     const stats5MinData = await fetchStatistics(
@@ -422,7 +507,10 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       "5minute"
     );
 
-    const stats5Min = statId in stats5MinData ? stats5MinData[statId] : [];
+    const stats5Min =
+      statId in stats5MinData
+        ? this._applyAdjustedChanges(stats5MinData[statId])
+        : [];
     // First datapoint of 5 minute data in the history is always junk since it counts the entire sum
     // as the change, which we don't want here.
     stats5Min.shift();
@@ -483,27 +571,34 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
 
     // Outliers are a possible mix of hour/5minute data, but the distinction
     // is not relevant here, as long as only one array is populated.
-    this._statsHour = statsOutliers;
-    this._stats5min = [];
+    return { hour: statsOutliers, fiveMin: [] };
   }
 
   private async _fixIssue(): Promise<void> {
+    const params = this._params!;
+    const chosenStat = this._chosenStat!;
+    const amount = this._amount!;
     const unit = getDisplayUnit(
       this.hass.states,
-      this._params!.statistic.statistic_id,
-      this._params!.statistic
+      params.statistic.statistic_id,
+      params.statistic
     );
     this._busy = true;
     try {
       await adjustStatisticsSum(
         this.hass,
-        this._params!.statistic.statistic_id,
-        this._chosenStat!.start,
-        this._amount! - this._origAmount!,
+        params.statistic.statistic_id,
+        chosenStat.start,
+        // The shown value is rounded, so compare with the stored value.
+        amount - chosenStat.change!,
         unit || null
       );
     } catch (err: any) {
-      this._busy = false;
+      // Report the error even if the dialog was closed or reopened while
+      // adjusting, but leave the state of a newer invocation alone
+      if (this._params === params) {
+        this._busy = false;
+      }
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.error_sum_adjusted",
@@ -517,8 +612,14 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.sum_adjusted"
       ),
     });
-    this._markDirtyStateClean();
-    this.closeDialog();
+    // The dialog was closed or reopened while adjusting
+    if (this._params !== params) {
+      return;
+    }
+    this._adjustedChanges.set(`${chosenStat.start}-${chosenStat.end}`, amount);
+    this._busy = false;
+    this._clearChosenStatistic();
+    this._refreshStats();
   }
 
   static get styles(): CSSResultGroup {

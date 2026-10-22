@@ -56,6 +56,7 @@ export abstract class HaDeviceAutomationPicker<
   private _localizeDeviceAutomation: (
     localize: LocalizeFunc,
     states: HassEntities,
+    formatEntityName: HomeAssistant["formatEntityName"],
     entityRegistry: EntityRegistryEntry[],
     automation: T
   ) => string;
@@ -105,7 +106,6 @@ export abstract class HaDeviceAutomationPicker<
     const value = this._value;
 
     return html`<ha-generic-picker
-      .hass=${this.hass}
       .label=${this.label}
       .value=${value}
       .disabled=${!this._automations || this._automations.length === 0}
@@ -139,6 +139,7 @@ export abstract class HaDeviceAutomationPicker<
         const primary = this._localizeDeviceAutomation(
           this.hass.localize,
           this.hass.states,
+          this.hass.formatEntityName,
           this._entityReg,
           automation
         );
@@ -186,6 +187,7 @@ export abstract class HaDeviceAutomationPicker<
       ? this._localizeDeviceAutomation(
           this.hass.localize,
           this.hass.states,
+          this.hass.formatEntityName,
           this._entityReg,
           described
         )

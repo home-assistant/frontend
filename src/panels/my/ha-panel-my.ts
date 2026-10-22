@@ -21,6 +21,39 @@ import { documentationUrl } from "../../util/documentation-url";
 // That's why redirects should be sorted with more specific ones first
 // Or else pressing "M" will link to the higher level page.
 
+// The users table reads these from the link
+const usersTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
+// The Marketplace tabs with a table read these from the link
+const marketplaceTableParams = {
+  search: "string?",
+  type: "string?",
+  status: "string?",
+  source: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
+// The helpers table reads these from the link
+const helpersTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  label: "string?",
+  category: "string?",
+  assistants: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -249,6 +282,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   helpers: {
     redirect: "/config/helpers",
+    params: helpersTableParams,
   },
   labs: {
     redirect: "/config/labs",
@@ -291,6 +325,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   users: {
     redirect: "/config/users",
+    params: usersTableParams,
   },
   general: {
     redirect: "/config/general",
@@ -468,6 +503,24 @@ export const getMyRedirects = (): Redirects => ({
       repository: "string",
       category: "string?",
     },
+  },
+  marketplace_discover: {
+    component: "marketplace",
+    redirect: "/marketplace/discover",
+  },
+  marketplace_browse: {
+    component: "marketplace",
+    redirect: "/marketplace/browse",
+    params: marketplaceTableParams,
+  },
+  marketplace_installed: {
+    component: "marketplace",
+    redirect: "/marketplace/installed",
+    params: marketplaceTableParams,
+  },
+  marketplace_repositories: {
+    component: "marketplace",
+    redirect: "/marketplace/repositories",
   },
 });
 

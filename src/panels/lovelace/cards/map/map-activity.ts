@@ -11,6 +11,7 @@ const NO_LOCATION_STATES: string[] = [UNAVAILABLE, UNKNOWN];
 export interface ActivityEntry {
   state: string;
   when: Date;
+  inZones?: string[];
   /** Zone detail: the person that arrived at or left the zone */
   personId?: string;
   arrived?: boolean;
@@ -38,19 +39,22 @@ export const personActivity = (
     if (!changed || entry.lu * 1000 < since) {
       continue;
     }
-    entries.push({ state: entry.s, when: new Date(entry.lu * 1000) });
+    entries.push({
+      state: entry.s,
+      inZones: entry.a?.in_zones,
+      when: new Date(entry.lu * 1000),
+    });
   }
   return entries.reverse().slice(0, ACTIVITY_MAX_ENTRIES);
 };
 
 /**
  * Arrivals at and departures from a zone by the given persons, newest first.
- * A person is in the zone while their state equals zoneState.
  */
 export const zoneActivity = (
   history: HistoryStates | undefined,
   personIds: string[],
-  zoneState: string,
+  zoneId: string,
   since: number
 ): ActivityEntry[] => {
   const entries: ActivityEntry[] = [];
@@ -60,7 +64,7 @@ export const zoneActivity = (
       if (NO_LOCATION_STATES.includes(entry.s)) {
         continue;
       }
-      const inZone = entry.s === zoneState;
+      const inZone = entry.a?.in_zones?.includes(zoneId) ?? false;
       // The first sample is an event only if it is an in-window arrival.
       const isEvent = wasInZone === undefined ? inZone : inZone !== wasInZone;
       if (isEvent && entry.lu * 1000 >= since) {

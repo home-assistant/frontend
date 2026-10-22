@@ -135,7 +135,6 @@ export class HaConfigLogs extends LitElement {
             ? html`
                 <ha-generic-picker
                   slot="toolbar-icon"
-                  .hass=${this.hass}
                   .getItems=${this._getLogProviderItems}
                   value=""
                   .rowRenderer=${this._providerRenderer}
@@ -178,7 +177,6 @@ export class HaConfigLogs extends LitElement {
                   ></system-log-card>
                 `
               : html`<error-log-card
-                  .hass=${this.hass}
                   .header=${
                     this._logProviders.find(
                       (p) => p.key === this._selectedLogProvider

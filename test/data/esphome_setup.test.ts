@@ -11,8 +11,10 @@ import {
   deviceHasMediaPlayerEntity,
   findESPHomeZWaveFlow,
   getESPHomeAudioControls,
+  getESPHomeBluetoothSwitch,
   getESPHomeSetupBannerState,
   getESPHomeSetupCapabilityIds,
+  hasESPHomeBluetoothSwitch,
   hasESPHomeSetupCapabilities,
   hasStartedNonBluetoothESPHomeSetup,
   isESPHomeSerialConfigured,
@@ -89,15 +91,23 @@ describe("hasESPHomeSetupCapabilities", () => {
     expect(hasESPHomeSetupCapabilities(undefined)).toBe(false);
   });
 
-  it("is false for Bluetooth alone", () => {
-    expect(
-      hasESPHomeSetupCapabilities(
-        capabilities({
-          bluetooth_proxy: { supported: true },
-        })
-      )
-    ).toBe(false);
-  });
+  it.each([
+    [true, true, true],
+    [false, true, false],
+    [false, false, true],
+  ])(
+    "is %s for Bluetooth alone with capability %s and switch %s",
+    (expected, supported, bluetoothSwitch) => {
+      expect(
+        hasESPHomeSetupCapabilities(
+          capabilities({
+            bluetooth_proxy: { supported },
+          }),
+          { bluetoothSwitch }
+        )
+      ).toBe(expected);
+    }
+  );
 
   it("is false for a device with no advertised capabilities", () => {
     expect(hasESPHomeSetupCapabilities(capabilities())).toBe(false);
@@ -177,6 +187,18 @@ describe("deriveESPHomeSetupStatus", () => {
     expect(status.audio).toBeUndefined();
     expect(status.connectivity).toBeUndefined();
     expect(status.serial).toBeUndefined();
+  });
+
+  it("marks Bluetooth not started when its switch is off", () => {
+    const status = deriveESPHomeSetupStatus(
+      capabilities({
+        bluetooth_proxy: { supported: true },
+      }),
+      { ...deriveOptions(), bluetoothEnabled: false }
+    );
+
+    expect(status.bluetooth).toBe("not-started");
+    expect(countRemainingESPHomeCapabilities(status)).toBe(1);
   });
 
   it("marks audio from media_player entities, not capabilities", () => {
@@ -398,7 +420,7 @@ describe("isESPHomeSerialConfigured", () => {
 });
 
 describe("remaining capabilities and continue-setup", () => {
-  it("counts incomplete rows and ignores Bluetooth", () => {
+  it("counts incomplete rows, with Bluetooth completed when it has no switch", () => {
     const status = deriveESPHomeSetupStatus(
       capabilities({
         bluetooth_proxy: { supported: true },
@@ -537,6 +559,57 @@ describe("remaining capabilities and continue-setup", () => {
 
     expect(countRemainingESPHomeCapabilities(status)).toBe(1);
     expect(getESPHomeSetupBannerState(status)).toBe("continue");
+  });
+});
+
+describe("getESPHomeBluetoothSwitch", () => {
+  // Another device's switch comes first, so only the device filter skips it
+  const entities = [
+    {
+      entity_id: "switch.other_bluetooth",
+      device_id: "dev-2",
+      platform: "esphome",
+    },
+    {
+      entity_id: "switch.garage_proxy_bluetooth",
+      device_id: "dev-1",
+      platform: "esphome",
+    },
+  ];
+
+  it("finds the device's Bluetooth switch and its state", () => {
+    expect(
+      getESPHomeBluetoothSwitch("dev-1", entities, {
+        "switch.garage_proxy_bluetooth": { state: "off" },
+        "switch.other_bluetooth": { state: "on" },
+      })
+    ).toEqual({ entityId: "switch.garage_proxy_bluetooth", on: false });
+  });
+
+  it("counts an offline switch as present, but not a disabled one", () => {
+    expect(hasESPHomeBluetoothSwitch("dev-1", entities)).toBe(true);
+    expect(
+      hasESPHomeBluetoothSwitch("dev-3", [
+        {
+          entity_id: "switch.disabled_bluetooth",
+          device_id: "dev-3",
+          platform: "esphome",
+          disabled_by: "integration",
+        },
+      ])
+    ).toBe(false);
+  });
+
+  it.each([
+    ["a disabled switch without a state", {}],
+    [
+      "an unavailable switch",
+      { "switch.garage_proxy_bluetooth": { state: "unavailable" } },
+    ],
+  ])("ignores %s", (_name, states) => {
+    expect(
+      getESPHomeBluetoothSwitch("dev-1", entities, states)
+    ).toBeUndefined();
   });
 });
 

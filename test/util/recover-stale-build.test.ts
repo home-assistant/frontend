@@ -316,10 +316,7 @@ describe("recover-stale-build", () => {
         expect(fetchMock).toHaveBeenCalledOnce();
       });
 
-      it("gives up on a stalled request without AbortController", async () => {
-        const abortController = globalThis.AbortController;
-        // @ts-expect-error — emulate a browser at the legacy floor
-        delete globalThis.AbortController;
+      it("gives up on a stalled request", async () => {
         // Never settles on its own; the probe's timeout has to end it.
         fetchMock.mockReturnValue(
           new Promise((resolve) => {
@@ -334,6 +331,8 @@ describe("recover-stale-build", () => {
 
           await expect(recovery).resolves.toBe(false);
           expect(reloadMarker()).toBeNull();
+          // The stalled request was aborted rather than left holding a connection.
+          expect(fetchMock.mock.calls[0][1].signal.aborted).toBe(true);
 
           // The probe was released, so a later failure is not swallowed.
           fetchMock.mockResolvedValue(httpResponse(404));
@@ -343,7 +342,6 @@ describe("recover-stale-build", () => {
           ).resolves.toBe(true);
         } finally {
           vi.useRealTimers();
-          globalThis.AbortController = abortController;
         }
       });
 

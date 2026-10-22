@@ -111,11 +111,7 @@ class HaConfigEntryDeviceRow extends LitElement {
         slot="start"
       ></ha-svg-icon>
       <div slot="headline">
-        ${computeDeviceNameDisplay(
-          device,
-          this.hass.localize,
-          this.hass.states
-        )}
+        ${computeDeviceNameDisplay(device, this.hass.localize)}
       </div>
       <span slot="supporting-text"
         >${supportingText.join(" • ")}
@@ -331,11 +327,7 @@ class HaConfigEntryDeviceRow extends LitElement {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_entry.device.confirm_disable_message",
           {
-            name: computeDeviceNameDisplay(
-              this.device,
-              this.hass.localize,
-              this.hass.states
-            ),
+            name: computeDeviceNameDisplay(this.device, this.hass.localize),
           }
         ),
         destructive: true,

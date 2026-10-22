@@ -11,7 +11,7 @@ import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -486,11 +486,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 >${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.use_device_name"
                 )}
-                (${computeDeviceNameDisplay(
-                  this._device,
-                  this.hass.localize,
-                  this.hass.states
-                )})</span
+                (${computeDeviceNameDisplay(this._device, this.hass.localize)})</span
               >
               <span slot="supporting-text"
                 >${this.hass.localize(
@@ -810,7 +806,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         domain === "calendar"
           ? html`
               <ha-color-picker
-                .hass=${this.hass}
                 .value=${this._calendarColor ?? ""}
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.calendar_color"
@@ -1764,7 +1759,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private get _entryName(): string | undefined {
-    return computeEntityEntryName(this.entry, this.hass.devices);
+    return computeEntityEntryName(this.entry);
   }
 
   private get _useDeviceArea(): boolean {

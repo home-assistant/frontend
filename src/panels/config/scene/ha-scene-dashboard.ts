@@ -25,7 +25,6 @@ import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
@@ -226,6 +225,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       scenes: SceneEntity[],
       entityReg: EntityRegistryEntry[],
       areas: HomeAssistant["areas"],
+      formatEntityName: HomeAssistant["formatEntityName"],
       categoryReg?: CategoryRegistryEntry[],
       labelReg?: LabelRegistryEntry[],
       filteredScenes?: string[] | null
@@ -252,7 +252,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         );
         return {
           ...scene,
-          name: computeStateName(scene),
+          name: formatEntityName(scene),
           area: entityRegEntry?.area_id
             ? areas[entityRegEntry?.area_id]?.name
             : undefined,
@@ -449,6 +449,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
       this.scenes,
       this._entityReg,
       this.hass.areas,
+      this.hass.formatEntityName,
       this._categories,
       this._labels,
       this._filteredSceneEntityIds
@@ -1032,7 +1033,7 @@ ${rejected
     await activateScene(this.hass, scene.entity_id);
     showToast(this, {
       message: this.hass.localize("ui.panel.config.scene.activated", {
-        name: computeStateName(scene),
+        name: this.hass.formatEntityName(scene),
       }),
     });
     forwardHaptic(this, "light");
@@ -1045,7 +1046,7 @@ ${rejected
       ),
       text: this.hass!.localize(
         "ui.panel.config.scene.picker.delete_confirm_text",
-        { name: computeStateName(scene) }
+        { name: this.hass.formatEntityName(scene) }
       ),
       confirmText: this.hass!.localize("ui.common.delete"),
       dismissText: this.hass!.localize("ui.common.cancel"),

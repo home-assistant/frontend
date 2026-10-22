@@ -5,19 +5,20 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
+import { fireEvent } from "../../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-svg-icon";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceBadgeConfig } from "../../../data/lovelace/config/badge";
-import { ensureBadgeConfig } from "../../../data/lovelace/config/badge";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type {
   LovelaceViewConfig,
   LovelaceViewRawConfig,
 } from "../../../data/lovelace/config/view";
+import { normalizeViewConfig } from "../../../data/lovelace/config/normalize";
 import { isStrategyView } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import {
@@ -68,7 +69,8 @@ declare global {
     "ll-edit-card": { path: LovelacePath };
     "ll-delete-card": DeleteCardParams;
     "ll-duplicate-card": { path: LovelacePath };
-    "ll-copy-card": { path: LovelacePath };
+    "ll-copy-card": { path: LovelacePath; silent?: boolean };
+    "ll-cut-card": { path: LovelacePath };
     "ll-create-badge": { path: LovelacePath };
     "ll-edit-badge": { path: LovelacePath };
     "ll-delete-badge": DeleteBadgeParams;
@@ -79,6 +81,7 @@ declare global {
     "ll-delete-card": HASSDomEvent<HASSDomEvents["ll-delete-card"]>;
     "ll-duplicate-card": HASSDomEvent<HASSDomEvents["ll-duplicate-card"]>;
     "ll-copy-card": HASSDomEvent<HASSDomEvents["ll-copy-card"]>;
+    "ll-cut-card": HASSDomEvent<HASSDomEvents["ll-cut-card"]>;
     "ll-create-badge": HASSDomEvent<HASSDomEvents["ll-create-badge"]>;
     "ll-edit-badge": HASSDomEvent<HASSDomEvents["ll-edit-badge"]>;
     "ll-delete-badge": HASSDomEvent<HASSDomEvents["ll-delete-badge"]>;
@@ -216,6 +219,42 @@ export class HUIView extends ReactiveElement {
           return;
         }
         this._clipboard = deepClone(cardConfig);
+
+        if (ev.detail.silent) {
+          return;
+        }
+
+        this.lovelace.showToast({
+          message: this.hass.localize(
+            "ui.panel.lovelace.editor.edit_card.copied_to_clipboard"
+          ),
+        });
+      }
+    );
+    this.addEventListener(
+      "ll-cut-card",
+      async (ev: HASSDomEvent<HASSDomEvents["ll-cut-card"]>) => {
+        fireEvent(this, "ll-copy-card", {
+          path: ev.detail.path!,
+          silent: true,
+        });
+
+        await performDeleteCard(this.hass, this.lovelace, {
+          ...ev.detail,
+          silent: true,
+          path: normalizeCardPath(ev.detail.path),
+        });
+
+        this.lovelace.showToast({
+          message: this.hass.localize(
+            "ui.panel.lovelace.editor.edit_card.cut_to_clipboard"
+          ),
+          duration: 8000,
+          action: {
+            action: () => fireEvent(window, "undo-change"),
+            text: this.hass.localize("ui.common.undo"),
+          },
+        });
       }
     );
     this.addEventListener(
@@ -232,7 +271,7 @@ export class HUIView extends ReactiveElement {
       "ll-edit-badge",
       (ev: HASSDomEvent<HASSDomEvents["ll-edit-badge"]>) => {
         const path = ev.detail.path;
-        const badge = getAtPath<Partial<LovelaceBadgeConfig> | string>(
+        const badge = getAtPath<LovelaceBadgeConfig>(
           this.lovelace.config,
           path
         );
@@ -249,7 +288,7 @@ export class HUIView extends ReactiveElement {
             );
             await this.lovelace.saveConfig(newConfig);
           },
-          badgeConfig: ensureBadgeConfig(badge),
+          badgeConfig: badge,
         });
       }
     );
@@ -435,10 +474,11 @@ export class HUIView extends ReactiveElement {
     config: LovelaceViewRawConfig
   ): Promise<LovelaceViewConfig> {
     if (isStrategyView(config)) {
-      const generatedConfig = await generateLovelaceViewStrategy(
+      const strategyConfig = await generateLovelaceViewStrategy(
         config,
         this.hass!
       );
+      const generatedConfig = normalizeViewConfig(strategyConfig);
       return {
         ...generatedConfig,
         type: getViewType(generatedConfig),
@@ -525,11 +565,7 @@ export class HUIView extends ReactiveElement {
       return;
     }
 
-    this._badges = config.badges.map((badge) => {
-      const badgeConfig = ensureBadgeConfig(badge);
-      const element = this.createBadgeElement(badgeConfig);
-      return element;
-    });
+    this._badges = config.badges.map((badge) => this.createBadgeElement(badge));
   }
 
   private _createCards(config: LovelaceViewConfig): void {

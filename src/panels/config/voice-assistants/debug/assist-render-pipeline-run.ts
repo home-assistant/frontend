@@ -590,7 +590,7 @@ export class AssistPipelineDebug extends LitElement {
     // Stop any existing audio first
     this._stopTTS();
 
-    const url = this.pipelineRun!.tts!.tts_output!.url;
+    const url = this.hass.hassUrl(this.pipelineRun!.tts!.tts_output!.url);
     this._audioElement = new Audio(url);
 
     this._audioElement.addEventListener("error", () => {

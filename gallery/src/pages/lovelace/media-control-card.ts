@@ -103,6 +103,13 @@ const CONFIGS = [
     },
   },
   {
+    heading: "Player Off (assumed state, cannot be switched on)",
+    config: {
+      type: "media-control",
+      entity: "media_player.theater_off_assumed",
+    },
+  },
+  {
     heading: "Player On (cannot be switched off)",
     config: {
       type: "media-control",

@@ -11,6 +11,7 @@ export interface HaImageCropperDialogParams {
   file: File;
   options: CropOptions;
   croppedCallback: (file: File) => void;
+  cancelCallback?: () => void;
 }
 
 const loadImageCropperDialog = () => import("./image-cropper-dialog");

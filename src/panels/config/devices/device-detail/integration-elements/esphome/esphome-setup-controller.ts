@@ -12,6 +12,8 @@ import {
   type ESPHomeDeviceEntityRef,
   deriveESPHomeSetupStatus,
   getESPHomeAudioControls,
+  getESPHomeBluetoothSwitch,
+  hasESPHomeBluetoothSwitch,
   getESPHomeSetupCapabilityIds,
   hasESPHomeSetupCapabilities,
   isESPHomeSerialConfigured,
@@ -189,12 +191,21 @@ export class ESPHomeSetupController implements ReactiveController {
     );
     if (
       !hasESPHomeSetupCapabilities(this._capabilities, {
+        bluetoothSwitch: hasESPHomeBluetoothSwitch(
+          deviceId,
+          this._getEntities()
+        ),
         mediaPlayerSupported: audio.supported,
       })
     ) {
       return undefined;
     }
     let status = deriveESPHomeSetupStatus(this._capabilities, {
+      bluetoothEnabled: getESPHomeBluetoothSwitch(
+        deviceId,
+        this._getEntities(),
+        hass.states
+      )?.on,
       mediaPlayerSupported: audio.supported,
       sendspinSupported: Boolean(audio.sendspinEntityId),
       sendspinEnabled: audio.sendspinOn,
@@ -276,7 +287,7 @@ export class ESPHomeSetupController implements ReactiveController {
     showESPHomeDeviceSetupDialog(this._host, {
       deviceId,
       deviceName: device
-        ? computeDeviceNameDisplay(device, hass.localize, hass.states)
+        ? computeDeviceNameDisplay(device, hass.localize)
         : undefined,
       capabilities: this._capabilities,
       mediaPlayerSupported: getESPHomeAudioControls(

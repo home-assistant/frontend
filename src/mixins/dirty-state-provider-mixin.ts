@@ -134,15 +134,24 @@ export const DirtyStateProviderMixin =
         this._dirtyStateContext = this._buildContextValue();
       }
 
+      /**
+       * Whether this provider holds off automatic frontend reloads, published
+       * as the global dirty state. Override to block reloads for more than
+       * unsaved edits.
+       */
+      protected get _blocksReload(): boolean {
+        return this.isDirtyState;
+      }
+
       public connectedCallback(): void {
         super.connectedCallback();
-        connectedDirtyStateProviders.set(this, this.isDirtyState);
+        connectedDirtyStateProviders.set(this, this._blocksReload);
         publishGlobalDirtyState();
       }
 
       protected updated(changedProperties: PropertyValues<this>): void {
         super.updated(changedProperties);
-        connectedDirtyStateProviders.set(this, this.isDirtyState);
+        connectedDirtyStateProviders.set(this, this._blocksReload);
         publishGlobalDirtyState();
       }
 
