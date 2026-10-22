@@ -107,7 +107,8 @@ export const scenesLinkFromUrl = (
       "ha-filter-devices": filter(values("device")),
       "ha-filter-entities": filter(values("entity")),
       "ha-filter-labels": filter(values("label")),
-      "ha-filter-categories": filter(values("category")),
+      // The category filter picks one category
+      "ha-filter-categories": filter(values("category").slice(0, 1)),
       "ha-filter-voice-assistants": filter(values("assistants")),
     },
   };
