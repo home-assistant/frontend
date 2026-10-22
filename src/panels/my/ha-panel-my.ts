@@ -54,6 +54,15 @@ const helpersTableParams = {
   assistants: "string?",
 } satisfies Redirect["params"];
 
+// The LoRaWAN devices table reads these from the link
+const lorawanDevicesParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  connection: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -172,6 +181,15 @@ export const getMyRedirects = (): Redirects => ({
   config_thread: {
     component: "thread",
     redirect: "/config/thread",
+  },
+  config_lorawan: {
+    component: "lorawan",
+    redirect: "/config/lorawan/overview",
+  },
+  lorawan_devices: {
+    component: "lorawan",
+    redirect: "/config/lorawan/devices",
+    params: lorawanDevicesParams,
   },
   add_zigbee_device: {
     component: "zha",
