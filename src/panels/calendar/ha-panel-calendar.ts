@@ -19,17 +19,9 @@ import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
-import type {
-  Calendar,
-  CalendarEvent,
-  CalendarEventApiData,
-  CalendarEventSubscription,
-} from "../../data/calendar";
-import {
-  getCalendars,
-  normalizeSubscriptionEventData,
-  subscribeCalendarEvents,
-} from "../../data/calendar";
+import type { Calendar } from "../../data/calendar";
+import { getCalendars } from "../../data/calendar";
+import { CalendarEventsController } from "../../data/calendar-events-controller";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { subscribeEntityRegistry } from "../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
@@ -50,12 +42,6 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
 
   @state() private _calendars: Calendar[] = [];
 
-  @state() private _events: CalendarEvent[] = [];
-
-  @state() private _error?: string = undefined;
-
-  @state() private _errorCalendars: string[] = [];
-
   @state() private _entityRegistry?: EntityRegistryEntry[];
 
   @state()
@@ -69,7 +55,7 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
 
   private _end?: Date;
 
-  private _unsubs: Record<string, Promise<UnsubscribeFunc>> = {};
+  private _events = new CalendarEventsController(this);
 
   private _showPaneController = new ResizeController(this, {
     callback: (entries) => entries[0]?.contentRect.width > 750,
@@ -84,15 +70,14 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
     this._mql = window.matchMedia(
       "(max-width: 450px), all and (max-height: 500px)"
     );
-    this._mql.addListener(this._setIsMobile);
+    this._mql.addEventListener("change", this._setIsMobile);
     this.mobile = this._mql.matches;
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._mql?.removeListener(this._setIsMobile!);
+    this._mql?.removeEventListener("change", this._setIsMobile!);
     this._mql = undefined;
-    this._unsubscribeAll();
   }
 
   private _setIsMobile = (ev: MediaQueryListEvent) => {
@@ -111,8 +96,7 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         }
         // Resubscribe events if view dates are available (handles both initial load and color updates)
         if (this._start && this._end) {
-          this._unsubscribeAll().then(() => {
-            this._events = [];
+          this._events.unsubscribeAll().then(() => {
             this._subscribeCalendarEvents(this._selectedCalendars);
           });
         }
@@ -214,12 +198,12 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         }
         <ha-full-calendar
           add-fab
-          .events=${this._events}
+          .events=${this._events.events}
           .calendars=${this._calendars}
           .narrow=${this.narrow}
           .initialView=${this.narrow ? "listWeek" : "dayGridMonth"}
           .hass=${this.hass}
-          .error=${this._error}
+          .error=${this._computeError(this._events.errorCalendars)}
           @view-changed=${this._handleViewChanged}
         ></ha-full-calendar>
       </ha-two-pane-top-app-bar-fixed>
@@ -237,87 +221,7 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this._error = undefined;
-
-    calendars.forEach((calendar) => {
-      // Unsubscribe existing subscription if any
-      if (calendar.entity_id in this._unsubs) {
-        this._unsubs[calendar.entity_id]
-          .then((unsubFunc) => unsubFunc())
-          .catch(() => {
-            // Subscription may have already been closed
-          });
-      }
-
-      const unsub = subscribeCalendarEvents(
-        this.hass,
-        calendar.entity_id,
-        this._start!,
-        this._end!,
-        (update: CalendarEventSubscription) => {
-          this._handleCalendarUpdate(calendar, update);
-        }
-      );
-      this._unsubs[calendar.entity_id] = unsub;
-    });
-  }
-
-  private _handleCalendarUpdate(
-    calendar: Calendar,
-    update: CalendarEventSubscription
-  ): void {
-    // Remove events from this calendar
-    this._events = this._events.filter(
-      (event) => event.calendar !== calendar.entity_id
-    );
-
-    if (update.events === null) {
-      // Error fetching events
-      if (!this._errorCalendars.includes(calendar.entity_id)) {
-        this._errorCalendars = [...this._errorCalendars, calendar.entity_id];
-      }
-      this._handleErrors(this._errorCalendars);
-      return;
-    }
-
-    // Remove from error list if successfully loaded
-    this._errorCalendars = this._errorCalendars.filter(
-      (id) => id !== calendar.entity_id
-    );
-    this._handleErrors(this._errorCalendars);
-
-    // Add new events from this calendar
-    const newEvents: CalendarEvent[] = update.events
-      .map((eventData: CalendarEventApiData) =>
-        normalizeSubscriptionEventData(eventData, calendar)
-      )
-      .filter((event): event is CalendarEvent => event !== null);
-
-    this._events = [...this._events, ...newEvents];
-  }
-
-  private async _unsubscribeAll(): Promise<void> {
-    await Promise.all(
-      Object.values(this._unsubs).map((unsub) =>
-        unsub
-          .then((unsubFunc) => unsubFunc())
-          .catch(() => {
-            // Subscription may have already been closed
-          })
-      )
-    );
-    this._unsubs = {};
-  }
-
-  private _unsubscribeCalendar(entityId: string): void {
-    if (entityId in this._unsubs) {
-      this._unsubs[entityId]
-        .then((unsubFunc) => unsubFunc())
-        .catch(() => {
-          // Subscription may have already been closed
-        });
-      delete this._unsubs[entityId];
-    }
+    this._events.subscribe(this.hass, calendars, this._start, this._end);
   }
 
   private _requestSelected(ev: Event) {
@@ -339,10 +243,7 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
       this._subscribeCalendarEvents([calendar]);
     } else {
       this._deSelectedCalendars = [...this._deSelectedCalendars, entityId];
-      this._unsubscribeCalendar(entityId);
-      this._events = this._events.filter(
-        (event) => event.calendar !== entityId
-      );
+      this._events.unsubscribe(entityId);
     }
   }
 
@@ -363,32 +264,30 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
   ): Promise<void> {
     this._start = ev.detail.start;
     this._end = ev.detail.end;
-    await this._unsubscribeAll();
-    this._events = [];
+    await this._events.unsubscribeAll();
     this._subscribeCalendarEvents(this._selectedCalendars);
   }
 
   private async _handleRefresh(): Promise<void> {
-    await this._unsubscribeAll();
-    this._events = [];
+    await this._events.unsubscribeAll();
     this._subscribeCalendarEvents(this._selectedCalendars);
   }
 
-  private _handleErrors(error_entity_ids: string[]) {
-    this._error = undefined;
-    if (error_entity_ids.length > 0) {
-      const nameList = error_entity_ids
-        .map((error_entity_id) =>
-          this.hass!.states[error_entity_id]
-            ? this.hass!.formatEntityName(this.hass!.states[error_entity_id])
-            : error_entity_id
-        )
-        .join(", ");
-
-      this._error = `${this.hass!.localize(
-        "ui.components.calendar.event_retrieval_error"
-      )} ${nameList}`;
+  private _computeError(error_entity_ids: string[]): string | undefined {
+    if (error_entity_ids.length === 0) {
+      return undefined;
     }
+    const nameList = error_entity_ids
+      .map((error_entity_id) =>
+        this.hass.states[error_entity_id]
+          ? this.hass.formatEntityName(this.hass.states[error_entity_id])
+          : error_entity_id
+      )
+      .join(", ");
+
+    return `${this.hass.localize(
+      "ui.components.calendar.event_retrieval_error"
+    )} ${nameList}`;
   }
 
   static get styles(): CSSResultGroup {

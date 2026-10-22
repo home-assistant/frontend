@@ -160,7 +160,6 @@ class HassSubpage extends LitElement {
           margin-right: var(--safe-area-inset-right);
           overflow-y: auto;
           overflow: auto;
-          -webkit-overflow-scrolling: touch;
         }
         .content.not-scrollable {
           overflow: hidden;

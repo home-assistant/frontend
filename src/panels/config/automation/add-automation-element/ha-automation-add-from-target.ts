@@ -72,7 +72,6 @@ import {
 import type { HomeAssistant, HomeAssistantRegistries } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
-import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
 import { getTargetIcon } from "../target/get_target_icon";
 import { getTargetText } from "../target/get_target_text";
 import {
@@ -80,7 +79,6 @@ import {
   parseRecentTarget,
 } from "../target/recent_targets";
 import { targetExists } from "../target/target_exists";
-import "./ha-automation-add-element-paste";
 
 // All person entities are also listed under "People" in the "Other" section
 // next to time and sun (triggers/conditions only), wherever they are assigned.
@@ -126,11 +124,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
   public timeLocationGroups?: AddAutomationElementListItem[];
 
   @property({ attribute: false }) public selectedGroup?: string;
-
-  @property({ attribute: false }) public clipboardItem?: string;
-
-  @property({ attribute: "automation-element-type" })
-  public automationElementType!: AddAutomationElementDialogParams["type"];
 
   @property({ attribute: false }) public recentTargets?: string[];
 
@@ -242,12 +235,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
         this.narrow && this.value
           ? this._renderNarrow(this._entries, this.value)
           : html`
-              <ha-list-base>
-                <ha-automation-add-element-paste
-                  .automationElementType=${this.automationElementType}
-                  .clipboardItem=${this.clipboardItem}
-                ></ha-automation-add-element-paste>
-              </ha-list-base>
               ${this._renderRecentTargets(
                 this.narrow,
                 this._getRecentTargets(

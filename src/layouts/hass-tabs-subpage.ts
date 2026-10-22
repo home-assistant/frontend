@@ -425,7 +425,6 @@ export class HassTabsSubpage extends LitElement {
           box-sizing: border-box;
           padding-right: var(--safe-area-inset-right);
           overflow: auto;
-          -webkit-overflow-scrolling: touch;
         }
         :host([narrow]) .content {
           padding-left: var(--safe-area-inset-left);

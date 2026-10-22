@@ -126,6 +126,7 @@ export default [
           "gauge-card",
           "plant-card",
           "map-card",
+          "calendar-card",
           "media-control-card",
           "media-player-row",
         ],
@@ -166,6 +167,10 @@ export default [
       {
         header: "Inputs and values",
         pages: ["input-number", "input-text", "number", "timer"],
+      },
+      {
+        header: "Time and schedules",
+        pages: ["calendar"],
       },
       {
         header: "System",

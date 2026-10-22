@@ -45,12 +45,12 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
     super.connectedCallback();
     this._mql = window.matchMedia("(min-width: 760px)");
     this._mqlListenerRef = this._createCards.bind(this);
-    this._mql.addListener(this._mqlListenerRef);
+    this._mql.addEventListener("change", this._mqlListenerRef);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._mql?.removeListener(this._mqlListenerRef!);
+    this._mql?.removeEventListener("change", this._mqlListenerRef!);
     this._mqlListenerRef = undefined;
     this._mql = undefined;
   }

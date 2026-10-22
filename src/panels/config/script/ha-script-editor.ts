@@ -1068,6 +1068,15 @@ export class HaScriptEditor extends SubscribeMixin(
     };
   }
 
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    if (!this._manualEditor?.sidebarOpen) {
+      return {};
+    }
+    return {
+      Escape: () => this._manualEditor?.triggerCloseSidebar(),
+    };
+  }
+
   // @ts-ignore
   private _collapseAll() {
     this._manualEditor?.collapseAll();

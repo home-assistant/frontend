@@ -2042,6 +2042,13 @@
             "add_title": "[%key:ui::dialogs::more_info_control::cover::favorite_position::add_title%]"
           }
         },
+        "calendar": {
+          "upcoming_events": "Upcoming events",
+          "no_events": "No events in the next 7 days",
+          "event_retrieval_error": "Could not load events for this calendar",
+          "today": "[%key:ui::components::calendar::today%]",
+          "tomorrow": "[%key:ui::components::selectors::period::periods::tomorrow%]"
+        },
         "camera": {
           "download_snapshot": "Download snapshot",
           "failed_to_download": "Failed to download snapshot. Please check the logs for more information."
@@ -2750,7 +2757,7 @@
       "dismiss": "Dismiss",
       "no_matching_link_found": "No matching My link found for {path}",
       "new_version_available": "A new version of the frontend is available. This page will update in {seconds, plural, one {# second} other {# seconds}}.",
-      "new_version_available_reload": "A new version of the frontend is available. It will be applied once you have saved or discarded your changes.",
+      "new_version_available_reload": "A new version of the frontend is available. It will be applied once you have finished what you are working on.",
       "update_now": "Update now",
       "theme_save_failed": "Unable to save theme settings to your user profile.",
       "theme_preferences_unavailable": "Unable to load user profile theme settings.",
@@ -5649,12 +5656,17 @@
               "id": "Trigger ID",
               "optional": "Optional",
               "edit_id": "Edit ID",
+              "edit_id_title": "Edit trigger ID",
+              "edit_id_info": "Trigger IDs are generated automatically, so you usually don't need to set one yourself. {link}",
+              "edit_id_learn_more": "Learn more about trigger IDs",
+              "edit_id_placeholder": "e.g. sun_has_set",
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "Re-order",
               "rename": "Rename",
               "cut": "Cut",
               "copy": "Copy",
               "paste": "Paste",
+              "paste_element": "Paste trigger",
               "change_alias": "Rename trigger",
               "alias": "Trigger name",
               "delete": "[%key:ui::common::delete%]",
@@ -5743,7 +5755,13 @@
                   "any_state_ignore_attributes": "Any state (ignoring attribute changes)",
                   "description": {
                     "picker": "Triggers when the state of an entity (or attribute) changes.",
-                    "changed": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n}{anyChange, select, \n true { or any attribute} \n other {}\n} changed{fromChoice, select, \n fromUsed { from {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n null { to any state} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
+                    "changed": "{hasAttribute, select, \n true {{attribute}} \n other {State}\n}{anyChange, select, \n true { or any attribute} \n other {}\n} changed{fromChoice, select, \n fromUsed { from {fromString}}\n fromNotUsed { from any state except {fromString}}\n null { from any state} \n other {}\n}{toChoice, select, \n toUsed { to {toString}} \n toNotUsed { to any state except {toString}}\n null { to any state} \n other {}\n}{hasDuration, select, \n true { for {duration}} \n other {}\n}"
+                  },
+                  "match_type": {
+                    "choices": {
+                      "is": "Is",
+                      "is_not": "Is not"
+                    }
                   },
                   "for_type": {
                     "choices": {
@@ -5967,6 +5985,7 @@
               "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
               "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
               "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
+              "paste_element": "Paste condition",
               "change_alias": "Rename condition",
               "alias": "Condition name",
               "delete": "[%key:ui::common::delete%]",
@@ -6155,6 +6174,7 @@
               "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
               "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
               "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
+              "paste_element": "Paste action",
               "change_alias": "Rename action",
               "alias": "Action name",
               "enable": "Enable",
@@ -7369,6 +7389,8 @@
             "setup_capability_serial_title": "Control a device over serial",
             "setup_capability_serial_short": "AV receivers, amplifiers, and more",
             "setup_capability_serial_description": "Add serial devices into Home Assistant, allowing for control of A/V receivers and multi-zone amplifiers.",
+            "setup_bluetooth_turn_on": "Turn on",
+            "setup_bluetooth_turn_off": "Turn off",
             "setup_audio_music_assistant": "Music Assistant",
             "setup_audio_byline": "By the Open Home Foundation",
             "setup_audio_offer_title": "Enhance your music experience",
@@ -7636,6 +7658,10 @@
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
             "entries": "{count} {count, plural,\n  one {entry}\n  other {entries}\n}",
+            "attention": {
+              "some": "{attention} of {count} {count, plural,\n  one {entry}\n  other {entries}\n} {state, select,\n  setup_error {failed to set up}\n  setup_retry {failed to set up, retrying}\n  migration_error {failed to migrate}\n  failed_unload {failed to unload}\n  not_loaded {{attention, plural,\n    one {is}\n    other {are}\n  } not loaded}\n  other {{attention, plural,\n    one {needs}\n    other {need}\n  } attention}\n}",
+              "all": "{count} {count, plural,\n  one {entry}\n  other {entries}\n} {state, select,\n  setup_error {failed to set up}\n  setup_retry {failed to set up, retrying}\n  migration_error {failed to migrate}\n  failed_unload {failed to unload}\n  not_loaded {{count, plural,\n    one {is}\n    other {are}\n  } not loaded}\n  other {{count, plural,\n    one {needs}\n    other {need}\n  } attention}\n}"
+            },
             "no_devices_or_entities": "No devices or entities",
             "devices_without_subentry": "Devices that don't belong to a sub-entry",
             "copy": "Copy entry ID",
@@ -9749,6 +9775,17 @@
             "not_loaded": "Usage Prediction integration is not loaded.",
             "no_data": "This place will soon fill up with the entities you use most often, based on your activity."
           },
+          "device": {
+            "no_device": "Select a device to show its entities.",
+            "device_not_found": "This device no longer exists.",
+            "categories": {
+              "control": "[%key:ui::panel::config::devices::entities::control%]",
+              "sensor": "[%key:ui::panel::config::devices::entities::sensor%]",
+              "event": "[%key:ui::panel::config::devices::entities::event%]",
+              "config": "[%key:ui::panel::config::devices::entities::config%]",
+              "diagnostic": "[%key:ui::panel::config::devices::entities::diagnostic%]"
+            }
+          },
           "light": {
             "lights": "Lights",
             "other_lights": "Other lights",
@@ -10218,6 +10255,8 @@
             "delete": "Delete",
             "copy": "Copy",
             "cut": "Cut",
+            "copied_to_clipboard": "Card copied to clipboard",
+            "cut_to_clipboard": "Card cut to clipboard",
             "duplicate": "Duplicate",
             "move": "Move to view",
             "move_before": "Move card before",
@@ -11772,6 +11811,29 @@
               "exclude_entities": "Exclude from suggestions",
               "exclude_entities_helper": "These entities will not be suggested based on your activity",
               "hide_empty": "Hide when empty"
+            },
+            "device": {
+              "device_id": "Device",
+              "categories": "Categories",
+              "display": "Display",
+              "display_options": {
+                "tiles": "Tiles",
+                "tiles_description": "One card per entity",
+                "list": "List",
+                "list_description": "All entities in a single card"
+              },
+              "group_by_category": "Group by category",
+              "group_by_category_helper": "Adds a subtitle above each category",
+              "heading": "Heading",
+              "heading_helper": "When shown, the heading includes the battery level",
+              "heading_options": {
+                "none": "No heading",
+                "device": "Device name",
+                "area": "Area and device name"
+              },
+              "entities": "Entities",
+              "exclude_entities": "Exclude entities",
+              "exclude_entities_helper": "Not shown in this section, even if their category is selected"
             },
             "original-states": {
               "areas": "Areas to display",
