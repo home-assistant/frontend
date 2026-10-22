@@ -53,7 +53,7 @@ export class HaAutomationAddElementPaste extends LitElement {
       display: flex;
       align-items: center;
       padding: var(--ha-space-3);
-      background-color: var(--ha-color-surface-low);
+      border-top: var(--ha-border-width-sm) solid var(--divider-color);
     }
     :host(:not([clipboard-item])) {
       display: none;

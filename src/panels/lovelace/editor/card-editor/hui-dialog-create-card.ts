@@ -1,13 +1,14 @@
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiContentPaste } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
-import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -47,6 +48,15 @@ export class HuiCreateDialogCard
   @state() private _currTab: "card" | "entity" = "entity";
 
   @state() private _narrow = false;
+
+  @state()
+  @storage({
+    key: "dashboardCardClipboard",
+    state: true,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  private _clipboard?: LovelaceCardConfig;
 
   public async showDialog(params: CreateCardDialogParams): Promise<void> {
     this._params = params;
@@ -150,7 +160,9 @@ export class HuiCreateDialogCard
                     .prioritizedCardTypes=${this._params.suggestedCards}
                     @suggestion-picked=${this._handleSuggestionPicked}
                     @browse-cards=${this._handleBrowseCards}
-                  ></hui-suggestion-picker>
+                  >
+                    ${this._renderPasteBar()}
+                  </hui-suggestion-picker>
                 `
               : html`
                   <hui-card-picker
@@ -158,23 +170,29 @@ export class HuiCreateDialogCard
                     .suggestedCards=${this._params.suggestedCards}
                     .lovelace=${this._params.lovelaceConfig}
                     .hass=${this.hass}
+                    hide-clipboard
                     @config-changed=${this._handleCardPicked}
-                  ></hui-card-picker>
+                  >
+                    ${this._renderPasteBar()}
+                  </hui-card-picker>
                 `
           )}
         </div>
-
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this._cancel}
-          >
-            ${this.hass!.localize("ui.common.cancel")}
-          </ha-button>
-        </ha-dialog-footer>
       </ha-dialog>
     `;
+  }
+
+  private _renderPasteBar() {
+    if (!this._clipboard) {
+      return nothing;
+    }
+
+    return html`<div class="paste-bar">
+      <ha-button appearance="filled" size="s" @click=${this._paste}>
+        <ha-svg-icon slot="start" .path=${mdiContentPaste}></ha-svg-icon>
+        ${this.hass.localize("ui.panel.lovelace.editor.cardpicker.paste_card")}
+      </ha-button>
+    </div>`;
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {
@@ -185,6 +203,10 @@ export class HuiCreateDialogCard
     return [
       haStyleDialog,
       css`
+        :host {
+          --dialog-safe-area-inset-bottom: var(--safe-area-inset-bottom, 0px);
+        }
+
         ha-dialog {
           --dialog-content-padding: 0;
           --dialog-z-index: 6;
@@ -200,8 +222,38 @@ export class HuiCreateDialogCard
         ha-dialog::part(body) {
           overflow: hidden;
         }
-        ha-dialog-footer {
-          border-top: 1px solid var(--divider-color);
+        .paste-bar {
+          display: flex;
+          align-items: center;
+          padding: var(--ha-space-3);
+          border-top: var(--ha-border-width-sm) solid var(--divider-color);
+        }
+
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-dialog {
+            --safe-area-inset-bottom: 0px;
+          }
+          .paste-bar {
+            padding-bottom: max(
+              var(--dialog-safe-area-inset-bottom),
+              var(--ha-space-3)
+            );
+          }
+          hui-card-picker:not(:has(> .paste-bar)) {
+            --ha-card-picker-content-padding-bottom: var(
+              --dialog-safe-area-inset-bottom
+            );
+          }
+          hui-suggestion-picker {
+            --ha-suggestion-picker-main-padding-bottom: var(
+              --dialog-safe-area-inset-bottom
+            );
+          }
+          hui-suggestion-picker:not(:has(> .paste-bar)) {
+            --ha-suggestion-picker-tree-padding-bottom: var(
+              --dialog-safe-area-inset-bottom
+            );
+          }
         }
 
         ha-tab-group-tab {
@@ -251,6 +303,14 @@ export class HuiCreateDialogCard
       }
     }
 
+    this._editNewCard(config);
+  }
+
+  private _paste() {
+    this._editNewCard(this._clipboard!);
+  }
+
+  private _editNewCard(config: LovelaceCardConfig) {
     const lovelaceConfig = this._params!.lovelaceConfig;
     const path = this._params!.path;
     const saveConfig = this._params!.saveConfig;

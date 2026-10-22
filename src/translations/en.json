@@ -11425,8 +11425,6 @@
             "generic": {
               "manual": "Manual",
               "manual_description": "Need to add a community badge or just want to manually write the YAML?",
-              "paste": "Paste from clipboard",
-              "paste_description": "Paste a {type} badge from the clipboard",
               "suggested_badges": "Suggested badges",
               "other_badges": "Other badges",
               "custom_badges": "Community badges"
@@ -11921,6 +11919,7 @@
             "suggestions_title": "Suggestions",
             "community_title": "Community",
             "not_found": "Can't find the card you want?",
+            "paste_card": "Paste card",
             "suggestions": {
               "periods": {
                 "last_24h": "Last 24 hours",
@@ -11944,7 +11943,8 @@
             "content_empty_title": "[%key:ui::panel::lovelace::editor::cardpicker::content_empty_title%]",
             "content_empty_description": "Or browse all badge types.",
             "browse_badges": "Browse all badges",
-            "not_found": "Can't find the badge you want?"
+            "not_found": "Can't find the badge you want?",
+            "paste_badge": "Paste badge"
           },
           "header-footer": {
             "header": "Header",
