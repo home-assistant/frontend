@@ -15,10 +15,7 @@ import type {
   HassioAddonRepository,
   HassioAddonsInfo,
 } from "../../../data/hassio/addon";
-import {
-  fetchHassioAddonsInfo,
-  reloadHassioAddons,
-} from "../../../data/hassio/addon";
+import { fetchHassioAddonsInfo } from "../../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type {
   StoreAddon,
@@ -36,6 +33,7 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../types";
+import { checkForAppUpdates } from "./common/check-for-updates";
 
 import "./supervisor-apps-repository";
 
@@ -70,6 +68,8 @@ export class HaConfigAppsAvailable extends LitElement {
   @state() private _error?: string;
 
   @state() private _filter?: string;
+
+  @state() private _checkingUpdates = false;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -144,7 +144,10 @@ export class HaConfigAppsAvailable extends LitElement {
             .path=${mdiDotsVertical}
             slot="trigger"
           ></ha-icon-button>
-          <ha-dropdown-item value="check_updates">
+          <ha-dropdown-item
+            value="check_updates"
+            .disabled=${this._checkingUpdates}
+          >
             ${this.hass.localize("ui.panel.config.apps.store.check_updates")}
           </ha-dropdown-item>
           <ha-dropdown-item value="repositories">
@@ -218,13 +221,11 @@ export class HaConfigAppsAvailable extends LitElement {
   }
 
   private async _refreshData() {
+    this._checkingUpdates = true;
     try {
-      await reloadHassioAddons(this.hass);
-    } catch (err) {
-      showAlertDialog(this, {
-        text: extractApiErrorMessage(err),
-      });
+      await checkForAppUpdates(this, this.hass);
     } finally {
+      this._checkingUpdates = false;
       this._loadData();
     }
   }
