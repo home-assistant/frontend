@@ -72,7 +72,7 @@ import {
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
 import { domainToName } from "../../../data/integration";
-import { mergeLogBacklogs } from "../../../data/log_backlog";
+import { LogStreamMerger } from "../../../data/log_backlog";
 import { formatListWithAnds } from "../../../common/string/format-list";
 import { haStyleScrollbar } from "../../../resources/styles";
 import type {
@@ -86,6 +86,8 @@ import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 const NUMBER_OF_LINES = 100;
 // Matches the live log dialog on the integration page
 const INTEGRATION_LOG_LINE_LIMIT = 5000;
+// Every subscription gets its lines of a log flush in a message of its own
+const INTEGRATION_LOG_MERGE_DELAY = 100;
 
 // Lines shown around each search match, as a failure's cause is often logged
 // on the lines next to its summary.
@@ -174,6 +176,8 @@ class ErrorLogCard extends LitElement {
   @state() private _integrationLive = false;
 
   private _integrationUnsubs?: Promise<UnsubscribeFunc>[];
+
+  private _integrationMergeTimeout?: number;
 
   private _integrationLines: string[] = [];
 
@@ -754,13 +758,29 @@ class ErrorLogCard extends LitElement {
     this._integrationLines = [];
     this._ansiToHtmlElement?.clear();
 
-    // Each subscription starts with the integration's backlog. They are merged
-    // in time order once all arrived, followed by the lines sent meanwhile.
+    // Each subscription starts with the integration's backlog, which are
+    // merged in time order with the lines sent meanwhile once all arrived.
+    // After that every flush of the log sends a batch to each subscription,
+    // so the batches of a flush are merged too.
     const integrations = this.integrations!;
-    const backlogs: (string[] | undefined)[] = integrations.map(
-      () => undefined
+    const merger = new LogStreamMerger(
+      integrations.length,
+      INTEGRATION_LOG_LINE_LIMIT
     );
-    let pending: string[] | undefined = [];
+    const batches: string[][] = integrations.map(() => []);
+    const backlogReceived = integrations.map(() => false);
+
+    const addBatches = () => {
+      this._integrationMergeTimeout = undefined;
+      if (this._integrationUnsubs !== unsubs) {
+        return;
+      }
+      const lines = merger.merge(batches);
+      for (const batch of batches) {
+        batch.length = 0;
+      }
+      this._addIntegrationLines(lines);
+    };
 
     const unsubs = integrations.map((integration, index) =>
       subscribeIntegrationLog(
@@ -770,22 +790,16 @@ class ErrorLogCard extends LitElement {
           if (this._integrationUnsubs !== unsubs) {
             return;
           }
-          if (!pending) {
-            this._addIntegrationLines(lines);
-            return;
-          }
-          if (backlogs[index] === undefined) {
-            backlogs[index] = lines;
-          } else {
-            pending.push(...lines);
-          }
-          if (backlogs.every((backlog) => backlog !== undefined)) {
-            const merged = [
-              ...mergeLogBacklogs(backlogs as string[][]),
-              ...pending,
-            ];
-            pending = undefined;
-            this._addIntegrationLines(merged);
+          batches[index].push(...lines);
+          backlogReceived[index] = true;
+          if (
+            backlogReceived.every(Boolean) &&
+            this._integrationMergeTimeout === undefined
+          ) {
+            this._integrationMergeTimeout = window.setTimeout(
+              addBatches,
+              INTEGRATION_LOG_MERGE_DELAY
+            );
           }
         }
       )
@@ -819,6 +833,8 @@ class ErrorLogCard extends LitElement {
       unsub.then((unsubscribe) => unsubscribe()).catch(() => undefined)
     );
     this._integrationUnsubs = undefined;
+    clearTimeout(this._integrationMergeTimeout);
+    this._integrationMergeTimeout = undefined;
     this._integrationLive = false;
   }
 

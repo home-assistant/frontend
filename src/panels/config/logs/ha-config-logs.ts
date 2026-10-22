@@ -21,11 +21,16 @@ import type {
   HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import {
+  getHistoryState,
+  navigate,
+  updateHistoryState,
+} from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { deepEqual } from "../../../common/util/deep-equal";
 import {
   DEFAULT_LOG_PROVIDER,
+  DEFAULT_LOGS_STATE,
   logsLinkFromUrl,
   logsQueryParamConfig,
   logsQueryParams,
@@ -86,6 +91,8 @@ const logProviders: LogProvider[] = [
     name: "Multicast",
   },
 ];
+
+const LOGS_HISTORY_STATE = "logsPage";
 
 interface LogProviderPickerItem extends PickerComboBoxItem {
   addon?: HassioAddonInfo;
@@ -302,7 +309,9 @@ export class HaConfigLogs extends LitElement {
     this._filter = "";
     this._integrations = [];
     // Picking another provider is a navigation of its own, so Back returns
-    // to the previous one
+    // to the previous one. Both entries are marked, so going back to one
+    // without params shows the default view instead of keeping the provider.
+    updateHistoryState({ [LOGS_HISTORY_STATE]: true });
     const search = createQueryString(
       logsQueryParams({
         provider,
@@ -312,7 +321,9 @@ export class HaConfigLogs extends LitElement {
       }),
       logsQueryParamConfig
     );
-    navigate(`/config/logs${search ? `?${search}` : ""}`);
+    navigate(`/config/logs${search ? `?${search}` : ""}`, {
+      data: { [LOGS_HISTORY_STATE]: true },
+    });
   }
 
   private _filtersShown(): boolean {
@@ -375,7 +386,11 @@ export class HaConfigLogs extends LitElement {
     if (!searchParams) {
       return;
     }
-    const link = logsLinkFromUrl(searchParams);
+    const link =
+      logsLinkFromUrl(searchParams) ??
+      (getHistoryState()?.[LOGS_HISTORY_STATE]
+        ? DEFAULT_LOGS_STATE
+        : undefined);
     if (link) {
       if (
         link.provider !== DEFAULT_LOG_PROVIDER &&
@@ -436,9 +451,11 @@ export class HaConfigLogs extends LitElement {
     }
   }
 
-  private _getLoadedIntegrations = memoizeOne((components: string[]) =>
-    components.filter((component) => !component.includes("."))
-  );
+  // Integrations that only provide a platform are only listed with it, like
+  // `other.device_tracker`
+  private _getLoadedIntegrations = memoizeOne((components: string[]) => [
+    ...new Set(components.map((component) => component.split(".")[0])),
+  ]);
 
   private _getIntegrationLoggers = memoizeOne(
     (

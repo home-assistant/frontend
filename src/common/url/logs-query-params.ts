@@ -26,6 +26,13 @@ export interface LogsState {
   raw: boolean;
 }
 
+export const DEFAULT_LOGS_STATE: LogsState = {
+  provider: DEFAULT_LOG_PROVIDER,
+  filter: "",
+  integrations: [],
+  raw: false,
+};
+
 export const logsQueryParams = (state: LogsState): LogsQueryParams => ({
   provider:
     state.provider === DEFAULT_LOG_PROVIDER ? undefined : state.provider,
