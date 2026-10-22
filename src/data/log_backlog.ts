@@ -51,7 +51,7 @@ export class LogStreamMerger {
     if (this._streams === 1) {
       return true;
     }
-    const key = record.lines.join("\n");
+    const key = record.lines.join("\n").replace(ANSI_ESCAPE, "");
     const counts =
       this._seen.get(key) ?? new Array<number>(this._streams).fill(0);
     counts[stream]++;
