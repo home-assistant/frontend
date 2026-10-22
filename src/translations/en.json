@@ -11912,6 +11912,7 @@
             "suggestions_title": "Suggestions",
             "community_title": "Community",
             "not_found": "Can't find the card you want?",
+            "paste_card": "Paste card",
             "suggestions": {
               "periods": {
                 "last_24h": "Last 24 hours",

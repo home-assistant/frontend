@@ -25,6 +25,16 @@ import "./hui-suggestion-card";
 import "./hui-suggestion-entity-tree";
 import type { HuiSuggestionEntityTree } from "./hui-suggestion-entity-tree";
 
+/**
+ * @element hui-suggestion-picker
+ *
+ * @summary Entity tree with card suggestions for the picked entity.
+ *
+ * @slot - Footer below the entity tree, e.g. an action bar.
+ *
+ * @fires suggestion-picked - Fired with the config of the picked suggestion.
+ * @fires browse-cards - Fired when the user wants to browse all cards.
+ */
 @customElement("hui-suggestion-picker")
 export class HuiSuggestionPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -102,6 +112,7 @@ export class HuiSuggestionPicker extends LitElement {
           .selectedEntityId=${this._entityId}
           @entity-picked=${this._handleEntityPicked}
         ></hui-suggestion-entity-tree>
+        <slot></slot>
       </div>
       <div class=${classMap({ main: true, hidden: !showMain })}>
         <div class="content ha-scrollbar">
