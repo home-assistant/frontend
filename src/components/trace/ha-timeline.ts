@@ -2,13 +2,16 @@ import { mdiCircleOutline } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { buttonLinkStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 import "../ha-svg-icon";
 
 @customElement("ha-timeline")
 export class HaTimeline extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property({ type: Boolean, reflect: true }) public label = false;
 
@@ -54,7 +57,7 @@ export class HaTimeline extends LitElement {
                       ? this.moreItems
                       : html`
                           <button class="link" @click=${this._handleShowMore}>
-                            ${this.hass?.localize(
+                            ${this._localize(
                               "ui.panel.config.automation.trace.messages.show_more_items",
                               { count: this.moreItems.length }
                             )}

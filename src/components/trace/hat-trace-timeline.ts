@@ -95,7 +95,6 @@ class LogbookRenderer {
   private pendingItems: [Date, LogbookEntry][] = [];
 
   constructor(
-    private hass: HomeAssistant,
     private entries: TemplateResult[],
     private timeTracker: RenderedTimeTracker,
     private logbookEntries: LogbookEntry[]
@@ -170,11 +169,7 @@ class LogbookRenderer {
     }
 
     this.entries.push(html`
-      <ha-timeline
-        .hass=${this.hass}
-        .icon=${mdiCircleOutline}
-        .moreItems=${moreItems}
-      >
+      <ha-timeline .icon=${mdiCircleOutline} .moreItems=${moreItems}>
         ${parts}
       </ha-timeline>
     `);
@@ -705,7 +700,6 @@ export class HaAutomationTracer extends LitElement {
 
     const timeTracker = new RenderedTimeTracker(this.hass, entries, this.trace);
     const logbookRenderer = new LogbookRenderer(
-      this.hass,
       entries,
       timeTracker,
       this.logbookEntries || []
