@@ -59,14 +59,20 @@ export const entitiesFilterQueryParams = (
 });
 
 // The filters as the URL holds them, so values that filter the same, such as
-// no list and an empty one, compare equal
+// no list and an empty one, or a list in another order, compare equal. A
+// filter list sends back what it was given in its own order.
 export const entitiesFilterQueryString = (
   filters: DataTableFiltersValues
-): string =>
-  createQueryString(
-    entitiesFilterQueryParams(filters),
-    entitiesFilterQueryParamConfig
-  );
+): string => {
+  const params = entitiesFilterQueryParams(filters);
+  const sorted: EntitiesFilterQueryParams = {};
+
+  for (const key of entitiesFilterQueryParamConfig.list) {
+    sorted[key] = params[key] && [...params[key]].sort();
+  }
+
+  return createQueryString(sorted, entitiesFilterQueryParamConfig);
+};
 
 // What a link says to show, undefined when it has no table params so what was
 // picked before stays. A link replaces the search and the filters, ones left
