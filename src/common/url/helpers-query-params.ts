@@ -51,14 +51,20 @@ export const helpersFilterQueryParams = (
 });
 
 // The filters as the URL holds them, so values that filter the same, such as
-// no list and an empty one, compare equal
+// no list and an empty one, or a list in another order, compare equal. A
+// filter list sends back what it was given in its own order.
 export const helpersFilterQueryString = (
   filters: DataTableFiltersValues
-): string =>
-  createQueryString(
-    helpersFilterQueryParams(filters),
-    helpersFilterQueryParamConfig
-  );
+): string => {
+  const params = helpersFilterQueryParams(filters);
+  const sorted: HelpersFilterQueryParams = {};
+
+  for (const key of helpersFilterQueryParamConfig.list) {
+    sorted[key] = params[key] && [...params[key]].sort();
+  }
+
+  return createQueryString(sorted, helpersFilterQueryParamConfig);
+};
 
 // What a link says to show, undefined when it has no table params so what was
 // picked before stays. A link replaces the search and the filters, ones left
