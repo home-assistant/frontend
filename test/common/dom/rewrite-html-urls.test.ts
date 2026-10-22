@@ -70,15 +70,9 @@ describe("rewriteHtmlUrls", () => {
     {
       name: "every address in a srcset and keeps the descriptors",
       input:
-        '<source srcset="small.png 480w,large.png  1080w , huge.png 2x" sizes="50vw">',
+        '<source srcset="small.png 480w,large.png  1080w ,, huge.png 2x" sizes="50vw">',
       output:
         '<source srcset="https://example.com/repo/small.png 480w, https://example.com/repo/large.png 1080w, https://example.com/repo/huge.png 2x" sizes="50vw">',
-    },
-    {
-      name: "a srcset address with a comma in it, as the browser reads it",
-      input: '<source srcset="a,b.png 1x, c.png,, d.png">',
-      output:
-        '<source srcset="https://example.com/repo/a,b.png 1x, https://example.com/repo/c.png, https://example.com/repo/d.png">',
     },
     {
       name: "a srcset with an entity in it, as the browser reads it",
@@ -87,14 +81,5 @@ describe("rewriteHtmlUrls", () => {
     },
   ])("rewrites $name", ({ input, output }) => {
     expect(rewriteHtmlUrls(input, toRepository)).toBe(output);
-  });
-
-  it("drops a srcset with an address that would not read back the same", () => {
-    expect(
-      rewriteHtmlUrls(
-        '<picture><source srcset="a.png 1x, b.png 2x"><img src="a.png"></picture>',
-        (url) => (url === "b.png" ? "https://example.com/b c.png" : url)
-      )
-    ).toBe('<picture><source><img src="a.png"></picture>');
   });
 });
