@@ -19,7 +19,8 @@ import type {
   HASSDomEvent,
 } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { mainWindow } from "../../../common/dom/get_main_window";
+import { navigate, replaceCurrentUrl } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { hasRejectedItems } from "../../../common/util/promise-all-settled-results";
@@ -311,16 +312,29 @@ class HaBlueprintOverview extends LitElement {
     })
   );
 
-  protected async firstUpdated(changedProps: PropertyValues<this>) {
+  public connectedCallback() {
+    // Leave the import path before the URL controllers connect, they keep the
+    // path they connected on
+    const importUrl =
+      this.route?.path === "/import"
+        ? (extractSearchParam("blueprint_url") ?? "")
+        : undefined;
+
+    if (importUrl !== undefined) {
+      replaceCurrentUrl("/config/blueprint/dashboard");
+      fireEvent(mainWindow, "location-changed", { replace: true });
+    }
+
+    super.connectedCallback();
+
+    if (importUrl) {
+      this._addBlueprint(importUrl);
+    }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadUsageCounts();
-    if (this.route.path === "/import") {
-      const url = extractSearchParam("blueprint_url");
-      await navigate("/config/blueprint/dashboard", { replace: true });
-      if (url) {
-        this._addBlueprint(url);
-      }
-    }
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
