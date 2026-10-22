@@ -3,10 +3,13 @@ import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { buttonLinkStyle } from "../../resources/styles";
+import type { HomeAssistant } from "../../types";
 import "../ha-svg-icon";
 
 @customElement("ha-timeline")
 export class HaTimeline extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @property({ type: Boolean, reflect: true }) public label = false;
 
   @property({ type: Boolean, reflect: true }) public raised = false;
@@ -51,7 +54,10 @@ export class HaTimeline extends LitElement {
                       ? this.moreItems
                       : html`
                           <button class="link" @click=${this._handleShowMore}>
-                            Show ${this.moreItems.length} more items
+                            ${this.hass?.localize(
+                              "ui.panel.config.automation.trace.messages.show_more_items",
+                              { count: this.moreItems.length }
+                            )}
                           </button>
                         `
                   }
