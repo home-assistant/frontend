@@ -107,6 +107,7 @@ class HaConfigHardwareAll extends LitElement {
           this.hass.localize("ui.panel.config.hardware.loading_system_data")
         }
         @row-click=${this._handleRowClicked}
+        sync-url
       ></hass-tabs-subpage-data-table>
     `;
   }
