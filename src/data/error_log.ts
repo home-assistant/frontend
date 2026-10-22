@@ -6,6 +6,8 @@ import type {
   HomeAssistantConfig,
   LogFileDisabledReason,
 } from "../types";
+import { fileDownload } from "../util/file_download";
+import { ANSI_ESCAPE } from "./log_backlog";
 import type { HassioAddonInfo } from "./hassio/addon";
 import { supervisorUrl } from "./hassio/common";
 
@@ -34,6 +36,16 @@ export const subscribeIntegrationLog = (
     // subscribe again themselves when the connection is ready
     { resubscribe: false }
   );
+
+export const downloadIntegrationLog = (
+  integration: string,
+  lines: string[]
+) => {
+  const text = lines.join("\n").replace(ANSI_ESCAPE, "");
+  const timeString = new Date().toISOString().replace(/:/g, "-");
+  const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+  fileDownload(url, `home-assistant_${integration}_${timeString}.log`);
+};
 
 export const getErrorLogDownloadUrl = (config: HomeAssistantConfig) =>
   hasSupervisorCoreLogDownload(config)

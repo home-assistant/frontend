@@ -329,6 +329,13 @@ export class HaCodeEditor extends ReactiveElement {
         ),
       });
     }
+    if (changedProps.has("_i18n")) {
+      transactions.push({
+        effects: this._loadedCodeMirror!.phrasesCompartment.reconfigure(
+          this._phrases
+        ),
+      });
+    }
     if (changedProps.has("linewrap")) {
       transactions.push({
         effects: this._loadedCodeMirror!.linewrapCompartment!.reconfigure(
@@ -379,6 +386,12 @@ export class HaCodeEditor extends ReactiveElement {
     return this._loadedCodeMirror!.langs[this.mode];
   }
 
+  private get _phrases(): Extension {
+    return this._i18n
+      ? this._loadedCodeMirror!.localizedPhrases(this._i18n.localize)
+      : [];
+  }
+
   private _createCodeMirror() {
     if (!this._loadedCodeMirror) {
       throw new Error("Cannot create editor before CodeMirror is loaded");
@@ -415,6 +428,7 @@ export class HaCodeEditor extends ReactiveElement {
         saveKeyBinding,
       ]),
       this._loadedCodeMirror.search({ top: true }),
+      this._loadedCodeMirror.phrasesCompartment.of(this._phrases),
       this._loadedCodeMirror.langCompartment.of(this._mode),
       this._loadedCodeMirror.haTheme,
       this._loadedCodeMirror.haSyntaxHighlighting,

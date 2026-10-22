@@ -1,9 +1,5 @@
 import { mdiHelpCircleOutline } from "@mdi/js";
-import type {
-  HassService,
-  HassServices,
-  HassServiceTarget,
-} from "home-assistant-js-websocket";
+import type { HassService, HassServices } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -30,9 +26,11 @@ import {
   expandDeviceTarget,
   expandFloorTarget,
   expandLabelTarget,
+  resolveEntityIDs,
   type Selector,
   type TargetSelector,
 } from "../data/selector";
+import type { HassServiceTargetWithExclude } from "../data/target";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
 import { getSelectorFallbackValue } from "./ha-form/get-selector-fallback-value";
@@ -105,7 +103,7 @@ export class HaServiceControl extends LitElement {
 
   @property({ attribute: false }) public value?: {
     action: string;
-    target?: HassServiceTarget;
+    target?: HassServiceTargetWithExclude;
     data?: Record<string, any>;
   };
 
@@ -343,7 +341,7 @@ export class HaServiceControl extends LitElement {
         );
         targetDevices.push(...expanded.devices);
         const primaryEntities = expanded.entities.filter(isPrimaryEntity);
-        targetEntities.push(primaryEntities);
+        targetEntities.push(...primaryEntities);
         targetAreas.push(...expanded.areas);
       });
     }
@@ -383,6 +381,19 @@ export class HaServiceControl extends LitElement {
         const primaryEntities = expanded.entities.filter(isPrimaryEntity);
         targetEntities.push(...primaryEntities);
       });
+    }
+    const exclude = value?.target?.exclude;
+    if (exclude) {
+      const excluded = new Set(
+        resolveEntityIDs(
+          this.hass,
+          exclude,
+          this.hass.entities,
+          this.hass.devices,
+          this.hass.areas
+        )
+      );
+      return targetEntities.filter((entityId) => !excluded.has(entityId));
     }
     return targetEntities;
   });
@@ -843,7 +854,7 @@ export class HaServiceControl extends LitElement {
     }
 
     const newService = ev.detail.value || "";
-    let target: HassServiceTarget | undefined;
+    let target: HassServiceTargetWithExclude | undefined;
 
     if (newService) {
       const serviceData = this._getServiceInfo(newService, this.hass.services);
@@ -894,11 +905,42 @@ export class HaServiceControl extends LitElement {
             )
           );
         }
+        const targetFloors = ensureArray(
+          currentTarget.floor_id || this._value!.data?.floor_id
+        )?.filter(
+          (floor) =>
+            expandFloorTarget(this.hass, floor, this.hass.areas, targetSelector)
+              .areas.length > 0
+        );
+        const targetLabels = ensureArray(
+          currentTarget.label_id || this._value!.data?.label_id
+        )?.filter((label) => {
+          const expanded = expandLabelTarget(
+            this.hass,
+            label,
+            this.hass.areas,
+            this.hass.devices,
+            this.hass.entities,
+            targetSelector
+          );
+          return (
+            expanded.areas.length > 0 ||
+            expanded.devices.length > 0 ||
+            expanded.entities.length > 0
+          );
+        });
         target = {
           ...(targetEntities.length ? { entity_id: targetEntities } : {}),
           ...(targetDevices.length ? { device_id: targetDevices } : {}),
           ...(targetAreas.length ? { area_id: targetAreas } : {}),
+          ...(targetFloors?.length ? { floor_id: targetFloors } : {}),
+          ...(targetLabels?.length ? { label_id: targetLabels } : {}),
         };
+        // An exclude on its own is not a target, so it only stays while
+        // something is still included.
+        if (currentTarget.exclude && Object.keys(target).length) {
+          target.exclude = currentTarget.exclude;
+        }
       }
     }
 
@@ -935,7 +977,7 @@ export class HaServiceControl extends LitElement {
 
   private _targetChanged(
     ev: HASSDomEvent<{
-      value: HassServiceTarget | undefined;
+      value: HassServiceTargetWithExclude | undefined;
       isValid?: boolean;
     }>
   ) {

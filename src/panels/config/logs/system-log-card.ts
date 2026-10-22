@@ -21,6 +21,7 @@ import {
   getErrorLogDownloadUrl,
 } from "../../../data/error_log";
 import { domainToName } from "../../../data/integration";
+import { formatListWithAnds } from "../../../common/string/format-list";
 import type { LoggedError } from "../../../data/system_log";
 import {
   fetchSystemLog,
@@ -40,6 +41,10 @@ export class SystemLogCard extends LitElement {
   @property() public filter = "";
 
   @property() public header?: string;
+
+  @property({ attribute: false }) public integrations?: string[];
+
+  @property({ attribute: false }) public integrationLoggers?: string[];
 
   public loaded = false;
 
@@ -70,8 +75,22 @@ export class SystemLogCard extends LitElement {
   }
 
   private _getFilteredItems = memoizeOne(
-    (localize: LocalizeFunc, items: LoggedError[], filter: string) =>
+    (
+      localize: LocalizeFunc,
+      items: LoggedError[],
+      filter: string,
+      loggers: string[] | undefined
+    ) =>
       items.filter((item: LoggedError) => {
+        if (
+          loggers &&
+          !loggers.some(
+            (logger) =>
+              item.name === logger || item.name.startsWith(`${logger}.`)
+          )
+        ) {
+          return false;
+        }
         if (filter) {
           const integration = getLoggedErrorIntegration(item);
           return (
@@ -99,7 +118,8 @@ export class SystemLogCard extends LitElement {
       ? this._getFilteredItems(
           this.hass.localize,
           this._items,
-          this.filter.toLowerCase()
+          this.filter.toLowerCase(),
+          this.integrations?.length ? this.integrationLoggers : undefined
         )
       : [];
     const integrations = filteredItems.length
@@ -142,7 +162,8 @@ export class SystemLogCard extends LitElement {
                       ></ha-icon-button>
 
                       ${
-                        logFileDownloadUnavailableReason
+                        logFileDownloadUnavailableReason &&
+                        !this.integrations?.length
                           ? nothing
                           : html`<ha-dropdown
                               @wa-select=${this._handleOverflowAction}
@@ -181,12 +202,30 @@ export class SystemLogCard extends LitElement {
                             ${this.hass.localize("ui.panel.config.logs.no_issues")}
                           </div>
                         `
-                      : filteredItems.length === 0 && this.filter
+                      : filteredItems.length === 0 &&
+                          (this.filter || this.integrations?.length)
                         ? html`<div class="card-content">
-                            ${this.hass.localize(
-                              "ui.panel.config.logs.no_issues_search",
-                              { term: this.filter }
-                            )}
+                            ${
+                              this.filter
+                                ? this.hass.localize(
+                                    "ui.panel.config.logs.no_issues_search",
+                                    { term: this.filter }
+                                  )
+                                : this.hass.localize(
+                                    "ui.panel.config.logs.no_issues_integration",
+                                    {
+                                      integration: formatListWithAnds(
+                                        this.hass.locale,
+                                        this.integrations!.map((domain) =>
+                                          domainToName(
+                                            this.hass.localize,
+                                            domain
+                                          )
+                                        )
+                                      ),
+                                    }
+                                  )
+                            }
                           </div>`
                         : html`<ha-list
                             >${filteredItems.map(

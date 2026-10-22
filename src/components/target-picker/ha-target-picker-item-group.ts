@@ -8,6 +8,7 @@ import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker"
 import "../ha-expansion-panel";
 import "../list/ha-list-base";
 import "./ha-target-picker-item-row";
+import { targetItemKey, type TargetExclusion } from "./target-exclusions";
 
 const TYPE_PLURAL = {
   entity: "entities",
@@ -59,6 +60,9 @@ export class HaTargetPickerItemGroup extends LitElement {
   @property({ attribute: false })
   public compositeSplits?: DeviceCompositeSplits;
 
+  @property({ attribute: false })
+  public exclusions?: Record<string, TargetExclusion[]>;
+
   protected render() {
     let count = 0;
     Object.values(this.items).forEach((items) => {
@@ -83,9 +87,13 @@ export class HaTargetPickerItemGroup extends LitElement {
       <ha-list-base>
         ${Object.entries(this.items).map(([type, items]) =>
           items
-            ? items.map(
-                (item) =>
-                  html`<ha-target-picker-item-row
+            ? items.map((item) => {
+                const exclusions = this.exclusions
+                  ? (this.exclusions[
+                      targetItemKey({ type: type as TargetType, id: item })
+                    ] ?? [])
+                  : undefined;
+                return html`<ha-target-picker-item-row
                     .hass=${this.hass}
                     .type=${type as TargetTypeFloorless}
                     .itemId=${item}
@@ -96,8 +104,19 @@ export class HaTargetPickerItemGroup extends LitElement {
                     .includeDeviceClasses=${this.includeDeviceClasses}
                     .primaryEntitiesOnly=${this.primaryEntitiesOnly}
                     .compositeSplits=${this.compositeSplits}
-                  ></ha-target-picker-item-row>`
-              )
+                    .exclusions=${exclusions}
+                  ></ha-target-picker-item-row>
+                  ${(exclusions ?? []).map(
+                    (exclusion) =>
+                      html`<ha-target-picker-item-row
+                        exclusion
+                        .hass=${this.hass}
+                        .type=${exclusion.type}
+                        .itemId=${exclusion.id}
+                        .removedCount=${exclusion.removed.length}
+                      ></ha-target-picker-item-row>`
+                  )}`;
+              })
             : nothing
         )}
       </ha-list-base>

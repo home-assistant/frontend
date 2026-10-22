@@ -1,7 +1,4 @@
-import type {
-  HassEntity,
-  HassServiceTarget,
-} from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../../../common/array/ensure-array";
 import {
   checkTimeInRange,
@@ -25,6 +22,7 @@ import type { DeviceCondition } from "../../../data/device/device_automation";
 import { UNKNOWN } from "../../../data/entity/entity";
 import { getUserPerson } from "../../../data/person";
 import { resolveEntityIDs } from "../../../data/selector";
+import type { HassServiceTargetWithExclude } from "../../../data/target";
 import type { HomeAssistant } from "../../../types";
 
 export type Condition =
@@ -70,7 +68,7 @@ export interface LocationCondition extends BaseCondition {
   /** Legacy: matches the person state (active zone name). */
   locations?: string[];
   /** Zones selected directly or through a label, area or floor. */
-  target?: HassServiceTarget;
+  target?: HassServiceTargetWithExclude;
   /**
    * `any_zone` (default) matches the zones in the person `in_zones`.
    * `active_zone` matches only the zone shown as the person state, like
@@ -367,18 +365,27 @@ const isIdList = (value: unknown): boolean =>
   typeof value === "string" ||
   (Array.isArray(value) && value.every((id) => typeof id === "string"));
 
-/**
- * YAML can hold anything here. Like `targetStruct`, only a mapping of target
- * keys to IDs is usable; anything else would throw while resolving zones.
- */
-const isValidTarget = (target: unknown): target is HassServiceTarget =>
+const isTargetMapping = (
+  target: unknown,
+  allowExclude: boolean
+): target is HassServiceTargetWithExclude =>
   typeof target === "object" &&
   target !== null &&
   !Array.isArray(target) &&
-  Object.entries(target).every(
-    ([key, value]) =>
-      (TARGET_KEYS as readonly string[]).includes(key) && isIdList(value)
+  Object.entries(target).every(([key, value]) =>
+    key === "exclude"
+      ? allowExclude && isTargetMapping(value, false)
+      : (TARGET_KEYS as readonly string[]).includes(key) && isIdList(value)
   );
+
+/**
+ * YAML can hold anything here. Like `targetStruct`, only a mapping of target
+ * keys to IDs, with an optional `exclude` of the same shape, is usable;
+ * anything else would throw while resolving zones.
+ */
+const isValidTarget = (
+  target: unknown
+): target is HassServiceTargetWithExclude => isTargetMapping(target, true);
 
 const ZONE_TARGET_SELECTOR = { target: { entity: { domain: "zone" } } };
 
@@ -391,7 +398,10 @@ interface ResolvedZones {
 
 // Keyed by target so each card keeps its own entry. Resolving scans the
 // registries, so only redo it when one of them changes.
-const resolvedZonesCache = new WeakMap<HassServiceTarget, ResolvedZones>();
+const resolvedZonesCache = new WeakMap<
+  HassServiceTargetWithExclude,
+  ResolvedZones
+>();
 
 /**
  * Zone entity IDs selected directly or through a label, area or floor, that
@@ -399,7 +409,7 @@ const resolvedZonesCache = new WeakMap<HassServiceTarget, ResolvedZones>();
  */
 export function resolveLocationZones(
   hass: HomeAssistant,
-  target: HassServiceTarget
+  target: HassServiceTargetWithExclude
 ): string[] {
   // Checked on every call rather than cached, so a zone that loses its state
   // is dropped and a directly selected zone that appears later is picked up.
@@ -410,7 +420,7 @@ export function resolveLocationZones(
 
 function resolveTargetZones(
   hass: HomeAssistant,
-  target: HassServiceTarget
+  target: HassServiceTargetWithExclude
 ): string[] {
   const cached = resolvedZonesCache.get(target);
   if (

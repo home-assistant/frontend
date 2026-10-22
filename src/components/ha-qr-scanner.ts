@@ -7,7 +7,7 @@ import { customElement, property, query, state } from "lit/decorators";
 // and "qr-scanner" defaults to a suboptimal implementation if it is not available.
 // The following import makes a better implementation available that is based on a
 // WebAssembly port of ZXing:
-import { prepareZXingModule } from "barcode-detector";
+import { prepareZXingModule, ZXING_WASM_VERSION } from "barcode-detector";
 import type QrScanner from "qr-scanner";
 import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
@@ -29,7 +29,8 @@ prepareZXingModule({
   overrides: {
     locateFile: (path: string, prefix: string) => {
       if (path.endsWith(".wasm")) {
-        return "/static/js/zxing_reader.wasm";
+        // Versioned, /static is cached for a month and the glue only works with its own wasm
+        return `/static/js/zxing_reader-${ZXING_WASM_VERSION}.wasm`;
       }
       return prefix + path;
     },

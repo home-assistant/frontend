@@ -260,6 +260,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   private _typedSearch?: string;
 
+  private _restoreInitial = false;
+
   private _queryParams = new QueryParamsController(
     this,
     dataTableQueryParamConfig,
@@ -267,6 +269,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       enabled: () => this.syncUrl,
       navigated: () => {
         if (this._urlRead) {
+          // Opened again without params, like from the sidebar
+          this._restoreInitial =
+            this._queryParams.searchParams()?.toString() === "";
           this._applyUrl();
         }
       },
@@ -298,6 +303,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         this._sortColumn = this.initialSorting.column;
         this._sortDirection = this.initialSorting.direction;
       }
+    }
+
+    // Done here, after the page has set the initial sorting and grouping it
+    // stored
+    if (this._restoreInitial) {
+      this._restoreInitial = false;
+      this._restoreInitialState();
     }
 
     if (this.syncUrl && !this._urlRead && Object.keys(this.columns).length) {
@@ -708,8 +720,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     fireEvent(this, "clear-filter");
   }
 
-  // A link with table params wins over what was picked before, the page is
-  // told so it keeps the same
+  // A link with table params wins over what was picked before. The page is
+  // told with `link` set, so it shows it without storing it as the user's
+  // choice.
   private _applyUrl() {
     const searchParams = this._queryParams.searchParams();
     const linked = searchParams
@@ -719,7 +732,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     if (linked) {
       if (linked.search !== this.filter) {
         this.filter = linked.search;
-        fireEvent(this, "search-changed", { value: this.filter });
+        fireEvent(this, "search-changed", { value: this.filter, link: true });
       }
       if (
         linked.sorting &&
@@ -728,15 +741,45 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       ) {
         this._sortColumn = linked.sorting.column;
         this._sortDirection = linked.sorting.direction;
-        fireEvent(this, "sorting-changed", linked.sorting);
+        fireEvent(this, "sorting-changed", { ...linked.sorting, link: true });
       }
       if (linked.groupColumn && linked.groupColumn !== this._groupColumn) {
-        this._setGroupColumn(linked.groupColumn);
+        this._setGroupColumn(linked.groupColumn, true);
       }
     }
 
     this._urlWritePending = true;
     this.requestUpdate();
+  }
+
+  private _restoreInitialState() {
+    // Without a stored sort, use the column's default like a fresh load does
+    const defaultColumn = Object.keys(this.columns).find(
+      (columnId) => this.columns[columnId].direction
+    );
+
+    const defaultDirection = defaultColumn
+      ? this.columns[defaultColumn].direction
+      : undefined;
+
+    const sorting =
+      this.initialSorting && this.columns[this.initialSorting.column]
+        ? this.initialSorting
+        : defaultColumn && defaultDirection
+          ? { column: defaultColumn, direction: defaultDirection }
+          : undefined;
+
+    this._sortColumn = sorting?.column;
+    this._sortDirection = sorting?.direction ?? null;
+
+    const groupColumn =
+      this.initialGroupColumn && this.columns[this.initialGroupColumn]
+        ? this.initialGroupColumn
+        : "";
+
+    if (groupColumn !== (this._groupColumn ?? "")) {
+      this._setGroupColumn(groupColumn, true);
+    }
   }
 
   private _flushUrl() {
@@ -807,9 +850,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._setGroupColumn(group);
   }
 
-  private _setGroupColumn(columnId: string) {
+  private _setGroupColumn(columnId: string, link = false) {
     this._groupColumn = columnId;
-    fireEvent(this, "grouping-changed", { value: columnId });
+    fireEvent(this, "grouping-changed", { value: columnId, link });
   }
 
   private _openSettings() {
@@ -1126,8 +1169,9 @@ declare global {
 
   // for fire event
   interface HASSDomEvents {
-    "search-changed": { value: string };
-    "grouping-changed": { value: string };
+    // `link` is set when a link changed it, not the user
+    "search-changed": { value: string; link?: boolean };
+    "grouping-changed": { value: string; link?: boolean };
     "columns-changed": {
       columnOrder: string[] | undefined;
       hiddenColumns: string[] | undefined;
