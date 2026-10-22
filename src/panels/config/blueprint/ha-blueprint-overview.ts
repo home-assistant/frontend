@@ -22,6 +22,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { navigate, replaceCurrentUrl } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { currentPath } from "../../../common/url/current-path";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { hasRejectedItems } from "../../../common/util/promise-all-settled-results";
 import type {
@@ -60,7 +61,9 @@ import { showToast } from "../../../util/toast";
 import { configSections } from "../config-sections";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
 
-const DASHBOARD_PATH = "/config/blueprint/dashboard";
+const BARE_PATH = "/config/blueprint";
+const DASHBOARD_PATH = `${BARE_PATH}/dashboard`;
+const IMPORT_PATH = `${DASHBOARD_PATH}/import`;
 
 type BlueprintMetaDataPath = BlueprintMetaData & {
   path: string;
@@ -318,13 +321,15 @@ class HaBlueprintOverview extends LitElement {
     // Move to the dashboard path before the URL controllers connect, they
     // keep the path they connected on. The router only gets there from the
     // bare path after this, and the import path is left for the dashboard.
-    const path = this.route?.path;
+    // Reads the URL, as a cached config panel reconnects this page with its
+    // old route on the way to another page.
+    const path = currentPath().replace(/\/$/, "");
     const importUrl =
-      path === "/import"
+      path === IMPORT_PATH
         ? (extractSearchParam("blueprint_url") ?? "")
         : undefined;
 
-    if (path === "" || importUrl !== undefined) {
+    if (path === BARE_PATH || importUrl !== undefined) {
       const search = importUrl === undefined ? mainWindow.location.search : "";
       replaceCurrentUrl(
         __DEMO__
