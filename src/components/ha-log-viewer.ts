@@ -94,7 +94,7 @@ export class HaLogViewer extends LitElement {
 
   protected render() {
     return html`
-      <div class="log" @scroll=${this._handleScroll}>
+      <div class="log" tabindex="0" @scroll=${this._handleScroll}>
         <slot></slot>
         ${
           this._noMatches
@@ -220,6 +220,10 @@ export class HaLogViewer extends LitElement {
       direction: ltr;
       font-family: var(--ha-font-family-code);
       font-size: var(--ha-font-size-s);
+    }
+    .log:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: -2px;
     }
     .no-matches {
       color: var(--secondary-text-color);
