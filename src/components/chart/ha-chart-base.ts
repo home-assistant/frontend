@@ -1366,6 +1366,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         },
       },
       timeAxis: {
+        axisPointer: {
+          lineStyle: { color: style.getPropertyValue("--info-color") },
+        },
         axisLine: {
           show: true,
           lineStyle: { color: style.getPropertyValue("--divider-color") },
