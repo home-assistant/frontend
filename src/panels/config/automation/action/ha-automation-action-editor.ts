@@ -37,9 +37,6 @@ export default class HaAutomationActionEditor extends LitElement {
 
   @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
-  @property({ type: Boolean, attribute: "initial-focus" }) public initialFocus =
-    false;
-
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
     false;
 
@@ -78,7 +75,6 @@ export default class HaAutomationActionEditor extends LitElement {
                     : nothing
                 }
                 <ha-yaml-editor
-                  .initialFocus=${this.initialFocus}
                   .defaultValue=${this.action}
                   @value-changed=${this._onYamlChange}
                   .readOnly=${this.disabled}

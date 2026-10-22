@@ -161,7 +161,6 @@ export class HuiDialogEditSection
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          initial-focus
           in-dialog
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
@@ -339,11 +338,15 @@ export class HuiDialogEditSection
     }
   }
 
-  private _toggleMode(): void {
+  private async _toggleMode(): Promise<void> {
     if (this._yamlMode && this._yamlError) return;
-    withViewTransition(() => {
+    await withViewTransition(() => {
       this._yamlMode = !this._yamlMode;
     });
+    if (this._yamlMode) {
+      await this.updateComplete;
+      this._editor?.focus();
+    }
   }
 
   protected supportedShortcuts(): SupportedShortcuts {

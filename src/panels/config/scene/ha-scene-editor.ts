@@ -17,7 +17,7 @@ import {
 import type { HassEntity, HassEvent } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
@@ -40,6 +40,7 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-svg-icon";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   fireRelatedContext,
   fullEntitiesContext,
@@ -146,6 +147,8 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   @state() private _scene?: SceneEntity;
 
   @state() private _mode: "review" | "live" | "yaml" = "review";
+
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   private _storedStates: SceneEntities = {};
 
@@ -345,7 +348,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
   private _renderYamlMode() {
     return html` <ha-yaml-editor
-      initial-focus
       .defaultValue=${this._config}
       @value-changed=${this._yamlChanged}
       @editor-save=${this._saveScene}
@@ -820,12 +822,14 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     }
   }
 
-  private _toggleYamlMode() {
+  private async _toggleYamlMode() {
     if (this._mode === "yaml") {
       this._initEntities(this._config!);
       this._exitYamlMode();
     } else {
       this._enterYamlMode();
+      await this.updateComplete;
+      this._yamlEditor?.focus();
     }
   }
 

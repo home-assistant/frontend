@@ -66,6 +66,13 @@ const OPEN_DIALOG_STACK: DialogState[] = [];
 export const FOCUS_TARGET = Symbol.for("HA focus target");
 
 /**
+ * Returns the tag name of the topmost open dialog that was opened with
+ * browser history, or `undefined` when no such dialog is open.
+ */
+export const getTopOpenDialogTag = (): string | undefined =>
+  OPEN_DIALOG_STACK[OPEN_DIALOG_STACK.length - 1]?.dialogTag;
+
+/**
  * Shows a dialog element, lazy-loading it if needed, and optionally integrates
  * dialog open/close behavior with browser history.
  *

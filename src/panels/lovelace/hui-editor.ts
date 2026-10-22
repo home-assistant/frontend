@@ -89,7 +89,6 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
         >
         <div class="content">
           <ha-yaml-editor
-            initial-focus
             @value-changed=${this._yamlChanged}
             @editor-save=${this._handleSave}
             disable-fullscreen
@@ -103,6 +102,7 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._setValue();
+    this.yamlEditor.focus();
   }
 
   protected updated(changedProps: PropertyValues<this>) {

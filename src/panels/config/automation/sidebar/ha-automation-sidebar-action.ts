@@ -70,6 +70,8 @@ export default class HaAutomationSidebarAction extends LitElement {
 
   @state() private _warnings?: string[];
 
+  private _focusYamlEditor = false;
+
   @query(".sidebar-editor")
   public editor?: HaAutomationConditionEditor;
 
@@ -374,7 +376,6 @@ export default class HaAutomationSidebarAction extends LitElement {
               this.sidebarKey,
               html`<ha-automation-action-editor
                 class="sidebar-editor"
-                .initialFocus=${this.config.uiSupported}
                 .hass=${this.hass}
                 .action=${actionConfig}
                 .yamlMode=${this.yamlMode}
@@ -453,7 +454,22 @@ export default class HaAutomationSidebarAction extends LitElement {
     if (!this._canToggleYamlMode) {
       return;
     }
+    this._focusYamlEditor = !this.yamlMode;
     fireEvent(this, "toggle-yaml-mode", { yamlMode: !this.yamlMode });
+  }
+
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // The editor is recreated after a mode switch, focus it once it exists
+    if (changedProperties.has("sidebarKey") && this._focusYamlEditor) {
+      this._focusYamlEditor = false;
+      this._focusEditor();
+    }
+  }
+
+  private async _focusEditor() {
+    await this.editor?.updateComplete;
+    this.editor?.yamlEditor?.focus();
   }
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {

@@ -197,7 +197,6 @@ class HaPanelDevAction extends MatchMinHeightMixin(
                     show-service-id
                   ></ha-service-picker>
                   <ha-yaml-editor
-                    initial-focus
                     id="yaml-editor"
                     .defaultValue=${this._serviceData}
                     @value-changed=${this._yamlChanged}
@@ -622,20 +621,28 @@ class HaPanelDevAction extends MatchMinHeightMixin(
     this._setYamlMode(ev.detail.value === "yaml");
   }
 
-  private _setYamlMode(yamlMode: boolean) {
+  private async _setYamlMode(yamlMode: boolean) {
     if (yamlMode === this._yamlMode) {
       return;
     }
-    withViewTransition(() => {
+    await withViewTransition(() => {
       this._yamlMode = yamlMode;
       this._yamlValid = true;
       this._error = undefined;
     });
+    if (yamlMode) {
+      await this.updateComplete;
+      this._yamlEditor?.focus();
+    }
   }
 
   protected supportedShortcuts(): SupportedShortcuts {
     return {
-      Y: () => this._uiAvailable && this._setYamlMode(!this._yamlMode),
+      Y: () => {
+        if (this._uiAvailable) {
+          this._setYamlMode(!this._yamlMode);
+        }
+      },
     };
   }
 

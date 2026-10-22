@@ -51,9 +51,6 @@ export class HaYamlEditor extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  @property({ type: Boolean, attribute: "initial-focus" }) public initialFocus =
-    false;
-
   @property({ attribute: "copy-clipboard", type: Boolean })
   public copyClipboard = false;
 
@@ -67,6 +64,8 @@ export class HaYamlEditor extends LitElement {
   private _i18n?: ContextType<typeof internationalizationContext>;
 
   @query("ha-code-editor") _codeEditor?: HaCodeEditor;
+
+  private _focusPending = false;
 
   public setValue(value): void {
     try {
@@ -96,9 +95,23 @@ export class HaYamlEditor extends LitElement {
     }
   }
 
+  /**
+   * Focuses the editor. If it is still being created, it is focused once it
+   * has been rendered.
+   */
   public focus(): void {
-    if (this._codeEditor?.codemirror) {
-      this._codeEditor?.codemirror.focus();
+    if (this._codeEditor) {
+      this._codeEditor.focus();
+      return;
+    }
+    this._focusPending = true;
+  }
+
+  protected updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    if (this._focusPending && this._codeEditor) {
+      this._focusPending = false;
+      this._codeEditor.focus();
     }
   }
 
@@ -124,7 +137,6 @@ export class HaYamlEditor extends LitElement {
         .readOnly=${this.readOnly}
         .disableFullscreen=${this.disableFullscreen}
         .inDialog=${this.inDialog}
-        .initialFocus=${this.initialFocus}
         mode="yaml"
         lint
         autocomplete-entities

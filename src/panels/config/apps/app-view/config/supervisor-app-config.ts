@@ -320,7 +320,6 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
                   )}
                 ></ha-form>`
               : html`<ha-yaml-editor
-                  .initialFocus=${this._canShowSchema}
                   @value-changed=${this._configChanged}
                   .yamlSchema=${ADDON_YAML_SCHEMA}
                 ></ha-yaml-editor>`
@@ -408,10 +407,18 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
 
     switch (action) {
       case "toggle_yaml":
-        this._yamlMode = !this._yamlMode;
+        this._toggleYamlMode();
         return;
       case "reset":
         this._resetTapped(ev);
+    }
+  }
+
+  private async _toggleYamlMode() {
+    this._yamlMode = !this._yamlMode;
+    if (this._yamlMode) {
+      await this.updateComplete;
+      this._editor?.focus();
     }
   }
 
@@ -419,7 +426,7 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
     return {
       Y: () => {
         if (this._canShowSchema && !this.disabled) {
-          this._yamlMode = !this._yamlMode;
+          this._toggleYamlMode();
         }
       },
     };

@@ -34,9 +34,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
 
   @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
-  @property({ type: Boolean, attribute: "initial-focus" }) public initialFocus =
-    false;
-
   @property({ attribute: false }) public description?: TriggerDescription;
 
   @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
@@ -72,7 +69,6 @@ export default class HaAutomationTriggerEditor extends LitElement {
                     : nothing
                 }
                 <ha-yaml-editor
-                  .initialFocus=${this.initialFocus}
                   .defaultValue=${this.trigger}
                   .readOnly=${this.disabled}
                   @value-changed=${this._onYamlChange}

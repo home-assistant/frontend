@@ -100,10 +100,9 @@ export class HaCodeEditor extends ReactiveElement {
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
 
-  @property({ type: Boolean, attribute: "initial-focus" })
-  public initialFocus = false;
-
   @property({ attribute: "read-only", type: Boolean }) public readOnly = false;
+
+  private _focusPending = false;
 
   @property({ type: Boolean }) public linewrap = false;
 
@@ -263,7 +262,20 @@ export class HaCodeEditor extends ReactiveElement {
     }
   }
 
+  /**
+   * Focuses the editor. If CodeMirror is still loading, it is focused once
+   * it has been created.
+   */
+  public focus(): void {
+    if (this.codemirror) {
+      this.codemirror.focus();
+      return;
+    }
+    this._focusPending = true;
+  }
+
   public disconnectedCallback() {
+    this._focusPending = false;
     fireEvent(this, "dialog-set-fullscreen", false);
     this._clearCompletionInfo();
     if (this._completionInfoFrame !== undefined) {
@@ -502,7 +514,8 @@ export class HaCodeEditor extends ReactiveElement {
     // Update the toolbar. Creating it if required
     this._updateToolbar();
 
-    if (this.initialFocus) {
+    if (this._focusPending) {
+      this._focusPending = false;
       this.codemirror.focus();
     }
   }

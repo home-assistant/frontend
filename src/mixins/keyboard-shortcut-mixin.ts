@@ -1,12 +1,13 @@
 import type { LitElement } from "lit";
 import type { Constructor } from "../types";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
+import { getTopOpenDialogTag } from "../dialogs/make-dialog-manager";
 
 declare global {
   type SupportedShortcuts = Record<string, () => void>;
 }
 
-const normalizeShortcutKey = (event: KeyboardEvent): string => {
+export const normalizeShortcutKey = (event: KeyboardEvent): string => {
   const { key } = event;
   if (key.length !== 1) {
     return key;
@@ -50,6 +51,13 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
     };
 
     private _isEventInScope(event: KeyboardEvent): boolean {
+      // Only the topmost dialog may handle the shortcut, even when focus has
+      // fallen back to the page behind it
+      const topDialogTag = getTopOpenDialogTag();
+      if (topDialogTag && topDialogTag !== this.localName) {
+        return false;
+      }
+
       const path = event.composedPath();
 
       if (path.includes(this)) {
