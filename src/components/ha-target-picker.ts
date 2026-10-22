@@ -496,7 +496,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       currentTarget.id
     );
 
-    return this._addTargetToValue(valueWithoutCurrent, newTarget);
+    return this._withoutOrphanExclude(
+      this._addTargetToValue(valueWithoutCurrent, newTarget)
+    );
   }
 
   private _addTargetToValue(
@@ -541,7 +543,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private _handleRemove(ev: HASSDomEvent<HASSDomEvents["remove-target-item"]>) {
     const { type, id } = ev.detail;
     fireEvent(this, "value-changed", {
-      value: this._removeItem(this.value, type, id),
+      value: this._withoutOrphanExclude(this._removeItem(this.value, type, id)),
     });
   }
 
@@ -602,8 +604,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
     const val = { ...value }!;
     delete val[typeId];
-    if (Object.keys(val).length) {
-      return val;
+    return val;
+  }
+
+  private _withoutOrphanExclude(value: this["value"]): this["value"] {
+    // An exclude on its own is not a target.
+    if (value && Object.keys(value).some((key) => key !== "exclude")) {
+      return value;
     }
     return undefined;
   }
@@ -957,7 +964,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         id: replacement,
       });
     }
-    fireEvent(this, "value-changed", { value });
+    fireEvent(this, "value-changed", {
+      value: this._withoutOrphanExclude(value),
+    });
   }
 
   private _renderRow = (

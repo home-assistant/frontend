@@ -23,6 +23,7 @@ import type {
   EntityRegistryEntry,
 } from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
+import type { HassServiceTargetWithExclude } from "./target";
 
 export type ThresholdMode = "crossed" | "changed" | "is";
 
@@ -1170,7 +1171,7 @@ export const computeCreateDomains = (
 
 export const resolveEntityIDs = (
   hass: HomeAssistant,
-  targetPickerValue: HassServiceTarget,
+  targetPickerValue: HassServiceTargetWithExclude,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
@@ -1180,6 +1181,43 @@ export const resolveEntityIDs = (
     return [];
   }
 
+  const included = resolveIncludedEntityIDs(
+    hass,
+    targetPickerValue,
+    entities,
+    devices,
+    areas,
+    targetSelector
+  );
+
+  if (!targetPickerValue.exclude) {
+    return included;
+  }
+
+  // Excludes are resolved like a target and taken out of the whole result,
+  // matching core. They are not narrowed by the selector: leaving out more
+  // than the selector allows can't add anything back.
+  const excluded = new Set(
+    resolveIncludedEntityIDs(
+      hass,
+      targetPickerValue.exclude,
+      entities,
+      devices,
+      areas,
+      { target: {} }
+    )
+  );
+  return included.filter((entityId) => !excluded.has(entityId));
+};
+
+const resolveIncludedEntityIDs = (
+  hass: HomeAssistant,
+  targetPickerValue: HassServiceTarget,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  targetSelector: TargetSelector
+): string[] => {
   const targetEntities = new Set(ensureArray(targetPickerValue.entity_id));
   const targetDevices = new Set(ensureArray(targetPickerValue.device_id));
   const targetAreas = new Set(ensureArray(targetPickerValue.area_id));
