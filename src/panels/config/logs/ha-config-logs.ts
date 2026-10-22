@@ -416,7 +416,9 @@ export class HaConfigLogs extends LitElement {
           (isComponentLoaded(this.hass.config, "hassio") &&
             this._logProviders.some((p) => p.key === link.provider));
         missingProvider = found ? undefined : link.provider;
-        this._selectedLogProvider = found ? link.provider : DEFAULT_LOG_PROVIDER;
+        this._selectedLogProvider = found
+          ? link.provider
+          : DEFAULT_LOG_PROVIDER;
       }
       const loaded = this._getLoadedIntegrations(this.hass.config.components);
       this._filter = link.search;
