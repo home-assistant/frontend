@@ -4,6 +4,7 @@ import type {
 } from "../../data/data_table_filters";
 import { dataTableQueryParamConfig } from "./data-table-query-params";
 import {
+  createQueryString,
   decodeQueryParams,
   hasQueryParams,
   type QueryParamConfig,
@@ -48,6 +49,16 @@ export const helpersFilterQueryParams = (
   category: list(filters["ha-filter-categories"]),
   assistants: list(filters["ha-filter-voice-assistants"]),
 });
+
+// The filters as the URL holds them, so values that filter the same, such as
+// no list and an empty one, compare equal
+export const helpersFilterQueryString = (
+  filters: DataTableFiltersValues
+): string =>
+  createQueryString(
+    helpersFilterQueryParams(filters),
+    helpersFilterQueryParamConfig
+  );
 
 // What a link says to show, undefined when it has no table params so what was
 // picked before stays. A link replaces the search and the filters, ones left

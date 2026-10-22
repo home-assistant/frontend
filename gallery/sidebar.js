@@ -37,6 +37,7 @@ export default [
         pages: [
           "ha-form",
           "ha-selector",
+          "ha-target-picker-exclusions",
           "ha-select-box",
           "ha-input",
           "ha-textarea",

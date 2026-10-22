@@ -9,7 +9,6 @@ import {
   mdiShape,
   mdiSwapHorizontal,
 } from "@mdi/js";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
 import {
   css,
   html,
@@ -25,7 +24,10 @@ import { consume } from "../../../../common/decorators/consume";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { transform } from "../../../../common/decorators/transform";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
-import { isTemplate } from "../../../../common/string/has-template";
+import {
+  hasTemplate,
+  isTemplate,
+} from "../../../../common/string/has-template";
 import "../../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
@@ -52,7 +54,11 @@ import {
   entityMeetsTargetSelector,
   type TargetSelector,
 } from "../../../../data/selector";
-import { extractFromTarget, type TargetType } from "../../../../data/target";
+import {
+  extractFromTarget,
+  type HassServiceTargetWithExclude,
+  type TargetType,
+} from "../../../../data/target";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
 import { isConfigObject } from "../ui-support";
 import { getTargetIcon } from "./get_target_icon";
@@ -61,7 +67,7 @@ import { getTargetText } from "./get_target_text";
 @customElement("ha-automation-row-targets")
 export class HaAutomationRowTargets extends LitElement {
   @property({ attribute: false })
-  public target?: HassServiceTarget;
+  public target?: HassServiceTargetWithExclude;
 
   @property({ attribute: false })
   public targetRequired = false;
@@ -114,8 +120,14 @@ export class HaAutomationRowTargets extends LitElement {
 
   private _countCache = new Map<
     string,
-    Promise<number | undefined> | number | undefined
+    Promise<TargetCount | undefined> | TargetCount | undefined
   >();
+
+  // What the target's `exclude` resolves to, shared by every count.
+  private _excludedEntities?: Promise<Set<string>>;
+
+  // The same, once resolved, to mark excluded entity targets.
+  @state() private _excludedEntityIds = new Set<string>();
 
   private _rerenderCount = true;
 
@@ -127,6 +139,8 @@ export class HaAutomationRowTargets extends LitElement {
       changedProps.has("_registries")
     ) {
       this._rerenderCount = true;
+      this._excludedEntities = undefined;
+      this._resolveExcludedEntityIds();
     }
 
     if (
@@ -213,6 +227,60 @@ export class HaAutomationRowTargets extends LitElement {
     }).length;
   }
 
+  // A templated exclude can only be resolved when the automation runs.
+  private _getExclude() {
+    const exclude = isConfigObject(this.target)
+      ? this.target.exclude
+      : undefined;
+    return isConfigObject(exclude) && !hasTemplate(exclude)
+      ? exclude
+      : undefined;
+  }
+
+  private async _resolveExcludedEntityIds() {
+    if (!this._api || !this._getExclude()) {
+      this._excludedEntityIds = new Set();
+      return;
+    }
+    const request = this._getExcludedEntities();
+    const excluded = await request;
+    // A newer target started its own lookup in the meantime.
+    if (request === this._excludedEntities) {
+      this._excludedEntityIds = excluded;
+    }
+  }
+
+  private _getExcludedEntities(): Promise<Set<string>> {
+    const exclude = this._getExclude();
+    if (!exclude) {
+      return Promise.resolve(new Set());
+    }
+    if (!this._excludedEntities) {
+      this._excludedEntities = extractFromTarget(
+        this._api.callWS,
+        exclude,
+        false,
+        false
+      )
+        .then((result) => new Set(result.referenced_entities))
+        // Counts then leave the exclude out rather than failing altogether.
+        .catch(() => new Set<string>());
+    }
+    return this._excludedEntities;
+  }
+
+  private _formatCount(count: TargetCount | undefined) {
+    if (!count) {
+      return " (-)";
+    }
+    return count.excluded
+      ? ` ${this._i18n.localize(
+          "ui.panel.config.automation.editor.target_summary.count_excluded",
+          { count: count.count, excluded: count.excluded }
+        )}`
+      : ` (${count.count})`;
+  }
+
   private _renderCount(
     targetType: "floor" | "area" | "device" | "label",
     targetId: string
@@ -220,22 +288,36 @@ export class HaAutomationRowTargets extends LitElement {
     const key = `${targetType}:${targetId}`;
     let fallback = " (-)";
     if (!this._countCache.has(key) || this._rerenderCount) {
-      if (typeof this._countCache.get(key) === "number") {
-        fallback = ` (${this._countCache.get(key)})`;
+      const cached = this._countCache.get(key);
+      if (cached && !(cached instanceof Promise)) {
+        fallback = this._formatCount(cached);
       }
       this._countCache.set(
         key,
-        extractFromTarget(
-          this._api.callWS,
-          {
-            [`${targetType}_id`]: [targetId],
-          },
-          false,
-          this.selector?.target?.primary_entities_only
-        )
-          .then((result) =>
-            this._countMatchingEntities(result.referenced_entities)
-          )
+        Promise.all([
+          extractFromTarget(
+            this._api.callWS,
+            {
+              [`${targetType}_id`]: [targetId],
+            },
+            false,
+            this.selector?.target?.primary_entities_only
+          ),
+          this._getExcludedEntities(),
+        ])
+          .then(([result, excluded]): TargetCount => {
+            // Excludes are global, so anything they resolve to is taken out
+            // of this target too.
+            const remaining = result.referenced_entities.filter(
+              (entityId) => !excluded.has(entityId)
+            );
+            const count = this._countMatchingEntities(remaining);
+            return {
+              count,
+              excluded:
+                this._countMatchingEntities(result.referenced_entities) - count,
+            };
+          })
           .catch((err) => {
             // eslint-disable-next-line no-console
             console.error("Error counting target entities", err);
@@ -244,20 +326,21 @@ export class HaAutomationRowTargets extends LitElement {
       );
     }
 
-    if (this._countCache.get(key) instanceof Promise) {
+    const cached = this._countCache.get(key);
+    if (cached instanceof Promise) {
       return until(
-        (this._countCache.get(key) as Promise<number | undefined>)!.then(
-          (count) => {
+        cached.then((count) => {
+          if (this._countCache.get(key) === cached) {
             this._countCache.set(key, count);
-            return count === undefined ? nothing : html` (${count})`;
           }
-        ),
+          return count === undefined ? nothing : this._formatCount(count);
+        }),
         fallback
       );
     }
 
-    if (typeof this._countCache.get(key) === "number") {
-      return ` (${this._countCache.get(key)})`;
+    if (cached) {
+      return this._formatCount(cached);
     }
     return nothing;
   }
@@ -272,8 +355,12 @@ export class HaAutomationRowTargets extends LitElement {
 
     // Any other value that isn't a mapping is invalid. Without this, the
     // characters of a string or the items of a list would count as targets.
-    const target = isConfigObject(this.target) ? this.target : undefined;
-    const length = Object.keys(target || {}).length;
+    // `exclude` takes entities away from the other keys; it is not a target
+    // of its own, so it gets no chip. Its effect shows in each count.
+    const { exclude: _exclude, ...target } = isConfigObject(this.target)
+      ? this.target
+      : {};
+    const length = Object.keys(target).length;
     if (!length) {
       return this._renderTargetBadge(
         this.targetRequired
@@ -286,13 +373,16 @@ export class HaAutomationRowTargets extends LitElement {
         this.targetRequired
       );
     }
-    const totalLength = Object.values(target || {}).reduce(
+    const totalLength = Object.values(target).reduce(
       (acc, val) => acc + ensureArray(val).length,
       0
     );
+    const excludedEntityTargets = ensureArray(target.entity_id ?? []).filter(
+      (entityId) => this._excludedEntityIds.has(entityId)
+    ).length;
 
     if (totalLength <= 5) {
-      const targets = Object.entries(target!).reduce<
+      const targets = Object.entries(target).reduce<
         ["floor" | "area" | "device" | "entity" | "label", string][]
       >((acc, [targetType, targetId]) => {
         const type = targetType.replace("_id", "") as
@@ -314,7 +404,7 @@ export class HaAutomationRowTargets extends LitElement {
       );
     }
 
-    const rows = Object.entries(target!)
+    const rows = Object.entries(target)
       .reduce<["floor" | "area" | "device" | "entity" | "label", string][]>(
         (acc, [targetType, targetId]) => {
           const type = targetType.replace("_id", "") as
@@ -359,7 +449,7 @@ export class HaAutomationRowTargets extends LitElement {
             ${this._i18n.localize(
               "ui.panel.config.automation.editor.target_summary.targets",
               {
-                count: totalLength,
+                count: totalLength - excludedEntityTargets,
               }
             )}
           </div>
@@ -421,7 +511,8 @@ export class HaAutomationRowTargets extends LitElement {
     targetId?: string,
     targetType?: string,
     countTemplate: unknown = nothing,
-    title?: string
+    title?: string,
+    excluded = false
   ) {
     if (!this.interactive || !targetId || !targetType) {
       return html`<div
@@ -429,6 +520,7 @@ export class HaAutomationRowTargets extends LitElement {
           target: true,
           warning,
           error,
+          excluded,
         })}
         title=${title ?? nothing}
         .targetId=${targetId}
@@ -445,6 +537,7 @@ export class HaAutomationRowTargets extends LitElement {
         target: true,
         warning,
         error,
+        excluded,
       })}
       title=${title ?? nothing}
       .targetId=${targetId}
@@ -470,6 +563,9 @@ export class HaAutomationRowTargets extends LitElement {
     let badgeTargetId: string | undefined = targetId;
     let badgeTargetType: string | undefined = targetType;
     let countTemplate: unknown = nothing;
+    // An entity target that the exclude block takes out again.
+    const excluded =
+      targetType === "entity" && this._excludedEntityIds.has(targetId);
 
     if (targetType === "entity" && ["all", "none"].includes(targetId)) {
       icon = mdiShape;
@@ -530,6 +626,11 @@ export class HaAutomationRowTargets extends LitElement {
         if (targetType !== "entity" && this.interactive) {
           countTemplate = this._renderCount(targetType, targetId);
         }
+        if (excluded) {
+          title = this._i18n.localize(
+            "ui.panel.config.automation.editor.target_summary.excluded"
+          );
+        }
       }
     }
 
@@ -558,6 +659,7 @@ export class HaAutomationRowTargets extends LitElement {
         title=${title ?? nothing}
         class=${classMap({
           warning,
+          excluded,
         })}
         >${iconTemplate} ${label}${countTemplate}</ha-dropdown-item
       >`;
@@ -571,7 +673,8 @@ export class HaAutomationRowTargets extends LitElement {
       badgeTargetId,
       badgeTargetType,
       countTemplate,
-      title
+      title,
+      excluded
     );
   }
 
@@ -630,6 +733,7 @@ export class HaAutomationRowTargets extends LitElement {
       type: targetType,
       itemId: targetId,
       selector: this.selector,
+      exclude: this._getExclude(),
     });
   }
 
@@ -727,6 +831,11 @@ export class HaAutomationRowTargets extends LitElement {
     ha-dropdown-item {
       padding: 0 var(--ha-space-2);
     }
+    .target.excluded .label,
+    ha-dropdown-item.excluded {
+      color: var(--secondary-text-color);
+      text-decoration: line-through;
+    }
     ha-dropdown-item.warning {
       background-color: var(--ha-color-fill-warning-quiet-resting);
       color: var(--ha-color-on-warning-normal);
@@ -739,6 +848,11 @@ export class HaAutomationRowTargets extends LitElement {
       color: var(--ha-color-on-warning-normal);
     }
   `;
+}
+
+interface TargetCount {
+  count: number;
+  excluded: number;
 }
 
 declare global {

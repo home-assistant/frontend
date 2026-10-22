@@ -1,7 +1,4 @@
-import type {
-  HassEntity,
-  HassServiceTarget,
-} from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -17,6 +14,7 @@ import {
   filterSelectorDevices,
   filterSelectorEntities,
 } from "../../data/selector";
+import type { HassServiceTargetWithExclude } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import "../ha-target-picker";
 
@@ -26,7 +24,7 @@ export class HaTargetSelector extends LitElement {
 
   @property({ attribute: false }) public selector!: TargetSelector;
 
-  @property({ type: Object }) public value?: HassServiceTarget;
+  @property({ type: Object }) public value?: HassServiceTargetWithExclude;
 
   @property() public label?: string;
 
@@ -87,6 +85,7 @@ export class HaTargetSelector extends LitElement {
         .disabled=${this.disabled}
         .createDomains=${this._createDomains}
         .primaryEntitiesOnly=${this.selector.target?.primary_entities_only}
+        allow-exclude
       ></ha-target-picker>`;
   }
 

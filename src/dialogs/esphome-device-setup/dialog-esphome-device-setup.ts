@@ -18,8 +18,6 @@ import "../../components/ha-domain-icon";
 import "../../components/ha-icon-button-prev";
 import "../../components/ha-spinner";
 import "../../components/ha-svg-icon";
-import "../../components/item/ha-list-item-button";
-import "../../components/list/ha-list-nav";
 import { fetchConfigFlowInProgress } from "../../data/config_flow";
 import {
   apiContext,
@@ -72,8 +70,7 @@ import {
 import { DialogMixin } from "../dialog-mixin";
 import type { ESPHomeDeviceSetupDialogParams } from "./show-dialog-esphome-device-setup";
 
-type SetupView =
-  "checklist" | "zwave-adapters" | "audio-offer" | "audio-working";
+type SetupView = "checklist" | "audio-offer" | "audio-working";
 
 const SERIAL_PORT_TYPE_LABELS: Record<ESPHomeSerialPortType, LocalizeKeys> = {
   TTL: "ui.panel.config.devices.esphome.setup_serial_port_ttl",
@@ -267,9 +264,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       return nothing;
     }
 
-    if (this._view === "zwave-adapters") {
-      return this._renderZWaveAdapters();
-    }
     // Footer hides Install and Skip while this flag is set. Progress is the body.
     if (this._installingAudio || this._view === "audio-working") {
       return this._renderAudioWorking();
@@ -571,10 +565,16 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     if (status === "not-started") {
       return html`
         <div class="actions">
-          <ha-button appearance="outlined" @click=${this._showZWaveAdapters}>
+          <ha-button
+            appearance="outlined"
+            href=${documentationUrl(this._hassConfig!, "/connect/zwa-2/")}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
             ${localize(
               "ui.panel.config.devices.esphome.setup_what_are_adapters"
             )}
+            <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-button>
         </div>
       `;
@@ -699,30 +699,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     `;
   }
 
-  private _renderZWaveAdapters() {
-    const localize = this._i18n!.localize;
-    return html`
-      <p>${localize("ui.panel.config.devices.esphome.setup_adapters_intro")}</p>
-      <ha-list-nav>
-        <ha-list-item-button
-          href=${documentationUrl(this._hassConfig!, "/connect/zwa-2/")}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          <span slot="headline">
-            ${localize("ui.panel.config.devices.esphome.setup_adapter_zwa2")}
-          </span>
-          <span slot="supporting-text">
-            ${localize(
-              "ui.panel.config.devices.esphome.setup_adapter_zwa2_description"
-            )}
-          </span>
-          <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
-        </ha-list-item-button>
-      </ha-list-nav>
-    `;
-  }
-
   private _setupSerialPort = async (ev: Event) => {
     ev.stopPropagation();
     if (!this._api) {
@@ -742,9 +718,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
 
   private _dialogTitle(): string {
     const localize = this._i18n!.localize;
-    if (this._view === "zwave-adapters") {
-      return localize("ui.panel.config.devices.esphome.setup_adapters_title");
-    }
     if (this._installingAudio || this._view === "audio-working") {
       return localize(ESPHOME_CAPABILITY_TITLE_KEYS.audio);
     }
@@ -913,11 +886,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     this._installingAudio = false;
     this._installStatus = undefined;
     this._error = undefined;
-  };
-
-  private _showZWaveAdapters = (ev: Event) => {
-    ev.stopPropagation();
-    this._view = "zwave-adapters";
   };
 
   private _bluetoothSwitch() {

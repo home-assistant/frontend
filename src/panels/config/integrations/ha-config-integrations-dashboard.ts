@@ -5,6 +5,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
@@ -479,18 +480,30 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
       this._filter
     );
 
+    const showDisabledBadge =
+      !this._showDisabled && this.narrow && disabledConfigEntries.length > 0;
+
     const filterMenu = html`
       <div slot=${ifDefined(this.narrow ? "toolbar-icon" : undefined)}>
         <div class="menu-badge-container">
           ${
-            !this._showDisabled && this.narrow && disabledConfigEntries.length
-              ? html`<span class="badge">${disabledConfigEntries.length}</span>`
+            showDisabledBadge
+              ? html`<span class="badge" aria-hidden="true"
+                  >${disabledConfigEntries.length}</span
+                >`
               : ""
           }
           <ha-dropdown multi @wa-select=${this._handleMenuAction}>
             <ha-icon-button
               slot="trigger"
-              .label=${this.hass.localize("ui.common.menu")}
+              .label=${
+                showDisabledBadge
+                  ? this.hass.localize(
+                      "ui.panel.config.integrations.filters_disabled_hidden",
+                      { number: disabledConfigEntries.length }
+                    )
+                  : this.hass.localize("ui.panel.config.integrations.filters")
+              }
               .path=${mdiFilterVariant}
             >
             </ha-icon-button>
@@ -546,6 +559,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     .placeholder=${this.hass.localize(
                       "ui.panel.config.integrations.search"
                     )}
+                    .accessibleLabel=${this.hass.localize(
+                      "ui.panel.config.integrations.search"
+                    )}
                   >
                   </ha-input-search>
                 </div>
@@ -562,6 +578,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                     .value=${this._filter}
                     @input=${this._handleSearchChange}
                     .placeholder=${this.hass.localize(
+                      "ui.panel.config.integrations.search"
+                    )}
+                    .accessibleLabel=${this.hass.localize(
                       "ui.panel.config.integrations.search"
                     )}
                   >
@@ -593,11 +612,11 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         }
         ${
           this._showIgnored
-            ? html`<h1>
+            ? html`<h2 class="section-header">
                   ${this.hass.localize(
                     "ui.panel.config.integrations.ignore.ignored"
                   )}
-                </h1>
+                </h2>
                 <div class="container">
                   ${
                     ignoredConfigEntries.length > 0
@@ -620,9 +639,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         }
         ${
           configEntriesInProgress.length
-            ? html`<h1>
+            ? html`<h2 class="section-header">
                   ${this.hass.localize("ui.panel.config.integrations.discovered")}
-                </h1>
+                </h2>
                 <div class="container">
                   ${configEntriesInProgress.map(
                     (flow: DataEntryFlowProgressExtended) => html`
@@ -639,9 +658,9 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         }
         ${
           this._showDisabled
-            ? html`<h1>
+            ? html`<h2 class="section-header">
                   ${this.hass.localize("ui.panel.config.integrations.disabled")}
-                </h1>
+                </h2>
                 <div class="container">
                   ${
                     disabledConfigEntries.length > 0
@@ -662,15 +681,20 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                 </div>`
             : ""
         }
-        ${
-          configEntriesInProgress.length ||
-          this._showDisabled ||
-          this._showIgnored
-            ? html`<h1>
-                ${this.hass.localize("ui.panel.config.integrations.configured")}
-              </h1>`
-            : ""
-        }
+        <h2
+          class=${classMap({
+            "section-header": true,
+            // Only shown when there are other sections, but always kept for
+            // screen readers so the cards are nested under a heading.
+            "visually-hidden": !(
+              configEntriesInProgress.length ||
+              this._showDisabled ||
+              this._showIgnored
+            ),
+          })}
+        >
+          ${this.hass.localize("ui.panel.config.integrations.configured")}
+        </h2>
         <div class="container">
           ${
             integrations.length
@@ -694,11 +718,11 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                   this.configEntries.length
                 ? html`
                     <div class="empty-message">
-                      <h1>
+                      <h3>
                         ${this.hass.localize(
                           "ui.panel.config.integrations.none_found"
                         )}
-                      </h1>
+                      </h3>
                       <p>
                         ${this.hass.localize(
                           "ui.panel.config.integrations.none_found_detail"
@@ -729,11 +753,11 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
                       integrations.length === 0
                     ? html`
                         <div class="empty-message">
-                          <h1>
+                          <h3>
                             ${this.hass.localize(
                               "ui.panel.config.integrations.none"
                             )}
-                          </h1>
+                          </h3>
                           <p>
                             ${this.hass.localize(
                               "ui.panel.config.integrations.no_integrations"
@@ -1089,8 +1113,11 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
           grid-column-start: 1;
           grid-column-end: -1;
         }
-        .empty-message h1 {
+        .empty-message h3 {
           margin: 0;
+          font-family: var(--ha-font-family-heading);
+          font-size: var(--ha-font-size-2xl);
+          line-height: var(--ha-line-height-condensed);
         }
         ha-input-search {
           flex: 1;
@@ -1168,8 +1195,25 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
         .menu-badge-container {
           position: relative;
         }
-        h1 {
+        .section-header {
           margin: var(--ha-space-6) var(--ha-space-4) 0;
+          font-family: var(--ha-font-family-heading);
+          font-size: var(--ha-font-size-2xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          white-space: normal;
+          overflow: visible;
+        }
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          margin: -1px;
+          padding: 0;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
         }
         ha-dropdown ha-icon-button {
           color: var(--primary-text-color);
