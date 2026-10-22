@@ -204,14 +204,14 @@ export class HassTabsSubpage extends LitElement {
       this._entities
     );
     const backPath = sanitizeNavigationPath(this.backPath);
-    const title = this.showTabs
-      ? this._activeTab &&
-        (this._activeTab.translationKey
+    const activeTabName =
+      this.showTabs && this._activeTab
+        ? this._activeTab.translationKey
           ? (this.localizeFunc || this._i18n.localize)(
               this._activeTab.translationKey as LocalizeKeys
             )
-          : this._activeTab.name)
-      : tabs[0];
+          : this._activeTab.name
+        : undefined;
 
     return html`
       <div class="toolbar ${classMap({ narrow: this._narrow })}">
@@ -231,11 +231,7 @@ export class HassTabsSubpage extends LitElement {
               this._narrow || !this.showTabs
                 ? html`<div class="main-title">
                     <slot name="header"
-                      >${
-                        !this.showTabs
-                          ? html`<span aria-hidden="true">${tabs[0]}</span>`
-                          : ""
-                      }</slot
+                      >${!this.showTabs ? html`<h1>${tabs[0]}</h1>` : ""}</slot
                     >
                   </div>`
                 : ""
@@ -268,7 +264,11 @@ export class HassTabsSubpage extends LitElement {
             : nothing
         }
         <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
-          ${title ? html`<h1 class="visually-hidden">${title}</h1>` : nothing}
+          ${
+            activeTabName
+              ? html`<h1 class="visually-hidden">${activeTabName}</h1>`
+              : nothing
+          }
           <slot></slot>
           ${this.hasFab ? html`<div class="fab-bottom-space"></div>` : nothing}
         </div>
@@ -467,6 +467,10 @@ export class HassTabsSubpage extends LitElement {
         }
         .narrow .main-title {
           margin-inline-start: var(--main-title-margin, var(--ha-space-2));
+        }
+        .main-title h1 {
+          margin: 0;
+          font: inherit;
         }
 
         .content {
