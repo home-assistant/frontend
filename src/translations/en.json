@@ -1215,6 +1215,9 @@
         "source_history": "Source: History",
         "source_stats": "Source: Long term statistics",
         "zoom_reset": "Reset zoom",
+        "zoom_range": "Visible part of the chart",
+        "zoom_start": "Start of the visible part",
+        "zoom_end": "End of the visible part",
         "expand_legend": "More",
         "collapse_legend": "Less",
         "toggle_visibility": "Toggle visibility",
@@ -2689,6 +2692,7 @@
           "title": "Charts",
           "drag_to_zoom": "to zoom in part of a chart",
           "scroll_to_zoom": "to zoom in or out",
+          "scroll_to_pan": "to move through a zoomed-in chart",
           "double_click": "to zoom in on part of the chart",
           "click_legend_solo": "on a chart legend item to show only that series"
         },
