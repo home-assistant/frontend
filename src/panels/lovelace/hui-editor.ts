@@ -17,6 +17,7 @@ import {
   showConfirmationDialog,
 } from "../../dialogs/generic/show-dialog-box";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import { PreventUnsavedMixin } from "../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
@@ -35,7 +36,7 @@ const strategyStruct = type({
 
 @customElement("hui-editor")
 class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
-  PreventUnsavedMixin(LitElement)
+  PreventUnsavedMixin(KeyboardShortcutMixin(LitElement))
 ) {
   @property({ type: Boolean }) public narrow = false;
 
@@ -204,6 +205,14 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
 
   private async _closeEditor() {
     await this._confirmDiscard(true);
+  }
+
+  protected supportedShortcuts(): SupportedShortcuts {
+    return { Y: () => this._closeEditor() };
+  }
+
+  protected supportedShortcutsInInput(): string[] {
+    return ["Y"];
   }
 
   private async _resetConfig() {

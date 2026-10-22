@@ -2730,7 +2730,8 @@
         "other": {
           "title": "Other",
           "my_link": "get My Home Assistant link",
-          "show_shortcuts": "show keyboard shortcuts"
+          "show_shortcuts": "show keyboard shortcuts",
+          "toggle_yaml": "switch between visual and YAML editor"
         }
       }
     },
