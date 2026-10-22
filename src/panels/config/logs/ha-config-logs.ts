@@ -27,6 +27,7 @@ import {
   updateHistoryState,
 } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
+import { currentPath } from "../../../common/url/current-path";
 import { deepEqual } from "../../../common/util/deep-equal";
 import {
   DEFAULT_LOG_PROVIDER,
@@ -131,8 +132,8 @@ export class HaConfigLogs extends LitElement {
   @consume({ context: manifestsContext, subscribe: true })
   private _manifests?: ContextType<typeof manifestsContext>;
 
-  // The add-on providers are only known after loading them, links are applied
-  // once they are
+  // The add-on providers are only known after loading them, until then the
+  // provider a link asks for is kept in the URL
   private _providersLoaded = false;
 
   private _queryParams = new QueryParamsController(this, logsQueryParamConfig, {
@@ -145,6 +146,14 @@ export class HaConfigLogs extends LitElement {
     const systemLog = this.systemLog;
     if (systemLog && systemLog.loaded) {
       systemLog.fetchData();
+    }
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>): void {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._applyUrl();
     }
   }
 
@@ -308,6 +317,8 @@ export class HaConfigLogs extends LitElement {
     this._selectedLogProvider = provider;
     this._filter = "";
     this._integrations = [];
+    // Keep the search typed so far on the entry Back returns to
+    this._queryParams.flush();
     // Picking another provider is a navigation of its own, so Back returns
     // to the previous one. Both entries are marked, so going back to one
     // without params shows the default view instead of keeping the provider.
@@ -315,13 +326,14 @@ export class HaConfigLogs extends LitElement {
     const search = createQueryString(
       logsQueryParams({
         provider,
-        filter: "",
+        search: "",
         integrations: [],
         raw: this._detail,
       }),
       logsQueryParamConfig
     );
-    navigate(`/config/logs${search ? `?${search}` : ""}`, {
+    // From the current path, so a trailing slash still matches the controller
+    navigate(`${currentPath()}${search ? `?${search}` : ""}`, {
       data: { [LOGS_HISTORY_STATE]: true },
     });
   }
@@ -361,8 +373,12 @@ export class HaConfigLogs extends LitElement {
   private _writeUrl(debounced = false) {
     this._queryParams.write(
       logsQueryParams({
-        provider: this._selectedLogProvider,
-        filter: this._filter,
+        // Until the apps are loaded, keep the provider the URL asks for
+        provider: this._providersLoaded
+          ? this._selectedLogProvider
+          : (logsLinkFromUrl(this._queryParams.searchParams() ?? "")
+              ?.provider ?? DEFAULT_LOG_PROVIDER),
+        search: this._filter,
         integrations: this._integrations,
         raw: this._detail,
       }),
@@ -374,14 +390,13 @@ export class HaConfigLogs extends LitElement {
     if (isComponentLoaded(this.hass.config, "hassio")) {
       await this._getInstalledAddons();
     }
+    // Keep a search typed while the apps were loading
+    this._queryParams.flush();
     this._providersLoaded = true;
     this._applyUrl();
   }
 
   private _applyUrl() {
-    if (!this._providersLoaded) {
-      return;
-    }
     const searchParams = this._queryParams.searchParams();
     if (!searchParams) {
       return;
@@ -391,32 +406,22 @@ export class HaConfigLogs extends LitElement {
       (getHistoryState()?.[LOGS_HISTORY_STATE]
         ? DEFAULT_LOGS_STATE
         : undefined);
+    let missingProvider: string | undefined;
     if (link) {
-      if (
-        link.provider !== DEFAULT_LOG_PROVIDER &&
-        !(
-          isComponentLoaded(this.hass.config, "hassio") &&
-          this._logProviders.some((p) => p.key === link.provider)
-        )
-      ) {
-        this._selectedLogProvider = DEFAULT_LOG_PROVIDER;
-        this._filter = "";
-        this._integrations = [];
-        this._writeUrl();
-        showAlertDialog(this, {
-          title:
-            this.hass.localize("ui.panel.config.logs.provider_not_found") ||
-            "Log provider not found",
-          text: this.hass.localize(
-            "ui.panel.config.logs.provider_not_available",
-            { provider: link.provider }
-          ),
-        });
-        return;
+      // The provider is checked once the apps are loaded, the rest of the link
+      // applies straight away
+      if (this._providersLoaded) {
+        const found =
+          link.provider === DEFAULT_LOG_PROVIDER ||
+          (isComponentLoaded(this.hass.config, "hassio") &&
+            this._logProviders.some((p) => p.key === link.provider));
+        missingProvider = found ? undefined : link.provider;
+        this._selectedLogProvider = found
+          ? link.provider
+          : DEFAULT_LOG_PROVIDER;
       }
       const loaded = this._getLoadedIntegrations(this.hass.config.components);
-      this._selectedLogProvider = link.provider;
-      this._filter = link.filter;
+      this._filter = link.search;
       if (link.provider === DEFAULT_LOG_PROVIDER) {
         this._detail = link.raw;
       }
@@ -428,7 +433,20 @@ export class HaConfigLogs extends LitElement {
         this._integrations = integrations;
       }
     }
+    // Before the alert adds its history entry, so closing it doesn't go back
+    // to the missing provider
     this._writeUrl();
+    if (missingProvider) {
+      showAlertDialog(this, {
+        title:
+          this.hass.localize("ui.panel.config.logs.provider_not_found") ||
+          "Log provider not found",
+        text: this.hass.localize(
+          "ui.panel.config.logs.provider_not_available",
+          { provider: missingProvider }
+        ),
+      });
+    }
   }
 
   private async _getInstalledAddons() {

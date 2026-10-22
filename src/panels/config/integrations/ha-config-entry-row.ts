@@ -321,7 +321,7 @@ export class HaConfigEntryRow extends LitElement {
             ERROR_STATES.includes(item.state)
               ? html`
                   <a
-                    href=${`/config/logs?filter=${encodeURIComponent(item.domain)}`}
+                    href=${`/config/logs?search=${encodeURIComponent(item.domain)}`}
                   >
                     <ha-dropdown-item value="logs">
                       <ha-svg-icon

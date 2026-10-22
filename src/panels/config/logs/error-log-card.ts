@@ -849,11 +849,6 @@ class ErrorLogCard extends LitElement {
       0,
       this._integrationLines.length - INTEGRATION_LOG_LINE_LIMIT
     );
-    // ha-ansi-to-html re-filters all lines after every added line while a
-    // search is set, so search once after adding them
-    if (this.filter) {
-      this._ansiToHtmlElement?.filterLines("");
-    }
     this._ansiToHtmlElement?.parseLinesToColoredPre(newLines);
     this._ansiToHtmlElement?.trimLines(INTEGRATION_LOG_LINE_LIMIT);
     if (this.filter) {

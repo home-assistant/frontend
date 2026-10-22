@@ -372,7 +372,7 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/logs",
     params: {
       provider: "string?",
-      filter: "string?",
+      search: "string?",
       integration: "string?",
       raw: "string?",
     },

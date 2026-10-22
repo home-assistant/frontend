@@ -51,6 +51,7 @@ When a router reuses one element for different items, such as one app's tab afte
 - A link to a page that is already open must apply the new URL. Handle `navigated()`, not only the first render. The router often keeps a page alive, so this is the common case, not an edge case.
 - Use one comma-separated param for several values (`?status=new,installed`), which `list` params do.
 - Use the names other pages already use for the same thing: `search`, `sort`, `direction` and `group` for the table, and `floor`, `area`, `device`, `label`, `config_entry`, `sub_entry` and `assistants` for the shared filters.
+- A search box's text is always `search`, never `filter` or `q`.
 - Keep existing param names so existing links and My Home Assistant links keep working. When renaming, read the old name as well for about six months, with a code comment naming the release it can be removed in, and write only the new name. Keep the old name in the config, use it only as a fallback when reading, and leave it out of the values you write, so the next write removes it from the URL.
 - Pages opt in. Some use params for other things, such as `?domain=` starting the add integration flow on the integrations dashboard, so check what a page already reads before syncing it.
 - Collapsed groups, column order and hidden columns stay in storage (`@storage`), not the URL.

@@ -159,7 +159,12 @@ export class HaAnsiToHtml extends LitElement {
    */
   public parseLinesToColoredPre(lines: string[], top = false) {
     for (const line of lines) {
-      this.parseLineToColoredPre(line, top);
+      this._addLine(line, top);
+    }
+
+    // Filter once all lines are added, keeping the hidden lines already shown
+    if (this._filter) {
+      this.filterLines(this._filter);
     }
   }
 
@@ -169,6 +174,10 @@ export class HaAnsiToHtml extends LitElement {
    * @param top should the new line be added to the top of the log
    */
   public parseLineToColoredPre(line, top = false) {
+    this.parseLinesToColoredPre([line], top);
+  }
+
+  private _addLine(line: string, top: boolean) {
     const lineDiv = document.createElement("div");
 
     // eslint-disable-next-line no-control-regex
@@ -329,19 +338,10 @@ export class HaAnsiToHtml extends LitElement {
     } else {
       this._pre?.appendChild(lineDiv);
     }
-
-    // filter new lines if a filter is set
-    if (this._filter) {
-      this.filterLines(this._filter);
-    }
   }
 
   public parseTextToColoredPre(text) {
-    const lines = text.split("\n");
-
-    for (const line of lines) {
-      this.parseLineToColoredPre(line);
-    }
+    this.parseLinesToColoredPre(text.split("\n"));
   }
 
   /**
@@ -409,6 +409,20 @@ export class HaAnsiToHtml extends LitElement {
             )
             .some(Boolean)
       );
+
+      // A button in place of a single hidden line takes as much room as the
+      // line, so show the line instead. Buttons only show around matches.
+      if (this.contextLines > 0 && matchedEntries.size) {
+        visible.forEach((shown, lineIndex) => {
+          if (
+            !shown &&
+            visible[lineIndex - 1] !== false &&
+            visible[lineIndex + 1] !== false
+          ) {
+            visible[lineIndex] = true;
+          }
+        });
+      }
 
       lineList.forEach((line, lineIndex) => {
         line.classList.toggle(
