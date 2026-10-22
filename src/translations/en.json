@@ -250,7 +250,9 @@
         "all_on": "All on",
         "some_on": "{on_count} of {total_count} {on_count, plural, one {on} other {on}}",
         "turn_all_on": "Turn all on",
-        "turn_all_off": "Turn all off"
+        "turn_all_off": "Turn all off",
+        "turn_on_name": "[%key:ui::components::entity::entity-toggle::turn_on%]",
+        "turn_off_name": "[%key:ui::components::entity::entity-toggle::turn_off%]"
       },
       "discovered-devices": {
         "title": "Devices discovered",
