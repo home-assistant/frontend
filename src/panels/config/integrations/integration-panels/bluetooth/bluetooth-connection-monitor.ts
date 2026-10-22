@@ -36,8 +36,6 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _filter?: string;
-
   private _tabs: PageNavigation[] = [
     {
       translationKey: "ui.panel.config.bluetooth.navigation.connections",
@@ -162,7 +160,7 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
 
     const searchParams = extractSearchParamsObject();
     if (searchParams.source) {
-      this._filter = searchParams.source;
+      this._tableSettings.showSearch(searchParams.source);
     }
   }
 
@@ -252,7 +250,8 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
         )}
         @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        filter=${this._filter || ""}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         sync-url
       ></hass-tabs-subpage-data-table>
     `;

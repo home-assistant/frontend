@@ -36,8 +36,6 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public address?: string;
-
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -125,7 +123,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
     const searchParams = extractSearchParamsObject();
     const address = searchParams.address;
     if (address) {
-      this.address = address;
+      this._tableSettings.showSearch(address);
     }
   }
 
@@ -230,7 +228,8 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
         .initialCollapsedGroups=${this._activeCollapsed}
         @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        filter=${this.address || ""}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         sync-url
         clickable
         .tabs=${this._tabs}
