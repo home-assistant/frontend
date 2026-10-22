@@ -581,7 +581,7 @@ export class HaDataTable extends LitElement {
                   >
                     ${
                       column.sortable
-                        ? html`
+                        ? html`<button type="button" class="sort-button">
                             <ha-svg-icon
                               .path=${
                                 sorted && this.sortDirection === "desc"
@@ -589,10 +589,10 @@ export class HaDataTable extends LitElement {
                                   : mdiArrowUp
                               }
                             ></ha-svg-icon>
-                          `
-                        : ""
+                            <span>${column.title}</span>
+                          </button>`
+                        : html`<span>${column.title}</span>`
                     }
-                    <span>${column.title}</span>
                   </div>
                 `;
               })}
@@ -1133,7 +1133,8 @@ export class HaDataTable extends LitElement {
   );
 
   private _handleHeaderClick(
-    ev: HASSDomCurrentTargetEvent<HTMLElement & { columnId: string }>
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { columnId: string }> &
+      MouseEvent
   ) {
     const columnId = ev.currentTarget.columnId;
     if (!this.columns[columnId].sortable) {
@@ -1154,7 +1155,10 @@ export class HaDataTable extends LitElement {
       direction: this.sortDirection,
     });
 
-    this._focusScroller();
+    // A keyboard click has no detail, keep focus on the sort button then
+    if (ev.detail !== 0) {
+      this._focusScroller();
+    }
   }
 
   private _handleHeaderRowCheckboxClick(ev: HASSDomTargetEvent<HaCheckbox>) {
@@ -1689,10 +1693,39 @@ export class HaDataTable extends LitElement {
           cursor: pointer;
         }
 
-        .row-button:focus-visible {
+        .row-button:focus-visible,
+        .sort-button:focus-visible {
           outline: var(--ha-border-width-md) solid var(--primary-color);
-          outline-offset: 2px;
+          outline-offset: calc(-1 * var(--ha-border-width-md));
           border-radius: var(--ha-border-radius-sm);
+        }
+
+        @supports selector(:has(*)) {
+          .row-button:focus-visible {
+            outline: none;
+          }
+
+          .mdc-data-table__row:has(.row-button:focus-visible) {
+            outline: var(--ha-border-width-md) solid var(--primary-color);
+            outline-offset: calc(-1 * var(--ha-border-width-md));
+          }
+        }
+
+        .sort-button {
+          display: block;
+          width: calc(100% + 2 * var(--ha-space-2));
+          margin-inline: calc(-1 * var(--ha-space-2));
+          padding: var(--ha-space-1) var(--ha-space-2);
+          border: none;
+          background: none;
+          font: inherit;
+          letter-spacing: inherit;
+          color: inherit;
+          text-align: inherit;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          cursor: pointer;
         }
 
         .mdc-data-table__cell--numeric {
@@ -1721,6 +1754,7 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:hover,
+        .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:focus-within,
         .mdc-data-table__header-cell.sortable.mdc-data-table__header-cell--icon:not(
             .not-sorted
           ) {
@@ -1883,14 +1917,15 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell.sortable {
           cursor: pointer;
         }
-        .mdc-data-table__header-cell > * {
+        .mdc-data-table__header-cell span,
+        .mdc-data-table__header-cell ha-svg-icon {
           transition: var(--float-start) 0.2s ease;
         }
         .mdc-data-table__header-cell--numeric ha-svg-icon {
           transition: var(--float-end) 0.2s ease;
         }
         .mdc-data-table__header-cell ha-svg-icon {
-          top: -3px;
+          top: calc(var(--ha-space-1) - 3px);
           position: absolute;
         }
         .mdc-data-table__header-cell.not-sorted ha-svg-icon {
@@ -1899,13 +1934,16 @@ export class HaDataTable extends LitElement {
           inset-inline-end: initial;
         }
         .mdc-data-table__header-cell.sortable:not(.not-sorted) span,
-        .mdc-data-table__header-cell.sortable.not-sorted:hover span {
+        .mdc-data-table__header-cell.sortable.not-sorted:hover span,
+        .mdc-data-table__header-cell.sortable.not-sorted:focus-within span {
           left: 24px;
           inset-inline-start: 24px;
           inset-inline-end: initial;
         }
         .mdc-data-table__header-cell.sortable:not(.not-sorted) ha-svg-icon,
-        .mdc-data-table__header-cell.sortable:hover.not-sorted ha-svg-icon {
+        .mdc-data-table__header-cell.sortable:hover.not-sorted ha-svg-icon,
+        .mdc-data-table__header-cell.sortable:focus-within.not-sorted
+          ha-svg-icon {
           left: 12px;
           inset-inline-start: 12px;
           inset-inline-end: initial;
@@ -1918,6 +1956,8 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted)
           ha-svg-icon,
         .mdc-data-table__header-cell--numeric.sortable:hover.not-sorted
+          ha-svg-icon,
+        .mdc-data-table__header-cell--numeric.sortable:focus-within.not-sorted
           ha-svg-icon {
           right: 12px;
           inset-inline-end: 12px;
