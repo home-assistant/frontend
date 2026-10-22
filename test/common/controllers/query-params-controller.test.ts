@@ -124,4 +124,14 @@ describe("QueryParamsController", () => {
     controller.hostConnected();
     expect(navigated).toHaveBeenCalledOnce();
   });
+
+  it("stays on its page when reconnected on the way to another page", () => {
+    controller.hostUpdated();
+    controller.hostDisconnected();
+    setUrl("/other-page");
+    controller.hostConnected();
+    controller.write({ search: "abc" });
+    expect(currentUrl()).toBe("/other-page");
+    expect(navigated).not.toHaveBeenCalled();
+  });
 });

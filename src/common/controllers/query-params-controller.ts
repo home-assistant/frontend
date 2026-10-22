@@ -30,7 +30,7 @@ export interface QueryParamsControllerOptions {
  * shared, bookmarked and reloaded. Writes replace the current history entry,
  * so Back leaves the page instead of undoing each change, and only touch the
  * config's params. The controller only acts while the URL is still the
- * page the host was connected on.
+ * page the host was first connected on.
  */
 export class QueryParamsController<
   C extends QueryParamConfig,
@@ -52,7 +52,9 @@ export class QueryParamsController<
   }
 
   public hostConnected() {
-    this._path = currentPath();
+    // A cached page is reconnected on the way to another page, before its
+    // router has moved on, so it keeps the page it was first connected on
+    this._path ??= currentPath();
     mainWindow.addEventListener("location-changed", this._navigated);
     mainWindow.addEventListener("popstate", this._navigated);
 
