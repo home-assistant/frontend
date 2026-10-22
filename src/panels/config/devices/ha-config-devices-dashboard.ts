@@ -1055,6 +1055,10 @@ export class HaConfigDeviceDashboard extends LitElement {
   }
 
   private _filterChanged(ev) {
+    // A filter can still finish looking up its items after the page is left
+    if (!this.isConnected) {
+      return;
+    }
     const type = ev.target.localName;
     const filters = { ...this._filters, [type]: ev.detail };
 
