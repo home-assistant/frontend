@@ -1100,7 +1100,11 @@ export class HaConfigEntities extends LitElement {
     ) {
       this._storageFilters = {
         ...this._storedFilters(),
-        [type]: ev.detail.value,
+        // Storage drops an undefined value, which would bring back the default
+        [type]:
+          type === "ha-filter-states"
+            ? (ev.detail.value ?? [])
+            : ev.detail.value,
       };
     }
 
