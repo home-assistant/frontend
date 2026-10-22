@@ -163,6 +163,9 @@ export class HuiEntitiesSectionStrategyEditor
     if (config.group_by === "none") {
       delete config.group_by;
     }
+    if (!config.name || (Array.isArray(config.name) && !config.name.length)) {
+      delete config.name;
+    }
     fireEvent(this, "config-changed", { config });
   }
 

@@ -100,7 +100,9 @@ export class HaEntityTypePicker extends LitElement {
       localize: LocalizeFunc,
       language: string
     ): PickerComboBoxItem[] => {
-      const types = usedEntityTypes(states);
+      // A section keeps following its types, so a device class is offered even
+      // when it is the only one of its domain today.
+      const types = usedEntityTypes(states, false);
       const domains = [...types.keys()]
         .map((domain) => ({ domain, name: domainToName(localize, domain) }))
         .sort((a, b) => stringCompare(a.name, b.name, language));

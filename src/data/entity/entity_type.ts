@@ -30,9 +30,11 @@ export const parseEntityType = (key: string): EntityType => {
 export const entityTypesNeedStates = (types?: string[]): boolean =>
   !!types?.some((key) => key.includes(SEPARATOR));
 
-// A domain worth no split maps to an empty list rather than to its lone bucket.
+// By default, a domain worth no split maps to an empty list rather than to its
+// lone bucket.
 export const usedEntityTypes = (
-  states: HomeAssistant["states"]
+  states: HomeAssistant["states"],
+  collapseSingleClass = true
 ): Map<string, string[]> => {
   const byDomain = new Map<string, Set<string>>();
 
@@ -51,7 +53,7 @@ export const usedEntityTypes = (
   return new Map(
     [...byDomain].map(([domain, classes]) => [
       domain,
-      classes.size > 1 ? [...classes] : [],
+      classes.size > 1 || !collapseSingleClass ? [...classes] : [],
     ])
   );
 };
