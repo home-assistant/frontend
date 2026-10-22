@@ -302,7 +302,7 @@ export class HUIView extends ReactiveElement {
 
   private _getCardClipboardParams(
     path: LovelacePath
-  ): ClipboardActionParams<LovelaceCardConfig> | undefined {
+  ): ClipboardActionParams<"card"> | undefined {
     if (!this.lovelace) return undefined;
     const cardPath = normalizeCardPath(path);
     const config = this._getCardConfig(cardPath);
@@ -319,7 +319,7 @@ export class HUIView extends ReactiveElement {
 
   private _getBadgeClipboardParams(
     path: LovelacePath
-  ): ClipboardActionParams<LovelaceBadgeConfig> | undefined {
+  ): ClipboardActionParams<"badge"> | undefined {
     if (!this.lovelace) return undefined;
     const config = getAtPath<LovelaceBadgeConfig>(this.lovelace.config, path);
     if (!config) return undefined;
