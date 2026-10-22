@@ -13,10 +13,15 @@ export const supportsServiceWorker = () =>
  * callback that marks the page as claimed for the cases the controller
  * doesn't show, such as a hard reload that bypassed an active worker. A
  * change skipped before that call was an update after all, so it reloads.
+ * `reload` returns false when it only deferred the reload, so a later change
+ * is still handled.
  */
 export const reloadOnControllerChange = (
   container: ServiceWorkerContainer,
-  reload: () => void = () => location.reload()
+  reload: () => boolean = () => {
+    location.reload();
+    return true;
+  }
 ) => {
   let claimed = Boolean(container.controller);
   let skipped = false;
@@ -25,8 +30,7 @@ export const reloadOnControllerChange = (
     if (reloading) {
       return;
     }
-    reloading = true;
-    reload();
+    reloading = reload();
   };
   container.addEventListener("controllerchange", () => {
     if (claimed) {
@@ -59,11 +63,12 @@ export const registerServiceWorker = async (
   // Until then this page runs the old build under the new worker, so its lazy imports can
   // fail and go through stale build recovery instead.
   const markClaimed = reloadOnControllerChange(navigator.serviceWorker, () => {
-    if (!window.isDirtyState) {
-      location.reload();
-      return;
+    if (window.isDirtyState) {
+      reloadPending = true;
+      return false;
     }
-    reloadPending = true;
+    location.reload();
+    return true;
   });
 
   const reg = await navigator.serviceWorker.register(`/sw-${__BUILD__}.js`);
