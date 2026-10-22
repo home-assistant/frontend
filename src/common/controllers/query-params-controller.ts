@@ -122,8 +122,19 @@ export class QueryParamsController<
     return this._options.enabled() && currentPath() === this._path;
   }
 
-  private _navigated = () => {
+  private _navigated = (ev?: Event) => {
     this._cancelPending();
+    // A router sends a path without a page, like /config/automation, on to
+    // its default page after the host is connected, so it follows that
+    const path = currentPath();
+
+    if (
+      ev instanceof CustomEvent &&
+      ev.detail?.replace &&
+      path.startsWith(`${this._path}/`)
+    ) {
+      this._path = path;
+    }
     // Leaving the page gets here too, before the router swaps the page
     if (this._isActive()) {
       this._options.navigated();

@@ -134,4 +134,24 @@ describe("QueryParamsController", () => {
     expect(currentUrl()).toBe("/other-page");
     expect(navigated).not.toHaveBeenCalled();
   });
+
+  it("follows a router sending its path on to the default page", () => {
+    setUrl("/page/dashboard?other=1");
+    window.dispatchEvent(
+      new CustomEvent("location-changed", { detail: { replace: true } })
+    );
+    expect(navigated).toHaveBeenCalledOnce();
+
+    controller.write({ search: "abc" });
+    expect(currentUrl()).toBe("/page/dashboard?other=1&search=abc");
+  });
+
+  it("does not follow a new entry for a page below its own", () => {
+    setUrl("/page/detail");
+    window.dispatchEvent(
+      new CustomEvent("location-changed", { detail: { replace: false } })
+    );
+    controller.write({ search: "abc" });
+    expect(currentUrl()).toBe("/page/detail");
+  });
 });
