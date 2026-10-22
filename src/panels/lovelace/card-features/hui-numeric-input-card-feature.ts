@@ -10,12 +10,17 @@ import "../../../components/ha-control-button";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";
-import { apiContext, internationalizationContext } from "../../../data/context";
+import {
+  apiContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { FrontendLocaleData } from "../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantApi,
+  HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -55,6 +60,10 @@ class HuiNumericInputCardFeature
   @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -122,6 +131,7 @@ class HuiNumericInputCardFeature
     if (this._config.style === "buttons") {
       return html`
         <ha-control-number-buttons
+          .label=${this._formatters.formatEntityName(stateObj)}
           .value=${value}
           .min=${stateObj.attributes.min}
           .max=${stateObj.attributes.max}
@@ -135,6 +145,7 @@ class HuiNumericInputCardFeature
     }
     return html`
       <ha-control-slider
+        .label=${this._formatters.formatEntityName(stateObj)}
         .value=${value}
         .min=${stateObj.attributes.min}
         .max=${stateObj.attributes.max}

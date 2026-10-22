@@ -158,6 +158,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     };
   }
 
+  private _computeIconLabel(name: string, domain: string) {
+    if (this._config?.icon_tap_action?.action !== "toggle") {
+      return name;
+    }
+    const key = ["button", "input_button"].includes(domain)
+      ? "icon_press"
+      : domain === "scene"
+        ? "icon_activate"
+        : "icon_toggle";
+    return this.hass!.localize(`ui.card.tile.${key}`, { name });
+  }
+
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
@@ -306,7 +318,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
             }}
             .interactive=${hasTileIconAction(this._config)}
-            .accessibleLabel=${name}
+            .accessibleLabel=${this._computeIconLabel(name, domain)}
             .imageUrl=${imageUrl}
             data-domain=${ifDefined(domain)}
             data-state=${ifDefined(stateObj?.state)}
@@ -341,6 +353,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             features.inline.length > 0
               ? html`
                   <hui-card-features
+                    role="group"
+                    aria-label=${name}
                     slot="features-inline"
                     .hass=${this.hass}
                     .context=${this._featureContext}
@@ -354,6 +368,8 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             features.below.length > 0
               ? html`
                   <hui-card-features
+                    role="group"
+                    aria-label=${name}
                     slot="features"
                     .columns=${features.columns}
                     .hass=${this.hass}

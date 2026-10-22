@@ -741,6 +741,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             features.inline.length > 0
               ? html`
                   <hui-card-features
+                    role="group"
+                    aria-label=${ifDefined(name)}
                     slot="features-inline"
                     .hass=${this.hass}
                     .context=${this._featureContext}
@@ -755,6 +757,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             features.below.length > 0
               ? html`
                   <hui-card-features
+                    role="group"
+                    aria-label=${ifDefined(name)}
                     slot="features"
                     .columns=${features.columns}
                     .hass=${this.hass}

@@ -303,6 +303,11 @@
       "scene": {
         "activate": "Activate"
       },
+      "tile": {
+        "icon_activate": "Activate {name}",
+        "icon_press": "Press {name}",
+        "icon_toggle": "[%key:ui::components::entity::entity-toggle::toggle%]"
+      },
       "script": {
         "run": "[%key:ui::card::service::run%]",
         "running_single": "Running…",
