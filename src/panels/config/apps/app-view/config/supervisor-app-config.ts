@@ -258,11 +258,11 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
       <h2 class="app-name">${this.addon.name}</h2>
       <ha-card outlined>
         <div class="header">
-          <h2>
+          <h3>
             ${this.hass.localize(
               "ui.panel.config.apps.configuration.options.header"
             )}
-          </h2>
+          </h3>
           <div class="card-menu">
             <ha-dropdown @wa-select=${this._handleAction}>
               <ha-icon-button
@@ -562,7 +562,7 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
           display: flex;
           justify-content: space-between;
         }
-        .header h2 {
+        .header h3 {
           color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
           font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
@@ -572,6 +572,9 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
           display: block;
           margin-block: 0px;
           font-weight: var(--ha-font-weight-normal);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .card-actions.right {
           justify-content: flex-end;

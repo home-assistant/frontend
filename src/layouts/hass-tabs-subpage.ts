@@ -289,11 +289,14 @@ export class HassTabsSubpage extends LitElement {
   }
 
   private _headerSlotChanged(ev: Event): void {
+    if (ev.target !== ev.currentTarget) {
+      return;
+    }
     this._hasCustomHeader =
       (ev.target as HTMLSlotElement).assignedNodes().length > 0;
   }
 
-  // slotchange bubbles, so the nested header slot also lands here
+  // slotchange bubbles, so nested slots also land here
   private _toolbarSlotChanged(ev: Event): void {
     if (ev.target !== ev.currentTarget) {
       return;
