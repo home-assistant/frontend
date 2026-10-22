@@ -865,6 +865,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
     if (scene?.attributes.id) {
       navigate(`/config/scene/edit/${scene?.attributes.id}`);
+    } else if (scene) {
+      this._showInfo(scene);
     }
   }
 
