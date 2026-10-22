@@ -93,6 +93,22 @@ const scenesTableParams = {
   assistants: "string?",
 } satisfies Redirect["params"];
 
+// The scripts table reads these from the link
+const scriptsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  entity: "string?",
+  label: "string?",
+  category: "string?",
+  assistants: "string?",
+  blueprint: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -331,6 +347,7 @@ export const getMyRedirects = (): Redirects => ({
   scripts: {
     component: "script",
     redirect: "/config/script/dashboard",
+    params: scriptsTableParams,
   },
   helpers: {
     redirect: "/config/helpers",
