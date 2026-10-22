@@ -501,6 +501,7 @@ export class HaConfigEntities extends LitElement {
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
       entitiesWithoutUniqueId: StateEntity[],
+      exposedEntities: Record<string, ExposeEntitySettings> | undefined,
       filters: DataTableFiltersValues,
       filteredItems: DataTableFiltersItems,
       entries?: ConfigEntry[],
@@ -640,9 +641,10 @@ export class HaConfigEntities extends LitElement {
           filter.length
         ) {
           filteredEntities = filteredEntities.filter((entity) =>
-            this._getExposedEntityVoiceAssistantIds(entity.entity_id).some(
-              (va) => (filter as string[]).includes(va)
-            )
+            this._getExposedEntityVoiceAssistantIds(
+              exposedEntities,
+              entity.entity_id
+            ).some((va) => (filter as string[]).includes(va))
           );
         }
       });
@@ -698,6 +700,7 @@ export class HaConfigEntities extends LitElement {
             : deviceName
           : undefined;
         const assistants = this._getExposedEntityVoiceAssistantIds(
+          exposedEntities,
           entry.entity_id
         );
 
@@ -799,6 +802,7 @@ export class HaConfigEntities extends LitElement {
         this.hass.devices,
         this.hass.areas,
         this._entitiesWithoutUniqueId,
+        this._exposedEntities,
         this._filters,
         this._filteredItems,
         this._entries,
@@ -1187,9 +1191,12 @@ export class HaConfigEntities extends LitElement {
 
   // local variant of data/expose/getExposedEntityVoiceAssistantIds
   // which works for both entities with and without unique id
-  private _getExposedEntityVoiceAssistantIds(entityId: string) {
+  private _getExposedEntityVoiceAssistantIds(
+    exposedEntities: Record<string, ExposeEntitySettings> | undefined,
+    entityId: string
+  ) {
     return Object.keys(voiceAssistants).filter(
-      (vaId) => this._exposedEntities?.[entityId]?.[vaId]
+      (vaId) => exposedEntities?.[entityId]?.[vaId]
     );
   }
 
@@ -1585,6 +1592,7 @@ ${rejected
         this.hass.devices,
         this.hass.areas,
         this._entitiesWithoutUniqueId,
+        this._exposedEntities,
         this._filters,
         this._filteredItems,
         this._entries,
