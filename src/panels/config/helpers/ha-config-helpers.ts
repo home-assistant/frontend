@@ -18,6 +18,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -35,6 +36,7 @@ import type {
 import {
   helpersFilterQueryParamConfig,
   helpersFilterQueryParams,
+  helpersFilterQueryString,
   helpersLinkFromUrl,
 } from "../../../common/url/helpers-query-params";
 import { debounce } from "../../../common/util/debounce";
@@ -46,7 +48,6 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
-  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
@@ -193,11 +194,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public cloudStatus?: CloudStatus;
 
-  @storage({ key: "helpers-table-sort", state: false, subscribe: false })
-  private _activeSorting?: SortingChangedEvent;
-
-  @storage({ key: "helpers-table-grouping", state: false, subscribe: false })
-  private _activeGrouping?: string;
+  private _tableSettings = new DataTableSettingsController(
+    this,
+    {
+      search: "helpers-table-search",
+      sorting: "helpers-table-sort",
+      grouping: "helpers-table-grouping",
+    },
+    { defaultGrouping: "category" }
+  );
 
   @storage({
     key: "helpers-table-collapsed",
@@ -205,15 +210,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     subscribe: false,
   })
   private _activeCollapsed?: string;
-
-  @state()
-  @storage({
-    storage: "sessionStorage",
-    key: "helpers-table-search",
-    state: true,
-    subscribe: false,
-  })
-  private _filter = "";
 
   @storage({
     key: "helpers-table-column-order",
@@ -692,21 +688,21 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         }
         .columns=${this._columns(this.hass.localize, helpers)}
         .data=${helpers}
-        .initialGroupColumn=${this._activeGrouping ?? "category"}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
+        .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
-        @sorting-changed=${this._handleSortingChanged}
-        @grouping-changed=${this._handleGroupingChanged}
+        @sorting-changed=${this._tableSettings.sortingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         .activeFilters=${this._activeFilters}
         @clear-filter=${this._clearFilter}
         @row-click=${this._openEditDialog}
         sync-url
-        .filter=${this._filter}
-        @search-changed=${this._handleSearchChange}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         has-fab
         clickable
         .noDataText=${this.hass.localize(
@@ -874,10 +870,22 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
 
   private _filterChanged(ev) {
     const type = ev.target.localName;
+    const filters = { ...this._filters, [type]: ev.detail.value };
 
-    this._filters = { ...this._filters, [type]: ev.detail.value };
+    // A filter also sends the value it was given, once it has found its items.
+    // Only a change to what the URL holds is the user's, so a link isn't stored.
+    if (
+      helpersFilterQueryString(filters) !==
+      helpersFilterQueryString(this._filters)
+    ) {
+      this._storageFilters = {
+        ...this._storageFilters,
+        [type]: ev.detail.value,
+      };
+    }
+
+    this._filters = filters;
     this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
-    this._storageFilters = this._filters;
     this._writeFilters();
     this._applyFilters();
   }
@@ -1025,11 +1033,19 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     const searchParams = this._filterParams.searchParams();
     const link = searchParams ? helpersLinkFromUrl(searchParams) : undefined;
 
+    // Shown, but not stored as the user's choice
     if (link) {
-      this._filter = link.search;
+      this._tableSettings.showSearch(link.search);
       this._filters = link.filters;
-      this._storageFilters = link.filters;
       this._applyFilters();
+    } else if (searchParams?.toString() === "") {
+      // Opened again without params, like from the sidebar. Written once the
+      // table has seen the URL without params, so it restores what it stored
+      this._filters = this._storageFilters;
+      this._applyFilters();
+      queueMicrotask(() => this._writeFilters());
+
+      return;
     }
 
     this._writeFilters();
@@ -1573,20 +1589,8 @@ ${rejected
     }
   };
 
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
-  }
-
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value ?? "";
-  }
-
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
-  }
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
   }
 
   private _handleColumnsChanged(ev: CustomEvent) {
