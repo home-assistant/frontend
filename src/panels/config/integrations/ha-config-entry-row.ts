@@ -24,20 +24,27 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
-import "../../../components/item/ha-list-item-button";
 import "../../../components/item/ha-row-item";
-import "../../../components/list/ha-list-base";
+import "../../../components/list/ha-list-virtualized";
+import type { HaListVirtualizedItem } from "../../../components/list/ha-list-virtualized";
 import {
   deleteApplicationCredential,
   fetchApplicationCredentialsConfigEntry,
 } from "../../../data/application_credential";
 import { getSignedPath } from "../../../data/auth";
-import type { DisableConfigEntryResult } from "../../../data/config_entries";
+import type {
+  ConfigEntry,
+  DisableConfigEntryResult,
+} from "../../../data/config_entries";
 import {
   deleteConfigEntry,
   disableConfigEntry,
@@ -47,6 +54,7 @@ import {
   reloadConfigEntry,
   updateConfigEntry,
 } from "../../../data/config_entries";
+import type { DeviceRowItem } from "../../../data/device/device_registry";
 import { groupDevicesByParent } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../data/diagnostics";
@@ -72,12 +80,35 @@ import {
   showPromptDialog,
 } from "../../lovelace/custom-card-helpers";
 import "./ha-config-entry-device-row";
+import "./ha-config-entry-toggle-row";
 import {
   renderConfigEntryError,
   type ConfigEntryData,
+  type SubEntryData,
 } from "./ha-config-integration-page";
 import "./ha-config-sub-entry-row";
+import type { HaConfigSubEntryRow } from "./ha-config-sub-entry-row";
 import { offerMarketplaceUninstall } from "./offer-marketplace-uninstall";
+
+interface ToggleRow extends HaListVirtualizedItem {
+  type: "toggle";
+  expanded: boolean;
+}
+
+interface SubEntryRow extends HaListVirtualizedItem {
+  type: "sub-entry";
+  data: SubEntryData;
+  expanded: boolean;
+}
+
+interface DeviceRow extends HaListVirtualizedItem {
+  type: "device";
+  item: DeviceRowItem;
+  framed: boolean;
+  frameEnd: boolean;
+}
+
+type EntryRow = ToggleRow | SubEntryRow | DeviceRow;
 
 @customElement("ha-config-entry-row")
 export class HaConfigEntryRow extends LitElement {
@@ -96,6 +127,9 @@ export class HaConfigEntryRow extends LitElement {
   @state() private _expanded = true;
 
   @state() private _devicesExpanded = true;
+
+  // Sub entries start expanded, so only the collapsed ones are tracked
+  @state() private _collapsedSubEntries: Record<string, boolean> = {};
 
   protected render() {
     const item = this.data.entry;
@@ -457,85 +491,136 @@ export class HaConfigEntryRow extends LitElement {
           }
         </ha-dropdown>
       </ha-row-item>
-      <ha-list-base>
-        ${
-          this._expanded
-            ? subEntries.length
-              ? html`${
-                  ownDevices.length
-                    ? html`<div class="devices">
-                        <ha-list-item-button
-                          @click=${this._toggleOwnDevices}
-                          class="toggle-devices-row ${classMap({
-                            expanded: this._devicesExpanded,
-                          })}"
-                        >
-                          <ha-icon-button
-                            class="expand-button ${classMap({
-                              expanded: this._devicesExpanded,
-                            })}"
-                            .path=${mdiChevronDown}
-                            slot="start"
-                          >
-                          </ha-icon-button>
-                          <span slot="headline"
-                            >${this.hass.localize(
-                              "ui.panel.config.integrations.config_entry.devices_without_subentry"
-                            )}</span
-                          >
-                        </ha-list-item-button>
-                        ${
-                          this._devicesExpanded
-                            ? groupDevicesByParent(ownDevices).map(
-                                ({ device, isChild, isLastChild }) =>
-                                  html`<ha-config-entry-device-row
-                                    .hass=${this.hass}
-                                    .narrow=${this.narrow}
-                                    .entry=${item}
-                                    .device=${device}
-                                    .entities=${entities}
-                                    .isChild=${isChild}
-                                    .isLastChild=${isLastChild}
-                                  ></ha-config-entry-device-row>`
-                              )
-                            : nothing
-                        }
-                      </div>`
-                    : nothing
-                }
-                ${subEntries.map(
-                  (subEntryData) => html`
-                    <ha-config-sub-entry-row
-                      .hass=${this.hass}
-                      .narrow=${this.narrow}
-                      .manifest=${this.manifest}
-                      .diagnosticHandler=${this.diagnosticHandler}
-                      .entities=${this.entities}
-                      .entry=${item}
-                      .data=${subEntryData}
-                      data-entry-id=${item.entry_id}
-                    ></ha-config-sub-entry-row>
-                  `
-                )}`
-              : html`
-                  ${groupDevicesByParent(ownDevices).map(
-                    ({ device, isChild, isLastChild }) =>
-                      html`<ha-config-entry-device-row
-                        .hass=${this.hass}
-                        .narrow=${this.narrow}
-                        .entry=${item}
-                        .device=${device}
-                        .entities=${entities}
-                        .isChild=${isChild}
-                        .isLastChild=${isLastChild}
-                      ></ha-config-entry-device-row>`
-                  )}
-                `
-            : nothing
-        }
-      </ha-list-base>
+      ${this._expanded ? this._renderRows(entities) : nothing}
     </div>`;
   }
+
+  private _getRows = memoizeOne(
+    (
+      data: ConfigEntryData,
+      devicesExpanded: boolean,
+      collapsedSubEntries: Record<string, boolean>
+    ): EntryRow[] => {
+      const rows: EntryRow[] = [];
+      const pushDevices = (devices: DeviceRowItem[], framed: boolean) => {
+        devices.forEach((item, index) => {
+          rows.push({
+            id: item.device.id,
+            type: "device",
+            interactive: true,
+            item,
+            framed,
+            frameEnd: framed && index === devices.length - 1,
+          });
+        });
+      };
+      const ownDevices = groupDevicesByParent([
+        ...data.devices,
+        ...data.services,
+      ]);
+      if (!data.subEntries.length) {
+        pushDevices(ownDevices, false);
+        return rows;
+      }
+      if (ownDevices.length) {
+        rows.push({
+          id: "devices",
+          type: "toggle",
+          interactive: true,
+          expanded: devicesExpanded,
+        });
+        if (devicesExpanded) {
+          pushDevices(ownDevices, true);
+        }
+      }
+      for (const subEntryData of data.subEntries) {
+        const devices = [
+          ...groupDevicesByParent(subEntryData.devices),
+          ...subEntryData.services.map((device) => ({
+            device,
+            isChild: false,
+            isLastChild: false,
+          })),
+        ];
+        const expanded =
+          devices.length > 0 &&
+          !collapsedSubEntries[subEntryData.subEntry.subentry_id];
+        rows.push({
+          id: `subentry:${subEntryData.subEntry.subentry_id}`,
+          type: "sub-entry",
+          data: subEntryData,
+          expanded,
+        });
+        if (expanded) {
+          pushDevices(devices, true);
+        }
+      }
+      return rows;
+    }
+  );
+
+  // Only the rows near the viewport are in the DOM
+  private _renderRows(entryEntities: EntityRegistryEntry[]) {
+    const rows = this._getRows(
+      this.data,
+      this._devicesExpanded,
+      this._collapsedSubEntries
+    );
+    if (!rows.length) {
+      return nothing;
+    }
+    return html`<ha-list-virtualized
+      auto-height
+      .rows=${rows}
+      .rowRenderer=${this._getRowRenderer(
+        this.hass,
+        this.narrow,
+        this.data.entry,
+        this.entities,
+        entryEntities
+      )}
+    ></ha-list-virtualized>`;
+  }
+
+  private _getRowRenderer = memoizeOne(
+    (
+      hass: HomeAssistant,
+      narrow: boolean,
+      entry: ConfigEntry,
+      entities: EntityRegistryEntry[],
+      entryEntities: EntityRegistryEntry[]
+    ) =>
+      (item: HaListVirtualizedItem) => {
+        const row = item as EntryRow;
+        if (row.type === "toggle") {
+          return html`<ha-config-entry-toggle-row
+            .expanded=${row.expanded}
+            @click=${this._toggleOwnDevices}
+          ></ha-config-entry-toggle-row>`;
+        }
+        if (row.type === "sub-entry") {
+          return html`<ha-config-sub-entry-row
+            .hass=${hass}
+            .entities=${entities}
+            .entry=${entry}
+            .data=${row.data}
+            .expanded=${row.expanded}
+            @expanded-changed=${this._subEntryExpandedChanged}
+          ></ha-config-sub-entry-row>`;
+        }
+        return html`<ha-config-entry-device-row
+          .hass=${hass}
+          .narrow=${narrow}
+          .entry=${entry}
+          .device=${row.item.device}
+          .entities=${entryEntities}
+          .isChild=${row.item.isChild}
+          .isLastChild=${row.item.isLastChild}
+          .framed=${row.framed}
+          .frameEnd=${row.frameEnd}
+        ></ha-config-entry-device-row>`;
+      }
+  );
 
   private _configPanel = memoizeOne(getConfigPanelPath);
 
@@ -548,9 +633,24 @@ export class HaConfigEntryRow extends LitElement {
     this._expanded = !this._expanded;
   }
 
-  private _toggleOwnDevices() {
+  // The row handlers run from the list's render, so they are bound here
+  private _toggleOwnDevices = () => {
     this._devicesExpanded = !this._devicesExpanded;
-  }
+  };
+
+  private _subEntryExpandedChanged = (
+    ev: HASSDomEvent<HASSDomEvents["expanded-changed"]> &
+      HASSDomCurrentTargetEvent<HaConfigSubEntryRow>
+  ) => {
+    const id = ev.currentTarget.data.subEntry.subentry_id;
+    const collapsed = { ...this._collapsedSubEntries };
+    if (ev.detail.expanded) {
+      delete collapsed[id];
+    } else {
+      collapsed[id] = true;
+    }
+    this._collapsedSubEntries = collapsed;
+  };
 
   private _handleMenuAction = (ev: HaDropdownSelectEvent) => {
     ev.stopPropagation();
@@ -885,26 +985,11 @@ export class HaConfigEntryRow extends LitElement {
         margin-left: -12px;
         margin-right: -12px;
       }
-      .devices {
-        border: 1px solid var(--divider-color);
-        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-        margin: 16px;
-        margin-top: 0;
-        background-color: var(--card-background-color);
-      }
       ha-icon-button {
         color: var(--ha-color-fill-neutral-loud-resting);
       }
       ha-icon-button.link {
         color: var(--ha-color-text-secondary);
-      }
-      .toggle-devices-row {
-        overflow: hidden;
-        border-radius: var(--ha-card-border-radius, var(--ha-border-radius-lg));
-      }
-      .toggle-devices-row.expanded {
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
       }
       ha-dropdown a {
         text-decoration: none;

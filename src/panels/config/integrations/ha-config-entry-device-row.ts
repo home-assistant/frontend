@@ -62,6 +62,13 @@ class HaConfigEntryDeviceRow extends LitElement {
   // The last child of its parent, so the tree connector draws its end.
   @property({ attribute: false }) public isLastChild = false;
 
+  // Inside the frame under a sub entry header or the devices toggle row.
+  @property({ type: Boolean, reflect: true }) public framed = false;
+
+  // The last row of its frame, so it draws the bottom of the frame.
+  @property({ type: Boolean, reflect: true, attribute: "frame-end" })
+  public frameEnd = false;
+
   protected render() {
     const device = this.device;
 
@@ -374,9 +381,33 @@ class HaConfigEntryDeviceRow extends LitElement {
   static styles = [
     haStyle,
     css`
+      :host {
+        display: block;
+        box-sizing: border-box;
+      }
       ha-list-item-button {
         border-top: 1px solid var(--divider-color);
         --ha-row-item-padding-inline: 56px 16px;
+      }
+      :host([framed]) {
+        padding-inline: var(--ha-space-4);
+      }
+      :host([framed]) ha-list-item-button {
+        border-inline: 1px solid var(--divider-color);
+      }
+      :host([frame-end]) {
+        padding-bottom: var(--ha-space-4);
+      }
+      :host([frame-end]) ha-list-item-button {
+        border-bottom: 1px solid var(--divider-color);
+        border-end-start-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
+        border-end-end-radius: var(
+          --ha-card-border-radius,
+          var(--ha-border-radius-lg)
+        );
       }
       ha-icon-button,
       ha-list-item-button > ha-icon-next,
