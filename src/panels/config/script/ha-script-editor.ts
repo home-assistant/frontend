@@ -79,7 +79,6 @@ import "./manual-script-editor";
 import type { HaManualScriptEditor } from "./manual-script-editor";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import { renderCtrlOrCmd } from "../../../common/keyboard/ctrl-or-cmd";
-import type { SidebarConfig } from "../../../data/automation";
 
 @customElement("ha-script-editor")
 export class HaScriptEditor extends SubscribeMixin(
@@ -88,14 +87,6 @@ export class HaScriptEditor extends SubscribeMixin(
   )
 ) {
   @property({ attribute: false }) public scriptId: string | null = null;
-
-  private _sidebarConfig?: SidebarConfig;
-
-  private _sidebarConfigChanged = (
-    ev: CustomEvent<{ value: SidebarConfig | undefined }>
-  ) => {
-    this._sidebarConfig = ev.detail.value;
-  };
 
   @query("manual-script-editor")
   private _manualEditor?: HaManualScriptEditor;
@@ -461,7 +452,6 @@ export class HaScriptEditor extends SubscribeMixin(
                               @value-changed=${this._valueChanged}
                               @editor-save=${this._handleSaveScript}
                               @save-script=${this._handleSaveScript}
-                              @sidebar-config-changed=${this._sidebarConfigChanged}
                             >
                               <div class="alert-wrapper" slot="alerts">
                                 ${this._renderDeprecatedMigratedAlert()}
@@ -1076,14 +1066,8 @@ export class HaScriptEditor extends SubscribeMixin(
       Z: () => this._redo(),
       y: () => this._redo(),
       Y: () => {
-        if (this._sidebarConfig) {
-          if (
-            "uiSupported" in this._sidebarConfig &&
-            !this._sidebarConfig.uiSupported
-          ) {
-            return;
-          }
-          this._sidebarConfig.toggleYamlMode();
+        if (this._manualEditor?.sidebarOpen) {
+          this._manualEditor.toggleSidebarYamlMode();
           return;
         }
         this._toggleYamlMode();
@@ -1096,7 +1080,6 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private _toggleYamlMode() {
-    this._sidebarConfig = undefined;
     if (this.mode === "gui") {
       this.switchYamlMode();
     } else {

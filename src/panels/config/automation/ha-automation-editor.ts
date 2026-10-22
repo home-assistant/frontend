@@ -123,8 +123,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   @property({ attribute: false }) public automations!: AutomationEntity[];
 
-  private _sidebarConfig?: SidebarConfig;
-
   @query("manual-automation-editor")
   private _manualEditor?: HaManualAutomationEditor;
 
@@ -809,7 +807,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   private _sidebarConfigChanged = (
     ev: CustomEvent<{ value: SidebarConfig | undefined }>
   ) => {
-    this._sidebarConfig = ev.detail.value;
     this._triggerController.checkShowIndices(ev.detail.value);
   };
 
@@ -1195,14 +1192,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       Z: () => this._redo(),
       y: () => this._redo(),
       Y: () => {
-        if (this._sidebarConfig) {
-          if (
-            "uiSupported" in this._sidebarConfig &&
-            !this._sidebarConfig.uiSupported
-          ) {
-            return;
-          }
-          this._sidebarConfig.toggleYamlMode();
+        if (this._manualEditor?.sidebarOpen) {
+          this._manualEditor.toggleSidebarYamlMode();
           return;
         }
         this._toggleYamlMode();
@@ -1215,7 +1206,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   }
 
   private _toggleYamlMode() {
-    this._sidebarConfig = undefined;
     if (this.mode === "gui") {
       this.switchYamlMode();
     } else {

@@ -23,11 +23,17 @@ import type { DomainManifestLookup } from "../../../data/integration";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
 import "./sidebar/ha-automation-sidebar-action";
+import type HaAutomationSidebarAction from "./sidebar/ha-automation-sidebar-action";
 import "./sidebar/ha-automation-sidebar-condition";
+import type HaAutomationSidebarCondition from "./sidebar/ha-automation-sidebar-condition";
 import "./sidebar/ha-automation-sidebar-option";
+import type HaAutomationSidebarOption from "./sidebar/ha-automation-sidebar-option";
 import "./sidebar/ha-automation-sidebar-script-field";
+import type HaAutomationSidebarScriptField from "./sidebar/ha-automation-sidebar-script-field";
 import "./sidebar/ha-automation-sidebar-script-field-selector";
+import type HaAutomationSidebarScriptFieldSelector from "./sidebar/ha-automation-sidebar-script-field-selector";
 import "./sidebar/ha-automation-sidebar-trigger";
+import type HaAutomationSidebarTrigger from "./sidebar/ha-automation-sidebar-trigger";
 
 // The sidebar card header: the dialog header's 48px minimum plus its padding
 const COLLAPSED_SHEET_HEIGHT = 68;
@@ -60,6 +66,15 @@ export default class HaAutomationSidebar extends LitElement {
 
   @query(".handle")
   private _handleElement?: HTMLDivElement;
+
+  @query(".sidebar-content")
+  private _contentElement?:
+    | HaAutomationSidebarAction
+    | HaAutomationSidebarCondition
+    | HaAutomationSidebarOption
+    | HaAutomationSidebarScriptField
+    | HaAutomationSidebarScriptFieldSelector
+    | HaAutomationSidebarTrigger;
 
   private _resizeStartX = 0;
 
@@ -269,6 +284,10 @@ export default class HaAutomationSidebar extends LitElement {
     }
 
     this._closeSidebar();
+  }
+
+  public toggleYamlMode() {
+    this._contentElement?.toggleYamlMode();
   }
 
   private _closeSidebar() {

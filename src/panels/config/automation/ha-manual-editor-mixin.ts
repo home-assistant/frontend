@@ -243,6 +243,10 @@ export const ManualEditorMixin = <TConfig>(
       }
     }
 
+    public toggleSidebarYamlMode() {
+      this.sidebarElement?.toggleYamlMode();
+    }
+
     private _handleBottomSheetResized(
       ev: HASSDomEvent<HASSDomEvents["bottom-sheet-resized"]>
     ) {
