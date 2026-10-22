@@ -10328,6 +10328,8 @@
             "delete": "[%key:ui::panel::lovelace::editor::edit_card::delete%]",
             "copy": "[%key:ui::panel::lovelace::editor::edit_card::copy%]",
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
+            "copied_to_clipboard": "Badge copied to clipboard",
+            "cut_to_clipboard": "Badge cut to clipboard",
             "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
             "tab_config": "[%key:ui::panel::lovelace::editor::edit_card::tab_config%]",
             "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]"

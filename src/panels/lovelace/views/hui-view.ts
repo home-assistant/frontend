@@ -35,6 +35,7 @@ import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dial
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { getCardSectionConfig } from "../editor/config-util";
+import { LOVELACE_EDIT_TOAST_ID } from "../editor/edit-toast";
 import {
   type DeleteBadgeParams,
   performDeleteBadge,
@@ -74,6 +75,8 @@ declare global {
     "ll-create-badge": { path: LovelacePath };
     "ll-edit-badge": { path: LovelacePath };
     "ll-delete-badge": DeleteBadgeParams;
+    "ll-copy-badge": { path: LovelacePath };
+    "ll-cut-badge": { path: LovelacePath };
   }
   interface HTMLElementEventMap {
     "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;
@@ -85,6 +88,8 @@ declare global {
     "ll-create-badge": HASSDomEvent<HASSDomEvents["ll-create-badge"]>;
     "ll-edit-badge": HASSDomEvent<HASSDomEvents["ll-edit-badge"]>;
     "ll-delete-badge": HASSDomEvent<HASSDomEvents["ll-delete-badge"]>;
+    "ll-copy-badge": HASSDomEvent<HASSDomEvents["ll-copy-badge"]>;
+    "ll-cut-badge": HASSDomEvent<HASSDomEvents["ll-cut-badge"]>;
   }
 }
 
@@ -128,6 +133,14 @@ export class HUIView extends ReactiveElement {
     storage: "sessionStorage",
   })
   protected _clipboard?: LovelaceCardConfig;
+
+  @storage({
+    key: "dashboardBadgeClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _badgeClipboard?: LovelaceBadgeConfig;
 
   constructor() {
     super();
@@ -225,6 +238,7 @@ export class HUIView extends ReactiveElement {
         }
 
         this.lovelace.showToast({
+          id: LOVELACE_EDIT_TOAST_ID,
           message: this.hass.localize(
             "ui.panel.lovelace.editor.edit_card.copied_to_clipboard"
           ),
@@ -239,13 +253,17 @@ export class HUIView extends ReactiveElement {
           silent: true,
         });
 
-        await performDeleteCard(this.hass, this.lovelace, {
+        const deleted = await performDeleteCard(this.hass, this.lovelace, {
           ...ev.detail,
           silent: true,
           path: normalizeCardPath(ev.detail.path),
         });
+        if (!deleted) {
+          return;
+        }
 
         this.lovelace.showToast({
+          id: LOVELACE_EDIT_TOAST_ID,
           message: this.hass.localize(
             "ui.panel.lovelace.editor.edit_card.cut_to_clipboard"
           ),
@@ -297,6 +315,58 @@ export class HUIView extends ReactiveElement {
       (ev: HASSDomEvent<HASSDomEvents["ll-delete-badge"]>) => {
         if (!this.lovelace) return;
         performDeleteBadge(this.hass, this.lovelace, ev.detail);
+      }
+    );
+    this.addEventListener(
+      "ll-copy-badge",
+      (ev: HASSDomEvent<HASSDomEvents["ll-copy-badge"]>) => {
+        if (!this.lovelace) return;
+        const badgeConfig = getAtPath<LovelaceBadgeConfig>(
+          this.lovelace.config,
+          ev.detail.path
+        );
+        if (!badgeConfig) {
+          return;
+        }
+        this._badgeClipboard = deepClone(badgeConfig);
+        this.lovelace.showToast({
+          id: LOVELACE_EDIT_TOAST_ID,
+          message: this.hass.localize(
+            "ui.panel.lovelace.editor.edit_badge.copied_to_clipboard"
+          ),
+        });
+      }
+    );
+    this.addEventListener(
+      "ll-cut-badge",
+      async (ev: HASSDomEvent<HASSDomEvents["ll-cut-badge"]>) => {
+        if (!this.lovelace) return;
+        const badgeConfig = getAtPath<LovelaceBadgeConfig>(
+          this.lovelace.config,
+          ev.detail.path
+        );
+        if (!badgeConfig) {
+          return;
+        }
+        const deleted = await performDeleteBadge(this.hass, this.lovelace, {
+          path: ev.detail.path,
+          silent: true,
+        });
+        if (!deleted) {
+          return;
+        }
+        this._badgeClipboard = deepClone(badgeConfig);
+        this.lovelace.showToast({
+          id: LOVELACE_EDIT_TOAST_ID,
+          message: this.hass.localize(
+            "ui.panel.lovelace.editor.edit_badge.cut_to_clipboard"
+          ),
+          duration: 8000,
+          action: {
+            action: () => fireEvent(window, "undo-change"),
+            text: this.hass.localize("ui.common.undo"),
+          },
+        });
       }
     );
   }
