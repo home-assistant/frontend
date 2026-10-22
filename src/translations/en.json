@@ -1569,7 +1569,23 @@
         "exit_fullscreen": "Exit fullscreen",
         "find_and_replace": "Find and replace",
         "test_on": "Turn on testing",
-        "test_off": "Turn off testing"
+        "test_off": "Turn off testing",
+        "search": {
+          "find": "Find",
+          "select_all": "All",
+          "match_case": "Match case",
+          "regexp": "Regexp",
+          "by_word": "By word",
+          "replace_all": "Replace all",
+          "current_match": "Current match",
+          "on_line": "on line",
+          "replaced_match_on_line": "Replaced match on line {line}",
+          "replaced_matches": "Replaced {count} matches"
+        },
+        "go_to_line": {
+          "label": "Go to line",
+          "go": "Go"
+        }
       },
       "state-class-picker": {
         "state_class": "State class",
