@@ -96,7 +96,7 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
-import { LOVELACE_EDIT_TOAST_ID } from "./editor/edit-toast";
+import { LOVELACE_EDIT_TOAST_ID } from "./types";
 
 interface ActionItem {
   icon: string;

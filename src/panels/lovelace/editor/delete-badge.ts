@@ -1,9 +1,9 @@
 import type { HomeAssistant } from "../../../types";
 import type { Lovelace } from "../types";
+import { LOVELACE_EDIT_TOAST_ID } from "../types";
 import type { LovelacePath } from "./lovelace-path";
 import { deleteAtPath } from "./lovelace-path";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { LOVELACE_EDIT_TOAST_ID } from "./edit-toast";
 
 export interface DeleteBadgeParams {
   path: LovelacePath;

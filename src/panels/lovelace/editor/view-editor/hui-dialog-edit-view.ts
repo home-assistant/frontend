@@ -59,7 +59,7 @@ import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
-import { LOVELACE_EDIT_TOAST_ID } from "../edit-toast";
+import { LOVELACE_EDIT_TOAST_ID } from "../../types";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 

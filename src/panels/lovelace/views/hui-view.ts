@@ -1,11 +1,9 @@
-import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
-import { fireEvent } from "../../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
@@ -35,7 +33,8 @@ import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dial
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { getCardSectionConfig } from "../editor/config-util";
-import { LOVELACE_EDIT_TOAST_ID } from "../editor/edit-toast";
+import type { ClipboardActionParams } from "../editor/clipboard-actions";
+import { performCopy, performCut } from "../editor/clipboard-actions";
 import {
   type DeleteBadgeParams,
   performDeleteBadge,
@@ -70,7 +69,7 @@ declare global {
     "ll-edit-card": { path: LovelacePath };
     "ll-delete-card": DeleteCardParams;
     "ll-duplicate-card": { path: LovelacePath };
-    "ll-copy-card": { path: LovelacePath; silent?: boolean };
+    "ll-copy-card": { path: LovelacePath };
     "ll-cut-card": { path: LovelacePath };
     "ll-create-badge": { path: LovelacePath };
     "ll-edit-badge": { path: LovelacePath };
@@ -224,55 +223,19 @@ export class HUIView extends ReactiveElement {
     this.addEventListener(
       "ll-copy-card",
       (ev: HASSDomEvent<HASSDomEvents["ll-copy-card"]>) => {
-        if (!this.lovelace) return;
-        const cardConfig = this._getCardConfig(
-          normalizeCardPath(ev.detail.path)
-        );
-        if (!cardConfig) {
-          return;
+        const params = this._getCardClipboardParams(ev.detail.path);
+        if (params) {
+          performCopy(this.hass, this.lovelace, params);
         }
-        this._clipboard = deepClone(cardConfig);
-
-        if (ev.detail.silent) {
-          return;
-        }
-
-        this.lovelace.showToast({
-          id: LOVELACE_EDIT_TOAST_ID,
-          message: this.hass.localize(
-            "ui.panel.lovelace.editor.edit_card.copied_to_clipboard"
-          ),
-        });
       }
     );
     this.addEventListener(
       "ll-cut-card",
-      async (ev: HASSDomEvent<HASSDomEvents["ll-cut-card"]>) => {
-        fireEvent(this, "ll-copy-card", {
-          path: ev.detail.path!,
-          silent: true,
-        });
-
-        const deleted = await performDeleteCard(this.hass, this.lovelace, {
-          ...ev.detail,
-          silent: true,
-          path: normalizeCardPath(ev.detail.path),
-        });
-        if (!deleted) {
-          return;
+      (ev: HASSDomEvent<HASSDomEvents["ll-cut-card"]>) => {
+        const params = this._getCardClipboardParams(ev.detail.path);
+        if (params) {
+          performCut(this.hass, this.lovelace, params);
         }
-
-        this.lovelace.showToast({
-          id: LOVELACE_EDIT_TOAST_ID,
-          message: this.hass.localize(
-            "ui.panel.lovelace.editor.edit_card.cut_to_clipboard"
-          ),
-          duration: 8000,
-          action: {
-            action: () => fireEvent(window, "undo-change"),
-            text: this.hass.localize("ui.common.undo"),
-          },
-        });
       }
     );
     this.addEventListener(
@@ -320,55 +283,54 @@ export class HUIView extends ReactiveElement {
     this.addEventListener(
       "ll-copy-badge",
       (ev: HASSDomEvent<HASSDomEvents["ll-copy-badge"]>) => {
-        if (!this.lovelace) return;
-        const badgeConfig = getAtPath<LovelaceBadgeConfig>(
-          this.lovelace.config,
-          ev.detail.path
-        );
-        if (!badgeConfig) {
-          return;
+        const params = this._getBadgeClipboardParams(ev.detail.path);
+        if (params) {
+          performCopy(this.hass, this.lovelace, params);
         }
-        this._badgeClipboard = deepClone(badgeConfig);
-        this.lovelace.showToast({
-          id: LOVELACE_EDIT_TOAST_ID,
-          message: this.hass.localize(
-            "ui.panel.lovelace.editor.edit_badge.copied_to_clipboard"
-          ),
-        });
       }
     );
     this.addEventListener(
       "ll-cut-badge",
-      async (ev: HASSDomEvent<HASSDomEvents["ll-cut-badge"]>) => {
-        if (!this.lovelace) return;
-        const badgeConfig = getAtPath<LovelaceBadgeConfig>(
-          this.lovelace.config,
-          ev.detail.path
-        );
-        if (!badgeConfig) {
-          return;
+      (ev: HASSDomEvent<HASSDomEvents["ll-cut-badge"]>) => {
+        const params = this._getBadgeClipboardParams(ev.detail.path);
+        if (params) {
+          performCut(this.hass, this.lovelace, params);
         }
-        const deleted = await performDeleteBadge(this.hass, this.lovelace, {
-          path: ev.detail.path,
-          silent: true,
-        });
-        if (!deleted) {
-          return;
-        }
-        this._badgeClipboard = deepClone(badgeConfig);
-        this.lovelace.showToast({
-          id: LOVELACE_EDIT_TOAST_ID,
-          message: this.hass.localize(
-            "ui.panel.lovelace.editor.edit_badge.cut_to_clipboard"
-          ),
-          duration: 8000,
-          action: {
-            action: () => fireEvent(window, "undo-change"),
-            text: this.hass.localize("ui.common.undo"),
-          },
-        });
       }
     );
+  }
+
+  private _getCardClipboardParams(
+    path: LovelacePath
+  ): ClipboardActionParams<LovelaceCardConfig> | undefined {
+    if (!this.lovelace) return undefined;
+    const cardPath = normalizeCardPath(path);
+    const config = this._getCardConfig(cardPath);
+    if (!config) return undefined;
+    return {
+      type: "card",
+      path: cardPath,
+      config,
+      setClipboard: (clipboard) => {
+        this._clipboard = clipboard;
+      },
+    };
+  }
+
+  private _getBadgeClipboardParams(
+    path: LovelacePath
+  ): ClipboardActionParams<LovelaceBadgeConfig> | undefined {
+    if (!this.lovelace) return undefined;
+    const config = getAtPath<LovelaceBadgeConfig>(this.lovelace.config, path);
+    if (!config) return undefined;
+    return {
+      type: "badge",
+      path,
+      config,
+      setClipboard: (clipboard) => {
+        this._badgeClipboard = clipboard;
+      },
+    };
   }
 
   private _getCardConfig(path: LovelacePath): LovelaceCardConfig | undefined {

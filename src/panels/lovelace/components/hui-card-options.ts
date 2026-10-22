@@ -46,7 +46,7 @@ import {
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
 import type { Lovelace, LovelaceCard } from "../types";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
-import { LOVELACE_EDIT_TOAST_ID } from "../editor/edit-toast";
+import { LOVELACE_EDIT_TOAST_ID } from "../types";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {

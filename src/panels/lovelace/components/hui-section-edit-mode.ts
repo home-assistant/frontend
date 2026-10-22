@@ -37,7 +37,7 @@ import {
 } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import type { Lovelace } from "../types";
-import { LOVELACE_EDIT_TOAST_ID } from "../editor/edit-toast";
+import { LOVELACE_EDIT_TOAST_ID } from "../types";
 
 @customElement("hui-section-edit-mode")
 export class HuiSectionEditMode extends LitElement {
