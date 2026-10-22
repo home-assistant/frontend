@@ -77,6 +77,24 @@ describe("YAML editor dirty state", () => {
     expect(el.isDirtyState).toBe(true);
   });
 
+  test("automation editor ignores where the hidden id was in the file", async () => {
+    const { id, ...rest } = AUTOMATION;
+    const el = await loadEditor<HaAutomationEditor>("ha-automation-editor", {
+      ...rest,
+      id,
+    });
+    const yaml = structuredClone(rest);
+
+    editYaml(el, yaml);
+    expect(el.isDirtyState).toBe(false);
+
+    editYaml(el, { ...yaml, actions: [reorderAction(yaml.actions[0])] });
+    expect(el.isDirtyState).toBe(true);
+
+    editYaml(el, yaml);
+    expect(el.isDirtyState).toBe(false);
+  });
+
   test("script editor is dirty when keys are only reordered", async () => {
     const el = await loadEditor<HaScriptEditor>("ha-script-editor", SCRIPT);
     const yaml = structuredClone(SCRIPT);

@@ -149,7 +149,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   protected domainHooks: EditorDomainHooks<AutomationConfig> = {
     domain: "automation",
     fetchFileConfig: fetchAutomationFileConfig,
-    normalizeConfig: normalizeAutomationConfig,
+    // The YAML editor hides the id and puts it back first, so load it first
+    // too. Otherwise the key order check marks unchanged YAML as dirty.
+    normalizeConfig: (config, report) => {
+      const { id, ...rest } = normalizeAutomationConfig(config, report);
+      return { id, ...rest };
+    },
     checkValidation: () => this._checkValidation(),
   };
 
