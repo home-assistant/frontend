@@ -739,7 +739,6 @@ export class HaAutomationTrace extends LitElement {
           min-height: 0;
           display: flex;
           overflow: hidden;
-          background: var(--ha-card-background, var(--card-background-color));
         }
 
         :host([narrow]) .main {
