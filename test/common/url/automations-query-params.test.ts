@@ -64,4 +64,10 @@ describe("automations query params", () => {
       automationsFilterQueryString({ "ha-filter-labels": filter([]) })
     ).toBe(automationsFilterQueryString({}));
   });
+
+  it("keeps one category, as the category filter picks one", () => {
+    expect(
+      automationsLinkFromUrl("?category=a,b")?.filters["ha-filter-categories"]
+    ).toEqual(filter(["a"]));
+  });
 });
