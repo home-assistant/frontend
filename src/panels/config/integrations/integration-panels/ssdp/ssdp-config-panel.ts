@@ -89,6 +89,7 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
   private _dataWithIds = memoizeOne((data) =>
     data.map((row) => ({
       ...row,
+      name: row.name || row.ssdp_usn,
       id: [row.ssdp_st, row.ssdp_location].filter(Boolean).join("|"),
     }))
   );

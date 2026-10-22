@@ -296,6 +296,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           extraTemplate: (scene) =>
             scene.label_entries.length
               ? html`<ha-data-table-labels
+                  clickable
                   @label-clicked=${this._labelClicked}
                   .labels=${scene.label_entries}
                 ></ha-data-table-labels>`
@@ -864,6 +865,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
     if (scene?.attributes.id) {
       navigate(`/config/scene/edit/${scene?.attributes.id}`);
+    } else if (scene) {
+      this._showInfo(scene);
     }
   }
 

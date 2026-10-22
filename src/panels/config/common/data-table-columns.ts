@@ -98,6 +98,8 @@ export function getEditableTableColumn<T>(
               <ha-svg-icon
                 .id="icon-edit-${slugify(entry.entity_id)}"
                 .path=${mdiPencilOff}
+                role="img"
+                aria-label=${tooltip}
                 style="color: var(--secondary-text-color)"
               ></ha-svg-icon>
               <ha-tooltip
