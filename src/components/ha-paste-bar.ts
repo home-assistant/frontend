@@ -1,23 +1,26 @@
 import { mdiContentPaste } from "@mdi/js";
-import { LitElement, css, html } from "lit";
+import { html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { HaActionBar } from "./ha-action-bar";
 import "./ha-button";
 import "./ha-svg-icon";
 
 /**
  * @element ha-paste-bar
  *
- * @summary Bar with a paste button, placed below a scrolling list, e.g. in the
- * add automation element, create card and create badge dialogs.
+ * @summary Action bar with a paste button, placed below a scrolling list, e.g.
+ * in the add automation element, create card and create badge dialogs.
  * Only render it when there is something on the clipboard.
  *
  * @attr label - Localized label of the paste button, e.g. "Paste action".
  *
+ * @cssprop --ha-action-bar-border-top - Top border of the bar. Defaults to `var(--ha-border-width-sm) solid var(--divider-color)`.
+ *
  * @fires paste-element - Fired when the paste button is clicked.
  */
 @customElement("ha-paste-bar")
-export class HaPasteBar extends LitElement {
+export class HaPasteBar extends HaActionBar {
   @property() public label = "";
 
   protected render() {
@@ -30,15 +33,6 @@ export class HaPasteBar extends LitElement {
   private _paste() {
     fireEvent(this, "paste-element");
   }
-
-  static styles = css`
-    :host {
-      display: flex;
-      align-items: center;
-      padding: var(--ha-space-3);
-      border-top: var(--ha-border-width-sm) solid var(--divider-color);
-    }
-  `;
 }
 
 declare global {
