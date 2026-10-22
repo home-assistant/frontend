@@ -64,4 +64,10 @@ describe("scripts query params", () => {
       scriptsFilterQueryString({})
     );
   });
+
+  it("keeps one category, as the category filter picks one", () => {
+    expect(
+      scriptsLinkFromUrl("?category=a,b")?.filters["ha-filter-categories"]
+    ).toEqual(filter(["a"]));
+  });
 });
