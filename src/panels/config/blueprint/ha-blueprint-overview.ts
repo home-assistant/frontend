@@ -12,6 +12,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import { storage } from "../../../common/decorators/storage";
 import type {
   HASSDomCurrentTargetEvent,
@@ -26,7 +27,6 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
-  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -97,11 +97,11 @@ class HaBlueprintOverview extends LitElement {
     Blueprints
   >;
 
-  @storage({ key: "blueprint-table-sort", state: false, subscribe: false })
-  private _activeSorting?: SortingChangedEvent;
-
-  @storage({ key: "blueprint-table-grouping", state: false, subscribe: false })
-  private _activeGrouping?: string;
+  private _tableSettings = new DataTableSettingsController(this, {
+    search: "blueprint-table-search",
+    sorting: "blueprint-table-sort",
+    grouping: "blueprint-table-grouping",
+  });
 
   @storage({
     key: "blueprint-table-collapsed",
@@ -123,15 +123,6 @@ class HaBlueprintOverview extends LitElement {
     subscribe: false,
   })
   private _activeHiddenColumns?: string[];
-
-  @state()
-  @storage({
-    storage: "sessionStorage",
-    key: "blueprint-table-search",
-    state: true,
-    subscribe: false,
-  })
-  private _filter = "";
 
   @state() private _usageCounts: Record<string, number> = {};
 
@@ -209,6 +200,7 @@ class HaBlueprintOverview extends LitElement {
         sortable: true,
         filterable: true,
         groupable: true,
+        urlName: "type",
       },
       path: {
         title: localize("ui.panel.config.blueprint.overview.headers.file_name"),
@@ -388,17 +380,18 @@ class HaBlueprintOverview extends LitElement {
             <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-button>
         </div>`}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
+        .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
-        @sorting-changed=${this._handleSortingChanged}
-        @grouping-changed=${this._handleGroupingChanged}
+        @sorting-changed=${this._tableSettings.sortingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        .filter=${this._filter}
-        @search-changed=${this._handleSearchChange}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
+        sync-url
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -789,20 +782,8 @@ class HaBlueprintOverview extends LitElement {
     });
   };
 
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
-  }
-
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
-  }
-
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
-  }
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
   }
 
   private _handleColumnsChanged(ev: CustomEvent) {
