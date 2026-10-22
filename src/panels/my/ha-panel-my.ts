@@ -29,6 +29,14 @@ const usersTableParams = {
   group: "string?",
 } satisfies Redirect["params"];
 
+// The Bluetooth monitor tables read these from the link
+const bluetoothTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
 // The Marketplace tabs with a table read these from the link
 const marketplaceTableParams = {
   search: "string?",
@@ -206,10 +214,12 @@ export const getMyRedirects = (): Redirects => ({
   bluetooth_advertisement_monitor: {
     component: "bluetooth",
     redirect: "/config/bluetooth/advertisement-monitor",
+    params: bluetoothTableParams,
   },
   bluetooth_connection_monitor: {
     component: "bluetooth",
     redirect: "/config/bluetooth/connection-monitor",
+    params: bluetoothTableParams,
   },
   bluetooth_visualization: {
     component: "bluetooth",
