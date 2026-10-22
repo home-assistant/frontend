@@ -325,8 +325,8 @@ importers:
         specifier: 4.4.2
         version: 4.4.2
       core-js:
-        specifier: 3.50.0
-        version: 3.50.0
+        specifier: 3.51.0
+        version: 3.51.0
       cropperjs:
         specifier: 1.7.0
         version: 1.7.0
@@ -489,7 +489,7 @@ importers:
         version: 8.0.7(@babel/core@8.0.7)
       '@bundle-stats/plugin-webpack-filter':
         specifier: 4.22.3
-        version: 4.22.3(core-js@3.50.0)
+        version: 4.22.3(core-js@3.51.0)
       '@eslint/js':
         specifier: 10.0.1
         version: 10.0.1(eslint@10.13.0(supports-color@8.1.1))
@@ -4356,8 +4356,8 @@ packages:
     resolution: {integrity: sha512-52r6fkXgxv4GLMjmFcMWRx7X9bw071xTTdrDcdyPGRqU2oE+9pCG0bAOMifSBdLw0JRBZKEF0q3B55qPlLuE8g==}
     engines: {node: '>=6.4.0'}
 
-  core-js@3.50.0:
-    resolution: {integrity: sha512-BRWgOLKkFeCgRudR6zrs8p9XJZcE14grzKMMssoYrk6krtuEZ7MTKPIY5RzOnqsEKIR9kst7wNzphttraT+Yqw==}
+  core-js@3.51.0:
+    resolution: {integrity: sha512-7bDKx/5jm5MxzsXxc93g6Z2+4ZsuT/MddrfRmTDJNAkWsYWHU8EVNEsBiIEWnMAMCHMmRfUEjkuo3jeNBOIHRw==}
 
   core-util-is@1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
@@ -9113,9 +9113,9 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@bundle-stats/plugin-webpack-filter@4.22.3(core-js@3.50.0)':
+  '@bundle-stats/plugin-webpack-filter@4.22.3(core-js@3.51.0)':
     dependencies:
-      core-js: 3.50.0
+      core-js: 3.51.0
       tslib: 2.8.1
 
   '@cacheable/memory@2.2.0':
@@ -11956,7 +11956,7 @@ snapshots:
     dependencies:
       browserslist: 4.29.3
 
-  core-js@3.50.0: {}
+  core-js@3.51.0: {}
 
   core-util-is@1.0.3: {}
 
