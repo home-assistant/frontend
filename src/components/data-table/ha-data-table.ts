@@ -90,6 +90,8 @@ export interface DataTableSortColumnData {
 }
 
 export interface DataTableColumnData<T = any> extends DataTableSortColumnData {
+  // In clickable tables the main value is rendered inside a button, so its
+  // template must not contain interactive elements
   main?: boolean;
   title: TemplateResult | string;
   label?: TemplateResult | string;
@@ -760,7 +762,14 @@ export class HaDataTable extends LitElement {
 
   private _renderMainValue(value: unknown) {
     return this.clickable
-      ? html`<button type="button" class="row-button">${value}</button>`
+      ? html`<button
+          type="button"
+          class="row-button"
+          @mouseover=${this._setTitle}
+          @focus=${this._setTitle}
+        >
+          ${value}
+        </button>`
       : value;
   }
 
@@ -853,7 +862,9 @@ export class HaDataTable extends LitElement {
             >
               ${
                 column.template
-                  ? column.template(row)
+                  ? column.main
+                    ? this._renderMainValue(column.template(row))
+                    : column.template(row)
                   : narrow && column.main
                     ? html`<div class="primary">
                           ${this._renderMainValue(row[key])}
@@ -1964,7 +1975,9 @@ export class HaDataTable extends LitElement {
           inset-inline-start: initial;
         }
         .mdc-data-table__header-cell--numeric.sortable:not(.not-sorted) span,
-        .mdc-data-table__header-cell--numeric.sortable:hover.not-sorted span {
+        .mdc-data-table__header-cell--numeric.sortable:hover.not-sorted span,
+        .mdc-data-table__header-cell--numeric.sortable:focus-within.not-sorted
+          span {
           left: -24px;
           inset-inline-start: -24px;
           inset-inline-end: initial;
