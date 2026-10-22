@@ -572,6 +572,29 @@ describe("TraceTree branch completion", () => {
     ).toBe(true);
   });
 
+  it.each([{ result: null }, { enabled: false }])(
+    "passes through a disabled condition: %j",
+    (result) => {
+      const tree = new TraceTree(
+        createTrace(
+          [
+            {
+              condition: "template",
+              value_template: "{{ false }}",
+              enabled: false,
+            },
+          ],
+          [{ path: "sequence/0", timestamp, result }]
+        )
+      );
+      expect(tree.sequence[0].condition).toEqual({
+        executed: true,
+        passed: true,
+        failed: false,
+      });
+    }
+  );
+
   it.each<Action>([
     { action: "light.turn_on", enabled: false },
     { stop: "Done", enabled: false },
