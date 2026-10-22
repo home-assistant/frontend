@@ -60,6 +60,8 @@ import { showToast } from "../../../util/toast";
 import { configSections } from "../config-sections";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
 
+const DASHBOARD_PATH = "/config/blueprint/dashboard";
+
 type BlueprintMetaDataPath = BlueprintMetaData & {
   path: string;
   error: boolean;
@@ -313,15 +315,22 @@ class HaBlueprintOverview extends LitElement {
   );
 
   public connectedCallback() {
-    // Leave the import path before the URL controllers connect, they keep the
-    // path they connected on
+    // Move to the dashboard path before the URL controllers connect, they
+    // keep the path they connected on. The router only gets there from the
+    // bare path after this, and the import path is left for the dashboard.
+    const path = this.route?.path;
     const importUrl =
-      this.route?.path === "/import"
+      path === "/import"
         ? (extractSearchParam("blueprint_url") ?? "")
         : undefined;
 
-    if (importUrl !== undefined) {
-      replaceCurrentUrl("/config/blueprint/dashboard");
+    if (path === "" || importUrl !== undefined) {
+      const search = importUrl === undefined ? mainWindow.location.search : "";
+      replaceCurrentUrl(
+        __DEMO__
+          ? `${mainWindow.location.pathname}${search}#${DASHBOARD_PATH}`
+          : `${DASHBOARD_PATH}${search}`
+      );
       fireEvent(mainWindow, "location-changed", { replace: true });
     }
 
