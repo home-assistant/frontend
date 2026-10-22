@@ -711,7 +711,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         ...(initData ? normalizeAutomationConfig(initData) : initData),
       } as AutomationConfig;
       this._initDirtyTracking(
-        { type: "deep" },
+        { type: "deep", compareKeyOrder: true },
         {
           config: baseConfig as AutomationConfig,
           entityRegistryUpdate: this.entityRegistryUpdate,
@@ -729,7 +729,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       getAutomationStateConfig(this.hass, this.entityId).then((c) => {
         this.config = normalizeAutomationConfig(c.config);
         this._initDirtyTracking(
-          { type: "deep" },
+          { type: "deep", compareKeyOrder: true },
           {
             config: this.config,
             entityRegistryUpdate: this.entityRegistryUpdate,

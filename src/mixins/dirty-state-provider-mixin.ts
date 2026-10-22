@@ -14,7 +14,11 @@ import {
 import type { Constructor } from "../types";
 
 export type CompareStrategy<State> =
-  | { type: "deep" }
+  | {
+      type: "deep";
+      /** Treat objects with the same keys in a different order as changed */
+      compareKeyOrder?: boolean;
+    }
   | { type: "shallow" }
   | { type: "custom"; compare: (a: State, b: State) => boolean };
 
@@ -203,10 +207,12 @@ export const DirtyStateProviderMixin =
       ): void {
         this._effectiveNormalize = effectiveNormalize;
         switch (strategy.type) {
-          case "deep":
-            this._dirtyCompareFn = (a, b) => deepEqual(a, b);
+          case "deep": {
+            const options = { compareKeyOrder: strategy.compareKeyOrder };
+            this._dirtyCompareFn = (a, b) => deepEqual(a, b, options);
             this._dirtyCloneFn = (value) => deepClone(value);
             break;
+          }
           case "shallow":
             this._dirtyCompareFn = (a, b) => shallowEqual(a, b);
             this._dirtyCloneFn = (value) => value;
