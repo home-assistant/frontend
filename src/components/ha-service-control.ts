@@ -449,9 +449,6 @@ export class HaServiceControl extends LitElement {
         } else {
           this._stickySelector.target = { object: null };
         }
-      } else if (typeof value === "object" && "exclude" in value) {
-        // The target picker can't show an exclude yet, so edit it as YAML.
-        this._stickySelector.target = { object: null };
       }
       return (
         this._stickySelector.target ??

@@ -24,7 +24,7 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
-import { targetIncludeStruct } from "../../../../../data/script";
+import { targetStruct } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
 import {
   LOCATION_MATCH_MODES,
@@ -35,7 +35,7 @@ import {
 const locationConditionStruct = object({
   condition: literal("location"),
   locations: optional(array(string())),
-  target: optional(targetIncludeStruct),
+  target: optional(targetStruct),
   match_mode: optional(enums(LOCATION_MATCH_MODES)),
   away: optional(boolean()),
 });

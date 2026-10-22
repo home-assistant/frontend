@@ -52,7 +52,7 @@ const targetIncludeFields = {
 };
 
 // A target without an exclude.
-export const targetIncludeStruct = object(targetIncludeFields);
+const targetIncludeStruct = object(targetIncludeFields);
 
 export const targetStruct = object({
   ...targetIncludeFields,
