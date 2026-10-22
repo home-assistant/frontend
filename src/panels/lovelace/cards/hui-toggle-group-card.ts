@@ -1,8 +1,14 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { consume } from "../../../common/decorators/consume";
+import {
+  consumeEntityStates,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { stateColorCss } from "../../../common/entity/state_color";
@@ -10,17 +16,27 @@ import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
 import "../../../components/tile/ha-tile-info";
+import { apiContext } from "../../../data/context";
 import { forwardHaptic } from "../../../data/haptics";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantApi } from "../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { ToggleGroupCardConfig } from "./types";
 import { getToggleAction } from "../../../common/entity/get_toggle_action";
 
 @customElement("hui-toggle-group-card")
 export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @state() private _config?: ToggleGroupCardConfig;
+
+  @state()
+  @consumeEntityStates({ entityIdPath: ["_config", "entities"] })
+  private _stateObjs?: Record<string, HassEntity>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   public setConfig(config: ToggleGroupCardConfig): void {
     if (!config.entities?.length) {
@@ -52,17 +68,14 @@ export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
   }
 
   private _getOnEntities(): HassEntity[] {
-    if (!this.hass || !this._config) return [];
-    return this._config.entities
-      .map((entityId) => this.hass!.states[entityId])
-      .filter(
-        (stateObj): stateObj is HassEntity =>
-          stateObj !== undefined && stateActive(stateObj)
-      );
+    if (!this._stateObjs) return [];
+    return Object.values(this._stateObjs).filter((stateObj) =>
+      stateActive(stateObj)
+    );
   }
 
   private _computeColor(): string | undefined {
-    if (!this._config || !this.hass) return undefined;
+    if (!this._config) return undefined;
 
     const onEntities = this._getOnEntities();
     if (onEntities.length === 0) return undefined;
@@ -75,37 +88,37 @@ export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
   }
 
   private _computeLabel(): string {
-    if (!this.hass || !this._config) return "";
+    if (!this._config) return "";
     const onCount = this._getOnEntities().length;
     const total = this._config.entities.length;
 
     if (onCount === 0) {
-      return this.hass.localize("ui.card.toggle-group.all_off");
+      return this._localize("ui.card.toggle-group.all_off");
     }
     if (onCount === total) {
-      return this.hass.localize("ui.card.toggle-group.all_on");
+      return this._localize("ui.card.toggle-group.all_on");
     }
-    return this.hass.localize("ui.card.toggle-group.some_on", {
+    return this._localize("ui.card.toggle-group.some_on", {
       on_count: onCount,
       total_count: total,
     });
   }
 
   private _handleTap(): void {
-    if (!this.hass || !this._config) return;
+    if (!this._config) return;
     const onEntities = this._getOnEntities();
     const domain = computeDomain(this._config.entities[0]);
 
     const service = getToggleAction(domain, onEntities.length === 0);
 
-    this.hass.callService(domain, service, {
+    this._api.callService(domain, service, {
       entity_id: this._config.entities,
     });
     forwardHaptic(this, "light");
   }
 
   protected render() {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return nothing;
     }
 
