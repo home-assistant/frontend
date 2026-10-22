@@ -346,6 +346,7 @@ class HaPanelHistory extends LitElement {
                         .start=${this._zoomRange[0]}
                         .end=${this._zoomRange[1]}
                         @zoom-slider-changed=${this._zoomSliderChanged}
+                        @zoom-slider-reset=${this._resetZoom}
                       ></ha-chart-zoom-slider>
                     </ha-card>`
                   : nothing
