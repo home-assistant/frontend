@@ -656,6 +656,7 @@ export class HaTracePathDetails extends LitElement {
 
         pre {
           margin: 0;
+          direction: ltr;
         }
 
         .error {
@@ -664,7 +665,7 @@ export class HaTracePathDetails extends LitElement {
 
         .error ul {
           margin: var(--ha-space-1) 0;
-          padding-left: var(--ha-space-6);
+          padding-inline-start: var(--ha-space-6);
         }
 
         ha-tab-group {
