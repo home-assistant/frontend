@@ -140,6 +140,11 @@ export class HaTargetSelector extends LitElement {
   );
 
   static styles = css`
+    label {
+      display: block;
+      margin-bottom: var(--ha-space-2);
+      font-weight: var(--ha-font-weight-medium);
+    }
     ha-target-picker {
       display: block;
     }
