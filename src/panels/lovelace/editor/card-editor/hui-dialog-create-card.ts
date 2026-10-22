@@ -226,7 +226,7 @@ export class HuiCreateDialogCard
           display: flex;
           align-items: center;
           padding: var(--ha-space-3);
-          background-color: var(--ha-color-surface-low);
+          border-top: var(--ha-border-width-sm) solid var(--divider-color);
         }
 
         @media all and (max-width: 450px), all and (max-height: 500px) {
