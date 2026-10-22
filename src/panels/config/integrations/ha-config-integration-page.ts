@@ -617,7 +617,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             href=${
                               devices.length === 1
                                 ? `/config/devices/device/${devices[0].id}`
-                                : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`
+                                : `/config/devices/dashboard?historyBack=1&domain=${this.domain}&status=disabled`
                             }
                           >
                             ${this.hass.localize(
@@ -635,7 +635,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           href=${
                             services.length === 1
                               ? `/config/devices/device/${services[0].id}`
-                              : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`
+                              : `/config/devices/dashboard?historyBack=1&domain=${this.domain}&status=disabled`
                           }
                         >
                           ${this.hass.localize(
