@@ -1080,11 +1080,16 @@ export class HaConfigEntities extends LitElement {
   }
 
   private _filterChanged(ev) {
-    // A filter can still finish looking up its items after the page is left
+    const type = ev.target.localName;
+
+    // A filter can still finish looking up its items after the page is left.
+    // Keep them for when the page comes back, but leave the URL alone.
     if (!this.isConnected) {
+      this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
+
       return;
     }
-    const type = ev.target.localName;
+
     const filters = { ...this._filters, [type]: ev.detail.value };
 
     // A filter also sends the value it was given, once it has found its items.
