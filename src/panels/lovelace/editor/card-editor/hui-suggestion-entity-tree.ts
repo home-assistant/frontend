@@ -782,7 +782,10 @@ export class HuiSuggestionEntityTree extends LitElement {
         .search-results {
           flex: 1;
           min-height: 0;
-          padding-bottom: var(--ha-space-3);
+          padding-bottom: max(
+            var(--suggestion-entity-tree-padding-bottom, 0px),
+            var(--ha-space-3)
+          );
           --ha-row-item-padding-block: 0;
           --ha-row-item-padding-inline: 0;
           --ha-row-item-gap: 0;

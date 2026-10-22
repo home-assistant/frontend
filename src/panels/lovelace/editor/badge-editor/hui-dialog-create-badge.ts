@@ -181,6 +181,10 @@ export class HuiCreateDialogBadge
     return [
       haStyleDialog,
       css`
+        :host {
+          --dialog-safe-area-inset-bottom: var(--safe-area-inset-bottom, 0px);
+        }
+
         ha-dialog {
           --dialog-content-padding: 0;
           --dialog-z-index: 6;
@@ -200,8 +204,34 @@ export class HuiCreateDialogBadge
           display: flex;
           align-items: center;
           padding: var(--ha-space-3);
-          padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
           background-color: var(--ha-color-surface-low);
+        }
+
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-dialog {
+            --safe-area-inset-bottom: 0px;
+          }
+          .paste-bar {
+            padding-bottom: max(
+              var(--dialog-safe-area-inset-bottom),
+              var(--ha-space-3)
+            );
+          }
+          hui-badge-picker:not(:has(> .paste-bar)) {
+            --badge-picker-content-padding-bottom: var(
+              --dialog-safe-area-inset-bottom
+            );
+          }
+          hui-badge-suggestion-picker {
+            --suggestion-picker-main-padding-bottom: var(
+              --dialog-safe-area-inset-bottom
+            );
+          }
+          hui-badge-suggestion-picker:not(:has(> .paste-bar)) {
+            --suggestion-picker-tree-padding-bottom: var(
+              --dialog-safe-area-inset-bottom
+            );
+          }
         }
 
         ha-tab-group-tab {

@@ -32,6 +32,9 @@ import type { HuiSuggestionEntityTree } from "./hui-suggestion-entity-tree";
  *
  * @slot - Footer below the entity tree, e.g. an action bar.
  *
+ * @cssprop --suggestion-picker-main-padding-bottom - Space at the end of the scrolling suggestions.
+ * @cssprop --suggestion-picker-tree-padding-bottom - Space at the end of the scrolling entity tree.
+ *
  * @fires suggestion-picked - Fired with the config of the picked suggestion.
  * @fires browse-cards - Fired when the user wants to browse all cards.
  */
@@ -305,6 +308,10 @@ export class HuiSuggestionPicker extends LitElement {
         .tree {
           flex: 1;
           min-height: 0;
+          --suggestion-entity-tree-padding-bottom: var(
+            --suggestion-picker-tree-padding-bottom,
+            0px
+          );
         }
         .main {
           flex: 1;
@@ -316,6 +323,7 @@ export class HuiSuggestionPicker extends LitElement {
           flex: 1;
           min-height: 0;
           overflow: auto;
+          padding-bottom: var(--suggestion-picker-main-padding-bottom, 0px);
         }
         .hidden {
           display: none !important;
