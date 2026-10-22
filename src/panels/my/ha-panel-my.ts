@@ -37,6 +37,14 @@ const bluetoothTableParams = {
   group: "string?",
 } satisfies Redirect["params"];
 
+// The DHCP, SSDP and Zeroconf discovery tables read these from the link
+const discoveryTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
 // The Marketplace tabs with a table read these from the link
 const marketplaceTableParams = {
   search: "string?",
@@ -122,6 +130,21 @@ const tagsTableParams = {
   search: "string?",
   sort: "string?",
   direction: "string?",
+} satisfies Redirect["params"];
+
+// The devices table reads these from the link
+const devicesTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  status: "string?",
+  floor: "string?",
+  area: "string?",
+  domain: "string?",
+  label: "string?",
+  config_entry: "string?",
+  sub_entry: "string?",
 } satisfies Redirect["params"];
 
 // The entities table reads these from the link
@@ -312,6 +335,7 @@ export const getMyRedirects = (): Redirects => ({
   config_dhcp: {
     component: "dhcp",
     redirect: "/config/dhcp",
+    params: discoveryTableParams,
   },
   config_energy: {
     component: "energy",
@@ -335,13 +359,16 @@ export const getMyRedirects = (): Redirects => ({
   config_ssdp: {
     component: "ssdp",
     redirect: "/config/ssdp",
+    params: discoveryTableParams,
   },
   config_zeroconf: {
     component: "zeroconf",
     redirect: "/config/zeroconf",
+    params: discoveryTableParams,
   },
   devices: {
     redirect: "/config/devices/dashboard",
+    params: devicesTableParams,
   },
   entities: {
     redirect: "/config/entities",
