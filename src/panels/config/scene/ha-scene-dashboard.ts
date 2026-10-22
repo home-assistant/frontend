@@ -692,11 +692,11 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           !this.scenes.length
             ? html`<div class="empty" slot="empty">
                 <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
-                <h1>
+                <h2>
                   ${this.hass.localize(
                     "ui.panel.config.scene.picker.empty_header"
                   )}
-                </h1>
+                </h2>
                 <p>
                   ${this.hass.localize("ui.panel.config.scene.picker.empty_text")}
                 </p>
@@ -1319,8 +1319,14 @@ ${rejected
         .empty ha-button {
           --mdc-icon-size: 24px;
         }
-        .empty h1 {
+        .empty h2 {
+          margin-block: var(--ha-space-5);
+          font-family: var(--ha-font-family-heading);
           font-size: var(--ha-font-size-3xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          white-space: normal;
+          overflow: visible;
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;

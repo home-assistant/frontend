@@ -21,7 +21,6 @@ import { canShowPage } from "../common/config/can_show_page";
 import { QueryParamsController } from "../common/controllers/query-params-controller";
 import { consume } from "../common/decorators/consume";
 import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
-import type { LocalizeFunc } from "../common/translations/localize";
 import {
   dataTableQueryParamConfig,
   dataTableQueryParamsFromState,
@@ -61,8 +60,6 @@ import type { PageNavigation } from "./hass-tabs-subpage";
 export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   // Unread, kept for callers that still pass it until they move to contexts
   @property({ attribute: false }) public hass?: HomeAssistant;
-
-  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -340,7 +337,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
-    const localize = this.localizeFunc || this._i18n.localize;
+    const localize = this._i18n.localize;
     const showPane = this._showPaneController.value ?? !this.narrow;
     const filterButton = this.hasFilters
       ? html`<ha-filter-pane-chip
@@ -495,7 +492,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     return html`
       <hass-tabs-subpage
-        .localizeFunc=${this.localizeFunc}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
         .backCallback=${this.backCallback}
@@ -868,7 +864,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         this.hiddenColumns = hiddenColumns;
         fireEvent(this, "columns-changed", { columnOrder, hiddenColumns });
       },
-      localizeFunc: this.localizeFunc,
     });
   }
 

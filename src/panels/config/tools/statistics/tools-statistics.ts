@@ -721,7 +721,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         this.columnOrder = columnOrder;
         this.hiddenColumns = hiddenColumns;
       },
-      localizeFunc: this._i18n.localize,
     });
   }
 
