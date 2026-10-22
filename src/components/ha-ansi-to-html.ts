@@ -411,16 +411,18 @@ export class HaAnsiToHtml extends LitElement {
       );
 
       // A button in place of a single hidden line takes as much room as the
-      // line, so show the line instead
-      visible.forEach((shown, lineIndex) => {
-        if (
-          !shown &&
-          visible[lineIndex - 1] !== false &&
-          visible[lineIndex + 1] !== false
-        ) {
-          visible[lineIndex] = true;
-        }
-      });
+      // line, so show the line instead. Buttons only show around matches.
+      if (this.contextLines > 0 && matchedEntries.size) {
+        visible.forEach((shown, lineIndex) => {
+          if (
+            !shown &&
+            visible[lineIndex - 1] !== false &&
+            visible[lineIndex + 1] !== false
+          ) {
+            visible[lineIndex] = true;
+          }
+        });
+      }
 
       lineList.forEach((line, lineIndex) => {
         line.classList.toggle(
