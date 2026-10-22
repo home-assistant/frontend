@@ -20,8 +20,10 @@ const THUMB_INSET = (ZOOM_SLIDER_HEIGHT - THUMB_SIZE) / 2;
 const RANGE_MIN_WIDTH = 2 * (THUMB_INSET + THUMB_SIZE) + ZOOM_SLIDER_HEIGHT;
 // The smallest visible range the thumbs can be dragged to, in percent
 const MIN_RANGE = 1;
-// A second press within this many milliseconds shows the full range again
+// A press this soon after a tap's release shows the full range again
 const DOUBLE_PRESS_TIME = 300;
+// A press that moves further than this is a drag, not a tap
+const TAP_MAX_DISTANCE = 4;
 
 type SliderPart = "start" | "end" | "range";
 
@@ -35,7 +37,9 @@ export class HaChartZoomSlider extends LitElement {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: HomeAssistantInternationalization;
 
-  private _lastPressTime?: number;
+  private _pressX?: number;
+
+  private _lastTapTime?: number;
 
   private _drag?: {
     pointerId: number;
@@ -58,6 +62,8 @@ export class HaChartZoomSlider extends LitElement {
       <div
         class="track"
         @pointerdown=${this._handleTrackPointerDown}
+        @pointerup=${this._handleTrackPointerUp}
+        @pointercancel=${this._handleTrackPointerUp}
         @selectstart=${preventDefault}
       >
         <div
@@ -127,8 +133,8 @@ export class HaChartZoomSlider extends LitElement {
   }
 
   // Pressing the track beside the visible range centers the range there.
-  // Double pressing anywhere on the slider resets it to the full range; this
-  // times presses itself, as touch browsers do not reliably fire dblclick.
+  // Double tapping anywhere on the slider resets it to the full range; this
+  // times taps itself, as touch browsers do not reliably fire dblclick.
   private _handleTrackPointerDown(
     ev: PointerEvent & HASSDomCurrentTargetEvent<HTMLElement>
   ) {
@@ -136,17 +142,18 @@ export class HaChartZoomSlider extends LitElement {
       return;
     }
     if (
-      this._lastPressTime !== undefined &&
-      ev.timeStamp - this._lastPressTime < DOUBLE_PRESS_TIME
+      this._lastTapTime !== undefined &&
+      ev.timeStamp - this._lastTapTime < DOUBLE_PRESS_TIME
     ) {
-      this._lastPressTime = undefined;
+      this._lastTapTime = undefined;
+      this._pressX = undefined;
       this._drag = undefined;
       // The press ends here, so the chart does not keep holding the slider open
       ev.stopPropagation();
       fireEvent(this, "zoom-slider-reset");
       return;
     }
-    this._lastPressTime = ev.timeStamp;
+    this._pressX = ev.clientX;
     if (ev.target !== ev.currentTarget) {
       return;
     }
@@ -156,6 +163,20 @@ export class HaChartZoomSlider extends LitElement {
       [this.start, this.end],
       position - (this.start + this.end) / 2
     );
+  }
+
+  // Only a press released where it started counts as a tap, so a quick drag
+  // followed by another press does not reset the zoom
+  private _handleTrackPointerUp(ev: PointerEvent) {
+    if (!ev.isPrimary) {
+      return;
+    }
+    const tapped =
+      ev.type === "pointerup" &&
+      this._pressX !== undefined &&
+      Math.abs(ev.clientX - this._pressX) <= TAP_MAX_DISTANCE;
+    this._lastTapTime = tapped ? ev.timeStamp : undefined;
+    this._pressX = undefined;
   }
 
   private _handlePointerDown(

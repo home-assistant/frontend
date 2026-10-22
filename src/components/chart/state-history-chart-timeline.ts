@@ -236,10 +236,6 @@ export class StateHistoryChartTimeline extends LitElement {
           show: true,
           triggerTooltip: false,
           label: { show: false },
-          // The theme only colors the axis tooltip's pointer
-          lineStyle: {
-            color: getComputedStyle(this).getPropertyValue("--info-color"),
-          },
         },
       },
       yAxis: {
