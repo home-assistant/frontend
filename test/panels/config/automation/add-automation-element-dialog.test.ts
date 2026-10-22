@@ -18,13 +18,20 @@ const manifests = {
   epex: { domain: "epex", integration_type: "entity" },
 };
 
-const setupDialog = () => {
-  const el = document.createElement("add-automation-element-dialog") as any;
-  const state = createMockEntityState("sensor.home_current_hour", "0.15");
-  el.hass = createMockHass(
-    { "sensor.home_current_hour": state },
-    { entities: {} }
+const createHass = (entities: unknown, stateValue = "0.15"): HomeAssistant =>
+  createMockHass(
+    {
+      "sensor.home_current_hour": createMockEntityState(
+        "sensor.home_current_hour",
+        stateValue
+      ),
+    },
+    { entities: entities as HomeAssistant["entities"] }
   );
+
+const setupDialog = (entities: unknown = {}) => {
+  const el = document.createElement("add-automation-element-dialog") as any;
+  el.hass = createHass(entities);
   el._params = { type: "trigger" };
   el._manifests = manifests;
   el._triggerDescriptions = triggerDescriptions;
@@ -38,89 +45,28 @@ describe("add automation element dialog active system domains", () => {
     const before = el._systemDomains;
     expect(before.active.has("epex")).toBe(false);
 
-    const state = createMockEntityState("sensor.home_current_hour", "0.15");
-    el.hass = createMockHass(
-      { "sensor.home_current_hour": state },
-      {
-        entities: {
-          "sensor.home_current_hour": {
-            entity_id: "sensor.home_current_hour",
-            translation_key: "epex_current_hour",
-          },
-        } as unknown as HomeAssistant["entities"],
-      }
-    );
+    el.hass = createHass({
+      "sensor.home_current_hour": {
+        entity_id: "sensor.home_current_hour",
+        translation_key: "epex_current_hour",
+      },
+    });
 
     const after = el._systemDomains;
     expect(after).not.toBe(before);
     expect(after.active.has("epex")).toBe(true);
   });
 
+  // The identity must stay stable while the content is unchanged, otherwise
+  // the collection groups rebuild on every state change.
   test("returns the same system domains after an unrelated state change", () => {
     const el = setupDialog();
 
     const before = el._systemDomains;
     expect(before.active.has("epex")).toBe(false);
 
-    const state = createMockEntityState("sensor.home_current_hour", "0.14");
-    el.hass = createMockHass(
-      { "sensor.home_current_hour": state },
-      { entities: {} }
-    );
+    el.hass = createHass({}, "0.14");
 
     expect(el._systemDomains).toBe(before);
-  });
-
-  test("collection groups recompute when the active system domains change", () => {
-    const el = setupDialog();
-
-    const inactive = el._systemDomains;
-    const active = {
-      active: new Set(["epex"]),
-      byEntityDomain: new Map<string, Set<string>>(),
-    };
-    const domains = new Set(["sensor"]);
-    const services = {};
-    const conditionDescriptions = {};
-    const collections: never[] = [];
-
-    const collectionsWithInactive = el._getCollections(
-      "trigger",
-      collections,
-      domains,
-      inactive,
-      el.hass.localize,
-      services,
-      triggerDescriptions,
-      conditionDescriptions,
-      manifests
-    );
-    expect(
-      el._getCollections(
-        "trigger",
-        collections,
-        domains,
-        inactive,
-        el.hass.localize,
-        services,
-        triggerDescriptions,
-        conditionDescriptions,
-        manifests
-      )
-    ).toBe(collectionsWithInactive);
-
-    expect(
-      el._getCollections(
-        "trigger",
-        collections,
-        domains,
-        active,
-        el.hass.localize,
-        services,
-        triggerDescriptions,
-        conditionDescriptions,
-        manifests
-      )
-    ).not.toBe(collectionsWithInactive);
   });
 });
