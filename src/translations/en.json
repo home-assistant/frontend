@@ -9202,7 +9202,14 @@
             "failed": "The command failed. Additional information may be available in the logs.",
             "success": "Your device is ready to be added to another Matter platform.",
             "scan_code": "With their app, scan the QR code or enter the sharing code below to finish setup.",
-            "copy_code": "Copy code"
+            "scan_code_add_to_apple_home": "If you use Apple Home on this device, select \"{button}\". Otherwise, scan the QR code or enter the sharing code below in the other app to finish setup.",
+            "scan_code_share_with_app": "If the other app, such as Google Home, is on this device, select \"{button}\". Otherwise, scan the QR code or enter the sharing code below in that app to finish setup.",
+            "copy_code": "Copy code",
+            "add_to_apple_home": "Add to Apple Home",
+            "share_with_app": "Share with app",
+            "share_failed": "Couldn't share the device. Try again, or close this dialog to get a new code.",
+            "share_expired": "This code has expired.",
+            "new_code": "Get new code"
           },
           "lock": {
             "manage": "Manage access",

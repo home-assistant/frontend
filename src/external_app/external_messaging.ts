@@ -1,5 +1,6 @@
 import type { NavigateOptions } from "../common/navigate";
 import type { AutomationConfig } from "../data/automation";
+import type { MatterShareDeviceParams } from "../data/matter";
 
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
@@ -41,6 +42,11 @@ interface EMOutgoingMessageEntityAddToGetActions extends EMMessage {
   payload: {
     entity_id: string;
   };
+}
+
+interface EMOutgoingMessageMatterShareDevice extends EMMessage {
+  type: "matter/share_device";
+  payload: MatterShareDeviceParams;
 }
 
 interface EMOutgoingMessageBarCodeScan extends EMMessage {
@@ -85,6 +91,11 @@ interface EMOutgoingMessageWithAnswer {
   "entity/add_to/get_actions": {
     request: EMOutgoingMessageEntityAddToGetActions;
     response: ExternalEntityAddToActions;
+  };
+  "matter/share_device": {
+    request: EMOutgoingMessageMatterShareDevice;
+    // The app answers with an empty object; the outcome is the resolution itself.
+    response: Record<string, never>;
   };
 }
 
@@ -394,6 +405,8 @@ export interface ExternalConfig {
   hasExoPlayer?: boolean;
   canCommissionMatter?: boolean;
   hasMatterStatusReport?: boolean;
+  canShareMatterDeviceToAppleHome?: boolean;
+  canShareMatterDeviceToOtherApps?: boolean;
   canImportThreadCredentials?: boolean;
   canTransferThreadCredentialsToKeychain?: boolean;
   hasAssist?: boolean;
