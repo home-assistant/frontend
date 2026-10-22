@@ -296,11 +296,6 @@ export class LoRaWANDevices extends LitElement {
     ha-select {
       margin: var(--ha-space-4);
     }
-    @media (max-width: 600px) {
-      hass-tabs-subpage-data-table {
-        --data-table-row-height: 132px;
-      }
-    }
   `;
 }
 
