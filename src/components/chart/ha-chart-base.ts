@@ -1652,6 +1652,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (ev.type === "pointerdown") {
       // zrender listens to pointer events instead of mouse events on Edge
       this._handleChartMouseDown(ev);
+      // Drag to zoom cancels the press, so a focused slider would never blur
+      this._zoomSliderHeld = false;
     }
     if (touchInput !== this._touchInput) {
       this._touchInput = touchInput;
@@ -1765,11 +1767,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     let end: number = zoomData.end;
     if (typeof start !== "number" || typeof end !== "number") {
       // A drag selection reports axis values; ECharts already moved the window
-      const dataZoom = ensureArray(
-        this.chart!.getOption().dataZoom as DataZoomComponentOption[]
-      ).find((d) => d?.id === "dataZoom");
-      start = dataZoom?.start ?? 0;
-      end = dataZoom?.end ?? 100;
+      const dataZoom = this.chart
+        // @ts-ignore private method, getOption() would clone all series data
+        ?.getModel()
+        .queryComponents({ mainType: "dataZoom", id: "dataZoom" })[0] as
+        { getPercentRange(): [number, number] | undefined } | undefined;
+      [start, end] = dataZoom?.getPercentRange() ?? [0, 100];
       const [prevStart, prevEnd] = this._zoomRange;
       const pixels =
         ((end - start) / (prevEnd - prevStart)) * this._getXAxisPixelWidth();

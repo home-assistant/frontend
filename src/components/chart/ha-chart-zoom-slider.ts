@@ -84,8 +84,16 @@ export class HaChartZoomSlider extends LitElement {
               data-part=${part}
               role="slider"
               aria-orientation="horizontal"
-              aria-valuemin="0"
-              aria-valuemax="100"
+              aria-valuemin=${
+                part === "start"
+                  ? 0
+                  : Math.round(Math.min(start + MIN_RANGE, end))
+              }
+              aria-valuemax=${
+                part === "start"
+                  ? Math.round(Math.max(end - MIN_RANGE, start))
+                  : 100
+              }
               aria-valuenow=${Math.round(part === "start" ? start : end)}
               aria-valuetext=${percent(part === "start" ? start : end)}
               aria-label=${localize(`ui.components.history_charts.zoom_${part}`)}
