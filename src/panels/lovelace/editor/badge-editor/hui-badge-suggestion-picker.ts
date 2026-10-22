@@ -25,6 +25,16 @@ import "../card-editor/hui-suggestion-entity-tree";
 import type { HuiSuggestionEntityTree } from "../card-editor/hui-suggestion-entity-tree";
 import "./hui-suggestion-badge";
 
+/**
+ * @element hui-badge-suggestion-picker
+ *
+ * @summary Entity tree with badge suggestions for the picked entity.
+ *
+ * @slot - Footer below the entity tree, e.g. an action bar.
+ *
+ * @fires badge-suggestion-picked - Fired with the config of the picked suggestion.
+ * @fires browse-badges - Fired when the user wants to browse all badges.
+ */
 @customElement("hui-badge-suggestion-picker")
 export class HuiBadgeSuggestionPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -102,6 +112,7 @@ export class HuiBadgeSuggestionPicker extends LitElement {
           .selectedEntityId=${this._entityId}
           @entity-picked=${this._handleEntityPicked}
         ></hui-suggestion-entity-tree>
+        <slot></slot>
       </div>
       <div class=${classMap({ main: true, hidden: !showMain })}>
         <div class="content ha-scrollbar">
