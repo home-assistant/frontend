@@ -37,6 +37,7 @@ import {
 } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
 import type { Lovelace } from "../types";
+import { LOVELACE_EDIT_TOAST_ID } from "../types";
 
 @customElement("hui-section-edit-mode")
 export class HuiSectionEditMode extends LitElement {
@@ -216,6 +217,7 @@ export class HuiSectionEditMode extends LitElement {
     if (!section) return;
     this._clipboard = deepClone(section);
     this.lovelace!.showToast({
+      id: LOVELACE_EDIT_TOAST_ID,
       message: this.hass.localize(
         "ui.panel.lovelace.editor.section.copied_to_clipboard"
       ),
@@ -233,6 +235,7 @@ export class HuiSectionEditMode extends LitElement {
       // The clipboard is only replaced once the section is gone, so a failed
       // cut does not turn into a copy.
       this.lovelace!.showToast({
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass.localize(
           "ui.panel.lovelace.editor.section.cut_error"
         ),
@@ -241,6 +244,7 @@ export class HuiSectionEditMode extends LitElement {
     }
     this._clipboard = deepClone(section);
     this.lovelace!.showToast({
+      id: LOVELACE_EDIT_TOAST_ID,
       message: this.hass.localize(
         "ui.panel.lovelace.editor.section.cut_to_clipboard"
       ),
@@ -265,6 +269,7 @@ export class HuiSectionEditMode extends LitElement {
       );
     } catch (_err: unknown) {
       this.lovelace!.showToast({
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass.localize(
           "ui.panel.lovelace.editor.section.paste_error"
         ),

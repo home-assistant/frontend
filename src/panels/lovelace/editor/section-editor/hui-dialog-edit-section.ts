@@ -54,6 +54,7 @@ import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import { getViewType } from "../../views/get-view-type";
 import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
+import { LOVELACE_EDIT_TOAST_ID } from "../../types";
 
 const TABS = ["tab-strategy", "tab-appearance", "tab-visibility"] as const;
 
@@ -401,6 +402,7 @@ export class HuiDialogEditSection
           ])
         );
         this.lovelace.showToast({
+          id: LOVELACE_EDIT_TOAST_ID,
           message: this.hass!.localize(
             "ui.panel.lovelace.editor.move_section.success"
           ),
@@ -416,6 +418,7 @@ export class HuiDialogEditSection
         this.closeDialog();
       } catch (err: any) {
         this.lovelace.showToast({
+          id: LOVELACE_EDIT_TOAST_ID,
           message: this.hass!.localize(
             "ui.panel.lovelace.editor.move_section.error"
           ),
@@ -444,6 +447,7 @@ export class HuiDialogEditSection
       await this.lovelace.saveConfig(deleteAtPath(oldFromConfig, fromPath));
 
       this.lovelace.showToast({
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass!.localize(
           "ui.panel.lovelace.editor.move_section.success"
         ),
@@ -460,6 +464,7 @@ export class HuiDialogEditSection
       this.closeDialog();
     } catch (err: any) {
       this.lovelace.showToast({
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass!.localize(
           "ui.panel.lovelace.editor.move_section.error"
         ),

@@ -46,6 +46,7 @@ import {
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
 import type { Lovelace, LovelaceCard } from "../types";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import { LOVELACE_EDIT_TOAST_ID } from "../types";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -385,6 +386,7 @@ export class HuiCardOptions extends LitElement {
             moveCardToContainer(newConfig, this.path!, toPath)
           );
           this.lovelace.showToast({
+            id: LOVELACE_EDIT_TOAST_ID,
             message: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.success"
             ),
@@ -411,6 +413,7 @@ export class HuiCardOptions extends LitElement {
           );
 
           this.lovelace.showToast({
+            id: LOVELACE_EDIT_TOAST_ID,
             message: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.success"
             ),
@@ -422,6 +425,7 @@ export class HuiCardOptions extends LitElement {
           });
         } catch (_err: any) {
           this.lovelace.showToast({
+            id: LOVELACE_EDIT_TOAST_ID,
             message: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.error"
             ),
