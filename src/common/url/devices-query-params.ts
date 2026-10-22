@@ -51,12 +51,18 @@ export const devicesFilterQueryParams = (
 });
 
 // The filters as the URL holds them, so values that filter the same, such as
-// no list and an empty one, compare equal
-export const devicesFilterQueryString = (filters: DataTableFilters): string =>
-  createQueryString(
-    devicesFilterQueryParams(filters),
-    devicesFilterQueryParamConfig
-  );
+// no list and an empty one, or a list in another order, compare equal. A
+// filter list sends back what it was given in its own order.
+export const devicesFilterQueryString = (filters: DataTableFilters): string => {
+  const params = devicesFilterQueryParams(filters);
+  const sorted: DevicesFilterQueryParams = {};
+
+  for (const key of devicesFilterQueryParamConfig.list) {
+    sorted[key] = params[key] && [...params[key]].sort();
+  }
+
+  return createQueryString(sorted, devicesFilterQueryParamConfig);
+};
 
 // What a link says to show, undefined when it has no table params so what was
 // picked before stays. A link replaces the search and the filters, ones left
