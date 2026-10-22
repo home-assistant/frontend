@@ -1205,9 +1205,14 @@
         }
       },
       "grid-size-picker": {
-        "reset_default": "Reset to default size",
-        "columns": "Number of columns",
-        "rows": "Number of rows"
+        "columns": "Width",
+        "rows": "Height",
+        "columns_value": "{count, plural, one {# column} other {# columns}}",
+        "rows_value": "{count, plural, one {# row} other {# rows}}",
+        "full_width": "Full width",
+        "fit_content": "Fit content",
+        "enter_precise_mode": "Enter precise mode",
+        "exit_precise_mode": "Exit precise mode"
       },
       "relative_time": {
         "never": "Never"
@@ -10300,12 +10305,12 @@
             "tab_layout": "Layout",
             "paste_condition": "Paste condition",
             "layout": {
+              "recommended_size": "Use recommended size",
+              "size": "{width} × {height}",
               "full_width": "Full width",
-              "full_width_helper": "Take up the full width of the section whatever its size",
-              "auto_height": "Auto height",
-              "auto_height_helper": "Adjust the card height based on its content",
-              "precise_mode": "Precise mode",
-              "precise_mode_helper": "Change the card width with more precision",
+              "full_width_helper": "Always fill the section, whatever its width",
+              "fit_content": "Fit height to content",
+              "fit_content_helper": "Make the card as tall as its content",
               "no_grid_support": "This card does not fully support resizing yet and may not display correctly with custom sizes."
             }
           },
