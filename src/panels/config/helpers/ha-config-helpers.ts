@@ -356,6 +356,20 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               ></ha-entity-id-icon>`
             : html`<ha-svg-icon
                 .path=${helper.icon}
+                role="img"
+                aria-label=${
+                  !helper.configEntry
+                    ? localize(
+                        "ui.panel.config.entities.picker.status.disabled"
+                      )
+                    : helper.configEntry.state === "loaded"
+                      ? localize(
+                          "ui.panel.config.entities.picker.status.unavailable"
+                        )
+                      : localize(
+                          `ui.panel.config.integrations.config_entry.state.${helper.configEntry.state}`
+                        )
+                }
                 style="color: var(--error-color)"
               ></ha-svg-icon>`,
       },
@@ -399,6 +413,9 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         template: (helper) => html`
           <ha-icon-overflow-menu
             narrow
+            .label=${this.hass.localize("ui.common.overflow_menu_for", {
+              name: helper.name,
+            })}
             .items=${[
               ...(helper.configEntry &&
               ERROR_STATES.includes(helper.configEntry.state)

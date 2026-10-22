@@ -464,6 +464,20 @@ export class HaDataTable extends LitElement {
 
     const filteredDataLength = this._filteredData?.length || 0;
 
+    const items = this._filteredData
+      ? this._groupData(
+          this._filteredData,
+          this._i18n?.localize,
+          this._i18n?.locale,
+          this.appendRow,
+          this.groupColumn,
+          this.groupOrder,
+          this._collapsedGroups,
+          this.sortColumn,
+          this.sortDirection
+        )
+      : [];
+
     return html`
       <div class="mdc-data-table">
         <slot name="header" @slotchange=${this._calcTableHeight}>
@@ -486,7 +500,7 @@ export class HaDataTable extends LitElement {
             "auto-height": this.autoHeight,
           })}"
           role="table"
-          aria-rowcount=${filteredDataLength + (this.loadError ? 2 : 1)}
+          aria-rowcount=${this._countRows(items) + (this.loadError ? 2 : 1)}
           style=${styleMap({
             height: this.autoHeight
               ? `${(filteredDataLength || 1) * 53 + 53}px`
@@ -712,17 +726,7 @@ export class HaDataTable extends LitElement {
                     tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
                     @scroll=${this._saveScrollPos}
                     @visibilityChanged=${this._handleVisibilityChanged}
-                    .items=${this._groupData(
-                      this._filteredData,
-                      this._i18n?.localize,
-                      this._i18n?.locale,
-                      this.appendRow,
-                      this.groupColumn,
-                      this.groupOrder,
-                      this._collapsedGroups,
-                      this.sortColumn,
-                      this.sortDirection
-                    )}
+                    .items=${items}
                     .keyFunction=${this._keyFunction}
                     .renderItem=${renderRow}
                   ></lit-virtualizer>
@@ -754,6 +758,14 @@ export class HaDataTable extends LitElement {
 
   private _keyFunction = (row: DataTableRowData) => row?.[this.id] || row;
 
+  private _countRows = memoizeOne(
+    (items: DataTableRowData[]) =>
+      items.filter(
+        (item) =>
+          !item.empty && (!item.append || item.groupHeader !== undefined)
+      ).length
+  );
+
   private _renderRow = (
     columns: DataTableColumnContainer,
     narrow: boolean,
@@ -765,9 +777,14 @@ export class HaDataTable extends LitElement {
       return nothing;
     }
     if (row.append) {
+      const isGroupHeader = row.groupHeader !== undefined;
       return html`<div
+        role=${ifDefined(isGroupHeader ? "row" : undefined)}
+        aria-rowindex=${ifDefined(
+          isGroupHeader ? index + (this.loadError ? 3 : 2) : undefined
+        )}
         class="mdc-data-table__row ${classMap({
-          "group-header-row": row.groupHeader !== undefined,
+          "group-header-row": isGroupHeader,
         })}"
         .group=${row.groupHeader}
       >

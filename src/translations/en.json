@@ -509,6 +509,7 @@
       "skip": "Skip",
       "menu": "Menu",
       "overflow_menu": "Overflow menu",
+      "overflow_menu_for": "Actions for {name}",
       "help": "Help",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
