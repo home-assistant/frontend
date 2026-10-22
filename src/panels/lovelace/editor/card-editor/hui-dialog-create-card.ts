@@ -240,17 +240,17 @@ export class HuiCreateDialogCard
             );
           }
           hui-card-picker:not(:has(> .paste-bar)) {
-            --card-picker-content-padding-bottom: var(
+            --ha-card-picker-content-padding-bottom: var(
               --dialog-safe-area-inset-bottom
             );
           }
           hui-suggestion-picker {
-            --suggestion-picker-main-padding-bottom: var(
+            --ha-suggestion-picker-main-padding-bottom: var(
               --dialog-safe-area-inset-bottom
             );
           }
           hui-suggestion-picker:not(:has(> .paste-bar)) {
-            --suggestion-picker-tree-padding-bottom: var(
+            --ha-suggestion-picker-tree-padding-bottom: var(
               --dialog-safe-area-inset-bottom
             );
           }

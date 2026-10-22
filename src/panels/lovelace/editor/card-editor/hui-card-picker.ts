@@ -61,7 +61,7 @@ const SPINNER = html`<div class="spinner"><ha-spinner></ha-spinner></div>`;
  *
  * @slot - Footer below the scrolling cards, e.g. an action bar.
  *
- * @cssprop --card-picker-content-padding-bottom - Space at the end of the scrolling cards.
+ * @cssprop --ha-card-picker-content-padding-bottom - Space at the end of the scrolling cards.
  *
  * @attr hide-clipboard - Hides the clipboard card, e.g. when the host offers its own paste action.
  *
@@ -706,7 +706,7 @@ export class HuiCardPicker extends LitElement {
           flex: 1;
           min-height: 0;
           overflow: auto;
-          padding-bottom: var(--card-picker-content-padding-bottom, 0px);
+          padding-bottom: var(--ha-card-picker-content-padding-bottom, 0px);
         }
 
         ha-input-search {

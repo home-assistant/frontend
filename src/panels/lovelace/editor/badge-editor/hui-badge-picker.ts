@@ -45,7 +45,7 @@ interface BadgeElement {
  *
  * @slot - Footer below the scrolling badges, e.g. an action bar.
  *
- * @cssprop --badge-picker-content-padding-bottom - Space at the end of the scrolling badges.
+ * @cssprop --ha-badge-picker-content-padding-bottom - Space at the end of the scrolling badges.
  *
  * @fires config-changed - Fired with the config of the picked badge.
  */
@@ -464,7 +464,7 @@ export class HuiBadgePicker extends LitElement {
           flex: 1;
           min-height: 0;
           overflow: auto;
-          padding-bottom: var(--badge-picker-content-padding-bottom, 0px);
+          padding-bottom: var(--ha-badge-picker-content-padding-bottom, 0px);
         }
 
         ha-input-search {

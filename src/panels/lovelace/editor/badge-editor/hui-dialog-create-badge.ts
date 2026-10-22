@@ -218,17 +218,17 @@ export class HuiCreateDialogBadge
             );
           }
           hui-badge-picker:not(:has(> .paste-bar)) {
-            --badge-picker-content-padding-bottom: var(
+            --ha-badge-picker-content-padding-bottom: var(
               --dialog-safe-area-inset-bottom
             );
           }
           hui-badge-suggestion-picker {
-            --suggestion-picker-main-padding-bottom: var(
+            --ha-suggestion-picker-main-padding-bottom: var(
               --dialog-safe-area-inset-bottom
             );
           }
           hui-badge-suggestion-picker:not(:has(> .paste-bar)) {
-            --suggestion-picker-tree-padding-bottom: var(
+            --ha-suggestion-picker-tree-padding-bottom: var(
               --dialog-safe-area-inset-bottom
             );
           }
