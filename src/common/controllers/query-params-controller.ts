@@ -30,8 +30,8 @@ export interface QueryParamsControllerOptions {
  * Keeps part of a page's state in the query string of the URL, so it can be
  * shared, bookmarked and reloaded. Writes replace the current history entry,
  * so Back leaves the page instead of undoing each change, and only touch the
- * config's params. The controller only acts while the URL is still the
- * page the host was first connected on.
+ * config's params. The controller only acts while the host is connected and
+ * the URL is still the page it was first connected on.
  */
 export class QueryParamsController<
   C extends QueryParamConfig,
@@ -43,6 +43,8 @@ export class QueryParamsController<
   private _pendingTimeout?: number;
 
   private _hostUpdated = false;
+
+  private _connected = false;
 
   constructor(
     private _host: ReactiveControllerHost,
@@ -56,6 +58,7 @@ export class QueryParamsController<
     // A cached page is reconnected on the way to another page, before its
     // router has moved on, so it keeps the page it was first connected on
     this._path ??= currentPath();
+    this._connected = true;
     mainWindow.addEventListener("location-changed", this._navigated);
     mainWindow.addEventListener("popstate", this._navigated);
 
@@ -71,6 +74,9 @@ export class QueryParamsController<
   }
 
   public hostDisconnected() {
+    // A page that was left can still finish a lookup, while a new page on the
+    // same path is showing
+    this._connected = false;
     mainWindow.removeEventListener("location-changed", this._navigated);
     mainWindow.removeEventListener("popstate", this._navigated);
     this._cancelPending();
@@ -120,7 +126,9 @@ export class QueryParamsController<
   }
 
   private _isActive(): boolean {
-    return this._options.enabled() && currentPath() === this._path;
+    return (
+      this._connected && this._options.enabled() && currentPath() === this._path
+    );
   }
 
   private _navigated = (ev?: Event | HASSDomEvent<NavigateOptions>) => {

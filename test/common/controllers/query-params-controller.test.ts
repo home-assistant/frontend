@@ -99,6 +99,15 @@ describe("QueryParamsController", () => {
     expect(currentUrl()).toBe("/page?other=1");
   });
 
+  it("does nothing once disconnected, also on the same page", () => {
+    // A page left while a lookup runs, with a new page on the same path
+    controller.hostDisconnected();
+    setUrl("/page?search=new");
+    controller.write({ search: "old" });
+    expect(currentUrl()).toBe("/page?search=new");
+    expect(controller.searchParams()).toBeUndefined();
+  });
+
   it("does nothing once the URL is another page", () => {
     setUrl("/other-page?other=1");
     window.dispatchEvent(new Event("location-changed"));
