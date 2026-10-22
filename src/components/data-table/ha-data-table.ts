@@ -758,6 +758,12 @@ export class HaDataTable extends LitElement {
 
   private _keyFunction = (row: DataTableRowData) => row?.[this.id] || row;
 
+  private _renderMainValue(value: unknown) {
+    return this.clickable
+      ? html`<button type="button" class="row-button">${value}</button>`
+      : value;
+  }
+
   private _countRows = memoizeOne(
     (items: DataTableRowData[]) =>
       items.filter(
@@ -849,7 +855,9 @@ export class HaDataTable extends LitElement {
                 column.template
                   ? column.template(row)
                   : narrow && column.main
-                    ? html`<div class="primary">${row[key]}</div>
+                    ? html`<div class="primary">
+                          ${this._renderMainValue(row[key])}
+                        </div>
                         <div class="secondary">
                           ${join(
                             Object.entries(columns)
@@ -870,7 +878,9 @@ export class HaDataTable extends LitElement {
                             ? column.extraTemplate(row)
                             : nothing
                         }`
-                    : html`${row[key]}${
+                    : html`${
+                        column.main ? this._renderMainValue(row[key]) : row[key]
+                      }${
                         column.extraTemplate
                           ? column.extraTemplate(row)
                           : nothing
@@ -1663,6 +1673,26 @@ export class HaDataTable extends LitElement {
         .mdc-data-table__cell a {
           color: inherit;
           text-decoration: none;
+        }
+
+        .row-button {
+          max-width: 100%;
+          padding: 0;
+          border: none;
+          background: none;
+          font: inherit;
+          letter-spacing: inherit;
+          color: inherit;
+          text-align: inherit;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          cursor: pointer;
+        }
+
+        .row-button:focus-visible {
+          outline: var(--ha-border-width-md) solid var(--primary-color);
+          outline-offset: 2px;
+          border-radius: var(--ha-border-radius-sm);
         }
 
         .mdc-data-table__cell--numeric {
