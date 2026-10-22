@@ -24,6 +24,19 @@ export interface TargetDetailsDialogParams {
    * they aren't given.
    */
   exclude?: HassServiceTarget;
+  /**
+   * The entities of the other included targets, so an exclusion made here
+   * is known to also affect them.
+   */
+  otherTargetEntities?: string[];
+  /**
+   * Set to give the rows checkboxes. Called on apply with the exclusions the
+   * dialog opened with and the ones it has now.
+   */
+  exclusionsChanged?: (
+    initial: TargetExclusion[],
+    current: TargetExclusion[]
+  ) => void;
 }
 
 export const loadTargetDetailsDialog = () => import("./dialog-target-details");

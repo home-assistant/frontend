@@ -69,9 +69,11 @@ import "./ha-tree-indicator";
 import "./list/ha-list-base";
 import "./target-picker/ha-target-picker-item-group";
 import "./target-picker/ha-target-picker-item-row";
+import { showTargetDetailsDialog } from "./target-picker/dialog/show-dialog-target-details";
 import { filterTargetEntries } from "./target-picker/filter-target-entries";
 import {
   addToExclude,
+  applyExclusionChanges,
   computeExclusionsPerTarget,
   hasIncludedTargets,
   removeFromExclude,
@@ -81,6 +83,7 @@ import {
   targetItems,
   withExclude,
   type ResolvedTargetItem,
+  type TargetExclusion,
   type TargetExclusions,
 } from "./target-picker/target-exclusions";
 
@@ -148,7 +151,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _excludeSection?: TargetTypeFloorless;
 
+  // What each exclusion takes out of each target, worked out from the value.
   @state() private _exclusions?: TargetExclusions;
+
+  // Whether every included target and every exclusion resolved, so it is
+  // known what each exclusion takes out, which ones are shared with another
+  // target, and the details can edit them.
+  @state() private _exclusionsComplete = true;
 
   // Every entity the included targets resolve to, so the exclude picker only
   // offers what would take something out.
@@ -290,6 +299,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     }
     if (
       changedProps.has("value") ||
+      changedProps.has("allowExclude") ||
       changedProps.has("primaryEntitiesOnly") ||
       changedProps.has("deviceFilter") ||
       changedProps.has("includeDomains") ||
@@ -338,11 +348,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       this.value?.exclude,
       this._exclusions
     );
-    const perTarget =
-      this._exclusions?.perTarget ??
-      (this.allowExclude && !hasIncludedTargets(this.value?.exclude)
-        ? {}
-        : undefined);
+    const perTarget = this._exclusionsPerTarget();
 
     if (
       !entityIds.length &&
@@ -360,6 +366,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       <div
         class="item-groups"
         @remove-target-exclusion=${this._handleRemoveExclusion}
+        @open-target-details=${this._openDetails}
       >
         ${
           entityIds.length
@@ -370,7 +377,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   type="entity"
                   .hass=${this.hass}
                   .exclusions=${perTarget}
-                  .exclude=${this.value?.exclude}
                   .items=${{ entity: entityIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
@@ -393,7 +399,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   type="device"
                   .hass=${this.hass}
                   .exclusions=${perTarget}
-                  .exclude=${this.value?.exclude}
                   .items=${{ device: deviceIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
@@ -416,7 +421,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   type="area"
                   .hass=${this.hass}
                   .exclusions=${perTarget}
-                  .exclude=${this.value?.exclude}
                   .items=${{
                     floor: floorIds,
                     area: areaIds,
@@ -441,7 +445,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   type="label"
                   .hass=${this.hass}
                   .exclusions=${perTarget}
-                  .exclude=${this.value?.exclude}
                   .items=${{ label: labelIds }}
                   .deviceFilter=${this.deviceFilter}
                   .entityFilter=${this.entityFilter}
@@ -663,11 +666,20 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     this._includedEntities = undefined;
     const value = this.value;
     const excludes = targetItems(value?.exclude);
-    if (!this.hass || !excludes.length) {
+    const includes = targetItems(value);
+    // Without an exclude, the targets are only needed to tell whether an
+    // exclusion made in the details is shared with another target.
+    if (
+      !this.hass ||
+      (!excludes.length && (!this.allowExclude || includes.length < 2))
+    ) {
       this._exclusions = undefined;
+      this._exclusionsComplete = true;
       return;
     }
-    const includes = targetItems(value);
+    // Until the targets resolve, the exclusions shown are from before and
+    // may not say which ones are shared now.
+    this._exclusionsComplete = false;
 
     // Each item on its own, so it is known which exclusion takes out what
     // from which target. One that fails only loses its own part.
@@ -698,10 +710,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       resolvedExcludes
     );
     if (!allIncluded) {
-      // Without every target, no effect can't be told from not known.
+      // Without every target, no effect can't be told from not known, and a
+      // shared exclusion can't be told from one that isn't.
       exclusions.noEffect = [];
     }
     this._exclusions = exclusions;
+    this._exclusionsComplete =
+      allIncluded && resolvedExcludes.length === excludes.length;
     this._includedEntities = allIncluded
       ? [
           ...new Set(
@@ -762,6 +777,55 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         this.value,
         removeFromExclude(this.value?.exclude, ev.detail)
       ),
+    });
+  }
+
+  private _exclusionsPerTarget():
+    Record<string, TargetExclusion[]> | undefined {
+    return (
+      this._exclusions?.perTarget ??
+      (this.allowExclude && !hasIncludedTargets(this.value?.exclude)
+        ? {}
+        : undefined)
+    );
+  }
+
+  private _openDetails(ev: HASSDomEvent<HASSDomEvents["open-target-details"]>) {
+    ev.stopPropagation();
+    const { type, id, title } = ev.detail;
+    const key = targetItemKey({ type, id });
+    const perTarget = this._exclusionsPerTarget();
+    const exclusions = perTarget ? (perTarget[key] ?? []) : undefined;
+    const editable =
+      exclusions &&
+      this.allowExclude &&
+      !this.disabled &&
+      this._exclusionsComplete;
+    showTargetDetailsDialog(this, {
+      title,
+      type,
+      itemId: id,
+      deviceFilter: this.deviceFilter,
+      entityFilter: this.entityFilter,
+      activeFilter: this.activeFilter,
+      includeDomains: this.includeDomains,
+      includeDeviceClasses: this.includeDeviceClasses,
+      primaryEntitiesOnly: this.primaryEntitiesOnly,
+      exclusions,
+      exclude: this.value?.exclude,
+      otherTargetEntities: Object.entries(
+        this._exclusions?.included ?? {}
+      ).flatMap(([targetKey, entities]) => (targetKey === key ? [] : entities)),
+      exclusionsChanged: editable
+        ? (initial, current) => {
+            fireEvent(this, "value-changed", {
+              value: withExclude(
+                this.value,
+                applyExclusionChanges(this.value?.exclude, initial, current)
+              ),
+            });
+          }
+        : undefined,
     });
   }
 
@@ -1537,6 +1601,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       width: 100%;
     }
 
+    /* Side by side, both pickers shrink to their buttons. Their popovers
+       still take the full width, which the section chips need. */
     .add-target-wrapper.exclude-shown {
       flex-wrap: wrap;
       gap: var(--ha-space-2);

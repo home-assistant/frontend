@@ -16,7 +16,8 @@ The target selector shows exclusions as follows:
   it, with how many they remove. Its count says how many are excluded.
 - An exclusion that takes nothing out of any target, like one of a deleted
   area, is listed under **Exclusions with no effect**, where it can be removed.
-- The target details show which entities are excluded and by what.
+- The target details show which entities are excluded and by what, and let
+  you tick or untick what the target holds.
 
 Only the target selector offers **Exclude**. Other users of the target picker
 set `allow-exclude` once they handle `exclude`.

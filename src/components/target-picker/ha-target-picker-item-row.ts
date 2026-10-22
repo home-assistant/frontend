@@ -8,10 +8,7 @@ import {
   mdiSwapHorizontal,
   mdiTextureBox,
 } from "@mdi/js";
-import type {
-  HassEntity,
-  HassServiceTarget,
-} from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   html,
@@ -23,9 +20,12 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import { live } from "lit/directives/live";
 import memoizeOne from "memoize-one";
 import { consume } from "../../common/decorators/consume";
+import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import {
   computeDeviceName,
@@ -60,6 +60,8 @@ import { brandsUrl } from "../../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import { floorDefaultIconPath } from "../ha-floor-icon";
 import "../ha-button";
+import "../ha-checkbox";
+import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-icon-button";
 import "../ha-icon-next";
 import "../ha-label";
@@ -68,9 +70,13 @@ import "../ha-svg-icon";
 import "../item/ha-list-item-base";
 import "../item/ha-list-item-button";
 import { computeTargetSubRows } from "./compute-target-sub-rows";
-import { showTargetDetailsDialog } from "./dialog/show-dialog-target-details";
 import { filterTargetEntries } from "./filter-target-entries";
-import type { TargetExclusion } from "./target-exclusions";
+import {
+  buildTargetRow,
+  targetRowState,
+  type TargetExclusion,
+  type TargetRow,
+} from "./target-exclusions";
 
 @customElement("ha-target-picker-item-row")
 export class HaTargetPickerItemRow extends LitElement {
@@ -142,17 +148,15 @@ export class HaTargetPickerItemRow extends LitElement {
 
   /**
    * On a target row: the exclusions that take entities out of it. In the
-   * target details, every row gets the target's exclusions.
+   * target details, every row gets the target's exclusions, as they are
+   * being edited.
    */
   @property({ attribute: false })
   public exclusions?: TargetExclusion[];
 
-  /**
-   * The `exclude` of the target value. The details work out the exclusions
-   * from it while `exclusions` isn't resolved yet.
-   */
-  @property({ attribute: false })
-  public exclude?: HassServiceTarget;
+  /** In the target details: rows get a checkbox to exclude what they hold. */
+  @property({ type: Boolean })
+  public selectable = false;
 
   @state() private _iconImg?: string;
 
@@ -195,6 +199,17 @@ export class HaTargetPickerItemRow extends LitElement {
     }
   }
 
+  private _targetRow = memoizeOne(
+    (
+      type: TargetType,
+      itemId: string,
+      entries: ExtractFromTargetResultReferenced | undefined,
+      entityRegistry: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"]
+    ): TargetRow =>
+      buildTargetRow(type, itemId, entries, entityRegistry, devices)
+  );
+
   protected render() {
     if (this.type === "label" && !this._labelRegistry) {
       return nothing;
@@ -233,8 +248,23 @@ export class HaTargetPickerItemRow extends LitElement {
     const rowEntities =
       this.type === "entity" ? [this.itemId] : entries?.referenced_entities;
     const fullyOut = !!rowEntities?.length && rowEntities.every(isOut);
-    const excludedBy =
-      this.subEntry && this.type === "entity" && fullyOut
+    const rowState =
+      this.selectable && rowEntities?.length
+        ? targetRowState(
+            this._targetRow(
+              this.type,
+              this.itemId,
+              entries,
+              this.hass.entities,
+              this.hass.devices
+            ),
+            !this.subEntry,
+            this.exclusions ?? []
+          )
+        : undefined;
+    const excludedBy = rowState
+      ? rowState.lockedBy
+      : this.subEntry && fullyOut
         ? this._excludedBy(rowEntities!)
         : [];
 
@@ -346,6 +376,19 @@ export class HaTargetPickerItemRow extends LitElement {
           : this.subEntry && this.type === "entity"
             ? html` <ha-icon-next slot="end"></ha-icon-next> `
             : nothing
+      }
+      ${
+        rowState
+          ? html`<ha-checkbox
+              slot="end"
+              .checked=${live(rowState.checked)}
+              .indeterminate=${live(rowState.indeterminate)}
+              .disabled=${rowState.disabled}
+              .title=${name}
+              @change=${this._selectionChanged}
+              @click=${stopPropagation}
+            ></ha-checkbox>`
+          : nothing
       }
     `;
 
@@ -585,6 +628,7 @@ export class HaTargetPickerItemRow extends LitElement {
             .itemId=${itemId}
             .parentEntries=${rowEntries?.[index]}
             .hideContext=${this.hideContext || this.type !== "label"}
+            .selectable=${this.selectable}
             .exclusions=${this.exclusions}
             expand
           ></ha-target-picker-item-row>
@@ -601,6 +645,7 @@ export class HaTargetPickerItemRow extends LitElement {
             .itemId=${itemId}
             .parentEntries=${deviceRowEntries?.[index]}
             .hideContext=${this.hideContext || this.type !== "label"}
+            .selectable=${this.selectable}
             .exclusions=${this.exclusions}
             expand
           ></ha-target-picker-item-row>
@@ -616,6 +661,7 @@ export class HaTargetPickerItemRow extends LitElement {
             type="entity"
             .itemId=${itemId}
             .hideContext=${this.hideContext || this.type !== "label"}
+            .selectable=${this.selectable}
             .exclusions=${this.exclusions}
           ></ha-target-picker-item-row>
         `
@@ -762,6 +808,21 @@ export class HaTargetPickerItemRow extends LitElement {
     });
   }
 
+  private _selectionChanged(ev: HASSDomTargetEvent<HaCheckbox>) {
+    ev.stopPropagation();
+    fireEvent(this, "target-selection-changed", {
+      row: this._targetRow(
+        this.type,
+        this.itemId,
+        this.parentEntries || this._entries,
+        this.hass.entities,
+        this.hass.devices
+      ),
+      isTarget: !this.subEntry,
+      selected: ev.target.checked,
+    });
+  }
+
   private async _getDeviceDomain(configEntryId: string) {
     try {
       const data = await getConfigEntry(this.hass, configEntryId);
@@ -834,20 +895,14 @@ export class HaTargetPickerItemRow extends LitElement {
     });
   };
 
+  // The target picker opens the details, as it knows what is excluded from
+  // the whole target.
   private _openDetails(ev: MouseEvent) {
     ev.stopPropagation();
-    showTargetDetailsDialog(this, {
-      title: this._itemData(this.type, this.itemId).name,
+    fireEvent(this, "open-target-details", {
       type: this.type,
-      itemId: this.itemId,
-      deviceFilter: this.deviceFilter,
-      entityFilter: this.entityFilter,
-      activeFilter: this.activeFilter,
-      includeDomains: this.includeDomains,
-      includeDeviceClasses: this.includeDeviceClasses,
-      primaryEntitiesOnly: this.primaryEntitiesOnly,
-      exclusions: this.exclusions,
-      exclude: this.exclude,
+      id: this.itemId,
+      title: this._itemData(this.type, this.itemId).name,
     });
   }
 
@@ -863,6 +918,8 @@ export class HaTargetPickerItemRow extends LitElement {
         background: var(--ha-color-fill-warning-quiet-resting);
       }
 
+      /* Exclusions sit under the target they take something out of: muted,
+         indented and led by a minus, so they read as "except". */
       .exclusion::part(base) {
         padding-inline-start: var(--ha-space-8);
       }
@@ -984,5 +1041,14 @@ export class HaTargetPickerItemRow extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-target-picker-item-row": HaTargetPickerItemRow;
+  }
+
+  interface HASSDomEvents {
+    "open-target-details": { type: TargetType; id: string; title: string };
+    "target-selection-changed": {
+      row: TargetRow;
+      isTarget: boolean;
+      selected: boolean;
+    };
   }
 }
