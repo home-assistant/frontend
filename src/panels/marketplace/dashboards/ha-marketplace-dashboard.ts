@@ -30,8 +30,8 @@ import { QueryParamsController } from "../../../common/controllers/query-params-
 import { navigate } from "../../../common/navigate";
 import { formatNumber } from "../../../common/number/format_number";
 import {
-  createMarketplaceFilterQueryString,
   marketplaceFilterQueryParamConfig,
+  sortedMarketplaceFilterQueryString,
 } from "../../../common/url/marketplace-query-params";
 import { shallowEqual } from "../../../common/util/shallow-equal";
 import type {
@@ -1008,8 +1008,8 @@ export class HaMarketplaceDashboard extends LitElement {
   // URL holds is the user's, so what a link applied isn't stored.
   private _isUserChange(filters: RepositoryFilters): boolean {
     return (
-      createMarketplaceFilterQueryString(filtersOfTab(filters, this.tab)) !==
-      createMarketplaceFilterQueryString(filtersOfTab(this._filters, this.tab))
+      sortedMarketplaceFilterQueryString(filtersOfTab(filters, this.tab)) !==
+      sortedMarketplaceFilterQueryString(filtersOfTab(this._filters, this.tab))
     );
   }
 

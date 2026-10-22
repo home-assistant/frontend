@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   helpersFilterQueryParamConfig,
   helpersFilterQueryParams,
+  helpersFilterQueryString,
   helpersLinkFromUrl,
 } from "../../../src/common/url/helpers-query-params";
 import {
@@ -70,5 +71,14 @@ describe("helpers query params", () => {
         )
       )
     ).toEqual({ search: "", filters });
+  });
+
+  it("compares the same filters in another order as equal", () => {
+    expect(helpersFilterQueryString({ "ha-filter-labels": ["b", "a"] })).toBe(
+      helpersFilterQueryString({ "ha-filter-labels": ["a", "b"] })
+    );
+    expect(helpersFilterQueryString({ "ha-filter-labels": [] })).toBe(
+      helpersFilterQueryString({})
+    );
   });
 });

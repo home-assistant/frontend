@@ -24,3 +24,18 @@ export const decodeMarketplaceFilterQueryParams = (
 export const createMarketplaceFilterQueryString = (
   values: MarketplaceFilterQueryParams
 ): string => createQueryString(values, marketplaceFilterQueryParamConfig);
+
+// The filters as the URL holds them with each list sorted, so the same filters
+// in another order compare equal. A filter list sends back what it was given
+// in its own order.
+export const sortedMarketplaceFilterQueryString = (
+  values: MarketplaceFilterQueryParams
+): string => {
+  const sorted: MarketplaceFilterQueryParams = {};
+
+  for (const key of marketplaceFilterQueryParamConfig.list) {
+    sorted[key] = values[key] && [...values[key]].sort();
+  }
+
+  return createMarketplaceFilterQueryString(sorted);
+};
