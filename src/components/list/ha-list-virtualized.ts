@@ -49,6 +49,8 @@ export interface HaListVirtualizedItem {
  * renders. Cleared once the user scrolls.
  * @attr {string} pin-block - Block alignment for `pin-index`: `start`,
  * `center` (default), `end`, or `nearest`.
+ * @attr {boolean} auto-height - Size the list to its rows and let the page
+ * scroll, instead of the list owning a scroll area.
  *
  * @fires ha-list-activated - Fired when a row is activated via Enter/Space. `detail: { index, item }`.
  * @cssprop --ha-list-scroll-padding-block-start - Space at the top of the scroll area that revealed rows stay below, like for an overlaid header. Defaults to `0px`.
@@ -77,6 +79,10 @@ export class HaListVirtualized extends HaListBase {
   @property({ attribute: "pin-block" }) public pinBlock:
     "start" | "center" | "end" | "nearest" = "center";
 
+  /** Size the list to its rows and let the page scroll. */
+  @property({ attribute: "auto-height", type: Boolean, reflect: true })
+  public autoHeight = false;
+
   @state() private _unpinned = false;
 
   @query("lit-virtualizer")
@@ -86,6 +92,9 @@ export class HaListVirtualized extends HaListBase {
   protected rangeEnd = -1;
   private _activeItemFocus = false;
   private _scrollToActiveItem = false;
+
+  // Items that registered from inside a wrapping virtualizer child.
+  private _itemByChild = new WeakMap<Element, HaListItemBase>();
 
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
@@ -98,9 +107,12 @@ export class HaListVirtualized extends HaListBase {
     }
   }
 
-  /** The element that scrolls the rows, once the virtualizer has rendered. */
+  /**
+   * The element that scrolls the rows, once the virtualizer has rendered.
+   * Undefined with `auto-height`, since the page scrolls then.
+   */
   public get scrollElement(): HTMLElement | undefined {
-    return this.virtualizerElement ?? undefined;
+    return this.autoHeight ? undefined : (this.virtualizerElement ?? undefined);
   }
 
   /** Scroll the row at `index` into view. */
@@ -126,7 +138,7 @@ export class HaListVirtualized extends HaListBase {
         class="ha-scrollbar"
         .keyFunction=${this._keyFunction}
         tabindex="-1"
-        scroller
+        ?scroller=${!this.autoHeight}
         .items=${this.rows}
         .renderItem=${this.rowRenderer}
         style="min-height: 36px; height: 100%;"
@@ -196,7 +208,7 @@ export class HaListVirtualized extends HaListBase {
     }
     if (this.virtualizerElement && this.rangeStart > -1) {
       Array.from(this.virtualizerElement.children).forEach((child, index) => {
-        const el = child as HTMLElement;
+        const el = this._rowItem(child);
         if (index + this.rangeStart === this.activeItemIndex) {
           el.tabIndex = 0;
           if (focusItem) {
@@ -209,12 +221,17 @@ export class HaListVirtualized extends HaListBase {
     }
   }
 
+  // The list item of a virtualizer child, or the child when it is the row.
+  private _rowItem(child: Element): HTMLElement {
+    return this._itemByChild.get(child) ?? (child as HTMLElement);
+  }
+
   private _applyVirtualActive(reveal: boolean) {
     if (!this.virtualizerElement || this.rangeStart < 0) {
       return;
     }
     Array.from(this.virtualizerElement.children).forEach((child, index) => {
-      const el = child as HTMLElement;
+      const el = this._rowItem(child);
       const active = index + this.rangeStart === this.activeItemIndex;
       el.removeAttribute("tabindex");
       el.toggleAttribute("active", active);
@@ -268,7 +285,7 @@ export class HaListVirtualized extends HaListBase {
     }
     const total = this.rows?.length ?? 0;
     Array.from(this.virtualizerElement.children).forEach((child, index) => {
-      const el = child as HTMLElement;
+      const el = this._rowItem(child);
       el.setAttribute("aria-setsize", String(total));
       el.setAttribute("aria-posinset", String(this.rangeStart + index + 1));
     });
@@ -313,10 +330,10 @@ export class HaListVirtualized extends HaListBase {
       this.activeItemIndex >= this.rangeStart &&
       this.activeItemIndex <= this.rangeEnd
     ) {
-      const active = this.virtualizerElement?.children[
-        this.activeItemIndex - this.rangeStart
-      ] as HaListItemBase | undefined;
-      if (active && active instanceof HaListItemBase) {
+      const active = this._rowItem(
+        this.virtualizerElement.children[this.activeItemIndex - this.rangeStart]
+      );
+      if (active instanceof HaListItemBase) {
         ev.preventDefault();
         active.activate();
         fireEvent(this, "ha-list-activated", {
@@ -357,7 +374,8 @@ export class HaListVirtualized extends HaListBase {
   }
 
   protected override getPageSize(): number {
-    if (this.rangeStart < 0 || this.rangeEnd < 0) {
+    // With auto-height the rendered range is not a page of the scroll area
+    if (this.autoHeight || this.rangeStart < 0 || this.rangeEnd < 0) {
       return super.getPageSize();
     }
     return Math.max(1, this.rangeEnd - this.rangeStart + 1);
@@ -374,6 +392,12 @@ export class HaListVirtualized extends HaListBase {
     ev: HASSDomEvent<HaListItemRegistrationDetail>
   ) => {
     ev.stopPropagation();
+    const child = ev
+      .composedPath()
+      .find((node) => (node as Node).parentNode === this.virtualizerElement);
+    if (child && child !== ev.detail.item) {
+      this._itemByChild.set(child as Element, ev.detail.item);
+    }
   };
 
   protected override onItemUnregister = (
@@ -403,6 +427,12 @@ export class HaListVirtualized extends HaListBase {
           --ha-list-scroll-padding-block-start,
           0px
         );
+      }
+      /* With auto-height the list grows to its rows instead of filling the
+         host. */
+      :host([auto-height]) .base {
+        height: auto;
+        flex: none;
       }
       /* The virtualizer positions rows absolutely, so they would otherwise
          shrink to their content. */

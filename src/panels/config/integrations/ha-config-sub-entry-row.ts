@@ -11,12 +11,15 @@ import {
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/item/ha-list-item-base";
 import "../../../components/list/ha-list-base";
+import "../../../components/list/ha-list-virtualized";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { deleteSubEntry, updateSubEntry } from "../../../data/config_entries";
+import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { groupDevicesByParent } from "../../../data/device/device_registry";
 import type { DiagnosticInfo } from "../../../data/diagnostics";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -28,7 +31,11 @@ import {
   showPromptDialog,
 } from "../../lovelace/custom-card-helpers";
 import "./ha-config-entry-device-row";
-import type { SubEntryData } from "./ha-config-integration-page";
+import {
+  toDeviceRows,
+  type DeviceRow,
+  type SubEntryData,
+} from "./ha-config-integration-page";
 
 @customElement("ha-config-sub-entry-row")
 class HaConfigSubEntryRow extends LitElement {
@@ -191,35 +198,40 @@ class HaConfigSubEntryRow extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
       </ha-list-item-base>
-      ${
-        this._expanded
-          ? html`
-              ${groupDevicesByParent(devices).map(
-                ({ device, isChild, isLastChild }) =>
-                  html`<ha-config-entry-device-row
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .entry=${this.entry}
-                    .device=${device}
-                    .entities=${this.entities}
-                    .isChild=${isChild}
-                    .isLastChild=${isLastChild}
-                  ></ha-config-entry-device-row>`
-              )}
-              ${services.map(
-                (service) =>
-                  html`<ha-config-entry-device-row
-                    .hass=${this.hass}
-                    .narrow=${this.narrow}
-                    .entry=${this.entry}
-                    .device=${service}
-                    .entities=${this.entities}
-                  ></ha-config-entry-device-row>`
-              )}
-            `
-          : nothing
-      }
+      ${this._expanded ? this._renderDeviceRows() : nothing}
     </div>`;
+  }
+
+  private _deviceRows = memoizeOne(
+    (devices: DeviceRegistryEntry[], services: DeviceRegistryEntry[]) =>
+      toDeviceRows([
+        ...groupDevicesByParent(devices),
+        ...services.map((device) => ({
+          device,
+          isChild: false,
+          isLastChild: false,
+        })),
+      ])
+  );
+
+  // Only the device rows near the viewport are in the DOM
+  private _renderDeviceRows() {
+    // A new renderer per update lets the rendered rows pick up hass changes
+    const renderRow = ({ device, isChild, isLastChild }: DeviceRow) =>
+      html`<ha-config-entry-device-row
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .entry=${this.entry}
+        .device=${device}
+        .entities=${this.entities}
+        .isChild=${isChild}
+        .isLastChild=${isLastChild}
+      ></ha-config-entry-device-row>`;
+    return html`<ha-list-virtualized
+      auto-height
+      .rows=${this._deviceRows(this.data.devices, this.data.services)}
+      .rowRenderer=${renderRow}
+    ></ha-list-virtualized>`;
   }
 
   private _toggleExpand() {

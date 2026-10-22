@@ -325,6 +325,10 @@ export class HaListBase extends LitElement {
     ) {
       return true;
     }
+    // A nested list or control already handled the key
+    if (ev.defaultPrevented) {
+      return true;
+    }
     const target = ev.target as HTMLElement | null;
     // Allow held arrow/Home/End to repeat for continuous navigation
     return (
