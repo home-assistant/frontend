@@ -78,6 +78,9 @@ export default class HaAutomationSidebar extends LitElement {
 
   private _resizeStartX = 0;
 
+  // Set when the user switches to YAML, consumed once the sidebar reopens
+  private _focusYamlEditor = false;
+
   private _tinykeysUnsub?: () => void;
 
   protected updated(changedProperties: PropertyValues<this>) {
@@ -87,6 +90,10 @@ export default class HaAutomationSidebar extends LitElement {
       this._bottomSheetElement?.position === "collapsed"
     ) {
       this._bottomSheetElement.snapTo("half");
+    }
+    if (changedProperties.has("sidebarKey") && this._focusYamlEditor) {
+      this._focusYamlEditor = false;
+      this._contentElement?.focusYamlEditor();
     }
     if (changedProperties.has("config") || changedProperties.has("narrow")) {
       if (!this.config || this.narrow) {
@@ -297,6 +304,9 @@ export default class HaAutomationSidebar extends LitElement {
   private _toggleYamlMode = (
     ev: HASSDomEvent<HASSDomEvents["toggle-yaml-mode"]>
   ) => {
+    // Script field sidebars don't pass the target mode, focusing is a no-op
+    // when the result is the visual editor
+    this._focusYamlEditor = ev.detail?.yamlMode !== false;
     (this.config as ActionSidebarConfig)?.toggleYamlMode(ev.detail?.yamlMode);
   };
 

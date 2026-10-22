@@ -267,6 +267,9 @@ export class HaCodeEditor extends ReactiveElement {
    * it has been created.
    */
   public focus(): void {
+    if (!this.isConnected) {
+      return;
+    }
     if (this.codemirror) {
       this.codemirror.focus();
       return;

@@ -100,6 +100,9 @@ export class HaYamlEditor extends LitElement {
    * has been rendered.
    */
   public focus(): void {
+    if (!this.isConnected) {
+      return;
+    }
     if (this._codeEditor) {
       this._codeEditor.focus();
       return;
