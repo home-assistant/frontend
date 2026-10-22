@@ -270,7 +270,7 @@ export class HaTargetPickerItemRow extends LitElement {
     const excludedBy =
       this.selectable && rowState
         ? rowState.lockedBy
-        : this.subEntry && fullyOut
+        : this.subEntry && out
           ? this._excludedBy(rowEntities!)
           : [];
 
