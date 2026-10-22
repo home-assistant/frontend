@@ -193,6 +193,7 @@ export default class HaAutomationSidebarOption extends LitElement {
               this.sidebarKey,
               html`<ha-yaml-editor
                 class="sidebar-editor"
+                initial-focus
                 .defaultValue=${this.config.config.option}
                 .readOnly=${this.disabled}
                 @value-changed=${this._yamlChanged}

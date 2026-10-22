@@ -113,6 +113,7 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
         this.sidebarKey,
         html`<ha-script-field-selector-editor
           class="sidebar-editor"
+          initial-focus
           .hass=${this.hass}
           .field=${this.config.config.field}
           .disabled=${this.disabled}

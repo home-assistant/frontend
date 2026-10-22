@@ -197,6 +197,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(
                     show-service-id
                   ></ha-service-picker>
                   <ha-yaml-editor
+                    initial-focus
                     id="yaml-editor"
                     .defaultValue=${this._serviceData}
                     @value-changed=${this._yamlChanged}

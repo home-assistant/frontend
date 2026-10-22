@@ -317,6 +317,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           this.sidebarKey,
           html`<ha-automation-trigger-editor
             class="sidebar-editor"
+            .initialFocus=${this.config.uiSupported}
             .hass=${this.hass}
             .trigger=${this.config.config}
             .description=${this.config.description}

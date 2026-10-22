@@ -51,6 +51,9 @@ export class HaYamlEditor extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
+  @property({ type: Boolean, attribute: "initial-focus" }) public initialFocus =
+    false;
+
   @property({ attribute: "copy-clipboard", type: Boolean })
   public copyClipboard = false;
 
@@ -121,6 +124,7 @@ export class HaYamlEditor extends LitElement {
         .readOnly=${this.readOnly}
         .disableFullscreen=${this.disableFullscreen}
         .inDialog=${this.inDialog}
+        .initialFocus=${this.initialFocus}
         mode="yaml"
         lint
         autocomplete-entities

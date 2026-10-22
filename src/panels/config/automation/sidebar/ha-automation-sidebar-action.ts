@@ -374,6 +374,7 @@ export default class HaAutomationSidebarAction extends LitElement {
               this.sidebarKey,
               html`<ha-automation-action-editor
                 class="sidebar-editor"
+                .initialFocus=${this.config.uiSupported}
                 .hass=${this.hass}
                 .action=${actionConfig}
                 .yamlMode=${this.yamlMode}

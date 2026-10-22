@@ -345,6 +345,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
   private _renderYamlMode() {
     return html` <ha-yaml-editor
+      initial-focus
       .defaultValue=${this._config}
       @value-changed=${this._yamlChanged}
       @editor-save=${this._saveScene}

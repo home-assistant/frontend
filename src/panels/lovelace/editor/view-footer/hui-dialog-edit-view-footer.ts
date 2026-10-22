@@ -83,7 +83,7 @@ export class HuiDialogEditViewFooter extends DirtyStateProviderMixin<LovelaceVie
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          autofocus
+          initial-focus
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
       `;

@@ -320,6 +320,7 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
                   )}
                 ></ha-form>`
               : html`<ha-yaml-editor
+                  .initialFocus=${this._canShowSchema}
                   @value-changed=${this._configChanged}
                   .yamlSchema=${ADDON_YAML_SCHEMA}
                 ></ha-yaml-editor>`

@@ -25,6 +25,9 @@ export default class HaScriptFieldEditor extends LitElement {
 
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
+  @property({ type: Boolean, attribute: "initial-focus" }) public initialFocus =
+    false;
+
   @state() private _uiError?: Record<string, string>;
 
   @state() private _yamlError?: undefined | "yaml_error" | "key_not_unique";
@@ -68,6 +71,7 @@ export default class HaScriptFieldEditor extends LitElement {
                   : nothing
               }
               <ha-yaml-editor
+                .initialFocus=${this.initialFocus}
                 .defaultValue=${yamlValue}
                 @value-changed=${this._onYamlChange}
               ></ha-yaml-editor>`

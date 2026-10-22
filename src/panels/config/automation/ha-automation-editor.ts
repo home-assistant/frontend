@@ -643,6 +643,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                         : nothing
                     }
                     <ha-yaml-editor
+                      initial-focus
                       .defaultValue=${this._preprocessYaml()}
                       .readOnly=${this.readOnly}
                       @value-changed=${this._yamlChanged}

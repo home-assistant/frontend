@@ -322,6 +322,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
               this.sidebarKey,
               html`<ha-automation-condition-editor
                 class="sidebar-editor"
+                .initialFocus=${this.config.uiSupported}
                 .hass=${this.hass}
                 .condition=${this.config.config}
                 .description=${this.config.description}

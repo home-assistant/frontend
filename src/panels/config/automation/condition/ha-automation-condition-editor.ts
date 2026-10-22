@@ -38,6 +38,9 @@ export default class HaAutomationConditionEditor extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public selected = false;
 
+  @property({ type: Boolean, attribute: "initial-focus" }) public initialFocus =
+    false;
+
   @property({ type: Boolean, attribute: "supported" }) public uiSupported =
     false;
 
@@ -83,6 +86,7 @@ export default class HaAutomationConditionEditor extends LitElement {
                     : nothing
                 }
                 <ha-yaml-editor
+                  .initialFocus=${this.initialFocus}
                   .defaultValue=${this.condition}
                   @value-changed=${this._onYamlChange}
                   .readOnly=${this.disabled}

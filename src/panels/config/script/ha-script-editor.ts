@@ -533,6 +533,7 @@ export class HaScriptEditor extends SubscribeMixin(
               : this.mode === "yaml"
                 ? html`${this._renderDeprecatedMigratedAlert()}
                     <ha-yaml-editor
+                      initial-focus
                       .defaultValue=${this._preprocessYaml()}
                       .readOnly=${this.readOnly}
                       disable-fullscreen
