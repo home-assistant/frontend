@@ -1169,17 +1169,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
           axisLine: { show: false },
           splitLine: { show: true },
           ...axis,
-          // The theme only colors the axis tooltip's pointer, so color an
-          // axis's own one here, where theme changes rebuild it
-          ...(axis.axisPointer?.show && {
-            axisPointer: {
-              ...axis.axisPointer,
-              lineStyle: {
-                color: getComputedStyle(this).getPropertyValue("--info-color"),
-                ...axis.axisPointer.lineStyle,
-              },
-            },
-          }),
           axisLabel: {
             formatter: this._formatTimeLabel,
             rich: { bold: { fontWeight: "bold" } },
