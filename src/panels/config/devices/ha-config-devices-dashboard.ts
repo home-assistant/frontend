@@ -1055,12 +1055,16 @@ export class HaConfigDeviceDashboard extends LitElement {
   }
 
   private _filterChanged(ev) {
-    // A filter can still finish looking up its items after the page is left
-    if (!this.isConnected) {
-      return;
-    }
     const type = ev.target.localName;
     const filters = { ...this._filters, [type]: ev.detail };
+
+    // A filter can still finish looking up its items after the page is left.
+    // Keep them for when the page comes back, but leave the URL alone.
+    if (!this.isConnected) {
+      this._filters = filters;
+
+      return;
+    }
 
     // A filter also sends the value it was given, once it has found its items.
     // Only a change to what the URL holds is the user's, so a link isn't stored.
