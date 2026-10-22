@@ -46,6 +46,7 @@ import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-paste-bar";
 import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-section-title";
 import "../../../components/ha-service-icon";
@@ -123,7 +124,6 @@ import { haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
-import "./add-automation-element/ha-automation-add-element-paste";
 import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
@@ -863,12 +863,13 @@ class DialogAddAutomationElement
                       `
                 }
                 ${
-                  showPasteFooter
-                    ? html`<ha-automation-add-element-paste
-                        .automationElementType=${automationElementType}
-                        .clipboardItem=${this._params!.clipboardItem}
+                  showPasteFooter && this._params!.clipboardItem
+                    ? html`<ha-paste-bar
+                        .label=${this.hass.localize(
+                          `ui.panel.config.automation.editor.${automationElementType}s.paste_element`
+                        )}
                         @paste-element=${this._paste}
-                      ></ha-automation-add-element-paste>`
+                      ></ha-paste-bar>`
                     : nothing
                 }
               </div>`
@@ -922,12 +923,13 @@ class DialogAddAutomationElement
                   @value-changed=${this._selected}
                 >
                   ${
-                    this._tab === "blocks"
-                      ? html`<ha-automation-add-element-paste
-                          .automationElementType=${automationElementType}
-                          .clipboardItem=${this._params!.clipboardItem}
+                    this._tab === "blocks" && this._params!.clipboardItem
+                      ? html`<ha-paste-bar
+                          .label=${this.hass.localize(
+                            `ui.panel.config.automation.editor.${automationElementType}s.paste_element`
+                          )}
                           @paste-element=${this._paste}
-                        ></ha-automation-add-element-paste>`
+                        ></ha-paste-bar>`
                       : nothing
                   }
                 </ha-automation-add-items>
@@ -2552,13 +2554,10 @@ class DialogAddAutomationElement
           --ha-bottom-sheet-surface-background: var(--card-background-color);
         }
 
-        ha-bottom-sheet
-          .list-column:has(> ha-automation-add-element-paste[clipboard-item]) {
+        ha-bottom-sheet .list-column:has(> ha-paste-bar) {
           margin-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
         }
-        ha-bottom-sheet
-          ha-automation-add-items
-          > ha-automation-add-element-paste {
+        ha-bottom-sheet ha-automation-add-items > ha-paste-bar {
           padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
         }
 
@@ -2726,13 +2725,10 @@ class DialogAddAutomationElement
         .groups {
           padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
         }
-        .list-column:has(> ha-automation-add-element-paste[clipboard-item])
-          > .groups {
+        .list-column:has(> ha-paste-bar) > .groups {
           padding-bottom: var(--ha-space-3);
         }
-        ha-automation-add-items:has(
-          > ha-automation-add-element-paste[clipboard-item]
-        ) {
+        ha-automation-add-items:has(> ha-paste-bar) {
           --ha-automation-add-items-padding-bottom: var(--ha-space-3);
         }
 
