@@ -868,9 +868,9 @@
       },
       "target-picker": {
         "add_target": "Add target",
-        "exclude_target": "Exclude",
+        "exclude_target": "Exclude target",
         "remove_exclusion": "Remove exclusion",
-        "removes_count": "Removes {count} {count, plural,\n one {entity}\n other {entities}\n}",
+        "excluded_count": "{count} excluded",
         "excluded_by": "Excluded by",
         "exclusions": "Exclusions",
         "exclusions_no_effect": "Exclusions with no effect",
@@ -893,8 +893,6 @@
         "devices_count": "{count} {count, plural,\n one {device}\n other {devices}\n}",
         "entities_count": "{count} {count, plural,\n one {entity}\n other {entities}\n}",
         "entities_count_filtered": "{count}/{total} {total, plural,\n one {entity}\n other {entities}\n}",
-        "entities_count_excluded": "{count} {count, plural,\n one {entity}\n other {entities}\n} ({excluded} excluded)",
-        "entities_count_filtered_excluded": "{count}/{total} {total, plural,\n one {entity}\n other {entities}\n} ({excluded} excluded)",
         "target_details": "Target details",
         "no_targets": "No targets",
         "no_target_found": "No target found for {term}",
@@ -5669,7 +5667,6 @@
               "template": "Template",
               "device_replaced": "Replaced device",
               "device_replaced_description": "This device was replaced by one or more new devices. Update this automation to use them.",
-              "count_excluded": "({count}, {excluded} excluded)",
               "excluded": "Excluded from the target",
               "types": {
                 "entity": "[%key:ui::components::target-picker::type::entities%]",

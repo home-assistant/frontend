@@ -330,6 +330,38 @@ describe("targetRowState", () => {
     expect(toggle("area:kitchen", false, [xmas])).toEqual([xmas, kitchenOut]);
   });
 
+  it("shows a row as partly out when only what is below it is excluded", () => {
+    const entityOut = (id: string): TargetExclusion => ({
+      type: "entity",
+      id,
+      removed: [id],
+      shared: false,
+    });
+    const tableAndMain = [entityOut("light.table"), entityOut("light.main")];
+    // Every entity of the switch is out, but the switch itself is not.
+    expect(stateOf("device:switch", tableAndMain)).toEqual({
+      checked: false,
+      indeterminate: true,
+      disabled: false,
+      lockedBy: [],
+    });
+    expect(stateOf("area:hallway", [entityOut("light.hall")])).toMatchObject({
+      checked: false,
+      indeterminate: true,
+    });
+    // Excluding the switch itself takes it out as a whole.
+    expect(
+      stateOf("device:switch", [
+        {
+          type: "device",
+          id: "switch",
+          removed: ["light.table", "light.main"],
+          shared: false,
+        },
+      ])
+    ).toMatchObject({ checked: false, indeterminate: false });
+  });
+
   it("leaves an excluded entity editable", () => {
     expect(
       stateOf("entity:light.main", [
