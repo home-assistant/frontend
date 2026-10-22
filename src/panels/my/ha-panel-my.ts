@@ -131,6 +131,21 @@ const applicationCredentialsTableParams = {
   direction: "string?",
 } satisfies Redirect["params"];
 
+// The devices table reads these from the link
+const devicesTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  status: "string?",
+  floor: "string?",
+  area: "string?",
+  domain: "string?",
+  label: "string?",
+  config_entry: "string?",
+  sub_entry: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -332,6 +347,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   devices: {
     redirect: "/config/devices/dashboard",
+    params: devicesTableParams,
   },
   entities: {
     redirect: "/config/entities",
