@@ -147,7 +147,8 @@ export class LoRaWANDevices extends LitElement {
   private _columns = memoizeOne(
     (
       localize: LocalizeFunc,
-      narrow: boolean
+      narrow: boolean,
+      darkMode: boolean
     ): DataTableColumnContainer<DeviceRow> => ({
       icon: {
         title: "",
@@ -165,7 +166,7 @@ export class LoRaWANDevices extends LitElement {
                   {
                     domain: device.domain,
                     type: "icon",
-                    darkOptimized: this.hass.themes?.darkMode,
+                    darkOptimized: darkMode,
                   },
                   this.hass.auth.data.hassUrl
                 )}
@@ -277,7 +278,11 @@ export class LoRaWANDevices extends LitElement {
       .isWide=${this.isWide}
       .route=${this.route}
       .tabs=${this._tabs}
-      .columns=${this._columns(this.hass.localize, this.narrow)}
+      .columns=${this._columns(
+        this.hass.localize,
+        this.narrow,
+        this.hass.themes.darkMode
+      )}
       .data=${this._rows(
         this._devices,
         this._connectionId,
