@@ -234,33 +234,33 @@ export class HaConfigDeviceDashboard extends LitElement {
 
     // Shown, but not stored as the user's choice
     if (link) {
-      // The filters only work out their items again when their value changes,
-      // so keep the items of the ones the link leaves as they are
-      const filters = Object.fromEntries(
-        Object.entries(link.filters).map(([key, filter]) => {
-          const current = this._filters[key];
-
-          return [
-            key,
-            current && deepEqual(filter.value, current.value)
-              ? current
-              : filter,
-          ];
-        })
-      );
-
       this._tableSettings.showSearch(link.search);
-      this._filters = filters;
+      this._filters = this._keepItems(link.filters);
     } else if (searchParams?.toString() === "") {
       // Opened again without params, like from the sidebar. Written once the
       // table has seen the URL without params, so it restores what it stored
-      this._filters = this._storageFilters;
+      this._filters = this._keepItems(this._storageFilters);
       queueMicrotask(() => this._writeFilters());
 
       return;
     }
 
     this._writeFilters();
+  }
+
+  // The filters only work out their items again when their value changes, so
+  // keep the items of the ones that stay as they are
+  private _keepItems(filters: DataTableFilters): DataTableFilters {
+    return Object.fromEntries(
+      Object.entries(filters).map(([key, filter]) => {
+        const current = this._filters[key];
+
+        return [
+          key,
+          current && deepEqual(filter.value, current.value) ? current : filter,
+        ];
+      })
+    );
   }
 
   private _writeFilters() {
