@@ -36,15 +36,22 @@ export const backupsFilterQueryParams = (
   location: list(filters[BACKUP_LOCATIONS_FILTER]),
 });
 
+const sorted = (values?: string[]): string[] | undefined =>
+  values && [...values].sort();
+
 // The filters as the URL holds them, so values that filter the same, such as
-// no list and an empty one, compare equal
+// no list and an empty one, or a list in another order, compare equal. A
+// filter list sends back what it was given in its own order.
 export const backupsFilterQueryString = (
   filters: DataTableFiltersValues
-): string =>
-  createQueryString(
-    backupsFilterQueryParams(filters),
+): string => {
+  const { type, location } = backupsFilterQueryParams(filters);
+
+  return createQueryString(
+    { type: sorted(type), location: sorted(location) },
     backupsFilterQueryParamConfig
   );
+};
 
 // What a link says to show, undefined when it has no table params so what was
 // picked before stays. A link replaces the search and the filters, ones left
