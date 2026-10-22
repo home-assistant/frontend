@@ -166,6 +166,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   @property({ attribute: "hide-zoom-controls", type: Boolean })
   public hideZoomControls = false;
 
+  // For charts sized to their content, like timelines, which grow to fit the
+  // zoom slider instead of giving up plot height
+  @property({ attribute: "grow-for-zoom-slider", type: Boolean })
+  public growForZoomSlider = false;
+
   // extraComponents is not reactive and should not trigger updates
   public extraComponents?: any[];
 
@@ -532,9 +537,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       <div
         class="container ${classMap({ "has-height": !!this.height })}"
         style=${styleMap({
-          // A content-sized chart, like a timeline, grows to fit the slider
           height:
-            showZoomSlider && this.height?.endsWith("px")
+            showZoomSlider && this.growForZoomSlider && this.height
               ? `calc(${this.height} + ${ZOOM_SLIDER_SPACE}px)`
               : this.height,
         })}

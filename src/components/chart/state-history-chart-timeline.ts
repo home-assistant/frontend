@@ -84,6 +84,7 @@ export class StateHistoryChartTimeline extends LitElement {
         }px`}
         .data=${this._chartData as HaECSeries}
         small-controls
+        grow-for-zoom-slider
         @chart-click=${this._handleChartClick}
         @chart-zoom=${this._handleDataZoom}
         .hideZoomControls=${this.hideZoomControls}
