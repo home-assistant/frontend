@@ -22,8 +22,8 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -673,11 +673,11 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           !this.scripts.length
             ? html` <div class="empty" slot="empty">
                 <ha-svg-icon .path=${mdiScriptText}></ha-svg-icon>
-                <h1>
+                <h2>
                   ${this.hass.localize(
                     "ui.panel.config.script.picker.empty_header"
                   )}
-                </h1>
+                </h2>
                 <p>
                   ${this.hass.localize(
                     "ui.panel.config.script.picker.empty_text"
@@ -1381,8 +1381,14 @@ ${rejected
         .empty ha-button {
           --mdc-icon-size: 24px;
         }
-        .empty h1 {
+        .empty h2 {
+          margin-block: var(--ha-space-5);
+          font-family: var(--ha-font-family-heading);
           font-size: var(--ha-font-size-3xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          white-space: normal;
+          overflow: visible;
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;

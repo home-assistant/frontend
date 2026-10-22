@@ -95,16 +95,16 @@ export class HaMarketplaceDiscover extends LitElement {
 
     return html`<div class="content">
       <div class="intro">
-        <h1>${localize("ui.panel.marketplace.discover.title")}</h1>
+        <h2>${localize("ui.panel.marketplace.discover.title")}</h2>
         <p>${localize("ui.panel.marketplace.discover.intro")}</p>
       </div>
       ${this._sections(this.marketplace.repositories).map(
         (section) =>
           html`<section class=${section.name}>
             <div class="section-header">
-              <h2>
+              <h3>
                 ${localize(`ui.panel.marketplace.discover.${section.name}`)}
-              </h2>
+              </h3>
               <a class="see-all" href=${section.seeAll}>
                 ${localize("ui.panel.marketplace.discover.see_all")}
               </a>
@@ -184,10 +184,14 @@ export class HaMarketplaceDiscover extends LitElement {
           padding: var(--ha-space-8) var(--ha-space-4);
         }
 
-        h1 {
+        .intro h2 {
           margin: 0;
+          font-family: var(--ha-font-family-heading);
           font-size: var(--ha-font-size-3xl);
           font-weight: var(--ha-font-weight-medium);
+          line-height: var(--ha-line-height-condensed);
+          white-space: normal;
+          overflow: visible;
         }
 
         .intro p {
@@ -202,10 +206,13 @@ export class HaMarketplaceDiscover extends LitElement {
           margin-block-end: var(--ha-space-3);
         }
 
-        h2 {
+        h3 {
           margin: 0;
           font-size: var(--ha-font-size-xl);
           font-weight: var(--ha-font-weight-medium);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .see-all {

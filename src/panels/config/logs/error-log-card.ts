@@ -813,7 +813,7 @@ class ErrorLogCard extends LitElement {
         }
         this._unsubscribeIntegrationLog();
         this._loadingState = "loaded";
-        this._error = (this.localizeFunc || this._localize)(
+        this._error = this._localize(
           "ui.panel.config.logs.integration_log_unsupported"
         );
       }

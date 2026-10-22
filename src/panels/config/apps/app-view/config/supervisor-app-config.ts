@@ -255,7 +255,7 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
           this._filteredSchema(this.addon.options, this.addon.schema!)
         );
     return html`
-      <h1>${this.addon.name}</h1>
+      <h2 class="app-name">${this.addon.name}</h2>
       <ha-card outlined>
         <div class="header">
           <h2>
@@ -546,6 +546,17 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
         }
         ha-dropdown-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
+        }
+        .app-name {
+          margin-block: var(--ha-space-4) var(--ha-space-2);
+          padding-inline-start: var(--ha-space-2);
+          color: var(--primary-text-color);
+          font-family: var(--ha-font-family-body);
+          font-size: var(--ha-font-size-2xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          white-space: normal;
+          overflow: visible;
         }
         .header {
           display: flex;
