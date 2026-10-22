@@ -9734,6 +9734,7 @@
           },
           "caption": "LoRaWAN",
           "description": "Devices across your LoRaWAN connections",
+          "icon": "[%key:ui::panel::config::devices::data_table::icon%]",
           "device": "Device",
           "connection": "Connection",
           "dev_eui": "DevEUI",
