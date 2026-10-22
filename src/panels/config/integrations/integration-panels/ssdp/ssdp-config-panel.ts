@@ -107,6 +107,8 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
         .initialCollapsedGroups=${this._activeCollapsed}
         @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         .data=${this._dataWithIds(this._data)}
         .noDataText=${this.hass.localize(
           "ui.panel.config.ssdp.no_devices_found"
