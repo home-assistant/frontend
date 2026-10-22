@@ -45,7 +45,7 @@ export interface EntitiesSectionStrategyConfig {
   entity_types?: string[];
   include_config_and_diagnostic?: boolean;
   group_by?: EntitiesSectionGroup;
-  name?: EntityNameItem | EntityNameItem[];
+  name?: "" | EntityNameItem | EntityNameItem[];
 }
 
 interface EntityGroup {
@@ -70,7 +70,7 @@ const computeTileConfig = (
 ): TileCardConfig => ({
   type: "tile",
   entity: entityId,
-  ...(name ? { name } : {}),
+  ...(name !== undefined ? { name } : {}),
 });
 
 const addToGroup = <T>(groups: Map<T, string[]>, key: T, entityId: string) => {
@@ -264,11 +264,13 @@ export class EntitiesSectionStrategy extends ReactiveElement {
       .filter(matchesType)
       .filter(isShown);
 
+    // An empty name hides the name on the tiles, which are then sorted by
+    // their default name.
     const names = new Map(
       shownEntityIds.map((entityId) => {
         const stateObj = hass.states[entityId];
         const name = stateObj
-          ? computeEntityNameDisplay(stateObj, config.name, hass)
+          ? computeEntityNameDisplay(stateObj, config.name || undefined, hass)
           : entityId;
         return [entityId, name];
       })
