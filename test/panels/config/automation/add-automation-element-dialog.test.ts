@@ -56,6 +56,21 @@ describe("add automation element dialog active system domains", () => {
     expect(after.active.has("epex")).toBe(true);
   });
 
+  test("returns the same system domains after an unrelated state change", () => {
+    const el = setupDialog();
+
+    const before = el._systemDomains;
+    expect(before.active.has("epex")).toBe(false);
+
+    const state = createMockEntityState("sensor.home_current_hour", "0.14");
+    el.hass = createMockHass(
+      { "sensor.home_current_hour": state },
+      { entities: {} }
+    );
+
+    expect(el._systemDomains).toBe(before);
+  });
+
   test("collection groups recompute when the active system domains change", () => {
     const el = setupDialog();
 
