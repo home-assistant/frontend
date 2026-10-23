@@ -27,6 +27,14 @@ const DEBOUNCE_WAIT = 300;
  */
 let dialogPageSearch: string | undefined;
 
+/** The controllers with a write to repeat once the dialog closes. */
+const dialogWriters = new Set<QueryParamsController<QueryParamConfig>>();
+
+const clearDialogPage = () => {
+  dialogPageSearch = undefined;
+  dialogWriters.clear();
+};
+
 /**
  * Whether a pop went back to the page's entry a dialog was opened from. Decided
  * by the first controller to get the pop, before any of them writes again.
@@ -40,7 +48,7 @@ const poppedToDialogPage = (ev: Event): boolean => {
       dialogPageSearch !== undefined &&
       mainWindow.location.search === dialogPageSearch;
     dialogPagePops.set(ev, popped);
-    dialogPageSearch = undefined;
+    clearDialogPage();
   }
   return popped;
 };
@@ -114,7 +122,13 @@ export class QueryParamsController<
     mainWindow.removeEventListener("popstate", this._navigated);
     this._cancelPending();
     this._dialogWrite = undefined;
-    dialogPageSearch = undefined;
+
+    // Another controller's write on the dialog's entry can still be repeated
+    dialogWriters.delete(this);
+
+    if (!dialogWriters.size) {
+      dialogPageSearch = undefined;
+    }
   }
 
   /** The current search params, or undefined when not on the host's page. */
@@ -175,7 +189,7 @@ export class QueryParamsController<
     if (ev?.type === "popstate") {
       dialogClosed = poppedToDialogPage(ev);
     } else if (ev) {
-      dialogPageSearch = undefined;
+      clearDialogPage();
     }
 
     // A router sends a path without a page, like /config/automation, on to
@@ -220,8 +234,10 @@ export class QueryParamsController<
     // A dialog's entry is popped when it closes, which would lose the write
     if (getHistoryState()?.dialog) {
       dialogPageSearch ??= current;
+      dialogWriters.add(this);
       this._dialogWrite = values;
     } else {
+      dialogWriters.delete(this);
       this._dialogWrite = undefined;
     }
 

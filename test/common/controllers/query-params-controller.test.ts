@@ -131,6 +131,24 @@ describe("QueryParamsController", () => {
     other.hostDisconnected();
   });
 
+  it("writes again after a dialog's entry is popped when another controller left", () => {
+    const other = new QueryParamsController(
+      createHost(),
+      { string: ["label"] },
+      { enabled: () => true, navigated: vi.fn() }
+    );
+
+    other.hostConnected();
+
+    window.history.replaceState({ dialog: "dialog-box" }, "", "/page?other=1");
+    controller.write({ search: "abc" });
+    other.hostDisconnected();
+    window.history.replaceState(null, "", "/page?other=1");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    expect(currentUrl()).toBe("/page?other=1&search=abc");
+    expect(navigated).not.toHaveBeenCalled();
+  });
+
   it("drops a write on a dialog's entry when navigated", () => {
     window.history.replaceState({ dialog: "dialog-box" }, "", "/page?other=1");
     controller.write({ search: "abc" });
