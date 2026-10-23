@@ -9836,8 +9836,8 @@
             "other_lights": "Other lights",
             "on": "On",
             "off": "Off",
-            "turn_on_area": "Turn on all lights in {area}",
-            "turn_off_area": "Turn off all lights in {area}"
+            "turn_on_area": "Off, turn on all lights in {area}",
+            "turn_off_area": "On, turn off all lights in {area}"
           },
           "security": {
             "devices": "Devices",
