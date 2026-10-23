@@ -340,8 +340,10 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
 
   static styles = css`
     ha-adaptive-popover {
-      /* As wide as the message and buttons need, up to the dialog's width */
+      /* As wide as the message and buttons need, up to the screen width, so
+         text only wraps when there is no room left */
       --ha-adaptive-popover-min-width: 0;
+      --ha-adaptive-popover-width: 95vw;
     }
     :host([inert]) {
       pointer-events: initial !important;

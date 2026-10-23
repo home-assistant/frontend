@@ -13,6 +13,7 @@ import { HaAdaptiveDialog } from "./ha-adaptive-dialog";
  * to `ha-adaptive-dialog` otherwise.
  *
  * @cssprop --ha-adaptive-popover-min-width - Minimum popover width. Defaults to its width preset; 0 fits it to its content, up to that width.
+ * @cssprop --ha-adaptive-popover-width - Width of a compact popover. Defaults to the medium dialog width.
  */
 @customElement("ha-adaptive-popover")
 export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
@@ -357,9 +358,12 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
           --ha-dialog-header-content-padding: var(--ha-space-5)
             var(--ha-space-1) var(--ha-space-3);
           --ha-dialog-header-min-height: 0;
-          /* Grow with the content up to the screen width, so text only wraps
-             when there is no room left, rather than being cut off */
-          --width: var(--full-width);
+          /* Content that sizes itself, such as a short message, can let the
+             popover grow wider so text only wraps when there is no room */
+          --width: var(
+            --ha-adaptive-popover-width,
+            min(var(--ha-dialog-width-md, 580px), var(--full-width))
+          );
           --ha-dialog-header-white-space: normal;
           --ha-dialog-header-title-height: auto;
           --dialog-content-padding: 0 var(--ha-space-5);
