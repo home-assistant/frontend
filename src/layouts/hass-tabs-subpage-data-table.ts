@@ -17,7 +17,6 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
 import { QueryParamsController } from "../common/controllers/query-params-controller";
 import { consume } from "../common/decorators/consume";
@@ -28,10 +27,7 @@ import {
   dataTableQueryStateFromUrl,
 } from "../common/url/data-table-query-params";
 import "../components/chips/ha-assist-chip";
-import {
-  dataTableGroupKey,
-  groupActionsSlot,
-} from "../components/data-table/ha-data-table";
+import { GROUP_ACTIONS_SLOT_PREFIX } from "../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
@@ -635,12 +631,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   .columnOrder=${this.columnOrder}
                   .hiddenColumns=${this.hiddenColumns}
                 >
-                  ${this._groups(this.data, this._groupColumn).map(
-                    (group) =>
-                      html`<slot
-                        name=${groupActionsSlot(group)}
-                        slot=${groupActionsSlot(group)}
-                      ></slot>`
+                  ${this._groupActionsSlots.map(
+                    (slot) => html`<slot name=${slot} slot=${slot}></slot>`
                   )}
                   ${
                     !this.narrow
@@ -857,22 +849,45 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._setGroupColumn(group);
   }
 
-  // Groups to pass the actions slots of through to the table
-  private _groups = memoizeOne(
-    (data: DataTableRowData[], groupColumn: string | undefined) => {
-      if (!groupColumn) {
-        return [];
-      }
+  // Slots of the group actions the page supplies, passed through to the table
+  @state() private _groupActionsSlots: string[] = [];
 
-      const groups = new Set<string>();
-
-      for (const row of data) {
-        groups.add(dataTableGroupKey(row[groupColumn]));
-      }
-
-      return [...groups];
-    }
+  private _groupActionsObserver = new MutationObserver(() =>
+    this._updateGroupActionsSlots()
   );
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._updateGroupActionsSlots();
+    // Subtree, so slot changes on the page's children are seen too
+    this._groupActionsObserver.observe(this, {
+      childList: true,
+      subtree: true,
+      attributeFilter: ["slot"],
+    });
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._groupActionsObserver.disconnect();
+  }
+
+  private _updateGroupActionsSlots() {
+    const slots = [
+      ...new Set(
+        Array.from(this.children, (child) => child.slot).filter((slot) =>
+          slot.startsWith(GROUP_ACTIONS_SLOT_PREFIX)
+        )
+      ),
+    ];
+
+    if (
+      slots.length !== this._groupActionsSlots.length ||
+      slots.some((slot, index) => slot !== this._groupActionsSlots[index])
+    ) {
+      this._groupActionsSlots = slots;
+    }
+  }
 
   private _setGroupColumn(columnId: string, link = false) {
     this._groupColumn = columnId;

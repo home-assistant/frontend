@@ -130,13 +130,16 @@ export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 // `--data-table-group-actions-button-size` and
 // `--data-table-group-actions-icon-size` change for all of them; style a
 // button itself for its own colour or size.
-export const groupActionsSlot = (group: string) => `group-actions-${group}`;
+export const GROUP_ACTIONS_SLOT_PREFIX = "group-actions-";
+
+export const groupActionsSlot = (group: string) =>
+  `${GROUP_ACTIONS_SLOT_PREFIX}${group}`;
 
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 
 // The group a row's value of the group column puts it in. Rows without a value
 // share a reserved group, sorted to the bottom.
-export const dataTableGroupKey = (
+const dataTableGroupKey = (
   value: string | number | boolean | null | undefined
 ) => {
   const key = String(value);
@@ -501,6 +504,14 @@ export class HaDataTable extends LitElement {
         )
       : [];
 
+    // The pinned group header is the same row as its group's header
+    const stickyGroupIndex =
+      this._stickyGroup === undefined
+        ? -1
+        : items.findIndex(
+            (item) => item.append && item.groupHeader === this._stickyGroup
+          );
+
     return html`
       <div class="mdc-data-table">
         <slot name="header" @slotchange=${this._calcTableHeight}>
@@ -750,6 +761,11 @@ export class HaDataTable extends LitElement {
                       ? html`<div
                           class="mdc-data-table__row sticky-group-header"
                           role="row"
+                          aria-rowindex=${ifDefined(
+                            stickyGroupIndex === -1
+                              ? undefined
+                              : stickyGroupIndex + (this.loadError ? 3 : 2)
+                          )}
                           .group=${this._stickyGroup}
                           @click=${this._collapseStickyGroup}
                         >
