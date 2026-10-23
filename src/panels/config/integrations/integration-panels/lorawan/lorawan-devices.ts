@@ -1,8 +1,10 @@
+import type { ContextType } from "@lit/context";
 import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { mdiPowerPlug } from "@mdi/js";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../../../common/decorators/consume";
 import { QueryParamsController } from "../../../../../common/controllers/query-params-controller";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -17,6 +19,7 @@ import "../../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../../components/ha-select";
 import "../../../../../components/ha-relative-time";
 import "../../../../../components/ha-svg-icon";
+import { configEntriesContext } from "../../../../../data/context";
 import type {
   LoRaWANDevice,
   LoRaWANConnection,
@@ -29,6 +32,7 @@ import "../../../../../layouts/hass-tabs-subpage-data-table";
 import { panelIsReady } from "../../../../../layouts/panel-ready";
 import { loadVirtualizer } from "../../../../../resources/virtualizer";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { brandsUrl } from "../../../../../util/brands-url";
 import "./lorawan-connection-link";
 import { connectionLabels } from "./connection-labels";
 
@@ -36,6 +40,7 @@ interface DeviceRow extends LoRaWANDevice, DataTableRowData {
   id: string;
   rssi: number | null;
   connection_title: string;
+  domain?: string;
 }
 
 @customElement("lorawan-devices")
@@ -65,6 +70,10 @@ export class LoRaWANDevices extends LitElement {
   @state() private _error = false;
   @state() private _connections: LoRaWANConnection[] = [];
 
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  private _configEntries?: ContextType<typeof configEntriesContext>;
+
   private _unsubscribe?: Promise<UnsubscribeFunc>;
 
   private _connectionLabels = memoizeOne(connectionLabels);
@@ -73,18 +82,30 @@ export class LoRaWANDevices extends LitElement {
     (
       devices: LoRaWANDevice[] | undefined,
       connection: string | null,
-      labels: Map<string, string>
-    ): DeviceRow[] =>
-      (devices ?? [])
+      labels: Map<string, string>,
+      registryDevices: HomeAssistant["devices"],
+      configEntries: ContextType<typeof configEntriesContext> | undefined
+    ): DeviceRow[] => {
+      const entryDomains = new Map(
+        (configEntries ?? []).map((entry) => [entry.entry_id, entry.domain])
+      );
+      return (devices ?? [])
         .filter(
           (device) => !connection || device.connection.entry_id === connection
         )
-        .map((device) => ({
-          ...device,
-          id: `${device.connection.entry_id}:${device.dev_eui}`,
-          rssi: strongestLoRaWANReception(device.receptions)?.rssi ?? null,
-          connection_title: labels.get(device.connection.entry_id)!,
-        }))
+        .map((device) => {
+          const entryId =
+            device.device_id &&
+            registryDevices[device.device_id]?.primary_config_entry;
+          return {
+            ...device,
+            id: `${device.connection.entry_id}:${device.dev_eui}`,
+            rssi: strongestLoRaWANReception(device.receptions)?.rssi ?? null,
+            connection_title: labels.get(device.connection.entry_id)!,
+            domain: entryId ? entryDomains.get(entryId) : undefined,
+          };
+        });
+    }
   );
 
   public connectedCallback() {
@@ -126,8 +147,32 @@ export class LoRaWANDevices extends LitElement {
   private _columns = memoizeOne(
     (
       localize: LocalizeFunc,
-      narrow: boolean
+      narrow: boolean,
+      darkMode: boolean
     ): DataTableColumnContainer<DeviceRow> => ({
+      icon: {
+        title: "",
+        label: localize("ui.panel.config.lorawan.icon"),
+        type: "icon",
+        moveable: false,
+        showNarrow: true,
+        template: (device) =>
+          device.domain
+            ? html`<img
+                alt=""
+                crossorigin="anonymous"
+                referrerpolicy="no-referrer"
+                src=${brandsUrl(
+                  {
+                    domain: device.domain,
+                    type: "icon",
+                    darkOptimized: darkMode,
+                  },
+                  this.hass.auth.data.hassUrl
+                )}
+              />`
+            : "",
+      },
       name: {
         title: localize("ui.panel.config.lorawan.device"),
         main: true,
@@ -233,8 +278,18 @@ export class LoRaWANDevices extends LitElement {
       .isWide=${this.isWide}
       .route=${this.route}
       .tabs=${this._tabs}
-      .columns=${this._columns(this.hass.localize, this.narrow)}
-      .data=${this._rows(this._devices, this._connectionId, labels)}
+      .columns=${this._columns(
+        this.hass.localize,
+        this.narrow,
+        this.hass.themes.darkMode
+      )}
+      .data=${this._rows(
+        this._devices,
+        this._connectionId,
+        labels,
+        this.hass.devices,
+        this._configEntries
+      )}
       .loading=${this._devices === undefined && !this._error}
       .loadError=${this._error}
       .noDataText=${this.hass.localize("ui.panel.config.lorawan.no_devices")}
@@ -295,11 +350,6 @@ export class LoRaWANDevices extends LitElement {
     }
     ha-select {
       margin: var(--ha-space-4);
-    }
-    @media (max-width: 600px) {
-      hass-tabs-subpage-data-table {
-        --data-table-row-height: 132px;
-      }
     }
   `;
 }

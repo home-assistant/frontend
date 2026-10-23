@@ -43,6 +43,13 @@ describe("validateConditionalConfig", () => {
       ["locations", { condition: "location", locations: ["home"] }],
       ["target", { condition: "location", target: { label_id: "store" } }],
       ["empty target", { condition: "location", target: {} }],
+      [
+        "a target with an exclude",
+        {
+          condition: "location",
+          target: { label_id: "store", exclude: { entity_id: "zone.store_1" } },
+        },
+      ],
       ["away", { condition: "location", away: true }],
       [
         "a match mode",
@@ -66,6 +73,17 @@ describe("validateConditionalConfig", () => {
       [
         "a target with an unknown key",
         { condition: "location", target: { zone_id: "zone.home" } },
+      ],
+      [
+        "an exclude with a non-string ID",
+        { condition: "location", target: { exclude: { entity_id: 5 } } },
+      ],
+      [
+        "a nested exclude",
+        {
+          condition: "location",
+          target: { exclude: { exclude: { entity_id: "zone.home" } } },
+        },
       ],
       ["a non-boolean away", { condition: "location", away: "yes" }],
       [
@@ -270,6 +288,25 @@ describe("checkConditionsMet", () => {
       expect(
         checkConditionsMet(
           [{ condition: "location", target: { label_id: "store" } }],
+          hass,
+          {}
+        )
+      ).toBe(false);
+    });
+
+    it("does not match an excluded zone", () => {
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      expect(
+        checkConditionsMet(
+          [
+            {
+              condition: "location",
+              target: {
+                label_id: "store",
+                exclude: { entity_id: "zone.store_1" },
+              },
+            },
+          ],
           hass,
           {}
         )

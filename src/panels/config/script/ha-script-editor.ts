@@ -605,7 +605,7 @@ export class HaScriptEditor extends SubscribeMixin(
         initData && "sequence" in initData ? {} : baseConfig;
       this.config = { ...initData, ...missingDefaults } as ScriptConfig;
       this._initDirtyTracking(
-        { type: "deep" },
+        { type: "deep", compareKeyOrder: true },
         {
           config: baseConfig as ScriptConfig,
           entityRegistryUpdate: this.entityRegistryUpdate,
@@ -622,7 +622,7 @@ export class HaScriptEditor extends SubscribeMixin(
       getScriptStateConfig(this.hass, this.entityId).then((c) => {
         this.config = normalizeScriptConfig(c.config);
         this._initDirtyTracking(
-          { type: "deep" },
+          { type: "deep", compareKeyOrder: true },
           {
             config: this.config,
             entityRegistryUpdate: this.entityRegistryUpdate,
@@ -1065,6 +1065,15 @@ export class HaScriptEditor extends SubscribeMixin(
       z: () => this._undo(),
       Z: () => this._redo(),
       y: () => this._redo(),
+    };
+  }
+
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    if (!this._manualEditor?.sidebarOpen) {
+      return {};
+    }
+    return {
+      Escape: () => this._manualEditor?.triggerCloseSidebar(),
     };
   }
 

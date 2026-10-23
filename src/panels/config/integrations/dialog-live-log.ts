@@ -261,16 +261,13 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
     if (!ansiToHtml) {
       return;
     }
-    if (!this._search) {
-      ansiToHtml.parseLinesToColoredPre(lines);
-      return;
-    }
-    // ha-ansi-to-html re-filters all lines after every added line while a
-    // search is set, so search once after adding them
-    ansiToHtml.filterLines("");
+
     ansiToHtml.parseLinesToColoredPre(lines);
-    this._noMatches =
-      this._shownCount > 0 && !ansiToHtml.filterLines(this._search);
+
+    if (this._search) {
+      this._noMatches =
+        this._shownCount > 0 && !ansiToHtml.filterLines(this._search);
+    }
   }
 
   private _searchChanged(ev: HASSDomTargetEvent<HaInputSearch>) {

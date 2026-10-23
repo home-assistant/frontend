@@ -21,12 +21,21 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
+import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  scenesFilterQueryParamConfig,
+  scenesFilterQueryParams,
+  scenesFilterQueryString,
+  scenesLinkFromUrl,
+} from "../../../common/url/scenes-query-params";
+import { deepEqual } from "../../../common/util/deep-equal";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -35,7 +44,6 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
-  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/ha-button";
@@ -61,7 +69,10 @@ import {
 } from "../../../data/category_registry";
 import type { CloudStatus } from "../../../data/cloud";
 import { fullEntitiesContext, labelsContext } from "../../../data/context";
-import type { DataTableFilters } from "../../../data/data_table_filters";
+import type {
+  DataTableFilter,
+  DataTableFilters,
+} from "../../../data/data_table_filters";
 import {
   deserializeFilters,
   isFilterUsed,
@@ -140,22 +151,21 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public scenes!: SceneEntity[];
 
-  @state() private _searchParms = new URLSearchParams(window.location.search);
-
   @state() private _selected: string[] = [];
 
   @state() private _activeFilters?: string[];
 
   @state() private _filteredSceneEntityIds?: string[] | null;
 
-  @state()
-  @storage({
-    storage: "sessionStorage",
-    key: "scene-table-search",
-    state: true,
-    subscribe: false,
-  })
-  private _filter = "";
+  private _tableSettings = new DataTableSettingsController(
+    this,
+    {
+      search: "scene-table-search",
+      sorting: "scene-table-sort",
+      grouping: "scene-table-grouping",
+    },
+    { defaultGrouping: "category" }
+  );
 
   @state()
   private _filters: DataTableFilters = {};
@@ -170,7 +180,16 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   })
   private _storageFilters: DataTableFilters = {};
 
-  private _fromUrl = false;
+  // The filters are kept in the URL by the page, the search, sorting and
+  // grouping by the table
+  private _filterParams = new QueryParamsController(
+    this,
+    scenesFilterQueryParamConfig,
+    {
+      enabled: () => true,
+      navigated: () => this._applyLink(),
+    }
+  );
 
   @state() private _expandedFilter?: string;
 
@@ -184,12 +203,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
-
-  @storage({ key: "scene-table-sort", state: false, subscribe: false })
-  private _activeSorting?: SortingChangedEvent;
-
-  @storage({ key: "scene-table-grouping", state: false, subscribe: false })
-  private _activeGrouping?: string;
 
   @storage({
     key: "scene-table-collapsed",
@@ -296,6 +309,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           extraTemplate: (scene) =>
             scene.label_entries.length
               ? html`<ha-data-table-labels
+                  clickable
                   @label-clicked=${this._labelClicked}
                   .labels=${scene.label_entries}
                 ></ha-data-table-labels>`
@@ -309,6 +323,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
             "ui.panel.config.scene.picker.headers.last_activated"
           ),
           sortable: true,
+          urlName: "last_activated",
           template: (scene) =>
             renderRelativeTimeColumn(
               scene.state,
@@ -408,17 +423,53 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
-      if (
-        !this._searchParms.has("area") &&
-        !this._searchParms.has("device") &&
-        !this._searchParms.has("label")
-      ) {
-        this._filters = this._storageFilters;
-      }
-      this._filterArea();
-      this._filterDevice();
-      this._filterLabel();
+      this._filters = this._storageFilters;
+      this._applyLink();
     }
+  }
+
+  // Links, like the ones on a device or area page, say in the URL what to
+  // show. The router keeps the page open, so a link can land on it.
+  private _applyLink() {
+    const searchParams = this._filterParams.searchParams();
+
+    const link = searchParams ? scenesLinkFromUrl(searchParams) : undefined;
+
+    // Shown, but not stored as the user's choice
+    if (link) {
+      this._tableSettings.showSearch(link.search);
+      this._filters = this._keepItems(link.filters);
+      this._applyFilters();
+    } else if (searchParams?.toString() === "") {
+      // Opened again without params, like from the sidebar. Written once the
+      // table has seen the URL without params, so it restores what it stored
+      this._filters = this._keepItems(this._storageFilters);
+      this._applyFilters();
+      queueMicrotask(() => this._writeFilters());
+
+      return;
+    }
+
+    this._writeFilters();
+  }
+
+  // The filters only work out their items again when their value changes, so
+  // keep the items of the ones that stay as they are
+  private _keepItems(filters: DataTableFilters): DataTableFilters {
+    return Object.fromEntries(
+      Object.entries(filters).map(([key, filter]) => {
+        const current = this._filters[key];
+
+        return [
+          key,
+          current && deepEqual(filter.value, current.value) ? current : filter,
+        ];
+      })
+    );
+  }
+
+  private _writeFilters() {
+    this._filterParams.write(scenesFilterQueryParams(this._filters));
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -482,14 +533,14 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         }
         .columns=${this._columns(this.hass.localize, scenes)}
         id="entity_id"
-        .initialGroupColumn=${this._activeGrouping ?? "category"}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
+        .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
-        @sorting-changed=${this._handleSortingChanged}
-        @grouping-changed=${this._handleGroupingChanged}
+        @sorting-changed=${this._tableSettings.sortingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         .data=${scenes}
         .empty=${!this.scenes.length}
@@ -498,8 +549,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           "ui.panel.config.scene.picker.no_scenes"
         )}
         @clear-filter=${this._clearFilter}
-        .filter=${this._filter}
-        @search-changed=${this._handleSearchChange}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
+        sync-url
         has-fab
         clickable
         @row-click=${this._handleRowClicked}
@@ -692,11 +744,11 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           !this.scenes.length
             ? html`<div class="empty" slot="empty">
                 <ha-svg-icon .path=${mdiPalette}></ha-svg-icon>
-                <h1>
+                <h2>
                   ${this.hass.localize(
                     "ui.panel.config.scene.picker.empty_header"
                   )}
-                </h1>
+                </h2>
                 <p>
                   ${this.hass.localize("ui.panel.config.scene.picker.empty_text")}
                 </p>
@@ -731,26 +783,31 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private _labelClicked = (ev: CustomEvent) => {
     const label = ev.detail.label;
-    this._filters = {
-      ...this._filters,
-      "ha-filter-labels": {
-        value: [label.label_id],
-        items: undefined,
-      },
-    };
-    if (!this._fromUrl) {
-      this._storageFilters = this._filters;
-    }
-    this._applyFilters();
+    this._setFilter("ha-filter-labels", {
+      value: [label.label_id],
+      items: undefined,
+    });
   };
 
   private _filterChanged(ev) {
-    const type = ev.target.localName;
-    this._filters = { ...this._filters, [type]: ev.detail };
-    if (!this._fromUrl) {
-      this._storageFilters = this._filters;
+    this._setFilter(ev.target.localName, ev.detail);
+  }
+
+  private _setFilter(type: string, filter: DataTableFilter) {
+    const filters = { ...this._filters, [type]: filter };
+
+    // A filter also sends the value it was given, once it has found its items.
+    // Only a change to what the URL holds is the user's, so a link isn't stored.
+    if (
+      scenesFilterQueryString(filters) !==
+      scenesFilterQueryString(this._filters)
+    ) {
+      this._storageFilters = { ...this._storageFilters, [type]: filter };
     }
+
+    this._filters = filters;
     this._applyFilters();
+    this._writeFilters();
   }
 
   private _applyFilters() {
@@ -799,58 +856,9 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
   private _clearFilter() {
     this._filters = {};
-    if (!this._fromUrl) {
-      this._storageFilters = {};
-    }
+    this._storageFilters = {};
     this._applyFilters();
-  }
-
-  private _filterArea() {
-    const area = this._searchParms.get("area");
-    if (!area) {
-      return;
-    }
-    this._fromUrl = true;
-    this._filters = {
-      ...this._filters,
-      "ha-filter-floor-areas": {
-        value: { areas: [area] },
-        items: undefined,
-      },
-    };
-    this._applyFilters();
-  }
-
-  private _filterDevice() {
-    const device = this._searchParms.get("device");
-    if (!device) {
-      return;
-    }
-    this._fromUrl = true;
-    this._filters = {
-      ...this._filters,
-      "ha-filter-devices": {
-        value: [device],
-        items: undefined,
-      },
-    };
-    this._applyFilters();
-  }
-
-  private _filterLabel() {
-    const label = this._searchParms.get("label");
-    if (!label) {
-      return;
-    }
-    this._fromUrl = true;
-    this._filters = {
-      ...this._filters,
-      "ha-filter-labels": {
-        value: [label],
-        items: undefined,
-      },
-    };
-    this._applyFilters();
+    this._writeFilters();
   }
 
   private _handleSelectionChanged(
@@ -864,6 +872,8 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
 
     if (scene?.attributes.id) {
       navigate(`/config/scene/edit/${scene?.attributes.id}`);
+    } else if (scene) {
+      this._showInfo(scene);
     }
   }
 
@@ -1277,20 +1287,8 @@ ${rejected
     }
   };
 
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
-  }
-
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value ?? "";
-  }
-
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
-  }
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
   }
 
   private _handleColumnsChanged(ev: CustomEvent) {
@@ -1319,8 +1317,14 @@ ${rejected
         .empty ha-button {
           --mdc-icon-size: 24px;
         }
-        .empty h1 {
+        .empty h2 {
+          margin-block: var(--ha-space-5);
+          font-family: var(--ha-font-family-heading);
           font-size: var(--ha-font-size-3xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          white-space: normal;
+          overflow: visible;
         }
         ha-assist-chip {
           --ha-assist-chip-container-shape: 10px;

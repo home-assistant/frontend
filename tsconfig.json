@@ -73,9 +73,6 @@
       "@lit-labs/virtualizer/layouts/grid": [
         "./node_modules/@lit-labs/virtualizer/layouts/grid.js"
       ],
-      "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver": [
-        "./node_modules/@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js"
-      ],
       "@lit-labs/observers/resize-controller": [
         "./node_modules/@lit-labs/observers/resize-controller.js"
       ],

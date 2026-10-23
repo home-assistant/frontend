@@ -25,6 +25,15 @@ import { getTargetIcon } from "../target/get_target_icon";
 
 type Target = [string, string | undefined, string | undefined];
 
+/**
+ * @element ha-automation-add-items
+ *
+ * @summary List of automation elements to add, grouped by title.
+ *
+ * @slot - Footer below the scrolling items, e.g. an action bar.
+ *
+ * @cssprop --ha-automation-add-items-padding-bottom - Bottom padding of the items list.
+ */
 @customElement("ha-automation-add-items")
 export class HaAutomationAddItems extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -65,36 +74,37 @@ export class HaAutomationAddItems extends LitElement {
 
   protected render() {
     return html`<div
-      class=${classMap({
-        items: true,
-        blank: this.error || !this.items || !this.items.length,
-        error: this.error,
-        scrolled: this._itemsScrolled,
-        "ha-scrollbar": this.scrollable,
-      })}
-      @scroll=${this._onItemsScroll}
-    >
-      ${
-        !this.items && !this.error
-          ? this.selectLabel
-          : this.error
-            ? html`${this.error}
-                <div>${this._renderTarget(this.target)}</div>`
-            : this.items && !this.items.length
-              ? html`${this.emptyLabel}
-                ${
-                  this.target
-                    ? html`<div>${this._renderTarget(this.target)}</div>`
-                    : nothing
-                }`
-              : repeat(
-                  this.items,
-                  (_, index) => `item-group-${index}`,
-                  (itemGroup) =>
-                    this._renderItemList(itemGroup.title, itemGroup.items)
-                )
-      }
-    </div>`;
+        class=${classMap({
+          items: true,
+          blank: this.error || !this.items || !this.items.length,
+          error: this.error,
+          scrolled: this._itemsScrolled,
+          "ha-scrollbar": this.scrollable,
+        })}
+        @scroll=${this._onItemsScroll}
+      >
+        ${
+          !this.items && !this.error
+            ? this.selectLabel
+            : this.error
+              ? html`${this.error}
+                  <div>${this._renderTarget(this.target)}</div>`
+              : this.items && !this.items.length
+                ? html`${this.emptyLabel}
+                  ${
+                    this.target
+                      ? html`<div>${this._renderTarget(this.target)}</div>`
+                      : nothing
+                  }`
+                : repeat(
+                    this.items,
+                    (_, index) => `item-group-${index}`,
+                    (itemGroup) =>
+                      this._renderItemList(itemGroup.title, itemGroup.items)
+                  )
+        }
+      </div>
+      <slot></slot>`;
   }
 
   private _renderItemList(title, items?: AddAutomationElementListItem[]) {
@@ -217,6 +227,7 @@ export class HaAutomationAddItems extends LitElement {
     css`
       :host {
         display: flex;
+        flex-direction: column;
         flex-grow: 1;
       }
       :host([scrollable]) .items {
@@ -227,6 +238,7 @@ export class HaAutomationAddItems extends LitElement {
         flex-direction: column;
         flex: 1;
         min-width: 0;
+        min-height: 0;
       }
       .items.blank {
         border-radius: var(--ha-border-radius-xl);
@@ -250,7 +262,10 @@ export class HaAutomationAddItems extends LitElement {
         --ha-list-gap: var(--ha-space-3);
         gap: var(--ha-space-2);
         padding: 0 var(--ha-space-4);
-        padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
+        padding-bottom: var(
+          --ha-automation-add-items-padding-bottom,
+          max(var(--safe-area-inset-bottom), var(--ha-space-3))
+        );
       }
       .items ha-list-base ha-list-item-button {
         border-radius: var(--ha-border-radius-lg);

@@ -46,6 +46,7 @@ Detailed guidance lives in `.agents/skills/<name>/SKILL.md`. Load every matching
 - `ha-frontend-lit`: reactive fields, DOM queries, lifecycle behavior, and render-derived state.
 - `ha-frontend-styling`: theme variables, spacing tokens, responsive layout, RTL, and view transitions.
 - `ha-frontend-testing`: lint, typecheck, Vitest, Playwright e2e dev servers, and benchmarks.
+- `ha-frontend-query-params`: typed URL query params, `QueryParamsController`, data table URL sync, in-app links, and My Home Assistant redirect params.
 - `ha-frontend-user-facing-text`: localization, terminology, sentence case, and Home Assistant text style.
 - `ha-frontend-review`: PR template use, existing review feedback, review checklist, recurring issues, and UI/UX evidence including gallery specifications.
 - `ha-frontend-ux-readiness`: UI/UX routing that complements frontend review for new user experiences.

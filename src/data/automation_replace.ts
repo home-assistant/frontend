@@ -136,7 +136,7 @@ const portTarget = (
         id in hass.devices &&
         deviceMeetsTargetSelector(
           hass.states,
-          Object.values(hass.entities),
+          hass.entities,
           hass.devices[id],
           selector
         ),

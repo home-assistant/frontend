@@ -15,8 +15,10 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { live } from "lit/directives/live";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
+import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
@@ -24,6 +26,7 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeEntityNameParts } from "../../../../common/entity/compute_entity_name_display";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { stringCompare } from "../../../../common/string/compare";
+import "../../../../components/ha-button";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-next";
@@ -64,12 +67,18 @@ import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import {
   TARGET_SEPARATOR,
   type SingleHassServiceTarget,
+  type TargetType,
 } from "../../../../data/target";
-import type { HomeAssistant } from "../../../../types";
+import type { HomeAssistant, HomeAssistantRegistries } from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
-import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
-import "./ha-automation-add-element-paste";
+import { getTargetIcon } from "../target/get_target_icon";
+import { getTargetText } from "../target/get_target_text";
+import {
+  MAX_RECENT_TARGETS,
+  parseRecentTarget,
+} from "../target/recent_targets";
+import { targetExists } from "../target/target_exists";
 
 // All person entities are also listed under "People" in the "Other" section
 // next to time and sun (triggers/conditions only), wherever they are assigned.
@@ -116,10 +125,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   @property({ attribute: false }) public selectedGroup?: string;
 
-  @property({ attribute: false }) public clipboardItem?: string;
-
-  @property({ attribute: "automation-element-type" })
-  public automationElementType!: AddAutomationElementDialogParams["type"];
+  @property({ attribute: false }) public recentTargets?: string[];
 
   // #endregion properties
 
@@ -150,6 +156,14 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   @state() private _entries: Record<string, Level1Entries> = {};
 
+  // Nothing is rendered until the tree is built, as recents and preselected
+  // targets open it
+  @state() private _treeLoaded = false;
+
+  private _initialDataLoadStarted = false;
+
+  private _configEntriesLoaded?: Promise<void>;
+
   @state() private _showShowMoreButton?: boolean;
 
   @state() private _fullHeight = false;
@@ -164,6 +178,15 @@ export default class HaAutomationAddFromTarget extends LitElement {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
+      // Without config entries the tree only lacks integration icons
+      this._configEntriesLoaded = this._loadConfigEntries().catch(
+        () => undefined
+      );
+    }
+
+    // The tree sorts helpers by their manifest, so it waits for them
+    if (!this._initialDataLoadStarted && this.manifests) {
+      this._initialDataLoadStarted = true;
       this._initialDataLoad();
     }
 
@@ -185,8 +208,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private async _initialDataLoad() {
-    await this._loadConfigEntries();
+    await this._configEntriesLoaded;
     this._getTreeData();
+    this._treeLoaded = true;
   }
 
   private async _setShowTargetShowMoreButton() {
@@ -202,7 +226,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   // #region render
   protected render() {
-    if (!this.manifests || !this._configEntryLookup) {
+    if (!this._treeLoaded) {
       return nothing;
     }
 
@@ -211,12 +235,16 @@ export default class HaAutomationAddFromTarget extends LitElement {
         this.narrow && this.value
           ? this._renderNarrow(this._entries, this.value)
           : html`
-              <ha-list-base>
-                <ha-automation-add-element-paste
-                  .automationElementType=${this.automationElementType}
-                  .clipboardItem=${this.clipboardItem}
-                ></ha-automation-add-element-paste>
-              </ha-list-base>
+              ${this._renderRecentTargets(
+                this.narrow,
+                this._getRecentTargets(
+                  this.recentTargets,
+                  this._registries,
+                  this.states,
+                  this._labelRegistry
+                ),
+                this.value
+              )}
               ${this._renderFloors(this.narrow, this._entries, this.value)}
               ${this._renderTimeLocation(
                 this.narrow,
@@ -335,6 +363,97 @@ export default class HaAutomationAddFromTarget extends LitElement {
       return nothing;
     }
   );
+
+  private _getRecentTargets = memoizeOne(
+    (
+      recentTargets: string[] | undefined,
+      registries: HomeAssistantRegistries,
+      states: HomeAssistant["states"],
+      labels: LabelRegistryEntry[] | undefined
+    ): [TargetType, string][] =>
+      Array.isArray(recentTargets)
+        ? recentTargets
+            .map(parseRecentTarget)
+            .filter(
+              (target): target is [TargetType, string] =>
+                !!target &&
+                targetExists(registries, states, labels, target[0], target[1])
+            )
+            .slice(0, MAX_RECENT_TARGETS)
+        : []
+  );
+
+  private _renderRecentTargets(
+    narrow: boolean,
+    targets: [TargetType, string][],
+    value?: SingleHassServiceTarget
+  ) {
+    if (!targets.length) {
+      return nothing;
+    }
+
+    const selected = this._getSelectedTargetId(value);
+
+    return html`<ha-section-title>
+        ${this._i18n.localize("ui.panel.config.automation.editor.recently_used")}
+        <ha-button
+          class="clear-recent"
+          aria-label=${this._i18n.localize(
+            "ui.panel.config.automation.editor.clear_recently_used"
+          )}
+          appearance="plain"
+          variant="neutral"
+          size="s"
+          @click=${this._clearRecentTargets}
+        >
+          ${this._i18n.localize("ui.common.clear")}
+        </ha-button>
+      </ha-section-title>
+      <ha-list-base>
+        ${targets.map(([type, id]) => {
+          const target = `${type}${TARGET_SEPARATOR}${id}`;
+          return html`<ha-list-item-button
+            .target=${target}
+            @click=${this._selectRecentTarget}
+            class=${selected === target ? "recent selected" : "recent"}
+          >
+            <div slot="start" class="target-icon">
+              ${getTargetIcon(
+                this._registries,
+                this.states,
+                type,
+                id,
+                this._configEntryLookup,
+                this._getLabel
+              )}
+            </div>
+            <div slot="headline">
+              ${getTargetText(
+                this._registries,
+                this.states,
+                this._i18n.localize,
+                type,
+                id,
+                this._getLabel
+              )}
+            </div>
+            <span slot="end" class="target-type"
+              >${this._i18n.localize(
+                `ui.components.target-picker.type.${type}`
+              )}</span
+            >
+            ${narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
+          </ha-list-item-button>`;
+        })}
+      </ha-list-base>`;
+  }
+
+  private _clearRecentTargets() {
+    fireEvent(this, "clear-recent-targets");
+  }
+
+  private _getLabel = (id: string) =>
+    this._labelRegistry?.find(({ label_id }) => label_id === id);
 
   private _renderFloors = memoizeOne(
     (
@@ -943,7 +1062,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
         .lazy=${lazy}
         @wa-lazy-load=${this._expandItem}
         @wa-collapse=${this._collapseItem}
-        .expanded=${open}
+        .expanded=${live(open)}
         .title=${label}
       >
         ${icon?.()} ${label} ${children || nothing}
@@ -1431,6 +1550,12 @@ export default class HaAutomationAddFromTarget extends LitElement {
     }
   }
 
+  private _selectRecentTarget(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { target: string }>
+  ) {
+    this._valueChanged(ev.currentTarget.target, !this.narrow);
+  }
+
   private _selectTimeLocationGroup(ev: CustomEvent) {
     const value = (ev.currentTarget as any).value;
     if (value) {
@@ -1448,9 +1573,19 @@ export default class HaAutomationAddFromTarget extends LitElement {
     if (expand && id) {
       this._expandTreeToItem(type, id);
       await this.updateComplete;
+      // Nested tree items created already expanded collapse themselves again,
+      // one more render lets live() open them before scrolling
+      this.requestUpdate();
+      await this.updateComplete;
+      // Opening rows push the selection down, scroll once they are open
+      await Promise.all(
+        [...this.shadowRoot!.querySelectorAll("wa-tree-item[expanded]")]
+          .flatMap((item) => item.shadowRoot?.getAnimations() ?? [])
+          .map((animation) => animation.finished.catch(() => undefined))
+      );
       if (type === "label") {
         this.shadowRoot!.querySelector(
-          "ha-list-item-button.selected"
+          "ha-list-item-button.selected:not(.recent)"
         )?.scrollIntoView({
           block: "center",
         });
@@ -1647,6 +1782,39 @@ export default class HaAutomationAddFromTarget extends LitElement {
       z-index: 1;
     }
 
+    /* Icons vary in kind, a fixed box keeps the labels aligned */
+    .target-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      width: var(--ha-space-8);
+      height: var(--ha-space-8);
+    }
+    .target-icon > * {
+      padding: 0;
+      flex: none;
+    }
+
+    .target-type {
+      font-size: var(--ha-font-size-s);
+      white-space: nowrap;
+    }
+
+    ha-list-item-button.selected::part(end) {
+      color: var(--ha-color-on-primary-normal);
+    }
+
+    ha-button.clear-recent {
+      /* :host tints the quiet fill for the tree items, keep it neutral */
+      --wa-color-neutral-fill-quiet: var(--ha-color-fill-neutral-quiet-hover);
+      margin-inline-start: auto;
+      margin-inline-end: calc(-1 * var(--ha-space-2));
+      --ha-button-height: var(--ha-space-6);
+      --wa-form-control-padding-inline: var(--ha-space-2);
+      font-size: var(--ha-font-size-s);
+    }
+
     wa-tree-item::part(item) {
       height: var(--ha-space-10);
       padding: var(--ha-space-1) var(--ha-space-3);
@@ -1758,5 +1926,6 @@ declare global {
   }
   interface HASSDomEvents {
     "time-location-group-selected": { value: string };
+    "clear-recent-targets": undefined;
   }
 }

@@ -1,10 +1,7 @@
 import type { PluginInput } from "fullcalendar";
-// @ts-ignore
-import skeletonStyles from "fullcalendar/skeleton.css";
 import classicThemePlugin from "fullcalendar/themes/classic";
-// @ts-ignore
-import classicThemeStyles from "fullcalendar/themes/classic/theme.css";
-import { css, unsafeCSS } from "lit";
+import { css } from "lit";
+import { fullCalendarBaseStyles } from "./fullcalendar-base-styles";
 
 // The classic theme plus the class hooks that fullCalendarStyles styles
 export const fullCalendarTheme: PluginInput = {
@@ -19,8 +16,7 @@ export const fullCalendarTheme: PluginInput = {
 };
 
 export const fullCalendarStyles = [
-  unsafeCSS(skeletonStyles),
-  unsafeCSS(classicThemeStyles),
+  ...fullCalendarBaseStyles,
   css`
     /* FullCalendar declares these on :root, which a shadow root never
        matches. Its popover and drag mirror sit outside the calendar element,
@@ -89,6 +85,15 @@ export const fullCalendarStyles = [
       font-size: var(--ha-font-size-xs);
       font-weight: var(--ha-font-weight-bold);
       text-transform: uppercase;
+    }
+
+    /* Margins instead of flex gap, which needs Safari 14.1 and Chrome 84 */
+    .ha-fc-list-event {
+      gap: 0;
+    }
+
+    .ha-fc-list-event > .ha-fc-dot {
+      margin-inline: 12px;
     }
   `,
 ];
