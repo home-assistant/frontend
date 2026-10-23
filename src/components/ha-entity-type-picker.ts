@@ -153,8 +153,9 @@ export class HaEntityTypePicker extends LitElement {
   };
 
   // Keeps the domain above the device classes that match, so the tree stays
-  // readable while searching. Items the search adds itself, like the "no
-  // match" placeholder, are kept after the list.
+  // readable while searching, and lists the domains by their best match.
+  // Items the search adds itself, like the "no match" placeholder, are kept
+  // after the list.
   private _searchFn: PickerComboBoxSearchFn<PickerComboBoxItem> = (
     _search,
     filteredItems,
@@ -164,12 +165,14 @@ export class HaEntityTypePicker extends LitElement {
     const matchedDomains = new Set(
       filteredItems.map((item) => parseEntityType(item.id).domain)
     );
-    const ordered = allItems.filter((item) => {
-      const { domain, deviceClass } = parseEntityType(item.id);
-      return (
-        matchedIds.has(item.id) || (!deviceClass && matchedDomains.has(domain))
-      );
-    });
+    const ordered = [...matchedDomains].flatMap((matchedDomain) =>
+      allItems.filter((item) => {
+        const { domain, deviceClass } = parseEntityType(item.id);
+        return (
+          domain === matchedDomain && (!deviceClass || matchedIds.has(item.id))
+        );
+      })
+    );
     const allIds = new Set(allItems.map((item) => item.id));
     const extras = filteredItems.filter((item) => !allIds.has(item.id));
     return [...markLastDeviceClasses(ordered), ...extras];
