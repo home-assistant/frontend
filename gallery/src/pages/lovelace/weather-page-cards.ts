@@ -4,7 +4,10 @@ import { customElement, query } from "lit/decorators";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 import { WeatherEntityFeature } from "../../../../src/data/weather";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import { mockWeatherForecasts } from "../../../../src/fake_data/weather";
+import {
+  mockWeatherForecasts,
+  mockWeatherHistory,
+} from "../../../../src/fake_data/weather";
 import type { DemoCardConfig } from "../../components/demo-card";
 import "../../components/demo-cards";
 
@@ -36,7 +39,22 @@ const ENTITIES = [
         WeatherEntityFeature.FORECAST_HOURLY,
     },
   },
+  {
+    entity_id: "sensor.rain_gauge",
+    state: "12.4",
+    attributes: {
+      friendly_name: "Rain gauge",
+      device_class: "precipitation",
+      state_class: "total_increasing",
+      unit_of_measurement: "mm",
+    },
+  },
 ];
+
+const metric = (heading: string, config: Record<string, unknown>) => ({
+  heading,
+  config: { type: "weather-metric", entities: SOURCES, ...config },
+});
 
 const CONFIGS: DemoCardConfig[] = [
   {
@@ -53,6 +71,19 @@ const CONFIGS: DemoCardConfig[] = [
   },
   { heading: "Sun", config: { type: "weather-sun" } },
   { heading: "Moon", config: { type: "weather-moon" } },
+  {
+    heading: "Wind",
+    config: { type: "weather-wind", entities: SOURCES },
+  },
+  metric("Compared to average", { metric: "compared_to_average" }),
+  metric("UV index", { metric: "uv_index" }),
+  metric("Humidity", { metric: "humidity" }),
+  metric("Pressure", { metric: "pressure" }),
+  metric("Precipitation (rain gauge)", {
+    metric: "precipitation",
+    entity: "sensor.rain_gauge",
+  }),
+  metric("Visibility", { metric: "visibility" }),
 ];
 
 @customElement("demo-lovelace-weather-page-cards")
@@ -76,6 +107,7 @@ class DemoWeatherPageCards extends LitElement {
     hass.addEntities(ENTITIES);
     mockIcons(hass);
     mockWeatherForecasts(hass);
+    mockWeatherHistory(hass);
   }
 }
 

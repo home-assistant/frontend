@@ -1,6 +1,8 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import {
+  getBeaufort,
+  getUvLevel,
   getWeatherSources,
   getWeatherValue,
 } from "../../src/data/weather_page";
@@ -84,5 +86,22 @@ describe("getWeatherSources", () => {
         "temperature"
       )?.value
     ).toBe(16);
+  });
+});
+
+describe("levels", () => {
+  it("uses the WHO UV index levels", () => {
+    expect(getUvLevel(2)).toBe("low");
+    expect(getUvLevel(4)).toBe("moderate");
+    expect(getUvLevel(7)).toBe("high");
+    expect(getUvLevel(9)).toBe("very_high");
+    expect(getUvLevel(11)).toBe("extreme");
+  });
+
+  it("converts wind speed to Beaufort", () => {
+    expect(getBeaufort(14, "km/h")).toBe(3);
+    expect(getBeaufort(75, "km/h")).toBe(9);
+    expect(getBeaufort(5, "Beaufort")).toBe(5);
+    expect(getBeaufort(10, "unknown")).toBeUndefined();
   });
 });
