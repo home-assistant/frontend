@@ -121,6 +121,40 @@ describe("performCut", () => {
 
     expect(clipboard).toEqual(CARD_A);
   });
+  it("keeps the clipboard but not the toast when a paste finished first", async () => {
+    let finishSave!: () => void;
+    const lovelace = createLovelace(
+      () =>
+        new Promise<void>((resolve) => {
+          finishSave = resolve;
+        })
+    );
+    let clipboard: LovelaceCardConfig | undefined;
+    const setClipboard = (config: LovelaceCardConfig) => {
+      clipboard = config;
+    };
+
+    const cut = performCut(
+      localize,
+      lovelace,
+      cardParams(CARD_A, 0, setClipboard)
+    );
+    await performPaste(
+      localize,
+      createLovelace(() => Promise.resolve()),
+      {
+        type: "card",
+        path: ["views", 0, "cards", 1],
+        config: CARD_B,
+      }
+    );
+    vi.mocked(lovelace.showToast).mockClear();
+    finishSave();
+    await cut;
+
+    expect(clipboard).toEqual(CARD_A);
+    expect(lovelace.showToast).not.toHaveBeenCalled();
+  });
 });
 
 describe("performPaste", () => {

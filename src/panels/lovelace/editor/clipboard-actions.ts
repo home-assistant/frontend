@@ -66,6 +66,7 @@ export async function performPaste<K extends ClipboardItemType>(
   lovelace: Lovelace,
   { type, path, config, replace }: PasteParams<K>
 ): Promise<void> {
+  ++lastVersion;
   lovelace.showToast({ id: LOVELACE_EDIT_TOAST_ID, message: "", duration: 0 });
   try {
     const index = path[path.length - 1];
@@ -114,6 +115,9 @@ export async function performCut<K extends ClipboardItemType>(
   }
   clipboardVersions[type] = version;
   setClipboard(deepClone(config));
+  if (lastVersion !== version) {
+    return;
+  }
   lovelace.showToast({
     id: LOVELACE_EDIT_TOAST_ID,
     message: localize(`ui.panel.lovelace.editor.edit_${type}.cut_to_clipboard`),
