@@ -24,6 +24,7 @@ import { mockAuth } from "./stubs/auth";
 import { demoDevices } from "./stubs/devices";
 import { mockDeviceRegistry } from "./stubs/device_registry";
 import { mockEnergy } from "./stubs/energy";
+import { mockWeatherForecasts } from "../../src/fake_data/weather";
 import { energyEntities } from "./stubs/entities";
 import {
   mockEntityRegistry,
@@ -196,6 +197,7 @@ export class HaDemo extends HomeAssistantAppEl {
     mockHassioSupervisor(hass);
     mockIcons(hass);
     mockEnergy(hass);
+    mockWeatherForecasts(hass);
     mockPersistentNotification(hass);
     // Consumed app-wide via the lazy manifests context, so register eagerly.
     mockIntegration(hass);

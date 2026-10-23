@@ -4,8 +4,26 @@ import { supportsFeature } from "../common/entity/supports-feature";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE, UNKNOWN } from "./entity/entity";
 import type { WeatherFrontendSystemData } from "./frontend";
+import type { IntegrationDescriptions } from "./integrations";
+import { getIntegrationDescriptions } from "./integrations";
 import type { ModernForecastType, WeatherEntity } from "./weather";
 import { WeatherEntityFeature } from "./weather";
+
+// Integration categories (from the manifest) that power the weather page.
+export const WEATHER_FORECAST_CATEGORY = "weather_alerts.forecasts";
+export const WEATHER_AIR_QUALITY_CATEGORY = "weather_alerts.air_quality_pollen";
+export const WEATHER_PAGE_CATEGORIES = [
+  WEATHER_FORECAST_CATEGORY,
+  WEATHER_AIR_QUALITY_CATEGORY,
+];
+
+export const AIR_QUALITY_DEVICE_CLASSES = [
+  "aqi",
+  "pm25",
+  "pm10",
+  "nitrogen_dioxide",
+  "ozone",
+];
 
 type EntityHass = Pick<HomeAssistant, "states" | "entities">;
 
@@ -93,6 +111,183 @@ export const getForecastSource = (
         isAvailable(stateObj) &&
         supportsFeature(stateObj, FORECAST_FEATURES[type])
     );
+
+/**
+ * A rain gauge is a precipitation sensor that adds up rain over time. Weather
+ * services report precipitation as a rate or a forecast, so those are skipped.
+ */
+export const findRainGauge = (hass: EntityHass): string | undefined =>
+  Object.values(hass.states)
+    .filter(
+      (stateObj) =>
+        computeDomain(stateObj.entity_id) === "sensor" &&
+        stateObj.attributes.device_class === "precipitation" &&
+        ["total", "total_increasing"].includes(
+          stateObj.attributes.state_class ?? ""
+        ) &&
+        isUserFacing(hass, stateObj.entity_id)
+    )
+    .map((stateObj) => stateObj.entity_id)
+    .sort()[0];
+
+export const getRainGauge = (
+  hass: EntityHass,
+  config?: WeatherFrontendSystemData
+): string | undefined => {
+  if (config?.rain_gauge_entity === null) {
+    return undefined;
+  }
+  if (config?.rain_gauge_entity) {
+    return config.rain_gauge_entity in hass.states
+      ? config.rain_gauge_entity
+      : undefined;
+  }
+  return findRainGauge(hass);
+};
+
+export type IntegrationCategories = Record<string, string[] | undefined>;
+
+const categoriesPromises = new WeakMap<
+  HomeAssistant["connection"],
+  Promise<IntegrationCategories>
+>();
+
+const collectCategories = (
+  descriptions: IntegrationDescriptions
+): IntegrationCategories => {
+  const result: IntegrationCategories = {};
+  for (const [domain, brandOrIntegration] of Object.entries(
+    descriptions.core.integration
+  )) {
+    if ("integration_type" in brandOrIntegration) {
+      result[domain] = brandOrIntegration.categories;
+      continue;
+    }
+    for (const [subDomain, integration] of Object.entries(
+      brandOrIntegration.integrations ?? {}
+    )) {
+      result[subDomain] = integration.categories;
+    }
+  }
+  return result;
+};
+
+/** Manifest categories per integration domain, cached per connection. */
+export const getIntegrationCategories = (
+  hass: HomeAssistant
+): Promise<IntegrationCategories> => {
+  let promise = categoriesPromises.get(hass.connection);
+  if (!promise) {
+    promise = getIntegrationDescriptions(hass)
+      .then(collectCategories)
+      .catch(() => ({}));
+    categoriesPromises.set(hass.connection, promise);
+  }
+  return promise;
+};
+
+export const domainsInCategories = (
+  categories: IntegrationCategories,
+  wanted: string[]
+): string[] =>
+  Object.entries(categories)
+    .filter(([, domainCategories]) =>
+      domainCategories?.some((category) => wanted.includes(category))
+    )
+    .map(([domain]) => domain)
+    .sort();
+
+const fromAirQualityService = (
+  hass: EntityHass,
+  categories: IntegrationCategories,
+  entityId: string
+): boolean => {
+  const platform = hass.entities[entityId]?.platform;
+  return (
+    !!platform && !!categories[platform]?.includes(WEATHER_AIR_QUALITY_CATEGORY)
+  );
+};
+
+/**
+ * Air quality sensors from air quality services. Indoor air purifiers also
+ * measure particles, so only services from the air quality category count.
+ * One sensor per kind is enough.
+ */
+export const findAirQualityEntities = (
+  hass: EntityHass,
+  categories: IntegrationCategories
+): string[] => {
+  const byDeviceClass = new Map<string, string>();
+  Object.values(hass.states)
+    .filter(
+      (stateObj) =>
+        computeDomain(stateObj.entity_id) === "sensor" &&
+        AIR_QUALITY_DEVICE_CLASSES.includes(
+          stateObj.attributes.device_class ?? ""
+        ) &&
+        isUserFacing(hass, stateObj.entity_id) &&
+        fromAirQualityService(hass, categories, stateObj.entity_id)
+    )
+    .sort((a, b) => a.entity_id.localeCompare(b.entity_id))
+    .forEach((stateObj) => {
+      const deviceClass = stateObj.attributes.device_class!;
+      if (!byDeviceClass.has(deviceClass)) {
+        byDeviceClass.set(deviceClass, stateObj.entity_id);
+      }
+    });
+  return AIR_QUALITY_DEVICE_CLASSES.map((deviceClass) =>
+    byDeviceClass.get(deviceClass)
+  ).filter((entityId): entityId is string => !!entityId);
+};
+
+/**
+ * There is no device class for pollen, so this looks for pollen sensors from
+ * air quality services by their translation key or entity ID.
+ */
+export const findPollenEntities = (
+  hass: EntityHass,
+  categories: IntegrationCategories
+): string[] =>
+  Object.values(hass.states)
+    .filter(
+      (stateObj) =>
+        computeDomain(stateObj.entity_id) === "sensor" &&
+        isUserFacing(hass, stateObj.entity_id) &&
+        fromAirQualityService(hass, categories, stateObj.entity_id) &&
+        (
+          hass.entities[stateObj.entity_id]?.translation_key ??
+          stateObj.entity_id
+        )
+          .toLowerCase()
+          .includes("pollen")
+    )
+    .map((stateObj) => stateObj.entity_id)
+    .sort();
+
+export const getAirQualityEntities = (
+  hass: EntityHass,
+  categories: IntegrationCategories,
+  config?: WeatherFrontendSystemData
+): string[] =>
+  (
+    config?.air_quality_entities ?? findAirQualityEntities(hass, categories)
+  ).filter((entityId) => entityId in hass.states);
+
+export const getPollenEntities = (
+  hass: EntityHass,
+  categories: IntegrationCategories,
+  config?: WeatherFrontendSystemData
+): string[] =>
+  (config?.pollen_entities ?? findPollenEntities(hass, categories)).filter(
+    (entityId) => entityId in hass.states
+  );
+
+export const findMoonEntity = (hass: EntityHass): string | undefined =>
+  Object.keys(hass.states).find(
+    (entityId) =>
+      computeDomain(entityId) === "sensor" &&
+      hass.entities[entityId]?.platform === "moon"
+  );
 
 // UV index levels from the World Health Organization.
 export type UvLevel = "low" | "moderate" | "high" | "very_high" | "extreme";

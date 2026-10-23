@@ -15,6 +15,7 @@
     "light": "Lights",
     "security": "Security",
     "climate": "Climate",
+    "weather": "Weather",
     "home": "Overview",
     "maintenance": "Maintenance",
     "notfound": "Page not found"
@@ -13087,6 +13088,17 @@
         "download_data": "[%key:ui::panel::history::download_data%]",
         "download_data_error": "[%key:ui::panel::history::download_data_error%]",
         "error_no_data": "No activity for the selected target in the selected time range."
+      },
+      "weather": {
+        "refresh": "Update weather now",
+        "updated": "Updated {time}",
+        "empty": {
+          "title": "No weather yet",
+          "description": "An administrator can add a weather service to show the weather here."
+        },
+        "editor": {
+          "load_failed": "Failed to load weather page configuration"
+        }
       }
     },
     "tips": {

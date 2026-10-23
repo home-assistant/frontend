@@ -69,6 +69,11 @@ const COMPONENTS = {
     waitForReady: true,
     readyTimeout: DASHBOARD_READY_TIMEOUT,
   },
+  weather: {
+    load: () => import("../panels/weather/ha-panel-weather"),
+    waitForReady: true,
+    readyTimeout: DASHBOARD_READY_TIMEOUT,
+  },
   maintenance: {
     load: () => import("../panels/maintenance/ha-panel-maintenance"),
     waitForReady: true,
