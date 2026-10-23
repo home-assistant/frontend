@@ -124,6 +124,9 @@ export interface DataTableRowData {
 
 export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
+// Slot for the actions at the end of a group's header, they don't toggle the group
+export const groupActionsSlot = (group: string) => `group-actions-${group}`;
+
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 const AUTO_FOCUS_ALLOWED_ACTIVE_TAGS = ["BODY", "HTML", "HOME-ASSISTANT"];
 
@@ -208,6 +211,9 @@ export class HaDataTable extends LitElement {
 
   @query(".sticky-group-header .group-header")
   private _stickyGroupHeaderCell?: HTMLElement;
+
+  @query(".sticky-group-header .group-actions")
+  private _stickyGroupActions?: HTMLElement;
 
   // Group pinned to the top of the scroller while its own header is scrolled out of view
   @state() private _stickyGroup?: string;
@@ -726,25 +732,14 @@ export class HaDataTable extends LitElement {
                       </div>
                     `
               : html`
-                  <lit-virtualizer
-                    scroller
-                    class="mdc-data-table__content scroller ha-scrollbar ${classMap(
-                      { grouped: Boolean(this.groupColumn) && !this.autoHeight }
-                    )}"
-                    tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
-                    @scroll=${this._saveScrollPos}
-                    @visibilityChanged=${this._handleVisibilityChanged}
-                    .items=${items}
-                    .keyFunction=${this._keyFunction}
-                    .renderItem=${renderRow}
-                  ></lit-virtualizer>
                   ${
+                    // Rendered before the rows, so the group's actions slot
+                    // shows here and not in its scrolled out header row
                     this.groupColumn &&
                     !this.autoHeight &&
                     this._stickyGroup !== undefined
                       ? html`<div
                           class="mdc-data-table__row sticky-group-header"
-                          aria-hidden="true"
                           .group=${this._stickyGroup}
                           @click=${this._collapseStickyGroup}
                         >
@@ -757,6 +752,18 @@ export class HaDataTable extends LitElement {
                         </div>`
                       : nothing
                   }
+                  <lit-virtualizer
+                    scroller
+                    class="mdc-data-table__content scroller ha-scrollbar ${classMap(
+                      { grouped: Boolean(this.groupColumn) && !this.autoHeight }
+                    )}"
+                    tabindex=${ifDefined(!this.autoHeight ? "0" : undefined)}
+                    @scroll=${this._saveScrollPos}
+                    @visibilityChanged=${this._handleVisibilityChanged}
+                    .items=${items}
+                    .keyFunction=${this._keyFunction}
+                    .renderItem=${renderRow}
+                  ></lit-virtualizer>
                 `
           }
         </div>
@@ -1113,12 +1120,14 @@ export class HaDataTable extends LitElement {
     localize: LocalizeFunc | undefined,
     sticky = false
   ) {
-    // The sticky copy is hidden from assistive technology, so its button is
-    // made inert. It handles clicks on its whole row instead, as its cell
-    // shifts with horizontal scrolling.
+    // The sticky copy's button and name are hidden from assistive technology,
+    // and its button is made inert. It handles clicks on its whole row
+    // instead, as its cell shifts with horizontal scrolling. The group's
+    // actions show in the sticky copy while it is pinned, so they stay
+    // available there.
     return html`<div
       class="mdc-data-table__cell group-header"
-      role="cell"
+      role=${ifDefined(sticky ? undefined : "cell")}
       .group=${groupName}
       @click=${sticky ? nothing : this._collapseGroup}
     >
@@ -1133,12 +1142,22 @@ export class HaDataTable extends LitElement {
         ?inert=${sticky}
       >
       </ha-icon-button>
-      ${
-        groupName === UNDEFINED_GROUP_KEY
-          ? localize?.("ui.components.data-table.ungrouped") || "Ungrouped"
-          : groupName || ""
-      }
+      <span aria-hidden=${ifDefined(sticky ? "true" : undefined)}>
+        ${
+          groupName === UNDEFINED_GROUP_KEY
+            ? localize?.("ui.components.data-table.ungrouped") || "Ungrouped"
+            : groupName || ""
+        }
+      </span>
+      <div class="group-actions" @click=${this._stopGroupToggle}>
+        <slot name=${groupActionsSlot(groupName)}></slot>
+      </div>
     </div>`;
+  }
+
+  // Actions don't toggle the group their header belongs to
+  private _stopGroupToggle(ev: Event) {
+    ev.stopPropagation();
   }
 
   private _memFilterData = memoizeOne(
@@ -1441,6 +1460,11 @@ export class HaDataTable extends LitElement {
     // Follow the horizontal scroll of the group header rows it covers
     if (this._stickyGroupHeaderCell) {
       this._stickyGroupHeaderCell.style.transform = `translateX(${-scrollLeft}px)`;
+    }
+
+    // Its actions stay at the end of the visible row, like the rows' own
+    if (this._stickyGroupActions) {
+      this._stickyGroupActions.style.transform = `translateX(${scrollLeft}px)`;
     }
   }
 
@@ -1887,6 +1911,22 @@ export class HaDataTable extends LitElement {
 
         .group-header ha-icon-button.collapsed {
           transform: rotate(180deg);
+        }
+
+        .group-actions {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          /* Centre in the row, not below the header's top padding */
+          align-self: stretch;
+          margin-top: -12px;
+          margin-inline-start: auto;
+          /* Line up with the row's last cell, such as an overflow menu */
+          padding-inline-end: var(--ha-space-4);
+          /* Stay in view when the rows scroll horizontally */
+          position: sticky;
+          inset-inline-end: 0;
+          cursor: default;
         }
 
         .sticky-group-header {
