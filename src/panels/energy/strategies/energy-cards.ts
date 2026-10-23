@@ -36,18 +36,14 @@ export const hasReturn = (prefs: EnergyPreferences): boolean =>
 export const hasSolar = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "solar");
 
-export const hasHomeSource = (prefs: EnergyPreferences): boolean =>
-  prefs.energy_sources.some((source) => source.type === "home");
-
 export const hasBattery = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "battery");
 
 /** Any electricity-relevant source: grid, solar, or battery. */
 export const hasEnergySource = (prefs: EnergyPreferences): boolean =>
-  hasGridSource(prefs) ||
-  hasSolar(prefs) ||
-  hasBattery(prefs) ||
-  hasHomeSource(prefs);
+  prefs.energy_sources.some((source) =>
+    ["grid", "solar", "battery"].includes(source.type)
+  );
 
 export const hasGasSource = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "gas");
@@ -63,7 +59,6 @@ export const hasDeviceConsumption = (prefs: EnergyPreferences): boolean =>
 
 export const hasPowerSources = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => {
-    if (source.type === "home" && !!source.stat_rate) return true;
     if (source.type === "solar" && source.stat_rate) return true;
     if (source.type === "battery" && source.stat_rate) return true;
     if (source.type === "grid") {
@@ -131,13 +126,13 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "overview",
     "energy-distribution",
     "ui.panel.energy.cards.energy_distribution_title",
-    (p) => hasEnergySource(p)
+    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
   ),
   entry(
     "overview",
     "energy-sources-table",
     "ui.panel.energy.cards.energy_sources_table_title",
-    (p) => p.energy_sources.some((s) => s.type !== "home")
+    (p) => p.energy_sources.length > 0
   ),
   entry(
     "overview",
@@ -149,7 +144,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "overview",
     "energy-usage-graph",
     "ui.panel.energy.cards.energy_usage_graph_title",
-    (p) => hasHomeSource(p)
+    (p) => hasGridSource(p) || hasBattery(p)
   ),
   entry(
     "overview",
@@ -171,7 +166,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "electricity",
     "energy-distribution",
     "ui.panel.energy.cards.energy_distribution_title",
-    (p) => hasEnergySource(p)
+    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
   ),
   entry(
     "electricity",
@@ -207,7 +202,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "electricity",
     "energy-usage-graph",
     "ui.panel.energy.cards.energy_usage_graph_title",
-    (p) => hasHomeSource(p)
+    (p) => hasGridSource(p) || hasBattery(p)
   ),
   entry(
     "electricity",

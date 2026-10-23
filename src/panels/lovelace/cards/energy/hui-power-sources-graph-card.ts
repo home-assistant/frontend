@@ -19,6 +19,7 @@ import type { EnergyData } from "../../../../data/energy";
 import {
   validateEnergyCollectionKey,
   formatPowerShort,
+  withInferredGridPower,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -148,9 +149,10 @@ export class HuiPowerSourcesGraphCard
     if (!this._energyData || !this._legendData) {
       return false;
     }
+    const states = withInferredGridPower(this._energyData.prefs, this._states);
     const values = getPowerLegendValues(
       this._energyData,
-      this._states,
+      states,
       this._formatPower
     );
     if (this._legendData.every((item) => item.value === values[item.id!])) {
@@ -253,10 +255,11 @@ export class HuiPowerSourcesGraphCard
       return;
     }
 
+    const states = withInferredGridPower(energyData.prefs, this._states);
     const result = generatePowerSourcesGraphData({
       localize: this._i18n.localize,
       formatPower: this._formatPower,
-      states: this._states,
+      states: states,
       energyData,
       computedStyles: getComputedStyle(this),
       start: this._start,

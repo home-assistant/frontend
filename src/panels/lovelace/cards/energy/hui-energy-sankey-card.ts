@@ -162,20 +162,10 @@ class HuiEnergySankeyCard
     const nodes: Node[] = [];
     const links: Link[] = [];
 
-    const homeTotal = types.home?.length
-      ? Math.max(0, consumption.total.used_total)
-      : Math.max(
-          0,
-          consumption.total.used_total,
-          consumption.total.used_grid +
-            consumption.total.used_solar +
-            consumption.total.used_battery
-        );
-
     const homeNode: Node = {
       id: "home",
       label: types.home?.[0]?.name || this._hassConfig.location_name,
-      value: homeTotal,
+      value: Math.max(0, consumption.total.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
     };
@@ -233,10 +223,7 @@ class HuiEnergySankeyCard
       }
     }
 
-    if (
-      types.grid ||
-      consumption.total.used_grid + consumption.total.grid_to_battery > 0
-    ) {
+    if (types.grid) {
       const totalFromGrid = summedData.total.from_grid ?? 0;
 
       nodes.push({
@@ -244,9 +231,7 @@ class HuiEnergySankeyCard
         label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
         ),
-        value: summedData.from_grid
-          ? totalFromGrid
-          : consumption.total.used_grid,
+        value: totalFromGrid,
         color: computedStyle
           .getPropertyValue("--energy-grid-consumption-color")
           .trim(),

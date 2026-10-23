@@ -2304,8 +2304,8 @@ describe("computeEnergyDeviceLabels", () => {
 describe("reconcileUsageWithHome", () => {
   const usage = { used_grid: 4, used_solar: 3, used_battery: 0 };
 
-  it("keeps the measured grid when a grid meter exists", () => {
-    assert.deepEqual(reconcileUsageWithHome(9, usage, true), {
+  it("uses home as used_total and keeps measured values", () => {
+    assert.deepEqual(reconcileUsageWithHome(9, usage), {
       used_total: 9,
       used_grid: 4,
       used_solar: 3,
@@ -2314,7 +2314,7 @@ describe("reconcileUsageWithHome", () => {
   });
 
   it("keeps measured values even when home is lower", () => {
-    assert.deepEqual(reconcileUsageWithHome(5, usage, true), {
+    assert.deepEqual(reconcileUsageWithHome(5, usage), {
       used_total: 5,
       used_grid: 4,
       used_solar: 3,
@@ -2322,26 +2322,8 @@ describe("reconcileUsageWithHome", () => {
     });
   });
 
-  it("infers grid when there is no grid meter", () => {
-    assert.deepEqual(reconcileUsageWithHome(9, usage, false), {
-      used_total: 9,
-      used_grid: 6,
-      used_solar: 3,
-      used_battery: 0,
-    });
-  });
-
-  it("never reduces solar, inferred grid floors at zero", () => {
-    assert.deepEqual(reconcileUsageWithHome(2, usage, false), {
-      used_total: 2,
-      used_grid: 0,
-      used_solar: 3,
-      used_battery: 0,
-    });
-  });
-
   it("keeps a real zero reading", () => {
-    assert.deepEqual(reconcileUsageWithHome(0, usage, true), {
+    assert.deepEqual(reconcileUsageWithHome(0, usage), {
       used_total: 0,
       used_grid: 4,
       used_solar: 3,
