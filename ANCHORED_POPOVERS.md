@@ -59,7 +59,6 @@ Menu items anchor to the menu's button, since the menu has closed by the time th
 - Focus lands on the popover rather than the default button.
 - Renames started from the automation sidebar have no anchor, so they stay dialogs.
 - Timer presets and other forms opened from custom events can't be anchored yet, because the event doesn't carry the clicked element.
-- Energy's "Are you sure you want to remove this source?" is a title-only confirmation. The current build shows it as plain text, but the energy captures were taken before that change and still show it as a heading.
 
 ## Values to turn into variables or tokens
 
