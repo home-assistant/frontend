@@ -85,20 +85,21 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
     `;
   }
 
-  static styles = css`
-    ${sectionContainerStyles}
+  static styles = [
+    sectionContainerStyles,
+    css`
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--row-gap, 8px);
+        width: 100%;
+      }
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      gap: var(--row-gap, 8px);
-      width: 100%;
-    }
-
-    .section-container:has(> hui-section[hidden]) {
-      display: none;
-    }
-  `;
+      .section-container:has(> hui-section[hidden]) {
+        display: none;
+      }
+    `,
+  ];
 }
 
 declare global {
