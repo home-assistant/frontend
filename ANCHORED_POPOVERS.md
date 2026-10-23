@@ -81,4 +81,4 @@ These were tuned by eye in the concept and are hard-coded:
 
 ## The look
 
-The popover reuses the dialog's 24px radius (`--ha-border-radius-3xl`), shadow and filled buttons. The new design system in the works should decide how popovers look, rather than this concept.
+The popover reuses the dialog's 24px radius (`--ha-border-radius-3xl`), shadow and filled buttons. The look from the new design system in the works would probably suit this idea better.
