@@ -72,12 +72,14 @@ export async function performPasteCard(
   { path, config, replace, inheritViewLayout }: PasteCardParams
 ): Promise<void> {
   lovelace.showToast({ id: LOVELACE_EDIT_TOAST_ID, message: "", duration: 0 });
+  let replaced: LovelaceCardConfig | undefined;
   try {
     const index = path[path.length - 1];
     if (typeof index !== "number") {
       throw new Error("Paste target is not a card");
     }
     const card = deepClone(config);
+    replaced = getAtPath<LovelaceCardConfig>(lovelace.config, path);
     if (inheritViewLayout) {
       const target = getAtPath<LovelaceCardConfig>(lovelace.config, path);
       if (target?.view_layout === undefined) {
@@ -108,7 +110,8 @@ export async function performPasteCard(
       message: localize("ui.panel.lovelace.editor.edit_card.replaced"),
       duration: 8000,
       action: {
-        action: () => fireEvent(window, "undo-change"),
+        action: () =>
+          lovelace.saveConfig(setAtPath(lovelace.config, path, replaced)),
         text: localize("ui.common.undo"),
       },
     });
