@@ -2,9 +2,11 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import {
+  computeCreateDomains,
   filterSelectorEntities,
   resolveEntityIDs,
 } from "../../src/data/selector";
+import type { TargetSelector } from "../../src/data/selector";
 import type { HomeAssistant } from "../../src/types";
 
 const entity = {
@@ -14,7 +16,10 @@ const entity = {
 } as HassEntity;
 
 const entityRegistry = {
-  "light.living_room": { device_id: "device_1" },
+  "light.living_room": {
+    device_id: "device_1",
+    translation_key: "living_room_light",
+  },
 } as unknown as HomeAssistant["entities"];
 
 const devices = {
@@ -136,6 +141,151 @@ describe("filterSelectorEntities device filter", () => {
   });
 });
 
+describe("filterSelectorEntities translation key filter", () => {
+  it("matches when the registry translation key matches", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: "living_room_light" },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(true);
+  });
+
+  it("matches when the translation key is in the list", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: ["kitchen_light", "living_room_light"] },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(true);
+  });
+
+  it("does not match when the translation key is not in the list", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: ["kitchen_light", "hallway_light"] },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(false);
+  });
+
+  it("does not match a different translation key", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: "kitchen_light" },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(false);
+  });
+
+  it("does not match an entity without a registry entry", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: "living_room_light" },
+        entity,
+        undefined,
+        {} as HomeAssistant["entities"]
+      )
+    ).toBe(false);
+  });
+
+  it("does not match a registry entry without a translation key", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: "living_room_light" },
+        entity,
+        undefined,
+        { "light.living_room": {} } as unknown as HomeAssistant["entities"]
+      )
+    ).toBe(false);
+  });
+
+  it("combines the translation key with other conditions (AND)", () => {
+    expect(
+      filterSelectorEntities(
+        { domain: "light", translation_key: "living_room_light" },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(true);
+
+    expect(
+      filterSelectorEntities(
+        { domain: "switch", translation_key: "living_room_light" },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(false);
+  });
+
+  it("matches every entity when the translation key list is empty", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: [] },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(true);
+  });
+
+  it("matches without a registry entry when the translation key list is empty", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: [] },
+        entity,
+        undefined,
+        {} as HomeAssistant["entities"]
+      )
+    ).toBe(true);
+  });
+
+  it("does not match when the translation key filter is an empty string", () => {
+    expect(
+      filterSelectorEntities(
+        { translation_key: "" },
+        entity,
+        undefined,
+        entityRegistry
+      )
+    ).toBe(false);
+  });
+});
+
+describe("computeCreateDomains translation key filter", () => {
+  it("offers helper creation for a domain only filter", () => {
+    expect(
+      computeCreateDomains({ entity: { filter: { domain: "counter" } } })
+    ).toEqual(["counter"]);
+  });
+
+  it("skips helper creation when the filter carries a translation key", () => {
+    expect(
+      computeCreateDomains({
+        entity: { filter: { domain: "counter", translation_key: "epex" } },
+      })
+    ).toEqual([]);
+  });
+
+  it("keeps helper creation for an empty translation key list", () => {
+    expect(
+      computeCreateDomains({
+        entity: { filter: { domain: "counter", translation_key: [] } },
+      })
+    ).toEqual(["counter"]);
+  });
+});
+
 describe("resolveEntityIDs", () => {
   const areaHass = {
     states: {
@@ -151,6 +301,7 @@ describe("resolveEntityIDs", () => {
       "sensor.kitchen_hub_temp": {
         entity_id: "sensor.kitchen_hub_temp",
         device_id: "hub",
+        translation_key: "epex_current_hour",
       },
       "sensor.hallway_probe": {
         entity_id: "sensor.hallway_probe",
@@ -162,13 +313,14 @@ describe("resolveEntityIDs", () => {
     areas: { kitchen: { area_id: "kitchen" }, hallway: { area_id: "hallway" } },
   } as unknown as HomeAssistant;
 
-  const resolve = (target) =>
+  const resolve = (target, targetSelector?: TargetSelector) =>
     resolveEntityIDs(
       areaHass,
       target,
       areaHass.entities,
       areaHass.devices,
-      areaHass.areas
+      areaHass.areas,
+      targetSelector
     ).sort();
 
   it("skips entities of an area device that are assigned to another area", () => {
@@ -192,6 +344,21 @@ describe("resolveEntityIDs", () => {
       "sensor.hallway_probe",
       "sensor.kitchen_hub_temp",
     ]);
+  });
+
+  it("resolves an area through a device whose entity matches a translation key filter", () => {
+    expect(
+      resolve(
+        { area_id: "kitchen" },
+        {
+          target: {
+            entity: [
+              { domain: "sensor", translation_key: "epex_current_hour" },
+            ],
+          },
+        }
+      )
+    ).toEqual(["sensor.kitchen_hub_temp"]);
   });
 
   // Excludes are global: resolved like a target and taken out of everything

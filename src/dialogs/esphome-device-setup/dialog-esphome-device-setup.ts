@@ -426,7 +426,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
       <div class="actions">
         <ha-button @click=${this._startAudioFlow}>
           ${localize(
-            "ui.panel.config.devices.esphome.setup_enable_stream_audio"
+            "ui.panel.config.devices.esphome.setup_synchronized_audio"
           )}
         </ha-button>
       </div>
@@ -463,10 +463,10 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
             "ui.panel.config.devices.esphome.setup_audio_benefit_multiroom"
           )}
           ${this._renderBenefit(
-            "ui.panel.config.devices.esphome.setup_audio_benefit_lossless"
+            "ui.panel.config.devices.esphome.setup_audio_benefit_mix_and_match"
           )}
           ${this._renderBenefit(
-            "ui.panel.config.devices.esphome.setup_audio_benefit_album_art"
+            "ui.panel.config.devices.esphome.setup_audio_benefit_lossless"
           )}
         </div>
       </div>

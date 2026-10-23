@@ -129,6 +129,13 @@ export class HaAutomationTrace extends LitElement {
       trace === pTrace && entities === pEntities && manifests === pManifests
   );
 
+  private get _isRTL() {
+    return computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
+  }
+
   protected render(): TemplateResult {
     const stateObj = this._entityId
       ? this.hass.states[this._entityId]
@@ -285,7 +292,12 @@ export class HaAutomationTrace extends LitElement {
                           : html`
                               <ha-split-panel
                                 class="split"
-                                .position=${this._splitPosition}
+                                dir=${this._isRTL ? "rtl" : "ltr"}
+                                .position=${
+                                  this._isRTL
+                                    ? 100 - this._splitPosition
+                                    : this._splitPosition
+                                }
                                 @wa-reposition=${this._splitRepositioned}
                               >
                                 ${this._renderPanes()}
@@ -513,7 +525,15 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private _splitRepositioned(ev: HASSDomTargetEvent<HaSplitPanel>) {
-    this._splitPosition = ev.target.position;
+    const position = this._isRTL
+      ? 100 - ev.target.position
+      : ev.target.position;
+    // Ignore reposition events caused by applying the current position.
+    if (position === this._splitPosition) {
+      return;
+    }
+
+    this._splitPosition = position;
     this._storeSplitPosition();
   }
 
@@ -719,7 +739,6 @@ export class HaAutomationTrace extends LitElement {
           min-height: 0;
           display: flex;
           overflow: hidden;
-          direction: ltr;
         }
 
         :host([narrow]) .main {
@@ -740,6 +759,11 @@ export class HaAutomationTrace extends LitElement {
           --ha-split-panel-min: 10%;
           --ha-split-panel-max: 80%;
           --ha-split-panel-divider-hit-area: var(--ha-space-4);
+        }
+
+        ha-split-panel.split[dir="rtl"] {
+          --ha-split-panel-min: 20%;
+          --ha-split-panel-max: 90%;
         }
 
         .graph {
@@ -781,7 +805,6 @@ export class HaAutomationTrace extends LitElement {
             var(--ha-panel-background, var(--primary-background-color))
           );
           border-bottom: 1px solid var(--divider-color);
-          direction: var(--direction);
         }
         ha-tab-group-tab::part(base) {
           padding: 2px 16px;
@@ -793,9 +816,6 @@ export class HaAutomationTrace extends LitElement {
           text-decoration: none;
         }
 
-        ha-trace-logbook {
-          direction: var(--direction);
-        }
         ha-trace-picker {
           flex-grow: 1;
           max-width: 500px;
