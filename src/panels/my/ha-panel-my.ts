@@ -162,6 +162,22 @@ const devicesTableParams = {
   sub_entry: "string?",
 } satisfies Redirect["params"];
 
+// The automations table reads these from the link
+const automationsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  entity: "string?",
+  label: "string?",
+  category: "string?",
+  assistants: "string?",
+  blueprint: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
@@ -398,6 +414,7 @@ export const getMyRedirects = (): Redirects => ({
   automations: {
     component: "automation",
     redirect: "/config/automation/dashboard",
+    params: automationsTableParams,
   },
   scenes: {
     component: "scene",
