@@ -21,6 +21,10 @@ export const AssistantSetupStyles = [
     .content img {
       width: 120px;
     }
+    .content img.nabu-casa-logo {
+      width: auto;
+      height: 32px;
+    }
     @media all and (max-width: 450px), all and (max-height: 500px) {
       :host {
         min-height: 100%;

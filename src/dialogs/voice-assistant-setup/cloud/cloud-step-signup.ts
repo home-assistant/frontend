@@ -46,6 +46,7 @@ export class CloudStepSignup extends LitElement {
   render() {
     return html`<div class="content">
       <img
+        class="nabu-casa-logo"
         src=${`/static/images/logo_nabu_casa${this.hass.themes?.darkMode ? "_dark" : ""}.png`}
         alt="Nabu Casa logo"
       />
