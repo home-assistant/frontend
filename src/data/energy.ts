@@ -770,11 +770,8 @@ const addInferredGrid = async (
     range.start,
     range.end
   );
-  if (!inferred && !inferPower) {
-    return { prefs, stats, statsCompare, statsMetadata };
-  }
   const inferredCompare =
-    inferred && statsCompare && range.startCompare
+    statsCompare && range.startCompare
       ? await inferGridStatistics(
           callWS,
           prefs,
@@ -783,12 +780,16 @@ const addInferredGrid = async (
           range.endCompare
         )
       : undefined;
+  const hasImport = !!(inferred || inferredCompare);
+  if (!hasImport && !inferPower) {
+    return { prefs, stats, statsCompare, statsMetadata };
+  }
   const hasExport = [inferred, inferredCompare].some((item) =>
     item?.to.some((stat) => (stat.change ?? 0) > 0)
   );
   const source: GridSourceTypeEnergyPreference = {
     type: "grid",
-    stat_energy_from: inferred ? INFERRED_GRID_STAT_ID : null,
+    stat_energy_from: hasImport ? INFERRED_GRID_STAT_ID : null,
     stat_energy_to: hasExport ? INFERRED_GRID_EXPORT_STAT_ID : null,
     stat_rate: inferPower ? INFERRED_GRID_POWER_ID : undefined,
     stat_cost: null,
@@ -805,10 +806,10 @@ const addInferredGrid = async (
   const register = (
     id: string,
     name: string,
-    series: StatisticValue[],
+    series?: StatisticValue[],
     seriesCompare?: StatisticValue[]
   ) => {
-    newStats[id] = series;
+    newStats[id] = series ?? [];
     if (newStatsCompare && seriesCompare) {
       newStatsCompare[id] = seriesCompare;
     }
@@ -822,14 +823,29 @@ const addInferredGrid = async (
       unit_class: "energy",
     };
   };
-  if (inferred) {
+  if (hasImport) {
     register(
       INFERRED_GRID_STAT_ID,
       localize(
         "ui.panel.lovelace.cards.energy.energy_usage_graph.combined_from_grid"
       ),
-      inferred.from,
+      inferred?.from,
       inferredCompare?.from
+    );
+  }
+  if (hasExport) {
+    register(
+      INFERRED_GRID_EXPORT_STAT_ID,
+      localize(
+        "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_exported",
+        {
+          name: localize(
+            "ui.panel.lovelace.cards.energy.energy_usage_graph.combined_from_grid"
+          ),
+        }
+      ),
+      inferred?.to,
+      inferredCompare?.to
     );
   }
 
@@ -1196,7 +1212,12 @@ const getEnergyData = async (
     stats,
     statsCompare,
     statsMetadata,
-    { start, end, startCompare, endCompare }
+    {
+      start: periodStart,
+      end: periodEnd,
+      startCompare: periodStartCompare,
+      endCompare: periodEndCompare,
+    }
   );
 
   const data: EnergyData = {
