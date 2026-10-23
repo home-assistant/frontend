@@ -124,7 +124,8 @@ export interface DataTableRowData {
 
 export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
-// Slot for the actions at the end of a group's header, they don't toggle the group
+// Slot for the actions at the end of a group's header, they don't toggle the
+// group. Put `ha-icon-button`s with a label in it, styled like the rows' icons.
 export const groupActionsSlot = (group: string) => `group-actions-${group}`;
 
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
@@ -1927,6 +1928,8 @@ export class HaDataTable extends LitElement {
           position: sticky;
           inset-inline-end: 0;
           cursor: default;
+          /* Inherited by the slotted icon buttons, like the rows' icon cells */
+          color: var(--secondary-text-color);
         }
 
         .sticky-group-header {
