@@ -20,7 +20,9 @@ import {
   energySourcesByType,
   formatPowerShort,
   getPowerFromState,
+  INFERRED_GRID_POWER_ID,
   validateEnergyCollectionKey,
+  withInferredGridPower,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import type {
@@ -424,18 +426,26 @@ class HuiPowerSankeyCard
       });
 
     // Collect grid power (positive = import, negative = export)
-    prefs.energy_sources
-      .filter((source) => source.type === "grid")
-      .forEach((source) => {
-        if (source.type === "grid" && source.stat_rate) {
-          const value = this._getCurrentPower(source.stat_rate);
-          if (value > 0) {
-            from_grid += value;
-          } else if (value < 0) {
-            to_grid += Math.abs(value);
-          }
-        }
-      });
+    const gridValues = prefs.energy_sources.flatMap((source) =>
+      source.type === "grid" &&
+      source.stat_rate &&
+      source.stat_rate !== INFERRED_GRID_POWER_ID
+        ? [this._getCurrentPower(source.stat_rate)]
+        : []
+    );
+    const inferredGrid = getPowerFromState(
+      withInferredGridPower(prefs, this._states)[INFERRED_GRID_POWER_ID]
+    );
+    if (inferredGrid !== undefined) {
+      gridValues.push(inferredGrid);
+    }
+    gridValues.forEach((value) => {
+      if (value > 0) {
+        from_grid += value;
+      } else if (value < 0) {
+        to_grid += Math.abs(value);
+      }
+    });
 
     // Collect battery power (positive = discharge, negative = charge)
     // Sum all battery values first, then determine net direction.

@@ -71,6 +71,15 @@ export class HuiPowerTotalBadge extends LitElement implements LovelaceBadge {
   }
 
   private _computeTotalPower(prefs: EnergyPreferences): number {
+    const homeSource = prefs.energy_sources.find(
+      (source) => source.type === "home" && source.stat_rate
+    );
+    if (homeSource?.type === "home" && homeSource.stat_rate) {
+      const home = getPowerFromState(this._states[homeSource.stat_rate]);
+      if (home !== undefined) {
+        return Math.max(0, home);
+      }
+    }
     let solar = 0;
     let fromGrid = 0;
     let toGrid = 0;

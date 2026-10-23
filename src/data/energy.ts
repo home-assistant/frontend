@@ -582,10 +582,7 @@ const inferGridStatistics = (
   if (!homeId || types.grid?.some((source) => source.stat_energy_from)) {
     return undefined;
   }
-  const homeStats = stats[homeId];
-  if (!homeStats?.length) {
-    return undefined;
-  }
+  const homeStats = stats[homeId] ?? [];
   const solar = sumByStart(
     stats,
     (types.solar ?? []).map((s) => s.stat_energy_from),
@@ -1906,8 +1903,8 @@ const computeConsumptionDataPartial = (
       grid_to_battery,
       battery_to_grid,
       used_solar,
-      used_battery,
       used_grid,
+      used_battery,
       used_total,
       solar_to_battery,
       solar_to_grid,
@@ -1928,11 +1925,11 @@ const computeConsumptionDataPartial = (
 
     outData.used_total[t] = usage.used_total;
     total.used_total += usage.used_total;
-    outData.used_grid[t] = usage.used_grid;
+    outData.used_grid![t] = usage.used_grid;
     total.used_grid += usage.used_grid;
-    outData.used_solar[t] = usage.used_solar;
+    outData.used_solar![t] = usage.used_solar;
     total.used_solar += usage.used_solar;
-    outData.used_battery[t] = usage.used_battery;
+    outData.used_battery![t] = usage.used_battery;
     total.used_battery += usage.used_battery;
     outData.grid_to_battery[t] = grid_to_battery;
     total.grid_to_battery += grid_to_battery;
