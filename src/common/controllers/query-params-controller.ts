@@ -19,6 +19,32 @@ import {
 
 const DEBOUNCE_WAIT = 300;
 
+/**
+ * The search of the page's entry a dialog was opened from, kept by the first
+ * write that lands on the dialog's entry. Shared by every controller, as a
+ * page can have more than one and a later write sees the URL an earlier one
+ * changed.
+ */
+let dialogPageSearch: string | undefined;
+
+/**
+ * Whether a pop went back to the page's entry a dialog was opened from. Decided
+ * by the first controller to get the pop, before any of them writes again.
+ */
+const dialogPagePops = new WeakMap<Event, boolean>();
+
+const poppedToDialogPage = (ev: Event): boolean => {
+  let popped = dialogPagePops.get(ev);
+  if (popped === undefined) {
+    popped =
+      dialogPageSearch !== undefined &&
+      mainWindow.location.search === dialogPageSearch;
+    dialogPagePops.set(ev, popped);
+    dialogPageSearch = undefined;
+  }
+  return popped;
+};
+
 export interface QueryParamsControllerOptions {
   /** Whether the host keeps its state in the URL. */
   enabled: () => boolean;
@@ -46,11 +72,8 @@ export class QueryParamsController<
 
   private _pendingTimeout?: number;
 
-  /**
-   * The last write that landed on a dialog's history entry, and the search of
-   * the page's entry from before it.
-   */
-  private _dialogWrite?: { values: QueryParamValues<C>; search: string };
+  /** The last write that landed on a dialog's history entry. */
+  private _dialogWrite?: QueryParamValues<C>;
 
   private _hostUpdated = false;
 
@@ -90,6 +113,8 @@ export class QueryParamsController<
     mainWindow.removeEventListener("location-changed", this._navigated);
     mainWindow.removeEventListener("popstate", this._navigated);
     this._cancelPending();
+    this._dialogWrite = undefined;
+    dialogPageSearch = undefined;
   }
 
   /** The current search params, or undefined when not on the host's page. */
@@ -146,6 +171,13 @@ export class QueryParamsController<
     const dialogWrite = this._dialogWrite;
     this._dialogWrite = undefined;
 
+    let dialogClosed = false;
+    if (ev?.type === "popstate") {
+      dialogClosed = poppedToDialogPage(ev);
+    } else if (ev) {
+      dialogPageSearch = undefined;
+    }
+
     // A router sends a path without a page, like /config/automation, on to
     // its default page after the host is connected, so it follows that
     const path = currentPath();
@@ -164,15 +196,13 @@ export class QueryParamsController<
       return;
     }
 
-    if (
-      dialogWrite &&
-      ev?.type === "popstate" &&
-      mainWindow.location.search === dialogWrite.search
-    ) {
+    if (dialogClosed) {
       // Closing a dialog went back to the page's own entry, which still has
-      // the URL from before the write, like after deleting from a dialog.
+      // the URL from before the writes, like after deleting from a dialog.
       // Going further back reads that entry's URL instead
-      this._write(dialogWrite.values);
+      if (dialogWrite) {
+        this._write(dialogWrite);
+      }
 
       return;
     }
@@ -188,9 +218,12 @@ export class QueryParamsController<
     const current = mainWindow.location.search;
 
     // A dialog's entry is popped when it closes, which would lose the write
-    this._dialogWrite = getHistoryState()?.dialog
-      ? { values, search: this._dialogWrite?.search ?? current }
-      : undefined;
+    if (getHistoryState()?.dialog) {
+      dialogPageSearch ??= current;
+      this._dialogWrite = values;
+    } else {
+      this._dialogWrite = undefined;
+    }
 
     const queryString = updateQueryString(current, values, this._config);
     if (current !== (queryString ? `?${queryString}` : "")) {

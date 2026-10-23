@@ -107,6 +107,30 @@ describe("QueryParamsController", () => {
     expect(navigated).toHaveBeenCalledOnce();
   });
 
+  it("writes again for each controller after a dialog's entry is popped", () => {
+    // Writes in the opposite order to the listeners, so the first listener's
+    // write saw the URL the other changed, and its replay changes the URL the
+    // other sees
+    const otherNavigated = vi.fn();
+    const other = new QueryParamsController(
+      createHost(),
+      { string: ["label"] },
+      { enabled: () => true, navigated: otherNavigated }
+    );
+    other.hostConnected();
+
+    window.history.replaceState({ dialog: "dialog-box" }, "", "/page?other=1");
+    other.write({ label: "a" });
+    controller.write({ search: "abc" });
+    window.history.replaceState(null, "", "/page?other=1");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    expect(currentUrl()).toBe("/page?other=1&search=abc&label=a");
+    expect(navigated).not.toHaveBeenCalled();
+    expect(otherNavigated).not.toHaveBeenCalled();
+
+    other.hostDisconnected();
+  });
+
   it("drops a write on a dialog's entry when navigated", () => {
     window.history.replaceState({ dialog: "dialog-box" }, "", "/page?other=1");
     controller.write({ search: "abc" });
