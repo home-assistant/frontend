@@ -131,11 +131,22 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
+    const previousHass = changedProperties.get("hass");
+
+    // Another language drops the translations of integrations, they don't
+    // come back by themselves
+    if (
+      this._entryLoaded &&
+      previousHass &&
+      previousHass.language !== this.hass.language
+    ) {
+      this._loadBackendTranslations();
+    }
+
     if (this._integrationLoaded || !this.hass) {
       return;
     }
 
-    const previousHass = changedProperties.get("hass");
     const componentsChanged =
       previousHass?.config.components !== this.hass.config.components;
 
@@ -281,12 +292,18 @@ class HaPanelMarketplace extends SubscribeMixin(LitElement) {
     }
 
     this._loadError = undefined;
-    // The panel translates the errors of the backend itself
-    this.hass.loadBackendTranslation("exceptions", "marketplace");
+    this._loadBackendTranslations();
     this._subscribeMarketplace();
     this._refreshInfo();
     this._refreshRepositories();
   };
+
+  private _loadBackendTranslations() {
+    // The panel translates the errors of the backend itself
+    this.hass.loadBackendTranslation("exceptions", "marketplace");
+    // The categories of custom integrations, the names come with Home Assistant
+    this.hass.loadBackendTranslation("integration_category", "homeassistant");
+  }
 
   private _subscribeMarketplace(): void {
     const signals: [MarketplaceDispatchEvent, () => void][] = [

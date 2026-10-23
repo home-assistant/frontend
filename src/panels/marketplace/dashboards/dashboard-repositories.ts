@@ -14,6 +14,10 @@ import {
   type SearchParamsSource,
 } from "../../../common/url/query-params";
 import type { DataTableRowData } from "../../../components/data-table/ha-data-table";
+import {
+  inIntegrationCategory,
+  integrationCategoryName,
+} from "../../../data/integration_category";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
 import type { HomeAssistant } from "../../../types";
 import type { MarketplaceTab } from "./ha-marketplace-dashboard";
@@ -38,6 +42,9 @@ export const TYPE_FILTER = "type";
 
 export const SOURCE_FILTER = "source";
 
+// Like `energy`, which takes in its subcategories, or `energy.solar`
+export const INTEGRATION_CATEGORY_FILTER = "integration_category";
+
 // Where a repository comes from, the community catalog or added from a link
 export const SOURCE_ORDER = ["catalog", "custom"] as const;
 
@@ -49,7 +56,10 @@ const repositorySource = (repository: RepositoryBase): RepositorySource =>
 // What the filter panes picked, nothing picked in a pane shows everything
 export type RepositoryFilters = Partial<
   Record<
-    typeof STATUS_FILTER | typeof TYPE_FILTER | typeof SOURCE_FILTER,
+    | typeof STATUS_FILTER
+    | typeof TYPE_FILTER
+    | typeof SOURCE_FILTER
+    | typeof INTEGRATION_CATEGORY_FILTER,
     string[]
   >
 >;
@@ -185,6 +195,17 @@ const matchesFilters = (
     return false;
   }
 
+  const integrationCategories = filters[INTEGRATION_CATEGORY_FILTER];
+
+  if (
+    integrationCategories?.length &&
+    !integrationCategories.some((slug) =>
+      inIntegrationCategory(repository.integration_categories, slug)
+    )
+  ) {
+    return false;
+  }
+
   return true;
 };
 
@@ -226,6 +247,13 @@ export const filterRepositories = (
       translated_source: localize(
         `ui.panel.marketplace.repository_source.${repositorySource(repository)}`
       ),
+      // Ones this Home Assistant doesn't know are left out
+      translated_integration_categories: (
+        repository.integration_categories ?? []
+      )
+        .map((slug) => integrationCategoryName(localize, slug))
+        .filter(Boolean)
+        .join(", "),
       // A date as text or 0 without one, only numbers sort among each other
       last_updated_timestamp: timestamp(repository.last_updated),
     }));
@@ -289,6 +317,8 @@ export const browseLinkFromUrl = (
       [STATUS_FILTER]: lists.status?.filter(Boolean),
       [TYPE_FILTER]: lists.type?.filter(Boolean),
       [SOURCE_FILTER]: lists.source?.filter(Boolean),
+      [INTEGRATION_CATEGORY_FILTER]:
+        lists.integration_category?.filter(Boolean),
     },
   };
 };
