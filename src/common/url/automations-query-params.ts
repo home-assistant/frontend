@@ -114,8 +114,7 @@ export const automationsLinkFromUrl = (
       "ha-filter-devices": filter(values("device")),
       "ha-filter-entities": filter(values("entity")),
       "ha-filter-labels": filter(values("label")),
-      // The category filter picks one category
-      "ha-filter-categories": filter(values("category").slice(0, 1)),
+      "ha-filter-categories": filter(values("category")),
       "ha-filter-voice-assistants": filter(values("assistants")),
       "ha-filter-blueprints": filter(values("blueprint")),
     },
