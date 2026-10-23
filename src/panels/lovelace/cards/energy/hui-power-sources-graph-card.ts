@@ -20,6 +20,7 @@ import {
   validateEnergyCollectionKey,
   formatPowerShort,
   withInferredGridPower,
+  INFERRED_GRID_POWER_ID,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -117,7 +118,8 @@ export class HuiPowerSourcesGraphCard
           s.type === "home" ||
           s.type === "grid" ||
           s.type === "battery") &&
-        s.stat_rate
+        s.stat_rate &&
+        s.stat_rate !== INFERRED_GRID_POWER_ID
           ? [s.stat_rate]
           : []
       ) ?? []

@@ -29,6 +29,7 @@ export class HuiPowerTotalBadge extends LitElement implements LovelaceBadge {
       this._data?.prefs.energy_sources.forEach((source) => {
         if (
           (source.type === "solar" ||
+            source.type === "home" ||
             source.type === "grid" ||
             source.type === "battery") &&
           source.stat_rate &&

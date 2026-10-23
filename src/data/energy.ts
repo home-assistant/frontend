@@ -625,13 +625,18 @@ const inferGridStatistics = (
   return result;
 };
 
-const inferGridPowerStatistics = (
+export const inferGridPowerStatistics = (
   prefs: EnergyPreferences,
   stats: Statistics
 ): StatisticValue[] | undefined => {
   const types = energySourcesByType(prefs);
   const homeRate = types.home?.find((s) => s.stat_rate)?.stat_rate;
-  if (!homeRate || types.grid?.some((s) => s.stat_rate)) {
+  if (
+    !homeRate ||
+    types.grid?.some(
+      (s) => s.stat_rate && s.stat_rate !== INFERRED_GRID_POWER_ID
+    )
+  ) {
     return undefined;
   }
   const solar = sumByStart(
@@ -702,18 +707,15 @@ const addInferredGrid = (
   if (!inferred) {
     return { prefs, stats, statsCompare, statsMetadata };
   }
-  const inferredPower = inferGridPowerStatistics(prefs, stats);
   const inferredCompare = statsCompare
     ? inferGridStatistics(prefs, statsCompare)
     : undefined;
-  const inferredPowerCompare = statsCompare
-    ? inferGridPowerStatistics(prefs, statsCompare)
-    : undefined;
+  const hasHomeRate = energySourcesByType(prefs).home?.some((s) => s.stat_rate);
   const source: GridSourceTypeEnergyPreference = {
     type: "grid",
     stat_energy_from: INFERRED_GRID_STAT_ID,
     stat_energy_to: null,
-    stat_rate: INFERRED_GRID_POWER_ID,
+    stat_rate: hasHomeRate ? INFERRED_GRID_POWER_ID : undefined,
     stat_cost: null,
     entity_energy_price: null,
     number_energy_price: null,
@@ -724,19 +726,9 @@ const addInferredGrid = (
   };
   return {
     prefs: { ...prefs, energy_sources: [...prefs.energy_sources, source] },
-    stats: {
-      ...stats,
-      [INFERRED_GRID_STAT_ID]: inferred,
-      ...(inferredPower && { [INFERRED_GRID_POWER_ID]: inferredPower }),
-    },
+    stats: { ...stats, [INFERRED_GRID_STAT_ID]: inferred },
     statsCompare: inferredCompare
-      ? {
-          ...statsCompare,
-          [INFERRED_GRID_STAT_ID]: inferredCompare,
-          ...(inferredPowerCompare && {
-            [INFERRED_GRID_POWER_ID]: inferredPowerCompare,
-          }),
-        }
+      ? { ...statsCompare, [INFERRED_GRID_STAT_ID]: inferredCompare }
       : statsCompare,
     statsMetadata: {
       ...statsMetadata,
@@ -748,15 +740,6 @@ const addInferredGrid = (
         mean_type: StatisticMeanType.NONE,
         statistics_unit_of_measurement: "kWh",
         unit_class: "energy",
-      },
-      [INFERRED_GRID_POWER_ID]: {
-        statistic_id: INFERRED_GRID_POWER_ID,
-        source: "energy",
-        name: null,
-        has_sum: false,
-        mean_type: StatisticMeanType.ARITHMETIC,
-        statistics_unit_of_measurement: "kW",
-        unit_class: "power",
       },
     },
   };
