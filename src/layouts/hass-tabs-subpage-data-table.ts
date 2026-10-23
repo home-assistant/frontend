@@ -17,6 +17,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { canShowPage } from "../common/config/can_show_page";
 import { QueryParamsController } from "../common/controllers/query-params-controller";
 import { consume } from "../common/decorators/consume";
@@ -27,7 +28,7 @@ import {
   dataTableQueryStateFromUrl,
 } from "../common/url/data-table-query-params";
 import "../components/chips/ha-assist-chip";
-import "../components/data-table/ha-data-table";
+import { groupActionsSlot } from "../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
@@ -631,6 +632,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   .columnOrder=${this.columnOrder}
                   .hiddenColumns=${this.hiddenColumns}
                 >
+                  ${this._groups(this.data, this._groupColumn).map(
+                    (group) =>
+                      html`<slot
+                        name=${groupActionsSlot(group)}
+                        slot=${groupActionsSlot(group)}
+                      ></slot>`
+                  )}
                   ${
                     !this.narrow
                       ? html`
@@ -845,6 +853,25 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     this._setGroupColumn(group);
   }
+
+  // Groups to pass the actions slots of through to the table
+  private _groups = memoizeOne(
+    (data: DataTableRowData[], groupColumn: string | undefined) => {
+      if (!groupColumn) {
+        return [];
+      }
+
+      const groups = new Set<string>();
+
+      for (const row of data) {
+        if (row[groupColumn] !== undefined) {
+          groups.add(String(row[groupColumn]));
+        }
+      }
+
+      return [...groups];
+    }
+  );
 
   private _setGroupColumn(columnId: string, link = false) {
     this._groupColumn = columnId;
