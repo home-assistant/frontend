@@ -991,6 +991,9 @@ export class HaMarketplaceDashboard extends LitElement {
             ),
             text: marketplaceErrorMessage(err, this._i18n.localize),
           });
+          // The alert reuses the confirmation's dialog, which only stays open
+          // when its action fails
+          throw err;
         }
       },
     });
