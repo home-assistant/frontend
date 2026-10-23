@@ -1,4 +1,3 @@
-import deepClone from "deep-clone-simple";
 import type { PropertyValues } from "lit";
 import { ReactiveElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -34,6 +33,8 @@ import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dial
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { getCardSectionConfig } from "../editor/config-util";
+import type { ClipboardActionParams } from "../editor/clipboard-actions";
+import { performCopy, performCut } from "../editor/clipboard-actions";
 import {
   type DeleteBadgeParams,
   performDeleteBadge,
@@ -69,9 +70,12 @@ declare global {
     "ll-delete-card": DeleteCardParams;
     "ll-duplicate-card": { path: LovelacePath };
     "ll-copy-card": { path: LovelacePath };
+    "ll-cut-card": { path: LovelacePath };
     "ll-create-badge": { path: LovelacePath };
     "ll-edit-badge": { path: LovelacePath };
     "ll-delete-badge": DeleteBadgeParams;
+    "ll-copy-badge": { path: LovelacePath };
+    "ll-cut-badge": { path: LovelacePath };
   }
   interface HTMLElementEventMap {
     "ll-create-card": HASSDomEvent<HASSDomEvents["ll-create-card"]>;
@@ -79,9 +83,12 @@ declare global {
     "ll-delete-card": HASSDomEvent<HASSDomEvents["ll-delete-card"]>;
     "ll-duplicate-card": HASSDomEvent<HASSDomEvents["ll-duplicate-card"]>;
     "ll-copy-card": HASSDomEvent<HASSDomEvents["ll-copy-card"]>;
+    "ll-cut-card": HASSDomEvent<HASSDomEvents["ll-cut-card"]>;
     "ll-create-badge": HASSDomEvent<HASSDomEvents["ll-create-badge"]>;
     "ll-edit-badge": HASSDomEvent<HASSDomEvents["ll-edit-badge"]>;
     "ll-delete-badge": HASSDomEvent<HASSDomEvents["ll-delete-badge"]>;
+    "ll-copy-badge": HASSDomEvent<HASSDomEvents["ll-copy-badge"]>;
+    "ll-cut-badge": HASSDomEvent<HASSDomEvents["ll-cut-badge"]>;
   }
 }
 
@@ -125,6 +132,14 @@ export class HUIView extends ReactiveElement {
     storage: "sessionStorage",
   })
   protected _clipboard?: LovelaceCardConfig;
+
+  @storage({
+    key: "dashboardBadgeClipboard",
+    state: false,
+    subscribe: false,
+    storage: "sessionStorage",
+  })
+  protected _badgeClipboard?: LovelaceBadgeConfig;
 
   constructor() {
     super();
@@ -171,7 +186,7 @@ export class HUIView extends ReactiveElement {
       "ll-delete-card",
       (ev: HASSDomEvent<HASSDomEvents["ll-delete-card"]>) => {
         if (!this.lovelace) return;
-        performDeleteCard(this.hass, this.lovelace, {
+        performDeleteCard(this.hass.localize, this.lovelace, {
           ...ev.detail,
           path: normalizeCardPath(ev.detail.path),
         });
@@ -208,14 +223,19 @@ export class HUIView extends ReactiveElement {
     this.addEventListener(
       "ll-copy-card",
       (ev: HASSDomEvent<HASSDomEvents["ll-copy-card"]>) => {
-        if (!this.lovelace) return;
-        const cardConfig = this._getCardConfig(
-          normalizeCardPath(ev.detail.path)
-        );
-        if (!cardConfig) {
-          return;
+        const params = this._getCardClipboardParams(ev.detail.path);
+        if (params) {
+          performCopy(this.hass.localize, this.lovelace, params);
         }
-        this._clipboard = deepClone(cardConfig);
+      }
+    );
+    this.addEventListener(
+      "ll-cut-card",
+      (ev: HASSDomEvent<HASSDomEvents["ll-cut-card"]>) => {
+        const params = this._getCardClipboardParams(ev.detail.path);
+        if (params) {
+          performCut(this.hass.localize, this.lovelace, params);
+        }
       }
     );
     this.addEventListener(
@@ -257,9 +277,60 @@ export class HUIView extends ReactiveElement {
       "ll-delete-badge",
       (ev: HASSDomEvent<HASSDomEvents["ll-delete-badge"]>) => {
         if (!this.lovelace) return;
-        performDeleteBadge(this.hass, this.lovelace, ev.detail);
+        performDeleteBadge(this.hass.localize, this.lovelace, ev.detail);
       }
     );
+    this.addEventListener(
+      "ll-copy-badge",
+      (ev: HASSDomEvent<HASSDomEvents["ll-copy-badge"]>) => {
+        const params = this._getBadgeClipboardParams(ev.detail.path);
+        if (params) {
+          performCopy(this.hass.localize, this.lovelace, params);
+        }
+      }
+    );
+    this.addEventListener(
+      "ll-cut-badge",
+      (ev: HASSDomEvent<HASSDomEvents["ll-cut-badge"]>) => {
+        const params = this._getBadgeClipboardParams(ev.detail.path);
+        if (params) {
+          performCut(this.hass.localize, this.lovelace, params);
+        }
+      }
+    );
+  }
+
+  private _getCardClipboardParams(
+    path: LovelacePath
+  ): ClipboardActionParams<"card"> | undefined {
+    if (!this.lovelace) return undefined;
+    const cardPath = normalizeCardPath(path);
+    const config = this._getCardConfig(cardPath);
+    if (!config) return undefined;
+    return {
+      type: "card",
+      path: cardPath,
+      config,
+      setClipboard: (clipboard) => {
+        this._clipboard = clipboard;
+      },
+    };
+  }
+
+  private _getBadgeClipboardParams(
+    path: LovelacePath
+  ): ClipboardActionParams<"badge"> | undefined {
+    if (!this.lovelace) return undefined;
+    const config = getAtPath<LovelaceBadgeConfig>(this.lovelace.config, path);
+    if (!config) return undefined;
+    return {
+      type: "badge",
+      path,
+      config,
+      setClipboard: (clipboard) => {
+        this._badgeClipboard = clipboard;
+      },
+    };
   }
 
   private _getCardConfig(path: LovelacePath): LovelaceCardConfig | undefined {

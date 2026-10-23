@@ -45,6 +45,7 @@ const defaultFullCalendarConfig: CalendarOptions = {
   locales: allLocales,
   firstDay: 1,
   dayHeaderFormat: { weekday: "short", month: undefined, day: undefined },
+  dayLaneInnerClass: "ha-fc-lane",
   columnEventClass: "ha-fc-block",
   columnEventTimeClass: ({ isShort }) => (isShort ? "" : "ha-fc-block-time"),
 };
@@ -459,6 +460,15 @@ class HaScheduleForm extends LitElement {
 
         .ha-fc-block-time {
           white-space: normal;
+        }
+
+        /* Older browsers drop the inline logical insets that place blocks.
+           Blocks never overlap, so each one fills its day. */
+        @supports not (inset-inline-start: 0) {
+          .ha-fc-lane > * {
+            left: 0;
+            right: 0;
+          }
         }
       `,
     ];

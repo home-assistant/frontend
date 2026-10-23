@@ -1,7 +1,6 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { mdiRestart } from "@mdi/js";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import {
   customElement,
   eventOptions,
@@ -11,6 +10,7 @@ import {
 } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
+import { fireEvent } from "../../common/dom/fire_event";
 import type {
   HASSDomEvent,
   HASSDomTargetEvent,
@@ -22,8 +22,6 @@ import type {
 } from "../../data/history";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import type { HomeAssistant } from "../../types";
-import "../ha-button";
-import "../ha-svg-icon";
 import "./state-history-chart-line";
 import type { StateHistoryChartLine } from "./state-history-chart-line";
 import "./state-history-chart-timeline";
@@ -49,6 +47,7 @@ declare global {
       end: number;
       chartIndex: number;
     };
+    "history-charts-zoom": { start: number; end: number };
   }
 }
 
@@ -117,8 +116,6 @@ export class StateHistoryCharts extends LitElement {
 
   @state() private _chartCount = 0;
 
-  @state() private _hasZoomedCharts = false;
-
   @queryAll("state-history-chart-line, state-history-chart-timeline")
   private _chartComponents!: NodeListOf<
     StateHistoryChartLine | StateHistoryChartTimeline
@@ -176,18 +173,6 @@ export class StateHistoryCharts extends LitElement {
               this._renderHistoryItem(item, index)
             )}`
       }
-      ${
-        this.syncCharts && this._hasZoomedCharts
-          ? html`<ha-button
-              size="l"
-              class="reset-button"
-              @click=${this._handleGlobalZoomReset}
-            >
-              <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
-              ${this.hass.localize("ui.components.history_charts.zoom_reset")}
-            </ha-button>`
-          : nothing
-      }
     `;
   }
 
@@ -221,7 +206,7 @@ export class StateHistoryCharts extends LitElement {
           @chart-zoom-with-index=${this._handleTimelineSync}
           .height=${this.virtualize ? undefined : this.height}
           .expandLegend=${this.expandLegend}
-          ?hide-reset-button=${this.syncCharts}
+          ?hide-zoom-controls=${this.syncCharts}
         ></state-history-chart-line>
       </div> `;
     }
@@ -241,7 +226,7 @@ export class StateHistoryCharts extends LitElement {
         .clickForMoreInfo=${this.clickForMoreInfo}
         @y-width-changed=${this._yWidthChanged}
         @chart-zoom-with-index=${this._handleTimelineSync}
-        ?hide-reset-button=${this.syncCharts}
+        ?hide-zoom-controls=${this.syncCharts}
       ></state-history-chart-timeline>
     </div> `;
   };
@@ -345,7 +330,7 @@ export class StateHistoryCharts extends LitElement {
 
     const { start, end, chartIndex } = e.detail;
 
-    this._hasZoomedCharts = start !== 0 || end !== 100;
+    fireEvent(this, "history-charts-zoom", { start, end });
     this._syncZoomToAllCharts(start, end, chartIndex);
   }
 
@@ -371,21 +356,8 @@ export class StateHistoryCharts extends LitElement {
     });
   }
 
-  private _handleGlobalZoomReset() {
-    this._hasZoomedCharts = false;
-    this._isSyncing = true;
-
-    requestAnimationFrame(() => {
-      this._chartComponents.forEach((chartComponent: any) => {
-        const chartBase =
-          chartComponent.renderRoot?.querySelector("ha-chart-base");
-
-        if (chartBase) {
-          chartBase.zoom(0, 100);
-        }
-      });
-      this._isSyncing = false;
-    });
+  public zoom(start: number, end: number) {
+    this._syncZoomToAllCharts(start, end);
   }
 
   private _newestStateTime(): number {
@@ -491,13 +463,6 @@ export class StateHistoryCharts extends LitElement {
     state-history-chart-timeline,
     state-history-chart-line {
       width: 100%;
-    }
-    .reset-button {
-      position: fixed;
-      bottom: calc(24px + var(--safe-area-inset-bottom));
-      right: calc(24px + var(--safe-area-inset-bottom));
-      z-index: 1;
-      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
   `;
 }

@@ -44,7 +44,7 @@ export class HaFilterChip extends HaChipBase {
     // Dispatch from the chip so listeners see the new selection before deciding
     // whether to cancel it. Preserve pointer and modifier-key information.
     const click =
-      typeof PointerEvent !== "undefined" && event instanceof PointerEvent
+      event instanceof PointerEvent
         ? new PointerEvent("click", event)
         : new MouseEvent("click", event);
 

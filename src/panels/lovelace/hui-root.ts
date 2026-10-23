@@ -96,6 +96,7 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+import { LOVELACE_EDIT_TOAST_ID } from "./types";
 
 interface ActionItem {
   icon: string;
@@ -1287,6 +1288,7 @@ class HUIRoot extends LitElement {
     } catch (err: any) {
       this._configChangedByUndo = false;
       showToast(this, {
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass.localize(
           "ui.panel.lovelace.editor.undo_redo_failed_to_apply_changes",
           {

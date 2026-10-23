@@ -120,7 +120,7 @@ export class DialogDataTableSettings extends LitElement {
       return nothing;
     }
 
-    const localize = this._params.localizeFunc || this._localize;
+    const localize = this._localize;
 
     const columns = this._sortedColumns(
       this._params.columns,

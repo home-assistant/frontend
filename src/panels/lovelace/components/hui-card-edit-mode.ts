@@ -242,8 +242,7 @@ export class HuiCardEditMode extends LitElement {
   }
 
   private _cutCard(): void {
-    fireEvent(this, "ll-copy-card", { path: this.path! });
-    fireEvent(this, "ll-delete-card", { path: this.path!, silent: true });
+    fireEvent(this, "ll-cut-card", { path: this.path! });
   }
 
   private _copyCard(): void {

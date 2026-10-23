@@ -344,6 +344,12 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       ? Math.max(consumption.total.used_grid, 0)
       : 0;
 
+    // Export not covered by solar or battery comes from unconfigured generation
+    const homeToGrid = Math.max(
+      (returnedToGrid ?? 0) - (solarToGrid ?? 0) - (batteryToGrid ?? 0),
+      0
+    );
+
     const totalHomeConsumption = Math.max(0, consumption.total.used_total);
 
     let lowCarbonEnergy: number | undefined;
@@ -397,6 +403,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
     const totalLines =
       gridConsumption +
+      homeToGrid +
       (solarConsumption || 0) +
       (solarToGrid || 0) +
       (solarToBattery || 0) +
@@ -932,6 +939,24 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                     <animateMotion
                       dur="${6 - (gridConsumption / totalLines) * 5}s"
                       repeatCount="indefinite"
+                      calcMode="linear"
+                    >
+                      <mpath xlink:href="#grid" />
+                    </animateMotion>
+                  </circle>`
+                  : ""
+              }
+              ${
+                hasFlow(homeToGrid) && !this._reducedMotion
+                  ? svg`<circle
+                    r="1"
+                    class="return"
+                    vector-effect="non-scaling-stroke"
+                  >
+                    <animateMotion
+                      dur="${6 - (homeToGrid / totalLines) * 5}s"
+                      repeatCount="indefinite"
+                      keyPoints="1;0" keyTimes="0;1"
                       calcMode="linear"
                     >
                       <mpath xlink:href="#grid" />

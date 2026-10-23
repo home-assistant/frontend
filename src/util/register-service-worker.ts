@@ -15,14 +15,33 @@ export const registerServiceWorker = async (
     return;
   }
 
-  // If the active service worker changes, refresh the page because the cache has changed
+  // Set when the active worker changed while this page could not reload.
+  let reloadPending = false;
+
+  // If the active service worker changes, refresh the page because the cache has changed.
+  // Another tab can activate the new worker, so wait until this page has no unsaved work.
+  // Until then this page runs the old build under the new worker, so its lazy imports can
+  // fail and go through stale build recovery instead.
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    location.reload();
+    if (!window.isDirtyState) {
+      location.reload();
+      return;
+    }
+    reloadPending = true;
   });
 
   const reg = await navigator.serviceWorker.register(`/sw-${__BUILD__}.js`);
 
   if (!notifyUpdate || __DEV__ || __DEMO__) {
+    // No update toast here, so reload as soon as the page is clean.
+    const reloadWhenClean = () => {
+      if (reloadPending && !window.isDirtyState) {
+        location.reload();
+      }
+    };
+    window.addEventListener("dirty-state-changed", reloadWhenClean);
+    // The page may have become clean while registering.
+    reloadWhenClean();
     return;
   }
 
@@ -43,6 +62,12 @@ export const registerServiceWorker = async (
   };
 
   const activateUpdate = () => {
+    if (reloadPending) {
+      clearUpdateCountdown();
+      hideUpdateToast();
+      location.reload();
+      return;
+    }
     if (!pendingWorker) {
       return;
     }
@@ -78,6 +103,7 @@ export const registerServiceWorker = async (
       secondaryAction: {
         action: () => {
           pendingWorker = undefined;
+          reloadPending = false;
           clearUpdateCountdown();
         },
         text: { translationKey: "ui.common.cancel" },
@@ -93,7 +119,7 @@ export const registerServiceWorker = async (
   };
 
   window.addEventListener("dirty-state-changed", () => {
-    if (!pendingWorker) {
+    if (!pendingWorker && !reloadPending) {
       return;
     }
     if (window.isDirtyState) {
@@ -132,5 +158,8 @@ export const registerServiceWorker = async (
 
   if (reg.waiting && navigator.serviceWorker.controller) {
     updateReady(reg.waiting);
+  } else if (reloadPending && !window.isDirtyState) {
+    // The page became clean while registering, before the listener above.
+    startUpdateCountdown();
   }
 };
