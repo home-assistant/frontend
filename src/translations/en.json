@@ -10433,6 +10433,10 @@
             "common-controls": {
               "name": "Common controls",
               "description": "Shows the entities you use most, based on your activity."
+            },
+            "device": {
+              "name": "Device",
+              "description": "Shows the controls and sensors of a device."
             }
           },
           "create_section": {
