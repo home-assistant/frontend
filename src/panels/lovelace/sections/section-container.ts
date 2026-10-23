@@ -39,6 +39,10 @@ export const sectionContainerStyles = css`
     position: relative;
   }
 
+  .section-container:has(> hui-section[hidden]) {
+    display: none;
+  }
+
   .section-container.has-background {
     padding: var(--ha-space-2);
     border-radius: var(--ha-section-border-radius, var(--ha-border-radius-xl));

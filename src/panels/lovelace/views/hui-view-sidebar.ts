@@ -94,10 +94,6 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
         gap: var(--row-gap, 8px);
         width: 100%;
       }
-
-      .section-container:has(> hui-section[hidden]) {
-        display: none;
-      }
     `,
   ];
 }
