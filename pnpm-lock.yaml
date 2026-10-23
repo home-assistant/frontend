@@ -457,8 +457,8 @@ importers:
         specifier: 7.4.1
         version: 7.4.1
       xss:
-        specifier: 1.0.15
-        version: 1.0.15
+        specifier: 1.0.16
+        version: 1.0.16
       zrender:
         specifier: 6.1.0
         version: 6.1.0
@@ -7771,8 +7771,8 @@ packages:
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
 
-  xss@1.0.15:
-    resolution: {integrity: sha512-FVdlVVC67WOIPvfOwhoMETV72f6GbW7aOabBC3WxN/oUdoEMDyLz4OgRv5/gck2ZeNqEQu+Tb0kloovXOfpYVg==}
+  xss@1.0.16:
+    resolution: {integrity: sha512-CsEvZ0QNH9vVgf3qldg+mJmmIwreZZEu/JS1SgldJrJqZgwyMrmIfENt1BJlkj/cPxO0c+R80kB5OMRtUPgqpQ==}
     engines: {node: '>= 0.10.0'}
     hasBin: true
 
@@ -15763,7 +15763,7 @@ snapshots:
 
   xmlchars@2.2.0: {}
 
-  xss@1.0.15:
+  xss@1.0.16:
     dependencies:
       commander: 2.20.3
       cssfilter: 0.0.10

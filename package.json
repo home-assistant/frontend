@@ -132,7 +132,7 @@
     "workbox-precaching": "7.4.1",
     "workbox-routing": "7.4.1",
     "workbox-strategies": "7.4.1",
-    "xss": "1.0.15",
+    "xss": "1.0.16",
     "zrender": "6.1.0"
   },
   "devDependencies": {
