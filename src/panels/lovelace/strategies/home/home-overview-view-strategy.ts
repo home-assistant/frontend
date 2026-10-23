@@ -12,6 +12,7 @@ import type { AreaRegistryEntry } from "../../../../data/area/area_registry";
 import type { EnergyPreferences } from "../../../../data/energy";
 import { getEnergyPreferences } from "../../../../data/energy";
 import type { SecurityAlertEntityConfig } from "../../../../data/frontend";
+import { fetchFrontendSystemData } from "../../../../data/frontend";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
 import type {
   LovelaceSectionConfig,
@@ -21,6 +22,7 @@ import type {
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { ShortcutItem } from "../../../../data/home_shortcuts";
 import { resolveShortcutItems } from "../../../../data/home_shortcuts";
+import { getWeatherSources } from "../../../../data/weather_page";
 import type { HomeAssistant } from "../../../../types";
 import { hasClimateEntities } from "../../../climate/strategies/climate-view-strategy";
 import type {
@@ -400,21 +402,18 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       conditions: computeDefaultSecurityAlertVisibility(alertEntity.entity),
     }));
 
-    const weatherFilter = generateEntityFilter(
-      hass.states,
-      hass.entities,
-      hass.devices,
-      hass.areas,
-      hass.floors,
-      {
-        domain: "weather",
-        entity_category: "none",
-      }
-    );
+    // Follow the weather page: its preferred source and its "show on home"
+    // setting. Without a weather page, use the first weather entity.
+    const weatherSettings = hass.panels.weather
+      ? await fetchFrontendSystemData(hass.connection, "weather").catch(
+          () => null
+        )
+      : null;
 
-    const weatherEntity = Object.keys(hass.states)
-      .filter(weatherFilter)
-      .sort()[0];
+    const weatherEntity =
+      weatherSettings?.show_on_home === false
+        ? undefined
+        : getWeatherSources(hass, weatherSettings ?? undefined)[0];
 
     const energyPrefs = await preloadHomeEnergyPreferences(hass);
     energyPreferencesPromises.delete(hass.connection);
@@ -502,6 +501,14 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
                 "ui.panel.lovelace.strategy.home.summary_list.weather"
               ),
               state_content: ["temperature", "state"],
+              tap_action: hass.panels.weather
+                ? {
+                    action: "navigate",
+                    navigation_path: config.home_panel
+                      ? "/weather?historyBack=1&backPath=/home"
+                      : "/weather?historyBack=1",
+                  }
+                : undefined,
             } satisfies TileCardConfig)
           : undefined,
       energy: () =>

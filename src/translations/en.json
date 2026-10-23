@@ -13126,6 +13126,11 @@
             "air_quality_helper": "Air quality index, fine particles, ozone and nitrogen dioxide.",
             "pollen": "Pollen",
             "pollen_helper": "Pollen sensors from your air quality services."
+          },
+          "settings": {
+            "title": "Settings",
+            "show_on_home": "Show on home",
+            "show_on_home_description": "Show the weather on the home overview."
           }
         }
       }

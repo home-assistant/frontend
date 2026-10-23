@@ -69,6 +69,7 @@ export interface WeatherFrontendSystemData {
   rain_gauge_entity?: string | null;
   air_quality_entities?: string[];
   pollen_entities?: string[];
+  show_on_home?: boolean;
 }
 
 declare global {
