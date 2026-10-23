@@ -105,6 +105,7 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
         <ha-adaptive-popover
           .dialogAnchor=${this._anchor}
           compact
+          class=${this._params.prompt ? "prompt" : ""}
           ?without-header=${titleOnly}
           .open=${this._open}
           .preventScrimClose=${!!this._params.confirmation || this.isDirtyState}
@@ -344,6 +345,10 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
          text only wraps when there is no room left */
       --ha-adaptive-popover-min-width: 0;
       --ha-adaptive-popover-width: 95vw;
+    }
+    ha-adaptive-popover.prompt {
+      /* A text field has no width of its own to fit to */
+      --ha-adaptive-popover-min-width: min(400px, 95vw);
     }
     :host([inert]) {
       pointer-events: initial !important;

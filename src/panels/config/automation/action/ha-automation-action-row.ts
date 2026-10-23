@@ -225,6 +225,8 @@ export default class HaAutomationActionRow extends LitElement {
   @query("ha-automation-row")
   private _automationRowElement?: HaAutomationRow;
 
+  @query(".menu-trigger") private _menuTrigger?: HTMLElement;
+
   private _runResultTimeout?: number;
 
   private _sidebarAction?: Action;
@@ -485,6 +487,7 @@ export default class HaAutomationActionRow extends LitElement {
       >
         <ha-icon-button
           slot="trigger"
+          class="menu-trigger"
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
@@ -1013,8 +1016,9 @@ export default class HaAutomationActionRow extends LitElement {
     this._yamlMode = true;
   }
 
-  private _renameAction = async (): Promise<void> => {
+  private _renameAction = async (anchor?: Element): Promise<void> => {
     const alias = await showPromptDialog(this, {
+      anchor,
       title: this.hass.localize(
         "ui.panel.config.automation.editor.actions.change_alias"
       ),
@@ -1303,7 +1307,8 @@ export default class HaAutomationActionRow extends LitElement {
         this._runAction();
         break;
       case "rename":
-        this._renameAction();
+        // The menu has closed, so open next to its button
+        this._renameAction(this._menuTrigger);
         break;
       case "edit_note":
         this._editNoteAction();
