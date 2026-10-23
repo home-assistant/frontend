@@ -1,5 +1,6 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
 import type { DeviceCompositeSplits } from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { TargetType, TargetTypeFloorless } from "../../data/target";
@@ -87,36 +88,40 @@ export class HaTargetPickerItemGroup extends LitElement {
       <ha-list-base>
         ${Object.entries(this.items).map(([type, items]) =>
           items
-            ? items.map((item) => {
-                const exclusions = this.exclusions
-                  ? (this.exclusions[
-                      targetItemKey({ type: type as TargetType, id: item })
-                    ] ?? [])
-                  : undefined;
-                return html`<ha-target-picker-item-row
-                    .hass=${this.hass}
-                    .type=${type as TargetTypeFloorless}
-                    .itemId=${item}
-                    .deviceFilter=${this.deviceFilter}
-                    .entityFilter=${this.entityFilter}
-                    .activeFilter=${this.activeFilter}
-                    .includeDomains=${this.includeDomains}
-                    .includeDeviceClasses=${this.includeDeviceClasses}
-                    .primaryEntitiesOnly=${this.primaryEntitiesOnly}
-                    .compositeSplits=${this.compositeSplits}
-                    .exclusions=${exclusions}
-                  ></ha-target-picker-item-row>
-                  ${(exclusions ?? []).map(
-                    (exclusion) =>
-                      html`<ha-target-picker-item-row
-                        exclusion
-                        .hass=${this.hass}
-                        .type=${exclusion.type}
-                        .itemId=${exclusion.id}
-                        .removedCount=${exclusion.removed.length}
-                      ></ha-target-picker-item-row>`
-                  )}`;
-              })
+            ? repeat(
+                items,
+                (item) => targetItemKey({ type: type as TargetType, id: item }),
+                (item) => {
+                  const exclusions = this.exclusions
+                    ? (this.exclusions[
+                        targetItemKey({ type: type as TargetType, id: item })
+                      ] ?? [])
+                    : undefined;
+                  return html`<ha-target-picker-item-row
+                      .hass=${this.hass}
+                      .type=${type as TargetTypeFloorless}
+                      .itemId=${item}
+                      .deviceFilter=${this.deviceFilter}
+                      .entityFilter=${this.entityFilter}
+                      .activeFilter=${this.activeFilter}
+                      .includeDomains=${this.includeDomains}
+                      .includeDeviceClasses=${this.includeDeviceClasses}
+                      .primaryEntitiesOnly=${this.primaryEntitiesOnly}
+                      .compositeSplits=${this.compositeSplits}
+                      .exclusions=${exclusions}
+                    ></ha-target-picker-item-row>
+                    ${(exclusions ?? []).map(
+                      (exclusion) =>
+                        html`<ha-target-picker-item-row
+                          exclusion
+                          .hass=${this.hass}
+                          .type=${exclusion.type}
+                          .itemId=${exclusion.id}
+                          .removedCount=${exclusion.removed.length}
+                        ></ha-target-picker-item-row>`
+                    )}`;
+                }
+              )
             : nothing
         )}
       </ha-list-base>

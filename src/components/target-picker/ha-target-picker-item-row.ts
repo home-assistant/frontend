@@ -164,6 +164,10 @@ export class HaTargetPickerItemRow extends LitElement {
 
   @state() private _entries?: ExtractFromTargetResult;
 
+  private _fetchedEntries?: ExtractFromTargetResult;
+
+  private _lastFetch = 0;
+
   @state()
   @consume({ context: labelsContext, subscribe: true })
   _labelRegistry?: LabelRegistryEntry[];
@@ -171,8 +175,21 @@ export class HaTargetPickerItemRow extends LitElement {
   private _loadedConfigEntryId?: string;
 
   protected willUpdate(changedProps: PropertyValues<this>) {
-    if (!this.subEntry && !this.exclusion && changedProps.has("itemId")) {
+    const resolvesEntries = !this.subEntry && !this.exclusion;
+    if (
+      resolvesEntries &&
+      (changedProps.has("itemId") || changedProps.has("primaryEntitiesOnly"))
+    ) {
       this._updateItemData();
+    } else if (
+      resolvesEntries &&
+      this._fetchedEntries &&
+      (changedProps.has("entityFilter") ||
+        changedProps.has("deviceFilter") ||
+        changedProps.has("includeDomains") ||
+        changedProps.has("includeDeviceClasses"))
+    ) {
+      this._entries = this._filterEntries(this._fetchedEntries);
     }
     if (
       changedProps.has("itemId") ||
@@ -682,7 +699,24 @@ export class HaTargetPickerItemRow extends LitElement {
     </ha-list-item-base>`;
   }
 
+  private _filterEntries(entries: ExtractFromTargetResult) {
+    return filterTargetEntries(
+      this.hass,
+      { type: this.type, id: this.itemId },
+      entries,
+      {
+        deviceFilter: this.deviceFilter,
+        entityFilter: this.entityFilter,
+        includeDomains: this.includeDomains,
+        includeDeviceClasses: this.includeDeviceClasses,
+        primaryEntitiesOnly: this.primaryEntitiesOnly,
+      }
+    );
+  }
+
   private async _updateItemData() {
+    const requestId = ++this._lastFetch;
+    this._fetchedEntries = undefined;
     if (this.type === "entity") {
       this._entries = undefined;
       return;
@@ -696,18 +730,12 @@ export class HaTargetPickerItemRow extends LitElement {
         false,
         this.primaryEntitiesOnly
       );
-      this._entries = filterTargetEntries(
-        this.hass,
-        { type: this.type, id: this.itemId },
-        entries,
-        {
-          deviceFilter: this.deviceFilter,
-          entityFilter: this.entityFilter,
-          includeDomains: this.includeDomains,
-          includeDeviceClasses: this.includeDeviceClasses,
-          primaryEntitiesOnly: this.primaryEntitiesOnly,
-        }
-      );
+      // A newer request was sent while this one was pending.
+      if (requestId !== this._lastFetch) {
+        return;
+      }
+      this._fetchedEntries = entries;
+      this._entries = this._filterEntries(entries);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("Failed to extract target", e);
