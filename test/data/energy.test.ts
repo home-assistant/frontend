@@ -40,6 +40,7 @@ import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_re
 import { StatisticMeanType } from "../../src/data/recorder";
 import type { StatisticsMetaData } from "../../src/data/recorder";
 import { createMockEntityState, createMockHass } from "../fixtures/hass";
+import type { LocalizeFunc } from "../../src/common/translations/localize";
 
 const checkConsumptionResult = (
   input: {
@@ -81,6 +82,7 @@ const checkConsumptionResult = (
   }
   return result;
 };
+const testLocalize = ((key: string) => key) as unknown as LocalizeFunc;
 
 describe("Energy Short Format Test", () => {
   // Create default to not have to specify a not relevant TimeFormat over and over again.
@@ -1152,6 +1154,7 @@ describe("getEnergyDataCollection cache", () => {
     }
     const options = {
       callWS: hass.callWS,
+      localize: testLocalize,
       entities: hass.entities,
       states: hass.states,
       locale: hass.locale,
@@ -1233,6 +1236,7 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
     });
     const collection = getEnergyDataCollection(hass.connection, {
       callWS: hass.callWS,
+      localize: testLocalize,
       entities: hass.entities,
       states: hass.states,
       locale: hass.locale,
@@ -1621,6 +1625,7 @@ describe("getEnergyDataCollection live day", () => {
     return {
       collection: getEnergyDataCollection(hass.connection, {
         callWS: hass.callWS,
+        localize: testLocalize,
         entities: hass.entities,
         states: hass.states,
         locale: hass.locale,
@@ -1823,6 +1828,7 @@ describe("getEnergyDataCollection statistics range", () => {
     });
     const collection = getEnergyDataCollection(hass.connection, {
       callWS: hass.callWS,
+      localize: testLocalize,
       entities: hass.entities,
       states: hass.states,
       locale: hass.locale,
@@ -1923,6 +1929,7 @@ describe("getEnergyDataCollection gas energy unit", () => {
     });
     const collection = getEnergyDataCollection(hass.connection, {
       callWS: hass.callWS,
+      localize: testLocalize,
       entities: hass.entities,
       states: hass.states,
       locale: hass.locale,

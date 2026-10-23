@@ -32,7 +32,7 @@ import { getEntityAreaId } from "../common/entity/context/get_entity_context";
 import { formatNumber } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
-import type { HomeAssistant, HomeAssistantRegistries } from "../types";
+import type { CallWS, HomeAssistant, HomeAssistantRegistries } from "../types";
 import { fileDownload } from "../util/file_download";
 import type {
   StatisticPeriod,
@@ -50,6 +50,7 @@ import {
   VOLUME_UNITS,
   StatisticMeanType,
 } from "./recorder";
+import type { LocalizeFunc } from "../common/translations/localize";
 
 export const ENERGY_COLLECTION_KEY_PREFIX = "energy_";
 
@@ -70,7 +71,6 @@ export function validateEnergyCollectionKey(key: string | undefined) {
     );
   }
 }
-
 export const emptyGridSourceEnergyPreference =
   (): GridSourceTypeEnergyPreference => ({
     type: "grid",
@@ -557,21 +557,104 @@ export const INFERRED_GRID_STAT_ID = "energy:inferred_grid";
 export const INFERRED_GRID_EXPORT_STAT_ID = "energy:inferred_grid_export";
 export const INFERRED_GRID_POWER_ID = "energy:inferred_grid_power";
 
-const sumByStart = (
+const sumChangeByStart = (
   stats: Statistics,
-  ids: (string | null | undefined)[],
-  field: "change" | "mean"
+  ids: (string | null | undefined)[]
 ) => {
   const sums = new Map<number, number>();
   for (const id of ids) {
     if (!id) continue;
     for (const stat of stats[id] ?? []) {
-      const v = stat[field];
-      if (v === null || v === undefined) continue;
-      sums.set(stat.start, (sums.get(stat.start) ?? 0) + v);
+      if (stat.change === null || stat.change === undefined) continue;
+      sums.set(stat.start, (sums.get(stat.start) ?? 0) + stat.change);
     }
   }
   return sums;
+};
+
+const inferGridStatistics = async (
+  callWS: CallWS,
+  prefs: EnergyPreferences,
+  buckets: StatisticValue[] | undefined,
+  start: Date,
+  end?: Date
+): Promise<{ from: StatisticValue[]; to: StatisticValue[] } | undefined> => {
+  const types = energySourcesByType(prefs);
+  const homeId = types.home?.[0]?.stat_energy_from;
+  if (
+    !homeId ||
+    !buckets?.length ||
+    types.grid?.some((source) => source.stat_energy_from)
+  ) {
+    return undefined;
+  }
+  const solarIds = (types.solar ?? []).map((s) => s.stat_energy_from);
+  const toBatteryIds = (types.battery ?? []).map((s) => s.stat_energy_to);
+  const fromBatteryIds = (types.battery ?? []).map((s) => s.stat_energy_from);
+  const toGridIds = (types.grid ?? []).map((s) => s.stat_energy_to);
+
+  const hourly = await fetchStatistics(
+    callWS,
+    start,
+    end,
+    [
+      homeId,
+      ...solarIds,
+      ...toBatteryIds,
+      ...fromBatteryIds,
+      ...toGridIds,
+    ].filter((id): id is string => !!id),
+    "hour",
+    { energy: "kWh" },
+    ["change"]
+  );
+  const solar = sumChangeByStart(hourly, solarIds);
+  const toBattery = sumChangeByStart(hourly, toBatteryIds);
+  const fromBattery = sumChangeByStart(hourly, fromBatteryIds);
+  const toGrid = sumChangeByStart(hourly, toGridIds);
+
+  // Direction is decided per hour, then summed per displayed bucket
+  const imported = new Array<number>(buckets.length).fill(0);
+  const exported = new Array<number>(buckets.length).fill(0);
+  let i = 0;
+  for (const stat of hourly[homeId] ?? []) {
+    if (stat.change === null || stat.change === undefined) continue;
+    while (i < buckets.length && buckets[i].end <= stat.start) i++;
+    if (i >= buckets.length) break;
+    if (buckets[i].start > stat.start) continue;
+    const balance =
+      stat.change +
+      (toGrid.get(stat.start) ?? 0) +
+      (toBattery.get(stat.start) ?? 0) -
+      (solar.get(stat.start) ?? 0) -
+      (fromBattery.get(stat.start) ?? 0);
+    imported[i] += Math.max(0, balance);
+    exported[i] += Math.max(0, -balance);
+  }
+
+  let sumFrom = 0;
+  let sumTo = 0;
+  const from: StatisticValue[] = [];
+  const to: StatisticValue[] = [];
+  buckets.forEach((bucket, idx) => {
+    sumFrom += imported[idx];
+    sumTo += exported[idx];
+    from.push({
+      start: bucket.start,
+      end: bucket.end,
+      change: imported[idx],
+      sum: sumFrom,
+      state: sumFrom,
+    });
+    to.push({
+      start: bucket.start,
+      end: bucket.end,
+      change: exported[idx],
+      sum: sumTo,
+      state: sumTo,
+    });
+  });
+  return { from, to };
 };
 
 const meanOver = (
@@ -602,71 +685,6 @@ const sumMeanOver = (
     (total, id) => (id ? total + meanOver(stats[id], start, end) : total),
     0
   );
-
-const inferGridStatistics = (
-  prefs: EnergyPreferences,
-  stats: Statistics
-): { from: StatisticValue[]; to: StatisticValue[] } | undefined => {
-  const types = energySourcesByType(prefs);
-  const homeId = types.home?.[0]?.stat_energy_from;
-  if (!homeId || types.grid?.some((source) => source.stat_energy_from)) {
-    return undefined;
-  }
-  const homeStats = stats[homeId] ?? [];
-  const solar = sumByStart(
-    stats,
-    (types.solar ?? []).map((s) => s.stat_energy_from),
-    "change"
-  );
-  const toBattery = sumByStart(
-    stats,
-    (types.battery ?? []).map((s) => s.stat_energy_to),
-    "change"
-  );
-  const fromBattery = sumByStart(
-    stats,
-    (types.battery ?? []).map((s) => s.stat_energy_from),
-    "change"
-  );
-  const toGrid = sumByStart(
-    stats,
-    (types.grid ?? []).map((s) => s.stat_energy_to),
-    "change"
-  );
-
-  let sumFrom = 0;
-  let sumTo = 0;
-  const from: StatisticValue[] = [];
-  const to: StatisticValue[] = [];
-  for (const stat of homeStats) {
-    if (stat.change === null || stat.change === undefined) continue;
-    const balance =
-      stat.change +
-      (toGrid.get(stat.start) ?? 0) +
-      (toBattery.get(stat.start) ?? 0) -
-      (solar.get(stat.start) ?? 0) -
-      (fromBattery.get(stat.start) ?? 0);
-    const imported = Math.max(0, balance);
-    const exported = Math.max(0, -balance);
-    sumFrom += imported;
-    sumTo += exported;
-    from.push({
-      start: stat.start,
-      end: stat.end,
-      change: imported,
-      sum: sumFrom,
-      state: sumFrom,
-    });
-    to.push({
-      start: stat.start,
-      end: stat.end,
-      change: exported,
-      sum: sumTo,
-      state: sumTo,
-    });
-  }
-  return { from, to };
-};
 
 export const inferGridPowerStatistics = (
   prefs: EnergyPreferences,
@@ -732,22 +750,38 @@ export const withInferredGridPower = (
   };
 };
 
-const addInferredGrid = (
+const addInferredGrid = async (
+  callWS: CallWS,
+  localize: LocalizeFunc,
   prefs: EnergyPreferences,
   stats: Statistics,
   statsCompare: Statistics,
-  statsMetadata: Record<string, StatisticsMetaData>
+  statsMetadata: Record<string, StatisticsMetaData>,
+  range: { start: Date; end?: Date; startCompare?: Date; endCompare?: Date }
 ) => {
   const types = energySourcesByType(prefs);
+  const homeId = types.home?.[0]?.stat_energy_from;
   const homeRate = types.home?.find((s) => s.stat_rate)?.stat_rate;
   const inferPower = !!homeRate && !types.grid?.some((s) => s.stat_rate);
-  const inferred = inferGridStatistics(prefs, stats);
+  const inferred = await inferGridStatistics(
+    callWS,
+    prefs,
+    homeId ? stats[homeId] : undefined,
+    range.start,
+    range.end
+  );
   if (!inferred && !inferPower) {
     return { prefs, stats, statsCompare, statsMetadata };
   }
   const inferredCompare =
-    inferred && statsCompare
-      ? inferGridStatistics(prefs, statsCompare)
+    inferred && statsCompare && range.startCompare
+      ? await inferGridStatistics(
+          callWS,
+          prefs,
+          homeId ? statsCompare[homeId] : undefined,
+          range.startCompare,
+          range.endCompare
+        )
       : undefined;
   const hasExport = [inferred, inferredCompare].some((item) =>
     item?.to.some((stat) => (stat.change ?? 0) > 0)
@@ -770,6 +804,7 @@ const addInferredGrid = (
   const newMetadata = { ...statsMetadata };
   const register = (
     id: string,
+    name: string,
     series: StatisticValue[],
     seriesCompare?: StatisticValue[]
   ) => {
@@ -780,7 +815,7 @@ const addInferredGrid = (
     newMetadata[id] = {
       statistic_id: id,
       source: "energy",
-      name: null,
+      name,
       has_sum: true,
       mean_type: StatisticMeanType.NONE,
       statistics_unit_of_measurement: "kWh",
@@ -788,10 +823,14 @@ const addInferredGrid = (
     };
   };
   if (inferred) {
-    register(INFERRED_GRID_STAT_ID, inferred.from, inferredCompare?.from);
-    if (hasExport) {
-      register(INFERRED_GRID_EXPORT_STAT_ID, inferred.to, inferredCompare?.to);
-    }
+    register(
+      INFERRED_GRID_STAT_ID,
+      localize(
+        "ui.panel.lovelace.cards.energy.energy_usage_graph.combined_from_grid"
+      ),
+      inferred.from,
+      inferredCompare?.from
+    );
   }
 
   return {
@@ -809,7 +848,7 @@ const getEnergyData = async (
   end?: Date,
   compare?: CompareMode
 ): Promise<EnergyData> => {
-  const { callWS, entities, states, locale, config } = options;
+  const { callWS, localize, entities, states, locale, config } = options;
   const info = await getEnergyInfo(callWS);
 
   let co2SignalEntity: string | undefined;
@@ -1150,6 +1189,16 @@ const getEnergyData = async (
     };
   }
 
+  const inferredGrid = await addInferredGrid(
+    callWS,
+    localize,
+    prefs,
+    stats,
+    statsCompare,
+    statsMetadata,
+    { start, end, startCompare, endCompare }
+  );
+
   const data: EnergyData = {
     start,
     end,
@@ -1157,7 +1206,7 @@ const getEnergyData = async (
     endCompare,
     compareMode: compare,
     info,
-    ...addInferredGrid(prefs, stats, statsCompare, statsMetadata),
+    ...inferredGrid,
     co2SignalEntity,
     fossilEnergyConsumption,
     fossilEnergyConsumptionCompare,
@@ -1357,6 +1406,7 @@ export const getNextEnergyPeriodStart = (
 
 export interface EnergyCollectionOptions {
   callWS: HomeAssistant["callWS"];
+  localize: LocalizeFunc;
   entities: HomeAssistant["entities"];
   states: HomeAssistant["states"];
   locale: HomeAssistant["locale"];

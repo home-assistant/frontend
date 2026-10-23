@@ -112,6 +112,7 @@ export class HuiStatisticCard extends LitElement implements LovelaceCard {
     if (!this._energySub) {
       this._energySub = getEnergyDataCollection(this.hass!.connection, {
         callWS: this.hass!.callWS,
+        localize: this.hass!.localize,
         entities: this.hass!.entities,
         states: this.hass!.states,
         locale: this.hass!.locale,

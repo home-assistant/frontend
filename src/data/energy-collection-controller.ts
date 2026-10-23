@@ -22,6 +22,7 @@ import type { EnergyCollection, EnergyData } from "./energy";
 import { getEnergyDataCollection } from "./energy";
 import type { FrontendLocaleData } from "./translation";
 import type { HomeAssistant } from "../types";
+import type { LocalizeFunc } from "../common/translations/localize";
 
 export interface EnergyCollectionControllerOptions {
   /** Subscribed only while this returns a config. */
@@ -69,6 +70,13 @@ export class EnergyCollectionController extends ContextController {
     transform: ({ locale }) => locale,
   })
   private _locale?: FrontendLocaleData;
+
+  @consumeContext({
+    context: internationalizationContext,
+    subscribe: true,
+    transform: ({ localize }) => localize,
+  })
+  private _localize?: LocalizeFunc;
 
   @consumeContext({
     context: configContext,
@@ -127,6 +135,7 @@ export class EnergyCollectionController extends ContextController {
       !this._entities ||
       !this._states ||
       !this._locale ||
+      !this._localize ||
       !this._hassConfig
     ) {
       return;
@@ -144,6 +153,7 @@ export class EnergyCollectionController extends ContextController {
     this._key = key;
     this._collection = getEnergyDataCollection(this._connection, {
       callWS: this._callWS,
+      localize: this._localize,
       entities: this._entities,
       states: this._states,
       locale: this._locale,

@@ -44,6 +44,7 @@ export class WaterViewStrategy extends ReactiveElement {
 
     const energyCollection = getEnergyDataCollection(hass.connection, {
       callWS: hass.callWS,
+      localize: hass.localize,
       entities: hass.entities,
       states: hass.states,
       locale: hass.locale,
