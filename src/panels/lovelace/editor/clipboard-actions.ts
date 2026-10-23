@@ -8,12 +8,7 @@ import { LOVELACE_EDIT_TOAST_ID } from "../types";
 import { performDeleteBadge } from "./delete-badge";
 import { performDeleteCard } from "./delete-card";
 import type { LovelacePath } from "./lovelace-path";
-import {
-  getAtPath,
-  getParentPath,
-  insertAtPath,
-  setAtPath,
-} from "./lovelace-path";
+import { getParentPath, insertAtPath, setAtPath } from "./lovelace-path";
 
 interface ClipboardItemConfigs {
   card: LovelaceCardConfig;
@@ -72,13 +67,11 @@ export async function performPaste<K extends ClipboardItemType>(
   { type, path, config, replace }: PasteParams<K>
 ): Promise<void> {
   lovelace.showToast({ id: LOVELACE_EDIT_TOAST_ID, message: "", duration: 0 });
-  let replaced: ClipboardItemConfigs[K] | undefined;
   try {
     const index = path[path.length - 1];
     if (typeof index !== "number") {
       throw new Error("Paste target is not an item");
     }
-    replaced = getAtPath<ClipboardItemConfigs[K]>(lovelace.config, path);
     const pastedPath = replace ? path : [...getParentPath(path), index + 1];
     const newConfig = replace
       ? setAtPath(lovelace.config, path, deepClone(config))
@@ -97,8 +90,7 @@ export async function performPaste<K extends ClipboardItemType>(
       message: localize(`ui.panel.lovelace.editor.edit_${type}.replaced`),
       duration: 8000,
       action: {
-        action: () =>
-          lovelace.saveConfig(setAtPath(lovelace.config, path, replaced)),
+        action: () => fireEvent(window, "undo-change"),
         text: localize("ui.common.undo"),
       },
     });
