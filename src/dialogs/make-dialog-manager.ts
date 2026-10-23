@@ -65,6 +65,9 @@ const LOADED: LoadedDialogsDict = {};
 const OPEN_DIALOG_STACK: DialogState[] = [];
 export const FOCUS_TARGET = Symbol.for("HA focus target");
 
+/** The URL of the last dialog's entry, when the dialog went back to close. */
+let closedDialogUrl: { pathname: string; search: string } | undefined;
+
 /**
  * Shows a dialog element, lazy-loading it if needed, and optionally integrates
  * dialog open/close behavior with browser history.
@@ -240,6 +243,29 @@ export const closeLastDialog = async (historyState?: any) => {
   return true;
 };
 
+/**
+ * Called on the back() of a dialog that closed itself. The page's entry still
+ * has the URL from before the dialog opened, so a change to the search made
+ * while it was open, like a filter written after a delete, is kept. Must run
+ * before anything else reads the URL on that popstate.
+ */
+export const restoreClosedDialogSearch = () => {
+  const closedUrl = closedDialogUrl;
+  closedDialogUrl = undefined;
+  const { history, location } = mainWindow;
+
+  if (
+    closedUrl?.pathname === location.pathname &&
+    closedUrl.search !== location.search
+  ) {
+    history.replaceState(
+      history.state,
+      "",
+      `${location.pathname}${closedUrl.search}${location.hash}`
+    );
+  }
+};
+
 export const closeAllDialogs = async () => {
   for (let i = OPEN_DIALOG_STACK.length - 1; i >= 0; i--) {
     const closed =
@@ -270,6 +296,8 @@ const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
       );
     } else if (dialogIndex !== -1) {
       // if the dialog is the last one and it was indeed open, go back
+      const { pathname, search } = mainWindow.location;
+      closedDialogUrl = { pathname, search };
       mainWindow.history.back();
     }
   }

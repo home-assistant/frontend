@@ -4,11 +4,7 @@ import type {
 } from "@lit/reactive-element/reactive-controller";
 import type { HASSDomEvent } from "../dom/fire_event";
 import { mainWindow } from "../dom/get_main_window";
-import {
-  getHistoryState,
-  replaceCurrentUrl,
-  type NavigateOptions,
-} from "../navigate";
+import { replaceCurrentUrl, type NavigateOptions } from "../navigate";
 import { constructUrlCurrentPath } from "../url/construct-url";
 import { currentPath } from "../url/current-path";
 import {
@@ -18,40 +14,6 @@ import {
 } from "../url/query-params";
 
 const DEBOUNCE_WAIT = 300;
-
-/**
- * The search of the page's entry a dialog was opened from, kept by the first
- * write that lands on the dialog's entry. Shared by every controller, as a
- * page can have more than one and a later write sees the URL an earlier one
- * changed.
- */
-let dialogPageSearch: string | undefined;
-
-/** The controllers with a write to repeat once the dialog closes. */
-const dialogWriters = new Set<QueryParamsController<QueryParamConfig>>();
-
-const clearDialogPage = () => {
-  dialogPageSearch = undefined;
-  dialogWriters.clear();
-};
-
-/**
- * Whether a pop went back to the page's entry a dialog was opened from. Decided
- * by the first controller to get the pop, before any of them writes again.
- */
-const dialogPagePops = new WeakMap<Event, boolean>();
-
-const poppedToDialogPage = (ev: Event): boolean => {
-  let popped = dialogPagePops.get(ev);
-  if (popped === undefined) {
-    popped =
-      dialogPageSearch !== undefined &&
-      mainWindow.location.search === dialogPageSearch;
-    dialogPagePops.set(ev, popped);
-    clearDialogPage();
-  }
-  return popped;
-};
 
 export interface QueryParamsControllerOptions {
   /** Whether the host keeps its state in the URL. */
@@ -79,9 +41,6 @@ export class QueryParamsController<
   private _pending?: QueryParamValues<C>;
 
   private _pendingTimeout?: number;
-
-  /** The last write that landed on a dialog's history entry. */
-  private _dialogWrite?: QueryParamValues<C>;
 
   private _hostUpdated = false;
 
@@ -121,14 +80,6 @@ export class QueryParamsController<
     mainWindow.removeEventListener("location-changed", this._navigated);
     mainWindow.removeEventListener("popstate", this._navigated);
     this._cancelPending();
-    this._dialogWrite = undefined;
-
-    // Another controller's write on the dialog's entry can still be repeated
-    dialogWriters.delete(this);
-
-    if (!dialogWriters.size) {
-      dialogPageSearch = undefined;
-    }
   }
 
   /** The current search params, or undefined when not on the host's page. */
@@ -182,16 +133,6 @@ export class QueryParamsController<
 
   private _navigated = (ev?: Event | HASSDomEvent<NavigateOptions>) => {
     this._cancelPending();
-    const dialogWrite = this._dialogWrite;
-    this._dialogWrite = undefined;
-
-    let dialogClosed = false;
-    if (ev?.type === "popstate") {
-      dialogClosed = poppedToDialogPage(ev);
-    } else if (ev) {
-      clearDialogPage();
-    }
-
     // A router sends a path without a page, like /config/automation, on to
     // its default page after the host is connected, so it follows that
     const path = currentPath();
@@ -204,43 +145,17 @@ export class QueryParamsController<
     ) {
       this._path = path;
     }
-
     // Leaving the page gets here too, before the router swaps the page
-    if (!this._isActive()) {
-      return;
+    if (this._isActive()) {
+      this._options.navigated();
     }
-
-    if (dialogClosed) {
-      // Closing a dialog went back to the page's own entry, which still has
-      // the URL from before the writes, like after deleting from a dialog.
-      // Going further back reads that entry's URL instead
-      if (dialogWrite) {
-        this._write(dialogWrite);
-      }
-
-      return;
-    }
-
-    this._options.navigated();
   };
 
   private _write(values: QueryParamValues<C>) {
     if (!this._isActive()) {
       return;
     }
-
     const current = mainWindow.location.search;
-
-    // A dialog's entry is popped when it closes, which would lose the write
-    if (getHistoryState()?.dialog) {
-      dialogPageSearch ??= current;
-      dialogWriters.add(this);
-      this._dialogWrite = values;
-    } else {
-      dialogWriters.delete(this);
-      this._dialogWrite = undefined;
-    }
-
     const queryString = updateQueryString(current, values, this._config);
     if (current !== (queryString ? `?${queryString}` : "")) {
       replaceCurrentUrl(constructUrlCurrentPath(queryString));
