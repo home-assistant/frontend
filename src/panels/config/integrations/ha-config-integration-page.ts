@@ -738,7 +738,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           </div>
 
           ${
-            normalData.length + attentionData.length > 0
+            normalData.length + attentionData.length > 0 || this._filter
               ? html`<ha-input-search
                   appearance="outlined"
                   .value=${this._filter}

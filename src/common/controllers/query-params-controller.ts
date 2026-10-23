@@ -15,6 +15,10 @@ import {
 
 const DEBOUNCE_WAIT = 300;
 
+// A page can be opened with or without a trailing slash
+const trimSlash = (path: string) =>
+  path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
+
 export interface QueryParamsControllerOptions {
   /** Whether the host keeps its state in the URL. */
   enabled: () => boolean;
@@ -133,7 +137,9 @@ export class QueryParamsController<
 
   private _isActive(): boolean {
     return (
-      this._connected && this._options.enabled() && currentPath() === this._path
+      this._connected &&
+      this._options.enabled() &&
+      trimSlash(currentPath()) === trimSlash(this._path ?? "")
     );
   }
 
@@ -164,7 +170,9 @@ export class QueryParamsController<
     const current = mainWindow.location.search;
     const queryString = updateQueryString(current, values, this._config);
     if (current !== (queryString ? `?${queryString}` : "")) {
-      replaceCurrentUrl(constructUrlCurrentPath(queryString));
+      // Keep a fragment like #config_entry=, the demo already routes with it
+      const hash = __DEMO__ ? "" : mainWindow.location.hash;
+      replaceCurrentUrl(`${constructUrlCurrentPath(queryString)}${hash}`);
     }
   }
 }
