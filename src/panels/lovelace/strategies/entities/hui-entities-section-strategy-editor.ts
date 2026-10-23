@@ -80,6 +80,7 @@ export class HuiEntitiesSectionStrategyEditor
         },
         {
           name: "group_by",
+          required: true,
           selector: {
             select: {
               mode: "dropdown",
