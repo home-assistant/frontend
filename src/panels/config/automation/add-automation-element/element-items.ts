@@ -1,5 +1,8 @@
 import { html } from "lit";
-import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../../../common/translations/localize";
 import "../../../../components/ha-condition-icon";
 import "../../../../components/ha-service-icon";
 import "../../../../components/ha-trigger-icon";
@@ -33,16 +36,14 @@ export const convertToItem = (
   return {
     key,
     name: localize(
-      // @ts-ignore
       `ui.panel.config.automation.editor.${type}s.${
         isGroup ? "groups" : "type"
-      }.${key}.label`
+      }.${key}.label` as LocalizeKeys
     ),
     description: localize(
-      // @ts-ignore
       `ui.panel.config.automation.editor.${type}s.${
         isGroup ? "groups" : "type"
-      }.${key}.description${isGroup ? "" : ".picker"}`
+      }.${key}.description${isGroup ? "" : ".picker"}` as LocalizeKeys
     ),
     iconPath: options.icon || ELEMENT_TYPES[type].icons[key],
   };
