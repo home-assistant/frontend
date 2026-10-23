@@ -223,8 +223,8 @@ importers:
         specifier: 2.0.17
         version: 2.0.17
       '@formatjs/intl-datetimeformat':
-        specifier: 7.8.1
-        version: 7.8.1
+        specifier: 7.8.2
+        version: 7.8.2
       '@formatjs/intl-displaynames':
         specifier: 7.3.15
         version: 7.3.15
@@ -244,11 +244,11 @@ importers:
         specifier: 9.4.3
         version: 9.4.3
       '@formatjs/intl-pluralrules':
-        specifier: 6.3.15
-        version: 6.3.15
+        specifier: 6.3.16
+        version: 6.3.16
       '@formatjs/intl-relativetimeformat':
-        specifier: 12.3.15
-        version: 12.3.15
+        specifier: 12.3.16
+        version: 12.3.16
       '@home-assistant/webawesome':
         specifier: 3.14.0-ha.1
         version: 3.14.0-ha.1(@floating-ui/utils@0.2.12)(@types/node@24.19.2)
@@ -1953,8 +1953,8 @@ packages:
   '@formatjs/icu-skeleton-parser@2.1.12':
     resolution: {integrity: sha512-ca7tZMLpfHX3sUD7hP6gE/qr6Iq89EDd3ZLeRhbsB7r0UD55DGJq+tmFLzrGrnx5StahUevQmQQVtbDRHsfDHA==}
 
-  '@formatjs/intl-datetimeformat@7.8.1':
-    resolution: {integrity: sha512-tGVZ3KdbHQwmA8wBn7gEJeOE9zo0InoyrbJWsD4VYdHGJfXykflOpdNC69+QaZShxfEQ6dwUfXjDfNzxe4AO4A==}
+  '@formatjs/intl-datetimeformat@7.8.2':
+    resolution: {integrity: sha512-5iCy2mXr6cpEd4N87HLVbN2zRz71dRLMmI8hMY9IgAVaob5fsVocEah6T4w3pPUVYz/aDO2TFGXErPY3JAEUsQ==}
 
   '@formatjs/intl-displaynames@7.3.15':
     resolution: {integrity: sha512-U26iRwxxnD4aZY+aDiSEV5Ym/7Db5S9OxKQ4c3T+WFFIj+DPKEQLh+tC++dMH1SuEa8CSWvPJkpaADa+WHn3qA==}
@@ -1980,11 +1980,11 @@ packages:
   '@formatjs/intl-numberformat@9.4.3':
     resolution: {integrity: sha512-absVu2I7FlWl+Buictw2PL8Fl385uab3bEA3TCCTu+0DBHHFE+RTbmPmj0nUVO82U1b2Qw3/OA2I7KKLI48EpQ==}
 
-  '@formatjs/intl-pluralrules@6.3.15':
-    resolution: {integrity: sha512-/K6Up6SrvLcTP5mWVHp58A9Uk7I4jYbDYqtYdgKDeSY1HG0bhBMS4eVtqK2nFx8mWWdcHbt9ZqHBcCto573PNg==}
+  '@formatjs/intl-pluralrules@6.3.16':
+    resolution: {integrity: sha512-iOqCpBM2fo7bbbWqno+yN9WioepV01N2q3KawFZhRYADzijpzmIIA6cbFXrriCI1Mt2q5c7mceiKHoQkEFf0/Q==}
 
-  '@formatjs/intl-relativetimeformat@12.3.15':
-    resolution: {integrity: sha512-AUn+GJmU4z0098f4K8VYTxrOl0hfoTzXVeO0MmunJbn9fP5u0hSK2i8LntLQnediQ1oJDL8pyqZMWCBBSAhPDA==}
+  '@formatjs/intl-relativetimeformat@12.3.16':
+    resolution: {integrity: sha512-wIFsJiH/p9yMLzY3jyvht2vcjgJopMn30ePQQh7upkB5YYSAX3whtiqytG1EPhy2QKDy1PKOk+BJVNLA6HLePg==}
 
   '@formatjs/intl-supportedvaluesof@2.3.11':
     resolution: {integrity: sha512-oRzzAbJA08psr6AO0jgXAdx4HZ2vGNeja1fgaio2R2ne8DLtGPV+fa3gxI/t8J2dNPOndrwVAZVVfbH6GDFDwA==}
@@ -9394,7 +9394,7 @@ snapshots:
 
   '@formatjs/icu-skeleton-parser@2.1.12': {}
 
-  '@formatjs/intl-datetimeformat@7.8.1':
+  '@formatjs/intl-datetimeformat@7.8.2':
     dependencies:
       '@formatjs/bigdecimal': 0.2.7
       '@formatjs/intl-localematcher': 0.9.0
@@ -9432,12 +9432,12 @@ snapshots:
       '@formatjs/bigdecimal': 0.2.7
       '@formatjs/intl-localematcher': 0.9.0
 
-  '@formatjs/intl-pluralrules@6.3.15':
+  '@formatjs/intl-pluralrules@6.3.16':
     dependencies:
       '@formatjs/bigdecimal': 0.2.7
       '@formatjs/intl-localematcher': 0.9.0
 
-  '@formatjs/intl-relativetimeformat@12.3.15':
+  '@formatjs/intl-relativetimeformat@12.3.16':
     dependencies:
       '@formatjs/intl-localematcher': 0.9.0
 
