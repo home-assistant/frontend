@@ -1089,8 +1089,10 @@ export class HaConfigDevicePage extends LitElement {
       if (request !== this._esphomeSetupRequest || this.deviceId !== deviceId) {
         return;
       }
-      this._esphomeSetup ??= new esphomeSetup.ESPHomeSetupController(this, () =>
-        this._entities(this.deviceId, this._entityReg, this.hass.devices)
+      // The wizard may list entities of sub-devices
+      this._esphomeSetup ??= new esphomeSetup.ESPHomeSetupController(
+        this,
+        () => this._entityReg
       );
     }
     this._esphomeSetup.refresh(deviceId);
