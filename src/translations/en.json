@@ -13090,14 +13090,43 @@
         "error_no_data": "No activity for the selected target in the selected time range."
       },
       "weather": {
+        "edit": "Edit weather page",
         "refresh": "Update weather now",
         "updated": "Updated {time}",
         "empty": {
           "title": "No weather yet",
-          "description": "An administrator can add a weather service to show the weather here."
+          "description": "An administrator can add a weather service to show the weather here.",
+          "description_admin": "Add a weather service to see the forecast, the sun and moon, and the air quality around your home.",
+          "action": "Add a weather service"
         },
         "editor": {
-          "load_failed": "Failed to load weather page configuration"
+          "title": "Edit weather page",
+          "load_failed": "Failed to load weather page configuration",
+          "save_failed": "Failed to save weather page configuration",
+          "sources": {
+            "title": "Sources",
+            "description": "For every value, the page uses the first source that has it. Drag to change the order.",
+            "empty": "There are no weather sources yet. Add a weather service below.",
+            "add": "Add source",
+            "remove": "Remove source"
+          },
+          "add_service": {
+            "title": "Add a service",
+            "description": "Integrations for weather and air quality. These are the connectors that power this page.",
+            "suggested": "Suggested for your home",
+            "add": "Add",
+            "browse": "Browse weather services"
+          },
+          "sensors": {
+            "title": "Sensors",
+            "description": "Measurements from around your home. These are found automatically, you can change them here.",
+            "rain_gauge": "Rain gauge",
+            "rain_gauge_helper": "Shows how much rain fell in the last 24 hours. Leave empty to hide it.",
+            "air_quality": "Air quality",
+            "air_quality_helper": "Air quality index, fine particles, ozone and nitrogen dioxide.",
+            "pollen": "Pollen",
+            "pollen_helper": "Pollen sensors from your air quality services."
+          }
         }
       }
     },

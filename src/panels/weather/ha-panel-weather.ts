@@ -1,4 +1,4 @@
-import { mdiRefresh, mdiWeatherPartlyCloudy } from "@mdi/js";
+import { mdiPencil, mdiRefresh, mdiWeatherPartlyCloudy } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -6,11 +6,15 @@ import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-button";
 import "../../components/ha-empty-state";
+import "../../components/ha-icon-button";
 import "../../components/ha-relative-time";
 import "../../components/ha-svg-icon";
 import "../../components/ha-top-app-bar-fixed";
 import type { WeatherFrontendSystemData } from "../../data/frontend";
-import { fetchFrontendSystemData } from "../../data/frontend";
+import {
+  fetchFrontendSystemData,
+  saveFrontendSystemData,
+} from "../../data/frontend";
 import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
 import {
   getPrimaryWeatherEntity,
@@ -25,6 +29,7 @@ import type { Lovelace } from "../lovelace/types";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-background";
 import "../lovelace/views/hui-view-container";
+import "./components/weather-page-editor";
 
 const WEATHER_LOVELACE_VIEW_CONFIG: LovelaceStrategyViewConfig = {
   strategy: {
@@ -41,6 +46,8 @@ class PanelWeather extends LitElement {
   @state() private _lovelace?: Lovelace;
 
   @state() private _config?: WeatherFrontendSystemData;
+
+  @state() private _editMode = false;
 
   @state() private _refreshing = false;
 
@@ -158,13 +165,50 @@ class PanelWeather extends LitElement {
   }
 
   protected render() {
+    const canEdit = this.hass.user?.is_admin && this._config;
     return html`
       <ha-top-app-bar-fixed
+        class=${this._editMode ? "edit-mode" : ""}
         .narrow=${this.narrow}
         .backButton=${this._searchParms.has("historyBack")}
       >
-        <div slot="title">${this.hass.localize("panel.weather")}</div>
-        ${this._renderView()}
+        <div slot="title">
+          ${
+            this._editMode
+              ? this.hass.localize("ui.panel.weather.editor.title")
+              : this.hass.localize("panel.weather")
+          }
+        </div>
+        ${
+          canEdit
+            ? this._editMode
+              ? html`<ha-button
+                  slot="actionItems"
+                  appearance="filled"
+                  size="s"
+                  class="exit-edit-mode"
+                  @click=${this._exitEditMode}
+                >
+                  ${this.hass.localize("ui.panel.lovelace.menu.exit_edit_mode")}
+                </ha-button>`
+              : html`<ha-icon-button
+                  slot="actionItems"
+                  .path=${mdiPencil}
+                  .label=${this.hass.localize("ui.panel.weather.edit")}
+                  @click=${this._enterEditMode}
+                ></ha-icon-button>`
+            : nothing
+        }
+        ${
+          this._editMode && this._config
+            ? html`<weather-page-editor
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+                .config=${this._config}
+                @value-changed=${this._configChanged}
+              ></weather-page-editor>`
+            : this._renderView()
+        }
       </ha-top-app-bar-fixed>
     `;
   }
@@ -182,9 +226,19 @@ class PanelWeather extends LitElement {
           .icon=${mdiWeatherPartlyCloudy}
           .heading=${this.hass.localize("ui.panel.weather.empty.title")}
           .description=${this.hass.localize(
-            "ui.panel.weather.empty.description"
+            this.hass.user?.is_admin
+              ? "ui.panel.weather.empty.description_admin"
+              : "ui.panel.weather.empty.description"
           )}
-        ></ha-empty-state>
+        >
+          ${
+            this.hass.user?.is_admin
+              ? html`<ha-button @click=${this._enterEditMode}>
+                  ${this.hass.localize("ui.panel.weather.empty.action")}
+                </ha-button>`
+              : nothing
+          }
+        </ha-empty-state>
       `;
     }
 
@@ -223,6 +277,39 @@ class PanelWeather extends LitElement {
     `;
   }
 
+  private _enterEditMode() {
+    if (this.hass.user?.is_admin) {
+      this._editMode = true;
+    }
+  }
+
+  private async _exitEditMode() {
+    this._editMode = false;
+    await this._setLovelace();
+  }
+
+  private async _configChanged(
+    ev: CustomEvent<{ value: WeatherFrontendSystemData }>
+  ) {
+    ev.stopPropagation();
+    const previous = this._config;
+    this._config = ev.detail.value;
+    try {
+      await saveFrontendSystemData(
+        this.hass.connection,
+        "weather",
+        this._config
+      );
+    } catch (_err) {
+      this._config = previous;
+      showToast(this, {
+        message: this.hass.localize("ui.panel.weather.editor.save_failed"),
+        duration: 0,
+        dismissable: true,
+      });
+    }
+  }
+
   private async _refresh() {
     const entityIds = getWeatherSources(this.hass, this._config);
     if (!entityIds.length) {
@@ -244,6 +331,16 @@ class PanelWeather extends LitElement {
       css`
         :host {
           user-select: none;
+        }
+        ha-top-app-bar-fixed.edit-mode {
+          --app-header-background-color: var(
+            --app-header-edit-background-color,
+            #455a64
+          );
+          --app-header-text-color: var(--app-header-edit-text-color, white);
+        }
+        .exit-edit-mode {
+          margin-inline-end: var(--ha-space-2);
         }
         hui-view-container {
           position: relative;
