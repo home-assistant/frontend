@@ -350,6 +350,11 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
           --ha-dialog-header-content-padding: var(--ha-space-5)
             var(--ha-space-1) var(--ha-space-3);
           --ha-dialog-header-min-height: 0;
+          /* Grow with the content up to the screen width, so text only wraps
+             when there is no room left, rather than being cut off */
+          --width: var(--full-width);
+          --ha-dialog-header-white-space: normal;
+          --ha-dialog-header-title-height: auto;
           --dialog-content-padding: 0 var(--ha-space-5);
         }
 
