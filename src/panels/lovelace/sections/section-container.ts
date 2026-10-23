@@ -1,6 +1,9 @@
 import { css, html, nothing } from "lit";
 import { classMap } from "lit/directives/class-map";
-import type { LovelaceBaseSectionConfig } from "../../../data/lovelace/config/section";
+import {
+  hasSectionBackground,
+  type LovelaceBaseSectionConfig,
+} from "../../../data/lovelace/config/section";
 import type { HomeAssistant } from "../../../types";
 import "./hui-section-background";
 
@@ -11,7 +14,7 @@ export const renderSectionContainer = (
   section: unknown,
   alignBackground = false
 ) => {
-  const hasBackground = config.background !== undefined;
+  const hasBackground = hasSectionBackground(config);
 
   return html`
     <div
