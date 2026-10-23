@@ -10,7 +10,6 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
-import { DEFAULT_ENTITY_NAME } from "../../../../common/entity/compute_entity_name_display";
 import { parseEntityType } from "../../../../data/entity/entity_type";
 import type { EntitySelectorFilter } from "../../../../data/selector";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
@@ -75,7 +74,6 @@ export class HuiEntitiesSectionStrategyEditor
           name: "name",
           selector: {
             entity_name: {
-              default_name: DEFAULT_ENTITY_NAME,
               allow_custom: false,
             },
           },
