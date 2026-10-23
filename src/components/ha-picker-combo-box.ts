@@ -362,7 +362,33 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       >
         ${this._plainList ? this._renderPlainList() : this._renderVirtualList()}
         ${this.renderScrollableFades()}
+      </div>
+      <div class="visually-hidden" role="status">
+        ${this._searchResultsStatus()}
       </div>`;
+  }
+
+  // DOM focus stays in the search field, so screen readers hear nothing when
+  // the list changes. Announce how many items match instead.
+  private _searchResultsStatus() {
+    if (!this._search) {
+      return nothing;
+    }
+    const count = this._items.filter(this._isOption).length;
+    if (!count) {
+      return this._noMatchLabel(this._search);
+    }
+    return this.i18n?.localize?.("ui.components.combo-box.result_count", {
+      count,
+    });
+  }
+
+  private _noMatchLabel(search: string) {
+    return typeof this.notFoundLabel === "function"
+      ? this.notFoundLabel(search)
+      : this.notFoundLabel ||
+          this.i18n?.localize?.("ui.components.combo-box.no_match") ||
+          "No matching items found";
   }
 
   private _renderPlainList() {
@@ -574,11 +600,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           <span slot="headline"
             >${
               this._search
-                ? typeof this.notFoundLabel === "function"
-                  ? this.notFoundLabel(this._search)
-                  : this.notFoundLabel ||
-                    this.i18n?.localize?.("ui.components.combo-box.no_match") ||
-                    "No matching items found"
+                ? this._noMatchLabel(this._search)
                 : this.emptyLabel ||
                   this.i18n?.localize?.("ui.components.combo-box.no_items") ||
                   "No items available"
@@ -1017,6 +1039,17 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           flex-direction: column;
           align-items: center;
           padding: var(--ha-space-3);
+        }
+
+        .visually-hidden {
+          position: absolute;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          height: 1px;
+          width: 1px;
+          margin: -1px;
+          padding: 0;
+          border: 0;
         }
       `,
     ];

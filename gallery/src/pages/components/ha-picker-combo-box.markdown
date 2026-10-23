@@ -50,6 +50,13 @@ With no cursor yet, <kbd>↓</kbd> and <kbd>Enter</kbd> start from the `value`
 row, or from the top match while searching. With one item in the list,
 <kbd>Enter</kbd> picks it whether or not the cursor has moved.
 
+## Screen readers
+
+DOM focus stays in the search field, so screen readers do not hear the list
+change. While searching, a visually hidden `role="status"` message says how
+many items match, or shows the not found label when nothing does. Section
+titles and placeholder rows are not counted.
+
 ## Implementation
 
 Without `sections`, the component filters the items from `getItems` itself as the
