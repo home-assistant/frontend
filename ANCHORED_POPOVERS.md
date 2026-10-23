@@ -86,4 +86,3 @@ For the decision on the look:
 - The popover here uses the dialog's 24px radius (`--ha-border-radius-3xl`).
 - Material 3 dialogs use 28dp ([dialog](https://github.com/material-components/material-components-android/blob/master/docs/components/Dialog.md), [shapes](https://github.com/material-components/material-components-android/blob/master/docs/theming/Shape.md)).
 - Fluent 2 popovers use 12px ([shapes](https://fluent2.microsoft.design/shapes)).
-- Windows 11 flyouts and dialogs use 8px, and leave the side attached to the opening control square ([geometry](https://learn.microsoft.com/en-us/windows/apps/design/signature-experiences/geometry)).
