@@ -3,6 +3,7 @@ const fs = require("fs");
 const { existsSync } = fs;
 const path = require("path");
 const rspack = require("@rspack/core");
+const browserslist = require("browserslist");
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const { RsdoctorRspackPlugin } = require("@rsdoctor/rspack-plugin");
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -228,6 +229,22 @@ const createRspackConfig = ({
         {
           test: /\.css$/,
           type: "asset/source",
+          // Imported stylesheets skip the minifier that compiles css``
+          // templates, so legacy builds compile logical properties and :is()
+          // here
+          use: latestBuild
+            ? []
+            : [
+                {
+                  loader: "builtin:lightningcss-loader",
+                  options: {
+                    targets: browserslist.loadConfig({
+                      path: paths.root_dir,
+                      env: "legacy",
+                    }),
+                  },
+                },
+              ],
         },
       ],
     },
@@ -417,8 +434,6 @@ const createRspackConfig = ({
         "lit/directives/keyed$": "lit/directives/keyed.js",
         "@lit-labs/virtualizer/layouts/grid":
           "@lit-labs/virtualizer/layouts/grid.js",
-        "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver":
-          "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js",
         "@lit-labs/observers/resize-controller":
           "@lit-labs/observers/resize-controller.js",
         "@formatjs/intl-durationformat/should-polyfill$":

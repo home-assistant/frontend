@@ -12,21 +12,23 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import { storage } from "../../../common/decorators/storage";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
 } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { mainWindow } from "../../../common/dom/get_main_window";
+import { navigate, replaceCurrentUrl } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { currentPath } from "../../../common/url/current-path";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { hasRejectedItems } from "../../../common/util/promise-all-settled-results";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
-  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -58,6 +60,10 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../config-sections";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
+
+const BARE_PATH = "/config/blueprint";
+const DASHBOARD_PATH = `${BARE_PATH}/dashboard`;
+const IMPORT_PATH = `${DASHBOARD_PATH}/import`;
 
 type BlueprintMetaDataPath = BlueprintMetaData & {
   path: string;
@@ -97,11 +103,11 @@ class HaBlueprintOverview extends LitElement {
     Blueprints
   >;
 
-  @storage({ key: "blueprint-table-sort", state: false, subscribe: false })
-  private _activeSorting?: SortingChangedEvent;
-
-  @storage({ key: "blueprint-table-grouping", state: false, subscribe: false })
-  private _activeGrouping?: string;
+  private _tableSettings = new DataTableSettingsController(this, {
+    search: "blueprint-table-search",
+    sorting: "blueprint-table-sort",
+    grouping: "blueprint-table-grouping",
+  });
 
   @storage({
     key: "blueprint-table-collapsed",
@@ -123,15 +129,6 @@ class HaBlueprintOverview extends LitElement {
     subscribe: false,
   })
   private _activeHiddenColumns?: string[];
-
-  @state()
-  @storage({
-    storage: "sessionStorage",
-    key: "blueprint-table-search",
-    state: true,
-    subscribe: false,
-  })
-  private _filter = "";
 
   @state() private _usageCounts: Record<string, number> = {};
 
@@ -209,6 +206,7 @@ class HaBlueprintOverview extends LitElement {
         sortable: true,
         filterable: true,
         groupable: true,
+        urlName: "type",
       },
       path: {
         title: localize("ui.panel.config.blueprint.overview.headers.file_name"),
@@ -319,16 +317,38 @@ class HaBlueprintOverview extends LitElement {
     })
   );
 
-  protected async firstUpdated(changedProps: PropertyValues<this>) {
+  public connectedCallback() {
+    // Move to the dashboard path before the URL controllers connect, they
+    // keep the path they connected on. The router only gets there from the
+    // bare path after this, and the import path is left for the dashboard.
+    // Reads the URL, as a cached config panel reconnects this page with its
+    // old route on the way to another page.
+    const path = currentPath().replace(/\/$/, "");
+    const importUrl =
+      path === IMPORT_PATH
+        ? (extractSearchParam("blueprint_url") ?? "")
+        : undefined;
+
+    if (path === BARE_PATH || importUrl !== undefined) {
+      const search = importUrl === undefined ? mainWindow.location.search : "";
+      replaceCurrentUrl(
+        __DEMO__
+          ? `${mainWindow.location.pathname}${search}#${DASHBOARD_PATH}`
+          : `${DASHBOARD_PATH}${search}`
+      );
+      fireEvent(mainWindow, "location-changed", { replace: true });
+    }
+
+    super.connectedCallback();
+
+    if (importUrl) {
+      this._addBlueprint(importUrl);
+    }
+  }
+
+  protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadUsageCounts();
-    if (this.route.path === "/import") {
-      const url = extractSearchParam("blueprint_url");
-      await navigate("/config/blueprint/dashboard", { replace: true });
-      if (url) {
-        this._addBlueprint(url);
-      }
-    }
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -388,17 +408,18 @@ class HaBlueprintOverview extends LitElement {
             <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-button>
         </div>`}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
+        .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
-        @sorting-changed=${this._handleSortingChanged}
-        @grouping-changed=${this._handleGroupingChanged}
+        @sorting-changed=${this._tableSettings.sortingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        .filter=${this._filter}
-        @search-changed=${this._handleSearchChange}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
+        sync-url
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -789,20 +810,8 @@ class HaBlueprintOverview extends LitElement {
     });
   };
 
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
-  }
-
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
-  }
-
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
-  }
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
   }
 
   private _handleColumnsChanged(ev: CustomEvent) {

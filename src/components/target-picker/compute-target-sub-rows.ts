@@ -119,11 +119,10 @@ export const computeTargetSubRows = (
                 if (!entity) {
                   return false;
                 }
-                return (
-                  entity.area_id === rowItem ||
-                  !entity.device_id ||
-                  areaDevices.includes(entity.device_id)
-                );
+                return entity.area_id
+                  ? entity.area_id === rowItem
+                  : !!entity.device_id &&
+                      areaDevices.includes(entity.device_id);
               });
 
             return nextEntries;
@@ -133,24 +132,6 @@ export const computeTargetSubRows = (
 
           return nextEntries;
         });
-
-  const entityRows =
-    type === "label"
-      ? entries.referenced_entities.filter((entityId) => {
-          const entity = entityRegistry[entityId];
-          if (!entity) {
-            return false;
-          }
-          return (
-            entity.labels.includes(itemId) &&
-            !entries.referenced_devices.includes(entity.device_id || "")
-          );
-        })
-      : nextType === "device"
-        ? entries.referenced_entities.filter(
-            (entityId) => entityRegistry[entityId]?.area_id === itemId
-          )
-        : [];
 
   const deviceRows =
     type === "label"
@@ -169,6 +150,33 @@ export const computeTargetSubRows = (
         referenced_entities: entitiesOf(deviceId),
       }))
     : undefined;
+
+  // Entities a label takes in through a device can be in an area that isn't
+  // labeled, so no area or device row holds them; they get a row of their own.
+  const placed = new Set(
+    [...(rowEntries ?? []), ...(deviceRowEntries ?? [])].flatMap(
+      (rowEntry) => rowEntry.referenced_entities
+    )
+  );
+
+  const entityRows =
+    type === "label"
+      ? entries.referenced_entities.filter((entityId) => {
+          const entity = entityRegistry[entityId];
+          if (!entity) {
+            return false;
+          }
+          return (
+            (entity.labels.includes(itemId) &&
+              !entries.referenced_devices.includes(entity.device_id || "")) ||
+            !placed.has(entityId)
+          );
+        })
+      : nextType === "device"
+        ? entries.referenced_entities.filter(
+            (entityId) => entityRegistry[entityId]?.area_id === itemId
+          )
+        : [];
 
   return {
     nextType,

@@ -25,6 +25,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
+import { QueryParamsController } from "../../../../common/controllers/query-params-controller";
 import { transform } from "../../../../common/decorators/transform";
 import type {
   HASSDomCurrentTargetEvent,
@@ -39,6 +40,11 @@ import {
 } from "../../../../common/entity/compute_device_name";
 import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name_display";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import {
+  dataTableQueryParamConfig,
+  dataTableQueryParamsFromState,
+  dataTableQueryStateFromUrl,
+} from "../../../../common/url/data-table-query-params";
 import "../../../../components/chips/ha-assist-chip";
 import "../../../../components/data-table/ha-data-table";
 import type {
@@ -172,11 +178,23 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   @query("ha-input-search") private _searchInput!: HaInputSearch;
 
+  // Nothing is stored, so opening the page again without params, like from
+  // another tools tab, keeps what was picked and writes it back
+  private _queryParams = new QueryParamsController(
+    this,
+    dataTableQueryParamConfig,
+    {
+      enabled: () => true,
+      navigated: () => this._applyUrl(),
+    }
+  );
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
       this._validateStatistics();
+      this._applyUrl();
     }
   }
 
@@ -242,6 +260,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         main: true,
         sortable: true,
         filterable: true,
+        urlName: "name",
         flex: 2,
       },
       device: {
@@ -253,6 +272,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         title: localize("ui.panel.config.entities.picker.headers.device"),
         filterable: true,
         groupable: true,
+        urlName: "device",
         hidden: true,
       },
       area: getAreaTableColumn(localize),
@@ -270,6 +290,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
+        urlName: "unit",
         forceLTR: true,
       },
       source: {
@@ -279,6 +300,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
+        urlName: "source",
       },
       issues_string: {
         title: localize(
@@ -287,6 +309,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
+        urlName: "issue",
         direction: "asc",
         flex: 2,
         template: (statistic) =>
@@ -382,6 +405,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       appearance="outlined"
       .value=${this.filter}
       @input=${this._handleSearchChange}
+      @blur=${this._flushUrl}
     >
     </ha-input-search>`;
 
@@ -654,6 +678,51 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     this.filter = ev.target.value ?? "";
+    this._writeUrl(true);
+  }
+
+  // A link with table params wins over what was picked before
+  private _applyUrl() {
+    const searchParams = this._queryParams.searchParams();
+
+    const linked = searchParams
+      ? dataTableQueryStateFromUrl(
+          searchParams,
+          this._columns(this._i18n.localize)
+        )
+      : undefined;
+
+    if (linked) {
+      this.filter = linked.search;
+
+      if (linked.sorting) {
+        this._sortColumn = linked.sorting.column;
+        this._sortDirection = linked.sorting.direction;
+      }
+
+      if (linked.groupColumn) {
+        this._groupColumn = linked.groupColumn;
+      }
+    }
+
+    this._writeUrl();
+  }
+
+  private _flushUrl() {
+    this._queryParams.flush();
+  }
+
+  private _writeUrl(debounced = false) {
+    this._queryParams.write(
+      dataTableQueryParamsFromState(
+        this._columns(this._i18n.localize),
+        this.filter,
+        this._sortColumn,
+        this._sortDirection,
+        this._groupColumn
+      ),
+      debounced
+    );
   }
 
   private _handleSelectionChanged(
@@ -668,6 +737,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     const { column, direction } = ev.detail;
     this._sortColumn = column;
     this._sortDirection = direction;
+    this._writeUrl();
   }
 
   private _handleSortBy(ev: HaDropdownSelectEvent) {
@@ -681,6 +751,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       this._sortDirection = "asc";
     }
     this._sortColumn = columnId;
+    this._writeUrl();
   }
 
   private _handleOverflowGroupBy = (ev: HaDropdownSelectEvent) => {
@@ -707,6 +778,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   private _setGroupColumn(columnId?: string) {
     this._groupColumn = columnId;
+    this._writeUrl();
   }
 
   private _openSettings() {
@@ -721,7 +793,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         this.columnOrder = columnOrder;
         this.hiddenColumns = hiddenColumns;
       },
-      localizeFunc: this._i18n.localize,
     });
   }
 

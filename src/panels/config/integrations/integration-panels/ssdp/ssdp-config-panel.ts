@@ -3,6 +3,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { DataTableSettingsController } from "../../../../../common/controllers/data-table-settings-controller";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type {
   RowClickedEvent,
@@ -32,12 +33,11 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
 
   @state() private _data: SSDPDiscoveryData[] = [];
 
-  @storage({
-    key: "ssdp-discovery-table-grouping",
-    state: false,
-    subscribe: false,
-  })
-  private _activeGrouping?: string = "ssdp_location";
+  private _tableSettings = new DataTableSettingsController(
+    this,
+    { grouping: "ssdp-discovery-table-grouping" },
+    { defaultGrouping: "ssdp_location" }
+  );
 
   @storage({
     key: "ssdp-discovery-table-collapsed",
@@ -79,6 +79,7 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
           filterable: true,
           sortable: true,
           groupable: true,
+          urlName: "location",
         },
       };
 
@@ -89,6 +90,7 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
   private _dataWithIds = memoizeOne((data) =>
     data.map((row) => ({
       ...row,
+      name: row.name || row.ssdp_usn,
       id: [row.ssdp_st, row.ssdp_location].filter(Boolean).join("|"),
     }))
   );
@@ -101,16 +103,19 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
         .route=${this.route}
         back-path="/config/integrations/integration/ssdp"
         .columns=${this._columns(this.hass.localize)}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        @grouping-changed=${this._handleGroupingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         .data=${this._dataWithIds(this._data)}
         .noDataText=${this.hass.localize(
           "ui.panel.config.ssdp.no_devices_found"
         )}
         @row-click=${this._handleRowClicked}
         clickable
+        sync-url
       ></hass-tabs-subpage-data-table>
     `;
   }
@@ -124,10 +129,6 @@ export class SSDPConfigPanel extends SubscribeMixin(LitElement) {
     showSSDPDiscoveryInfoDialog(this, {
       entry: entry!,
     });
-  }
-
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {

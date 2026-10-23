@@ -32,7 +32,8 @@ export interface TriggerTraceStep extends BaseTraceStep {
 }
 
 export interface ConditionTraceStep extends BaseTraceStep {
-  result?: { result: boolean };
+  // `null` when the condition is disabled.
+  result?: { result: boolean | null };
 }
 
 export interface CallServiceActionTraceStep extends BaseTraceStep {
