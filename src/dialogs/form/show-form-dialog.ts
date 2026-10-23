@@ -5,6 +5,12 @@ export type FormDialogData = Record<string, any>;
 
 export interface FormDialogParams {
   title: string;
+  /**
+   * The element that opened the form, such as the button that was clicked.
+   * The form then opens as a popover next to it on larger screens, and as a
+   * bottom sheet on smaller ones.
+   */
+  anchor?: Element;
   schema: HaFormSchema[];
   data?: FormDialogData;
   // Extra submit-time validation beyond the schema's own checks. Returned
@@ -30,6 +36,7 @@ export const showFormDialog = (
     fireEvent(element, "show-dialog", {
       dialogTag: "dialog-form",
       dialogImport: () => import("./dialog-form"),
+      dialogAnchor: dialogParams.anchor,
       dialogParams: {
         ...dialogParams,
         cancel: () => {

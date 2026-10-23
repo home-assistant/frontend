@@ -11,6 +11,7 @@ import { deepActiveElement } from "../../common/dom/deep-active-element";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { nextRender } from "../../common/util/render-status";
+import "../../components/ha-adaptive-popover";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
@@ -39,7 +40,12 @@ export class DialogForm
 {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  // Set by the dialog manager before each showDialog
+  @property({ attribute: false }) public dialogAnchor?: Element;
+
   @state() private _params?: FormDialogParams;
+
+  @state() private _anchor?: Element;
 
   @state() private _data: FormDialogData = {};
 
@@ -61,6 +67,7 @@ export class DialogForm
 
   public async showDialog(params: FormDialogParams): Promise<void> {
     this._params = params;
+    this._anchor = this.dialogAnchor;
     this._data = params.data || {};
     this._initialData = deepClone(this._data);
     this._open = true;
@@ -250,12 +257,7 @@ export class DialogForm
   ): Promise<void> {
     await this._afterFormRender();
 
-    if (
-      !this.isConnected ||
-      !this._open ||
-      this._params !== expectedParams ||
-      !this._dialog
-    ) {
+    if (!this.isConnected || !this._open || this._params !== expectedParams) {
       return;
     }
 
@@ -265,7 +267,10 @@ export class DialogForm
       this._focusFirstControl();
     }
 
-    this._dialog.bodyContainer.scrollTop = scrollTop;
+    // Only the dialog keeps its own scroll position, a popover fits its form
+    if (this._dialog) {
+      this._dialog.bodyContainer.scrollTop = scrollTop;
+    }
   }
 
   private _dialogClosed(): void {
@@ -284,6 +289,7 @@ export class DialogForm
     this._closeState = undefined;
     this._stack = [];
     this._params = undefined;
+    this._anchor = undefined;
     this._initialData = {};
     this._data = {};
     this._open = false;
@@ -387,6 +393,23 @@ export class DialogForm
       },
     ];
 
+    if (this._anchor) {
+      // A popover next to what opened it, or a bottom sheet on small screens
+      return html`
+        <ha-adaptive-popover
+          .dialogAnchor=${this._anchor}
+          compact
+          .open=${this._open}
+          .headerTitle=${params.title}
+          .hideCloseButton=${true}
+          .preventScrimClose=${this.isDirtyState}
+          @closed=${this._dialogClosed}
+        >
+          ${this._renderForms(levels)} ${this._renderFooter(params)}
+        </ha-adaptive-popover>
+      `;
+    }
+
     return html`
       <ha-dialog
         .open=${this._open}
@@ -394,38 +417,49 @@ export class DialogForm
         .preventScrimClose=${this.isDirtyState}
         @closed=${this._dialogClosed}
       >
-        ${levels.map((level, index) => {
-          const isActive = index === levels.length - 1;
-
-          return html`
-            <ha-form
-              ?hidden=${!isActive}
-              ?autofocus=${isActive}
-              .hass=${this.hass}
-              .computeLabel=${level.params.computeLabel}
-              .computeHelper=${level.params.computeHelper}
-              .data=${level.data}
-              .schema=${level.params.schema}
-              .error=${level.error}
-              @value-changed=${this._valueChanged}
-              @show-dialog=${this._handleNestedShowDialog}
-            >
-            </ha-form>
-          `;
-        })}
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this._cancel}
-          >
-            ${params.cancelText || this.hass.localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button slot="primaryAction" @click=${this._submit}>
-            ${params.submitText || this.hass.localize("ui.common.save")}
-          </ha-button>
-        </ha-dialog-footer>
+        ${this._renderForms(levels)} ${this._renderFooter(params)}
       </ha-dialog>
+    `;
+  }
+
+  private _renderForms(
+    levels: Pick<StackEntry, "params" | "data" | "error">[]
+  ) {
+    return levels.map((level, index) => {
+      const isActive = index === levels.length - 1;
+
+      return html`
+        <ha-form
+          ?hidden=${!isActive}
+          ?autofocus=${isActive}
+          .hass=${this.hass}
+          .computeLabel=${level.params.computeLabel}
+          .computeHelper=${level.params.computeHelper}
+          .data=${level.data}
+          .schema=${level.params.schema}
+          .error=${level.error}
+          @value-changed=${this._valueChanged}
+          @show-dialog=${this._handleNestedShowDialog}
+        >
+        </ha-form>
+      `;
+    });
+  }
+
+  private _renderFooter(params: FormDialogParams) {
+    return html`
+      <ha-dialog-footer slot="footer">
+        <ha-button
+          slot="secondaryAction"
+          appearance="plain"
+          @click=${this._cancel}
+        >
+          ${params.cancelText || this.hass?.localize("ui.common.cancel")}
+        </ha-button>
+        <ha-button slot="primaryAction" @click=${this._submit}>
+          ${params.submitText || this.hass?.localize("ui.common.save")}
+        </ha-button>
+      </ha-dialog-footer>
     `;
   }
 

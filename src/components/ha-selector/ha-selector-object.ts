@@ -262,6 +262,7 @@ export class HaObjectSelector extends LitElement {
     };
 
     const newItem = await showFormDialog(this, {
+      anchor: ev.currentTarget,
       title: this.hass.localize("ui.common.add"),
       schema,
       data,
@@ -290,6 +291,7 @@ export class HaObjectSelector extends LitElement {
     const index = ev.currentTarget.index;
 
     const updatedItem = await showFormDialog(this, {
+      anchor: ev.currentTarget,
       title: this.hass.localize("ui.common.edit"),
       schema: this._schema(this.selector),
       data: item,
