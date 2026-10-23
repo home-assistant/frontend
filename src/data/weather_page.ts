@@ -113,6 +113,33 @@ export const getUvLevel = (uvIndex: number): UvLevel => {
   return "extreme";
 };
 
+// Fine particle (PM2.5) levels based on the 2021 WHO air quality guideline
+// and its interim targets. These are the same everywhere, unlike the many
+// regional air quality indexes.
+export type AirQualityLevel =
+  "good" | "fair" | "moderate" | "poor" | "very_poor" | "extremely_poor";
+
+export const AIR_QUALITY_LEVEL_COLORS: Record<AirQualityLevel, string> = {
+  good: "var(--success-color)",
+  fair: "var(--lime-color)",
+  moderate: "var(--warning-color)",
+  poor: "var(--orange-color)",
+  very_poor: "var(--error-color)",
+  extremely_poor: "var(--purple-color)",
+};
+
+export const PM25_LEVEL_LIMITS: [AirQualityLevel, number][] = [
+  ["good", 15],
+  ["fair", 25],
+  ["moderate", 37.5],
+  ["poor", 50],
+  ["very_poor", 75],
+  ["extremely_poor", Infinity],
+];
+
+export const getPm25Level = (pm25: number): AirQualityLevel =>
+  PM25_LEVEL_LIMITS.find(([, limit]) => pm25 <= limit)![0];
+
 const WIND_SPEED_TO_MS: Record<string, number> = {
   "m/s": 1,
   "km/h": 1 / 3.6,

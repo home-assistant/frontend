@@ -112,6 +112,8 @@ const LAZY_LOAD_TYPES = {
   "weather-sun": () => import("../cards/weather/hui-weather-sun-card"),
   "weather-moon": () => import("../cards/weather/hui-weather-moon-card"),
   "weather-wind": () => import("../cards/weather/hui-weather-wind-card"),
+  "weather-air-quality": () =>
+    import("../cards/weather/hui-weather-air-quality-card"),
   "weather-metric": () => import("../cards/weather/hui-weather-metric-card"),
 };
 
