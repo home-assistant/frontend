@@ -262,19 +262,19 @@ describe("TraceTree", () => {
 describe("TraceTree wait_for_trigger branches", () => {
   const wait = {
     wait_for_trigger: [],
-    on_trigger: [{ delay: 1 }],
+    on_complete: [{ delay: 1 }],
     on_timeout: [{ delay: 2 }],
   };
 
   it.each([
-    ["on_trigger", { wait: { completed: true, remaining: 5, trigger: {} } }],
+    ["on_complete", { wait: { completed: true, remaining: 5, trigger: {} } }],
     ["on_timeout", { wait: { completed: false, remaining: 0 }, timeout: true }],
   ] as const)("tracks the %s branch the wait took", (choice, result) => {
-    const [onTrigger, onTimeout] = new TraceTree(
+    const [onComplete, onTimeout] = new TraceTree(
       createTrace([wait], [{ path: "sequence/0", timestamp, result }])
     ).sequence[0].branches;
-    expect(onTrigger.path).toBe("sequence/0/on_trigger");
-    expect(onTrigger.hasTrace).toBe(choice === "on_trigger");
+    expect(onComplete.path).toBe("sequence/0/on_complete");
+    expect(onComplete.hasTrace).toBe(choice === "on_complete");
     expect(onTimeout.hasTrace).toBe(choice === "on_timeout");
   });
 
@@ -292,7 +292,7 @@ describe("TraceTree wait_for_trigger branches", () => {
     expect(branch.finished).toBe(false);
   });
 
-  it("has no branches without on_trigger or on_timeout actions", () => {
+  it("has no branches without on_complete or on_timeout actions", () => {
     expect(
       new TraceTree(createTrace([{ wait_for_trigger: [] }])).sequence[0]
         .branches

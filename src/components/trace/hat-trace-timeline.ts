@@ -303,7 +303,7 @@ class ActionRenderer {
 
     if (
       actionType === "wait_for_trigger" &&
-      ((data as WaitForTriggerAction).on_trigger ||
+      ((data as WaitForTriggerAction).on_complete ||
         (data as WaitForTriggerAction).on_timeout)
     ) {
       return this._handleWaitForTrigger(index);
@@ -600,7 +600,7 @@ class ActionRenderer {
       waitConfig.alias ||
       describeAction(this.hass, this.entityReg, waitConfig, "wait_for_trigger");
     const choice = waitTrace.result?.wait?.trigger
-      ? "on_trigger"
+      ? "on_complete"
       : waitTrace.result?.timeout
         ? "on_timeout"
         : undefined;
@@ -625,7 +625,7 @@ class ActionRenderer {
         return i;
       }
 
-      if (!["on_trigger", "on_timeout"].includes(parts[startLevel])) {
+      if (!["on_complete", "on_timeout"].includes(parts[startLevel])) {
         i++;
         continue;
       }

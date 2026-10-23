@@ -328,8 +328,8 @@ class AutomationTriggerConditionMapper {
       }
       case "wait_for_trigger": {
         const result = { ...(action as WaitForTriggerAction) };
-        if (result.on_trigger) {
-          result.on_trigger = this._mapActions(result.on_trigger);
+        if (result.on_complete) {
+          result.on_complete = this._mapActions(result.on_complete);
         }
         if (result.on_timeout) {
           result.on_timeout = this._mapActions(result.on_timeout);

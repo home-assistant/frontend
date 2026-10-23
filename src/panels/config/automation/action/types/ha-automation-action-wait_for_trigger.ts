@@ -84,7 +84,7 @@ export class HaWaitForTriggerAction
     const branchesAllowed =
       hasTimeout && this.action.continue_on_timeout !== false;
     const hasBranchActions =
-      ensureArray(this.action.on_trigger ?? []).length > 0 ||
+      ensureArray(this.action.on_complete ?? []).length > 0 ||
       ensureArray(this.action.on_timeout ?? []).length > 0;
 
     return html`
@@ -127,13 +127,13 @@ export class HaWaitForTriggerAction
                       }
                       <h4>
                         ${this.hass.localize(
-                          "ui.panel.config.automation.editor.actions.type.wait_for_trigger.on_trigger"
+                          "ui.panel.config.automation.editor.actions.type.wait_for_trigger.on_complete"
                         )}:
                       </h4>
                       <ha-automation-action
-                        .actions=${ensureArray(this.action.on_trigger ?? [])}
+                        .actions=${ensureArray(this.action.on_complete ?? [])}
                         .disabled=${this.disabled}
-                        @value-changed=${this._onTriggerChanged}
+                        @value-changed=${this._onCompleteChanged}
                         .hass=${this.hass}
                         .narrow=${this.narrow}
                         .optionsInSidebar=${this.indent}
@@ -180,15 +180,15 @@ export class HaWaitForTriggerAction
     handleChangeEvent(this, ev);
   }
 
-  private _onTriggerChanged(ev: CustomEvent) {
-    this._branchChanged(ev, "on_trigger");
+  private _onCompleteChanged(ev: CustomEvent) {
+    this._branchChanged(ev, "on_complete");
   }
 
   private _onTimeoutChanged(ev: CustomEvent) {
     this._branchChanged(ev, "on_timeout");
   }
 
-  private _branchChanged(ev: CustomEvent, key: "on_trigger" | "on_timeout") {
+  private _branchChanged(ev: CustomEvent, key: "on_complete" | "on_timeout") {
     ev.stopPropagation();
     const actions = ev.detail.value as Action[];
     const newValue: WaitForTriggerAction = {
