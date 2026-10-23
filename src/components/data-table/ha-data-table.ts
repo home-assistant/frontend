@@ -129,6 +129,16 @@ export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 export const groupActionsSlot = (group: string) => `group-actions-${group}`;
 
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
+
+// The group a row's value of the group column puts it in. Rows without a value
+// share a reserved group, sorted to the bottom.
+export const dataTableGroupKey = (
+  value: string | number | boolean | null | undefined
+) => {
+  const key = String(value);
+
+  return key === "undefined" ? UNDEFINED_GROUP_KEY : key;
+};
 const AUTO_FOCUS_ALLOWED_ACTIVE_TAGS = ["BODY", "HTML", "HOME-ASSISTANT"];
 
 // Default row height, used to fill the viewport with skeleton rows.
@@ -1039,12 +1049,10 @@ export class HaDataTable extends LitElement {
 
         if (groupColumn) {
           const isGroupSortColumn = sortColumn === groupColumn;
-          const grouped = groupBy(items, (item) => item[groupColumn]);
-          if (grouped.undefined) {
-            // make sure ungrouped items are at the bottom
-            grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
-            delete grouped.undefined;
-          }
+
+          const grouped = groupBy(items, (item) =>
+            dataTableGroupKey(item[groupColumn])
+          );
           const sortedEntries: [string, DataTableRowData[]][] = Object.keys(
             grouped
           )
@@ -1143,7 +1151,10 @@ export class HaDataTable extends LitElement {
         ?inert=${sticky}
       >
       </ha-icon-button>
-      <span aria-hidden=${ifDefined(sticky ? "true" : undefined)}>
+      <span
+        class="group-name"
+        aria-hidden=${ifDefined(sticky ? "true" : undefined)}
+      >
         ${
           groupName === UNDEFINED_GROUP_KEY
             ? localize?.("ui.components.data-table.ungrouped") || "Ungrouped"
@@ -1534,18 +1545,15 @@ export class HaDataTable extends LitElement {
   }
 
   public collapseAllGroups() {
-    if (
-      !this.groupColumn ||
-      !this.data.some((item) => item[this.groupColumn!])
-    ) {
+    const groupColumn = this.groupColumn;
+
+    if (!groupColumn || !this.data.some((item) => item[groupColumn])) {
       return;
     }
-    const grouped = groupBy(this.data, (item) => item[this.groupColumn!]);
-    if (grouped.undefined) {
-      // undefined is a reserved group name
-      grouped[UNDEFINED_GROUP_KEY] = grouped.undefined;
-      delete grouped.undefined;
-    }
+
+    const grouped = groupBy(this.data, (item) =>
+      dataTableGroupKey(item[groupColumn])
+    );
     this._collapsedGroups = Object.keys(grouped);
     this._lastSelectedRowId = null;
     fireEvent(this, "collapsed-changed", { value: this._collapsedGroups });
@@ -1904,6 +1912,16 @@ export class HaDataTable extends LitElement {
           display: flex;
           align-items: center;
           cursor: pointer;
+          /* Clipping would make the cell the actions' sticky scroll container,
+             and cut off the pinned header's actions */
+          overflow: visible;
+        }
+
+        .group-name {
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
 
         .group-header ha-icon-button {
