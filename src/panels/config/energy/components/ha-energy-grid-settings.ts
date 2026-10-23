@@ -261,6 +261,7 @@ export class EnergyGridSettings extends LitElement {
     const entryId = ev.currentTarget.closest(".row").entry.entry_id;
     if (
       !(await showConfirmationDialog(this, {
+        anchor: ev.currentTarget,
         title: this.hass.localize("ui.panel.config.energy.delete_integration"),
       }))
     ) {
@@ -323,6 +324,7 @@ export class EnergyGridSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
+        anchor: ev.currentTarget,
         title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {

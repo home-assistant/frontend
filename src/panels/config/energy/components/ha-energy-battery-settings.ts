@@ -205,6 +205,7 @@ export class EnergyBatterySettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
+        anchor: ev.currentTarget,
         title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {

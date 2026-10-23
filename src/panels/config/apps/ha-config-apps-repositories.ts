@@ -3,7 +3,10 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomCurrentTargetEvent,
+} from "../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/data-table/ha-data-table";
 import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
@@ -218,11 +221,14 @@ export class HaConfigAppsRepositories extends LitElement {
     });
   }
 
-  private _removeRepository = async (ev: Event) => {
-    const slug = (ev.currentTarget as any).slug;
+  private _removeRepository = async (
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { slug: string }>
+  ) => {
+    const slug = ev.currentTarget.slug;
     const repo = this._repositories?.find((r) => r.slug === slug);
 
     showConfirmationDialog(this, {
+      anchor: ev.currentTarget,
       title: this.hass.localize("ui.panel.config.apps.repositories.remove"),
       text: this.hass.localize(
         "ui.panel.config.apps.repositories.confirm_remove",

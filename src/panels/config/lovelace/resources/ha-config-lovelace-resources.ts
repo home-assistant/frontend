@@ -284,6 +284,7 @@ export class HaConfigLovelaceResources extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
+        anchor: event.currentTarget,
         title: this.hass!.localize(
           "ui.panel.config.lovelace.resources.confirm_delete_title"
         ),

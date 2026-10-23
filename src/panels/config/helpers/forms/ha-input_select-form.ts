@@ -3,7 +3,10 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import {
+  fireEvent,
+  type HASSDomCurrentTargetEvent,
+} from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-picker";
@@ -185,10 +188,13 @@ class HaInputSelectForm extends LitElement {
     input.value = "";
   }
 
-  private async _removeOption(ev: Event) {
-    const index = (ev.target as any).index;
+  private async _removeOption(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { index: number }>
+  ) {
+    const index = ev.currentTarget.index;
     if (
       !(await showConfirmationDialog(this, {
+        anchor: ev.currentTarget,
         title: this.hass.localize(
           "ui.dialogs.helper_settings.input_select.confirm_delete.delete"
         ),

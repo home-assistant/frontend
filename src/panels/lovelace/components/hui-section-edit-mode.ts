@@ -13,7 +13,7 @@ import {
 import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
@@ -49,6 +49,8 @@ export class HuiSectionEditMode extends LitElement {
 
   @property({ type: Boolean, attribute: "is-strategy", reflect: true })
   public isStrategy = false;
+
+  @query(".menu-trigger") private _menuTrigger?: HTMLElement;
 
   // Session storage keeps a copied or cut section while switching views and
   // dashboards.
@@ -95,6 +97,7 @@ export class HuiSectionEditMode extends LitElement {
           >
             <ha-icon-button
               slot="trigger"
+              class="menu-trigger"
               .label=${this.hass.localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
@@ -292,6 +295,8 @@ export class HuiSectionEditMode extends LitElement {
 
     if (hasContent) {
       const confirm = await showConfirmationDialog(this, {
+        // The menu has closed, so open next to its button
+        anchor: this._menuTrigger,
         title: this.hass.localize(
           "ui.panel.lovelace.editor.delete_section.title"
         ),
