@@ -51,7 +51,7 @@ Menu items anchor to the menu's button, since the menu has closed by the time th
 7. **Destructive confirmations.** A popover is lighter than a dialog. Is that too easy to confirm for deletes?
 8. **Rollout.** There are about 170 confirmation calls. Opt in per call site (current), or anchor automatically when the click event is available?
 9. **Popovers inside dialogs.** For example, removing a dropdown option from the helper settings dialog. Should popovers open there at all, and if they do, should they be kept inside the dialog's bounds?
-10. **Forms.** The object selector's edit form doesn't work well as a popover stacked over the card editor dialog. It should probably be a view of its own instead of a stacked popover or dialog.
+10. **Forms.** A popover suits a quick edit with one or two fields. The object selector's edit form has more than that and doesn't work well as a popover stacked over the card editor dialog. A longer form should probably be a view of its own instead of a stacked popover or dialog.
 
 ## Known gaps
 
