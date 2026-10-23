@@ -22,6 +22,12 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
   /** Tighter spacing in the popover, for short content such as confirmations */
   @property({ type: Boolean, reflect: true }) public compact = false;
 
+  /**
+   * Names the popover when it has no header title to label it, such as when
+   * its title lives in another shadow root
+   */
+  @property({ attribute: false }) public accessibleLabel?: string;
+
   private _allowPopoverHide = false;
 
   private _openPopoverAnimationFrame?: number;
@@ -86,6 +92,7 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
         role="dialog"
         aria-modal="true"
         aria-labelledby=${ifDefined(this._defaultAriaLabelledBy)}
+        aria-label=${ifDefined(this.accessibleLabel)}
         aria-describedby=${ifDefined(this.ariaDescribedBy)}
         @pointerdown=${this._handlePopoverPointerDown}
         @wa-show=${this._handlePopoverShow}
@@ -360,6 +367,12 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
 
         /* 18px beside and below the buttons looks even with the 20px around
            the text */
+        /* Without a header the content starts the popover, so it takes the
+           header's place at the top */
+        :host([compact][without-header]) wa-popover {
+          --dialog-content-padding: var(--ha-space-5) var(--ha-space-5) 0;
+        }
+
         :host([compact]) ::slotted([slot="footer"]) {
           padding: var(--ha-space-4) 18px 18px var(--ha-space-5);
         }

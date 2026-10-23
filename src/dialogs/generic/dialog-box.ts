@@ -92,21 +92,35 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
         this.hass.localize("ui.dialogs.generic.default_confirmation_title"));
 
     if (this._anchor) {
+      // With only a title, it reads as the message rather than a heading
+      const titleOnly =
+        !!dialogTitle &&
+        !this._params.text &&
+        !this._params.subtitle &&
+        !this._params.prompt;
+
       // A popover next to what opened it, or a bottom sheet on small screens.
       // The title is the popover's own, so it can name the dialog.
       return html`
         <ha-adaptive-popover
           .dialogAnchor=${this._anchor}
           compact
+          ?without-header=${titleOnly}
           .open=${this._open}
           .preventScrimClose=${!!this._params.confirmation || this.isDirtyState}
-          .headerTitle=${dialogTitle || undefined}
+          .headerTitle=${titleOnly ? undefined : dialogTitle || undefined}
           .headerSubtitle=${this._params.subtitle}
+          .accessibleLabel=${titleOnly ? dialogTitle : undefined}
           .hideCloseButton=${confirmPrompt && !this._params.showCloseButton}
-          aria-describedby="dialog-box-description"
           @closed=${this._dialogClosed}
         >
-          ${this._renderDescription(this._params)}
+          ${
+            titleOnly
+              ? html`<div id="dialog-box-description">
+                  <p>${dialogTitle}</p>
+                </div>`
+              : this._renderDescription(this._params)
+          }
           ${this._renderFooter(this._params, confirmPrompt)}
         </ha-adaptive-popover>
       `;
