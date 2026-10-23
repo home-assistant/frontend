@@ -157,6 +157,25 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
   private _usedDomains?: Set<string>;
 
   @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HomeAssistant["states"], SystemDomains | undefined>({
+    transformer: function (this: DialogAddAutomationElement, states) {
+      const systemDomains = this._calculateSystemDomains(states);
+      // keep the previous result, so a state change doesn't rerender the dialog
+      return deepEqual(systemDomains, this._systemDomains)
+        ? this._systemDomains
+        : systemDomains;
+    },
+    watch: [
+      "_manifests",
+      "_triggerDescriptions",
+      "_conditionDescriptions",
+      "_registries",
+    ],
+  })
+  private _systemDomains?: SystemDomains;
+
+  @state()
   @consume({ context: servicesContext, subscribe: true })
   private _services!: ContextType<typeof servicesContext>;
 
@@ -241,8 +260,6 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
   private _historyPending = false;
 
   private _closedWhileHistoryPending = false;
-
-  private _systemDomains?: SystemDomains;
 
   private _unsubNarrow?: () => void;
 
@@ -457,11 +474,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       this._conditionDescriptions,
       this._manifests
     );
-    const systemDomains = this._getSystemDomains(
-      sources,
-      this._states,
-      this._registries
-    );
+    const systemDomains = this._systemDomains;
 
     const narrowDetails =
       this._narrow && !!(this._selectedGroup || this._selectedTarget);
@@ -773,41 +786,32 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     })
   );
 
-  // An equal result keeps the previous object, so state updates don't
-  // rebuild the groups
-  private _getSystemDomains = memoizeOne(
-    (
-      sources: ElementSources,
-      states: HomeAssistant["states"],
-      registries: ContextType<typeof registriesContext>
-    ): SystemDomains | undefined => {
-      if (!sources.manifests || sources.type === "action") {
-        return undefined;
-      }
-      const systemDomains =
-        sources.type === "trigger"
-          ? calculateActiveSystemDomains(
-              sources.triggerDescriptions,
-              sources.manifests,
-              getTriggerDomain,
-              states,
-              registries.entities,
-              registries.devices
-            )
-          : calculateActiveSystemDomains(
-              sources.conditionDescriptions,
-              sources.manifests,
-              getConditionDomain,
-              states,
-              registries.entities,
-              registries.devices
-            );
-      if (!deepEqual(systemDomains, this._systemDomains)) {
-        this._systemDomains = systemDomains;
-      }
-      return this._systemDomains;
+  private _calculateSystemDomains(
+    states: HomeAssistant["states"]
+  ): SystemDomains | undefined {
+    const type = this.params?.type;
+    if (!type || type === "action" || !this._manifests || !this._registries) {
+      return undefined;
     }
-  );
+    const { entities, devices } = this._registries;
+    return type === "trigger"
+      ? calculateActiveSystemDomains(
+          this._triggerDescriptions,
+          this._manifests,
+          getTriggerDomain,
+          states,
+          entities,
+          devices
+        )
+      : calculateActiveSystemDomains(
+          this._conditionDescriptions,
+          this._manifests,
+          getConditionDomain,
+          states,
+          entities,
+          devices
+        );
+  }
 
   private _getAllItems = memoizeOne(getAllItems);
 
