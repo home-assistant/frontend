@@ -554,6 +554,7 @@ const getStatisticsRange = (
       ];
 
 export const INFERRED_GRID_STAT_ID = "energy:inferred_grid";
+export const INFERRED_GRID_EXPORT_STAT_ID = "energy:inferred_grid_export";
 export const INFERRED_GRID_POWER_ID = "energy:inferred_grid_power";
 
 const sumByStart = (
@@ -573,10 +574,39 @@ const sumByStart = (
   return sums;
 };
 
+const meanOver = (
+  series: StatisticValue[] | undefined,
+  start: number,
+  end: number
+): number => {
+  let weighted = 0;
+  let covered = 0;
+  for (const stat of series ?? []) {
+    if (stat.start >= end) break;
+    if (stat.mean === null || stat.mean === undefined) continue;
+    const overlap = Math.min(end, stat.end) - Math.max(start, stat.start);
+    if (overlap <= 0) continue;
+    weighted += stat.mean * overlap;
+    covered += overlap;
+  }
+  return covered ? weighted / covered : 0;
+};
+
+const sumMeanOver = (
+  stats: Statistics,
+  ids: (string | null | undefined)[],
+  start: number,
+  end: number
+): number =>
+  ids.reduce(
+    (total, id) => (id ? total + meanOver(stats[id], start, end) : total),
+    0
+  );
+
 const inferGridStatistics = (
   prefs: EnergyPreferences,
   stats: Statistics
-): StatisticValue[] | undefined => {
+): { from: StatisticValue[]; to: StatisticValue[] } | undefined => {
   const types = energySourcesByType(prefs);
   const homeId = types.home?.[0]?.stat_energy_from;
   if (!homeId || types.grid?.some((source) => source.stat_energy_from)) {
@@ -604,22 +634,38 @@ const inferGridStatistics = (
     "change"
   );
 
-  let sum = 0;
-  const result: StatisticValue[] = [];
+  let sumFrom = 0;
+  let sumTo = 0;
+  const from: StatisticValue[] = [];
+  const to: StatisticValue[] = [];
   for (const stat of homeStats) {
     if (stat.change === null || stat.change === undefined) continue;
-    const change = Math.max(
-      0,
+    const balance =
       stat.change +
-        (toGrid.get(stat.start) ?? 0) +
-        (toBattery.get(stat.start) ?? 0) -
-        (solar.get(stat.start) ?? 0) -
-        (fromBattery.get(stat.start) ?? 0)
-    );
-    sum += change;
-    result.push({ start: stat.start, end: stat.end, change, sum, state: sum });
+      (toGrid.get(stat.start) ?? 0) +
+      (toBattery.get(stat.start) ?? 0) -
+      (solar.get(stat.start) ?? 0) -
+      (fromBattery.get(stat.start) ?? 0);
+    const imported = Math.max(0, balance);
+    const exported = Math.max(0, -balance);
+    sumFrom += imported;
+    sumTo += exported;
+    from.push({
+      start: stat.start,
+      end: stat.end,
+      change: imported,
+      sum: sumFrom,
+      state: sumFrom,
+    });
+    to.push({
+      start: stat.start,
+      end: stat.end,
+      change: exported,
+      sum: sumTo,
+      state: sumTo,
+    });
   }
-  return result;
+  return { from, to };
 };
 
 export const inferGridPowerStatistics = (
@@ -636,16 +682,8 @@ export const inferGridPowerStatistics = (
   ) {
     return undefined;
   }
-  const solar = sumByStart(
-    stats,
-    (types.solar ?? []).map((s) => s.stat_rate),
-    "mean"
-  );
-  const battery = sumByStart(
-    stats,
-    (types.battery ?? []).map((s) => s.stat_rate),
-    "mean"
-  );
+  const solarIds = (types.solar ?? []).map((s) => s.stat_rate);
+  const batteryIds = (types.battery ?? []).map((s) => s.stat_rate);
   const result: StatisticValue[] = [];
   for (const stat of stats[homeRate] ?? []) {
     if (stat.mean === null || stat.mean === undefined) continue;
@@ -655,8 +693,8 @@ export const inferGridPowerStatistics = (
       // grid > 0 = import, solar > 0 = production, battery > 0 = discharge
       mean:
         stat.mean -
-        (solar.get(stat.start) ?? 0) -
-        (battery.get(stat.start) ?? 0),
+        sumMeanOver(stats, solarIds, stat.start, stat.end) -
+        sumMeanOver(stats, batteryIds, stat.start, stat.end),
     });
   }
   return result;
@@ -700,19 +738,25 @@ const addInferredGrid = (
   statsCompare: Statistics,
   statsMetadata: Record<string, StatisticsMetaData>
 ) => {
+  const types = energySourcesByType(prefs);
+  const homeRate = types.home?.find((s) => s.stat_rate)?.stat_rate;
+  const inferPower = !!homeRate && !types.grid?.some((s) => s.stat_rate);
   const inferred = inferGridStatistics(prefs, stats);
-  if (!inferred) {
+  if (!inferred && !inferPower) {
     return { prefs, stats, statsCompare, statsMetadata };
   }
-  const inferredCompare = statsCompare
-    ? inferGridStatistics(prefs, statsCompare)
-    : undefined;
-  const hasHomeRate = energySourcesByType(prefs).home?.some((s) => s.stat_rate);
+  const inferredCompare =
+    inferred && statsCompare
+      ? inferGridStatistics(prefs, statsCompare)
+      : undefined;
+  const hasExport = [inferred, inferredCompare].some((item) =>
+    item?.to.some((stat) => (stat.change ?? 0) > 0)
+  );
   const source: GridSourceTypeEnergyPreference = {
     type: "grid",
-    stat_energy_from: INFERRED_GRID_STAT_ID,
-    stat_energy_to: null,
-    stat_rate: hasHomeRate ? INFERRED_GRID_POWER_ID : undefined,
+    stat_energy_from: inferred ? INFERRED_GRID_STAT_ID : null,
+    stat_energy_to: hasExport ? INFERRED_GRID_EXPORT_STAT_ID : null,
+    stat_rate: inferPower ? INFERRED_GRID_POWER_ID : undefined,
     stat_cost: null,
     entity_energy_price: null,
     number_energy_price: null,
@@ -721,24 +765,40 @@ const addInferredGrid = (
     number_energy_price_export: null,
     cost_adjustment_day: 0,
   };
+  const newStats = { ...stats };
+  const newStatsCompare = statsCompare ? { ...statsCompare } : statsCompare;
+  const newMetadata = { ...statsMetadata };
+  const register = (
+    id: string,
+    series: StatisticValue[],
+    seriesCompare?: StatisticValue[]
+  ) => {
+    newStats[id] = series;
+    if (newStatsCompare && seriesCompare) {
+      newStatsCompare[id] = seriesCompare;
+    }
+    newMetadata[id] = {
+      statistic_id: id,
+      source: "energy",
+      name: null,
+      has_sum: true,
+      mean_type: StatisticMeanType.NONE,
+      statistics_unit_of_measurement: "kWh",
+      unit_class: "energy",
+    };
+  };
+  if (inferred) {
+    register(INFERRED_GRID_STAT_ID, inferred.from, inferredCompare?.from);
+    if (hasExport) {
+      register(INFERRED_GRID_EXPORT_STAT_ID, inferred.to, inferredCompare?.to);
+    }
+  }
+
   return {
     prefs: { ...prefs, energy_sources: [...prefs.energy_sources, source] },
-    stats: { ...stats, [INFERRED_GRID_STAT_ID]: inferred },
-    statsCompare: inferredCompare
-      ? { ...statsCompare, [INFERRED_GRID_STAT_ID]: inferredCompare }
-      : statsCompare,
-    statsMetadata: {
-      ...statsMetadata,
-      [INFERRED_GRID_STAT_ID]: {
-        statistic_id: INFERRED_GRID_STAT_ID,
-        source: "energy",
-        name: null,
-        has_sum: true,
-        mean_type: StatisticMeanType.NONE,
-        statistics_unit_of_measurement: "kWh",
-        unit_class: "energy",
-      },
-    },
+    stats: newStats,
+    statsCompare: newStatsCompare,
+    statsMetadata: newMetadata,
   };
 };
 
