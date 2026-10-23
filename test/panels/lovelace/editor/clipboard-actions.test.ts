@@ -5,7 +5,7 @@ import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types"
 import {
   performCopy,
   performCut,
-  performPasteCard,
+  performPaste,
 } from "../../../../src/panels/lovelace/editor/clipboard-actions";
 import type { LovelacePath } from "../../../../src/panels/lovelace/editor/lovelace-path";
 import { getAtPath } from "../../../../src/panels/lovelace/editor/lovelace-path";
@@ -123,16 +123,15 @@ describe("performCut", () => {
   });
 });
 
-describe("performPasteCard", () => {
+describe("performPaste", () => {
   const CLIPBOARD: LovelaceCardConfig = {
     type: "clipboard",
     entities: ["light.a"],
-    view_layout: { position: "sidebar" },
   };
 
   const pasteInto = async (
     config: LovelaceConfig,
-    params: Omit<Parameters<typeof performPasteCard>[2], "config">
+    params: Omit<Parameters<typeof performPaste<"card">>[2], "type" | "config">
   ) => {
     const saveConfig = vi.fn<Lovelace["saveConfig"]>(() => Promise.resolve());
     const lovelace = {
@@ -141,7 +140,8 @@ describe("performPasteCard", () => {
       saveConfig,
       showToast: vi.fn(),
     } as Partial<Lovelace> as Lovelace;
-    await performPasteCard(localize, lovelace, {
+    await performPaste(localize, lovelace, {
+      type: "card",
       config: CLIPBOARD,
       ...params,
     });
@@ -201,32 +201,6 @@ describe("performPasteCard", () => {
     expect(getAtPath(restored, ["views", 0, "cards"])).toEqual([CARD_A]);
   });
 
-  it("takes the target card's view layout in sidebar views", async () => {
-    const targetLayout = { position: "main", extra: { nested: true } };
-    const { cardsAt } = await pasteInto(
-      {
-        views: [
-          {
-            type: "sidebar",
-            cards: [{ ...CARD_A, view_layout: targetLayout }],
-          },
-        ],
-      },
-      { path: ["views", 0, "cards", 0], inheritViewLayout: true }
-    );
-    const pasted = cardsAt(["views", 0, "cards"])[1];
-    expect(pasted.view_layout).toEqual(targetLayout);
-    expect(pasted.view_layout.extra).not.toBe(targetLayout.extra);
-
-    const { cardsAt: plainCardsAt } = await pasteInto(
-      { views: [{ type: "sidebar", cards: [CARD_A] }] },
-      { path: ["views", 0, "cards", 0], inheritViewLayout: true }
-    );
-    expect(plainCardsAt(["views", 0, "cards"])[1]).not.toHaveProperty(
-      "view_layout"
-    );
-  });
-
   it("shows an error toast when saving fails", async () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     const config: LovelaceConfig = { views: [{ cards: [CARD_A] }] };
@@ -237,7 +211,8 @@ describe("performPasteCard", () => {
       showToast: vi.fn(),
     } as Partial<Lovelace> as Lovelace;
 
-    await performPasteCard(localize, lovelace, {
+    await performPaste(localize, lovelace, {
+      type: "card",
       path: ["views", 0, "cards", 0],
       config: CLIPBOARD,
     });

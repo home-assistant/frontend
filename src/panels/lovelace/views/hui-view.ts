@@ -32,12 +32,12 @@ import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { getCardSectionConfig } from "../editor/config-util";
+import { adoptViewLayout, getCardSectionConfig } from "../editor/config-util";
 import type { ClipboardActionParams } from "../editor/clipboard-actions";
 import {
   performCopy,
   performCut,
-  performPasteCard,
+  performPaste,
 } from "../editor/clipboard-actions";
 import {
   type DeleteBadgeParams,
@@ -252,22 +252,24 @@ export class HUIView extends ReactiveElement {
       (ev: HASSDomEvent<HASSDomEvents["ll-paste-card"]>) => {
         const config = this._clipboard;
         const path = normalizeCardPath(ev.detail.path);
-        if (
-          !config ||
-          getPathTarget(path) !== "item" ||
-          getItemKind(path) !== "card" ||
-          !this._getCardConfig(path)
-        ) {
+        const target =
+          getPathTarget(path) === "item" && getItemKind(path) === "card"
+            ? this._getCardConfig(path)
+            : undefined;
+        if (!config || !target) {
           return;
         }
         const viewType = getViewType(
           getAtPath<LovelaceViewConfig>(this.lovelace.config, getViewPath(path))
         );
-        performPasteCard(this.hass.localize, this.lovelace, {
+        performPaste(this.hass.localize, this.lovelace, {
+          type: "card",
           path,
-          config,
+          config:
+            viewType === SIDEBAR_VIEW_LAYOUT
+              ? adoptViewLayout(config, target)
+              : config,
           replace: viewType === PANEL_VIEW_LAYOUT,
-          inheritViewLayout: viewType === SIDEBAR_VIEW_LAYOUT,
         });
       }
     );

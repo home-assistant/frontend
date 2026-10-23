@@ -59,55 +59,42 @@ export function performCopy<K extends ClipboardItemType>(
   });
 }
 
-export interface PasteCardParams {
+export interface PasteParams<K extends ClipboardItemType> {
+  type: K;
   path: LovelacePath;
-  config: LovelaceCardConfig;
+  config: ClipboardItemConfigs[K];
   replace?: boolean;
-  inheritViewLayout?: boolean;
 }
 
-export async function performPasteCard(
+export async function performPaste<K extends ClipboardItemType>(
   localize: LocalizeFunc,
   lovelace: Lovelace,
-  { path, config, replace, inheritViewLayout }: PasteCardParams
+  { type, path, config, replace }: PasteParams<K>
 ): Promise<void> {
   lovelace.showToast({ id: LOVELACE_EDIT_TOAST_ID, message: "", duration: 0 });
-  let replaced: LovelaceCardConfig | undefined;
+  let replaced: ClipboardItemConfigs[K] | undefined;
   try {
     const index = path[path.length - 1];
     if (typeof index !== "number") {
-      throw new Error("Paste target is not a card");
+      throw new Error("Paste target is not an item");
     }
-    const card = deepClone(config);
-    replaced = getAtPath<LovelaceCardConfig>(lovelace.config, path);
-    if (inheritViewLayout) {
-      const target = getAtPath<LovelaceCardConfig>(lovelace.config, path);
-      if (target?.view_layout === undefined) {
-        delete card.view_layout;
-      } else {
-        card.view_layout = deepClone(target.view_layout);
-      }
-    }
-    await lovelace.saveConfig(
-      replace
-        ? setAtPath(lovelace.config, path, card)
-        : insertAtPath(
-            lovelace.config,
-            [...getParentPath(path), index + 1],
-            card
-          )
-    );
+    replaced = getAtPath<ClipboardItemConfigs[K]>(lovelace.config, path);
+    const pastedPath = replace ? path : [...getParentPath(path), index + 1];
+    const newConfig = replace
+      ? setAtPath(lovelace.config, path, deepClone(config))
+      : insertAtPath(lovelace.config, pastedPath, deepClone(config));
+    await lovelace.saveConfig(newConfig);
   } catch (_err: unknown) {
     lovelace.showToast({
       id: LOVELACE_EDIT_TOAST_ID,
-      message: localize("ui.panel.lovelace.editor.edit_card.paste_error"),
+      message: localize(`ui.panel.lovelace.editor.edit_${type}.paste_error`),
     });
     return;
   }
   if (replace) {
     lovelace.showToast({
       id: LOVELACE_EDIT_TOAST_ID,
-      message: localize("ui.panel.lovelace.editor.edit_card.replaced"),
+      message: localize(`ui.panel.lovelace.editor.edit_${type}.replaced`),
       duration: 8000,
       action: {
         action: () =>
