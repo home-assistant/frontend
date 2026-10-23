@@ -46,8 +46,11 @@ export class QueryParamsController<
 
   private _pendingTimeout?: number;
 
-  /** The last write that landed on a dialog's history entry. */
-  private _dialogWrite?: QueryParamValues<C>;
+  /**
+   * The last write that landed on a dialog's history entry, and the search of
+   * the page's entry from before it.
+   */
+  private _dialogWrite?: { values: QueryParamValues<C>; search: string };
 
   private _hostUpdated = false;
 
@@ -161,10 +164,15 @@ export class QueryParamsController<
       return;
     }
 
-    if (dialogWrite && ev?.type === "popstate") {
+    if (
+      dialogWrite &&
+      ev?.type === "popstate" &&
+      mainWindow.location.search === dialogWrite.search
+    ) {
       // Closing a dialog went back to the page's own entry, which still has
-      // the URL from before the write, like after deleting from a dialog
-      this._write(dialogWrite);
+      // the URL from before the write, like after deleting from a dialog.
+      // Going further back reads that entry's URL instead
+      this._write(dialogWrite.values);
 
       return;
     }
@@ -177,10 +185,13 @@ export class QueryParamsController<
       return;
     }
 
-    // A dialog's entry is popped when it closes, which would lose the write
-    this._dialogWrite = getHistoryState()?.dialog ? values : undefined;
-
     const current = mainWindow.location.search;
+
+    // A dialog's entry is popped when it closes, which would lose the write
+    this._dialogWrite = getHistoryState()?.dialog
+      ? { values, search: this._dialogWrite?.search ?? current }
+      : undefined;
+
     const queryString = updateQueryString(current, values, this._config);
     if (current !== (queryString ? `?${queryString}` : "")) {
       replaceCurrentUrl(constructUrlCurrentPath(queryString));
