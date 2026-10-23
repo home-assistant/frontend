@@ -3,6 +3,7 @@ import {
   mdiDotsVertical,
   mdiDownload,
   mdiImagePlus,
+  mdiRestart,
   mdiTuneVariant,
 } from "@mdi/js";
 import { differenceInHours } from "date-fns";
@@ -39,10 +40,12 @@ import {
   DEFAULT_CHART_WIDTH,
   MIN_TIME_BETWEEN_UPDATES,
 } from "../../components/chart/ha-chart-base";
+import "../../components/chart/ha-chart-zoom-slider";
 import "../../components/chart/state-history-charts";
 import type { StateHistoryCharts } from "../../components/chart/state-history-charts";
 import "../../components/date-picker/ha-date-range-nav";
 import "../../components/ha-button";
+import "../../components/ha-card";
 import "../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
@@ -110,6 +113,9 @@ class HaPanelHistory extends LitElement {
   private _storedTargetPickerValue?: HassServiceTarget;
 
   @state() private _isLoading = false;
+
+  // The zoom window shared by all charts, in percent of their x-axis
+  @state() private _zoomRange: [number, number] = [0, 100];
 
   @state() private _filters: SourceFilters = {};
 
@@ -191,6 +197,7 @@ class HaPanelHistory extends LitElement {
       !!this._mungedStateHistory &&
       (this._mungedStateHistory.line.length > 0 ||
         this._mungedStateHistory.timeline.length > 0);
+    const showZoomBar = !loading && hasTargets && hasResults;
     const sourcesLabel = sourceCount
       ? this.hass.localize("ui.panel.history.sources_count", {
           count: entityIds.length,
@@ -297,7 +304,11 @@ class HaPanelHistory extends LitElement {
                   @value-changed=${this._dateRangeChanged}
                 ></ha-date-range-nav>
               </div>
-              <div class="results ha-scrollbar">
+              <div
+                class="results ha-scrollbar ${classMap({
+                  "has-zoom-bar": showZoomBar,
+                })}"
+              >
                 ${
                   loading
                     ? html`<div class="progress-wrapper">
@@ -314,16 +325,61 @@ class HaPanelHistory extends LitElement {
                             .narrow=${this.narrow}
                             sync-charts
                             inside-labels
+                            @history-charts-zoom=${this._chartsZoomChanged}
                           >
                           </state-history-charts>
                         `
                 }
               </div>
+              ${
+                showZoomBar
+                  ? html`<ha-card class="zoom-bar">
+                      <ha-icon-button
+                        .disabled=${!this._isZoomed()}
+                        .label=${this.hass.localize(
+                          "ui.components.history_charts.zoom_reset"
+                        )}
+                        .path=${mdiRestart}
+                        @click=${this._resetZoom}
+                      ></ha-icon-button>
+                      <ha-chart-zoom-slider
+                        .start=${this._zoomRange[0]}
+                        .end=${this._zoomRange[1]}
+                        @zoom-slider-changed=${this._zoomSliderChanged}
+                        @zoom-slider-reset=${this._resetZoom}
+                      ></ha-chart-zoom-slider>
+                    </ha-card>`
+                  : nothing
+              }
             </div>
           </div>
         </div>
       </ha-top-app-bar-fixed>
     `;
+  }
+
+  private _isZoomed() {
+    const [start, end] = this._zoomRange;
+    return start !== 0 || end !== 100;
+  }
+
+  private _chartsZoomChanged(
+    ev: HASSDomEvent<HASSDomEvents["history-charts-zoom"]>
+  ) {
+    this._zoomRange = [ev.detail.start, ev.detail.end];
+  }
+
+  private _zoomSliderChanged(
+    ev: HASSDomEvent<HASSDomEvents["zoom-slider-changed"]>
+  ) {
+    const { start, end } = ev.detail;
+    this._zoomRange = [start, end];
+    this._stateHistoryCharts?.zoom(start, end);
+  }
+
+  private _resetZoom() {
+    this._zoomRange = [0, 100];
+    this._stateHistoryCharts?.zoom(0, 100);
   }
 
   private _renderEmptyState(hasTargets: boolean) {
@@ -546,6 +602,8 @@ class HaPanelHistory extends LitElement {
     }
 
     this._isLoading = true;
+    // The charts are rebuilt once loaded, so they start unzoomed.
+    this._zoomRange = [0, 100];
 
     if (this._subscribed) {
       this._unsubscribeHistory();
@@ -864,6 +922,7 @@ class HaPanelHistory extends LitElement {
           /* The target picker chips need more room than a plain filter list. */
           --ha-filter-pane-width: 340px;
         }
+
         ha-top-app-bar-fixed {
           height: 100vh;
           overflow-x: hidden;
@@ -901,10 +960,15 @@ class HaPanelHistory extends LitElement {
         }
 
         .content-column {
+          position: relative;
           display: flex;
           flex-direction: column;
           flex: 1;
           min-width: 0;
+          --zoom-bar-bottom: var(--ha-space-10);
+        }
+        :host([narrow]) .content-column {
+          --zoom-bar-bottom: var(--ha-space-2);
         }
 
         .toolbar {
@@ -915,7 +979,6 @@ class HaPanelHistory extends LitElement {
           height: 56px;
           flex-shrink: 0;
           padding: 0 16px;
-          background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
           overflow-x: auto;
@@ -935,6 +998,36 @@ class HaPanelHistory extends LitElement {
           min-width: 0;
           overflow: hidden auto;
           padding: var(--ha-space-4);
+        }
+
+        /* Room to scroll the last chart out from under the zoom bar */
+        .results.has-zoom-bar {
+          padding-bottom: calc(
+            56px + var(--zoom-bar-bottom) + var(--ha-space-4)
+          );
+        }
+
+        /* Floats like the energy dashboard's date bar */
+        .zoom-bar {
+          position: absolute;
+          inset-inline: var(--ha-space-4);
+          bottom: var(--zoom-bar-bottom);
+          z-index: 1;
+          max-width: 600px;
+          height: 56px;
+          margin-inline: auto;
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          padding: 0 var(--ha-space-4);
+          --ha-card-box-shadow: var(--ha-box-shadow-l);
+        }
+        :host([narrow]) .zoom-bar {
+          inset-inline: var(--ha-space-2);
+        }
+        .zoom-bar ha-chart-zoom-slider {
+          flex: 1;
+          min-width: 0;
         }
 
         /* Narrow screens: keep the vertical rhythm but give the charts the

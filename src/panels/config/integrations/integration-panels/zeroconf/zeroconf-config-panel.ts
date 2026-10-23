@@ -3,6 +3,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { DataTableSettingsController } from "../../../../../common/controllers/data-table-settings-controller";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type {
   RowClickedEvent,
@@ -32,12 +33,11 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
 
   @state() private _data: ZeroconfDiscoveryData[] = [];
 
-  @storage({
-    key: "zeroconf-discovery-table-grouping",
-    state: false,
-    subscribe: false,
-  })
-  private _activeGrouping?: string = "type";
+  private _tableSettings = new DataTableSettingsController(
+    this,
+    { grouping: "zeroconf-discovery-table-grouping" },
+    { defaultGrouping: "type" }
+  );
 
   @storage({
     key: "zeroconf-discovery-table-collapsed",
@@ -74,6 +74,7 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
           filterable: true,
           sortable: true,
           groupable: true,
+          urlName: "type",
         },
         ip_addresses: {
           title: localize("ui.panel.config.zeroconf.ip_addresses"),
@@ -108,16 +109,19 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
         .route=${this.route}
         back-path="/config/integrations/integration/zeroconf"
         .columns=${this._columns(this.hass.localize)}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        @grouping-changed=${this._handleGroupingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         .data=${this._dataWithIds(this._data)}
         .noDataText=${this.hass.localize(
           "ui.panel.config.zeroconf.no_devices_found"
         )}
         @row-click=${this._handleRowClicked}
         clickable
+        sync-url
       ></hass-tabs-subpage-data-table>
     `;
   }
@@ -127,10 +131,6 @@ export class ZeroconfConfigPanel extends SubscribeMixin(LitElement) {
     showZeroconfDiscoveryInfoDialog(this, {
       entry: entry!,
     });
-  }
-
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {

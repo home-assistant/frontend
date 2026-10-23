@@ -11,6 +11,7 @@ import {
   mdiWrap,
   mdiWrapDisabled,
 } from "@mdi/js";
+import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   type CSSResultGroup,
@@ -51,12 +52,15 @@ import type { ConnectionStatus } from "../../../data/connection-status";
 import {
   apiContext,
   configContext,
+  connectionContext,
   internationalizationContext,
 } from "../../../data/context";
 import {
+  downloadIntegrationLog,
   fetchErrorLog,
   getCoreLogFileDownloadUnavailableReason,
   getErrorLogDownloadUrl,
+  subscribeIntegrationLog,
 } from "../../../data/error_log";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -67,21 +71,37 @@ import {
   fetchHassioLogsLegacy,
   getHassioLogDownloadUrl,
 } from "../../../data/hassio/supervisor";
-import type { HomeAssistantApi, HomeAssistantConfig } from "../../../types";
+import { domainToName } from "../../../data/integration";
+import { LogStreamMerger } from "../../../data/log_backlog";
+import { formatListWithAnds } from "../../../common/string/format-list";
+import { haStyleScrollbar } from "../../../resources/styles";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+} from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showDownloadLogsDialog } from "./show-dialog-download-logs";
 
 const NUMBER_OF_LINES = 100;
+// Matches the live log dialog on the integration page
+const INTEGRATION_LOG_LINE_LIMIT = 5000;
+// Every subscription gets its lines of a log flush in a message of its own
+const INTEGRATION_LOG_MERGE_DELAY = 100;
+
+// Lines shown around each search match, as a failure's cause is often logged
+// on the lines next to its summary.
+const SEARCH_CONTEXT_LINES = 3;
 
 @customElement("error-log-card")
 class ErrorLogCard extends LitElement {
-  @property({ attribute: false }) public localizeFunc?: LocalizeFunc<any>;
-
   @property() public filter = "";
 
   @property() public header?: string;
 
   @property() public provider?: string;
+
+  @property({ attribute: false }) public integrations?: string[];
 
   @property({ attribute: "allow-switch", type: Boolean }) public allowSwitch =
     false;
@@ -99,6 +119,9 @@ class ErrorLogCard extends LitElement {
   @state()
   @consume({ context: configContext, subscribe: true })
   private _config!: HomeAssistantConfig;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: HomeAssistantConnection;
 
   @query(".error-log") private _logElement?: HTMLElement;
 
@@ -127,6 +150,9 @@ class ErrorLogCard extends LitElement {
 
   @state() private _logStreamAborter?: AbortController;
 
+  // Responses of an earlier load are ignored once the log source changes
+  private _loadId = 0;
+
   @state() private _streamSupported?: boolean;
 
   @state() private _loadingState: "loading" | "empty" | "loaded" = "loading";
@@ -145,18 +171,30 @@ class ErrorLogCard extends LitElement {
 
   @state() private _wrapLines = true;
 
+  @state() private _integrationLive = false;
+
+  private _integrationUnsubs?: Promise<UnsubscribeFunc>[];
+
+  private _integrationMergeTimeout?: number;
+
+  private _integrationLines: string[] = [];
+
   protected render(): TemplateResult {
-    const streaming =
-      this._streamSupported &&
-      this.provider &&
-      isComponentLoaded(this._config.config, "hassio") &&
-      this._loadingState !== "loading";
+    const integrationLog = this._isIntegrationLog();
 
-    const hasBoots = this._streamSupported && Array.isArray(this._boots);
+    const streaming = integrationLog
+      ? this._integrationLive
+      : this._streamSupported &&
+        this.provider &&
+        isComponentLoaded(this._config.config, "hassio") &&
+        this._loadingState !== "loading";
 
-    const localize = this.localizeFunc || this._localize;
+    const hasBoots =
+      !integrationLog && this._streamSupported && Array.isArray(this._boots);
+
+    const localize = this._localize;
     const logFileDownloadUnavailableReason =
-      !this.provider || this.provider === "core"
+      !integrationLog && (!this.provider || this.provider === "core")
         ? getCoreLogFileDownloadUnavailableReason(this._config)
         : undefined;
 
@@ -295,7 +333,7 @@ class ErrorLogCard extends LitElement {
               }
             </div>
           </div>
-          <div class="card-content error-log">
+          <div class="card-content error-log ha-scrollbar">
             <div id="scroll-top-marker"></div>
             ${
               this._loadingPrevState === "loading"
@@ -317,7 +355,21 @@ class ErrorLogCard extends LitElement {
                     </div>`
                   : this._loadingState === "empty"
                     ? html`<div>
-                        ${localize("ui.panel.config.logs.no_errors")}
+                        ${
+                          integrationLog
+                            ? localize(
+                                "ui.panel.config.logs.integration_log_waiting",
+                                {
+                                  integration: formatListWithAnds(
+                                    this._i18n.locale,
+                                    this.integrations!.map((domain) =>
+                                      domainToName(this._localize, domain)
+                                    )
+                                  ),
+                                }
+                              )
+                            : localize("ui.panel.config.logs.no_errors")
+                        }
                       </div>`
                     : nothing
             }
@@ -334,6 +386,8 @@ class ErrorLogCard extends LitElement {
             }
             <ha-ansi-to-html
               ?wrap-disabled=${!this._wrapLines}
+              .contextLines=${SEARCH_CONTEXT_LINES}
+              .expandLabel=${this._expandLabel}
             ></ha-ansi-to-html>
             <div id="scroll-bottom-marker"></div>
           </div>
@@ -388,7 +442,7 @@ class ErrorLogCard extends LitElement {
       this._i18n.loadFragmentTranslation("config");
     }
 
-    if (changedProps.has("provider")) {
+    if (changedProps.has("provider") || changedProps.has("integrations")) {
       this._boot = 0;
       this._loadLogs();
     }
@@ -410,8 +464,16 @@ class ErrorLogCard extends LitElement {
       this._newLogsIndicator = false;
     }
 
-    if (changedProps.has("filter")) {
+    if (
+      changedProps.has("filter") ||
+      (changedProps.has("_loadingState") &&
+        this._loadingState === "loaded" &&
+        this.filter)
+    ) {
       this._debounceSearch();
+    } else if (changedProps.has("_localize") && this.filter) {
+      // The hidden lines buttons are built outside Lit, so relabel them.
+      this._ansiToHtmlElement?.filterLines(this.filter);
     }
 
     if (
@@ -425,12 +487,27 @@ class ErrorLogCard extends LitElement {
     }
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    // The settings panel is kept while away, the log stopped when it was
+    // detached
+    if (this.hasUpdated) {
+      window.addEventListener(
+        "connection-status",
+        this._handleConnectionStatus
+      );
+      this._loadLogs();
+    }
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
 
     if (this._logStreamAborter) {
       this._logStreamAborter.abort();
     }
+
+    this._unsubscribeIntegrationLog();
 
     window.removeEventListener(
       "connection-status",
@@ -439,6 +516,14 @@ class ErrorLogCard extends LitElement {
   }
 
   private async _downloadLogs(): Promise<void> {
+    if (this._isIntegrationLog()) {
+      downloadIntegrationLog(
+        this.integrations!.join("_"),
+        this._integrationLines
+      );
+      return;
+    }
+
     if (
       (!this.provider || this.provider === "core") &&
       getCoreLogFileDownloadUnavailableReason(this._config)
@@ -470,6 +555,7 @@ class ErrorLogCard extends LitElement {
   }
 
   private async _loadLogs(retry = false): Promise<void> {
+    const loadId = ++this._loadId;
     this._error = undefined;
     this._loadingState = "loading";
     this._numberOfLines = retry ? (this._numberOfLines ?? 0) : 0;
@@ -478,6 +564,17 @@ class ErrorLogCard extends LitElement {
       this._loadingPrevState = undefined;
       this._firstCursor = undefined;
       this._ansiToHtmlElement?.clear();
+    }
+
+    this._unsubscribeIntegrationLog();
+
+    if (this._isIntegrationLog()) {
+      if (this._logStreamAborter) {
+        this._logStreamAborter.abort();
+        this._logStreamAborter = undefined;
+      }
+      this._subscribeIntegrationLog();
+      return;
     }
 
     if (
@@ -511,6 +608,9 @@ class ErrorLogCard extends LitElement {
             this._boot
           );
           const testLogs = await testResponse.text();
+          if (loadId !== this._loadId) {
+            return;
+          }
           if (!testLogs.trim()) {
             this._loadingState = "empty";
           }
@@ -536,6 +636,10 @@ class ErrorLogCard extends LitElement {
             NUMBER_OF_LINES,
             this._boot
           );
+        }
+
+        if (loadId !== this._loadId) {
+          return;
         }
 
         if (response.headers.has("X-First-Cursor")) {
@@ -606,6 +710,10 @@ class ErrorLogCard extends LitElement {
           logs = await fetchErrorLog(this._api);
         }
 
+        if (loadId !== this._loadId) {
+          return;
+        }
+
         if (logs) {
           this._ansiToHtmlElement?.parseTextToColoredPre(logs);
           this._loadingState = "loaded";
@@ -613,7 +721,7 @@ class ErrorLogCard extends LitElement {
         }
       }
     } catch (err: any) {
-      if (err.name === "AbortError") {
+      if (err.name === "AbortError" || loadId !== this._loadId) {
         return;
       }
 
@@ -623,13 +731,129 @@ class ErrorLogCard extends LitElement {
         return;
       }
 
-      this._error = (this.localizeFunc || this._localize)(
-        "ui.panel.config.logs.failed_get_logs",
-        {
-          provider: this.provider,
-          error: extractApiErrorMessage(err),
+      this._error = this._localize("ui.panel.config.logs.failed_get_logs", {
+        provider: this.provider,
+        error: extractApiErrorMessage(err),
+      });
+    }
+  }
+
+  private _isIntegrationLog(): boolean {
+    return (
+      !!this.integrations?.length &&
+      (!this.provider || this.provider === "core")
+    );
+  }
+
+  private _subscribeIntegrationLog() {
+    // The backlog is sent again on every subscription
+    this._integrationLines = [];
+    this._ansiToHtmlElement?.clear();
+
+    // Each subscription starts with the integration's backlog, which are
+    // merged in time order with the lines sent meanwhile once all arrived.
+    // After that every flush of the log sends a batch to each subscription,
+    // so the batches of a flush are merged too.
+    const integrations = this.integrations!;
+    const merger = new LogStreamMerger(
+      integrations.length,
+      INTEGRATION_LOG_LINE_LIMIT
+    );
+    const batches: string[][] = integrations.map(() => []);
+    const backlogReceived = integrations.map(() => false);
+
+    const addBatches = () => {
+      this._integrationMergeTimeout = undefined;
+      if (this._integrationUnsubs !== unsubs) {
+        return;
+      }
+      const lines = merger.merge(batches);
+      for (const batch of batches) {
+        batch.length = 0;
+      }
+      this._addIntegrationLines(lines);
+    };
+
+    const unsubs = integrations.map((integration, index) =>
+      subscribeIntegrationLog(
+        this._connection.connection,
+        integration,
+        (lines) => {
+          if (this._integrationUnsubs !== unsubs) {
+            return;
+          }
+          batches[index].push(...lines);
+          backlogReceived[index] = true;
+          if (
+            backlogReceived.every(Boolean) &&
+            this._integrationMergeTimeout === undefined
+          ) {
+            this._integrationMergeTimeout = window.setTimeout(
+              addBatches,
+              INTEGRATION_LOG_MERGE_DELAY
+            );
+          }
         }
+      )
+    );
+    this._integrationUnsubs = unsubs;
+    Promise.all(unsubs).then(
+      () => {
+        if (this._integrationUnsubs !== unsubs) {
+          return;
+        }
+        this._integrationLive = true;
+        if (this._loadingState === "loading") {
+          this._loadingState = "empty";
+        }
+      },
+      () => {
+        if (this._integrationUnsubs !== unsubs) {
+          return;
+        }
+        this._unsubscribeIntegrationLog();
+        this._loadingState = "loaded";
+        this._error = this._localize(
+          "ui.panel.config.logs.integration_log_unsupported"
+        );
+      }
+    );
+  }
+
+  private _unsubscribeIntegrationLog() {
+    this._integrationUnsubs?.forEach((unsub) =>
+      unsub.then((unsubscribe) => unsubscribe()).catch(() => undefined)
+    );
+    this._integrationUnsubs = undefined;
+    clearTimeout(this._integrationMergeTimeout);
+    this._integrationMergeTimeout = undefined;
+    this._integrationLive = false;
+  }
+
+  private _addIntegrationLines(lines: string[]) {
+    const newLines = lines.flatMap((line) => line.split("\n"));
+    if (!newLines.length) {
+      return;
+    }
+    const scrolledToBottom = this._scrolledToBottomController.value;
+    this._integrationLines.push(...newLines);
+    this._integrationLines.splice(
+      0,
+      this._integrationLines.length - INTEGRATION_LOG_LINE_LIMIT
+    );
+    this._ansiToHtmlElement?.parseLinesToColoredPre(newLines);
+    this._ansiToHtmlElement?.trimLines(INTEGRATION_LOG_LINE_LIMIT);
+    if (this.filter) {
+      this._noSearchResults = !this._ansiToHtmlElement?.filterLines(
+        this.filter
       );
+    }
+    this._loadingState = "loaded";
+
+    if (scrolledToBottom) {
+      this._scrollToBottom();
+    } else {
+      this._newLogsIndicator = true;
     }
   }
 
@@ -640,6 +864,9 @@ class ErrorLogCard extends LitElement {
       this._scrollToBottom();
     }
   }, 150);
+
+  private _expandLabel = (count: number) =>
+    this._localize("ui.panel.config.logs.show_hidden_lines", { count });
 
   private _debounceScrollToBottom = debounce(() => {
     this._logElement!.scrollTop = this._logElement!.scrollHeight;
@@ -661,6 +888,12 @@ class ErrorLogCard extends LitElement {
       this._logStreamAborter.abort();
       this._loadingState = "loading";
     }
+    if (ev.detail === "disconnected" && this._integrationUnsubs) {
+      // The subscriptions ended with the connection
+      this._integrationUnsubs = undefined;
+      this._integrationLive = false;
+      this._loadingState = "loading";
+    }
     if (ev.detail === "connected") {
       this._loadLogs(true);
     }
@@ -680,12 +913,16 @@ class ErrorLogCard extends LitElement {
     const scrollPositionFromBottom =
       this._logElement.scrollHeight - this._logElement.scrollTop;
     this._loadingPrevState = "loading";
+    const loadId = this._loadId;
     const response = await fetchHassioLogs(
       this._api,
       this.provider,
       `entries=${this._firstCursor}:-100:100`,
       this._boot
     );
+    if (loadId !== this._loadId) {
+      return;
+    }
 
     if (response.headers.has("X-First-Cursor")) {
       if (this._firstCursor === response.headers.get("X-First-Cursor")!) {
@@ -696,6 +933,9 @@ class ErrorLogCard extends LitElement {
     }
 
     const body = await response.text();
+    if (loadId !== this._loadId) {
+      return;
+    }
 
     if (body) {
       const lines = body
@@ -793,12 +1033,14 @@ class ErrorLogCard extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
+    ${haStyleScrollbar}
+
     :host {
       direction: var(--direction);
     }
     .error-log-intro {
       text-align: center;
-      margin: 16px;
+      margin: var(--error-log-card-margin, 16px);
     }
 
     ha-card {

@@ -15,6 +15,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -27,7 +28,6 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
-  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-dropdown";
@@ -115,21 +115,10 @@ export class HaConfigLabels extends LitElement {
 
   @state() private _loading = true;
 
-  @state()
-  @storage({
-    storage: "sessionStorage",
-    key: "labels-table-search",
-    state: true,
-    subscribe: false,
-  })
-  private _filter = "";
-
-  @storage({
-    key: "labels-table-sort",
-    state: false,
-    subscribe: false,
-  })
-  private _activeSorting?: SortingChangedEvent;
+  private _tableSettings = new DataTableSettingsController(this, {
+    search: "labels-table-search",
+    sorting: "labels-table-sort",
+  });
 
   @storage({
     key: "labels-table-column-order",
@@ -273,13 +262,14 @@ export class HaConfigLabels extends LitElement {
         .loading=${this._loading}
         .noDataText=${this.hass.localize("ui.panel.config.labels.no_labels")}
         has-fab
-        .initialSorting=${this._activeSorting}
+        .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
-        @sorting-changed=${this._handleSortingChanged}
-        .filter=${this._filter}
-        @search-changed=${this._handleSearchChange}
+        @sorting-changed=${this._tableSettings.sortingChanged}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
+        sync-url
         @row-click=${this._editLabel}
         clickable
         id="label_id"
@@ -478,7 +468,7 @@ export class HaConfigLabels extends LitElement {
         this._navigateConfig("/config/entities");
         break;
       case "navigate-devices":
-        this._navigateConfig("/config/devices/dashboard");
+        this._navigateConfig("/config/devices/dashboard", "&status=disabled");
         break;
       case "navigate-automations":
         this._navigateConfig("/config/automation/dashboard");
@@ -495,17 +485,11 @@ export class HaConfigLabels extends LitElement {
     }
   };
 
-  private _navigateConfig = (path: string) => {
-    navigate(`${path}?historyBack=1&label=${this._overflowLabel.label_id}`);
+  private _navigateConfig = (path: string, params = "") => {
+    navigate(
+      `${path}?historyBack=1&label=${this._overflowLabel.label_id}${params}`
+    );
   };
-
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
-  }
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
-  }
 
   private _handleColumnsChanged(ev: CustomEvent) {
     this._activeColumnOrder = ev.detail.columnOrder;

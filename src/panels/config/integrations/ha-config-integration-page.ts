@@ -128,7 +128,7 @@ export const renderConfigEntryError = (
   }
   return html`
     <br />
-    <a href=${`/config/logs?filter=${encodeURIComponent(entry.domain)}`}>
+    <a href=${`/config/logs?search=${encodeURIComponent(entry.domain)}`}>
       ${hass.localize(
         "ui.panel.config.integrations.config_entry.check_the_logs"
       )}
@@ -441,7 +441,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ${
                   this._logInfo
                     ? html`<a
-                          href=${`/config/logs?filter=${encodeURIComponent(this.domain)}`}
+                          href=${`/config/logs?search=${encodeURIComponent(this.domain)}`}
                         >
                           <ha-dropdown-item>
                             <ha-svg-icon
@@ -617,7 +617,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             href=${
                               devices.length === 1
                                 ? `/config/devices/device/${devices[0].id}`
-                                : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`
+                                : `/config/devices/dashboard?historyBack=1&domain=${this.domain}&status=disabled`
                             }
                           >
                             ${this.hass.localize(
@@ -635,7 +635,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                           href=${
                             services.length === 1
                               ? `/config/devices/device/${services[0].id}`
-                              : `/config/devices/dashboard?historyBack=1&domain=${this.domain}`
+                              : `/config/devices/dashboard?historyBack=1&domain=${this.domain}&status=disabled`
                           }
                         >
                           ${this.hass.localize(

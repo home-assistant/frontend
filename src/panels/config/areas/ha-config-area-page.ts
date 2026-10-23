@@ -89,12 +89,14 @@ type AreaQuickLinkKey =
 const NAVIGATION_ACTIONS: {
   value: string;
   path: string;
+  params?: string;
   icon: string;
   countKey: AreaQuickLinkKey;
 }[] = [
   {
     value: "navigate-devices",
     path: "/config/devices/dashboard",
+    params: "&status=disabled",
     icon: mdiDevices,
     countKey: "devices",
   },
@@ -656,7 +658,9 @@ class HaConfigAreaPage extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          ${NAVIGATION_ACTIONS.map(
+          ${NAVIGATION_ACTIONS.filter(
+            (action) => quickLinkCounts[action.countKey]
+          ).map(
             (action) => html`
               <ha-dropdown-item value=${action.value}>
                 <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
@@ -668,8 +672,13 @@ class HaConfigAreaPage extends LitElement {
               </ha-dropdown-item>
             `
           )}
-
-          <wa-divider></wa-divider>
+          ${
+            NAVIGATION_ACTIONS.some(
+              (action) => quickLinkCounts[action.countKey]
+            )
+              ? html`<wa-divider></wa-divider>`
+              : nothing
+          }
 
           <ha-dropdown-item value="edit" .data=${area}>
             <ha-svg-icon slot="icon" .path=${mdiPencil}> </ha-svg-icon>
@@ -845,7 +854,9 @@ class HaConfigAreaPage extends LitElement {
 
     const navAction = NAVIGATION_ACTIONS.find((a) => a.value === action);
     if (navAction) {
-      navigate(`${navAction.path}?historyBack=1&area=${this.areaId}`);
+      navigate(
+        `${navAction.path}?historyBack=1&area=${this.areaId}${navAction.params ?? ""}`
+      );
       return;
     }
 

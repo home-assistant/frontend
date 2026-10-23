@@ -2,8 +2,9 @@ import type {
   ReactiveController,
   ReactiveControllerHost,
 } from "@lit/reactive-element/reactive-controller";
+import type { HASSDomEvent } from "../dom/fire_event";
 import { mainWindow } from "../dom/get_main_window";
-import { replaceCurrentUrl } from "../navigate";
+import { replaceCurrentUrl, type NavigateOptions } from "../navigate";
 import { constructUrlCurrentPath } from "../url/construct-url";
 import { currentPath } from "../url/current-path";
 import {
@@ -29,8 +30,8 @@ export interface QueryParamsControllerOptions {
  * Keeps part of a page's state in the query string of the URL, so it can be
  * shared, bookmarked and reloaded. Writes replace the current history entry,
  * so Back leaves the page instead of undoing each change, and only touch the
- * config's params. The controller only acts while the URL is still the
- * page the host was connected on.
+ * config's params. The controller only acts while the host is connected and
+ * the URL is still the page it was first connected on.
  */
 export class QueryParamsController<
   C extends QueryParamConfig,
@@ -43,6 +44,8 @@ export class QueryParamsController<
 
   private _hostUpdated = false;
 
+  private _connected = false;
+
   constructor(
     private _host: ReactiveControllerHost,
     private _config: C,
@@ -52,7 +55,10 @@ export class QueryParamsController<
   }
 
   public hostConnected() {
-    this._path = currentPath();
+    // A cached page is reconnected on the way to another page, before its
+    // router has moved on, so it keeps the page it was first connected on
+    this._path ??= currentPath();
+    this._connected = true;
     mainWindow.addEventListener("location-changed", this._navigated);
     mainWindow.addEventListener("popstate", this._navigated);
 
@@ -68,6 +74,9 @@ export class QueryParamsController<
   }
 
   public hostDisconnected() {
+    // A page that was left can still finish a lookup, while a new page on the
+    // same path is showing
+    this._connected = false;
     mainWindow.removeEventListener("location-changed", this._navigated);
     mainWindow.removeEventListener("popstate", this._navigated);
     this._cancelPending();
@@ -117,11 +126,25 @@ export class QueryParamsController<
   }
 
   private _isActive(): boolean {
-    return this._options.enabled() && currentPath() === this._path;
+    return (
+      this._connected && this._options.enabled() && currentPath() === this._path
+    );
   }
 
-  private _navigated = () => {
+  private _navigated = (ev?: Event | HASSDomEvent<NavigateOptions>) => {
     this._cancelPending();
+    // A router sends a path without a page, like /config/automation, on to
+    // its default page after the host is connected, so it follows that
+    const path = currentPath();
+
+    if (
+      ev &&
+      "detail" in ev &&
+      ev.detail?.replace &&
+      path.startsWith(`${this._path}/`)
+    ) {
+      this._path = path;
+    }
     // Leaving the page gets here too, before the router swaps the page
     if (this._isActive()) {
       this._options.navigated();

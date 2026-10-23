@@ -11,6 +11,7 @@ import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoize from "memoize-one";
+import { DataTableSettingsController } from "../../../../common/controllers/data-table-settings-controller";
 import { storage } from "../../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
@@ -21,7 +22,6 @@ import type {
   DataTableColumnContainer,
   RowClickedEvent,
   SelectionChangedEvent,
-  SortingChangedEvent,
 } from "../../../../components/data-table/ha-data-table";
 import "../../../../components/chips/ha-assist-chip";
 import "../../../../components/ha-alert";
@@ -115,21 +115,15 @@ export class HaConfigLovelaceDashboards extends LitElement {
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
-  @state()
-  @storage({
-    storage: "sessionStorage",
-    key: "lovelace-dashboards-table-search",
-    state: true,
-    subscribe: false,
-  })
-  private _filter = "";
-
-  @storage({
-    key: "lovelace-dashboards-table-sort",
-    state: false,
-    subscribe: false,
-  })
-  private _activeSorting?: SortingChangedEvent;
+  private _tableSettings = new DataTableSettingsController(
+    this,
+    {
+      search: "lovelace-dashboards-table-search",
+      sorting: "lovelace-dashboards-table-sort",
+      grouping: "lovelace-dashboards-table-grouping",
+    },
+    { defaultGrouping: "localized_type" }
+  );
 
   @storage({
     key: "lovelace-dashboards-table-column-order",
@@ -144,13 +138,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
     subscribe: false,
   })
   private _activeHiddenColumns?: string[];
-
-  @storage({
-    key: "lovelace-dashboards-table-grouping",
-    state: false,
-    subscribe: false,
-  })
-  private _activeGrouping?: string = "localized_type";
 
   @storage({
     key: "lovelace-dashboards-table-collapsed",
@@ -237,6 +224,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         sortable: true,
         groupable: true,
         filterable: true,
+        urlName: "type",
       };
 
       columns.mode = {
@@ -429,17 +417,18 @@ export class HaConfigLovelaceDashboards extends LitElement {
             ? []
             : this._getItems(this._dashboards, defaultPanel, this.hass.panels)
         }
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
+        .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
-        @grouping-changed=${this._handleGroupingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @columns-changed=${this._handleColumnsChanged}
-        @sorting-changed=${this._handleSortingChanged}
-        .filter=${this._filter}
-        @search-changed=${this._handleSearchChange}
+        @sorting-changed=${this._tableSettings.sortingChanged}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
+        ?sync-url=${!this._loading && !this._loadFailed}
         @row-click=${this._handleRowClicked}
         selectable
         .selected=${this._selected.length}
@@ -804,21 +793,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
     });
   };
 
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
-  }
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
-  }
-
   private _handleColumnsChanged(ev: CustomEvent) {
     this._activeColumnOrder = ev.detail.columnOrder;
     this._activeHiddenColumns = ev.detail.hiddenColumns;
-  }
-
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {

@@ -2,7 +2,6 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
   HassServices,
-  HassServiceTarget,
 } from "home-assistant-js-websocket";
 import type { Describe } from "superstruct";
 import {
@@ -31,6 +30,7 @@ import type {
 } from "./automation";
 import { migrateAutomationTrigger } from "./automation";
 import type { BlueprintInput } from "./blueprint";
+import type { HassServiceTargetWithExclude } from "./target";
 
 export const MODES = ["single", "restart", "queued", "parallel"] as const;
 export const MODES_MAX = ["queued", "parallel"] as const;
@@ -43,12 +43,21 @@ export const baseActionStruct = object({
   enabled: optional(boolean()),
 });
 
-export const targetStruct = object({
+const targetIncludeFields = {
   entity_id: optional(union([string(), array(string())])),
   device_id: optional(union([string(), array(string())])),
   area_id: optional(union([string(), array(string())])),
   floor_id: optional(union([string(), array(string())])),
   label_id: optional(union([string(), array(string())])),
+};
+
+// A target without an exclude.
+const targetIncludeStruct = object(targetIncludeFields);
+
+export const targetStruct = object({
+  ...targetIncludeFields,
+  // Same shape as the target, without nesting another exclude.
+  exclude: optional(targetIncludeStruct),
 });
 
 export const serviceActionStruct: Describe<ServiceActionWithTemplate> = assign(
@@ -126,14 +135,14 @@ export interface ServiceAction extends BaseAction {
   action?: string;
   service_template?: string;
   entity_id?: string;
-  target?: HassServiceTarget;
+  target?: HassServiceTargetWithExclude;
   data?: Record<string, unknown>;
   response_variable?: string;
   metadata?: Record<string, unknown>;
 }
 
 type ServiceActionWithTemplate = ServiceAction & {
-  target?: HassServiceTarget | string;
+  target?: HassServiceTargetWithExclude | string;
 };
 
 export type { ServiceActionWithTemplate };

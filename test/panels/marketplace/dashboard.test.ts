@@ -297,6 +297,7 @@ it("browses the way the link says", async () => {
 
 it("browses the way the link says, also when the tab was open before", async () => {
   // The router keeps the page of a tab, and hangs it back in when it is opened
+  window.history.replaceState(null, "", "/marketplace/browse");
   const dashboard = await openDashboard();
   dashboard.remove();
   window.history.replaceState(null, "", "/marketplace/browse?type=theme");

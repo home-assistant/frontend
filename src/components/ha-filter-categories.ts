@@ -1,4 +1,3 @@
-import type { SelectedDetail } from "@material/mwc-list";
 import {
   mdiDelete,
   mdiDotsVertical,
@@ -12,6 +11,7 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
+import { repeat } from "lit/directives/repeat";
 import {
   FilterPanelController,
   filterPanelStyles,
@@ -35,8 +35,9 @@ import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
-import "./ha-list";
 import "./ha-list-item";
+import "./item/ha-list-item-option";
+import "./list/ha-list-selectable";
 
 @customElement("ha-filter-categories")
 export class HaFilterCategories extends SubscribeMixin(LitElement) {
@@ -94,47 +95,44 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
         this._panel.showContent
           ? html`
               <div class="content" ${ref(this._content)}>
-                <ha-list
-                  @selected=${this._categorySelected}
+                <ha-list-selectable
                   class="ha-scrollbar"
-                  activatable
+                  multi
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.category.caption"
+                  )}
+                  @ha-list-item-selected=${this._categoryAdded}
+                  @ha-list-item-deselected=${this._categoryRemoved}
                 >
-                  ${
-                    this._categories.length > 0
-                      ? html`<ha-list-item
-                          .selected=${!this.value?.length}
-                          .activated=${!this.value?.length}
-                          >${this.hass.localize(
-                            "ui.panel.config.category.filter.show_all"
-                          )}</ha-list-item
-                        >`
-                      : nothing
-                  }
-                  ${this._categories.map(
+                  ${repeat(
+                    this._categories,
+                    (category) => category.category_id,
                     (category) =>
-                      html`<ha-list-item
+                      html`<ha-list-item-option
+                        appearance="checkbox"
+                        selection-position="end"
                         .value=${category.category_id}
-                        .selected=${this.value?.includes(category.category_id)}
-                        .activated=${this.value?.includes(category.category_id)}
-                        graphic="icon"
-                        hasMeta
+                        .selected=${
+                          this.value?.includes(category.category_id) ?? false
+                        }
                       >
                         ${
                           category.icon
                             ? html`<ha-icon
-                                slot="graphic"
+                                slot="start"
                                 .icon=${category.icon}
                               ></ha-icon>`
                             : html`<ha-svg-icon
                                 .path=${mdiTag}
-                                slot="graphic"
+                                slot="start"
                               ></ha-svg-icon>`
                         }
-                        ${category.name}
+                        <span slot="headline">${category.name}</span>
                         <ha-dropdown
                           @click=${stopPropagation}
+                          @keydown=${this._handleMenuKeydown}
                           @wa-select=${this._handleAction}
-                          slot="meta"
+                          slot="end"
                           .categoryId=${category.category_id}
                         >
                           <ha-icon-button
@@ -161,9 +159,9 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
                             )}
                           </ha-dropdown-item>
                         </ha-dropdown>
-                      </ha-list-item>`
+                      </ha-list-item-option>`
                   )}
-                </ha-list>
+                </ha-list-selectable>
                 <ha-list-item graphic="icon" @click=${this._addCategory}>
                   <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
                   ${this.hass.localize("ui.panel.config.category.editor.add")}
@@ -213,10 +211,10 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     }
     try {
       await deleteCategoryRegistryEntry(this.hass, this.scope!, id);
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
+
+      if (this.value?.includes(id)) {
+        this._setValue(this.value.filter((categoryId) => categoryId !== id));
+      }
     } catch (err: any) {
       alert(`Failed to delete: ${err.message}`);
     }
@@ -237,25 +235,39 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
     this.expanded = ev.detail.expanded;
   }
 
-  private async _categorySelected(ev: CustomEvent<SelectedDetail<number>>) {
-    if (!ev.detail.index) {
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
-      this.value = [];
-      return;
+  // The list toggles the focused row on Enter and Space, which would pick the
+  // category instead of opening its menu.
+  private _handleMenuKeydown(ev: KeyboardEvent) {
+    if (ev.key === "Enter" || ev.key === " ") {
+      ev.stopPropagation();
     }
-    const index = ev.detail.index - 1;
+  }
 
-    const val = this._categories![index]?.category_id;
-    if (!val) {
+  private _categoryAdded(ev: CustomEvent<number>) {
+    const categoryId = this._categories[ev.detail]?.category_id;
+
+    if (!categoryId || this.value?.includes(categoryId)) {
       return;
     }
-    this.value = [val];
+
+    this._setValue([...(this.value || []), categoryId]);
+  }
+
+  private _categoryRemoved(ev: CustomEvent<number>) {
+    const categoryId = this._categories[ev.detail]?.category_id;
+
+    if (!categoryId) {
+      return;
+    }
+
+    this._setValue((this.value || []).filter((id) => id !== categoryId));
+  }
+
+  private _setValue(value: string[]) {
+    this.value = value;
 
     fireEvent(this, "data-table-filter-changed", {
-      value: this.value,
+      value: value.length ? value : undefined,
       items: undefined,
     });
   }
@@ -298,13 +310,22 @@ export class HaFilterCategories extends SubscribeMixin(LitElement) {
           padding: 0px 2px;
           color: var(--text-primary-color);
         }
-        ha-list {
+        /* The list scrolls through its own container, not through the host. */
+        ha-list-selectable {
+          display: flex;
           flex: 1;
           min-height: 0;
-          --mdc-list-item-meta-size: auto;
-          --mdc-list-side-padding-right: var(--ha-space-1);
-          --mdc-list-side-padding-left: var(--ha-space-4);
-          --ha-icon-button-size: 36px;
+        }
+        ha-list-selectable::part(base) {
+          flex: 1;
+          min-height: 0;
+        }
+        /* Keeps a row with its menu button as tall as the other filters. */
+        ha-list-item-option {
+          --ha-row-item-padding-block: var(--ha-space-2);
+        }
+        ha-list-item-option ha-icon-button {
+          --ha-icon-button-size: 32px;
         }
         ha-list-item {
           --mdc-list-item-graphic-margin: var(--ha-space-4);

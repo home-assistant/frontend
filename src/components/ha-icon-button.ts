@@ -44,7 +44,7 @@ export class HaIconButton extends LitElement {
       <ha-button
         appearance="plain"
         variant="neutral"
-        .ariaLabel=${this.label ?? null}
+        .accessibleLabel=${this.label ?? ""}
         .title=${this.hideTitle ? "" : (this.label ?? "")}
         aria-haspopup=${ifDefined(this.ariaHasPopup)}
         .disabled=${this.disabled}

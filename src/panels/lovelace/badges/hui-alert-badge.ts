@@ -26,10 +26,19 @@ import type { LocalizeFunc } from "../../../common/translations/localize";
 import { formattersContext } from "../../../data/context";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { HomeAssistant } from "../../../types";
+import { hasTileCardAction } from "../cards/tile/tile-card-helpers";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
+import { hasAction } from "../common/has-action";
 import type { LovelaceBadge, LovelaceBadgeEditor } from "../types";
 import type { AlertBadgeConfig } from "./types";
+
+export const ALERT_BADGE_DEFAULT_CONFIG: Partial<AlertBadgeConfig> = {
+  type: "alert",
+  show_name: true,
+  show_state: true,
+  show_icon: true,
+};
 
 @customElement("hui-alert-badge")
 export class HuiAlertBadge extends LitElement implements LovelaceBadge {
@@ -53,6 +62,10 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
     );
 
     return { type: "alert", entity: entity || "" };
+  }
+
+  public static getDefaultConfig(): Partial<AlertBadgeConfig> {
+    return ALERT_BADGE_DEFAULT_CONFIG;
   }
 
   @state() private _config?: AlertBadgeConfig;
@@ -87,7 +100,7 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
       );
     }
 
-    this._config = config;
+    this._config = { ...ALERT_BADGE_DEFAULT_CONFIG, ...config };
   }
 
   protected render() {
@@ -115,10 +128,21 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
     const pulse = active && this._config.pulse === true;
     const hasColor = color !== undefined && color !== "none";
 
+    const name = this._formatters.formatEntityName(stateObj, this._config.name);
+
+    const { show_name: showName, show_state: showState } = this._config;
+
+    const content = showState
+      ? this._formatters.formatEntityState(stateObj)
+      : showName
+        ? name
+        : undefined;
+
     return html`
       <ha-badge
-        type="button"
-        .label=${this._formatters.formatEntityName(stateObj)}
+        .type=${hasTileCardAction(this._config) ? "button" : "badge"}
+        .label=${showState && showName ? name : undefined}
+        .iconOnly=${!content}
         class=${classMap({ alert: true, pulse, "no-color": !hasColor })}
         style=${styleMap({
           "--ha-alert-color":
@@ -126,20 +150,29 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
         })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
-          hasHold: false,
-          hasDoubleClick: false,
+          hasHold: hasAction(this._config.hold_action),
+          hasDoubleClick: hasAction(this._config.double_tap_action),
         })}
       >
-        <ha-state-icon slot="icon" .stateObj=${stateObj}></ha-state-icon>
-        ${this._formatters.formatEntityState(stateObj)}
+        ${
+          this._config.show_icon
+            ? html`<ha-state-icon
+                slot="icon"
+                .stateObj=${stateObj}
+                .icon=${this._config.icon}
+              ></ha-state-icon>`
+            : nothing
+        }
+        ${content}
       </ha-badge>
     `;
   }
 
   private _handleAction(ev: ActionHandlerEvent): void {
-    if (ev.detail.action === "tap" && this._config) {
-      fireEvent(this, "hass-more-info", { entityId: this._config.entity });
-    }
+    fireEvent(this, "hass-action", {
+      config: this._config!,
+      action: ev.detail.action!,
+    });
   }
 
   static styles = css`

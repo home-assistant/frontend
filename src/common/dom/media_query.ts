@@ -12,7 +12,7 @@ export const listenMediaQuery = (
 ): MediaQueriesListener => {
   const mql = matchMedia(mediaQuery);
   const listener = (e) => matchesChanged(e.matches);
-  mql.addListener(listener);
+  mql.addEventListener("change", listener);
   matchesChanged(mql.matches);
-  return () => mql.removeListener(listener);
+  return () => mql.removeEventListener("change", listener);
 };

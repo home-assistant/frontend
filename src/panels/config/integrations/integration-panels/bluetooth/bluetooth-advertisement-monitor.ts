@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../../../common/controllers/data-table-settings-controller";
 import { storage } from "../../../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
@@ -35,8 +36,6 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public address?: string;
-
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -54,12 +53,11 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
 
   @state() private _sourceDevices: Record<string, DeviceRegistryEntry> = {};
 
-  @storage({
-    key: "bluetooth-advertisement-table-grouping",
-    state: false,
-    subscribe: false,
-  })
-  private _activeGrouping?: string = "source";
+  private _tableSettings = new DataTableSettingsController(
+    this,
+    { grouping: "bluetooth-advertisement-table-grouping" },
+    { defaultGrouping: "source" }
+  );
 
   @storage({
     key: "bluetooth-advertisement-table-collapsed",
@@ -125,7 +123,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
     const searchParams = extractSearchParamsObject();
     const address = searchParams.address;
     if (address) {
-      this.address = address;
+      this._tableSettings.showSearch(address);
     }
   }
 
@@ -159,6 +157,7 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           filterable: true,
           sortable: true,
           groupable: true,
+          urlName: "source",
         },
         source_address: {
           title: localize("ui.panel.config.bluetooth.source_address"),
@@ -225,20 +224,18 @@ export class BluetoothAdvertisementMonitorPanel extends LitElement {
           "ui.panel.config.bluetooth.no_advertisements_found"
         )}
         @row-click=${this._handleRowClicked}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        @grouping-changed=${this._handleGroupingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        filter=${this.address || ""}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
+        sync-url
         clickable
         .tabs=${this._tabs}
         back-path="/config/bluetooth/dashboard"
       ></hass-tabs-subpage-data-table>
     `;
-  }
-
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {

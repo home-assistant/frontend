@@ -95,7 +95,7 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
       >
         <ha-dialog-header slot="header">
           ${
-            !confirmPrompt
+            !confirmPrompt || this._params.showCloseButton
               ? html`<slot name="headerNavigationIcon" slot="navigationIcon">
                   <ha-icon-button
                     data-dialog="close"
@@ -169,6 +169,13 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
                   `
                 : nothing
           }
+          ${
+            this._params.prompt && this._params.textBelowInput
+              ? html`<div class="after-input">
+                  ${this._params.textBelowInput}
+                </div>`
+              : nothing
+          }
         </div>
         <ha-dialog-footer slot="footer">
           ${
@@ -176,7 +183,6 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
               ? html`
                   <ha-button
                     slot="secondaryAction"
-                    variant="neutral"
                     @click=${this._dismiss}
                     ?autofocus=${!this._params.prompt && this._params.destructive}
                     ?disabled=${this._loading}
@@ -307,6 +313,9 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
     }
     ha-input {
       width: 100%;
+    }
+    .after-input {
+      margin-top: var(--ha-space-4);
     }
     .title {
       font-weight: inherit;
