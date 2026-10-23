@@ -12,8 +12,11 @@ import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-settings-row";
 import "../../../components/ha-sortable";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import type { ConfigEntry } from "../../../data/config_entries";
 import { getConfigEntries } from "../../../data/config_entries";
 import type { ConfigFlowInProgressMessage } from "../../../data/config_flow";
@@ -114,7 +117,7 @@ export class WeatherPageEditor extends LitElement {
     return html`
       <div class="content">
         ${this._renderSources()} ${this._renderAddService()}
-        ${this._renderSensors()}
+        ${this._renderSensors()} ${this._renderSettings()}
       </div>
     `;
   }
@@ -342,6 +345,31 @@ export class WeatherPageEditor extends LitElement {
     `;
   }
 
+  private _renderSettings() {
+    const localize = this.hass.localize;
+    return html`
+      <section>
+        <h2>${localize("ui.panel.weather.editor.settings.title")}</h2>
+        <ha-card outlined>
+          <ha-settings-row .narrow=${this.narrow}>
+            <span slot="heading">
+              ${localize("ui.panel.weather.editor.settings.show_on_home")}
+            </span>
+            <span slot="description">
+              ${localize(
+                "ui.panel.weather.editor.settings.show_on_home_description"
+              )}
+            </span>
+            <ha-switch
+              .checked=${this.config.show_on_home !== false}
+              @change=${this._showOnHomeChanged}
+            ></ha-switch>
+          </ha-settings-row>
+        </ha-card>
+      </section>
+    `;
+  }
+
   private _sourceMoved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>) {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
@@ -413,6 +441,10 @@ export class WeatherPageEditor extends LitElement {
   private _pollenChanged(ev: ValueChangedEvent<string[]>) {
     ev.stopPropagation();
     this._changed({ pollen_entities: ev.detail.value });
+  }
+
+  private _showOnHomeChanged(ev: Event) {
+    this._changed({ show_on_home: (ev.target as HaSwitch).checked });
   }
 
   static styles = css`
