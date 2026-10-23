@@ -7,6 +7,7 @@ import type { Lovelace } from "../types";
 import { LOVELACE_EDIT_TOAST_ID } from "../types";
 import { performDeleteBadge } from "./delete-badge";
 import { performDeleteCard } from "./delete-card";
+import { clearCardHighlight, setCardHighlight } from "./card-highlight";
 import type { LovelacePath } from "./lovelace-path";
 import { getParentPath, insertAtPath, setAtPath } from "./lovelace-path";
 
@@ -73,12 +74,18 @@ export async function performPaste<K extends ClipboardItemType>(
     if (typeof index !== "number") {
       throw new Error("Paste target is not an item");
     }
-    const pastedPath = replace ? path : [...getParentPath(path), index + 1];
+    const item = deepClone(config);
     const newConfig = replace
-      ? setAtPath(lovelace.config, path, deepClone(config))
-      : insertAtPath(lovelace.config, pastedPath, deepClone(config));
+      ? setAtPath(lovelace.config, path, item)
+      : insertAtPath(
+          lovelace.config,
+          [...getParentPath(path), index + 1],
+          item
+        );
+    setCardHighlight(item);
     await lovelace.saveConfig(newConfig);
   } catch (_err: unknown) {
+    clearCardHighlight();
     lovelace.showToast({
       id: LOVELACE_EDIT_TOAST_ID,
       message: localize(`ui.panel.lovelace.editor.edit_${type}.paste_error`),

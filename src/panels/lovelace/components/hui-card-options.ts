@@ -20,6 +20,7 @@ import {
 } from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { highlightElement } from "../../../common/dom/highlight-element";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
@@ -35,7 +36,9 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import type { HuiCard } from "../cards/hui-card";
 import { computeCardSize } from "../common/compute-card-size";
+import { takeCardHighlight } from "../editor/card-highlight";
 import {
   addCard,
   moveCardToContainer,
@@ -63,6 +66,9 @@ export class HuiCardOptions extends LitElement {
   @property({ attribute: false }) public path?: LovelacePath;
 
   @queryAssignedElements() private _assignedElements?: LovelaceCard[];
+
+  @queryAssignedElements({ selector: "hui-card" })
+  private _huiCards?: HuiCard[];
 
   @property({ attribute: "hide-position", type: Boolean })
   public hidePosition = false;
@@ -99,6 +105,9 @@ export class HuiCardOptions extends LitElement {
       viewPath
     );
     this.classList.toggle("panel", viewConfig?.panel);
+    if (takeCardHighlight(this._huiCards?.[0]?.config)) {
+      highlightElement(this);
+    }
   }
 
   private get _cards() {
