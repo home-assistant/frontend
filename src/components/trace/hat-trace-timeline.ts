@@ -601,7 +601,7 @@ class ActionRenderer {
       describeAction(this.hass, this.entityReg, waitConfig, "wait_for_trigger");
     const choice = waitTrace.result?.wait?.trigger
       ? "on_complete"
-      : waitTrace.result?.timeout
+      : waitTrace.result?.timeout || waitTrace.result?.wait?.remaining === 0
         ? "on_timeout"
         : undefined;
 

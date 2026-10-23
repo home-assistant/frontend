@@ -269,6 +269,10 @@ describe("TraceTree wait_for_trigger branches", () => {
   it.each([
     ["on_complete", { wait: { completed: true, remaining: 5, trigger: {} } }],
     ["on_timeout", { wait: { completed: false, remaining: 0 }, timeout: true }],
+    // A timeout that continues is only traced as a wait without a trigger
+    ["on_timeout", { wait: { completed: false, remaining: 0, trigger: null } }],
+    // A running wait has not taken a branch yet
+    ["neither", { wait: { completed: false, remaining: 5, trigger: null } }],
   ] as const)("tracks the %s branch the wait took", (choice, result) => {
     const [onComplete, onTimeout] = new TraceTree(
       createTrace([wait], [{ path: "sequence/0", timestamp, result }])

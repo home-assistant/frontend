@@ -341,7 +341,9 @@ export class TraceTree {
               !!records?.some((record) =>
                 choice === "on_complete"
                   ? !!record.result?.wait?.trigger
-                  : !!record.result?.timeout
+                  : !record.result?.wait?.trigger &&
+                    (!!record.result?.timeout ||
+                      record.result?.wait?.remaining === 0)
               ) || this._hasTracedSteps(prefix);
             return this._branch(
               `${path}/${choice}`,
