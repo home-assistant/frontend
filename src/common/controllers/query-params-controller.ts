@@ -24,6 +24,12 @@ export interface QueryParamsControllerOptions {
    * the URL with `searchParams()` and apply it, then `write()` the state back.
    */
   navigated: () => void;
+  /**
+   * The path of the host's page, for a page that can first be connected on
+   * a sub-path it sends on to itself, like an add link. Defaults to the path
+   * the host is first connected on.
+   */
+  path?: string;
 }
 
 /**
@@ -57,7 +63,7 @@ export class QueryParamsController<
   public hostConnected() {
     // A cached page is reconnected on the way to another page, before its
     // router has moved on, so it keeps the page it was first connected on
-    this._path ??= currentPath();
+    this._path ??= this._options.path ?? currentPath();
     this._connected = true;
     mainWindow.addEventListener("location-changed", this._navigated);
     mainWindow.addEventListener("popstate", this._navigated);
