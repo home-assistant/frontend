@@ -31,7 +31,10 @@ import { addSection } from "../editor/config-util";
 import type { LovelacePath } from "../editor/lovelace-path";
 import { getAtPath, moveAtPath } from "../editor/lovelace-path";
 import type { HuiSection } from "../sections/hui-section";
-import "../sections/hui-section-background";
+import {
+  renderSectionContainer,
+  sectionContainerStyles,
+} from "../sections/section-container";
 import type { Lovelace } from "../types";
 import { generateDefaultSection } from "./default-section";
 import "./hui-view-footer";
@@ -450,27 +453,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   );
 
   private _renderSection(section: HuiSection, alignBackground: boolean) {
-    const hasBackground = section.config.background !== undefined;
-
-    return html`
-      <div
-        class="section-container ${classMap({
-          "has-background": hasBackground,
-          "align-background": alignBackground,
-        })}"
-      >
-        ${
-          hasBackground
-            ? html`<hui-section-background
-                .hass=${this.hass}
-                .background=${section.config.background}
-                .theme=${section.config.theme}
-              ></hui-section-background>`
-            : nothing
-        }
-        ${section}
-      </div>
-    `;
+    return renderSectionContainer(
+      this.hass,
+      section.config,
+      section,
+      alignBackground
+    );
   }
 
   private _createSection(): void {
@@ -584,22 +572,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       display: none;
     }
 
-    .section-container {
-      position: relative;
-    }
-
-    .section-container.has-background {
-      padding: var(--ha-space-2);
-      border-radius: var(
-        --ha-section-border-radius,
-        var(--ha-border-radius-xl)
-      );
-    }
-
-    .section-container.align-background {
-      margin-top: var(--ha-space-2);
-      margin-bottom: var(--ha-space-2);
-    }
+    ${sectionContainerStyles}
 
     .container {
       display: grid;
