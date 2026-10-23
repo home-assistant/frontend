@@ -292,10 +292,15 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/integrations/integration",
     params: {
       domain: "string",
+      search: "string?",
     },
   },
   integrations: {
-    redirect: "/config/integrations",
+    redirect: "/config/integrations/dashboard",
+    params: {
+      search: "string?",
+      status: "string?",
+    },
   },
   config_mqtt: {
     component: "mqtt",
@@ -883,7 +888,13 @@ class HaPanelMy extends LitElement {
       this._redirect!.redirect === "/config/integrations/integration" &&
       params.domain === "hacs"
     ) {
-      return `${this._redirect!.redirect}?${createSearchParam({ domain: "marketplace" })}`;
+      const marketplaceParams = new URLSearchParams(
+        this._createRedirectParams()
+      );
+
+      marketplaceParams.set("domain", "marketplace");
+
+      return `${this._redirect!.redirect}?${marketplaceParams}`;
     }
 
     // Special case for supervisor_app/supervisor_addon: use path-based URL
