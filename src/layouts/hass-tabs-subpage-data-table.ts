@@ -28,7 +28,10 @@ import {
   dataTableQueryStateFromUrl,
 } from "../common/url/data-table-query-params";
 import "../components/chips/ha-assist-chip";
-import { groupActionsSlot } from "../components/data-table/ha-data-table";
+import {
+  dataTableGroupKey,
+  groupActionsSlot,
+} from "../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
@@ -864,9 +867,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       const groups = new Set<string>();
 
       for (const row of data) {
-        if (row[groupColumn] !== undefined) {
-          groups.add(String(row[groupColumn]));
-        }
+        groups.add(dataTableGroupKey(row[groupColumn]));
       }
 
       return [...groups];
