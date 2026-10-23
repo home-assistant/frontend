@@ -64,6 +64,11 @@ export interface WeatherFrontendSystemData {
   // not listed are added after these, unless they are excluded.
   weather_entities?: string[];
   excluded_weather_entities?: string[];
+  // An absent key means the entity is detected automatically, null means
+  // the user turned it off.
+  rain_gauge_entity?: string | null;
+  air_quality_entities?: string[];
+  pollen_entities?: string[];
 }
 
 declare global {

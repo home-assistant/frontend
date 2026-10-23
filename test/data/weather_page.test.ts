@@ -1,8 +1,12 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import {
+  findAirQualityEntities,
+  findPollenEntities,
+  findRainGauge,
   getBeaufort,
   getPm25Level,
+  getRainGauge,
   getUvLevel,
   getWeatherSources,
   getWeatherValue,
@@ -87,6 +91,73 @@ describe("getWeatherSources", () => {
         "temperature"
       )?.value
     ).toBe(16);
+  });
+});
+
+describe("rain gauge", () => {
+  const hass = createHass([
+    entity("sensor.rain_rate", {
+      device_class: "precipitation",
+      state_class: "measurement",
+    }),
+    entity("sensor.rain_total", {
+      device_class: "precipitation",
+      state_class: "total_increasing",
+    }),
+  ]);
+
+  it("only uses sensors that add up rain", () => {
+    expect(findRainGauge(hass)).toBe("sensor.rain_total");
+  });
+
+  it("can be turned off", () => {
+    expect(getRainGauge(hass, { rain_gauge_entity: null })).toBeUndefined();
+  });
+});
+
+describe("air quality and pollen", () => {
+  const categories = {
+    airly: ["weather_alerts.air_quality_pollen"],
+    accuweather: [
+      "weather_alerts.forecasts",
+      "weather_alerts.air_quality_pollen",
+    ],
+    xiaomi_miio: ["climate.air_purifiers"],
+  };
+  const hass = createHass(
+    [
+      entity("sensor.outside_pm25", { device_class: "pm25" }),
+      entity("sensor.outside_aqi", { device_class: "aqi" }),
+      entity("sensor.purifier_pm25", { device_class: "pm25" }),
+      entity("sensor.home_grass_pollen"),
+      entity("sensor.home_cloud_ceiling"),
+    ],
+    {
+      "sensor.outside_pm25": { platform: "airly" },
+      "sensor.outside_aqi": { platform: "airly" },
+      "sensor.purifier_pm25": { platform: "xiaomi_miio" },
+      "sensor.home_grass_pollen": {
+        platform: "accuweather",
+        translation_key: "grass_pollen",
+      },
+      "sensor.home_cloud_ceiling": {
+        platform: "accuweather",
+        translation_key: "cloud_ceiling",
+      },
+    }
+  );
+
+  it("finds outdoor air quality from air quality services", () => {
+    expect(findAirQualityEntities(hass, categories)).toEqual([
+      "sensor.outside_aqi",
+      "sensor.outside_pm25",
+    ]);
+  });
+
+  it("finds pollen sensors", () => {
+    expect(findPollenEntities(hass, categories)).toEqual([
+      "sensor.home_grass_pollen",
+    ]);
   });
 });
 
