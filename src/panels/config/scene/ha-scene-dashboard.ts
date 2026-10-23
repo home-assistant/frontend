@@ -109,6 +109,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { renderCategoryGroupActions } from "../category/render-category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -562,6 +563,7 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
+        ${renderCategoryGroupActions(this.hass, "scene", this._categories)}
 
         <ha-filter-floor-areas
           .type=${"scene"}

@@ -122,6 +122,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { renderCategoryGroupActions } from "../category/render-category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -564,6 +565,7 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
+        ${renderCategoryGroupActions(this.hass, "automation", this._categories)}
         <ha-filter-floor-areas
           .type=${"automation"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
