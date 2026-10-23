@@ -4,7 +4,11 @@ import type {
 } from "@lit/reactive-element/reactive-controller";
 import type { HASSDomEvent } from "../dom/fire_event";
 import { mainWindow } from "../dom/get_main_window";
-import { replaceCurrentUrl, type NavigateOptions } from "../navigate";
+import {
+  getHistoryState,
+  replaceCurrentUrl,
+  type NavigateOptions,
+} from "../navigate";
 import { constructUrlCurrentPath } from "../url/construct-url";
 import { currentPath } from "../url/current-path";
 import {
@@ -41,6 +45,9 @@ export class QueryParamsController<
   private _pending?: QueryParamValues<C>;
 
   private _pendingTimeout?: number;
+
+  /** The last write that landed on a dialog's history entry. */
+  private _dialogWrite?: QueryParamValues<C>;
 
   private _hostUpdated = false;
 
@@ -133,6 +140,9 @@ export class QueryParamsController<
 
   private _navigated = (ev?: Event | HASSDomEvent<NavigateOptions>) => {
     this._cancelPending();
+    const dialogWrite = this._dialogWrite;
+    this._dialogWrite = undefined;
+
     // A router sends a path without a page, like /config/automation, on to
     // its default page after the host is connected, so it follows that
     const path = currentPath();
@@ -145,16 +155,31 @@ export class QueryParamsController<
     ) {
       this._path = path;
     }
+
     // Leaving the page gets here too, before the router swaps the page
-    if (this._isActive()) {
-      this._options.navigated();
+    if (!this._isActive()) {
+      return;
     }
+
+    if (dialogWrite && ev?.type === "popstate") {
+      // Closing a dialog went back to the page's own entry, which still has
+      // the URL from before the write, like after deleting from a dialog
+      this._write(dialogWrite);
+
+      return;
+    }
+
+    this._options.navigated();
   };
 
   private _write(values: QueryParamValues<C>) {
     if (!this._isActive()) {
       return;
     }
+
+    // A dialog's entry is popped when it closes, which would lose the write
+    this._dialogWrite = getHistoryState()?.dialog ? values : undefined;
+
     const current = mainWindow.location.search;
     const queryString = updateQueryString(current, values, this._config);
     if (current !== (queryString ? `?${queryString}` : "")) {
