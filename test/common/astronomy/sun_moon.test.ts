@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   getMoonIllumination,
   getNextFullMoon,
+  getSolarNoon,
   getSunEvents,
   getSunTimes,
+  getTwilightTimes,
   moonPhaseName,
 } from "../../../src/common/astronomy/sun_moon";
 
@@ -39,6 +41,29 @@ describe("getSunTimes", () => {
     );
     expect(rise).toBeUndefined();
     expect(set).toBeUndefined();
+  });
+});
+
+describe("getTwilightTimes", () => {
+  it("finds civil dawn and dusk", () => {
+    const { rise, set } = getTwilightTimes(
+      new Date("2026-10-18T12:00:00+02:00"),
+      LATITUDE,
+      LONGITUDE
+    );
+    expectClose(rise, "2026-10-18T07:35:00+02:00");
+    expectClose(set, "2026-10-18T19:14:00+02:00");
+  });
+});
+
+describe("getSolarNoon", () => {
+  it("finds when the sun is highest", () => {
+    const noon = getSolarNoon(
+      new Date("2026-10-18T12:00:00+02:00"),
+      LATITUDE,
+      LONGITUDE
+    );
+    expectClose(noon, "2026-10-18T13:24:00+02:00");
   });
 });
 

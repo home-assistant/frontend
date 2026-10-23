@@ -14,6 +14,8 @@ const SYNODIC_MONTH = 29.530588853;
 
 // Altitude of the sun's upper limb at sunrise and sunset, including refraction
 const SUN_HORIZON = -0.833 * RAD;
+// Altitude of the sun's center at civil dawn and dusk
+const CIVIL_TWILIGHT = -6 * RAD;
 // Altitude of the moon's center at moonrise and moonset
 const MOON_HORIZON = 0.133 * RAD;
 
@@ -175,6 +177,52 @@ export const getSunTimes = (
     startOfDay(date),
     endOfDay(date)
   );
+
+/**
+ * Civil dawn and dusk: when the center of the sun is 6° below the horizon.
+ * Outside this, it is too dark to see well outdoors without lights.
+ */
+export const getTwilightTimes = (
+  date: Date,
+  latitude: number,
+  longitude: number
+): RiseSet =>
+  findRiseSet(
+    (d) => sunAltitude(d, latitude, longitude),
+    CIVIL_TWILIGHT,
+    startOfDay(date),
+    endOfDay(date)
+  );
+
+/**
+ * Solar noon: when the sun is highest in the sky on the day of `date`. Found
+ * by sampling every 5 minutes, then fitting a parabola through the highest
+ * sample and its neighbors.
+ */
+export const getSolarNoon = (
+  date: Date,
+  latitude: number,
+  longitude: number
+): Date => {
+  const start = startOfDay(date).getTime();
+  const end = endOfDay(date).getTime();
+  const altitudeAt = (time: number) =>
+    sunAltitude(new Date(time), latitude, longitude);
+  let bestTime = start;
+  let bestAlt = -Infinity;
+  for (let time = start; time <= end; time += SAMPLE_STEP_MS) {
+    const alt = altitudeAt(time);
+    if (alt > bestAlt) {
+      bestAlt = alt;
+      bestTime = time;
+    }
+  }
+  const before = altitudeAt(bestTime - SAMPLE_STEP_MS);
+  const after = altitudeAt(bestTime + SAMPLE_STEP_MS);
+  const curvature = before - 2 * bestAlt + after;
+  const offset = curvature < 0 ? (0.5 * (before - after)) / curvature : 0;
+  return new Date(bestTime + offset * SAMPLE_STEP_MS);
+};
 
 /** Sunrises and sunsets between `start` and `end`, in chronological order. */
 export const getSunEvents = (

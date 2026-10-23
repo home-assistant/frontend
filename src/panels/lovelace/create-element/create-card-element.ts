@@ -109,6 +109,8 @@ const LAZY_LOAD_TYPES = {
   "weather-current": () => import("../cards/weather/hui-weather-current-card"),
   "weather-hourly": () => import("../cards/weather/hui-weather-hourly-card"),
   "weather-daily": () => import("../cards/weather/hui-weather-daily-card"),
+  "weather-sun": () => import("../cards/weather/hui-weather-sun-card"),
+  "weather-moon": () => import("../cards/weather/hui-weather-moon-card"),
 };
 
 // This will not return an error card but will throw the error
