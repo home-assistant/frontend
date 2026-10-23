@@ -50,6 +50,8 @@ Menu items anchor to the menu's button, since the menu has closed by the time th
 6. **Mobile.** Bottom sheet, the same as adaptive dialogs, or a popover there too?
 7. **Destructive confirmations.** A popover is lighter than a dialog. Is that too easy to confirm for deletes?
 8. **Rollout.** There are about 170 confirmation calls. Opt in per call site (current), or anchor automatically when the click event is available?
+9. **Popovers inside dialogs.** For example, removing a dropdown option from the helper settings dialog. Should popovers open there at all, and if they do, should they be kept inside the dialog's bounds?
+10. **Forms.** The object selector's edit form doesn't work well as a popover stacked over the card editor dialog. It should probably be a view of its own instead of a stacked popover or dialog.
 
 ## Known gaps
 
@@ -57,6 +59,7 @@ Menu items anchor to the menu's button, since the menu has closed by the time th
 - Focus lands on the popover rather than the default button.
 - Renames started from the automation sidebar have no anchor, so they stay dialogs.
 - Timer presets and other forms opened from custom events can't be anchored yet, because the event doesn't carry the clicked element.
+- Energy's "Are you sure you want to remove this source?" is a title-only confirmation. The current build shows it as plain text, but the energy captures were taken before that change and still show it as a heading.
 
 ## Values to turn into variables or tokens
 
