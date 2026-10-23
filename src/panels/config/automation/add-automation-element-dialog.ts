@@ -209,6 +209,11 @@ interface DomainClassificationOptions {
   activeSystemDomains?: Set<string>;
 }
 
+interface ActiveSystemDomains {
+  active: Set<string>;
+  byEntityDomain: Map<string, Set<string>>;
+}
+
 @customElement("add-automation-element-dialog")
 class DialogAddAutomationElement
   extends KeyboardShortcutMixin(LitElement)
@@ -285,6 +290,8 @@ class DialogAddAutomationElement
   private _configEntryLookup: Record<string, ConfigEntry> = {};
 
   private _closing = false;
+
+  private _cachedSystemDomains?: ActiveSystemDomains;
 
   // #endregion variables
 
@@ -446,9 +453,15 @@ class DialogAddAutomationElement
     (
       descriptions: TriggerDescriptions | ConditionDescriptions,
       manifests: DomainManifestLookup,
-      getDomain: (key: string) => string
-    ): { active: Set<string>; byEntityDomain: Map<string, Set<string>> } => {
+      getDomain: (key: string) => string,
+      states: HomeAssistant["states"],
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"]
+    ): ActiveSystemDomains => {
       const active = new Set<string>();
+      const presentDomains = new Set(
+        Object.keys(states).map((entityId) => computeDomain(entityId))
+      );
       // Group all entity filters by domain
       const domainFilters: Record<
         string,
@@ -464,12 +477,7 @@ class DialogAddAutomationElement
         }
         // For entity-type domains that have their own entities, the normal
         // domainUsed check handles them — only process those without entities.
-        if (
-          integrationType === "entity" &&
-          Object.keys(this.hass.states).some(
-            (id) => computeDomain(id) === domain
-          )
-        ) {
+        if (integrationType === "entity" && presentDomains.has(domain)) {
           continue;
         }
         if (!domainFilters[domain]) {
@@ -492,12 +500,17 @@ class DialogAddAutomationElement
         }
       }
       // Check each entity in hass.states against the filters
-      for (const entity of Object.values(this.hass.states)) {
-        for (const [domain, filters] of Object.entries(domainFilters)) {
+      const domainFilterEntries = Object.entries(domainFilters);
+      for (const entity of Object.values(states)) {
+        for (const [domain, filters] of domainFilterEntries) {
           if (active.has(domain)) {
             continue;
           }
-          if (filters.some((f) => filterSelectorEntities(f, entity))) {
+          if (
+            filters.some((f) =>
+              filterSelectorEntities(f, entity, undefined, entities, devices)
+            )
+          ) {
             active.add(domain);
           }
         }
@@ -528,11 +541,18 @@ class DialogAddAutomationElement
       this._params?.type === "trigger"
         ? this._triggerDescriptions
         : this._conditionDescriptions;
-    return this._calculateActiveSystemDomains(
+    const systemDomains = this._calculateActiveSystemDomains(
       descriptions,
       this._manifests,
-      this._params?.type === "trigger" ? getTriggerDomain : getConditionDomain
+      this._params?.type === "trigger" ? getTriggerDomain : getConditionDomain,
+      this.hass.states,
+      this.hass.entities,
+      this.hass.devices
     );
+    if (!deepEqual(systemDomains, this._cachedSystemDomains)) {
+      this._cachedSystemDomains = systemDomains;
+    }
+    return this._cachedSystemDomains;
   }
 
   private async _loadConfigEntries() {
@@ -649,6 +669,7 @@ class DialogAddAutomationElement
           automationElementType,
           TYPES[automationElementType].collections,
           this._domains,
+          this._systemDomains,
           this.hass.localize,
           this.hass.services,
           this._triggerDescriptions,
@@ -1171,6 +1192,7 @@ class DialogAddAutomationElement
       type: AddAutomationElementDialogParams["type"],
       collections: AutomationElementGroupCollection[],
       domains: Set<string> | undefined,
+      systemDomains: ActiveSystemDomains | undefined,
       localize: LocalizeFunc,
       services: HomeAssistant["services"],
       triggerDescriptions: TriggerDescriptions,
@@ -1216,7 +1238,7 @@ class DialogAddAutomationElement
               {
                 type,
                 usedDomains: domains,
-                activeSystemDomains: this._systemDomains?.active,
+                activeSystemDomains: systemDomains?.active,
                 exclusiveDomains,
               }
             )

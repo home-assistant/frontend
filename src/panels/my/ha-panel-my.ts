@@ -132,6 +132,21 @@ const tagsTableParams = {
   direction: "string?",
 } satisfies Redirect["params"];
 
+// The statistics table reads these from the link
+const statisticsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
+// The application credentials table reads these from the link
+const applicationCredentialsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+} satisfies Redirect["params"];
+
 // The devices table reads these from the link
 const devicesTableParams = {
   search: "string?",
@@ -165,9 +180,26 @@ const entitiesTableParams = {
   sub_entry: "string?",
 } satisfies Redirect["params"];
 
+// The automations table reads these from the link
+const automationsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  entity: "string?",
+  label: "string?",
+  category: "string?",
+  assistants: "string?",
+  blueprint: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
+    params: applicationCredentialsTableParams,
   },
   tools_assist: {
     redirect: "/config/tools/assist",
@@ -195,6 +227,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   tools_statistics: {
     redirect: "/config/tools/statistics",
+    params: statisticsTableParams,
   },
   tools_yaml: {
     redirect: "/config/tools/yaml",
@@ -400,6 +433,7 @@ export const getMyRedirects = (): Redirects => ({
   automations: {
     component: "automation",
     redirect: "/config/automation/dashboard",
+    params: automationsTableParams,
   },
   scenes: {
     component: "scene",

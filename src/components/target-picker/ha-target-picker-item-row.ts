@@ -248,8 +248,10 @@ export class HaTargetPickerItemRow extends LitElement {
     const rowEntities =
       this.type === "entity" ? [this.itemId] : entries?.referenced_entities;
     const fullyOut = !!rowEntities?.length && rowEntities.every(isOut);
+    const excludedCount = rowEntities?.filter(isOut).length ?? 0;
+    const inDetails = this.expand || this.subEntry;
     const rowState =
-      this.selectable && rowEntities?.length
+      (this.selectable || (inDetails && this.exclusions)) && rowEntities?.length
         ? targetRowState(
             this._targetRow(
               this.type,
@@ -262,11 +264,15 @@ export class HaTargetPickerItemRow extends LitElement {
             this.exclusions ?? []
           )
         : undefined;
-    const excludedBy = rowState
-      ? rowState.lockedBy
-      : this.subEntry && fullyOut
-        ? this._excludedBy(rowEntities!)
-        : [];
+    const out = rowState
+      ? !rowState.checked && !rowState.indeterminate
+      : fullyOut;
+    const excludedBy =
+      this.selectable && rowState
+        ? rowState.lockedBy
+        : this.subEntry && out
+          ? this._excludedBy(rowEntities!)
+          : [];
 
     const content = html`
       <div class="icon" slot="start">
@@ -280,7 +286,7 @@ export class HaTargetPickerItemRow extends LitElement {
         )}
       </div>
 
-      <span slot="headline" class=${classMap({ out: fullyOut })}
+      <span slot="headline" class=${classMap({ out })}
         >${
           canMigrate
             ? this.hass.localize(
@@ -331,8 +337,18 @@ export class HaTargetPickerItemRow extends LitElement {
                 ${
                   this.expand || !entries.referenced_entities.length
                     ? html`<span class="main">
-                        ${this._entitiesLabel(entries, isOut)}
-                      </span>`
+                          ${this._entitiesLabel(entries, isOut)}
+                        </span>
+                        ${
+                          this.expand && excludedCount
+                            ? html`<span class="secondary">
+                                ${this.hass.localize(
+                                  "ui.components.target-picker.excluded_count",
+                                  { count: excludedCount }
+                                )}
+                              </span>`
+                            : nothing
+                        }`
                     : html`<ha-button
                         appearance="filled"
                         variant="brand"
@@ -378,7 +394,7 @@ export class HaTargetPickerItemRow extends LitElement {
             : nothing
       }
       ${
-        rowState
+        this.selectable && rowState
           ? html`<ha-checkbox
               slot="end"
               .checked=${live(rowState.checked)}
@@ -466,22 +482,10 @@ export class HaTargetPickerItemRow extends LitElement {
     const remaining = entries.referenced_entities.filter(
       (entityId) => !isOut(entityId)
     );
-    const excluded = entries.referenced_entities.length - remaining.length;
     const total = remaining.length;
     const count = this.activeFilter
       ? remaining.filter(this.activeFilter).length
       : total;
-    if (excluded) {
-      return this.activeFilter
-        ? this.hass.localize(
-            "ui.components.target-picker.entities_count_filtered_excluded",
-            { count, total, excluded }
-          )
-        : this.hass.localize(
-            "ui.components.target-picker.entities_count_excluded",
-            { count, excluded }
-          );
-    }
     return this.activeFilter
       ? this.hass.localize(
           "ui.components.target-picker.entities_count_filtered",
@@ -574,7 +578,7 @@ export class HaTargetPickerItemRow extends LitElement {
           this.removedCount
             ? html`<span slot="end" class="removed">
                 ${this.hass.localize(
-                  "ui.components.target-picker.removes_count",
+                  "ui.components.target-picker.excluded_count",
                   { count: this.removedCount }
                 )}
               </span>`

@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../../../common/controllers/data-table-settings-controller";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
@@ -50,6 +51,8 @@ export class ZHAGroupsDashboard extends LitElement {
   @state() private _loadFailed = false;
 
   private _firstUpdatedCalled = false;
+
+  private _tableSettings = new DataTableSettingsController(this, {});
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -126,9 +129,12 @@ export class ZHAGroupsDashboard extends LitElement {
             : undefined
         }
         @retry-load=${this._retryFetchGroups}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         @row-click=${this._handleRowClicked}
         clickable
         has-fab
+        sync-url
       >
         <ha-button href="/config/zha/group-add" slot="fab" size="l">
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
