@@ -1,11 +1,7 @@
-import {
-  mdiAccessPoint,
-  mdiBluetooth,
-  mdiMusic,
-  mdiSwapHorizontal,
-} from "@mdi/js";
+import { mdiAccessPoint, mdiBluetooth, mdiSwapHorizontal } from "@mdi/js";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { LocalizeKeys } from "../common/translations/localize";
+import { mdiSendspin } from "../resources/sendspin-logo-svg";
 import type { ConfigEntry } from "./config_entries";
 import type { DataEntryFlowProgress } from "./data_entry_flow";
 import type {
@@ -65,7 +61,7 @@ export const ESPHOME_CAPABILITY_ACCENTS: Record<ESPHomeCapabilityId, string> = {
 
 export const ESPHOME_CAPABILITY_ICONS: Record<ESPHomeCapabilityId, string> = {
   bluetooth: mdiBluetooth,
-  audio: mdiMusic,
+  audio: mdiSendspin,
   connectivity: mdiAccessPoint,
   serial: mdiSwapHorizontal,
 };
