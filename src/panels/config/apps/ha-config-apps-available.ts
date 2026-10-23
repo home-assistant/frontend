@@ -223,10 +223,9 @@ export class HaConfigAppsAvailable extends LitElement {
   private async _refreshData() {
     this._checkingUpdates = true;
     try {
-      await checkForAppUpdates(this, this.hass);
+      this._loadData(await checkForAppUpdates(this, this.hass));
     } finally {
       this._checkingUpdates = false;
-      this._loadData();
     }
   }
 
@@ -278,14 +277,14 @@ export class HaConfigAppsAvailable extends LitElement {
     }
   }
 
-  private async _loadData(): Promise<void> {
+  private async _loadData(addon?: HassioAddonsInfo): Promise<void> {
     try {
-      const [addon, store] = await Promise.all([
-        fetchHassioAddonsInfo(this.hass),
+      const [addonInfo, store] = await Promise.all([
+        addon ?? fetchHassioAddonsInfo(this.hass),
         fetchSupervisorStore(this.hass),
       ]);
 
-      this._addon = addon;
+      this._addon = addonInfo;
       this._store = store;
     } catch (err: any) {
       this._error =

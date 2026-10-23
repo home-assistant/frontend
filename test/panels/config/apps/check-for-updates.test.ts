@@ -71,29 +71,32 @@ describe("checkForAppUpdates", () => {
       addons: [app("ssh", true), app("mosquitto", true), app("vscode", true)],
       result: 'ui.panel.config.apps.store.updates_available {"count":3}',
     },
-  ])("replaces the checking toast with $result", async ({ addons, result }) => {
-    const { hass } = mockHass(addons);
-    const { el, toasts } = element();
+  ])(
+    "replaces the checking toast with $result and returns the apps",
+    async ({ addons, result }) => {
+      const { hass } = mockHass(addons);
+      const { el, toasts } = element();
 
-    await checkForAppUpdates(el, hass);
+      expect(await checkForAppUpdates(el, hass)).toEqual({ addons });
 
-    expect(toasts).toEqual([
-      {
-        id: "check-app-updates",
-        message: "ui.panel.config.apps.store.checking_updates",
-      },
-      { id: "check-app-updates", message: result },
-    ]);
-    expect(showAlertDialog).not.toHaveBeenCalled();
-  });
+      expect(toasts).toEqual([
+        {
+          id: "check-app-updates",
+          message: "ui.panel.config.apps.store.checking_updates",
+        },
+        { id: "check-app-updates", message: result },
+      ]);
+      expect(showAlertDialog).not.toHaveBeenCalled();
+    }
+  );
 
   it.each(["/store/reload", "/addons"] as const)(
-    "closes the toast and shows the error when %s fails",
+    "closes the toast, shows the error and returns nothing when %s fails",
     async (failingEndpoint) => {
       const { hass } = mockHass([app("ssh", true)], failingEndpoint);
       const { el, toasts } = element();
 
-      await checkForAppUpdates(el, hass);
+      expect(await checkForAppUpdates(el, hass)).toBeUndefined();
 
       expect(toasts).toEqual([
         {

@@ -1,4 +1,4 @@
-import type { HassioAddonInfo } from "../../../../data/hassio/addon";
+import type { HassioAddonsInfo } from "../../../../data/hassio/addon";
 import {
   fetchHassioAddonsInfo,
   reloadHassioAddons,
@@ -13,16 +13,16 @@ const CHECK_UPDATES_TOAST_ID = "check-app-updates";
 export const checkForAppUpdates = async (
   element: HTMLElement,
   hass: HomeAssistant
-): Promise<void> => {
+): Promise<HassioAddonsInfo | undefined> => {
   showToast(element, {
     id: CHECK_UPDATES_TOAST_ID,
     message: hass.localize("ui.panel.config.apps.store.checking_updates"),
   });
 
-  let addons: HassioAddonInfo[];
+  let info: HassioAddonsInfo;
   try {
     await reloadHassioAddons(hass);
-    ({ addons } = await fetchHassioAddonsInfo(hass));
+    info = await fetchHassioAddonsInfo(hass);
   } catch (err) {
     showToast(element, {
       id: CHECK_UPDATES_TOAST_ID,
@@ -32,10 +32,10 @@ export const checkForAppUpdates = async (
     showAlertDialog(element, {
       text: extractApiErrorMessage(err),
     });
-    return;
+    return undefined;
   }
 
-  const count = addons.filter((addon) => addon.update_available).length;
+  const count = info.addons.filter((addon) => addon.update_available).length;
   showToast(element, {
     id: CHECK_UPDATES_TOAST_ID,
     message: count
@@ -44,4 +44,5 @@ export const checkForAppUpdates = async (
         })
       : hass.localize("ui.panel.config.apps.store.no_updates"),
   });
+  return info;
 };

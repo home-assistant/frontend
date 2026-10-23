@@ -206,10 +206,14 @@ export class HaConfigAppsInstalled extends LitElement {
   private async _handleCheckUpdates() {
     this._checkingUpdates = true;
     try {
-      await checkForAppUpdates(this, this.hass);
+      const info = await checkForAppUpdates(this, this.hass);
+      if (info) {
+        this._addonInfo = info;
+      } else {
+        this._loadData();
+      }
     } finally {
       this._checkingUpdates = false;
-      this._loadData();
     }
   }
 
