@@ -65,6 +65,9 @@ const services = {
       },
     },
   },
+  homeassistant: {
+    turn_on: { target: {}, fields: {} },
+  },
   switch: {
     turn_on: { target: { entity: [{ domain: "switch" }] }, fields: {} },
   },
@@ -155,6 +158,27 @@ describe("portAction", () => {
 
     expect(result).toMatchObject({
       target: { floor_id: "ground_floor", label_id: "evening" },
+    });
+  });
+
+  it("splits comma separated entity ids and keeps the exclusions", () => {
+    const result = portAction(
+      {
+        action: "homeassistant.turn_on",
+        target: {
+          entity_id: "light.kitchen, Light.Garage, switch.kettle",
+          exclude: { entity_id: "light.nightlight" },
+        },
+      },
+      { action: "light.turn_off", metadata: {} },
+      hass
+    );
+
+    expect(result).toMatchObject({
+      target: {
+        entity_id: ["light.kitchen", "light.garage"],
+        exclude: { entity_id: "light.nightlight" },
+      },
     });
   });
 

@@ -1,3 +1,4 @@
+import deepClone from "deep-clone-simple";
 import type {
   HassEntity,
   HassServiceTarget,
@@ -23,6 +24,7 @@ import type {
   EntityRegistryEntry,
 } from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
+import { getServiceCallEntityIds } from "./service";
 import type { HassServiceTargetWithExclude } from "./target";
 
 export type ThresholdMode = "crossed" | "changed" | "is";
@@ -717,8 +719,13 @@ export const resolveSelectorContext = (
   return context;
 };
 
+export type TargetRegistries = Pick<
+  HomeAssistant,
+  "states" | "entities" | "devices" | "areas"
+>;
+
 export const expandLabelTarget = (
-  hass: HomeAssistant,
+  hass: TargetRegistries,
   labelId: string,
   areas: HomeAssistant["areas"],
   devices: HomeAssistant["devices"],
@@ -777,7 +784,7 @@ export const expandLabelTarget = (
 };
 
 export const expandFloorTarget = (
-  hass: HomeAssistant,
+  hass: TargetRegistries,
   floorId: string,
   areas: HomeAssistant["areas"],
   targetSelector: TargetSelector
@@ -801,7 +808,7 @@ export const expandFloorTarget = (
 };
 
 export const expandAreaTarget = (
-  hass: HomeAssistant,
+  hass: TargetRegistries,
   areaId: string,
   devices: HomeAssistant["devices"],
   entities: HomeAssistant["entities"],
@@ -841,7 +848,7 @@ export const expandAreaTarget = (
 };
 
 export const expandDeviceTarget = (
-  hass: HomeAssistant,
+  hass: TargetRegistries,
   deviceId: string,
   entities: HomeAssistant["entities"],
   targetSelector: TargetSelector
@@ -865,7 +872,7 @@ export const expandDeviceTarget = (
 };
 
 export const areaMeetsTargetSelector = (
-  hass: HomeAssistant,
+  hass: TargetRegistries,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areaId: string,
@@ -957,6 +964,105 @@ export const entityMeetsTargetSelector = (
     );
   }
   return true;
+};
+
+export const filterTargetForSelector = (
+  target: HassServiceTargetWithExclude,
+  targetSelector: TargetSelector,
+  registries: TargetRegistries
+): HassServiceTargetWithExclude => {
+  const { states, entities, devices, areas } = registries;
+  const entityIds = getServiceCallEntityIds(undefined, target).filter((id) =>
+    entityMeetsTargetSelector(
+      states[id],
+      targetSelector,
+      undefined,
+      entities,
+      devices
+    )
+  );
+  const deviceIds = ensureArray(target.device_id)?.filter(
+    (id) =>
+      id in devices &&
+      deviceMeetsTargetSelector(
+        states,
+        Object.values(entities),
+        devices[id],
+        targetSelector
+      )
+  );
+  const areaIds = ensureArray(target.area_id)?.filter((id) =>
+    areaMeetsTargetSelector(registries, entities, devices, id, targetSelector)
+  );
+  const floorIds = ensureArray(target.floor_id)?.filter(
+    (id) =>
+      expandFloorTarget(registries, id, areas, targetSelector).areas.length > 0
+  );
+  const labelIds = ensureArray(target.label_id)?.filter((id) => {
+    const expanded = expandLabelTarget(
+      registries,
+      id,
+      areas,
+      devices,
+      entities,
+      targetSelector
+    );
+    return (
+      expanded.areas.length > 0 ||
+      expanded.devices.length > 0 ||
+      expanded.entities.length > 0
+    );
+  });
+  const result: HassServiceTargetWithExclude = {
+    ...(entityIds.length ? { entity_id: entityIds } : {}),
+    ...(deviceIds?.length ? { device_id: deviceIds } : {}),
+    ...(areaIds?.length ? { area_id: areaIds } : {}),
+    ...(floorIds?.length ? { floor_id: floorIds } : {}),
+    ...(labelIds?.length ? { label_id: labelIds } : {}),
+  };
+  // An exclude on its own is not a target, so it only stays while
+  // something is still included.
+  if (target.exclude && Object.keys(result).length) {
+    result.exclude = deepClone(target.exclude);
+  }
+  return result;
+};
+
+interface FieldWithDefault {
+  selector?: object;
+  required?: boolean;
+  default?: unknown;
+}
+
+export const fillFieldDefaults = (
+  values: Record<string, unknown>,
+  fields: [string, FieldWithDefault][],
+  loadDefaults: boolean,
+  skipDefault?: (field: FieldWithDefault) => boolean
+): { values: Record<string, unknown>; changed: boolean } => {
+  const result = { ...values };
+  let changed = false;
+  fields.forEach(([key, field]) => {
+    if (!field.selector || result[key] !== undefined) {
+      return;
+    }
+    if (
+      field.required &&
+      field.default === undefined &&
+      "boolean" in field.selector
+    ) {
+      result[key] = false;
+      changed = true;
+    } else if (
+      loadDefaults &&
+      field.default !== undefined &&
+      !skipDefault?.(field)
+    ) {
+      result[key] = deepClone(field.default);
+      changed = true;
+    }
+  });
+  return { values: result, changed };
 };
 
 export const filterSelectorDevices = (

@@ -3,7 +3,6 @@ import type {
   HassService,
   HassServiceTarget,
 } from "home-assistant-js-websocket";
-import { ensureArray } from "../common/array/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { hasTemplate } from "../common/string/has-template";
@@ -24,14 +23,14 @@ import {
 } from "./automation";
 import type { ConditionDescriptions } from "./condition";
 import type { Action, ServiceAction } from "./script";
-import type { Selector, TargetSelector } from "./selector";
 import {
-  areaMeetsTargetSelector,
-  deviceMeetsTargetSelector,
-  entityMeetsTargetSelector,
-  expandFloorTarget,
-  expandLabelTarget,
+  fillFieldDefaults,
+  filterTargetForSelector,
+  type Selector,
+  type TargetRegistries,
+  type TargetSelector,
 } from "./selector";
+import type { HassServiceTargetWithExclude } from "./target";
 import type { TriggerDescriptions } from "./trigger";
 import { isTriggerList } from "./trigger";
 
@@ -74,29 +73,6 @@ const portFields = (
   return result;
 };
 
-// Fill the defaults the editors would fill for a new item, so they don't
-// change the replaced item again, which would add a second undo step.
-const fillDefaults = (
-  values: Record<string, unknown>,
-  fields: Fields,
-  skip?: (field: Field) => boolean
-) => {
-  Object.entries(fields).forEach(([key, field]) => {
-    if (!field.selector || values[key] !== undefined) {
-      return;
-    }
-    if (
-      field.required &&
-      field.default === undefined &&
-      "boolean" in field.selector
-    ) {
-      values[key] = false;
-    } else if (field.default !== undefined && !skip?.(field)) {
-      values[key] = deepClone(field.default);
-    }
-  });
-};
-
 const TARGET_KEYS = [
   "entity_id",
   "device_id",
@@ -106,74 +82,25 @@ const TARGET_KEYS = [
 ] as const;
 
 const portTarget = (
-  target: HassServiceTarget | string | undefined,
+  target: HassServiceTargetWithExclude | string | undefined,
   filter: TargetFilter,
   oldFilter: TargetFilter,
-  hass: HomeAssistant
-): HassServiceTarget | undefined => {
+  registries: TargetRegistries
+): HassServiceTargetWithExclude | undefined => {
   if (!target || filter === undefined) {
     return undefined;
   }
   if (oldFilter !== undefined && deepEqual(oldFilter, filter)) {
-    return deepClone(target as HassServiceTarget);
+    return deepClone(target as HassServiceTargetWithExclude);
   }
   if (typeof target === "string" || hasTemplate(target)) {
     return undefined;
   }
-
-  const selector: TargetSelector = { target: filter };
-  const matches: Record<(typeof TARGET_KEYS)[number], (id: string) => boolean> =
-    {
-      entity_id: (id) =>
-        entityMeetsTargetSelector(
-          hass.states[id],
-          selector,
-          undefined,
-          hass.entities,
-          hass.devices
-        ),
-      device_id: (id) =>
-        id in hass.devices &&
-        deviceMeetsTargetSelector(
-          hass.states,
-          Object.values(hass.entities),
-          hass.devices[id],
-          selector
-        ),
-      area_id: (id) =>
-        areaMeetsTargetSelector(
-          hass,
-          hass.entities,
-          hass.devices,
-          id,
-          selector
-        ),
-      floor_id: (id) =>
-        expandFloorTarget(hass, id, hass.areas, selector).areas.length > 0,
-      label_id: (id) => {
-        const { areas, devices, entities } = expandLabelTarget(
-          hass,
-          id,
-          hass.areas,
-          hass.devices,
-          hass.entities,
-          selector
-        );
-        return areas.length + devices.length + entities.length > 0;
-      },
-    };
-
-  const result: HassServiceTarget = {};
-  TARGET_KEYS.forEach((key) => {
-    const value = target[key];
-    if (!value) {
-      return;
-    }
-    const kept = ensureArray(value).filter(matches[key]);
-    if (kept.length) {
-      result[key] = Array.isArray(value) ? kept : kept[0];
-    }
-  });
+  const result = filterTargetForSelector(
+    target,
+    { target: filter },
+    registries
+  );
   return Object.keys(result).length ? result : undefined;
 };
 
@@ -240,7 +167,7 @@ const portPlatformItem = <T extends PlatformTrigger | PlatformCondition>(
         description?: { target?: TargetSelector["target"]; fields: Fields };
       }
     | undefined,
-  hass: HomeAssistant
+  registries: TargetRegistries
 ): T => {
   const target =
     item.target ??
@@ -248,22 +175,24 @@ const portPlatformItem = <T extends PlatformTrigger | PlatformCondition>(
       old?.target,
       getTargetFilter(description),
       getTargetFilter(old?.description),
-      hass
+      registries
     );
   const fields = description.fields ?? {};
-  const options = portFields(old?.options, fields, old?.description?.fields);
-  fillDefaults(
-    options,
-    fields,
+  // Fill the defaults the editors would fill for a new item, so they don't
+  // change the replaced item again, which would add a second undo step.
+  const options = fillFieldDefaults(
+    portFields(old?.options, fields, old?.description?.fields),
+    Object.entries(fields),
+    true,
     (field) => isAutomationBehavior(field) && !!description.target && !target
-  );
+  ).values;
   return setTarget({ ...item, options }, target);
 };
 
 export const portTrigger = (
   oldTrigger: Trigger,
   newTrigger: Trigger,
-  hass: HomeAssistant,
+  registries: TargetRegistries,
   descriptions: TriggerDescriptions
 ): Trigger => {
   const trigger = {
@@ -287,14 +216,14 @@ export const portTrigger = (
           description: descriptions[oldTrigger.trigger],
         }
       : undefined,
-    hass
+    registries
   );
 };
 
 export const portCondition = (
   oldCondition: Condition,
   newCondition: Condition,
-  hass: HomeAssistant,
+  registries: TargetRegistries,
   descriptions: ConditionDescriptions
 ): Condition => {
   const condition = {
@@ -319,7 +248,7 @@ export const portCondition = (
           description: descriptions[oldCondition.condition],
         }
       : undefined,
-    hass
+    registries
   );
 };
 
@@ -328,13 +257,13 @@ interface ServiceFieldWithSection extends Field {
 }
 
 const getService = (
-  hass: HomeAssistant,
+  services: HomeAssistant["services"],
   action: string | undefined
 ): HassService | undefined => {
   if (!action?.includes(".")) {
     return undefined;
   }
-  return hass.services[computeDomain(action)]?.[computeObjectId(action)];
+  return services[computeDomain(action)]?.[computeObjectId(action)];
 };
 
 // Sections only group fields in the UI, their values are not nested.
@@ -379,7 +308,7 @@ const isServiceAction = (action: Action): action is ServiceAction =>
 export const portAction = (
   oldAction: Action,
   newAction: Action,
-  hass: HomeAssistant
+  registries: TargetRegistries & Pick<HomeAssistant, "services">
 ): Action => {
   // `continue_on_error` isn't valid on conditions.
   const keys = keptKeys(ACTION_ROW_CONFIG_KEYS).filter(
@@ -393,21 +322,24 @@ export const portAction = (
   } as Action;
 
   const service = isServiceAction(action)
-    ? getService(hass, action.action)
+    ? getService(registries.services, action.action)
     : undefined;
   if (!service || !isServiceAction(action)) {
     return action;
   }
 
   const oldService = isServiceAction(oldAction) ? oldAction : undefined;
-  const oldDescription = getService(hass, oldService?.action);
+  const oldDescription = getService(registries.services, oldService?.action);
   const fields = getServiceFields(service);
-  const data = portFields(
-    oldService?.data,
-    fields,
-    oldDescription ? getServiceFields(oldDescription) : undefined
-  );
-  fillDefaults(data, fields);
+  const data = fillFieldDefaults(
+    portFields(
+      oldService?.data,
+      fields,
+      oldDescription ? getServiceFields(oldDescription) : undefined
+    ),
+    Object.entries(fields),
+    true
+  ).values;
 
   const result: ServiceAction = {
     ...action,
@@ -423,7 +355,7 @@ export const portAction = (
         oldService && getServiceTarget(oldService),
         getTargetFilter(service),
         getTargetFilter(oldDescription),
-        hass
+        registries
       )
   );
 };
