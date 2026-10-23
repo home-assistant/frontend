@@ -164,6 +164,33 @@ const groupByPlace = (
   return groups;
 };
 
+const findAreaWithMostLights = (hass: HomeAssistant): string | undefined => {
+  const lightCountByArea = new Map<string, number>();
+  for (const entry of Object.values(hass.entities)) {
+    if (computeDomain(entry.entity_id) !== "light" || entry.hidden) {
+      continue;
+    }
+    const areaId = getEntityAreaId(
+      entry.entity_id,
+      hass.entities,
+      hass.devices
+    );
+    if (areaId) {
+      lightCountByArea.set(areaId, (lightCountByArea.get(areaId) ?? 0) + 1);
+    }
+  }
+
+  let bestAreaId: string | undefined;
+  let bestCount = 0;
+  for (const [areaId, count] of lightCountByArea) {
+    if (count > bestCount) {
+      bestAreaId = areaId;
+      bestCount = count;
+    }
+  }
+  return bestAreaId;
+};
+
 @customElement("entities-section-strategy")
 export class EntitiesSectionStrategy extends ReactiveElement {
   static registryDependencies: readonly LovelaceStrategyDependency[] = [
@@ -181,16 +208,11 @@ export class EntitiesSectionStrategy extends ReactiveElement {
   public static getStubConfig(
     hass: HomeAssistant
   ): EntitiesSectionStrategyConfig {
+    const areaId = findAreaWithMostLights(hass) ?? Object.keys(hass.areas)[0];
     const config: EntitiesSectionStrategyConfig = {
       type: "entities",
       entity_types: ["light"],
-      group_by: "area",
     };
-    const floorId = Object.keys(hass.floors)[0];
-    if (floorId) {
-      return { ...config, target: { floor_id: floorId } };
-    }
-    const areaId = Object.keys(hass.areas)[0];
     if (areaId) {
       return { ...config, target: { area_id: areaId } };
     }
