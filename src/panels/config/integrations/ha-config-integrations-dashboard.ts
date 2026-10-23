@@ -945,7 +945,8 @@ class HaConfigIntegrationsDashboard extends KeyboardShortcutMixin(
     }
     const brand = extractSearchParam("brand");
     const domain = extractSearchParam("domain");
-    navigate("/config/integrations/dashboard/", { replace: true });
+    // Navigating closes open dialogs, so open them once it has finished
+    await navigate("/config/integrations/dashboard/", { replace: true });
 
     if (brand) {
       showAddIntegrationDialog(this, {
