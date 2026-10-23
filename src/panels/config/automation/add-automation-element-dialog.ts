@@ -20,6 +20,7 @@ import type { LocalizeKeys } from "../../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import { debounce } from "../../../common/util/debounce";
 import { deepEqual } from "../../../common/util/deep-equal";
+import { uid } from "../../../common/util/uid";
 import { ADAPTIVE_DIALOG_MEDIA_QUERY } from "../../../components/ha-adaptive-dialog";
 import "../../../components/ha-bottom-sheet";
 import "../../../components/ha-button-toggle-group";
@@ -97,6 +98,7 @@ import {
 } from "./add-automation-element/target-items";
 import type {
   AddElementHistoryData,
+  AddElementTab,
   AddElementType,
   AutomationItemComboBoxItem,
   ElementSources,
@@ -116,8 +118,6 @@ import {
   addRecentTarget,
   RECENT_TARGETS_STORAGE_KEY,
 } from "./target/recent_targets";
-
-type Tab = "targets" | "groups" | "blocks";
 
 const DOCUMENTATION_PATHS: Record<AddElementType, string> = {
   trigger: "/docs/automation/trigger/",
@@ -199,7 +199,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
 
   @state() private _selectedTarget?: SingleHassServiceTarget;
 
-  @state() private _tab: Tab = "targets";
+  @state() private _tab: AddElementTab = "targets";
 
   @state() private _filter = "";
 
@@ -236,7 +236,14 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
 
   private _closing = false;
 
-  private _historyCleanedUp = false;
+  private readonly _historyId = uid();
+
+  private _hasManagerHistoryEntry = false;
+
+  // Closing waits until the history is back at the entry that opened the dialog
+  private _historyPending = false;
+
+  private _closedWhileHistoryPending = false;
 
   private _unsubNarrow?: () => void;
 
@@ -266,6 +273,9 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
   }
 
   private _initialize(type: AddElementType) {
+    this._hasManagerHistoryEntry =
+      mainWindow.history.state?.dialog === this.localName;
+
     const queryTarget = getAddAutomationElementTargetFromQuery(
       this._states,
       this._registries.devices,
@@ -321,18 +331,22 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       historyState &&
       (this._selectedTarget || this._selectedGroup)
     ) {
-      const dialogData: AddElementHistoryData | undefined =
-        historyState.dialogData;
+      const dialogData = this._ownHistoryData(historyState);
       if (dialogData?.target) {
+        this._selectedGroup = undefined;
+        this._selectedCollectionIndex = undefined;
         this._selectedTarget = dialogData.target;
         this._fetchTargetElements();
         this._tab = "targets";
         return false;
       }
       if (dialogData?.group) {
+        this._selectedTarget = undefined;
+        this._targetElementKeys = undefined;
+        this._loadItemsError = false;
         this._selectedCollectionIndex = dialogData.collectionIndex;
         this._selectedGroup = dialogData.group;
-        this._tab = "groups";
+        this._tab = dialogData.tab ?? "groups";
         return false;
       }
 
@@ -344,8 +358,15 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       }
     }
 
-    this._closing = true;
-    this._cleanUpHistory();
+    if (!this._closing) {
+      this._closing = true;
+      if (this._unwindHistory() && historyState) {
+        // Called for a history step, the dialog stays on the dialog stack
+        // until the history is back at the entry that opened it
+        super.closeDialog(historyState);
+        return false;
+      }
+    }
     return super.closeDialog(historyState);
   }
 
@@ -359,25 +380,47 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
 
   // #region history
 
-  private _pushHistory(data: Omit<AddElementHistoryData, "depth">) {
-    const depth: number =
-      (mainWindow.history.state?.dialogData?.depth ?? 0) + 1;
-    mainWindow.history.pushState({ dialogData: { ...data, depth } }, "");
+  // Entries pushed by an earlier dialog, like before a page reload, are ignored
+  private _ownHistoryData(
+    historyState: { dialogData?: AddElementHistoryData } | null | undefined
+  ): AddElementHistoryData | undefined {
+    const dialogData = historyState?.dialogData;
+    return dialogData?.dialogId === this._historyId ? dialogData : undefined;
   }
 
-  // Removes the navigation levels the dialog added to the history, so the
-  // dialog manager finds its own state when the dialog is gone.
-  private _cleanUpHistory() {
-    if (this._historyCleanedUp) {
-      return;
-    }
-    this._historyCleanedUp = true;
-    const depth: number | undefined =
-      mainWindow.history.state?.dialogData?.depth;
-    if (depth) {
-      mainWindow.history.go(-depth);
-    }
+  private _pushHistory(
+    data: Omit<AddElementHistoryData, "dialogId" | "depth">
+  ) {
+    const depth =
+      (this._ownHistoryData(mainWindow.history.state)?.depth ?? 0) + 1;
+    mainWindow.history.pushState(
+      { dialogData: { ...data, dialogId: this._historyId, depth } },
+      ""
+    );
   }
+
+  // Goes back to the opener entry, where the dialog manager closes this
+  // dialog as the top one, so a dialog below it stays open.
+  private _unwindHistory(): boolean {
+    const depth = this._ownHistoryData(mainWindow.history.state)?.depth;
+    if (!depth) {
+      return false;
+    }
+    this._historyPending = true;
+    mainWindow.addEventListener("popstate", this._historyUnwound, {
+      once: true,
+    });
+    mainWindow.history.go(-(depth + (this._hasManagerHistoryEntry ? 1 : 0)));
+    return true;
+  }
+
+  private _historyUnwound = () => {
+    this._historyPending = false;
+    if (this._closedWhileHistoryPending) {
+      // let DialogMixin remove the dialog now
+      this.dispatchEvent(new Event("closed"));
+    }
+  };
 
   // #endregion history
 
@@ -961,10 +1004,17 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     mainWindow.history.back();
   }
 
-  private _handleClosed() {
+  private _handleClosed(ev: Event) {
     // Closed by the dialog itself, like with escape or a click on the scrim
-    this._closing = true;
-    this._cleanUpHistory();
+    if (!this._closing) {
+      this._closing = true;
+      this._unwindHistory();
+    }
+    if (this._historyPending) {
+      // DialogMixin removes the dialog on this event
+      ev.stopPropagation();
+      this._closedWhileHistoryPending = true;
+    }
   }
 
   private _scrollToTop(content: boolean) {
@@ -977,7 +1027,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     });
   }
 
-  private _switchTab(ev: ValueChangedEvent<Tab>) {
+  private _switchTab(ev: ValueChangedEvent<AddElementTab>) {
     this._tab = ev.detail.value;
   }
 
@@ -1024,6 +1074,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     this._pushHistory({
       group: this._selectedGroup,
       collectionIndex: this._selectedCollectionIndex,
+      tab: "targets",
     });
     this._scrollToTop(this._narrow);
   }

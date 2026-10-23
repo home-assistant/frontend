@@ -13,6 +13,8 @@ import type { AddAutomationElementDialogParams } from "../show-add-automation-el
 
 export type AddElementType = AddAutomationElementDialogParams["type"];
 
+export type AddElementTab = "targets" | "groups" | "blocks";
+
 export interface AddAutomationElementListItem {
   key: string;
   name: string;
@@ -69,9 +71,13 @@ export interface ElementSources {
 
 /** History state the dialog pushes for each navigation level. */
 export interface AddElementHistoryData {
+  // dialog instance that pushed the entry, entries can outlive a page reload
+  dialogId: string;
   // number of history entries the dialog pushed up to this one
   depth: number;
   target?: SingleHassServiceTarget;
   group?: string;
   collectionIndex?: number;
+  // tab the group was picked in, time & location groups live in the target tree
+  tab?: AddElementTab;
 }
