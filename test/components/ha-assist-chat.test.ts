@@ -1,5 +1,13 @@
 import { ContextProvider } from "@lit/context";
-import { describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import type { AssistPipeline } from "../../src/data/assist_pipeline";
 import type { AssistMessage } from "../../src/data/assist_chat";
 import {
@@ -90,22 +98,52 @@ describe("greetingTranslationLanguage", () => {
 });
 
 describe("ha-assist-chat scrolling", () => {
-  // Each message sits in its own container, so a ".message:last-child"
-  // selector matched the greeting and scrolled to the top (#51873)
-  it("scrolls to the newest message", async () => {
-    // jsdom lacks scrollIntoView and the validity API of form controls
-    const internalsProto = window.ElementInternals.prototype as any;
+  // jsdom lacks scrollIntoView and the validity API of form controls
+  const internalsProto = window.ElementInternals.prototype as any;
+  const patched: [object, string][] = [
+    [internalsProto, "setValidity"],
+    [internalsProto, "setFormValue"],
+    [internalsProto, "validity"],
+    [Element.prototype, "scrollIntoView"],
+  ];
+  const originals = patched.map(([target, key]) =>
+    Object.getOwnPropertyDescriptor(target, key)
+  );
+  const scrolled: Element[] = [];
+  let host: HTMLElement | undefined;
+
+  beforeAll(() => {
     internalsProto.setValidity = vi.fn();
     internalsProto.setFormValue = vi.fn();
     Object.defineProperty(internalsProto, "validity", {
       get: () => ({ valid: true }),
       configurable: true,
     });
-    const scrolled: Element[] = [];
     Element.prototype.scrollIntoView = function (this: Element) {
       scrolled.push(this);
     };
-    const host = document.createElement("div");
+  });
+
+  afterEach(() => {
+    host?.remove();
+    host = undefined;
+    scrolled.length = 0;
+  });
+
+  afterAll(() => {
+    patched.forEach(([target, key], i) => {
+      if (originals[i]) {
+        Object.defineProperty(target, key, originals[i]);
+      } else {
+        delete (target as Record<string, unknown>)[key];
+      }
+    });
+  });
+
+  // Each message sits in its own container, so a ".message:last-child"
+  // selector matched the greeting and scrolled to the top (#51873)
+  it("scrolls to the newest message", async () => {
+    host = document.createElement("div");
     document.body.appendChild(host);
     new ContextProvider(host, {
       context: internationalizationContext,
@@ -139,7 +177,5 @@ describe("ha-assist-chat scrolling", () => {
     const messages = el.shadowRoot!.querySelectorAll(".message");
     expect(messages).toHaveLength(3);
     expect([...messages].indexOf(scrolled[scrolled.length - 1])).toBe(2);
-    host.remove();
-    delete (Element.prototype as Partial<Element>).scrollIntoView;
   });
 });
