@@ -755,6 +755,7 @@ export class HaDataTable extends LitElement {
                     this._stickyGroup !== undefined
                       ? html`<div
                           class="mdc-data-table__row sticky-group-header"
+                          role="row"
                           .group=${this._stickyGroup}
                           @click=${this._collapseStickyGroup}
                         >
@@ -1140,7 +1141,7 @@ export class HaDataTable extends LitElement {
     // available there.
     return html`<div
       class="mdc-data-table__cell group-header"
-      role=${ifDefined(sticky ? undefined : "cell")}
+      role="cell"
       .group=${groupName}
       @click=${sticky ? nothing : this._collapseGroup}
     >
