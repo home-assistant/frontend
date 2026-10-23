@@ -79,10 +79,6 @@ These were tuned by eye in the concept and are hard-coded:
 - [#51650](https://github.com/home-assistant/frontend/pull/51650): added `ha-adaptive-popover`, used by the set date card feature. This branch builds on it.
 - [OpenHomeFoundation/ux-design#43](https://github.com/OpenHomeFoundation/ux-design/issues/43): showing contextual actions in popover dialogs.
 
-## Corner radius in other design systems
+## The look
 
-For the decision on the look:
-
-- The popover here uses the dialog's 24px radius (`--ha-border-radius-3xl`).
-- Material 3 dialogs use 28dp ([dialog](https://github.com/material-components/material-components-android/blob/master/docs/components/Dialog.md), [shapes](https://github.com/material-components/material-components-android/blob/master/docs/theming/Shape.md)).
-- Fluent 2 popovers use 12px ([shapes](https://fluent2.microsoft.design/shapes)).
+The popover reuses the dialog's 24px radius (`--ha-border-radius-3xl`), shadow and filled buttons. The new design system in the works should decide how popovers look, rather than this concept.
