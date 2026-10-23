@@ -29,6 +29,9 @@ import {
   CompareMode,
   reconcileUsageWithHome,
   computeConsumptionData,
+  INFERRED_GRID_STAT_ID,
+  INFERRED_GRID_EXPORT_STAT_ID,
+  emptyGridSourceEnergyPreference,
 } from "../../src/data/energy";
 import type {
   EnergyData,
@@ -38,7 +41,10 @@ import type {
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
 import { StatisticMeanType } from "../../src/data/recorder";
-import type { StatisticsMetaData } from "../../src/data/recorder";
+import type {
+  StatisticsMetaData,
+  StatisticValue,
+} from "../../src/data/recorder";
 import { createMockEntityState, createMockHass } from "../fixtures/hass";
 import type { LocalizeFunc } from "../../src/common/translations/localize";
 
@@ -2366,5 +2372,203 @@ describe("computeConsumptionData with a home meter", () => {
 
   it("never changes the measured grid value", () => {
     assert.equal(consumption.used_grid[1], baseline.used_grid[1]);
+  });
+});
+
+describe("getEnergyDataCollection inferred grid", () => {
+  const HOUR = 3_600_000;
+  const DAY = 24 * HOUR;
+
+  // statistic id -> [hour start ms, change][]
+  type HourlyChanges = Record<string, [number, number][]>;
+
+  // Minimal recorder: serves the hourly data above, aggregated per period.
+  const mockRecorderCallWS = (hourly: HourlyChanges) => async (msg: any) => {
+    if (msg.type === "energy/info") {
+      return { cost_sensors: {}, solar_forecast_domains: [] };
+    }
+    if (msg.type === "recorder/get_statistics_metadata") {
+      return (msg.statistic_ids as string[]).map((id) => ({
+        statistic_id: id,
+        source: "recorder",
+        name: null,
+        has_sum: true,
+        mean_type: 0,
+        statistics_unit_of_measurement: "kWh",
+        unit_class: "energy",
+      }));
+    }
+    if (msg.type === "recorder/statistics_during_period") {
+      const from = new Date(msg.start_time).getTime();
+      const to = msg.end_time ? new Date(msg.end_time).getTime() : Infinity;
+      const size =
+        msg.period === "hour" ? HOUR : msg.period === "day" ? DAY : Infinity;
+      const result: Record<string, any[]> = {};
+      for (const id of msg.statistic_ids as string[]) {
+        const buckets = new Map<number, number>();
+        for (const [start, change] of hourly[id] ?? []) {
+          if (start < from || start >= to) continue;
+          const bucket =
+            size === Infinity
+              ? from
+              : from + Math.floor((start - from) / size) * size;
+          buckets.set(bucket, (buckets.get(bucket) ?? 0) + change);
+        }
+        if (buckets.size) {
+          result[id] = [...buckets].map(([start, change]) => ({
+            start,
+            end: size === Infinity ? to : start + size,
+            change,
+          }));
+        }
+      }
+      return result;
+    }
+    throw new Error(`Unexpected message ${msg.type}`);
+  };
+
+  const localize = ((key: string) => key) as any;
+
+  const homeSource = {
+    type: "home",
+    stat_energy_from: "sensor.home_energy",
+  } as EnergySource;
+  const solarSource = {
+    type: "solar",
+    stat_energy_from: "sensor.solar_energy",
+    config_entry_solar_forecast: null,
+  } as EnergySource;
+  const gridSource = {
+    ...emptyGridSourceEnergyPreference(),
+    stat_energy_from: "sensor.grid_in",
+  } as EnergySource;
+
+  // Hour 0: home 1, solar 6 -> 5 kWh exported.
+  // Hour 1: home 6, solar 1 -> 5 kWh imported.
+  const opposite = (t0: number): HourlyChanges => ({
+    "sensor.home_energy": [
+      [t0, 1],
+      [t0 + HOUR, 6],
+    ],
+    "sensor.solar_energy": [
+      [t0, 6],
+      [t0 + HOUR, 1],
+    ],
+  });
+
+  const total = (series: StatisticValue[] = []) =>
+    series.reduce((sum, stat) => sum + (stat.change ?? 0), 0);
+
+  const load = async (
+    key: string,
+    sources: EnergySource[],
+    hourly: HourlyChanges,
+    start: Date,
+    end: Date,
+    compare?: CompareMode
+  ) => {
+    const collection = getEnergyDataCollection(
+      {
+        addEventListener: () => undefined,
+        removeEventListener: () => undefined,
+      } as any,
+      {
+        callWS: mockRecorderCallWS(hourly) as any,
+        localize,
+        entities: {},
+        states: {},
+        locale: {
+          language: "en",
+          number_format: "language",
+          time_format: "24",
+          time_zone: "server",
+        } as any,
+        config: { time_zone: "UTC", unit_system: { length: "km" } } as any,
+        panelUrl: "energy",
+        key,
+        prefs: {
+          energy_sources: sources,
+          device_consumption: [],
+          device_consumption_water: [],
+        },
+      }
+    );
+    collection.setPeriod(start, end);
+    if (compare) {
+      collection.setCompare(compare);
+    }
+    await collection.refresh();
+    return collection.state!;
+  };
+
+  const start = new Date(2026, 2, 2);
+  const end = new Date(2026, 2, 6, 23, 59, 59, 999);
+
+  it("keeps import and export separate within one daily bucket", async () => {
+    const state = await load(
+      "energy_infer_day",
+      [homeSource, solarSource],
+      opposite(start.getTime()),
+      start,
+      end
+    );
+    assert.closeTo(total(state.stats[INFERRED_GRID_STAT_ID]), 5, 1e-9);
+    assert.closeTo(total(state.stats[INFERRED_GRID_EXPORT_STAT_ID]), 5, 1e-9);
+  });
+
+  it("keeps import and export separate within one monthly bucket", async () => {
+    const monthStart = new Date(2026, 2, 1);
+    const monthEnd = new Date(2026, 3, 30, 23, 59, 59, 999);
+    const state = await load(
+      "energy_infer_month",
+      [homeSource, solarSource],
+      opposite(monthStart.getTime() + DAY),
+      monthStart,
+      monthEnd
+    );
+    assert.closeTo(total(state.stats[INFERRED_GRID_STAT_ID]), 5, 1e-9);
+    assert.closeTo(total(state.stats[INFERRED_GRID_EXPORT_STAT_ID]), 5, 1e-9);
+  });
+
+  it("does not infer when a grid measurement is configured", async () => {
+    const state = await load(
+      "energy_infer_configured",
+      [homeSource, solarSource, gridSource],
+      {
+        ...opposite(start.getTime()),
+        "sensor.grid_in": [[start.getTime(), 3]],
+      },
+      start,
+      end
+    );
+    assert.isUndefined(state.stats[INFERRED_GRID_STAT_ID]);
+    assert.isUndefined(state.statsMetadata[INFERRED_GRID_STAT_ID]);
+    assert.lengthOf(state.prefs.energy_sources, 3);
+    assert.equal(state.stats["sensor.grid_in"][0].change, 3);
+  });
+
+  it("registers the comparison period without data in the selected one", async () => {
+    const compareStart = new Date(2026, 1, 25).getTime();
+    const state = await load(
+      "energy_infer_compare",
+      [homeSource, solarSource],
+      opposite(compareStart),
+      start,
+      end,
+      CompareMode.PREVIOUS
+    );
+    const sources = state.prefs.energy_sources;
+    assert.deepInclude(sources[sources.length - 1], {
+      type: "grid",
+      stat_energy_from: INFERRED_GRID_STAT_ID,
+      stat_energy_to: INFERRED_GRID_EXPORT_STAT_ID,
+    });
+    assert.deepEqual(state.stats[INFERRED_GRID_STAT_ID], []);
+    assert.closeTo(total(state.statsCompare[INFERRED_GRID_STAT_ID]), 5, 1e-9);
+    assert.closeTo(
+      total(state.statsCompare[INFERRED_GRID_EXPORT_STAT_ID]),
+      5,
+      1e-9
+    );
   });
 });

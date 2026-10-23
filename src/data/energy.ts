@@ -2637,6 +2637,16 @@ export const downloadEnergyData = (
 
   printCategory("solar_production", solar_productions, electricUnit);
 
+  const home_consumptions: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "home")
+    .forEach((source) => {
+      source = source as HomeSourceTypeEnergyPreference;
+      home_consumptions.push(source.stat_energy_from);
+    });
+
+  printCategory("home_consumption", home_consumptions, electricUnit);
+
   const gas_consumptions: string[] = [];
   const gas_consumptions_cost: string[] = [];
   energy_sources
@@ -2721,6 +2731,7 @@ export const downloadEnergyData = (
   };
 
   const hasSolar = !!solar_productions.length;
+  const hasHome = !!home_consumptions.length;
   const hasBattery = !!battery_ins.length;
   const hasGridReturn = !!grid_productions.length;
   const hasGridSource = !!grid_consumptions.length;
@@ -2776,7 +2787,10 @@ export const downloadEnergyData = (
     }
   }
 
-  if ((hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) > 1) {
+  if (
+    hasHome ||
+    (hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) > 1
+  ) {
     processConsumptionData(
       "calculated_total_consumption",
       electricUnit,
