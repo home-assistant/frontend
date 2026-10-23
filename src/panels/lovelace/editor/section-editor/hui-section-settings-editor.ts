@@ -105,8 +105,8 @@ export class HuiDialogEditSection extends LitElement {
   );
 
   render() {
-    const backgroundEnabled = this.config.background !== undefined;
     const background = resolveSectionBackground(this.config.background);
+    const backgroundEnabled = background !== undefined;
 
     const data: SettingsData = {
       column_span: this.config.column_span,
