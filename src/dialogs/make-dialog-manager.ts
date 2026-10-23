@@ -279,7 +279,17 @@ export const closeAllDialogs = async () => {
 };
 
 const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
-  _removeOpenDialogTag(ev.detail.dialog);
+  // Not every dialog passes its tag in the event detail. Without it, only
+  // untrack this dialog when it fired the event itself, not a dialog nested in it
+  const closedElement = ev.currentTarget as HTMLElement;
+  const dialogTag =
+    ev.detail.dialog ??
+    (ev.composedPath()[0] === closedElement
+      ? closedElement.localName
+      : undefined);
+  if (dialogTag) {
+    _removeOpenDialogTag(dialogTag);
+  }
   // If not closed by navigating back, remove the open state from history
   const dialogIndex = OPEN_DIALOG_STACK.findIndex(
     (state) => state.dialogTag === ev.detail.dialog

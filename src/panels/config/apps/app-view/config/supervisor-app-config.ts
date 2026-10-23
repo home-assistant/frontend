@@ -423,13 +423,9 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
   }
 
   protected supportedShortcutsInInput(): SupportedShortcuts {
-    return {
-      Y: () => {
-        if (this._canShowSchema && !this.disabled) {
-          this._toggleYamlMode();
-        }
-      },
-    };
+    return this._canShowSchema && !this.disabled
+      ? { Y: () => this._toggleYamlMode() }
+      : {};
   }
 
   private _toggleOptional() {

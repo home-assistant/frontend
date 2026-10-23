@@ -350,7 +350,9 @@ export class HuiDialogEditSection
   }
 
   protected supportedShortcutsInInput(): SupportedShortcuts {
-    return this._params ? { Y: () => this._toggleMode() } : {};
+    return this._params && !(this._yamlMode && this._yamlError)
+      ? { Y: () => this._toggleMode() }
+      : {};
   }
 
   private _openSelectView(): void {

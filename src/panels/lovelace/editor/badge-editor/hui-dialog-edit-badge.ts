@@ -323,16 +323,15 @@ export class HuiDialogEditBadge
   }
 
   private _toggleMode(): void {
-    if (!this._guiModeAvailable) {
-      return;
-    }
     withViewTransition(() => {
       this._badgeEditorEl?.toggleMode();
     });
   }
 
   protected supportedShortcutsInInput(): SupportedShortcuts {
-    return this._params ? { Y: () => this._toggleMode() } : {};
+    return this._params && this._guiModeAvailable
+      ? { Y: () => this._toggleMode() }
+      : {};
   }
 
   private _opened() {

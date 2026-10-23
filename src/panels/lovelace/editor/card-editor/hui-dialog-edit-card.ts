@@ -347,16 +347,15 @@ export class HuiDialogEditCard
   }
 
   private _toggleMode(): void {
-    if (!this._guiModeAvailable) {
-      return;
-    }
     withViewTransition(() => {
       this._cardEditorEl?.toggleMode();
     });
   }
 
   protected supportedShortcutsInInput(): SupportedShortcuts {
-    return this._params ? { Y: () => this._toggleMode() } : {};
+    return this._params && this._guiModeAvailable
+      ? { Y: () => this._toggleMode() }
+      : {};
   }
 
   private _opened() {

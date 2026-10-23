@@ -1069,14 +1069,13 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   protected supportedShortcutsInInput(): SupportedShortcuts {
+    if (this._manualEditor?.sidebarOpen) {
+      return this._manualEditor.canToggleSidebarYamlMode
+        ? { Y: () => this._manualEditor?.toggleSidebarYamlMode() }
+        : {};
+    }
     return {
-      Y: () => {
-        if (this._manualEditor?.sidebarOpen) {
-          this._manualEditor.toggleSidebarYamlMode();
-          return;
-        }
-        this._toggleYamlMode();
-      },
+      Y: () => this._toggleYamlMode(),
     };
   }
 

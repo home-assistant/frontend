@@ -293,6 +293,10 @@ export default class HaAutomationSidebar extends LitElement {
     this._closeSidebar();
   }
 
+  public get canToggleYamlMode(): boolean {
+    return !!this._contentElement?.canToggleYamlMode;
+  }
+
   public toggleYamlMode() {
     this._contentElement?.toggleYamlMode();
   }

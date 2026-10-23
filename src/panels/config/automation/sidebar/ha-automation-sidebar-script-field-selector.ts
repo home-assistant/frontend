@@ -73,7 +73,7 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
       <ha-dropdown-item
         slot="menu-items"
         value="toggle_yaml_mode"
-        .disabled=${!this._canToggleYamlMode}
+        .disabled=${!this.canToggleYamlMode}
       >
         <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
         <div class="overflow-label">
@@ -154,12 +154,12 @@ export default class HaAutomationSidebarScriptFieldSelector extends LitElement {
     this.config?.save?.(ev.detail.value);
   }
 
-  private get _canToggleYamlMode(): boolean {
+  public get canToggleYamlMode(): boolean {
     return !this._warnings;
   }
 
   public toggleYamlMode() {
-    if (!this._canToggleYamlMode) {
+    if (!this.canToggleYamlMode) {
       return;
     }
     fireEvent(this, "toggle-yaml-mode");

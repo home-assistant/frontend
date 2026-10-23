@@ -637,13 +637,9 @@ class HaPanelDevAction extends MatchMinHeightMixin(
   }
 
   protected supportedShortcutsInInput(): SupportedShortcuts {
-    return {
-      Y: () => {
-        if (this._uiAvailable) {
-          this._setYamlMode(!this._yamlMode);
-        }
-      },
-    };
+    return this._uiAvailable
+      ? { Y: () => this._setYamlMode(!this._yamlMode) }
+      : {};
   }
 
   private _yamlChanged(ev: HASSDomEvent<{ value: any; isValid: boolean }>) {
