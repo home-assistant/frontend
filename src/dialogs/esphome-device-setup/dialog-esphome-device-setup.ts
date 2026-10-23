@@ -398,14 +398,16 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     if (status !== "completed") {
       return nothing;
     }
+    return this._checkBadge(
+      this._i18n!.localize(
+        "ui.panel.config.devices.esphome.setup_status_completed"
+      )
+    );
+  }
+
+  private _checkBadge(label: string) {
     return html`
-      <span
-        class="status-badge completed"
-        role="img"
-        aria-label=${this._i18n!.localize(
-          "ui.panel.config.devices.esphome.setup_status_completed"
-        )}
-      >
+      <span class="status-badge completed" role="img" aria-label=${label}>
         <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
       </span>
     `;
@@ -507,7 +509,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     return html`
       <div
         class="protect"
-        style="--capability-accent: ${ESPHOME_CAPABILITY_ACCENTS.audio}"
+        style="--capability-accent: var(--light-green-color)"
       >
         <span class="icon-chip">
           <ha-svg-icon .path=${mdiShieldLock}></ha-svg-icon>
@@ -624,11 +626,9 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
             <span class="port-text">
               <span class="port-name">${entry.title}</span>
             </span>
-            <span class="chip active">
-              ${localize(
-                "ui.panel.config.devices.esphome.setup_zwave_configured"
-              )}
-            </span>
+            ${this._checkBadge(
+              localize("ui.panel.config.devices.esphome.setup_zwave_configured")
+            )}
           </li>
         </ul>
       `;
@@ -748,13 +748,11 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
                         </span>
                       `
                     : usage.consumers.length
-                      ? html`
-                          <span class="chip active">
-                            ${localize(
-                              "ui.panel.config.devices.esphome.setup_serial_configured"
-                            )}
-                          </span>
-                        `
+                      ? this._checkBadge(
+                          localize(
+                            "ui.panel.config.devices.esphome.setup_serial_configured"
+                          )
+                        )
                       : html`
                           <ha-button size="s" @click=${this._setupSerialPort}>
                             ${localize(
@@ -1403,10 +1401,6 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
           line-height: 1;
           background: var(--ha-color-fill-neutral-normal-resting);
           color: var(--primary-text-color);
-        }
-        .chip.active {
-          background: var(--success-color);
-          color: var(--ha-color-on-success-loud);
         }
         .ma-offer {
           display: flex;

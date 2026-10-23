@@ -1,11 +1,7 @@
-import {
-  mdiAccessPoint,
-  mdiBluetooth,
-  mdiMusic,
-  mdiSwapHorizontal,
-} from "@mdi/js";
+import { mdiAccessPoint, mdiBluetooth, mdiSwapHorizontal } from "@mdi/js";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { LocalizeKeys } from "../common/translations/localize";
+import { mdiSendspin } from "../resources/sendspin-logo-svg";
 import type { ConfigEntry } from "./config_entries";
 import type { DataEntryFlowProgress } from "./data_entry_flow";
 import type {
@@ -55,17 +51,19 @@ export const CAPABILITY_ORDER: ESPHomeCapabilityId[] = [
   "serial",
 ];
 
-/** Theme colors for each setup capability. */
+const SENDSPIN_RED = "#e25c4c";
+
+/** Colors for each setup capability. */
 export const ESPHOME_CAPABILITY_ACCENTS: Record<ESPHomeCapabilityId, string> = {
   bluetooth: "var(--blue-color)",
-  audio: "var(--light-green-color)",
+  audio: SENDSPIN_RED,
   connectivity: "var(--cyan-color)",
   serial: "var(--deep-purple-color)",
 };
 
 export const ESPHOME_CAPABILITY_ICONS: Record<ESPHomeCapabilityId, string> = {
   bluetooth: mdiBluetooth,
-  audio: mdiMusic,
+  audio: mdiSendspin,
   connectivity: mdiAccessPoint,
   serial: mdiSwapHorizontal,
 };
