@@ -131,7 +131,17 @@ export const deviceComboBoxKeys: FuseWeightedKey[] = [
 ];
 
 export const getDevices = (
-  hass: HomeAssistant,
+  hass: Pick<
+    HomeAssistant,
+    | "states"
+    | "entities"
+    | "devices"
+    | "areas"
+    | "localize"
+    | "language"
+    | "locale"
+    | "translationMetadata"
+  >,
   configEntryLookup: Record<string, ConfigEntry>,
   options?: GetDevicesOptions
 ): DevicePickerItem[] => {

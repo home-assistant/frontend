@@ -18,6 +18,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { live } from "lit/directives/live";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
@@ -44,15 +45,16 @@ import {
   type FloorNestedComboBoxItem,
   type UnassignedAreasFloorComboBoxItem,
 } from "../../../../data/area_floor_picker";
+import type { ConfigEntry } from "../../../../data/config_entries";
 import {
-  getConfigEntries,
-  type ConfigEntry,
-} from "../../../../data/config_entries";
-import {
+  configContext,
+  configEntriesContext,
   internationalizationContext,
   labelsContext,
+  manifestsContext,
   registriesContext,
   statesContext,
+  uiContext,
 } from "../../../../data/context";
 import {
   getDeviceEntityLookup,
@@ -69,9 +71,13 @@ import {
   type SingleHassServiceTarget,
   type TargetType,
 } from "../../../../data/target";
-import type { HomeAssistant, HomeAssistantRegistries } from "../../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantRegistries,
+  HomeAssistantUI,
+} from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
-import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
 import { getTargetIcon } from "../target/get_target_icon";
 import { getTargetText } from "../target/get_target_text";
 import {
@@ -79,6 +85,7 @@ import {
   parseRecentTarget,
 } from "../target/recent_targets";
 import { targetExists } from "../target/target_exists";
+import type { AddAutomationElementListItem } from "./types";
 
 // All person entities are also listed under "People" in the "Other" section
 // next to time and sun (triggers/conditions only), wherever they are assigned.
@@ -106,14 +113,10 @@ interface Level3Entries {
 @customElement("ha-automation-add-from-target")
 export default class HaAutomationAddFromTarget extends LitElement {
   // #region properties
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false })
   public value?: SingleHassServiceTarget;
 
   @property({ type: Boolean }) public narrow = false;
-
-  @property({ attribute: false }) public manifests?: DomainManifestLookup;
 
   // Section title + group rows (Time, Location) for the targetless element
   // groups. Picking a row drills into that group's items, just like selecting
@@ -145,6 +148,35 @@ export default class HaAutomationAddFromTarget extends LitElement {
   @state()
   @consume({ context: labelsContext, subscribe: true })
   private _labelRegistry!: LabelRegistryEntry[];
+
+  @state()
+  @consume({ context: manifestsContext, subscribe: true })
+  private _manifests?: DomainManifestLookup;
+
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<ConfigEntry[], Record<string, ConfigEntry>>({
+    transformer: function (value) {
+      return value
+        ? Object.fromEntries(value.map((entry) => [entry.entry_id, entry]))
+        : undefined;
+    },
+  })
+  private _configEntryLookup?: Record<string, ConfigEntry>;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: ({ themes }) => themes?.darkMode,
+  })
+  private _darkMode?: boolean;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, string>({
+    transformer: ({ auth }) => auth.data.hassUrl,
+  })
+  private _hassUrl?: string;
   // #endregion context
 
   // #region state and variables
@@ -162,13 +194,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _initialDataLoadStarted = false;
 
-  private _configEntriesLoaded?: Promise<void>;
-
   @state() private _showShowMoreButton?: boolean;
 
   @state() private _fullHeight = false;
-
-  private _configEntryLookup: Record<string, ConfigEntry> = {};
 
   // #endregion state and variables
 
@@ -177,15 +205,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
-    if (!this.hasUpdated) {
-      // Without config entries the tree only lacks integration icons
-      this._configEntriesLoaded = this._loadConfigEntries().catch(
-        () => undefined
-      );
-    }
-
-    // The tree sorts helpers by their manifest, so it waits for them
-    if (!this._initialDataLoadStarted && this.manifests) {
+    // The tree sorts helpers by their manifest and shows the integration
+    // icons of devices, so it waits for manifests and config entries
+    if (
+      !this._initialDataLoadStarted &&
+      this._manifests &&
+      this._configEntryLookup
+    ) {
       this._initialDataLoadStarted = true;
       this._initialDataLoad();
     }
@@ -208,7 +234,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
   }
 
   private async _initialDataLoad() {
-    await this._configEntriesLoaded;
+    // Building the tree can select the value, which fires an event
+    await this.updateComplete;
     this._getTreeData();
     this._treeLoaded = true;
   }
@@ -423,7 +450,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 this.states,
                 type,
                 id,
-                this._configEntryLookup,
+                this._configEntryLookup ?? {},
                 this._getLabel
               )}
             </div>
@@ -850,7 +877,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
         ];
       })
       .sort(([, deviceNameA = "zzz"], [, deviceNameB = "zzz"]) =>
-        stringCompare(deviceNameA, deviceNameB, this.hass.locale.language)
+        stringCompare(deviceNameA, deviceNameB, this._i18n.locale.language)
       )
       .map(([deviceId, deviceName, domain]) => {
         const { open, entities, devices: children } = devices[deviceId];
@@ -899,13 +926,13 @@ export default class HaAutomationAddFromTarget extends LitElement {
         const label = domainToName(
           this._i18n.localize,
           domain,
-          this.manifests![domain]
+          this._manifests![domain]
         );
 
         return [domainTargetId, label, domain] as [string, string, string];
       })
       .sort(([, labelA = "zzz"], [, labelB = "zzz"]) =>
-        stringCompare(labelA, labelB, this.hass.locale.language)
+        stringCompare(labelA, labelB, this._i18n.locale.language)
       )
       .map(([domainTargetId, label, domain]) => {
         const { open, entities } = domains[domainTargetId];
@@ -955,7 +982,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
         return [entityId, label, stateObj] as [string, string, HassEntity];
       })
       .sort(([, labelA], [, labelB]) =>
-        stringCompare(labelA, labelB, this.hass.locale.language)
+        stringCompare(labelA, labelB, this._i18n.locale.language)
       )
       .map(([entityId, label, stateObj]) =>
         this._renderItem(
@@ -1019,9 +1046,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
           {
             domain,
             type: "icon",
-            darkOptimized: this.hass.themes?.darkMode,
+            darkOptimized: this._darkMode,
           },
-          this.hass.auth.data.hassUrl
+          this._hassUrl
         )}
       />
     `;
@@ -1207,7 +1234,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       .filter((entity) => !entity.area_id && !entity.device_id)
       .forEach(({ entity_id }) => {
         const domain = entity_id.split(".", 2)[0];
-        const manifest = this.manifests ? this.manifests[domain] : undefined;
+        const manifest = this._manifests ? this._manifests[domain] : undefined;
         if (manifest?.integration_type === "helper") {
           if (!this._entries[`helper${TARGET_SEPARATOR}`]) {
             this._entries[`helper${TARGET_SEPARATOR}`] = {
@@ -1482,7 +1509,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
       }
 
       const domain = id.split(".", 1)[0];
-      const isHelper = this.manifests![domain]?.integration_type === "helper";
+      const isHelper = this._manifests![domain]?.integration_type === "helper";
       const group = isHelper
         ? `helper${TARGET_SEPARATOR}`
         : `device${TARGET_SEPARATOR}`;
@@ -1752,13 +1779,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
     // avoid leaving the label text selected by the double click
     window.getSelection()?.removeAllRanges();
     this._toggleItem(item.target, !item.expanded);
-  }
-
-  private async _loadConfigEntries() {
-    const configEntries = await getConfigEntries(this.hass);
-    this._configEntryLookup = Object.fromEntries(
-      configEntries.map((entry) => [entry.entry_id, entry])
-    );
   }
 
   private _expandHeight() {
