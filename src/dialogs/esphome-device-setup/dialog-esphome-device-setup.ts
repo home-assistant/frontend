@@ -509,7 +509,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
     return html`
       <div
         class="protect"
-        style="--capability-accent: ${ESPHOME_CAPABILITY_ACCENTS.audio}"
+        style="--capability-accent: var(--light-green-color)"
       >
         <span class="icon-chip">
           <ha-svg-icon .path=${mdiShieldLock}></ha-svg-icon>
