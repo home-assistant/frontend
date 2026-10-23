@@ -61,6 +61,29 @@ export const dailyForecast = (): ForecastAttribute[] => {
     precipitation_probability: probability,
   }));
 };
+
+// Earlier states of the weather entity, for the pressure trend and the
+// comparison with the average high.
+export const weatherHistory = (entityId: string) => {
+  const now = Date.now();
+  const states: { s: string; a: Record<string, number>; lu: number }[] = [];
+  for (let hoursAgo = 7 * 24; hoursAgo > 0; hoursAgo -= 3) {
+    const time = now - hoursAgo * HOUR_MS;
+    const hour = new Date(time).getHours();
+    states.push({
+      s: "cloudy",
+      a: {
+        temperature: Math.round(
+          11 + 4 * Math.sin(((hour - 9) / 24) * 2 * Math.PI)
+        ),
+        pressure: 1008 + hoursAgo / 3,
+      },
+      lu: time / 1000,
+    });
+  }
+  return { [entityId]: states };
+};
+
 /** Forecasts for weather entities. */
 export const mockWeatherForecasts = (hass: MockHomeAssistant) => {
   hass.mockWS("weather/subscribe_forecast", (msg, currentHass, onChange) => {
@@ -83,4 +106,12 @@ export const mockWeatherForecasts = (hass: MockHomeAssistant) => {
     onChange!({ type: msg.forecast_type, forecast });
     return () => undefined;
   });
+};
+
+/** History and rain gauge statistics for the weather page cards. */
+export const mockWeatherHistory = (hass: MockHomeAssistant) => {
+  hass.mockWS("recorder/statistic_during_period", () => ({ change: 4.2 }));
+  hass.mockWS("history/history_during_period", (msg) =>
+    weatherHistory(msg.entity_ids?.[0] ?? "weather.home")
+  );
 };

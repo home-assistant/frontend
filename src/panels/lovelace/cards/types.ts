@@ -718,6 +718,20 @@ export interface WeatherMoonCardConfig extends LovelaceCardConfig {
   no_background?: boolean;
 }
 
+export type WeatherMetric =
+  | "humidity"
+  | "pressure"
+  | "visibility"
+  | "uv_index"
+  | "precipitation"
+  | "compared_to_average";
+
+export interface WeatherMetricCardConfig extends WeatherPageCardConfig {
+  metric: WeatherMetric;
+  // Rain gauge sensor, used by the precipitation metric
+  entity?: string;
+}
+
 export interface TileCardConfig extends LovelaceCardConfig, TileActionsConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];

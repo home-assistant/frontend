@@ -93,3 +93,67 @@ export const getForecastSource = (
         isAvailable(stateObj) &&
         supportsFeature(stateObj, FORECAST_FEATURES[type])
     );
+
+// UV index levels from the World Health Organization.
+export type UvLevel = "low" | "moderate" | "high" | "very_high" | "extreme";
+
+export const UV_LEVEL_COLORS: Record<UvLevel, string> = {
+  low: "var(--success-color)",
+  moderate: "var(--warning-color)",
+  high: "var(--orange-color)",
+  very_high: "var(--error-color)",
+  extreme: "var(--purple-color)",
+};
+
+export const getUvLevel = (uvIndex: number): UvLevel => {
+  if (uvIndex < 3) return "low";
+  if (uvIndex < 6) return "moderate";
+  if (uvIndex < 8) return "high";
+  if (uvIndex < 11) return "very_high";
+  return "extreme";
+};
+
+const WIND_SPEED_TO_MS: Record<string, number> = {
+  "m/s": 1,
+  "km/h": 1 / 3.6,
+  mph: 0.44704,
+  kn: 0.514444,
+  "ft/s": 0.3048,
+};
+
+// Upper limits of Beaufort 0 to 11, in m/s
+const BEAUFORT_LIMITS = [
+  0.5, 1.6, 3.4, 5.5, 8.0, 10.8, 13.9, 17.2, 20.8, 24.5, 28.5, 32.7,
+];
+
+export const getBeaufort = (
+  speed: number,
+  unit: string | undefined
+): number | undefined => {
+  if (unit === "Beaufort") {
+    return Math.round(speed);
+  }
+  const factor = unit ? WIND_SPEED_TO_MS[unit] : undefined;
+  if (factor === undefined) {
+    return undefined;
+  }
+  const metersPerSecond = speed * factor;
+  const index = BEAUFORT_LIMITS.findIndex((limit) => metersPerSecond < limit);
+  return index === -1 ? 12 : index;
+};
+
+const PRESSURE_TO_HPA: Record<string, number> = {
+  hPa: 1,
+  mbar: 1,
+  kPa: 10,
+  inHg: 33.8639,
+  mmHg: 1.33322,
+};
+
+export const pressureToHpa = (
+  value: number,
+  unit: string | undefined
+): number | undefined => {
+  const factor = unit ? PRESSURE_TO_HPA[unit] : undefined;
+  return factor === undefined ? undefined : value * factor;
+};
