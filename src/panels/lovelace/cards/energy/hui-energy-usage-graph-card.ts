@@ -312,7 +312,6 @@ export class HuiEnergyUsageGraphCard
       solar?: string[];
       to_battery?: string[];
       from_battery?: string[];
-      home?: string[];
     } = {};
 
     const statLabels: {
@@ -328,10 +327,6 @@ export class HuiEnergyUsageGraphCard
     };
 
     for (const source of energyData.prefs.energy_sources) {
-      if (source.type === "home") {
-        statIds.home = [source.stat_energy_from];
-        continue;
-      }
       if (source.type === "solar") {
         if (statIds.solar) {
           statIds.solar.push(source.stat_energy_from);
@@ -552,7 +547,6 @@ export class HuiEnergyUsageGraphCard
       solar?: string[] | undefined;
       to_battery?: string[] | undefined;
       from_battery?: string[] | undefined;
-      home?: string[] | undefined;
     },
     colorIndices: Record<string, Record<string, number>>,
     computedStyles: CSSStyleDeclaration,
@@ -645,7 +639,7 @@ export class HuiEnergyUsageGraphCard
       if (used_grid) {
         combinedData.used_grid = { used_grid };
       }
-    } else if (!statIdsByCat.from_grid && statIdsByCat.home) {
+    } else if (!statIdsByCat.from_grid) {
       combinedData.used_grid = { used_grid: consumptionData.used_grid };
     }
 
