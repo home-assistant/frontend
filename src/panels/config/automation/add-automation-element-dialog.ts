@@ -242,6 +242,8 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
 
   private _closedWhileHistoryPending = false;
 
+  private _systemDomains?: SystemDomains;
+
   private _unsubNarrow?: () => void;
 
   // #endregion variables
@@ -267,6 +269,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     super.disconnectedCallback();
     this._unsubNarrow?.();
     this._unsubNarrow = undefined;
+    mainWindow.removeEventListener("popstate", this._historyUnwound);
   }
 
   private _initialize(type: AddElementType) {
@@ -456,7 +459,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     );
     const systemDomains = this._getSystemDomains(
       sources,
-      this._usedDomains,
+      this._states,
       this._registries
     );
 
@@ -770,33 +773,39 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     })
   );
 
-  // Entities are only checked again when the used domains or registries change
+  // An equal result keeps the previous object, so state updates don't
+  // rebuild the groups
   private _getSystemDomains = memoizeOne(
     (
       sources: ElementSources,
-      _usedDomains: Set<string> | undefined,
+      states: HomeAssistant["states"],
       registries: ContextType<typeof registriesContext>
     ): SystemDomains | undefined => {
       if (!sources.manifests || sources.type === "action") {
         return undefined;
       }
-      return sources.type === "trigger"
-        ? calculateActiveSystemDomains(
-            sources.triggerDescriptions,
-            sources.manifests,
-            getTriggerDomain,
-            this._states,
-            registries.entities,
-            registries.devices
-          )
-        : calculateActiveSystemDomains(
-            sources.conditionDescriptions,
-            sources.manifests,
-            getConditionDomain,
-            this._states,
-            registries.entities,
-            registries.devices
-          );
+      const systemDomains =
+        sources.type === "trigger"
+          ? calculateActiveSystemDomains(
+              sources.triggerDescriptions,
+              sources.manifests,
+              getTriggerDomain,
+              states,
+              registries.entities,
+              registries.devices
+            )
+          : calculateActiveSystemDomains(
+              sources.conditionDescriptions,
+              sources.manifests,
+              getConditionDomain,
+              states,
+              registries.entities,
+              registries.devices
+            );
+      if (!deepEqual(systemDomains, this._systemDomains)) {
+        this._systemDomains = systemDomains;
+      }
+      return this._systemDomains;
     }
   );
 

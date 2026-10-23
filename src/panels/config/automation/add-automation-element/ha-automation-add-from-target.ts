@@ -205,11 +205,7 @@ export default class HaAutomationAddFromTarget extends LitElement {
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
-    if (
-      !this._initialDataLoadStarted &&
-      this._manifests &&
-      this._configEntryLookup
-    ) {
+    if (!this._initialDataLoadStarted && this._manifests) {
       this._initialDataLoadStarted = true;
       this._initialDataLoad();
     }
@@ -258,7 +254,11 @@ export default class HaAutomationAddFromTarget extends LitElement {
     return html`
       ${
         this.narrow && this.value
-          ? this._renderNarrow(this._entries, this.value)
+          ? this._renderNarrow(
+              this._entries,
+              this.value,
+              this._configEntryLookup
+            )
           : html`
               ${this._renderRecentTargets(
                 this.narrow,
@@ -270,7 +270,12 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 ),
                 this.value
               )}
-              ${this._renderFloors(this.narrow, this._entries, this.value)}
+              ${this._renderFloors(
+                this.narrow,
+                this._entries,
+                this.value,
+                this._configEntryLookup
+              )}
               ${this._renderTimeLocation(
                 this.narrow,
                 this._entries,
@@ -279,7 +284,12 @@ export default class HaAutomationAddFromTarget extends LitElement {
                 this.selectedGroup,
                 this.value
               )}
-              ${this._renderUnassigned(this.narrow, this._entries, this.value)}
+              ${this._renderUnassigned(
+                this.narrow,
+                this._entries,
+                this.value,
+                this._configEntryLookup
+              )}
               ${this._renderLabels(
                 this.narrow,
                 this.states,
@@ -308,7 +318,9 @@ export default class HaAutomationAddFromTarget extends LitElement {
   private _renderNarrow = memoizeOne(
     (
       entries: Record<string, Level1Entries>,
-      value: SingleHassServiceTarget
+      value: SingleHassServiceTarget,
+      // device icons come from the config entries
+      _configEntryLookup?: Record<string, ConfigEntry>
     ) => {
       const [valueTypeId, valueId] = Object.entries(value)[0];
       const valueType = valueTypeId.replace("_id", "");
@@ -484,7 +496,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
     (
       narrow: boolean,
       entries: Record<string, Level1Entries>,
-      value?: SingleHassServiceTarget
+      value?: SingleHassServiceTarget,
+      _configEntryLookup?: Record<string, ConfigEntry>
     ) => {
       const emptyFloors =
         !this._floorAreas.length ||
@@ -695,7 +708,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
     (
       narrow: boolean,
       entries: Record<string, Level1Entries>,
-      _value?: SingleHassServiceTarget
+      _value?: SingleHassServiceTarget,
+      _configEntryLookup?: Record<string, ConfigEntry>
     ) => {
       const unassignedDevicesLength = Object.keys(
         entries[`area${TARGET_SEPARATOR}`]?.devices || {}
