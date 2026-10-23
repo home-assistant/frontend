@@ -731,6 +731,11 @@ export interface WeatherMetricCardConfig extends WeatherPageCardConfig {
   entity?: string;
 }
 
+export interface WeatherAirQualityCardConfig extends LovelaceCardConfig {
+  air_quality_entities?: string[];
+  pollen_entities?: string[];
+}
+
 export interface TileCardConfig extends LovelaceCardConfig, TileActionsConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];

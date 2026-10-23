@@ -440,6 +440,16 @@
         "gusts": "Gusts",
         "from": "From",
         "beaufort": "Bft",
+        "air_quality": "Air quality",
+        "fine_particles": "fine particles",
+        "air_quality_level": {
+          "good": "Good",
+          "fair": "Fair",
+          "moderate": "Moderate",
+          "poor": "Poor",
+          "very_poor": "Very poor",
+          "extremely_poor": "Extremely poor"
+        },
         "uv_level": {
           "low": "Low",
           "moderate": "Moderate",

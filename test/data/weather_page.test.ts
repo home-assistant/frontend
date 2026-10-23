@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import {
   getBeaufort,
+  getPm25Level,
   getUvLevel,
   getWeatherSources,
   getWeatherValue,
@@ -96,6 +97,12 @@ describe("levels", () => {
     expect(getUvLevel(7)).toBe("high");
     expect(getUvLevel(9)).toBe("very_high");
     expect(getUvLevel(11)).toBe("extreme");
+  });
+
+  it("uses the WHO guideline for fine particles", () => {
+    expect(getPm25Level(8)).toBe("good");
+    expect(getPm25Level(20)).toBe("fair");
+    expect(getPm25Level(100)).toBe("extremely_poor");
   });
 
   it("converts wind speed to Beaufort", () => {

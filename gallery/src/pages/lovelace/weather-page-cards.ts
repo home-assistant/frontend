@@ -49,6 +49,31 @@ const ENTITIES = [
       unit_of_measurement: "mm",
     },
   },
+  {
+    entity_id: "sensor.home_pm2_5",
+    state: "8",
+    attributes: {
+      friendly_name: "PM2.5",
+      device_class: "pm25",
+      unit_of_measurement: "µg/m³",
+    },
+  },
+  {
+    entity_id: "sensor.home_nitrogen_dioxide",
+    state: "12",
+    attributes: {
+      friendly_name: "Nitrogen dioxide",
+      device_class: "nitrogen_dioxide",
+      unit_of_measurement: "µg/m³",
+    },
+  },
+  {
+    entity_id: "sensor.home_grass_pollen",
+    state: "Moderate",
+    attributes: {
+      friendly_name: "Grass pollen",
+    },
+  },
 ];
 
 const metric = (heading: string, config: Record<string, unknown>) => ({
@@ -84,6 +109,17 @@ const CONFIGS: DemoCardConfig[] = [
     entity: "sensor.rain_gauge",
   }),
   metric("Visibility", { metric: "visibility" }),
+  {
+    heading: "Air quality and pollen",
+    config: {
+      type: "weather-air-quality",
+      air_quality_entities: [
+        "sensor.home_pm2_5",
+        "sensor.home_nitrogen_dioxide",
+      ],
+      pollen_entities: ["sensor.home_grass_pollen"],
+    },
+  },
 ];
 
 @customElement("demo-lovelace-weather-page-cards")
