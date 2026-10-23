@@ -71,5 +71,4 @@ export const RECENT_ELEMENTS_STORAGE_KEY = "automation-recent-elements";
 // People are shown in the same section by ha-automation-add-from-target.
 export const TIME_LOCATION_GROUPS = ["time", "sun"];
 
-// Numeric domains get a numeric state element when browsing by entity
 export const NUMERIC_DOMAINS = ["counter", "input_number", "number", "sensor"];

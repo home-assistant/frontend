@@ -97,7 +97,6 @@ import type {
   AutomationItemComboBoxItem,
 } from "./types";
 
-// What the entity and device items are built from
 type PickerSources = Pick<
   HomeAssistant,
   | "states"

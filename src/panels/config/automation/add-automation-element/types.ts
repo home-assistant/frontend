@@ -23,7 +23,6 @@ export interface AddAutomationElementListItem {
   icon?: TemplateResult;
 }
 
-/** A titled section of items, e.g. all elements of one domain. */
 export interface ItemsSection {
   title: string;
   items: AddAutomationElementListItem[];
@@ -55,10 +54,7 @@ export interface SystemDomains {
   byEntityDomain: Map<string, Set<string>>;
 }
 
-/**
- * Everything the element lists are built from. Created once per change of
- * its inputs, so it can be used as a key for memoized computations.
- */
+// Created once per change of its inputs, so it can be used as a memo key
 export interface ElementSources {
   type: AddElementType;
   localize: LocalizeFunc;
@@ -69,7 +65,6 @@ export interface ElementSources {
   manifests?: DomainManifestLookup;
 }
 
-/** History state the dialog pushes for each navigation level. */
 export interface AddElementHistoryData {
   // dialog instance that pushed the entry, entries can outlive a page reload
   dialogId: string;

@@ -25,10 +25,6 @@ export interface DomainClassificationOptions {
   activeSystemDomains?: Set<string>;
 }
 
-/**
- * The collection placeholder a domain's group belongs to, or undefined when
- * the domain is not listed.
- */
 export const classifyDomain = (
   domain: string,
   manifest: DomainManifestLookup[string] | undefined,
@@ -64,7 +60,6 @@ export const classifyDomain = (
   return "integration";
 };
 
-/** The collection group key a domain is sorted under when browsing by target. */
 export const getDomainGroupKey = (
   domain: string,
   manifests: DomainManifestLookup | undefined,
@@ -82,10 +77,6 @@ export const getDomainGroupKey = (
   return "dynamicGroups";
 };
 
-/**
- * System and entity integrations without entities of their own (like
- * "person" conditions on zones), active when an entity matches their targets.
- */
 export const calculateActiveSystemDomains = (
   descriptions: TriggerDescriptions | ConditionDescriptions,
   manifests: DomainManifestLookup,
@@ -135,7 +126,6 @@ export const calculateActiveSystemDomains = (
       }
     }
   }
-  // Check each entity against the filters
   const domainFilterEntries = Object.entries(domainFilters);
   for (const entity of Object.values(states)) {
     for (const [domain, filters] of domainFilterEntries) {
@@ -166,7 +156,6 @@ export const calculateActiveSystemDomains = (
   return { active, byEntityDomain };
 };
 
-/** Generated domain groups for the given collection placeholder types. */
 export const getDynamicDomainGroups = (
   localize: LocalizeFunc,
   language: string,

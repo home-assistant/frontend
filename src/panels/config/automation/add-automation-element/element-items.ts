@@ -24,7 +24,6 @@ import type { AddAutomationElementListItem, AddElementType } from "./types";
 
 type GroupOptions = AutomationElementGroup[string];
 
-/** List item for a built-in element or group, like "state" or "time". */
 export const convertToItem = (
   key: string,
   options: GroupOptions,
@@ -86,10 +85,6 @@ export const getConditionListItem = (
   };
 };
 
-/**
- * List item for a service. The domain prefix tells services apart in lists
- * that mix domains.
- */
 export const getServiceListItem = (
   localize: LocalizeFunc,
   services: HomeAssistant["services"],
@@ -126,10 +121,6 @@ export const getServiceListItem = (
 const getDomainOfElement = (type: AddElementType, key: string): string =>
   type === "condition" ? getConditionDomain(key) : getTriggerDomain(key);
 
-/**
- * Items of the backend triggers or conditions of the given domains, used by
- * curated groups that bundle domains (e.g. Sun).
- */
 export const getDomainElementItems = (
   type: AddElementType,
   domains: string[],
@@ -172,7 +163,6 @@ export const groupHasItems = (
   return true;
 };
 
-/** Definition of a group, looked up in the given collection first. */
 export const findGroupDefinition = (
   type: AddElementType,
   group: string,
@@ -185,10 +175,6 @@ export const findGroupDefinition = (
   );
 };
 
-/**
- * The members of a group, or with no group given all top level groups of all
- * collections.
- */
 export const getGroups = (
   type: AddElementType,
   group?: string,

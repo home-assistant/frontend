@@ -21,7 +21,6 @@ import type {
 } from "../../../../types";
 import { getTargetText } from "../target/get_target_text";
 
-/** What the target texts are built from. */
 export interface TargetLabelSources {
   i18n: HomeAssistantInternationalization;
   registries: HomeAssistantRegistries;
@@ -30,10 +29,8 @@ export interface TargetLabelSources {
   getLabel: (id: string) => LabelRegistryEntry | undefined;
 }
 
-/**
- * Type and ID of a target. Targets without ID are the virtual tree nodes, like
- * "unassigned devices" (area) or all entities of a domain (entity_<domain>).
- */
+// Targets without ID are virtual tree nodes, like "unassigned devices" (area)
+// or all entities of a domain (entity_<domain>)
 export const extractTypeAndIdFromTarget = (
   target: SingleHassServiceTarget
 ): [string, string | undefined] => {
@@ -42,7 +39,6 @@ export const extractTypeAndIdFromTarget = (
   return [targetType, targetId];
 };
 
-/** Whether the target is a real target that elements can be added to. */
 export const isTargetWithId = (target?: SingleHassServiceTarget): boolean =>
   !!target && !!Object.values(target)[0];
 
@@ -89,10 +85,6 @@ export const getSelectedTargetLabel = (
   return undefined;
 };
 
-/**
- * Where the target is located, like the floor of an area or the area of a
- * device, shown as subtitle on narrow screens.
- */
 export const getTargetSubtitle = (
   { i18n, registries, states, manifests }: TargetLabelSources,
   target: SingleHassServiceTarget
@@ -157,10 +149,7 @@ export const getTargetSubtitle = (
   return undefined;
 };
 
-/**
- * Whether the target tree is hidden on narrow screens, because the selected
- * target has nothing left to drill into.
- */
+// Narrow screens hide the tree when the target has nothing left to drill into
 export const isTargetTreeHidden = (
   registries: HomeAssistantRegistries,
   target: SingleHassServiceTarget

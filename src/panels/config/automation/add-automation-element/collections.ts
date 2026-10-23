@@ -49,10 +49,6 @@ const getDescriptions = (sources: ElementSources) =>
     ? sources.conditionDescriptions
     : sources.triggerDescriptions;
 
-/**
- * Backend triggers, optionally limited to a dynamic domain group. System
- * domain triggers that cover the browsed entity domain are included.
- */
 export const getTriggerItems = (
   sources: ElementSources,
   systemDomainsByEntityDomain: Map<string, Set<string>> | undefined,
@@ -87,10 +83,6 @@ export const getTriggerItems = (
   );
 };
 
-/**
- * Backend conditions, optionally limited to a dynamic domain group. System
- * domain conditions that cover the browsed entity domain are included.
- */
 export const getConditionItems = (
   sources: ElementSources,
   systemDomainsByEntityDomain: Map<string, Set<string>> | undefined,
@@ -125,7 +117,6 @@ export const getConditionItems = (
   return result;
 };
 
-/** Services, optionally limited to a dynamic domain group. */
 export const getServiceItems = (
   sources: ElementSources,
   group?: string
@@ -173,7 +164,6 @@ export const getServiceItems = (
   return result;
 };
 
-/** All elements of a type, for search and recently used elements. */
 export const getAllItems = (
   sources: ElementSources
 ): AddAutomationElementListItem[] => {
@@ -203,7 +193,6 @@ export const getAllItems = (
   return items.filter(({ name }) => name);
 };
 
-/** The groups of the "by type" tab, per collection. */
 export const getCollections = (
   sources: ElementSources,
   usedDomains: Set<string> | undefined,
@@ -313,7 +302,6 @@ export const getCollections = (
   return generatedCollections;
 };
 
-/** The building blocks, like "if-then" or "and". */
 export const getBlockItems = (
   type: AddElementType,
   localize: LocalizeFunc,
@@ -326,7 +314,6 @@ export const getBlockItems = (
     language
   );
 
-/** The items of a group selected in the "by type" tab. */
 export const getGroupItems = (
   sources: ElementSources,
   group: string,
@@ -368,7 +355,6 @@ export const getGroupItems = (
   return sortByName(result, language);
 };
 
-/** The targetless groups (time, sun) shown in the "by target" tab. */
 export const getTimeLocationGroups = (
   sources: ElementSources
 ): AddAutomationElementListItem[] => {
@@ -388,7 +374,6 @@ export const getTimeLocationGroups = (
     .filter((item) => item.name);
 };
 
-/** The rendered group an element belongs to, if any. */
 const findRenderedGroup = (
   type: AddElementType,
   key: string,
@@ -405,7 +390,6 @@ const findRenderedGroup = (
     .find((group) => group.key === groupKey);
 };
 
-/** Recently used elements that still exist, with the name of their group. */
 export const getRecentElements = (
   type: AddElementType,
   recents: string[] | undefined,

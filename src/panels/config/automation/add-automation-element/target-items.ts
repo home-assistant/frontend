@@ -33,7 +33,6 @@ import type {
   ItemsSection,
 } from "./types";
 
-/** Keys of the elements that apply to a target, as known by the backend. */
 export const fetchTargetElementKeys = (
   callWS: HomeAssistant["callWS"],
   type: AddElementType,
@@ -45,10 +44,6 @@ export const fetchTargetElementKeys = (
       ? getConditionsForTarget(callWS, target)
       : getServicesForTarget(callWS, target);
 
-/**
- * Sorts domain sections like the collections of the "by type" tab, domains of
- * the same collection group by title.
- */
 export const sortDomainsByCollection = (
   type: AddElementType,
   entries: [string, ItemsSection][],
@@ -81,7 +76,6 @@ export const sortDomainsByCollection = (
     .map((entry) => entry[1]);
 };
 
-/** The state elements of the entity group, numeric state for numeric entities. */
 export const getDefaultStateItems = (
   type: "trigger" | "condition",
   localize: LocalizeFunc,
@@ -103,10 +97,6 @@ export const getDefaultStateItems = (
   return items;
 };
 
-/**
- * Builds the sections of the elements that apply to a target, one per
- * domain.
- */
 export const getTargetSections = (
   sources: ElementSources,
   target: SingleHassServiceTarget,

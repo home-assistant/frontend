@@ -205,7 +205,6 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
 
   @state() private _narrow = false;
 
-  // Keys of the elements that apply to the selected target
   @state() private _targetElementKeys?: string[];
 
   @state() private _loadItemsError = false;
@@ -231,7 +230,6 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
   // The mode is kept while open, resizing would otherwise lose the view state
   private _bottomSheetMode = false;
 
-  // Opened for a target from the URL, so there is no overview to go back to
   private _openedFromQuery = false;
 
   private _closing = false;
@@ -240,7 +238,6 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
 
   private _hasManagerHistoryEntry = false;
 
-  // Closing waits until the history is back at the entry that opened the dialog
   private _historyPending = false;
 
   private _closedWhileHistoryPending = false;
@@ -361,8 +358,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     if (!this._closing) {
       this._closing = true;
       if (this._unwindHistory() && historyState) {
-        // Called for a history step, the dialog stays on the dialog stack
-        // until the history is back at the entry that opened it
+        // stay on the dialog stack until the history is back at the opener
         super.closeDialog(historyState);
         return false;
       }
@@ -774,9 +770,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     })
   );
 
-  // System domains are derived from trigger/condition descriptions, so
-  // they don't apply to actions. Entities are only checked again when the
-  // used domains change.
+  // Entities are only checked again when the used domains or registries change
   private _getSystemDomains = memoizeOne(
     (
       sources: ElementSources,
@@ -913,8 +907,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       usedDomains: Set<string> | undefined,
       activeSystemDomains: Set<string> | undefined
     ): ItemsSection[] =>
-      // States only decide whether an entity gets the numeric state item, they
-      // are taken as of loading the target, like the elements themselves
+      // states are taken as of loading the target, like the elements
       getTargetSections(sources, target, keys, this._states, {
         type: sources.type,
         usedDomains,
@@ -979,7 +972,6 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
 
     try {
       const keys = await fetchTargetElementKeys(this._api.callWS, type, target);
-      // A response for a target that is no longer selected is outdated
       if (this._selectedTarget === target) {
         this._targetElementKeys = keys;
       }

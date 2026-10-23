@@ -205,8 +205,6 @@ export default class HaAutomationAddFromTarget extends LitElement {
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
-    // The tree sorts helpers by their manifest and shows the integration
-    // icons of devices, so it waits for manifests and config entries
     if (
       !this._initialDataLoadStarted &&
       this._manifests &&
