@@ -976,12 +976,8 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
     this.lovelace!.enableFullEditMode();
   };
 
-  protected supportedShortcuts(): SupportedShortcuts {
+  protected supportedShortcutsInInput(): SupportedShortcuts {
     return this.lovelace?.editMode ? { Y: this._handleRawEditor } : {};
-  }
-
-  protected supportedShortcutsInInput(): string[] {
-    return ["Y"];
   }
 
   private _handleManageDashboards = () => {

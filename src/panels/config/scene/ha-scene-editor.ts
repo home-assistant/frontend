@@ -1357,12 +1357,13 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   protected supportedShortcuts(): SupportedShortcuts {
     return {
       s: () => this._saveScene(),
-      Y: () => this._toggleYamlMode(),
     };
   }
 
-  protected supportedShortcutsInInput(): string[] {
-    return ["Y"];
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return {
+      Y: () => this._toggleYamlMode(),
+    };
   }
 
   private get _sceneAreaIdCurrent(): string | undefined | null {

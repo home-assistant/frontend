@@ -422,7 +422,7 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
     }
   }
 
-  protected supportedShortcuts(): SupportedShortcuts {
+  protected supportedShortcutsInInput(): SupportedShortcuts {
     return {
       Y: () => {
         if (this._canShowSchema && !this.disabled) {
@@ -430,10 +430,6 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
         }
       },
     };
-  }
-
-  protected supportedShortcutsInInput(): string[] {
-    return ["Y"];
   }
 
   private _toggleOptional() {

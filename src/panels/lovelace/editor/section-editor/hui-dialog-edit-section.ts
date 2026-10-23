@@ -349,12 +349,8 @@ export class HuiDialogEditSection
     }
   }
 
-  protected supportedShortcuts(): SupportedShortcuts {
+  protected supportedShortcutsInInput(): SupportedShortcuts {
     return this._params ? { Y: () => this._toggleMode() } : {};
-  }
-
-  protected supportedShortcutsInInput(): string[] {
-    return ["Y"];
   }
 
   private _openSelectView(): void {

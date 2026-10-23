@@ -636,7 +636,7 @@ class HaPanelDevAction extends MatchMinHeightMixin(
     }
   }
 
-  protected supportedShortcuts(): SupportedShortcuts {
+  protected supportedShortcutsInInput(): SupportedShortcuts {
     return {
       Y: () => {
         if (this._uiAvailable) {
@@ -644,10 +644,6 @@ class HaPanelDevAction extends MatchMinHeightMixin(
         }
       },
     };
-  }
-
-  protected supportedShortcutsInInput(): string[] {
-    return ["Y"];
   }
 
   private _yamlChanged(ev: HASSDomEvent<{ value: any; isValid: boolean }>) {

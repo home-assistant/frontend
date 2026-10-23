@@ -1191,6 +1191,11 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       z: () => this._undo(),
       Z: () => this._redo(),
       y: () => this._redo(),
+    };
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return {
       Y: () => {
         if (this._manualEditor?.sidebarOpen) {
           this._manualEditor.toggleSidebarYamlMode();
@@ -1199,10 +1204,6 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         this._toggleYamlMode();
       },
     };
-  }
-
-  protected supportedShortcutsInInput(): string[] {
-    return ["Y"];
   }
 
   private async _toggleYamlMode() {

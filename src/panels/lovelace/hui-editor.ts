@@ -207,12 +207,8 @@ class LovelaceFullConfigEditor extends DirtyStateProviderMixin<string>()(
     await this._confirmDiscard(true);
   }
 
-  protected supportedShortcuts(): SupportedShortcuts {
+  protected supportedShortcutsInInput(): SupportedShortcuts {
     return { Y: () => this._closeEditor() };
-  }
-
-  protected supportedShortcutsInInput(): string[] {
-    return ["Y"];
   }
 
   private async _resetConfig() {

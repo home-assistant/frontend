@@ -63,14 +63,27 @@ type LoadedDialogsDict = Record<string, LoadedDialogInfo>;
 
 const LOADED: LoadedDialogsDict = {};
 const OPEN_DIALOG_STACK: DialogState[] = [];
+// Tags of all open dialogs in opening order, including those opened without
+// browser history, which OPEN_DIALOG_STACK doesn't track
+const OPEN_DIALOG_TAGS: string[] = [];
+// Shown through the dialog manager but not modal, and never fire
+// `dialog-closed`, so they must not be tracked as open dialogs
+const NON_MODAL_DIALOG_TAGS = new Set(["notification-manager"]);
 export const FOCUS_TARGET = Symbol.for("HA focus target");
 
+const _removeOpenDialogTag = (dialogTag: string) => {
+  const index = OPEN_DIALOG_TAGS.indexOf(dialogTag);
+  if (index !== -1) {
+    OPEN_DIALOG_TAGS.splice(index, 1);
+  }
+};
+
 /**
- * Returns the tag name of the topmost open dialog that was opened with
- * browser history, or `undefined` when no such dialog is open.
+ * Returns the tag name of the topmost open dialog, or `undefined` when no
+ * dialog is open.
  */
 export const getTopOpenDialogTag = (): string | undefined =>
-  OPEN_DIALOG_STACK[OPEN_DIALOG_STACK.length - 1]?.dialogTag;
+  OPEN_DIALOG_TAGS[OPEN_DIALOG_TAGS.length - 1];
 
 /**
  * Shows a dialog element, lazy-loading it if needed, and optionally integrates
@@ -192,6 +205,11 @@ export const showDialog = async (
     dialogElement = await LOADED[dialogTag].element;
   }
 
+  if (!NON_MODAL_DIALOG_TAGS.has(dialogTag)) {
+    _removeOpenDialogTag(dialogTag);
+    OPEN_DIALOG_TAGS.push(dialogTag);
+  }
+
   if ("dialogNext" in dialogElement! && dialogElement.dialogNext) {
     dialogElement.dialogAnchor = dialogAnchor;
     dialogElement.params = dialogParams;
@@ -261,6 +279,7 @@ export const closeAllDialogs = async () => {
 };
 
 const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
+  _removeOpenDialogTag(ev.detail.dialog);
   // If not closed by navigating back, remove the open state from history
   const dialogIndex = OPEN_DIALOG_STACK.findIndex(
     (state) => state.dialogTag === ev.detail.dialog

@@ -372,12 +372,8 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
     }
   }
 
-  protected supportedShortcuts(): SupportedShortcuts {
+  protected supportedShortcutsInInput(): SupportedShortcuts {
     return this._params ? { Y: () => this._toggleMode() } : {};
-  }
-
-  protected supportedShortcutsInInput(): string[] {
-    return ["Y"];
   }
 
   private _openSelectDashboard(): void {

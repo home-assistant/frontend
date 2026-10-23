@@ -1,6 +1,8 @@
 import type { LitElement } from "lit";
 import type { Constructor } from "../types";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
+import { deepActiveElement } from "../common/dom/deep-active-element";
+import { nextRender } from "../common/util/render-status";
 import { getTopOpenDialogTag } from "../dialogs/make-dialog-manager";
 
 declare global {
@@ -27,9 +29,6 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
         !event.altKey &&
         key in supportedShortcuts
       ) {
-        if (this.supportedShortcutsInInput().includes(key)) {
-          return;
-        }
         // Only capture the event if the user is not focused on an input
         if (!canOverrideAlphanumericInput(event.composedPath())) {
           return;
@@ -50,11 +49,15 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       }
     };
 
-    private _isEventInScope(event: KeyboardEvent): boolean {
-      // Only the topmost dialog may handle the shortcut, even when focus has
-      // fallen back to the page behind it
+    // Only the topmost dialog may handle the shortcut, even when focus has
+    // fallen back to the page behind it
+    private _isTopDialogOrPage(): boolean {
       const topDialogTag = getTopOpenDialogTag();
-      if (topDialogTag && topDialogTag !== this.localName) {
+      return !topDialogTag || topDialogTag === this.localName;
+    }
+
+    private _isEventInScope(event: KeyboardEvent): boolean {
+      if (!this._isTopDialogOrPage()) {
         return false;
       }
 
@@ -76,20 +79,37 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       return !insideOtherDialog;
     }
 
-    private _keydownCaptureEvent = (event: KeyboardEvent) => {
-      const supportedShortcuts = this.supportedShortcuts();
+    // Runs in the capture phase so inputs and code editors can't consume the
+    // shortcut before it reaches the window
+    private _keydownCaptureEvent = async (event: KeyboardEvent) => {
+      const supportedShortcuts = this.supportedShortcutsInInput();
       const key = normalizeShortcutKey(event);
       if (
-        (event.ctrlKey || event.metaKey) &&
-        !event.altKey &&
-        key in supportedShortcuts &&
-        this.supportedShortcutsInInput().includes(key) &&
-        this._isEventInScope(event)
+        !(event.ctrlKey || event.metaKey) ||
+        event.altKey ||
+        !(key in supportedShortcuts) ||
+        !this._isEventInScope(event)
       ) {
-        event.preventDefault();
-        event.stopPropagation();
-        supportedShortcuts[key]();
+        return;
       }
+      event.preventDefault();
+      event.stopPropagation();
+
+      // Fields that only publish their value on `change` would lose pending
+      // edits, so blur to commit them and let the update propagate first
+      const activeElement = deepActiveElement();
+      if (
+        activeElement instanceof HTMLElement &&
+        activeElement !== document.body
+      ) {
+        activeElement.blur();
+        await nextRender();
+        // The editor may have been removed, or a dialog opened, in the meantime
+        if (!this._listenersAdded || !this._isTopDialogOrPage()) {
+          return;
+        }
+      }
+      this.supportedShortcutsInInput()[key]?.();
     };
 
     private _listenersAdded = false;
@@ -123,8 +143,11 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       return {};
     }
 
-    protected supportedShortcutsInInput(): string[] {
-      return [];
+    /**
+     * Shortcuts that also work while an input or code editor is focused.
+     */
+    protected supportedShortcutsInInput(): SupportedShortcuts {
+      return {};
     }
 
     protected supportedSingleKeyShortcuts(): SupportedShortcuts {
