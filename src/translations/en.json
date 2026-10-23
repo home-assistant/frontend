@@ -10446,6 +10446,10 @@
             "device": {
               "name": "Device",
               "description": "Shows the controls and sensors of a device."
+            },
+            "entities": {
+              "name": "Entities",
+              "description": "Shows the entities of the types you pick, like all the lights in a room."
             }
           },
           "create_section": {

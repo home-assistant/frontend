@@ -19,7 +19,7 @@ import { showCreateSectionDialog } from "./show-create-section-dialog";
 import { showEditSectionDialog } from "./show-edit-section-dialog";
 
 interface BuiltInSectionStrategy {
-  type: "common-controls" | "device";
+  type: "common-controls" | "device" | "entities";
   isAvailable?: (hass: HomeAssistant) => boolean;
 }
 
@@ -30,6 +30,9 @@ const BUILT_IN_SECTION_STRATEGIES: BuiltInSectionStrategy[] = [
   },
   {
     type: "device",
+  },
+  {
+    type: "entities",
   },
 ];
 
