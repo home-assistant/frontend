@@ -162,6 +162,24 @@ const devicesTableParams = {
   sub_entry: "string?",
 } satisfies Redirect["params"];
 
+// The entities table reads these from the link
+const entitiesTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  status: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  domain: "string?",
+  entity_domain: "string?",
+  label: "string?",
+  assistants: "string?",
+  config_entry: "string?",
+  sub_entry: "string?",
+} satisfies Redirect["params"];
+
 // The automations table reads these from the link
 const automationsTableParams = {
   search: "string?",
@@ -387,6 +405,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   entities: {
     redirect: "/config/entities",
+    params: entitiesTableParams,
   },
   labels: {
     redirect: "/config/labels",
