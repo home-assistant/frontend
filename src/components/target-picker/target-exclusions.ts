@@ -302,7 +302,26 @@ export interface TargetRowState {
   lockedBy: TargetItem[];
 }
 
-/** How a row's checkbox shows `exclusions`. */
+/**
+ * Whether an exclusion is of something below a row: one of the rows under it,
+ * or one of its entities. Labels have no row, so they never are.
+ */
+const isBelow = (row: TargetRow) => {
+  let below: Set<string> | undefined;
+  return (exclusion: TargetExclusion): boolean => {
+    if (exclusion.type === "entity") {
+      return row.type !== "entity" && row.entities.includes(exclusion.id);
+    }
+    below ??= rowKeysBelow(row);
+    return below.has(targetItemKey(exclusion));
+  };
+};
+
+/**
+ * How a row's checkbox shows `exclusions`. A row is only out as a whole when
+ * it, or something above it, is excluded. When only what is below it is,
+ * even all of it, the row is partly out.
+ */
 export const targetRowState = (
   row: TargetRow,
   isTarget: boolean,
@@ -310,7 +329,9 @@ export const targetRowState = (
 ): TargetRowState => {
   const entities = new Set(row.entities);
   const undoable = canUndo(row, isTarget);
+  const fromBelow = isBelow(row);
   const out = new Set<string>();
+  const wholeOut = new Set<string>();
   const undoableOut = new Set<string>();
   const locked = new Set<string>();
   const lockedBy: TargetItem[] = [];
@@ -322,6 +343,9 @@ export const targetRowState = (
       return;
     }
     removed.forEach((entityId) => out.add(entityId));
+    if (!fromBelow(exclusion)) {
+      removed.forEach((entityId) => wholeOut.add(entityId));
+    }
     if (undoable(exclusion)) {
       removed.forEach((entityId) => undoableOut.add(entityId));
     } else {
@@ -332,7 +356,7 @@ export const targetRowState = (
   const disabled = entities.size > 0 && locked.size === entities.size;
   return {
     checked: !disabled && undoableOut.size === 0,
-    indeterminate: out.size > 0 && out.size < entities.size,
+    indeterminate: out.size > 0 && wholeOut.size < entities.size,
     disabled,
     lockedBy: disabled ? lockedBy : [],
   };
