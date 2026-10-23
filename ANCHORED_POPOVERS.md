@@ -75,4 +75,15 @@ These were tuned by eye in the concept and are hard-coded:
 
 ## Related earlier work
 
-An earlier concept made more info a popover. It needed a "mini" variant and more work, and that thinking moved to card feature actions opening popovers instead. Both point the same way: lighter, anchored surfaces for quick actions.
+- [#51641](https://github.com/home-assistant/frontend/issues/51641): card features with actions showing a popover instead of a full dialog. The original idea was a popover mode for more info, similar to the Apple Home controls, which needed a new "mini more info" and more work.
+- [#51650](https://github.com/home-assistant/frontend/pull/51650): added `ha-adaptive-popover`, used by the set date card feature. This branch builds on it.
+- [OpenHomeFoundation/ux-design#43](https://github.com/OpenHomeFoundation/ux-design/issues/43): showing contextual actions in popover dialogs.
+
+## Corner radius in other design systems
+
+For the decision on the look:
+
+- The popover here uses the dialog's 24px radius (`--ha-border-radius-3xl`).
+- Material 3 dialogs use 28dp ([dialog](https://github.com/material-components/material-components-android/blob/master/docs/components/Dialog.md), [shapes](https://github.com/material-components/material-components-android/blob/master/docs/theming/Shape.md)).
+- Fluent 2 popovers use 12px ([shapes](https://fluent2.microsoft.design/shapes)).
+- Windows 11 flyouts and dialogs use 8px, and leave the side attached to the opening control square ([geometry](https://learn.microsoft.com/en-us/windows/apps/design/signature-experiences/geometry)).
