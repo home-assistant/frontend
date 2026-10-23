@@ -4,6 +4,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../../components/ha-adaptive-popover";
 import "../../components/ha-button";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
@@ -27,7 +28,12 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  // Set by the dialog manager before each showDialog
+  @property({ attribute: false }) public dialogAnchor?: Element;
+
   @state() private _params?: DialogBoxParams;
+
+  @state() private _anchor?: Element;
 
   @state() private _open = false;
 
@@ -48,6 +54,7 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
       await this._closePromise;
     }
     this._params = params;
+    this._anchor = this.dialogAnchor;
     this._validInput = true;
     this._open = true;
     this._initDirtyTracking(
@@ -83,6 +90,27 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
       this._params.title ||
       (this._params.confirmation &&
         this.hass.localize("ui.dialogs.generic.default_confirmation_title"));
+
+    if (this._anchor) {
+      // A popover next to what opened it, or a bottom sheet on small screens.
+      // The title is the popover's own, so it can name the dialog.
+      return html`
+        <ha-adaptive-popover
+          .dialogAnchor=${this._anchor}
+          compact
+          .open=${this._open}
+          .preventScrimClose=${!!this._params.confirmation || this.isDirtyState}
+          .headerTitle=${dialogTitle || undefined}
+          .headerSubtitle=${this._params.subtitle}
+          .hideCloseButton=${confirmPrompt && !this._params.showCloseButton}
+          aria-describedby="dialog-box-description"
+          @closed=${this._dialogClosed}
+        >
+          ${this._renderDescription(this._params)}
+          ${this._renderFooter(this._params, confirmPrompt)}
+        </ha-adaptive-popover>
+      `;
+    }
 
     return html`
       <ha-dialog
@@ -126,95 +154,97 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
               : nothing
           }
         </ha-dialog-header>
-        <div id="dialog-box-description">
-          ${this._params.text ? html` <p>${this._params.text}</p> ` : ""}
-          ${
-            this._params.prompt && !this._params.multiline
+        ${this._renderDescription(this._params)}
+        ${this._renderFooter(this._params, confirmPrompt)}
+      </ha-dialog>
+    `;
+  }
+
+  private _renderDescription(params: DialogBoxParams) {
+    return html`
+      <div id="dialog-box-description">
+        ${params.text ? html` <p>${params.text}</p> ` : ""}
+        ${
+          params.prompt && !params.multiline
+            ? html`
+                <ha-input
+                  autofocus
+                  value=${ifDefined(params.defaultValue)}
+                  .placeholder=${params.placeholder}
+                  .label=${params.inputLabel ? params.inputLabel : ""}
+                  .type=${params.inputType ? params.inputType : "text"}
+                  .min=${params.inputMin}
+                  .max=${params.inputMax}
+                  .disabled=${this._loading}
+                  @input=${this._validateInput}
+                >
+                  ${
+                    params.inputSuffix
+                      ? html`<span slot="end">${params.inputSuffix}</span>`
+                      : nothing
+                  }
+                </ha-input>
+              `
+            : params.prompt && params.multiline
               ? html`
-                  <ha-input
+                  <ha-textarea
+                    resize="auto"
                     autofocus
-                    value=${ifDefined(this._params.defaultValue)}
-                    .placeholder=${this._params.placeholder}
-                    .label=${
-                      this._params.inputLabel ? this._params.inputLabel : ""
-                    }
-                    .type=${
-                      this._params.inputType ? this._params.inputType : "text"
-                    }
-                    .min=${this._params.inputMin}
-                    .max=${this._params.inputMax}
+                    .value=${params.defaultValue}
+                    .placeholder=${params.placeholder}
+                    .label=${params.inputLabel}
                     .disabled=${this._loading}
                     @input=${this._validateInput}
-                  >
-                    ${
-                      this._params.inputSuffix
-                        ? html`<span slot="end"
-                            >${this._params.inputSuffix}</span
-                          >`
-                        : nothing
-                    }
-                  </ha-input>
-                `
-              : this._params.prompt && this._params.multiline
-                ? html`
-                    <ha-textarea
-                      resize="auto"
-                      autofocus
-                      .value=${this._params.defaultValue}
-                      .placeholder=${this._params.placeholder}
-                      .label=${this._params.inputLabel}
-                      .disabled=${this._loading}
-                      @input=${this._validateInput}
-                    ></ha-textarea>
-                  `
-                : nothing
-          }
-          ${
-            this._params.prompt && this._params.textBelowInput
-              ? html`<div class="after-input">
-                  ${this._params.textBelowInput}
-                </div>`
-              : nothing
-          }
-        </div>
-        <ha-dialog-footer slot="footer">
-          ${
-            confirmPrompt
-              ? html`
-                  <ha-button
-                    slot="secondaryAction"
-                    @click=${this._dismiss}
-                    ?autofocus=${!this._params.prompt && this._params.destructive}
-                    ?disabled=${this._loading}
-                    appearance="plain"
-                  >
-                    ${
-                      this._params.dismissText
-                        ? this._params.dismissText
-                        : this.hass.localize("ui.common.cancel")
-                    }
-                  </ha-button>
+                  ></ha-textarea>
                 `
               : nothing
+        }
+        ${
+          params.prompt && params.textBelowInput
+            ? html`<div class="after-input">${params.textBelowInput}</div>`
+            : nothing
+        }
+      </div>
+    `;
+  }
+
+  private _renderFooter(params: DialogBoxParams, confirmPrompt: boolean) {
+    return html`
+      <ha-dialog-footer slot="footer">
+        ${
+          confirmPrompt
+            ? html`
+                <ha-button
+                  slot="secondaryAction"
+                  @click=${this._dismiss}
+                  ?autofocus=${!params.prompt && params.destructive}
+                  ?disabled=${this._loading}
+                  appearance="plain"
+                >
+                  ${
+                    params.dismissText
+                      ? params.dismissText
+                      : this.hass.localize("ui.common.cancel")
+                  }
+                </ha-button>
+              `
+            : nothing
+        }
+        <ha-button
+          slot="primaryAction"
+          @click=${this._confirm}
+          ?autofocus=${!params.prompt && !params.destructive}
+          ?disabled=${this._loading || (!!params.prompt && !this._validInput)}
+          .loading=${this._loading}
+          variant=${params.destructive ? "danger" : "brand"}
+        >
+          ${
+            params.confirmText
+              ? params.confirmText
+              : this.hass.localize("ui.common.ok")
           }
-          <ha-button
-            slot="primaryAction"
-            @click=${this._confirm}
-            ?autofocus=${!this._params.prompt && !this._params.destructive}
-            ?disabled=${
-              this._loading || (!!this._params.prompt && !this._validInput)
-            }
-            .loading=${this._loading}
-            variant=${this._params.destructive ? "danger" : "brand"}
-          >
-            ${
-              this._params.confirmText
-                ? this._params.confirmText
-                : this.hass.localize("ui.common.ok")
-            }
-          </ha-button>
-        </ha-dialog-footer>
-      </ha-dialog>
+        </ha-button>
+      </ha-dialog-footer>
     `;
   }
 
@@ -287,6 +317,7 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
     }
     this._closeState = undefined;
     this._params = undefined;
+    this._anchor = undefined;
     this._open = false;
     this._loading = false;
     this._closeResolve?.();
@@ -294,6 +325,10 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
   }
 
   static styles = css`
+    ha-adaptive-popover {
+      /* As wide as the message and buttons need, up to the dialog's width */
+      --ha-adaptive-popover-min-width: 0;
+    }
     :host([inert]) {
       pointer-events: initial !important;
       cursor: initial !important;

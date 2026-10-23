@@ -16,6 +16,8 @@ import { customElement, property } from "lit/decorators";
  *
  * @cssprop --ha-dialog-header-white-space - White space of the title and subtitle, set to `normal` to let them wrap. Defaults to `nowrap`.
  * @cssprop --ha-dialog-header-title-height - Height of the title, set to `auto` when it wraps.
+ * @cssprop --ha-dialog-header-content-padding - Padding around the title and subtitle.
+ * @cssprop --ha-dialog-header-min-height - Minimum height of the title and subtitle area.
  * @cssprop --ha-dialog-header-title-color - Color of the title.
  * @cssprop --ha-dialog-header-subtitle-color - Color of the subtitle.
  *
@@ -80,11 +82,14 @@ export class HaDialogHeader extends LitElement {
         }
         .header-content {
           flex: 1;
-          padding: 10px var(--ha-space-1);
+          padding: var(
+            --ha-dialog-header-content-padding,
+            10px var(--ha-space-1)
+          );
           display: flex;
           flex-direction: column;
           justify-content: center;
-          min-height: var(--ha-space-12);
+          min-height: var(--ha-dialog-header-min-height, var(--ha-space-12));
           min-width: 0;
           overflow: hidden;
           text-overflow: ellipsis;

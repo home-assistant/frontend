@@ -11,11 +11,16 @@ import { HaAdaptiveDialog } from "./ha-adaptive-dialog";
  *
  * Uses an anchored desktop popover when an anchor is available and falls back
  * to `ha-adaptive-dialog` otherwise.
+ *
+ * @cssprop --ha-adaptive-popover-min-width - Minimum popover width. Defaults to its width preset; 0 fits it to its content, up to that width.
  */
 @customElement("ha-adaptive-popover")
 export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
   @property({ attribute: false })
   public dialogAnchor?: Element;
+
+  /** Tighter spacing in the popover, for short content such as confirmations */
+  @property({ type: Boolean, reflect: true }) public compact = false;
 
   private _allowPopoverHide = false;
 
@@ -285,7 +290,11 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
           padding: 0;
           border-color: transparent;
           box-shadow: var(--dialog-box-shadow, var(--wa-shadow-l));
-          min-width: var(--width, var(--full-width));
+          /* 0 fits the popover to its content, up to its width */
+          min-width: var(
+            --ha-adaptive-popover-min-width,
+            var(--width, var(--full-width))
+          );
           max-width: var(--width);
           max-height: var(
             --ha-dialog-max-height,
@@ -332,6 +341,22 @@ export class HaAdaptivePopover extends ScrollLockMixin(HaAdaptiveDialog) {
         slot[name="footer"] {
           display: block;
           padding: 0;
+        }
+
+        /* 20px around the edges, 12px below the title and 16px above the
+           footer. The header bar and its empty navigation icon slot already
+           give the title 16px on the side. */
+        :host([compact]) wa-popover {
+          --ha-dialog-header-content-padding: var(--ha-space-5)
+            var(--ha-space-1) var(--ha-space-3);
+          --ha-dialog-header-min-height: 0;
+          --dialog-content-padding: 0 var(--ha-space-5);
+        }
+
+        /* 18px beside and below the buttons looks even with the 20px around
+           the text */
+        :host([compact]) ::slotted([slot="footer"]) {
+          padding: var(--ha-space-4) 18px 18px var(--ha-space-5);
         }
 
         ::slotted([slot="footer"]) {
