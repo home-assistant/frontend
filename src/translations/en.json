@@ -13093,6 +13093,11 @@
           "error": {
             "title": "Error"
           },
+          "dismiss_new": {
+            "title": "Dismiss new repositories?",
+            "text": "{count, plural,\n  one {The new repository will no longer be marked as new.}\n  other {The {count} new repositories will no longer be marked as new.}\n}",
+            "confirm": "Dismiss"
+          },
           "reload": {
             "description": "You need to reload your browser for the updated resources to be used.",
             "confirm": "Do you want to do that now?"
