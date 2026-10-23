@@ -132,6 +132,14 @@ const tagsTableParams = {
   direction: "string?",
 } satisfies Redirect["params"];
 
+// The statistics table reads these from the link
+const statisticsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
 // The application credentials table reads these from the link
 const applicationCredentialsTableParams = {
   search: "string?",
@@ -185,6 +193,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   tools_statistics: {
     redirect: "/config/tools/statistics",
+    params: statisticsTableParams,
   },
   tools_yaml: {
     redirect: "/config/tools/yaml",
