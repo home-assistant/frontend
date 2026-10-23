@@ -132,6 +132,13 @@ const tagsTableParams = {
   direction: "string?",
 } satisfies Redirect["params"];
 
+// The application credentials table reads these from the link
+const applicationCredentialsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+} satisfies Redirect["params"];
+
 // The devices table reads these from the link
 const devicesTableParams = {
   search: "string?",
@@ -150,6 +157,7 @@ const devicesTableParams = {
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
+    params: applicationCredentialsTableParams,
   },
   tools_assist: {
     redirect: "/config/tools/assist",
