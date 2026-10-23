@@ -89,12 +89,14 @@ type AreaQuickLinkKey =
 const NAVIGATION_ACTIONS: {
   value: string;
   path: string;
+  params?: string;
   icon: string;
   countKey: AreaQuickLinkKey;
 }[] = [
   {
     value: "navigate-devices",
     path: "/config/devices/dashboard",
+    params: "&status=disabled",
     icon: mdiDevices,
     countKey: "devices",
   },
@@ -852,7 +854,9 @@ class HaConfigAreaPage extends LitElement {
 
     const navAction = NAVIGATION_ACTIONS.find((a) => a.value === action);
     if (navAction) {
-      navigate(`${navAction.path}?historyBack=1&area=${this.areaId}`);
+      navigate(
+        `${navAction.path}?historyBack=1&area=${this.areaId}${navAction.params ?? ""}`
+      );
       return;
     }
 

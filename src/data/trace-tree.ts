@@ -204,12 +204,14 @@ export class TraceTree {
     const node = this._base(config, path, type, parentDisabled);
     const records = this.trace.trace[path] as ConditionTraceStep[] | undefined;
     const executed = !!records?.some((record) => record.result || record.error);
+    // A disabled condition is still recorded by Core, with a `null` result
+    // (or `enabled: false` in a sequence). It is skipped, so the run passes.
     node.condition = {
       executed,
-      passed: !!records?.some((record) => record.result?.result),
-      failed: !!records?.some(
-        (record) => record.result && !record.result.result
+      passed: !!records?.some(
+        (record) => record.result && record.result.result !== false
       ),
+      failed: !!records?.some((record) => record.result?.result === false),
     };
     node.track = executed;
     return node;

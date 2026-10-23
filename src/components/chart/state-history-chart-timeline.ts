@@ -230,6 +230,13 @@ export class StateHistoryChartTimeline extends LitElement {
         splitLine: {
           show: false,
         },
+        // The item tooltip draws no axis line, so mark the pointed time as
+        // line charts do, also where a tap opens the tooltip
+        axisPointer: {
+          show: true,
+          triggerTooltip: false,
+          label: { show: false },
+        },
       },
       yAxis: {
         type: "category",

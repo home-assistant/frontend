@@ -37,6 +37,14 @@ const bluetoothTableParams = {
   group: "string?",
 } satisfies Redirect["params"];
 
+// The DHCP, SSDP and Zeroconf discovery tables read these from the link
+const discoveryTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
 // The Marketplace tabs with a table read these from the link
 const marketplaceTableParams = {
   search: "string?",
@@ -78,9 +86,120 @@ const lorawanDevicesParams = {
   connection: "string?",
 } satisfies Redirect["params"];
 
+// The scenes table reads these from the link
+const scenesTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  entity: "string?",
+  label: "string?",
+  category: "string?",
+  assistants: "string?",
+} satisfies Redirect["params"];
+
+// The scripts table reads these from the link
+const scriptsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  entity: "string?",
+  label: "string?",
+  category: "string?",
+  assistants: "string?",
+  blueprint: "string?",
+} satisfies Redirect["params"];
+
+// The blueprints table reads these from the link
+const blueprintsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
+// The tags table reads these from the link
+const tagsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+} satisfies Redirect["params"];
+
+// The statistics table reads these from the link
+const statisticsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+} satisfies Redirect["params"];
+
+// The application credentials table reads these from the link
+const applicationCredentialsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+} satisfies Redirect["params"];
+
+// The devices table reads these from the link
+const devicesTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  status: "string?",
+  floor: "string?",
+  area: "string?",
+  domain: "string?",
+  label: "string?",
+  config_entry: "string?",
+  sub_entry: "string?",
+} satisfies Redirect["params"];
+
+// The entities table reads these from the link
+const entitiesTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  status: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  domain: "string?",
+  entity_domain: "string?",
+  label: "string?",
+  assistants: "string?",
+  config_entry: "string?",
+  sub_entry: "string?",
+} satisfies Redirect["params"];
+
+// The automations table reads these from the link
+const automationsTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  entity: "string?",
+  label: "string?",
+  category: "string?",
+  assistants: "string?",
+  blueprint: "string?",
+} satisfies Redirect["params"];
+
 export const getMyRedirects = (): Redirects => ({
   application_credentials: {
     redirect: "/config/application_credentials",
+    params: applicationCredentialsTableParams,
   },
   tools_assist: {
     redirect: "/config/tools/assist",
@@ -108,6 +227,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   tools_statistics: {
     redirect: "/config/tools/statistics",
+    params: statisticsTableParams,
   },
   tools_yaml: {
     redirect: "/config/tools/yaml",
@@ -172,10 +292,15 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/integrations/integration",
     params: {
       domain: "string",
+      search: "string?",
     },
   },
   integrations: {
-    redirect: "/config/integrations",
+    redirect: "/config/integrations/dashboard",
+    params: {
+      search: "string?",
+      status: "string?",
+    },
   },
   config_mqtt: {
     component: "mqtt",
@@ -248,6 +373,7 @@ export const getMyRedirects = (): Redirects => ({
   config_dhcp: {
     component: "dhcp",
     redirect: "/config/dhcp",
+    params: discoveryTableParams,
   },
   config_energy: {
     component: "energy",
@@ -271,16 +397,20 @@ export const getMyRedirects = (): Redirects => ({
   config_ssdp: {
     component: "ssdp",
     redirect: "/config/ssdp",
+    params: discoveryTableParams,
   },
   config_zeroconf: {
     component: "zeroconf",
     redirect: "/config/zeroconf",
+    params: discoveryTableParams,
   },
   devices: {
     redirect: "/config/devices/dashboard",
+    params: devicesTableParams,
   },
   entities: {
     redirect: "/config/entities",
+    params: entitiesTableParams,
   },
   labels: {
     redirect: "/config/labels",
@@ -303,18 +433,22 @@ export const getMyRedirects = (): Redirects => ({
   blueprints: {
     component: "blueprint",
     redirect: "/config/blueprint/dashboard",
+    params: blueprintsTableParams,
   },
   automations: {
     component: "automation",
     redirect: "/config/automation/dashboard",
+    params: automationsTableParams,
   },
   scenes: {
     component: "scene",
     redirect: "/config/scene/dashboard",
+    params: scenesTableParams,
   },
   scripts: {
     component: "script",
     redirect: "/config/script/dashboard",
+    params: scriptsTableParams,
   },
   helpers: {
     redirect: "/config/helpers",
@@ -330,6 +464,7 @@ export const getMyRedirects = (): Redirects => ({
   tags: {
     component: "tag",
     redirect: "/config/tags",
+    params: tagsTableParams,
   },
   voice_assistants: {
     redirect: "/config/voice-assistants",
@@ -753,7 +888,13 @@ class HaPanelMy extends LitElement {
       this._redirect!.redirect === "/config/integrations/integration" &&
       params.domain === "hacs"
     ) {
-      return `${this._redirect!.redirect}?${createSearchParam({ domain: "marketplace" })}`;
+      const marketplaceParams = new URLSearchParams(
+        this._createRedirectParams()
+      );
+
+      marketplaceParams.set("domain", "marketplace");
+
+      return `${this._redirect!.redirect}?${marketplaceParams}`;
     }
 
     // Special case for supervisor_app/supervisor_addon: use path-based URL

@@ -1,5 +1,4 @@
 import { ContextProvider } from "@lit/context";
-import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -36,8 +35,6 @@ import {
 } from "../../data/trace";
 import { getTraceTriggers } from "../../data/trace-tree";
 import type { TriggerDescriptions } from "../../data/trigger";
-import { getDeviceTarget } from "../../panels/config/automation/target/get_device_target";
-import { getEntityTarget } from "../../panels/config/automation/target/get_entity_target";
 import "../../panels/config/automation/target/ha-automation-row-targets";
 import {
   automationTriggerContext,
@@ -51,6 +48,7 @@ import "../ha-code-editor";
 import "../ha-icon-button";
 import "../ha-tab-group";
 import "../ha-tab-group-tab";
+import { getTraceNodeTarget } from "./get_trace_node_target";
 import { childTraceLinkStyles, renderChildTraceLink } from "./trace-child-link";
 import "./hat-logbook-note";
 import type { NodeInfo } from "./hat-script-graph";
@@ -417,7 +415,7 @@ export class HaTracePathDetails extends LitElement {
     type: NodeInfo["type"],
     size: "s" | "m" = "m"
   ) {
-    const target = this._getTarget(config, type);
+    const target = getTraceNodeTarget(config, type);
     if (!target) {
       return nothing;
     }
@@ -445,31 +443,6 @@ export class HaTracePathDetails extends LitElement {
     if (type === "action" && typeof config.action === "string") {
       const [domain, service] = config.action.split(".", 2);
       return this.hass.services?.[domain]?.[service]?.target;
-    }
-    return undefined;
-  }
-
-  private _getTarget(
-    config: any,
-    type: NodeInfo["type"]
-  ): HassServiceTarget | undefined {
-    if (config.target) {
-      return config.target;
-    }
-    if (type === "trigger" || type === "condition") {
-      const element = type === "trigger" ? config.trigger : config.condition;
-      if (element === "state" || element === "numeric_state") {
-        return getEntityTarget(config.entity_id);
-      }
-      if (element === "device") {
-        return getDeviceTarget(config.device_id);
-      }
-      return undefined;
-    }
-    if (type === "action") {
-      return config.entity_id
-        ? getEntityTarget(config.entity_id)
-        : getDeviceTarget(config.device_id);
     }
     return undefined;
   }
@@ -656,6 +629,7 @@ export class HaTracePathDetails extends LitElement {
 
         pre {
           margin: 0;
+          direction: ltr;
         }
 
         .error {
@@ -664,7 +638,7 @@ export class HaTracePathDetails extends LitElement {
 
         .error ul {
           margin: var(--ha-space-1) 0;
-          padding-left: var(--ha-space-6);
+          padding-inline-start: var(--ha-space-6);
         }
 
         ha-tab-group {

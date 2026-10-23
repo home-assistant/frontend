@@ -2,7 +2,22 @@
 const URL_ATTRIBUTES = [
   ["a", "href"],
   ["img", "src"],
+  ["source", "src"],
 ] as const;
+
+// The markdown worker drops a srcset unless every part between commas and
+// spaces is a safe URL or a descriptor, so a plain split is enough: the srcset
+// is written back from the rewritten URLs.
+const splitSrcsetCandidates = (srcset: string) =>
+  srcset
+    .split(",")
+    .map((candidate) => candidate.trim().split(/\s+/))
+    .filter(([url]) => url);
+
+const rewriteSrcset = (srcset: string, rewrite: (url: string) => string) =>
+  splitSrcsetCandidates(srcset)
+    .map(([url, ...descriptors]) => [rewrite(url), ...descriptors].join(" "))
+    .join(", ");
 
 /**
  * Rewrite the address of every link and image in a piece of HTML.
@@ -27,6 +42,14 @@ export const rewriteHtmlUrls = (
         rewrite(element.getAttribute(attribute)!)
       );
     }
+  }
+
+  // Rewrite each address in a <picture> source like an image
+  for (const element of template.content.querySelectorAll("source[srcset]")) {
+    element.setAttribute(
+      "srcset",
+      rewriteSrcset(element.getAttribute("srcset")!, rewrite)
+    );
   }
 
   return template.innerHTML;

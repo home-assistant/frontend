@@ -79,6 +79,8 @@ const DEFAULT_TOOLTIP_TRIGGER_ON = "mousemove|click|mousewheel";
 const ZOOM_SLIDER_BOTTOM = 4;
 // Room the plot gives up at its bottom while the zoom slider shows
 const ZOOM_SLIDER_SPACE = ZOOM_SLIDER_BOTTOM + ZOOM_SLIDER_HEIGHT + 8;
+// Grid bottom that just fits the x-axis labels, as in line charts
+const X_AXIS_LABEL_SPACE = 20;
 const ZOOM_RESET_SIZE = 24;
 const ZOOM_RESET_OFFSET = ZOOM_RESET_SIZE + 4;
 // A narrower drag selection is a sloppy click rather than a zoom
@@ -524,7 +526,17 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     const room = this._showZoomSlider();
     if (this.chart && room !== this._zoomSliderRoom) {
       this._zoomSliderRoom = room;
-      this.chart.setOption({ grid: this._getGridOption() });
+      if (this.growForZoomSlider) {
+        // The host grows by the room the grid gives up, so apply both in one
+        // render to keep the plot still instead of shrinking and regrowing it
+        this.chart.setOption(
+          { grid: this._getGridOption() },
+          { lazyUpdate: true }
+        );
+        this.chart.resize();
+      } else {
+        this.chart.setOption({ grid: this._getGridOption() });
+      }
     }
   }
 
@@ -539,7 +551,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         style=${styleMap({
           height:
             showZoomSlider && this.growForZoomSlider && this.height
-              ? `calc(${this.height} + ${ZOOM_SLIDER_SPACE}px)`
+              ? `calc(${this.height} + ${this._getZoomSliderSpace()}px)`
               : this.height,
         })}
       >
@@ -1051,6 +1063,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         .start=${this._zoomRange[0]}
         .end=${this._zoomRange[1]}
         @zoom-slider-changed=${this._handleZoomSliderChanged}
+        @zoom-slider-reset=${this._handleZoomSliderReset}
         @pointerdown=${this._holdZoomSlider}
         @focusin=${this._holdZoomSlider}
         @pointerup=${this._releaseZoomSlider}
@@ -1064,6 +1077,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     ev: HASSDomEvent<HASSDomEvents["zoom-slider-changed"]>
   ) {
     this._setZoomWindow(ev.detail.start, ev.detail.end);
+  }
+
+  // A held slider stays at the full range, so release it to hide it
+  private _handleZoomSliderReset() {
+    this._zoomSliderHeld = false;
+    this._handleZoomReset();
   }
 
   private _holdZoomSlider() {
@@ -1084,8 +1103,25 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       return grid;
     }
     const [first, ...rest] = ensureArray(grid);
-    const bottom = typeof first.bottom === "number" ? first.bottom : 0;
-    return [{ ...first, bottom: bottom + ZOOM_SLIDER_SPACE }, ...rest];
+    return [
+      { ...first, bottom: this._getGridBottom() + this._getZoomSliderSpace() },
+      ...rest,
+    ];
+  }
+
+  private _getGridBottom() {
+    const bottom =
+      this.options?.grid && ensureArray(this.options.grid)[0].bottom;
+    return typeof bottom === "number" ? bottom : 0;
+  }
+
+  // Charts that grow for the slider let it take their padding below the
+  // x-axis labels, so it sits as close to the labels as in other charts
+  private _getZoomSliderSpace() {
+    return this.growForZoomSlider
+      ? ZOOM_SLIDER_SPACE -
+          Math.max(0, this._getGridBottom() - X_AXIS_LABEL_SPACE)
+      : ZOOM_SLIDER_SPACE;
   }
 
   // "boundaryFilter" is a custom mode added via axis-proxy-patch.ts.
@@ -1330,6 +1366,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         },
       },
       timeAxis: {
+        axisPointer: {
+          lineStyle: { color: style.getPropertyValue("--info-color") },
+        },
         axisLine: {
           show: true,
           lineStyle: { color: style.getPropertyValue("--divider-color") },

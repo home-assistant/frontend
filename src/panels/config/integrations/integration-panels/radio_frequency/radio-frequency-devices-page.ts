@@ -2,6 +2,7 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../../../common/controllers/data-table-settings-controller";
 import { navigate } from "../../../../../common/navigate";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
@@ -49,6 +50,8 @@ export class RadioFrequencyDevicesPage extends LitElement {
     },
   ];
 
+  private _tableSettings = new DataTableSettingsController(this, {});
+
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer => {
       const columns: DataTableColumnContainer<RadioFrequencyTransmitterRow> = {
@@ -63,6 +66,7 @@ export class RadioFrequencyDevicesPage extends LitElement {
         },
         type: {
           title: localize("ui.panel.config.radio_frequency.type"),
+          urlName: "type",
           sortable: true,
           filterable: true,
           groupable: true,
@@ -145,7 +149,10 @@ export class RadioFrequencyDevicesPage extends LitElement {
           "ui.panel.config.radio_frequency.no_devices"
         )}
         @row-click=${this._handleRowClicked}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         clickable
+        sync-url
       ></hass-tabs-subpage-data-table>
     `;
   }
