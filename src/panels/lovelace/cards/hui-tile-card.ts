@@ -293,12 +293,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const features = this._featureLayout(this._config);
 
     const hasImage = Boolean(imageUrl);
+    const hasFeatures = features.inline.length > 0 || features.below.length > 0;
 
     const fixedInfoHeight =
       this.layout === "grid" && this._config.grid_options?.rows !== "auto";
 
     return html`
-      <ha-card style=${styleMap(style)} class=${classMap({ active })}>
+      <ha-card
+        style=${styleMap(style)}
+        class=${classMap({ active })}
+        role=${ifDefined(hasFeatures ? "group" : undefined)}
+        aria-labelledby=${ifDefined(hasFeatures ? "name" : undefined)}
+      >
         <ha-tile-container
           .featurePosition=${featurePosition}
           .vertical=${Boolean(this._config.vertical)}
@@ -342,7 +348,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ${renderTileBadge(stateObj, this.hass)}
           </ha-tile-icon>
           <ha-tile-info slot="info">
-            <span slot="primary" class="primary">${name}</span>
+            <span slot="primary" class="primary" id="name">${name}</span>
             ${
               stateDisplay
                 ? html`<span slot="secondary">${stateDisplay}</span>`
@@ -353,8 +359,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             features.inline.length > 0
               ? html`
                   <hui-card-features
-                    role="group"
-                    aria-label=${name}
                     slot="features-inline"
                     .hass=${this.hass}
                     .context=${this._featureContext}
@@ -368,8 +372,6 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             features.below.length > 0
               ? html`
                   <hui-card-features
-                    role="group"
-                    aria-label=${name}
                     slot="features"
                     .columns=${features.columns}
                     .hass=${this.hass}

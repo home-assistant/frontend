@@ -3,24 +3,23 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
-import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
 import "../../../components/ha-icon";
-import {
-  apiContext,
-  formattersContext,
-  internationalizationContext,
-} from "../../../data/context";
+import { apiContext, internationalizationContext } from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { FrontendLocaleData } from "../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantApi,
-  HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -62,8 +61,8 @@ class HuiNumericInputCardFeature
   private _api!: HomeAssistantApi;
 
   @state()
-  @consume({ context: formattersContext, subscribe: true })
-  private _formatters!: HomeAssistantFormatters;
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -128,10 +127,18 @@ class HuiNumericInputCardFeature
     const parsedState = Number(stateObj.state);
     const value = !isNaN(parsedState) ? parsedState : undefined;
 
+    const deviceClass = stateObj.attributes.device_class;
+    const label =
+      (deviceClass &&
+        this._localize(
+          `component.number.entity_component.${deviceClass}.name`
+        )) ||
+      this._localize("ui.card.common.value");
+
     if (this._config.style === "buttons") {
       return html`
         <ha-control-number-buttons
-          .label=${this._formatters.formatEntityName(stateObj)}
+          .label=${label}
           .value=${value}
           .min=${stateObj.attributes.min}
           .max=${stateObj.attributes.max}
@@ -145,7 +152,7 @@ class HuiNumericInputCardFeature
     }
     return html`
       <ha-control-slider
-        .label=${this._formatters.formatEntityName(stateObj)}
+        .label=${label}
         .value=${value}
         .min=${stateObj.attributes.min}
         .max=${stateObj.attributes.max}
