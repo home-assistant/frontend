@@ -712,6 +712,11 @@ export interface WeatherDailyCardConfig extends WeatherPageCardConfig {
   days?: number;
 }
 
+export interface WeatherMoonCardConfig extends LovelaceCardConfig {
+  // The moon sensor, when the moon integration is set up
+  entity?: string;
+}
+
 export interface TileCardConfig extends LovelaceCardConfig, TileActionsConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];

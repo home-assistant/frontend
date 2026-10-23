@@ -51,6 +51,8 @@ const CONFIGS: DemoCardConfig[] = [
     heading: "Daily forecast",
     config: { type: "weather-daily", entities: SOURCES },
   },
+  { heading: "Sun", config: { type: "weather-sun" } },
+  { heading: "Moon", config: { type: "weather-moon" } },
 ];
 
 @customElement("demo-lovelace-weather-page-cards")
