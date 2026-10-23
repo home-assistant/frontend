@@ -171,7 +171,6 @@ export class EntitiesSectionStrategy extends ReactiveElement {
     "devices",
     "areas",
     "floors",
-    "labels",
   ];
 
   public static async getConfigElement(): Promise<LovelaceStrategyEditor> {
