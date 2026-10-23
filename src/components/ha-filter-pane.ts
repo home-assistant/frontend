@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import { highlightElement } from "../common/dom/highlight-element";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { haStyleScrollbar } from "../resources/styles";
 import "./ha-adaptive-dialog";
@@ -12,8 +13,6 @@ import "./ha-button";
 import "./ha-dialog-footer";
 import "./ha-filter-pane-chip";
 import "./ha-icon-button";
-
-const HIGHLIGHT_DURATION = 1500;
 
 /**
  * Filter pane for a filtered page: a column next to the content on wide
@@ -116,12 +115,7 @@ export class HaFilterPane extends LitElement {
   }
 
   public highlight() {
-    const color = getComputedStyle(this).getPropertyValue("--primary-color");
-    this.getAnimations().forEach((animation) => animation.cancel());
-    this.animate([{ outlineColor: color }, { outlineColor: "transparent" }], {
-      duration: HIGHLIGHT_DURATION,
-      easing: "ease-out",
-    });
+    highlightElement(this);
   }
 
   private _close() {
@@ -144,7 +138,6 @@ export class HaFilterPane extends LitElement {
           box-sizing: border-box;
           overflow: hidden;
           border-inline-end: 1px solid var(--divider-color);
-          outline: var(--ha-border-width-md) solid transparent;
           outline-offset: calc(-1 * var(--ha-border-width-md));
         }
 
