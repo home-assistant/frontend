@@ -9847,7 +9847,7 @@
           },
           "entities": {
             "other": "Other",
-            "no_criteria": "Pick the types to show and where to look for them.",
+            "no_criteria": "Pick at least one type and one target.",
             "no_entities": "No entities match this section."
           },
           "light": {
