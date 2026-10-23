@@ -48,6 +48,12 @@ export function resolveSectionBackground(
   return background;
 }
 
+export function hasSectionBackground(
+  section: LovelaceBaseSectionConfig
+): boolean {
+  return resolveSectionBackground(section.background) !== undefined;
+}
+
 export function isStrategySection(
   section: LovelaceSectionRawConfig
 ): section is LovelaceStrategySectionConfig {
