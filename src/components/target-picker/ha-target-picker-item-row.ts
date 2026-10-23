@@ -712,8 +712,8 @@ export class HaTargetPickerItemRow extends LitElement {
 
   private async _updateItemData() {
     const requestId = ++this._lastFetch;
+    this._fetchedEntries = undefined;
     if (this.type === "entity") {
-      this._fetchedEntries = undefined;
       this._entries = undefined;
       return;
     }
