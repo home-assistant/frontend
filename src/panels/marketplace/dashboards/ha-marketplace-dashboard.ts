@@ -413,7 +413,7 @@ export class HaMarketplaceDashboard extends LitElement {
           )}
           .label=${this._i18n.localize("ui.panel.marketplace.menu.dismiss")}
           .path=${mdiCheckAll}
-          @click=${this._dismissNew}
+          @click=${this._dismissNewFromGroup}
         ></ha-icon-button>
         ${
           this.tab === "installed"
@@ -952,8 +952,13 @@ export class HaMarketplaceDashboard extends LitElement {
     showMarketplaceAddFromLink(this, this._i18n.localize, this.marketplace);
   }
 
-  private _dismissNew() {
+  private _dismissNewFromGroup(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    this._dismissNew(ev.currentTarget);
+  }
+
+  private _dismissNew(anchor?: Element) {
     showConfirmationDialog(this, {
+      anchor,
       title: this._i18n.localize(
         "ui.panel.marketplace.dialog.dismiss_new.title"
       ),
