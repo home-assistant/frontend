@@ -258,10 +258,15 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/integrations/integration",
     params: {
       domain: "string",
+      search: "string?",
     },
   },
   integrations: {
-    redirect: "/config/integrations",
+    redirect: "/config/integrations/dashboard",
+    params: {
+      search: "string?",
+      status: "string?",
+    },
   },
   config_mqtt: {
     component: "mqtt",
