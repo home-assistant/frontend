@@ -266,6 +266,18 @@ export const restoreClosedDialogSearch = () => {
   }
 };
 
+/**
+ * Called after the current entry's URL is rewritten. Until the back() of a
+ * closed dialog lands, that is still the dialog's entry, so keep its search
+ * for restoreClosedDialogSearch().
+ */
+export const updateClosedDialogSearch = () => {
+  if (closedDialogUrl) {
+    const { pathname, search } = mainWindow.location;
+    closedDialogUrl = { pathname, search };
+  }
+};
+
 export const closeAllDialogs = async () => {
   for (let i = OPEN_DIALOG_STACK.length - 1; i >= 0; i--) {
     const closed =
