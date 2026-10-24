@@ -468,7 +468,7 @@ class HaConfigHttpForm extends LitElement {
 
   // Build a link to the new address for an address-changing restart, so the
   // user (still on the old address) can jump to it once Home Assistant is back.
-  // Best-effort: skip Home Assistant Cloud remote UI (Nabu Casa), and skip when
+  // Best-effort: skip Home Assistant Link remote UI (Nabu Casa), and skip when
   // the current page is not on the old port — that usually means a reverse
   // proxy, where swapping the port would point at the wrong place. Even when
   // shown, the new address may not be reachable (e.g. a firewall).

@@ -4,7 +4,7 @@ import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 const pipelines: AssistPipeline[] = [
   {
     id: "01home_assistant_cloud",
-    name: "Home Assistant Cloud",
+    name: "Home Assistant Link",
     language: "en",
     conversation_engine: "conversation.home_assistant",
     conversation_language: "en",
