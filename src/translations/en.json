@@ -99,6 +99,7 @@
         "turn_on": "Turn on",
         "turn_off": "Turn off",
         "toggle": "Toggle",
+        "value": "Value",
         "entity_not_found": "Entity not found"
       },
       "alarm_control_panel": {
@@ -248,7 +249,11 @@
       "toggle-group": {
         "all_off": "All off",
         "all_on": "All on",
-        "some_on": "{on_count} of {total_count} {on_count, plural, one {on} other {on}}"
+        "some_on": "{on_count} of {total_count} {on_count, plural, one {on} other {on}}",
+        "turn_all_on": "Turn all on",
+        "turn_all_off": "Turn all off",
+        "turn_on_name": "[%key:ui::components::entity::entity-toggle::turn_on%]",
+        "turn_off_name": "[%key:ui::components::entity::entity-toggle::turn_off%]"
       },
       "discovered-devices": {
         "title": "Devices discovered",
@@ -302,6 +307,11 @@
       },
       "scene": {
         "activate": "Activate"
+      },
+      "tile": {
+        "icon_activate": "Activate {name}",
+        "icon_press": "Press {name}",
+        "icon_toggle": "[%key:ui::components::entity::entity-toggle::toggle%]"
       },
       "script": {
         "run": "[%key:ui::card::service::run%]",
@@ -9846,7 +9856,9 @@
             "lights": "Lights",
             "other_lights": "Other lights",
             "on": "On",
-            "off": "Off"
+            "off": "Off",
+            "turn_on_area": "Off, turn on all lights in {area}",
+            "turn_off_area": "On, turn off all lights in {area}"
           },
           "security": {
             "devices": "Devices",
