@@ -103,7 +103,7 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
     }
   };
 
-  protected updated(changedProps: PropertyValues) {
+  protected willUpdate(changedProps: PropertyValues) {
     if (!changedProps.has("hass") && !changedProps.has("_config")) {
       return;
     }
@@ -244,7 +244,6 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
     }
 
     .date-text {
-      direction: inherit;
       color: var(--primary-text-color);
       font-size: var(--ha-font-size-xl);
       font-weight: var(--ha-font-weight-medium);

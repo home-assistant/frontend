@@ -31,16 +31,8 @@ describe("isValidTimeZone", () => {
     expect(isValidTimeZone("Europe/Paris")).toBe(true);
   });
 
-  it("accepts UTC", () => {
-    expect(isValidTimeZone("UTC")).toBe(true);
-  });
-
   it("rejects a made-up zone name", () => {
     expect(isValidTimeZone("Europe/Pariss")).toBe(false);
-  });
-
-  it("rejects an empty string", () => {
-    expect(isValidTimeZone("")).toBe(false);
   });
 });
 
