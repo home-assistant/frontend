@@ -22,6 +22,7 @@ import type {
   ParallelAction,
   RepeatAction,
   SequenceAction,
+  WaitForTriggerAction,
 } from "../../../../data/script";
 
 export const GENERATED_TRIGGER_ID_PREFIX = "generated-";
@@ -341,6 +342,16 @@ class AutomationTriggerConditionMapper {
         result.then = this._mapActions(result.then) as Action | Action[];
         if (result.else) {
           result.else = this._mapActions(result.else);
+        }
+        return result;
+      }
+      case "wait_for_trigger": {
+        const result = { ...(action as WaitForTriggerAction) };
+        if (result.on_complete) {
+          result.on_complete = this._mapActions(result.on_complete);
+        }
+        if (result.on_timeout) {
+          result.on_timeout = this._mapActions(result.on_timeout);
         }
         return result;
       }
