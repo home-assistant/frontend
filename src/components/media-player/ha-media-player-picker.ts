@@ -1,15 +1,18 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiMonitor } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { computeEntityNameList } from "../../common/entity/compute_entity_name_display";
+import {
+  computeEntityPickerDisplay,
+  computeEntitySearchLabels,
+} from "../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import {
   areasContext,
@@ -107,9 +110,6 @@ export class HaMediaPlayerPicker extends LitElement {
     const webBrowserLabel = this._i18n.localize(
       "ui.components.media-browser.web-browser"
     );
-    const lang = this._i18n.language || "en";
-    const isRTL =
-      this._i18n.translationMetadata.translations[lang]?.isRTL || false;
 
     return [
       {
@@ -128,34 +128,22 @@ export class HaMediaPlayerPicker extends LitElement {
       ...Object.values(this._states)
         .filter(this._filterPlayerEntities)
         .map<MediaPlayerComboBoxItem>((stateObj) => {
-          const friendlyName = computeStateName(stateObj);
-          const [entityName, deviceName, parentDeviceName, areaName] =
-            computeEntityNameList(
-              stateObj,
-              [
-                { type: "entity" },
-                { type: "device" },
-                { type: "parent_device" },
-                { type: "area" },
-              ],
-              this._entities,
-              this._devices,
-              this._areas,
-              this._floors
-            );
           const entityId = stateObj.entity_id;
           const domainName = domainToName(
             this._i18n.localize,
             computeDomain(entityId)
           );
-          const primary = entityName || deviceName || entityId;
-          const secondary = [
-            areaName,
-            parentDeviceName,
-            entityName ? deviceName : undefined,
-          ]
-            .filter(Boolean)
-            .join(isRTL ? " ◂ " : " ▸ ");
+          const { primary, secondary } = computeEntityPickerDisplay(
+            {
+              entities: this._entities,
+              devices: this._devices,
+              areas: this._areas,
+              floors: this._floors,
+              language: this._i18n.language,
+              translationMetadata: this._i18n.translationMetadata,
+            },
+            stateObj
+          );
 
           return {
             id: entityId,
@@ -165,12 +153,13 @@ export class HaMediaPlayerPicker extends LitElement {
             domain_name: domainName,
             sorting_label: [primary, secondary].filter(Boolean).join("_"),
             search_labels: {
-              entityName: entityName || null,
-              deviceName: deviceName || null,
-              parentDeviceName: parentDeviceName || null,
-              areaName: areaName || null,
+              ...computeEntitySearchLabels(stateObj, {
+                entities: this._entities,
+                devices: this._devices,
+                areas: this._areas,
+                floors: this._floors,
+              }),
               domainName: domainName || null,
-              friendlyName: friendlyName || null,
               entityId,
             },
             stateObj,
@@ -199,7 +188,7 @@ export class HaMediaPlayerPicker extends LitElement {
           borderTop: index === 0 ? undefined : "1px solid var(--divider-color)",
         })}
       >
-        <ha-combo-box-item type="button" compact .disabled=${!!item.disabled}>
+        <ha-combo-box-item .disabled=${!!item.disabled}>
           ${
             item.icon_path
               ? html`

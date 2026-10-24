@@ -7,6 +7,7 @@ import type {
 } from "../../../../../src/data/matter";
 import {
   createMatterNetworkChartData,
+  getBridgedDeviceId,
   getTopologyNodeCategory,
   getTopologyNodeName,
   networkToColorVar,
@@ -129,6 +130,17 @@ describe("getTopologyNodeCategory", () => {
     expect(
       getTopologyNodeCategory(node({ id: "unknown_1", kind: "thread_unknown" }))
     ).toBe(6);
+    expect(
+      getTopologyNodeCategory(
+        node({ id: "8", network_type: "ethernet", is_bridge: true })
+      )
+    ).toBe(7);
+    // an offline bridge reads as offline like any other node
+    expect(
+      getTopologyNodeCategory(
+        node({ id: "9", is_bridge: true, available: false })
+      )
+    ).toBe(5);
   });
 });
 
@@ -283,7 +295,7 @@ describe("createMatterNetworkChartData", () => {
       element
     );
 
-    expect(data.categories).toHaveLength(7);
+    expect(data.categories).toHaveLength(9);
     // Home Assistant root + the 3 topology nodes
     expect(data.nodes).toHaveLength(4);
 
@@ -706,6 +718,39 @@ describe("createMatterNetworkChartData", () => {
     expect(data.nodes.find((n) => n.id === "br_1")!.name).toBe("Cuisine");
   });
 
+  it("links Home Assistant straight to a wired node", () => {
+    const data = createMatterNetworkChartData(
+      topology([
+        node({ id: "36", node_id: 36, network_type: "ethernet" }),
+        node({
+          id: "37",
+          node_id: 37,
+          network_type: "ethernet",
+          available: false,
+        }),
+        node({ id: "38", node_id: 38, network_type: "unknown" }),
+      ]),
+      mockHass(),
+      element
+    );
+
+    // an Ethernet node has no radio link, but HA reaches it over the LAN
+    const online = data.links.find(
+      (l) => l.source === "ha" && l.target === "36"
+    )!;
+    expect(online.lineStyle?.type).toBe("solid");
+    expect(online.symbol).toBe("none");
+    expect(online.ignoreForceLayout).toBeFalsy();
+
+    const offline = data.links.find(
+      (l) => l.source === "ha" && l.target === "37"
+    )!;
+    expect(offline.lineStyle?.type).toBe("dashed");
+
+    // an unknown transport still has no path we can see
+    expect(data.links.map((l) => l.target)).toEqual(["36", "37"]);
+  });
+
   it("routes HA through the Wi-Fi access point, not the stations", () => {
     const data = createMatterNetworkChartData(
       topology(
@@ -765,5 +810,151 @@ describe("createMatterNetworkChartData", () => {
 
     expect(data.nodes.find((n) => n.id === "1")!.context).toBe("NetA");
     expect(data.nodes.find((n) => n.id === "2")!.context).toBe("NetB");
+  });
+
+  it("hangs the devices behind a bridge off the bridge node", () => {
+    const hass = mockHass(
+      {
+        bridge: { id: "bridge", name: "Gateway" },
+        couch: {
+          id: "couch",
+          name: "Couch",
+          via_device_id: "bridge",
+          area_id: "living_room",
+        },
+        window: {
+          id: "window",
+          name: "Window",
+          name_by_user: "Bedroom window",
+          via_device_id: "bridge",
+        },
+        disabled: {
+          id: "disabled",
+          name: "Disabled",
+          via_device_id: "bridge",
+          disabled_by: "user",
+        },
+        other: { id: "other", name: "Other", via_device_id: "plug" },
+        plug: { id: "plug", name: "Plug" },
+      },
+      { living_room: { area_id: "living_room", name: "Living room" } }
+    );
+    const data = createMatterNetworkChartData(
+      topology([
+        node({
+          id: "3",
+          node_id: 3,
+          network_type: "ethernet",
+          is_bridge: true,
+          ha_device_id: "bridge",
+        }),
+        // only a node flagged as a bridge exposes bridged devices
+        node({
+          id: "4",
+          node_id: 4,
+          network_type: "wifi",
+          ha_device_id: "plug",
+        }),
+      ]),
+      hass,
+      element,
+      new Set(["3"])
+    );
+
+    // the bridge is drawn as an aggregator carrying its bridged device count
+    const bridge = data.nodes.find((n) => n.id === "3")!;
+    expect(bridge.category).toBe(7);
+    expect(bridge.symbol).toMatch(/^image:\/\/data:image\/svg\+xml/);
+    expect(decodeURIComponent(bridge.symbol!)).toContain(">2</text>");
+    expect(data.nodes.find((n) => n.id === "4")!.symbol).toBe("circle");
+
+    const bridged = data.nodes.filter((n) => n.category === 8);
+    expect(bridged.map((n) => [n.id, n.name, n.context])).toEqual([
+      ["bridged_couch", "Couch", "Living room"],
+      ["bridged_window", "Bedroom window", undefined],
+    ]);
+    expect(getBridgedDeviceId("bridged_couch")).toBe("couch");
+    expect(getBridgedDeviceId("3")).toBeUndefined();
+    expect(data.categories).toHaveLength(9);
+
+    const bridgedLinks = data.links.filter((l) => l.source === "3");
+    expect(bridgedLinks.map((l) => l.target)).toEqual([
+      "bridged_couch",
+      "bridged_window",
+    ]);
+    // not a directional radio link, and it pulls the device to its bridge
+    expect(bridgedLinks[0].symbol).toBe("none");
+    expect(bridgedLinks[0].lineStyle?.type).toBe("solid");
+    expect(bridgedLinks[0].ignoreForceLayout).toBeFalsy();
+  });
+
+  it("dashes the links to the devices behind an offline bridge", () => {
+    const data = createMatterNetworkChartData(
+      topology([
+        node({
+          id: "3",
+          node_id: 3,
+          network_type: "ethernet",
+          is_bridge: true,
+          available: false,
+          ha_device_id: "bridge",
+        }),
+      ]),
+      mockHass({
+        bridge: { id: "bridge", name: "Gateway" },
+        couch: { id: "couch", name: "Couch", via_device_id: "bridge" },
+      }),
+      element,
+      new Set(["3"])
+    );
+
+    const link = data.links.find((l) => l.target === "bridged_couch")!;
+    expect(link.source).toBe("3");
+    expect(link.lineStyle?.type).toBe("dashed");
+  });
+
+  it("keeps the devices behind a collapsed bridge out of the graph", () => {
+    const data = createMatterNetworkChartData(
+      topology([
+        node({
+          id: "3",
+          node_id: 3,
+          network_type: "ethernet",
+          is_bridge: true,
+          ha_device_id: "bridge",
+        }),
+      ]),
+      mockHass({
+        bridge: { id: "bridge", name: "Gateway" },
+        couch: { id: "couch", name: "Couch", via_device_id: "bridge" },
+      }),
+      element
+    );
+
+    expect(data.nodes.filter((n) => n.category === 8)).toHaveLength(0);
+    expect(data.links.filter((l) => l.source === "3")).toHaveLength(0);
+    // the count still tells what the bridge would expand to
+    const bridge = data.nodes.find((n) => n.id === "3")!;
+    expect(decodeURIComponent(bridge.symbol!)).toContain(">1</text>");
+  });
+
+  it("draws a bridge without a device without a count", () => {
+    const data = createMatterNetworkChartData(
+      topology([
+        node({
+          id: "3",
+          node_id: 3,
+          network_type: "ethernet",
+          is_bridge: true,
+        }),
+      ]),
+      mockHass(),
+      element
+    );
+
+    const bridge = data.nodes.find((n) => n.id === "3")!;
+    expect(bridge.category).toBe(7);
+    expect(decodeURIComponent(bridge.symbol!)).not.toContain("<text");
+    expect(data.nodes.filter((n) => n.category === 8)).toHaveLength(0);
   });
 });

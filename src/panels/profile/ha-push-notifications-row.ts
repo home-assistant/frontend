@@ -5,7 +5,10 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { pushSupported } from "../../components/ha-push-notifications-toggle";
 import "../../components/item/ha-row-item";
 import type { HomeAssistant } from "../../types";
-import { documentationUrl } from "../../util/documentation-url";
+import {
+  documentationUrl,
+  SECURE_CONNECTION_DOCUMENTATION_PATH,
+} from "../../util/documentation-url";
 
 @customElement("ha-push-notifications-row")
 class HaPushNotificationsRow extends LitElement {
@@ -13,14 +16,26 @@ class HaPushNotificationsRow extends LitElement {
 
   protected render(): TemplateResult {
     const platformLoaded = isComponentLoaded(this.hass.config, "html5.notify");
-    let descriptionKey:
-      "error_use_https" | "error_load_platform" | "description";
-    if (!pushSupported) {
-      descriptionKey = "error_use_https";
+    let description: string;
+    let documentationPath = "/integrations/html5";
+
+    if (!window.isSecureContext) {
+      description = this.hass.localize(
+        "ui.components.secure_connection_required.push_notifications"
+      );
+      documentationPath = SECURE_CONNECTION_DOCUMENTATION_PATH;
+    } else if (!pushSupported) {
+      description = this.hass.localize(
+        "ui.panel.profile.push_notifications.error_not_supported"
+      );
     } else if (!platformLoaded) {
-      descriptionKey = "error_load_platform";
+      description = this.hass.localize(
+        "ui.panel.profile.push_notifications.error_load_platform"
+      );
     } else {
-      descriptionKey = "description";
+      description = this.hass.localize(
+        "ui.panel.profile.push_notifications.description"
+      );
     }
 
     const isDisabled = !platformLoaded || !pushSupported;
@@ -33,11 +48,9 @@ class HaPushNotificationsRow extends LitElement {
           )}</span
         >
         <span slot="supporting-text"
-          >${this.hass.localize(
-            `ui.panel.profile.push_notifications.${descriptionKey}`
-          )}
+          >${description}
           <a
-            href=${documentationUrl(this.hass, "/integrations/html5")}
+            href=${documentationUrl(this.hass, documentationPath)}
             target="_blank"
             rel="noreferrer"
             >${this.hass.localize(

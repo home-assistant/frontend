@@ -14,6 +14,7 @@ export interface IPv4ConfiguredAddress {
 
 export interface Adapter {
   name: string;
+  index: number | null;
   enabled: boolean;
   auto: boolean;
   default: boolean;
@@ -27,9 +28,9 @@ export interface NetworkConfig {
 }
 
 export interface NetworkUrls {
-  internal: string;
-  external: string;
-  cloud: string;
+  internal: string | null;
+  external: string | null;
+  cloud: string | null;
 }
 
 export const getNetworkConfig = (hass: HomeAssistant) =>
@@ -41,7 +42,7 @@ export const setNetworkConfig = (
   hass: HomeAssistant,
   configured_adapters: string[]
 ) =>
-  hass.callWS<string[]>({
+  hass.callWS<{ configured_adapters: string[] }>({
     type: "network/configure",
     config: {
       configured_adapters: configured_adapters,

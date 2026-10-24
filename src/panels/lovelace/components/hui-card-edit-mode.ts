@@ -21,14 +21,14 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { haStyle } from "../../../resources/styles";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
+import type { LovelacePath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 
 @customElement("hui-card-edit-mode")
 export class HuiCardEditMode extends LitElement {
   @property({ attribute: false }) public lovelace!: Lovelace;
 
-  @property({ type: Array }) public path!: LovelaceCardPath;
+  @property({ attribute: false }) public path!: LovelacePath;
 
   @property({ type: Boolean, attribute: "hidden-overlay" })
   public hiddenOverlay = false;
@@ -112,6 +112,10 @@ export class HuiCardEditMode extends LitElement {
             : html`
                 <div
                   class="control"
+                  role="button"
+                  aria-label=${this._localize(
+                    "ui.panel.lovelace.editor.edit_card.edit_label"
+                  )}
                   @click=${this._handleOverlayClick}
                   @keydown=${this._handleOverlayClick}
                   tabindex="0"
@@ -238,8 +242,7 @@ export class HuiCardEditMode extends LitElement {
   }
 
   private _cutCard(): void {
-    fireEvent(this, "ll-copy-card", { path: this.path! });
-    fireEvent(this, "ll-delete-card", { path: this.path!, silent: true });
+    fireEvent(this, "ll-cut-card", { path: this.path! });
   }
 
   private _copyCard(): void {

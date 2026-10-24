@@ -18,7 +18,7 @@ jobs:
   deploy_dev:
     runs-on: ubuntu-latest
     name: Deploy Development
-    if: github.event_name != 'push'
+    if: github.repository == 'home-assistant/frontend' && github.event_name != 'push'
     environment:
       name: Cast Development
       url: ${{ steps.deploy.outputs.netlify_url }}
@@ -50,7 +50,7 @@ jobs:
   deploy_master:
     runs-on: ubuntu-latest
     name: Deploy Production
-    if: github.event_name == 'push'
+    if: github.repository == 'home-assistant/frontend' && github.event_name == 'push'
     environment:
       name: Cast Production
       url: ${{ steps.deploy.outputs.netlify_url }}

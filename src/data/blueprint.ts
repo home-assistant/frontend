@@ -1,3 +1,4 @@
+import type { HaFormVisible } from "../components/ha-form/types";
 import type { HomeAssistant } from "../types";
 import type { ManualAutomationConfig } from "./automation";
 import type { ManualScriptConfig } from "./script";
@@ -19,6 +20,7 @@ export interface BlueprintMetaData {
   description?: string;
   source_url?: string;
   author?: string;
+  homeassistant?: { min_version?: string };
 }
 
 export interface BlueprintInput {
@@ -26,6 +28,7 @@ export interface BlueprintInput {
   description?: string;
   selector?: Selector;
   default?: any;
+  visible?: HaFormVisible;
 }
 
 export interface BlueprintInputSection {
@@ -33,13 +36,14 @@ export interface BlueprintInputSection {
   icon?: string;
   description?: string;
   collapsed?: boolean;
+  visible?: HaFormVisible;
   input: Record<string, BlueprintInput | null>;
 }
 
 export interface BlueprintImportResult {
   suggested_filename: string;
   raw_data: string;
-  exists?: boolean;
+  exists: boolean;
   blueprint: Blueprint;
   validation_errors: string[] | null;
 }
@@ -63,7 +67,7 @@ export const saveBlueprint = (
   source_url?: string,
   allow_override?: boolean
 ) =>
-  hass.callWS({
+  hass.callWS<{ overrides_existing: boolean }>({
     type: "blueprint/save",
     domain,
     path,
@@ -77,7 +81,7 @@ export const deleteBlueprint = (
   domain: BlueprintDomain,
   path: string
 ) =>
-  hass.callWS<BlueprintImportResult>({
+  hass.callWS<undefined>({
     type: "blueprint/delete",
     domain,
     path,

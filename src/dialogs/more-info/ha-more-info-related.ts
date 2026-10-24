@@ -1,9 +1,9 @@
 import { mdiDevices, mdiTextureBox } from "@mdi/js";
-import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../common/entity/compute_device_name";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -92,14 +92,10 @@ class HaMoreInfoRelated extends LitElement {
     const floorName = floor ? computeFloorName(floor) : undefined;
     const areaName = area ? (computeAreaName(area) ?? area.area_id) : undefined;
     const parentDeviceName = parentDevice
-      ? computeDeviceNameDisplay(
-          parentDevice,
-          this.hass.localize,
-          this.hass.states
-        )
+      ? computeDeviceNameDisplay(parentDevice, this.hass.localize)
       : undefined;
     const deviceName = device
-      ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
+      ? computeDeviceNameDisplay(device, this.hass.localize)
       : undefined;
     const integrationName = this.entry?.platform
       ? this.hass.localize(`component.${this.entry.platform}.title`) ||

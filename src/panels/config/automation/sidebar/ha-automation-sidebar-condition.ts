@@ -1,6 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
-  mdiAppleKeyboardCommand,
   mdiCommentEditOutline,
   mdiContentCopy,
   mdiContentCut,
@@ -23,9 +22,11 @@ import { handleStructError } from "../../../../common/structs/handle-errors";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import type {
+  Condition,
   ConditionSidebarConfig,
   LegacyCondition,
 } from "../../../../data/automation";
+import { getRowNote } from "../../../../data/automation";
 import {
   CONDITION_BUILDING_BLOCKS,
   getConditionDomain,
@@ -37,7 +38,9 @@ import "../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../condition/ha-automation-condition-editor";
 import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import "./ha-automation-sidebar-card";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
 @customElement("ha-automation-sidebar-condition")
 export default class HaAutomationSidebarCondition extends LitElement {
@@ -72,6 +75,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
         this.yamlMode = this.config.yamlMode;
         if (this.yamlMode) {
           this.editor?.yamlEditor?.setValue(this.config.config);
+          this._warnings = this._checkUiSupport(this.config.config);
         }
       }
     }
@@ -86,6 +90,8 @@ export default class HaAutomationSidebarCondition extends LitElement {
       "enabled" in this.config.config && this.config.config.enabled === false;
 
     const type = this.config.config.condition;
+
+    const note = getRowNote(this.config.config.note);
 
     const isBuildingBlock = CONDITION_BUILDING_BLOCKS.includes(type);
 
@@ -195,17 +201,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
           ${
             !this.narrow
               ? html`<span class="shortcut">
-                  <span
-                    >${
-                      isMac
-                        ? html`<ha-svg-icon
-                            .path=${mdiAppleKeyboardCommand}
-                          ></ha-svg-icon>`
-                        : this.hass.localize(
-                            "ui.panel.config.automation.editor.ctrl"
-                          )
-                    }</span
-                  >
+                  <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                   <span>+</span>
                   <span>C</span>
                 </span>`
@@ -227,17 +223,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
           ${
             !this.narrow
               ? html`<span class="shortcut">
-                  <span
-                    >${
-                      isMac
-                        ? html`<ha-svg-icon
-                            .path=${mdiAppleKeyboardCommand}
-                          ></ha-svg-icon>`
-                        : this.hass.localize(
-                            "ui.panel.config.automation.editor.ctrl"
-                          )
-                    }</span
-                  >
+                  <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                   <span>+</span>
                   <span>X</span>
                 </span>`
@@ -261,17 +247,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
                   ${
                     !this.narrow
                       ? html`<span class="shortcut">
-                          <span
-                            >${
-                              isMac
-                                ? html`<ha-svg-icon
-                                    .path=${mdiAppleKeyboardCommand}
-                                  ></ha-svg-icon>`
-                                : this.hass.localize(
-                                    "ui.panel.config.automation.editor.ctrl"
-                                  )
-                            }</span
-                          >
+                          <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                           <span>+</span>
                           <span>V</span>
                         </span>`
@@ -327,17 +303,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
           ${
             !this.narrow
               ? html`<span class="shortcut">
-                  <span
-                    >${
-                      isMac
-                        ? html`<ha-svg-icon
-                            .path=${mdiAppleKeyboardCommand}
-                          ></ha-svg-icon>`
-                        : this.hass.localize(
-                            "ui.panel.config.automation.editor.ctrl"
-                          )
-                    }</span
-                  >
+                  <span>${renderCtrlOrCmd(this.hass.localize)}</span>
                   <span>+</span>
                   <span
                     >${this.hass.localize(
@@ -370,10 +336,10 @@ export default class HaAutomationSidebarCondition extends LitElement {
             )
       }
       ${
-        this.config.config.note?.trim() && !this.yamlMode
+        note && !this.yamlMode
           ? html`<ha-automation-note
               @edit-note=${this.config.editNote}
-              .note=${this.config.config.note}
+              .note=${note}
             ></ha-automation-note>`
           : nothing
       }
@@ -401,7 +367,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
   }
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    this._warnings = handleStructError(this.hass.localize, ev.detail).warnings;
     if (!this.yamlMode) {
       this.yamlMode = true;
     }
@@ -426,10 +392,26 @@ export default class HaAutomationSidebarCondition extends LitElement {
     ev.stopPropagation();
 
     this.config?.save?.(ev.detail.value);
+    this._warnings = this._checkUiSupport(ev.detail.value);
+  }
+
+  private _checkUiSupport(condition: Condition): string[] | undefined {
+    if (
+      !this.config.uiSupported ||
+      !isConfigObject(condition) ||
+      typeof condition.condition !== "string"
+    ) {
+      return undefined;
+    }
+    return getUiSupportWarnings(
+      this.hass.localize,
+      `ha-automation-condition-${condition.condition}`,
+      condition
+    );
   }
 
   private _toggleYamlMode = () => {
-    fireEvent(this, "toggle-yaml-mode");
+    fireEvent(this, "toggle-yaml-mode", { yamlMode: !this.yamlMode });
   };
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {

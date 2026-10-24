@@ -1,10 +1,10 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume } from "@lit/context";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { LocalizeFunc } from "../../common/translations/localize";
@@ -56,6 +56,7 @@ export abstract class HaDeviceAutomationPicker<
   private _localizeDeviceAutomation: (
     localize: LocalizeFunc,
     states: HassEntities,
+    formatEntityName: HomeAssistant["formatEntityName"],
     entityRegistry: EntityRegistryEntry[],
     automation: T
   ) => string;
@@ -105,7 +106,6 @@ export abstract class HaDeviceAutomationPicker<
     const value = this._value;
 
     return html`<ha-generic-picker
-      .hass=${this.hass}
       .label=${this.label}
       .value=${value}
       .disabled=${!this._automations || this._automations.length === 0}
@@ -139,6 +139,7 @@ export abstract class HaDeviceAutomationPicker<
         const primary = this._localizeDeviceAutomation(
           this.hass.localize,
           this.hass.states,
+          this.hass.formatEntityName,
           this._entityReg,
           automation
         );
@@ -170,7 +171,7 @@ export abstract class HaDeviceAutomationPicker<
   // Device automation labels (entity name + subtype) are often longer than the
   // field, so let the option wrap onto multiple lines instead of truncating.
   private _rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) =>
-    html`<ha-combo-box-item type="button" compact multiline>
+    html`<ha-combo-box-item multiline>
       ${DEFAULT_ROW_RENDERER_CONTENT(item)}
     </ha-combo-box-item>`;
 
@@ -186,6 +187,7 @@ export abstract class HaDeviceAutomationPicker<
       ? this._localizeDeviceAutomation(
           this.hass.localize,
           this.hass.states,
+          this.hass.formatEntityName,
           this._entityReg,
           described
         )

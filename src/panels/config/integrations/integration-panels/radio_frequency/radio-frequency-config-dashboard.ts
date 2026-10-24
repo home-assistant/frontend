@@ -4,9 +4,9 @@ import { LitElement, css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-nav";
 import { UNAVAILABLE } from "../../../../../data/entity/entity";
 import { FALLBACK_DOMAIN_ICONS } from "../../../../../data/icons";
 import type { RadioFrequencyTransmitter } from "../../../../../data/radio_frequency";
@@ -73,11 +73,12 @@ export class RadioFrequencyConfigDashboard extends LitElement {
 
           <ha-card class="network-card">
             <div class="card-content">
-              <ha-md-list>
-                <ha-md-list-item
-                  type="link"
-                  href="/config/radio-frequency/devices"
-                >
+              <ha-list-nav
+                .ariaLabel=${this.hass.localize(
+                  "ui.panel.config.radio_frequency.title"
+                )}
+              >
+                <ha-list-item-button href="/config/radio-frequency/devices">
                   <ha-svg-icon
                     slot="start"
                     .path=${FALLBACK_DOMAIN_ICONS[DOMAIN]}
@@ -89,8 +90,8 @@ export class RadioFrequencyConfigDashboard extends LitElement {
                     )}
                   </div>
                   <ha-icon-next slot="end"></ha-icon-next>
-                </ha-md-list-item>
-              </ha-md-list>
+                </ha-list-item-button>
+              </ha-list-nav>
             </div>
           </ha-card>
         </div>
@@ -109,11 +110,6 @@ export class RadioFrequencyConfigDashboard extends LitElement {
         ha-card {
           margin: 0px auto var(--ha-space-4);
           max-width: 600px;
-        }
-
-        ha-md-list {
-          background: none;
-          padding: 0;
         }
 
         .network-card {

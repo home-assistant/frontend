@@ -96,6 +96,10 @@ export class HaConfigAppsInstalled extends LitElement {
           <ha-input-search
             appearance="outlined"
             .value=${this._filter}
+            .placeholder=${this.hass.localize(
+              "ui.panel.config.apps.installed.search",
+              { number: this._addonInfo.addons.length }
+            )}
             @input=${this._handleSearchChange}
           >
           </ha-input-search>
@@ -253,7 +257,6 @@ export class HaConfigAppsInstalled extends LitElement {
       :host {
         display: block;
         height: 100%;
-        background-color: var(--primary-background-color);
       }
 
       ha-card {
@@ -273,10 +276,13 @@ export class HaConfigAppsInstalled extends LitElement {
         position: sticky;
         top: 0;
         z-index: 2;
-        background-color: var(--primary-background-color);
         padding: 0 var(--ha-space-4);
         box-sizing: border-box;
         border-bottom: 1px solid var(--divider-color);
+        background: var(
+          --ha-panel-toolbar-background,
+          var(--primary-background-color)
+        );
       }
 
       ha-input-search {

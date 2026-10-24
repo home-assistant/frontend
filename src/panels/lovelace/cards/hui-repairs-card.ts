@@ -38,9 +38,9 @@ export class HuiRepairsCard
       subscribeRepairsIssueRegistry(
         this.hass!.connection,
         (repairs: { issues: RepairsIssue[] }) => {
-          // Filter to only active and non-ignored issues
+          // Filter to only non-ignored issues
           this._repairsIssues = repairs.issues.filter(
-            (issue) => issue.active !== false && !issue.ignored
+            (issue) => !issue.ignored
           );
         }
       ),

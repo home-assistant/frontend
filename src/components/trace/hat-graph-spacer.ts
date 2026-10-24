@@ -38,12 +38,19 @@ export class HatGraphSpacer extends LitElement {
     :host([track]) {
       --stroke-clr: var(--track-clr);
     }
+    :host([track]) path {
+      stroke: var(--stroke-clr);
+      stroke-width: 2;
+      stroke-dasharray: none;
+    }
     :host-context([disabled]) {
       --stroke-clr: var(--disabled-clr);
     }
     path {
-      stroke: var(--stroke-clr);
-      stroke-width: 2;
+      stroke: var(--connector-clr, var(--stroke-clr));
+      stroke-width: 1;
+      stroke-dasharray: 4 3;
+      stroke-dashoffset: 4px;
       fill: none;
     }
   `;

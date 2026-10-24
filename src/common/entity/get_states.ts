@@ -4,6 +4,7 @@ import type { HomeAssistant } from "../../types";
 import { stringCompare } from "../string/compare";
 import { computeDomain } from "./compute_domain";
 import { computeStateDomain } from "./compute_state_domain";
+import { computeZoneTrackerState } from "../../data/zone";
 
 export const FIXED_DOMAIN_STATES = {
   alarm_control_panel: [
@@ -95,6 +96,7 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
       "door",
       "garage_door",
       "gas",
+      "glass_break",
       "heat",
       "light",
       "lock",
@@ -274,12 +276,10 @@ export const getStatesDomain = (
         result.push(
           ...Object.entries(hass.states)
             .filter(
-              ([entityId, stateObj]) =>
-                computeDomain(entityId) === "zone" &&
-                entityId !== "zone.home" &&
-                stateObj.attributes.friendly_name
+              ([entityId]) =>
+                computeDomain(entityId) === "zone" && entityId !== "zone.home"
             )
-            .map(([_entityId, stateObj]) => stateObj.attributes.friendly_name!)
+            .map(([_entityId, stateObj]) => computeZoneTrackerState(stateObj))
             .sort((zone1, zone2) =>
               stringCompare(zone1, zone2, hass.locale.language)
             )

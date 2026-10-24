@@ -3,6 +3,7 @@ import type {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import type { DurationUnits } from "../common/datetime/normalize_duration";
 import type { EntityNameItem } from "../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { supportsFeature } from "../common/entity/supports-feature";
@@ -17,11 +18,8 @@ import {
   devicesInEffectiveArea,
   getDeviceIntegrationLookup,
 } from "./device/device_registry";
-import type {
-  EntityRegistryDisplayEntry,
-  EntityRegistryEntry,
-} from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
+import type { HassServiceTargetWithExclude } from "./target";
 
 export type ThresholdMode = "crossed" | "changed" | "is";
 
@@ -87,6 +85,7 @@ export type Selector =
   | UiColorSelector
   | UiStateContentSelector
   | UiTimeFormatSelector
+  | UnitOfMeasurementSelector
   | BackupLocationSelector;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
@@ -266,14 +265,30 @@ export interface LegacyDeviceSelector {
   };
 }
 
+export type DurationSelectorMode = "positive" | "signed" | "offset";
+
 export interface DurationSelector {
   duration: {
     enable_day?: boolean;
     enable_millisecond?: boolean;
     allow_negative?: boolean;
     enable_second?: boolean;
+    mode?: DurationSelectorMode;
   } | null;
 }
+
+export const getDurationSelectorMode = (
+  config: DurationSelector["duration"]
+): DurationSelectorMode =>
+  config?.mode ?? (config?.allow_negative ? "signed" : "positive");
+
+export const getDurationSelectorUnits = (
+  config: DurationSelector["duration"]
+): DurationUnits => ({
+  enableDay: !!config?.enable_day,
+  enableSecond: config?.enable_second ?? true,
+  enableMillisecond: !!config?.enable_millisecond,
+});
 
 interface EntitySelectorFilter {
   integration?: string;
@@ -281,6 +296,7 @@ interface EntitySelectorFilter {
   device_class?: string | readonly string[];
   supported_features?: number | [number];
   unit_of_measurement?: string | readonly string[];
+  translation_key?: string | readonly string[];
 }
 
 interface EntitySelectorEntityFilter extends EntitySelectorFilter {
@@ -368,6 +384,10 @@ export interface LocationSelector {
     radius?: boolean;
     radius_readonly?: boolean;
     icon?: string;
+    /** Name whose initials the marker shows when there is no icon */
+    name?: string;
+    /** Marker and radius color; defaults to the theme's zone color */
+    color?: string;
   } | null;
 }
 
@@ -434,6 +454,7 @@ interface ObjectSelectorField {
   label?: string;
   description?: string;
   required?: boolean;
+  default?: unknown;
 }
 
 export interface ObjectSelector {
@@ -652,6 +673,20 @@ export interface UiTimeFormatSelector {
   ui_time_format: {} | null;
 }
 
+// Maps a context key to the name of another field or blueprint input
+export interface UnitOfMeasurementSelectorContext {
+  filter_device_class?: string;
+  filter_state_class?: string;
+}
+
+export interface UnitOfMeasurementSelector {
+  unit_of_measurement: {
+    device_classes?: string | string[] | null;
+    state_classes?: string | string[] | null;
+    context?: UnitOfMeasurementSelectorContext;
+  } | null;
+}
+
 export interface EntityNameSelector {
   entity_name: {
     entity_id?: string;
@@ -659,14 +694,33 @@ export interface EntityNameSelector {
   } | null;
 }
 
+/**
+ * Resolve the context of a selector config, which maps a context key to the
+ * name of another field, to the current values of those fields.
+ */
+export const resolveSelectorContext = (
+  selector: Selector,
+  data: Record<string, unknown> | undefined
+): Record<string, unknown> | undefined => {
+  const config = Object.values(selector)[0] as
+    { context?: Record<string, string> } | null | undefined;
+  if (!config?.context) {
+    return undefined;
+  }
+  const context: Record<string, unknown> = {};
+  for (const [contextKey, fieldName] of Object.entries(config.context)) {
+    context[contextKey] = data?.[fieldName];
+  }
+  return context;
+};
+
 export const expandLabelTarget = (
   hass: HomeAssistant,
   labelId: string,
   areas: HomeAssistant["areas"],
   devices: HomeAssistant["devices"],
   entities: HomeAssistant["entities"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newEntities: string[] = [];
   const newDevices: string[] = [];
@@ -680,8 +734,7 @@ export const expandLabelTarget = (
         entities,
         devices,
         area.area_id,
-        targetSelector,
-        entitySources
+        targetSelector
       )
     ) {
       newAreas.push(area.area_id);
@@ -691,13 +744,7 @@ export const expandLabelTarget = (
   Object.values(devices).forEach((device) => {
     if (
       device.labels.includes(labelId) &&
-      deviceMeetsTargetSelector(
-        hass.states,
-        Object.values(entities),
-        device,
-        targetSelector,
-        entitySources
-      )
+      deviceMeetsTargetSelector(hass.states, entities, device, targetSelector)
     ) {
       newDevices.push(device.id);
     }
@@ -709,7 +756,7 @@ export const expandLabelTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -725,8 +772,7 @@ export const expandFloorTarget = (
   hass: HomeAssistant,
   floorId: string,
   areas: HomeAssistant["areas"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newAreas: string[] = [];
   Object.values(areas).forEach((area) => {
@@ -737,8 +783,7 @@ export const expandFloorTarget = (
         hass.entities,
         hass.devices,
         area.area_id,
-        targetSelector,
-        entitySources
+        targetSelector
       )
     ) {
       newAreas.push(area.area_id);
@@ -752,8 +797,7 @@ export const expandAreaTarget = (
   areaId: string,
   devices: HomeAssistant["devices"],
   entities: HomeAssistant["entities"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newEntities: string[] = [];
   const newDevices: string[] = [];
@@ -761,13 +805,7 @@ export const expandAreaTarget = (
   // this area counts, a child with a different explicit area does not.
   devicesInEffectiveArea(devices, areaId).forEach((device) => {
     if (
-      deviceMeetsTargetSelector(
-        hass.states,
-        Object.values(entities),
-        device,
-        targetSelector,
-        entitySources
-      )
+      deviceMeetsTargetSelector(hass.states, entities, device, targetSelector)
     ) {
       newDevices.push(device.id);
     }
@@ -778,7 +816,7 @@ export const expandAreaTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -793,8 +831,7 @@ export const expandDeviceTarget = (
   hass: HomeAssistant,
   deviceId: string,
   entities: HomeAssistant["entities"],
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ) => {
   const newEntities: string[] = [];
   Object.values(entities).forEach((entity) => {
@@ -803,7 +840,7 @@ export const expandDeviceTarget = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -819,18 +856,11 @@ export const areaMeetsTargetSelector = (
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areaId: string,
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ): boolean => {
   const hasMatchingdevice = devicesInEffectiveArea(devices, areaId).some(
     (device) =>
-      deviceMeetsTargetSelector(
-        hass.states,
-        Object.values(entities),
-        device,
-        targetSelector,
-        entitySources
-      )
+      deviceMeetsTargetSelector(hass.states, entities, device, targetSelector)
   );
   if (hasMatchingdevice) {
     return true;
@@ -841,7 +871,7 @@ export const areaMeetsTargetSelector = (
       entityMeetsTargetSelector(
         hass.states[entity.entity_id],
         targetSelector,
-        entitySources,
+        undefined,
         hass.entities,
         hass.devices
       )
@@ -854,18 +884,19 @@ export const areaMeetsTargetSelector = (
 
 export const deviceMeetsTargetSelector = (
   states: HomeAssistant["states"],
-  entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
+  entityRegistry: HomeAssistant["entities"],
   device: DeviceRegistryEntry,
-  targetSelector: TargetSelector,
-  entitySources?: EntitySources
+  targetSelector: TargetSelector
 ): boolean => {
-  const deviceIntegrationLookup = entitySources
-    ? getDeviceIntegrationLookup(entitySources, entityRegistry)
-    : undefined;
-
   if (targetSelector.target?.device) {
+    const filterDevices = ensureArray(targetSelector.target.device);
+    const deviceIntegrationLookup = filterDevices.some(
+      (filterDevice) => filterDevice.integration
+    )
+      ? getDeviceIntegrationLookup(Object.values(entityRegistry))
+      : undefined;
     if (
-      !ensureArray(targetSelector.target.device).some((filterDevice) =>
+      !filterDevices.some((filterDevice) =>
         filterSelectorDevices(filterDevice, device, deviceIntegrationLookup)
       )
     ) {
@@ -875,7 +906,7 @@ export const deviceMeetsTargetSelector = (
   if (targetSelector.target?.entity) {
     // Only the device's own entities: a child device is reached through the
     // device target itself, so a parent must not match on a child's behalf.
-    const entities = entityRegistry.filter(
+    const entities = Object.values(entityRegistry).filter(
       (reg) => reg.device_id === device.id
     );
     return entities.some((entity) => {
@@ -883,7 +914,8 @@ export const deviceMeetsTargetSelector = (
       return entityMeetsTargetSelector(
         entityState,
         targetSelector,
-        entitySources
+        undefined,
+        entityRegistry
       );
     });
   }
@@ -959,6 +991,7 @@ export const filterSelectorEntities = (
     device_class: filterDeviceClass,
     supported_features: filterSupportedFeature,
     unit_of_measurement: filterUnitOfMeasurement,
+    translation_key: filterTranslationKey,
     integration: filterIntegration,
     device: filterDevice,
   } = filterEntity;
@@ -1007,6 +1040,14 @@ export const filterSelectorEntities = (
     }
   }
 
+  const filterTranslationKeys = ensureArray(filterTranslationKey) ?? [];
+  if (filterTranslationKeys.length) {
+    const translationKey = entityRegistry?.[entity.entity_id]?.translation_key;
+    if (!translationKey || !filterTranslationKeys.includes(translationKey)) {
+      return false;
+    }
+  }
+
   if (filterDevice) {
     if (!entityRegistry || !devices) {
       return false;
@@ -1027,7 +1068,8 @@ export const filterSelectorEntities = (
 
   if (
     filterIntegration &&
-    entitySources?.[entity.entity_id]?.domain !== filterIntegration
+    (entityRegistry?.[entity.entity_id]?.platform ??
+      entitySources?.[entity.entity_id]?.domain) !== filterIntegration
   ) {
     return false;
   }
@@ -1113,6 +1155,7 @@ export const computeCreateDomains = (
     !entityFilter.device_class &&
     !entityFilter.supported_features &&
     !entityFilter.device &&
+    !ensureArray(entityFilter.translation_key)?.length &&
     entityFilter.domain
       ? ensureArray(entityFilter.domain).filter((domain) =>
           isHelperDomain(domain)
@@ -1125,7 +1168,7 @@ export const computeCreateDomains = (
 
 export const resolveEntityIDs = (
   hass: HomeAssistant,
-  targetPickerValue: HassServiceTarget,
+  targetPickerValue: HassServiceTargetWithExclude,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
@@ -1135,6 +1178,43 @@ export const resolveEntityIDs = (
     return [];
   }
 
+  const included = resolveIncludedEntityIDs(
+    hass,
+    targetPickerValue,
+    entities,
+    devices,
+    areas,
+    targetSelector
+  );
+
+  if (!targetPickerValue.exclude) {
+    return included;
+  }
+
+  // Excludes are resolved like a target and taken out of the whole result,
+  // matching core. They are not narrowed by the selector: leaving out more
+  // than the selector allows can't add anything back.
+  const excluded = new Set(
+    resolveIncludedEntityIDs(
+      hass,
+      targetPickerValue.exclude,
+      entities,
+      devices,
+      areas,
+      { target: {} }
+    )
+  );
+  return included.filter((entityId) => !excluded.has(entityId));
+};
+
+const resolveIncludedEntityIDs = (
+  hass: HomeAssistant,
+  targetPickerValue: HassServiceTarget,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  targetSelector: TargetSelector
+): string[] => {
   const targetEntities = new Set(ensureArray(targetPickerValue.entity_id));
   const targetDevices = new Set(ensureArray(targetPickerValue.device_id));
   const targetAreas = new Set(ensureArray(targetPickerValue.area_id));

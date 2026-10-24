@@ -1,7 +1,8 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { live } from "lit/directives/live";
 import { styleMap } from "lit/directives/style-map";
 import { STATES_OFF } from "../../../common/const";
 import type {
@@ -20,6 +21,7 @@ import type { ImageEntity } from "../../../data/image";
 import { computeImageUrl } from "../../../data/image";
 import {
   isMediaSourceContentId,
+  isStreamingMedia,
   resolveMediaSource,
 } from "../../../data/media_source";
 import type { HomeAssistant } from "../../../types";
@@ -69,6 +71,10 @@ export class HuiImage extends LitElement {
 
   @state() private _loadState?: LoadState;
 
+  @query("#image") private _img?: HTMLImageElement;
+
+  private _reconnectImg = false;
+
   @state() private _cameraImageSrc?: string;
 
   @state() private _loadedImageSrc?: string;
@@ -92,11 +98,14 @@ export class HuiImage extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    if (this._reconnectImg) {
+      this.requestUpdate();
+    }
     if (this._loadState === undefined) {
       this._loadState = LoadState.Loading;
     }
     if (this.cameraImage && this.cameraView !== "live") {
-      this._startIntersectionObserverOrUpdates();
+      this._startIntersectionObserver();
     }
   }
 
@@ -105,6 +114,12 @@ export class HuiImage extends LitElement {
     this._stopUpdateCameraInterval();
     this._stopIntersectionObserver();
     this._imageVisible = undefined;
+    // A detached <img> keeps an MJPEG stream open, which can tie up the
+    // connection. Drop the source and set it again when reconnected.
+    if (isStreamingMedia(this._img?.getAttribute("src") || "")) {
+      this._reconnectImg = true;
+      this._img?.removeAttribute("src");
+    }
   }
 
   protected handleIntersectionCallback(entries: IntersectionObserverEntry[]) {
@@ -112,11 +127,14 @@ export class HuiImage extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues): void {
+    if (this.isConnected) {
+      this._reconnectImg = false;
+    }
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
       if (this._shouldStartCameraUpdates(oldHass)) {
-        this._startIntersectionObserverOrUpdates();
+        this._startIntersectionObserver();
       } else if (!this.hass!.connected) {
         this._stopUpdateCameraInterval();
         this._stopIntersectionObserver();
@@ -284,7 +302,7 @@ export class HuiImage extends LitElement {
               : html`
                   <img
                     id="image"
-                    src=${imageSrc}
+                    src=${this._reconnectImg ? nothing : live(imageSrc)}
                     alt=${this.entity || ""}
                     @error=${this._onImageError}
                     @load=${this._onImageLoad}
@@ -338,20 +356,13 @@ export class HuiImage extends LitElement {
     );
   }
 
-  private _startIntersectionObserverOrUpdates(): void {
-    if ("IntersectionObserver" in window) {
-      if (!this._intersectionObserver) {
-        this._intersectionObserver = new IntersectionObserver(
-          this.handleIntersectionCallback.bind(this)
-        );
-      }
-      this._intersectionObserver.observe(this);
-    } else {
-      // No support for IntersectionObserver
-      // assume all images are visible
-      this._imageVisible = true;
-      this._startUpdateCameraInterval();
+  private _startIntersectionObserver(): void {
+    if (!this._intersectionObserver) {
+      this._intersectionObserver = new IntersectionObserver(
+        this.handleIntersectionCallback.bind(this)
+      );
     }
+    this._intersectionObserver.observe(this);
   }
 
   private _stopIntersectionObserver(): void {

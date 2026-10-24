@@ -42,7 +42,6 @@ import {
   haStyleDialogFixedTop,
 } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import "../../components/hui-entity-editor";
 import type { Lovelace } from "../../types";
 import { SECTIONS_VIEW_LAYOUT } from "../../views/const";
 import { generateDefaultSection } from "../../views/default-section";
@@ -60,6 +59,7 @@ import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import { LOVELACE_EDIT_TOAST_ID } from "../../types";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
@@ -440,6 +440,7 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
       });
     } else {
       this._lovelace!.showToast({
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass!.localize(
           "ui.panel.lovelace.editor.select_dashboard.success"
         ),

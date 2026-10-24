@@ -1,11 +1,11 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { consume } from "@lit/context";
+import { consume } from "../../../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../../../common/entity/compute_entity_name_display";
 import "../../../../../components/ha-button";
 import {
   dirtyStateContext,
@@ -25,9 +25,7 @@ import "../../../helpers/forms/ha-input_datetime-form";
 import "../../../helpers/forms/ha-input_number-form";
 import "../../../helpers/forms/ha-input_select-form";
 import "../../../helpers/forms/ha-input_text-form";
-import "../../../helpers/forms/ha-schedule-form";
 import "../../../helpers/forms/ha-timer-form";
-import "../../../voice-assistants/entity-voice-settings";
 import "../../entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
 import { getDeleteConfirmationText } from "../../get-delete-confirmation-text";
@@ -153,7 +151,14 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private async _getItem() {
-    const items = await HELPERS_CRUD[this.entry.platform].fetch(this.hass!);
+    const [items] = await Promise.all([
+      HELPERS_CRUD[this.entry.platform].fetch(this.hass!),
+      // Only schedules need FullCalendar, which some older browsers cannot
+      // load. The form renders with the item, so it must be defined by then.
+      this.entry.platform === "schedule"
+        ? import("../../../helpers/forms/ha-schedule-form")
+        : undefined,
+    ]);
     const item =
       items.find((helper) => helper.id === this.entry.unique_id) || null;
     this._item = item;
@@ -172,6 +177,9 @@ export class EntitySettingsHelperTab extends LitElement {
         );
       }
       const result = await this._registryEditor!.updateEntry();
+      if (!result) {
+        return;
+      }
       this._dirtyState?.markClean();
       if (result.close) {
         fireEvent(this, "close-dialog");
@@ -184,7 +192,7 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private async _confirmDeleteItem(): Promise<void> {
-    const name = computeEntityEntryName(this.entry, this.hass.devices);
+    const name = computeEntityEntryName(this.entry);
     const confirmationText = await getDeleteConfirmationText(
       this.hass,
       this.entry,

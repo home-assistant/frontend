@@ -6,7 +6,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import "../../components/ha-button";
-import "../../components/ha-dialog-header";
 import "../../components/ha-spinner";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
 import { interceptWakeWord } from "../../data/assist_satellite";
@@ -93,7 +92,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
 
     const entityState = this.hass.states[this.assistEntityId];
 
-    if (entityState.state !== "idle") {
+    if (entityState?.state !== "idle") {
       return html`<ha-spinner></ha-spinner>`;
     }
 
@@ -136,7 +135,7 @@ export class HaVoiceAssistantSetupStepWakeWord extends LitElement {
                 )}</ha-alert
               >`
             : this._muteSwitchEntity &&
-                this.hass.states[this._muteSwitchEntity].state === "on"
+                this.hass.states[this._muteSwitchEntity]?.state === "on"
               ? html`<ha-alert
                   alert-type="warning"
                   .title=${this.hass.localize(

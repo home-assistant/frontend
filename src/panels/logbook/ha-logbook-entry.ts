@@ -65,6 +65,9 @@ class HaLogbookEntry extends LitElement {
 
   @property({ type: Boolean, attribute: false }) public graphColor = false;
 
+  /** Overrides the node color, e.g. the color of the zone a person entered */
+  @property({ attribute: false }) public nodeColor?: string;
+
   @property({ type: String, attribute: "name-detail" })
   public nameDetail?: LogbookNameDetail;
 
@@ -309,7 +312,7 @@ class HaLogbookEntry extends LitElement {
     return (
       entityName ||
       (entityId && entityId in this.hass.states
-        ? this.hass.states[entityId].attributes.friendly_name || entityId
+        ? this.hass.formatEntityName(this.hass.states[entityId])
         : entityId)
     );
   }
@@ -362,10 +365,7 @@ class HaLogbookEntry extends LitElement {
           const messageEnd = messageParts.splice(i);
           messageEnd.shift();
           return html`${messageParts.join(" ")}
-          ${this._entityName(
-            entityId,
-            this.hass.states[entityId].attributes.friendly_name
-          )}
+          ${this.hass.formatEntityName(this.hass.states[entityId])}
           ${messageEnd.join(" ")}`;
         }
       }
@@ -384,13 +384,14 @@ class HaLogbookEntry extends LitElement {
       (domain === "sensor" && stateObj!.attributes.device_class === "enum");
     const useGraphColor = this.graphColor || !isEnumDomain;
     const color =
-      layout === "inline" && !isUnavailable && this.item.state && useGraphColor
+      this.nodeColor ??
+      (layout === "inline" && !isUnavailable && this.item.state && useGraphColor
         ? computeTimelineColor(
             this.item.state,
             (this._computedStyle ??= getComputedStyle(this)),
             stateObj
           )
-        : nodeColor(item.category, stateObj);
+        : nodeColor(item.category, stateObj));
     const style = color ? styleMap({ "--node-color": color }) : nothing;
     if (layout !== "timeline") {
       return html`<span

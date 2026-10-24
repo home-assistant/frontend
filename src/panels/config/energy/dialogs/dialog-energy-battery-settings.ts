@@ -208,13 +208,15 @@ export class DialogEnergyBatterySettings
           .placeholder=${
             this._source?.stat_energy_from
               ? getStatisticLabel(
-                  this.hass,
+                  this.hass.states,
+                  this.hass.formatEntityName,
                   this._source.stat_energy_from,
                   this._params?.statsMetadata?.[this._source.stat_energy_from]
                 )
               : this._source?.stat_energy_to
                 ? getStatisticLabel(
-                    this.hass,
+                    this.hass.states,
+                    this.hass.formatEntityName,
                     this._source.stat_energy_to,
                     this._params?.statsMetadata?.[this._source.stat_energy_to]
                   )
@@ -309,7 +311,7 @@ export class DialogEnergyBatterySettings
       this._params?.statsMetadata &&
       !(statId in this._params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass, [statId]);
+      const [metadata] = await getStatisticMetadata(this.hass.callWS, [statId]);
       if (metadata) {
         this._params.statsMetadata[statId] = metadata;
         this.requestUpdate("_params");

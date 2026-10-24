@@ -1,13 +1,10 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { AppSelector, AddonSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-addon-picker";
 
 @customElement("ha-selector-app")
 export class HaAppSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: AppSelector | AddonSelector;
 
   @property() public value?: any;
@@ -22,7 +19,6 @@ export class HaAppSelector extends LitElement {
 
   protected render() {
     return html`<ha-addon-picker
-      .hass=${this.hass}
       .value=${this.value}
       .label=${this.label}
       .helper=${this.helper}

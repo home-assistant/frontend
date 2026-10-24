@@ -4,8 +4,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-button";
 import "../../components/ha-card";
-import "../../components/ha-md-list";
-import "../../components/ha-md-list-item";
+import "../../components/item/ha-row-item";
 import type { CoreFrontendUserData } from "../../data/frontend";
 import { subscribeFrontendUserData } from "../../data/frontend";
 import { showEditSidebarDialog } from "../../dialogs/sidebar/show-dialog-edit-sidebar";
@@ -81,40 +80,38 @@ class HaProfileSectionPreferences extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-dashboard-row>
-            <ha-md-list>
-              <ha-md-list-item>
-                <span slot="headline"
-                  >${this.hass.localize(
-                    "ui.panel.profile.customize_sidebar.header"
-                  )}</span
-                >
-                <span slot="supporting-text"
-                  >${this.hass.localize(
-                    "ui.panel.profile.customize_sidebar.description"
-                  )}</span
-                >
-                <ha-button
-                  slot="end"
-                  appearance="plain"
-                  size="s"
-                  @click=${this._customizeSidebar}
-                >
-                  ${this.hass.localize(
-                    "ui.panel.profile.customize_sidebar.button"
-                  )}
-                </ha-button>
-              </ha-md-list-item>
-              ${
-                this.hass.user!.is_admin
-                  ? html`
-                      <ha-entity-id-picker-row
-                        .hass=${this.hass}
-                        .coreUserData=${this._coreUserData}
-                      ></ha-entity-id-picker-row>
-                    `
-                  : ""
-              }
-            </ha-md-list>
+            <ha-row-item>
+              <span slot="headline"
+                >${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.header"
+                )}</span
+              >
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.description"
+                )}</span
+              >
+              <ha-button
+                slot="end"
+                appearance="plain"
+                size="s"
+                @click=${this._customizeSidebar}
+              >
+                ${this.hass.localize(
+                  "ui.panel.profile.customize_sidebar.button"
+                )}
+              </ha-button>
+            </ha-row-item>
+            ${
+              this.hass.user!.is_admin
+                ? html`
+                    <ha-entity-id-picker-row
+                      .hass=${this.hass}
+                      .coreUserData=${this._coreUserData}
+                    ></ha-entity-id-picker-row>
+                  `
+                : ""
+            }
           </ha-card>
         </div>
       </hass-subpage>
@@ -141,12 +138,6 @@ class HaProfileSectionPreferences extends LitElement {
         ha-card {
           margin: 0 auto var(--ha-space-4);
           max-width: 600px;
-        }
-
-        ha-md-list {
-          background: none;
-          padding-top: 0;
-          padding-bottom: 0;
         }
       `,
     ];

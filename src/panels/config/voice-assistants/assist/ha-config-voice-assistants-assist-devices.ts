@@ -80,7 +80,9 @@ class AssistDevicesPage extends LitElement {
     ): AssistDeviceExtra[] =>
       assistDevices.map((assistDevice) => {
         const device = deviceReg[assistDevice.device_id];
-        const selected = states[assistDevice.pipeline_entity]?.state;
+        const selected = assistDevice.pipeline_entity
+          ? states[assistDevice.pipeline_entity]?.state
+          : undefined;
         const isPreferred = selected === "preferred";
         const pipeline = isPreferred ? preferred : selected;
         const pipelineName =
@@ -89,11 +91,7 @@ class AssistDevicesPage extends LitElement {
         return {
           ...assistDevice,
           name: device
-            ? computeDeviceNameDisplay(
-                device,
-                this.hass.localize,
-                this.hass.states
-              )
+            ? computeDeviceNameDisplay(device, this.hass.localize)
             : "",
           pipeline: isPreferred
             ? localize("ui.components.pipeline-picker.preferred", {

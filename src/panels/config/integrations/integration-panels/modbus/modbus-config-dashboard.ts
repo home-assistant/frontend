@@ -16,10 +16,11 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-base";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { domainToName } from "../../../../../data/integration";
@@ -187,22 +188,21 @@ export class ModbusConfigDashboard extends LitElement {
     // removed while the connection was listed has nowhere to link to
     if (!holder.entry) {
       return html`
-        <ha-md-list-item class="holder">
+        <ha-list-item-base class="holder">
           <ha-svg-icon
             slot="start"
             .path=${source === "yaml" ? mdiFileDocumentOutline : mdiPuzzle}
           ></ha-svg-icon>
           <div slot="headline">${holder.id}</div>
           ${this._renderUnits(holder)}
-        </ha-md-list-item>
+        </ha-list-item-base>
       `;
     }
 
     const { domain, title } = holder.entry;
 
     return html`
-      <ha-md-list-item
-        type="link"
+      <ha-list-item-button
         class="holder"
         href=${`/config/integrations/integration/${domain}#config_entry=${holder.id}`}
       >
@@ -225,19 +225,19 @@ export class ModbusConfigDashboard extends LitElement {
         </div>
         ${this._renderUnits(holder)}
         <ha-icon-next slot="end"></ha-icon-next>
-      </ha-md-list-item>
+      </ha-list-item-button>
     `;
   }
 
   private _renderSerialPortLink(): TemplateResult {
     return html`
-      <ha-md-list-item type="link" class="holder" href="/config/serial">
+      <ha-list-item-button class="holder" href="/config/serial">
         <ha-svg-icon slot="start" .path=${mdiCableData}></ha-svg-icon>
         <div slot="headline">
           ${this.hass.localize("ui.panel.config.modbus.view_serial_port")}
         </div>
         <ha-icon-next slot="end"></ha-icon-next>
-      </ha-md-list-item>
+      </ha-list-item-button>
     `;
   }
 
@@ -256,12 +256,12 @@ export class ModbusConfigDashboard extends LitElement {
 
   private _renderConnectionItem(item: ConnectionListItem): TemplateResult {
     return html`
-      <ha-md-list-item class="connection">
+      <ha-list-item-base class="connection">
         <ha-svg-icon slot="start" .path=${item.icon}></ha-svg-icon>
         <div slot="headline">${item.primary}</div>
         <div slot="supporting-text">${item.secondary}</div>
         ${this._renderState(item)}
-      </ha-md-list-item>
+      </ha-list-item-base>
       ${item.holders.map((holder) => this._renderHolder(holder, item.source))}
       ${
         item.serialDevice && isComponentLoaded(this.hass.config, "usb")
@@ -283,9 +283,9 @@ export class ModbusConfigDashboard extends LitElement {
               "ui.panel.config.modbus.connections_description"
             )}
           </div>
-          <ha-md-list>
+          <ha-list-base>
             ${items.map((item) => this._renderConnectionItem(item))}
-          </ha-md-list>
+          </ha-list-base>
         </div>
       </ha-card>
     `;
@@ -474,23 +474,16 @@ export class ModbusConfigDashboard extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        ha-md-list {
-          background: none;
-          padding: 0;
+        ha-list-item-base,
+        ha-list-item-button {
+          --ha-row-item-padding-block: var(--ha-space-2);
+          --ha-row-item-min-height: 0;
         }
 
-        ha-md-list-item {
-          --md-list-item-top-space: var(--ha-space-2);
-          --md-list-item-bottom-space: var(--ha-space-2);
-          --md-list-item-one-line-container-height: 0;
-          --md-list-item-two-line-container-height: 0;
-          --md-list-item-three-line-container-height: 0;
-        }
-
-        ha-md-list-item.connection:not(:first-child) {
+        ha-list-item-base.connection:not(:first-child) {
           border-top: 1px solid var(--divider-color);
           margin-top: var(--ha-space-2);
-          --md-list-item-top-space: var(--ha-space-4);
+          --ha-row-item-padding-block: var(--ha-space-4) var(--ha-space-2);
         }
 
         .state {
@@ -512,11 +505,11 @@ export class ModbusConfigDashboard extends LitElement {
           background-color: var(--success-color);
         }
 
-        ha-md-list-item.holder {
-          --md-list-item-leading-space: var(--ha-space-14);
+        .holder {
+          --ha-row-item-padding-inline: var(--ha-space-14) var(--ha-space-4);
         }
 
-        ha-md-list-item.holder img[slot="start"] {
+        .holder img[slot="start"] {
           width: 24px;
           height: 24px;
         }

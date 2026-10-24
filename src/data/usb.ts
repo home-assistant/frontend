@@ -1,4 +1,4 @@
-import type { HomeAssistant } from "../types";
+import type { CallWS, HomeAssistant } from "../types";
 
 export interface SerialPort {
   device: string;
@@ -41,8 +41,11 @@ export const scanUSBDevices = (hass: HomeAssistant) =>
 export const listSerialPorts = (hass: HomeAssistant) =>
   hass.callWS<SerialPort[]>({ type: "usb/list_serial_ports" });
 
-export const listSerialPortsWithUsage = (hass: HomeAssistant) =>
+export const listSerialPortsWithUsage = (hass: { callWS: CallWS }) =>
   hass.callWS<SerialPortUsage[]>({
     type: "usb/list_serial_ports",
     include_usage: true,
   });
+
+export const listSerialIntegrations = (hass: { callWS: CallWS }) =>
+  hass.callWS<string[]>({ type: "usb/list_serial_integrations" });

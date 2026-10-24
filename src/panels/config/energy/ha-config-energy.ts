@@ -222,9 +222,9 @@ class HaConfigEnergy extends LitElement {
     this._error = undefined;
 
     const validationPromise = getEnergyPreferenceValidation(this.hass);
-    const energyInfoPromise = await getEnergyInfo(this.hass);
+    const energyInfoPromise = await getEnergyInfo(this.hass.callWS);
     try {
-      this._preferences = await getEnergyPreferences(this.hass);
+      this._preferences = await getEnergyPreferences(this.hass.callWS);
     } catch (err: any) {
       if (err.code === "not_found") {
         this._preferences = INITIAL_CONFIG;
@@ -249,7 +249,7 @@ class HaConfigEnergy extends LitElement {
     } catch (err: any) {
       this._error = err.message;
     }
-    this._info = await getEnergyInfo(this.hass);
+    this._info = await getEnergyInfo(this.hass.callWS);
     await this._fetchMetaData();
   }
 
@@ -258,7 +258,10 @@ class HaConfigEnergy extends LitElement {
       return;
     }
     const statIDs = getReferencedStatisticIds(this._preferences, this._info);
-    const statsMetadataArray = await getStatisticMetadata(this.hass, statIDs);
+    const statsMetadataArray = await getStatisticMetadata(
+      this.hass.callWS,
+      statIDs
+    );
     const statsMetadata: Record<string, StatisticsMetaData> = {};
     statsMetadataArray.forEach((x) => {
       statsMetadata[x.statistic_id] = x;

@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 
 import {
   mdiCog,
@@ -21,6 +20,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
@@ -31,7 +31,6 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import { afterNextRender } from "../../../common/util/render-status";
 import "../../../components/device/ha-device-picker";
-import "../../../components/entity/ha-entities-picker";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
@@ -187,12 +186,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
           const device = deviceLookup[deviceId];
           const deviceEntities: string[] = deviceEntityLookup[deviceId] || [];
           outputDevices.push({
-            name: computeDeviceNameDisplay(
-              device,
-              this.hass.localize,
-              this.hass.states,
-              this._deviceEntityLookup[device.id]
-            ),
+            name: computeDeviceNameDisplay(device, this.hass.localize),
             id: device.id,
             entities: deviceEntities,
           });

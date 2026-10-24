@@ -14,8 +14,13 @@ import "../../../components/ha-spinner";
 import type { ConfigEntry } from "../../../data/config_entries";
 import {
   deleteConfigEntry,
+  enableConfigEntry,
   getConfigEntries,
 } from "../../../data/config_entries";
+import {
+  createConfigFlow,
+  handleConfigFlowStep,
+} from "../../../data/config_flow";
 import type { LLMApi } from "../../../data/llm";
 import { fetchLLMApis } from "../../../data/llm";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
@@ -43,6 +48,8 @@ export class MCPPref extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _enabling = false;
+
   private _sortedApis = memoizeOne((apis: LLMApi[], language: string) =>
     [...apis].sort((a, b) => a.name.localeCompare(b.name, language))
   );
@@ -52,6 +59,7 @@ export class MCPPref extends LitElement {
   }
 
   protected render() {
+    const enabled = this._entry && !this._entry.disabled_by;
     return html`
       <ha-card outlined>
         <h1 class="card-header">
@@ -69,7 +77,7 @@ export class MCPPref extends LitElement {
             referrerpolicy="no-referrer"
           />${this.hass.localize("ui.panel.config.mcp.header")}
           ${
-            this._entry
+            enabled
               ? html`
                   <div class="header-actions">
                     <ha-dropdown>
@@ -92,14 +100,19 @@ export class MCPPref extends LitElement {
         </h1>
         <div class="card-content">
           <p>
-            ${this.hass.localize("ui.panel.config.mcp.description", {
-              documentation_link: html`<a
-                href=${documentationUrl(this.hass, "/integrations/mcp_server/")}
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize("ui.panel.config.mcp.documentation")}</a
-              >`,
-            })}
+            ${this.hass.localize(
+              enabled
+                ? "ui.panel.config.mcp.description"
+                : "ui.panel.config.mcp.description_disabled",
+              {
+                documentation_link: html`<a
+                  href=${documentationUrl(this.hass, "/integrations/mcp_server/")}
+                  target="_blank"
+                  rel="noreferrer"
+                  >${this.hass.localize("ui.panel.config.mcp.documentation")}</a
+                >`,
+              }
+            )}
           </p>
           ${
             this._entry === undefined && this._error === undefined
@@ -122,13 +135,18 @@ export class MCPPref extends LitElement {
                 `
               : nothing
           }
-          ${this._entry ? this._renderEnabled() : nothing}
+          ${enabled ? this._renderEnabled() : nothing}
         </div>
         ${
-          this._entry === null
+          this._entry === null || this._entry?.disabled_by
             ? html`
                 <div class="card-actions centered">
-                  <ha-button appearance="filled" @click=${this._enable}>
+                  <ha-button
+                    appearance="filled"
+                    .loading=${this._enabling}
+                    .disabled=${this._enabling}
+                    @click=${this._enable}
+                  >
                     ${this.hass.localize("ui.panel.config.mcp.enable")}
                   </ha-button>
                 </div>
@@ -143,7 +161,7 @@ export class MCPPref extends LitElement {
     return html`
       ${this._renderUrlRow(
         this.hass.localize("ui.panel.config.mcp.your_api_header"),
-        this._mcpUrl(),
+        this._mcpPath(),
         html`<ha-icon-button
           .label=${this.hass.localize("ui.panel.config.mcp.configure")}
           .path=${mdiCog}
@@ -157,7 +175,7 @@ export class MCPPref extends LitElement {
                 ${this.hass.localize("ui.panel.config.mcp.apis_header")}
               </p>
               ${this._sortedApis(this._apis, this.hass.locale.language).map(
-                (api) => this._renderUrlRow(api.name, this._mcpUrl(api.id))
+                (api) => this._renderUrlRow(api.name, this._mcpPath(api.id))
               )}
             `
           : nothing
@@ -165,26 +183,27 @@ export class MCPPref extends LitElement {
     `;
   }
 
-  private _renderUrlRow(name: string, url: string, action?: TemplateResult) {
+  private _renderUrlRow(name: string, path: string, action?: TemplateResult) {
+    // Only the path is shown, so screenshots do not reveal the host
     return html`
       <div class="url-row">
         <div class="url-info">
           <span class="name">${name}</span>
-          <span class="url">${url}</span>
+          <span class="url">…${path}</span>
         </div>
         ${action}
         <ha-icon-button
           .label=${this.hass.localize("ui.panel.config.mcp.copy_url")}
           .path=${mdiContentCopy}
-          data-url=${url}
+          data-url=${this.hass.hassUrl(path)}
           @click=${this._copyUrl}
         ></ha-icon-button>
       </div>
     `;
   }
 
-  private _mcpUrl(apiId?: string) {
-    return this.hass.hassUrl(`/api/mcp${apiId ? `/${apiId}` : ""}`);
+  private _mcpPath(apiId?: string) {
+    return `/api/mcp${apiId ? `/${apiId}` : ""}`;
   }
 
   private async _load() {
@@ -194,7 +213,7 @@ export class MCPPref extends LitElement {
         domain: MCP_SERVER_DOMAIN,
       });
       this._entry = entries.length ? entries[0] : null;
-      if (this._entry) {
+      if (this._entry && !this._entry.disabled_by) {
         this._apis = await fetchLLMApis(this.hass);
       }
     } catch (err: any) {
@@ -202,13 +221,59 @@ export class MCPPref extends LitElement {
     }
   }
 
-  private _enable() {
-    showConfigFlowDialog(this, {
-      startFlowHandler: MCP_SERVER_DOMAIN,
-      dialogClosedCallback: () => {
-        this._load();
-      },
-    });
+  private async _enable() {
+    if (this._entry?.disabled_by) {
+      await this._enableEntry(this._entry.entry_id);
+      return;
+    }
+    this._enabling = true;
+    try {
+      // The config flow only asks for confirmation, so submit it directly
+      let step = await createConfigFlow(this.hass, MCP_SERVER_DOMAIN);
+      if (step.type === "form") {
+        step = await handleConfigFlowStep(this.hass, step.flow_id, {});
+      }
+      if (step.type === "form") {
+        showConfigFlowDialog(this, {
+          continueFlowId: step.flow_id,
+          dialogClosedCallback: () => {
+            this._load();
+          },
+        });
+        return;
+      }
+      await this._load();
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.mcp.error_enable"),
+        text: err?.message,
+      });
+    } finally {
+      this._enabling = false;
+    }
+  }
+
+  private async _enableEntry(entryId: string) {
+    let result: { require_restart: boolean };
+    try {
+      result = await enableConfigEntry(this.hass, entryId);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.disable_error"
+        ),
+        text: err?.message,
+      });
+      return;
+    }
+    if (result.require_restart) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.enable_restart_confirm"
+        ),
+      });
+    }
+    await this._load();
   }
 
   private _configure() {

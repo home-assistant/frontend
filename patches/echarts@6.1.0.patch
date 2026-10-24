@@ -1,0 +1,15 @@
+diff --git a/lib/component/helper/RoamController.js b/lib/component/helper/RoamController.js
+index 95366713472f3ec5f3649547bb1fe202b806a2e6..e91f99229d554e79077486e1caf3602c8702ea66 100644
+--- a/lib/component/helper/RoamController.js
++++ b/lib/component/helper/RoamController.js
+@@ -305,9 +305,8 @@ var RoamController = /** @class */function (_super) {
+     if (interactionMutex.isTaken(this._zr, 'globalPan') || eventConsumed(e)) {
+       return;
+     }
+-    var scale = e.pinchScale > 1 ? 1.1 : 1 / 1.1;
+     this._checkTriggerMoveZoom(this, 'zoom', null, e, {
+-      scale: scale,
++      scale: e.pinchScale,
+       originX: e.pinchX,
+       originY: e.pinchY,
+       isAvailableBehavior: null

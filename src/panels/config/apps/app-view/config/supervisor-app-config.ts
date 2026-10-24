@@ -16,7 +16,6 @@ import type {
   HaFormDataContainer,
   HaFormSchema,
 } from "../../../../../components/ha-form/types";
-import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-yaml-editor";
@@ -256,14 +255,14 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
           this._filteredSchema(this.addon.options, this.addon.schema!)
         );
     return html`
-      <h1>${this.addon.name}</h1>
+      <h2 class="app-name">${this.addon.name}</h2>
       <ha-card outlined>
         <div class="header">
-          <h2>
+          <h3>
             ${this.hass.localize(
               "ui.panel.config.apps.configuration.options.header"
             )}
-          </h2>
+          </h3>
           <div class="card-menu">
             <ha-dropdown @wa-select=${this._handleAction}>
               <ha-icon-button
@@ -345,18 +344,14 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
         </div>
         ${
           hasHiddenOptions
-            ? html`<ha-formfield
+            ? html`<ha-switch
+                @change=${this._toggleOptional}
+                .checked=${this._showOptional}
                 class="show-additional"
-                .label=${this.hass.localize(
+                >${this.hass.localize(
                   "ui.panel.config.apps.configuration.options.show_unused_optional"
-                )}
-              >
-                <ha-switch
-                  @change=${this._toggleOptional}
-                  .checked=${this._showOptional}
-                >
-                </ha-switch>
-              </ha-formfield>`
+                )}</ha-switch
+              >`
             : ""
         }
         <div class="card-actions right">
@@ -446,7 +441,7 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
       text: this.hass.localize(
         "ui.panel.config.apps.configuration.confirm.reset_options.text"
       ),
-      confirmText: this.hass.localize("ui.common.reset_options"),
+      confirmText: this.hass.localize("ui.common.reset"),
       dismissText: this.hass.localize("ui.common.cancel"),
       destructive: true,
     });
@@ -552,11 +547,22 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
         ha-dropdown-item[disabled] {
           --mdc-theme-text-primary-on-background: var(--disabled-text-color);
         }
+        .app-name {
+          margin-block: var(--ha-space-4) var(--ha-space-2);
+          padding-inline-start: var(--ha-space-2);
+          color: var(--primary-text-color);
+          font-family: var(--ha-font-family-body);
+          font-size: var(--ha-font-size-2xl);
+          font-weight: var(--ha-font-weight-normal);
+          line-height: var(--ha-line-height-condensed);
+          white-space: normal;
+          overflow: visible;
+        }
         .header {
           display: flex;
           justify-content: space-between;
         }
-        .header h2 {
+        .header h3 {
           color: var(--ha-card-header-color, var(--primary-text-color));
           font-family: var(--ha-card-header-font-family, inherit);
           font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
@@ -566,6 +572,9 @@ class SupervisorAppConfig extends DirtyStateProviderMixin<
           display: block;
           margin-block: 0px;
           font-weight: var(--ha-font-weight-normal);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .card-actions.right {
           justify-content: flex-end;

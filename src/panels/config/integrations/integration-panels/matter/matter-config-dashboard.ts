@@ -16,9 +16,9 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-nav";
 import type { ConfigEntry } from "../../../../../data/config_entries";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { fetchMatterNetworkTopology } from "../../../../../data/matter";
@@ -26,6 +26,7 @@ import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
+import { showMatterAddDeviceDialog } from "./show-dialog-add-matter-device";
 
 const THREAD_ICON =
   "m 17.126982,8.0730792 c 0,-0.7297242 -0.593746,-1.32357 -1.323637,-1.32357 -0.729454,0 -1.323199,0.5938458 -1.323199,1.32357 v 1.3234242 l 1.323199,1.458e-4 c 0.729891,0 1.323637,-0.5937006 1.323637,-1.32357 z M 11.999709,0 C 5.3829818,0 0,5.3838955 0,12.001455 0,18.574352 5.3105455,23.927406 11.865164,24 V 12.012075 l -3.9275642,-2.91e-4 c -1.1669814,0 -2.1169453,0.949979 -2.1169453,2.118323 0,1.16718 0.9499639,2.116868 2.1169453,2.116868 v 2.615717 c -2.6093089,0 -4.732218,-2.12327 -4.732218,-4.732585 0,-2.61048 2.1229091,-4.7343308 4.732218,-4.7343308 l 3.9275642,5.82e-4 v -1.323279 c 0,-2.172296 1.766691,-3.9395777 3.938181,-3.9395777 2.171928,0 3.9392,1.7672817 3.9392,3.9395777 0,2.1721498 -1.767272,3.9395768 -3.9392,3.9395768 l -1.323199,-1.45e-4 V 23.744102 C 19.911127,22.597726 24,17.768833 24,12.001455 24,5.3838955 18.616727,0 11.999709,0 Z";
@@ -97,12 +98,16 @@ export class MatterConfigDashboard extends LitElement {
           ${this._renderNavigationCard()}
         </div>
 
-        <ha-button slot="fab" href="/config/matter/add" size="l">
+        <ha-button slot="fab" size="l" @click=${this._addDevice}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.matter.panel.add_device")}
         </ha-button>
       </hass-subpage>
     `;
+  }
+
+  private _addDevice() {
+    showMatterAddDeviceDialog(this);
   }
 
   private _renderNetworkStatus(isOnline: boolean, deviceCount: number) {
@@ -167,10 +172,13 @@ export class MatterConfigDashboard extends LitElement {
           </ha-button>
         </div>
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item
-              type="link"
-              href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.matter.panel.my_network_title"
+            )}
+          >
+            <ha-list-item-button
+              href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}&status=disabled`}
             >
               <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
               <div slot="headline">
@@ -180,10 +188,9 @@ export class MatterConfigDashboard extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-            <ha-md-list-item
-              type="link"
-              href=${`/config/entities/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+            </ha-list-item-button>
+            <ha-list-item-button
+              href=${`/config/entities?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
               <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
               <div slot="headline">
@@ -193,8 +200,8 @@ export class MatterConfigDashboard extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
-          </ha-md-list>
+            </ha-list-item-button>
+          </ha-list-nav>
         </div>
       </ha-card>
     `;
@@ -204,8 +211,12 @@ export class MatterConfigDashboard extends LitElement {
     return html`
       <ha-card class="nav-card">
         <div class="card-content">
-          <ha-md-list>
-            <ha-md-list-item type="link" href="/config/matter/options">
+          <ha-list-nav
+            .ariaLabel=${this.hass.localize(
+              "ui.panel.config.matter.panel.options_title"
+            )}
+          >
+            <ha-list-item-button href="/config/matter/options">
               <ha-svg-icon slot="start" .path=${mdiTune}></ha-svg-icon>
               <div slot="headline">
                 ${this.hass.localize(
@@ -218,10 +229,10 @@ export class MatterConfigDashboard extends LitElement {
                 )}
               </div>
               <ha-icon-next slot="end"></ha-icon-next>
-            </ha-md-list-item>
+            </ha-list-item-button>
             ${
               isComponentLoaded(this.hass.config, "thread")
-                ? html`<ha-md-list-item type="link" href="/config/thread">
+                ? html`<ha-list-item-button href="/config/thread">
                     <ha-svg-icon
                       slot="start"
                       .path=${THREAD_ICON}
@@ -237,10 +248,10 @@ export class MatterConfigDashboard extends LitElement {
                       )}
                     </div>
                     <ha-icon-next slot="end"></ha-icon-next>
-                  </ha-md-list-item>`
+                  </ha-list-item-button>`
                 : nothing
             }
-          </ha-md-list>
+          </ha-list-nav>
         </div>
       </ha-card>
     `;
@@ -305,15 +316,6 @@ export class MatterConfigDashboard extends LitElement {
 
         .content {
           margin-top: var(--ha-space-6);
-        }
-
-        ha-md-list {
-          background: none;
-          padding: 0;
-        }
-
-        ha-md-list-item {
-          --md-item-overflow: visible;
         }
 
         .network-status div.heading {

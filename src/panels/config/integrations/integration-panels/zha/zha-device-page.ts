@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   mdiAccessPointNetwork,
   mdiCodeJson,
@@ -10,6 +10,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-spinner";
 import { narrowViewportContext } from "../../../../../data/context";
@@ -59,6 +60,13 @@ class ZHADevicePage extends LitElement {
   @state() private _error?: string;
 
   private _deviceRefreshInterval?: number;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._device) {
+      this._startDeviceRefreshInterval();
+    }
+  }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -190,7 +198,9 @@ class ZHADevicePage extends LitElement {
       if (!tabs.includes(this._currTab)) {
         this._currTab = tabs[0];
       }
-      this._startDeviceRefreshInterval();
+      if (this.isConnected) {
+        this._startDeviceRefreshInterval();
+      }
     } catch (_err: any) {
       if (this.ieee === ieee) {
         this._error = this.hass.localize(

@@ -46,18 +46,6 @@ export const rowStyles = css`
   ha-card {
     transition: outline 0.2s;
   }
-  .disabled-bar {
-    background: var(--divider-color, #e0e0e0);
-    text-align: center;
-    border-top-right-radius: var(
-      --ha-card-border-radius,
-      var(--ha-border-radius-lg)
-    );
-    border-top-left-radius: var(
-      --ha-card-border-radius,
-      var(--ha-border-radius-lg)
-    );
-  }
   .warning ul {
     margin: 4px 0;
   }
@@ -75,6 +63,54 @@ export const rowStyles = css`
   .icon-badge-wrapper {
     position: relative;
     display: inline-flex;
+  }
+
+  .trigger-leading {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ha-space-2);
+  }
+
+  .trigger-leading {
+    color: var(--ha-color-on-neutral-quiet);
+  }
+
+  .trigger-leading ha-trigger-icon,
+  .trigger-leading ha-svg-icon {
+    --mdc-icon-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .trigger-index-badge {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 22px;
+    height: 22px;
+    border: 2px dotted var(--ha-color-border-neutral-normal);
+    border-radius: var(--ha-border-radius-circle);
+    box-sizing: border-box;
+    color: var(--ha-color-text-secondary);
+    font-size: var(--ha-font-size-s);
+    line-height: 1;
+    text-box-trim: both;
+    text-box-edge: cap alphabetic;
+    overflow: hidden;
+    transition:
+      opacity var(--ha-animation-duration-fast) ease-out,
+      transform var(--ha-animation-duration-fast) ease-out,
+      width var(--ha-animation-duration-fast) ease-out,
+      margin-inline-end var(--ha-animation-duration-fast) ease-out,
+      border-width var(--ha-animation-duration-fast) ease-out;
+  }
+
+  .trigger-index-badge.hidden {
+    opacity: 0;
+    transform: translateX(calc(-8px * var(--scale-direction)));
+    width: 0;
+    margin-inline-end: 0;
+    border-width: 0;
+    pointer-events: none;
   }
 
   .note-indicator {
@@ -195,8 +231,29 @@ export const manualEditorStyles = css`
     transition: padding-bottom 180ms ease-in-out;
   }
 
-  .content.has-bottom-sheet {
-    padding-bottom: calc(90vh - max(var(--safe-area-inset-bottom), 32px));
+  .has-bottom-sheet {
+    --automation-bottom-sheet-height: 50vh;
+    /* The backdrop covers the editor when the sheet is at full height */
+    --automation-bottom-sheet-covered-height: min(
+      var(--automation-bottom-sheet-settled-height, 100vh),
+      var(--automation-bottom-sheet-height)
+    );
+  }
+  /* A custom property can't fall back from dvh to vh by being declared twice */
+  @supports (height: 1dvh) {
+    .has-bottom-sheet {
+      --automation-bottom-sheet-height: 50dvh;
+    }
+  }
+  .has-bottom-sheet .content {
+    padding-bottom: calc(
+      var(--automation-bottom-sheet-covered-height) + var(--ha-space-4)
+    );
+  }
+  .has-bottom-sheet .fab-positioner ha-button[slot="fab"].dirty {
+    bottom: calc(
+      var(--automation-bottom-sheet-covered-height) + var(--ha-space-4)
+    );
   }
 
   ha-automation-sidebar {
@@ -244,6 +301,13 @@ export const automationRowsStyles = css`
   ha-automation-action-row {
     display: block;
     scroll-margin-top: 48px;
+  }
+  /* The part the open bottom sheet covers, see scrollRowIntoView */
+  ha-automation-trigger-row,
+  ha-automation-condition-row,
+  ha-automation-action-row,
+  ha-automation-option-row {
+    scroll-margin-bottom: var(--automation-bottom-sheet-height, 0px);
   }
   .handle {
     padding: 4px;
@@ -311,22 +375,5 @@ export const overflowStyles = css`
     .shortcut-placeholder {
       display: none;
     }
-  }
-`;
-
-export const shortcutStyles = css`
-  .shortcut {
-    direction: ltr;
-    --mdc-icon-size: var(--ha-space-3);
-    display: inline-flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 2px;
-    margin-right: var(--ha-space-4);
-  }
-  .shortcut span {
-    font-size: var(--ha-font-size-s);
-    font-family: var(--ha-font-family-code);
-    color: var(--ha-color-text-secondary);
   }
 `;

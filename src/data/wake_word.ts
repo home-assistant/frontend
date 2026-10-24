@@ -3,6 +3,7 @@ import type { HomeAssistant } from "../types";
 export interface WakeWord {
   id: string;
   name: string;
+  phrase: string | null;
 }
 
 export const fetchWakeWordInfo = (hass: HomeAssistant, entity_id: string) =>

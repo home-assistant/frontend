@@ -1,9 +1,10 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiPlus, mdiShape } from "@mdi/js";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeEntityPickerDisplay } from "../../common/entity/compute_entity_name_display";
 import { isValidEntityId } from "../../common/entity/valid_entity_id";
@@ -75,6 +76,9 @@ export class HaEntityPicker extends LitElement {
   public showEntityId = false;
 
   @property() public label?: string;
+
+  @property({ attribute: "aria-label" })
+  public ariaLabel: string | null = null;
 
   @property() public value?: string;
 
@@ -274,7 +278,7 @@ export class HaEntityPicker extends LitElement {
     const showEntityId = this._showEntityId;
 
     return html`
-      <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+      <ha-combo-box-item .borderTop=${index !== 0}>
         ${
           item.icon_path
             ? html`
@@ -448,6 +452,7 @@ export class HaEntityPicker extends LitElement {
         .allowCustomValue=${this.allowCustomEntity}
         .required=${this.required}
         .label=${this.label}
+        .ariaLabel=${this.ariaLabel}
         .placeholder=${placeholder}
         .helper=${this.helper}
         .value=${this.addButton ? undefined : this.value}

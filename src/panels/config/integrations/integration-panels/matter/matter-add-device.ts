@@ -8,11 +8,13 @@ import { showMatterAddDeviceDialog } from "./show-dialog-add-matter-device";
 export class MatterAddDevice extends HTMLElement {
   public hass!: HomeAssistant;
 
-  connectedCallback() {
-    navigate("/config/devices/dashboard", {
+  async connectedCallback() {
+    // Navigation closes open dialogs, so wait for it before showing the
+    // dialog. This element is detached by then, open it from the app root.
+    await navigate("/config/devices/dashboard", {
       replace: true,
     });
-    showMatterAddDeviceDialog(this);
+    showMatterAddDeviceDialog(document.querySelector("home-assistant") ?? this);
   }
 }
 

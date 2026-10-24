@@ -120,6 +120,7 @@ const SELECTOR_INITIAL_VALUES = {
   ui_color: undefined,
   ui_state_content: undefined,
   ui_time_format: undefined,
+  unit_of_measurement: undefined,
 } satisfies SelectorInitialValues;
 
 export const getSelectorInitialValueOrUndefined = (

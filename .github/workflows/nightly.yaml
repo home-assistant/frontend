@@ -14,6 +14,7 @@ permissions:
 
 jobs:
   nightly:
+    if: github.repository == 'home-assistant/frontend'
     name: Nightly
     runs-on: ubuntu-latest
     permissions:
@@ -78,7 +79,7 @@ jobs:
           RSPACK_CACHE: readwrite
         run: |
           pip install build
-          yarn install
+          pnpm install --frozen-lockfile
           export SKIP_FETCH_NIGHTLY_TRANSLATIONS=1
           script/build_frontend
           rm -rf dist home_assistant_frontend.egg-info
@@ -103,7 +104,7 @@ jobs:
           key: rspack-cache-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: wheels
           path: dist/home_assistant_frontend*.whl
@@ -113,6 +114,7 @@ jobs:
   # needed for the uploaded artifact, not the wheel, so they are downloaded in
   # parallel here instead of blocking the build above.
   translations:
+    if: github.repository == 'home-assistant/frontend'
     name: Translations
     runs-on: ubuntu-latest
     steps:
@@ -135,7 +137,7 @@ jobs:
         run: tar -czvf translations.tar.gz translations
 
       - name: Upload translations
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: translations
           path: translations.tar.gz

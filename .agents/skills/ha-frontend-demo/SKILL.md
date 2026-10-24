@@ -16,8 +16,8 @@ The demo is the full Home Assistant frontend running against a mocked backend an
 Run commands from the repository root:
 
 ```bash
-yarn dev:demo               # Development server on http://localhost:8090
-yarn dev:demo --background  # Detached; also supports --status/--stop/--logs
+pnpm dev:demo               # Development server on http://localhost:8090
+pnpm dev:demo --background  # Detached; also supports --status/--stop/--logs
 ```
 
 Use the E2E workflows documented in `ha-frontend-testing` when validating the demo.
@@ -53,6 +53,10 @@ http://localhost:8090/?demo=<second slug>#/energy/water
 - `demo/src/configs/demo-configs.ts`: Registry of demo configurations and URL slug handling.
 - `demo/src/stubs/`: Mocked WebSocket and REST APIs.
 - `demo/script/develop_demo`, `demo/script/build_demo`: Development server and static build wrappers.
+
+## Core Data
+
+The service descriptions in `src/fake_data/demo_services.ts` and the trigger and condition descriptions and icons in `demo/src/stubs/automation_platforms_*.ts` are generated from Home Assistant Core. Do not edit them by hand. Run `script/gen_demo_core_data` to regenerate them from the core `dev` branch, and add a domain to the lists in `build-scripts/gulp/gen-demo-core-data.js` when the demo needs its services, triggers, or conditions. Their translations come from the backend translations merged into the demo build.
 
 ## Shared Gallery Stubs
 

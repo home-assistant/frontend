@@ -80,7 +80,7 @@ export interface EntityHistoryState {
   /** state */
   s: string;
   /** attributes */
-  a: Record<string, any>;
+  a?: Record<string, any>;
   /** last_changed; if set, also applies to lu */
   lc?: number;
   /** last_updated */
@@ -94,23 +94,26 @@ export interface HistoryStreamMessage {
 }
 
 export const entityIdHistoryNeedsAttributes = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states">,
   entityId: string
 ) =>
   !hass.states[entityId] ||
   NEED_ATTRIBUTE_DOMAINS.includes(computeDomain(entityId));
 
 export const fetchDateWS = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states" | "callWS">,
   startTime: Date,
   endTime: Date,
-  entityIds: string[]
+  entityIds: string[],
+  options: {
+    minimalResponse?: boolean;
+  } = {}
 ) => {
   const params = {
     type: "history/history_during_period",
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
-    minimal_response: true,
+    minimal_response: options.minimalResponse ?? true,
     no_attributes: !entityIds.some((entityId) =>
       entityIdHistoryNeedsAttributes(hass, entityId)
     ),
@@ -120,6 +123,32 @@ export const fetchDateWS = (
   }
   return hass.callWS<HistoryStates>(params);
 };
+
+// Rebuilding the charts for this many states takes tens of milliseconds
+const LARGE_HISTORY_STATES = 100_000;
+const MIN_LARGE_HISTORY_UPDATE_DELAY = 1000;
+
+export const countHistoryStates = (history: HistoryStates): number => {
+  let count = 0;
+  for (const states of Object.values(history)) {
+    count += states.length;
+  }
+  return count;
+};
+
+/** How long a live update may wait: none for a small history, else the time one chart pixel covers (1 s to `maxDelay`) */
+export const computeHistoryUpdateDelay = (
+  stateCount: number,
+  timespanMs: number,
+  chartPixels: number,
+  maxDelay: number
+): number =>
+  stateCount < LARGE_HISTORY_STATES
+    ? 0
+    : Math.min(
+        Math.max(timespanMs / chartPixels, MIN_LARGE_HISTORY_UPDATE_DELAY),
+        maxDelay
+      );
 
 export const subscribeHistory = (
   hass: HomeAssistant,
@@ -384,7 +413,7 @@ const processTimelineEntity = (
             ? " ◂ "
             : " ▸ ",
         }) || current_state.entity_id
-      : computeStateNameFromEntityAttributes(entityId, first.a),
+      : computeStateNameFromEntityAttributes(entityId, first.a ?? {}),
     entity_id: entityId,
     data,
   };
@@ -423,7 +452,7 @@ const processLineChartEntities = (
         };
 
         for (const attr of LINE_ATTRIBUTES_TO_KEEP) {
-          if (attr in state.a) {
+          if (state.a && attr in state.a) {
             processedState.attributes![attr] = state.a[attr];
           }
         }
@@ -456,7 +485,7 @@ const processLineChartEntities = (
           }) || entityId
         : computeStateNameFromEntityAttributes(
             entityId,
-            "friendly_name" in first.a ? first.a : {}
+            first.a && "friendly_name" in first.a ? first.a : {}
           );
 
     data.push({
@@ -603,7 +632,7 @@ export const computeHistory = (
     if (isNumeric) {
       unit =
         currentState?.attributes.unit_of_measurement ||
-        numericStateFromHistory?.a.unit_of_measurement ||
+        numericStateFromHistory?.a?.unit_of_measurement ||
         BLANK_UNIT;
     } else {
       unit = {
@@ -680,6 +709,16 @@ export const isNumericEntity = (
     domain === "sensor" &&
     isNumericSensorDeviceClass(currentState.attributes.device_class)) ||
   numericStateFromHistory != null;
+
+// Non-numeric domains that computeHistory gives a unit, so they get a line chart
+const LINE_CHART_DOMAINS = ["climate", "humidifier", "water_heater", "zone"];
+
+export const isTimelineEntity = (
+  domain: string,
+  currentState: HassEntity | undefined
+): boolean =>
+  !isNumericEntity(domain, currentState, undefined) &&
+  !LINE_CHART_DOMAINS.includes(domain);
 
 export const mergeHistoryResults = (
   historyResult: HistoryResult,

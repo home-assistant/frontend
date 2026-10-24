@@ -89,6 +89,9 @@ export class HuiCardFeatures extends LitElement {
     :host([columns="2"]) {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+    :host([columns="2"]) hui-card-feature:not(.wide) {
+      --feature-columns: 2;
+    }
     .wide {
       grid-column: 1 / -1;
     }

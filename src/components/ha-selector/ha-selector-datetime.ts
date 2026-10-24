@@ -1,6 +1,6 @@
-import { consume } from "@lit/context";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import { transform } from "../../common/decorators/transform";
 import type { DateTimeSelector } from "../../data/selector";
@@ -91,6 +91,8 @@ export class HaDateTimeSelector extends LitElement {
          below for its hint while ha-time-input does not. */
       align-items: flex-start;
       flex-direction: row;
+      /* Narrow screens have no room for both fields on one row. */
+      flex-wrap: wrap;
     }
 
     ha-date-input {

@@ -101,7 +101,10 @@ class HaBackupConfigSchedule extends LitElement {
       ...this.value,
       schedule: {
         recurrence: data.recurrence,
-        time: data.time_option === BackupScheduleTime.CUSTOM ? data.time : null,
+        time:
+          data.time_option === BackupScheduleTime.CUSTOM
+            ? (data.time ?? null)
+            : null,
         days:
           data.recurrence === BackupScheduleRecurrence.CUSTOM_DAYS
             ? data.days

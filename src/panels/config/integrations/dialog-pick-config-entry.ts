@@ -1,9 +1,9 @@
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-md-list";
-import "../../../components/ha-md-list-item";
 import "../../../components/ha-dialog";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import { ERROR_STATES, RECOVERABLE_STATES } from "../../../data/config_entries";
 import type { HomeAssistant } from "../../../types";
 import type { PickConfigEntryDialogParams } from "./show-pick-config-entry-dialog";
@@ -43,21 +43,22 @@ export class DialogPickConfigEntry extends LitElement {
         header-title=${title}
         @closed=${this._dialogClosed}
       >
-        <ha-md-list>
+        <ha-list-base>
           ${this._params.configEntries.map(
             (entry) =>
-              html`<ha-md-list-item
-                type="button"
+              html`<ha-list-item-button
                 @click=${this._itemPicked}
                 .entry=${entry}
                 .disabled=${
                   !ERROR_STATES.includes(entry.state) &&
                   !RECOVERABLE_STATES.includes(entry.state)
                 }
-                >${entry.title}</ha-md-list-item
+                ><span slot="headline"
+                  >${entry.title}</span
+                ></ha-list-item-button
               >`
           )}
-        </ha-md-list>
+        </ha-list-base>
       </ha-dialog>
     `;
   }

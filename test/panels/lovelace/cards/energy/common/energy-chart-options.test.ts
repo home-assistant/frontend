@@ -5,12 +5,15 @@ import {
   computeStatMidpoint,
   fillDataGapsAndRoundCaps,
   fillLineGaps,
+  formatSeriesTotal,
   generateFillBuckets,
   getCompareTransform,
   getPeriodMidpointOffset,
   getSuggestedMax,
   splitUntrackedConsumption,
 } from "../../../../../../src/panels/lovelace/cards/energy/common/energy-chart-options";
+
+import { createMockHass } from "../../../../../fixtures/hass";
 
 // Helper to get x value from either [x,y] or {value: [x,y]} format
 function getX(item: any): number {
@@ -1062,5 +1065,26 @@ describe("splitUntrackedConsumption", () => {
     splitUntrackedConsumption(usedTotal, deviceTotal);
     assert.deepEqual(usedTotal, usedCopy);
     assert.deepEqual(deviceTotal, deviceCopy);
+  });
+});
+
+describe("formatSeriesTotal", () => {
+  const { locale } = createMockHass();
+  it("returns undefined for empty data", () => {
+    const series: LineSeriesOption = {
+      type: "line",
+      data: [],
+    };
+
+    assert.isUndefined(formatSeriesTotal(series, locale, "kWh"));
+  });
+
+  it("formats the total from mixed tuple and object data", () => {
+    const series: LineSeriesOption = {
+      type: "line",
+      data: [[1000, 10], { value: [2000, 20] }, [3000, 30]],
+    };
+
+    assert.equal(formatSeriesTotal(series, locale, "kWh"), "60 kWh");
   });
 });

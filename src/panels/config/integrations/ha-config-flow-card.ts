@@ -177,7 +177,8 @@ export class HaConfigFlowCard extends LitElement {
         payload: {
           name:
             this.flow.localized_title ||
-            this.flow.context.title_placeholders.name,
+            this.flow.context.title_placeholders?.name ||
+            "",
         },
       });
       return;

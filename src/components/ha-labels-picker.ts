@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { mdiPlaylistPlus } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
@@ -6,6 +5,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import { labelsContext } from "../data/context";
@@ -239,11 +239,11 @@ export class HaLabelsPicker extends LitElement {
       height: var(--ha-space-8);
     }
     ha-input-chip {
-      --md-input-chip-selected-container-color: var(
+      --ha-input-chip-selected-container-color: var(
         --ha-label-background-color,
         var(--grey-color)
       );
-      --md-input-chip-selected-outline-width: 1px;
+      --ha-input-chip-selected-outline-width: 1px;
     }
     label {
       display: block;

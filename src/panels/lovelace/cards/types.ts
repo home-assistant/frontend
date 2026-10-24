@@ -1,5 +1,6 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
+import type { MapStyleConfig } from "../../../common/map/map-styles";
 import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { MapCardMarkerLabelMode } from "../../../components/map/ha-map";
 import type { EnergySourceByType } from "../../../data/energy";
@@ -428,6 +429,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   auto_fit?: boolean;
   fit_zones?: boolean;
+  show_zone_radius?: boolean;
   default_zoom?: number;
   show_all?: boolean;
   entities?: (MapEntityConfig | string)[];
@@ -435,6 +437,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   geo_location_sources?: (GeoLocationSourceConfig | string)[];
   dark_mode?: boolean;
   theme_mode?: ThemeMode;
+  map_style?: MapStyleConfig;
   cluster?: boolean;
   conditions?: Condition[];
   scale_ruler?: boolean;
@@ -513,6 +516,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;
+  label_position?: "side" | "below";
   logarithmic_scale?: boolean;
   min_y_axis?: number;
   max_y_axis?: number;
@@ -692,7 +696,16 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface TileCardConfig extends LovelaceCardConfig {
+export interface TileActionsConfig {
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+  icon_tap_action?: ActionConfig;
+  icon_hold_action?: ActionConfig;
+  icon_double_tap_action?: ActionConfig;
+}
+
+export interface TileCardConfig extends LovelaceCardConfig, TileActionsConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   hide_state?: boolean;
@@ -701,12 +714,6 @@ export interface TileCardConfig extends LovelaceCardConfig {
   color?: string;
   show_entity_picture?: boolean;
   vertical?: boolean;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-  double_tap_action?: ActionConfig;
-  icon_tap_action?: ActionConfig;
-  icon_hold_action?: ActionConfig;
-  icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
   features_position?: LovelaceCardFeaturePosition;
   time_format?: TimestampRenderingFormat;
@@ -745,8 +752,16 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
 export interface AlertCardConfig extends LovelaceCardConfig {
   type: "alert";
   entity: string;
-  color?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
+  icon?: string;
+  alert_color?: string;
+  clear_color?: string;
   pulse?: boolean;
+  hide_state?: boolean;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface ToggleGroupCardConfig extends LovelaceCardConfig {

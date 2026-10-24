@@ -1,8 +1,9 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consume } from "../../../../../common/decorators/consume";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
@@ -25,6 +26,7 @@ import type {
   ZHADeviceEndpoint,
   ZHAEntityReference,
 } from "../../../../../data/zha";
+import { computeZHAEntityName } from "../../../../../data/zha";
 
 export interface DeviceEndpointRowData {
   id: string;
@@ -251,8 +253,8 @@ export class ZHADeviceEndpointList extends LitElement {
   private _deviceEndpointDetails(
     deviceEndpoint: DeviceEndpointRowData
   ): string {
-    const entityNames = deviceEndpoint.entities.map(
-      (entity) => entity.name || entity.original_name || entity.entity_id
+    const entityNames = deviceEndpoint.entities.map((entity) =>
+      computeZHAEntityName(entity, deviceEndpoint.name)
     );
     const entitySummary = entityNames.length
       ? entityNames.length > 2

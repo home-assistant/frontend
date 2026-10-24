@@ -1,6 +1,5 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-switch";
 
 import { customElement, property, state } from "lit/decorators";
@@ -108,6 +107,29 @@ const disabledFailedUnloadEntry = createConfigEntry(
     state: "failed_unload",
     disabled_by: "user",
   }
+);
+
+const brandEntries: ConfigEntryExtended[] = (
+  [
+    ["hue", "Philips Hue", "loaded"],
+    ["hue", "Philips Hue", "setup_error"],
+    ["mqtt", "MQTT", "setup_retry"],
+    ["zha", "Zigbee Home Automation", "not_loaded"],
+    ["sonos", "Sonos", "setup_error"],
+    ["shelly", "Shelly", "failed_unload"],
+    ["spotify", "Spotify", "setup_retry"],
+    ["tuya", "Tuya", "setup_error"],
+    ["unifi", "UniFi Network", "not_loaded"],
+    ["met", "Meteorologisk institutt (Met.no)", "setup_error"],
+    ["google_assistant", "Google Assistant", "not_loaded"],
+    ["homekit_controller", "HomeKit Device", "setup_retry"],
+  ] as [string, string, ConfigEntryExtended["state"]][]
+).map(([domain, name, entryState]) =>
+  createConfigEntry(`${name} ${entryState}`, {
+    domain,
+    localized_domain_name: name,
+    state: entryState,
+  })
 );
 
 const configFlows: DataEntryFlowProgressExtended[] = [
@@ -258,12 +280,10 @@ export class DemoIntegrationCard extends LitElement {
     return html`
       <div class="container">
         <div class="filters">
-          <ha-formfield label="Custom Integration">
-            <ha-switch @change=${this._toggleCustomIntegration}></ha-switch>
-          </ha-formfield>
-          <ha-formfield label="Relies on cloud">
-            <ha-switch @change=${this._toggleCloud}></ha-switch>
-          </ha-formfield>
+          <ha-switch @change=${this._toggleCustomIntegration}
+            >Custom Integration</ha-switch
+          >
+          <ha-switch @change=${this._toggleCloud}>Relies on cloud</ha-switch>
         </div>
 
         <ha-ignored-config-entry-card
@@ -293,7 +313,6 @@ export class DemoIntegrationCard extends LitElement {
               class=${classMap({
                 highlight: info.highlight !== undefined,
               })}
-              .hass=${this.hass}
               domain="esphome"
               .items=${info.items}
               .manifest=${createManifest(
@@ -316,7 +335,6 @@ export class DemoIntegrationCard extends LitElement {
         <!-- One that is standalone to see how it increases height if height
            not defined by other cards. -->
         <ha-integration-card
-          .hass=${this.hass}
           domain="esphome"
           .items=${[
             loadedEntry,
@@ -329,6 +347,21 @@ export class DemoIntegrationCard extends LitElement {
           .entityRegistryEntries=${createEntityRegistryEntries(loadedEntry)}
           .deviceRegistryEntries=${createDeviceRegistryEntries(loadedEntry)}
         ></ha-integration-card>
+      </div>
+      <div class="container">
+        ${brandEntries.map(
+          (entry) => html`
+            <ha-integration-card
+              .domain=${entry.domain}
+              .items=${[entry]}
+              .manifest=${createManifest(
+                this.isCustomIntegration,
+                this.isCloud
+              )}
+              .entityRegistryEntries=${createEntityRegistryEntries(entry)}
+            ></ha-integration-card>
+          `
+        )}
       </div>
     `;
   }
@@ -369,9 +402,9 @@ export class DemoIntegrationCard extends LitElement {
       max-width: 500px;
     }
 
-    ha-formfield {
+    ha-switch {
       margin: 8px 0;
-      display: block;
+      display: flex;
     }
   `;
 }

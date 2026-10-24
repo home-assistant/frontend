@@ -11,7 +11,6 @@ import "../../../../components/entity/state-badge";
 import "../../../../components/ha-button";
 import "../../../../components/ha-combo-box-item";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-ripple";
 import "../../../../components/ha-section-title";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
@@ -26,6 +25,19 @@ import "./hui-suggestion-card";
 import "./hui-suggestion-entity-tree";
 import type { HuiSuggestionEntityTree } from "./hui-suggestion-entity-tree";
 
+/**
+ * @element hui-suggestion-picker
+ *
+ * @summary Entity tree with card suggestions for the picked entity.
+ *
+ * @slot - Footer below the entity tree, e.g. an action bar.
+ *
+ * @cssprop --ha-suggestion-picker-main-padding-bottom - Space at the end of the scrolling suggestions.
+ * @cssprop --ha-suggestion-picker-tree-padding-bottom - Space at the end of the scrolling entity tree.
+ *
+ * @fires suggestion-picked - Fired with the config of the picked suggestion.
+ * @fires browse-cards - Fired when the user wants to browse all cards.
+ */
 @customElement("hui-suggestion-picker")
 export class HuiSuggestionPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -103,6 +115,7 @@ export class HuiSuggestionPicker extends LitElement {
           .selectedEntityId=${this._entityId}
           @entity-picked=${this._handleEntityPicked}
         ></hui-suggestion-entity-tree>
+        <slot></slot>
       </div>
       <div class=${classMap({ main: true, hidden: !showMain })}>
         <div class="content ha-scrollbar">
@@ -168,7 +181,7 @@ export class HuiSuggestionPicker extends LitElement {
           "ui.panel.lovelace.editor.cardpicker.selected_entity"
         )}
       </ha-section-title>
-      <ha-combo-box-item compact class="selected-entity">
+      <ha-combo-box-item class="selected-entity">
         ${
           stateObj
             ? html`<state-badge
@@ -295,6 +308,10 @@ export class HuiSuggestionPicker extends LitElement {
         .tree {
           flex: 1;
           min-height: 0;
+          --ha-suggestion-entity-tree-padding-bottom: var(
+            --ha-suggestion-picker-tree-padding-bottom,
+            0px
+          );
         }
         .main {
           flex: 1;
@@ -306,6 +323,7 @@ export class HuiSuggestionPicker extends LitElement {
           flex: 1;
           min-height: 0;
           overflow: auto;
+          padding-bottom: var(--ha-suggestion-picker-main-padding-bottom, 0px);
         }
         .hidden {
           display: none !important;

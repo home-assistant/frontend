@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -6,6 +6,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import { computeCssColor } from "../../common/color/compute-color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -229,7 +230,7 @@ export class StateBadge extends LitElement {
       const domain = computeDomain(this.stateObj.entity_id);
       if (domain === "update") {
         cls.set("has-no-radius", true);
-      } else if (domain === "media_player" || domain === "camera") {
+      } else if (domain === "media_player") {
         cls.set("has-media-image", true);
       } else if (this.style.backgroundImage !== "") {
         cls.set("has-image", true);
@@ -256,7 +257,10 @@ export class StateBadge extends LitElement {
           justify-content: center;
         }
         :host(.has-image) {
-          border-radius: var(--state-badge-with-image-border-radius, 50%);
+          border-radius: var(
+            --state-badge-with-image-border-radius,
+            var(--ha-picture-border-radius)
+          );
         }
         :host(.has-media-image) {
           border-radius: var(--state-badge-with-media-image-border-radius, 8%);

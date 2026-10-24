@@ -3,7 +3,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
-import { computeStateName } from "../common/entity/compute_state_name";
 import { debounce } from "../common/util/debounce";
 import type { STTEngine } from "../data/stt";
 import { listSTTEngines } from "../data/stt";
@@ -59,22 +58,22 @@ export class HaSTTPicker extends LitElement {
       value = NONE;
     }
 
-    const options: HaSelectOption[] = this._engines
-      .filter((engine) => !engine.deprecated || engine.engine_id !== value)
-      .map((engine) => {
-        let label: string;
-        if (engine.engine_id.includes(".")) {
-          const stateObj = this.hass.states[engine.engine_id];
-          label = stateObj ? computeStateName(stateObj) : engine.engine_id;
-        } else {
-          label = engine.name || engine.engine_id;
-        }
-        return {
-          value: engine.engine_id,
-          label,
-          disabled: engine.supported_languages?.length === 0,
-        };
-      });
+    const options: HaSelectOption[] = this._engines.map((engine) => {
+      let label: string;
+      if (engine.engine_id.includes(".")) {
+        const stateObj = this.hass.states[engine.engine_id];
+        label = stateObj
+          ? this.hass.formatEntityName(stateObj)
+          : engine.engine_id;
+      } else {
+        label = engine.name || engine.engine_id;
+      }
+      return {
+        value: engine.engine_id,
+        label,
+        disabled: engine.supported_languages?.length === 0,
+      };
+    });
 
     if (this.required || value === NONE) {
       options.unshift({

@@ -261,7 +261,6 @@ export class HaStateContentPicker extends LitElement {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
       <ha-generic-picker
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
         .value=${this._getPickerValue()}

@@ -8,6 +8,7 @@ import {
   mdiContentDuplicate,
   mdiDevices,
   mdiDotsVertical,
+  mdiDownload,
   mdiInformationOutline,
   mdiLinkVariant,
   mdiPencil,
@@ -29,17 +30,13 @@ import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { mainWindow } from "../../common/dom/get_main_window";
 import { stopPropagation } from "../../common/dom/stop_propagation";
-import { computeAreaName } from "../../common/entity/compute_area_name";
-import { computeDeviceName } from "../../common/entity/compute_device_name";
+import { consume } from "../../common/decorators/consume";
 import { computeDomain } from "../../common/entity/compute_domain";
 import {
-  computeEntityEntryName,
-  computeEntityName,
-} from "../../common/entity/compute_entity_name";
-import {
-  getEntityContext,
-  getEntityEntryContext,
-} from "../../common/entity/context/get_entity_context";
+  computeEntityEntryNameParts,
+  computeEntityNameParts,
+  type EntityNameType,
+} from "../../common/entity/compute_entity_name_display";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import {
   getHistoryState,
@@ -61,6 +58,8 @@ import "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-icon-button-prev";
 import "./ha-more-info-related";
+import { downloadCameraSnapshot } from "../../data/camera";
+import { apiContext } from "../../data/context";
 import type {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -69,6 +68,7 @@ import {
   getExtendedEntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
+import { UNAVAILABLE } from "../../data/entity/entity";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import type { EntitySettingsState } from "../../panels/config/entities/entity-registry-settings-editor";
 import type { Helper } from "../../panels/config/helpers/const";
@@ -79,7 +79,8 @@ import {
   haStyleScrollbar,
 } from "../../resources/styles";
 import "../../state-summary/state-card-content";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantApi } from "../../types";
+import { showToast } from "../../util/toast";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
 import {
   computeShowHistoryComponent,
@@ -130,12 +131,22 @@ declare global {
 
 const DEFAULT_VIEW: MoreInfoView = "info";
 
+const BREADCRUMB_NAME: EntityNameType[] = [
+  "area",
+  "parent_device",
+  "device",
+  "entity",
+];
+
 @customElement("ha-more-info-dialog")
 export class MoreInfoDialog extends DirtyStateProviderMixin<
   EntitySettingsState | Helper | Record<string, string[]> | null,
   "entity-registry" | "helper" | "vacuum-segment-mapping"
 >()(ScrollableFadeMixin(LitElement)) {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
@@ -356,6 +367,24 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._setView("settings");
   }
 
+  private _computeViewTitle(): string | undefined {
+    switch (this._currView) {
+      case "details":
+        return this.hass.localize("ui.dialogs.more_info_control.details");
+      case "related":
+        return this.hass.localize("ui.dialogs.more_info_control.related");
+      case "add_to":
+        return this.hass.localize("ui.dialogs.more_info_control.add_to.item");
+      case "settings":
+        return (
+          this._childView?.viewTitle ||
+          this.hass.localize("ui.dialogs.more_info_control.settings")
+        );
+      default:
+        return this._childView?.viewTitle;
+    }
+  }
+
   private _showChildView(ev: CustomEvent): void {
     this._pushChildView(ev.detail as ChildView);
   }
@@ -466,6 +495,9 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       case "details":
         this._setView("details");
         break;
+      case "download_snapshot":
+        this._downloadSnapshot();
+        break;
       default:
         break;
     }
@@ -540,6 +572,18 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     this._setView("add_to");
   }
 
+  private async _downloadSnapshot() {
+    try {
+      await downloadCameraSnapshot(this._api, this._entityId!);
+    } catch (_err) {
+      showToast(this, {
+        message: this.hass.localize(
+          "ui.dialogs.more_info_control.camera.failed_to_download"
+        ),
+      });
+    }
+  }
+
   private _breadcrumbClick(ev: Event) {
     ev.stopPropagation();
     this._setView("related");
@@ -564,55 +608,32 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     const showCloseIcon =
       isDefaultView && this._parentEntityIds.length === 0 && !this._childView;
 
-    const context = stateObj
-      ? getEntityContext(
-          stateObj,
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas,
-          this.hass.floors
-        )
+    const nameParts = stateObj
+      ? computeEntityNameParts(stateObj, this.hass)
       : this._entry
-        ? getEntityEntryContext(
-            this._entry,
-            this.hass.entities,
-            this.hass.devices,
-            this.hass.areas,
-            this.hass.floors
-          )
+        ? computeEntityEntryNameParts(this._entry, this.hass)
         : undefined;
-
-    const entityName = stateObj
-      ? computeEntityName(stateObj, this.hass.entities, this.hass.devices)
-      : this._entry
-        ? computeEntityEntryName(this._entry, this.hass.devices)
-        : entityId;
-
-    const deviceName = context?.device
-      ? computeDeviceName(context.device)
-      : undefined;
-    const parentDeviceName = context?.parentDevice
-      ? computeDeviceName(context.parentDevice)
-      : undefined;
-    const areaName = context?.area ? computeAreaName(context.area) : undefined;
-
-    const breadcrumb = [
-      areaName,
-      parentDeviceName,
-      deviceName,
-      entityName,
-    ].filter((v): v is string => Boolean(v));
+    const breadcrumb = (
+      nameParts ? BREADCRUMB_NAME.map((type) => nameParts[type]) : [entityId]
+    ).filter((v): v is string => Boolean(v));
     const addToMenuItem = this.hass.localize(
       "ui.dialogs.more_info_control.add_to.item"
     );
-    const viewTitle =
-      this._currView === "details"
-        ? this.hass.localize("ui.dialogs.more_info_control.details")
-        : this._currView === "related"
-          ? this.hass.localize("ui.dialogs.more_info_control.related")
-          : this._currView === "add_to"
-            ? addToMenuItem
-            : this._childView?.viewTitle;
+    const downloadSnapshotMenuItem =
+      domain === "camera"
+        ? html`
+            <ha-dropdown-item
+              value="download_snapshot"
+              .disabled=${stateObj?.state === UNAVAILABLE}
+            >
+              <ha-svg-icon slot="icon" .path=${mdiDownload}></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.dialogs.more_info_control.camera.download_snapshot"
+              )}
+            </ha-dropdown-item>
+          `
+        : nothing;
+    const viewTitle = this._computeViewTitle();
     const defaultTitle = breadcrumb[breadcrumb.length - 1] || entityId;
     if (!viewTitle) {
       breadcrumb.pop();
@@ -757,6 +778,14 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                           ></ha-icon-button>
 
                           ${
+                            domain === "camera"
+                              ? html`
+                                  ${downloadSnapshotMenuItem}
+                                  <wa-divider></wa-divider>
+                                `
+                              : nothing
+                          }
+                          ${
                             this._shouldShowAddEntityTo()
                               ? html`
                                   <ha-dropdown-item value="add_to">
@@ -828,12 +857,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                                       }
                                     ></ha-svg-icon>
                                     ${this.hass.localize(
-                                      "ui.dialogs.more_info_control.device_or_service_info",
-                                      {
-                                        type: this.hass.localize(
-                                          `ui.dialogs.more_info_control.device_type.${deviceType}`
-                                        ),
-                                      }
+                                      `ui.dialogs.more_info_control.${deviceType}_info`
                                     )}
                                   </ha-dropdown-item>
                                 `
@@ -879,16 +903,41 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                           </ha-dropdown-item>
                         </ha-dropdown>
                       `
-                    : !__DEMO__ && this._shouldShowAddEntityTo()
-                      ? html`
-                          <ha-icon-button
-                            slot="headerActionItems"
-                            .label=${addToMenuItem}
-                            .path=${mdiPlusBoxMultipleOutline}
-                            @click=${this._goToAddEntityTo}
-                          ></ha-icon-button>
-                        `
-                      : nothing
+                    : html`
+                        ${
+                          !__DEMO__ && this._shouldShowAddEntityTo()
+                            ? html`
+                                <ha-icon-button
+                                  slot="headerActionItems"
+                                  .label=${addToMenuItem}
+                                  .path=${mdiPlusBoxMultipleOutline}
+                                  @click=${this._goToAddEntityTo}
+                                ></ha-icon-button>
+                              `
+                            : nothing
+                        }
+                        ${
+                          domain === "camera"
+                            ? html`
+                                <ha-dropdown
+                                  slot="headerActionItems"
+                                  @closed=${stopPropagation}
+                                  @wa-select=${this._handleMenuAction}
+                                  placement="bottom-end"
+                                >
+                                  <ha-icon-button
+                                    slot="trigger"
+                                    .label=${this.hass.localize(
+                                      "ui.common.menu"
+                                    )}
+                                    .path=${mdiDotsVertical}
+                                  ></ha-icon-button>
+                                  ${downloadSnapshotMenuItem}
+                                </ha-dropdown>
+                              `
+                            : nothing
+                        }
+                      `
                 }
               `
             : this._currView === "details"
@@ -1030,6 +1079,32 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     if (changedProps.has("_currView")) {
       this._infoEditMode = false;
       this._detailsYamlMode = false;
+    }
+
+    if (changedProps.has("_entityId")) {
+      this._reportShownEntityToExternalApp(
+        changedProps.get("_entityId") as string | null | undefined
+      );
+    }
+  }
+
+  private _reportShownEntityToExternalApp(
+    previousEntityId: string | null | undefined
+  ) {
+    const external = this.hass.auth.external;
+    if (!external) {
+      return;
+    }
+    if (this._entityId) {
+      external.fireMessage({
+        type: "more_info/opened",
+        payload: { entity_id: this._entityId },
+      });
+    } else if (previousEntityId) {
+      external.fireMessage({
+        type: "more_info/closed",
+        payload: { entity_id: previousEntityId },
+      });
     }
   }
 

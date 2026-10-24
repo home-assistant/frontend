@@ -1,14 +1,17 @@
-import { consume } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { MAP_MAX_ZOOM } from "../../common/map/base-layer";
-import type { MapLatLng } from "../../common/map/map-engine";
+import type { MapLatLng, MapView } from "../../common/map/map-engine";
 import { circleBoundsPoints } from "../../common/map/map-engine";
-import { internationalizationContext } from "../../data/context";
+import { internationalizationContext, uiContext } from "../../data/context";
+import type { Themes } from "../../data/ws-themes";
 import type { HomeAssistantInternationalization, ThemeMode } from "../../types";
 import "../ha-alert";
 import "../ha-input-helper-text";
@@ -16,6 +19,10 @@ import "./ha-map";
 import type { HaMap, HaMapEditableLocation } from "./ha-map";
 import type { HaIcon } from "../ha-icon";
 import type { HaSvgIcon } from "../ha-svg-icon";
+import {
+  createZoneMarkerElement,
+  ZONE_CIRCLE_SIZE,
+} from "../../common/map/zone-marker";
 
 declare global {
   // for fire event
@@ -36,13 +43,20 @@ export interface MarkerLocation {
   icon?: string;
   iconPath?: string;
   radius_color?: string;
+  /** Draw as a zone marker, without a radius */
+  zone_marker?: boolean;
   location_editable?: boolean;
   radius_editable?: boolean;
   /** Clicking or activating the marker fires marker-clicked */
   clickable?: boolean;
+  /** Counts toward the map fit; defaults to true */
+  fit?: boolean;
 }
 
 const ICON_SIZE = 24;
+
+const isZoneMarker = (location: MarkerLocation): boolean =>
+  !!location.radius || !!location.zone_marker;
 
 /**
  * A map with draggable markers and zone circles, drawn by ha-map. Without
@@ -68,12 +82,31 @@ export class HaLocationsEditor extends LitElement {
 
   @state() private _editingAvailable = true;
 
+  // Marker elements bake in theme colors, so they are rebuilt on a theme
+  // change; narrow the UI context to themes to avoid unrelated rerenders
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<ContextType<typeof uiContext>, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes?: Themes;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: HomeAssistantInternationalization;
 
   public fitMap(options?: { zoom?: number; pad?: number }): void {
     this.map.fitMap(options);
+  }
+
+  public getView(): MapView | undefined {
+    const view = this.map.getView();
+    return (
+      view && {
+        ...view,
+        center: [view.center[0], this._normalizeLongitude(view.center[1])],
+      }
+    );
   }
 
   public fitBounds(
@@ -108,7 +141,10 @@ export class HaLocationsEditor extends LitElement {
     return html`
       <div class="map">
         <ha-map
-          .editableLocations=${this._editableLocations(this.locations)}
+          .editableLocations=${this._editableLocations(
+            this.locations,
+            this._themes
+          )}
           .zoom=${this.zoom}
           .autoFit=${this.autoFit}
           .themeMode=${this.themeMode}
@@ -140,7 +176,14 @@ export class HaLocationsEditor extends LitElement {
   }
 
   private _editableLocations = memoizeOne(
-    (locations?: MarkerLocation[]): HaMapEditableLocation[] => {
+    (
+      locations: MarkerLocation[] | undefined,
+      themes: Themes | undefined
+    ): HaMapEditableLocation[] => {
+      if (themes !== this._elementsThemes) {
+        this._elementsThemes = themes;
+        this._elements.clear();
+      }
       const ids = new Set((locations ?? []).map((location) => location.id));
       for (const id of this._elements.keys()) {
         if (!ids.has(id)) {
@@ -152,12 +195,15 @@ export class HaLocationsEditor extends LitElement {
         location: [location.latitude, location.longitude],
         radius: location.radius,
         element: this._elementFor(location),
-        elementSize: [ICON_SIZE, ICON_SIZE],
+        elementSize: isZoneMarker(location)
+          ? [ZONE_CIRCLE_SIZE, ZONE_CIRCLE_SIZE]
+          : [ICON_SIZE, ICON_SIZE],
         title: location.name,
         color: location.radius_color,
         locationEditable: location.location_editable,
         radiusEditable: location.radius_editable,
         activatable: location.clickable,
+        fit: location.fit,
       }));
     }
   );
@@ -165,20 +211,38 @@ export class HaLocationsEditor extends LitElement {
   // Reused while unchanged, so ha-map moves markers instead of rebuilding them
   private _elements = new Map<string, { key: string; element?: HTMLElement }>();
 
+  private _elementsThemes?: Themes;
+
   private _elementFor(location: MarkerLocation): HTMLElement | undefined {
+    const isZone = isZoneMarker(location);
     const key = JSON.stringify([
+      isZone,
       location.icon,
       location.iconPath,
       location.name,
-      location.location_editable,
+      location.radius_color,
     ]);
     const cached = this._elements.get(location.id);
     if (cached?.key === key) {
       return cached.element;
     }
-    const element = this._createIcon(location);
+    // The zone marker doubles as the circle's draggable center
+    const element = isZone
+      ? this._createZoneMarker(location)
+      : this._createIcon(location);
     this._elements.set(location.id, { key, element });
     return element;
+  }
+
+  private _createZoneMarker(location: MarkerLocation): HTMLElement {
+    return createZoneMarkerElement({
+      color:
+        location.radius_color ||
+        getComputedStyle(this).getPropertyValue("--accent-color"),
+      icon: location.icon,
+      iconPath: location.iconPath,
+      name: location.name ?? "",
+    });
   }
 
   private _createIcon(location: MarkerLocation): HTMLElement | undefined {
@@ -186,9 +250,7 @@ export class HaLocationsEditor extends LitElement {
       return undefined;
     }
     const el = document.createElement("div");
-    el.className = `named-icon ${
-      location.location_editable ? "draggable" : ""
-    }`;
+    el.className = "named-icon";
     if (location.name !== undefined) {
       el.innerText = location.name;
     }
@@ -296,12 +358,13 @@ export class HaLocationsEditor extends LitElement {
       display: block;
       height: 100%;
     }
-    /* Over the map, clear of the zoom control, so a fixed-height host shows it */
+    /* Over the map, clear of the zoom control, so a fixed-height host shows it.
+       The control sits at the physical top-left in either direction. */
     ha-alert {
       position: absolute;
       top: var(--ha-space-2);
-      inset-inline-start: 56px;
-      inset-inline-end: var(--ha-space-2);
+      left: 56px;
+      right: var(--ha-space-2);
       z-index: 1;
     }
   `;

@@ -1,5 +1,4 @@
 import type { Connection } from "home-assistant-js-websocket";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import type { HomeAssistant } from "../../types";
 import type { ConfigEntry } from "../config_entries";
@@ -7,8 +6,7 @@ import type {
   EntityRegistryDisplayEntry,
   EntityRegistryEntry,
 } from "../entity/entity_registry";
-import type { EntitySources } from "../entity/entity_sources";
-import type { RegistryEntry } from "../registry";
+import type { NextNamePart, RegistryEntry } from "../registry";
 
 export {
   fetchDeviceRegistry,
@@ -46,6 +44,7 @@ export interface DeviceRegistryEntry extends RegistryEntry {
   // Set when this device is a child (logical part) of another device.
   // null for regular top-level devices.
   parent_device_id: string | null;
+  next_name_part?: NextNamePart | null;
 }
 
 /**
@@ -68,6 +67,7 @@ export interface ChildDeviceRegistryEntry extends RegistryEntry {
   area_id: string | null;
   disabled_by: DeviceDisabler | null;
   parent_device_id: string;
+  next_name_part?: NextNamePart | null;
 }
 
 /**
@@ -230,20 +230,6 @@ export const fetchLinkedDevices = (
     })
     .then((result) => result.linked_devices);
 
-export const fallbackDeviceName = (
-  hass: HomeAssistant,
-  entities: EntityRegistryEntry[] | EntityRegistryDisplayEntry[] | string[]
-) => {
-  for (const entity of entities || []) {
-    const entityId = typeof entity === "string" ? entity : entity.entity_id;
-    const stateObj = hass.states[entityId];
-    if (stateObj) {
-      return computeStateName(stateObj);
-    }
-  }
-  return undefined;
-};
-
 export const devicesInArea = (devices: DeviceRegistryEntry[], areaId: string) =>
   devices.filter((device) => device.area_id === areaId);
 
@@ -308,7 +294,6 @@ export const getDeviceEntityDisplayLookup = (
 };
 
 export const getDeviceIntegrationLookup = (
-  entitySources: EntitySources,
   entities: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   devices?: DeviceRegistryEntry[],
   configEntries?: ConfigEntry[]
@@ -316,14 +301,13 @@ export const getDeviceIntegrationLookup = (
   const deviceIntegrations: Record<string, Set<string>> = {};
 
   for (const entity of entities) {
-    const source = entitySources[entity.entity_id];
-    if (!source?.domain || entity.device_id === null) {
+    if (!entity.platform || entity.device_id === null) {
       continue;
     }
 
     deviceIntegrations[entity.device_id!] =
       deviceIntegrations[entity.device_id!] || new Set<string>();
-    deviceIntegrations[entity.device_id!].add(source.domain);
+    deviceIntegrations[entity.device_id!].add(entity.platform);
   }
   // Lookup devices that have no entities
   if (devices && configEntries) {

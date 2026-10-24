@@ -1,9 +1,10 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type HlsType from "hls.js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../common/decorators/consume";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
@@ -334,11 +335,10 @@ class HaHLSPlayer extends LitElement {
       lowLatencyMode: this._isLLHLSSupported(),
     });
     this._hlsPolyfillInstance = hls;
+    // Load the source once, before attaching. MEDIA_ATTACHED fires again on
+    // every recoverMediaError(), and loading there would restart the stream.
+    hls.loadSource(url);
     hls.attachMedia(videoEl);
-    hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-      this._resetError();
-      hls.loadSource(url);
-    });
     hls.on(Hls.Events.FRAG_LOADED, (_event, _data: any) => {
       this._resetError();
     });

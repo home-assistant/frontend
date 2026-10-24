@@ -1,8 +1,10 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiDelete, mdiDragHorizontalVariant } from "@mdi/js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consume } from "../../../common/decorators/consume";
+import { ALERT_DOMAINS } from "../../../common/entity/alert_active";
 import { computeEntityPickerDisplay } from "../../../common/entity/compute_entity_name_display";
 import {
   fireEvent,
@@ -93,6 +95,7 @@ export class SecurityAlertsEditor extends LitElement {
           "ui.panel.security.editor.add_alert_entity"
         )}
         .excludeEntities=${this.alertEntities.map(({ entity }) => entity)}
+        .includeDomains=${ALERT_DOMAINS}
         .entityFilter=${this._entityFilter}
         @value-changed=${this._add}
       ></ha-entity-picker>

@@ -27,6 +27,19 @@ export async function goToPanel(page: Page, path: string) {
   ]);
 }
 
+export async function openSystemLogDetail(page: Page, message: string) {
+  await goToPanel(page, "/?scenario=system-log-reporting#/config/logs");
+  await page
+    .locator("system-log-card ha-list-item")
+    .filter({ hasText: message })
+    .click();
+  const dialog = page.locator("dialog-system-log-detail");
+
+  await expect(dialog.locator(".contents")).toContainText(message);
+
+  return dialog;
+}
+
 // The hass-more-info event is one-shot: if it lands before the shell's
 // listener is attached it is silently dropped. Re-dispatching is idempotent
 // (showDialog just resets the dialog to the requested view), so poll the
