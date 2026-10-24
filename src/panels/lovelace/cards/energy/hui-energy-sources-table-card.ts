@@ -697,7 +697,7 @@ export class HuiEnergySourcesTableCard
                       null,
                       showCosts,
                       compare,
-                      source.name
+                      source.name || this._hassConfig.location_name
                     )
                   : nothing;
               })}
