@@ -1722,14 +1722,16 @@ const computeConsumptionDataPartial = (
       from_battery: fromBattery && (fromBattery[t] ?? 0),
     });
     const usedTotal = hasHome ? Math.max(homeUsed, 0) : used_total;
+    const measured = used_grid + used_solar + used_battery;
+    const scale = hasHome && measured > usedTotal ? usedTotal / measured : 1;
     outData.used_total[t] = usedTotal;
     total.used_total += usedTotal;
-    outData.used_grid![t] = used_grid;
-    total.used_grid += used_grid;
-    outData.used_solar![t] = used_solar;
-    total.used_solar += used_solar;
-    outData.used_battery![t] = used_battery;
-    total.used_battery += used_battery;
+    outData.used_grid![t] = used_grid * scale;
+    total.used_grid += used_grid * scale;
+    outData.used_solar![t] = used_solar * scale;
+    total.used_solar += used_solar * scale;
+    outData.used_battery![t] = used_battery * scale;
+    total.used_battery += used_battery * scale;
     outData.grid_to_battery[t] = grid_to_battery;
     total.grid_to_battery += grid_to_battery;
     outData.battery_to_grid![t] = battery_to_grid;

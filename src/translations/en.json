@@ -10888,7 +10888,8 @@
                 "solar": "Solar",
                 "battery": "Battery",
                 "gas": "Gas",
-                "water": "Water"
+                "water": "Water",
+                "home": "Home"
               }
             },
             "energy-compare": {

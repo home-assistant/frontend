@@ -219,7 +219,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "electricity",
     "energy-sources-table",
     "ui.panel.energy.cards.energy_sources_table_title",
-    (p) => hasGridSource(p) || hasSolar(p) || hasBattery(p)
+    (p) => hasGridSource(p) || hasSolar(p) || hasBattery(p) || hasHomeSource(p)
   ),
   entry(
     "electricity",
