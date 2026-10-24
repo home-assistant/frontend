@@ -58,6 +58,14 @@ export interface EnergyFrontendSystemData {
   hidden_cards?: string[];
 }
 
+export interface WeatherFrontendSystemData {
+  // Weather entities in order of preference. For every value on the weather
+  // page, the first entity that provides it is used. Weather entities that are
+  // not listed are added after these, unless they are excluded.
+  weather_entities?: string[];
+  excluded_weather_entities?: string[];
+}
+
 declare global {
   interface FrontendUserData {
     core: CoreFrontendUserData;
@@ -69,6 +77,7 @@ declare global {
     home: HomeFrontendSystemData;
     energy: EnergyFrontendSystemData;
     security: SecurityFrontendSystemData;
+    weather: WeatherFrontendSystemData;
   }
 }
 
