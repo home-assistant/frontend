@@ -112,7 +112,10 @@ export class HuiPowerSourcesGraphCard
   private _statRateIds = memoizeOne(
     (energyData?: EnergyData) =>
       energyData?.prefs.energy_sources.flatMap((s) =>
-        (s.type === "solar" || s.type === "grid" || s.type === "battery") &&
+        (s.type === "solar" ||
+          s.type === "home" ||
+          s.type === "grid" ||
+          s.type === "battery") &&
         s.stat_rate
           ? [s.stat_rate]
           : []
@@ -249,7 +252,6 @@ export class HuiPowerSourcesGraphCard
     if (!this.isConnected) {
       return;
     }
-
     const result = generatePowerSourcesGraphData({
       localize: this._i18n.localize,
       formatPower: this._formatPower,
