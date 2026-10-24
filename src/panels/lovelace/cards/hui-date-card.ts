@@ -1,10 +1,21 @@
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../components/ha-card";
+import { consume } from "../../../common/decorators/consume";
+import { transform } from "../../../common/decorators/transform";
 import { shallowEqual } from "../../../common/util/shallow-equal";
-import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-card";
+import {
+  configContext,
+  internationalizationContext,
+} from "../../../data/context";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import type {
   LovelaceCard,
   LovelaceCardEditor,
@@ -31,7 +42,19 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig?: HassConfig;
 
   @state() private _config?: DateCardConfig;
 
@@ -104,15 +127,20 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
   };
 
   protected willUpdate(changedProps: PropertyValues) {
-    if (!changedProps.has("hass") && !changedProps.has("_config")) {
+    if (
+      !changedProps.has("_locale") &&
+      !changedProps.has("_hassConfig") &&
+      !changedProps.has("_config")
+    ) {
       return;
     }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldHassConfig = changedProps.get("_hassConfig") as
+      HassConfig | undefined;
     const localeOrServerTimeZoneChanged =
-      changedProps.has("hass") &&
-      (oldHass?.locale !== this.hass?.locale ||
-        oldHass?.config.time_zone !== this.hass?.config.time_zone);
+      changedProps.has("_locale") ||
+      (changedProps.has("_hassConfig") &&
+        oldHassConfig?.time_zone !== this._hassConfig?.time_zone);
 
     const oldConfig = changedProps.get("_config") as DateCardConfig | undefined;
     const relevantConfigChanged =
@@ -120,7 +148,7 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
       (oldConfig?.time_zone !== this._config?.time_zone ||
         !shallowEqual(oldConfig?.date_format, this._config?.date_format));
 
-    // hass/_config can arrive in separate update cycles; force one init.
+    // Contexts and _config can arrive in separate update cycles; force one init.
     const neverScheduled = !this._midnightTimer;
 
     if (
@@ -142,24 +170,36 @@ export class HuiDateCard extends LitElement implements LovelaceCard {
   private _scheduleMidnightRefresh() {
     this._clearMidnightTimer();
 
-    if (!this.hass || !this._config) {
+    // A detached card can still get updates; connectedCallback reschedules.
+    if (
+      !this.isConnected ||
+      !this._locale ||
+      !this._hassConfig ||
+      !this._config
+    ) {
       return;
     }
 
     const now = new Date();
     this._dateText = computeDateText(
       now,
-      this.hass.locale,
-      this.hass.config,
+      this._locale,
+      this._hassConfig,
       this._config
     );
 
     const timeZone = computeResolvedTimeZone(
-      this.hass.locale,
-      this.hass.config,
+      this._locale,
+      this._hassConfig,
       this._config
     );
     const delay = computeMsUntilMidnight(now, timeZone);
+
+    // Guard against a NaN/negative delay (e.g. Intl longOffset unsupported on
+    // Chromium < 95) so the midnight refresh can't fire in a tight loop.
+    if (!Number.isFinite(delay) || delay <= 0) {
+      return;
+    }
 
     this._midnightTimer = window.setTimeout(() => {
       this._scheduleMidnightRefresh();
