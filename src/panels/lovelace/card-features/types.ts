@@ -39,6 +39,10 @@ export interface LightBrightnessCardFeatureConfig {
   type: "light-brightness";
 }
 
+export interface LightBrightnessFavoritesCardFeatureConfig {
+  type: "light-brightness-favorites";
+}
+
 export const LIGHT_COLOR_CONTROLS = [
   "hue",
   "saturation",
@@ -384,6 +388,7 @@ export type LovelaceCardFeatureConfig =
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
+  | LightBrightnessFavoritesCardFeatureConfig
   | LightColorCardFeatureConfig
   | LightColorTempCardFeatureConfig
   | LightColorFavoritesCardFeatureConfig
