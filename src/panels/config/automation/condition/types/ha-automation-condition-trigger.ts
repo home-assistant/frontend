@@ -16,6 +16,7 @@ import "../../../../../components/list/ha-list-selectable";
 import type { TriggerCondition } from "../../../../../data/automation";
 import {
   automationTriggerContext,
+  hasCustomTriggerId,
   type AutomationTriggerContext,
   type TriggerIdOption,
 } from "../../trigger/automation-trigger-id";
@@ -122,7 +123,15 @@ export class HaTriggerCondition extends LitElement {
                       <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
                       <span class="duplicate-trigger-id">${option.id}</span>
                     </span>`
-                  : nothing
+                  : hasCustomTriggerId(option)
+                    ? html`<span
+                        slot="end"
+                        class="custom-trigger-badge"
+                        title=${option.id}
+                      >
+                        <span class="custom-trigger-id">${option.id}</span>
+                      </span>`
+                    : nothing
               }
             </ha-list-item-option>
           `
@@ -247,8 +256,18 @@ export class HaTriggerCondition extends LitElement {
         --mdc-icon-size: 18px;
         flex-shrink: 0;
       }
+      .custom-trigger-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px var(--ha-space-2);
+        border-radius: var(--ha-border-radius-md);
+        background: var(--ha-color-fill-neutral-quiet-resting);
+        color: var(--ha-color-on-neutral-normal);
+        line-height: 18px;
+      }
       .missing-trigger-id,
-      .duplicate-trigger-id {
+      .duplicate-trigger-id,
+      .custom-trigger-id {
         font-family: var(--ha-font-family-code);
         font-size: var(--ha-font-size-s);
         max-width: 120px;
