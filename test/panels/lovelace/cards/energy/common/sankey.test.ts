@@ -937,7 +937,6 @@ describe("buildSankeyDeviceNodes", () => {
           initialUntracked: 70.007,
         })
       );
-      // c and d are grouped: no node carries their custom colors
       expect(result.deviceNodes.map((n) => n.id)).toContain("other_home");
       expect(result.deviceNodes.some((n) => n.color === "rgb(1, 2, 3)")).toBe(
         false

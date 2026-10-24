@@ -270,8 +270,10 @@ export class DialogEnergyDeviceSettings
       return "#9e9e9e";
     }
     const devices = this._params?.device_consumptions ?? [];
+    const statConsumption =
+      this._params?.device?.stat_consumption ?? this._device.stat_consumption;
     const idx = devices.findIndex(
-      (d) => d.stat_consumption === this._device!.stat_consumption
+      (d) => d.stat_consumption === statConsumption
     );
     return getGraphColorByIndex(
       idx === -1 ? devices.length : idx,
