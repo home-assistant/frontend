@@ -30,6 +30,7 @@ interface SmallConsumer {
   value: number;
   effectiveParent: string | undefined;
   idx: number;
+  color: [number, number, number] | undefined;
 }
 
 const OTHER_LABEL_KEY =
@@ -293,6 +294,7 @@ export const buildSankeyDeviceNodes = (
         value,
         effectiveParent,
         idx,
+        color: device.color,
       });
       smallConsumerStats.add(device.stat_consumption);
       return;
@@ -302,7 +304,10 @@ export const buildSankeyDeviceNodes = (
       id,
       label: getLabel(id, device.name),
       value,
-      color: getGraphColorByIndex(idx, computedStyle),
+      color:
+        device.color !== undefined
+          ? `rgb(${device.color.join(", ")})`
+          : getGraphColorByIndex(idx, computedStyle),
       index: 4,
       parent: effectiveParent,
       entityId: getEntityId(id),
@@ -348,7 +353,10 @@ export const buildSankeyDeviceNodes = (
         id: consumer.id,
         label: getLabel(consumer.id, consumer.name),
         value: consumer.value,
-        color: getGraphColorByIndex(consumer.idx, computedStyle),
+        color:
+          consumer.color !== undefined
+            ? `rgb(${consumer.color.join(", ")})`
+            : getGraphColorByIndex(consumer.idx, computedStyle),
         index: 4,
         parent: consumer.effectiveParent,
         entityId: getEntityId(consumer.id),
