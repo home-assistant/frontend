@@ -200,7 +200,12 @@ export class EnergyHomeSettings extends LitElement {
         ),
       });
     } catch (err: any) {
-      showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
+      showAlertDialog(this, {
+        title: this._i18n.localize(
+          "ui.panel.config.energy.save_config_failed",
+          { error: err.message }
+        ),
+      });
     }
   }
 
