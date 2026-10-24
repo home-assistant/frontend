@@ -113,6 +113,7 @@ import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showNewAutomationDialog } from "../automation/show-dialog-new-automation";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { renderCategoryGroupActions } from "../category/render-category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -496,6 +497,7 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
+        ${renderCategoryGroupActions(this.hass, "script", this._categories)}
         <ha-filter-floor-areas
           .type=${"script"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
