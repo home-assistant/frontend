@@ -63,6 +63,7 @@ export const securityEntityFilters: EntityFilter[] = [
       "carbon_monoxide",
       "gas",
       "glass_break",
+      "heat",
       "moisture",
       "safety",
       "smoke",
