@@ -38,7 +38,6 @@ import {
   computeContextCause,
   computeTraceLink,
   computeUserCause,
-  entityDisplay,
 } from "../../../logbook/logbook-entry-model";
 import { showActionCallDetailDialog } from "./show-dialog-action-call-detail";
 
@@ -51,7 +50,7 @@ interface ActionCallRow extends DataTableRowData {
   cause?: LogbookCause;
   // The user the call was made for, when the cause is something else.
   user?: LogbookCause;
-  cause_phrase: string;
+  cause_phrase?: string;
   when: number;
 }
 
@@ -109,6 +108,7 @@ class HaPanelToolsActionHistory extends LitElement {
       userIdToName: Record<string, string>,
       systemUserIds: Set<string>,
       services: HomeAssistant["services"],
+      _entities: HomeAssistant["entities"],
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
       floors: HomeAssistant["floors"]
@@ -116,8 +116,8 @@ class HaPanelToolsActionHistory extends LitElement {
       calls.map((call, index) => {
         const action = `${call.domain}.${call.service}`;
         const user = computeUserCause(call, userIdToName, systemUserIds);
-        // Entity names are read from the current states, which are not an
-        // input so the rows are not rebuilt on every state change.
+        // Names come from the registries, which are inputs. The states are
+        // not, so the rows are not rebuilt on every state change.
         const cause = computeContextCause(this.hass, call) ?? user;
         const data = call.service_data;
         return {
@@ -132,9 +132,10 @@ class HaPanelToolsActionHistory extends LitElement {
             action,
           action,
           targets: [
-            ...targetIds(data.entity_id).map(
-              (entityId) =>
-                entityDisplay(this.hass, entityId).primary ?? entityId
+            ...targetIds(data.entity_id).map((entityId) =>
+              this.hass.states[entityId]
+                ? this.hass.formatEntityName(this.hass.states[entityId])
+                : entityId
             ),
             ...targetIds(data.device_id).map(
               (deviceId) =>
@@ -151,7 +152,7 @@ class HaPanelToolsActionHistory extends LitElement {
           ].join(", "),
           cause,
           user: cause === user ? undefined : user,
-          cause_phrase: cause ? computeCausePhrase(localize, cause) : "",
+          cause_phrase: cause ? computeCausePhrase(localize, cause) : undefined,
           when: call.when,
         };
       })
@@ -164,6 +165,7 @@ class HaPanelToolsActionHistory extends LitElement {
       this._userIdToName,
       this._systemUserIds,
       this.hass.services,
+      this.hass.entities,
       this.hass.devices,
       this.hass.areas,
       this.hass.floors
@@ -299,12 +301,6 @@ class HaPanelToolsActionHistory extends LitElement {
   }
 
   private async _refresh() {
-    if (isComponentLoaded(this.hass.config, "trace")) {
-      loadTraceContexts(this.hass).then((traceContexts) => {
-        this._traceContexts = traceContexts;
-      });
-    }
-
     const [start, end] = this._range;
     const fetch = getLogbookActionCalls(
       this.hass,
@@ -315,9 +311,15 @@ class HaPanelToolsActionHistory extends LitElement {
     this._loading = true;
     this._error = undefined;
     try {
-      const calls = await fetch;
+      const [calls, traceContexts] = await Promise.all([
+        fetch,
+        isComponentLoaded(this.hass.config, "trace")
+          ? loadTraceContexts(this.hass).catch(() => this._traceContexts)
+          : this._traceContexts,
+      ]);
       if (this._fetch === fetch) {
         this._calls = calls;
+        this._traceContexts = traceContexts;
       }
     } catch (err: unknown) {
       if (this._fetch === fetch) {

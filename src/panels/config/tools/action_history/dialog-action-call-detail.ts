@@ -31,7 +31,7 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
   private _config!: ContextType<typeof configContext>;
 
   protected render() {
-    if (!this.params || !this._i18n) {
+    if (!this.params || !this._i18n || !this._config) {
       return nothing;
     }
     const { call, name, cause, user, traceUrl } = this.params;
