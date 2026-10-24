@@ -290,7 +290,7 @@ export const getDurationSelectorUnits = (
   enableMillisecond: !!config?.enable_millisecond,
 });
 
-interface EntitySelectorFilter {
+export interface EntitySelectorFilter {
   integration?: string;
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
@@ -691,6 +691,7 @@ export interface EntityNameSelector {
   entity_name: {
     entity_id?: string;
     default_name?: EntityNameItem | EntityNameItem[] | string;
+    allow_custom?: boolean;
   } | null;
 }
 

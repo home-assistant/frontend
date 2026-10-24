@@ -928,6 +928,10 @@
         "expand": "Expand",
         "collapse": "Collapse"
       },
+      "entity-type-picker": {
+        "add": "Add type",
+        "no_types": "No types available"
+      },
       "subpage-data-table": {
         "filters": "Filters",
         "show_results": "Show {number} results",
@@ -9842,6 +9846,11 @@
               "diagnostic": "[%key:ui::panel::config::devices::entities::diagnostic%]"
             }
           },
+          "entities": {
+            "other": "Other",
+            "no_criteria": "Pick at least one type and one target.",
+            "no_entities": "No entities match this section."
+          },
           "light": {
             "lights": "Lights",
             "other_lights": "Other lights",
@@ -10438,6 +10447,10 @@
             "device": {
               "name": "Device",
               "description": "Shows the controls and sensors of a device."
+            },
+            "entities": {
+              "name": "Entities",
+              "description": "Shows the entities of the types you pick, like all the lights in a room."
             }
           },
           "create_section": {
@@ -11929,6 +11942,21 @@
               "entities": "Entities",
               "exclude_entities": "Exclude entities",
               "exclude_entities_helper": "Not shown in this section, even if their category is selected"
+            },
+            "entities": {
+              "title": "Title",
+              "entity_types": "Types to show",
+              "target": "[%key:ui::panel::config::automation::editor::targets%]",
+              "group_by": "Group by",
+              "name": "Display name",
+              "group_by_options": {
+                "none": "No grouping",
+                "area": "Area",
+                "floor": "Floor",
+                "type": "Type"
+              },
+              "include_config_and_diagnostic": "Include configuration and diagnostic entities",
+              "include_config_and_diagnostic_helper": "By default, these only show when you add them as entities or through a label"
             },
             "original-states": {
               "areas": "Areas to display",
