@@ -32,9 +32,13 @@ import { showCreateBadgeDialog } from "../editor/badge-editor/show-create-badge-
 import { showEditBadgeDialog } from "../editor/badge-editor/show-edit-badge-dialog";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { getCardSectionConfig } from "../editor/config-util";
+import { adoptViewLayout, getCardSectionConfig } from "../editor/config-util";
 import type { ClipboardActionParams } from "../editor/clipboard-actions";
-import { performCopy, performCut } from "../editor/clipboard-actions";
+import {
+  performCopy,
+  performCut,
+  performPaste,
+} from "../editor/clipboard-actions";
 import {
   type DeleteBadgeParams,
   performDeleteBadge,
@@ -47,8 +51,10 @@ import type { LovelacePath } from "../editor/lovelace-path";
 import {
   appendAtPath,
   getAtPath,
+  getItemKind,
   getParentPath,
   getPathTarget,
+  getViewPath,
   normalizeCardPath,
   setAtPath,
 } from "../editor/lovelace-path";
@@ -60,6 +66,7 @@ import {
   generateLovelaceViewStrategy,
 } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
+import { PANEL_VIEW_LAYOUT, SIDEBAR_VIEW_LAYOUT } from "./const";
 import { getViewType } from "./get-view-type";
 
 declare global {
@@ -71,6 +78,7 @@ declare global {
     "ll-duplicate-card": { path: LovelacePath };
     "ll-copy-card": { path: LovelacePath };
     "ll-cut-card": { path: LovelacePath };
+    "ll-paste-card": { path: LovelacePath };
     "ll-create-badge": { path: LovelacePath };
     "ll-edit-badge": { path: LovelacePath };
     "ll-delete-badge": DeleteBadgeParams;
@@ -84,6 +92,7 @@ declare global {
     "ll-duplicate-card": HASSDomEvent<HASSDomEvents["ll-duplicate-card"]>;
     "ll-copy-card": HASSDomEvent<HASSDomEvents["ll-copy-card"]>;
     "ll-cut-card": HASSDomEvent<HASSDomEvents["ll-cut-card"]>;
+    "ll-paste-card": HASSDomEvent<HASSDomEvents["ll-paste-card"]>;
     "ll-create-badge": HASSDomEvent<HASSDomEvents["ll-create-badge"]>;
     "ll-edit-badge": HASSDomEvent<HASSDomEvents["ll-edit-badge"]>;
     "ll-delete-badge": HASSDomEvent<HASSDomEvents["ll-delete-badge"]>;
@@ -236,6 +245,32 @@ export class HUIView extends ReactiveElement {
         if (params) {
           performCut(this.hass.localize, this.lovelace, params);
         }
+      }
+    );
+    this.addEventListener(
+      "ll-paste-card",
+      (ev: HASSDomEvent<HASSDomEvents["ll-paste-card"]>) => {
+        const config = this._clipboard;
+        const path = normalizeCardPath(ev.detail.path);
+        const target =
+          getPathTarget(path) === "item" && getItemKind(path) === "card"
+            ? this._getCardConfig(path)
+            : undefined;
+        if (!config || !target) {
+          return;
+        }
+        const viewType = getViewType(
+          getAtPath<LovelaceViewConfig>(this.lovelace.config, getViewPath(path))
+        );
+        performPaste(this.hass.localize, this.lovelace, {
+          type: "card",
+          path,
+          config:
+            viewType === SIDEBAR_VIEW_LAYOUT
+              ? adoptViewLayout(config, target)
+              : config,
+          replace: viewType === PANEL_VIEW_LAYOUT,
+        });
       }
     );
     this.addEventListener(

@@ -8,6 +8,7 @@ import { LOVELACE_EDIT_TOAST_ID } from "../types";
 import { performDeleteBadge } from "./delete-badge";
 import { performDeleteCard } from "./delete-card";
 import type { LovelacePath } from "./lovelace-path";
+import { getParentPath, insertAtPath, setAtPath } from "./lovelace-path";
 
 interface ClipboardItemConfigs {
   card: LovelaceCardConfig;
@@ -53,6 +54,50 @@ export function performCopy<K extends ClipboardItemType>(
   });
 }
 
+export interface PasteParams<K extends ClipboardItemType> {
+  type: K;
+  path: LovelacePath;
+  config: ClipboardItemConfigs[K];
+  replace?: boolean;
+}
+
+export async function performPaste<K extends ClipboardItemType>(
+  localize: LocalizeFunc,
+  lovelace: Lovelace,
+  { type, path, config, replace }: PasteParams<K>
+): Promise<void> {
+  ++lastVersion;
+  lovelace.showToast({ id: LOVELACE_EDIT_TOAST_ID, message: "", duration: 0 });
+  try {
+    const index = path[path.length - 1];
+    if (typeof index !== "number") {
+      throw new Error("Paste target is not an item");
+    }
+    const pastedPath = replace ? path : [...getParentPath(path), index + 1];
+    const newConfig = replace
+      ? setAtPath(lovelace.config, path, deepClone(config))
+      : insertAtPath(lovelace.config, pastedPath, deepClone(config));
+    await lovelace.saveConfig(newConfig);
+  } catch (_err: unknown) {
+    lovelace.showToast({
+      id: LOVELACE_EDIT_TOAST_ID,
+      message: localize(`ui.panel.lovelace.editor.edit_${type}.paste_error`),
+    });
+    return;
+  }
+  if (replace) {
+    lovelace.showToast({
+      id: LOVELACE_EDIT_TOAST_ID,
+      message: localize(`ui.panel.lovelace.editor.edit_${type}.replaced`),
+      duration: 8000,
+      action: {
+        action: () => fireEvent(window, "undo-change"),
+        text: localize("ui.common.undo"),
+      },
+    });
+  }
+}
+
 export async function performCut<K extends ClipboardItemType>(
   localize: LocalizeFunc,
   lovelace: Lovelace,
@@ -70,6 +115,9 @@ export async function performCut<K extends ClipboardItemType>(
   }
   clipboardVersions[type] = version;
   setClipboard(deepClone(config));
+  if (lastVersion !== version) {
+    return;
+  }
   lovelace.showToast({
     id: LOVELACE_EDIT_TOAST_ID,
     message: localize(`ui.panel.lovelace.editor.edit_${type}.cut_to_clipboard`),
