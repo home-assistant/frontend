@@ -333,8 +333,6 @@ describe("generatePowerSourcesGraphData with a home meter", () => {
   } as const;
 
   // Returns the [x, y] points of the "usage" line.
-  // Adapt `find` to how the series is identified in the result: run
-  // `console.log(JSON.stringify(result, null, 2))` once to check.
   const usagePoints = (energyData: EnergyData): [number, number][] => {
     const result = generatePowerSourcesGraphData({ ...params, energyData });
     const usage = result.chartData.find((series) => series.id === "usage");

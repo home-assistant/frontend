@@ -6,11 +6,7 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
 import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import type { EnergyData } from "../../../../data/energy";
-import {
-  getPowerFromState,
-  inferGridPowerStatistics,
-  INFERRED_GRID_POWER_ID,
-} from "../../../../data/energy";
+import { getPowerFromState } from "../../../../data/energy";
 import type { StatisticValue } from "../../../../data/recorder";
 import { LinearGradient } from "../../../../resources/echarts/echarts";
 import { fillLineGaps } from "./common/energy-chart-options";
@@ -215,14 +211,7 @@ export function generatePowerSourcesGraphData(
       negative: [number, number][];
     }
   > = {};
-
-  const inferredPower = inferGridPowerStatistics(
-    energyData.prefs,
-    energyData.stats
-  );
-  const statsById = inferredPower
-    ? { ...energyData.stats, [INFERRED_GRID_POWER_ID]: inferredPower }
-    : energyData.stats;
+  const statsById = energyData.stats;
 
   const getStatsWithCurrent = (id: string): StatisticValue[] => {
     const stats = [...(statsById[id] ?? [])];

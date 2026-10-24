@@ -20,9 +20,7 @@ import {
   energySourcesByType,
   formatPowerShort,
   getPowerFromState,
-  INFERRED_GRID_POWER_ID,
   validateEnergyCollectionKey,
-  withInferredGridPower,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import type {
@@ -427,18 +425,10 @@ class HuiPowerSankeyCard
 
     // Collect grid power (positive = import, negative = export)
     const gridValues = prefs.energy_sources.flatMap((source) =>
-      source.type === "grid" &&
-      source.stat_rate &&
-      source.stat_rate !== INFERRED_GRID_POWER_ID
+      source.type === "grid" && source.stat_rate
         ? [this._getCurrentPower(source.stat_rate)]
         : []
     );
-    const inferredGrid = getPowerFromState(
-      withInferredGridPower(prefs, this._states)[INFERRED_GRID_POWER_ID]
-    );
-    if (inferredGrid !== undefined) {
-      gridValues.push(inferredGrid);
-    }
     gridValues.forEach((value) => {
       if (value > 0) {
         from_grid += value;

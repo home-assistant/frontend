@@ -19,8 +19,6 @@ import type { EnergyData } from "../../../../data/energy";
 import {
   validateEnergyCollectionKey,
   formatPowerShort,
-  withInferredGridPower,
-  INFERRED_GRID_POWER_ID,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
 import type { FrontendLocaleData } from "../../../../data/translation";
@@ -118,8 +116,7 @@ export class HuiPowerSourcesGraphCard
           s.type === "home" ||
           s.type === "grid" ||
           s.type === "battery") &&
-        s.stat_rate &&
-        s.stat_rate !== INFERRED_GRID_POWER_ID
+        s.stat_rate
           ? [s.stat_rate]
           : []
       ) ?? []
@@ -151,10 +148,9 @@ export class HuiPowerSourcesGraphCard
     if (!this._energyData || !this._legendData) {
       return false;
     }
-    const states = withInferredGridPower(this._energyData.prefs, this._states);
     const values = getPowerLegendValues(
       this._energyData,
-      states,
+      this._states,
       this._formatPower
     );
     if (this._legendData.every((item) => item.value === values[item.id!])) {
@@ -256,12 +252,10 @@ export class HuiPowerSourcesGraphCard
     if (!this.isConnected) {
       return;
     }
-
-    const states = withInferredGridPower(energyData.prefs, this._states);
     const result = generatePowerSourcesGraphData({
       localize: this._i18n.localize,
       formatPower: this._formatPower,
-      states: states,
+      states: this._states,
       energyData,
       computedStyles: getComputedStyle(this),
       start: this._start,

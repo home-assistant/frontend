@@ -49,6 +49,7 @@ const colorPropertyMap = {
   solar: "--energy-solar-color",
   gas: "--energy-gas-color",
   water: "--energy-water-color",
+  home: "--primary-color",
 };
 
 @customElement("hui-energy-sources-table-card")
@@ -678,6 +679,28 @@ export class HuiEnergySourcesTableCard
               </tr>
             </thead>
             <tbody class="mdc-data-table__content">
+              ${types.home?.map((source, idx) => {
+                const { hasData, energy, energyCompare } = _extractStatData(
+                  source.stat_energy_from,
+                  null
+                );
+                return hasData
+                  ? this._renderRow(
+                      computedStyles,
+                      "home",
+                      source.stat_energy_from,
+                      idx,
+                      energy,
+                      energyCompare,
+                      "kWh",
+                      null,
+                      null,
+                      showCosts,
+                      compare,
+                      source.name
+                    )
+                  : nothing;
+              })}
               ${_renderSimpleCategory("solar")}
               ${types.battery?.map((source, idx) => {
                 const {
@@ -974,7 +997,7 @@ export class HuiEnergySourcesTableCard
       text-transform: inherit;
     }
     .mdc-data-table {
-      background-color: var(--card-background-color);
+      background: transparent;
       border-radius: var(--ha-border-radius-sm);
       border: 0;
       box-sizing: border-box;
@@ -984,7 +1007,6 @@ export class HuiEnergySourcesTableCard
       width: 100%;
     }
     .mdc-data-table__table-container {
-      -webkit-overflow-scrolling: touch;
       overflow-x: auto;
       width: 100%;
     }
@@ -1022,7 +1044,7 @@ export class HuiEnergySourcesTableCard
       white-space: nowrap;
     }
     .mdc-data-table__header-cell {
-      background-color: var(--card-background-color);
+      background: transparent;
       font-family: var(--ha-font-family-body);
       -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       -webkit-font-smoothing: var(--ha-font-smoothing);

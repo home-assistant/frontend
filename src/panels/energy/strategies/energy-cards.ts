@@ -131,7 +131,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "overview",
     "energy-distribution",
     "ui.panel.energy.cards.energy_distribution_title",
-    (p) => hasEnergySource(p)
+    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
   ),
   entry(
     "overview",
@@ -171,7 +171,7 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
     "electricity",
     "energy-distribution",
     "ui.panel.energy.cards.energy_distribution_title",
-    (p) => hasEnergySource(p)
+    (p) => hasGridSource(p) || hasBattery(p) || hasSolar(p)
   ),
   entry(
     "electricity",
