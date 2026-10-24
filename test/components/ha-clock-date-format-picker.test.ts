@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getAvailableDateFormatPartSections } from "../../src/components/ha-date-format-parts-picker";
+import { getAvailableClockDatePartSections } from "../../src/components/ha-clock-date-format-picker";
 
 type TestSection = "weekday" | "day" | "month" | "year" | "separator";
 
@@ -22,9 +22,9 @@ const ALL_SECTIONS = [
   ]),
 ];
 
-describe("getAvailableDateFormatPartSections", () => {
+describe("getAvailableClockDatePartSections", () => {
   it("returns every section when no value is set", () => {
-    const result = getAvailableDateFormatPartSections(ALL_SECTIONS, []);
+    const result = getAvailableClockDatePartSections(ALL_SECTIONS, []);
     expect(result.map((sectionData) => sectionData.id)).toEqual([
       "day",
       "month",
@@ -35,7 +35,7 @@ describe("getAvailableDateFormatPartSections", () => {
   });
 
   it("hides a group's section once a value from that group is used", () => {
-    const result = getAvailableDateFormatPartSections(ALL_SECTIONS, [
+    const result = getAvailableClockDatePartSections(ALL_SECTIONS, [
       "day-numeric",
     ]);
     expect(result.map((sectionData) => sectionData.id)).toEqual([
@@ -48,7 +48,7 @@ describe("getAvailableDateFormatPartSections", () => {
 
   it("keeps the edited item's own group visible via excludeIndex", () => {
     const value = ["day-numeric", "month-short"];
-    const result = getAvailableDateFormatPartSections(ALL_SECTIONS, value, 0);
+    const result = getAvailableClockDatePartSections(ALL_SECTIONS, value, 0);
     expect(result.map((sectionData) => sectionData.id)).toEqual([
       "day",
       "year",
@@ -59,7 +59,7 @@ describe("getAvailableDateFormatPartSections", () => {
 
   it("keeps the edited item's group visible even when a duplicate of that group exists elsewhere", () => {
     const value = ["day-numeric", "day-2-digit", "month-long"];
-    const result = getAvailableDateFormatPartSections(ALL_SECTIONS, value, 0);
+    const result = getAvailableClockDatePartSections(ALL_SECTIONS, value, 0);
     expect(result.map((sectionData) => sectionData.id)).toEqual([
       "day",
       "year",
@@ -70,7 +70,7 @@ describe("getAvailableDateFormatPartSections", () => {
 
   it("does not crash and keeps normal filtering when excludeIndex is out of range", () => {
     const value = ["day-numeric", "month-long"];
-    const result = getAvailableDateFormatPartSections(ALL_SECTIONS, value, 5);
+    const result = getAvailableClockDatePartSections(ALL_SECTIONS, value, 5);
     expect(result.map((sectionData) => sectionData.id)).toEqual([
       "year",
       "weekday",
@@ -85,7 +85,7 @@ describe("getAvailableDateFormatPartSections", () => {
       "separator-dot",
       "separator-new-line",
     ];
-    const result = getAvailableDateFormatPartSections(ALL_SECTIONS, value);
+    const result = getAvailableClockDatePartSections(ALL_SECTIONS, value);
     expect(result.map((sectionData) => sectionData.id)).toEqual([
       "day",
       "month",
@@ -96,7 +96,7 @@ describe("getAvailableDateFormatPartSections", () => {
   });
 
   it("treats an unrecognized token as a separator and does not hide any group", () => {
-    const result = getAvailableDateFormatPartSections(ALL_SECTIONS, [
+    const result = getAvailableClockDatePartSections(ALL_SECTIONS, [
       "not-a-real-part",
     ]);
     expect(result.map((sectionData) => sectionData.id)).toEqual([

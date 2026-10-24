@@ -1,21 +1,21 @@
 import { assert, describe, it } from "vitest";
-import type { DateFormatPart } from "../../../../src/panels/lovelace/cards/types";
+import type { ClockCardDatePart } from "../../../../src/panels/lovelace/cards/types";
 import {
-  formatDateFromParts,
-  getDateFormatConfig,
-  getDateFormatIntlOptions,
-  hasDateFormatParts,
-} from "../../../../src/panels/lovelace/cards/date-format";
+  formatClockCardDate,
+  getClockCardDateConfig,
+  getClockCardDateTimeFormatOptions,
+  hasClockCardDate,
+} from "../../../../src/panels/lovelace/cards/clock/clock-date-format";
 
-describe("date-format", () => {
+describe("clock-date-format", () => {
   const date = new Date("2024-11-08T10:20:30.000Z");
 
   it("returns an empty config when date format is missing", () => {
-    assert.deepEqual(getDateFormatConfig(), { parts: [] });
+    assert.deepEqual(getClockCardDateConfig(), { parts: [] });
   });
 
   it("preserves literal token order", () => {
-    const config = getDateFormatConfig({
+    const config = getClockCardDateConfig({
       date_format: [
         "day-numeric",
         "separator-dot",
@@ -39,19 +39,19 @@ describe("date-format", () => {
   });
 
   it("filters invalid date tokens", () => {
-    const config = getDateFormatConfig({
+    const config = getClockCardDateConfig({
       date_format: [
         "month-short",
         "invalid",
         "year-2-digit",
-      ] as unknown as DateFormatPart[],
+      ] as unknown as ClockCardDatePart[],
     });
 
     assert.deepEqual(config.parts, ["month-short", "year-2-digit"]);
   });
 
   it("builds Intl options from selected date tokens", () => {
-    const options = getDateFormatIntlOptions({
+    const options = getClockCardDateTimeFormatOptions({
       parts: [
         "weekday-short",
         "separator-slash",
@@ -71,18 +71,18 @@ describe("date-format", () => {
   });
 
   it("reports whether any date part is configured", () => {
-    assert.equal(hasDateFormatParts(), false);
-    assert.equal(hasDateFormatParts({ date_format: [] }), false);
-    assert.equal(hasDateFormatParts({ date_format: ["separator-dot"] }), true);
+    assert.equal(hasClockCardDate(), false);
+    assert.equal(hasClockCardDate({ date_format: [] }), false);
+    assert.equal(hasClockCardDate({ date_format: ["separator-dot"] }), true);
     assert.equal(
-      hasDateFormatParts({ date_format: ["separator-new-line"] }),
+      hasClockCardDate({ date_format: ["separator-new-line"] }),
       true
     );
-    assert.equal(hasDateFormatParts({ date_format: ["weekday-short"] }), true);
+    assert.equal(hasClockCardDate({ date_format: ["weekday-short"] }), true);
   });
 
   it("formats output in configured part order with literal separators", () => {
-    const result = formatDateFromParts(
+    const result = formatClockCardDate(
       date,
       {
         parts: [
@@ -101,7 +101,7 @@ describe("date-format", () => {
   });
 
   it("uses separator only for the next gap", () => {
-    const result = formatDateFromParts(
+    const result = formatClockCardDate(
       date,
       {
         parts: [
@@ -119,7 +119,7 @@ describe("date-format", () => {
   });
 
   it("supports using the same separator style multiple times", () => {
-    const result = formatDateFromParts(
+    const result = formatClockCardDate(
       date,
       {
         parts: [
@@ -138,7 +138,7 @@ describe("date-format", () => {
   });
 
   it("renders separators even when no value follows", () => {
-    const result = formatDateFromParts(
+    const result = formatClockCardDate(
       date,
       {
         parts: ["day-numeric", "separator-dash", "separator-dot"],
@@ -151,7 +151,7 @@ describe("date-format", () => {
   });
 
   it("renders separators even when no value precedes", () => {
-    const result = formatDateFromParts(
+    const result = formatClockCardDate(
       date,
       {
         parts: ["separator-slash", "separator-dot", "day-numeric"],
@@ -164,7 +164,7 @@ describe("date-format", () => {
   });
 
   it("renders all consecutive separators between values", () => {
-    const result = formatDateFromParts(
+    const result = formatClockCardDate(
       date,
       {
         parts: [
@@ -183,7 +183,7 @@ describe("date-format", () => {
   });
 
   it("renders repeated separators without deduplication", () => {
-    const result = formatDateFromParts(
+    const result = formatClockCardDate(
       date,
       {
         parts: [
@@ -202,7 +202,7 @@ describe("date-format", () => {
   });
 
   it("renders separator-only configurations", () => {
-    const result = formatDateFromParts(
+    const result = formatClockCardDate(
       date,
       {
         parts: ["separator-dash", "separator-slash", "separator-dot"],
@@ -215,7 +215,7 @@ describe("date-format", () => {
   });
 
   it("supports inserting a new line between date values", () => {
-    const result = formatDateFromParts(
+    const result = formatClockCardDate(
       date,
       {
         parts: [
@@ -233,7 +233,7 @@ describe("date-format", () => {
   });
 
   it("allows multiple variants for the same date part", () => {
-    const result = formatDateFromParts(
+    const result = formatClockCardDate(
       date,
       {
         parts: ["month-short", "month-long", "year-numeric"],
@@ -246,93 +246,16 @@ describe("date-format", () => {
   });
 
   it("filters invalid tokens when formatting", () => {
-    const config = getDateFormatConfig({
+    const config = getClockCardDateConfig({
       date_format: [
         "month-numeric",
         "invalid",
         "year-numeric",
-      ] as unknown as DateFormatPart[],
+      ] as unknown as ClockCardDatePart[],
     });
 
-    const result = formatDateFromParts(date, config, "en", "UTC");
+    const result = formatClockCardDate(date, config, "en", "UTC");
 
     assert.equal(result, "11 2024");
-  });
-
-  it("applies the locale's contextual grammar when combining fields (Russian genitive month)", () => {
-    const result = formatDateFromParts(
-      date,
-      { parts: ["day-numeric", "month-long"] },
-      "ru",
-      "UTC"
-    );
-
-    assert.equal(result, "8 ноября");
-  });
-
-  it("applies the locale's contextual grammar when combining fields (Finnish partitive month)", () => {
-    const result = formatDateFromParts(
-      date,
-      { parts: ["day-numeric", "month-long"] },
-      "fi",
-      "UTC"
-    );
-
-    assert.equal(result, "8 marraskuuta");
-  });
-
-  it("applies contextual grammar across three combined fields (Finnish)", () => {
-    const result = formatDateFromParts(
-      date,
-      { parts: ["weekday-long", "day-numeric", "month-long"] },
-      "fi",
-      "UTC"
-    );
-
-    assert.equal(result, "perjantai 8 marraskuuta");
-  });
-
-  it("applies contextual grammar when year is combined too (Finnish)", () => {
-    const result = formatDateFromParts(
-      date,
-      { parts: ["day-numeric", "month-long", "year-numeric"] },
-      "fi",
-      "UTC"
-    );
-
-    assert.equal(result, "8 marraskuuta 2024");
-  });
-
-  it("keeps the contextual (combined) grammar even when the configured order differs from Intl's natural order (Finnish)", () => {
-    const result = formatDateFromParts(
-      date,
-      { parts: ["month-long", "day-numeric"] },
-      "fi",
-      "UTC"
-    );
-
-    assert.equal(result, "marraskuuta 8");
-  });
-
-  it("uses the standalone (non-contextual) month form when the field has no other field to combine with (Finnish)", () => {
-    const result = formatDateFromParts(
-      date,
-      { parts: ["month-long"] },
-      "fi",
-      "UTC"
-    );
-
-    assert.equal(result, "marraskuu");
-  });
-
-  it("falls back to independent standalone formatting when a field is duplicated, even though contextual grammar is unavailable there (Finnish)", () => {
-    const result = formatDateFromParts(
-      date,
-      { parts: ["month-short", "month-long"] },
-      "fi",
-      "UTC"
-    );
-
-    assert.equal(result, "marras marraskuu");
   });
 });

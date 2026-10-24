@@ -22,7 +22,7 @@ import type {
 import type { ValueChangedEvent } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { DateCardConfig } from "../../cards/types";
-import { DATE_FORMAT_PARTS } from "../../cards/date-format";
+import { CLOCK_CARD_DATE_PARTS } from "../../cards/clock/clock-date-format";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { getTimezoneOptions } from "../../../../components/ha-timezone-picker";
@@ -32,7 +32,7 @@ const cardConfigStruct = assign(
   object({
     title: optional(string()),
     date_size: optional(enums(["small", "medium", "large"] as const)),
-    date_format: optional(defaulted(array(enums(DATE_FORMAT_PARTS)), [])),
+    date_format: optional(defaulted(array(enums(CLOCK_CARD_DATE_PARTS)), [])),
     time_zone: optional(enums(getTimezoneOptions().map((option) => option.id))),
     no_background: optional(boolean()),
   })
@@ -70,7 +70,7 @@ export class HuiDateCardEditor
           name: "date_format",
           required: false,
           selector: {
-            ui_date_format_parts: {},
+            ui_clock_date_format: {},
           },
         },
         { name: "no_background", selector: { boolean: {} } },

@@ -27,9 +27,9 @@ import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { TimeFormat } from "../../../../data/translation";
 import { getTimezoneOptions } from "../../../../components/ha-timezone-picker";
 import {
-  DATE_FORMAT_PARTS,
-  getDateFormatConfig,
-} from "../../cards/date-format";
+  CLOCK_CARD_DATE_PARTS,
+  getClockCardDateConfig,
+} from "../../cards/clock/clock-date-format";
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
@@ -41,7 +41,7 @@ const cardConfigStruct = assign(
     time_zone: optional(enums(getTimezoneOptions().map((option) => option.id))),
     show_seconds: optional(boolean()),
     no_background: optional(boolean()),
-    date_format: optional(defaulted(array(enums(DATE_FORMAT_PARTS)), [])),
+    date_format: optional(defaulted(array(enums(CLOCK_CARD_DATE_PARTS)), [])),
     // Analog clock options
     border: optional(defaulted(boolean(), false)),
     ticks: optional(
@@ -108,7 +108,7 @@ export class HuiClockCardEditor
           name: "date_format",
           required: false,
           selector: {
-            ui_date_format_parts: {},
+            ui_clock_date_format: {},
           },
         },
         {
@@ -225,7 +225,7 @@ export class HuiClockCardEditor
   );
 
   private _data = memoizeOne((config: ClockCardConfig): ClockCardFormData => {
-    const dateConfig = getDateFormatConfig(config);
+    const dateConfig = getClockCardDateConfig(config);
 
     const data: ClockCardFormData = {
       ...config,
@@ -331,9 +331,7 @@ export class HuiClockCardEditor
           `ui.panel.lovelace.editor.card.clock.no_background`
         );
       case "date_format":
-        return this._localize(
-          `ui.panel.lovelace.editor.card.clock.date_format`
-        );
+        return this._localize(`ui.panel.lovelace.editor.card.clock.date.label`);
       case "border":
         return this._localize(
           `ui.panel.lovelace.editor.card.clock.border.label`
@@ -361,7 +359,7 @@ export class HuiClockCardEditor
     switch (schema.name) {
       case "date_format":
         return this._localize(
-          `ui.panel.lovelace.editor.card.clock.date_format_description`
+          `ui.panel.lovelace.editor.card.clock.date.description`
         );
       case "border":
         return this._localize(

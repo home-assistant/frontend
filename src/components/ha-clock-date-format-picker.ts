@@ -9,10 +9,10 @@ import { resolveTimeZone } from "../common/datetime/resolve-time-zone";
 import { fireEvent } from "../common/dom/fire_event";
 import { configContext, internationalizationContext } from "../data/context";
 import {
-  DATE_FORMAT_PARTS,
-  formatDateFromParts,
-} from "../panels/lovelace/cards/date-format";
-import type { DateFormatPart } from "../panels/lovelace/cards/types";
+  CLOCK_CARD_DATE_PARTS,
+  formatClockCardDate,
+} from "../panels/lovelace/cards/clock/clock-date-format";
+import type { ClockCardDatePart } from "../panels/lovelace/cards/types";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import "./chips/ha-assist-chip";
 import "./chips/ha-chip-set";
@@ -23,14 +23,14 @@ import "./ha-input-helper-text";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 import "./ha-sortable";
 
-type DateFormatPartSection = "weekday" | "day" | "month" | "year" | "separator";
+type ClockDatePartSection = "weekday" | "day" | "month" | "year" | "separator";
 
-type DateFormatSeparatorPart = Extract<
-  DateFormatPart,
+type ClockDateSeparatorPart = Extract<
+  ClockCardDatePart,
   "separator-dash" | "separator-slash" | "separator-dot" | "separator-new-line"
 >;
 
-const DATE_FORMAT_PART_SECTION_ORDER: readonly DateFormatPartSection[] = [
+const CLOCK_DATE_PART_SECTION_ORDER: readonly ClockDatePartSection[] = [
   "day",
   "month",
   "year",
@@ -38,16 +38,16 @@ const DATE_FORMAT_PART_SECTION_ORDER: readonly DateFormatPartSection[] = [
   "separator",
 ];
 
-const DATE_FORMAT_SEPARATOR_VALUES: Record<DateFormatSeparatorPart, string> = {
+const CLOCK_DATE_SEPARATOR_VALUES: Record<ClockDateSeparatorPart, string> = {
   "separator-dash": "-",
   "separator-slash": "/",
   "separator-dot": ".",
   "separator-new-line": "",
 };
 
-const getDateFormatPartSection = (
-  part: DateFormatPart
-): DateFormatPartSection => {
+const getClockDatePartSection = (
+  part: ClockCardDatePart
+): ClockDatePartSection => {
   if (part.startsWith("weekday-")) {
     return "weekday";
   }
@@ -67,8 +67,8 @@ const getDateFormatPartSection = (
   return "separator";
 };
 
-interface DateFormatPartSectionData {
-  id: DateFormatPartSection;
+interface ClockDatePartSectionData {
+  id: ClockDatePartSection;
   title: string;
   items: PickerComboBoxItem[];
 }
@@ -81,20 +81,20 @@ interface DateFormatPartSectionData {
  * pre-existing config authored outside the picker via YAML).
  * The separator group is always kept.
  */
-export const getAvailableDateFormatPartSections = (
-  sections: DateFormatPartSectionData[],
+export const getAvailableClockDatePartSections = (
+  sections: ClockDatePartSectionData[],
   value: string[],
   excludeIndex?: number
-): DateFormatPartSectionData[] => {
+): ClockDatePartSectionData[] => {
   const editedItem = excludeIndex != null ? value[excludeIndex] : undefined;
   const editedSection = editedItem
-    ? getDateFormatPartSection(editedItem as DateFormatPart)
+    ? getClockDatePartSection(editedItem as ClockCardDatePart)
     : undefined;
 
-  const usedSections = new Set<DateFormatPartSection>();
+  const usedSections = new Set<ClockDatePartSection>();
 
   value.forEach((item) => {
-    const section = getDateFormatPartSection(item as DateFormatPart);
+    const section = getClockDatePartSection(item as ClockCardDatePart);
 
     if (section !== "separator" && section !== editedSection) {
       usedSections.add(section);
@@ -107,14 +107,14 @@ export const getAvailableDateFormatPartSections = (
   );
 };
 
-interface DateFormatPartValueItem {
+interface ClockDatePartValueItem {
   key: string;
   item: string;
   idx: number;
 }
 
-@customElement("ha-date-format-parts-picker")
-export class HaDateFormatPartsPicker extends LitElement {
+@customElement("ha-clock-date-format-picker")
+export class HaClockDateFormatPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
@@ -143,7 +143,7 @@ export class HaDateFormatPartsPicker extends LitElement {
     const value = this._value;
     const valueItems = this._getValueItems(value);
     const sections = this._buildSections();
-    const pickerSections = getAvailableDateFormatPartSections(
+    const pickerSections = getAvailableClockDatePartSections(
       sections,
       value,
       this._editIndex
@@ -171,7 +171,7 @@ export class HaDateFormatPartsPicker extends LitElement {
             <ha-chip-set>
               ${repeat(
                 valueItems,
-                (entry: DateFormatPartValueItem) => entry.key,
+                (entry: ClockDatePartValueItem) => entry.key,
                 ({ item, idx }) => this._renderValueChip(item, idx, sections)
               )}
               ${
@@ -203,7 +203,7 @@ export class HaDateFormatPartsPicker extends LitElement {
   }
 
   private _getValueItems = memoizeOne(
-    (value: string[]): DateFormatPartValueItem[] => {
+    (value: string[]): ClockDatePartValueItem[] => {
       const occurrences = new Map<string, number>();
 
       return value.map((item, idx) => {
@@ -222,7 +222,7 @@ export class HaDateFormatPartsPicker extends LitElement {
   private _renderValueChip(
     item: string,
     idx: number,
-    sections: DateFormatPartSectionData[]
+    sections: ClockDatePartSectionData[]
   ) {
     const label = this._getItemLabel(item, sections);
     const isValid = !!label;
@@ -281,15 +281,14 @@ export class HaDateFormatPartsPicker extends LitElement {
     value.length === 0 ? undefined : value
   );
 
-  private _buildSections(): DateFormatPartSectionData[] {
-    const itemsBySection: Record<DateFormatPartSection, PickerComboBoxItem[]> =
-      {
-        weekday: [],
-        day: [],
-        month: [],
-        year: [],
-        separator: [],
-      };
+  private _buildSections(): ClockDatePartSectionData[] {
+    const itemsBySection: Record<ClockDatePartSection, PickerComboBoxItem[]> = {
+      weekday: [],
+      day: [],
+      month: [],
+      year: [],
+      separator: [],
+    };
 
     const previewDate = new Date();
     const previewTimeZone = resolveTimeZone(
@@ -297,17 +296,17 @@ export class HaDateFormatPartsPicker extends LitElement {
       this._hassConfig.config.time_zone
     );
 
-    DATE_FORMAT_PARTS.forEach((part) => {
-      const section = getDateFormatPartSection(part);
+    CLOCK_CARD_DATE_PARTS.forEach((part) => {
+      const section = getClockDatePartSection(part);
       const label =
         this._i18n.localize(
-          `ui.panel.lovelace.editor.date_format.parts.${part}`
+          `ui.panel.lovelace.editor.card.clock.date.parts.${part}`
         ) ?? part;
 
       const secondary =
         section === "separator"
-          ? DATE_FORMAT_SEPARATOR_VALUES[part as DateFormatSeparatorPart]
-          : formatDateFromParts(
+          ? CLOCK_DATE_SEPARATOR_VALUES[part as ClockDateSeparatorPart]
+          : formatClockCardDate(
               previewDate,
               { parts: [part] },
               this._i18n.locale.language,
@@ -322,18 +321,18 @@ export class HaDateFormatPartsPicker extends LitElement {
       });
     });
 
-    return DATE_FORMAT_PART_SECTION_ORDER.map((section) => ({
+    return CLOCK_DATE_PART_SECTION_ORDER.map((section) => ({
       id: section,
       title:
         this._i18n.localize(
-          `ui.panel.lovelace.editor.date_format.sections.${section}`
+          `ui.panel.lovelace.editor.card.clock.date.sections.${section}`
         ) ?? section,
       items: itemsBySection[section],
     })).filter((section) => section.items.length > 0);
   }
 
   private _getSectionHeaders(
-    sections: DateFormatPartSectionData[]
+    sections: ClockDatePartSectionData[]
   ): { id: string; label: string }[] {
     return sections.map((section) => ({
       id: section.id,
@@ -342,7 +341,7 @@ export class HaDateFormatPartsPicker extends LitElement {
   }
 
   private _getItems = memoizeOne(
-    (sections: DateFormatPartSectionData[]) =>
+    (sections: ClockDatePartSectionData[]) =>
       (
         searchString?: string,
         section?: string
@@ -386,7 +385,7 @@ export class HaDateFormatPartsPicker extends LitElement {
 
   private _getItemLabel(
     value: string,
-    sections: DateFormatPartSectionData[]
+    sections: ClockDatePartSectionData[]
   ): string | undefined {
     for (const section of sections) {
       const item = section.items.find((candidate) => candidate.id === value);
@@ -571,6 +570,6 @@ export class HaDateFormatPartsPicker extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-date-format-parts-picker": HaDateFormatPartsPicker;
+    "ha-clock-date-format-picker": HaClockDateFormatPicker;
   }
 }

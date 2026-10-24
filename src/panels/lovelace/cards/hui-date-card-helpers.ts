@@ -2,7 +2,10 @@ import { TZDate } from "@date-fns/tz";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { FrontendLocaleData } from "../../../data/translation";
 import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
-import { formatDateFromParts, getDateFormatConfig } from "./date-format";
+import {
+  formatClockCardDate,
+  getClockCardDateConfig,
+} from "./clock/clock-date-format";
 import type { DateCardConfig } from "./types";
 
 /**
@@ -59,14 +62,14 @@ export const computeDateText = (
   config: HassConfig,
   cardConfig: DateCardConfig
 ): string => {
-  const { parts } = getDateFormatConfig(cardConfig);
+  const { parts } = getClockCardDateConfig(cardConfig);
   const timeZone = computeResolvedTimeZone(locale, config, cardConfig);
 
   if (!parts.length) {
     return formatDefaultDate(dateObj, locale.language, timeZone);
   }
 
-  return formatDateFromParts(dateObj, { parts }, locale.language, timeZone);
+  return formatClockCardDate(dateObj, { parts }, locale.language, timeZone);
 };
 
 /**

@@ -13,7 +13,7 @@ import {
   TimeZone,
 } from "../../../../src/data/translation";
 import { demoConfig } from "../../../../src/fake_data/demo_config";
-import type { DateFormatPart } from "../../../../src/panels/lovelace/cards/types";
+import type { ClockCardDatePart } from "../../../../src/panels/lovelace/cards/types";
 
 const locale = {
   language: "en",
@@ -108,7 +108,7 @@ describe("computeDateText", () => {
     expect(
       computeDateText(dateObj, locale, demoConfig, {
         type: "date",
-        date_format: ["not_a_real_token"] as unknown as DateFormatPart[],
+        date_format: ["not_a_real_token"] as unknown as ClockCardDatePart[],
       })
     ).toBe("Saturday, November 18");
   });
@@ -117,7 +117,7 @@ describe("computeDateText", () => {
     // demoConfig.time_zone is "America/Los_Angeles"; forcing a zone far enough
     // east/west flips the calendar day for this UTC instant.
     const utcDateObj = new Date(Date.UTC(2017, 10, 18, 4, 0, 0));
-    const dateFormat: DateFormatPart[] = [
+    const dateFormat: ClockCardDatePart[] = [
       "year-numeric",
       "separator-dash",
       "month-long",
