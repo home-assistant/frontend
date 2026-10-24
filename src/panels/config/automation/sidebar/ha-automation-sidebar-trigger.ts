@@ -11,6 +11,7 @@ import {
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
+  mdiSwapHorizontal,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
@@ -122,6 +123,28 @@ export default class HaAutomationSidebarTrigger extends LitElement {
               : ""
           }</span
         >
+        ${
+          this.config.replace
+            ? html`<ha-dropdown-item
+                slot="menu-items"
+                value="replace"
+                .disabled=${this.disabled}
+              >
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiSwapHorizontal}
+                ></ha-svg-icon>
+                <div class="overflow-label">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.replace"
+                  )}
+                  <span
+                    class="shortcut-placeholder ${isMac ? "mac" : ""}"
+                  ></span>
+                </div>
+              </ha-dropdown-item>`
+            : nothing
+        }
         <ha-dropdown-item
           slot="menu-items"
           value="rename"
@@ -397,6 +420,9 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     }
 
     switch (action) {
+      case "replace":
+        this.config.replace?.();
+        break;
       case "rename":
         this.config.rename();
         break;

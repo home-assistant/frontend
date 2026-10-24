@@ -108,6 +108,9 @@ declare global {
     "insert-after": {
       value: Trigger | Condition | Action | Trigger[] | Condition[] | Action[];
     };
+    "replace-item": {
+      value: Trigger | Condition | Action;
+    };
     "save-automation": undefined;
     paste: {
       item: Trigger | Condition | Action;

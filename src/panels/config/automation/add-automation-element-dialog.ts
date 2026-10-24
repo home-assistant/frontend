@@ -310,13 +310,22 @@ class DialogAddAutomationElement
     this._params = params;
     this._resetVariables();
 
-    const queryTarget = getAddAutomationElementTargetFromQuery(
-      this.hass.states,
-      this.hass.devices,
-      this.hass.areas,
-      params.type
-    );
+    const queryTarget = params.replacing
+      ? undefined
+      : getAddAutomationElementTargetFromQuery(
+          this.hass.states,
+          this.hass.devices,
+          this.hass.areas,
+          params.type
+        );
     this._openedFromQuery = !!queryTarget;
+
+    if (params.replacing) {
+      const view = this._getReplacingView(params.type, params.replacing);
+      this._tab = view.tab;
+      this._selectedGroup = view.group;
+      this._selectedCollectionIndex = view.collectionIndex;
+    }
 
     if (queryTarget) {
       const searchParams = new URLSearchParams(mainWindow.location.search);
@@ -346,6 +355,18 @@ class DialogAddAutomationElement
         },
         ""
       );
+      // Same state as selecting the group, so back returns to the groups.
+      if (this._selectedGroup) {
+        mainWindow.history.pushState(
+          {
+            dialogData: {
+              group: this._selectedGroup,
+              collectionIndex: this._selectedCollectionIndex,
+            },
+          },
+          ""
+        );
+      }
     }
 
     if (this._params?.type === "action") {
@@ -417,6 +438,65 @@ class DialogAddAutomationElement
     this._resetVariables();
 
     return true;
+  }
+
+  private _getReplacingView(
+    type: AddAutomationElementDialogParams["type"],
+    key: string
+  ): {
+    tab: "groups" | "blocks";
+    group?: string;
+    collectionIndex?: number;
+  } {
+    if (
+      type !== "trigger" &&
+      this._getBlockItems(type, this.hass.localize).some(
+        (item) => item.key === key
+      )
+    ) {
+      return { tab: "blocks" };
+    }
+
+    let domain: string | undefined;
+    if (isDynamic(key)) {
+      const value = getValueFromDynamic(key);
+      const domains =
+        type === "trigger"
+          ? Object.keys(this._triggerDescriptions).map(getTriggerDomain)
+          : type === "condition"
+            ? Object.keys(this._conditionDescriptions).map(getConditionDomain)
+            : Object.keys(this.hass.services);
+      domain =
+        type === "trigger"
+          ? getTriggerDomain(value)
+          : type === "condition"
+            ? getConditionDomain(value)
+            : computeDomain(value);
+      // Descriptions come from a context, which only reaches the dialog once
+      // it's attached, after its first showDialog. Until then, trust the key.
+      if (domains.length && !domains.includes(domain)) {
+        return { tab: "groups" };
+      }
+      if (!this._getExclusiveDomains(type).has(domain)) {
+        // Dynamic groups list their items regardless of the collection.
+        return { tab: "groups", group: `${DYNAMIC_PREFIX}${domain}` };
+      }
+    }
+
+    for (const [collectionIndex, collection] of TYPES[
+      type
+    ].collections.entries()) {
+      for (const [group, options] of Object.entries(collection.groups)) {
+        if (
+          domain
+            ? options.domains?.includes(domain)
+            : group === key || (options.members && key in options.members)
+        ) {
+          return { tab: "groups", group, collectionIndex };
+        }
+      }
+    }
+    return { tab: "groups" };
   }
 
   private _resetVariables() {
@@ -740,6 +820,7 @@ class DialogAddAutomationElement
                 .manifests=${this._manifests}
                 .narrow=${this._narrow}
                 .addElementType=${this._params!.type}
+                .replacing=${!!this._params!.replacing}
                 .items=${this._items(
                   automationElementType,
                   this.hass.localize,
@@ -901,6 +982,7 @@ class DialogAddAutomationElement
                 <ha-automation-add-items
                   .hass=${this.hass}
                   .items=${this._getItems()}
+                  .replacing=${!!this._params!.replacing}
                   .scrollable=${!this._narrow || this._tab === "blocks"}
                   .error=${
                     this._tab === "targets" && this._loadItemsError
@@ -1009,11 +1091,7 @@ class DialogAddAutomationElement
     }
 
     if (this._selectedGroup) {
-      return html`<span slot="subtitle"
-        >${this.hass.localize(
-          `ui.panel.config.automation.editor.${this._params!.type}s.add`
-        )}</span
-      >`;
+      return html`<span slot="subtitle">${this._getModeTitle()}</span>`;
     }
 
     if (this._selectedTarget) {
@@ -2493,6 +2571,12 @@ class DialogAddAutomationElement
     }
   );
 
+  private _getModeTitle() {
+    return this.hass.localize(
+      `ui.panel.config.automation.editor.${this._params!.type}s.${this._params!.replacing ? "replace_title" : "add"}`
+    );
+  }
+
   private _getDialogTitle() {
     if (this._narrow && this._selectedGroup) {
       return isDynamic(this._selectedGroup)
@@ -2516,9 +2600,7 @@ class DialogAddAutomationElement
       }
     }
 
-    return this.hass.localize(
-      `ui.panel.config.automation.editor.${this._params!.type}s.add`
-    );
+    return this._getModeTitle();
   }
 
   private _getAddFromTargetHidden = memoizeOne(

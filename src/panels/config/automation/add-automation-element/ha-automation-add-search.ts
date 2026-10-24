@@ -1,5 +1,10 @@
 import "@material/mwc-list/mwc-list";
-import { mdiPlus, mdiTextureBox, mdiUnfoldMoreHorizontal } from "@mdi/js";
+import {
+  mdiPlus,
+  mdiSwapHorizontal,
+  mdiTextureBox,
+  mdiUnfoldMoreHorizontal,
+} from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import {
@@ -146,6 +151,8 @@ export class HaAutomationAddSearch extends LitElement {
   @property({ attribute: false }) public items!: AddAutomationElementListItem[];
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ type: Boolean }) public replacing = false;
 
   @property({ attribute: false })
   public convertToItem!: (
@@ -470,7 +477,7 @@ export class HaAutomationAddSearch extends LitElement {
             ? html`<ha-svg-icon
                 slot="end"
                 style="color: var(--primary-color);"
-                .path=${mdiPlus}
+                .path=${this.replacing ? mdiSwapHorizontal : mdiPlus}
               ></ha-svg-icon>`
             : this.narrow
               ? html`<ha-icon-next slot="end"></ha-icon-next>`
