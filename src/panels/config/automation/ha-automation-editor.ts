@@ -1194,6 +1194,27 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     };
   }
 
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    if (this._manualEditor?.sidebarOpen) {
+      return this._manualEditor.canToggleSidebarYamlMode
+        ? { Y: () => this._manualEditor?.toggleSidebarYamlMode() }
+        : {};
+    }
+    return {
+      Y: () => this._toggleYamlMode(),
+    };
+  }
+
+  private async _toggleYamlMode() {
+    if (this.mode === "gui") {
+      this.switchYamlMode();
+      await this.updateComplete;
+      this._yamlEditor?.focus();
+    } else {
+      this.switchUiMode();
+    }
+  }
+
   protected supportedSingleKeyShortcuts(): SupportedShortcuts {
     if (!this._manualEditor?.sidebarOpen) {
       return {};
@@ -1281,11 +1302,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         this._takeControl();
         break;
       case "toggle_yaml_mode":
-        if (this.mode === "gui") {
-          this.switchYamlMode();
-          break;
-        }
-        this.switchUiMode();
+        this._toggleYamlMode();
         break;
       case "disable":
         this._toggle();

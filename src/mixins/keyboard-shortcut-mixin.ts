@@ -1,10 +1,21 @@
 import type { LitElement } from "lit";
 import type { Constructor } from "../types";
 import { canOverrideAlphanumericInput } from "../common/dom/can-override-input";
+import { deepActiveElement } from "../common/dom/deep-active-element";
+import { nextRender } from "../common/util/render-status";
+import { getTopOpenDialogTag } from "../dialogs/make-dialog-manager";
 
 declare global {
   type SupportedShortcuts = Record<string, () => void>;
 }
+
+export const normalizeShortcutKey = (event: KeyboardEvent): string => {
+  const { key } = event;
+  if (key.length !== 1) {
+    return key;
+  }
+  return event.shiftKey ? key.toUpperCase() : key.toLowerCase();
+};
 
 export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
   superClass: T
@@ -12,7 +23,7 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
   class extends superClass {
     private _keydownEvent = (event: KeyboardEvent) => {
       const supportedShortcuts = this.supportedShortcuts();
-      const key = event.shiftKey ? event.key.toUpperCase() : event.key;
+      const key = normalizeShortcutKey(event);
       if (
         (event.ctrlKey || event.metaKey) &&
         !event.altKey &&
@@ -38,6 +49,69 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       }
     };
 
+    // Only the topmost dialog may handle the shortcut, even when focus has
+    // fallen back to the page behind it
+    private _isTopDialogOrPage(): boolean {
+      const topDialogTag = getTopOpenDialogTag();
+      return !topDialogTag || topDialogTag === this.localName;
+    }
+
+    private _isEventInScope(event: KeyboardEvent): boolean {
+      if (!this._isTopDialogOrPage()) {
+        return false;
+      }
+
+      const path = event.composedPath();
+
+      if (path.includes(this)) {
+        return true;
+      }
+
+      const insideOtherDialog = path.some(
+        (el) =>
+          el instanceof HTMLElement &&
+          (el.localName === "dialog" ||
+            el.localName.endsWith("-dialog") ||
+            el.getAttribute("role") === "dialog" ||
+            el.getAttribute("aria-modal") === "true")
+      );
+
+      return !insideOtherDialog;
+    }
+
+    // Runs in the capture phase so inputs and code editors can't consume the
+    // shortcut before it reaches the window
+    private _keydownCaptureEvent = async (event: KeyboardEvent) => {
+      const supportedShortcuts = this.supportedShortcutsInInput();
+      const key = normalizeShortcutKey(event);
+      if (
+        !(event.ctrlKey || event.metaKey) ||
+        event.altKey ||
+        !(key in supportedShortcuts) ||
+        !this._isEventInScope(event)
+      ) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+
+      // Fields that only publish their value on `change` would lose pending
+      // edits, so blur to commit them and let the update propagate first
+      const activeElement = deepActiveElement();
+      if (
+        activeElement instanceof HTMLElement &&
+        activeElement !== document.body
+      ) {
+        activeElement.blur();
+        await nextRender();
+        // The editor may have been removed, or a dialog opened, in the meantime
+        if (!this._listenersAdded || !this._isTopDialogOrPage()) {
+          return;
+        }
+      }
+      this.supportedShortcutsInInput()[key]?.();
+    };
+
     private _listenersAdded = false;
 
     public connectedCallback() {
@@ -56,14 +130,23 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       }
       this._listenersAdded = true;
       window.addEventListener("keydown", this._keydownEvent);
+      window.addEventListener("keydown", this._keydownCaptureEvent, true);
     }
 
     public removeKeyboardShortcuts() {
       this._listenersAdded = false;
       window.removeEventListener("keydown", this._keydownEvent);
+      window.removeEventListener("keydown", this._keydownCaptureEvent, true);
     }
 
     protected supportedShortcuts(): SupportedShortcuts {
+      return {};
+    }
+
+    /**
+     * Shortcuts that also work while an input or code editor is focused.
+     */
+    protected supportedShortcutsInInput(): SupportedShortcuts {
       return {};
     }
 

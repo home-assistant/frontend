@@ -23,10 +23,11 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import "./hui-view-footer-settings-editor";
 import type { EditViewFooterDialogParams } from "./show-edit-view-footer-dialog";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("hui-dialog-edit-view-footer")
 export class HuiDialogEditViewFooter extends DirtyStateProviderMixin<LovelaceViewFooterConfig>()(
-  LitElement
+  KeyboardShortcutMixin(LitElement)
 ) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -82,7 +83,6 @@ export class HuiDialogEditViewFooter extends DirtyStateProviderMixin<LovelaceVie
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          autofocus
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
       `;
@@ -145,8 +145,20 @@ export class HuiDialogEditViewFooter extends DirtyStateProviderMixin<LovelaceVie
     const action = ev.detail.item.value;
 
     if (action === "toggle-mode") {
-      this._yamlMode = !this._yamlMode;
+      this._toggleMode();
     }
+  }
+
+  private async _toggleMode() {
+    this._yamlMode = !this._yamlMode;
+    if (this._yamlMode) {
+      await this.updateComplete;
+      this._editor?.focus();
+    }
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return this._params ? { Y: () => this._toggleMode() } : {};
   }
 
   private _configChanged(ev: CustomEvent): void {

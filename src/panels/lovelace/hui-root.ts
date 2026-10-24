@@ -76,6 +76,7 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { haStyle } from "../../resources/styles";
 import { handleBackClick } from "../../layouts/back-navigation";
 import { ChildPanelReady } from "../../layouts/panel-ready";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { isMobileClient } from "../../util/is_mobile";
@@ -130,7 +131,7 @@ interface UndoStackItem {
 }
 
 @customElement("hui-root")
-class HUIRoot extends LitElement {
+class HUIRoot extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public panel?: PanelInfo;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -974,6 +975,10 @@ class HUIRoot extends LitElement {
   private _handleRawEditor = () => {
     this.lovelace!.enableFullEditMode();
   };
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return this.lovelace?.editMode ? { Y: this._handleRawEditor } : {};
+  }
 
   private _handleManageDashboards = () => {
     navigate("/config/lovelace/dashboards");
