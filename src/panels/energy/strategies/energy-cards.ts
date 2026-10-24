@@ -278,6 +278,12 @@ export const ENERGY_CARD_CATALOG: readonly EnergyCardCatalogEntry[] = [
   ),
   entry(
     "now",
+    "power-devices-graph",
+    "ui.panel.energy.cards.energy_devices_graph_title",
+    (p) => hasPowerDevices(p)
+  ),
+  entry(
+    "now",
     "power-sankey",
     "ui.panel.energy.cards.power_sankey_title",
     (p) => hasPowerDevices(p)
