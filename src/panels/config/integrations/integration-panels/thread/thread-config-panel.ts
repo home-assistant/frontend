@@ -465,11 +465,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
   }
 
   private _onImageError(ev) {
-    ev.target.style.display = "none";
+    ev.target.style.visibility = "hidden";
   }
 
   private _onImageLoad(ev) {
-    ev.target.style.display = "";
+    ev.target.style.visibility = "";
   }
 
   hassSubscribe() {
@@ -788,6 +788,9 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         max-width: 600px;
         margin: 0 auto;
         direction: ltr;
+      }
+      .router {
+        --ha-row-item-min-height: 72px;
       }
       .router img[slot="start"] {
         width: 40px;
