@@ -805,6 +805,13 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
       ha-dropdown a {
         text-decoration: none;
       }
+      /* The meta slot of ha-list-item gives its content caption typography,
+         which the menu items would inherit. */
+      ha-dropdown[slot="meta"] {
+        font-family: var(--ha-font-family-body);
+        font-size: var(--ha-font-size-m);
+        letter-spacing: normal;
+      }
       .routers {
         padding-bottom: 0;
       }
