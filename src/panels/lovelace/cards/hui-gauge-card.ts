@@ -63,6 +63,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @property({ attribute: false }) public layout?: string;
+
   @state() private _config?: GaugeCardConfig;
 
   public getCardSize(): number {
@@ -140,10 +142,17 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     const name = this.hass.formatEntityName(stateObj, this._config.name);
 
+    // In a sections view with a set number of rows the card height is fixed,
+    // so the gauge also has to fit in the height, not only in the width.
+    const rows = this._config.grid_options?.rows;
+    const fixedHeight =
+      this.layout === "grid" && rows !== undefined && rows !== "auto";
+
     return html`
       <ha-card
         class=${classMap({
           action: hasAnyAction(this._config),
+          "fixed-height": fixedHeight,
         })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
@@ -175,7 +184,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
+    return (
+      changedProps.has("layout") || hasConfigOrEntityChanged(this, changedProps)
+    );
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -319,6 +330,23 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     ha-gauge {
       width: 100%;
       max-width: 250px;
+    }
+
+    ha-card.fixed-height {
+      container-type: size;
+    }
+
+    /* The gauge is 100 by 55 (see the viewBox in ha-gauge), so limit its
+       width to what fits in the card height left over after the name. */
+    ha-card.fixed-height ha-gauge {
+      flex: none;
+      max-width: min(
+        250px,
+        calc(
+          (100cqh - var(--ha-font-size-m) * var(--ha-line-height-expanded)) *
+            100 / 55
+        )
+      );
     }
   `;
 }
