@@ -6,7 +6,8 @@ import type { HaMarketplaceRepositoryDashboard } from "../../../src/panels/marke
 import type { MarketplaceData } from "../../../src/data/marketplace/marketplace";
 import type { RepositoryInfo } from "../../../src/data/marketplace/repository";
 import { ERROR_GITHUB_RATE_LIMITED } from "../../../src/data/marketplace/websocket";
-import type { HomeAssistant, Route } from "../../../src/types";
+import type { Route } from "../../../src/types";
+import { provideHass } from "../../../src/fake_data/provide_hass";
 import { deferred } from "./dialog-host";
 import { markdownWithRepositoryContext } from "../../../src/panels/marketplace/tools/markdown";
 import type * as MarkdownModule from "../../../src/panels/marketplace/tools/markdown";
@@ -118,34 +119,25 @@ const openRepositoryPage = async (
   marketplace: MarketplaceData = MARKETPLACE,
   configEntries: unknown[] = []
 ) => {
-  const sendMessagePromise = vi.fn(
-    async (message: { type: string; repository_id: string }) =>
-      message.type === "config_entries/get"
-        ? configEntries
-        : fetchRepository(message.repository_id)
-  );
   const page = document.createElement("ha-marketplace-repository-dashboard");
-  page.hass = {
-    localize: (key: string) => key,
-    connection: { sendMessagePromise },
-    callWS: sendMessagePromise,
-    auth: { data: { hassUrl: "http://example.local:8123" } },
-    locale: {
-      language: "en",
-      number_format: "language",
-      time_format: "language",
-      date_format: "language",
-      time_zone: "local",
-      first_weekday: "language",
-    },
-    themes: { darkMode: false },
-  } as unknown as HomeAssistant;
+  const host = document.createElement("div");
+  const hass = provideHass(host, { localize: (key: string) => key });
+
+  const answer = ({ repository_id }: { repository_id: string }) =>
+    fetchRepository(repository_id);
+
+  hass.mockWS("marketplace/repository/info", answer);
+  hass.mockWS("marketplace/repositories/add", answer);
+  hass.mockWS("config_entries/get", () => configEntries);
+  const sendMessagePromise = vi.spyOn(hass.connection, "sendMessagePromise");
+  document.body.appendChild(host);
   page.marketplace = marketplace;
   page.narrow = false;
   page.route = route;
-  document.body.appendChild(page);
+  host.appendChild(page);
   await page.updateComplete;
-  return { page, sendMessagePromise };
+
+  return { page, sendMessagePromise, hass };
 };
 
 const getInternals = (page: HaMarketplaceRepositoryDashboard) =>
@@ -404,17 +396,17 @@ describe("ha-marketplace-repository-dashboard", () => {
   });
 
   it("prepares the README once while the repository stays the same", async () => {
-    const { page } = await openRepositoryPage(
+    const { page, hass } = await openRepositoryPage(
       async (repositoryId) => repositoryInfo(repositoryId),
       repositoryRoute("1")
     );
     await settle(page);
     vi.mocked(markdownWithRepositoryContext).mockClear();
 
-    // Any entity changing gives a new hass
-    page.hass = { ...page.hass };
+    // Any entity changing gives new states
+    hass.updateHass({ states: {} });
     await page.updateComplete;
-    page.hass = { ...page.hass };
+    hass.updateHass({ states: {} });
     await page.updateComplete;
 
     expect(markdownWithRepositoryContext).not.toHaveBeenCalled();
@@ -710,14 +702,14 @@ describe("ha-marketplace-repository-dashboard", () => {
     {
       name: "the more info of its update entity",
       entityId: "update.example",
-      states: { "update.example": { entity_id: "update.example" } },
+      entities: [{ entity_id: "update.example", state: "on", attributes: {} }],
       event: "hass-more-info",
       detail: { entityId: "update.example" },
     },
     {
       name: "the install dialog without an update entity",
       entityId: null,
-      states: {},
+      entities: [],
       event: "show-dialog",
       detail: expect.objectContaining({
         dialogTag: "dialog-marketplace-install",
@@ -726,14 +718,14 @@ describe("ha-marketplace-repository-dashboard", () => {
     {
       name: "the install dialog when its update entity is gone",
       entityId: "update.example",
-      states: {},
+      entities: [],
       event: "show-dialog",
       detail: expect.objectContaining({
         dialogTag: "dialog-marketplace-install",
       }),
     },
-  ])("updates through $name", async ({ entityId, states, event, detail }) => {
-    const { page } = await openRepositoryPage(
+  ])("updates through $name", async ({ entityId, entities, event, detail }) => {
+    const { page, hass } = await openRepositoryPage(
       async (repositoryId) =>
         repositoryInfo(repositoryId, {
           installed: true,
@@ -742,7 +734,8 @@ describe("ha-marketplace-repository-dashboard", () => {
         } as Partial<RepositoryInfo>),
       repositoryRoute("1")
     );
-    (page.hass as unknown as Record<string, unknown>).states = states;
+
+    hass.addEntities(entities);
     await settle(page);
     const fired = vi.fn();
     page.addEventListener(event, (ev) => fired((ev as CustomEvent).detail));

@@ -7,6 +7,11 @@ import type { LovelaceViewSidebarConfig } from "../../../data/lovelace/config/vi
 import { ConditionalListenerMixin } from "../../../mixins/conditional-listener-mixin";
 import type { HomeAssistant } from "../../../types";
 import "../sections/hui-section";
+import {
+  renderSectionContainer,
+  sectionContainerStyles,
+} from "../sections/section-container";
+import type { LovelacePath } from "../editor/lovelace-path";
 import type { Lovelace } from "../types";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 
@@ -22,7 +27,7 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
 
   @property({ attribute: false }) public config?: LovelaceViewSidebarConfig;
 
-  @property({ attribute: false }) public viewIndex!: number;
+  @property({ attribute: false }) public path!: LovelacePath;
 
   private _visible = true;
 
@@ -63,27 +68,34 @@ export class HuiViewSidebar extends ConditionalListenerMixin<LovelaceViewSidebar
         ${repeat(
           this.config?.sections ?? [],
           (section) => this._getSectionKey(section),
-          (section) => html`
-            <hui-section
-              .config=${section}
-              .hass=${this.hass}
-              .preview=${this.lovelace.editMode}
-              .viewIndex=${this.viewIndex}
-            ></hui-section>
-          `
+          (section, idx) => {
+            const sectionPath = [...this.path, "sidebar", "sections", idx];
+            const sectionElement = html`
+              <hui-section
+                .config=${section}
+                .hass=${this.hass}
+                .preview=${this.lovelace.editMode}
+                .path=${sectionPath}
+              ></hui-section>
+            `;
+            return renderSectionContainer(this.hass, section, sectionElement);
+          }
         )}
       </div>
     `;
   }
 
-  static styles = css`
-    .container {
-      display: flex;
-      flex-direction: column;
-      gap: var(--row-gap, 8px);
-      width: 100%;
-    }
-  `;
+  static styles = [
+    sectionContainerStyles,
+    css`
+      .container {
+        display: flex;
+        flex-direction: column;
+        gap: var(--row-gap, 8px);
+        width: 100%;
+      }
+    `,
+  ];
 }
 
 declare global {

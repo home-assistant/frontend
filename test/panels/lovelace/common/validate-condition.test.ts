@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import * as selector from "../../../../src/data/selector";
 import type { VisibilityCondition } from "../../../../src/panels/lovelace/common/validate-condition";
 import {
   addEntityToCondition,
@@ -34,6 +35,83 @@ describe("validateConditionalConfig", () => {
         { condition: "numeric_state", entity: "sensor.test", above: 0 },
       ] as any;
       expect(validateConditionalConfig(conditions)).toBe(true);
+    });
+  });
+
+  describe("location condition validation", () => {
+    it.each([
+      ["locations", { condition: "location", locations: ["home"] }],
+      ["target", { condition: "location", target: { label_id: "store" } }],
+      ["empty target", { condition: "location", target: {} }],
+      [
+        "a target with an exclude",
+        {
+          condition: "location",
+          target: { label_id: "store", exclude: { entity_id: "zone.store_1" } },
+        },
+      ],
+      ["away", { condition: "location", away: true }],
+      [
+        "a match mode",
+        { condition: "location", target: {}, match_mode: "active_zone" },
+      ],
+      [
+        "locations and away",
+        { condition: "location", locations: ["home"], away: true },
+      ],
+    ])("should return true with %s", (_name, condition) => {
+      expect(validateConditionalConfig([condition] as any)).toBe(true);
+    });
+
+    it.each([
+      ["a string target", { condition: "location", target: "zone.home" }],
+      ["a list target", { condition: "location", target: ["zone.home"] }],
+      [
+        "a target with a non-string ID",
+        { condition: "location", target: { entity_id: 5 } },
+      ],
+      [
+        "a target with an unknown key",
+        { condition: "location", target: { zone_id: "zone.home" } },
+      ],
+      [
+        "an exclude with a non-string ID",
+        { condition: "location", target: { exclude: { entity_id: 5 } } },
+      ],
+      [
+        "a nested exclude",
+        {
+          condition: "location",
+          target: { exclude: { exclude: { entity_id: "zone.home" } } },
+        },
+      ],
+      ["a non-boolean away", { condition: "location", away: "yes" }],
+      [
+        "an unknown match mode",
+        { condition: "location", target: {}, match_mode: "nearest" },
+      ],
+      [
+        "locations with a target",
+        { condition: "location", locations: ["home"], target: {} },
+      ],
+      [
+        "locations with a match mode",
+        { condition: "location", locations: ["home"], match_mode: "any_zone" },
+      ],
+      [
+        "a non-boolean away with a target",
+        { condition: "location", target: {}, away: "yes" },
+      ],
+    ])("should return false with %s", (_name, condition) => {
+      expect(validateConditionalConfig([condition] as any)).toBe(false);
+    });
+
+    it("should return false without locations, target or away", () => {
+      expect(
+        validateConditionalConfig([
+          { condition: "location", away: false },
+        ] as any)
+      ).toBe(false);
     });
   });
 
@@ -129,6 +207,407 @@ describe("checkConditionsMet", () => {
       });
       const conditions = [{ entity: "sensor.test" }] as any;
       expect(checkConditionsMet(conditions, hass, {})).toBe(false);
+    });
+  });
+
+  describe("location condition evaluation", () => {
+    const createLocationHass = (state: string, inZones: string[]) =>
+      ({
+        states: {
+          "person.me": {
+            entity_id: "person.me",
+            state,
+            attributes: { user_id: "user1", in_zones: inZones },
+          },
+          "zone.store_1": {
+            entity_id: "zone.store_1",
+            state: "1",
+            attributes: {},
+          },
+          "zone.store_2": {
+            entity_id: "zone.store_2",
+            state: "0",
+            attributes: {},
+          },
+          "zone.work": {
+            entity_id: "zone.work",
+            state: "0",
+            attributes: {},
+          },
+        },
+        entities: {
+          "zone.store_1": { entity_id: "zone.store_1", labels: ["store"] },
+          "zone.store_2": { entity_id: "zone.store_2", labels: ["store"] },
+          "zone.work": {
+            entity_id: "zone.work",
+            labels: [],
+            area_id: "downtown",
+          },
+        },
+        devices: {},
+        areas: { downtown: { area_id: "downtown", labels: [] } },
+        user: { id: "user1" },
+      }) as unknown as HomeAssistant;
+
+    it("matches locations against the person state", () => {
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      expect(
+        checkConditionsMet(
+          [{ condition: "location", locations: ["Store"] }],
+          hass,
+          {}
+        )
+      ).toBe(true);
+    });
+
+    it("matches a zone label against in_zones", () => {
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      expect(
+        checkConditionsMet(
+          [{ condition: "location", target: { label_id: "store" } }],
+          hass,
+          {}
+        )
+      ).toBe(true);
+    });
+
+    it("matches a zone that is not the active zone", () => {
+      // Active zone is the smaller "Work" zone inside the store zone.
+      const hass = createLocationHass("Work", ["zone.work", "zone.store_2"]);
+      expect(
+        checkConditionsMet(
+          [{ condition: "location", target: { entity_id: "zone.store_2" } }],
+          hass,
+          {}
+        )
+      ).toBe(true);
+    });
+
+    it("does not match when the person is in no selected zone", () => {
+      const hass = createLocationHass("Work", ["zone.work"]);
+      expect(
+        checkConditionsMet(
+          [{ condition: "location", target: { label_id: "store" } }],
+          hass,
+          {}
+        )
+      ).toBe(false);
+    });
+
+    it("does not match an excluded zone", () => {
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      expect(
+        checkConditionsMet(
+          [
+            {
+              condition: "location",
+              target: {
+                label_id: "store",
+                exclude: { entity_id: "zone.store_1" },
+              },
+            },
+          ],
+          hass,
+          {}
+        )
+      ).toBe(false);
+    });
+
+    it("matches zones in a selected area", () => {
+      const hass = createLocationHass("Work", ["zone.work"]);
+      expect(
+        checkConditionsMet(
+          [{ condition: "location", target: { area_id: "downtown" } }],
+          hass,
+          {}
+        )
+      ).toBe(true);
+    });
+
+    it("does not match when the person is in no zone", () => {
+      const hass = createLocationHass("not_home", []);
+      expect(
+        checkConditionsMet(
+          [{ condition: "location", target: { entity_id: "zone.store_1" } }],
+          hass,
+          {}
+        )
+      ).toBe(false);
+    });
+
+    it.each([
+      ["not a mapping", "zone.store_1"],
+      ["holds a non-string ID", { entity_id: ["zone.store_1", 5] }],
+    ])("does not match a target that is %s", (_name, target) => {
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      const conditions = [{ condition: "location", target }] as any;
+      expect(() => checkConditionsMet(conditions, hass, {})).not.toThrow();
+      expect(checkConditionsMet(conditions, hass, {})).toBe(false);
+    });
+
+    it("only treats away: true as away", () => {
+      const hass = createLocationHass("not_home", []);
+      expect(
+        checkConditionsMet(
+          [{ condition: "location", away: "yes" }] as any,
+          hass,
+          {}
+        )
+      ).toBe(false);
+    });
+
+    it("picks up label changes for the same condition", () => {
+      const conditions = [
+        { condition: "location", target: { label_id: "work" } },
+      ] as any;
+      const hass = createLocationHass("Work", ["zone.work"]);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(false);
+
+      // Registry updates replace hass.entities, which must refresh the cache.
+      const relabeled = {
+        ...hass,
+        entities: {
+          ...hass.entities,
+          "zone.work": { ...hass.entities["zone.work"], labels: ["work"] },
+        },
+      } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, relabeled, {})).toBe(true);
+    });
+
+    it("picks up a zone whose state returns without a registry change", () => {
+      const conditions = [
+        { condition: "location", target: { label_id: "store" } },
+      ] as any;
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      // zone.store_1 has no state while zones reload.
+      const { "zone.store_1": _store1, ...states } = hass.states;
+      const reloading = { ...hass, states } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, reloading, {})).toBe(false);
+
+      // Same registries, state is back.
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+    });
+
+    it("keeps the cache while an unrelated zone has no state", () => {
+      const conditions = [
+        { condition: "location", target: { label_id: "store" } },
+      ] as any;
+      const base = createLocationHass("Store", ["zone.store_1"]);
+      // zone.work is registered but has no state.
+      const { "zone.work": _work, ...states } = base.states;
+      const hass = { ...base, states } as unknown as HomeAssistant;
+      const resolve = vi.spyOn(selector, "resolveEntityIDs");
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+      const moved = {
+        ...hass,
+        states: { ...hass.states },
+      } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, moved, {})).toBe(true);
+      expect(resolve).toHaveBeenCalledTimes(1);
+      resolve.mockRestore();
+    });
+
+    it("drops a cached zone that loses its state", () => {
+      const conditions = [
+        { condition: "location", target: { label_id: "store" } },
+      ] as any;
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+
+      // Same registries, but zone.store_1 has no state any more.
+      const { "zone.store_1": _store1, ...states } = hass.states;
+      const removed = { ...hass, states } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, removed, {})).toBe(false);
+    });
+
+    it("does not match a directly selected zone without a state", () => {
+      const conditions = [
+        { condition: "location", target: { entity_id: "zone.store_1" } },
+      ] as any;
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      const { "zone.store_1": _store1, ...states } = hass.states;
+      const removed = { ...hass, states } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, removed, {})).toBe(false);
+
+      // Picked up when the state is back.
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+    });
+
+    it("re-checks in_zones when the person moves", () => {
+      const conditions = [
+        { condition: "location", target: { label_id: "store" } },
+      ] as any;
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+
+      // Same registries (cached zones), new person state.
+      const moved = {
+        ...hass,
+        states: {
+          ...hass.states,
+          "person.me": {
+            ...hass.states["person.me"],
+            state: "Work",
+            attributes: { user_id: "user1", in_zones: ["zone.work"] },
+          },
+        },
+      } as unknown as HomeAssistant;
+      expect(checkConditionsMet(conditions, moved, {})).toBe(false);
+    });
+
+    it("matches away when the person is not in any zone", () => {
+      const hass = createLocationHass("not_home", []);
+      const conditions = [
+        { condition: "location", target: { label_id: "store" }, away: true },
+      ] as any;
+      expect(checkConditionsMet(conditions, hass, {})).toBe(true);
+      expect(
+        checkConditionsMet(
+          [{ condition: "location", target: { label_id: "store" } }],
+          hass,
+          {}
+        )
+      ).toBe(false);
+    });
+
+    describe("active_zone", () => {
+      const createActiveZoneHass = (state: string, inZones: string[]) =>
+        ({
+          states: {
+            "person.me": {
+              entity_id: "person.me",
+              state,
+              attributes: { user_id: "user1", in_zones: inZones },
+            },
+            "zone.home": {
+              entity_id: "zone.home",
+              state: "0",
+              attributes: { friendly_name: "Home" },
+            },
+            "zone.store_1": {
+              entity_id: "zone.store_1",
+              state: "0",
+              attributes: { friendly_name: "Store" },
+            },
+            "zone.work": {
+              entity_id: "zone.work",
+              state: "0",
+              attributes: { friendly_name: "Work" },
+            },
+            // Named like zone.store_1.
+            "zone.store_2": {
+              entity_id: "zone.store_2",
+              state: "0",
+              attributes: { friendly_name: "Store" },
+            },
+            // Passive, and named like zone.work.
+            "zone.work_campus": {
+              entity_id: "zone.work_campus",
+              state: "0",
+              attributes: { friendly_name: "Work", passive: true },
+            },
+          },
+          entities: {
+            "zone.store_1": { entity_id: "zone.store_1", labels: ["store"] },
+          },
+          devices: {},
+          areas: {},
+          user: { id: "user1" },
+        }) as unknown as HomeAssistant;
+
+      const check = (hass: HomeAssistant, target: Record<string, unknown>) =>
+        checkConditionsMet(
+          [{ condition: "location", target, match_mode: "active_zone" }],
+          hass,
+          {}
+        );
+
+      it("matches the zone shown as the person state", () => {
+        const hass = createActiveZoneHass("Store", ["zone.store_1"]);
+        expect(check(hass, { entity_id: "zone.store_1" })).toBe(true);
+        expect(check(hass, { label_id: "store" })).toBe(true);
+      });
+
+      it("matches home", () => {
+        const hass = createActiveZoneHass("home", ["zone.home"]);
+        expect(check(hass, { entity_id: "zone.home" })).toBe(true);
+      });
+
+      it("does not match a zone that is not the active zone", () => {
+        const hass = createActiveZoneHass("Work", [
+          "zone.work",
+          "zone.store_1",
+        ]);
+        expect(check(hass, { entity_id: "zone.store_1" })).toBe(false);
+        expect(
+          checkConditionsMet(
+            [{ condition: "location", target: { entity_id: "zone.store_1" } }],
+            hass,
+            {}
+          )
+        ).toBe(true);
+      });
+
+      it("does not match another zone with the same name", () => {
+        const hass = createActiveZoneHass("Store", ["zone.store_2"]);
+        expect(check(hass, { entity_id: "zone.store_1" })).toBe(false);
+        expect(check(hass, { entity_id: "zone.store_2" })).toBe(true);
+      });
+
+      it.each([["active_zone"], ["any_zone"]])(
+        "matches the state with %s when in_zones is empty",
+        (matchMode) => {
+          // Legacy device trackers don't report in_zones.
+          const hass = createActiveZoneHass("Work", []);
+          const conditions = (entityId: string) =>
+            [
+              {
+                condition: "location",
+                target: { entity_id: entityId },
+                match_mode: matchMode,
+              },
+            ] as any;
+          expect(checkConditionsMet(conditions("zone.work"), hass, {})).toBe(
+            true
+          );
+          expect(checkConditionsMet(conditions("zone.store_1"), hass, {})).toBe(
+            false
+          );
+        }
+      );
+
+      it("does not match a zone named not_home while away", () => {
+        const hass = createActiveZoneHass("not_home", []);
+        hass.states["zone.not_home"] = {
+          entity_id: "zone.not_home",
+          state: "0",
+          attributes: { friendly_name: "not_home" },
+        } as any;
+        for (const matchMode of ["active_zone", "any_zone"]) {
+          expect(
+            checkConditionsMet(
+              [
+                {
+                  condition: "location",
+                  target: { entity_id: "zone.not_home" },
+                  match_mode: matchMode,
+                },
+              ] as any,
+              hass,
+              {}
+            )
+          ).toBe(false);
+        }
+      });
+
+      it("never matches a passive zone", () => {
+        const hass = createActiveZoneHass("Work", [
+          "zone.work",
+          "zone.work_campus",
+        ]);
+        expect(check(hass, { entity_id: "zone.work_campus" })).toBe(false);
+        expect(check(hass, { entity_id: "zone.work" })).toBe(true);
+      });
     });
   });
 });

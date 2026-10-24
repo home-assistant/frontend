@@ -1,4 +1,8 @@
 import type { HassEntity } from "home-assistant-js-websocket";
+import {
+  computeAlertActiveStates,
+  isAlertActive,
+} from "../../../common/entity/alert_active";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import type {
   SecurityAlertEntityConfig,
@@ -6,10 +10,7 @@ import type {
 } from "../../../data/frontend";
 import type { HomeAssistant } from "../../../types";
 import type { AlertCardConfig } from "../../lovelace/cards/types";
-import {
-  checkConditionsMet,
-  type StateCondition,
-} from "../../lovelace/common/validate-condition";
+import type { StateCondition } from "../../lovelace/common/validate-condition";
 
 const DANGER_BINARY_SENSOR_DEVICE_CLASSES = [
   "carbon_monoxide",
@@ -57,26 +58,15 @@ export const computeDefaultSecurityAlertSeverity = (
 export const computeDefaultSecurityAlertVisibility = (
   entityId: string
 ): StateCondition[] => {
-  const condition: StateCondition = {
-    condition: "state",
-    entity: entityId,
-  };
+  const states = computeAlertActiveStates(entityId);
 
-  switch (computeDomain(entityId)) {
-    case "alarm_control_panel":
-      condition.state = "triggered";
-      break;
-    case "cover":
-      condition.state = "open";
-      break;
-    case "lock":
-      condition.state = ["jammed", "unlocked", "open"];
-      break;
-    default:
-      condition.state = "on";
-  }
-
-  return [condition];
+  return [
+    {
+      condition: "state",
+      entity: entityId,
+      state: states.length === 1 ? states[0] : states,
+    },
+  ];
 };
 
 export const resolveSecurityAlertSeverity = (
@@ -86,10 +76,13 @@ export const resolveSecurityAlertSeverity = (
   alertEntity.severity ?? computeDefaultSecurityAlertSeverity(stateObj);
 
 export const isSecurityAlertActive = (
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
   entityId: string
-): boolean =>
-  checkConditionsMet(computeDefaultSecurityAlertVisibility(entityId), hass, {});
+): boolean => {
+  const stateObj = states[entityId];
+
+  return !!stateObj && isAlertActive(stateObj);
+};
 
 export const filterSecurityAlertEntities = (
   alertEntities: SecurityAlertEntityConfig[],
@@ -112,7 +105,7 @@ export const computeSecurityAlertCardConfig = (
   return {
     type: "alert",
     entity: alertEntity.entity,
-    color: severity === "alert" ? "red" : "amber",
+    alert_color: severity === "alert" ? "red" : "amber",
     visibility: computeDefaultSecurityAlertVisibility(alertEntity.entity),
   };
 };

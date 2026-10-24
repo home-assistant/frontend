@@ -145,13 +145,7 @@ export const getEntities = (
       domain_name: domainName,
       sorting_label: [primary, secondary].filter(Boolean).join("_"),
       search_labels: {
-        ...computeEntitySearchLabels(
-          stateObj,
-          hass.entities,
-          hass.devices,
-          hass.areas,
-          hass.floors
-        ),
+        ...computeEntitySearchLabels(stateObj, hass),
         domainName: domainName || null,
         entityId: entityId,
       },

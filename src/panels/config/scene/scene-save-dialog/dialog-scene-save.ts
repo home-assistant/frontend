@@ -329,6 +329,7 @@ class DialogSceneSave extends DirtyStateProviderMixin<SceneSaveState>()(
       await buildEntityMetadataInspirations(
         this.hass.connection,
         this.hass.states,
+        this.hass.formatEntityName,
         "scene"
       ),
       SUGGESTION_INCLUDE

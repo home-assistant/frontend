@@ -76,11 +76,15 @@ class StorageClass {
     return storageKey in this._storage;
   }
 
-  public getValue(storageKey: string): any {
+  public getValue<T = any>(storageKey: string): T | undefined {
+    if (!(storageKey in this._storage)) {
+      this.addFromStorage(storageKey);
+    }
+
     return this._storage[storageKey];
   }
 
-  public setValue(storageKey: string, value: any): any {
+  public setValue<T = any>(storageKey: string, value: T): void {
     const oldValue = this._storage[storageKey];
     this._storage[storageKey] = value;
     try {
@@ -103,9 +107,22 @@ class StorageClass {
 
 const storages: Record<string, StorageClass> = {};
 
+export type StorageName = "localStorage" | "sessionStorage";
+
+// Shared with `@storage`, so code that isn't a decorated field sees the same values
+export const getStorage = (
+  storageName: StorageName = "localStorage"
+): StorageClass => {
+  if (!(storageName in storages)) {
+    storages[storageName] = new StorageClass(window[storageName]);
+  }
+
+  return storages[storageName];
+};
+
 export function storage(options: {
   key?: string;
-  storage?: "localStorage" | "sessionStorage";
+  storage?: StorageName;
   subscribe?: boolean;
   state?: boolean;
   serializer?: (value: any) => any;
@@ -119,15 +136,7 @@ export function storage(options: {
       throw new Error("This decorator does not support this compilation type.");
     }
 
-    const storageName = options.storage || "localStorage";
-
-    let storageInstance: StorageClass;
-    if (storageName && storageName in storages) {
-      storageInstance = storages[storageName];
-    } else {
-      storageInstance = new StorageClass(window[storageName]);
-      storages[storageName] = storageInstance;
-    }
+    const storageInstance = getStorage(options.storage);
 
     const storageKey = options.key || String(propertyKey);
 

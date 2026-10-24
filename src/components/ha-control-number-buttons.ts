@@ -1,13 +1,16 @@
 import { ResizeController } from "@lit-labs/observers/resize-controller";
+import type { ContextType } from "@lit/context";
 import { mdiMinus, mdiPlus } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { conditionalClamp } from "../common/number/clamp";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
+import { internationalizationContext } from "../data/context";
 import type { FrontendLocaleData } from "../data/translation";
 import "./ha-svg-icon";
 
@@ -44,6 +47,10 @@ export class HaControlNumberButton extends LitElement {
   public formatOptions: Intl.NumberFormatOptions = {};
 
   @query("#input") _input!: HTMLDivElement;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   private _hideUnit = new ResizeController(this, {
     callback: (entries) => {
@@ -160,7 +167,9 @@ export class HaControlNumberButton extends LitElement {
           class="button minus"
           type="button"
           tabindex="-1"
-          aria-label="decrement"
+          aria-label=${ifDefined(
+            this._i18n?.localize("ui.components.number-buttons.decrement")
+          )}
           @click=${this._handleMinusButton}
           .disabled=${
             this.disabled || (this.min != null && this._value <= this.min)
@@ -172,7 +181,9 @@ export class HaControlNumberButton extends LitElement {
           class="button plus"
           type="button"
           tabindex="-1"
-          aria-label="increment"
+          aria-label=${ifDefined(
+            this._i18n?.localize("ui.components.number-buttons.increment")
+          )}
           @click=${this._handlePlusButton}
           .disabled=${
             this.disabled || (this.max != null && this._value >= this.max)

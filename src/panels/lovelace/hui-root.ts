@@ -96,6 +96,7 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+import { LOVELACE_EDIT_TOAST_ID } from "./types";
 
 interface ActionItem {
   icon: string;
@@ -211,14 +212,7 @@ class HUIRoot extends LitElement {
             @click=${this._editModeDisable}
           >
             ${this.hass!.localize("ui.panel.lovelace.menu.exit_edit_mode")}
-          </ha-button>
-          <ha-icon-button
-            .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-            .path=${mdiHelpCircleOutline}
-            href=${documentationUrl(this.hass, "/dashboards/")}
-            rel="noreferrer"
-            target="_blank"
-          ></ha-icon-button>`
+          </ha-button>`
       );
     }
 
@@ -250,6 +244,13 @@ class HUIRoot extends LitElement {
         icon: mdiFileMultiple,
         key: "ui.panel.lovelace.editor.menu.manage_resources",
         overflowAction: this._handleManageResources,
+        visible: this._editMode,
+        overflow: true,
+      },
+      {
+        icon: mdiHelpCircleOutline,
+        key: "ui.panel.lovelace.menu.help",
+        overflowAction: this._handleHelp,
         visible: this._editMode,
         overflow: true,
       },
@@ -465,14 +466,20 @@ class HUIRoot extends LitElement {
         !view.visible.some((e) => e.user === this.hass!.user?.id)) ||
         view.visible === false);
 
-    const tabs = html`<ha-tab-group @wa-tab-show=${this._handleViewSelected}>
+    const tabs = html`<ha-tab-group
+      .active=${typeof this._curView === "number" ? String(this._curView) : ""}
+      @wa-tab-show=${this._handleViewSelected}
+    >
       ${views.map((view, index) => {
         const icon_and_title =
           view.show_icon_and_title && view.icon && view.title;
         const icon_only = view.icon && !icon_and_title;
         const title_only = !icon_only && !icon_and_title;
+        const current = this._curView === index;
         const hidden =
-          !this._editMode && (view.subview || _isTabHiddenForUser(view));
+          !this._editMode &&
+          !current &&
+          (view.subview || _isTabHiddenForUser(view));
         const tabContent = html`
           ${
             icon_only || icon_and_title
@@ -497,7 +504,7 @@ class HUIRoot extends LitElement {
           <ha-tab-group-tab
             slot="nav"
             panel=${index}
-            .active=${this._curView === index}
+            .active=${current}
             .disabled=${hidden}
             aria-label=${ifDefined(view.title)}
             data-path=${view.path || index}
@@ -1052,6 +1059,14 @@ class HUIRoot extends LitElement {
     this.lovelace!.setEditMode(true);
   };
 
+  private _handleHelp = () => {
+    window.open(
+      documentationUrl(this.hass, "/dashboards/"),
+      "_blank",
+      "noreferrer"
+    );
+  };
+
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
     this._undoRedoController.reset();
@@ -1192,8 +1207,6 @@ class HUIRoot extends LitElement {
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
       this._navigateToView(path);
-    } else if (!this._editMode) {
-      scrollTo({ behavior: "smooth", top: 0 });
     }
   }
 
@@ -1275,6 +1288,7 @@ class HUIRoot extends LitElement {
     } catch (err: any) {
       this._configChangedByUndo = false;
       showToast(this, {
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass.localize(
           "ui.panel.lovelace.editor.undo_redo_failed_to_apply_changes",
           {
@@ -1341,25 +1355,10 @@ class HUIRoot extends LitElement {
           color: var(--app-header-text-color, white);
           position: fixed;
           top: 0;
-          width: calc(
-            var(--ha-top-app-bar-width, 100%) - var(
-                --safe-area-inset-right,
-                0px
-              )
-          );
+          width: var(--ha-top-app-bar-width, 100%);
           backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: var(--safe-area-inset-top);
-          padding-right: var(--safe-area-inset-right);
           z-index: 4;
-        }
-        .narrow .header {
-          width: calc(
-            var(--ha-top-app-bar-width, 100%) - var(
-                --safe-area-inset-left,
-                0px
-              ) - var(--safe-area-inset-right, 0px)
-          );
-          padding-left: var(--safe-area-inset-left);
         }
         :host([scrolled]) .header {
           box-shadow: var(
@@ -1381,7 +1380,6 @@ class HUIRoot extends LitElement {
           font-size: var(--ha-font-size-xl);
           padding: 0px 12px;
           padding-right: calc(12px + var(--safe-area-inset-right, 0px));
-          width: calc(100% + var(--safe-area-inset-right, 0px));
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
@@ -1391,11 +1389,6 @@ class HUIRoot extends LitElement {
         .narrow .toolbar {
           padding: 0 calc(4px + var(--safe-area-inset-right, 0px)) 0
             calc(4px + var(--safe-area-inset-left, 0px));
-          width: calc(
-            100% + var(--safe-area-inset-left, 0px) +
-              var(--safe-area-inset-right, 0px)
-          );
-          margin-left: calc(-1 * var(--safe-area-inset-left, 0px));
         }
         .main-title {
           margin-inline-start: var(--ha-space-6);
@@ -1473,6 +1466,10 @@ class HUIRoot extends LitElement {
         }
         .tab-bar {
           display: flex;
+          padding-right: var(--safe-area-inset-right, 0px);
+        }
+        .narrow .tab-bar {
+          padding-left: var(--safe-area-inset-left, 0px);
         }
         .edit-mode ha-tab-group {
           flex-grow: 0;
@@ -1579,7 +1576,6 @@ class HUIRoot extends LitElement {
         .exit-edit-mode {
           --mdc-theme-primary: var(--app-header-edit-text-color, #fff);
           --mdc-button-outline-color: var(--app-header-edit-text-color, #fff);
-          --mdc-typography-button-font-size: var(--ha-font-size-m);
         }
         .child-view-icon {
           opacity: 0.5;

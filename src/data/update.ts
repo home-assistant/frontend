@@ -105,6 +105,7 @@ export const isSystemUpdate = (entity: UpdateEntity): boolean => {
 
 export const filterUpdateEntities = (
   entities: HassEntities,
+  formatEntityName: HomeAssistant["formatEntityName"],
   language?: string
 ) =>
   (
@@ -131,18 +132,19 @@ export const filterUpdateEntities = (
       return 1;
     }
     return caseInsensitiveStringCompare(
-      a.attributes.title || a.attributes.friendly_name || "",
-      b.attributes.title || b.attributes.friendly_name || "",
+      a.attributes.title || formatEntityName(a),
+      b.attributes.title || formatEntityName(b),
       language
     );
   });
 
 export const filterUpdateEntitiesParameterized = (
   entities: HassEntities,
+  formatEntityName: HomeAssistant["formatEntityName"],
   showSkipped = false,
   showNotInstallable = false
 ) =>
-  filterUpdateEntities(entities).filter((entity) => {
+  filterUpdateEntities(entities, formatEntityName).filter((entity) => {
     if (showNotInstallable) {
       return updateCanNotInstall(entity, showSkipped);
     }
@@ -168,9 +170,11 @@ export const checkForEntityUpdates = async (
   element: HTMLElement,
   hass: HomeAssistant
 ) => {
-  const entities = filterUpdateEntities(hass.states, hass.locale.language).map(
-    (entity) => entity.entity_id
-  );
+  const entities = filterUpdateEntities(
+    hass.states,
+    hass.formatEntityName,
+    hass.locale.language
+  ).map((entity) => entity.entity_id);
 
   if (!entities.length) {
     showAlertDialog(element, {
@@ -225,6 +229,7 @@ export const checkForEntityUpdates = async (
 };
 
 // When updating, and entity does not support % show "Installing"
+// When updating, and entity does support % but has not reported it yet, show "Preparing"
 // When updating, and entity does support % show "Installing (xx%)"
 // When update available, show "Update available"
 // When the latest version is skipped, show the latest version
@@ -232,7 +237,7 @@ export const checkForEntityUpdates = async (
 // When update is not available and there is no latest_version show "Unavailable"
 export const computeUpdateStateDisplay = (
   stateObj: UpdateEntity,
-  hass: HomeAssistant
+  options: Pick<HomeAssistant, "localize" | "locale" | "formatEntityState">
 ): string => {
   const state = stateObj.state;
   const attributes = stateObj.attributes;
@@ -241,18 +246,26 @@ export const computeUpdateStateDisplay = (
   // downgrading firmware (installed_version is newer than latest_version).
   // Show the installing status regardless of state in that case.
   if (updateIsInstalling(stateObj)) {
+    // The install has not started yet, for example while a backup is
+    // created before the update.
+    if (
+      supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
+      attributes.update_percentage == null
+    ) {
+      return options.localize("ui.card.update.preparing");
+    }
     const supportsProgress =
       supportsFeature(stateObj, UpdateEntityFeature.PROGRESS) &&
       attributes.update_percentage !== null;
     if (supportsProgress) {
-      return hass.localize("ui.card.update.installing_with_progress", {
-        progress: formatNumber(attributes.update_percentage!, hass.locale, {
+      return options.localize("ui.card.update.installing_with_progress", {
+        progress: formatNumber(attributes.update_percentage!, options.locale, {
           maximumFractionDigits: attributes.display_precision,
           minimumFractionDigits: attributes.display_precision,
         }),
       });
     }
-    return hass.localize("ui.card.update.installing");
+    return options.localize("ui.card.update.installing");
   }
 
   if (state === "off") {
@@ -262,10 +275,10 @@ export const computeUpdateStateDisplay = (
     if (isSkipped) {
       return attributes.latest_version!;
     }
-    return hass.formatEntityState(stateObj);
+    return options.formatEntityState(stateObj);
   }
 
-  return hass.formatEntityState(stateObj);
+  return options.formatEntityState(stateObj);
 };
 
 export type UpdateType =

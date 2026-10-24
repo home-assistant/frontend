@@ -1,4 +1,5 @@
 import type { VisibilityCondition } from "../../../panels/lovelace/common/validate-condition";
+import type { LovelaceBadgeConfig } from "./badge";
 import type { LovelaceCardConfig } from "./card";
 import type { LovelaceStrategyConfig } from "./strategy";
 
@@ -27,6 +28,8 @@ export interface LovelaceBaseSectionConfig {
 export interface LovelaceSectionConfig extends LovelaceBaseSectionConfig {
   type?: string;
   cards?: LovelaceCardConfig[];
+  badges?: LovelaceBadgeConfig[];
+  sections?: LovelaceSectionRawConfig[];
 }
 
 export interface LovelaceStrategySectionConfig extends LovelaceBaseSectionConfig {
@@ -43,6 +46,12 @@ export function resolveSectionBackground(
     return background ? {} : undefined;
   }
   return background;
+}
+
+export function hasSectionBackground(
+  section: LovelaceBaseSectionConfig
+): boolean {
+  return resolveSectionBackground(section.background) !== undefined;
 }
 
 export function isStrategySection(

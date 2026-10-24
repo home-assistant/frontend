@@ -7,6 +7,7 @@ import {
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { goBack, navigate } from "../../../common/navigate";
@@ -140,14 +141,17 @@ class HaConfigAppDashboard extends LitElement {
         back-path=${this._fromStore ? "/config/apps/available" : "/config/apps"}
       >
         <span slot="header">${this._addon.name}</span>
-        <supervisor-app-router
-          .route=${route}
-          .narrow=${this.narrow}
-          .hass=${this.hass}
-          .addon=${this._addon}
-          .controlEnabled=${this._controlEnabled}
-          @system-managed-take-control=${this._enableControl}
-        ></supervisor-app-router>
+        ${keyed(
+          this._addon.slug,
+          html`<supervisor-app-router
+            .route=${route}
+            .narrow=${this.narrow}
+            .hass=${this.hass}
+            .addon=${this._addon}
+            .controlEnabled=${this._controlEnabled}
+            @system-managed-take-control=${this._enableControl}
+          ></supervisor-app-router>`
+        )}
       </hass-tabs-subpage>
     `;
   }

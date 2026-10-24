@@ -1,10 +1,6 @@
 import type { maplibreGL } from "@maplibre/maplibre-gl-leaflet";
 import type { Map as LeafletMap, TileLayerOptions } from "leaflet";
-import type {
-  setRTLTextPlugin,
-  setWorkerUrl,
-  StyleSpecification,
-} from "maplibre-gl";
+import type { setWorkerUrl, StyleSpecification } from "maplibre-gl";
 import { deepEqual } from "../util/deep-equal";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
 import type { ResolvedMapStyle } from "./map-styles";
@@ -23,10 +19,6 @@ const SHIPPED_STYLES = {
   light: "/static/map/light.json",
   dark: "/static/map/dark.json",
 } as const;
-
-// Without it Arabic and Hebrew labels render reversed. Loaded by MapLibre's
-// worker, hence a URL rather than an import.
-export const RTL_TEXT_PLUGIN_URL = "/static/map/mapbox-gl-rtl-text.js";
 
 // MapLibre needs WebGL2 even for raster, so the fallback stays a Leaflet layer.
 // OSM serves no @2x variant.
@@ -78,13 +70,10 @@ export const supportsWebGL2 = (): boolean => {
 
 // The one gate for MapLibre, whether through the Leaflet adapter or the
 // engine `ha-map` drives directly. Its worker is bundled per build target
-// like the rest of it, so wherever the page runs, the worker runs too - with
-// one exception. Babel transpiles everything MapLibre is written in except
-// BigInt literals, which have no ES2017 spelling. A browser without BigInt
-// (Chromium below 67, such as Fire OS 5 tablets) cannot parse the chunk, and
-// a worker that cannot parse never reports back, hence the check up front.
-export const supportsVectorMaps = (): boolean =>
-  supportsWebGL2() && typeof BigInt === "function";
+// like the rest of it, so wherever the page runs, the worker runs too: the
+// legacy floor (Chrome 67 / Safari 15) guarantees the BigInt literals MapLibre
+// uses, which Babel cannot transpile.
+export const supportsVectorMaps = (): boolean => supportsWebGL2();
 
 // The demo has no core to proxy through. OSM sets CORS on its tiles but not on
 // its glyphs, which is why those come from VersaTiles.
@@ -160,20 +149,6 @@ export const ensureWorkerUrl = (setUrl: typeof setWorkerUrl) => {
   }
   workerUrlSet = true;
   setUrl(new URL(__MAPLIBRE_WORKER_URL__, location.href).href);
-};
-
-// Global to MapLibre, and it throws when set twice.
-let rtlTextPluginRequested = false;
-export const ensureRTLTextPlugin = (setPlugin: typeof setRTLTextPlugin) => {
-  if (rtlTextPluginRequested) {
-    return;
-  }
-  rtlTextPluginRequested = true;
-  setPlugin(new URL(RTL_TEXT_PLUGIN_URL, location.href).href, true).catch(
-    () => {
-      // RTL labels stay reversed; everything else still renders.
-    }
-  );
 };
 
 const createVectorLayer = async (
@@ -390,7 +365,6 @@ export const createBaseLayer = async (
         import("maplibre-gl"),
       ]);
       ensureWorkerUrl(maplibre.setWorkerUrl);
-      ensureRTLTextPlugin(maplibre.setRTLTextPlugin);
       vectorLayer = await createVectorLayer(
         createLayer,
         leaflet,

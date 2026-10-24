@@ -25,6 +25,19 @@ import "../card-editor/hui-suggestion-entity-tree";
 import type { HuiSuggestionEntityTree } from "../card-editor/hui-suggestion-entity-tree";
 import "./hui-suggestion-badge";
 
+/**
+ * @element hui-badge-suggestion-picker
+ *
+ * @summary Entity tree with badge suggestions for the picked entity.
+ *
+ * @slot - Footer below the entity tree, e.g. an action bar.
+ *
+ * @cssprop --ha-suggestion-picker-main-padding-bottom - Space at the end of the scrolling suggestions.
+ * @cssprop --ha-suggestion-picker-tree-padding-bottom - Space at the end of the scrolling entity tree.
+ *
+ * @fires badge-suggestion-picked - Fired with the config of the picked suggestion.
+ * @fires browse-badges - Fired when the user wants to browse all badges.
+ */
 @customElement("hui-badge-suggestion-picker")
 export class HuiBadgeSuggestionPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -102,6 +115,7 @@ export class HuiBadgeSuggestionPicker extends LitElement {
           .selectedEntityId=${this._entityId}
           @entity-picked=${this._handleEntityPicked}
         ></hui-suggestion-entity-tree>
+        <slot></slot>
       </div>
       <div class=${classMap({ main: true, hidden: !showMain })}>
         <div class="content ha-scrollbar">
@@ -174,7 +188,6 @@ export class HuiBadgeSuggestionPicker extends LitElement {
           stateObj
             ? html`<state-badge
                 slot="start"
-                .hass=${this.hass}
                 .stateObj=${stateObj}
               ></state-badge>`
             : nothing
@@ -297,6 +310,10 @@ export class HuiBadgeSuggestionPicker extends LitElement {
         .tree {
           flex: 1;
           min-height: 0;
+          --ha-suggestion-entity-tree-padding-bottom: var(
+            --ha-suggestion-picker-tree-padding-bottom,
+            0px
+          );
         }
         .main {
           flex: 1;
@@ -308,6 +325,7 @@ export class HuiBadgeSuggestionPicker extends LitElement {
           flex: 1;
           min-height: 0;
           overflow: auto;
+          padding-bottom: var(--ha-suggestion-picker-main-padding-bottom, 0px);
         }
         .hidden {
           display: none !important;

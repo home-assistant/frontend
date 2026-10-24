@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -55,6 +55,8 @@ export class HuiClockCardAnalog extends LitElement {
 
   @state() private _date?: string;
 
+  @queryAll(".hand") private _hands!: NodeListOf<HTMLElement>;
+
   private _dateInterval?: number;
 
   private _timeZone?: string;
@@ -87,6 +89,27 @@ export class HuiClockCardAnalog extends LitElement {
         this._initDate();
       }
     }
+
+    if (
+      changedProps.has("_hourOffsetSec") ||
+      changedProps.has("_minuteOffsetSec") ||
+      changedProps.has("_secondOffsetSec")
+    ) {
+      this._restartHandAnimations();
+    }
+  }
+
+  // The hands are positioned by a negative animation-delay computed from the
+  // current time. Changing the delay of a running animation keeps its original
+  // start time, so the time elapsed since then would be counted twice and the
+  // clock would run ahead. Restart the animations so the new delay applies
+  // from now.
+  private _restartHandAnimations() {
+    this._hands.forEach((hand) => {
+      hand.getAnimations().forEach((animation) => {
+        animation.currentTime = 0;
+      });
+    });
   }
 
   private _handleVisibilityChange = () => {

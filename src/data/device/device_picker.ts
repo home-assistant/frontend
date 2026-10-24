@@ -11,10 +11,7 @@ import type { FuseWeightedKey } from "../../resources/fuseMultiTerm";
 import type { HomeAssistant } from "../../types";
 import type { ConfigEntry } from "../config_entries";
 import type { HaEntityPickerEntityFilterFunc } from "../entity/entity";
-import type {
-  EntityRegistryDisplayEntry,
-  EntityRegistryEntry,
-} from "../entity/entity_registry";
+import type { EntityRegistryDisplayEntry } from "../entity/entity_registry";
 import { domainToName } from "../integration";
 import {
   getDeviceEntityDisplayLookup,
@@ -57,11 +54,9 @@ export const computeDeviceAreaLabel = (
   device: DeviceRegistryEntry,
   areas: HomeAssistant["areas"],
   devices: HomeAssistant["devices"],
-  states: HomeAssistant["states"],
   localize: LocalizeFunc,
   language: HomeAssistant["language"],
-  translationMetadata: HomeAssistant["translationMetadata"],
-  viaDeviceEntities?: EntityRegistryEntry[] | EntityRegistryDisplayEntry[]
+  translationMetadata: HomeAssistant["translationMetadata"]
 ): DeviceAreaLabel => {
   // Pass devices so a child device inherits its parent's area.
   const area = getDeviceArea(device, areas, devices);
@@ -70,7 +65,7 @@ export const computeDeviceAreaLabel = (
     ? devices[device.via_device_id]
     : undefined;
   const viaDeviceName = viaDevice
-    ? computeDeviceNameDisplay(viaDevice, localize, states, viaDeviceEntities)
+    ? computeDeviceNameDisplay(viaDevice, localize)
     : undefined;
   const viaDeviceArea = viaDevice
     ? getDeviceArea(viaDevice, areas, devices)
@@ -86,7 +81,7 @@ export const computeDeviceAreaLabel = (
     ? devices[device.parent_device_id]
     : undefined;
   const parentDeviceName = parentDevice
-    ? computeDeviceNameDisplay(parentDevice, localize, states)
+    ? computeDeviceNameDisplay(parentDevice, localize)
     : undefined;
 
   const isRTL = computeRTL(language, translationMetadata.translations);
@@ -278,25 +273,16 @@ export const getDevices = (
   }
 
   const outputDevices = inputDevices.map<DevicePickerItem>((device) => {
-    const deviceName = computeDeviceNameDisplay(
-      device,
-      hass.localize,
-      hass.states,
-      deviceEntityLookup[device.id]
-    );
+    const deviceName = computeDeviceNameDisplay(device, hass.localize);
 
     const { areaName, viaDeviceName, viaDeviceAreaName, parentDeviceName } =
       computeDeviceAreaLabel(
         device,
         hass.areas,
         hass.devices,
-        hass.states,
         hass.localize,
         hass.language,
-        hass.translationMetadata,
-        device.via_device_id
-          ? deviceEntityLookup[device.via_device_id]
-          : undefined
+        hass.translationMetadata
       );
 
     const configEntry = device.primary_config_entry

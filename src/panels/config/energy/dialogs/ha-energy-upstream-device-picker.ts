@@ -5,7 +5,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
-  computeEntityNameList,
+  computeEntityNameParts,
   computeEntitySearchLabels,
 } from "../../../../common/entity/compute_entity_name_display";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -67,38 +67,27 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
-      const [areaName] = computeEntityNameList(
-        stateObj,
-        [{ type: "area" }],
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
+      const { area: areaName } = computeEntityNameParts(stateObj, this.hass);
 
       return {
         id: statisticId,
         // Match the label shown in the device list and the graphs.
         primary: computeEnergyLabel(
-          this.hass,
+          this.hass.states,
+          this.hass.formatEntityName,
           statisticId,
           this.statsMetadata?.[statisticId],
           name
         ),
         secondary: areaName,
         stateObj,
-        search_labels: computeEntitySearchLabels(
-          stateObj,
-          this.hass.entities,
-          this.hass.devices,
-          this.hass.areas,
-          this.hass.floors
-        ),
+        search_labels: computeEntitySearchLabels(stateObj, this.hass),
       };
     }
 
     const label = getStatisticLabel(
-      this.hass,
+      this.hass.states,
+      this.hass.formatEntityName,
       statisticId,
       this.statsMetadata?.[statisticId]
     );
@@ -160,11 +149,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     ${
       item.stateObj
         ? html`
-            <state-badge
-              slot="start"
-              .stateObj=${item.stateObj}
-              .hass=${this.hass}
-            ></state-badge>
+            <state-badge slot="start" .stateObj=${item.stateObj}></state-badge>
           `
         : item.icon_path
           ? html`
@@ -202,7 +187,6 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
   protected render() {
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         use-top-label
         .label=${this.label}
         .helper=${this.helper}

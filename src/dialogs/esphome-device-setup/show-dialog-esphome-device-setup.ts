@@ -1,5 +1,8 @@
 import { fireEvent } from "../../common/dom/fire_event";
-import type { ESPHomeDeviceCapabilities } from "../../data/esphome";
+import type {
+  ESPHomeDeviceCapabilities,
+  ESPHomeDeviceWizard,
+} from "../../data/esphome";
 
 export const loadESPHomeDeviceSetupDialog = () =>
   import("./dialog-esphome-device-setup");
@@ -8,6 +11,7 @@ export interface ESPHomeDeviceSetupDialogParams {
   deviceId: string;
   deviceName?: string;
   capabilities?: ESPHomeDeviceCapabilities;
+  wizard?: ESPHomeDeviceWizard;
   mediaPlayerSupported?: boolean;
   dialogClosedCallback?: () => void;
 }

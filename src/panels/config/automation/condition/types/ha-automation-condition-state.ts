@@ -20,6 +20,7 @@ import "../../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 import type { StateCondition } from "../../../../../data/automation";
 import { STATE_CONDITION_HIDDEN_ATTRIBUTES } from "../../../../../data/entity/entity_attributes";
+import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../../types";
 import { forDictStruct } from "../../structs";
 import type { ConditionElement } from "../ha-automation-condition-row";
@@ -80,12 +81,26 @@ export class HaStateCondition extends LitElement implements ConditionElement {
     return { condition: "state", entity_id: "", state: [] };
   }
 
+  public static checkUiSupport(
+    _localize: LocalizeFunc,
+    condition: StateCondition
+  ): Error | undefined {
+    try {
+      assert(condition, stateConditionStruct);
+    } catch (err: any) {
+      return err;
+    }
+    return undefined;
+  }
+
   public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (changedProperties.has("condition")) {
-      try {
-        assert(this.condition, stateConditionStruct);
-      } catch (e: any) {
-        fireEvent(this, "ui-mode-not-available", e);
+      const err = HaStateCondition.checkUiSupport(
+        this.hass.localize,
+        this.condition
+      );
+      if (err) {
+        fireEvent(this, "ui-mode-not-available", err);
         return false;
       }
     }

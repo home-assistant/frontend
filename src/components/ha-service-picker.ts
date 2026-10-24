@@ -1,12 +1,20 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import type { ContextType } from "@lit/context";
 import { mdiRoomService } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { isValidServiceId } from "../common/entity/valid_service_id";
 import type { LocalizeFunc } from "../common/translations/localize";
+import {
+  configContext,
+  connectionContext,
+  internationalizationContext,
+  servicesContext,
+} from "../data/context";
 import { getServiceIcons } from "../data/icons";
 import { domainToName } from "../data/integration";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
@@ -31,7 +39,19 @@ const SEARCH_KEYS = [
 
 @customElement("ha-service-picker")
 class HaServicePicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: servicesContext, subscribe: true })
+  private _services!: ContextType<typeof servicesContext>;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -53,8 +73,8 @@ class HaServicePicker extends LitElement {
 
   protected firstUpdated(props: PropertyValues<this>) {
     super.firstUpdated(props);
-    this.hass.loadBackendTranslation("services");
-    getServiceIcons(this.hass.connection, this.hass.config);
+    this._i18n.loadBackendTranslation("services");
+    getServiceIcons(this._connection.connection, this._config.config);
   }
 
   private _rowRenderer: RenderItemFunction<ServiceComboBoxItem> = (
@@ -62,11 +82,7 @@ class HaServicePicker extends LitElement {
     index
   ) => html`
     <ha-combo-box-item .borderTop=${index !== 0}>
-      <ha-service-icon
-        slot="start"
-        .hass=${this.hass}
-        .service=${item.id}
-      ></ha-service-icon>
+      <ha-service-icon slot="start" .service=${item.id}></ha-service-icon>
       <span slot="headline">${item.primary}</span>
       <span slot="supporting-text">${item.secondary}</span>
       ${
@@ -105,7 +121,7 @@ class HaServicePicker extends LitElement {
         }
 
         const descriptionPlaceholders =
-          this.hass.services[domain][service].description_placeholders;
+          services[domain][service].description_placeholders;
 
         const serviceName =
           localize(
@@ -116,11 +132,7 @@ class HaServicePicker extends LitElement {
           service;
 
         return html`
-          <ha-service-icon
-            slot="start"
-            .hass=${this.hass}
-            .service=${serviceId}
-          ></ha-service-icon>
+          <ha-service-icon slot="start" .service=${serviceId}></ha-service-icon>
           <span slot="headline">${serviceName}</span>
           ${
             this.showServiceId
@@ -136,13 +148,12 @@ class HaServicePicker extends LitElement {
   protected render(): TemplateResult {
     const placeholder =
       this.placeholder ??
-      this.hass.localize("ui.components.service-picker.action");
+      this._i18n.localize("ui.components.service-picker.action");
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
-        .notFoundLabel=${this.hass.localize(
+        .notFoundLabel=${this._i18n.localize(
           "ui.components.service-picker.no_match"
         )}
         .label=${this.label}
@@ -151,11 +162,11 @@ class HaServicePicker extends LitElement {
         .getItems=${this._getItems}
         .rowRenderer=${this._rowRenderer}
         .valueRenderer=${this._valueRenderer(
-          this.hass.localize,
-          this.hass.services
+          this._i18n.localize,
+          this._services
         )}
         .searchKeys=${SEARCH_KEYS}
-        .unknownItemText=${this.hass.localize(
+        .unknownItemText=${this._i18n.localize(
           "ui.components.service-picker.unknown"
         )}
         @value-changed=${this._valueChanged}
@@ -165,9 +176,9 @@ class HaServicePicker extends LitElement {
   }
 
   private _getItems = () =>
-    this._services(this.hass.localize, this.hass.services);
+    this._serviceItems(this._i18n.localize, this._services);
 
-  private _services = memoizeOne(
+  private _serviceItems = memoizeOne(
     (
       localize: LocalizeFunc,
       services: HomeAssistant["services"]
@@ -187,10 +198,10 @@ class HaServicePicker extends LitElement {
             const domainName = domainToName(localize, domain);
 
             const descriptionPlaceholders =
-              this.hass.services[domain][service].description_placeholders;
+              services[domain][service].description_placeholders;
 
             const name =
-              this.hass.localize(
+              localize(
                 `component.${domain}.services.${service}.name`,
                 descriptionPlaceholders
               ) ||
@@ -198,7 +209,7 @@ class HaServicePicker extends LitElement {
               service;
 
             const description =
-              this.hass.localize(
+              localize(
                 `component.${domain}.services.${service}.description`,
                 descriptionPlaceholders
               ) ||

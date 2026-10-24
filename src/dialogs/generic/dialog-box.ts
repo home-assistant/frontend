@@ -90,12 +90,12 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
         type=${confirmPrompt ? "alert" : "standard"}
         .preventScrimClose=${!!this._params.confirmation || this.isDirtyState}
         @closed=${this._dialogClosed}
-        aria-labelledby="dialog-box-title"
+        .accessibleLabel=${this._accessibleLabel(dialogTitle)}
         aria-describedby="dialog-box-description"
       >
         <ha-dialog-header slot="header">
           ${
-            !confirmPrompt
+            !confirmPrompt || this._params.showCloseButton
               ? html`<slot name="headerNavigationIcon" slot="navigationIcon">
                   <ha-icon-button
                     data-dialog="close"
@@ -169,6 +169,13 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
                   `
                 : nothing
           }
+          ${
+            this._params.prompt && this._params.textBelowInput
+              ? html`<div class="after-input">
+                  ${this._params.textBelowInput}
+                </div>`
+              : nothing
+          }
         </div>
         <ha-dialog-footer slot="footer">
           ${
@@ -215,6 +222,17 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
     if (this._params?.cancel) {
       this._params.cancel();
     }
+  }
+
+  // Alerts often have no title. Their message is what a screen reader should
+  // announce then, as long as it is plain text.
+  private _accessibleLabel(dialogTitle: string | false | undefined) {
+    if (dialogTitle) {
+      return dialogTitle;
+    }
+    return typeof this._params?.text === "string"
+      ? this._params.text
+      : undefined;
   }
 
   private _dismiss(): void {
@@ -295,6 +313,9 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
     }
     ha-input {
       width: 100%;
+    }
+    .after-input {
+      margin-top: var(--ha-space-4);
     }
     .title {
       font-weight: inherit;

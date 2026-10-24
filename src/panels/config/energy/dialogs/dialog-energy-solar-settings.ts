@@ -158,7 +158,8 @@ export class DialogEnergySolarSettings
           .placeholder=${
             this._source?.stat_energy_from
               ? getStatisticLabel(
-                  this.hass,
+                  this.hass.states,
+                  this.hass.formatEntityName,
                   this._source.stat_energy_from,
                   this._params?.statsMetadata?.[this._source.stat_energy_from]
                 )
@@ -341,7 +342,7 @@ export class DialogEnergySolarSettings
       this._params?.statsMetadata &&
       !(ev.detail.value in this._params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass, [
+      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
         ev.detail.value,
       ]);
       if (metadata) {

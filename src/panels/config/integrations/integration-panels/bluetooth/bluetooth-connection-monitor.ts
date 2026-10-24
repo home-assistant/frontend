@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../../../common/controllers/data-table-settings-controller";
 import { storage } from "../../../../../common/decorators/storage";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import { extractSearchParamsObject } from "../../../../../common/url/search-params";
@@ -35,8 +36,6 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
-  @state() private _filter?: string;
-
   private _tabs: PageNavigation[] = [
     {
       translationKey: "ui.panel.config.bluetooth.navigation.connections",
@@ -52,12 +51,11 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
 
   @state() private _sourceDevices: Record<string, DeviceRegistryEntry> = {};
 
-  @storage({
-    key: "bluetooth-connection-table-grouping",
-    state: false,
-    subscribe: false,
-  })
-  private _activeGrouping?: string = "source";
+  private _tableSettings = new DataTableSettingsController(
+    this,
+    { grouping: "bluetooth-connection-table-grouping" },
+    { defaultGrouping: "source" }
+  );
 
   @storage({
     key: "bluetooth-connection-table-collapsed",
@@ -162,7 +160,7 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
 
     const searchParams = extractSearchParamsObject();
     if (searchParams.source) {
-      this._filter = searchParams.source;
+      this._tableSettings.showSearch(searchParams.source);
     }
   }
 
@@ -196,6 +194,7 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
           filterable: true,
           sortable: true,
           groupable: true,
+          urlName: "source",
         },
         source_address: {
           title: localize("ui.panel.config.bluetooth.source_address"),
@@ -244,20 +243,18 @@ export class BluetoothConnectionMonitorPanel extends LitElement {
         back-path="/config/bluetooth/dashboard"
         .columns=${this._columns(this.hass.localize)}
         .data=${this._dataWithNamedSourceAndIds(this._data)}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .noDataText=${this.hass.localize(
           "ui.panel.config.bluetooth.no_connections"
         )}
-        @grouping-changed=${this._handleGroupingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        filter=${this._filter || ""}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
+        sync-url
       ></hass-tabs-subpage-data-table>
     `;
-  }
-
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {

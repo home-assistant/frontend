@@ -77,7 +77,6 @@ class BrowseMediaTTS extends LitElement {
             this._provider?.supported_languages?.length
               ? html` <div class="options">
                   <ha-language-picker
-                    .hass=${this.hass}
                     .languages=${this._provider.supported_languages}
                     .value=${this._language}
                     required

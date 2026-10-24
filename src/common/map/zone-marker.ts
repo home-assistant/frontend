@@ -4,6 +4,8 @@ import { theme2hex } from "../color/convert-color";
 /** The zone marker: a colored circle with the zone's icon or initials, shared by the map and the zone editor */
 
 export const ZONE_CIRCLE_SIZE = 36;
+// Same as an entity marker's icon
+const ZONE_ICON_SIZE = 24;
 
 // WCAG minimum contrast for icons and other graphics
 const MIN_CONTENT_CONTRAST = 3;
@@ -68,6 +70,6 @@ export const zoneMarkerStyles = `
     overflow: hidden;
     font-size: var(--ha-font-size-s);
     font-weight: var(--ha-font-weight-medium);
-    --mdc-icon-size: ${ZONE_CIRCLE_SIZE / 2}px;
+    --mdc-icon-size: ${ZONE_ICON_SIZE}px;
   }
 `;
