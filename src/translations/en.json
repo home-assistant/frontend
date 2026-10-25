@@ -11493,6 +11493,16 @@
               "button": {
                 "label": "Button"
               },
+              "calendar-forecast": {
+                "label": "Calendar forecast",
+                "focus": "Focus",
+                "focus_options": {
+                  "past": "Past",
+                  "present": "Present",
+                  "future": "Future"
+                },
+                "show_all_day_events": "Show all-day events"
+              },
               "cover-open-close": {
                 "label": "Cover open/close"
               },

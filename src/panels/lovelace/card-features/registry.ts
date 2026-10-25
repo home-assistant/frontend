@@ -3,6 +3,7 @@ import { supportsAlarmModesCardFeature } from "./hui-alarm-modes-card-feature";
 import { supportsAreaControlsCardFeature } from "./hui-area-controls-card-feature";
 import { supportsBarGaugeCardFeature } from "./hui-bar-gauge-card-feature";
 import { supportsButtonCardFeature } from "./hui-button-card-feature";
+import { supportsCalendarForecastCardFeature } from "./hui-calendar-forecast-card-feature";
 import { supportsClimateFanModesCardFeature } from "./hui-climate-fan-modes-card-feature";
 import { supportsClimateHvacModesCardFeature } from "./hui-climate-hvac-modes-card-feature";
 import { supportsClimatePresetModesCardFeature } from "./hui-climate-preset-modes-card-feature";
@@ -69,6 +70,7 @@ export const UI_FEATURE_TYPES = [
   "area-controls",
   "bar-gauge",
   "button",
+  "calendar-forecast",
   "climate-fan-modes",
   "climate-hvac-modes",
   "climate-preset-modes",
@@ -127,6 +129,7 @@ export const SUPPORTS_FEATURE_TYPES: Record<UiFeatureType, SupportsFeature> = {
   "area-controls": supportsAreaControlsCardFeature,
   "bar-gauge": supportsBarGaugeCardFeature,
   button: supportsButtonCardFeature,
+  "calendar-forecast": supportsCalendarForecastCardFeature,
   "climate-fan-modes": supportsClimateFanModesCardFeature,
   "climate-swing-modes": supportsClimateSwingModesCardFeature,
   "climate-swing-horizontal-modes":
