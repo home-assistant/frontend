@@ -155,6 +155,7 @@ export class HaStateControlFanSpeed extends LitElement {
           style=${styleMap({
             "--control-select-color": color,
             "--control-select-background": color,
+            "--fan-speed-count": `${speeds.length}`,
           })}
           .disabled=${this.stateObj.state === UNAVAILABLE}
         >
@@ -214,6 +215,8 @@ export class HaStateControlFanSpeed extends LitElement {
     }
     ha-control-select.dense {
       line-height: var(--ha-line-height-condensed);
+      /* Keep every segment tall enough for its content on short screens */
+      min-height: calc(var(--fan-speed-count) * 28px + 4px);
     }
   `;
 }
