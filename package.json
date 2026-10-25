@@ -64,7 +64,7 @@
     "@formatjs/intl-pluralrules": "6.3.16",
     "@formatjs/intl-relativetimeformat": "12.3.16",
     "@home-assistant/webawesome": "3.14.0-ha.1",
-    "@lezer/common": "1.5.3",
+    "@lezer/common": "1.5.4",
     "@lezer/highlight": "1.2.5",
     "@lit-labs/motion": "1.1.0",
     "@lit-labs/observers": "2.1.0",
