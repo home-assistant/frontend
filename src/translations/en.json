@@ -609,6 +609,7 @@
         },
         "image_region": {
           "add_corner": "Add corner",
+          "add_corner_between": "Add corner between corner {first} and corner {second}",
           "add_region": "Add region",
           "clear": "Clear region",
           "corner": "Corner {number}",

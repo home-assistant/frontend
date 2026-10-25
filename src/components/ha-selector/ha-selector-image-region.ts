@@ -298,12 +298,23 @@ export class HaImageRegionSelector extends LitElement {
               @keydown=${this._cornerKeyDown}
             ></div>
             ${
-              !this._draft && canAdd
+              canAdd
                 ? html`<div
-                    class="midpoint"
+                    class="midpoint ${this._draft ? "dragging" : ""}"
                     style=${this._midpointStyle(shown, index)}
+                    tabindex=${editable ? 0 : -1}
+                    role="button"
+                    aria-disabled=${editable ? "false" : "true"}
+                    aria-label=${localize(
+                      "ui.components.selectors.image_region.add_corner_between",
+                      {
+                        first: index + 1,
+                        second: ((index + 1) % shown.length) + 1,
+                      }
+                    )}
                     .index=${index}
                     @pointerdown=${this._midpointPointerDown}
+                    @keydown=${this._midpointKeyDown}
                   ></div>`
                 : nothing
             }
@@ -528,6 +539,28 @@ export class HaImageRegionSelector extends LitElement {
     this._startDrag(ev, {
       kind: "corner",
       pointerId: ev.pointerId,
+      index: index + 1,
+    });
+  }
+
+  private _midpointKeyDown(
+    ev: KeyboardEvent & HASSDomCurrentTargetEvent<IndexedElement>
+  ): void {
+    if (
+      (ev.key !== "Enter" && ev.key !== " ") ||
+      ev.ctrlKey ||
+      ev.metaKey ||
+      ev.altKey ||
+      this.disabled ||
+      this._invalid ||
+      this._drag
+    ) {
+      return;
+    }
+    ev.preventDefault();
+    const index = ev.currentTarget.index;
+    this._setValue(insertMidpoint(this._points, index), {
+      kind: "corner",
       index: index + 1,
     });
   }
@@ -805,12 +838,22 @@ export class HaImageRegionSelector extends LitElement {
       outline-offset: 2px;
       box-shadow: 0 0 0 5px var(--card-background-color);
     }
+    .midpoint:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+      opacity: 1;
+    }
     .midpoint {
       width: 14px;
       height: 14px;
       background-color: var(--primary-color);
       opacity: 0.6;
       cursor: copy;
+    }
+    /* Hidden during drags, but kept so a focused midpoint keeps the focus. */
+    .midpoint.dragging {
+      opacity: 0;
+      pointer-events: none;
     }
     .toolbar {
       display: flex;

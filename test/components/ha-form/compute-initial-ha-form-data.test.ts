@@ -289,6 +289,12 @@ describe("computeInitialHaFormData", () => {
     });
   });
 
+  it("leaves a required image region empty", () => {
+    expect(
+      computeInitialHaFormData([requiredField({ image_region: {} })])
+    ).toEqual({});
+  });
+
   it("throws for an unsupported required selector", () => {
     expect(() =>
       computeInitialHaFormData([
