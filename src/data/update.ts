@@ -174,7 +174,9 @@ export const checkForEntityUpdates = async (
     hass.states,
     hass.formatEntityName,
     hass.locale.language
-  ).map((entity) => entity.entity_id);
+  )
+    .filter((entity) => entity.state !== "unavailable")
+    .map((entity) => entity.entity_id);
 
   if (!entities.length) {
     showAlertDialog(element, {
