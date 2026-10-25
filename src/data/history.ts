@@ -762,9 +762,11 @@ export const mergeHistoryResults = (
       return;
     }
     const entry = (lookup[key] ??= {});
-    entry.ltsItem = entry.ltsItem
-      ? { ...entry.ltsItem, data: [...entry.ltsItem.data, ...item.data] }
-      : item;
+    if (entry.ltsItem) {
+      entry.ltsItem.data.push(...item.data);
+    } else {
+      entry.ltsItem = { ...item, data: [...item.data] };
+    }
   };
 
   for (const item of ltsResult.line) {
