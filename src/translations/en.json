@@ -11527,7 +11527,15 @@
                 "label": "Fan direction"
               },
               "fan-speed": {
-                "label": "Fan speed"
+                "label": "Fan speed",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "Buttons",
+                  "buttons_description": "Pick a speed from a row of buttons",
+                  "slider": "Slider",
+                  "slider_description": "Drag to set the speed"
+                },
+                "style_unavailable": "This fan has too many speeds to show them as buttons."
               },
               "alarm-modes": {
                 "label": "Alarm modes",

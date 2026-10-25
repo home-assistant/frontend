@@ -33,6 +33,7 @@ import {
   fanPercentageToSpeed,
   fanSpeedToPercentage,
   isNumberedFanSpeed,
+  resolveFanSpeedStyle,
 } from "../../../data/fan";
 import type { FrontendLocaleData } from "../../../data/translation";
 import type {
@@ -41,7 +42,7 @@ import type {
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   FanSpeedCardFeatureConfig,
@@ -105,6 +106,12 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
     };
   }
 
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-fan-speed-card-feature-editor");
+
+    return document.createElement("hui-fan-speed-card-feature-editor");
+  }
+
   public setConfig(config: FanSpeedCardFeatureConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
@@ -134,7 +141,10 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
       return nothing;
     }
 
-    const speeds = computeFanSpeeds(this._stateObj);
+    const speeds =
+      resolveFanSpeedStyle(this._stateObj, this._config.style) === "buttons"
+        ? computeFanSpeeds(this._stateObj)
+        : undefined;
 
     const percentage = stateActive(this._stateObj)
       ? (this._stateObj.attributes.percentage ?? 0)

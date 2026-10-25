@@ -1,0 +1,129 @@
+import { css, html, LitElement, nothing } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import "../../../../components/ha-alert";
+import "../../../../components/ha-form/ha-form";
+import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type { FanEntity } from "../../../../data/fan";
+import {
+  resolveFanSpeedStyle,
+  supportsFanSpeedStyleChoice,
+} from "../../../../data/fan";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type {
+  FanSpeedCardFeatureConfig,
+  LovelaceCardFeatureContext,
+} from "../../card-features/types";
+import type { LovelaceCardFeatureEditor } from "../../types";
+
+@customElement("hui-fan-speed-card-feature-editor")
+export class HuiFanSpeedCardFeatureEditor
+  extends LitElement
+  implements LovelaceCardFeatureEditor
+{
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
+  @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @state() private _config?: FanSpeedCardFeatureConfig;
+
+  public setConfig(config: FanSpeedCardFeatureConfig): void {
+    this._config = config;
+  }
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc, disabled: boolean) =>
+      [
+        {
+          name: "style",
+          disabled,
+          selector: {
+            select: {
+              multiple: false,
+              mode: "box",
+              options: ["buttons", "slider"].map((mode) => ({
+                value: mode,
+                label: localize(
+                  `ui.panel.lovelace.editor.features.types.fan-speed.style_list.${mode}`
+                ),
+                description: localize(
+                  `ui.panel.lovelace.editor.features.types.fan-speed.style_list.${mode}_description`
+                ),
+                image: {
+                  src: `/static/images/form/feature_style_${mode}.svg`,
+                  src_dark: `/static/images/form/feature_style_${mode}_dark.svg`,
+                  flip_rtl: true,
+                },
+              })),
+            },
+          },
+        },
+      ] as const
+  );
+
+  protected render() {
+    if (!this.hass || !this._config) {
+      return nothing;
+    }
+
+    const stateObj = this.context?.entity_id
+      ? (this.hass.states[this.context.entity_id] as FanEntity | undefined)
+      : undefined;
+
+    const unavailable = !!stateObj && !supportsFanSpeedStyleChoice(stateObj);
+
+    const data: FanSpeedCardFeatureConfig = {
+      ...this._config,
+      style: stateObj
+        ? resolveFanSpeedStyle(stateObj, this._config.style)
+        : (this._config.style ?? "buttons"),
+    };
+
+    return html`
+      ${
+        unavailable
+          ? html`
+              <ha-alert alert-type="info">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.features.types.fan-speed.style_unavailable"
+                )}
+              </ha-alert>
+            `
+          : nothing
+      }
+      <ha-form
+        .hass=${this.hass}
+        .data=${data}
+        .schema=${this._schema(this.hass.localize, unavailable)}
+        .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
+    `;
+  }
+
+  private _valueChanged(ev: ValueChangedEvent<FanSpeedCardFeatureConfig>) {
+    fireEvent(this, "config-changed", { config: ev.detail.value });
+  }
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) =>
+    this.hass!.localize(
+      `ui.panel.lovelace.editor.features.types.fan-speed.${schema.name}`
+    );
+
+  static styles = css`
+    ha-alert {
+      display: block;
+      margin-bottom: var(--ha-space-4);
+    }
+  `;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hui-fan-speed-card-feature-editor": HuiFanSpeedCardFeatureEditor;
+  }
+}
