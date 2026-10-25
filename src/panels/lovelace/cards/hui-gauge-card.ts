@@ -38,7 +38,11 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { GaugeCardConfig } from "./types";
 
 export const DEFAULT_MIN = 0;
@@ -191,9 +195,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     // In a sections view with a set number of rows the card height is fixed,
     // so the gauge also has to fit in the height, not only in the width.
-    const rows = this._config.grid_options?.rows;
     const fixedHeight =
-      this.layout === "grid" && rows !== undefined && rows !== "auto";
+      this.layout === "grid" &&
+      typeof this._config.grid_options?.rows === "number";
 
     return html`
       <ha-card
@@ -212,22 +216,32 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             : undefined
         )}
       >
-        <ha-gauge
-          .min=${this._config.min!}
-          .max=${this._config.max!}
-          .value=${value}
-          .valueText=${valueToDisplay}
-          .locale=${this._i18n.locale}
-          .label=${customUnit ?? ""}
-          style=${styleMap({
-            "--gauge-color": this._computeSeverity(Number(value)),
-          })}
-          .needle=${this._config!.needle}
-          .levels=${this._config!.needle ? this._severityLevels() : undefined}
-        ></ha-gauge>
+        <div class="gauge-container">
+          <ha-gauge
+            .min=${this._config.min!}
+            .max=${this._config.max!}
+            .value=${value}
+            .valueText=${valueToDisplay}
+            .locale=${this._i18n.locale}
+            .label=${customUnit ?? ""}
+            style=${styleMap({
+              "--gauge-color": this._computeSeverity(Number(value)),
+            })}
+            .needle=${this._config!.needle}
+            .levels=${this._config!.needle ? this._severityLevels() : undefined}
+          ></ha-gauge>
+        </div>
         <p class="title" .title=${name}>${name}</p>
       </ha-card>
     `;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    // With one row there is almost no room left for the gauge after the
+    // padding and the name, so the card needs at least 2 rows.
+    return {
+      min_rows: 2,
+    };
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -376,21 +390,23 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       max-width: 250px;
     }
 
-    ha-card.fixed-height {
+    .gauge-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* With a fixed card height the container takes the space left after
+       the name, and the gauge is sized to fit inside it. */
+    ha-card.fixed-height .gauge-container {
+      flex: 1;
+      min-height: 0;
       container-type: size;
     }
 
-    /* The gauge is 100 by 55 (see the viewBox in ha-gauge), so limit its
-       width to what fits in the card height left over after the name. */
     ha-card.fixed-height ha-gauge {
-      flex: none;
-      max-width: min(
-        250px,
-        calc(
-          (100cqh - var(--ha-font-size-m) * var(--ha-line-height-expanded)) *
-            100 / 55
-        )
-      );
+      width: min(250px, 100cqw, 100cqh * 100 / 55);
     }
   `;
 }
