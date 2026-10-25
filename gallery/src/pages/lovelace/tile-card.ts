@@ -202,6 +202,17 @@ const ENTITIES = [
     },
   },
   {
+    entity_id: "fan.tmp_on_off_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "TMP on/off fan",
+      device_class: "fan",
+      percentage: 100,
+      percentage_step: 100,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
     entity_id: "fan.six_speed_fan",
     state: "on",
     attributes: {
@@ -448,6 +459,15 @@ const CONFIGS = [
     config: {
       type: "tile",
       entity: "fan.five_speed_fan",
+      features: [{ type: "fan-speed", style: "slider" }],
+    },
+  },
+  {
+    heading:
+      "TMP fan speed feature (off/on, slider style forced to button style)",
+    config: {
+      type: "tile",
+      entity: "fan.tmp_on_off_fan",
       features: [{ type: "fan-speed", style: "slider" }],
     },
   },

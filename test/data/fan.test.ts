@@ -70,6 +70,11 @@ describe("fan speed style", () => {
     expect(resolveFanSpeedStyle(fan(), "buttons")).toBe("slider");
   });
 
+  it("keeps buttons for an off/on fan", () => {
+    expect(resolveFanSpeedStyle(fan(100))).toBe("buttons");
+    expect(resolveFanSpeedStyle(fan(100), "slider")).toBe("buttons");
+  });
+
   it("offers a choice from 3 to 11 speeds", () => {
     expect(supportsFanSpeedStyleChoice(fan(100))).toBe(false);
     expect(supportsFanSpeedStyleChoice(fan(50))).toBe(true);

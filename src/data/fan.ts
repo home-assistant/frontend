@@ -83,17 +83,6 @@ export const computeDefaultFanSpeedStyle = (
     ? "buttons"
     : "slider";
 
-export const resolveFanSpeedStyle = (
-  stateObj: FanEntity,
-  style?: FanSpeedStyle
-): FanSpeedStyle => {
-  const resolved = style ?? computeDefaultFanSpeedStyle(stateObj);
-  if (resolved === "buttons" && !computeFanSpeeds(stateObj)) {
-    return "slider";
-  }
-  return resolved;
-};
-
 // A slider brings nothing to an off/on fan, so it always shows buttons.
 export const supportsFanSpeedStyleChoice = (stateObj: FanEntity): boolean => {
   const speedCount = computeFanSpeedCount(stateObj);
@@ -101,6 +90,15 @@ export const supportsFanSpeedStyleChoice = (stateObj: FanEntity): boolean => {
     speedCount >= 3 && speedCount <= FAN_SPEED_COUNT_MAX_FOR_DISCRETE_SPEEDS
   );
 };
+
+// Fans without a choice always use their default style, whatever is requested.
+export const resolveFanSpeedStyle = (
+  stateObj: FanEntity,
+  style?: FanSpeedStyle
+): FanSpeedStyle =>
+  supportsFanSpeedStyleChoice(stateObj)
+    ? (style ?? computeDefaultFanSpeedStyle(stateObj))
+    : computeDefaultFanSpeedStyle(stateObj);
 
 export const isNumberedFanSpeed = (speed: FanSpeed): speed is `${number}` =>
   !isNaN(Number(speed));
