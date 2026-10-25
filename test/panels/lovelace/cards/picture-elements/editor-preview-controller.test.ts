@@ -275,6 +275,14 @@ describe("PictureElementsEditorPreviewController", () => {
     expect(space.defaultPrevented).toBe(false);
   });
 
+  it("selects an element activated by a click alone", () => {
+    const { elements, handlers } = setup({
+      configs: [{ type: "icon" }, { type: "icon" }],
+    });
+    elements[1].click();
+    expect(handlers.selectElement).toHaveBeenCalledWith(1);
+  });
+
   it("keeps element actions from running while editing", () => {
     const { elements } = setup();
     const action = vi.fn();

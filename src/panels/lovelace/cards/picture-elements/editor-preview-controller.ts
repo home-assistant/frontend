@@ -353,10 +353,18 @@ export class PictureElementsEditorPreviewController implements ReactiveControlle
 
   // Bound in the capture phase to the events that run element actions.
   public blockAction = capture((ev: Event): void => {
-    if (this._editor) {
-      ev.stopPropagation();
-      // Stop navigation, the context menu and native image drags.
-      ev.preventDefault();
+    const editor = this._editor;
+    if (!editor) {
+      return;
+    }
+    ev.stopPropagation();
+    // Stop navigation, the context menu and native image drags.
+    ev.preventDefault();
+    // Assistive technology can activate an element with a click alone. Clicks
+    // after a press land on the root, as it captures the pointer.
+    const index = ev.type === "click" ? this._elementIndex(ev) : undefined;
+    if (index !== undefined) {
+      editor.handlers.selectElement(index);
     }
   });
 
