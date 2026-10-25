@@ -366,6 +366,7 @@ export class HaImageRegionSelector extends LitElement {
                     .index=${index}
                     @pointerdown=${this._midpointPointerDown}
                     @keydown=${this._midpointKeyDown}
+                    @click=${this._midpointClick}
                   ></div>`
                 : nothing
             }
@@ -617,15 +618,28 @@ export class HaImageRegionSelector extends LitElement {
       (ev.key !== "Enter" && ev.key !== " ") ||
       ev.ctrlKey ||
       ev.metaKey ||
-      ev.altKey ||
-      this.disabled ||
-      this._invalid ||
-      this._drag
+      ev.altKey
     ) {
       return;
     }
     ev.preventDefault();
-    const index = ev.currentTarget.index;
+    this._addCornerAfter(ev.currentTarget.index);
+  }
+
+  // Assistive technology activates the button with a click alone. Pointer
+  // clicks (detail >= 1) already inserted the corner on pointerdown.
+  private _midpointClick(
+    ev: MouseEvent & HASSDomCurrentTargetEvent<IndexedElement>
+  ): void {
+    if (ev.detail === 0) {
+      this._addCornerAfter(ev.currentTarget.index);
+    }
+  }
+
+  private _addCornerAfter(index: number): void {
+    if (this.disabled || this._invalid || this._drag) {
+      return;
+    }
     this._setValue(insertMidpoint(this._points, index), {
       kind: "corner",
       index: index + 1,
