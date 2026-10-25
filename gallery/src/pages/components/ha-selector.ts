@@ -538,6 +538,10 @@ const SCHEMAS: {
         },
       },
       icon: { name: "Icon", selector: { icon: {} } },
+      image_region: {
+        name: "Image region",
+        selector: { image_region: { max_points: 12 } },
+      },
       media: { name: "Media", selector: { media: {} } },
       location: { name: "Location", selector: { location: {} } },
       location_radius: {
