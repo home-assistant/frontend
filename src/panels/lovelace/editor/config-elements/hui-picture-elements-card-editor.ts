@@ -2,6 +2,7 @@ import memoizeOne from "memoize-one";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import {
   any,
   array,
@@ -66,6 +67,10 @@ export class HuiPictureElementsCardEditor
   @state() private _config?: PictureElementsCardConfig;
 
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
+
+  // Bumped when the preview moves an element, as the sub-editor's YAML mode
+  // doesn't pick up outside changes.
+  private _movedFromPreview = 0;
 
   public setConfig(config: PictureElementsCardConfig): void {
     assert(config, cardConfigStruct);
@@ -160,6 +165,7 @@ export class HuiPictureElementsCardEditor
     const elements = this._config!.elements.concat();
     elements[index] = newElement;
     this._config = { ...this._config!, elements };
+    this._movedFromPreview++;
     this._subElementEditorConfig = {
       index,
       type: "element",
@@ -253,13 +259,18 @@ export class HuiPictureElementsCardEditor
               `
             : nothing
         }
-        <hui-sub-element-editor
-          .hass=${this.hass}
-          .config=${this._subElementEditorConfig}
-          @go-back=${this._goBack}
-          @config-changed=${this._handleSubElementChanged}
-        >
-        </hui-sub-element-editor>
+        ${keyed(
+          `${this._subElementEditorConfig.index}-${this._movedFromPreview}`,
+          html`
+            <hui-sub-element-editor
+              .hass=${this.hass}
+              .config=${this._subElementEditorConfig}
+              @go-back=${this._goBack}
+              @config-changed=${this._handleSubElementChanged}
+            >
+            </hui-sub-element-editor>
+          `
+        )}
       `;
     }
 

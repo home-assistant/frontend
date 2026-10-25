@@ -355,7 +355,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     }
 
     .editing .element.selected,
-    .editing .selected > .element {
+    .editing .selected .element {
       outline: 2px solid var(--primary-color);
       outline-offset: 2px;
     }
