@@ -1,6 +1,10 @@
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-alert";
@@ -11,7 +15,7 @@ import {
   resolveFanSpeedStyle,
   supportsFanSpeedStyleChoice,
 } from "../../../../data/fan";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type { ValueChangedEvent } from "../../../../types";
 import type {
   FanSpeedCardFeatureConfig,
   LovelaceCardFeatureContext,
@@ -23,9 +27,15 @@ export class HuiFanSpeedCardFeatureEditor
   extends LitElement
   implements LovelaceCardFeatureEditor
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: FanEntity;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state() private _config?: FanSpeedCardFeatureConfig;
 
@@ -64,13 +74,11 @@ export class HuiFanSpeedCardFeatureEditor
   );
 
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this._config) {
       return nothing;
     }
 
-    const stateObj = this.context?.entity_id
-      ? (this.hass.states[this.context.entity_id] as FanEntity | undefined)
-      : undefined;
+    const stateObj = this._stateObj;
 
     const unavailable = !!stateObj && !supportsFanSpeedStyleChoice(stateObj);
 
@@ -86,7 +94,7 @@ export class HuiFanSpeedCardFeatureEditor
         unavailable
           ? html`
               <ha-alert alert-type="info">
-                ${this.hass.localize(
+                ${this._localize(
                   "ui.panel.lovelace.editor.features.types.fan-speed.style_unavailable"
                 )}
               </ha-alert>
@@ -94,9 +102,8 @@ export class HuiFanSpeedCardFeatureEditor
           : nothing
       }
       <ha-form
-        .hass=${this.hass}
         .data=${data}
-        .schema=${this._schema(this.hass.localize, unavailable)}
+        .schema=${this._schema(this._localize, unavailable)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -110,7 +117,7 @@ export class HuiFanSpeedCardFeatureEditor
   private _computeLabelCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) =>
-    this.hass!.localize(
+    this._localize(
       `ui.panel.lovelace.editor.features.types.fan-speed.${schema.name}`
     );
 
