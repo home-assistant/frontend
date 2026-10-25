@@ -622,6 +622,11 @@
           "no_image": "No image to show. You can still draw the region.",
           "refresh_image": "Refresh image",
           "remove_corner": "Remove corner {number}",
+          "validation": {
+            "max_points": "The region can have at most {max} corners.",
+            "min_points": "The region needs at least {min} corners.",
+            "required": "Draw a region on the image."
+          },
           "x": "X",
           "y": "Y"
         },

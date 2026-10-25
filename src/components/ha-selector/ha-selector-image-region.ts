@@ -112,6 +112,9 @@ export class HaImageRegionSelector extends LitElement {
   // The corners while a drag is in progress, before they are committed.
   @state() private _draft?: ImageRegionPoint[];
 
+  // Set when a validity check failed, until the value changes.
+  @state() private _showValidation = false;
+
   @query(".frame") private _frame?: HTMLElement;
 
   @queryAll(".corner") private _corners!: NodeListOf<HTMLElement>;
@@ -123,6 +126,8 @@ export class HaImageRegionSelector extends LitElement {
   @query(".add-corner") private _addCornerButton?: HTMLElement;
 
   @query(".add-region") private _addRegionButton?: HaButton;
+
+  @query(".clear") private _clearButton?: HaButton;
 
   // What to focus once the parent sent the changed value back.
   private _pendingFocus?: { kind: FocusKind; index: number };
@@ -158,13 +163,42 @@ export class HaImageRegionSelector extends LitElement {
   }
 
   public reportValidity(): boolean {
+    const valid = !this._validationErrorKey;
+    this._showValidation = !valid;
+    return valid;
+  }
+
+  public focus(options?: FocusOptions): void {
+    const target = this._invalid
+      ? this._clearButton
+      : this._points.length
+        ? this._corners[0]
+        : this._addRegionButton;
+    if (target) {
+      target.focus(options);
+    } else {
+      super.focus(options);
+    }
+  }
+
+  // Why the value would be rejected; the invalid value has its own alert.
+  private get _validationErrorKey():
+    "required" | "min_points" | "max_points" | "invalid" | undefined {
     if (this.value == null) {
-      return !this.required;
+      return this.required ? "required" : undefined;
+    }
+    // An empty list is sent as is and rejected, also for optional fields.
+    if (Array.isArray(this.value) && !this.value.length) {
+      return "required";
+    }
+    if (this._invalid) {
+      return "invalid";
     }
     const count = this._points.length;
-    return (
-      !this._invalid && count >= this._minPoints && count <= this._maxPoints
-    );
+    if (count < this._minPoints) {
+      return "min_points";
+    }
+    return count > this._maxPoints ? "max_points" : undefined;
   }
 
   public disconnectedCallback(): void {
@@ -181,6 +215,13 @@ export class HaImageRegionSelector extends LitElement {
   }
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
+    if (
+      changedProps.has("value") ||
+      changedProps.has("required") ||
+      changedProps.has("selector")
+    ) {
+      this._showValidation = false;
+    }
     if (
       (changedProps.has("selector") || changedProps.has("context")) &&
       this._entityId !== this._imageEntityId
@@ -421,6 +462,7 @@ export class HaImageRegionSelector extends LitElement {
                   ${localize("ui.components.selectors.image_region.add_corner")}
                 </ha-button>
                 <ha-button
+                  class="clear"
                   appearance="plain"
                   variant="danger"
                   .disabled=${this.disabled}
@@ -430,6 +472,7 @@ export class HaImageRegionSelector extends LitElement {
                 </ha-button>`
             : this._invalid
               ? html`<ha-button
+                  class="clear"
                   appearance="plain"
                   variant="danger"
                   .disabled=${this.disabled}
@@ -448,12 +491,26 @@ export class HaImageRegionSelector extends LitElement {
                 </ha-button>`
         }
       </div>
+      ${this._renderValidationError()}
       ${
         this.helper
           ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
           : nothing
       }
     `;
+  }
+
+  private _renderValidationError() {
+    const key = this._showValidation ? this._validationErrorKey : undefined;
+    if (!key || key === "invalid") {
+      return nothing;
+    }
+    return html`<div class="error" role="alert">
+      ${this._i18n.localize(
+        `ui.components.selectors.image_region.validation.${key}`,
+        { min: this._minPoints, max: this._maxPoints }
+      )}
+    </div>`;
   }
 
   private _midpointStyle(points: ImageRegionPoint[], index: number): string {
@@ -894,6 +951,11 @@ export class HaImageRegionSelector extends LitElement {
       .row-label {
         flex-basis: 100%;
       }
+    }
+    .error {
+      margin-top: var(--ha-space-2);
+      color: var(--ha-color-on-danger-quiet);
+      font-size: var(--ha-font-size-s);
     }
     .actions {
       display: flex;
