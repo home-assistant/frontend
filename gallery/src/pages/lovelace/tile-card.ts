@@ -201,6 +201,39 @@ const ENTITIES = [
       supported_features: FanEntityFeature.SET_SPEED,
     },
   },
+  {
+    entity_id: "fan.six_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Kitchen fan",
+      device_class: "fan",
+      percentage: 50,
+      percentage_step: 100 / 6,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.ten_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Living room fan",
+      device_class: "fan",
+      percentage: 70,
+      percentage_step: 10,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.eleven_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Office fan",
+      device_class: "fan",
+      percentage: 45,
+      percentage_step: 100 / 11,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
 ];
 
 const CONFIGS = [
@@ -411,6 +444,47 @@ const CONFIGS = [
     },
   },
   {
+    heading: "Fan speed feature (5 speeds, slider style)",
+    config: {
+      type: "tile",
+      entity: "fan.five_speed_fan",
+      features: [{ type: "fan-speed", style: "slider" }],
+    },
+  },
+  {
+    heading: "Fan speed feature (6 speeds)",
+    config: {
+      type: "tile",
+      entity: "fan.six_speed_fan",
+      features: [{ type: "fan-speed" }],
+    },
+  },
+  {
+    heading: "Fan speed feature (6 speeds, buttons style)",
+    config: {
+      type: "tile",
+      entity: "fan.six_speed_fan",
+      features: [{ type: "fan-speed", style: "buttons" }],
+    },
+  },
+  {
+    heading: "Fan speed feature (10 speeds, buttons style)",
+    config: {
+      type: "tile",
+      entity: "fan.ten_speed_fan",
+      features: [{ type: "fan-speed", style: "buttons" }],
+    },
+  },
+  {
+    heading:
+      "Fan speed feature (11 speeds, buttons style falls back to slider)",
+    config: {
+      type: "tile",
+      entity: "fan.eleven_speed_fan",
+      features: [{ type: "fan-speed", style: "buttons" }],
+    },
+  },
+  {
     heading: "Fan speed feature (half width)",
     config: {
       type: "grid",
@@ -426,6 +500,26 @@ const CONFIGS = [
           type: "tile",
           entity: "fan.five_speed_fan",
           features: [{ type: "fan-speed" }],
+        },
+      ],
+    },
+  },
+  {
+    heading: "Fan speed feature (half width, buttons style)",
+    config: {
+      type: "grid",
+      columns: 2,
+      square: false,
+      cards: [
+        {
+          type: "tile",
+          entity: "fan.six_speed_fan",
+          features: [{ type: "fan-speed", style: "buttons" }],
+        },
+        {
+          type: "tile",
+          entity: "fan.ten_speed_fan",
+          features: [{ type: "fan-speed", style: "buttons" }],
         },
       ],
     },
