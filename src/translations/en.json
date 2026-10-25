@@ -11319,7 +11319,8 @@
               "dark_mode_image": "Dark mode image path",
               "state_filter": "State filter",
               "dark_mode_filter": "Dark mode state filter",
-              "position_hint": "Click on the image preview to position this element",
+              "move_hint": "Drag this element in the image preview, or select the spot where it should go.",
+              "select_hint": "Select an element in the image preview to edit it, or drag it to move it.",
               "element_types": {
                 "state-badge": "State badge",
                 "state-icon": "State icon",
