@@ -142,9 +142,15 @@ export class HaControlSlider extends LitElement {
   protected updated(changedProps: PropertyValues<this>) {
     super.updated(changedProps);
     if (changedProps.has("value") || changedProps.has("roundValue")) {
-      const valuenow = this._displayedValue(this.value ?? 0);
-      this.setAttribute("aria-valuenow", valuenow.toString());
-      this.setAttribute("aria-valuetext", this._formatValue(valuenow));
+      // An unknown value must not be announced as the minimum.
+      if (this.value == null) {
+        this.removeAttribute("aria-valuenow");
+        this.removeAttribute("aria-valuetext");
+      } else {
+        const valuenow = this._displayedValue(this.value);
+        this.setAttribute("aria-valuenow", valuenow.toString());
+        this.setAttribute("aria-valuetext", this._formatValue(valuenow));
+      }
     }
     if (changedProps.has("min")) {
       this.setAttribute("aria-valuemin", this.min.toString());
@@ -349,7 +355,8 @@ export class HaControlSlider extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const valuenow = this._displayedValue(this.value ?? 0);
+    const valuenow =
+      this.value != null ? this._displayedValue(this.value) : undefined;
     return html`
       <div
         class="container${classMap({
@@ -365,8 +372,10 @@ export class HaControlSlider extends LitElement {
           role="slider"
           tabindex="0"
           aria-label=${ifDefined(this.label)}
-          aria-valuenow=${valuenow.toString()}
-          aria-valuetext=${this._formatValue(valuenow)}
+          aria-valuenow=${ifDefined(valuenow?.toString())}
+          aria-valuetext=${ifDefined(
+            valuenow != null ? this._formatValue(valuenow) : undefined
+          )}
           aria-valuemin=${ifDefined(
             this.min != null ? this.min.toString() : undefined
           )}
