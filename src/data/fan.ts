@@ -46,7 +46,13 @@ const FAN_SPEEDS_NAMED: Partial<Record<number, FanSpeed[]>> = {
   4: ["off", "low", "medium", "high"],
 };
 
+// Fans with up to this many speeds (off included) show buttons by default.
 export const FAN_SPEED_COUNT_MAX_FOR_BUTTONS = 6;
+
+// Fans with more speeds than this (off included) can only show a slider.
+export const FAN_SPEED_COUNT_MAX_FOR_DISCRETE_SPEEDS = 11;
+
+export type FanSpeedStyle = "buttons" | "slider";
 
 export function computeFanSpeedCount(stateObj: FanEntity): number {
   const step = stateObj.attributes.percentage_step ?? 1;
@@ -56,7 +62,7 @@ export function computeFanSpeedCount(stateObj: FanEntity): number {
 
 export function computeFanSpeeds(stateObj: FanEntity): FanSpeed[] | undefined {
   const speedCount = computeFanSpeedCount(stateObj);
-  if (speedCount > FAN_SPEED_COUNT_MAX_FOR_BUTTONS) {
+  if (speedCount > FAN_SPEED_COUNT_MAX_FOR_DISCRETE_SPEEDS) {
     return undefined;
   }
   return (
@@ -69,6 +75,32 @@ export function computeFanSpeeds(stateObj: FanEntity): FanSpeed[] | undefined {
     ]
   );
 }
+
+export const computeDefaultFanSpeedStyle = (
+  stateObj: FanEntity
+): FanSpeedStyle =>
+  computeFanSpeedCount(stateObj) <= FAN_SPEED_COUNT_MAX_FOR_BUTTONS
+    ? "buttons"
+    : "slider";
+
+export const resolveFanSpeedStyle = (
+  stateObj: FanEntity,
+  style?: FanSpeedStyle
+): FanSpeedStyle => {
+  const resolved = style ?? computeDefaultFanSpeedStyle(stateObj);
+  if (resolved === "buttons" && !computeFanSpeeds(stateObj)) {
+    return "slider";
+  }
+  return resolved;
+};
+
+// A slider brings nothing to an off/on fan, so it always shows buttons.
+export const supportsFanSpeedStyleChoice = (stateObj: FanEntity): boolean => {
+  const speedCount = computeFanSpeedCount(stateObj);
+  return (
+    speedCount >= 3 && speedCount <= FAN_SPEED_COUNT_MAX_FOR_DISCRETE_SPEEDS
+  );
+};
 
 export const isNumberedFanSpeed = (speed: FanSpeed): speed is `${number}` =>
   !isNaN(Number(speed));
