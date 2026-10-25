@@ -1593,7 +1593,6 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         .app {
           display: flex;
           gap: var(--ha-space-4);
-          max-width: 1200px;
         }
         .app.column {
           flex-direction: column;

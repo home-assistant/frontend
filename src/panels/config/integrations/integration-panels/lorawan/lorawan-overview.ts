@@ -173,12 +173,12 @@ export class LoRaWANOverview extends LitElement {
       height: 100%;
     }
     .container {
-      padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+      padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
     }
     ha-card {
       overflow: hidden;
       margin: 0 auto var(--ha-space-4);
-      max-width: 600px;
+      max-width: var(--ha-content-width-narrow);
     }
     .summary {
       margin-top: var(--ha-space-6);
@@ -248,7 +248,7 @@ export class LoRaWANOverview extends LitElement {
     }
     @media (max-width: 450px) {
       .container {
-        padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+        padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
       }
       .card-heading {
         flex-wrap: wrap;

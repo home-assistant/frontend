@@ -289,7 +289,7 @@ export class HaConfigPerson extends LitElement {
       color: var(--primary-color);
     }
     ha-card {
-      max-width: 600px;
+      max-width: var(--ha-content-width-narrow);
       margin: 16px auto;
       overflow: hidden;
     }

@@ -723,8 +723,8 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
       haStyle,
       css`
         .content {
-          padding: var(--ha-space-4);
-          max-width: 1200px;
+          padding: var(--ha-space-4) var(--ha-content-gutter);
+          max-width: var(--ha-content-width-wide);
           margin: auto;
         }
         .card-header {

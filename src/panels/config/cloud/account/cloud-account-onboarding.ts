@@ -146,8 +146,6 @@ export class CloudAccountOnboarding extends LitElement {
         ha-card {
           display: block;
           width: 100%;
-          max-width: 600px;
-          margin-inline: auto;
           container-type: inline-size;
         }
         .ready-card {

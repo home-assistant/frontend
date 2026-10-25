@@ -225,10 +225,9 @@ export class ZHAGroupPage extends LitElement {
     return [
       css`
         .container {
-          box-sizing: border-box;
-          max-width: 720px;
+          max-width: var(--ha-content-width-narrow);
           margin: 0 auto;
-          padding: var(--ha-space-4) var(--ha-space-4)
+          padding: var(--ha-space-4) var(--ha-content-gutter)
             calc(var(--ha-space-20) + var(--safe-area-inset-bottom, 0px));
         }
 

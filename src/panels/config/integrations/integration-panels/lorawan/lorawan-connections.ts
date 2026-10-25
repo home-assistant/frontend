@@ -104,11 +104,11 @@ export class LoRaWANConnections extends LitElement {
       height: 100%;
     }
     .container {
-      padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+      padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
     }
     ha-card,
     ha-alert {
-      max-width: 600px;
+      max-width: var(--ha-content-width-narrow);
       margin: var(--ha-space-6) auto var(--ha-space-4);
       overflow: hidden;
     }

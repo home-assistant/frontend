@@ -56,7 +56,8 @@ class HaConfigConnectivity extends LitElement {
         ha-config-section {
           margin: auto;
           margin-top: -32px;
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
+          padding-inline: var(--ha-content-gutter);
         }
 
         ha-card {
@@ -65,11 +66,6 @@ class HaConfigConnectivity extends LitElement {
         }
 
         @media all and (max-width: 600px) {
-          ha-card {
-            border-width: 1px 0;
-            border-radius: var(--ha-border-radius-square);
-            box-shadow: unset;
-          }
           ha-config-section {
             margin-top: -42px;
           }

@@ -96,13 +96,13 @@ class HaProfileSectionBrowser extends LitElement {
         }
 
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4)
+          padding: var(--ha-space-2) var(--ha-content-gutter)
             calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
         }
 
         ha-card {
           margin: 0 auto var(--ha-space-4);
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
         }
       `,
     ];
