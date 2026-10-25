@@ -35,6 +35,21 @@ export const isImageRegion = (value: unknown): value is ImageRegionPoint[] =>
       isPercent(point.y)
   );
 
+/** The index of the corner that starts the longest edge. */
+const longestEdge = (points: ImageRegionPoint[]): number => {
+  let longest = 0;
+  let longestLength = -1;
+  points.forEach((start, index) => {
+    const end = points[(index + 1) % points.length];
+    const length = Math.hypot(end.x - start.x, end.y - start.y);
+    if (length > longestLength) {
+      longest = index;
+      longestLength = length;
+    }
+  });
+  return longest;
+};
+
 /** Insert a point in the middle of the edge that starts at `index`. */
 export const insertMidpoint = (
   points: ImageRegionPoint[],
@@ -78,9 +93,9 @@ export const regionFromPoints = (
           { x: left, y: bottom },
         ];
   points = points.map(roundPoint);
-  // Spread the extra corners over the edges, longest gaps first.
-  for (let edge = 0; points.length < minPoints; edge += 2) {
-    points = insertMidpoint(points, edge % points.length);
+  // Add the extra corners in the middle of the longest edge each time.
+  while (points.length < minPoints) {
+    points = insertMidpoint(points, longestEdge(points));
   }
   return points;
 };

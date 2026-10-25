@@ -157,6 +157,16 @@ export class HaImageRegionSelector extends LitElement {
     return this.value != null && !isImageRegion(this.value);
   }
 
+  public reportValidity(): boolean {
+    if (this.value == null) {
+      return !this.required;
+    }
+    const count = this._points.length;
+    return (
+      !this._invalid && count >= this._minPoints && count <= this._maxPoints
+    );
+  }
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._endDrag();

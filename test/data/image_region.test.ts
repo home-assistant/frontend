@@ -41,6 +41,10 @@ describe("image region geometry", () => {
     expect(
       regionFromPoints({ x: 0, y: 0 }, { x: 100, y: 100 }, 9, 12)
     ).toHaveLength(9);
+    // Many corners still don't land on top of each other.
+    const many = regionFromPoints({ x: 25, y: 25 }, { x: 75, y: 75 }, 21, 21);
+    expect(many).toHaveLength(21);
+    expect(new Set(many.map(({ x, y }) => `${x},${y}`)).size).toBe(21);
   });
 
   it("moves a region but stops it at the image edges", () => {
