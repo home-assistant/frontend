@@ -2042,8 +2042,8 @@
           "turn_on_oscillating": "Turn on oscillating",
           "turn_off_oscillating": "Turn off oscillating",
           "switch_mode": {
-            "buttons": "Switch to buttons",
-            "slider": "Switch to slider"
+            "buttons": "Switch to buttons mode",
+            "slider": "Switch to slider mode"
           }
         },
         "climate": {
@@ -11530,9 +11530,9 @@
                 "label": "Fan speed",
                 "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
                 "style_list": {
-                  "buttons": "Buttons",
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
                   "buttons_description": "Pick a speed from a row of buttons",
-                  "slider": "Slider",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]",
                   "slider_description": "Drag to set the speed"
                 },
                 "style_unavailable": "This fan has too many speeds to show them as buttons."

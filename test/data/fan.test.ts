@@ -94,7 +94,7 @@ describe("fan speed and percentage conversion", () => {
   });
 
   it.each([100 / 6, 100 / 7, 10])(
-    "round-trips every speed with a step of %d",
+    "round-trips every speed with a step of %s",
     (step) => {
       const stateObj = fan(step);
       for (const speed of computeFanSpeeds(stateObj)!) {

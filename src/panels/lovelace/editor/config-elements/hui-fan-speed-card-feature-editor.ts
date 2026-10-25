@@ -12,6 +12,7 @@ import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import type { FanEntity } from "../../../../data/fan";
 import {
+  computeFanSpeeds,
   resolveFanSpeedStyle,
   supportsFanSpeedStyleChoice,
 } from "../../../../data/fan";
@@ -80,7 +81,9 @@ export class HuiFanSpeedCardFeatureEditor
 
     const stateObj = this._stateObj;
 
-    const unavailable = !!stateObj && !supportsFanSpeedStyleChoice(stateObj);
+    const disabled = !!stateObj && !supportsFanSpeedStyleChoice(stateObj);
+
+    const tooManySpeeds = !!stateObj && !computeFanSpeeds(stateObj);
 
     const data: FanSpeedCardFeatureConfig = {
       ...this._config,
@@ -91,7 +94,7 @@ export class HuiFanSpeedCardFeatureEditor
 
     return html`
       ${
-        unavailable
+        tooManySpeeds
           ? html`
               <ha-alert alert-type="info">
                 ${this._localize(
@@ -103,7 +106,7 @@ export class HuiFanSpeedCardFeatureEditor
       }
       <ha-form
         .data=${data}
-        .schema=${this._schema(this._localize, unavailable)}
+        .schema=${this._schema(this._localize, disabled)}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
