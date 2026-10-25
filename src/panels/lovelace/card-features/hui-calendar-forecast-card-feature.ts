@@ -1,15 +1,19 @@
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../../common/color/compute-color";
+import { useAmPm } from "../../../common/datetime/use_am_pm";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateColorCss } from "../../../common/entity/state_color";
 import type { CalendarEventApiData } from "../../../data/calendar";
 import { subscribeCalendarEvents } from "../../../data/calendar";
 import type { ScheduleDay } from "../../../data/schedule";
 import { weekdays } from "../../../data/schedule";
 import type { HomeAssistant } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
+import { hourFormatter } from "./common/graph-labels";
 import type {
   CalendarForecastCardFeatureConfig,
   CalendarForecastFocus,
@@ -34,6 +38,11 @@ const NOW_POSITION: Record<CalendarForecastFocus, number> = {
 };
 
 const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
+const LABEL_STEPS = [1, 2, 3, 4, 6, 8, 12, 24];
+const MAX_LABELS = 6;
+
+const LABEL_EDGE_MARGIN = 0.04;
 
 interface TimeSegment {
   start: number;
@@ -60,6 +69,10 @@ export const supportsCalendarForecastCardFeature = (
   if (!stateObj) return false;
   return SUPPORTED_DOMAINS.includes(computeDomain(stateObj.entity_id));
 };
+
+const computeLabelStep = (hours: number): number =>
+  LABEL_STEPS.find((step) => hours / step <= MAX_LABELS) ??
+  LABEL_STEPS[LABEL_STEPS.length - 1];
 
 const getRawDate = (
   value: CalendarEventApiData["start"]
@@ -130,6 +143,8 @@ class HuiCalendarForecastCardFeature
 
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
+  @property({ attribute: false }) public color?: string;
+
   @state() private _config?: CalendarForecastCardFeatureConfig;
 
   @state() private _now = Date.now();
@@ -150,6 +165,13 @@ class HuiCalendarForecastCardFeature
     return {
       type: "calendar-forecast",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-calendar-forecast-card-feature-editor");
+    return document.createElement(
+      "hui-calendar-forecast-card-feature-editor"
+    ) as LovelaceCardFeatureEditor;
   }
 
   public setConfig(config: CalendarForecastCardFeatureConfig): void {
@@ -181,6 +203,7 @@ class HuiCalendarForecastCardFeature
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
+    // Only the state of our own entity matters, not every change in hass.
     if (changedProps.size === 1 && changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       const entityId = this.context?.entity_id;
@@ -348,9 +371,14 @@ class HuiCalendarForecastCardFeature
 
     const { start, end, nowPosition } = this._computeWindow(this._now);
     const duration = end - start;
+    const stateObj = this.hass.states[this.context.entity_id!];
+    const eventColor =
+      this.color && this.color !== "state"
+        ? computeCssColor(this.color)
+        : stateColorCss(stateObj, "on");
 
     return html`
-      <div class="track">
+      <div class="track" style=${styleMap({ "--event-color": eventColor })}>
         ${
           this._config.show_all_day_events
             ? this._renderSegments(this._allDaySegments, start, duration, true)
@@ -362,6 +390,11 @@ class HuiCalendarForecastCardFeature
           style=${styleMap({ "inset-inline-start": `${nowPosition * 100}%` })}
         ></div>
       </div>
+      ${
+        this._config.show_labels !== false
+          ? this._renderLabels(start, duration)
+          : nothing
+      }
     `;
   }
 
@@ -375,8 +408,9 @@ class HuiCalendarForecastCardFeature
     return segments
       .filter((segment) => segment.end > start && segment.start < end)
       .map((segment) => {
-        const from = Math.max(segment.start, start);
-        const to = Math.min(segment.end, end);
+        const overflow = duration / 2;
+        const from = Math.max(segment.start, start - overflow);
+        const to = Math.min(segment.end, end + overflow);
         return html`
           <div
             class="segment ${allDay ? "all-day" : ""}"
@@ -389,9 +423,44 @@ class HuiCalendarForecastCardFeature
       });
   }
 
+  private _renderLabels(start: number, duration: number): TemplateResult {
+    const end = start + duration;
+    const step = computeLabelStep(duration / MS_PER_HOUR);
+    const locale = this.hass!.locale;
+    const formatter = hourFormatter(locale.language, useAmPm(locale));
+
+    const labels: TemplateResult[] = [];
+    const time = new Date(start);
+    time.setMinutes(0, 0, 0);
+    if (time.getTime() < start) {
+      time.setHours(time.getHours() + 1);
+    }
+    while (time.getTime() <= end) {
+      const position = (time.getTime() - start) / duration;
+      if (
+        time.getHours() % step === 0 &&
+        position >= LABEL_EDGE_MARGIN &&
+        position <= 1 - LABEL_EDGE_MARGIN
+      ) {
+        labels.push(html`
+          <div
+            class="label"
+            style=${styleMap({ "inset-inline-start": `${position * 100}%` })}
+          >
+            ${formatter.format(time)}
+          </div>
+        `);
+      }
+      time.setHours(time.getHours() + 1);
+    }
+
+    return html`<div class="labels">${labels}</div>`;
+  }
+
   static styles = css`
     :host {
       display: flex;
+      flex-direction: column;
       width: 100%;
       height: var(--feature-height);
       pointer-events: none !important;
@@ -400,6 +469,7 @@ class HuiCalendarForecastCardFeature
     .track {
       position: relative;
       flex: 1;
+      min-height: 0;
       border-radius: var(--feature-border-radius);
       overflow: hidden;
     }
@@ -416,7 +486,8 @@ class HuiCalendarForecastCardFeature
       position: absolute;
       top: 0;
       bottom: 0;
-      background-color: var(--feature-color);
+      border-radius: var(--feature-border-radius);
+      background-color: var(--event-color, var(--feature-color));
     }
 
     .segment.all-day {
@@ -425,13 +496,40 @@ class HuiCalendarForecastCardFeature
 
     .now {
       position: absolute;
-      top: 25%;
-      bottom: 25%;
+      top: 0;
+      bottom: 0;
       width: 4px;
       margin-inline-start: -2px;
       border-radius: 2px;
       background-color: var(--white-color, #ffffff);
       box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .labels {
+      position: relative;
+      flex: none;
+      height: 14px;
+    }
+
+    .label {
+      position: absolute;
+      top: 0;
+      width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--secondary-text-color);
+      font-size: 9px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .label::before {
+      content: "";
+      width: 1px;
+      height: 3px;
+      margin-bottom: 2px;
+      background-color: var(--secondary-text-color);
     }
   `;
 }

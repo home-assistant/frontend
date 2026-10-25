@@ -58,7 +58,11 @@ export class HuiCalendarForecastCardFeatureEditor
             },
           },
         },
-        // Schedules have no all-day events, so only show this for calendars.
+        {
+          name: "show_labels",
+          default: true,
+          selector: { boolean: {} },
+        },
         ...(isCalendar
           ? ([
               {
@@ -119,6 +123,10 @@ export class HuiCalendarForecastCardFeatureEditor
       case "show_all_day_events":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.features.types.calendar-forecast.show_all_day_events"
+        );
+      case "show_labels":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.features.types.calendar-forecast.show_labels"
         );
       default:
         return "";

@@ -24,6 +24,7 @@ export interface CalendarForecastCardFeatureConfig {
   hours_to_show?: number;
   focus?: CalendarForecastFocus;
   show_all_day_events?: boolean;
+  show_labels?: boolean;
 }
 
 export interface CoverOpenCloseCardFeatureConfig {

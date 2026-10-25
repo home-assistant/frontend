@@ -11501,7 +11501,8 @@
                   "present": "Present",
                   "future": "Future"
                 },
-                "show_all_day_events": "Show all-day events"
+                "show_all_day_events": "Show all-day events",
+                "show_labels": "Show labels"
               },
               "cover-open-close": {
                 "label": "Cover open/close"
