@@ -3084,9 +3084,9 @@
             "title": "Unable to check for updates",
             "description": "You do not have any integrations that provide updates."
           },
-          "unavailable_update_entities": {
+          "update_integrations_not_loaded": {
             "title": "[%key:ui::panel::config::updates::no_update_entities::title%]",
-            "description": "All update entities are currently unavailable. Try again later."
+            "description": "The integrations that provide updates are not loaded. Try again later."
           },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",

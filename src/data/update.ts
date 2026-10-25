@@ -176,12 +176,12 @@ export const checkForEntityUpdates = async (
     hass.locale.language
   );
   const entities = updateEntities
-    .filter((entity) => entity.state !== "unavailable")
+    .filter((entity) => !entity.attributes.restored)
     .map((entity) => entity.entity_id);
 
   if (!entities.length) {
     const messageKey = updateEntities.length
-      ? "unavailable_update_entities"
+      ? "update_integrations_not_loaded"
       : "no_update_entities";
     showAlertDialog(element, {
       title: hass.localize(`ui.panel.config.updates.${messageKey}.title`),
