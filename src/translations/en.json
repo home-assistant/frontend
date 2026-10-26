@@ -3178,9 +3178,7 @@
           "gen_image_settings": "Image generation settings",
           "evaluate_header": "Decisions",
           "evaluate_description": "Evaluate questions.",
-          "evaluate_settings": "Decision settings",
-          "allow_automatic_evaluation": "Use decisions in Home Assistant features",
-          "allow_automatic_evaluation_description": "Allow Home Assistant to automatically use the selected decision model to improve built-in features."
+          "evaluate_settings": "Decision settings"
         },
         "mcp": {
           "header": "Model Context Protocol",
