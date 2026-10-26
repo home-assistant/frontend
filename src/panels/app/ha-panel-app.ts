@@ -226,6 +226,9 @@ class HaPanelApp extends LitElement {
 
   private async _fetchData(addonSlug: string) {
     const createSessionPromise = createHassioSession(this.hass, addonSlug);
+    // The app info checks below may return before the session is awaited,
+    // and both fail when a non-admin opens an admin-only app
+    createSessionPromise.catch(() => undefined);
 
     let addon: IngressAppInfo;
 
