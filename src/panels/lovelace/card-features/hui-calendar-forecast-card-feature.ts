@@ -1,9 +1,13 @@
+import { TZDate } from "@date-fns/tz";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { formatTime } from "../../../common/datetime/format_time";
+import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
 import { useAmPm } from "../../../common/datetime/use_am_pm";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
@@ -13,7 +17,6 @@ import type { ScheduleDay } from "../../../data/schedule";
 import { weekdays } from "../../../data/schedule";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
-import { hourFormatter } from "./common/graph-labels";
 import type {
   CalendarForecastCardFeatureConfig,
   CalendarForecastFocus,
@@ -28,6 +31,8 @@ const MS_PER_MINUTE = 60 * 1000;
 const MS_PER_HOUR = 60 * MS_PER_MINUTE;
 
 const FETCH_MARGIN = MS_PER_HOUR;
+
+const RETRY_DELAY = 5 * MS_PER_MINUTE;
 
 const SUPPORTED_DOMAINS = ["calendar", "schedule"];
 
@@ -74,6 +79,15 @@ const computeLabelStep = (hours: number): number =>
   LABEL_STEPS.find((step) => hours / step <= MAX_LABELS) ??
   LABEL_STEPS[LABEL_STEPS.length - 1];
 
+const labelFormatter = memoizeOne(
+  (language: string, amPm: boolean, timeZone: string) =>
+    new Intl.DateTimeFormat(language, {
+      hour: "numeric",
+      hourCycle: amPm ? "h12" : "h23",
+      timeZone,
+    })
+);
+
 const getRawDate = (
   value: CalendarEventApiData["start"]
 ): string | undefined => {
@@ -83,10 +97,13 @@ const getRawDate = (
   return undefined;
 };
 
-const parseCalendarDate = (raw: string): number | undefined => {
+const parseCalendarDate = (
+  raw: string,
+  timeZone: string
+): number | undefined => {
   if (DATE_ONLY.test(raw)) {
     const [year, month, day] = raw.split("-").map(Number);
-    return new Date(year, month - 1, day).getTime();
+    return new TZDate(year, month - 1, day, timeZone).getTime();
   }
   const time = Date.parse(raw);
   return Number.isNaN(time) ? undefined : time;
@@ -106,9 +123,13 @@ const mergeSegments = (segments: TimeSegment[]): TimeSegment[] => {
   return merged;
 };
 
-const parseScheduleTime = (day: Date, time: string): number => {
+const parseScheduleTime = (
+  day: TZDate,
+  time: string,
+  timeZone: string
+): number => {
   const [hours, minutes, seconds] = time.split(":").map(Number);
-  const date = new Date(day);
+  const date = new TZDate(day.getTime(), timeZone);
   date.setHours(hours, minutes || 0, seconds || 0, 0);
   return date.getTime();
 };
@@ -116,15 +137,16 @@ const parseScheduleTime = (day: Date, time: string): number => {
 const expandSchedule = (
   schedule: ScheduleWeek,
   start: number,
-  end: number
+  end: number,
+  timeZone: string
 ): TimeSegment[] => {
   const segments: TimeSegment[] = [];
-  const day = new Date(start);
+  const day = new TZDate(start, timeZone);
   day.setHours(0, 0, 0, 0);
   while (day.getTime() < end) {
     for (const block of schedule[weekdays[day.getDay()]] ?? []) {
-      const blockStart = parseScheduleTime(day, block.from);
-      const blockEnd = parseScheduleTime(day, block.to);
+      const blockStart = parseScheduleTime(day, block.from, timeZone);
+      const blockEnd = parseScheduleTime(day, block.to, timeZone);
       if (blockEnd > blockStart && blockEnd > start && blockStart < end) {
         segments.push({ start: blockStart, end: blockEnd });
       }
@@ -155,9 +177,11 @@ class HuiCalendarForecastCardFeature
 
   private _fetchedRange?: FetchedRange;
 
+  private _retryAfter = 0;
+
   private _unsubCalendar?: Promise<UnsubscribeFunc | undefined>;
 
-  private _scheduleRequest = 0;
+  private _request = 0;
 
   private _interval?: number;
 
@@ -203,7 +227,6 @@ class HuiCalendarForecastCardFeature
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    // Only the state of our own entity matters, not every change in hass.
     if (changedProps.size === 1 && changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       const entityId = this.context?.entity_id;
@@ -260,8 +283,17 @@ class HuiCalendarForecastCardFeature
 
   private _resetData() {
     this._unsubscribeCalendar();
-    this._scheduleRequest++;
+    this._request++;
     this._fetchedRange = undefined;
+    this._retryAfter = 0;
+    this._segments = [];
+    this._allDaySegments = [];
+  }
+
+  private _handleFetchError(request: number) {
+    if (request !== this._request) return;
+    this._fetchedRange = undefined;
+    this._retryAfter = Date.now() + RETRY_DELAY;
     this._segments = [];
     this._allDaySegments = [];
   }
@@ -269,11 +301,16 @@ class HuiCalendarForecastCardFeature
   private _refreshData(force = false) {
     const entityId = this.context?.entity_id;
     if (
+      !this.isConnected ||
       !this.hass ||
       !this._config ||
       !entityId ||
       !this.hass.states[entityId]
     ) {
+      return;
+    }
+
+    if (!force && Date.now() < this._retryAfter) {
       return;
     }
 
@@ -295,6 +332,7 @@ class HuiCalendarForecastCardFeature
       end: end + FETCH_MARGIN,
     };
     this._fetchedRange = range;
+    this._retryAfter = 0;
 
     if (computeDomain(entityId) === "calendar") {
       this._subscribeCalendar(range);
@@ -305,28 +343,32 @@ class HuiCalendarForecastCardFeature
 
   private _subscribeCalendar(range: FetchedRange) {
     this._unsubscribeCalendar();
+    const request = ++this._request;
     this._unsubCalendar = subscribeCalendarEvents(
       this.hass!,
       range.entityId,
       new Date(range.start),
       new Date(range.end),
-      (update) => this._setCalendarEvents(update.events ?? [])
+      (update) => {
+        if (request !== this._request) return;
+        this._setCalendarEvents(update.events ?? []);
+      }
     ).catch(() => {
-      this._segments = [];
-      this._allDaySegments = [];
+      this._handleFetchError(request);
       return undefined;
     });
   }
 
   private _setCalendarEvents(events: CalendarEventApiData[]) {
+    const timeZone = this.hass!.config.time_zone;
     const timed: TimeSegment[] = [];
     const allDay: TimeSegment[] = [];
     for (const event of events) {
       const rawStart = getRawDate(event.start);
       const rawEnd = getRawDate(event.end);
       if (!rawStart || !rawEnd) continue;
-      const start = parseCalendarDate(rawStart);
-      const end = parseCalendarDate(rawEnd);
+      const start = parseCalendarDate(rawStart, timeZone);
+      const end = parseCalendarDate(rawEnd, timeZone);
       if (start === undefined || end === undefined || end <= start) continue;
       const isAllDay = event.all_day ?? DATE_ONLY.test(rawStart);
       (isAllDay ? allDay : timed).push({ start, end });
@@ -336,7 +378,7 @@ class HuiCalendarForecastCardFeature
   }
 
   private async _fetchSchedule(range: FetchedRange) {
-    const request = ++this._scheduleRequest;
+    const request = ++this._request;
     try {
       const result = await this.hass!.callService<ScheduleResponse>(
         "schedule",
@@ -346,16 +388,19 @@ class HuiCalendarForecastCardFeature
         false,
         true
       );
-      if (request !== this._scheduleRequest) return;
+      if (request !== this._request) return;
       const schedule = result.response?.[range.entityId];
       this._segments = schedule
-        ? expandSchedule(schedule, range.start, range.end)
+        ? expandSchedule(
+            schedule,
+            range.start,
+            range.end,
+            this.hass!.config.time_zone
+          )
         : [];
       this._allDaySegments = [];
     } catch (_err) {
-      if (request !== this._scheduleRequest) return;
-      this._segments = [];
-      this._allDaySegments = [];
+      this._handleFetchError(request);
     }
   }
 
@@ -371,6 +416,7 @@ class HuiCalendarForecastCardFeature
 
     const { start, end, nowPosition } = this._computeWindow(this._now);
     const duration = end - start;
+
     const stateObj = this.hass.states[this.context.entity_id!];
     const eventColor =
       this.color && this.color !== "state"
@@ -378,7 +424,12 @@ class HuiCalendarForecastCardFeature
         : stateColorCss(stateObj, "on");
 
     return html`
-      <div class="track" style=${styleMap({ "--event-color": eventColor })}>
+      <div
+        class="track"
+        role="img"
+        aria-label=${this._computeAriaLabel(start, end)}
+        style=${styleMap({ "--event-color": eventColor })}
+      >
         ${
           this._config.show_all_day_events
             ? this._renderSegments(this._allDaySegments, start, duration, true)
@@ -396,6 +447,26 @@ class HuiCalendarForecastCardFeature
           : nothing
       }
     `;
+  }
+
+  private _computeAriaLabel(start: number, end: number): string {
+    const { locale, config, localize } = this.hass!;
+    const intervals = this._segments
+      .filter((segment) => segment.end > start && segment.start < end)
+      .map((segment) => {
+        const from = new Date(Math.max(segment.start, start));
+        const to = new Date(Math.min(segment.end, end));
+        return `${formatTime(from, locale, config)} – ${formatTime(to, locale, config)}`;
+      });
+    if (!intervals.length) {
+      return localize(
+        "ui.panel.lovelace.editor.features.types.calendar-forecast.no_events"
+      );
+    }
+    return localize(
+      "ui.panel.lovelace.editor.features.types.calendar-forecast.events",
+      { events: intervals.join(", ") }
+    );
   }
 
   private _renderSegments(
@@ -426,11 +497,16 @@ class HuiCalendarForecastCardFeature
   private _renderLabels(start: number, duration: number): TemplateResult {
     const end = start + duration;
     const step = computeLabelStep(duration / MS_PER_HOUR);
-    const locale = this.hass!.locale;
-    const formatter = hourFormatter(locale.language, useAmPm(locale));
+    const { locale, config } = this.hass!;
+    const timeZone = resolveTimeZone(locale.time_zone, config.time_zone);
+    const formatter = labelFormatter(
+      locale.language,
+      useAmPm(locale),
+      timeZone
+    );
 
     const labels: TemplateResult[] = [];
-    const time = new Date(start);
+    const time = new TZDate(start, timeZone);
     time.setMinutes(0, 0, 0);
     if (time.getTime() < start) {
       time.setHours(time.getHours() + 1);
@@ -454,7 +530,7 @@ class HuiCalendarForecastCardFeature
       time.setHours(time.getHours() + 1);
     }
 
-    return html`<div class="labels">${labels}</div>`;
+    return html`<div class="labels" aria-hidden="true">${labels}</div>`;
   }
 
   static styles = css`

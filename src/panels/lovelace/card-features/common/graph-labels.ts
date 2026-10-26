@@ -13,7 +13,7 @@ const narrowWeekdayFormatter = memoizeOne(
   (language: string) => new Intl.DateTimeFormat(language, { weekday: "narrow" })
 );
 
-export const hourFormatter = memoizeOne(
+const hourFormatter = memoizeOne(
   (language: string, amPm: boolean) =>
     new Intl.DateTimeFormat(language, {
       hour: "numeric",

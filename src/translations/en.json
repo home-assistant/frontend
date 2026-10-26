@@ -11502,7 +11502,9 @@
                   "future": "Future"
                 },
                 "show_all_day_events": "Show all-day events",
-                "show_labels": "Show labels"
+                "show_labels": "Show labels",
+                "events": "Events: {events}",
+                "no_events": "No events"
               },
               "cover-open-close": {
                 "label": "Cover open/close"
