@@ -99,6 +99,7 @@
         "turn_on": "Turn on",
         "turn_off": "Turn off",
         "toggle": "Toggle",
+        "value": "Value",
         "entity_not_found": "Entity not found"
       },
       "alarm_control_panel": {
@@ -248,7 +249,11 @@
       "toggle-group": {
         "all_off": "All off",
         "all_on": "All on",
-        "some_on": "{on_count} of {total_count} {on_count, plural, one {on} other {on}}"
+        "some_on": "{on_count} of {total_count} {on_count, plural, one {on} other {on}}",
+        "turn_all_on": "Turn all on",
+        "turn_all_off": "Turn all off",
+        "turn_on_name": "[%key:ui::components::entity::entity-toggle::turn_on%]",
+        "turn_off_name": "[%key:ui::components::entity::entity-toggle::turn_off%]"
       },
       "discovered-devices": {
         "title": "Devices discovered",
@@ -302,6 +307,11 @@
       },
       "scene": {
         "activate": "Activate"
+      },
+      "tile": {
+        "icon_activate": "Activate {name}",
+        "icon_press": "Press {name}",
+        "icon_toggle": "[%key:ui::components::entity::entity-toggle::toggle%]"
       },
       "script": {
         "run": "[%key:ui::card::service::run%]",
@@ -751,6 +761,10 @@
           }
         }
       },
+      "log_viewer": {
+        "scroll_down_button": "New logs - Click to scroll",
+        "no_matches": "No log lines match the search"
+      },
       "logbook": {
         "entries_not_found": "No activity found.",
         "automation_triggered": "Triggered",
@@ -927,6 +941,10 @@
         "no_device_class": "No type",
         "expand": "Expand",
         "collapse": "Collapse"
+      },
+      "entity-type-picker": {
+        "add": "Add type",
+        "no_types": "No types available"
       },
       "subpage-data-table": {
         "filters": "Filters",
@@ -3085,6 +3103,10 @@
             "title": "Unable to check for updates",
             "description": "You do not have any integrations that provide updates."
           },
+          "update_integrations_not_loaded": {
+            "title": "[%key:ui::panel::config::updates::no_update_entities::title%]",
+            "description": "The integrations that provide updates are not loaded. Try again later."
+          },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
           "updates_refreshed": "State of {count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
@@ -3171,9 +3193,7 @@
           "gen_image_settings": "Image generation settings",
           "evaluate_header": "Decisions",
           "evaluate_description": "Evaluate questions.",
-          "evaluate_settings": "Decision settings",
-          "allow_automatic_evaluation": "Use decisions in Home Assistant features",
-          "allow_automatic_evaluation_description": "Allow Home Assistant to automatically use the selected decision model to improve built-in features."
+          "evaluate_settings": "Decision settings"
         },
         "mcp": {
           "header": "Model Context Protocol",
@@ -3222,6 +3242,9 @@
           "store": {
             "title": "App store",
             "check_updates": "Check for updates",
+            "checking_updates": "Checking for app updates...",
+            "updates_available": "{count} {count, plural,\n  one {app update}\n  other {app updates}\n} available",
+            "no_updates": "No app updates available",
             "repositories": "Repositories",
             "registries": "Registry credentials",
             "no_results_found": "No results found in {repository}"
@@ -4260,6 +4283,21 @@
               "subscribe_prompt": "Subscribe to an event type above to see events here.",
               "buffer_disclaimer": "Showing the latest {count} events. Older events are discarded as new ones arrive.\n\nTip: Subscribe to a more specific event type, or use the filter to narrow results."
             },
+            "action_history": {
+              "title": "Action history",
+              "action": "Action",
+              "action_id": "Action ID",
+              "targets": "Targets",
+              "cause": "Cause",
+              "time": "Time",
+              "user": "User",
+              "context_id": "Context ID",
+              "data": "Data",
+              "perform_again": "Perform again",
+              "copy_yaml": "Copy as YAML",
+              "no_actions": "No actions were performed in this time range.",
+              "load_failed": "Could not load the action history: {error}"
+            },
             "actions": {
               "title": "Actions",
               "description": "The actions tool allows you to perform any action available in Home Assistant.",
@@ -4816,6 +4854,8 @@
             "delete_confirm_title": "Delete helper?",
             "delete_confirm_text": "Are you sure you want to delete {name}?",
             "delete_failed": "Failed to delete helper",
+            "duplicate_name": "{name} (Copy)",
+            "duplicate_failed": "Failed to duplicate helper",
             "no_category_support": "You can't assign a category to this helper",
             "no_category_entity_reg": "To assign a category to a helper it needs to have a unique ID."
           },
@@ -4998,7 +5038,7 @@
           "log_file_disabled_debug_download": {
             "environment": "Debug logging has been disabled, but no log file was downloaded because HA_DISABLE_LOG_FILE is set and Home Assistant is not writing a log file."
           },
-          "scroll_down_button": "New logs - Click to scroll",
+          "scroll_down_button": "[%key:ui::components::log_viewer::scroll_down_button%]",
           "live": "Live",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
@@ -7780,8 +7820,7 @@
             "live_log": {
               "title": "Live log",
               "waiting": "Waiting for log messages from {integration}…",
-              "unsupported": "This version of Home Assistant can't stream the log.",
-              "no_matches": "No log lines match the search"
+              "unsupported": "This version of Home Assistant can't stream the log."
             },
             "state": {
               "loaded": "Loaded",
@@ -9843,11 +9882,18 @@
               "diagnostic": "[%key:ui::panel::config::devices::entities::diagnostic%]"
             }
           },
+          "entities": {
+            "other": "Other",
+            "no_criteria": "Pick at least one type and one target.",
+            "no_entities": "No entities match this section."
+          },
           "light": {
             "lights": "Lights",
             "other_lights": "Other lights",
             "on": "On",
-            "off": "Off"
+            "off": "Off",
+            "turn_on_area": "Off, turn on all lights in {area}",
+            "turn_off_area": "On, turn off all lights in {area}"
           },
           "security": {
             "devices": "Devices",
@@ -10319,6 +10365,9 @@
             "cut": "Cut",
             "copied_to_clipboard": "Card copied to clipboard",
             "cut_to_clipboard": "Card cut to clipboard",
+            "paste": "Paste",
+            "paste_error": "Error while pasting card",
+            "replaced": "Card replaced",
             "duplicate": "Duplicate",
             "move": "Move to view",
             "move_before": "Move card before",
@@ -10363,6 +10412,8 @@
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
             "copied_to_clipboard": "Badge copied to clipboard",
             "cut_to_clipboard": "Badge cut to clipboard",
+            "paste_error": "Error while pasting badge",
+            "replaced": "Badge replaced",
             "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
             "tab_config": "[%key:ui::panel::lovelace::editor::edit_card::tab_config%]",
             "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]"
@@ -10433,8 +10484,31 @@
           },
           "section_strategy": {
             "common-controls": {
-              "name": "Common controls"
+              "name": "Common controls",
+              "description": "Shows the entities you use most, based on your activity."
+            },
+            "device": {
+              "name": "Device",
+              "description": "Shows the controls and sensors of a device."
+            },
+            "entities": {
+              "name": "Entities",
+              "description": "Shows the entities of the types you pick, like all the lights in a room."
             }
+          },
+          "create_section": {
+            "header": "Create section",
+            "manual": "Manual section",
+            "manual_description": "Start empty and add your own cards.",
+            "automatic": "[%key:ui::panel::lovelace::editor::section::automatic%]",
+            "automatic_description": "Fills itself with cards and stays up to date.",
+            "paste": "Paste section",
+            "paste_description": "Add the section you copied."
+          },
+          "select_section_strategy": {
+            "header": "Choose an automatic section",
+            "built_in": "Built-in sections",
+            "custom": "Community sections"
           },
           "edit_section": {
             "header": "Section configuration",
@@ -11301,6 +11375,20 @@
                 }
               }
             },
+            "date": {
+              "name": "Date",
+              "description": "This card displays the current date using your desired size and format.",
+              "date_size": "Date size",
+              "date_sizes": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+              },
+              "date_format": "Date format",
+              "date_format_description": "[%key:ui::panel::lovelace::editor::card::clock::date::description%]",
+              "no_background": "[%key:ui::panel::lovelace::editor::card::clock::no_background%]",
+              "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]"
+            },
             "media-control": {
               "name": "Media control",
               "description": "This card is used to display media player entities on an interface with easy to use controls."
@@ -11911,6 +11999,21 @@
               "entities": "Entities",
               "exclude_entities": "Exclude entities",
               "exclude_entities_helper": "Not shown in this section, even if their category is selected"
+            },
+            "entities": {
+              "title": "Title",
+              "entity_types": "Types to show",
+              "target": "[%key:ui::panel::config::automation::editor::targets%]",
+              "group_by": "Group by",
+              "name": "Display name",
+              "group_by_options": {
+                "none": "No grouping",
+                "area": "Area",
+                "floor": "Floor",
+                "type": "Type"
+              },
+              "include_config_and_diagnostic": "Include configuration and diagnostic entities",
+              "include_config_and_diagnostic_helper": "By default, these only show when you add them as entities or through a label"
             },
             "original-states": {
               "areas": "Areas to display",

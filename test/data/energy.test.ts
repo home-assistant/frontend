@@ -2145,12 +2145,50 @@ describe("computeEnergyLabel", () => {
       }
     );
 
-  it("composes the device and entity name", () => {
+  it("uses the device name without the entity name", () => {
     const hass = createHass(
       "Washer Energy",
       { name: "Energy", device_id: "device1" },
       { name: "Washer" }
     );
+
+    assert.equal(
+      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
+      "Washer"
+    );
+  });
+
+  it("prefixes a sub-device with its parent device", () => {
+    const hass = createMockHass(
+      {
+        [ENTITY_ID]: createMockEntityState(ENTITY_ID, "1", {
+          friendly_name: "Shelly EM Channel 1 Energy",
+        }),
+      },
+      {
+        entities: {
+          [ENTITY_ID]: createEntry({ name: "Energy", device_id: "channel1" }),
+        },
+        devices: {
+          shelly: createDevice({ id: "shelly", name: "Shelly EM" }),
+          channel1: createDevice({
+            id: "channel1",
+            name: "Channel 1",
+            parent_device_id: "shelly",
+            next_name_part: "parent_device",
+          }),
+        },
+      }
+    );
+
+    assert.equal(
+      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
+      "Shelly EM Channel 1"
+    );
+  });
+
+  it("uses the entity name when the entity has no device", () => {
+    const hass = createHass("Washer Energy", { name: "Washer Energy" });
 
     assert.equal(
       computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
@@ -2168,19 +2206,6 @@ describe("computeEnergyLabel", () => {
     assert.equal(
       computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
       "Washer"
-    );
-  });
-
-  it("distinguishes entities sharing a name by their device", () => {
-    const hass = createHass(
-      "Energy",
-      { name: "Energy", device_id: "device1" },
-      { name: "Dishwasher" }
-    );
-
-    assert.equal(
-      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
-      "Dishwasher Energy"
     );
   });
 
@@ -2218,7 +2243,7 @@ describe("computeEnergyLabel", () => {
         undefined,
         ""
       ),
-      "Washer Energy"
+      "Washer"
     );
   });
 

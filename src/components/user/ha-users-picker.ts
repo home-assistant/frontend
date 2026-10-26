@@ -1,19 +1,22 @@
+import type { ContextType } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { apiContext } from "../../data/context";
 import type { User } from "../../data/user";
 import { fetchUsers } from "../../data/user";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { ValueChangedEvent } from "../../types";
 import "../ha-icon-button";
 import "./ha-user-picker";
 
 @customElement("ha-users-picker")
 class HaUsersPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public label?: string;
 
   @property({ attribute: false }) public value?: string[];
@@ -29,6 +32,13 @@ class HaUsersPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (!this.users) {
@@ -37,11 +47,11 @@ class HaUsersPicker extends LitElement {
   }
 
   private async _fetchUsers() {
-    this.users = await fetchUsers(this.hass);
+    this.users = await fetchUsers(this._api.callWS);
   }
 
   protected render() {
-    if (!this.hass || !this.users) {
+    if (!this.users) {
       return nothing;
     }
 
@@ -55,7 +65,6 @@ class HaUsersPicker extends LitElement {
               <ha-user-picker
                 .placeholder=${this.pickedUserLabel}
                 .index=${idx}
-                .hass=${this.hass}
                 .value=${user_id}
                 .users=${this._notSelectedUsersAndSelected(
                   user_id,
@@ -73,9 +82,8 @@ class HaUsersPicker extends LitElement {
         <ha-user-picker
           .placeholder=${
             this.pickUserLabel ||
-            this.hass!.localize("ui.components.user-picker.add_user")
+            this._localize("ui.components.user-picker.add_user")
           }
-          .hass=${this.hass}
           .users=${notSelectedUsers}
           .disabled=${this.disabled || !notSelectedUsers?.length}
           @value-changed=${this._addUser}
