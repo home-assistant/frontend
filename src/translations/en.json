@@ -11504,7 +11504,8 @@
                 "show_all_day_events": "Show all-day events",
                 "show_labels": "Show labels",
                 "events": "Events: {events}",
-                "no_events": "No events"
+                "no_events": "No events",
+                "all_day": "All day"
               },
               "cover-open-close": {
                 "label": "Cover open/close"

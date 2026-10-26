@@ -227,7 +227,7 @@ export interface CalendarEventSubscription {
 }
 
 export const subscribeCalendarEvents = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   entity_id: string,
   start: Date,
   end: Date,

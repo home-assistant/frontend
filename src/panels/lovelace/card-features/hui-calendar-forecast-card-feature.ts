@@ -76,6 +76,12 @@ interface TimeSegment {
   end: number;
 }
 
+type SegmentLane = "full" | "top" | "bottom";
+
+interface LaidOutSegment extends TimeSegment {
+  lane: SegmentLane;
+}
+
 interface FetchedRange {
   entityId: string;
   start: number;
@@ -150,6 +156,49 @@ const mergeSegments = (segments: TimeSegment[]): TimeSegment[] => {
   }
   return merged;
 };
+
+const layoutSegments = (segments: TimeSegment[]): LaidOutSegment[] => {
+  const sorted = [...segments].sort(
+    (a, b) => a.start - b.start || a.end - b.end
+  );
+  const result: LaidOutSegment[] = [];
+  let i = 0;
+  while (i < sorted.length) {
+    const group = [sorted[i]];
+    let groupEnd = sorted[i].end;
+    i++;
+    while (i < sorted.length && sorted[i].start < groupEnd) {
+      group.push(sorted[i]);
+      groupEnd = Math.max(groupEnd, sorted[i].end);
+      i++;
+    }
+
+    if (group.length === 1) {
+      result.push({ ...group[0], lane: "full" });
+      continue;
+    }
+
+    const lanes: TimeSegment[][] = [[], []];
+    for (const segment of group) {
+      const free = lanes.findIndex(
+        (lane) => !lane.length || lane[lane.length - 1].end <= segment.start
+      );
+      const lane = lanes[free === -1 ? 1 : free];
+      const last = lane[lane.length - 1];
+      if (last && segment.start < last.end) {
+        last.end = Math.max(last.end, segment.end);
+      } else {
+        lane.push({ ...segment });
+      }
+    }
+    lanes[0].forEach((segment) => result.push({ ...segment, lane: "top" }));
+    lanes[1].forEach((segment) => result.push({ ...segment, lane: "bottom" }));
+  }
+  return result;
+};
+
+const toFullLane = (segments: TimeSegment[]): LaidOutSegment[] =>
+  segments.map((segment) => ({ ...segment, lane: "full" }));
 
 const parseScheduleTime = (
   day: TZDate,
@@ -233,9 +282,9 @@ class HuiCalendarForecastCardFeature
 
   @state() private _now = Date.now();
 
-  @state() private _segments: TimeSegment[] = [];
+  @state() private _segments: LaidOutSegment[] = [];
 
-  @state() private _allDaySegments: TimeSegment[] = [];
+  @state() private _allDaySegments: LaidOutSegment[] = [];
 
   private _fetchedRange?: FetchedRange;
 
@@ -434,8 +483,8 @@ class HuiCalendarForecastCardFeature
       const isAllDay = event.all_day ?? DATE_ONLY.test(rawStart);
       (isAllDay ? allDay : timed).push({ start, end });
     }
-    this._segments = mergeSegments(timed);
-    this._allDaySegments = mergeSegments(allDay);
+    this._segments = layoutSegments(timed);
+    this._allDaySegments = toFullLane(mergeSegments(allDay));
   }
 
   private async _fetchSchedule(range: FetchedRange) {
@@ -452,11 +501,13 @@ class HuiCalendarForecastCardFeature
       if (request !== this._request) return;
       const schedule = result.response?.[range.entityId];
       this._segments = schedule
-        ? expandSchedule(
-            schedule,
-            range.start,
-            range.end,
-            this._hassConfig!.time_zone
+        ? toFullLane(
+            expandSchedule(
+              schedule,
+              range.start,
+              range.end,
+              this._hassConfig!.time_zone
+            )
           )
         : [];
       this._allDaySegments = [];
@@ -519,6 +570,7 @@ class HuiCalendarForecastCardFeature
 
     const items = this._segments
       .filter((segment) => isVisible(segment, start, end))
+      .sort((a, b) => a.start - b.start)
       .map((segment) => {
         const from = new Date(Math.max(segment.start, start));
         const to = new Date(Math.min(segment.end, end));
@@ -548,7 +600,7 @@ class HuiCalendarForecastCardFeature
   }
 
   private _renderSegments(
-    segments: TimeSegment[],
+    segments: LaidOutSegment[],
     start: number,
     duration: number,
     allDay: boolean
@@ -560,12 +612,13 @@ class HuiCalendarForecastCardFeature
       .map((segment) => {
         const from = Math.max(segment.start, start - overflow);
         const to = Math.min(segment.end, end + overflow);
+        const width = ((to - from) / duration) * 100;
         return html`
           <div
-            class="segment ${allDay ? "all-day" : ""}"
+            class="segment lane-${segment.lane} ${allDay ? "all-day" : ""}"
             style=${styleMap({
               "inset-inline-start": `${((from - start) / duration) * 100}%`,
-              width: `${((to - from) / duration) * 100}%`,
+              width: `max(calc(${width}% - var(--segment-gap)), 2px)`,
             })}
           ></div>
         `;
@@ -624,6 +677,7 @@ class HuiCalendarForecastCardFeature
     }
 
     .track {
+      --segment-gap: 2px;
       position: relative;
       flex: 1;
       min-height: 0;
@@ -643,8 +697,17 @@ class HuiCalendarForecastCardFeature
       position: absolute;
       top: 0;
       bottom: 0;
+      margin-inline-start: calc(var(--segment-gap) / 2);
       border-radius: var(--feature-border-radius);
       background-color: var(--event-color, var(--feature-color));
+    }
+
+    .segment.lane-top {
+      bottom: calc(50% + var(--segment-gap) / 2);
+    }
+
+    .segment.lane-bottom {
+      top: calc(50% + var(--segment-gap) / 2);
     }
 
     .segment.all-day {
