@@ -6,6 +6,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { debounce } from "../../common/util/debounce";
 import type { HomeAssistant } from "../../types";
+import type { FanDirection } from "../fan";
 import type { LightColor } from "../light";
 import type { NextNamePart, RegistryEntry } from "../registry";
 import type { Segment } from "../vacuum";
@@ -102,6 +103,16 @@ export interface TimerEntityOptions {
   presets?: number[];
 }
 
+export interface FanFavorite {
+  percentage: number;
+  direction?: FanDirection;
+  oscillating?: boolean;
+}
+
+export interface FanEntityOptions {
+  favorites?: FanFavorite[];
+}
+
 export type FavoriteOption =
   | "favorite_colors"
   | "favorite_positions"
@@ -184,6 +195,7 @@ export interface EntityRegistryOptions {
   cover?: CoverEntityOptions;
   valve?: ValveEntityOptions;
   timer?: TimerEntityOptions;
+  fan?: FanEntityOptions;
   vacuum?: VacuumEntityOptions;
   device_tracker?: DeviceTrackerEntityOptions;
   switch_as_x?: SwitchAsXEntityOptions;
@@ -212,6 +224,7 @@ export interface EntityRegistryEntryUpdateParams {
     | CoverEntityOptions
     | ValveEntityOptions
     | TimerEntityOptions
+    | FanEntityOptions
     | VacuumEntityOptions
     | DeviceTrackerEntityOptions;
   aliases?: (string | null)[];

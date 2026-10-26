@@ -182,7 +182,9 @@
           "medium": "Medium",
           "high": "High",
           "numbered": "Speed {speed}"
-        }
+        },
+        "oscillation_on": "Oscillation on",
+        "oscillation_off": "Oscillation off"
       },
       "humidifier": {
         "currently": "[%key:ui::card::climate::currently%]",
