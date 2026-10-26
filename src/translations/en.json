@@ -11319,6 +11319,20 @@
                 }
               }
             },
+            "date": {
+              "name": "Date",
+              "description": "This card displays the current date using your desired size and format.",
+              "date_size": "Date size",
+              "date_sizes": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+              },
+              "date_format": "Date format",
+              "date_format_description": "[%key:ui::panel::lovelace::editor::card::clock::date::description%]",
+              "no_background": "[%key:ui::panel::lovelace::editor::card::clock::no_background%]",
+              "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]"
+            },
             "media-control": {
               "name": "Media control",
               "description": "This card is used to display media player entities on an interface with easy to use controls."

@@ -490,6 +490,15 @@ export type ClockCardDatePart =
   | "separator-dot"
   | "separator-new-line";
 
+export interface DateCardConfig extends LovelaceCardConfig {
+  type: "date";
+  title?: string;
+  date_size?: "small" | "medium" | "large";
+  date_format?: ClockCardDatePart[];
+  time_zone?: string;
+  no_background?: boolean;
+}
+
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
