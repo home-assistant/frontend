@@ -10,6 +10,7 @@ import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
 import {
+  brandsAccessTokenContext,
   configContext,
   internationalizationContext,
   uiContext,
@@ -87,6 +88,11 @@ export class HaMarketplaceDiscover extends LitElement {
     transformer: ({ auth }) => auth.data.hassUrl,
   })
   private _hassUrl!: string;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
 
   private _sections = memoizeOne(discoverSections);
 
