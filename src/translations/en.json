@@ -10474,8 +10474,27 @@
           },
           "section_strategy": {
             "common-controls": {
-              "name": "Common controls"
+              "name": "Common controls",
+              "description": "Shows the entities you use most, based on your activity."
+            },
+            "device": {
+              "name": "Device",
+              "description": "Shows the controls and sensors of a device."
             }
+          },
+          "create_section": {
+            "header": "Create section",
+            "manual": "Manual section",
+            "manual_description": "Start empty and add your own cards.",
+            "automatic": "[%key:ui::panel::lovelace::editor::section::automatic%]",
+            "automatic_description": "Fills itself with cards and stays up to date.",
+            "paste": "Paste section",
+            "paste_description": "Add the section you copied."
+          },
+          "select_section_strategy": {
+            "header": "Choose an automatic section",
+            "built_in": "Built-in sections",
+            "custom": "Community sections"
           },
           "edit_section": {
             "header": "Section configuration",

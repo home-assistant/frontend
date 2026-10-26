@@ -54,6 +54,7 @@ import {
   deleteAtPath,
   getAtPath,
   getViewPath,
+  insertAtPath,
   moveAtPath,
   setAtPath,
 } from "../lovelace-path";
@@ -139,10 +140,9 @@ export class HuiDialogEditSection
 
     this.lovelace = params.lovelace;
 
-    this._config = getAtPath<LovelaceSectionRawConfig>(
-      params.lovelaceConfig,
-      params.path
-    );
+    this._config =
+      params.newSection ??
+      getAtPath<LovelaceSectionRawConfig>(params.lovelaceConfig, params.path);
     this._currTab =
       this._config && isStrategySection(this._config)
         ? "tab-strategy"
@@ -152,7 +152,12 @@ export class HuiDialogEditSection
       params.lovelaceConfig,
       viewPath
     );
-    this._initDirtyTracking({ type: "deep" }, this._config);
+    if (params.newSection) {
+      this._initDirtyTracking({ type: "deep" }, {});
+      this._updateDirtyState(params.newSection);
+    } else {
+      this._initDirtyTracking({ type: "deep" }, this._config);
+    }
     this._defaultPreviewMode =
       window.innerWidth >= TWO_COLUMNS_MIN_WIDTH ? "desktop" : "mobile";
   }
@@ -174,6 +179,7 @@ export class HuiDialogEditSection
     this._currTab = TABS[0];
     this._strategyError = false;
     this._yamlError = false;
+    this._discardDirtyStateChanges();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -265,24 +271,33 @@ export class HuiDialogEditSection
           @click=${this._enlarge}
           >${heading}</span
         >
-        <ha-dropdown
-          slot="headerActionItems"
-          placement="bottom-end"
-          @closed=${stopPropagation}
-          @wa-select=${this._handleAction}
-        >
-          <ha-icon-button
-            slot="trigger"
-            .label=${this.hass!.localize("ui.common.menu")}
-            .path=${mdiDotsVertical}
-          ></ha-icon-button>
-          <ha-dropdown-item value="move-to-view">
-            <ha-svg-icon slot="icon" .path=${mdiFileMoveOutline}></ha-svg-icon>
-            ${this.hass!.localize(
-              "ui.panel.lovelace.editor.edit_view.move_to_view"
-            )}
-          </ha-dropdown-item>
-        </ha-dropdown>
+        ${
+          this._params.newSection
+            ? nothing
+            : html`
+                <ha-dropdown
+                  slot="headerActionItems"
+                  placement="bottom-end"
+                  @closed=${stopPropagation}
+                  @wa-select=${this._handleAction}
+                >
+                  <ha-icon-button
+                    slot="trigger"
+                    .label=${this.hass!.localize("ui.common.menu")}
+                    .path=${mdiDotsVertical}
+                  ></ha-icon-button>
+                  <ha-dropdown-item value="move-to-view">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiFileMoveOutline}
+                    ></ha-svg-icon>
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.editor.edit_view.move_to_view"
+                    )}
+                  </ha-dropdown-item>
+                </ha-dropdown>
+              `
+        }
         <div class="content">
           <div class="element-editor ha-scrollbar">
             ${
@@ -679,11 +694,13 @@ export class HuiDialogEditSection
     ) {
       return;
     }
-    const newConfig = setAtPath(
-      this._params.lovelaceConfig,
-      this._params.path,
-      this._config
-    );
+    const newConfig = this._params.newSection
+      ? insertAtPath(
+          this._params.lovelaceConfig,
+          this._params.path,
+          this._config
+        )
+      : setAtPath(this._params.lovelaceConfig, this._params.path, this._config);
 
     this._params.saveConfig(newConfig);
     this._markDirtyStateClean();
