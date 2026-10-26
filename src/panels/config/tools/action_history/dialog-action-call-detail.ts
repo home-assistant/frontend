@@ -1,9 +1,11 @@
 import type { ContextType } from "@lit/context";
+import { dump } from "js-yaml";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { consume } from "../../../../common/decorators/consume";
 import { navigate } from "../../../../common/navigate";
+import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
@@ -12,11 +14,44 @@ import {
   configContext,
   internationalizationContext,
 } from "../../../../data/context";
+import type { LogbookActionCall } from "../../../../data/logbook";
 import { localizeTriggerSource } from "../../../../data/logbook";
 import { DialogMixin } from "../../../../dialogs/dialog-mixin";
+import { showToast } from "../../../../util/toast";
 import type { LogbookCause } from "../../../logbook/logbook-entry-model";
 import { renderLogbookCauseIcon } from "../../../logbook/logbook-entry-templates";
 import type { ActionCallDetailDialogParams } from "./show-dialog-action-call-detail";
+
+const TARGET_KEYS = new Set([
+  "entity_id",
+  "device_id",
+  "area_id",
+  "floor_id",
+  "label_id",
+]);
+
+// The call as an action, like it would be written in an automation.
+const callToAction = (call: LogbookActionCall) => {
+  const action: Record<string, unknown> = {
+    action: `${call.domain}.${call.service}`,
+  };
+  const target: Record<string, unknown> = {};
+  const data: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(call.service_data)) {
+    if (TARGET_KEYS.has(key)) {
+      target[key] = value;
+    } else {
+      data[key] = value;
+    }
+  }
+  if (Object.keys(target).length) {
+    action.target = target;
+  }
+  if (Object.keys(data).length) {
+    action.data = data;
+  }
+  return action;
+};
 
 @customElement("dialog-action-call-detail")
 export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogParams>(
@@ -106,6 +141,13 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
                 `
               : nothing
           }
+          <ha-button
+            slot="secondaryAction"
+            appearance="plain"
+            @click=${this._copyYaml}
+          >
+            ${localize("ui.panel.config.tools.tabs.action_history.copy_yaml")}
+          </ha-button>
           <ha-button slot="primaryAction" @click=${this.closeDialog}>
             ${localize("ui.common.close")}
           </ha-button>
@@ -124,6 +166,13 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
         </div>
       </div>
     `;
+  }
+
+  private async _copyYaml() {
+    await copyToClipboard(dump(callToAction(this.params!.call)));
+    showToast(this, {
+      message: this._i18n.localize("ui.common.copied_clipboard"),
+    });
   }
 
   private _viewTrace() {
