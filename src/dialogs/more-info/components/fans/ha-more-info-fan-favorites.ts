@@ -465,6 +465,7 @@ export class HaMoreInfoFanFavorites extends LitElement {
               <ha-button
                 appearance="plain"
                 size="s"
+                .disabled=${this.stateObj.state === UNAVAILABLE}
                 @click=${this._enterEditMode}
               >
                 <ha-svg-icon
