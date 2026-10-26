@@ -77,6 +77,7 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
     "common-controls": () =>
       import("./usage_prediction/common-controls-section-strategy"),
     device: () => import("./device/device-section-strategy"),
+    entities: () => import("./entities/entities-section-strategy"),
   },
 };
 

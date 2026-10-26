@@ -34,6 +34,7 @@ export class HaSelectorEntityName extends SubscribeMixin(LitElement) {
         }
         .value=${this.value}
         .defaultValue=${this.selector.entity_name?.default_name}
+        .allowCustom=${this.selector.entity_name?.allow_custom ?? true}
         .label=${this.label}
         .helper=${this.helper}
         .disabled=${this.disabled}

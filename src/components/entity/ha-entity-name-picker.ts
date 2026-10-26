@@ -86,6 +86,8 @@ export class HaEntityNamePicker extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ attribute: false }) public allowCustom = true;
+
   @state() private _mode?: "composed" | "custom";
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
@@ -129,17 +131,23 @@ export class HaEntityNamePicker extends LitElement {
       <div class="container">
         <div class="header">
           ${this.label ? html`<label>${this.label}</label>` : nothing}
-          <ha-button-toggle-group
-            size="s"
-            .buttons=${modeButtons}
-            .active=${this._mode}
-            .disabled=${this.disabled}
-            @value-changed=${this._modeChanged}
-          ></ha-button-toggle-group>
+          ${
+            this.allowCustom
+              ? html`
+                  <ha-button-toggle-group
+                    size="s"
+                    .buttons=${modeButtons}
+                    .active=${this._mode}
+                    .disabled=${this.disabled}
+                    @value-changed=${this._modeChanged}
+                  ></ha-button-toggle-group>
+                `
+              : nothing
+          }
         </div>
         <div class="content">
           ${
-            this._mode === "custom"
+            this.allowCustom && this._mode === "custom"
               ? this._renderTextInput()
               : this._renderPicker()
           }
@@ -211,7 +219,7 @@ export class HaEntityNamePicker extends LitElement {
         .rowRenderer=${rowRenderer}
         .value=${this._getPickerValue()}
         no-sort
-        allow-custom-value
+        ?allow-custom-value=${this.allowCustom}
         .customValueLabel=${this.hass.localize(
           "ui.components.entity.entity-name-picker.custom_name"
         )}
