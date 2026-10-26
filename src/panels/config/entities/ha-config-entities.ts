@@ -115,6 +115,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import { showToast } from "../../../util/toast";
 import {
   getAreaTableColumn,
   getCreatedAtTableColumn,
@@ -134,6 +135,8 @@ import {
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+
+const EXPOSE_TOAST_ID = "entities-expose";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -1716,7 +1719,7 @@ ${rejected
     }`;
   }
 
-  private _exposeSelected(assistants: string[], shouldExpose: boolean) {
+  private async _exposeSelected(assistants: string[], shouldExpose: boolean) {
     // Only entities with a state can be exposed, same as the expose page
     const entityIds = this._selected.filter(
       (entityId) => entityId in this.hass.states
@@ -1731,43 +1734,66 @@ ${rejected
       return;
     }
 
-    const params = {
-      assistants: assistants
-        .map((assistant) => voiceAssistants[assistant].name)
-        .join(", "),
-      entities: entityIds.length,
-    };
+    // Remember which entities change per assistant, so undo only reverts those
+    const exposedEntities = this._exposedEntities;
+    const changedEntities = assistants.map((assistant) => ({
+      assistant,
+      entityIds: entityIds.filter(
+        (entityId) =>
+          Boolean(exposedEntities?.[entityId]?.[assistant]) !== shouldExpose
+      ),
+    }));
 
-    showConfirmationDialog(this, {
-      title: this.hass.localize(
+    try {
+      await exposeEntities(this.hass, assistants, entityIds, shouldExpose);
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text: err.message || err.code || String(err),
+      });
+      return;
+    }
+    fireEvent(this, "exposed-entities-changed");
+    this._clearSelection();
+
+    showToast(this, {
+      id: EXPOSE_TOAST_ID,
+      message: this.hass.localize(
         shouldExpose
-          ? "ui.panel.config.voice_assistants.expose.expose_confirm_title"
-          : "ui.panel.config.voice_assistants.expose.unexpose_confirm_title"
-      ),
-      text: this.hass.localize(
-        shouldExpose
-          ? "ui.panel.config.voice_assistants.expose.expose_confirm_text"
-          : "ui.panel.config.voice_assistants.expose.unexpose_confirm_text",
-        params
-      ),
-      confirmText: this.hass.localize(
-        shouldExpose
-          ? "ui.panel.config.voice_assistants.expose.expose"
-          : "ui.panel.config.voice_assistants.expose.unexpose"
-      ),
-      dismissText: this.hass.localize("ui.common.cancel"),
-      confirm: async () => {
-        try {
-          await exposeEntities(this.hass, assistants, entityIds, shouldExpose);
-          fireEvent(this, "exposed-entities-changed");
-          this._clearSelection();
-        } catch (err: any) {
-          showAlertDialog(this, {
-            text: err.message || err.code || String(err),
-          });
+          ? "ui.panel.config.entities.picker.expose_selected.toast"
+          : "ui.panel.config.entities.picker.unexpose_selected.toast",
+        {
+          count: entityIds.length,
+          assistants: assistants
+            .map((assistant) => voiceAssistants[assistant].name)
+            .join(", "),
         }
+      ),
+      duration: 8000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => this._undoExpose(changedEntities, shouldExpose),
       },
     });
+  }
+
+  private async _undoExpose(
+    changedEntities: { assistant: string; entityIds: string[] }[],
+    shouldExpose: boolean
+  ) {
+    try {
+      await Promise.all(
+        changedEntities
+          .filter(({ entityIds }) => entityIds.length)
+          .map(({ assistant, entityIds }) =>
+            exposeEntities(this.hass, [assistant], entityIds, !shouldExpose)
+          )
+      );
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text: err.message || err.code || String(err),
+      });
+    }
+    fireEvent(this, "exposed-entities-changed");
   }
 
   static get styles(): CSSResultGroup {

@@ -7502,10 +7502,12 @@
             "expose_selected": {
               "button": "Expose to voice assistant",
               "all_assistants": "All assistants",
-              "no_entities": "None of the selected entities can be exposed."
+              "no_entities": "None of the selected entities can be exposed.",
+              "toast": "Exposed {count} {count, plural,\n  one {entity}\n  other {entities}\n} to {assistants}"
             },
             "unexpose_selected": {
-              "button": "Stop exposing to voice assistant"
+              "button": "Stop exposing to voice assistant",
+              "toast": "Stopped exposing {count} {count, plural,\n  one {entity}\n  other {entities}\n} to {assistants}"
             },
             "restore_entity_id_selected": {
               "button": "Recreate entity IDs of selected",
