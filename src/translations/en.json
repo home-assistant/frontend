@@ -4278,6 +4278,7 @@
               "user": "User",
               "context_id": "Context ID",
               "data": "Data",
+              "perform_again": "Perform again",
               "copy_yaml": "Copy as YAML",
               "no_actions": "No actions were performed in this time range.",
               "load_failed": "Could not load the action history: {error}"

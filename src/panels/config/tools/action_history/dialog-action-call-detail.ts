@@ -7,12 +7,15 @@ import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_da
 import { consume } from "../../../../common/decorators/consume";
 import { navigate } from "../../../../common/navigate";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
+import "../../../../components/buttons/ha-progress-button";
+import type { HaProgressButton } from "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-yaml-editor";
 import {
+  apiContext,
   configContext,
   internationalizationContext,
   servicesContext,
@@ -79,8 +82,12 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
   @consume({ context: configContext, subscribe: true })
   private _config!: ContextType<typeof configContext>;
 
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
   @consume({ context: servicesContext, subscribe: true })
-  private _services?: ContextType<typeof servicesContext>;
+  private _services!: ContextType<typeof servicesContext>;
 
   protected render() {
     if (!this.params || !this._i18n || !this._config) {
@@ -88,6 +95,7 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
     }
     const { call, name, cause, user, traceUrl } = this.params;
     const localize = this._i18n.localize;
+    const canPerform = Boolean(this._services?.[call.domain]?.[call.service]);
 
     return html`
       <ha-dialog
@@ -152,24 +160,41 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
           read-only
           in-dialog
         ></ha-yaml-editor>
-        <ha-dialog-footer slot="footer">
-          ${
-            traceUrl
-              ? html`
-                  <ha-button
-                    slot="secondaryAction"
-                    appearance="plain"
-                    @click=${this._viewTrace}
-                  >
-                    ${localize("ui.components.logbook.view_trace")}
-                  </ha-button>
-                `
-              : nothing
-          }
-          <ha-button slot="primaryAction" @click=${this.closeDialog}>
-            ${localize("ui.common.close")}
-          </ha-button>
-        </ha-dialog-footer>
+        ${
+          traceUrl || canPerform
+            ? html`
+                <ha-dialog-footer slot="footer">
+                  ${
+                    traceUrl
+                      ? html`
+                          <ha-button
+                            slot="secondaryAction"
+                            appearance="plain"
+                            @click=${this._viewTrace}
+                          >
+                            ${localize("ui.components.logbook.view_trace")}
+                          </ha-button>
+                        `
+                      : nothing
+                  }
+                  ${
+                    canPerform
+                      ? html`
+                          <ha-progress-button
+                            slot="primaryAction"
+                            @click=${this._performAgain}
+                          >
+                            ${localize(
+                              "ui.panel.config.tools.tabs.action_history.perform_again"
+                            )}
+                          </ha-progress-button>
+                        `
+                      : nothing
+                  }
+                </ha-dialog-footer>
+              `
+            : nothing
+        }
       </ha-dialog>
     `;
   }
@@ -193,6 +218,29 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
     showToast(this, {
       message: this._i18n.localize("ui.common.copied_clipboard"),
     });
+  }
+
+  private async _performAgain(ev: Event) {
+    const button = ev.currentTarget as HaProgressButton;
+    const { domain, service, service_data } = this.params!.call;
+    button.progress = true;
+    try {
+      // Calls with a response fail when it is not asked for.
+      await this._api.callService(
+        domain,
+        service,
+        service_data,
+        undefined,
+        true,
+        "response" in this._services[domain][service]
+      );
+    } catch {
+      button.actionError();
+      return;
+    } finally {
+      button.progress = false;
+    }
+    button.actionSuccess();
   }
 
   private _viewTrace() {
