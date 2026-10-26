@@ -3,7 +3,10 @@ import type { ReactiveElement, PropertyValues } from "lit";
 import { fireEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { updateHistoryState } from "../common/navigate";
-import { closeLastDialog } from "../dialogs/make-dialog-manager";
+import {
+  closeLastDialog,
+  restoreClosedDialogSearch,
+} from "../dialogs/make-dialog-manager";
 import type { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 import type { Constructor } from "../types";
 
@@ -64,6 +67,9 @@ export const urlSyncMixin = <
               console.log("popstate", ev);
             }
             if (ev.state.opensDialog) {
+              // This listener is added before any page's, so pages read the
+              // restored URL
+              restoreClosedDialogSearch();
               // coming back from a dialog
               // if we are instead navigating forward, the dialogs are already closed
               closeLastDialog();
