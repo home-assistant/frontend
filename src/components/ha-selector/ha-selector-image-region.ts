@@ -845,7 +845,6 @@ export class HaImageRegionSelector extends LitElement {
     .frame {
       position: relative;
       margin-inline: auto;
-      overflow: hidden;
       border-radius: var(--ha-border-radius-md, 8px);
       background-color: var(--secondary-background-color);
       touch-action: none;
@@ -865,6 +864,7 @@ export class HaImageRegionSelector extends LitElement {
       inset: 0;
       width: 100%;
       height: 100%;
+      border-radius: inherit;
     }
     img {
       object-fit: fill;
