@@ -146,7 +146,7 @@ export const activateScene = (
   hass.callService("scene", "turn_on", { entity_id: entityId });
 
 export const applyScene = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   entities: SceneEntities
 ): Promise<ServiceCallResponse> =>
   hass.callService("scene", "apply", { entities });

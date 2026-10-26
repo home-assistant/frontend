@@ -514,7 +514,7 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
       favoritesContext.stateObj
     );
 
-    if (!favoritesHandler) {
+    if (!favoritesHandler?.getResetOptions) {
       return;
     }
 
@@ -820,16 +820,22 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
                                         : favoritesLabels?.editMode
                                     }
                                   </ha-dropdown-item>
-                                  <ha-dropdown-item
-                                    value="reset_favorites"
-                                    .disabled=${resetFavoritesDisabled}
-                                  >
-                                    <ha-svg-icon
-                                      slot="icon"
-                                      .path=${mdiBackupRestore}
-                                    ></ha-svg-icon>
-                                    ${favoritesLabels?.reset}
-                                  </ha-dropdown-item>
+                                  ${
+                                    favoritesHandler?.getResetOptions
+                                      ? html`
+                                          <ha-dropdown-item
+                                            value="reset_favorites"
+                                            .disabled=${resetFavoritesDisabled}
+                                          >
+                                            <ha-svg-icon
+                                              slot="icon"
+                                              .path=${mdiBackupRestore}
+                                            ></ha-svg-icon>
+                                            ${favoritesLabels?.reset}
+                                          </ha-dropdown-item>
+                                        `
+                                      : nothing
+                                  }
                                   <ha-dropdown-item
                                     value="copy_favorites"
                                     .disabled=${copyFavoritesDisabled}

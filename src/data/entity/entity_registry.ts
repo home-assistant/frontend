@@ -119,15 +119,16 @@ export type FavoriteOption =
   | "favorite_tilt_positions"
   | "presets";
 
-export type FavoritesDomain = "light" | "cover" | "valve" | "timer";
+export type FavoritesDomain = "light" | "cover" | "valve" | "timer" | "fan";
 
-export type FavoriteOptionValue = LightColor[] | number[];
+export type FavoriteOptionValue = LightColor[] | number[] | FanFavorite[];
 
 export const DOMAINS_WITH_FAVORITES: FavoritesDomain[] = [
   "light",
   "cover",
   "valve",
   "timer",
+  "fan",
 ];
 
 export const isFavoritesDomain = (domain: string): domain is FavoritesDomain =>

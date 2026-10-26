@@ -42,6 +42,14 @@ export class HaMoreInfoFavorites extends LitElement {
 
   @property({ attribute: false }) public addLabel = "";
 
+  @property({ attribute: false }) public addIcon = mdiPlus;
+
+  @property({ type: Boolean, attribute: false }) public addDisabled = false;
+
+  // Index of the item being edited in place. It pulses while the other items
+  // stop shaking and are dimmed.
+  @property({ attribute: false }) public selectedIndex?: number;
+
   @property({ attribute: false }) public doneLabel = "";
 
   private _itemMoved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>): void {
@@ -88,12 +96,17 @@ export class HaMoreInfoFavorites extends LitElement {
         .options=${SORTABLE_OPTIONS}
       >
         <div class="container">
-          ${this.items.map(
-            (item, index) => html`
+          ${this.items.map((item, index) => {
+            const hasSelection =
+              this.editMode && this.selectedIndex !== undefined;
+            const selected = hasSelection && this.selectedIndex === index;
+            return html`
               <div class="favorite">
                 <div
                   class="favorite-bubble ${classMap({
-                    shake: !!this.editMode,
+                    shake: this.editMode && !hasSelection,
+                    pulse: selected,
+                    dimmed: hasSelection && !selected,
                   })}"
                 >
                   <div
@@ -128,8 +141,8 @@ export class HaMoreInfoFavorites extends LitElement {
                   }
                 </div>
               </div>
-            `
-          )}
+            `;
+          })}
           ${
             this.editMode && this.showAdd
               ? html`
@@ -137,8 +150,9 @@ export class HaMoreInfoFavorites extends LitElement {
                     class="button"
                     @click=${this._handleAdd}
                     .label=${this.addLabel}
+                    .disabled=${this.addDisabled}
                   >
-                    <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+                    <ha-svg-icon .path=${this.addIcon}></ha-svg-icon>
                   </ha-outlined-icon-button>
                 `
               : nothing
@@ -195,6 +209,28 @@ export class HaMoreInfoFavorites extends LitElement {
       animation-delay: 0.3s;
     }
 
+    .favorite .favorite-bubble.pulse {
+      position: relative;
+      display: block;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    .favorite .favorite-bubble.dimmed {
+      position: relative;
+      display: block;
+    }
+
+    .favorite .favorite-bubble.dimmed .item {
+      opacity: 0.4;
+      transition: opacity var(--ha-animation-duration-fast, 150ms) ease-in-out;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .favorite .favorite-bubble.pulse {
+        animation: none;
+      }
+    }
+
     .sortable-ghost {
       opacity: 0.4;
     }
@@ -218,6 +254,16 @@ export class HaMoreInfoFavorites extends LitElement {
       }
       100% {
         transform: rotateZ(0deg) translateX(-1px) translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.08);
       }
     }
 
