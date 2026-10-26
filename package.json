@@ -148,7 +148,7 @@
     "@eslint/js": "10.0.1",
     "@gfx/zopfli": "1.0.15",
     "@html-eslint/eslint-plugin": "0.67.0",
-    "@lokalise/node-api": "16.6.0",
+    "@lokalise/node-api": "17.0.1",
     "@octokit/auth-oauth-device": "8.0.5",
     "@octokit/rest": "22.0.1",
     "@playwright/test": "1.64.1",
