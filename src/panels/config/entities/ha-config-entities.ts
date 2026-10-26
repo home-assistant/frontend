@@ -1775,7 +1775,9 @@ ${rejected
           ? "ui.panel.config.entities.picker.expose_selected.toast"
           : "ui.panel.config.entities.picker.unexpose_selected.toast",
         {
-          count: entityIds.length,
+          count: new Set(
+            changedEntities.flatMap((changed) => changed.entityIds)
+          ).size,
           assistants: assistants
             .map((assistant) => voiceAssistants[assistant].name)
             .join(", "),
