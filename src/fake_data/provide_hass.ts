@@ -597,8 +597,9 @@ export const provideHass = (
       },
     ],
     formatEntityAttributeName: (_stateObj, attribute) => attribute,
+    // Formatters return strings: Intl.ListFormat and others reject numbers.
     formatEntityAttributeValue: (stateObj, attribute, value) =>
-      value !== null ? value : (stateObj.attributes[attribute] ?? ""),
+      String(value ?? stateObj.attributes[attribute] ?? ""),
     formatEntityAttributeValueToParts: (stateObj, attribute, value) => [
       {
         type: "value",

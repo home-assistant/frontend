@@ -1,6 +1,7 @@
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../src/components/ha-switch";
+import type { ExtEntityRegistryEntry } from "../../../src/data/entity/entity_registry";
 import type { HomeAssistant } from "../../../src/types";
 import "../ha-demo-options";
 import "./demo-more-info";
@@ -10,6 +11,9 @@ class DemoMoreInfos extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Array }) public entities!: string[];
+
+  @property({ attribute: false })
+  public entries?: Record<string, ExtEntityRegistryEntry>;
 
   @state() private _showConfig = false;
 
@@ -24,6 +28,7 @@ class DemoMoreInfos extends LitElement {
             (item) =>
               html`<demo-more-info
                 .entityId=${item}
+                .entry=${this.entries?.[item]}
                 .showConfig=${this._showConfig}
                 .hass=${this.hass}
               ></demo-more-info>`
