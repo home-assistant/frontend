@@ -4,12 +4,13 @@ import { customElement, property, state } from "lit/decorators";
 import "../../../../../../components/ha-expansion-panel";
 import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../../data/zha";
-import { fetchZHADevice } from "../../../../../../data/zha";
+import { fetchZHADevice, ZHADeviceType } from "../../../../../../data/zha";
 import { haStyle } from "../../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../../types";
 import {
   computeZHADeviceType,
   formatAsPaddedHex,
+  formatGreenPowerSrcId,
 } from "../../../../integrations/integration-panels/zha/functions";
 
 @customElement("ha-device-info-zha")
@@ -39,9 +40,16 @@ export class HaDeviceInfoZha extends LitElement {
     if (!this._zhaDevice) {
       return nothing;
     }
+    const srcId = formatGreenPowerSrcId(this._zhaDevice);
     return html`
       <ha-expansion-panel header="Zigbee info">
-        <div>Nwk: ${formatAsPaddedHex(this._zhaDevice.nwk)}</div>
+        ${
+          this._zhaDevice.device_type !== ZHADeviceType.GreenPower
+            ? html`<div>Nwk: ${formatAsPaddedHex(this._zhaDevice.nwk)}</div>`
+            : srcId
+              ? html`<div>Source ID: ${srcId}</div>`
+              : html`<div>IEEE: ${this._zhaDevice.ieee}</div>`
+        }
         <div>
           Device Type:
           ${computeZHADeviceType(this._zhaDevice, this.hass.localize)}

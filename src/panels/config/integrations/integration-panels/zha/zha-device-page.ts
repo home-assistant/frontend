@@ -270,6 +270,10 @@ class ZHADevicePage extends LitElement {
   }
 
   private _getTabs = memoizeOne((device: ZHADevice | undefined) => {
+    if (device?.device_type === ZHADeviceType.GreenPower) {
+      return ["signature"] as ZHADevicePageTab[];
+    }
+
     const tabs: ZHADevicePageTab[] = ["clusters", "bindings", "signature"];
 
     if (

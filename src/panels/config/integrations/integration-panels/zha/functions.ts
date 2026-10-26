@@ -13,6 +13,13 @@ export const formatAsPaddedHex = (value: string | number): string => {
 export const getIeeeTail = (ieee: string) =>
   ieee.split(":").slice(-4).reverse().join("");
 
+// Only SrcID-addressed Green Power devices have a source ID, others use the IEEE
+export const formatGreenPowerSrcId = (device: ZHADevice): string | undefined =>
+  device.signature.src_id == null
+    ? undefined
+    : "0x" +
+      device.signature.src_id.toString(16).toUpperCase().padStart(8, "0");
+
 const DEVICE_TYPE_TRANSLATION_KEYS = {
   [ZHADeviceType.Coordinator]: "ui.panel.config.zha.visualization.coordinator",
   [ZHADeviceType.Router]: "ui.panel.config.zha.visualization.router",

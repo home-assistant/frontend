@@ -15,10 +15,18 @@ import "../../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
-import { fetchDevices, refreshTopology } from "../../../../../data/zha";
+import {
+  fetchDevices,
+  refreshTopology,
+  ZHADeviceType,
+} from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { computeZHADeviceType, formatAsPaddedHex } from "./functions";
+import {
+  computeZHADeviceType,
+  formatAsPaddedHex,
+  formatGreenPowerSrcId,
+} from "./functions";
 import { createZHANetworkChartData } from "./zha-network-data";
 
 @customElement("zha-network-visualization-page")
@@ -124,7 +132,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
     if (device.device_type) {
       attributes.push(computeZHADeviceType(device, this.hass.localize));
     }
-    if (device.nwk != null) {
+    if (device.device_type === ZHADeviceType.GreenPower) {
+      const srcId = formatGreenPowerSrcId(device);
+      if (srcId) {
+        attributes.push(srcId);
+      }
+    } else if (device.nwk != null) {
       attributes.push(formatAsPaddedHex(device.nwk));
     }
     return attributes;
@@ -167,9 +180,17 @@ export class ZHANetworkVisualizationPage extends LitElement {
     return html`<b>IEEE: </b>${device.ieee}<br /><b
         >${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b
       >${computeZHADeviceType(device, this.hass.localize)}${
-        device.nwk != null
-          ? html`<br /><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`
-          : nothing
+        device.device_type === ZHADeviceType.GreenPower
+          ? formatGreenPowerSrcId(device)
+            ? html`<br /><b
+                  >${this.hass.localize(
+                    "ui.panel.config.zha.device_page.src_id"
+                  )}: </b
+                >${formatGreenPowerSrcId(device)}`
+            : nothing
+          : device.nwk != null
+            ? html`<br /><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`
+            : nothing
       }${
         device.manufacturer != null && device.model != null
           ? html`<br /><b

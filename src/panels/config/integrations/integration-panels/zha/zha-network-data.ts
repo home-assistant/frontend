@@ -32,6 +32,7 @@ export function createZHANetworkChartData(
   const primaryColor = style.getPropertyValue("--primary-color");
   const routerColor = style.getPropertyValue("--cyan-color");
   const endDeviceColor = style.getPropertyValue("--teal-color");
+  const greenPowerColor = style.getPropertyValue("--green-color");
   const offlineColor = style.getPropertyValue("--error-color");
   const nodes: NetworkNode[] = [];
   const links: NetworkLink[] = [];
@@ -52,6 +53,11 @@ export function createZHANetworkChartData(
       itemStyle: { color: endDeviceColor },
     },
     {
+      name: hass.localize("ui.panel.config.zha.visualization.green_power"),
+      symbol: "triangle",
+      itemStyle: { color: greenPowerColor },
+    },
+    {
       name: hass.localize("ui.panel.config.zha.visualization.offline"),
       symbol: "circle",
       itemStyle: { color: offlineColor },
@@ -61,13 +67,16 @@ export function createZHANetworkChartData(
   // Create all the nodes and links
   devices.forEach((device) => {
     const isCoordinator = device.device_type === ZHADeviceType.Coordinator;
+    const isGreenPower = device.device_type === ZHADeviceType.GreenPower;
     let category: number;
     if (!device.available) {
-      category = 3; // Offline
+      category = 4; // Offline
     } else if (isCoordinator) {
       category = 0;
     } else if (device.device_type === ZHADeviceType.Router) {
       category = 1;
+    } else if (isGreenPower) {
+      category = 3;
     } else {
       category = 2; // End Device
     }
@@ -93,14 +102,20 @@ export function createZHANetworkChartData(
         : device.device_type === ZHADeviceType.Router
           ? 30
           : 20,
-      symbol: isCoordinator ? "roundRect" : "circle",
+      symbol: isCoordinator
+        ? "roundRect"
+        : isGreenPower
+          ? "triangle"
+          : "circle",
       itemStyle: {
         color: device.available
           ? isCoordinator
             ? primaryColor
             : device.device_type === ZHADeviceType.Router
               ? routerColor
-              : endDeviceColor
+              : isGreenPower
+                ? greenPowerColor
+                : endDeviceColor
           : offlineColor,
       },
       polarDistance: category === 0 ? 0 : category === 1 ? 0.5 : 0.9,

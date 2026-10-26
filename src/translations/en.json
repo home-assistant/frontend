@@ -8331,6 +8331,7 @@
             "information": "Device information",
             "ieee": "IEEE",
             "nwk": "NWK",
+            "src_id": "Source ID",
             "bindings_error": "Failed to load binding options",
             "no_bindings": "No bindable devices or groups were found",
             "not_found": "Zigbee device not found",

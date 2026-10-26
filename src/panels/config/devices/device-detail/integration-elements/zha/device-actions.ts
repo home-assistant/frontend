@@ -33,8 +33,9 @@ export const getZHADeviceActions = async (
   }
 
   const actions: DeviceAction[] = [];
+  const isGreenPower = zhaDevice.device_type === ZHADeviceType.GreenPower;
 
-  if (!zhaDevice.active_coordinator) {
+  if (!zhaDevice.active_coordinator && !isGreenPower) {
     actions.push({
       label: hass.localize("ui.dialogs.zha_device_info.buttons.reconfigure"),
       icon: mdiCogRefresh,
@@ -58,21 +59,26 @@ export const getZHADeviceActions = async (
     );
   }
 
-  actions.push(
-    ...[
-      {
-        label: hass.localize("ui.dialogs.zha_device_info.buttons.manage"),
-        icon: mdiGroup,
-        action: () => navigate(`/config/zha/device/${zhaDevice.ieee}/clusters`),
-      },
-      {
-        label: hass.localize("ui.dialogs.zha_device_info.buttons.view_network"),
-        icon: mdiFamilyTree,
-        action: () =>
-          navigate(`/config/zha/visualization/${zhaDevice!.device_reg_id}`),
-      },
-    ]
-  );
+  if (!isGreenPower) {
+    actions.push(
+      ...[
+        {
+          label: hass.localize("ui.dialogs.zha_device_info.buttons.manage"),
+          icon: mdiGroup,
+          action: () =>
+            navigate(`/config/zha/device/${zhaDevice.ieee}/clusters`),
+        },
+        {
+          label: hass.localize(
+            "ui.dialogs.zha_device_info.buttons.view_network"
+          ),
+          icon: mdiFamilyTree,
+          action: () =>
+            navigate(`/config/zha/visualization/${zhaDevice!.device_reg_id}`),
+        },
+      ]
+    );
+  }
 
   if (!zhaDevice.active_coordinator) {
     actions.push({
