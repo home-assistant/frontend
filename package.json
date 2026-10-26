@@ -40,7 +40,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
-    "@babel/runtime": "8.0.7",
+    "@babel/runtime": "8.0.8",
     "@braintree/sanitize-url": "7.1.2",
     "@codemirror/autocomplete": "6.20.4",
     "@codemirror/commands": "6.11.1",
