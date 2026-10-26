@@ -11,7 +11,6 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { computeCssColor } from "../../../common/color/compute-color";
-import { formatTime } from "../../../common/datetime/format_time";
 import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
 import { useAmPm } from "../../../common/datetime/use_am_pm";
 import { consume } from "../../../common/decorators/consume";
@@ -114,6 +113,18 @@ const labelFormatter = memoizeOne(
   (language: string, amPm: boolean, timeZone: string) =>
     new Intl.DateTimeFormat(language, {
       hour: "numeric",
+      hourCycle: amPm ? "h12" : "h23",
+      timeZone,
+    })
+);
+
+const rangeFormatter = memoizeOne(
+  (language: string, amPm: boolean, timeZone: string) =>
+    new Intl.DateTimeFormat(language, {
+      month: "short",
+      day: "numeric",
+      hour: amPm ? "numeric" : "2-digit",
+      minute: "2-digit",
       hourCycle: amPm ? "h12" : "h23",
       timeZone,
     })
@@ -286,6 +297,8 @@ class HuiCalendarForecastCardFeature
 
   @state() private _allDaySegments: LaidOutSegment[] = [];
 
+  @state() private _error = false;
+
   private _fetchedRange?: FetchedRange;
 
   private _retryAfter = 0;
@@ -391,6 +404,7 @@ class HuiCalendarForecastCardFeature
     this._request++;
     this._fetchedRange = undefined;
     this._retryAfter = 0;
+    this._error = false;
     this._segments = [];
     this._allDaySegments = [];
   }
@@ -399,6 +413,7 @@ class HuiCalendarForecastCardFeature
     if (request !== this._request) return;
     this._fetchedRange = undefined;
     this._retryAfter = Date.now() + RETRY_DELAY;
+    this._error = true;
     this._segments = [];
     this._allDaySegments = [];
   }
@@ -483,6 +498,7 @@ class HuiCalendarForecastCardFeature
       const isAllDay = event.all_day ?? DATE_ONLY.test(rawStart);
       (isAllDay ? allDay : timed).push({ start, end });
     }
+    this._error = false;
     this._segments = layoutSegments(timed);
     this._allDaySegments = toFullLane(mergeSegments(allDay));
   }
@@ -500,6 +516,7 @@ class HuiCalendarForecastCardFeature
       );
       if (request !== this._request) return;
       const schedule = result.response?.[range.entityId];
+      this._error = false;
       this._segments = schedule
         ? toFullLane(
             expandSchedule(
@@ -527,6 +544,16 @@ class HuiCalendarForecastCardFeature
       !supportsCalendarForecastCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
+    }
+
+    if (this._error) {
+      return html`
+        <div class="info">
+          ${this._localize(
+            "ui.panel.lovelace.editor.features.types.calendar-forecast.failed_to_load"
+          )}
+        </div>
+      `;
     }
 
     const { start, end, nowPosition } = this._computeWindow(this._now);
@@ -565,17 +592,22 @@ class HuiCalendarForecastCardFeature
 
   private _computeAriaLabel(start: number, end: number): string {
     const locale = this._locale!;
-    const config = this._hassConfig!;
     const localize = this._localize!;
+    const formatter = rangeFormatter(
+      locale.language,
+      useAmPm(locale),
+      resolveTimeZone(locale.time_zone, this._hassConfig!.time_zone)
+    );
 
     const items = this._segments
       .filter((segment) => isVisible(segment, start, end))
       .sort((a, b) => a.start - b.start)
-      .map((segment) => {
-        const from = new Date(Math.max(segment.start, start));
-        const to = new Date(Math.min(segment.end, end));
-        return `${formatTime(from, locale, config)} – ${formatTime(to, locale, config)}`;
-      });
+      .map((segment) =>
+        formatter.formatRange(
+          Math.max(segment.start, start),
+          Math.min(segment.end, end)
+        )
+      );
 
     if (
       this._config?.show_all_day_events &&
@@ -723,6 +755,15 @@ class HuiCalendarForecastCardFeature
       border-radius: 2px;
       background-color: var(--white-color, #ffffff);
       box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .info {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
     }
 
     .labels {

@@ -11505,6 +11505,7 @@
                 "show_labels": "Show labels",
                 "events": "Events: {events}",
                 "no_events": "No events",
+                "failed_to_load": "Failed to load events",
                 "all_day": "All day"
               },
               "cover-open-close": {
