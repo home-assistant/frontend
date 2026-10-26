@@ -41,7 +41,6 @@ import {
 import { updateHassGroups } from "../../src/data/context/updateContext";
 import type { HomeAssistant, ThemeSettings } from "../../src/types";
 // @ts-ignore
-// eslint-disable-next-line import-x/extensions
 import { PAGES, SIDEBAR } from "../build/import-pages";
 import {
   GALLERY_THEME_STORAGE_KEY,

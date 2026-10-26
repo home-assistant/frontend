@@ -3,7 +3,6 @@ import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { HaMarkdown } from "../../../src/components/ha-markdown";
 // @ts-ignore
-// eslint-disable-next-line import-x/extensions
 import { PAGES } from "../../build/import-pages";
 
 @customElement("page-description")
