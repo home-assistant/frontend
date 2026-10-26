@@ -95,7 +95,11 @@ class ZHAAddDevicesPage extends LitElement {
                       "ui.panel.config.zha.add_device_page.spinner"
                     )}
                   </h1>
-                  <ha-spinner aria-label="Searching"></ha-spinner>
+                  <ha-spinner
+                    aria-label=${this.hass!.localize(
+                      "ui.panel.config.zha.add_device_page.spinner"
+                    )}
+                  ></ha-spinner>
                 `
               : html`
                   <div>
@@ -216,7 +220,7 @@ class ZHAAddDevicesPage extends LitElement {
     if (!this.hass) {
       return;
     }
-    // "Search again" lands here with the previous subscription still open.
+    // "Try again" lands here with the previous subscription still open.
     // Only subscribe once it is closed, so the backend ends that debug logging
     // session before starting the next one
     const unsubscribed = this._unsubscribe();
