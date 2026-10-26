@@ -1,5 +1,10 @@
 import { TZDate } from "@date-fns/tz";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type {
+  Connection,
+  HassConfig,
+  HassEntity,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,13 +14,30 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { formatTime } from "../../../common/datetime/format_time";
 import { resolveTimeZone } from "../../../common/datetime/resolve-time-zone";
 import { useAmPm } from "../../../common/datetime/use_am_pm";
+import { consume } from "../../../common/decorators/consume";
+import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateColorCss } from "../../../common/entity/state_color";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { CalendarEventApiData } from "../../../data/calendar";
 import { subscribeCalendarEvents } from "../../../data/calendar";
+import {
+  apiContext,
+  configContext,
+  connectionContext,
+  internationalizationContext,
+} from "../../../data/context";
 import type { ScheduleDay } from "../../../data/schedule";
 import { weekdays } from "../../../data/schedule";
-import type { HomeAssistant } from "../../../types";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import type {
   CalendarForecastCardFeatureConfig,
@@ -64,6 +86,9 @@ type ScheduleWeek = Partial<Record<(typeof weekdays)[number], ScheduleDay[]>>;
 
 type ScheduleResponse = Record<string, ScheduleWeek>;
 
+const supportsCalendarForecastCardFeatureFromState = (stateObj: HassEntity) =>
+  SUPPORTED_DOMAINS.includes(computeDomain(stateObj.entity_id));
+
 export const supportsCalendarForecastCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -72,7 +97,7 @@ export const supportsCalendarForecastCardFeature = (
     ? hass.states[context.entity_id]
     : undefined;
   if (!stateObj) return false;
-  return SUPPORTED_DOMAINS.includes(computeDomain(stateObj.entity_id));
+  return supportsCalendarForecastCardFeatureFromState(stateObj);
 };
 
 const computeLabelStep = (hours: number): number =>
@@ -87,6 +112,9 @@ const labelFormatter = memoizeOne(
       timeZone,
     })
 );
+
+const isVisible = (segment: TimeSegment, start: number, end: number) =>
+  segment.end > start && segment.start < end;
 
 const getRawDate = (
   value: CalendarEventApiData["start"]
@@ -161,11 +189,45 @@ class HuiCalendarForecastCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: LovelaceCardFeatureContext;
 
   @property({ attribute: false }) public color?: string;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["context", "entity_id"] })
+  private _stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, LocalizeFunc>({
+    transformer: ({ localize }) => localize,
+  })
+  private _localize?: LocalizeFunc;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig?: HassConfig;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection?: Connection;
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api?: HomeAssistantApi;
 
   @state() private _config?: CalendarForecastCardFeatureConfig;
 
@@ -226,35 +288,29 @@ class HuiCalendarForecastCardFeature
     this._resetData();
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.size === 1 && changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      const entityId = this.context?.entity_id;
-      return (
-        !oldHass ||
-        !entityId ||
-        oldHass.states[entityId] !== this.hass?.states[entityId]
-      );
-    }
-    return true;
-  }
-
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("_config") || changedProps.has("context")) {
       this._resetData();
     }
 
+    if (changedProps.has("_hassConfig")) {
+      const oldConfig = changedProps.get("_hassConfig") as
+        HassConfig | undefined;
+      if (oldConfig && oldConfig.time_zone !== this._hassConfig?.time_zone) {
+        this._resetData();
+      }
+    }
+
     let force = false;
     const entityId = this.context?.entity_id;
     if (
-      changedProps.has("hass") &&
+      changedProps.has("_stateObj") &&
       entityId &&
       computeDomain(entityId) === "schedule"
     ) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      force =
-        oldHass !== undefined &&
-        oldHass.states[entityId] !== this.hass?.states[entityId];
+      const oldStateObj = changedProps.get("_stateObj") as
+        HassEntity | undefined;
+      force = oldStateObj !== undefined && oldStateObj !== this._stateObj;
     }
 
     this._refreshData(force);
@@ -302,11 +358,16 @@ class HuiCalendarForecastCardFeature
     const entityId = this.context?.entity_id;
     if (
       !this.isConnected ||
-      !this.hass ||
       !this._config ||
+      !this._hassConfig ||
       !entityId ||
-      !this.hass.states[entityId]
+      !this._stateObj
     ) {
+      return;
+    }
+
+    const isCalendar = computeDomain(entityId) === "calendar";
+    if (isCalendar ? !this._connection : !this._api) {
       return;
     }
 
@@ -334,7 +395,7 @@ class HuiCalendarForecastCardFeature
     this._fetchedRange = range;
     this._retryAfter = 0;
 
-    if (computeDomain(entityId) === "calendar") {
+    if (isCalendar) {
       this._subscribeCalendar(range);
     } else {
       this._fetchSchedule(range);
@@ -345,7 +406,7 @@ class HuiCalendarForecastCardFeature
     this._unsubscribeCalendar();
     const request = ++this._request;
     this._unsubCalendar = subscribeCalendarEvents(
-      this.hass!,
+      { connection: this._connection! },
       range.entityId,
       new Date(range.start),
       new Date(range.end),
@@ -360,7 +421,7 @@ class HuiCalendarForecastCardFeature
   }
 
   private _setCalendarEvents(events: CalendarEventApiData[]) {
-    const timeZone = this.hass!.config.time_zone;
+    const timeZone = this._hassConfig!.time_zone;
     const timed: TimeSegment[] = [];
     const allDay: TimeSegment[] = [];
     for (const event of events) {
@@ -380,7 +441,7 @@ class HuiCalendarForecastCardFeature
   private async _fetchSchedule(range: FetchedRange) {
     const request = ++this._request;
     try {
-      const result = await this.hass!.callService<ScheduleResponse>(
+      const result = await this._api!.callService<ScheduleResponse>(
         "schedule",
         "get_schedule",
         undefined,
@@ -395,7 +456,7 @@ class HuiCalendarForecastCardFeature
             schedule,
             range.start,
             range.end,
-            this.hass!.config.time_zone
+            this._hassConfig!.time_zone
           )
         : [];
       this._allDaySegments = [];
@@ -407,9 +468,12 @@ class HuiCalendarForecastCardFeature
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
       !this.context ||
-      !supportsCalendarForecastCardFeature(this.hass, this.context)
+      !this._stateObj ||
+      !this._locale ||
+      !this._hassConfig ||
+      !this._localize ||
+      !supportsCalendarForecastCardFeatureFromState(this._stateObj)
     ) {
       return nothing;
     }
@@ -417,11 +481,10 @@ class HuiCalendarForecastCardFeature
     const { start, end, nowPosition } = this._computeWindow(this._now);
     const duration = end - start;
 
-    const stateObj = this.hass.states[this.context.entity_id!];
     const eventColor =
       this.color && this.color !== "state"
         ? computeCssColor(this.color)
-        : stateColorCss(stateObj, "on");
+        : stateColorCss(this._stateObj, "on");
 
     return html`
       <div
@@ -450,22 +513,37 @@ class HuiCalendarForecastCardFeature
   }
 
   private _computeAriaLabel(start: number, end: number): string {
-    const { locale, config, localize } = this.hass!;
-    const intervals = this._segments
-      .filter((segment) => segment.end > start && segment.start < end)
+    const locale = this._locale!;
+    const config = this._hassConfig!;
+    const localize = this._localize!;
+
+    const items = this._segments
+      .filter((segment) => isVisible(segment, start, end))
       .map((segment) => {
         const from = new Date(Math.max(segment.start, start));
         const to = new Date(Math.min(segment.end, end));
         return `${formatTime(from, locale, config)} – ${formatTime(to, locale, config)}`;
       });
-    if (!intervals.length) {
+
+    if (
+      this._config?.show_all_day_events &&
+      this._allDaySegments.some((segment) => isVisible(segment, start, end))
+    ) {
+      items.unshift(
+        localize(
+          "ui.panel.lovelace.editor.features.types.calendar-forecast.all_day"
+        )
+      );
+    }
+
+    if (!items.length) {
       return localize(
         "ui.panel.lovelace.editor.features.types.calendar-forecast.no_events"
       );
     }
     return localize(
       "ui.panel.lovelace.editor.features.types.calendar-forecast.events",
-      { events: intervals.join(", ") }
+      { events: items.join(", ") }
     );
   }
 
@@ -476,10 +554,10 @@ class HuiCalendarForecastCardFeature
     allDay: boolean
   ) {
     const end = start + duration;
+    const overflow = duration / 2;
     return segments
-      .filter((segment) => segment.end > start && segment.start < end)
+      .filter((segment) => isVisible(segment, start, end))
       .map((segment) => {
-        const overflow = duration / 2;
         const from = Math.max(segment.start, start - overflow);
         const to = Math.min(segment.end, end + overflow);
         return html`
@@ -497,8 +575,11 @@ class HuiCalendarForecastCardFeature
   private _renderLabels(start: number, duration: number): TemplateResult {
     const end = start + duration;
     const step = computeLabelStep(duration / MS_PER_HOUR);
-    const { locale, config } = this.hass!;
-    const timeZone = resolveTimeZone(locale.time_zone, config.time_zone);
+    const locale = this._locale!;
+    const timeZone = resolveTimeZone(
+      locale.time_zone,
+      this._hassConfig!.time_zone
+    );
     const formatter = labelFormatter(
       locale.language,
       useAmPm(locale),
