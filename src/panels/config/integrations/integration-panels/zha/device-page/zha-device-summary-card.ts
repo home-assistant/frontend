@@ -30,7 +30,7 @@ import type { ZHADevice } from "../../../../../../data/zha";
 import { ZHADeviceType } from "../../../../../../data/zha";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../../resources/styles";
-import { formatAsPaddedHex } from "../functions";
+import { computeZHADeviceType, formatAsPaddedHex } from "../functions";
 import { showZHAReconfigureDeviceDialog } from "../show-dialog-zha-reconfigure-device";
 
 type ZHADeviceAction = "add-via" | "view-network" | "remove";
@@ -86,7 +86,7 @@ export class ZHADeviceSummaryCard extends LitElement {
             this._i18n.localize(
               "ui.panel.config.zha.visualization.device_type"
             ),
-            this.device.device_type
+            computeZHADeviceType(this.device, this._i18n.localize)
           )}
           ${this._renderSummaryItem(
             this._i18n.localize("ui.dialogs.zha_device_info.power_source"),

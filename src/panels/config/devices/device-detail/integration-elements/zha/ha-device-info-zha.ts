@@ -7,7 +7,10 @@ import type { ZHADevice } from "../../../../../../data/zha";
 import { fetchZHADevice } from "../../../../../../data/zha";
 import { haStyle } from "../../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../../types";
-import { formatAsPaddedHex } from "../../../../integrations/integration-panels/zha/functions";
+import {
+  computeZHADeviceType,
+  formatAsPaddedHex,
+} from "../../../../integrations/integration-panels/zha/functions";
 
 @customElement("ha-device-info-zha")
 export class HaDeviceInfoZha extends LitElement {
@@ -39,7 +42,10 @@ export class HaDeviceInfoZha extends LitElement {
     return html`
       <ha-expansion-panel header="Zigbee info">
         <div>Nwk: ${formatAsPaddedHex(this._zhaDevice.nwk)}</div>
-        <div>Device Type: ${this._zhaDevice.device_type}</div>
+        <div>
+          Device Type:
+          ${computeZHADeviceType(this._zhaDevice, this.hass.localize)}
+        </div>
         <div>
           LQI:
           ${

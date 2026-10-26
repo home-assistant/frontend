@@ -18,7 +18,7 @@ import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices, refreshTopology } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { formatAsPaddedHex } from "./functions";
+import { computeZHADeviceType, formatAsPaddedHex } from "./functions";
 import { createZHANetworkChartData } from "./zha-network-data";
 
 @customElement("zha-network-visualization-page")
@@ -122,7 +122,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       attributes.push(device.model);
     }
     if (device.device_type) {
-      attributes.push(device.device_type);
+      attributes.push(computeZHADeviceType(device, this.hass.localize));
     }
     if (device.nwk != null) {
       attributes.push(formatAsPaddedHex(device.nwk));
@@ -166,7 +166,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       : undefined;
     return html`<b>IEEE: </b>${device.ieee}<br /><b
         >${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b
-      >${device.device_type.replace("_", " ")}${
+      >${computeZHADeviceType(device, this.hass.localize)}${
         device.nwk != null
           ? html`<br /><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`
           : nothing

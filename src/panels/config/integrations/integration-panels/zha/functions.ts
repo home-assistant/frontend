@@ -1,5 +1,6 @@
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { Cluster, ZHADevice, ZHAGroup } from "../../../../../data/zha";
+import { ZHADeviceType } from "../../../../../data/zha";
 
 export const formatAsPaddedHex = (value: string | number): string => {
   let hex = value;
@@ -11,6 +12,19 @@ export const formatAsPaddedHex = (value: string | number): string => {
 
 export const getIeeeTail = (ieee: string) =>
   ieee.split(":").slice(-4).reverse().join("");
+
+const DEVICE_TYPE_TRANSLATION_KEYS = {
+  [ZHADeviceType.Coordinator]: "ui.panel.config.zha.visualization.coordinator",
+  [ZHADeviceType.Router]: "ui.panel.config.zha.visualization.router",
+  [ZHADeviceType.EndDevice]: "ui.panel.config.zha.visualization.end_device",
+  [ZHADeviceType.GreenPower]: "ui.panel.config.zha.visualization.green_power",
+  [ZHADeviceType.Unknown]: "ui.dialogs.zha_device_info.unknown",
+} as const;
+
+export const computeZHADeviceType = (
+  device: ZHADevice,
+  localize: LocalizeFunc
+): string => localize(DEVICE_TYPE_TRANSLATION_KEYS[device.device_type]);
 
 export const sortZHADevices = (a: ZHADevice, b: ZHADevice): number => {
   const nameA = a.user_given_name ? a.user_given_name : a.name;

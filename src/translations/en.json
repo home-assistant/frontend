@@ -8426,6 +8426,7 @@
             "coordinator": "Coordinator",
             "router": "Router",
             "end_device": "End device",
+            "green_power": "Green Power",
             "offline": "Offline"
           },
           "device_binding": {
