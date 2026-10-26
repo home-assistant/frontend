@@ -1746,19 +1746,19 @@ ${rejected
 
     let changedEntities: { assistant: string; entityIds: string[] }[];
     try {
-      // Fetch the current exposure from the backend and remember which
-      // entities change per assistant, so undo only reverts those
-      const { exposed_entities: exposedEntities } = await listExposedEntities(
-        this.hass
+      changedEntities = await Promise.all(
+        assistants.map(async (assistant) => ({
+          assistant,
+          entityIds: (
+            await exposeEntities(
+              this.hass,
+              [assistant],
+              entityIds,
+              shouldExpose
+            )
+          ).changed_entity_ids,
+        }))
       );
-      changedEntities = assistants.map((assistant) => ({
-        assistant,
-        entityIds: entityIds.filter(
-          (entityId) =>
-            Boolean(exposedEntities[entityId]?.[assistant]) !== shouldExpose
-        ),
-      }));
-      await exposeEntities(this.hass, assistants, entityIds, shouldExpose);
     } catch (err: any) {
       showAlertDialog(this, {
         text: err.message || err.code || String(err),
