@@ -138,7 +138,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   public async showDialog(params: ShowDialogHelperDetailParams): Promise<void> {
     this._params = params;
     this._domain = params.domain;
-    this._item = undefined;
+    this._item = params.item;
     if (this._domain && this._domain in HELPERS) {
       this._loading = true;
       try {
@@ -390,10 +390,8 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._submitting = true;
     this._error = "";
     try {
-      const createdEntity = await HELPERS[this._domain].create(
-        this.hass,
-        this._item
-      );
+      const { id: _id, ...item } = this._item;
+      const createdEntity = await HELPERS[this._domain].create(this.hass, item);
       if (this._params?.dialogClosedCallback && createdEntity.id) {
         this._params.dialogClosedCallback({
           flowFinished: true,

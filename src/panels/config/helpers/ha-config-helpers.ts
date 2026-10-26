@@ -4,6 +4,7 @@ import {
   mdiAlertCircle,
   mdiCancel,
   mdiCog,
+  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
@@ -444,6 +445,22 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 ),
                 action: () => this._editCategory(helper),
               },
+              ...(helper.editable && helper.entity_id
+                ? [
+                    {
+                      divider: true,
+                    },
+                    ...(isHelperDomain(helper.type)
+                      ? [
+                          {
+                            path: mdiContentDuplicate,
+                            label: this.hass.localize("ui.common.duplicate"),
+                            action: () => this._duplicateHelper(helper),
+                          },
+                        ]
+                      : []),
+                  ]
+                : []),
               ...(helper.configEntry &&
               helper.editable &&
               ERROR_STATES.includes(helper.configEntry.state) &&
@@ -470,9 +487,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                 : []),
               ...(helper.editable && helper.entity_id
                 ? [
-                    {
-                      divider: true,
-                    },
                     {
                       path: mdiDelete,
                       label: this.hass.localize("ui.common.delete"),
@@ -1485,6 +1499,49 @@ ${rejected
         text:
           err.message ||
           this.hass.localize("ui.panel.config.helpers.picker.delete_failed"),
+      });
+    }
+  }
+
+  private async _duplicateHelper(helper: HelperItem) {
+    if (!isHelperDomain(helper.type)) {
+      return;
+    }
+
+    try {
+      const entityReg = this._entityReg?.find(
+        (entry) => entry.entity_id === helper.entity_id
+      );
+      if (!entityReg?.unique_id) {
+        throw new Error(
+          this.hass.localize("ui.panel.config.helpers.picker.duplicate_failed")
+        );
+      }
+
+      const config = (await HELPERS_CRUD[helper.type].fetch(this.hass)).find(
+        (item) => item.id === entityReg.unique_id
+      );
+      if (!config) {
+        throw new Error(
+          this.hass.localize("ui.panel.config.helpers.picker.duplicate_failed")
+        );
+      }
+
+      showHelperDetailDialog(this, {
+        domain: helper.type,
+        item: {
+          ...config,
+          name: `${config.name} (${this.hass.localize("ui.common.duplicate")})`,
+        },
+      });
+    } catch (err) {
+      showAlertDialog(this, {
+        text:
+          err instanceof Error
+            ? err.message
+            : this.hass.localize(
+                "ui.panel.config.helpers.picker.duplicate_failed"
+              ),
       });
     }
   }
