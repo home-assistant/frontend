@@ -1,11 +1,16 @@
 import type { ContextType } from "@lit/context";
 import { mdiClose } from "@mdi/js";
+import type { HassEntities } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../common/decorators/consume";
-import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import {
+  consumeLocalize,
+  preserveUnchangedEntityStatesRecord,
+} from "../../common/decorators/consume-context-entry";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { supportsFeature } from "../../common/entity/supports-feature";
@@ -31,7 +36,18 @@ import type { JoinMediaPlayersDialogParams } from "./show-join-media-players-dia
 class DialogJoinMediaPlayers extends LitElement {
   @state()
   @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
+  @transform<HassEntities, HassEntities>({
+    transformer: function (this: DialogJoinMediaPlayers, states) {
+      const mediaPlayers: HassEntities = {};
+      Object.entries(states ?? {}).forEach(([entityId, stateObj]) => {
+        if (computeDomain(entityId) === "media_player") {
+          mediaPlayers[entityId] = stateObj;
+        }
+      });
+      return preserveUnchangedEntityStatesRecord(this._states, mediaPlayers);
+    },
+  })
+  private _states: HassEntities = {};
 
   @state()
   @consume({ context: entitiesContext, subscribe: true })
@@ -65,7 +81,7 @@ class DialogJoinMediaPlayers extends LitElement {
       return;
     }
     const entityId = this._entityId;
-    const stateObj = this._states?.[entityId] as MediaPlayerEntity | undefined;
+    const stateObj = this._states[entityId] as MediaPlayerEntity | undefined;
 
     this._groupMembers =
       stateObj?.attributes.group_members?.filter((id) => id !== entityId) || [];
@@ -161,11 +177,11 @@ class DialogJoinMediaPlayers extends LitElement {
     (
       entityId: string,
       entities: ContextType<typeof entitiesContext>,
-      states: ContextType<typeof statesContext>
+      states: HassEntities
     ): string[] => {
       const currentPlatform = entities?.[entityId]?.platform;
 
-      if (!currentPlatform || !states) {
+      if (!currentPlatform) {
         return [];
       }
 
