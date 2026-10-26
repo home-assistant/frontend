@@ -334,7 +334,7 @@ class HaPanelToolsActionHistory extends LitElement {
   }
 
   private async _fetchUsers() {
-    const users = await fetchUsers(this.hass);
+    const users = await fetchUsers(this.hass.callWS);
     const userIdToName: Record<string, string> = {};
     const systemUserIds = new Set<string>();
     for (const user of users) {

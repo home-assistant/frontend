@@ -49,7 +49,7 @@ export class HaCardConditionUser extends LitElement {
   }
 
   private async _fetchUsers() {
-    const users = await fetchUsers(this.hass);
+    const users = await fetchUsers(this.hass.callWS);
     this._users = users.filter((user) => !user.system_generated);
   }
 
