@@ -137,7 +137,7 @@
   },
   "devDependencies": {
     "@ampproject/remapping": "2.3.0",
-    "@babel/core": "8.0.7",
+    "@babel/core": "8.0.9",
     "@babel/helper-compilation-targets": "8.0.7",
     "@babel/helper-define-polyfill-provider": "1.0.0",
     "@babel/plugin-transform-class-properties": "8.0.1",
