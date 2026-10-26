@@ -225,7 +225,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     const pipelineName =
       this.hass.states[this.assistConfiguration?.pipeline_entity_id].state;
 
-    const pipelines = await listAssistPipelines(this.hass);
+    const pipelines = await listAssistPipelines(this.hass.callWS);
 
     let pipeline: AssistPipeline | undefined;
 

@@ -1548,7 +1548,7 @@ ${rejected
   }
 
   private async _loadSubEntries(entryId: string) {
-    this._subEntries = await getSubEntries(this.hass, entryId);
+    this._subEntries = await getSubEntries(this.hass.callWS, entryId);
   }
 
   private _addDevice() {

@@ -1,11 +1,14 @@
+import type { ContextType } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { formatLanguageCode } from "../common/language/format_language";
 import type { AssistPipeline } from "../data/assist_pipeline";
 import { listAssistPipelines } from "../data/assist_pipeline";
-import type { HomeAssistant } from "../types";
+import { apiContext, internationalizationContext } from "../data/context";
+import type { HomeAssistantInternationalization } from "../types";
 import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 import "./ha-select";
 
@@ -18,8 +21,6 @@ export class HaAssistPipelinePicker extends LitElement {
 
   @property() public label?: string;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -29,6 +30,13 @@ export class HaAssistPipelinePicker extends LitElement {
   @state() _pipelines?: AssistPipeline[];
 
   @state() _preferredPipeline: string | null = null;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   private get _default() {
     return this.includeLastUsed ? LAST_USED : PREFERRED;
@@ -42,7 +50,7 @@ export class HaAssistPipelinePicker extends LitElement {
     const options: HaSelectOption[] = [
       {
         value: PREFERRED,
-        label: this.hass.localize("ui.components.pipeline-picker.preferred", {
+        label: this._i18n.localize("ui.components.pipeline-picker.preferred", {
           preferred: this._pipelines.find(
             (pipeline) => pipeline.id === this._preferredPipeline
           )?.name,
@@ -53,14 +61,14 @@ export class HaAssistPipelinePicker extends LitElement {
     if (this.includeLastUsed) {
       options.unshift({
         value: LAST_USED,
-        label: this.hass.localize("ui.components.pipeline-picker.last_used"),
+        label: this._i18n.localize("ui.components.pipeline-picker.last_used"),
       });
     }
 
     options.push(
       ...this._pipelines.map((pipeline) => ({
         value: pipeline.id,
-        label: `${pipeline.name} (${formatLanguageCode(pipeline.language, this.hass.locale)})`,
+        label: `${pipeline.name} (${formatLanguageCode(pipeline.language, this._i18n.locale)})`,
       }))
     );
 
@@ -68,7 +76,7 @@ export class HaAssistPipelinePicker extends LitElement {
       <ha-select
         .label=${
           this.label ||
-          this.hass!.localize("ui.components.pipeline-picker.pipeline")
+          this._i18n.localize("ui.components.pipeline-picker.pipeline")
         }
         .value=${value}
         .required=${this.required}
@@ -82,7 +90,7 @@ export class HaAssistPipelinePicker extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues<this>): void {
     super.firstUpdated(changedProperties);
-    listAssistPipelines(this.hass).then((pipelines) => {
+    listAssistPipelines(this._api.callWS).then((pipelines) => {
       this._pipelines = pipelines.pipelines;
       this._preferredPipeline = pipelines.preferred_pipeline;
     });
@@ -97,7 +105,6 @@ export class HaAssistPipelinePicker extends LitElement {
   private _changed(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
     if (
-      !this.hass ||
       value === "" ||
       value === this.value ||
       (this.value === undefined && value === this._default)
