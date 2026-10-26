@@ -481,27 +481,39 @@ export class EntityRegistrySettingsEditor extends LitElement {
     return html`
       ${
         !this.hideName && this._device
-          ? html`<ha-row-item>
+          ? html`<ha-row-item class="main-entity">
               <span slot="headline"
                 >${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.use_device_name"
-                )}
-                (${computeDeviceNameDisplay(this._device, this.hass.localize)})</span
+                  "ui.dialogs.entity_registry.editor.main_entity",
+                  {
+                    device: computeDeviceNameDisplay(
+                      this._device,
+                      this.hass.localize
+                    ),
+                  }
+                )}</span
               >
               <span slot="supporting-text"
                 >${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.change_device_settings",
-                  {
-                    link: html`<button
-                      class="link"
-                      @click=${this._openDeviceSettings}
-                    >
-                      ${this.hass.localize(
-                        "ui.dialogs.entity_registry.editor.change_device_name_link"
-                      )}
-                    </button>`,
-                  }
-                )}</span
+                  "ui.dialogs.entity_registry.editor.main_entity_description"
+                )}
+                ${
+                  this._useDeviceName
+                    ? this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.change_device_settings",
+                        {
+                          link: html`<button
+                            class="link"
+                            @click=${this._openDeviceSettings}
+                          >
+                            ${this.hass.localize(
+                              "ui.dialogs.entity_registry.editor.change_device_name_link"
+                            )}
+                          </button>`,
+                        }
+                      )
+                    : nothing
+                }</span
               >
               <ha-switch
                 slot="end"
@@ -1912,6 +1924,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           margin-inline-start: 0;
         }
 
+        ha-row-item.main-entity::part(supporting-text),
         ha-row-item.device-area::part(supporting-text) {
           white-space: normal;
         }
