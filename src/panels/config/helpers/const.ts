@@ -34,3 +34,7 @@ export type Helper =
   | Counter
   | Timer
   | Schedule;
+
+type HelperWithoutId<T> = T extends { id: string } ? Omit<T, "id"> : never;
+
+export type HelperFormItem = HelperWithoutId<Helper>;

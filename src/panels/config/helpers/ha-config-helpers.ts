@@ -4,6 +4,7 @@ import {
   mdiAlertCircle,
   mdiCancel,
   mdiCog,
+  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
@@ -473,6 +474,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                     {
                       divider: true,
                     },
+                    ...(isHelperDomain(helper.type)
+                      ? [
+                          {
+                            path: mdiContentDuplicate,
+                            label: this.hass.localize("ui.common.duplicate"),
+                            action: () => this._duplicateHelper(helper),
+                          },
+                        ]
+                      : []),
                     {
                       path: mdiDelete,
                       label: this.hass.localize("ui.common.delete"),
@@ -1487,6 +1497,48 @@ ${rejected
           this.hass.localize("ui.panel.config.helpers.picker.delete_failed"),
       });
     }
+  }
+
+  private async _duplicateHelper(helper: HelperItem) {
+    if (!isHelperDomain(helper.type)) {
+      return;
+    }
+
+    const entityReg = this._entityReg?.find(
+      (entry) => entry.entity_id === helper.entity_id
+    );
+    if (!entityReg?.unique_id) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.helpers.picker.duplicate_failed"
+        ),
+      });
+      return;
+    }
+
+    const config = (
+      await HELPERS_CRUD[helper.type].fetch(this.hass).catch(() => [])
+    ).find((item) => item.id === entityReg.unique_id);
+    if (!config) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.helpers.picker.duplicate_failed"
+        ),
+      });
+      return;
+    }
+
+    const { id: _id, ...item } = config;
+    showHelperDetailDialog(this, {
+      domain: helper.type,
+      item: {
+        ...item,
+        name: this.hass.localize(
+          "ui.panel.config.helpers.picker.duplicate_name",
+          { name: config.name }
+        ),
+      },
+    });
   }
 
   private _createHelper() {
