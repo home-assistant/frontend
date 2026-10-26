@@ -281,7 +281,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
     showAreaRegistryDetailDialog(this, {
       entry: area,
       updateEntry: (values) =>
-        updateAreaRegistryEntry(this.hass, areaId, values),
+        updateAreaRegistryEntry(this.hass.callWS, areaId, values),
     });
   };
 
