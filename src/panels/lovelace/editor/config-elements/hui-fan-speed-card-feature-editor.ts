@@ -114,6 +114,7 @@ export class HuiFanSpeedCardFeatureEditor
         .data=${data}
         .schema=${this._schema(this._localize, disabled)}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -129,6 +130,15 @@ export class HuiFanSpeedCardFeatureEditor
     this._localize(
       `ui.panel.lovelace.editor.features.types.fan-speed.${schema.name}`
     );
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) =>
+    this._stateObj && !supportsFanSpeedStyleChoice(this._stateObj)
+      ? undefined
+      : this._localize(
+          `ui.panel.lovelace.editor.features.types.fan-speed.${schema.name}_helper`
+        );
 
   static styles = css`
     ha-alert {

@@ -11531,6 +11531,7 @@
                   "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]",
                   "slider_description": "Drag to set the speed"
                 },
+                "style_helper": "Buttons switch to a slider when the card is too narrow to fit them.",
                 "style_unavailable": "This fan has too many speeds to show them as buttons."
               },
               "alarm-modes": {

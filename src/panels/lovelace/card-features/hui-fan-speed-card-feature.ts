@@ -1,3 +1,4 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -27,6 +28,7 @@ import { UNAVAILABLE } from "../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import type { FanEntity, FanSpeed } from "../../../data/fan";
 import {
+  computeFanSpeedButtonsMinWidth,
   computeFanSpeedIcon,
   computeFanSpeeds,
   FanEntityFeature,
@@ -100,6 +102,11 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
 
   @state() private _config?: FanSpeedCardFeatureConfig;
 
+  private _resizeController = new ResizeController<number | undefined>(this, {
+    callback: (entries: { contentRect?: { width: number } }[]) =>
+      entries[0]?.contentRect?.width || undefined,
+  });
+
   static getStubConfig(): FanSpeedCardFeatureConfig {
     return {
       type: "fan-speed",
@@ -146,11 +153,16 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
         ? computeFanSpeeds(this._stateObj)
         : undefined;
 
+    // Fall back to the slider when the buttons do not fit the card width.
+    const width = this._resizeController.value;
+    const buttonsFit =
+      !speeds || !width || width >= computeFanSpeedButtonsMinWidth(speeds);
+
     const percentage = stateActive(this._stateObj)
       ? (this._stateObj.attributes.percentage ?? 0)
       : 0;
 
-    if (speeds) {
+    if (speeds && buttonsFit) {
       const options = speeds.map<ControlSelectOption>((speed) =>
         isNumberedFanSpeed(speed)
           ? {
@@ -232,6 +244,9 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
     return [
       cardFeatureStyles,
       css`
+        :host {
+          display: block;
+        }
         ha-control-select {
           /* Color the background to match the slider style */
           --control-select-background: var(--feature-color);

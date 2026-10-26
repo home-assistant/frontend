@@ -103,6 +103,25 @@ export const resolveFanSpeedStyle = (
 export const isNumberedFanSpeed = (speed: FanSpeed): speed is `${number}` =>
   !isNaN(Number(speed));
 
+// Narrowest button that still fits the off icon or a one-digit speed.
+const FAN_SPEED_BUTTON_MIN_WIDTH = 22;
+
+// Two-digit speeds need a little more room.
+const FAN_SPEED_BUTTON_MIN_WIDTH_TWO_DIGITS = 24;
+
+// Width needed to show every speed as a button without cutting its label.
+export const computeFanSpeedButtonsMinWidth = (speeds: FanSpeed[]): number => {
+  const twoDigits = speeds.some(
+    (speed) => isNumberedFanSpeed(speed) && speed.length > 1
+  );
+  return (
+    speeds.length *
+    (twoDigits
+      ? FAN_SPEED_BUTTON_MIN_WIDTH_TWO_DIGITS
+      : FAN_SPEED_BUTTON_MIN_WIDTH)
+  );
+};
+
 export function fanPercentageToSpeed(
   stateObj: FanEntity,
   value: number

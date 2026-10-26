@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { FanEntity } from "../../src/data/fan";
 import {
   computeDefaultFanSpeedStyle,
+  computeFanSpeedButtonsMinWidth,
   computeFanSpeedIcon,
   computeFanSpeeds,
   fanPercentageToSpeed,
@@ -80,6 +81,22 @@ describe("fan speed style", () => {
     expect(supportsFanSpeedStyleChoice(fan(50))).toBe(true);
     expect(supportsFanSpeedStyleChoice(fan(10))).toBe(true);
     expect(supportsFanSpeedStyleChoice(fan(100 / 11))).toBe(false);
+  });
+});
+
+describe("computeFanSpeedButtonsMinWidth", () => {
+  const minWidth = (step: number) =>
+    computeFanSpeedButtonsMinWidth(computeFanSpeeds(fan(step))!);
+
+  it("fits off and 6 speeds in a half-width card", () => {
+    // A half-width tile feature is 160px wide on a 375px wide phone.
+    expect(minWidth(100 / 6)).toBe(154);
+    expect(minWidth(100 / 6)).toBeLessThanOrEqual(160);
+  });
+
+  it("needs more room for two-digit speeds", () => {
+    expect(minWidth(100 / 9)).toBe(10 * 22);
+    expect(minWidth(10)).toBe(11 * 24);
   });
 });
 
