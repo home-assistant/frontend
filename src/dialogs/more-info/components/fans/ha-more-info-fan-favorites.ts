@@ -3,6 +3,10 @@ import { mdiContentSaveEditOutline, mdiStarPlusOutline } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  indexAfterMove,
+  indexAfterRemove,
+} from "../../../../common/array/track-index";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
@@ -276,13 +280,7 @@ export class HaMoreInfoFanFavorites extends LitElement {
     }
 
     if (this.selectedIndex !== undefined) {
-      this._select(
-        this.selectedIndex === index
-          ? undefined
-          : this.selectedIndex > index
-            ? this.selectedIndex - 1
-            : this.selectedIndex
-      );
+      this._select(indexAfterRemove(this.selectedIndex, index));
     }
 
     await this._save(
@@ -296,15 +294,8 @@ export class HaMoreInfoFanFavorites extends LitElement {
     favorites.splice(newIndex, 0, moved);
 
     // Keep the same favorite selected at its new position.
-    const selected = this.selectedIndex;
-    if (selected !== undefined) {
-      if (selected === oldIndex) {
-        this._select(newIndex);
-      } else if (oldIndex < selected && newIndex >= selected) {
-        this._select(selected - 1);
-      } else if (oldIndex > selected && newIndex <= selected) {
-        this._select(selected + 1);
-      }
+    if (this.selectedIndex !== undefined) {
+      this._select(indexAfterMove(this.selectedIndex, oldIndex, newIndex));
     }
 
     this._save(favorites);
