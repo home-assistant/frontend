@@ -60,7 +60,6 @@ class HaPushNotificationsRow extends LitElement {
         >
         <ha-push-notifications-toggle
           slot="end"
-          .hass=${this.hass}
           .disabled=${isDisabled}
         ></ha-push-notifications-toggle>
       </ha-row-item>
