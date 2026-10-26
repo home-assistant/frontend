@@ -413,7 +413,7 @@ describe("computeFanFavoriteSceneState", () => {
   });
 
   it("leaves out values the fan does not report", () => {
-    // Off fans report no direction: the core then compares None with None.
+    // A fan that reports no direction: the core then compares None with None.
     expect(
       computeFanFavoriteSceneState(fullFan("off"), { percentage: 60 })
     ).toEqual({ state: "on", percentage: 60 });

@@ -28,7 +28,11 @@ import type {
   FanFavorite,
 } from "../../../../data/entity/entity_registry";
 import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
-import type { FanEntity, FanSnapshot } from "../../../../data/fan";
+import type {
+  FanEntity,
+  FanFavoriteSaveBlocker,
+  FanSnapshot,
+} from "../../../../data/fan";
 import {
   completeFanSceneState,
   computeFanFavoriteFromState,
@@ -40,6 +44,7 @@ import {
   normalizeFanFavorites,
 } from "../../../../data/fan";
 import { applyScene } from "../../../../data/scene";
+import { showToast } from "../../../../util/toast";
 import type { HomeAssistant, HomeAssistantConfig } from "../../../../types";
 import { showConfirmationDialog } from "../../../generic/show-dialog-box";
 import "../ha-more-info-favorites";
@@ -55,7 +60,8 @@ type FavoriteLocalizeKey =
   | "delete"
   | "delete_confirm_title"
   | "delete_confirm_text"
-  | "delete_confirm_action";
+  | "delete_confirm_action"
+  | "save_failed";
 
 interface StoredSnapshot {
   entityId: string;
@@ -104,8 +110,13 @@ export class HaMoreInfoFanFavorites extends LitElement {
 
   @state() private _favorites: FanFavorite[] = [];
 
-  // An apply is running. Saving then would read the state from before it.
+  // An apply call is running. Saving then would read the state from before
+  // it. This only waits for the call: a fan that reports its new state later
+  // can still be saved with the previous one.
   @state() private _applying = false;
+
+  // Last save blocker reported to more-info-fan for the edit banner.
+  private _reportedBlocker?: FanFavoriteSaveBlocker;
 
   private _snapshot?: StoredSnapshot;
 
@@ -133,6 +144,19 @@ export class HaMoreInfoFanFavorites extends LitElement {
       );
     }
 
+    // The dialog can switch to another fan without ending edit mode, like
+    // when going back to a fan group from one of its members. Restore the
+    // fan that was edited and start over from the new one.
+    if (
+      changedProps.has("stateObj") &&
+      !changedProps.has("editMode") &&
+      this.editMode &&
+      changedProps.get("stateObj")?.entity_id !== this.stateObj?.entity_id
+    ) {
+      this._restoreSnapshot();
+      this._takeSnapshot();
+    }
+
     if (changedProps.has("editMode")) {
       const wasEditing = Boolean(changedProps.get("editMode"));
       if (this.editMode && !wasEditing) {
@@ -140,6 +164,20 @@ export class HaMoreInfoFanFavorites extends LitElement {
       } else if (!this.editMode && wasEditing) {
         this._restoreSnapshot();
       }
+    }
+  }
+
+  protected updated(): void {
+    const blocker = this.stateObj
+      ? computeFanFavoriteSaveBlocker(
+          this.stateObj,
+          this._favorites,
+          this.selectedIndex
+        )
+      : undefined;
+    if (blocker !== this._reportedBlocker) {
+      this._reportedBlocker = blocker;
+      fireEvent(this, "fan-favorite-save-blocker-changed", { blocker });
     }
   }
 
@@ -167,6 +205,8 @@ export class HaMoreInfoFanFavorites extends LitElement {
 
   // Waits for the previous apply, then builds the target from the state at
   // that time. callService already shows a toast when the call fails.
+  // That state is the one the frontend has received: it can lag behind the
+  // fan, and stops updating once this element is disconnected.
   private _queueApply(
     entityId: string,
     buildTarget: (current: FanEntity) => FanSnapshot
@@ -217,16 +257,33 @@ export class HaMoreInfoFanFavorites extends LitElement {
       favorites: favorites.length ? favorites : undefined,
     };
 
-    const result = await updateEntityRegistryEntry(
-      this._api,
-      this.entry.entity_id,
-      {
-        options_domain: "fan",
-        options,
-      }
-    );
-
-    fireEvent(this, "entity-entry-updated", result.entity_entry);
+    try {
+      const result = await updateEntityRegistryEntry(
+        this._api,
+        this.entry.entity_id,
+        {
+          options_domain: "fan",
+          options,
+        }
+      );
+      fireEvent(this, "entity-entry-updated", result.entity_entry);
+    } catch (err: unknown) {
+      // Go back to what is stored. The selection may point to a favorite
+      // that moved, so drop it.
+      this._favorites = normalizeFanFavorites(
+        this.entry?.options?.fan?.favorites
+      );
+      this._select(undefined);
+      showToast(this, {
+        message: this._localizeFavorite("save_failed", {
+          // WebSocket errors are plain objects with a message.
+          error:
+            err && typeof err === "object" && "message" in err
+              ? String(err.message)
+              : String(err),
+        }),
+      });
+    }
   }
 
   private _applyFavorite(index: number): void {
@@ -487,6 +544,9 @@ export class HaMoreInfoFanFavorites extends LitElement {
 declare global {
   interface HASSDomEvents {
     "fan-favorite-selected": { index?: number };
+    // Computed from the favorites list, which is updated before it is
+    // saved, so the banner and the save button always agree.
+    "fan-favorite-save-blocker-changed": { blocker?: FanFavoriteSaveBlocker };
   }
 
   interface HTMLElementTagNameMap {

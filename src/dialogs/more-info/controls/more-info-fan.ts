@@ -24,11 +24,10 @@ import "../../../components/ha-list-item";
 import "../../../components/ha-outlined-icon-button";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { ExtEntityRegistryEntry } from "../../../data/entity/entity_registry";
-import type { FanEntity } from "../../../data/fan";
+import type { FanEntity, FanFavoriteSaveBlocker } from "../../../data/fan";
 import {
   FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
   FanEntityFeature,
-  computeFanFavoriteSaveBlocker,
   computeFanSpeedCount,
   computeFanSpeedStateDisplay,
   fanSupportsFavorites,
@@ -80,6 +79,9 @@ class MoreInfoFan extends LitElement {
 
   // Favorite being updated in edit mode.
   @state() private _selectedFavoriteIndex?: number;
+
+  // Why the current state cannot be saved, reported by the favorites.
+  @state() private _favoriteSaveBlocker?: FanFavoriteSaveBlocker;
 
   private _renderPresetModeIcon = (value: string) =>
     html`<ha-attribute-icon
@@ -147,6 +149,13 @@ class MoreInfoFan extends LitElement {
     this._selectedFavoriteIndex = ev.detail.index;
   }
 
+  private _favoriteSaveBlockerChanged(
+    ev: HASSDomEvent<HASSDomEvents["fan-favorite-save-blocker-changed"]>
+  ) {
+    ev.stopPropagation();
+    this._favoriteSaveBlocker = ev.detail.blocker;
+  }
+
   protected willUpdate(changedProps: PropertyValues<this>): void {
     if (
       (changedProps.has("editMode") && !this.editMode) ||
@@ -170,11 +179,7 @@ class MoreInfoFan extends LitElement {
 
   private _renderFavoritesInfo(supportsPresetMode: boolean) {
     const updating = this._selectedFavoriteIndex !== undefined;
-    const blocker = computeFanFavoriteSaveBlocker(
-      this.stateObj!,
-      normalizeFanFavorites(this.entry?.options?.fan?.favorites),
-      this._selectedFavoriteIndex
-    );
+    const blocker = this._favoriteSaveBlocker;
 
     return html`
       <ha-alert alert-type="info" class="favorites-info">
@@ -309,6 +314,9 @@ class MoreInfoFan extends LitElement {
                   .editMode=${this.editMode}
                   .selectedIndex=${this._selectedFavoriteIndex}
                   @fan-favorite-selected=${this._favoriteSelected}
+                  @fan-favorite-save-blocker-changed=${
+                    this._favoriteSaveBlockerChanged
+                  }
                 ></ha-more-info-fan-favorites>
               `
             : nothing

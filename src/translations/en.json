@@ -2062,7 +2062,8 @@
             "edit_info_update": "Adjust the fan, then update the selected favorite. It returns to its previous state when you finish editing.",
             "edit_info_preset": "The preset mode isn't saved.",
             "save_blocked_no_speed": "Turn on the fan and set a speed to save it as a favorite.",
-            "save_blocked_duplicate": "A favorite with these settings already exists."
+            "save_blocked_duplicate": "A favorite with these settings already exists.",
+            "save_failed": "Failed to save favorites: {error}"
           }
         },
         "climate": {
