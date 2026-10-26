@@ -70,13 +70,16 @@ export class HaSnowflakes extends LitElement {
     if (!this._connection || !this.isConnected) {
       return;
     }
-    this._labFeatureConnection = this._connection;
+    const connection = this._connection;
+    this._labFeatureConnection = connection;
     this._unsubLabFeature = subscribeLabFeature(
-      this._connection,
+      connection,
       "frontend",
       "winter_mode",
       (feature) => {
-        this._enabled = feature.enabled;
+        if (this._labFeatureConnection === connection) {
+          this._enabled = feature.enabled;
+        }
       }
     );
   }
