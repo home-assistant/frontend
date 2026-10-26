@@ -4270,6 +4270,7 @@
               "context_id": "Context ID",
               "data": "Data",
               "perform_again": "Perform again",
+              "copy_yaml": "Copy as YAML",
               "no_actions": "No actions were performed in this time range.",
               "load_failed": "Could not load the action history: {error}"
             },
@@ -10332,6 +10333,9 @@
             "cut": "Cut",
             "copied_to_clipboard": "Card copied to clipboard",
             "cut_to_clipboard": "Card cut to clipboard",
+            "paste": "Paste",
+            "paste_error": "Error while pasting card",
+            "replaced": "Card replaced",
             "duplicate": "Duplicate",
             "move": "Move to view",
             "move_before": "Move card before",
@@ -10376,6 +10380,8 @@
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
             "copied_to_clipboard": "Badge copied to clipboard",
             "cut_to_clipboard": "Badge cut to clipboard",
+            "paste_error": "Error while pasting badge",
+            "replaced": "Badge replaced",
             "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
             "tab_config": "[%key:ui::panel::lovelace::editor::edit_card::tab_config%]",
             "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]"
