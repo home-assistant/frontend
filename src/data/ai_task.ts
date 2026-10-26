@@ -89,8 +89,8 @@ export interface EvaluationTaskResult {
   answers: Record<string, EvaluationAnswer>;
 }
 
-export const fetchAITaskPreferences = (hass: HomeAssistant) =>
-  hass.callWS<AITaskPreferences>({
+export const fetchAITaskPreferences = (callWS: HomeAssistant["callWS"]) =>
+  callWS<AITaskPreferences>({
     type: "ai_task/preferences/get",
   });
 
@@ -104,10 +104,10 @@ export const saveAITaskPreferences = (
   });
 
 export const generateDataAITask = async <T = string>(
-  hass: HomeAssistant,
+  callService: HomeAssistant["callService"],
   task: GenDataTask
 ): Promise<GenDataTaskResult<T>> => {
-  const result = await hass.callService<GenDataTaskResult<T>>(
+  const result = await callService<GenDataTaskResult<T>>(
     "ai_task",
     "generate_data",
     task,
