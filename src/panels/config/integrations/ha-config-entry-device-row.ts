@@ -262,7 +262,7 @@ class HaConfigEntryDeviceRow extends LitElement {
   };
 
   private _handleNavigateToEntities = () => {
-    navigate(`/config/entities/?historyBack=1&device=${this.device.id}`);
+    navigate(`/config/entities?historyBack=1&device=${this.device.id}`);
   };
 
   private _doDisableDevice = async () => {

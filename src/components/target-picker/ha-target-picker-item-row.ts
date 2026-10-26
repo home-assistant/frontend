@@ -164,6 +164,10 @@ export class HaTargetPickerItemRow extends LitElement {
 
   @state() private _entries?: ExtractFromTargetResult;
 
+  private _fetchedEntries?: ExtractFromTargetResult;
+
+  private _lastFetch = 0;
+
   @state()
   @consume({ context: labelsContext, subscribe: true })
   _labelRegistry?: LabelRegistryEntry[];
@@ -171,8 +175,21 @@ export class HaTargetPickerItemRow extends LitElement {
   private _loadedConfigEntryId?: string;
 
   protected willUpdate(changedProps: PropertyValues<this>) {
-    if (!this.subEntry && !this.exclusion && changedProps.has("itemId")) {
+    const resolvesEntries = !this.subEntry && !this.exclusion;
+    if (
+      resolvesEntries &&
+      (changedProps.has("itemId") || changedProps.has("primaryEntitiesOnly"))
+    ) {
       this._updateItemData();
+    } else if (
+      resolvesEntries &&
+      this._fetchedEntries &&
+      (changedProps.has("entityFilter") ||
+        changedProps.has("deviceFilter") ||
+        changedProps.has("includeDomains") ||
+        changedProps.has("includeDeviceClasses"))
+    ) {
+      this._entries = this._filterEntries(this._fetchedEntries);
     }
     if (
       changedProps.has("itemId") ||
@@ -248,8 +265,10 @@ export class HaTargetPickerItemRow extends LitElement {
     const rowEntities =
       this.type === "entity" ? [this.itemId] : entries?.referenced_entities;
     const fullyOut = !!rowEntities?.length && rowEntities.every(isOut);
+    const excludedCount = rowEntities?.filter(isOut).length ?? 0;
+    const inDetails = this.expand || this.subEntry;
     const rowState =
-      this.selectable && rowEntities?.length
+      (this.selectable || (inDetails && this.exclusions)) && rowEntities?.length
         ? targetRowState(
             this._targetRow(
               this.type,
@@ -262,11 +281,15 @@ export class HaTargetPickerItemRow extends LitElement {
             this.exclusions ?? []
           )
         : undefined;
-    const excludedBy = rowState
-      ? rowState.lockedBy
-      : this.subEntry && fullyOut
-        ? this._excludedBy(rowEntities!)
-        : [];
+    const out = rowState
+      ? !rowState.checked && !rowState.indeterminate
+      : fullyOut;
+    const excludedBy =
+      this.selectable && rowState
+        ? rowState.lockedBy
+        : this.subEntry && out
+          ? this._excludedBy(rowEntities!)
+          : [];
 
     const content = html`
       <div class="icon" slot="start">
@@ -280,7 +303,7 @@ export class HaTargetPickerItemRow extends LitElement {
         )}
       </div>
 
-      <span slot="headline" class=${classMap({ out: fullyOut })}
+      <span slot="headline" class=${classMap({ out })}
         >${
           canMigrate
             ? this.hass.localize(
@@ -331,8 +354,18 @@ export class HaTargetPickerItemRow extends LitElement {
                 ${
                   this.expand || !entries.referenced_entities.length
                     ? html`<span class="main">
-                        ${this._entitiesLabel(entries, isOut)}
-                      </span>`
+                          ${this._entitiesLabel(entries, isOut)}
+                        </span>
+                        ${
+                          this.expand && excludedCount
+                            ? html`<span class="secondary">
+                                ${this.hass.localize(
+                                  "ui.components.target-picker.excluded_count",
+                                  { count: excludedCount }
+                                )}
+                              </span>`
+                            : nothing
+                        }`
                     : html`<ha-button
                         appearance="filled"
                         variant="brand"
@@ -378,7 +411,7 @@ export class HaTargetPickerItemRow extends LitElement {
             : nothing
       }
       ${
-        rowState
+        this.selectable && rowState
           ? html`<ha-checkbox
               slot="end"
               .checked=${live(rowState.checked)}
@@ -466,22 +499,10 @@ export class HaTargetPickerItemRow extends LitElement {
     const remaining = entries.referenced_entities.filter(
       (entityId) => !isOut(entityId)
     );
-    const excluded = entries.referenced_entities.length - remaining.length;
     const total = remaining.length;
     const count = this.activeFilter
       ? remaining.filter(this.activeFilter).length
       : total;
-    if (excluded) {
-      return this.activeFilter
-        ? this.hass.localize(
-            "ui.components.target-picker.entities_count_filtered_excluded",
-            { count, total, excluded }
-          )
-        : this.hass.localize(
-            "ui.components.target-picker.entities_count_excluded",
-            { count, excluded }
-          );
-    }
     return this.activeFilter
       ? this.hass.localize(
           "ui.components.target-picker.entities_count_filtered",
@@ -574,7 +595,7 @@ export class HaTargetPickerItemRow extends LitElement {
           this.removedCount
             ? html`<span slot="end" class="removed">
                 ${this.hass.localize(
-                  "ui.components.target-picker.removes_count",
+                  "ui.components.target-picker.excluded_count",
                   { count: this.removedCount }
                 )}
               </span>`
@@ -678,7 +699,24 @@ export class HaTargetPickerItemRow extends LitElement {
     </ha-list-item-base>`;
   }
 
+  private _filterEntries(entries: ExtractFromTargetResult) {
+    return filterTargetEntries(
+      this.hass,
+      { type: this.type, id: this.itemId },
+      entries,
+      {
+        deviceFilter: this.deviceFilter,
+        entityFilter: this.entityFilter,
+        includeDomains: this.includeDomains,
+        includeDeviceClasses: this.includeDeviceClasses,
+        primaryEntitiesOnly: this.primaryEntitiesOnly,
+      }
+    );
+  }
+
   private async _updateItemData() {
+    const requestId = ++this._lastFetch;
+    this._fetchedEntries = undefined;
     if (this.type === "entity") {
       this._entries = undefined;
       return;
@@ -692,18 +730,12 @@ export class HaTargetPickerItemRow extends LitElement {
         false,
         this.primaryEntitiesOnly
       );
-      this._entries = filterTargetEntries(
-        this.hass,
-        { type: this.type, id: this.itemId },
-        entries,
-        {
-          deviceFilter: this.deviceFilter,
-          entityFilter: this.entityFilter,
-          includeDomains: this.includeDomains,
-          includeDeviceClasses: this.includeDeviceClasses,
-          primaryEntitiesOnly: this.primaryEntitiesOnly,
-        }
-      );
+      // A newer request was sent while this one was pending.
+      if (requestId !== this._lastFetch) {
+        return;
+      }
+      this._fetchedEntries = entries;
+      this._entries = this._filterEntries(entries);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("Failed to extract target", e);
