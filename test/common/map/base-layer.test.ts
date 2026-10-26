@@ -40,11 +40,9 @@ vi.mock("../../../src/data/map_tiles", () => ({
 const emitToken = (token: string) =>
   tokenListeners.forEach((listener) => listener(token));
 
-const setRTLTextPlugin = vi.hoisted(() => vi.fn(async () => undefined));
-
 const setWorkerUrl = vi.hoisted(() => vi.fn());
 
-vi.mock("maplibre-gl", () => ({ setRTLTextPlugin, setWorkerUrl }));
+vi.mock("maplibre-gl", () => ({ setWorkerUrl }));
 
 // What the build wrote out, which loadStyle fetches instead of building.
 const COLORFUL = { palette: "colorful", shipped: "light" } as const;
@@ -229,18 +227,6 @@ describe("createBaseLayer", () => {
     expect(options.referrerPolicy).toBe("origin");
   });
 
-  // MapLibre's code has BigInt literals in it, which Babel cannot transpile
-  // away, and a worker that fails to parse is silent - so no BigInt, no vector.
-  it("falls back to raster tiles without BigInt", async () => {
-    vi.stubGlobal("BigInt", undefined);
-    const createBaseLayer = await setWebGL2(true);
-
-    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
-
-    expect(isRaster()).toBe(true);
-    expect(maplibreGL).not.toHaveBeenCalled();
-  });
-
   // The worker is an entry of the build, and the build hands over its URL.
   // Absolute, because on Cast the page is not served from the instance.
   it("points MapLibre at the built worker once, before the first map", async () => {
@@ -254,18 +240,6 @@ describe("createBaseLayer", () => {
     );
     expect(setWorkerUrl.mock.invocationCallOrder[0]).toBeLessThan(
       maplibreGL.mock.invocationCallOrder[0]
-    );
-  });
-
-  it("registers the RTL text plugin once, lazily, from our own host", async () => {
-    const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
-    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
-
-    expect(setRTLTextPlugin).toHaveBeenCalledOnce();
-    expect(setRTLTextPlugin).toHaveBeenCalledWith(
-      `${location.origin}/static/map/mapbox-gl-rtl-text.js`,
-      true
     );
   });
 

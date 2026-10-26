@@ -27,6 +27,7 @@ import {
   configContext,
   entitiesContext,
   internationalizationContext,
+  reducedMotionContext,
   statesContext,
   uiContext,
 } from "../../../../data/context";
@@ -83,7 +84,9 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
   @state() private _data?: EnergyData;
 
-  @state() private _animate = true;
+  @state()
+  @consume({ context: reducedMotionContext, subscribe: true })
+  private _reducedMotion = false;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -191,12 +194,6 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
   public getCardSize(): Promise<number> | number {
     return 3;
-  }
-
-  protected willUpdate() {
-    if (!this.hasUpdated && matchMedia("(prefers-reduced-motion)").matches) {
-      this._animate = false;
-    }
   }
 
   protected render() {
@@ -347,6 +344,12 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       ? Math.max(consumption.total.used_grid, 0)
       : 0;
 
+    // Export not covered by solar or battery comes from unconfigured generation
+    const homeToGrid = Math.max(
+      (returnedToGrid ?? 0) - (solarToGrid ?? 0) - (batteryToGrid ?? 0),
+      0
+    );
+
     const totalHomeConsumption = Math.max(0, consumption.total.used_total);
 
     let lowCarbonEnergy: number | undefined;
@@ -400,6 +403,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
     const totalLines =
       gridConsumption +
+      homeToGrid +
       (solarConsumption || 0) +
       (solarToGrid || 0) +
       (solarToBattery || 0) +
@@ -505,7 +509,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                           <svg width="80" height="30">
                             <path d="M40 0 v30" id="gas" />
                             ${
-                              gasUsage && this._animate
+                              gasUsage && !this._reducedMotion
                                 ? svg`<circle
                     r="1"
                     class="gas"
@@ -541,7 +545,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                             <svg width="80" height="30">
                               <path d="M40 0 v30" id="water" />
                               ${
-                                waterUsage && this._animate
+                                waterUsage && !this._reducedMotion
                                   ? svg`<circle
                 r="1"
                 class="water"
@@ -777,7 +781,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                           <svg width="80" height="30">
                             <path d="M40 30 v-30" id="water" />
                             ${
-                              waterUsage && this._animate
+                              waterUsage && !this._reducedMotion
                                 ? svg`<circle
                     r="1"
                     class="water"
@@ -892,7 +896,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                   : nothing
               }
               ${
-                hasFlow(solarToGrid) && this._animate
+                hasFlow(solarToGrid) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="return"
@@ -909,7 +913,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                   : ""
               }
               ${
-                hasFlow(solarConsumption) && this._animate
+                hasFlow(solarConsumption) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="solar"
@@ -926,7 +930,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                   : ""
               }
               ${
-                hasFlow(gridConsumption) && this._animate
+                hasFlow(gridConsumption) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="grid"
@@ -943,7 +947,25 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                   : ""
               }
               ${
-                hasFlow(solarToBattery) && this._animate
+                hasFlow(homeToGrid) && !this._reducedMotion
+                  ? svg`<circle
+                    r="1"
+                    class="return"
+                    vector-effect="non-scaling-stroke"
+                  >
+                    <animateMotion
+                      dur="${6 - (homeToGrid / totalLines) * 5}s"
+                      repeatCount="indefinite"
+                      keyPoints="1;0" keyTimes="0;1"
+                      calcMode="linear"
+                    >
+                      <mpath xlink:href="#grid" />
+                    </animateMotion>
+                  </circle>`
+                  : ""
+              }
+              ${
+                hasFlow(solarToBattery) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="battery-solar"
@@ -960,7 +982,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                   : ""
               }
               ${
-                hasFlow(batteryConsumption) && this._animate
+                hasFlow(batteryConsumption) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="battery-house"
@@ -977,7 +999,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                   : ""
               }
               ${
-                hasFlow(batteryFromGrid) && this._animate
+                hasFlow(batteryFromGrid) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="battery-from-grid"
@@ -995,7 +1017,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                   : ""
               }
               ${
-                hasFlow(batteryToGrid) && this._animate
+                hasFlow(batteryToGrid) && !this._reducedMotion
                   ? svg`<circle
                     r="1"
                     class="battery-to-grid"

@@ -39,12 +39,42 @@ export interface IntegrationDescriptions {
   };
 }
 
+export interface IntegrationFilter {
+  domains: string[];
+}
+
 export const getIntegrationDescriptions = (
   hass: HomeAssistant
 ): Promise<IntegrationDescriptions> =>
   hass.callWS<IntegrationDescriptions>({
     type: "integration/descriptions",
   });
+
+export const filterIntegrationsByDomains = <T extends Brands>(
+  integrations: T,
+  domains: string[]
+): T => {
+  const filtered: Brands = {};
+  for (const [domain, integration] of Object.entries(integrations)) {
+    if ("integration_type" in integration) {
+      if (domains.includes(domain)) {
+        filtered[domain] = integration;
+      }
+      continue;
+    }
+    const subIntegrations = Object.entries(
+      integration.integrations ?? {}
+    ).filter(([subDomain]) => domains.includes(subDomain));
+    if (subIntegrations.length) {
+      const { iot_standards: _iotStandards, ...brand } = integration;
+      filtered[domain] = {
+        ...brand,
+        integrations: Object.fromEntries(subIntegrations),
+      };
+    }
+  }
+  return filtered as T;
+};
 
 export const findIntegration = (
   integrations: Brands | undefined,

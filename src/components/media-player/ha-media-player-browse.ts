@@ -23,6 +23,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { getShadowRootHost } from "../../common/dom/get-shadow-root-host";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { slugify } from "../../common/string/slugify";
+import { stripDiacritics } from "../../common/string/strip-diacritics";
 import { debounce } from "../../common/util/debounce";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import type {
@@ -94,6 +95,13 @@ export interface MediaPlayerItemId {
 
 type MediaClass = MediaPlayerItem["media_class"];
 
+/** Folders with at least this many items get a filter field when their source cannot search. */
+const FILTER_MIN_CHILDREN = 10;
+
+/** Case and accent insensitive, so "stefan" finds "Ștefan" and "DIGI" finds "Digi". */
+const normalizeForFilter = (value: string): string =>
+  stripDiacritics(value).toLowerCase().trim();
+
 const MANUAL_ITEM_BASE: Omit<MediaPlayerItem, "title"> = {
   can_expand: true,
   can_play: false,
@@ -143,6 +151,8 @@ export class HaMediaPlayerBrowse extends LitElement {
   @state() private _currentItem?: MediaPlayerItem;
 
   @state() private _searchQuery = "";
+
+  @state() private _filterQuery = "";
 
   @state() private _searchResults?: MediaPlayerItem[];
 
@@ -233,6 +243,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     this._searchQuery = "";
     this._searchResults = undefined;
     this._mediaClassFilter = [];
+    this._filterQuery = "";
     const currentId = navigateIds[navigateIds.length - 1];
     const parentId =
       navigateIds.length > 1 ? navigateIds[navigateIds.length - 2] : undefined;
@@ -447,13 +458,24 @@ export class HaMediaPlayerBrowse extends LitElement {
       });
     }
 
-    // Search is available on non-root pages that opt in via can_search, aside
-    // from the manual-entry and TTS pseudo-sources.
-    const showSearch =
+    // Search and filter are available on non-root pages, aside from the
+    // manual-entry and TTS pseudo-sources.
+    const allowsSearchOrFilter =
       this.navigateIds.length > 1 &&
       !isManualMediaSourceContentId(currentItem.media_content_id) &&
-      !isTTSMediaSource(currentItem.media_content_id) &&
-      currentItem.can_search;
+      !isTTSMediaSource(currentItem.media_content_id);
+    const showSearch = allowsSearchOrFilter && currentItem.can_search;
+    const showFilter =
+      allowsSearchOrFilter &&
+      !currentItem.can_search &&
+      children.length >= FILTER_MIN_CHILDREN;
+    const filterQuery = showFilter ? normalizeForFilter(this._filterQuery) : "";
+    const isFiltering = filterQuery !== "";
+    if (isFiltering) {
+      children = children.filter((child) =>
+        normalizeForFilter(child.title).includes(filterQuery)
+      );
+    }
     // The backend reports which media classes are worth filtering by for this
     // item; without them we still allow searching, just without the filter.
     const mediaClassFilterOptions =
@@ -478,7 +500,7 @@ export class HaMediaPlayerBrowse extends LitElement {
 
     return html`
               ${
-                canPickCurrent || showSearch
+                canPickCurrent || showSearch || showFilter
                   ? html`
                       <div
                         class="header ${classMap({
@@ -494,7 +516,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                                 currentItem,
                                 mediaClassFilterOptions
                               )
-                            : nothing
+                            : showFilter
+                              ? this._renderFilterRow(currentItem)
+                              : nothing
                         }
                         ${
                           canPickCurrent
@@ -617,7 +641,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                           @tts-picked=${this._ttsPicked}
                         ></ha-browse-media-tts>
                       `
-                    : !children.length && !notShown
+                    : !children.length && (!notShown || isFiltering)
                       ? html`
                           <div class="container no-items">
                             ${
@@ -625,25 +649,29 @@ export class HaMediaPlayerBrowse extends LitElement {
                                 ? this.hass.localize(
                                     "ui.components.media-browser.search.no_results"
                                   )
-                                : currentItem.media_content_id ===
-                                    "media-source://media_source/local/."
-                                  ? html`
-                                      <div class="highlight-add-button">
-                                        <span>
-                                          <ha-svg-icon
-                                            .path=${mdiArrowUpRight}
-                                          ></ha-svg-icon>
-                                        </span>
-                                        <span>
-                                          ${this.hass.localize(
-                                            "ui.components.media-browser.file_management.highlight_button"
-                                          )}
-                                        </span>
-                                      </div>
-                                    `
-                                  : this.hass.localize(
-                                      "ui.components.media-browser.no_items"
+                                : isFiltering
+                                  ? this.hass.localize(
+                                      "ui.components.media-browser.filter.no_matches"
                                     )
+                                  : currentItem.media_content_id ===
+                                      "media-source://media_source/local/."
+                                    ? html`
+                                        <div class="highlight-add-button">
+                                          <span>
+                                            <ha-svg-icon
+                                              .path=${mdiArrowUpRight}
+                                            ></ha-svg-icon>
+                                          </span>
+                                          <span>
+                                            ${this.hass.localize(
+                                              "ui.components.media-browser.file_management.highlight_button"
+                                            )}
+                                          </span>
+                                        </div>
+                                      `
+                                    : this.hass.localize(
+                                        "ui.components.media-browser.no_items"
+                                      )
                             }
                           </div>
                         `
@@ -773,6 +801,23 @@ export class HaMediaPlayerBrowse extends LitElement {
     `;
   }
 
+  private _renderFilterRow(currentItem: MediaPlayerItem): TemplateResult {
+    return html`
+      <div class="search-row">
+        <ha-input-search
+          class="search-input"
+          appearance="outlined"
+          .value=${this._filterQuery}
+          .placeholder=${this.hass.localize(
+            "ui.components.media-browser.filter.filter_placeholder",
+            { name: currentItem.title }
+          )}
+          @input=${this._handleFilterInput}
+        ></ha-input-search>
+      </div>
+    `;
+  }
+
   private _renderMediaClassFilter(
     mediaClassFilterOptions: MediaClass[]
   ): TemplateResult {
@@ -844,6 +889,12 @@ export class HaMediaPlayerBrowse extends LitElement {
     if (!value) {
       this._clearSearch();
     }
+  }
+
+  private _handleFilterInput(ev: InputEvent): void {
+    this._filterQuery = (ev.target as HaInputSearch).value ?? "";
+    this._virtualizer?.scrollTo(0, 0);
+    this._content?.scrollTo(0, 0);
   }
 
   private _handleSearchKeydown(ev: KeyboardEvent): void {

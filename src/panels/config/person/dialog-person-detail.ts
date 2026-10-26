@@ -455,7 +455,7 @@ class DialogPersonDetail
     if (target.checked) {
       target.checked = false;
 
-      const users = await fetchUsers(this.hass);
+      const users = await fetchUsers(this.hass.callWS);
       const currentLinkedUsers = new Set(
         Object.values(this.hass.states)
           .filter(
@@ -670,7 +670,7 @@ class DialogPersonDetail
         }
         ha-picture-upload {
           margin-bottom: 16px;
-          --file-upload-image-border-radius: var(--ha-border-radius-circle);
+          --file-upload-image-border-radius: var(--ha-picture-border-radius);
         }
         ha-row-item {
           --ha-row-item-padding-inline: 0;

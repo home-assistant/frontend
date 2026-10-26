@@ -4,6 +4,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { getDeviceIntegrationLookup } from "../../../data/device/device_registry";
@@ -19,11 +20,20 @@ import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import type { HomeAssistant } from "../../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../../device/ha-device-picker";
 import "../../ha-adaptive-dialog";
+import "../../ha-button";
+import "../../ha-dialog-footer";
 import "../../ha-icon-button";
 import "../../ha-icon-next";
 import "../../ha-svg-icon";
 import "../../list/ha-list-base";
 import "../ha-target-picker-item-row";
+import type { TargetExclusion } from "../target-exclusions";
+import {
+  isShared,
+  resolveItemExclusions,
+  resolveTargetItemEntities,
+  toggleTargetRow,
+} from "../target-exclusions";
 import type { TargetDetailsDialogParams } from "./show-dialog-target-details";
 
 @customElement("ha-dialog-target-details")
@@ -38,6 +48,16 @@ class DialogTargetDetails extends LitElement implements HassDialog {
 
   @state() private _entitySourcesLoaded = false;
 
+  @state() private _initialExclusions: TargetExclusion[] = [];
+
+  @state() private _exclusions: TargetExclusion[] = [];
+
+  private _exclusionsRequest = 0;
+
+  private _otherTargetEntities = memoizeOne(
+    (entities?: string[]) => new Set(entities)
+  );
+
   private _deviceIntegrationLookup = memoizeOne(
     (entities: HomeAssistant["entities"]) =>
       getDeviceIntegrationLookup(Object.values(entities))
@@ -45,7 +65,35 @@ class DialogTargetDetails extends LitElement implements HassDialog {
 
   public showDialog(params: TargetDetailsDialogParams): void {
     this._params = params;
+    this._initialExclusions = params.exclusions ?? [];
+    this._exclusions = this._initialExclusions;
     this._opened = true;
+    if (!params.exclusions && params.exclude) {
+      this._resolveExclusions(params);
+    }
+  }
+
+  private async _resolveExclusions(params: TargetDetailsDialogParams) {
+    const request = ++this._exclusionsRequest;
+    let exclusions: TargetExclusion[];
+    try {
+      exclusions = await resolveItemExclusions(
+        this.hass,
+        { type: params.type, id: params.itemId },
+        params.exclude,
+        params.selector
+          ? params.selector.target?.primary_entities_only
+          : params.primaryEntitiesOnly
+      );
+    } catch (_err) {
+      // The details still show the target, only without what is excluded.
+      return;
+    }
+    if (request !== this._exclusionsRequest || this._params !== params) {
+      return;
+    }
+    this._initialExclusions = exclusions;
+    this._exclusions = exclusions;
   }
 
   public closeDialog() {
@@ -58,6 +106,8 @@ class DialogTargetDetails extends LitElement implements HassDialog {
     this._params = undefined;
     this._entitySources = undefined;
     this._entitySourcesLoaded = false;
+    this._initialExclusions = [];
+    this._exclusions = [];
   }
 
   private _hasIntegration(selector: TargetSelector) {
@@ -160,6 +210,10 @@ class DialogTargetDetails extends LitElement implements HassDialog {
       entityFilter = this._combinedFilter(entityFilter, activeFilter);
     }
 
+    const selectable = !!this._params.exclusionsChanged;
+    const showExclusions =
+      selectable || !!this._params.exclusions || !!this._params.exclude;
+
     const waitingForSources =
       this._params.selector &&
       this._hasIntegration(this._params.selector) &&
@@ -196,14 +250,86 @@ class DialogTargetDetails extends LitElement implements HassDialog {
                       .includeDomains=${includeDomains}
                       .includeDeviceClasses=${includeDeviceClasses}
                       .primaryEntitiesOnly=${primaryEntitiesOnly}
+                      .selectable=${selectable}
+                      .exclusions=${showExclusions ? this._exclusions : undefined}
+                      @target-selection-changed=${this._selectionChanged}
                       expand
                     ></ha-target-picker-item-row>
                   `
             }
           </ha-list-base>
         </div>
+        ${
+          selectable
+            ? html`
+                <ha-dialog-footer slot="footer">
+                  <ha-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this.closeDialog}
+                  >
+                    ${this.hass.localize("ui.common.cancel")}
+                  </ha-button>
+                  <ha-button slot="primaryAction" @click=${this._apply}>
+                    ${this.hass.localize("ui.common.apply")}
+                  </ha-button>
+                </ha-dialog-footer>
+              `
+            : nothing
+        }
       </ha-adaptive-dialog>
     `;
+  }
+
+  private _selectionChanged(
+    ev: HASSDomEvent<HASSDomEvents["target-selection-changed"]>
+  ) {
+    ev.stopPropagation();
+    const before = this._exclusions;
+    this._exclusions = toggleTargetRow({
+      ...ev.detail,
+      exclusions: before,
+      initial: this._initialExclusions,
+      otherTargetEntities: this._otherTargetEntities(
+        this._params?.otherTargetEntities
+      ),
+    });
+    this._exclusions
+      .filter(
+        (exclusion) =>
+          exclusion.type !== "entity" &&
+          !before.includes(exclusion) &&
+          !this._initialExclusions.includes(exclusion)
+      )
+      .forEach((exclusion) => this._resolveRemoved(exclusion));
+  }
+
+  private async _resolveRemoved(exclusion: TargetExclusion) {
+    let removed: string[];
+    try {
+      removed = await resolveTargetItemEntities(this.hass, exclusion, false);
+    } catch (_err) {
+      return;
+    }
+    if (!this._exclusions.includes(exclusion)) {
+      return;
+    }
+
+    const shared = isShared(
+      removed,
+      this._otherTargetEntities(this._params?.otherTargetEntities)
+    );
+    this._exclusions = this._exclusions.map((current) =>
+      current === exclusion ? { ...exclusion, removed, shared } : current
+    );
+  }
+
+  private _apply() {
+    this._params?.exclusionsChanged?.(
+      this._initialExclusions,
+      this._exclusions
+    );
+    this.closeDialog();
   }
 
   static styles = css`

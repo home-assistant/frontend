@@ -20,7 +20,6 @@ import {
   apiContext,
   devicesContext,
   internationalizationContext,
-  statesContext,
 } from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
@@ -41,10 +40,6 @@ export class HaFilterDevices extends LitElement {
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
-
-  @consume({ context: statesContext, subscribe: true })
-  @state()
-  private _states!: ContextType<typeof statesContext>;
 
   @consume({ context: devicesContext, subscribe: true })
   @state()
@@ -76,6 +71,8 @@ export class HaFilterDevices extends LitElement {
   private _content = createRef<HTMLElement>();
 
   private _panel = new FilterPanelController(this, this._content);
+
+  private _relatedRequestId = 0;
 
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
@@ -125,7 +122,6 @@ export class HaFilterDevices extends LitElement {
                   this._devicesReg,
                   this._filter || "",
                   this._localize,
-                  this._states,
                   this._i18n.locale.language
                 )}
                 .rowRenderer=${this._renderItem}
@@ -158,7 +154,6 @@ export class HaFilterDevices extends LitElement {
         this._devicesReg,
         this._filter || "",
         this._localize,
-        this._states,
         this._i18n.locale.language
       )[ev.detail].id,
     ];
@@ -169,7 +164,6 @@ export class HaFilterDevices extends LitElement {
       this._devicesReg,
       this._filter || "",
       this._localize,
-      this._states,
       this._i18n.locale.language
     )[ev.detail].id;
     this.value = (this.value ?? []).filter((deviceId) => deviceId !== id);
@@ -196,7 +190,6 @@ export class HaFilterDevices extends LitElement {
       devices: ContextType<typeof devicesContext>,
       filter: string,
       localize: LocalizeFunc,
-      states: ContextType<typeof statesContext>,
       language: string | undefined
     ): HaFilterDevicesItem[] => {
       const values = Object.values(devices);
@@ -204,7 +197,7 @@ export class HaFilterDevices extends LitElement {
         .map((device) => ({
           id: device.id,
           interactive: true,
-          name: computeDeviceNameDisplay(device, localize, states),
+          name: computeDeviceNameDisplay(device, localize),
         }))
         .filter(
           ({ name }) =>
@@ -215,6 +208,7 @@ export class HaFilterDevices extends LitElement {
   );
 
   private async _findRelated() {
+    const requestId = ++this._relatedRequestId;
     const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (!this.value?.length) {
@@ -242,6 +236,12 @@ export class HaFilterDevices extends LitElement {
       }
     }
     const results = await Promise.all(relatedPromises);
+
+    // The value changed while this lookup ran
+    if (requestId !== this._relatedRequestId) {
+      return;
+    }
+
     const items = new Set<string>();
     for (const result of results) {
       if (result[this.type!]) {

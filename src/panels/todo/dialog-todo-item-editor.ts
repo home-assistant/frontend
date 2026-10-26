@@ -7,7 +7,6 @@ import { formatShortDateTimeWithConditionalYear } from "../../common/datetime/fo
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { supportsMarkdownHelper } from "../../common/translations/markdown_support";
 import "../../components/ha-alert";
@@ -140,7 +139,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
       this._params.item === undefined || !("uid" in this._params.item);
     const listName =
       this._params.entity in this.hass.states
-        ? computeStateName(this.hass.states[this._params.entity])
+        ? this.hass.formatEntityName(this.hass.states[this._params.entity])
         : this._params.entity;
 
     const { dueDate, dueTime } = this._getLocaleStrings(this._due);

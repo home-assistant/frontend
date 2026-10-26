@@ -18,9 +18,14 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { canShowPage } from "../common/config/can_show_page";
+import { QueryParamsController } from "../common/controllers/query-params-controller";
 import { consume } from "../common/decorators/consume";
 import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
-import type { LocalizeFunc } from "../common/translations/localize";
+import {
+  dataTableQueryParamConfig,
+  dataTableQueryParamsFromState,
+  dataTableQueryStateFromUrl,
+} from "../common/url/data-table-query-params";
 import "../components/chips/ha-assist-chip";
 import "../components/data-table/ha-data-table";
 import type {
@@ -55,8 +60,6 @@ import type { PageNavigation } from "./hass-tabs-subpage";
 export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   // Unread, kept for callers that still pass it until they move to contexts
   @property({ attribute: false }) public hass?: HomeAssistant;
-
-  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -217,6 +220,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   @property({ attribute: false }) public hiddenColumns?: string[];
 
+  /**
+   * Keep search, sorting and grouping in the URL (`search`, `sort`,
+   * `direction` and `group`). Params in the URL win over the initial values.
+   * Opt in per page, as some pages use query params for other things.
+   */
+  @property({ attribute: "sync-url", type: Boolean }) public syncUrl = false;
+
   @state() private _sortColumn?: string;
 
   @state() private _sortDirection: SortingDirection = null;
@@ -239,6 +249,32 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     callback: (entries) => entries[0]?.contentRect.width > 750,
   });
 
+  // The URL is read once the table is opted in and has its columns, and only
+  // written after that, so a link isn't overwritten before it is applied
+  private _urlRead = false;
+
+  private _urlWritePending = false;
+
+  private _typedSearch?: string;
+
+  private _restoreInitial = false;
+
+  private _queryParams = new QueryParamsController(
+    this,
+    dataTableQueryParamConfig,
+    {
+      enabled: () => this.syncUrl,
+      navigated: () => {
+        if (this._urlRead) {
+          // Opened again without params, like from the sidebar
+          this._restoreInitial =
+            this._queryParams.searchParams()?.toString() === "";
+          this._applyUrl();
+        }
+      },
+    }
+  );
+
   public clearSelection() {
     this._dataTable.clearSelection();
   }
@@ -255,20 +291,53 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         ).length > 1;
     }
 
-    if (this.hasUpdated) {
+    if (!this.hasUpdated) {
+      if (this.initialGroupColumn && this.columns[this.initialGroupColumn]) {
+        this._setGroupColumn(this.initialGroupColumn);
+      }
+
+      if (this.initialSorting && this.columns[this.initialSorting.column]) {
+        this._sortColumn = this.initialSorting.column;
+        this._sortDirection = this.initialSorting.direction;
+      }
+    }
+
+    // Done here, after the page has set the initial sorting and grouping it
+    // stored
+    if (this._restoreInitial) {
+      this._restoreInitial = false;
+      this._restoreInitialState();
+    }
+
+    if (this.syncUrl && !this._urlRead && Object.keys(this.columns).length) {
+      this._urlRead = true;
+      this._applyUrl();
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    const typed = this.filter === this._typedSearch;
+    this._typedSearch = undefined;
+    if (!this.syncUrl || !this._urlRead) {
+      this._urlWritePending = false;
       return;
     }
-    if (this.initialGroupColumn && this.columns[this.initialGroupColumn]) {
-      this._setGroupColumn(this.initialGroupColumn);
-    }
-    if (this.initialSorting && this.columns[this.initialSorting.column]) {
-      this._sortColumn = this.initialSorting.column;
-      this._sortDirection = this.initialSorting.direction;
+    const sortingOrGroupingChanged =
+      this._urlWritePending ||
+      changedProperties.has("_sortColumn") ||
+      changedProperties.has("_sortDirection") ||
+      changedProperties.has("_groupColumn");
+
+    this._urlWritePending = false;
+    if (sortingOrGroupingChanged || changedProperties.has("filter")) {
+      // Typing is written once it pauses, a search set by the page or a link
+      // straight away
+      this._writeUrl(!sortingOrGroupingChanged && typed);
     }
   }
 
   protected render(): TemplateResult {
-    const localize = this.localizeFunc || this._i18n.localize;
+    const localize = this._i18n.localize;
     const showPane = this._showPaneController.value ?? !this.narrow;
     const filterButton = this.hasFilters
       ? html`<ha-filter-pane-chip
@@ -298,6 +367,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       appearance="outlined"
       .value=${this.filter}
       @input=${this._handleSearchChange}
+      @blur=${this._flushUrl}
       .placeholder=${this.searchLabel}
     >
     </ha-input-search>`;
@@ -422,7 +492,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     return html`
       <hass-tabs-subpage
-        .localizeFunc=${this.localizeFunc}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
         .backCallback=${this.backCallback}
@@ -647,6 +716,85 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     fireEvent(this, "clear-filter");
   }
 
+  // A link with table params wins over what was picked before. The page is
+  // told with `link` set, so it shows it without storing it as the user's
+  // choice.
+  private _applyUrl() {
+    const searchParams = this._queryParams.searchParams();
+    const linked = searchParams
+      ? dataTableQueryStateFromUrl(searchParams, this.columns)
+      : undefined;
+
+    if (linked) {
+      if (linked.search !== this.filter) {
+        this.filter = linked.search;
+        fireEvent(this, "search-changed", { value: this.filter, link: true });
+      }
+      if (
+        linked.sorting &&
+        (linked.sorting.column !== this._sortColumn ||
+          linked.sorting.direction !== this._sortDirection)
+      ) {
+        this._sortColumn = linked.sorting.column;
+        this._sortDirection = linked.sorting.direction;
+        fireEvent(this, "sorting-changed", { ...linked.sorting, link: true });
+      }
+      if (linked.groupColumn && linked.groupColumn !== this._groupColumn) {
+        this._setGroupColumn(linked.groupColumn, true);
+      }
+    }
+
+    this._urlWritePending = true;
+    this.requestUpdate();
+  }
+
+  private _restoreInitialState() {
+    // Without a stored sort, use the column's default like a fresh load does
+    const defaultColumn = Object.keys(this.columns).find(
+      (columnId) => this.columns[columnId].direction
+    );
+
+    const defaultDirection = defaultColumn
+      ? this.columns[defaultColumn].direction
+      : undefined;
+
+    const sorting =
+      this.initialSorting && this.columns[this.initialSorting.column]
+        ? this.initialSorting
+        : defaultColumn && defaultDirection
+          ? { column: defaultColumn, direction: defaultDirection }
+          : undefined;
+
+    this._sortColumn = sorting?.column;
+    this._sortDirection = sorting?.direction ?? null;
+
+    const groupColumn =
+      this.initialGroupColumn && this.columns[this.initialGroupColumn]
+        ? this.initialGroupColumn
+        : "";
+
+    if (groupColumn !== (this._groupColumn ?? "")) {
+      this._setGroupColumn(groupColumn, true);
+    }
+  }
+
+  private _flushUrl() {
+    this._queryParams.flush();
+  }
+
+  private _writeUrl(debounced = false) {
+    this._queryParams.write(
+      dataTableQueryParamsFromState(
+        this.columns,
+        this.filter,
+        this._sortColumn,
+        this._sortDirection,
+        this._groupColumn
+      ),
+      debounced
+    );
+  }
+
   private _toggleFilters() {
     this.showFilters = !this.showFilters;
   }
@@ -698,9 +846,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._setGroupColumn(group);
   }
 
-  private _setGroupColumn(columnId: string) {
+  private _setGroupColumn(columnId: string, link = false) {
     this._groupColumn = columnId;
-    fireEvent(this, "grouping-changed", { value: columnId });
+    fireEvent(this, "grouping-changed", { value: columnId, link });
   }
 
   private _openSettings() {
@@ -716,7 +864,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         this.hiddenColumns = hiddenColumns;
         fireEvent(this, "columns-changed", { columnOrder, hiddenColumns });
       },
-      localizeFunc: this.localizeFunc,
     });
   }
 
@@ -773,6 +920,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     this.filter = target.value ?? "";
+    this._typedSearch = this.filter;
     fireEvent(this, "search-changed", { value: this.filter });
   }
 
@@ -787,6 +935,11 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       height: 100%;
       --data-table-border-width: 0;
       --data-table-empty-row-height: var(--safe-area-inset-bottom, 0px);
+      /* Same insets as the content padding of hass-tabs-subpage */
+      --data-table-inset-right: var(--safe-area-inset-right, 0px);
+    }
+    :host([narrow]) ha-data-table {
+      --data-table-inset-left: var(--safe-area-inset-left, 0px);
     }
     :host(:not([narrow])) ha-data-table,
     .pane {
@@ -842,11 +995,17 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       height: 56px;
       width: 100%;
       justify-content: space-between;
-      padding: 0 16px;
+      padding-left: calc(16px + var(--data-table-inset-left, 0px));
+      padding-right: calc(16px + var(--data-table-inset-right, 0px));
       gap: var(--ha-space-4);
       box-sizing: border-box;
-      background: var(--primary-background-color);
+      background: var(
+        --ha-panel-toolbar-background,
+        var(--primary-background-color)
+      );
       border-bottom: 1px solid var(--divider-color);
+      overflow-x: auto;
+      scrollbar-width: none;
     }
     ha-input-search {
       flex: 1;
@@ -911,27 +1070,15 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     .narrow-header-row {
-      --header-row-inset-start: var(--safe-area-inset-left, 0px);
-      --header-row-inset-end: var(--safe-area-inset-right, 0px);
       display: flex;
       align-items: center;
       min-width: 100%;
       gap: var(--ha-space-4);
-      padding: 0;
-      padding-inline-start: calc(16px + var(--header-row-inset-start));
+      padding-left: calc(16px + var(--data-table-inset-left, 0px));
+      padding-right: calc(16px + var(--data-table-inset-right, 0px));
       box-sizing: border-box;
       overflow-x: scroll;
       scrollbar-width: none;
-    }
-
-    .narrow-header-row:dir(rtl) {
-      --header-row-inset-start: var(--safe-area-inset-right, 0px);
-      --header-row-inset-end: var(--safe-area-inset-left, 0px);
-    }
-
-    .narrow-header-row::after {
-      content: "";
-      flex: 0 0 var(--header-row-inset-end);
     }
 
     .narrow-header-row .flex {
@@ -977,8 +1124,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     .select-mode-chip {
-      --md-assist-chip-icon-label-space: 0;
-      --md-assist-chip-trailing-space: 8px;
+      --ha-assist-chip-icon-label-space: 0;
+      --ha-assist-chip-trailing-space: 8px;
     }
 
     ha-adaptive-dialog {
@@ -997,7 +1144,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     }
 
     ha-dropdown ha-assist-chip {
-      --md-assist-chip-trailing-space: 8px;
+      --ha-assist-chip-trailing-space: 8px;
     }
 
     ha-dropdown-item.selected {
@@ -1017,8 +1164,9 @@ declare global {
 
   // for fire event
   interface HASSDomEvents {
-    "search-changed": { value: string };
-    "grouping-changed": { value: string };
+    // `link` is set when a link changed it, not the user
+    "search-changed": { value: string; link?: boolean };
+    "grouping-changed": { value: string; link?: boolean };
     "columns-changed": {
       columnOrder: string[] | undefined;
       hiddenColumns: string[] | undefined;

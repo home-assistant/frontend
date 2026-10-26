@@ -586,7 +586,7 @@ describe("getStates", () => {
       expect(result.length).toBe(4);
     });
 
-    it("should handle zones without friendly_name", () => {
+    it("names zones without friendly_name after their object id", () => {
       const hassWithoutFriendlyName = {
         ...mockHass,
         states: {
@@ -601,7 +601,6 @@ describe("getStates", () => {
       const entity = createMockEntity("device_tracker.test");
       const result = getStates(hassWithoutFriendlyName, entity);
 
-      // Should not include zones without friendly_name
       expect(result).toEqual(
         expect.arrayContaining([
           "home",
@@ -610,9 +609,10 @@ describe("getStates", () => {
           "unknown",
           "Work",
           "Office",
+          "no name",
         ])
       );
-      expect(result.length).toBe(6);
+      expect(result.length).toBe(7);
     });
   });
 });

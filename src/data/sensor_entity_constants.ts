@@ -434,6 +434,6 @@ export const SENSOR_STATE_CLASSES: string[] = [
   "total_increasing",
 ];
 
-export const SENSOR_STATE_CLASS_UNITS: Record<string, string[]> = {
+export const SENSOR_STATE_CLASS_UNITS: Record<string, (string | null)[]> = {
   measurement_angle: ["°"],
 };

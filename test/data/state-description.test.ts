@@ -85,6 +85,24 @@ describe("describing state triggers and conditions", () => {
     expect(describeRowCondition(condition)).toBe("State is on");
   });
 
+  it("describes negated from and to states", () => {
+    expect(
+      describeRowTrigger({
+        trigger: "state",
+        entity_id: "light.kitchen",
+        not_from: ["unavailable", "unknown"],
+      })
+    ).toBe("State changed from any state except unavailable and unknown");
+    expect(
+      describeRowTrigger({
+        trigger: "state",
+        entity_id: "light.kitchen",
+        from: "off",
+        not_to: "on",
+      })
+    ).toBe("State changed from off to any state except on");
+  });
+
   it("falls back to the label when nothing is configured yet", () => {
     expect(
       describeRowTrigger({ trigger: "state", entity_id: "light.kitchen" })

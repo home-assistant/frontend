@@ -23,6 +23,7 @@ import type {
   EntityRegistryEntry,
 } from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
+import type { HassServiceTargetWithExclude } from "./target";
 
 export type ThresholdMode = "crossed" | "changed" | "is";
 
@@ -88,6 +89,7 @@ export type Selector =
   | UiColorSelector
   | UiStateContentSelector
   | UiTimeFormatSelector
+  | UnitOfMeasurementSelector
   | BackupLocationSelector;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
@@ -292,7 +294,7 @@ export const getDurationSelectorUnits = (
   enableMillisecond: !!config?.enable_millisecond,
 });
 
-interface EntitySelectorFilter {
+export interface EntitySelectorFilter {
   integration?: string;
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
@@ -674,12 +676,47 @@ export interface UiTimeFormatSelector {
   ui_time_format: {} | null;
 }
 
+// Maps a context key to the name of another field or blueprint input
+export interface UnitOfMeasurementSelectorContext {
+  filter_device_class?: string;
+  filter_state_class?: string;
+}
+
+export interface UnitOfMeasurementSelector {
+  unit_of_measurement: {
+    device_classes?: string | string[] | null;
+    state_classes?: string | string[] | null;
+    context?: UnitOfMeasurementSelectorContext;
+  } | null;
+}
+
 export interface EntityNameSelector {
   entity_name: {
     entity_id?: string;
     default_name?: EntityNameItem | EntityNameItem[] | string;
+    allow_custom?: boolean;
   } | null;
 }
+
+/**
+ * Resolve the context of a selector config, which maps a context key to the
+ * name of another field, to the current values of those fields.
+ */
+export const resolveSelectorContext = (
+  selector: Selector,
+  data: Record<string, unknown> | undefined
+): Record<string, unknown> | undefined => {
+  const config = Object.values(selector)[0] as
+    { context?: Record<string, string> } | null | undefined;
+  if (!config?.context) {
+    return undefined;
+  }
+  const context: Record<string, unknown> = {};
+  for (const [contextKey, fieldName] of Object.entries(config.context)) {
+    context[contextKey] = data?.[fieldName];
+  }
+  return context;
+};
 
 export const expandLabelTarget = (
   hass: HomeAssistant,
@@ -1135,7 +1172,7 @@ export const computeCreateDomains = (
 
 export const resolveEntityIDs = (
   hass: HomeAssistant,
-  targetPickerValue: HassServiceTarget,
+  targetPickerValue: HassServiceTargetWithExclude,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areas: HomeAssistant["areas"],
@@ -1145,6 +1182,43 @@ export const resolveEntityIDs = (
     return [];
   }
 
+  const included = resolveIncludedEntityIDs(
+    hass,
+    targetPickerValue,
+    entities,
+    devices,
+    areas,
+    targetSelector
+  );
+
+  if (!targetPickerValue.exclude) {
+    return included;
+  }
+
+  // Excludes are resolved like a target and taken out of the whole result,
+  // matching core. They are not narrowed by the selector: leaving out more
+  // than the selector allows can't add anything back.
+  const excluded = new Set(
+    resolveIncludedEntityIDs(
+      hass,
+      targetPickerValue.exclude,
+      entities,
+      devices,
+      areas,
+      { target: {} }
+    )
+  );
+  return included.filter((entityId) => !excluded.has(entityId));
+};
+
+const resolveIncludedEntityIDs = (
+  hass: HomeAssistant,
+  targetPickerValue: HassServiceTarget,
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  targetSelector: TargetSelector
+): string[] => {
   const targetEntities = new Set(ensureArray(targetPickerValue.entity_id));
   const targetDevices = new Set(ensureArray(targetPickerValue.device_id));
   const targetAreas = new Set(ensureArray(targetPickerValue.area_id));

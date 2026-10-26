@@ -1,10 +1,13 @@
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import { internationalizationContext } from "../data/context";
 import type { FrontendLocaleData } from "../data/translation";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./ha-generic-picker";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
@@ -304,7 +307,9 @@ export const getCountryOptions = (
 
 @customElement("ha-country-picker")
 export class HaCountryPicker extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   @property() public value?: string;
 
@@ -326,7 +331,7 @@ export class HaCountryPicker extends LitElement {
     this._getCountryOptions(
       this.countries ?? COUNTRIES,
       this.noSort,
-      this.hass?.locale
+      this._i18n?.locale
     );
 
   private _getCountryName = (country?: string) =>
@@ -338,7 +343,7 @@ export class HaCountryPicker extends LitElement {
   protected render() {
     const label =
       this.label ??
-      (this.hass?.localize("ui.components.country-picker.country") ||
+      (this._i18n?.localize("ui.components.country-picker.country") ||
         "Country");
 
     const value =
@@ -347,10 +352,9 @@ export class HaCountryPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${
-          this.hass?.localize("ui.components.country-picker.no_countries") ||
+          this._i18n?.localize("ui.components.country-picker.no_countries") ||
           "No countries available"
         }
         .label=${label}
@@ -383,9 +387,10 @@ export class HaCountryPicker extends LitElement {
 
   private _notFoundLabel = (search: string) => {
     const term = html`<b>'${search}'</b>`;
-    return this.hass
-      ? this.hass.localize("ui.components.country-picker.no_match", { term })
-      : html`No countries found for ${term}`;
+    return (
+      this._i18n?.localize("ui.components.country-picker.no_match", { term }) ||
+      html`No countries found for ${term}`
+    );
   };
 }
 

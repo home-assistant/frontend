@@ -280,8 +280,7 @@ class HuiAreaControlsCardFeature
               style=${styleMap({
                 "--active-color": activeColor,
               })}
-              .title=${label}
-              aria-label=${label}
+              .label=${label}
               class=${active ? "active" : ""}
               .control=${normalized}
               @click=${this._handleButtonTap}

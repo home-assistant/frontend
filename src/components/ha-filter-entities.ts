@@ -1,4 +1,5 @@
 import type { ContextType } from "@lit/context";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -13,12 +14,12 @@ import {
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
-import { computeStateName } from "../common/entity/compute_state_name";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { deepEqual } from "../common/util/deep-equal";
 import {
   apiContext,
+  formattersContext,
   internationalizationContext,
   statesContext,
 } from "../data/context";
@@ -33,6 +34,11 @@ import "./ha-state-icon";
 import "./input/ha-input-search";
 import type { HaInputSearch } from "./input/ha-input-search";
 
+interface EntityItem {
+  stateObj: HassEntity;
+  name: string;
+}
+
 @customElement("ha-filter-entities")
 export class HaFilterEntities extends LitElement {
   @state()
@@ -42,6 +48,10 @@ export class HaFilterEntities extends LitElement {
   @consume({ context: statesContext, subscribe: true })
   @state()
   private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: formattersContext, subscribe: true })
+  @state()
+  private _formatters!: ContextType<typeof formattersContext>;
 
   @consume({ context: internationalizationContext, subscribe: true })
   @state()
@@ -63,6 +73,8 @@ export class HaFilterEntities extends LitElement {
   private _content = createRef<HTMLElement>();
 
   private _panel = new FilterPanelController(this, this._content);
+
+  private _relatedRequestId = 0;
 
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
@@ -113,6 +125,7 @@ export class HaFilterEntities extends LitElement {
                   <lit-virtualizer
                     .items=${this._entities(
                       this._states,
+                      this._formatters,
                       this.type,
                       this._filter || "",
                       this._i18n.locale.language,
@@ -132,19 +145,22 @@ export class HaFilterEntities extends LitElement {
     `;
   }
 
-  private _keyFunction = (entity) => entity?.entity_id;
+  private _keyFunction = (item?: EntityItem) => item?.stateObj.entity_id;
 
-  private _renderItem = (entity) =>
-    !entity
+  private _renderItem = (item?: EntityItem) =>
+    !item
       ? nothing
       : html`<ha-check-list-item
           tabindex="0"
-          .value=${entity.entity_id}
-          .selected=${this.value?.includes(entity.entity_id) ?? false}
+          .value=${item.stateObj.entity_id}
+          .selected=${this.value?.includes(item.stateObj.entity_id) ?? false}
           graphic="icon"
         >
-          <ha-state-icon slot="graphic" .stateObj=${entity}></ha-state-icon>
-          ${computeStateName(entity)}
+          <ha-state-icon
+            slot="graphic"
+            .stateObj=${item.stateObj}
+          ></ha-state-icon>
+          ${item.name}
         </ha-check-list-item>`;
 
   private _handleItemKeydown(ev: KeyboardEvent) {
@@ -180,29 +196,29 @@ export class HaFilterEntities extends LitElement {
   private _entities = memoizeOne(
     (
       states: ContextType<typeof statesContext>,
+      formatters: ContextType<typeof formattersContext>,
       type: this["type"],
       filter: string,
       language: string | undefined,
       _value
-    ) => {
-      const values = Object.values(states);
-      return values
+    ): EntityItem[] =>
+      Object.values(states)
+        .filter((stateObj) => !type || computeStateDomain(stateObj) !== type)
+        .map((stateObj) => ({
+          stateObj,
+          name: formatters.formatEntityName(stateObj),
+        }))
         .filter(
-          (entityState) =>
-            (!type || computeStateDomain(entityState) !== type) &&
-            (!filter ||
-              entityState.entity_id.toLowerCase().includes(filter) ||
-              entityState.attributes.friendly_name
-                ?.toLowerCase()
-                .includes(filter))
+          (item) =>
+            !filter ||
+            item.stateObj.entity_id.toLowerCase().includes(filter) ||
+            item.name.toLowerCase().includes(filter)
         )
-        .sort((a, b) =>
-          stringCompare(computeStateName(a), computeStateName(b), language)
-        );
-    }
+        .sort((a, b) => stringCompare(a.name, b.name, language))
   );
 
   private async _findRelated() {
+    const requestId = ++this._relatedRequestId;
     const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (!this.value?.length) {
@@ -221,6 +237,12 @@ export class HaFilterEntities extends LitElement {
     }
 
     const results = await Promise.all(relatedPromises);
+
+    // The value changed while this lookup ran
+    if (requestId !== this._relatedRequestId) {
+      return;
+    }
+
     const items = new Set<string>();
     for (const result of results) {
       if (result[this.type!]) {

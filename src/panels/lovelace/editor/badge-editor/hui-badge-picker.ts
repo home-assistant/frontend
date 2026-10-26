@@ -7,7 +7,6 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
-import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-spinner";
@@ -39,20 +38,22 @@ interface BadgeElement {
   element: TemplateResult;
 }
 
+/**
+ * @element hui-badge-picker
+ *
+ * @summary Searchable grid of badges to pick from.
+ *
+ * @slot - Footer below the scrolling badges, e.g. an action bar.
+ *
+ * @cssprop --ha-badge-picker-content-padding-bottom - Space at the end of the scrolling badges.
+ *
+ * @fires config-changed - Fired with the config of the picked badge.
+ */
 @customElement("hui-badge-picker")
 export class HuiBadgePicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public suggestedBadges?: string[];
-
-  @state()
-  @storage({
-    key: "dashboardBadgeClipboard",
-    state: true,
-    subscribe: true,
-    storage: "sessionStorage",
-  })
-  private _clipboard?: LovelaceBadgeConfig;
 
   @state() private _badges: BadgeElement[] = [];
 
@@ -172,7 +173,6 @@ export class HuiBadgePicker extends LitElement {
                         `
                       : nothing
                   }
-                  ${this._renderClipboardBadge()}
                   ${suggestedBadges.map(
                     (badgeElement: BadgeElement) => badgeElement.element
                   )}
@@ -226,6 +226,7 @@ export class HuiBadgePicker extends LitElement {
           </div>
         </div>
       </div>
+      <slot></slot>
     `;
   }
 
@@ -318,37 +319,6 @@ export class HuiBadgePicker extends LitElement {
         `
       )}`,
     }));
-  }
-
-  private _renderClipboardBadge() {
-    if (!this._clipboard) {
-      return nothing;
-    }
-
-    return html` ${until(
-      this._renderBadgeElement(
-        {
-          type: this._clipboard.type,
-          showElement: true,
-          isCustom: false,
-          name: this.hass!.localize(
-            "ui.panel.lovelace.editor.badge.generic.paste"
-          ),
-          description: `${this.hass!.localize(
-            "ui.panel.lovelace.editor.badge.generic.paste_description",
-            {
-              type: this._clipboard.type,
-            }
-          )}`,
-        },
-        this._clipboard
-      ),
-      html`
-        <div class="badge spinner">
-          <ha-spinner></ha-spinner>
-        </div>
-      `
-    )}`;
   }
 
   private _handleSearchChange(ev: InputEvent) {
@@ -494,6 +464,7 @@ export class HuiBadgePicker extends LitElement {
           flex: 1;
           min-height: 0;
           overflow: auto;
+          padding-bottom: var(--ha-badge-picker-content-padding-bottom, 0px);
         }
 
         ha-input-search {

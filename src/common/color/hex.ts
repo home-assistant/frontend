@@ -39,3 +39,14 @@ export const hexBlend = (c1: string, c2: string, blend = 50): string => {
   }
   return `#${color}`;
 };
+
+/**
+ * Converts a CSS color, like a color name, to `#rrggbb`.
+ * @param color - Any CSS color (name, hex, rgb(), hsl() and so on).
+ * @returns The hex color, or undefined for invalid colors and colors with
+ * transparency.
+ */
+export const cssColorToHex = (color: string): string | undefined => {
+  const parsed = parse(color.trim());
+  return parsed && (parsed.alpha ?? 1) === 1 ? formatHex(parsed) : undefined;
+};

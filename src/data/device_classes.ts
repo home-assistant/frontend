@@ -111,6 +111,7 @@ export const DOMAIN_DEVICE_CLASSES: Record<string, string[]> = {
     "wind_direction",
     "wind_speed",
   ],
+  radio_frequency: ["receiver", "transmitter"],
   sensor: [
     "absolute_humidity",
     "apparent_power",

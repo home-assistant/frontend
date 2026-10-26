@@ -383,6 +383,8 @@ export class HuiEnergySourcesTableCard
 
     let totalGrid = 0;
     let totalGridCost = 0;
+    let gridImportIdx = 0;
+    let gridExportIdx = 0;
     let totalBattery = 0;
 
     let hasGridCost = false;
@@ -774,9 +776,10 @@ export class HuiEnergySourcesTableCard
                     )
                   : ""
               }
-              ${types.grid?.map((source, idx) => {
+              ${types.grid?.map((source) => {
                 const importResult = (() => {
                   if (!source.stat_energy_from) return nothing;
+                  const idx = gridImportIdx++;
 
                   const cost_stat =
                     source.stat_cost ||
@@ -831,6 +834,7 @@ export class HuiEnergySourcesTableCard
 
                 const exportResult = (() => {
                   if (!source.stat_energy_to) return nothing;
+                  const idx = gridExportIdx++;
 
                   const cost_stat =
                     source.stat_compensation ||
@@ -970,7 +974,7 @@ export class HuiEnergySourcesTableCard
       text-transform: inherit;
     }
     .mdc-data-table {
-      background-color: var(--card-background-color);
+      background: transparent;
       border-radius: var(--ha-border-radius-sm);
       border: 0;
       box-sizing: border-box;
@@ -980,7 +984,6 @@ export class HuiEnergySourcesTableCard
       width: 100%;
     }
     .mdc-data-table__table-container {
-      -webkit-overflow-scrolling: touch;
       overflow-x: auto;
       width: 100%;
     }
@@ -1018,7 +1021,7 @@ export class HuiEnergySourcesTableCard
       white-space: nowrap;
     }
     .mdc-data-table__header-cell {
-      background-color: var(--card-background-color);
+      background: transparent;
       font-family: var(--ha-font-family-body);
       -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       -webkit-font-smoothing: var(--ha-font-smoothing);

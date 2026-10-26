@@ -91,6 +91,24 @@ export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
     });
   }
 
+  private _computeIconLabel(): string {
+    const turnOn = this._getOnEntities().length === 0;
+    const title = this._config!.title;
+    if (title) {
+      return this.hass!.localize(
+        turnOn
+          ? "ui.card.toggle-group.turn_on_name"
+          : "ui.card.toggle-group.turn_off_name",
+        { name: title }
+      );
+    }
+    return this.hass!.localize(
+      turnOn
+        ? "ui.card.toggle-group.turn_all_on"
+        : "ui.card.toggle-group.turn_all_off"
+    );
+  }
+
   private _handleTap(): void {
     if (!this.hass || !this._config) return;
     const onEntities = this._getOnEntities();
@@ -124,6 +142,7 @@ export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
             slot="icon"
             icon="mdi:power"
             .interactive=${true}
+            .accessibleLabel=${this._computeIconLabel()}
             @action=${this._handleTap}
           ></ha-tile-icon>
           <ha-tile-info

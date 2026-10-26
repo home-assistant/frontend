@@ -11,6 +11,7 @@ import {
   fetchSupervisorMounts,
   SupervisorMountType,
   SupervisorMountUsage,
+  supervisorMountDescription,
 } from "../data/supervisor/mounts";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
@@ -58,9 +59,7 @@ class HaMountPicker extends LitElement {
     ).map((mount) => ({
       value: mount.name,
       label: mount.name,
-      secondary: `${mount.server}${mount.port ? `:${mount.port}` : ""}${
-        mount.type === SupervisorMountType.NFS ? mount.path : `:${mount.share}`
-      }`,
+      secondary: supervisorMountDescription(mount),
       iconPath:
         mount.usage === SupervisorMountUsage.MEDIA
           ? mdiPlayBox
@@ -108,10 +107,16 @@ class HaMountPicker extends LitElement {
   private _filterMounts = memoizeOne(
     (mounts: SupervisorMounts, usage: this["usage"]) => {
       let filteredMounts = mounts.mounts.filter((mount) =>
-        [SupervisorMountType.CIFS, SupervisorMountType.NFS].includes(mount.type)
+        [
+          SupervisorMountType.CIFS,
+          SupervisorMountType.DISK,
+          SupervisorMountType.NFS,
+        ].includes(mount.type)
       );
       if (usage) {
-        filteredMounts = mounts.mounts.filter((mount) => mount.usage === usage);
+        filteredMounts = filteredMounts.filter(
+          (mount) => mount.usage === usage
+        );
       }
       return filteredMounts.sort((mountA, mountB) => {
         if (mountA.name === mounts.default_backup_mount) {

@@ -3,13 +3,13 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
   SelectionChangedEvent,
-  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-help-tooltip";
@@ -52,12 +52,10 @@ export class HaConfigApplicationCredentials extends LitElement {
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
-  @storage({
-    key: "application-credentials-table-sort",
-    state: false,
-    subscribe: false,
-  })
-  private _activeSorting?: SortingChangedEvent;
+  private _tableSettings = new DataTableSettingsController(this, {
+    search: "application-credentials-table-search",
+    sorting: "application-credentials-table-sort",
+  });
 
   @storage({
     key: "application-credentials-table-column-order",
@@ -72,15 +70,6 @@ export class HaConfigApplicationCredentials extends LitElement {
     subscribe: false,
   })
   private _activeHiddenColumns?: string[];
-
-  @state()
-  @storage({
-    storage: "sessionStorage",
-    key: "application-credentials-table-search",
-    state: true,
-    subscribe: false,
-  })
-  private _filter = "";
 
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer => {
@@ -107,6 +96,7 @@ export class HaConfigApplicationCredentials extends LitElement {
           ),
           sortable: true,
           filterable: true,
+          urlName: "integration",
         },
         actions: {
           lastFixed: true,
@@ -175,13 +165,14 @@ export class HaConfigApplicationCredentials extends LitElement {
         selectable
         .selected=${this._selected.length}
         @selection-changed=${this._handleSelectionChanged}
-        .initialSorting=${this._activeSorting}
+        .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
-        @sorting-changed=${this._handleSortingChanged}
-        .filter=${this._filter}
-        @search-changed=${this._handleSearchChange}
+        @sorting-changed=${this._tableSettings.sortingChanged}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
+        sync-url
       >
         <div class="header-btns" slot="selection-bar">
           ${
@@ -323,17 +314,9 @@ export class HaConfigApplicationCredentials extends LitElement {
     });
   }
 
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
-  }
-
   private _handleColumnsChanged(ev: CustomEvent) {
     this._activeColumnOrder = ev.detail.columnOrder;
     this._activeHiddenColumns = ev.detail.hiddenColumns;
-  }
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
   }
 
   static styles = css`

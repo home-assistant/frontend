@@ -281,7 +281,6 @@ export class HaAreaControlsPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .value=${this.value || ""}
         .disabled=${this.disabled}
         .required=${this.required}

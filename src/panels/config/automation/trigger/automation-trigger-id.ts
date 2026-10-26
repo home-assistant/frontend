@@ -47,6 +47,11 @@ export interface AutomationTriggerContext {
   select: (condition: TriggerCondition, ids: string[]) => void;
   /** Requests confirmation before migrating duplicate IDs throughout the automation. */
   fixDuplicateIds: () => Promise<void>;
+  /**
+   * Replace a leaf trigger after an explicit ID edit, leaving references to the old ID
+   * dangling. Return false when the trigger is not one of the automation's triggers.
+   */
+  updateTriggerId: (original: Trigger, updated: Trigger) => boolean;
 }
 
 export const automationTriggerContext =
@@ -147,6 +152,10 @@ const walkLeafTriggers = (
     });
     return changed ? mapped : triggers;
   }
+  // Incomplete YAML can leave null entries in the trigger list
+  if (!triggers || typeof triggers !== "object") {
+    return triggers;
+  }
   if (isTriggerList(triggers)) {
     const newInner = triggers.triggers
       ? (walkLeafTriggers(triggers.triggers, callback) as Trigger | Trigger[])
@@ -158,6 +167,16 @@ const walkLeafTriggers = (
   }
   return callback(triggers);
 };
+
+/** Replace one leaf trigger by object identity; return the input unchanged if it is absent. */
+export const replaceLeafTrigger = (
+  triggers: Trigger | Trigger[],
+  original: Trigger,
+  updated: Trigger
+): Trigger | Trigger[] =>
+  walkLeafTriggers(triggers, (trigger) =>
+    trigger === original ? updated : trigger
+  );
 
 /** Store only selected candidate IDs, matching options to their original trigger objects. */
 export const assignGeneratedTriggerIds = (
@@ -296,6 +315,10 @@ class AutomationTriggerConditionMapper {
 
   /** Map condition actions and nested blocks; return other action types unchanged. */
   private _mapAction = (action: Action): Action => {
+    // Invalid YAML can contain scalars, which getActionType can't handle
+    if (typeof action !== "object" || action === null) {
+      return action;
+    }
     switch (getActionType(action)) {
       case "check_condition":
         return this._mapCondition(action as Condition) as Action;
@@ -376,6 +399,9 @@ export const updateTriggerCondition = (
  * triggers are stripped the same way.
  */
 export const stripGeneratedTriggerIds = (trigger: Trigger): Trigger => {
+  if (!trigger || typeof trigger !== "object") {
+    return trigger;
+  }
   if (isTriggerList(trigger)) {
     if (!trigger.triggers) {
       return trigger;

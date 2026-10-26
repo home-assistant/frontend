@@ -93,9 +93,13 @@ const initRouting = () => {
     ignoreURLParametersMatching: [/.*/],
   });
 
-  // Cache static content (including translations) on first access.
+  // Cache static content (including translations) on first access. Match on
+  // the start of the path: custom integrations serve their own files from
+  // paths like /api/<domain>/static/, and those must not be cached forever.
   registerRoute(
-    /\/(static|frontend_latest|frontend_es5)\/.+/,
+    ({ url }) =>
+      url.origin === location.origin &&
+      /^\/(static|frontend_latest|frontend_es5)\/.+/.test(url.pathname),
     new CacheFirst({ matchOptions: { ignoreSearch: true } })
   );
 
@@ -185,6 +189,16 @@ const initRouting = () => {
 
   // Get api from network.
   registerRoute(/\/(api|auth)\/.*/, new NetworkOnly());
+
+  // Signed URLs (such as media files under /media/ with an authSig) differ on
+  // every request, so caching them never produces a hit. With the catch-all
+  // route below, a photo slideshow would store one full-size image per slide
+  // until the browser's storage quota runs out.
+  registerRoute(
+    ({ url }) =>
+      url.origin === location.origin && url.searchParams.has("authSig"),
+    new NetworkOnly()
+  );
 
   // Get manifest and onboarding from network.
   registerRoute(/\/(?:manifest\.json|onboarding\.html)/, new NetworkOnly());

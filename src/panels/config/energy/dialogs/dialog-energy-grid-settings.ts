@@ -362,6 +362,8 @@ export class DialogEnergyGridSettings
                   )}
                   type="number"
                   step="any"
+                  required
+                  auto-validate
                   @input=${this._numberCostChanged}
                 >
                   <span slot="end">${this.hass.config.currency}/kWh</span>
@@ -458,6 +460,8 @@ export class DialogEnergyGridSettings
                           )}
                           type="number"
                           step="any"
+                          required
+                          auto-validate
                           @input=${this._numberCompensationChanged}
                         >
                           <span slot="end"
@@ -518,6 +522,21 @@ export class DialogEnergyGridSettings
 
     // Check power config validity (if power is configured)
     if (hasPower && !isPowerConfigValid(this._powerType, this._powerConfig)) {
+      return false;
+    }
+
+    if (
+      this._importCostType === "number" &&
+      typeof this._source?.number_energy_price !== "number"
+    ) {
+      return false;
+    }
+
+    if (
+      hasExport &&
+      this._exportCostType === "number" &&
+      typeof this._source?.number_energy_price_export !== "number"
+    ) {
       return false;
     }
 

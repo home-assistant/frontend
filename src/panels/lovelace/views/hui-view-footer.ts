@@ -9,15 +9,14 @@ import "../../../components/ha-svg-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import {
   DEFAULT_FOOTER_MAX_WIDTH_PX,
-  type LovelaceViewConfig,
   type LovelaceViewFooterConfig,
 } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { HuiCard } from "../cards/hui-card";
 import { computeCardGridSize } from "../common/compute-card-grid-size";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { replaceView } from "../editor/config-util";
+import type { LovelacePath } from "../editor/lovelace-path";
+import { setAtPath } from "../editor/lovelace-path";
 import { showEditViewFooterDialog } from "../editor/view-footer/show-edit-view-footer-dialog";
 import type { Lovelace } from "../types";
 
@@ -31,7 +30,7 @@ export class HuiViewFooter extends LitElement {
 
   @property({ attribute: false }) public config?: LovelaceViewFooterConfig;
 
-  @property({ attribute: false }) public viewIndex!: number;
+  @property({ attribute: false }) public path!: LovelacePath;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -90,22 +89,16 @@ export class HuiViewFooter extends LitElement {
     return element;
   }
 
+  private get _cardPath(): LovelacePath {
+    return [...this.path, "footer", "card"];
+  }
+
   private _addCard() {
     showCreateCardDialog(this, {
       lovelaceConfig: this.lovelace.config,
       saveConfig: this.lovelace.saveConfig,
-      path: [this.viewIndex],
-      saveCard: (newCardConfig: LovelaceCardConfig) => {
-        this._saveFooterConfig({ ...this.config, card: newCardConfig });
-      },
+      path: this._cardPath,
     });
-  }
-
-  private _deleteCard(ev) {
-    ev.stopPropagation();
-    const newConfig = { ...this.config };
-    delete newConfig.card;
-    this._saveFooterConfig(newConfig);
   }
 
   private _configure() {
@@ -117,34 +110,10 @@ export class HuiViewFooter extends LitElement {
     });
   }
 
-  private _editCard(ev) {
-    ev.stopPropagation();
-    const cardConfig = this.config?.card;
-    if (!cardConfig) return;
-
-    showEditCardDialog(this, {
-      cardConfig,
-      lovelaceConfig: this.lovelace.config,
-      saveCardConfig: (newCardConfig: LovelaceCardConfig) => {
-        this._saveFooterConfig({ ...this.config, card: newCardConfig });
-      },
-    });
-  }
-
   private _saveFooterConfig(footerConfig: LovelaceViewFooterConfig) {
-    const viewConfig = this.lovelace.config.views[
-      this.viewIndex
-    ] as LovelaceViewConfig;
-
-    const config = { ...viewConfig, footer: footerConfig };
-
-    const updatedConfig = replaceView(
-      this.hass,
-      this.lovelace.config,
-      this.viewIndex,
-      config
+    this.lovelace.saveConfig(
+      setAtPath(this.lovelace.config, [...this.path, "footer"], footerConfig)
     );
-    this.lovelace.saveConfig(updatedConfig);
   }
 
   private _renderCard(card: HuiCard, editMode: boolean) {
@@ -164,10 +133,8 @@ export class HuiViewFooter extends LitElement {
           editMode
             ? html`
                 <hui-card-edit-mode
-                  @ll-edit-card=${this._editCard}
-                  @ll-delete-card=${this._deleteCard}
                   .lovelace=${this.lovelace!}
-                  .path=${[0]}
+                  .path=${this._cardPath}
                   no-duplicate
                   no-move
                 >

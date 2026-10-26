@@ -81,7 +81,7 @@ class HaChangePasswordCard extends LitElement {
                     @input=${this._newPasswordChanged}
                     @change=${this._newPasswordChanged}
                     required
-                    autoValidate
+                    auto-validate
                   ></ha-input>
                   <ha-input
                     type="password"
@@ -95,7 +95,7 @@ class HaChangePasswordCard extends LitElement {
                     @input=${this._newPasswordConfirmChanged}
                     @change=${this._newPasswordConfirmChanged}
                     required
-                    autoValidate
+                    auto-validate
                   ></ha-input>`
               : ""
           }

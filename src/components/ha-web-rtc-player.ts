@@ -1,12 +1,14 @@
 import type { ContextType } from "@lit/context";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
 import {
   addWebRtcCandidate,
   fetchWebRtcClientConfiguration,
@@ -17,8 +19,17 @@ import {
 } from "../data/camera";
 import { apiContext, connectionContext } from "../data/context";
 import "./ha-alert";
+import "./ha-spinner";
+import { showToast } from "../util/toast";
 
 const HIDDEN_CLEANUP_DELAY = 60000;
+
+interface WebRtcPlayerError {
+  type: "not_supported" | "start_failed" | "connect_failed";
+  message?: string;
+}
+
+export type WebRtcMicrophoneState = "off" | "connecting" | "on" | "denied";
 
 /**
  * A WebRTC stream is established by first sending an offer through a signal
@@ -26,7 +37,7 @@ const HIDDEN_CLEANUP_DELAY = 60000;
  * is handled entirely client side.
  */
 @customElement("ha-web-rtc-player")
-class HaWebRtcPlayer extends LitElement {
+export class HaWebRtcPlayer extends LitElement {
   @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
@@ -34,6 +45,10 @@ class HaWebRtcPlayer extends LitElement {
   @state()
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: ContextType<typeof connectionContext>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @property() public entityid?: string;
 
@@ -55,7 +70,9 @@ class HaWebRtcPlayer extends LitElement {
 
   @property({ attribute: "poster-url" }) public posterUrl?: string;
 
-  @state() private _error?: string;
+  @state() private _error?: WebRtcPlayerError;
+
+  @state() private _reconnectPoster?: string;
 
   @query("#remote-stream") private _videoEl!: HTMLVideoElement;
 
@@ -65,6 +82,111 @@ class HaWebRtcPlayer extends LitElement {
 
   private _remoteStream?: MediaStream;
 
+  private _localReturnAudioTrack?: MediaStreamTrack;
+
+  private _microphoneSender?: RTCRtpSender;
+
+  private _timerRunning = false;
+
+  private _microphoneConnecting = false;
+
+  private _microphoneDenied = false;
+
+  // Increased on every start, stop and clean up, so older starts are ignored
+  private _microphoneRequest = 0;
+
+  public get microphoneState(): WebRtcMicrophoneState {
+    if (this._microphoneDenied) {
+      return "denied";
+    }
+    if (this._microphoneConnecting) {
+      return "connecting";
+    }
+    return this._localReturnAudioTrack ? "on" : "off";
+  }
+
+  public get microphoneTrack(): MediaStreamTrack | undefined {
+    return this._localReturnAudioTrack;
+  }
+
+  public async toggleMicrophone() {
+    if (this._localReturnAudioTrack || this._microphoneConnecting) {
+      // Stop (not disable) so the browser releases the microphone, also cancels connecting
+      this._microphoneRequest++;
+      this._localReturnAudioTrack?.stop();
+      this._localReturnAudioTrack = undefined;
+      this._microphoneConnecting = false;
+      this._fireMicrophoneChanged();
+      await this._microphoneSender?.replaceTrack(null).catch(() => undefined);
+      return;
+    }
+    if (this._microphoneDenied) {
+      return;
+    }
+
+    const request = ++this._microphoneRequest;
+    this._microphoneConnecting = true;
+    this._fireMicrophoneChanged();
+    const track = await this._getMicrophoneTrack();
+    // Cancelled or cleaned up (closed, hidden or entity changed) while asking
+    if (request !== this._microphoneRequest || !this.isConnected) {
+      track?.stop();
+      return;
+    }
+    if (!track) {
+      this._logEvent("unable to add audio send track");
+      this._microphoneConnecting = false;
+      this._fireMicrophoneChanged();
+      return;
+    }
+    this._logEvent("found microphone to use for audio return track");
+    if (this._microphoneSender) {
+      // The connection was already set up with a microphone, swap it back in
+      const sender = this._microphoneSender;
+      try {
+        await sender.replaceTrack(track);
+      } catch (_err: unknown) {
+        track.stop();
+        if (request === this._microphoneRequest) {
+          this._microphoneConnecting = false;
+          this._fireMicrophoneChanged();
+        }
+        return;
+      }
+      // Cancelled or cleaned up while swapping. Only stop the track, the
+      // cancel already queued replaceTrack(null) and a newer start its track.
+      if (request !== this._microphoneRequest) {
+        track.stop();
+        return;
+      }
+      this._localReturnAudioTrack = track;
+      this._microphoneConnecting = false;
+      this._fireMicrophoneChanged();
+      return;
+    }
+    // Renegotiating the existing connection is not supported by all providers
+    // (go2rtc answers with a new DTLS fingerprint, which Firefox rejects), so
+    // start a new connection and session with the microphone track instead.
+    this._captureReconnectFrame();
+    await this._startWebRtc(track);
+  }
+
+  private _captureReconnectFrame() {
+    const video = this._videoEl;
+    if (!video?.videoWidth || !video.videoHeight) {
+      return;
+    }
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d")?.drawImage(video, 0, 0);
+    this._reconnectPoster = canvas.toDataURL("image/jpeg");
+  }
+
+  private _fireMicrophoneChanged() {
+    fireEvent(this, "microphone-changed", { state: this.microphoneState });
+  }
+
   private _unsub?: Promise<UnsubscribeFunc>;
 
   private _sessionId?: string;
@@ -72,6 +194,8 @@ class HaWebRtcPlayer extends LitElement {
   private _candidatesList: RTCIceCandidate[] = [];
 
   private _hiddenCleanupTimeout?: number;
+
+  private _cleanUpCount = 0;
 
   private _handleVisibilityChange = () => {
     if (document.pictureInPictureElement) {
@@ -94,7 +218,11 @@ class HaWebRtcPlayer extends LitElement {
 
   protected override render(): TemplateResult {
     if (this._error) {
-      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
+      return html`<ha-alert alert-type="error">
+        ${this._localize(`ui.components.web-rtc-player.${this._error.type}`, {
+          message: this._error.message ?? "",
+        })}
+      </ha-alert>`;
     }
     return html`
       <video
@@ -103,14 +231,22 @@ class HaWebRtcPlayer extends LitElement {
         .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
-        poster=${ifDefined(this.posterUrl)}
+        poster=${ifDefined(this._reconnectPoster ?? this.posterUrl)}
         @loadeddata=${this._loadedData}
+        @resize=${this._videoResized}
         style=${styleMap({
           height: this.aspectRatio == null ? "100%" : "auto",
           aspectRatio: this.aspectRatio,
           objectFit: this.fitMode,
         })}
       ></video>
+      ${
+        this._reconnectPoster
+          ? html`<div class="reconnecting">
+              <ha-spinner size="medium"></ha-spinner>
+            </div>`
+          : nothing
+      }
     `;
   }
 
@@ -141,17 +277,30 @@ class HaWebRtcPlayer extends LitElement {
     this._startWebRtc();
   }
 
-  private async _startWebRtc(): Promise<void> {
+  private async _startWebRtc(
+    localReturnAudioTrack?: MediaStreamTrack
+  ): Promise<void> {
     this._cleanUp();
+
+    if (localReturnAudioTrack) {
+      this._localReturnAudioTrack = localReturnAudioTrack;
+      this._microphoneConnecting = true;
+      this._fireMicrophoneChanged();
+    }
 
     // Browser support required for WebRTC
     if (typeof RTCPeerConnection === "undefined") {
-      this._error = "WebRTC is not supported in this browser";
+      this._error = { type: "not_supported" };
       fireEvent(this, "streams", { hasAudio: false, hasVideo: false });
       return;
     }
 
-    if (!this._api || !this._connection || !this.entityid) {
+    if (
+      !this._api ||
+      !this._connection ||
+      !this.entityid ||
+      !this.isConnected
+    ) {
       return;
     }
 
@@ -159,12 +308,28 @@ class HaWebRtcPlayer extends LitElement {
 
     this._startTimer();
 
+    const cleanUpCountAtStart = this._cleanUpCount;
+
     this._logEvent("start clientConfig");
 
-    this._clientConfig = await fetchWebRtcClientConfiguration(
-      this._api,
-      this.entityid
-    );
+    let clientConfig: WebRTCClientConfiguration;
+    try {
+      clientConfig = await fetchWebRtcClientConfiguration(
+        this._api,
+        this.entityid
+      );
+    } catch (err: any) {
+      if (cleanUpCountAtStart === this._cleanUpCount) {
+        this._failStart({ type: "start_failed", message: err.message });
+      }
+      return;
+    }
+
+    if (cleanUpCountAtStart !== this._cleanUpCount) {
+      return;
+    }
+
+    this._clientConfig = clientConfig;
 
     this._logEvent("end clientConfig", this._clientConfig);
 
@@ -202,12 +367,20 @@ class HaWebRtcPlayer extends LitElement {
     this._remoteStream = new MediaStream();
     this._peerConnection.ontrack = this._addTrack;
 
-    this._peerConnection.addTransceiver("audio", { direction: "recvonly" });
+    if (this._localReturnAudioTrack) {
+      this._microphoneSender = this._peerConnection.addTransceiver(
+        this._localReturnAudioTrack,
+        { direction: "sendrecv" }
+      ).sender;
+    } else {
+      this._peerConnection.addTransceiver("audio", { direction: "recvonly" });
+    }
     this._peerConnection.addTransceiver("video", { direction: "recvonly" });
   }
 
   private _startNegotiation = async () => {
-    if (!this._peerConnection) {
+    const peerConnection = this._peerConnection;
+    if (!peerConnection) {
       return;
     }
 
@@ -219,9 +392,9 @@ class HaWebRtcPlayer extends LitElement {
     this._logEvent("start createOffer", offerOptions);
 
     const offer: RTCSessionDescriptionInit =
-      await this._peerConnection.createOffer(offerOptions);
+      await peerConnection.createOffer(offerOptions);
 
-    if (!this._peerConnection) {
+    if (this._peerConnection !== peerConnection) {
       return;
     }
 
@@ -229,9 +402,9 @@ class HaWebRtcPlayer extends LitElement {
 
     this._logEvent("start setLocalDescription");
 
-    await this._peerConnection.setLocalDescription(offer);
+    await peerConnection.setLocalDescription(offer);
 
-    if (!this._peerConnection || !this.entityid) {
+    if (this._peerConnection !== peerConnection || !this.entityid) {
       return;
     }
 
@@ -250,17 +423,19 @@ class HaWebRtcPlayer extends LitElement {
 
     this._logEvent("start webRtcOffer", offer_sdp);
 
-    try {
-      this._unsub = webRtcOffer(
-        this._connection,
-        this.entityid,
-        offer_sdp,
-        (event) => this._handleOfferEvent(event)
-      );
-    } catch (err: any) {
-      this._error = "Failed to start WebRTC stream: " + err.message;
-      this._cleanUp();
-    }
+    this._unsub = webRtcOffer(
+      this._connection,
+      this.entityid,
+      offer_sdp,
+      (event) => this._handleOfferEvent(peerConnection, event)
+    );
+    this._unsub.catch((err) => {
+      if (this._peerConnection !== peerConnection) {
+        return;
+      }
+      this._unsub = undefined;
+      this._failStart({ type: "start_failed", message: err.message });
+    });
   };
 
   private _iceConnectionStateChanged = () => {
@@ -273,8 +448,12 @@ class HaWebRtcPlayer extends LitElement {
     }
   };
 
-  private async _handleOfferEvent(event: WebRtcOfferEvent) {
-    if (!this.entityid) {
+  private async _handleOfferEvent(
+    peerConnection: RTCPeerConnection,
+    event: WebRtcOfferEvent
+  ) {
+    // Ignore events of a subscription that belongs to a superseded start
+    if (this._peerConnection !== peerConnection || !this.entityid) {
       return;
     }
     if (event.type === "session") {
@@ -293,7 +472,7 @@ class HaWebRtcPlayer extends LitElement {
     if (event.type === "answer") {
       this._logEvent("answer", event.answer);
 
-      this._handleAnswer(event);
+      this._handleAnswer(peerConnection, event);
     }
     if (event.type === "candidate") {
       this._logEvent("remote ice candidate", event.candidate);
@@ -309,15 +488,14 @@ class HaWebRtcPlayer extends LitElement {
                 sdpMid: "0",
               });
 
-        await this._peerConnection?.addIceCandidate(candidate);
+        await peerConnection.addIceCandidate(candidate);
       } catch (err: any) {
         // eslint-disable-next-line no-console
         console.error(err);
       }
     }
     if (event.type === "error") {
-      this._error = "Failed to start WebRTC stream: " + event.message;
-      this._cleanUp();
+      this._failStart({ type: "start_failed", message: event.message });
     }
   }
 
@@ -360,11 +538,11 @@ class HaWebRtcPlayer extends LitElement {
     this._videoEl.srcObject = this._remoteStream;
   };
 
-  private async _handleAnswer(event: WebRtcAnswer) {
-    if (
-      !this._peerConnection?.signalingState ||
-      ["stable", "closed"].includes(this._peerConnection.signalingState)
-    ) {
+  private async _handleAnswer(
+    peerConnection: RTCPeerConnection,
+    event: WebRtcAnswer
+  ) {
+    if (["stable", "closed"].includes(peerConnection.signalingState)) {
       return;
     }
 
@@ -375,15 +553,58 @@ class HaWebRtcPlayer extends LitElement {
     });
     try {
       this._logEvent("start setRemoteDescription", remoteDesc);
-      await this._peerConnection.setRemoteDescription(remoteDesc);
+      await peerConnection.setRemoteDescription(remoteDesc);
     } catch (err: any) {
-      this._error = "Failed to connect WebRTC stream: " + err.message;
-      this._cleanUp();
+      // Closing a superseded connection rejects its pending operations
+      if (this._peerConnection !== peerConnection) {
+        return;
+      }
+      this._failStart({ type: "connect_failed", message: err.message });
     }
     this._logEvent("end setRemoteDescription");
   }
 
+  private async _getMicrophoneTrack(): Promise<MediaStreamTrack | undefined> {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      return stream.getAudioTracks()[0];
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === "NotAllowedError") {
+        this._microphoneDenied = true;
+        return undefined;
+      }
+      // A missing or busy microphone should not replace the running video
+      showToast(this, {
+        message: this._localize(
+          "ui.components.web-rtc-player.microphone_failed",
+          { message: err instanceof Error ? err.message : String(err) }
+        ),
+      });
+      return undefined;
+    }
+  }
+
+  private _failStart(error: WebRtcPlayerError) {
+    // The camera can reject the microphone, keep the video running without it
+    if (this._localReturnAudioTrack && this._microphoneConnecting) {
+      showToast(this, {
+        message: this._localize(
+          "ui.components.web-rtc-player.microphone_connect_failed",
+          { message: error.message ?? "" }
+        ),
+      });
+      this._startWebRtc();
+      return;
+    }
+    this._error = error;
+    this._cleanUp();
+  }
+
   private _cleanUp() {
+    this._cleanUpCount++;
+    this._microphoneRequest++;
     if (this._remoteStream) {
       this._remoteStream.getTracks().forEach((track) => {
         track.stop();
@@ -391,8 +612,15 @@ class HaWebRtcPlayer extends LitElement {
 
       this._remoteStream = undefined;
     }
+    if (this._localReturnAudioTrack || this._microphoneConnecting) {
+      this._localReturnAudioTrack?.stop();
+      this._localReturnAudioTrack = undefined;
+      this._microphoneConnecting = false;
+      this._fireMicrophoneChanged();
+    }
     const videoEl = this._videoEl;
     if (videoEl) {
+      videoEl.srcObject = null;
       videoEl.removeAttribute("src");
       videoEl.load();
     }
@@ -409,11 +637,16 @@ class HaWebRtcPlayer extends LitElement {
       this._peerConnection.onsignalingstatechange = null;
 
       this._peerConnection = undefined;
+      this._microphoneSender = undefined;
 
       this._logEvent("stopped");
       this._stopTimer();
     }
-    this._unsub?.then((unsub) => unsub());
+    // A rejected subscription is already handled in _startNegotiation
+    this._unsub?.then(
+      (unsub) => unsub(),
+      () => undefined
+    );
     this._unsub = undefined;
     this._sessionId = undefined;
     this._candidatesList = [];
@@ -433,6 +666,18 @@ class HaWebRtcPlayer extends LitElement {
 
     this._logEvent("loadedData", data);
     this._stopTimer();
+
+    // Without a track the microphone is still waiting for permission
+    if (this._microphoneConnecting && this._localReturnAudioTrack) {
+      this._microphoneConnecting = false;
+      this._fireMicrophoneChanged();
+    }
+  }
+
+  private _videoResized() {
+    if (this._videoEl.videoWidth && this._videoEl.videoHeight) {
+      this._reconnectPoster = undefined;
+    }
   }
 
   private _startTimer() {
@@ -441,18 +686,25 @@ class HaWebRtcPlayer extends LitElement {
     }
     // eslint-disable-next-line no-console
     console.time("WebRTC");
+    this._timerRunning = true;
   }
 
   private _stopTimer() {
     if (!__DEV__) {
       return;
     }
+    this._timerRunning = false;
     // eslint-disable-next-line no-console
     console.timeEnd("WebRTC");
   }
 
   private _logEvent(msg: string, ...args: unknown[]) {
     if (!__DEV__) {
+      return;
+    }
+    if (!this._timerRunning) {
+      // eslint-disable-next-line no-console
+      console.log("WebRTC:", msg, ...args);
       return;
     }
     // eslint-disable-next-line no-console
@@ -465,9 +717,23 @@ class HaWebRtcPlayer extends LitElement {
       display: block;
     }
 
+    :host {
+      position: relative;
+    }
+
     video {
       width: 100%;
       max-height: var(--video-max-height, calc(100vh - 97px));
+    }
+
+    .reconnecting {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0, 0, 0, 0.4);
+      --ha-spinner-indicator-color: white;
     }
   `;
 }
@@ -475,5 +741,8 @@ class HaWebRtcPlayer extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-web-rtc-player": HaWebRtcPlayer;
+  }
+  interface HASSDomEvents {
+    "microphone-changed": { state: WebRtcMicrophoneState };
   }
 }

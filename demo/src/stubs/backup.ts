@@ -39,6 +39,7 @@ const backupInfo: BackupInfo = {
     },
   ],
   agent_errors: {},
+  agent_error_translations: {},
   last_attempted_automatic_backup: recent,
   last_completed_automatic_backup: recent,
   last_action_event: { manager_state: "idle" },
