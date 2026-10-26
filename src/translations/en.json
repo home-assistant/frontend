@@ -4571,7 +4571,7 @@
             }
           },
           "delete_source": "Are you sure you want to remove this source?",
-          "save_config_failed": "Failed to save config {error}",
+          "save_config_failed": "Failed to save config: {error}",
           "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
           "grid": {
             "title": "Electricity grid",
