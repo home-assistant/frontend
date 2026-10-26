@@ -1,4 +1,5 @@
 import type { ContextType } from "@lit/context";
+import { mdiContentCopy } from "@mdi/js";
 import { dump } from "js-yaml";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -9,6 +10,7 @@ import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-yaml-editor";
 import {
   configContext,
@@ -79,6 +81,14 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
         .headerTitle=${name}
         .headerSubtitle=${`${call.domain}.${call.service}`}
       >
+        <ha-icon-button
+          slot="headerActionItems"
+          .label=${localize(
+            "ui.panel.config.tools.tabs.action_history.copy_yaml"
+          )}
+          .path=${mdiContentCopy}
+          @click=${this._copyYaml}
+        ></ha-icon-button>
         <dl>
           <dt>${localize("ui.panel.config.tools.tabs.action_history.time")}</dt>
           <dd>
@@ -141,13 +151,6 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
                 `
               : nothing
           }
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this._copyYaml}
-          >
-            ${localize("ui.panel.config.tools.tabs.action_history.copy_yaml")}
-          </ha-button>
           <ha-button slot="primaryAction" @click=${this.closeDialog}>
             ${localize("ui.common.close")}
           </ha-button>
