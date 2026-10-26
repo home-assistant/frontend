@@ -207,7 +207,6 @@ export class HuiDialogEditCard
         .preventScrimClose=${this.isEffectiveDirtyState}
         @keydown=${this._ignoreKeydown}
         @closed=${this._dialogClosed}
-        @opened=${this._opened}
       >
         <ha-icon-button
           slot="headerNavigationIcon"
@@ -356,10 +355,6 @@ export class HuiDialogEditCard
     return this._params && this._guiModeAvailable
       ? { Y: () => this._toggleMode() }
       : {};
-  }
-
-  private _opened() {
-    this._cardEditorEl?.focusYamlEditor();
   }
 
   private _cardConfigInSection = memoizeOne(

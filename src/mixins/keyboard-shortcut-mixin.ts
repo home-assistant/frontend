@@ -23,7 +23,10 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
   class extends superClass {
     private _keydownEvent = (event: KeyboardEvent) => {
       const supportedShortcuts = this.supportedShortcuts();
-      const key = normalizeShortcutKey(event);
+      const key =
+        event.shiftKey && event.key.length > 1
+          ? event.key.toUpperCase()
+          : normalizeShortcutKey(event);
       if (
         (event.ctrlKey || event.metaKey) &&
         !event.altKey &&
