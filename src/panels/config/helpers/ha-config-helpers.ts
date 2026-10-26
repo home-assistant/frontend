@@ -1516,9 +1516,9 @@ ${rejected
       return;
     }
 
-    const config = (await HELPERS_CRUD[helper.type].fetch(this.hass)).find(
-      (item) => item.id === entityReg.unique_id
-    );
+    const config = (
+      await HELPERS_CRUD[helper.type].fetch(this.hass).catch(() => [])
+    ).find((item) => item.id === entityReg.unique_id);
     if (!config) {
       showAlertDialog(this, {
         text: this.hass.localize(
