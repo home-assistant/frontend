@@ -19,7 +19,6 @@ class StateCardConfigurator extends LitElement {
     return html`
       <div class="horizontal justified layout">
         <state-info
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info>

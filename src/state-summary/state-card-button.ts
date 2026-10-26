@@ -26,7 +26,6 @@ export class StateCardButton extends LitElement {
     return html`
       <div class="horizontal justified layout">
         <state-info
-          .hass=${this.hass}
           .stateObj=${stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
