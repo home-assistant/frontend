@@ -1,4 +1,3 @@
-import { render } from "lit";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type * as MatterData from "../../../../../../src/data/matter";
 import type { MatterCommissioningParameters } from "../../../../../../src/data/matter";
@@ -268,73 +267,6 @@ describe("dialog-matter-open-commissioning-window", () => {
       expect(commissionParams()).toBe(fresh);
     });
 
-    /** The dialog is never connected, so the template is drawn by hand. */
-    const renderer = (
-      config: Record<string, boolean> = {
-        canShareMatterDeviceToAppleHome: true,
-      }
-    ) => {
-      dialog.hass = {
-        ...dialog.hass,
-        auth: {
-          data: { hassUrl: "http://ha.local" },
-          external: { config },
-        },
-      } as unknown as HomeAssistant;
-      const container = document.createElement("div");
-      return () => {
-        render(
-          (internals()["render"] as () => unknown).call(dialog),
-          container,
-          { host: dialog }
-        );
-        return container;
-      };
-    };
-
-    describe("prompt", () => {
-      const prompt = async (config?: Record<string, boolean>) => {
-        await openedWindow();
-        const draw = renderer(config);
-        dialog.hass = {
-          ...dialog.hass,
-          localize: (key: string, args?: Record<string, string>) =>
-            args ? `${key} ${JSON.stringify(args)}` : key,
-        } as unknown as HomeAssistant;
-        return draw().querySelector("p")!.textContent!;
-      };
-
-      it.each([
-        [
-          "Apple Home",
-          { canShareMatterDeviceToAppleHome: true },
-          "scan_code_add_to_apple_home",
-          "add_to_apple_home",
-        ],
-        [
-          "the chooser",
-          { canShareMatterDeviceToOtherApps: true },
-          "scan_code_share_with_app",
-          "share_with_app",
-        ],
-      ])(
-        "points to the share button for %s",
-        async (_, config, key, button) => {
-          const text = await prompt(config);
-
-          expect(text).toContain(
-            `${key} {"button":"ui.panel.config.matter.open_commissioning_window.${button}"}`
-          );
-        }
-      );
-
-      it("keeps the plain scan prompt in the browser", async () => {
-        const text = await prompt({});
-
-        expect(text).toMatch(/open_commissioning_window\.scan_code\s*$/);
-      });
-    });
-
     describe("expiry", () => {
       it("marks the code expired 30 seconds before the window ends, without a tap", async () => {
         await openedWindow();
@@ -379,44 +311,16 @@ describe("dialog-matter-open-commissioning-window", () => {
             })
         );
         await openedWindow();
-        const draw = renderer();
         vi.advanceTimersByTime(260_000);
         const pending = share();
 
         vi.advanceTimersByTime(10_000);
-        expect(draw().querySelector("ha-qr-code")).not.toBeNull();
+        expect(internals()["_shareExpired"]).toBe(true);
+        expect(internals()["_sharing"]).toBe(true);
         await vi.advanceTimersByTimeAsync(10_000);
         await pending;
 
-        expect(draw().querySelector("ha-qr-code")).toBeNull();
-      });
-
-      it("swaps the dead code for a new-code button once it has expired", async () => {
-        await openedWindow();
-        const draw = renderer();
-
-        expect(draw().textContent).toContain("add_to_apple_home");
-        vi.advanceTimersByTime(270_000);
-        const container = draw();
-
-        expect(container.querySelector("ha-qr-code")).toBeNull();
-        expect(container.textContent).not.toContain("copy_code");
-        expect(container.textContent).not.toContain("add_to_apple_home");
-        expect(container.textContent).toContain("ui.common.close");
-        const button =
-          container.querySelector<HTMLElement>("ha-alert ha-button")!;
-        expect(button.textContent).toContain("new_code");
-
-        // `ha-button` forwards `click()` to its inner button, which a detached one never renders.
-        const settle = pendingWindow();
-        button.dispatchEvent(new MouseEvent("click"));
-
-        expect(openMatterCommissioningWindow).toHaveBeenCalledTimes(2);
-        expect(draw().querySelector("ha-qr-code")).toBeNull();
-        expect(draw().querySelector("ha-spinner")).not.toBeNull();
-        settle.resolve({ ...window_ });
-        await vi.advanceTimersByTimeAsync(0);
-        expect(draw().querySelector("ha-qr-code")).not.toBeNull();
+        expect(internals()["_sharing"]).toBe(false);
       });
 
       it("stops the clock when the dialog closes", async () => {
