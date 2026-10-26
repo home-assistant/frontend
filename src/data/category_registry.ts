@@ -53,23 +53,23 @@ export const subscribeCategoryRegistry = (
   );
 
 export const createCategoryRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   scope: string,
   values: CategoryRegistryEntryMutableParams
 ) =>
-  hass.callWS<CategoryRegistryEntry>({
+  callWS<CategoryRegistryEntry>({
     type: "config/category_registry/create",
     scope,
     ...values,
   });
 
 export const updateCategoryRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   scope: string,
   category_id: string,
   updates: Partial<CategoryRegistryEntryMutableParams>
 ) =>
-  hass.callWS<CategoryRegistryEntry>({
+  callWS<CategoryRegistryEntry>({
     type: "config/category_registry/update",
     scope,
     category_id,
@@ -77,11 +77,11 @@ export const updateCategoryRegistryEntry = (
   });
 
 export const deleteCategoryRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   scope: string,
   category_id: string
 ) =>
-  hass.callWS({
+  callWS({
     type: "config/category_registry/delete",
     scope,
     category_id,

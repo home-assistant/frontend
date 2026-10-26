@@ -764,7 +764,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-categories
-          .hass=${this.hass}
           scope="helpers"
           .value=${this._filters["ha-filter-categories"]}
           @data-table-filter-changed=${this._filterChanged}
@@ -1550,7 +1549,7 @@ ${rejected
       scope: "helpers",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
-          this.hass,
+          this.hass.callWS,
           "helpers",
           values
         );
