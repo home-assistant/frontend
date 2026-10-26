@@ -103,7 +103,9 @@ export const resolveFanSpeedStyle = (
 export const isNumberedFanSpeed = (speed: FanSpeed): speed is `${number}` =>
   !isNaN(Number(speed));
 
-// Narrowest button that still fits the off icon or a one-digit speed.
+// Narrowest button that still fits the off icon or a one-digit speed. With it,
+// off and 6 speeds (154px) fit as buttons in a half-width tile, which is 172px
+// wide on desktop and 160px on a 375px wide phone.
 const FAN_SPEED_BUTTON_MIN_WIDTH = 22;
 
 // Two-digit speeds need a little more room.

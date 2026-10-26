@@ -472,7 +472,7 @@ const CONFIGS = [
     },
   },
   {
-    heading: "Fan speed feature (6 speeds)",
+    heading: "Fan speed feature (6 speeds, slider by default)",
     config: {
       type: "tile",
       entity: "fan.six_speed_fan",
@@ -525,7 +525,8 @@ const CONFIGS = [
     },
   },
   {
-    heading: "Fan speed feature (half width, buttons style)",
+    heading:
+      "Fan speed feature (half width, buttons fall back to a slider when they do not fit)",
     config: {
       type: "grid",
       columns: 2,

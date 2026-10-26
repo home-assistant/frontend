@@ -88,10 +88,8 @@ describe("computeFanSpeedButtonsMinWidth", () => {
   const minWidth = (step: number) =>
     computeFanSpeedButtonsMinWidth(computeFanSpeeds(fan(step))!);
 
-  it("fits off and 6 speeds in a half-width card", () => {
-    // A half-width tile feature is 160px wide on a 375px wide phone.
-    expect(minWidth(100 / 6)).toBe(154);
-    expect(minWidth(100 / 6)).toBeLessThanOrEqual(160);
+  it("needs 22px per button for one-digit speeds", () => {
+    expect(minWidth(100 / 6)).toBe(7 * 22);
   });
 
   it("needs more room for two-digit speeds", () => {

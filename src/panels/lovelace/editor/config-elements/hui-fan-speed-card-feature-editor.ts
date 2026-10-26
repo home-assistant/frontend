@@ -134,7 +134,7 @@ export class HuiFanSpeedCardFeatureEditor
   private _computeHelperCallback = (
     schema: SchemaUnion<ReturnType<typeof this._schema>>
   ) =>
-    this._stateObj && !supportsFanSpeedStyleChoice(this._stateObj)
+    schema.disabled
       ? undefined
       : this._localize(
           `ui.panel.lovelace.editor.features.types.fan-speed.${schema.name}_helper`
