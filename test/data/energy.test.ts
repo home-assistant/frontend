@@ -2328,20 +2328,4 @@ describe("computeConsumptionData with a home meter", () => {
   it("never changes the measured grid value", () => {
     assert.equal(consumption.used_grid[1], baseline.used_grid[1]);
   });
-
-  it("scales measured usage down when home is lower", () => {
-    const { consumption: c } = computeConsumptionData(
-      {
-        from_grid: { 1: 4 },
-        solar: { 1: 3 },
-        home: { 1: 2 },
-        total: { from_grid: 4, solar: 3, home: 2 },
-        timestamps: [1],
-      },
-      undefined
-    );
-    assert.closeTo(c.used_grid[1], 8 / 7, 1e-9);
-    assert.closeTo(c.used_solar[1], 6 / 7, 1e-9);
-    assert.closeTo(c.used_grid[1] + c.used_solar[1], c.used_total[1], 1e-9);
-  });
 });

@@ -68,6 +68,7 @@ export function validateEnergyCollectionKey(key: string | undefined) {
     );
   }
 }
+
 export const emptyGridSourceEnergyPreference =
   (): GridSourceTypeEnergyPreference => ({
     type: "grid",
@@ -1721,6 +1722,7 @@ const computeConsumptionDataPartial = (
       to_battery: toBattery && (toBattery[t] ?? 0),
       from_battery: fromBattery && (fromBattery[t] ?? 0),
     });
+
     const usedTotal = hasHome ? Math.max(homeUsed, 0) : used_total;
     outData.used_total[t] = usedTotal;
     total.used_total += usedTotal;

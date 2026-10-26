@@ -252,6 +252,7 @@ export class HuiPowerSourcesGraphCard
     if (!this.isConnected) {
       return;
     }
+
     const result = generatePowerSourcesGraphData({
       localize: this._i18n.localize,
       formatPower: this._formatPower,

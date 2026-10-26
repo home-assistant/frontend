@@ -319,6 +319,7 @@ export function generatePowerSourcesGraphData(
 
   const start = energyData.start;
   const end = energyData.end || endOfToday();
+
   const chartData = fillLineGaps(datasets);
 
   const homeStats = homeStatId
