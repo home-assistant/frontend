@@ -112,7 +112,7 @@ export class HaImageRegionSelector extends LitElement {
   // The corners while a drag is in progress, before they are committed.
   @state() private _draft?: ImageRegionPoint[];
 
-  // Set when a validity check failed, until the value changes.
+  // Set when a validity check failed, until the value or config changes.
   @state() private _showValidation = false;
 
   @query(".frame") private _frame?: HTMLElement;
@@ -163,7 +163,8 @@ export class HaImageRegionSelector extends LitElement {
   }
 
   public reportValidity(): boolean {
-    const valid = !this._validationErrorKey;
+    // Like a disabled native input, a disabled selector is always valid.
+    const valid = this.disabled || !this._validationErrorKey;
     this._showValidation = !valid;
     return valid;
   }
@@ -218,6 +219,7 @@ export class HaImageRegionSelector extends LitElement {
     if (
       changedProps.has("value") ||
       changedProps.has("required") ||
+      changedProps.has("disabled") ||
       changedProps.has("selector")
     ) {
       this._showValidation = false;
