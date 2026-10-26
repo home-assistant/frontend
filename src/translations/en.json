@@ -2053,6 +2053,7 @@
             "update": "Update favorite with current state",
             "apply": "Apply favorite: {value}",
             "select": "Select favorite: {value}",
+            "deselect": "Deselect favorite: {value}",
             "delete": "Delete favorite {number}",
             "delete_confirm_title": "Delete favorite?",
             "delete_confirm_text": "This favorite will be permanently deleted.",

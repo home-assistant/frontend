@@ -135,6 +135,9 @@ const FAVORITES: Record<string, FanFavorite[]> = {
     { percentage: 30, direction: "forward", oscillating: true },
     { percentage: 60, direction: "reverse", oscillating: false },
     { percentage: 100, direction: "forward", oscillating: true },
+    // Saved before the fan supported oscillation: applying it leaves the
+    // oscillation unchanged.
+    { percentage: 45, direction: "reverse" },
   ],
   "fan.bedroom_fan": [],
 };
@@ -188,48 +191,68 @@ class DemoMoreInfoFan extends LitElement {
       })
     );
 
-    // Reproduce a scene the way the core does for fans: speed first (turning
-    // the fan on if needed), then preset, direction, and oscillation.
+    // Mirrors fan reproduce_state in the core. The calls are worked out from
+    // the state before applying and then run in order. Speed and preset are
+    // skipped when missing, but direction and oscillation are compared even
+    // then, and a missing value fails the call like the core schema does.
     const reproduceFanState = async (
       currentHass: MockHomeAssistant,
       entityId: string,
       target: { state: string } & FanEntity["attributes"]
     ) => {
       const current = currentHass.states[entityId] as FanEntity;
+      const calls: [string, Record<string, unknown>][] = [];
+
       if (target.state === "off") {
-        await hass.callService("fan", "turn_off", { entity_id: entityId });
-        return;
+        if (current.state !== "off") {
+          calls.push(["turn_off", {}]);
+        }
+      } else {
+        if (current.state !== "on") {
+          calls.push([
+            "turn_on",
+            Object.fromEntries(
+              (["percentage", "preset_mode"] as const)
+                .filter((attribute) => target[attribute] != null)
+                .map((attribute) => [attribute, target[attribute]])
+            ),
+          ]);
+        } else {
+          if (
+            target.percentage != null &&
+            target.percentage !== current.attributes.percentage
+          ) {
+            calls.push(["set_percentage", { percentage: target.percentage }]);
+          }
+          if (
+            target.preset_mode != null &&
+            target.preset_mode !== current.attributes.preset_mode
+          ) {
+            calls.push([
+              "set_preset_mode",
+              { preset_mode: target.preset_mode },
+            ]);
+          }
+        }
+        const direction = target.direction ?? null;
+        if (direction !== (current.attributes.direction ?? null)) {
+          calls.push(["set_direction", { direction }]);
+        }
+        const oscillating = target.oscillating ?? null;
+        if (oscillating !== (current.attributes.oscillating ?? null)) {
+          calls.push(["oscillate", { oscillating }]);
+        }
       }
-      if (current.state === "off") {
-        await hass.callService("fan", "turn_on", {
+
+      for (const [service, data] of calls) {
+        if (Object.values(data).includes(null)) {
+          throw new Error(`fan.${service} does not accept an empty value`);
+        }
+        // The core waits for each call before the next one.
+        // eslint-disable-next-line no-await-in-loop
+        await hass.callService("fan", service, {
           entity_id: entityId,
-          percentage: target.percentage,
-        });
-      } else if (
-        target.percentage !== undefined &&
-        target.percentage !== current.attributes.percentage
-      ) {
-        await hass.callService("fan", "set_percentage", {
-          entity_id: entityId,
-          percentage: target.percentage,
-        });
-      }
-      if (target.preset_mode !== undefined) {
-        await hass.callService("fan", "set_preset_mode", {
-          entity_id: entityId,
-          preset_mode: target.preset_mode,
-        });
-      }
-      if (target.direction !== undefined) {
-        await hass.callService("fan", "set_direction", {
-          entity_id: entityId,
-          direction: target.direction,
-        });
-      }
-      if (target.oscillating !== undefined) {
-        await hass.callService("fan", "oscillate", {
-          entity_id: entityId,
-          oscillating: target.oscillating,
+          ...data,
         });
       }
     };

@@ -260,16 +260,6 @@ export const normalizeFanFavorites = (
       favorite.percentage <= 100
   );
 
-// Target state for scene.apply. The core reproduces it in order: speed (or
-// turn on), then direction, then oscillation, skipping values already set.
-export const computeFanFavoriteSceneState = (
-  stateObj: FanEntity,
-  favorite: FanFavorite
-): { state: "on" } & FanFavorite => ({
-  state: "on",
-  ...filterFanFavorite(stateObj, favorite),
-});
-
 export type FanSnapshot = {
   state: string;
 } & Pick<
@@ -277,8 +267,41 @@ export type FanSnapshot = {
   "percentage" | "preset_mode" | "direction" | "oscillating"
 >;
 
-// State to restore after editing favorites. Missing values are left out:
-// reproduce_state skips them and leaves the attribute unchanged.
+// The core reproduces a fan state in order: speed (or turn on), then
+// direction, then oscillation. Unlike speed and preset, it compares direction
+// and oscillation even when the target leaves them out, and then calls the
+// service with None, which fails. Fill them in from the current state so
+// that a missing value means "leave unchanged".
+export const completeFanSceneState = <T extends FanSnapshot>(
+  current: FanEntity,
+  target: T
+): T => {
+  if (target.state !== "on") {
+    return target;
+  }
+  const completed = { ...target };
+  const { direction, oscillating } = current.attributes;
+  if (completed.direction === undefined && direction != null) {
+    completed.direction = direction;
+  }
+  if (completed.oscillating === undefined && oscillating != null) {
+    completed.oscillating = oscillating;
+  }
+  return completed;
+};
+
+// Target state for scene.apply.
+export const computeFanFavoriteSceneState = (
+  stateObj: FanEntity,
+  favorite: FanFavorite
+): FanSnapshot =>
+  completeFanSceneState(stateObj, {
+    state: "on",
+    ...filterFanFavorite(stateObj, favorite),
+  });
+
+// State to restore after editing favorites. Missing values are left out;
+// pass the result through completeFanSceneState before applying it.
 export const computeFanSnapshot = (
   stateObj: FanEntity
 ): FanSnapshot | undefined => {

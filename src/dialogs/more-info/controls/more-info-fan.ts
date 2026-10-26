@@ -151,7 +151,12 @@ class MoreInfoFan extends LitElement {
     if (
       (changedProps.has("editMode") && !this.editMode) ||
       (changedProps.has("stateObj") &&
-        changedProps.get("stateObj")?.entity_id !== this.stateObj?.entity_id)
+        changedProps.get("stateObj")?.entity_id !== this.stateObj?.entity_id) ||
+      // Another client removed favorites: the selection no longer exists.
+      (changedProps.has("entry") &&
+        this._selectedFavoriteIndex !== undefined &&
+        this._selectedFavoriteIndex >=
+          normalizeFanFavorites(this.entry?.options?.fan?.favorites).length)
     ) {
       this._selectedFavoriteIndex = undefined;
     }

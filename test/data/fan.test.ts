@@ -10,8 +10,10 @@ import {
 } from "../../src/data/translation";
 import {
   FanEntityFeature,
+  completeFanSceneState,
   computeFanFavoriteFromState,
   computeFanFavoriteSaveBlocker,
+  computeFanFavoriteSceneState,
   computeFanSnapshot,
   computeFanSpeedIcon,
   computeFanSpeeds,
@@ -371,5 +373,68 @@ describe("formatFanFavorite", () => {
         i18n
       )
     ).toBe("High and Oscillation off");
+  });
+});
+
+// The core compares direction and oscillation even when the target leaves
+// them out, then calls the service with None, which fails. These tests
+// protect the values filled in to prevent that.
+describe("computeFanFavoriteSceneState", () => {
+  it("keeps the current values of features the favorite leaves out", () => {
+    expect(
+      computeFanFavoriteSceneState(
+        fullFan("on", {
+          percentage: 30,
+          direction: "forward",
+          oscillating: true,
+        }),
+        { percentage: 60 }
+      )
+    ).toEqual({
+      state: "on",
+      percentage: 60,
+      direction: "forward",
+      oscillating: true,
+    });
+  });
+
+  it("uses the favorite values when it has them", () => {
+    expect(
+      computeFanFavoriteSceneState(
+        fullFan("on", { direction: "forward", oscillating: true }),
+        { percentage: 60, direction: "reverse", oscillating: false }
+      )
+    ).toEqual({
+      state: "on",
+      percentage: 60,
+      direction: "reverse",
+      oscillating: false,
+    });
+  });
+
+  it("leaves out values the fan does not report", () => {
+    // Off fans report no direction: the core then compares None with None.
+    expect(
+      computeFanFavoriteSceneState(fullFan("off"), { percentage: 60 })
+    ).toEqual({ state: "on", percentage: 60 });
+  });
+});
+
+describe("completeFanSceneState", () => {
+  it("fills in a restored state that had no direction", () => {
+    expect(
+      completeFanSceneState(fullFan("on", { direction: "reverse" }), {
+        state: "on",
+        percentage: 40,
+      })
+    ).toEqual({ state: "on", percentage: 40, direction: "reverse" });
+  });
+
+  it("leaves a turn off target alone", () => {
+    expect(
+      completeFanSceneState(fullFan("on", { direction: "reverse" }), {
+        state: "off",
+      })
+    ).toEqual({ state: "off" });
   });
 });

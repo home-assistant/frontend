@@ -15,6 +15,7 @@ import {
   configContext,
   formattersContext,
   internationalizationContext,
+  statesContext,
 } from "../../../../data/context";
 import { UNAVAILABLE } from "../../../../data/entity/entity";
 import type {
@@ -25,6 +26,7 @@ import type {
 import { updateEntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { FanEntity, FanSnapshot } from "../../../../data/fan";
 import {
+  completeFanSceneState,
   computeFanFavoriteFromState,
   computeFanFavoriteSaveBlocker,
   computeFanFavoriteSceneState,
@@ -45,6 +47,7 @@ type FavoriteLocalizeKey =
   | "update"
   | "apply"
   | "select"
+  | "deselect"
   | "delete"
   | "delete_confirm_title"
   | "delete_confirm_text"
@@ -66,6 +69,10 @@ interface StoredSnapshot {
 export class HaMoreInfoFanFavorites extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
+
+  // Read when an apply runs, which can be after the dialog moved on.
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
 
   @state()
   @consume({ context: formattersContext, subscribe: true })
@@ -93,7 +100,14 @@ export class HaMoreInfoFanFavorites extends LitElement {
 
   @state() private _favorites: FanFavorite[] = [];
 
+  // An apply is running. Saving then would read the state from before it.
+  @state() private _applying = false;
+
   private _snapshot?: StoredSnapshot;
+
+  // Applies run one after the other, so a restore never interleaves with a
+  // favorite that is still being applied.
+  private _pendingApply?: Promise<void>;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -138,13 +152,39 @@ export class HaMoreInfoFanFavorites extends LitElement {
   private _restoreSnapshot(): void {
     const snapshot = this._snapshot;
     this._snapshot = undefined;
-    if (!snapshot || !this._api) {
+    if (!snapshot) {
       return;
     }
     // Best effort: the fan stays as it is if the call fails.
-    applyScene(this._api, { [snapshot.entityId]: snapshot.state }).catch(
-      () => undefined
+    this._queueApply(snapshot.entityId, (current) =>
+      completeFanSceneState(current, snapshot.state)
     );
+  }
+
+  // Waits for the previous apply, then builds the target from the state at
+  // that time. callService already shows a toast when the call fails.
+  private _queueApply(
+    entityId: string,
+    buildTarget: (current: FanEntity) => FanSnapshot
+  ): void {
+    const run = (this._pendingApply ?? Promise.resolve())
+      .then(async () => {
+        const current = this._states?.[entityId] as FanEntity | undefined;
+        if (!current || !this._api) {
+          return;
+        }
+        await applyScene(this._api, { [entityId]: buildTarget(current) });
+      })
+      .catch(() => undefined);
+
+    this._pendingApply = run;
+    this._applying = true;
+    run.then(() => {
+      if (this._pendingApply === run) {
+        this._pendingApply = undefined;
+        this._applying = false;
+      }
+    });
   }
 
   private _localizeFavorite(
@@ -192,18 +232,16 @@ export class HaMoreInfoFanFavorites extends LitElement {
       return;
     }
 
-    applyScene(this._api, {
-      [this.stateObj.entity_id]: computeFanFavoriteSceneState(
-        this.stateObj,
-        favorite
-      ),
-    });
+    this._queueApply(this.stateObj.entity_id, (current) =>
+      computeFanFavoriteSceneState(current, favorite)
+    );
   }
 
   private async _saveCurrentState(): Promise<void> {
     const favorite = computeFanFavoriteFromState(this.stateObj);
 
     if (
+      this._applying ||
       !favorite ||
       computeFanFavoriteSaveBlocker(
         this.stateObj,
@@ -275,7 +313,7 @@ export class HaMoreInfoFanFavorites extends LitElement {
   // Rebuilt on each render so the list rerenders when the fan state changes.
   private _renderFavorite =
     (current: FanFavorite | undefined): HaMoreInfoFavorites["renderItem"] =>
-    (item, _index, editMode) => {
+    (item, index, editMode) => {
       const favorite = item as FanFavorite;
       const value = formatFanFavorite(
         this.stateObj,
@@ -288,9 +326,14 @@ export class HaMoreInfoFanFavorites extends LitElement {
         <ha-fan-favorite-button
           .stateObj=${this.stateObj}
           .favorite=${favorite}
-          .label=${this._localizeFavorite(editMode ? "select" : "apply", {
-            value,
-          })}
+          .label=${this._localizeFavorite(
+            !editMode
+              ? "apply"
+              : index === this.selectedIndex
+                ? "deselect"
+                : "select",
+            { value }
+          )}
           .active=${Boolean(
             current && fanFavoritesEqual(this.stateObj, current, favorite)
           )}
@@ -410,7 +453,9 @@ export class HaMoreInfoFanFavorites extends LitElement {
           .isAdmin=${isAdmin}
           .addIcon=${updating ? mdiContentSaveEditOutline : mdiStarPlusOutline}
           .addLabel=${this._localizeFavorite(updating ? "update" : "save")}
-          .addDisabled=${saveBlocked || this.stateObj.state === UNAVAILABLE}
+          .addDisabled=${
+            saveBlocked || this._applying || this.stateObj.state === UNAVAILABLE
+          }
           .doneLabel=${this._i18n.localize(
             "ui.dialogs.more_info_control.exit_edit_mode"
           )}
