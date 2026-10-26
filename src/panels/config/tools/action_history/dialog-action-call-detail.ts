@@ -15,6 +15,7 @@ import "../../../../components/ha-yaml-editor";
 import {
   configContext,
   internationalizationContext,
+  servicesContext,
 } from "../../../../data/context";
 import type { LogbookActionCall } from "../../../../data/logbook";
 import { localizeTriggerSource } from "../../../../data/logbook";
@@ -22,6 +23,7 @@ import { DialogMixin } from "../../../../dialogs/dialog-mixin";
 import { showToast } from "../../../../util/toast";
 import type { LogbookCause } from "../../../logbook/logbook-entry-model";
 import { renderLogbookCauseIcon } from "../../../logbook/logbook-entry-templates";
+import type { HomeAssistant } from "../../../../types";
 import type { ActionCallDetailDialogParams } from "./show-dialog-action-call-detail";
 
 const TARGET_KEYS = new Set([
@@ -33,14 +35,21 @@ const TARGET_KEYS = new Set([
 ]);
 
 // The call as an action, like it would be written in an automation.
-const callToAction = (call: LogbookActionCall) => {
+const callToAction = (
+  call: LogbookActionCall,
+  services: HomeAssistant["services"] | undefined
+) => {
+  const service = services?.[call.domain]?.[call.service];
   const action: Record<string, unknown> = {
     action: `${call.domain}.${call.service}`,
   };
   const target: Record<string, unknown> = {};
   const data: Record<string, unknown> = {};
+  // Only actions that accept a target get one, for others (like scripts)
+  // these keys are regular fields.
+  const hasTarget = service !== undefined && "target" in service;
   for (const [key, value] of Object.entries(call.service_data)) {
-    if (TARGET_KEYS.has(key)) {
+    if (hasTarget && TARGET_KEYS.has(key)) {
       target[key] = value;
     } else {
       data[key] = value;
@@ -51,6 +60,9 @@ const callToAction = (call: LogbookActionCall) => {
   }
   if (Object.keys(data).length) {
     action.data = data;
+  }
+  if (service !== undefined && "response" in service) {
+    action.response_variable = "action_response";
   }
   return action;
 };
@@ -66,6 +78,9 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
   @state()
   @consume({ context: configContext, subscribe: true })
   private _config!: ContextType<typeof configContext>;
+
+  @consume({ context: servicesContext, subscribe: true })
+  private _services?: ContextType<typeof servicesContext>;
 
   protected render() {
     if (!this.params || !this._i18n || !this._config) {
@@ -172,7 +187,9 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
   }
 
   private async _copyYaml() {
-    await copyToClipboard(dump(callToAction(this.params!.call)));
+    await copyToClipboard(
+      dump(callToAction(this.params!.call, this._services))
+    );
     showToast(this, {
       message: this._i18n.localize("ui.common.copied_clipboard"),
     });
