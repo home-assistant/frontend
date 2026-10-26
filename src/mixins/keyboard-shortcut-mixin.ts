@@ -95,9 +95,13 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
         if (!wrapper) {
           return true;
         }
+        const root = (el as HTMLElement).getRootNode();
         return !(
           el === wrapper ||
-          (el as HTMLElement).getRootNode() === wrapper.shadowRoot
+          root === wrapper.shadowRoot ||
+          (root instanceof ShadowRoot &&
+            root.host.localName === "wa-dialog" &&
+            root.host.getRootNode() === wrapper.shadowRoot)
         );
       });
     }
