@@ -88,7 +88,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
           .hass=${this.params.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
-          .value=${this._source.stat_energy_from}
+          .value=${this._source.stat_energy_to}
           .label=${this._i18n.localize(
             "ui.panel.config.energy.home.dialog.home_energy"
           )}
@@ -105,7 +105,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
             "ui.panel.config.energy.home.dialog.display_name"
           )}
           type="text"
-          .disabled=${!this._source.stat_energy_from}
+          .disabled=${!this._source.stat_energy_to}
           .value=${this._source.name || ""}
           .placeholder=${this._hassConfig.config.location_name}
           @input=${this._nameChanged}
@@ -137,7 +137,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
           <ha-button
             @click=${this._save}
             .disabled=${
-              !this._source.stat_energy_from ||
+              !this._source.stat_energy_to ||
               (!!this.params.source && !this.isDirtyState)
             }
             slot="primaryAction"
@@ -150,7 +150,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
   }
 
   private _statisticChanged(ev: ValueChangedEvent<string>) {
-    this._source = { ...this._source!, stat_energy_from: ev.detail.value };
+    this._source = { ...this._source!, stat_energy_to: ev.detail.value };
     this._updateDirtyState(this._source);
   }
 

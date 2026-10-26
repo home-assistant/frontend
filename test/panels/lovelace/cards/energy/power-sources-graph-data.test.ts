@@ -272,7 +272,7 @@ const HOME_RATE_ID = "sensor.home_power";
 
 const homeSource = {
   type: "home",
-  stat_energy_from: "sensor.home_energy",
+  stat_energy_to: "sensor.home_energy",
   stat_rate: HOME_RATE_ID,
 } as EnergySource;
 

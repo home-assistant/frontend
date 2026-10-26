@@ -93,7 +93,7 @@ export const emptySolarEnergyPreference =
 export const emptyHomeEnergyPreference =
   (): HomeSourceTypeEnergyPreference => ({
     type: "home",
-    stat_energy_from: "",
+    stat_energy_to: "",
   });
 
 export const emptyBatteryEnergyPreference =
@@ -184,7 +184,7 @@ export interface SolarSourceTypeEnergyPreference {
 export interface HomeSourceTypeEnergyPreference {
   type: "home";
 
-  stat_energy_from: string;
+  stat_energy_to: string;
   stat_rate?: string;
   name?: string;
 }
@@ -434,8 +434,13 @@ export const getReferencedStatisticIds = (
       continue;
     }
 
-    if (source.type === "solar" || source.type === "home") {
+    if (source.type === "solar") {
       statIDs.push(source.stat_energy_from);
+      continue;
+    }
+
+    if (source.type === "home") {
+      statIDs.push(source.stat_energy_to);
       continue;
     }
 
@@ -1442,8 +1447,11 @@ const getEnergyGasUnit = (
     const kWhStatIds = new Set([
       ...prefs.device_consumption.map((device) => device.stat_consumption),
       ...prefs.energy_sources.flatMap((source) => {
-        if (source.type === "solar" || source.type === "home") {
+        if (source.type === "solar") {
           return [source.stat_energy_from];
+        }
+        if (source.type === "home") {
+          return [source.stat_energy_to];
         }
         if (source.type === "battery") {
           return [source.stat_energy_from, source.stat_energy_to];
@@ -1590,7 +1598,7 @@ const getSummedDataPartial = (
     }
 
     if (source.type === "home") {
-      statIds.home = [source.stat_energy_from];
+      statIds.home = [source.stat_energy_to];
       continue;
     }
 
@@ -2312,7 +2320,7 @@ export const downloadEnergyData = (
     .filter((s) => s.type === "home")
     .forEach((source) => {
       source = source as HomeSourceTypeEnergyPreference;
-      home_consumptions.push(source.stat_energy_from);
+      home_consumptions.push(source.stat_energy_to);
     });
 
   printCategory("home_consumption", home_consumptions, electricUnit);
