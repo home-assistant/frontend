@@ -15,7 +15,7 @@ import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-spinner";
 import { narrowViewportContext } from "../../../../../data/context";
 import type { ZHADevice } from "../../../../../data/zha";
-import { fetchZHADevice } from "../../../../../data/zha";
+import { fetchZHADevice, ZHADeviceType } from "../../../../../data/zha";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-subpage";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -274,7 +274,8 @@ class ZHADevicePage extends LitElement {
 
     if (
       device &&
-      (device.device_type === "Router" || device.device_type === "Coordinator")
+      (device.device_type === ZHADeviceType.Router ||
+        device.device_type === ZHADeviceType.Coordinator)
     ) {
       tabs.push("neighbors");
     }

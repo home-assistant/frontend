@@ -7,7 +7,7 @@ import {
 } from "@mdi/js";
 import { goBack, navigate } from "../../../../../../common/navigate";
 import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
-import { fetchZHADevice } from "../../../../../../data/zha";
+import { fetchZHADevice, ZHADeviceType } from "../../../../../../data/zha";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../../../types";
 import { showZHAReconfigureDeviceDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-reconfigure-device";
@@ -44,8 +44,8 @@ export const getZHADeviceActions = async (
 
   if (
     zhaDevice.power_source === "Mains" &&
-    (zhaDevice.device_type === "Router" ||
-      zhaDevice.device_type === "Coordinator")
+    (zhaDevice.device_type === ZHADeviceType.Router ||
+      zhaDevice.device_type === ZHADeviceType.Coordinator)
   ) {
     actions.push(
       ...[

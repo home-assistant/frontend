@@ -27,6 +27,7 @@ import {
   internationalizationContext,
 } from "../../../../../../data/context";
 import type { ZHADevice } from "../../../../../../data/zha";
+import { ZHADeviceType } from "../../../../../../data/zha";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../../resources/styles";
 import { formatAsPaddedHex } from "../functions";
@@ -132,8 +133,8 @@ export class ZHADeviceSummaryCard extends LitElement {
   private _renderDeviceActionMenu(): TemplateResult | typeof nothing {
     const canAddViaDevice =
       this.device!.power_source === "Mains" &&
-      (this.device!.device_type === "Router" ||
-        this.device!.device_type === "Coordinator");
+      (this.device!.device_type === ZHADeviceType.Router ||
+        this.device!.device_type === ZHADeviceType.Coordinator);
     const canManageDevice = !this.device!.active_coordinator;
 
     if (!canAddViaDevice && !canManageDevice) {
