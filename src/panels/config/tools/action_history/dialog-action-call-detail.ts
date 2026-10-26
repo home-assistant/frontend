@@ -47,6 +47,7 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
     }
     const { call, name, cause, user, traceUrl } = this.params;
     const localize = this._i18n.localize;
+    const canPerform = Boolean(this._services?.[call.domain]?.[call.service]);
 
     return html`
       <ha-dialog
@@ -103,39 +104,41 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
           read-only
           in-dialog
         ></ha-yaml-editor>
-        <ha-dialog-footer slot="footer">
-          ${
-            traceUrl
-              ? html`
-                  <ha-button
-                    slot="secondaryAction"
-                    appearance="plain"
-                    @click=${this._viewTrace}
-                  >
-                    ${localize("ui.components.logbook.view_trace")}
-                  </ha-button>
-                `
-              : nothing
-          }
-          ${
-            this._services?.[call.domain]?.[call.service]
-              ? html`
-                  <ha-progress-button
-                    slot="secondaryAction"
-                    appearance="plain"
-                    @click=${this._performAgain}
-                  >
-                    ${localize(
-                      "ui.panel.config.tools.tabs.action_history.perform_again"
-                    )}
-                  </ha-progress-button>
-                `
-              : nothing
-          }
-          <ha-button slot="primaryAction" @click=${this.closeDialog}>
-            ${localize("ui.common.close")}
-          </ha-button>
-        </ha-dialog-footer>
+        ${
+          traceUrl || canPerform
+            ? html`
+                <ha-dialog-footer slot="footer">
+                  ${
+                    traceUrl
+                      ? html`
+                          <ha-button
+                            slot="secondaryAction"
+                            appearance="plain"
+                            @click=${this._viewTrace}
+                          >
+                            ${localize("ui.components.logbook.view_trace")}
+                          </ha-button>
+                        `
+                      : nothing
+                  }
+                  ${
+                    canPerform
+                      ? html`
+                          <ha-progress-button
+                            slot="primaryAction"
+                            @click=${this._performAgain}
+                          >
+                            ${localize(
+                              "ui.panel.config.tools.tabs.action_history.perform_again"
+                            )}
+                          </ha-progress-button>
+                        `
+                      : nothing
+                  }
+                </ha-dialog-footer>
+              `
+            : nothing
+        }
       </ha-dialog>
     `;
   }
