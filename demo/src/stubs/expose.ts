@@ -39,6 +39,26 @@ export const mockExpose = (hass: MockHomeAssistant) => {
       expose_new: msg.assistant !== "cloud.google_assistant",
     })
   );
-  hass.mockWS("homeassistant/expose_entity", () => null);
+  hass.mockWS(
+    "homeassistant/expose_entity",
+    (msg: {
+      assistants: (keyof ExposeEntitySettings)[];
+      entity_ids: string[];
+      should_expose: boolean;
+    }) => {
+      const changedEntityIds = msg.entity_ids.filter((entityId) => {
+        const settings = (exposedEntities[entityId] ??= {});
+        let changed = false;
+        for (const assistant of msg.assistants) {
+          if (Boolean(settings[assistant]) !== msg.should_expose) {
+            changed = true;
+          }
+          settings[assistant] = msg.should_expose;
+        }
+        return changed;
+      });
+      return { changed_entity_ids: changedEntityIds };
+    }
+  );
   hass.mockWS("homeassistant/expose_new_entities/set", () => null);
 };
