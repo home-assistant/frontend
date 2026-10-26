@@ -50,6 +50,7 @@ const createIconItem = (icon: IconData, prefix: string): PickerComboBoxItem => {
 const loadIcons = async () => {
   ICONS_LOADED = true;
 
+  // @ts-ignore
   const iconList = await import("../../build/mdi/iconList.json");
   ICONS = iconList.default.map((icon) => createIconItem(icon, "mdi"));
 

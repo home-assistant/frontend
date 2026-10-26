@@ -1800,6 +1800,7 @@ export class HaCodeEditor extends ReactiveElement {
       const iconList: {
         name: string;
         keywords: string[];
+        // @ts-ignore
       }[] = (await import("../../build/mdi/iconList.json")).default;
 
       this._iconList = iconList.map((icon) => ({
