@@ -16,30 +16,8 @@ import "./ha-svg-icon";
  *
  */
 @customElement("ha-dropdown-item")
-// @ts-ignore Allow to override the private notifyParentOfOpening
 export class HaDropdownItem extends DropdownItem {
   @property({ type: Boolean, reflect: true }) selected = false;
-
-  // Webawesome only closes open sibling submenus of `wa-dropdown-item`
-  // elements, so hovering from one submenu item to another kept the first
-  // one open and highlighted.
-  // @ts-ignore
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  private override notifyParentOfOpening() {
-    // @ts-ignore
-    super.notifyParentOfOpening();
-    const siblings = this.parentElement?.children ?? [];
-    for (const sibling of siblings) {
-      if (
-        sibling !== this &&
-        sibling.localName === this.localName &&
-        sibling.getAttribute("slot") === this.getAttribute("slot") &&
-        (sibling as HaDropdownItem).submenuOpen
-      ) {
-        (sibling as HaDropdownItem).submenuOpen = false;
-      }
-    }
-  }
 
   protected renderCheckboxIcon() {
     return html`
