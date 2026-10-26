@@ -46,3 +46,6 @@ export const listSerialPortsWithUsage = (hass: { callWS: CallWS }) =>
     type: "usb/list_serial_ports",
     include_usage: true,
   });
+
+export const listSerialIntegrations = (hass: { callWS: CallWS }) =>
+  hass.callWS<string[]>({ type: "usb/list_serial_integrations" });

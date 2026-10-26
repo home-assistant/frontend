@@ -3,6 +3,7 @@ import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { DataTableSettingsController } from "../../../../../common/controllers/data-table-settings-controller";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import type { DataTableColumnContainer } from "../../../../../components/data-table/ha-data-table";
 import { extractSearchParamsObject } from "../../../../../common/url/search-params";
@@ -22,13 +23,13 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _macAddress?: string;
-
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
   @state() private _data: DHCPDiscoveryData[] = [];
+
+  private _tableSettings = new DataTableSettingsController(this, {});
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -85,7 +86,7 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
     const searchParams = extractSearchParamsObject();
     const macAddress = searchParams.mac_address;
     if (macAddress) {
-      this._macAddress = macAddress.toUpperCase();
+      this._tableSettings.showSearch(macAddress.toUpperCase());
     }
   }
 
@@ -101,7 +102,9 @@ export class DHCPConfigPanel extends SubscribeMixin(LitElement) {
         .noDataText=${this.hass.localize(
           "ui.panel.config.dhcp.no_devices_found"
         )}
-        filter=${this._macAddress || ""}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
+        sync-url
       ></hass-tabs-subpage-data-table>
     `;
   }

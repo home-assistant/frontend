@@ -231,7 +231,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
       this.readOnly = false;
       // Force dirty: set baseline to null so current config always differs
       this._initDirtyTracking(
-        { type: "deep" },
+        { type: "deep", compareKeyOrder: true },
         {
           config: null as unknown as TConfig,
           entityRegistryUpdate: this.entityRegistryUpdate,
@@ -290,7 +290,7 @@ export const AutomationScriptEditorMixin = <TConfig extends BaseEditorConfig>(
         // options were migrated.
         this.deprecatedConfigMigrated = report.deprecated;
         this._initDirtyTracking(
-          { type: "deep" },
+          { type: "deep", compareKeyOrder: true },
           {
             config: this.config,
             entityRegistryUpdate: this.entityRegistryUpdate,

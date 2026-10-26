@@ -40,11 +40,9 @@ vi.mock("../../../src/data/map_tiles", () => ({
 const emitToken = (token: string) =>
   tokenListeners.forEach((listener) => listener(token));
 
-const setRTLTextPlugin = vi.hoisted(() => vi.fn(async () => undefined));
-
 const setWorkerUrl = vi.hoisted(() => vi.fn());
 
-vi.mock("maplibre-gl", () => ({ setRTLTextPlugin, setWorkerUrl }));
+vi.mock("maplibre-gl", () => ({ setWorkerUrl }));
 
 // What the build wrote out, which loadStyle fetches instead of building.
 const COLORFUL = { palette: "colorful", shipped: "light" } as const;
@@ -57,10 +55,14 @@ const STYLE = {
   sprite: [{ id: "base", url: "/static/map/sprites/base?v=abc12345" }],
 };
 
+const rasterHandlers: Record<string, () => void> = {};
 const rasterLayer = {
   // Leaflet returns the layer from addTo, and the source chains off it.
   addTo: vi.fn(() => rasterLayer),
   redraw: vi.fn(),
+  on: vi.fn((event: string, handler: () => void) => {
+    rasterHandlers[event] = handler;
+  }),
   options: {} as Record<string, unknown>,
 };
 const leaflet = {
@@ -101,9 +103,12 @@ beforeEach(() => {
   for (const event of Object.keys(glHandlers)) {
     delete glHandlers[event];
   }
+  for (const event of Object.keys(rasterHandlers)) {
+    delete rasterHandlers[event];
+  }
   vi.stubGlobal(
     "fetch",
-    vi.fn(async () => ({ json: async () => structuredClone(STYLE) }))
+    vi.fn(async () => ({ text: async () => JSON.stringify(STYLE) }))
   );
 });
 
@@ -127,18 +132,42 @@ describe("loadStyle", () => {
     ]);
   });
 
+  // A dashboard of maps asks for the same style at once. Each still needs its
+  // own copy, because MapLibre mutates the style it is handed.
+  it("fetches a style once while in flight, but hands out separate copies", async () => {
+    let respond!: (value: unknown) => void;
+    const fetchMock = vi.fn(
+      () =>
+        new Promise((resolve) => {
+          respond = resolve;
+        })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { loadStyle } = await import("../../../src/common/map/base-layer");
+    const first = loadStyle(COLORFUL);
+    const second = loadStyle(COLORFUL);
+    respond({ text: async () => JSON.stringify(STYLE) });
+    const [a, b] = await Promise.all([first, second]);
+
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(a).toEqual(b);
+    expect(a).not.toBe(b);
+  });
+
   it("keeps the bundled sprites in the demo, with tiles and glyphs upstream", async () => {
     vi.stubGlobal("__DEMO__", true);
     vi.stubGlobal(
       "fetch",
       vi.fn(async () => ({
-        json: async () => ({
-          ...structuredClone(STYLE),
-          glyphs: "/api/map_tiles/fonts/{fontstack}/{range}.pbf",
-          sources: {
-            osm: { type: "vector", url: "/api/map_tiles/tilejson.json" },
-          },
-        }),
+        text: async () =>
+          JSON.stringify({
+            ...STYLE,
+            glyphs: "/api/map_tiles/fonts/{fontstack}/{range}.pbf",
+            sources: {
+              osm: { type: "vector", url: "/api/map_tiles/tilejson.json" },
+            },
+          }),
       }))
     );
 
@@ -198,18 +227,6 @@ describe("createBaseLayer", () => {
     expect(options.referrerPolicy).toBe("origin");
   });
 
-  // MapLibre's code has BigInt literals in it, which Babel cannot transpile
-  // away, and a worker that fails to parse is silent - so no BigInt, no vector.
-  it("falls back to raster tiles without BigInt", async () => {
-    vi.stubGlobal("BigInt", undefined);
-    const createBaseLayer = await setWebGL2(true);
-
-    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
-
-    expect(isRaster()).toBe(true);
-    expect(maplibreGL).not.toHaveBeenCalled();
-  });
-
   // The worker is an entry of the build, and the build hands over its URL.
   // Absolute, because on Cast the page is not served from the instance.
   it("points MapLibre at the built worker once, before the first map", async () => {
@@ -223,18 +240,6 @@ describe("createBaseLayer", () => {
     );
     expect(setWorkerUrl.mock.invocationCallOrder[0]).toBeLessThan(
       maplibreGL.mock.invocationCallOrder[0]
-    );
-  });
-
-  it("registers the RTL text plugin once, lazily, from our own host", async () => {
-    const createBaseLayer = await setWebGL2(true);
-    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
-    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
-
-    expect(setRTLTextPlugin).toHaveBeenCalledOnce();
-    expect(setRTLTextPlugin).toHaveBeenCalledWith(
-      `${location.origin}/static/map/mapbox-gl-rtl-text.js`,
-      true
     );
   });
 
@@ -340,7 +345,7 @@ describe("setMapStyle", () => {
 
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => ({ json: async () => structuredClone(STYLE) }))
+      vi.fn(async () => ({ text: async () => JSON.stringify(STYLE) }))
     );
     baseLayer.setMapStyle(DARK);
 
@@ -363,7 +368,7 @@ describe("setMapStyle", () => {
     );
 
     const styleResponse = (name: string) => ({
-      json: async () => ({ ...structuredClone(STYLE), name }),
+      text: async () => JSON.stringify({ ...STYLE, name }),
     });
 
     // The layer only settles once its first style resolves, so let that one
@@ -474,6 +479,20 @@ describe("WebGL context loss", () => {
     expect(isRaster()).toBe(true);
   });
 
+  // A rotation is announced once, so a layer created after it would otherwise
+  // start out on the token the vector layer was created with.
+  it("hands the raster fallback the latest token", async () => {
+    const createBaseLayer = await setWebGL2(true);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
+
+    emitToken("fresh-token");
+    glHandlers.webglcontextlost();
+    vi.runAllTimers();
+
+    const [, options = {}] = vi.mocked(leaflet.tileLayer).mock.calls[0];
+    expect(options).toMatchObject({ token: "fresh-token" });
+  });
+
   it("stops answering theme changes once it has fallen back", async () => {
     const createBaseLayer = await setWebGL2(true);
     const baseLayer = await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
@@ -567,13 +586,36 @@ describe("recovering from a refused token", () => {
     expect(glMap.setStyle).not.toHaveBeenCalled();
   });
 
+  // Nothing else on the raster path asks for a new token.
+  it("asks for a new token when a raster tile is refused", async () => {
+    const createBaseLayer = await setWebGL2(false);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
+
+    rasterHandlers.tileerror();
+
+    expect(refreshMapTilesToken).toHaveBeenCalled();
+  });
+
   it("redraws the raster layer so refused tiles are asked for again", async () => {
+    const createBaseLayer = await setWebGL2(false);
+    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
+
+    rasterHandlers.tileerror();
+    emitToken("fresh-token");
+
+    expect(rasterLayer.options.token).toBe("fresh-token");
+    expect(rasterLayer.redraw).toHaveBeenCalled();
+  });
+
+  // Rotation happens every half hour regardless, and a redraw refetches every
+  // tile on screen.
+  it("leaves a raster layer that never failed alone on rotation", async () => {
     const createBaseLayer = await setWebGL2(false);
     await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
 
     emitToken("fresh-token");
 
     expect(rasterLayer.options.token).toBe("fresh-token");
-    expect(rasterLayer.redraw).toHaveBeenCalled();
+    expect(rasterLayer.redraw).not.toHaveBeenCalled();
   });
 });

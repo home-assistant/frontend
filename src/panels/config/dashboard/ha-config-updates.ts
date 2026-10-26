@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
@@ -20,12 +21,13 @@ import "../../../components/progress/ha-progress-ring";
 import {
   areasContext,
   devicesContext,
+  formattersContext,
   fullEntitiesContext,
-  statesContext,
 } from "../../../data/context";
 import { entityRegistryByEntityId } from "../../../data/entity/entity_registry";
 import type { UpdateEntity } from "../../../data/update";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import type { HomeAssistantFormatters } from "../../../types";
 
 @customElement("ha-config-updates")
 class HaConfigUpdates extends LitElement {
@@ -35,10 +37,6 @@ class HaConfigUpdates extends LitElement {
 
   @consumeLocalize()
   private _localize!: LocalizeFunc;
-
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
 
   @state()
   @consume({ context: devicesContext, subscribe: true })
@@ -51,6 +49,16 @@ class HaConfigUpdates extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   private _entities: ContextType<typeof fullEntitiesContext> = [];
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
 
   private _renderUpdateProgress(entity: UpdateEntity) {
     if (entity.attributes.update_percentage != null) {
@@ -107,7 +115,7 @@ class HaConfigUpdates extends LitElement {
               <div slot="start">
                 <state-badge
                   .title=${
-                    entity.attributes.title || entity.attributes.friendly_name
+                    entity.attributes.title || this._formatEntityName(entity)
                   }
                   .stateObj=${entity}
                   class=${ifDefined(
@@ -127,12 +135,8 @@ class HaConfigUpdates extends LitElement {
               <span slot="headline"
                 >${
                   deviceEntry
-                    ? computeDeviceNameDisplay(
-                        deviceEntry,
-                        this._localize,
-                        this._states
-                      )
-                    : entity.attributes.friendly_name
+                    ? computeDeviceNameDisplay(deviceEntry, this._localize)
+                    : this._formatEntityName(entity)
                 }</span
               >
               <span slot="supporting-text">
@@ -171,9 +175,6 @@ class HaConfigUpdates extends LitElement {
   static get styles(): CSSResultGroup[] {
     return [
       css`
-        ha-list-item-button {
-          --md-list-item-leading-icon-size: 40px;
-        }
         ha-list-item-button ha-icon-next {
           color: var(--secondary-text-color);
           height: 24px;

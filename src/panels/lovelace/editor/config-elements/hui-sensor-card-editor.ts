@@ -116,11 +116,11 @@ export class HuiSensorCardEditor
           schema: [
             {
               name: "min",
-              selector: { number: { mode: "box" } },
+              selector: { number: { mode: "box", step: "any" } },
             },
             {
               name: "max",
-              selector: { number: { mode: "box" } },
+              selector: { number: { mode: "box", step: "any" } },
             },
           ],
         },

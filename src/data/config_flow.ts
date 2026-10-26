@@ -71,8 +71,10 @@ export const ignoreConfigFlow = (
 ) =>
   hass.callWS({ type: "config_entries/ignore_flow", flow_id: flowId, title });
 
-export const deleteConfigFlow = (hass: HomeAssistant, flowId: string) =>
-  hass.callApi("DELETE", `config/config_entries/flow/${flowId}`);
+export const deleteConfigFlow = (
+  hass: Pick<HomeAssistant, "callApi">,
+  flowId: string
+) => hass.callApi("DELETE", `config/config_entries/flow/${flowId}`);
 
 // The backend indexes a single key, and only these two exist.
 export const getConfigFlowHandlers = (

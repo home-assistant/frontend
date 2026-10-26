@@ -11,6 +11,8 @@
     "resolveJsonModule": true,
     // Babel handles transpiling and no need for declaration files
     "noEmit": true,
+    // Lets build scripts import the shared .mts workflow helpers
+    "allowImportingTsExtensions": true,
     // Caching
     "incremental": true,
     "tsBuildInfoFile": "node_modules/.cache/typescript/.tsbuildinfo",
@@ -70,9 +72,6 @@
       "lit/polyfill-support": ["./node_modules/lit/polyfill-support.js"],
       "@lit-labs/virtualizer/layouts/grid": [
         "./node_modules/@lit-labs/virtualizer/layouts/grid.js"
-      ],
-      "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver": [
-        "./node_modules/@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js"
       ],
       "@lit-labs/observers/resize-controller": [
         "./node_modules/@lit-labs/observers/resize-controller.js"

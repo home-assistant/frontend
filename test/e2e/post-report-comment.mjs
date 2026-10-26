@@ -8,6 +8,7 @@
 //   await postReportComment({ github, context, core });
 
 import { readFileSync } from "fs";
+import { withRetry } from "../../.github/scripts/github-retry.mts";
 
 const REPORT_PATH = "test/e2e/reports/combined/results.json";
 const COMMENT_MARKER = "<!-- playwright-e2e-report -->";
@@ -78,12 +79,14 @@ export default async function postReportComment({ github, context, core }) {
   const { owner, repo } = context.repo;
   const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
 
-  const comments = await github.paginate(github.rest.issues.listComments, {
-    owner,
-    repo,
-    issue_number: context.issue.number,
-    per_page: 100,
-  });
+  const comments = await withRetry("comment list", () =>
+    github.paginate(github.rest.issues.listComments, {
+      owner,
+      repo,
+      issue_number: context.issue.number,
+      per_page: 100,
+    })
+  );
   const previousComments = comments.filter(
     (comment) =>
       comment.user?.login === "github-actions[bot]" &&
@@ -128,6 +131,7 @@ export default async function postReportComment({ github, context, core }) {
     body = `${body.slice(0, MAX_BODY)}\n\n_…report truncated, see the full HTML report artifact._`;
   }
 
+  // Not retried, as a retry after GitHub created the comment would post it twice
   await github.rest.issues.createComment({
     owner,
     repo,
@@ -142,16 +146,18 @@ export default async function postReportComment({ github, context, core }) {
   const commentsToMinimize = (
     await Promise.all(
       batches.map(async (batch) => {
-        const { nodes } = await github.graphql(
-          `query($ids: [ID!]!) {
-            nodes(ids: $ids) {
-              ... on IssueComment {
-                id
-                isMinimized
+        const { nodes } = await withRetry("comment state lookup", () =>
+          github.graphql(
+            `query($ids: [ID!]!) {
+              nodes(ids: $ids) {
+                ... on IssueComment {
+                  id
+                  isMinimized
+                }
               }
-            }
-          }`,
-          { ids: batch.map((comment) => comment.node_id) }
+            }`,
+            { ids: batch.map((comment) => comment.node_id) }
+          )
         );
         return nodes.filter((node) => !node.isMinimized);
       })
@@ -160,13 +166,15 @@ export default async function postReportComment({ github, context, core }) {
 
   await Promise.all(
     commentsToMinimize.map((comment) =>
-      github.graphql(
-        `mutation($id: ID!) {
-          minimizeComment(input: { subjectId: $id, classifier: OUTDATED }) {
-            clientMutationId
-          }
-        }`,
-        { id: comment.id }
+      withRetry("comment minimize", () =>
+        github.graphql(
+          `mutation($id: ID!) {
+            minimizeComment(input: { subjectId: $id, classifier: OUTDATED }) {
+              clientMutationId
+            }
+          }`,
+          { id: comment.id }
+        )
       )
     )
   );

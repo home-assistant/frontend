@@ -93,8 +93,8 @@ export class StateHistoryChartLine extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
-  @property({ attribute: "hide-reset-button", type: Boolean })
-  public hideResetButton?: boolean;
+  @property({ attribute: "hide-zoom-controls", type: Boolean })
+  public hideZoomControls = false;
 
   @state() private _chartData: LineSeriesOption[] = [];
 
@@ -106,7 +106,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _hiddenStats = new Set<string>();
 
-  @state() private _yWidth = MIN_Y_AXIS_WIDTH;
+  @state() private _yWidth = 0;
 
   @state() private _visualMap?: VisualMapComponentOption[];
 
@@ -117,7 +117,6 @@ export class StateHistoryChartLine extends LitElement {
   protected render() {
     return html`
       <ha-chart-base
-        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
         .height=${this.height}
@@ -126,7 +125,7 @@ export class StateHistoryChartLine extends LitElement {
         @dataset-unhidden=${this._datasetUnhidden}
         @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
-        .hideResetButton=${this.hideResetButton}
+        .hideZoomControls=${this.hideZoomControls}
         .clickLabelForMoreInfo=${this.clickForMoreInfo}
         @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>

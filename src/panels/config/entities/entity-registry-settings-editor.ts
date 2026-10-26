@@ -11,6 +11,7 @@ import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -255,6 +256,8 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _noDeviceArea?: boolean;
 
+  @state() private _ownAreaWithoutName = false;
+
   private _origEntityId!: string;
 
   private _deviceClassOptions?: string[][];
@@ -272,13 +275,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     this._name = this.entry.name || this._originalName;
-    this._useDeviceName =
-      !!this._device && !(this.entry.name ?? this._originalName);
+    this._useDeviceName = !!this._device && !this._entryName;
     this._icon = this.entry.icon || "";
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
     this._origEntityId = this.entry.entity_id;
     this._areaId = this.entry.area_id;
+    this._ownAreaWithoutName = this._useDeviceName && !!this.entry.area_id;
     this._labels = this.entry.labels;
     this._entityId = this.entry.entity_id;
     this._disabledBy = this.entry.disabled_by;
@@ -483,11 +486,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 >${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.use_device_name"
                 )}
-                (${computeDeviceNameDisplay(
-                  this._device,
-                  this.hass.localize,
-                  this.hass.states
-                )})</span
+                (${computeDeviceNameDisplay(this._device, this.hass.localize)})</span
               >
               <span slot="supporting-text"
                 >${this.hass.localize(
@@ -807,7 +806,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
         domain === "calendar"
           ? html`
               <ha-color-picker
-                .hass=${this.hass}
                 .value=${this._calendarColor ?? ""}
                 .label=${this.hass.localize(
                   "ui.dialogs.entity_registry.editor.calendar_color"
@@ -1233,7 +1231,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
                 >
                 <span slot="supporting-text"
                   >${this.hass.localize(
-                    this._useDeviceArea
+                    !this._hasOwnName
                       ? "ui.dialogs.entity_registry.editor.use_device_area_required"
                       : "ui.dialogs.entity_registry.editor.change_device_settings",
                     {
@@ -1750,10 +1748,22 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   private _useDeviceNameChanged(ev: HASSDomCurrentTargetEvent<HaSwitch>): void {
     this._useDeviceName = ev.currentTarget.checked;
+    this._ownAreaWithoutName = false;
+  }
+
+  private get _hasOwnName(): boolean {
+    if (this._device && this._useDeviceName) {
+      return false;
+    }
+    return !!(this._computeName() ?? this._originalName);
+  }
+
+  private get _entryName(): string | undefined {
+    return computeEntityEntryName(this.entry);
   }
 
   private get _useDeviceArea(): boolean {
-    return !!this._device && this._useDeviceName;
+    return !!this._device && !this._hasOwnName && !this._ownAreaWithoutName;
   }
 
   private get _originalName(): string {
@@ -1779,6 +1789,9 @@ export class EntityRegistrySettingsEditor extends LitElement {
       return this.entry.name;
     }
     if (this._device && this._useDeviceName) {
+      if (!this._entryName) {
+        return this.entry.name;
+      }
       return this._originalName ? "" : null;
     }
     const name = this._name.trim();

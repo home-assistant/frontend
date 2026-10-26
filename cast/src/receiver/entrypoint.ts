@@ -19,7 +19,7 @@ const playerStylesAdded = false;
 let controls: HTMLElement | null;
 
 const setTouchControlsVisibility = (visible: boolean) => {
-  if (!castContext.getDeviceCapabilities().touch_input_supported) {
+  if (!castContext.getDeviceCapabilities()?.touch_input_supported) {
     return;
   }
   controls =
@@ -51,7 +51,7 @@ const playDummyMedia = (viewTitle?: string) => {
     clearTimeout(timeOut);
     timeOut = undefined;
   }
-  if (castContext.getDeviceCapabilities().touch_input_supported) {
+  if (castContext.getDeviceCapabilities()?.touch_input_supported) {
     timeOut = window.setTimeout(() => playDummyMedia(viewTitle), 540000); // repeat every 9 minutes to keep it active (gets deactivated after 10 minutes)
   }
 };

@@ -2,21 +2,28 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiCommentEditOutline,
   mdiDelete,
+  mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
 } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 
+import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { OptionSidebarConfig } from "../../../../data/automation";
+import { getRowNote } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import "../ha-automation-note";
 import { overflowStyles, sidebarEditorStyles } from "../styles";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import "./ha-automation-sidebar-card";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 
@@ -32,11 +39,32 @@ export default class HaAutomationSidebarOption extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
+
+  @property({ type: Number, attribute: "sidebar-key" })
+  public sidebarKey?: number;
+
+  @state() private _warnings?: string[];
+
   @query(".sidebar-editor")
-  public editor?: HaAutomationConditionEditor;
+  public editor?: HaYamlEditor;
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (!changedProperties.has("config")) {
+      return;
+    }
+    this._warnings = undefined;
+    this.yamlMode = !!this.config.yamlMode;
+    if (this.yamlMode && this.config.config.option) {
+      this.editor?.setValue(this.config.config.option);
+      this._warnings = this._checkUiSupport(this.config.config.option);
+    }
+  }
 
   protected render() {
     const disabled = this.disabled;
+
+    const note = getRowNote(this.config.note);
 
     const subtitle = this.hass.localize(
       "ui.panel.config.automation.editor.actions.type.choose.label"
@@ -54,6 +82,7 @@ export default class HaAutomationSidebarOption extends LitElement {
       .hass=${this.hass}
       .isWide=${this.isWide}
       .narrow=${this.narrow}
+      .warnings=${this._warnings}
       @wa-select=${this._handleDropdownSelect}
     >
       <span slot="title">${title}</span>
@@ -114,6 +143,21 @@ export default class HaAutomationSidebarOption extends LitElement {
                   ></span>
                 </div>
               </ha-dropdown-item>
+              <ha-dropdown-item
+                slot="menu-items"
+                value="toggle_yaml_mode"
+                .disabled=${!!this._warnings}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
+                <div class="overflow-label">
+                  ${this.hass.localize(
+                    `ui.panel.config.automation.editor.edit_${!this.yamlMode ? "yaml" : "ui"}`
+                  )}
+                  <span
+                    class="shortcut-placeholder ${isMac ? "mac" : ""}"
+                  ></span>
+                </div>
+              </ha-dropdown-item>
               <wa-divider slot="menu-items"></wa-divider>
               <ha-dropdown-item
                 slot="menu-items"
@@ -143,17 +187,48 @@ export default class HaAutomationSidebarOption extends LitElement {
               </ha-dropdown-item>
             `
       }
-
-      <div class="description">${description}</div>
       ${
-        !this.config.defaultOption && this.config.note?.trim()
+        this.yamlMode && this.config.config.option
+          ? keyed(
+              this.sidebarKey,
+              html`<ha-yaml-editor
+                class="sidebar-editor"
+                .defaultValue=${this.config.config.option}
+                .readOnly=${this.disabled}
+                @value-changed=${this._yamlChanged}
+              ></ha-yaml-editor>`
+            )
+          : html`<div class="description">${description}</div>`
+      }
+      ${
+        !this.config.defaultOption && note && !this.yamlMode
           ? html`<ha-automation-note
               @edit-note=${this.config.editNote}
-              .note=${this.config.note}
+              .note=${note}
             ></ha-automation-note>`
           : nothing
       }
     </ha-automation-sidebar-card>`;
+  }
+
+  private _yamlChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (!ev.detail.isValid) {
+      return;
+    }
+    this.config.save(ev.detail.value);
+    this._warnings = this._checkUiSupport(ev.detail.value);
+  }
+
+  private _checkUiSupport(option: unknown): string[] | undefined {
+    if (!isConfigObject(option)) {
+      return undefined;
+    }
+    return getUiSupportWarnings(
+      this.hass.localize,
+      "ha-automation-option-row",
+      option
+    );
   }
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
@@ -172,6 +247,9 @@ export default class HaAutomationSidebarOption extends LitElement {
         break;
       case "duplicate":
         this.config.duplicate();
+        break;
+      case "toggle_yaml_mode":
+        fireEvent(this, "toggle-yaml-mode", { yamlMode: !this.yamlMode });
         break;
       case "delete":
         this.config.delete();

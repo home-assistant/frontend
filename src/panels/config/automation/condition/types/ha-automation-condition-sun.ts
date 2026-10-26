@@ -65,7 +65,7 @@ export class HaSunCondition extends LitElement implements ConditionElement {
                 name: "after_offset",
                 selector: {
                   duration: {
-                    allow_negative: true,
+                    mode: "offset",
                   },
                 },
               },
@@ -96,7 +96,7 @@ export class HaSunCondition extends LitElement implements ConditionElement {
                 name: "before_offset",
                 selector: {
                   duration: {
-                    allow_negative: true,
+                    mode: "offset",
                   },
                 },
               },

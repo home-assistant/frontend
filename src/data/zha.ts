@@ -227,7 +227,10 @@ export const reconfigureNode = (
     {
       type: "zha/devices/reconfigure",
       ieee: ieeeAddress,
-    }
+    },
+    // Subscribing starts the reconfiguration, so a reconnect must not
+    // start it again.
+    { resubscribe: false }
   );
 
 export const refreshTopology = (hass: HomeAssistant): Promise<void> =>

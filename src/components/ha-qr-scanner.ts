@@ -7,7 +7,7 @@ import { customElement, property, query, state } from "lit/decorators";
 // and "qr-scanner" defaults to a suboptimal implementation if it is not available.
 // The following import makes a better implementation available that is based on a
 // WebAssembly port of ZXing:
-import { prepareZXingModule } from "barcode-detector";
+import { prepareZXingModule, ZXING_WASM_VERSION } from "barcode-detector";
 import type QrScanner from "qr-scanner";
 import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
@@ -20,6 +20,7 @@ import "./ha-button";
 import "./ha-dropdown";
 import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
+import "./ha-secure-connection-alert";
 import "./ha-spinner";
 import "./input/ha-input";
 import type { HaInput } from "./input/ha-input";
@@ -28,7 +29,8 @@ prepareZXingModule({
   overrides: {
     locateFile: (path: string, prefix: string) => {
       if (path.endsWith(".wasm")) {
-        return "/static/js/zxing_reader.wasm";
+        // Versioned, /static is cached for a month and the glue only works with its own wasm
+        return `/static/js/zxing_reader-${ZXING_WASM_VERSION}.wasm`;
       }
       return prefix + path;
     },
@@ -163,15 +165,15 @@ class HaQrScanner extends LitElement {
                   : nothing
               }
             </div>`
-        : html`<ha-alert alert-type="warning">
-              ${
-                !window.isSecureContext
-                  ? this._localize(
-                      "ui.components.qr-scanner.only_https_supported"
-                    )
-                  : this._localize("ui.components.qr-scanner.not_supported")
-              }
-            </ha-alert>
+        : html`${
+              !window.isSecureContext
+                ? html`<ha-secure-connection-alert
+                    feature="camera"
+                  ></ha-secure-connection-alert>`
+                : html`<ha-alert alert-type="warning">
+                    ${this._localize("ui.components.qr-scanner.not_supported")}
+                  </ha-alert>`
+            }
             <p>${this._localize("ui.components.qr-scanner.manual_input")}</p>
             <div class="row">
               <ha-input

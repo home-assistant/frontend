@@ -50,8 +50,18 @@ const evaluate = (expression: any, properties: Record<string, string>): any => {
       return args[0] in properties;
     case "!":
       return !evaluate(args[0], properties);
-    case "<":
-      return evaluate(args[0], properties) < evaluate(args[1], properties);
+    case "<": {
+      // Like MapLibre, comparing against a string needs a string on both sides
+      const [left, right] = args.map((arg) => evaluate(arg, properties));
+      if (typeof left !== "string" || typeof right !== "string") {
+        throw new Error("Expected value to be of type string");
+      }
+      return left < right;
+    }
+    case "coalesce":
+      return args
+        .map((arg) => evaluate(arg, properties))
+        .find((value) => value !== undefined);
     case "concat":
       return args.map((arg) => evaluate(arg, properties)).join("");
     case "format":
@@ -126,6 +136,11 @@ describe("finalizeMapStyle", () => {
     expect(evaluate(city, { name: "בני ברק" })).toBe("בני ברק");
   });
 
+  it("handles labels without a name", () => {
+    expect(() => evaluate(city, {})).not.toThrow();
+    expect(() => evaluate(street, { name_en: "Hamra Street" })).not.toThrow();
+  });
+
   it("keeps street labels on one line", () => {
     expect(
       evaluate(street, { name: "شارع الحمرا", name_en: "Hamra Street" })
@@ -135,5 +150,16 @@ describe("finalizeMapStyle", () => {
   it("does not touch other layers", () => {
     expect(textField(finalized, "label-motorway-shield")).toBe("{ref}");
     expect(finalized.layers[3]).toEqual(style().layers[3]);
+  });
+
+  it("softens the globe's edge and keeps the rest of the sky", () => {
+    const withSky = style();
+    withSky.sky = { "sky-color": "#88c", "sky-horizon-blend": 0.2 };
+
+    expect(finalizeMapStyle("colorful", withSky).sky).toEqual({
+      "sky-color": "#88c",
+      "sky-horizon-blend": 0.2,
+      "atmosphere-blend": 0.5,
+    });
   });
 });

@@ -3,6 +3,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing, svg } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isSafari } from "../../util/is_safari";
+import "../ha-svg-icon";
 import {
   BUILDING_BLOCK_ICON_SIZE,
   BUILDING_BLOCK_RADIUS,
@@ -66,17 +67,17 @@ export class HatGraphNode extends LitElement {
     const width = SPACING + NODE_SIZE;
     const size = this.buildingBlock ? BUILDING_BLOCK_SIZE : NODE_SIZE;
     const iconSize = this.buildingBlock ? BUILDING_BLOCK_ICON_SIZE : ICON_SIZE;
+    // Distance from the top of the svg to the node center (viewBox origin).
+    const centerY = this.graphStart
+      ? Math.ceil(height / 2)
+      : Math.ceil((NODE_SIZE + SPACING * 2) / 2);
     // A rotated building block is wider than its side.
     return html`
       <svg
         class=${isSafari ? "safari" : ""}
         width="${width}px"
         height="${height}px"
-        viewBox="-${Math.ceil(width / 2)} -${
-          this.graphStart
-            ? Math.ceil(height / 2)
-            : Math.ceil((NODE_SIZE + SPACING * 2) / 2)
-        } ${width} ${height}"
+        viewBox="-${Math.ceil(width / 2)} -${centerY} ${width} ${height}"
       >
         ${
           this.graphStart
@@ -134,19 +135,6 @@ export class HatGraphNode extends LitElement {
       `
               : nothing
           }
-          <g
-            class="icon-wrapper"
-            style="pointer-events: none"
-            transform="translate(-${iconSize / 2} -${iconSize / 2}) scale(${
-              iconSize / ICON_SIZE
-            })"
-          >
-            ${
-              this.iconPath
-                ? svg`<path class="icon" d=${this.iconPath}/>`
-                : svg`<foreignObject><span class="icon"><slot name="icon"></slot></span></foreignObject>`
-            }
-          </g>
           ${
             this.notEnabled
               ? svg`
@@ -162,6 +150,15 @@ export class HatGraphNode extends LitElement {
           }
         </g>
       </svg>
+      <span class="icon" style="top: ${centerY}px">
+        <slot name="icon">
+          ${
+            this.iconPath
+              ? html`<ha-svg-icon .path=${this.iconPath}></ha-svg-icon>`
+              : nothing
+          }
+        </slot>
+      </span>
     `;
   }
 
@@ -169,12 +166,12 @@ export class HatGraphNode extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
+      position: relative;
       min-width: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing));
       height: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing) + 1px);
     }
     /* The count badge overlaps the next node's connector. */
     :host([badge]) {
-      position: relative;
       z-index: 1;
     }
     :host([graph-start]) {
@@ -219,7 +216,7 @@ export class HatGraphNode extends LitElement {
     /* Not the whole node group: SVG composites group opacity as a unit, which
        would fade the error and count badges along with the rest. The body is
        left at full strength so the grey does not wash out. */
-    :host([not-enabled]) .icon-wrapper,
+    :host([not-enabled]) .icon,
     :host([not-enabled]) .strike {
       opacity: 0.6;
     }
@@ -279,15 +276,17 @@ export class HatGraphNode extends LitElement {
       font-size: var(--ha-font-size-s);
       fill: var(--text-primary-color);
     }
-    path.icon {
-      fill: var(--icon-clr);
-    }
-    foreignObject {
-      width: 24px;
-      height: 24px;
-    }
     .icon {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      pointer-events: none;
       color: var(--icon-clr);
+      --mdc-icon-size: 24px;
+    }
+    :host([building-block]) .icon {
+      --mdc-icon-size: 20px;
     }
   `;
 }

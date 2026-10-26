@@ -1,10 +1,6 @@
 import type { maplibreGL } from "@maplibre/maplibre-gl-leaflet";
 import type { Map as LeafletMap, TileLayerOptions } from "leaflet";
-import type {
-  setRTLTextPlugin,
-  setWorkerUrl,
-  StyleSpecification,
-} from "maplibre-gl";
+import type { setWorkerUrl, StyleSpecification } from "maplibre-gl";
 import { deepEqual } from "../util/deep-equal";
 import type { LeafletModuleType } from "../dom/setup-leaflet-map";
 import type { ResolvedMapStyle } from "./map-styles";
@@ -23,10 +19,6 @@ const SHIPPED_STYLES = {
   light: "/static/map/light.json",
   dark: "/static/map/dark.json",
 } as const;
-
-// Without it Arabic and Hebrew labels render reversed. Loaded by MapLibre's
-// worker, hence a URL rather than an import.
-export const RTL_TEXT_PLUGIN_URL = "/static/map/mapbox-gl-rtl-text.js";
 
 // MapLibre needs WebGL2 even for raster, so the fallback stays a Leaflet layer.
 // OSM serves no @2x variant.
@@ -78,13 +70,10 @@ export const supportsWebGL2 = (): boolean => {
 
 // The one gate for MapLibre, whether through the Leaflet adapter or the
 // engine `ha-map` drives directly. Its worker is bundled per build target
-// like the rest of it, so wherever the page runs, the worker runs too - with
-// one exception. Babel transpiles everything MapLibre is written in except
-// BigInt literals, which have no ES2017 spelling. A browser without BigInt
-// (Chromium below 67, such as Fire OS 5 tablets) cannot parse the chunk, and
-// a worker that cannot parse never reports back, hence the check up front.
-export const supportsVectorMaps = (): boolean =>
-  supportsWebGL2() && typeof BigInt === "function";
+// like the rest of it, so wherever the page runs, the worker runs too: the
+// legacy floor (Chrome 67 / Safari 15) guarantees the BigInt literals MapLibre
+// uses, which Babel cannot transpile.
+export const supportsVectorMaps = (): boolean => supportsWebGL2();
 
 // The demo has no core to proxy through. OSM sets CORS on its tiles but not on
 // its glyphs, which is why those come from VersaTiles.
@@ -106,6 +95,22 @@ const useDemoUpstream = (style: StyleSpecification): StyleSpecification => {
 // MapLibre rejects a relative sprite URL
 const absoluteSprite = (url: string) => new URL(url, location.href).href;
 
+// Shared only while in flight, or a style that failed once would never be
+// fetched again. Text rather than a parsed style: MapLibre mutates what it
+// is handed.
+const pendingStyles = new Map<string, Promise<string>>();
+
+const fetchStyle = (url: string): Promise<string> => {
+  let pending = pendingStyles.get(url);
+  if (!pending) {
+    pending = fetch(url)
+      .then((response) => response.text())
+      .finally(() => pendingStyles.delete(url));
+    pendingStyles.set(url, pending);
+  }
+  return pending;
+};
+
 export const loadStyle = async (
   mapStyle: ResolvedMapStyle
 ): Promise<StyleSpecification> => {
@@ -114,7 +119,7 @@ export const loadStyle = async (
   // Anything that does not ship is built here, from the same builder: its own
   // chunk, so a map on the default style never downloads it.
   const style: StyleSpecification = shipped
-    ? await (await fetch(shipped)).json()
+    ? JSON.parse(await fetchStyle(shipped))
     : await (
         await import("./build-map-style")
       ).buildMapStyle(
@@ -144,20 +149,6 @@ export const ensureWorkerUrl = (setUrl: typeof setWorkerUrl) => {
   }
   workerUrlSet = true;
   setUrl(new URL(__MAPLIBRE_WORKER_URL__, location.href).href);
-};
-
-// Global to MapLibre, and it throws when set twice.
-let rtlTextPluginRequested = false;
-export const ensureRTLTextPlugin = (setPlugin: typeof setRTLTextPlugin) => {
-  if (rtlTextPluginRequested) {
-    return;
-  }
-  rtlTextPluginRequested = true;
-  setPlugin(new URL(RTL_TEXT_PLUGIN_URL, location.href).href, true).catch(
-    () => {
-      // RTL labels stay reversed; everything else still renders.
-    }
-  );
 };
 
 const createVectorLayer = async (
@@ -204,6 +195,9 @@ const createVectorLayer = async (
   let latestRequest = 0;
   let vector = true;
   let refused = false;
+  // A fallback hands this to the raster layer, and a rotation that already
+  // happened is not announced again.
+  let currentToken = token;
 
   const glMap = layer.getMaplibreMap();
   let fallbackTimeout: number | undefined;
@@ -224,7 +218,7 @@ const createVectorLayer = async (
     } catch {
       // Nothing left to detach.
     }
-    createRasterLayer(leaflet, map, token);
+    createRasterLayer(leaflet, map, currentToken);
   };
 
   const scheduleSwap = () => {
@@ -291,7 +285,8 @@ const createVectorLayer = async (
 
   // Only a new token clears the refusal. A style change in between applies a
   // style that is refused just as the last one was, so it proves nothing.
-  const unsubscribeToken = subscribeMapTilesToken(() => {
+  const unsubscribeToken = subscribeMapTilesToken((newToken) => {
+    currentToken = newToken;
     if (vector && refused) {
       refused = false;
       applyStyle(requestedStyle);
@@ -327,11 +322,27 @@ const createRasterLayer = (
     } as TokenTileLayerOptions)
     .addTo(map);
 
-  // Substituted per request, so a refreshed token needs no new layer.
+  // The only sign this path gets that its token is stale. Throttled, or a
+  // tile missing for another reason asks on every pan.
+  let refused = false;
+  let lastRecovery = 0;
+  layer.on("tileerror", () => {
+    refused = true;
+    if (Date.now() - lastRecovery < RECOVERY_THROTTLE) {
+      return;
+    }
+    lastRecovery = Date.now();
+    refreshMapTilesToken();
+  });
+
+  // Substituted per request, so later tiles pick up a new token by
+  // themselves. Only the ones already cached as failures need a redraw.
   const unsubscribe = subscribeMapTilesToken((newToken) => {
     (layer.options as TokenTileLayerOptions).token = newToken;
-    // Tiles that 403'd are cached as failures; only a redraw asks again.
-    layer.redraw();
+    if (refused) {
+      refused = false;
+      layer.redraw();
+    }
   });
   map.on("unload", unsubscribe);
 
@@ -354,7 +365,6 @@ export const createBaseLayer = async (
         import("maplibre-gl"),
       ]);
       ensureWorkerUrl(maplibre.setWorkerUrl);
-      ensureRTLTextPlugin(maplibre.setRTLTextPlugin);
       vectorLayer = await createVectorLayer(
         createLayer,
         leaflet,

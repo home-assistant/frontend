@@ -1,11 +1,11 @@
-import type { HassServiceTarget } from "home-assistant-js-websocket";
+import { ContextProvider } from "@lit/context";
 import { dump } from "js-yaml";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../common/decorators/consume";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import type { Trigger } from "../../data/automation";
+import type { Trigger, TriggerCondition } from "../../data/automation";
 import { migrateAutomationTrigger } from "../../data/automation";
 import { describeCondition, describeTrigger } from "../../data/automation_i18n";
 import type { ConditionDescriptions } from "../../data/condition";
@@ -27,11 +27,20 @@ import type {
   TraceExtended,
 } from "../../data/trace";
 import type { TargetSelector } from "../../data/selector";
-import { getDataFromPath, isTriggerPath } from "../../data/trace";
+import {
+  getDataFromPath,
+  getNestedStepConfig,
+  getTracedEntityId,
+  isTriggerPath,
+} from "../../data/trace";
+import { getTraceTriggers } from "../../data/trace-tree";
 import type { TriggerDescriptions } from "../../data/trigger";
-import { getDeviceTarget } from "../../panels/config/automation/target/get_device_target";
-import { getEntityTarget } from "../../panels/config/automation/target/get_entity_target";
 import "../../panels/config/automation/target/ha-automation-row-targets";
+import {
+  automationTriggerContext,
+  getTriggerIdOptions,
+} from "../../panels/config/automation/trigger/automation-trigger-id";
+import "../../panels/config/automation/trigger/ha-automation-trigger-references";
 import "../../panels/logbook/ha-logbook-renderer";
 import type { HomeAssistant } from "../../types";
 import "../ha-alert";
@@ -39,6 +48,8 @@ import "../ha-code-editor";
 import "../ha-icon-button";
 import "../ha-tab-group";
 import "../ha-tab-group-tab";
+import { getTraceNodeTarget } from "./get_trace_node_target";
+import { childTraceLinkStyles, renderChildTraceLink } from "./trace-child-link";
 import "./hat-logbook-note";
 import type { NodeInfo } from "./hat-script-graph";
 
@@ -95,6 +106,27 @@ export class HaTracePathDetails extends LitElement {
   @state()
   @consume({ context: conditionDescriptionsContext, subscribe: true })
   private _conditionDescriptions?: ConditionDescriptions;
+
+  private _triggerProvider = new ContextProvider(this, {
+    context: automationTriggerContext,
+    initialValue: {
+      options: [],
+      showIndices: false,
+      select: () => undefined,
+      fixDuplicateIds: async () => undefined,
+      updateTriggerId: () => false,
+    },
+  });
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    if (changedProps.has("trace")) {
+      this._triggerProvider.setValue({
+        ...this._triggerProvider.value,
+        options: getTriggerIdOptions(getTraceTriggers(this.trace.config)),
+      });
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
@@ -192,20 +224,12 @@ export class HaTracePathDetails extends LitElement {
       const data: ActionTraceStep[] = paths[curPath];
 
       // Extract details from this.selected.config child properties used to add 'alias' (to headline), describeCondition and 'entity_id' (to result)
-      const nestPath = curPath
-        .substring(this.selected.path.length + 1)
-        .split("/");
-      let currentDetail: unknown = this.selected.config;
-      for (const part of nestPath) {
-        if (typeof currentDetail !== "object" || currentDetail === null) {
-          break;
-        }
-        const child = (currentDetail as Record<string, unknown>)[part];
-        if (child === undefined || typeof child === "string") {
-          break;
-        }
-        currentDetail = child;
-      }
+      const nestedPath = curPath.substring(this.selected.path.length + 1);
+      const currentDetail = getNestedStepConfig(
+        this.selected.config,
+        nestedPath
+      );
+      const tracedEntityId = getTracedEntityId(currentDetail, nestedPath);
 
       parts.push(
         data.map((trace, idx) => {
@@ -216,6 +240,7 @@ export class HaTracePathDetails extends LitElement {
             error,
             template_errors,
             changed_variables,
+            child_id,
             ...rest
           } = trace as any;
 
@@ -249,6 +274,15 @@ export class HaTracePathDetails extends LitElement {
               }
             )}
             <br />
+            ${
+              child_id
+                ? html`${renderChildTraceLink(
+                      this.hass,
+                      this._entityReg,
+                      child_id
+                    )}<br />`
+                : nothing
+            }
             ${
               error
                 ? html`<div class="error">
@@ -290,14 +324,8 @@ export class HaTracePathDetails extends LitElement {
                 : html`<pre>${dump(rest)}</pre>`
             }
             ${
-              typeof currentDetail === "object" &&
-              currentDetail !== null &&
-              "entity_id" in currentDetail &&
-              currentDetail.entity_id &&
-              curPath
-                .substring(this.selected.path.length + 1)
-                .includes("entity_id")
-                ? html`<pre>entity: ${currentDetail.entity_id}</pre>`
+              tracedEntityId
+                ? html`<pre>entity: ${tracedEntityId}</pre>`
                 : nothing
             }
           `;
@@ -353,6 +381,7 @@ export class HaTracePathDetails extends LitElement {
 
     return html`<div class="heading">
       <h2>${description}</h2>
+      ${this._renderTriggerReferences(currentDetail)}
       ${this._renderTargets(currentDetail, selectedType)}
     </div>`;
   }
@@ -366,8 +395,19 @@ export class HaTracePathDetails extends LitElement {
 
     return html`<div class="nested-condition">
       ${describeCondition(currentDetail, this.hass, this._entityReg)}
+      ${this._renderTriggerReferences(currentDetail)}
       ${this._renderTargets(currentDetail, "condition", "s")}
     </div>`;
+  }
+
+  private _renderTriggerReferences(config: any) {
+    if (config?.condition !== "trigger") {
+      return nothing;
+    }
+    return html`<ha-automation-trigger-references
+      .condition=${config as TriggerCondition}
+      .hass=${this.hass}
+    ></ha-automation-trigger-references>`;
   }
 
   private _renderTargets(
@@ -375,7 +415,7 @@ export class HaTracePathDetails extends LitElement {
     type: NodeInfo["type"],
     size: "s" | "m" = "m"
   ) {
-    const target = this._getTarget(config, type);
+    const target = getTraceNodeTarget(config, type);
     if (!target) {
       return nothing;
     }
@@ -403,31 +443,6 @@ export class HaTracePathDetails extends LitElement {
     if (type === "action" && typeof config.action === "string") {
       const [domain, service] = config.action.split(".", 2);
       return this.hass.services?.[domain]?.[service]?.target;
-    }
-    return undefined;
-  }
-
-  private _getTarget(
-    config: any,
-    type: NodeInfo["type"]
-  ): HassServiceTarget | undefined {
-    if (config.target) {
-      return config.target;
-    }
-    if (type === "trigger" || type === "condition") {
-      const element = type === "trigger" ? config.trigger : config.condition;
-      if (element === "state" || element === "numeric_state") {
-        return getEntityTarget(config.entity_id);
-      }
-      if (element === "device") {
-        return getDeviceTarget(config.device_id);
-      }
-      return undefined;
-    }
-    if (type === "action") {
-      return config.entity_id
-        ? getEntityTarget(config.entity_id)
-        : getDeviceTarget(config.device_id);
     }
     return undefined;
   }
@@ -566,6 +581,7 @@ export class HaTracePathDetails extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
+      childTraceLinkStyles,
       css`
         .padded-box {
           margin: 16px;
@@ -613,6 +629,7 @@ export class HaTracePathDetails extends LitElement {
 
         pre {
           margin: 0;
+          direction: ltr;
         }
 
         .error {
@@ -621,11 +638,14 @@ export class HaTracePathDetails extends LitElement {
 
         .error ul {
           margin: var(--ha-space-1) 0;
-          padding-left: var(--ha-space-6);
+          padding-inline-start: var(--ha-space-6);
         }
 
         ha-tab-group {
-          background-color: var(--primary-background-color);
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--ha-panel-background, var(--primary-background-color))
+          );
           border-top: 1px solid var(--divider-color);
           border-bottom: 1px solid var(--divider-color);
         }
