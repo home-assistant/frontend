@@ -28,6 +28,7 @@ import type { DateRange } from "../common/datetime/calc_date_range";
 import { calcDateRange } from "../common/datetime/calc_date_range";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { getEntityAreaId } from "../common/entity/context/get_entity_context";
+import type { EntityNameItem } from "../common/entity/entity_name_config";
 import { formatNumber } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
@@ -320,11 +321,16 @@ export interface EnergySourceByType {
 export const energySourcesByType = (prefs: EnergyPreferences) =>
   groupBy(prefs.energy_sources, (item) => item.type) as EnergySourceByType;
 
+const ENERGY_DEVICE_NAME = [
+  { type: "parent_device" },
+  { type: "device" },
+] satisfies EntityNameItem[];
+
 /**
- * Display name of a configured statistic. A name set by the user always wins;
- * otherwise the entity is named the same way the rest of the UI names
- * entities, so devices sharing an entity name stay distinguishable.
- * Statistics without an entity (external or removed) keep the statistic label.
+ * Display name of an individual device. A name set by the user always wins;
+ * otherwise the device is named like an entity without the entity part, so
+ * the energy and power sensors of one device share a name. Entities without a
+ * device and statistics without an entity keep the statistic label.
  */
 export const computeEnergyLabel = (
   states: HomeAssistant["states"],
@@ -335,6 +341,12 @@ export const computeEnergyLabel = (
 ): string => {
   if (customName) {
     return customName;
+  }
+
+  const entity = states[statisticId];
+  const deviceName = entity && formatEntityName(entity, ENERGY_DEVICE_NAME);
+  if (deviceName) {
+    return deviceName;
   }
 
   return getStatisticLabel(
