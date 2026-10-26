@@ -681,14 +681,14 @@ export class HuiEnergySourcesTableCard
             <tbody class="mdc-data-table__content">
               ${types.home?.map((source, idx) => {
                 const { hasData, energy, energyCompare } = _extractStatData(
-                  source.stat_energy_from,
+                  source.stat_energy_to,
                   null
                 );
                 return hasData
                   ? this._renderRow(
                       computedStyles,
                       "home",
-                      source.stat_energy_from,
+                      source.stat_energy_to,
                       idx,
                       energy,
                       energyCompare,
