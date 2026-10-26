@@ -204,7 +204,6 @@ class DialogAreaDetail
 
       <ha-labels-picker
         .label=${this.hass.localize("ui.components.label-picker.labels")}
-        .hass=${this.hass}
         .value=${this._labels}
         @value-changed=${this._labelsChanged}
         .placeholder=${this.hass.localize(

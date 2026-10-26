@@ -990,7 +990,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
           : nothing
       }
       <ha-labels-picker
-        .hass=${this.hass}
         .value=${this._labels}
         .disabled=${!!this.disabled}
         @value-changed=${this._labelsChanged}

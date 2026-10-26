@@ -218,7 +218,6 @@ class DialogAutomationSave
         this._visibleOptionals.includes("labels")
           ? html` <ha-labels-picker
               id="labels"
-              .hass=${this.hass}
               .value=${this._entryUpdates.labels}
               @value-changed=${this._registryEntryChanged}
             ></ha-labels-picker>`
