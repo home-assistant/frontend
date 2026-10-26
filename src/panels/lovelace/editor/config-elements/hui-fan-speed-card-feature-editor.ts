@@ -10,7 +10,7 @@ import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
-import type { FanEntity } from "../../../../data/fan";
+import type { FanEntity, FanSpeedStyle } from "../../../../data/fan";
 import {
   computeFanSpeeds,
   resolveFanSpeedStyle,
@@ -22,6 +22,12 @@ import type {
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
+
+// Speed buttons are a row of segments, not the numeric input stepper.
+const FAN_SPEED_STYLE_IMAGES: Record<FanSpeedStyle, string> = {
+  buttons: "segments",
+  slider: "slider",
+};
 
 @customElement("hui-fan-speed-card-feature-editor")
 export class HuiFanSpeedCardFeatureEditor
@@ -54,7 +60,7 @@ export class HuiFanSpeedCardFeatureEditor
             select: {
               multiple: false,
               mode: "box",
-              options: ["buttons", "slider"].map((mode) => ({
+              options: (["buttons", "slider"] as const).map((mode) => ({
                 value: mode,
                 label: localize(
                   `ui.panel.lovelace.editor.features.types.fan-speed.style_list.${mode}`
@@ -63,8 +69,8 @@ export class HuiFanSpeedCardFeatureEditor
                   `ui.panel.lovelace.editor.features.types.fan-speed.style_list.${mode}_description`
                 ),
                 image: {
-                  src: `/static/images/form/feature_style_${mode}.svg`,
-                  src_dark: `/static/images/form/feature_style_${mode}_dark.svg`,
+                  src: `/static/images/form/feature_style_${FAN_SPEED_STYLE_IMAGES[mode]}.svg`,
+                  src_dark: `/static/images/form/feature_style_${FAN_SPEED_STYLE_IMAGES[mode]}_dark.svg`,
                   flip_rtl: true,
                 },
               })),
