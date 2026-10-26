@@ -150,13 +150,7 @@ class DialogTargetDetails extends LitElement implements HassDialog {
       return true;
     }
     return ensureArray(target.entity).some((e) =>
-      filterSelectorEntities(
-        e,
-        entity,
-        this._entitySources,
-        this.hass.entities,
-        this.hass.devices
-      )
+      filterSelectorEntities(e, entity, this._entitySources)
     );
   };
 
