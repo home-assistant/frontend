@@ -184,7 +184,6 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
             this._ttsSettings
               ? html`<div class="row">
                   <ha-tts-voice-picker
-                    .hass=${this.hass}
                     .engineId=${this._ttsSettings.engine}
                     .language=${this._ttsSettings.language}
                     .value=${this._ttsSettings.voice}
