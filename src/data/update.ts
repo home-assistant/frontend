@@ -170,18 +170,22 @@ export const checkForEntityUpdates = async (
   element: HTMLElement,
   hass: HomeAssistant
 ) => {
-  const entities = filterUpdateEntities(
+  const updateEntities = filterUpdateEntities(
     hass.states,
     hass.formatEntityName,
     hass.locale.language
-  ).map((entity) => entity.entity_id);
+  );
+  const entities = updateEntities
+    .filter((entity) => !entity.attributes.restored)
+    .map((entity) => entity.entity_id);
 
   if (!entities.length) {
+    const messageKey = updateEntities.length
+      ? "update_integrations_not_loaded"
+      : "no_update_entities";
     showAlertDialog(element, {
-      title: hass.localize("ui.panel.config.updates.no_update_entities.title"),
-      text: hass.localize(
-        "ui.panel.config.updates.no_update_entities.description"
-      ),
+      title: hass.localize(`ui.panel.config.updates.${messageKey}.title`),
+      text: hass.localize(`ui.panel.config.updates.${messageKey}.description`),
       warning: true,
     });
     return;
