@@ -31,7 +31,7 @@ const exposedEntities: Record<string, ExposeEntitySettings> = {
 
 export const mockExpose = (hass: MockHomeAssistant) => {
   hass.mockWS("homeassistant/expose_entity/list", () => ({
-    exposed_entities: exposedEntities,
+    exposed_entities: structuredClone(exposedEntities),
   }));
   hass.mockWS(
     "homeassistant/expose_new_entities/get",
