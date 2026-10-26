@@ -439,6 +439,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                     .placeholder=${this.hass!.localize(
                       "ui.panel.lovelace.cards.todo-list.add_item"
                     )}
+                    enterkeyhint="done"
                     @keydown=${this._addKeyPress}
                     .disabled=${unavailable}
                   >
