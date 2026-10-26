@@ -103,26 +103,15 @@ export const resolveFanSpeedStyle = (
 export const isNumberedFanSpeed = (speed: FanSpeed): speed is `${number}` =>
   !isNaN(Number(speed));
 
-// Narrowest button that still fits the off icon or a one-digit speed. With it,
-// off and 6 speeds (154px) fit as buttons in a half-width tile, which is 172px
-// wide on desktop and 160px on a 375px wide phone.
-const FAN_SPEED_BUTTON_MIN_WIDTH = 22;
+// Minimum target size for WCAG 2.2 AA (2.5.8). Feature buttons have no gap
+// between them, so each one must be at least this wide. It also fits the off
+// icon and two-digit speeds. Off and 6 speeds (168px) fit as buttons in a
+// half-width tile, which is 172px wide on desktop and on phones from 393px.
+const FAN_SPEED_BUTTON_MIN_WIDTH = 24;
 
-// Two-digit speeds need a little more room.
-const FAN_SPEED_BUTTON_MIN_WIDTH_TWO_DIGITS = 24;
-
-// Width needed to show every speed as a button without cutting its label.
-export const computeFanSpeedButtonsMinWidth = (speeds: FanSpeed[]): number => {
-  const twoDigits = speeds.some(
-    (speed) => isNumberedFanSpeed(speed) && speed.length > 1
-  );
-  return (
-    speeds.length *
-    (twoDigits
-      ? FAN_SPEED_BUTTON_MIN_WIDTH_TWO_DIGITS
-      : FAN_SPEED_BUTTON_MIN_WIDTH)
-  );
-};
+// Width needed to show every speed as a button.
+export const computeFanSpeedButtonsMinWidth = (speeds: FanSpeed[]): number =>
+  speeds.length * FAN_SPEED_BUTTON_MIN_WIDTH;
 
 export function fanPercentageToSpeed(
   stateObj: FanEntity,

@@ -88,12 +88,8 @@ describe("computeFanSpeedButtonsMinWidth", () => {
   const minWidth = (step: number) =>
     computeFanSpeedButtonsMinWidth(computeFanSpeeds(fan(step))!);
 
-  it("needs 22px per button for one-digit speeds", () => {
-    expect(minWidth(100 / 6)).toBe(7 * 22);
-  });
-
-  it("needs more room for two-digit speeds", () => {
-    expect(minWidth(100 / 9)).toBe(10 * 22);
+  it("needs 24px per button", () => {
+    expect(minWidth(100 / 6)).toBe(7 * 24);
     expect(minWidth(10)).toBe(11 * 24);
   });
 });
