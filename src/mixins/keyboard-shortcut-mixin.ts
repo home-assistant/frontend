@@ -17,6 +17,13 @@ export const normalizeShortcutKey = (event: KeyboardEvent): string => {
   return event.shiftKey ? key.toUpperCase() : key.toLowerCase();
 };
 
+const isModalBoundary = (el: EventTarget): boolean =>
+  el instanceof HTMLElement &&
+  (el.localName === "dialog" ||
+    el.localName.endsWith("-dialog") ||
+    el.getAttribute("role") === "dialog" ||
+    el.getAttribute("aria-modal") === "true");
+
 export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
   superClass: T
 ) =>
@@ -65,21 +72,34 @@ export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(
       }
 
       const path = event.composedPath();
+      const hostIndex = path.indexOf(this);
 
-      if (path.includes(this)) {
-        return true;
+      if (hostIndex === -1) {
+        return !path.some(isModalBoundary);
       }
 
-      const insideOtherDialog = path.some(
-        (el) =>
-          el instanceof HTMLElement &&
-          (el.localName === "dialog" ||
-            el.localName.endsWith("-dialog") ||
-            el.getAttribute("role") === "dialog" ||
-            el.getAttribute("aria-modal") === "true")
-      );
+      // The editor's own dialog wrapper is the top-level element of its
+      // template, i.e. the one right below its render root
+      const rootIndex = path.indexOf(this.renderRoot);
+      const wrapper =
+        rootIndex > 0 && path[rootIndex - 1] instanceof HTMLElement
+          ? (path[rootIndex - 1] as HTMLElement)
+          : undefined;
 
-      return !insideOtherDialog;
+      // Any other modal between the target and this editor is nested (for
+      // example a picker) and keeps the shortcut to itself
+      return !path.slice(0, hostIndex).some((el) => {
+        if (!isModalBoundary(el)) {
+          return false;
+        }
+        if (!wrapper) {
+          return true;
+        }
+        return !(
+          el === wrapper ||
+          (el as HTMLElement).getRootNode() === wrapper.shadowRoot
+        );
+      });
     }
 
     // Runs in the capture phase so inputs and code editors can't consume the
