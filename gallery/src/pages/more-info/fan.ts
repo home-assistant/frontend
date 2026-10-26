@@ -76,42 +76,6 @@ const ENTITIES = [
       supported_features: FanEntityFeature.SET_SPEED,
     },
   },
-  {
-    entity_id: "fan.six_speed_fan",
-    state: "on",
-    attributes: {
-      friendly_name: "Six speed fan",
-      device_class: "fan",
-      percentage: 50,
-      percentage_step: 100 / 6,
-      supported_features:
-        FanEntityFeature.SET_SPEED +
-        FanEntityFeature.TURN_ON +
-        FanEntityFeature.TURN_OFF,
-    },
-  },
-  {
-    entity_id: "fan.ten_speed_fan",
-    state: "on",
-    attributes: {
-      friendly_name: "Ten speed fan",
-      device_class: "fan",
-      percentage: 70,
-      percentage_step: 10,
-      supported_features: FanEntityFeature.SET_SPEED,
-    },
-  },
-  {
-    entity_id: "fan.eleven_speed_fan",
-    state: "on",
-    attributes: {
-      friendly_name: "Eleven speed fan",
-      device_class: "fan",
-      percentage: 45,
-      percentage_step: 100 / 11,
-      supported_features: FanEntityFeature.SET_SPEED,
-    },
-  },
 ];
 
 @customElement("demo-more-info-fan")

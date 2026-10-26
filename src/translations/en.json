@@ -2040,11 +2040,7 @@
           "set_forward_direction": "Set forward direction",
           "set_reverse_direction": "Set reverse direction",
           "turn_on_oscillating": "Turn on oscillating",
-          "turn_off_oscillating": "Turn off oscillating",
-          "switch_mode": {
-            "buttons": "Switch to buttons mode",
-            "slider": "Switch to slider mode"
-          }
+          "turn_off_oscillating": "Turn off oscillating"
         },
         "climate": {
           "temperature": "Temperature",

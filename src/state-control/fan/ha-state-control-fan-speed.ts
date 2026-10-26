@@ -2,7 +2,6 @@ import type { ContextType } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
@@ -21,15 +20,14 @@ import {
 } from "../../data/context";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity/entity_attributes";
-import type { FanEntity, FanSpeed, FanSpeedStyle } from "../../data/fan";
+import type { FanEntity, FanSpeed } from "../../data/fan";
 import {
-  FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
+  computeDefaultFanSpeedStyle,
   computeFanSpeedIcon,
   computeFanSpeeds,
   fanPercentageToSpeed,
   fanSpeedToPercentage,
   isNumberedFanSpeed,
-  resolveFanSpeedStyle,
 } from "../../data/fan";
 
 @customElement("ha-state-control-fan-speed")
@@ -51,8 +49,6 @@ export class HaStateControlFanSpeed extends LitElement {
   private _i18n!: ContextType<typeof internationalizationContext>;
 
   @property({ attribute: false }) public stateObj!: FanEntity;
-
-  @property({ attribute: "speed-style" }) public speedStyle?: FanSpeedStyle;
 
   @state() sliderValue?: number;
 
@@ -109,14 +105,11 @@ export class HaStateControlFanSpeed extends LitElement {
     const color = stateColorCss(this.stateObj);
 
     const speeds =
-      resolveFanSpeedStyle(this.stateObj, this.speedStyle) === "buttons"
+      computeDefaultFanSpeedStyle(this.stateObj) === "buttons"
         ? computeFanSpeeds(this.stateObj)
         : undefined;
 
     if (speeds) {
-      // Segments are too short for an icon and a label when there are more
-      // speeds than buttons are shown for by default.
-      const dense = speeds.length > FAN_SPEED_COUNT_MAX_FOR_BUTTONS;
       const options = speeds
         .map<ControlSelectOption>((speed) =>
           isNumberedFanSpeed(speed)
@@ -125,24 +118,17 @@ export class HaStateControlFanSpeed extends LitElement {
                 label: formatNumber(speed, this._i18n.locale),
                 ariaLabel: this._localizeSpeed(speed),
               }
-            : dense
-              ? {
-                  value: speed,
-                  ariaLabel: this._localizeSpeed(speed),
-                  path: computeFanSpeedIcon(this.stateObj, speed),
-                }
-              : {
-                  value: speed,
-                  label: this._localizeSpeed(speed),
-                  path: computeFanSpeedIcon(this.stateObj, speed),
-                }
+            : {
+                value: speed,
+                label: this._localizeSpeed(speed),
+                path: computeFanSpeedIcon(this.stateObj, speed),
+              }
         )
         .reverse();
 
       return html`
         <ha-control-select
           vertical
-          class=${classMap({ dense })}
           .options=${options}
           .value=${this.speedValue}
           @value-changed=${this._speedValueChanged}
@@ -155,7 +141,6 @@ export class HaStateControlFanSpeed extends LitElement {
           style=${styleMap({
             "--control-select-color": color,
             "--control-select-background": color,
-            "--fan-speed-count": `${speeds.length}`,
           })}
           .disabled=${this.stateObj.state === UNAVAILABLE}
         >
@@ -212,11 +197,6 @@ export class HaStateControlFanSpeed extends LitElement {
       --control-select-color: var(--primary-color);
       --control-select-background: var(--disabled-color);
       --control-select-background-opacity: 0.2;
-    }
-    ha-control-select.dense {
-      line-height: var(--ha-line-height-condensed);
-      /* Keep every segment tall enough for its content on short screens */
-      min-height: calc(var(--fan-speed-count) * 28px + 4px);
     }
   `;
 }

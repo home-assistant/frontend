@@ -4,8 +4,6 @@ import {
   mdiArrowOscillatingOff,
   mdiFan,
   mdiFanOff,
-  mdiFormatListNumbered,
-  mdiMenu,
   mdiPower,
   mdiTuneVariant,
 } from "@mdi/js";
@@ -13,24 +11,19 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
-import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
-import "../../../components/ha-icon-button-group";
-import "../../../components/ha-icon-button-toggle";
 import "../../../components/ha-list-item";
 import "../../../components/ha-outlined-icon-button";
 import { UNAVAILABLE } from "../../../data/entity/entity";
-import type { FanEntity, FanSpeedStyle } from "../../../data/fan";
+import type { FanEntity } from "../../../data/fan";
 import {
+  FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
   FanEntityFeature,
-  computeDefaultFanSpeedStyle,
+  computeFanSpeedCount,
   computeFanSpeedStateDisplay,
-  resolveFanSpeedStyle,
-  supportsFanSpeedStyleChoice,
 } from "../../../data/fan";
 import { forwardHaptic } from "../../../data/haptics";
 import "../../../state-control/fan/ha-state-control-fan-speed";
@@ -51,15 +44,9 @@ class MoreInfoFan extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
-  @state()
-  @consumeLocalize()
-  private _localize!: LocalizeFunc;
-
   @property({ attribute: false }) public stateObj?: FanEntity;
 
   @state() public _presetMode?: string;
-
-  @state() private _mode?: FanSpeedStyle;
 
   private _renderPresetModeIcon = (value: string) =>
     html`<ha-attribute-icon
@@ -120,25 +107,6 @@ class MoreInfoFan extends LitElement {
     });
   }
 
-  private _setButtonsMode() {
-    this._mode = "buttons";
-  }
-
-  private _setSliderMode() {
-    this._mode = "slider";
-  }
-
-  protected willUpdate(changedProps: PropertyValues<this>): void {
-    super.willUpdate(changedProps);
-    if (changedProps.has("stateObj") && this.stateObj) {
-      const entityId = this.stateObj.entity_id;
-      const oldEntityId = changedProps.get("stateObj")?.entity_id;
-      if (!this._mode || entityId !== oldEntityId) {
-        this._mode = computeDefaultFanSpeedStyle(this.stateObj);
-      }
-    }
-  }
-
   protected updated(changedProps: PropertyValues<this>): void {
     if (changedProps.has("stateObj")) {
       this._presetMode = this.stateObj?.attributes.preset_mode;
@@ -186,10 +154,9 @@ class MoreInfoFan extends LitElement {
       FanEntityFeature.PRESET_MODE
     );
 
-    const speedStyle = resolveFanSpeedStyle(this.stateObj, this._mode);
-
-    const supportsSpeedStyleChoice =
-      supportsSpeed && supportsFanSpeedStyleChoice(this.stateObj);
+    const supportSpeedPercentage =
+      supportsSpeed &&
+      computeFanSpeedCount(this.stateObj) > FAN_SPEED_COUNT_MAX_FOR_BUTTONS;
 
     return html`
       <ha-more-info-state-header
@@ -200,10 +167,7 @@ class MoreInfoFan extends LitElement {
         ${
           supportsSpeed
             ? html`
-                <ha-state-control-fan-speed
-                  .stateObj=${this.stateObj}
-                  .speedStyle=${this._mode}
-                >
+                <ha-state-control-fan-speed .stateObj=${this.stateObj}>
                 </ha-state-control-fan-speed>
               `
             : html`
@@ -215,31 +179,7 @@ class MoreInfoFan extends LitElement {
               `
         }
         ${
-          supportsSpeedStyleChoice
-            ? html`
-                <ha-icon-button-group>
-                  <ha-icon-button-toggle
-                    .label=${this._localize(
-                      "ui.dialogs.more_info_control.fan.switch_mode.slider"
-                    )}
-                    .selected=${speedStyle === "slider"}
-                    .path=${mdiMenu}
-                    @click=${this._setSliderMode}
-                  ></ha-icon-button-toggle>
-                  <ha-icon-button-toggle
-                    .label=${this._localize(
-                      "ui.dialogs.more_info_control.fan.switch_mode.buttons"
-                    )}
-                    .selected=${speedStyle === "buttons"}
-                    .path=${mdiFormatListNumbered}
-                    @click=${this._setButtonsMode}
-                  ></ha-icon-button-toggle>
-                </ha-icon-button-group>
-              `
-            : nothing
-        }
-        ${
-          supportsSpeed && speedStyle === "slider" && supportsOnOff
+          supportSpeedPercentage && supportsOnOff
             ? html`
                 <div class="buttons">
                   <ha-outlined-icon-button
