@@ -1744,17 +1744,20 @@ ${rejected
       return;
     }
 
-    // Remember which entities change per assistant, so undo only reverts those
-    const exposedEntities = this._exposedEntities;
-    const changedEntities = assistants.map((assistant) => ({
-      assistant,
-      entityIds: entityIds.filter(
-        (entityId) =>
-          Boolean(exposedEntities?.[entityId]?.[assistant]) !== shouldExpose
-      ),
-    }));
-
+    let changedEntities: { assistant: string; entityIds: string[] }[];
     try {
+      // Fetch the current exposure from the backend and remember which
+      // entities change per assistant, so undo only reverts those
+      const { exposed_entities: exposedEntities } = await listExposedEntities(
+        this.hass
+      );
+      changedEntities = assistants.map((assistant) => ({
+        assistant,
+        entityIds: entityIds.filter(
+          (entityId) =>
+            Boolean(exposedEntities[entityId]?.[assistant]) !== shouldExpose
+        ),
+      }));
       await exposeEntities(this.hass, assistants, entityIds, shouldExpose);
     } catch (err: any) {
       showAlertDialog(this, {
