@@ -40,7 +40,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import type { Helper, HelperDomain } from "./const";
+import type { Helper, HelperDomain, HelperFormItem } from "./const";
 import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
@@ -104,11 +104,11 @@ const HELPERS: HelperCreators = {
 
 @customElement("dialog-helper-detail")
 export class DialogHelperDetail extends DirtyStateProviderMixin<
-  Helper | undefined
+  HelperFormItem | undefined
 >()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _item?: Helper;
+  @state() private _item?: HelperFormItem;
 
   @state() private _open = false;
 
@@ -390,8 +390,10 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._submitting = true;
     this._error = "";
     try {
-      const { id: _id, ...item } = this._item;
-      const createdEntity = await HELPERS[this._domain].create(this.hass, item);
+      const createdEntity = await HELPERS[this._domain].create(
+        this.hass,
+        this._item
+      );
       if (this._params?.dialogClosedCallback && createdEntity.id) {
         this._params.dialogClosedCallback({
           flowFinished: true,
