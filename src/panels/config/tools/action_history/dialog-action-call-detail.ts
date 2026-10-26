@@ -4,13 +4,17 @@ import { customElement, state } from "lit/decorators";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { consume } from "../../../../common/decorators/consume";
 import { navigate } from "../../../../common/navigate";
+import "../../../../components/buttons/ha-progress-button";
+import type { HaProgressButton } from "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-yaml-editor";
 import {
+  apiContext,
   configContext,
   internationalizationContext,
+  servicesContext,
 } from "../../../../data/context";
 import { localizeTriggerSource } from "../../../../data/logbook";
 import { DialogMixin } from "../../../../dialogs/dialog-mixin";
@@ -29,6 +33,13 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
   @state()
   @consume({ context: configContext, subscribe: true })
   private _config!: ContextType<typeof configContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: servicesContext, subscribe: true })
+  private _services!: ContextType<typeof servicesContext>;
 
   protected render() {
     if (!this.params || !this._i18n || !this._config) {
@@ -106,6 +117,21 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
                 `
               : nothing
           }
+          ${
+            this._services?.[call.domain]?.[call.service]
+              ? html`
+                  <ha-progress-button
+                    slot="secondaryAction"
+                    appearance="plain"
+                    @click=${this._performAgain}
+                  >
+                    ${localize(
+                      "ui.panel.config.tools.tabs.action_history.perform_again"
+                    )}
+                  </ha-progress-button>
+                `
+              : nothing
+          }
           <ha-button slot="primaryAction" @click=${this.closeDialog}>
             ${localize("ui.common.close")}
           </ha-button>
@@ -124,6 +150,29 @@ export class DialogActionCallDetail extends DialogMixin<ActionCallDetailDialogPa
         </div>
       </div>
     `;
+  }
+
+  private async _performAgain(ev: Event) {
+    const button = ev.currentTarget as HaProgressButton;
+    const { domain, service, service_data } = this.params!.call;
+    button.progress = true;
+    try {
+      // Calls with a response fail when it is not asked for.
+      await this._api.callService(
+        domain,
+        service,
+        service_data,
+        undefined,
+        true,
+        "response" in this._services[domain][service]
+      );
+    } catch {
+      button.actionError();
+      return;
+    } finally {
+      button.progress = false;
+    }
+    button.actionSuccess();
   }
 
   private _viewTrace() {
