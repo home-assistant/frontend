@@ -18,7 +18,7 @@ import {
 import { extractApiErrorMessage } from "../../data/hassio/common";
 import {
   createHassioSession,
-  validateHassioSession,
+  refreshHassioSession,
 } from "../../data/hassio/ingress";
 import {
   showAlertDialog,
@@ -62,6 +62,10 @@ class HaPanelApp extends LitElement {
 
   private _sessionKeepAlive?: number;
 
+  private _session?: string;
+
+  private _sessionRefresh?: Promise<void>;
+
   private _fetchDataTimeout?: number;
 
   private _autoRetryUntil?: number;
@@ -94,17 +98,22 @@ class HaPanelApp extends LitElement {
     super.connectedCallback();
     window.addEventListener("message", this._handleIframeMessage);
     window.addEventListener("resize", this._handleResize);
+    document.addEventListener("visibilitychange", this._handleVisibility);
+    document.addEventListener("resume", this._handleVisibility);
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     window.removeEventListener("message", this._handleIframeMessage);
     window.removeEventListener("resize", this._handleResize);
+    document.removeEventListener("visibilitychange", this._handleVisibility);
+    document.removeEventListener("resume", this._handleVisibility);
 
     if (this._sessionKeepAlive) {
       clearInterval(this._sessionKeepAlive);
       this._sessionKeepAlive = undefined;
     }
+    this._session = undefined;
     if (this._fetchDataTimeout) {
       clearTimeout(this._fetchDataTimeout);
       this._fetchDataTimeout = undefined;
@@ -335,16 +344,40 @@ class HaPanelApp extends LitElement {
     if (this._sessionKeepAlive) {
       clearInterval(this._sessionKeepAlive);
     }
-    this._sessionKeepAlive = window.setInterval(async () => {
-      try {
-        await validateHassioSession(this.hass, session);
-      } catch (_err: any) {
-        session = await createHassioSession(this.hass);
-      }
-    }, 60000);
+    this._session = session;
+    this._sessionKeepAlive = window.setInterval(this._refreshSession, 60000);
 
     this._addon = addon;
   }
+
+  // The keep-alive timer does not run while the device sleeps, so the session
+  // may have expired by the time the page is visible again. Refresh it right
+  // away instead of leaving the app unreachable until the next tick.
+  private _handleVisibility = () => {
+    if (!document.hidden) {
+      this._refreshSession();
+    }
+  };
+
+  private _refreshSession = (): Promise<void> => {
+    if (!this._session) {
+      return Promise.resolve();
+    }
+    if (this._sessionRefresh) {
+      return this._sessionRefresh;
+    }
+    this._sessionRefresh = refreshHassioSession(this.hass, this._session)
+      .then((session) => {
+        this._session = session;
+      })
+      .catch((_err: any) => {
+        // Connection to Home Assistant is gone, the next refresh will retry
+      })
+      .finally(() => {
+        this._sessionRefresh = undefined;
+      });
+    return this._sessionRefresh;
+  };
 
   private async _checkLoaded(ev: Event): Promise<void> {
     const iframe = ev.target as HTMLIFrameElement;

@@ -50,3 +50,17 @@ export const validateHassioSession = async (
     data: { session },
   });
 };
+
+// Extends the session, or replaces it with a new one if it has expired.
+// Returns the session to keep using.
+export const refreshHassioSession = async (
+  hass: Pick<HomeAssistant, "callWS">,
+  session: string
+): Promise<string> => {
+  try {
+    await validateHassioSession(hass, session);
+    return session;
+  } catch (_err: any) {
+    return createHassioSession(hass);
+  }
+};
