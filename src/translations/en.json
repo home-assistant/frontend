@@ -4259,6 +4259,19 @@
               "subscribe_prompt": "Subscribe to an event type above to see events here.",
               "buffer_disclaimer": "Showing the latest {count} events. Older events are discarded as new ones arrive.\n\nTip: Subscribe to a more specific event type, or use the filter to narrow results."
             },
+            "action_history": {
+              "title": "Action history",
+              "action": "Action",
+              "action_id": "Action ID",
+              "targets": "Targets",
+              "cause": "Cause",
+              "time": "Time",
+              "user": "User",
+              "context_id": "Context ID",
+              "data": "Data",
+              "no_actions": "No actions were performed in this time range.",
+              "load_failed": "Could not load the action history: {error}"
+            },
             "actions": {
               "title": "Actions",
               "description": "The actions tool allows you to perform any action available in Home Assistant.",
