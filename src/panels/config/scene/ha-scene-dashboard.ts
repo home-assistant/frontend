@@ -109,6 +109,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { renderCategoryGroupActions } from "../category/render-category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -562,6 +563,13 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
+        ${renderCategoryGroupActions(
+          this.hass,
+          "scene",
+          this._categories,
+          this._tableSettings.grouping,
+          this._categoryDeleted
+        )}
 
         <ha-filter-floor-areas
           .type=${"scene"}
@@ -784,6 +792,21 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     const label = ev.detail.label;
     this._setFilter("ha-filter-labels", {
       value: [label.label_id],
+      items: undefined,
+    });
+  };
+
+  private _categoryDeleted = (categoryId: string) => {
+    const value = this._filters["ha-filter-categories"]?.value;
+
+    if (!Array.isArray(value) || !value.includes(categoryId)) {
+      return;
+    }
+
+    const remaining = value.filter((id) => id !== categoryId);
+
+    this._setFilter("ha-filter-categories", {
+      value: remaining.length ? remaining : undefined,
       items: undefined,
     });
   };

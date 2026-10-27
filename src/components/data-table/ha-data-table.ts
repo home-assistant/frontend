@@ -126,7 +126,7 @@ export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
 // Slot for the actions at the end of a group's header, they don't toggle the
 // group. Put `ha-icon-button`s with a label in it. They get the rows' icon
-// colour and a smaller size by default, which `--data-table-group-actions-color`,
+// colour and size by default, which `--data-table-group-actions-color`,
 // `--data-table-group-actions-button-size` and
 // `--data-table-group-actions-icon-size` change for all of them; style a
 // button itself for its own colour or size.
@@ -1961,10 +1961,10 @@ export class HaDataTable extends LitElement {
           align-self: stretch;
           margin-top: -12px;
           margin-inline-start: auto;
-          /* Smaller than the rows' icon buttons, inherited by the slotted ones */
-          --_button-size: var(--data-table-group-actions-button-size, 36px);
+          /* The rows' icon button size, inherited by the slotted ones */
+          --_button-size: var(--data-table-group-actions-button-size, 48px);
           --ha-icon-button-size: var(--_button-size);
-          --mdc-icon-size: var(--data-table-group-actions-icon-size, 20px);
+          --mdc-icon-size: var(--data-table-group-actions-icon-size, 24px);
           /* Centre the last action over the row's last cell, such as an
              overflow menu, which is a 48px icon button */
           padding-inline-end: calc(
@@ -1974,6 +1974,8 @@ export class HaDataTable extends LitElement {
           position: sticky;
           inset-inline-end: 0;
           cursor: default;
+          /* Don't pass the group name's weight on to slotted menus */
+          font-weight: var(--ha-font-weight-normal);
           /* Inherited by the slotted icon buttons, like the rows' icon cells */
           color: var(
             --data-table-group-actions-color,
