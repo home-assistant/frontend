@@ -444,9 +444,6 @@ export class DialogEnergyWaterSettings
           number_energy_price: null,
           stat_cost: null,
         };
-        if (isCurrent()) {
-          this._numberPriceText = "";
-        }
       }
       await params.saveCallback(source);
       if (isCurrent()) {
