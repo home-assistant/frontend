@@ -113,12 +113,6 @@ export class MockBaseEntity {
     state?: string;
     attributes?: EntityAttributes;
   }): void {
-    // A transition or timer of a removed or replaced entity must not bring its
-    // state back
-    if (this.hass?.mockEntities[this.entityId] !== this) {
-      return;
-    }
-
     this.lastUpdated = now();
     if (changes.state !== undefined && changes.state !== this.state) {
       this.state = changes.state;
@@ -128,7 +122,13 @@ export class MockBaseEntity {
       this.attributes = { ...this.attributes, ...changes.attributes };
     }
 
-    this.hass!.updateStates({
+    // A removed or replaced entity can finish its transitions, so that their
+    // timers stop, but must not bring its state back
+    if (this.hass?.mockEntities[this.entityId] !== this) {
+      return;
+    }
+
+    this.hass.updateStates({
       [this.entityId]: this.toState(),
     });
   }
