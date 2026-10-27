@@ -420,7 +420,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     const ttsEngine = (
       await listTTSEngines(
-        this.hass,
+        this.hass.callWS,
         this.language,
         this.hass.config.country || undefined
       )
@@ -431,7 +431,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
 
     const ttsVoices = await listTTSVoices(
-      this.hass,
+      this.hass.callWS,
       ttsEntityId,
       ttsEngine.supported_languages[0]
     );
@@ -442,7 +442,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     const sttEngine = (
       await listSTTEngines(
-        this.hass,
+        this.hass.callWS,
         this.language,
         this.hass.config.country || undefined
       )
