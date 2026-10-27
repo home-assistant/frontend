@@ -25,10 +25,11 @@ type CategoryMenu = HaDropdown & {
   category: CategoryRegistryEntry;
   scope: string;
   hass: HomeAssistant;
+  onDeleted: (categoryId: string) => void;
 };
 
 const deleteCategory = async (menu: CategoryMenu) => {
-  const { category, scope, hass } = menu;
+  const { category, scope, hass, onDeleted } = menu;
   const confirmed = await showConfirmationDialog(menu, {
     title: hass.localize("ui.panel.config.category.editor.confirm_delete"),
     text: hass.localize("ui.panel.config.category.editor.confirm_delete_text"),
@@ -39,7 +40,8 @@ const deleteCategory = async (menu: CategoryMenu) => {
     return;
   }
   try {
-    await deleteCategoryRegistryEntry(hass, scope, category.category_id);
+    await deleteCategoryRegistryEntry(hass.callWS, scope, category.category_id);
+    onDeleted(category.category_id);
   } catch (err: any) {
     showAlertDialog(menu, { text: err.message });
   }
@@ -56,18 +58,25 @@ const handleAction = (ev: HaDropdownSelectEvent<"edit" | "delete">) => {
     scope,
     entry: category,
     updateEntry: (updates) =>
-      updateCategoryRegistryEntry(hass, scope, category.category_id, updates),
+      updateCategoryRegistryEntry(
+        hass.callWS,
+        scope,
+        category.category_id,
+        updates
+      ),
   });
 };
 
 // The same edit and delete menu as the categories filter, on the category
 // group headers of a table grouped by category, which names its groups after
 // the categories. Other groupings can have groups with the same names.
+// onDeleted lets the page take a deleted category out of its filter.
 export const renderCategoryGroupActions = (
   hass: HomeAssistant,
   scope: string,
   categories: CategoryRegistryEntry[] | undefined,
-  grouping: string | undefined
+  grouping: string | undefined,
+  onDeleted: (categoryId: string) => void
 ) =>
   grouping === "category"
     ? categories?.map(
@@ -77,6 +86,7 @@ export const renderCategoryGroupActions = (
             .category=${category}
             .scope=${scope}
             .hass=${hass}
+            .onDeleted=${onDeleted}
             @wa-select=${handleAction}
           >
             <ha-icon-button

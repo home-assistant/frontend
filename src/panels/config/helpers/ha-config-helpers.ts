@@ -82,6 +82,7 @@ import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type {
   DataTableFiltersItems,
+  DataTableFiltersValue,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
 import {
@@ -883,7 +884,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           this.hass,
           "helpers",
           this._categories,
-          this._tableSettings.grouping
+          this._tableSettings.grouping,
+          this._categoryDeleted
         )}
         <ha-button slot="fab" size="l" @click=${this._createHelper}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
@@ -902,8 +904,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _filterChanged(ev) {
-    const type = ev.target.localName;
-    const filters = { ...this._filters, [type]: ev.detail.value };
+    this._setFilter(ev.target.localName, ev.detail.value, ev.detail.items);
+  }
+
+  private _setFilter(
+    type: string,
+    value: DataTableFiltersValue,
+    items: Set<string> | undefined
+  ) {
+    const filters = { ...this._filters, [type]: value };
 
     // A filter also sends the value it was given, once it has found its items.
     // Only a change to what the URL holds is the user's, so a link isn't stored.
@@ -913,15 +922,31 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     ) {
       this._storageFilters = {
         ...this._storageFilters,
-        [type]: ev.detail.value,
+        [type]: value,
       };
     }
 
     this._filters = filters;
-    this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
+    this._filteredItems = { ...this._filteredItems, [type]: items };
     this._writeFilters();
     this._applyFilters();
   }
+
+  private _categoryDeleted = (categoryId: string) => {
+    const value = this._filters["ha-filter-categories"];
+
+    if (!Array.isArray(value) || !value.includes(categoryId)) {
+      return;
+    }
+
+    const remaining = value.filter((id) => id !== categoryId);
+
+    this._setFilter(
+      "ha-filter-categories",
+      remaining.length ? remaining : undefined,
+      undefined
+    );
+  };
 
   private _applyFilters() {
     if (!this._helperEntities) {

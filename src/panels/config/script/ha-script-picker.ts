@@ -501,7 +501,8 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           this.hass,
           "script",
           this._categories,
-          this._tableSettings.grouping
+          this._tableSettings.grouping,
+          this._categoryDeleted
         )}
         <ha-filter-floor-areas
           .type=${"script"}
@@ -735,6 +736,21 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
     const label = ev.detail.label;
     this._setFilter("ha-filter-labels", {
       value: [label.label_id],
+      items: undefined,
+    });
+  };
+
+  private _categoryDeleted = (categoryId: string) => {
+    const value = this._filters["ha-filter-categories"]?.value;
+
+    if (!Array.isArray(value) || !value.includes(categoryId)) {
+      return;
+    }
+
+    const remaining = value.filter((id) => id !== categoryId);
+
+    this._setFilter("ha-filter-categories", {
+      value: remaining.length ? remaining : undefined,
       items: undefined,
     });
   };
