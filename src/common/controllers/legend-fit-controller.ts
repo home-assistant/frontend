@@ -49,10 +49,9 @@ export class LegendFitController {
 
   private _rowWidth?: number;
 
-  private _resizeObserver = new ResizeObserver(() => this._fit());
+  private _resizeObserver?: ResizeObserver;
 
-  // Items can come and go without changing the size of the list
-  private _mutationObserver = new MutationObserver(() => this._fit());
+  private _mutationObserver?: MutationObserver;
 
   constructor(host: ReactiveControllerHost) {
     this._host = host;
@@ -72,10 +71,13 @@ export class LegendFitController {
     if (element === this._element) {
       return;
     }
-    this._resizeObserver.disconnect();
-    this._mutationObserver.disconnect();
+    this._resizeObserver?.disconnect();
+    this._mutationObserver?.disconnect();
     this._element = element;
     if (element) {
+      this._resizeObserver ??= new ResizeObserver(() => this._fit());
+      // Items can come and go without changing the size of the list
+      this._mutationObserver ??= new MutationObserver(() => this._fit());
       this._resizeObserver.observe(element);
       this._mutationObserver.observe(element, { childList: true });
     }
