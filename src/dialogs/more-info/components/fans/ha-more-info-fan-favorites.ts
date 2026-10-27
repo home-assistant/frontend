@@ -124,14 +124,8 @@ export class HaMoreInfoFanFavorites extends LitElement {
   // favorite that is still being applied.
   private _pendingApply?: Promise<void>;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    // Reattached while still editing: start from the current state again.
-    if (this.editMode && !this._snapshot) {
-      this._takeSnapshot();
-    }
-  }
-
+  // No snapshot on reattach: the dialog caches this view with a stale
+  // stateObj, and a snapshot of it would reapply the edited state.
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._restoreSnapshot();
