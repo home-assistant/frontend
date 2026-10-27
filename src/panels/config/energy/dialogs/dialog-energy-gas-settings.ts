@@ -533,7 +533,8 @@ export class DialogEnergyGasSettings
         source = { ...source, stat_energy_from: statEnergyFrom };
         if (isCurrent()) {
           this._pickedDisplayUnit = this._integralTotalUnit();
-          this._source = source;
+          // Keep edits made meanwhile, only fill in the new sensor
+          this._source = { ...this._source!, stat_energy_from: statEnergyFrom };
           this._updateFormDirtyState();
         }
       }
