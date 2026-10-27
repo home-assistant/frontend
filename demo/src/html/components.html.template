@@ -384,10 +384,11 @@ provider.entities = Object.values(provider.hass.states).map((entity) =&gt;
         cards.
       </p>
       <p>
-        The mocked backend only knows a part of the Home Assistant API. A
-        custom card that asks for history, statistics, or templates gets an
-        error. From another site, the script of the custom card needs CORS
-        headers, like the embed script.
+        The mocked backend only knows a part of the Home Assistant API. History
+        is made up from the current state of each entity. Templates are not
+        rendered, they come back as they are. Statistics come back empty. Other
+        requests get an error. From another site, the script of the custom card
+        needs CORS headers, like the embed script.
       </p>
       <pre><code>&lt;script type="module" src="https://example.com/embed-demo-custom-card.js"&gt;&lt;/script&gt;
 &lt;ha-embed-card&gt;
