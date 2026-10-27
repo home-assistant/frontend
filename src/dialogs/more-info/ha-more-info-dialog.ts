@@ -214,16 +214,23 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
   }
 
   private async _loadEntityRegistryEntry() {
-    if (!this._entityId) {
+    const entityId = this._entityId;
+    if (!entityId) {
       return;
     }
+    // Don't show the previous entity's entry while the new one loads.
+    if (this._entry?.entity_id !== entityId) {
+      this._entry = undefined;
+    }
+    let entry: ExtEntityRegistryEntry | null;
     try {
-      this._entry = await getExtendedEntityRegistryEntry(
-        this.hass,
-        this._entityId
-      );
+      entry = await getExtendedEntityRegistryEntry(this.hass, entityId);
     } catch (_e) {
-      this._entry = null;
+      entry = null;
+    }
+    // Ignore a late response for an entity that is no longer shown.
+    if (this._entityId === entityId) {
+      this._entry = entry;
     }
   }
 
@@ -540,7 +547,10 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
         options: favoritesHandler.getResetOptions(favoritesContext.stateObj),
       }
     );
-    this._entry = result.entity_entry;
+    // The dialog may have switched entity during the confirmation or request.
+    if (result.entity_entry.entity_id === this._entityId) {
+      this._entry = result.entity_entry;
+    }
   }
 
   private async _copyFavorites() {
