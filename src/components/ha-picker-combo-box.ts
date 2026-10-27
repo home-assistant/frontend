@@ -230,6 +230,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   // item", and belong to no section.
   private _sectionedItemsCount = 0;
 
+  // Rows the combo box offers for any search, like "Add custom item" and the
+  // additional items, are not search results.
+  private _actionItems = new WeakSet<PickerComboBoxItem>();
+
   // The virtualized list renders its scroller a moment after it connects, so
   // the scroll fades attach once it reports its first visible rows.
   private _virtualScrollElement?: HTMLElement;
@@ -369,26 +373,28 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   }
 
   // DOM focus stays in the search field, so screen readers hear nothing when
-  // the list changes. Announce how many items match instead.
+  // the list changes. Announce how many items match instead. A live region is
+  // only read out when its text changes, so the message names the search.
   private _searchResultsStatus() {
     if (!this._search) {
       return nothing;
     }
-    const count = this._items.filter(this._isOption).length;
+    const count = this._items.filter(
+      (item) => this._isOption(item) && !this._actionItems.has(item)
+    ).length;
+    const term = `‘${this._search}’`;
     if (!count) {
-      return this._noMatchLabel(this._search);
+      // A not found label that takes the search names it already.
+      return typeof this.notFoundLabel === "function"
+        ? this.notFoundLabel(this._search)
+        : this.i18n?.localize?.("ui.components.combo-box.no_results", {
+            term,
+          });
     }
     return this.i18n?.localize?.("ui.components.combo-box.result_count", {
       count,
+      term,
     });
-  }
-
-  private _noMatchLabel(search: string) {
-    return typeof this.notFoundLabel === "function"
-      ? this.notFoundLabel(search)
-      : this.notFoundLabel ||
-          this.i18n?.localize?.("ui.components.combo-box.no_match") ||
-          "No matching items found";
   }
 
   private _renderPlainList() {
@@ -480,8 +486,25 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     }
   }
 
-  private _getAdditionalItems = (searchString?: string) =>
-    this.getAdditionalItems?.(searchString) || [];
+  private _getAdditionalItems = (searchString?: string) => {
+    const items = this.getAdditionalItems?.(searchString) || [];
+    items.forEach((item) => this._actionItems.add(item));
+    return items;
+  };
+
+  private _getCustomValueItem(search: string): PickerComboBoxItem {
+    const item = {
+      id: search,
+      primary:
+        this.customValueLabel ??
+        this.i18n?.localize?.("ui.components.combo-box.add_custom_item") ??
+        "Add custom item",
+      secondary: `"${search}"`,
+      icon_path: mdiPlus,
+    };
+    this._actionItems.add(item);
+    return item;
+  }
 
   private _getItems = () => {
     let items = [...(this.getItems(this._search, this._selectedSection) || [])];
@@ -523,15 +546,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     items.push(...additionalItems);
 
     if (this.allowCustomValue && this._search) {
-      items.push({
-        id: this._search,
-        primary:
-          this.customValueLabel ??
-          this.i18n?.localize?.("ui.components.combo-box.add_custom_item") ??
-          "Add custom item",
-        secondary: `"${this._search}"`,
-        icon_path: mdiPlus,
-      });
+      items.push(this._getCustomValueItem(this._search));
     }
 
     if (this.mode === "dialog") {
@@ -600,7 +615,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           <span slot="headline"
             >${
               this._search
-                ? this._noMatchLabel(this._search)
+                ? typeof this.notFoundLabel === "function"
+                  ? this.notFoundLabel(this._search)
+                  : this.notFoundLabel ||
+                    this.i18n?.localize?.("ui.components.combo-box.no_match") ||
+                    "No matching items found"
                 : this.emptyLabel ||
                   this.i18n?.localize?.("ui.components.combo-box.no_items") ||
                   "No items available"
@@ -688,15 +707,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       }
 
       if (this.allowCustomValue && searchString) {
-        filteredItems.push({
-          id: searchString,
-          primary:
-            this.customValueLabel ??
-            this.i18n?.localize?.("ui.components.combo-box.add_custom_item") ??
-            "Add custom item",
-          secondary: `"${searchString}"`,
-          icon_path: mdiPlus,
-        });
+        filteredItems.push(this._getCustomValueItem(searchString));
       }
 
       this._items = filteredItems;

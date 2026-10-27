@@ -54,8 +54,10 @@ row, or from the top match while searching. With one item in the list,
 
 DOM focus stays in the search field, so screen readers do not hear the list
 change. While searching, a visually hidden `role="status"` message says how
-many items match, or shows the not found label when nothing does. Section
-titles and placeholder rows are not counted.
+many items match the search and names it, so a new search with the same count
+is still read out. When nothing matches, it reads a not found label that takes
+the search, or says there are no results for it. Section titles, placeholder
+rows, "Add custom item" and the additional items are not counted.
 
 ## Implementation
 

@@ -16,6 +16,23 @@ const ITEMS: PickerComboBoxItem[] = [
   { id: "bedroom_light", primary: "Bedroom light" },
 ];
 
+// Like the quick bar: with sections, getItems filters and returns the section
+// titles as strings, which are not results.
+const SECTIONED_PROPERTIES: Partial<HaPickerComboBox> = {
+  sections: [{ id: "lights", label: "Lights" }],
+  getItems: (searchString?: string) => {
+    const matches = ITEMS.filter((item) =>
+      item.primary.toLowerCase().includes(searchString ?? "")
+    );
+    return ["Lights", ...matches] as unknown as PickerComboBoxItem[];
+  },
+};
+
+// Like the "Add new" item of the area and label pickers.
+const getAdditionalItems = (searchString?: string): PickerComboBoxItem[] => [
+  { id: `___ADD_NEW___${searchString ?? ""}`, primary: "Add new item" },
+];
+
 // Under Node, Lit's `isServer` is true, so the ResizeController behind the
 // list's scroll fades never creates its observer and throws on use.
 vi.mock("@lit-labs/observers/resize-controller", () => ({
@@ -87,12 +104,12 @@ describe("ha-picker-combo-box", () => {
 
     await search(comboBox, "kitchen");
     expect(statusText(comboBox)).toBe(
-      'ui.components.combo-box.result_count: {"count":2}'
+      'ui.components.combo-box.result_count: {"count":2,"term":"‘kitchen’"}'
     );
 
     await search(comboBox, "bedroom");
     expect(statusText(comboBox)).toBe(
-      'ui.components.combo-box.result_count: {"count":1}'
+      'ui.components.combo-box.result_count: {"count":1,"term":"‘bedroom’"}'
     );
   });
 
@@ -100,7 +117,38 @@ describe("ha-picker-combo-box", () => {
     const comboBox = await mountComboBox();
 
     await search(comboBox, "garage");
-    expect(statusText(comboBox)).toBe("ui.components.combo-box.no_match");
+    expect(statusText(comboBox)).toBe(
+      'ui.components.combo-box.no_results: {"term":"‘garage’"}'
+    );
+  });
+
+  it("announces a not found label that takes the search", async () => {
+    const comboBox = await mountComboBox({
+      notFoundLabel: (searchString: string) =>
+        `No areas found for ‘${searchString}’`,
+    });
+
+    await search(comboBox, "garage");
+    expect(statusText(comboBox)).toBe("No areas found for ‘garage’");
+  });
+
+  // A live region is only read out when its text changes.
+  it("announces a new search with as many results", async () => {
+    const comboBox = await mountComboBox();
+
+    await search(comboBox, "bedroom");
+    const bedroomStatus = statusText(comboBox);
+    await search(comboBox, "fan");
+    expect(statusText(comboBox)).not.toBe(bedroomStatus);
+  });
+
+  it("announces a new search that finds nothing either", async () => {
+    const comboBox = await mountComboBox({ notFoundLabel: "Nothing found!" });
+
+    await search(comboBox, "garage");
+    const garageStatus = statusText(comboBox);
+    await search(comboBox, "porch");
+    expect(statusText(comboBox)).not.toBe(garageStatus);
   });
 
   it("goes quiet again when the search is cleared", async () => {
@@ -111,22 +159,38 @@ describe("ha-picker-combo-box", () => {
     expect(statusText(comboBox)).toBe("");
   });
 
-  // Like the quick bar: with sections, getItems filters and returns the
-  // section titles as strings, which are not results.
   it("does not count section titles", async () => {
-    const comboBox = await mountComboBox({
-      sections: [{ id: "lights", label: "Lights" }],
-      getItems: (searchString?: string) => {
-        const matches = ITEMS.filter((item) =>
-          item.primary.toLowerCase().includes(searchString ?? "")
-        );
-        return ["Lights", ...matches] as unknown as PickerComboBoxItem[];
-      },
-    });
+    const comboBox = await mountComboBox(SECTIONED_PROPERTIES);
 
     await search(comboBox, "light");
     expect(statusText(comboBox)).toBe(
-      'ui.components.combo-box.result_count: {"count":2}'
+      'ui.components.combo-box.result_count: {"count":2,"term":"‘light’"}'
     );
   });
+
+  // The custom value and "Add new" rows are offered for any search, so they
+  // are not results.
+  it.each([
+    ["without sections", {}],
+    ["with sections", SECTIONED_PROPERTIES],
+  ])(
+    "does not count the rows it adds itself %s",
+    async (_name, properties: Partial<HaPickerComboBox>) => {
+      const comboBox = await mountComboBox({
+        ...properties,
+        allowCustomValue: true,
+        getAdditionalItems,
+      });
+
+      await search(comboBox, "garage");
+      expect(statusText(comboBox)).toBe(
+        'ui.components.combo-box.no_results: {"term":"‘garage’"}'
+      );
+
+      await search(comboBox, "light");
+      expect(statusText(comboBox)).toBe(
+        'ui.components.combo-box.result_count: {"count":2,"term":"‘light’"}'
+      );
+    }
+  );
 });
