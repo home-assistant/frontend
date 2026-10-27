@@ -11,6 +11,7 @@ import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { HomeSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
+  computeEnergyLabel,
   emptyHomeEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
@@ -18,6 +19,8 @@ import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { ValueChangedEvent } from "../../../../types";
+import type { IntegralUnits } from "./energy-integral";
+import { confirmIntegrals, integralUnits } from "./energy-integral";
 import type { EnergySettingsHomeDialogParams } from "./show-dialogs-energy";
 import { DialogMixin } from "../../../../dialogs/dialog-mixin";
 import {
@@ -47,6 +50,8 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
   @state() private _power_units?: string[];
 
   @state() private _error?: string;
+
+  @state() private _saving = false;
 
   connectedCallback() {
     super.connectedCallback();
@@ -105,7 +110,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
             "ui.panel.config.energy.home.dialog.display_name"
           )}
           type="text"
-          .disabled=${!this._source.stat_energy_to}
+          .disabled=${!(this._source.stat_energy_to || this._source.stat_rate)}
           .value=${this._source.name || ""}
           .placeholder=${this._hassConfig.config.location_name}
           @input=${this._nameChanged}
@@ -137,9 +142,11 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
           <ha-button
             @click=${this._save}
             .disabled=${
-              !this._source.stat_energy_to ||
+              this._saving ||
+              !(this._source.stat_energy_to || this._integralUnits()) ||
               (!!this.params.source && !this.isDirtyState)
             }
+            .loading=${this._saving}
             slot="primaryAction"
           >
             ${this._i18n.localize("ui.common.save")}
@@ -170,14 +177,72 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
     this._updateDirtyState(this._source);
   }
 
+  private _integralUnits(): IntegralUnits | undefined {
+    const statRate = this._source?.stat_rate;
+    if (!statRate || !this._energy_units) {
+      return undefined;
+    }
+    return integralUnits(
+      this.params!.hass.states[statRate]?.attributes.unit_of_measurement,
+      this._energy_units
+    );
+  }
+
   private async _save() {
+    const params = this.params!;
+    this._error = undefined;
+    this._saving = true;
     try {
-      await this.params!.saveCallback(this._source!);
+      if (!this._source!.stat_energy_to) {
+        const statEnergyTo = await this._energyFromPower();
+        if (!statEnergyTo) {
+          return;
+        }
+        this._source = { ...this._source!, stat_energy_to: statEnergyTo };
+        this._updateDirtyState(this._source);
+      }
+      await params.saveCallback(this._source!);
       this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
+    } finally {
+      this._saving = false;
     }
+  }
+
+  private async _energyFromPower(): Promise<string | undefined> {
+    const hass = this.params!.hass;
+    const statRate = this._source!.stat_rate!;
+    const units = this._integralUnits();
+    if (!units) {
+      return undefined;
+    }
+    const sensors = await confirmIntegrals(this, hass, {
+      deviceClass: "energy",
+      requests: [
+        {
+          rate: statRate,
+          units,
+          name: this._i18n.localize(
+            "ui.panel.config.energy.integral.energy.sensor_name",
+            {
+              name: computeEnergyLabel(
+                hass.states,
+                hass.formatEntityName,
+                statRate,
+                undefined,
+                this._source?.name
+              ),
+            }
+          ),
+        },
+      ],
+      intro: this._i18n.localize(
+        "ui.panel.config.energy.home.dialog.energy_sensor_needed"
+      ),
+    });
+    return sensors?.[0];
   }
 
   static get styles(): CSSResultGroup {
