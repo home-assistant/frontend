@@ -2152,7 +2152,7 @@
         "editor": {
           "name": "Name",
           "main_entity": "Main entity of the device ({device})",
-          "main_entity_description": "Main entities are shown with the device name only.",
+          "main_entity_description": "Represents the device's main function and has no separate name.",
           "change_device_name_link": "change the device name",
           "restore_name": "Restore default name",
           "icon": "Icon",
