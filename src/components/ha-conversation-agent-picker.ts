@@ -1,9 +1,14 @@
+import type { ContextType } from "@lit/context";
 import { mdiCog } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { debounce } from "../common/util/debounce";
+import { apiContext, configContext, entitiesContext } from "../data/context";
 import type { Agent } from "../data/conversation";
 import { listAgents } from "../data/conversation";
 import type { EntityConfigFlow } from "../dialogs/config-flow/entity-config-flow";
@@ -11,7 +16,6 @@ import {
   fetchEntityConfigFlow,
   showEntityConfigFlow,
 } from "../dialogs/config-flow/entity-config-flow";
-import type { HomeAssistant } from "../types";
 import "./ha-select";
 import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 
@@ -25,8 +29,6 @@ export class HaConversationAgentPicker extends LitElement {
 
   @property() public label?: string;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -34,6 +36,17 @@ export class HaConversationAgentPicker extends LitElement {
   @state() _agents?: Agent[];
 
   @state() private _configFlow?: EntityConfigFlow;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
 
   protected render() {
     if (!this._agents) {
@@ -55,9 +68,7 @@ export class HaConversationAgentPicker extends LitElement {
     if (!this.required) {
       options.unshift({
         value: NONE,
-        label: this.hass.localize(
-          "ui.components.conversation-agent-picker.none"
-        ),
+        label: this._localize("ui.components.conversation-agent-picker.none"),
       });
     }
 
@@ -65,7 +76,7 @@ export class HaConversationAgentPicker extends LitElement {
       <ha-select
         .label=${
           this.label ||
-          this.hass!.localize(
+          this._localize(
             "ui.components.conversation-agent-picker.conversation_agent"
           )
         }
@@ -78,7 +89,7 @@ export class HaConversationAgentPicker extends LitElement {
       >${
         this._configFlow
           ? html`<ha-icon-button
-              .label=${this.hass.localize(
+              .label=${this._localize(
                 "ui.components.conversation-agent-picker.settings"
               )}
               .path=${mdiCog}
@@ -108,7 +119,7 @@ export class HaConversationAgentPicker extends LitElement {
     let configFlow: EntityConfigFlow | undefined;
     try {
       configFlow = entityId
-        ? await fetchEntityConfigFlow(this.hass, entityId)
+        ? await fetchEntityConfigFlow(this._api, this._entities, entityId)
         : undefined;
     } catch (_err) {
       configFlow = undefined;
@@ -122,9 +133,9 @@ export class HaConversationAgentPicker extends LitElement {
 
   private async _updateAgents() {
     const { agents } = await listAgents(
-      this.hass,
+      this._api.callWS,
       this.language,
-      this.hass.config.country || undefined
+      this._config.config.country || undefined
     );
 
     this._agents = agents;
@@ -184,7 +195,7 @@ export class HaConversationAgentPicker extends LitElement {
 
   private _openConfigFlow() {
     if (this._configFlow) {
-      showEntityConfigFlow(this, this.hass, this._configFlow);
+      showEntityConfigFlow(this, this._api, this._configFlow);
     }
   }
 
@@ -204,7 +215,6 @@ export class HaConversationAgentPicker extends LitElement {
   private _changed(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
     if (
-      !this.hass ||
       value === "" ||
       value === this.value ||
       (this.value === undefined && value === NONE)

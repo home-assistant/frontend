@@ -94,7 +94,6 @@ export class AssistPipelineRunDebug extends LitElement {
               this._pipelineRuns.length === 0
                 ? html`
                     <ha-assist-pipeline-picker
-                      .hass=${this.hass}
                       .value=${this._pipelineId}
                       @value-changed=${this._pipelinePicked}
                     ></ha-assist-pipeline-picker>
