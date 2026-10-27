@@ -147,9 +147,9 @@ export function integralFlowInput(
     max_sub_interval: { hours: 0, minutes: 5, seconds: 0 },
     round: 3,
     ...units,
-    // The helper infers energy from power, but not gas or water from a flow
-    // rate
-    ...(deviceClass !== "energy" ? { device_class: deviceClass } : {}),
+    // The helper only infers energy from a power device class and never gas or
+    // water from a flow rate, and the energy dashboard needs it
+    device_class: deviceClass,
   };
 }
 
