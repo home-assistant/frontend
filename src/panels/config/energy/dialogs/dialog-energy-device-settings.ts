@@ -156,6 +156,7 @@ export class DialogEnergyDeviceSettings
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.selected_stat_intro",
             { unit: this._energy_units?.join(", ") || "" }
@@ -172,6 +173,7 @@ export class DialogEnergyDeviceSettings
           )}
           .excludeStatistics=${this._excludeListPower}
           @value-changed=${this._powerStatisticChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.selected_stat_intro",
             { unit: this._power_units?.join(", ") || "" }
@@ -182,7 +184,7 @@ export class DialogEnergyDeviceSettings
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.display_name"
           )}
-          .disabled=${!this._device}
+          .disabled=${!this._device || this._saving}
           .value=${this._device?.name || ""}
           .placeholder=${
             labelStatistic
@@ -212,7 +214,7 @@ export class DialogEnergyDeviceSettings
           .emptyLabel=${this.hass.localize(
             "ui.panel.config.energy.device_consumption.dialog.no_upstream_devices"
           )}
-          .disabled=${!this._device}
+          .disabled=${!this._device || this._saving}
           @value-changed=${this._parentChanged}
         ></ha-energy-upstream-device-picker>
 
