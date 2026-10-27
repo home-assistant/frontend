@@ -322,6 +322,17 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       --mdc-icon-size: 100%;
     }
 
+    /* Percentage sizes only resolve here through the intrinsic size of the
+       icon, which older WebKit versions can compute as 0 and hide the icon.
+       Size the button and the icon from the button width instead. */
+    @supports (width: 1cqi) {
+      .light-button {
+        container-type: inline-size;
+        --ha-icon-button-size: 100cqi;
+        --mdc-icon-size: 100cqi;
+      }
+    }
+
     .light-button.state-on {
       color: var(--state-light-active-color);
     }
