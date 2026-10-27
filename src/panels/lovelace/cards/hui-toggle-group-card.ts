@@ -68,10 +68,15 @@ export class HuiToggleGroupCard extends LitElement implements LovelaceCard {
   }
 
   private _getOnEntities(): HassEntity[] {
-    if (!this._stateObjs) return [];
-    return Object.values(this._stateObjs).filter((stateObj) =>
-      stateActive(stateObj)
-    );
+    if (!this._config || !this._stateObjs) return [];
+    // Walk the configured order: the states record keeps its identity when
+    // only the order of the entities changed.
+    return this._config.entities
+      .map((entityId) => this._stateObjs![entityId])
+      .filter(
+        (stateObj): stateObj is HassEntity =>
+          stateObj !== undefined && stateActive(stateObj)
+      );
   }
 
   private _computeColor(): string | undefined {
