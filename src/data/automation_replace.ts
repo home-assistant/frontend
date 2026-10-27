@@ -124,6 +124,7 @@ const getTargetFilter = (
 const isAutomationBehavior = (field: Field) =>
   !!field.selector && "automation_behavior" in field.selector;
 
+// Ids with a dot are platforms even before descriptions load.
 export const isPlatformTrigger = (
   trigger: Trigger,
   descriptions: TriggerDescriptions

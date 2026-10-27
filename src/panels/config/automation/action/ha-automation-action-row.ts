@@ -99,7 +99,7 @@ import {
   getActionPickerKey,
   isActionReplaceable,
 } from "../automation-element-config";
-import { showEditorToast } from "../editor-toast";
+import { showEditorToast, showReplacedToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import "../ha-automation-row-options";
 import { overflowStyles, rowStyles } from "../styles";
@@ -1031,16 +1031,7 @@ export default class HaAutomationActionRow extends LitElement {
         fireEvent(this, "replace-item", {
           value: portAction(action, createAction(value, target), this.hass),
         });
-        showEditorToast(this, {
-          message: this.hass.localize("ui.common.successfully_replaced"),
-          duration: 4000,
-          action: {
-            text: this.hass.localize("ui.common.undo"),
-            action: () => {
-              fireEvent(window, "undo-change");
-            },
-          },
-        });
+        showReplacedToast(this, this.hass.localize);
       },
     });
   };

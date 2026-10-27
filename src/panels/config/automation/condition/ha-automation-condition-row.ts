@@ -76,7 +76,7 @@ import {
   getConditionPickerKey,
   isConditionReplaceable,
 } from "../automation-element-config";
-import { showEditorToast } from "../editor-toast";
+import { showEditorToast, showReplacedToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
 import { showAddAutomationElementDialog } from "../show-add-automation-element-dialog";
@@ -654,16 +654,7 @@ export default class HaAutomationConditionRow extends LitElement {
             this.conditionDescriptions
           ),
         });
-        showEditorToast(this, {
-          message: this.hass.localize("ui.common.successfully_replaced"),
-          duration: 4000,
-          action: {
-            text: this.hass.localize("ui.common.undo"),
-            action: () => {
-              fireEvent(window, "undo-change");
-            },
-          },
-        });
+        showReplacedToast(this, this.hass.localize);
       },
     });
   };

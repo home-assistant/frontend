@@ -99,8 +99,9 @@ export class HaAutomationAddGroups extends LitElement {
                   ({ item, groupName }) => html`
                     <ha-list-item-button
                       .value=${item.key}
-                      class=${item.key === this.replacingItemKey ? "current" : ""}
-                      .disabled=${item.key === this.replacingItemKey}
+                      class=${this._isCurrent(item) ? "current" : ""}
+                      .disabled=${this._isCurrent(item)}
+                      aria-current=${this._isCurrent(item) ? "true" : nothing}
                       @click=${this._recentSelected}
                     >
                       <div slot="headline">${item.name}</div>
@@ -157,6 +158,10 @@ export class HaAutomationAddGroups extends LitElement {
         )}
       </ha-list-base>
     `;
+  }
+
+  private _isCurrent(item: AddAutomationElementListItem) {
+    return item.key === this.replacingItemKey;
   }
 
   private _renderIcon(item: AddAutomationElementListItem) {

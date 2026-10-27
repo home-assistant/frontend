@@ -12,6 +12,10 @@ import {
   getValueFromDynamic,
   isDynamic,
 } from "../../../data/automation";
+import {
+  isPlatformCondition,
+  isPlatformTrigger,
+} from "../../../data/automation_replace";
 import type { ConditionDescriptions } from "../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../data/condition";
 import type { Action } from "../../../data/script";
@@ -65,12 +69,11 @@ export const createAction = (
   return elClass ? { ...elClass.defaultConfig } : { [key]: {} };
 };
 
-// Ids with a dot are platforms even before descriptions load.
 export const getTriggerPickerKey = (
   trigger: Exclude<Trigger, TriggerList>,
   descriptions: TriggerDescriptions
 ): string =>
-  trigger.trigger in descriptions || trigger.trigger.includes(".")
+  isPlatformTrigger(trigger, descriptions)
     ? `${DYNAMIC_PREFIX}${trigger.trigger}`
     : trigger.trigger;
 
@@ -78,7 +81,7 @@ export const getConditionPickerKey = (
   condition: Condition,
   descriptions: ConditionDescriptions
 ): string =>
-  condition.condition in descriptions || condition.condition.includes(".")
+  isPlatformCondition(condition, descriptions)
     ? `${DYNAMIC_PREFIX}${condition.condition}`
     : condition.condition;
 

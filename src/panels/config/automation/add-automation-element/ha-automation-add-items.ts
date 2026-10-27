@@ -168,6 +168,7 @@ export class HaAutomationAddItems extends LitElement {
               .value=${item.key}
               class=${this._isCurrent(item) ? "current" : ""}
               .disabled=${this._isCurrent(item)}
+              aria-current=${this._isCurrent(item) ? "true" : nothing}
               @click=${this._selected}
             >
               <div slot="headline" class=${this.target ? "item-headline" : ""}>
