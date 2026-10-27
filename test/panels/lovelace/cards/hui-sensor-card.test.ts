@@ -2,7 +2,6 @@ import { describe, expect, it, vi } from "vitest";
 import "../../../../src/panels/lovelace/cards/hui-sensor-card";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { SensorCardConfig } from "../../../../src/panels/lovelace/cards/types";
-import type { HuiSensorCard } from "../../../../src/panels/lovelace/cards/hui-sensor-card";
 
 vi.hoisted(() => {
   Object.assign(globalThis, {
@@ -17,8 +16,12 @@ vi.hoisted(() => {
 });
 
 describe("hui-sensor-card color and configuration", () => {
-  const makeCard = (config: Partial<SensorCardConfig> = {}): HuiSensorCard => {
-    const card = document.createElement("hui-sensor-card") as HuiSensorCard;
+  const makeCard = (
+    config: Partial<SensorCardConfig> = {}
+  ): HTMLElementTagNameMap["hui-sensor-card"] => {
+    const card = document.createElement(
+      "hui-sensor-card"
+    ) as HTMLElementTagNameMap["hui-sensor-card"];
     card.setConfig({
       type: "sensor",
       entity: "sensor.temperature",

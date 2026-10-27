@@ -96,9 +96,6 @@ class HuiSensorCard extends HuiEntityCard {
         ha-card {
           overflow: hidden;
         }
-        .footer {
-          --accent-color: var(--state-color);
-        }
         .info {
           direction: ltr;
           text-align: var(--float-start);
