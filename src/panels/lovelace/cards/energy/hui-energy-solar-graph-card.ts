@@ -131,6 +131,10 @@ export class HuiEnergySolarGraphCard
       return nothing;
     }
 
+    const formattedTotal = this._total
+      ? formatNumberWithUnit(this._total, "kWh", this._i18n.locale)
+      : undefined;
+
     return html`
       <ha-card>
         ${
@@ -142,7 +146,7 @@ export class HuiEnergySolarGraphCard
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumberWithUnit(this._total, "kWh", this._i18n.locale)}
+                        ${formattedTotal}
                       </hui-energy-graph-chip>`
                     : nothing
                 }

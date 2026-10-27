@@ -310,6 +310,13 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       }
     }
 
+    const formattedBatterySoc =
+      averageBatterySoc !== null
+        ? formatNumberWithUnit(averageBatterySoc, "%", this._i18n.locale, {
+            maximumFractionDigits: 0,
+          })
+        : undefined;
+
     let returnedToGrid: number | null = null;
 
     if (hasReturnToGrid) {
@@ -729,17 +736,8 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                                 .path=${batteryIconPath}
                               ></ha-svg-icon>
                               ${
-                                averageBatterySoc !== null
-                                  ? html`<span
-                                      >${formatNumberWithUnit(
-                                        averageBatterySoc,
-                                        "%",
-                                        this._i18n.locale,
-                                        {
-                                          maximumFractionDigits: 0,
-                                        }
-                                      )}</span
-                                    >`
+                                formattedBatterySoc
+                                  ? html`<span>${formattedBatterySoc}</span>`
                                   : nothing
                               }
                             </div>

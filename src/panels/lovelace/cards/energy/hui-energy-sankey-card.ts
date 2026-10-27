@@ -391,13 +391,11 @@ class HuiEnergySankeyCard
     `;
   }
 
-  private _valueFormatter = (value: number) =>
-    formatNumberWithUnit(
-      value,
-      "kWh",
-      this._i18n.locale,
-      value < 0.1 ? { maximumFractionDigits: 3 } : undefined
-    );
+  private _valueFormatter = (value: number) => {
+    const formatOptions =
+      value < 0.1 ? { maximumFractionDigits: 3 } : undefined;
+    return formatNumberWithUnit(value, "kWh", this._i18n.locale, formatOptions);
+  };
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     fireSankeyNodeMoreInfo(this, ev.detail.node);

@@ -335,13 +335,16 @@ class HuiWaterSankeyCard
     `;
   }
 
-  private _valueFormatter = (value: number) =>
-    formatNumberWithUnit(
+  private _valueFormatter = (value: number) => {
+    const formatOptions =
+      value < 0.1 ? { maximumFractionDigits: 3 } : undefined;
+    return formatNumberWithUnit(
       value,
       this._data!.waterUnit,
       this._i18n.locale,
-      value < 0.1 ? { maximumFractionDigits: 3 } : undefined
+      formatOptions
     );
+  };
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     fireSankeyNodeMoreInfo(this, ev.detail.node);

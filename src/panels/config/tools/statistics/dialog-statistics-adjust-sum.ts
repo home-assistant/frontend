@@ -231,6 +231,15 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       const rows: TemplateResult[] = [];
       for (const stat of data) {
         const digits = this._fractionDigits(stat.change);
+        const change = formatNumberWithUnit(
+          stat.change!,
+          unit,
+          this.hass.locale,
+          {
+            minimumFractionDigits: digits,
+            maximumFractionDigits: digits,
+          }
+        );
         rows.push(html`
           <ha-list-item
             twoline
@@ -238,12 +247,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
             .stat=${stat}
             @click=${this._setChosenStatistic}
           >
-            <span
-              >${formatNumberWithUnit(stat.change!, unit, this.hass.locale, {
-                minimumFractionDigits: digits,
-                maximumFractionDigits: digits,
-              })}</span
-            >
+            <span>${change}</span>
             <span slot="secondary">
               ${formatDateTime(
                 new Date(stat.start),

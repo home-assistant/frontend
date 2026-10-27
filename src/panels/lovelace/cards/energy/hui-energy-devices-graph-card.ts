@@ -220,11 +220,13 @@ export class HuiEnergyDevicesGraphCard
     const deviceName = this._getDeviceName(params.name);
     const area = computeEnergyStatisticArea(this._registries, params.name);
     const energy = params.value[0] as number;
+    const formatOptions =
+      energy < 0.1 ? { maximumFractionDigits: 3 } : undefined;
     const formattedEnergy = formatNumberWithUnit(
       energy,
       "kWh",
       this._i18n.locale,
-      energy < 0.1 ? { maximumFractionDigits: 3 } : undefined
+      formatOptions
     );
     const formattedPercent = params.percent
       ? formatNumberWithUnit(params.percent, "%", this._i18n.locale)

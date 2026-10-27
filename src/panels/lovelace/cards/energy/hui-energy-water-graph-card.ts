@@ -137,6 +137,10 @@ export class HuiEnergyWaterGraphCard
       return nothing;
     }
 
+    const formattedTotal = this._total
+      ? formatNumberWithUnit(this._total, this._unit, this._i18n.locale)
+      : undefined;
+
     return html`
       <ha-card>
         ${
@@ -150,11 +154,7 @@ export class HuiEnergyWaterGraphCard
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumberWithUnit(
-                          this._total,
-                          this._unit,
-                          this._i18n.locale
-                        )}
+                        ${formattedTotal}
                       </hui-energy-graph-chip>`
                     : nothing
                 }

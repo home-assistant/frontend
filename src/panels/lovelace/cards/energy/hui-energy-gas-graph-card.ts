@@ -185,6 +185,15 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
       return nothing;
     }
 
+    const formattedTotal = this._total
+      ? formatNumberWithUnit(
+          this._total,
+          this._unit,
+          this._i18n.locale,
+          this._gasFormatOptions
+        )
+      : undefined;
+
     return html`
       <ha-card>
         ${
@@ -196,12 +205,7 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumberWithUnit(
-                          this._total,
-                          this._unit,
-                          this._i18n.locale,
-                          this._gasFormatOptions
-                        )}
+                        ${formattedTotal}
                       </hui-energy-graph-chip>`
                     : nothing
                 }

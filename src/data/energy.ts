@@ -1894,20 +1894,25 @@ export const formatConsumptionShort = (
     }
     pickedUnit = units[unitIndex];
   }
-  return formatNumberWithUnit(
-    val,
-    pickedUnit,
-    locale,
+  const formatOptions: Intl.NumberFormatOptions =
     displayPrecision !== undefined && pickedUnit === unit
       ? {
           minimumFractionDigits: displayPrecision,
           maximumFractionDigits: displayPrecision,
         }
-      : {
-          maximumFractionDigits:
-            Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
-        }
-  );
+      : { maximumFractionDigits: shortFractionDigits(val) };
+  return formatNumberWithUnit(val, pickedUnit, locale, formatOptions);
+};
+
+const shortFractionDigits = (value: number): number => {
+  const absValue = Math.abs(value);
+  if (absValue < 10) {
+    return 2;
+  }
+  if (absValue < 100) {
+    return 1;
+  }
+  return 0;
 };
 
 export const calculateSolarConsumedGauge = (
