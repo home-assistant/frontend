@@ -1,6 +1,7 @@
 import "@material/mwc-list/mwc-list";
 import type { ContextType } from "@lit/context";
 import {
+  mdiCheck,
   mdiPlus,
   mdiSwapHorizontal,
   mdiTextureBox,
@@ -167,7 +168,7 @@ export class HaAutomationAddSearch extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ type: Boolean }) public replacing = false;
+  @property({ attribute: false }) public replacingItemKey?: string;
 
   @property({ attribute: "add-element-type" })
   public addElementType!: AddElementType;
@@ -434,8 +435,12 @@ export class HaAutomationAddSearch extends LitElement {
       showEntityId = !!this._showEntityId;
     }
 
+    const current = type === "item" && item.id === this.replacingItemKey;
+
     return html`<ha-list-item-button
       .value=${item}
+      class=${current ? "current" : ""}
+      .disabled=${current}
       @click=${this._selectSearchResult}
     >
       <ha-combo-box-item
@@ -532,7 +537,7 @@ export class HaAutomationAddSearch extends LitElement {
             ? html`<ha-svg-icon
                 slot="end"
                 style="color: var(--primary-color);"
-                .path=${this.replacing ? mdiSwapHorizontal : mdiPlus}
+                .path=${current ? mdiCheck : this.replacingItemKey ? mdiSwapHorizontal : mdiPlus}
               ></ha-svg-icon>`
             : this.narrow
               ? html`<ha-icon-next slot="end"></ha-icon-next>`
@@ -1061,6 +1066,13 @@ export class HaAutomationAddSearch extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
+    }
+    ha-list-item-button.current {
+      color: var(--primary-text-color);
+      background-color: var(--ha-color-fill-primary-quiet-resting);
+    }
+    ha-list-item-button.current::part(base) {
+      color: inherit;
     }
     .empty-search {
       display: flex;

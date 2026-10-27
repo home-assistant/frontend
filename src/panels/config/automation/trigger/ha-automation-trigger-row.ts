@@ -896,7 +896,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "trigger",
       clipboardItem: undefined,
-      replacing: key,
+      replacingItemKey: key,
       add: (value, target) => {
         if (value === key && !target) {
           return;

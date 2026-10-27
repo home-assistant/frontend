@@ -6,7 +6,6 @@ import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { addRecent } from "../../../common/array/add-recent";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import { transform } from "../../../common/decorators/transform";
@@ -16,6 +15,7 @@ import type {
 } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { listenMediaQuery } from "../../../common/dom/media_query";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import { debounce } from "../../../common/util/debounce";
@@ -87,9 +87,14 @@ import { calculateActiveSystemDomains } from "./add-automation-element/domain-cl
 import { getExclusiveDomains } from "./add-automation-element/element-items";
 import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-groups";
+import type { HaAutomationAddGroups } from "./add-automation-element/ha-automation-add-groups";
 import "./add-automation-element/ha-automation-add-items";
 import type { HaAutomationAddItems } from "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
+import {
+  fetchTargetElementKeys,
+  getTargetSections,
+} from "./add-automation-element/target-items";
 import {
   extractTypeAndIdFromTarget,
   getSelectedTargetLabel,
@@ -98,10 +103,6 @@ import {
   isTargetWithId,
   type TargetLabelSources,
 } from "./add-automation-element/target-labels";
-import {
-  fetchTargetElementKeys,
-  getTargetSections,
-} from "./add-automation-element/target-items";
 import type {
   AddElementHistoryData,
   AddElementTab,
@@ -121,8 +122,8 @@ import {
   getAddAutomationElementTargetFromQuery,
 } from "./show-add-automation-element-dialog";
 import {
-  addRecentTarget,
   RECENT_TARGETS_STORAGE_KEY,
+  addRecentTarget,
 } from "./target/recent_targets";
 
 const DOCUMENTATION_PATHS: Record<AddElementType, string> = {
@@ -250,6 +251,9 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
   @query(".content")
   private _contentElement?: HTMLDivElement;
 
+  @query("ha-automation-add-groups")
+  private _groupsElement?: HaAutomationAddGroups;
+
   private _initialized = false;
 
   // The mode is kept while open, resizing would otherwise lose the view state
@@ -299,7 +303,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     this._hasManagerHistoryEntry =
       mainWindow.history.state?.dialog === this.localName;
 
-    const replacing = this.params!.replacing;
+    const replacing = this.params!.replacingItemKey;
     const queryTarget = replacing
       ? undefined
       : getAddAutomationElementTargetFromQuery(
@@ -525,14 +529,25 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
 
     if (this._bottomSheetMode) {
       return html`
-        <ha-bottom-sheet open @closed=${this._handleClosed} flexcontent>
+        <ha-bottom-sheet
+          open
+          @closed=${this._handleClosed}
+          @after-show=${this._handleAfterShow}
+          flexcontent
+        >
           ${this._renderContent(this.params)}
         </ha-bottom-sheet>
       `;
     }
 
     return html`
-      <ha-dialog width="large" open @closed=${this._handleClosed} flexcontent>
+      <ha-dialog
+        width="large"
+        open
+        @closed=${this._handleClosed}
+        @after-show=${this._handleAfterShow}
+        flexcontent
+      >
         ${this._renderContent(this.params)}
       </ha-dialog>
     `;
@@ -645,7 +660,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
                 .filter=${this._filter}
                 .narrow=${this._narrow}
                 .addElementType=${type}
-                .replacing=${!!params.replacing}
+                .replacingItemKey=${params.replacingItemKey}
                 .items=${this._getAllItems(sources)}
                 @search-element-picked=${this._searchItemSelected}
               >
@@ -694,6 +709,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
                           .recentElements=${recentElements}
                           .selectedGroup=${this._selectedGroup}
                           .narrow=${this._narrow}
+                          .replacingItemKey=${params.replacingItemKey}
                           @group-selected=${this._groupSelected}
                           @recent-element-selected=${this._recentSelected}
                           @clear-recent-elements=${this._clearRecentElements}
@@ -703,7 +719,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
                 </div>
                 <ha-automation-add-items
                   .items=${this._getItemSections(sources, systemDomains)}
-                  .replacing=${!!params.replacing}
+                  .replacingItemKey=${params.replacingItemKey}
                   .scrollable=${!this._narrow || this._tab === "blocks"}
                   .error=${
                     this._tab === "targets" && this._loadItemsError
@@ -824,7 +840,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
 
   private _getModeTitle(type: AddElementType): string {
     return this._i18n.localize(
-      `ui.panel.config.automation.editor.${type}s.${this.params!.replacing ? "replace_title" : "add"}`
+      `ui.panel.config.automation.editor.${type}s.${this.params!.replacingItemKey ? "replace_title" : "add"}`
     );
   }
 
@@ -1101,6 +1117,17 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       // DialogMixin removes the dialog on this event
       ev.stopPropagation();
       this._closedWhileHistoryPending = true;
+    }
+  }
+
+  // The content renders before the dialog is shown, so the group and item
+  // being replaced can only be scrolled to now.
+  private _handleAfterShow() {
+    if (this._selectedGroup) {
+      this._groupsElement?.scrollToSelected();
+    }
+    if (this.params?.replacingItemKey) {
+      this._itemsListElement?.scrollToCurrent();
     }
   }
 

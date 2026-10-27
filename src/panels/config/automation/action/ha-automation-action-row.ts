@@ -1023,7 +1023,7 @@ export default class HaAutomationActionRow extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "action",
       clipboardItem: undefined,
-      replacing: key,
+      replacingItemKey: key,
       add: (value, target) => {
         if (value === key && !target) {
           return;

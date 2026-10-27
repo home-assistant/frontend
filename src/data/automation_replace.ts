@@ -34,9 +34,6 @@ import type { HassServiceTargetWithExclude } from "./target";
 import type { TriggerDescriptions } from "./trigger";
 import { isTriggerList } from "./trigger";
 
-// Values that don't fit the new item are dropped, even if that leaves it
-// incomplete: an incomplete item is visible, an invalid value might not be.
-
 interface Field {
   selector?: Selector;
   required?: boolean;
@@ -52,6 +49,8 @@ const keptKeys = (keys: readonly string[]) =>
   keys.filter((key) => key !== "alias");
 
 // Only an identical field is known to accept the value, templates included.
+// Other values are dropped, even if that leaves the item incomplete: an
+// incomplete item is visible, an invalid value might not be.
 const portFields = (
   values: Record<string, unknown> | undefined,
   fields: Fields,

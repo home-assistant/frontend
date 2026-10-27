@@ -641,7 +641,7 @@ export default class HaAutomationConditionRow extends LitElement {
     showAddAutomationElementDialog(this, {
       type: "condition",
       clipboardItem: undefined,
-      replacing: key,
+      replacingItemKey: key,
       add: (value, target) => {
         if (value === key && !target) {
           return;
