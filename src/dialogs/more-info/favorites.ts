@@ -375,7 +375,7 @@ const fanFavoritesHandler: FavoritesDialogHandler = {
       (candidate) =>
         candidate.entity_id !== fanStateObj.entity_id &&
         computeStateDomain(candidate) === "fan" &&
-        fanAcceptsFavorites(fanStateObj, candidate as FanEntity, favorites)
+        fanAcceptsFavorites(fanStateObj, candidate as FanEntity)
     );
 
     await copyFavoriteOptionsToEntities(

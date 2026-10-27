@@ -229,41 +229,44 @@ describe("computeFanSnapshot", () => {
 });
 
 describe("fanAcceptsFavorites", () => {
-  const source = fullFan("on", { percentage_step: 25 });
-  const favorites = [{ percentage: 50, oscillating: true }];
+  const withSpeed = (features: number) =>
+    fullFan(
+      "on",
+      { percentage_step: 25 },
+      FanEntityFeature.SET_SPEED + features
+    );
+  const source = withSpeed(FanEntityFeature.OSCILLATE);
 
   it("requires the same speed steps", () => {
     expect(
       fanAcceptsFavorites(
         source,
-        fullFan("on", { percentage_step: 25 }),
-        favorites
-      )
-    ).toBe(true);
-    expect(
-      fanAcceptsFavorites(
-        source,
-        fullFan("on", { percentage_step: 20 }),
-        favorites
+        fullFan(
+          "on",
+          { percentage_step: 20 },
+          FanEntityFeature.SET_SPEED + FanEntityFeature.OSCILLATE
+        )
       )
     ).toBe(false);
   });
 
-  it("requires only the features the favorites use", () => {
-    const withoutDirection = fullFan(
-      "on",
-      { percentage_step: 25 },
-      FanEntityFeature.SET_SPEED + FanEntityFeature.OSCILLATE
-    );
-    const withoutOscillation = fullFan(
-      "on",
-      { percentage_step: 25 },
-      FanEntityFeature.SET_SPEED + FanEntityFeature.DIRECTION
-    );
-    expect(fanAcceptsFavorites(source, withoutDirection, favorites)).toBe(true);
-    expect(fanAcceptsFavorites(source, withoutOscillation, favorites)).toBe(
-      false
-    );
+  it("rejects a fan with an extra feature", () => {
+    expect(
+      fanAcceptsFavorites(
+        source,
+        withSpeed(FanEntityFeature.OSCILLATE + FanEntityFeature.DIRECTION)
+      )
+    ).toBe(false);
+  });
+
+  it("rejects a fan missing a feature", () => {
+    expect(fanAcceptsFavorites(source, withSpeed(0))).toBe(false);
+  });
+
+  it("accepts a fan with the same features", () => {
+    expect(
+      fanAcceptsFavorites(source, withSpeed(FanEntityFeature.OSCILLATE))
+    ).toBe(true);
   });
 });
 

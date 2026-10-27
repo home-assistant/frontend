@@ -330,19 +330,19 @@ export const computeFanSnapshot = (
 };
 
 // A fan can receive copied favorites when its speed steps match and it
-// supports every feature the favorites set.
+// supports exactly the same direction and oscillation features, so the
+// copied favorites define the same fields as on the source.
 export const fanAcceptsFavorites = (
   source: FanEntity,
-  candidate: FanEntity,
-  favorites: FanFavorite[]
+  candidate: FanEntity
 ): boolean =>
   fanSupportsFavorites(candidate) &&
   (candidate.attributes.percentage_step ?? 1) ===
     (source.attributes.percentage_step ?? 1) &&
-  (!favorites.some((favorite) => favorite.direction !== undefined) ||
-    supportsFeature(candidate, FanEntityFeature.DIRECTION)) &&
-  (!favorites.some((favorite) => favorite.oscillating !== undefined) ||
-    supportsFeature(candidate, FanEntityFeature.OSCILLATE));
+  supportsFeature(candidate, FanEntityFeature.DIRECTION) ===
+    supportsFeature(source, FanEntityFeature.DIRECTION) &&
+  supportsFeature(candidate, FanEntityFeature.OSCILLATE) ===
+    supportsFeature(source, FanEntityFeature.OSCILLATE);
 
 export type FanFavoriteSaveBlocker = "no_speed" | "duplicate";
 
