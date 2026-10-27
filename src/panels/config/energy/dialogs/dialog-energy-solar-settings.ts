@@ -209,6 +209,7 @@ export class DialogEnergySolarSettings
 
         <ha-radio-group
           .value=${this._forecast ? "true" : "false"}
+          .disabled=${this._saving}
           name="forecast"
           @change=${this._handleForecastChanged}
         >
@@ -231,6 +232,7 @@ export class DialogEnergySolarSettings
                     html`<ha-checkbox
                       .entry=${entry}
                       @change=${this._forecastCheckChanged}
+                      .disabled=${this._saving}
                       .checked=${!!this._source?.config_entry_solar_forecast?.includes(
                         entry.entry_id
                       )}
@@ -257,6 +259,7 @@ export class DialogEnergySolarSettings
                   appearance="filled"
                   size="s"
                   @click=${this._addForecast}
+                  .disabled=${this._saving}
                 >
                   <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
                   ${this.hass.localize(
