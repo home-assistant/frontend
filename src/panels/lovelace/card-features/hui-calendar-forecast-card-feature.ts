@@ -168,42 +168,59 @@ const mergeSegments = (segments: TimeSegment[]): TimeSegment[] => {
   return merged;
 };
 
-const layoutSegments = (segments: TimeSegment[]): LaidOutSegment[] => {
-  const sorted = [...segments].sort(
-    (a, b) => a.start - b.start || a.end - b.end
-  );
+const layoutSegments = (
+  segments: TimeSegment[],
+  start: number,
+  end: number
+): LaidOutSegment[] => {
+  const items = segments
+    .filter((segment) => isVisible(segment, start, end))
+    .map((segment) => ({
+      segment,
+      from: Math.max(segment.start, start),
+      to: Math.min(segment.end, end),
+    }))
+    .sort((a, b) => a.from - b.from || a.to - b.to);
+
   const result: LaidOutSegment[] = [];
   let i = 0;
-  while (i < sorted.length) {
-    const group = [sorted[i]];
-    let groupEnd = sorted[i].end;
+  while (i < items.length) {
+    const group = [items[i]];
+    let groupEnd = items[i].to;
     i++;
-    while (i < sorted.length && sorted[i].start < groupEnd) {
-      group.push(sorted[i]);
-      groupEnd = Math.max(groupEnd, sorted[i].end);
+    while (i < items.length && items[i].from < groupEnd) {
+      group.push(items[i]);
+      groupEnd = Math.max(groupEnd, items[i].to);
       i++;
     }
 
     if (group.length === 1) {
-      result.push({ ...group[0], lane: "full" });
+      result.push({ ...group[0].segment, lane: "full" });
       continue;
     }
 
-    const lanes: TimeSegment[][] = [[], []];
-    for (const segment of group) {
+    const lanes: { segment: TimeSegment; to: number }[][] = [[], []];
+    for (const item of group) {
       const free = lanes.findIndex(
-        (lane) => !lane.length || lane[lane.length - 1].end <= segment.start
+        (lane) => !lane.length || lane[lane.length - 1].to <= item.from
       );
       const lane = lanes[free === -1 ? 1 : free];
       const last = lane[lane.length - 1];
-      if (last && segment.start < last.end) {
-        last.end = Math.max(last.end, segment.end);
+      if (last && item.from < last.to) {
+        last.segment = {
+          start: last.segment.start,
+          end: Math.max(last.segment.end, item.segment.end),
+        };
+        last.to = Math.max(last.to, item.to);
       } else {
-        lane.push({ ...segment });
+        lane.push({ segment: { ...item.segment }, to: item.to });
       }
     }
-    lanes[0].forEach((segment) => result.push({ ...segment, lane: "top" }));
-    lanes[1].forEach((segment) => result.push({ ...segment, lane: "bottom" }));
+    lanes.forEach((lane, index) =>
+      lane.forEach(({ segment }) =>
+        result.push({ ...segment, lane: index === 0 ? "top" : "bottom" })
+      )
+    );
   }
   return result;
 };
@@ -293,9 +310,9 @@ class HuiCalendarForecastCardFeature
 
   @state() private _now = Date.now();
 
-  @state() private _segments: LaidOutSegment[] = [];
+  @state() private _segments: TimeSegment[] = [];
 
-  @state() private _allDaySegments: LaidOutSegment[] = [];
+  @state() private _allDaySegments: TimeSegment[] = [];
 
   @state() private _error = false;
 
@@ -476,7 +493,11 @@ class HuiCalendarForecastCardFeature
       new Date(range.end),
       (update) => {
         if (request !== this._request) return;
-        this._setCalendarEvents(update.events ?? []);
+        if (update.events === null) {
+          this._handleFetchError(request);
+          return;
+        }
+        this._setCalendarEvents(update.events);
       }
     ).catch(() => {
       this._handleFetchError(request);
@@ -499,8 +520,8 @@ class HuiCalendarForecastCardFeature
       (isAllDay ? allDay : timed).push({ start, end });
     }
     this._error = false;
-    this._segments = layoutSegments(timed);
-    this._allDaySegments = toFullLane(mergeSegments(allDay));
+    this._segments = timed;
+    this._allDaySegments = mergeSegments(allDay);
   }
 
   private async _fetchSchedule(range: FetchedRange) {
@@ -518,13 +539,11 @@ class HuiCalendarForecastCardFeature
       const schedule = result.response?.[range.entityId];
       this._error = false;
       this._segments = schedule
-        ? toFullLane(
-            expandSchedule(
-              schedule,
-              range.start,
-              range.end,
-              this._hassConfig!.time_zone
-            )
+        ? expandSchedule(
+            schedule,
+            range.start,
+            range.end,
+            this._hassConfig!.time_zone
           )
         : [];
       this._allDaySegments = [];
@@ -573,10 +592,20 @@ class HuiCalendarForecastCardFeature
       >
         ${
           this._config.show_all_day_events
-            ? this._renderSegments(this._allDaySegments, start, duration, true)
+            ? this._renderSegments(
+                toFullLane(this._allDaySegments),
+                start,
+                duration,
+                true
+              )
             : nothing
         }
-        ${this._renderSegments(this._segments, start, duration, false)}
+        ${this._renderSegments(
+          layoutSegments(this._segments, start, end),
+          start,
+          duration,
+          false
+        )}
         <div
           class="now"
           style=${styleMap({ "inset-inline-start": `${nowPosition * 100}%` })}
