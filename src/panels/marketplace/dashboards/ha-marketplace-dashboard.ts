@@ -73,6 +73,7 @@ import {
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
 import {
   apiContext,
+  brandsAccessTokenContext,
   configContext,
   devicesContext,
   entitiesContext,
@@ -186,6 +187,10 @@ export class HaMarketplaceDashboard extends LitElement {
   @state()
   @consume({ context: configContext, subscribe: true })
   private _config!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  private _brandsAccessToken?: string;
 
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
@@ -364,7 +369,8 @@ export class HaMarketplaceDashboard extends LitElement {
           this.narrow,
           this._darkMode,
           // Everything on the installed tab is, a mark would say nothing
-          this.tab !== "installed"
+          this.tab !== "installed",
+          this._brandsAccessToken
         )}
         .data=${repositories}
         .searchLabel=${this._i18n.localize(
@@ -563,7 +569,9 @@ export class HaMarketplaceDashboard extends LitElement {
       localizeFunc: LocalizeFunc,
       narrow: boolean,
       darkMode: boolean | undefined,
-      markInstalled: boolean
+      markInstalled: boolean,
+      // Cache key only: the icon URLs carry the brands access token
+      _brandsAccessToken: string | undefined
     ): DataTableColumnContainer<MarketplaceRepository> => ({
       icon: {
         title: "",

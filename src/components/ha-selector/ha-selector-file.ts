@@ -1,20 +1,20 @@
+import type { ContextType } from "@lit/context";
 import { mdiFile } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { consume } from "../../common/decorators/consume";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import { apiContext } from "../../data/context";
 import { removeFile, uploadFile } from "../../data/file_upload";
 import type { FileSelector } from "../../data/selector";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../types";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-file-upload";
 
 @customElement("ha-selector-file")
 export class HaFileSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: FileSelector;
 
   @property() public value?: string;
@@ -27,8 +27,12 @@ export class HaFileSelector extends LitElement {
 
   @property({ type: Boolean }) public required = true;
 
+  @state()
   @consumeLocalize()
-  protected _localize?: LocalizeFunc;
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @state() private _filename?: { fileId: string; name: string };
 
@@ -47,7 +51,7 @@ export class HaFileSelector extends LitElement {
         .value=${
           this.value
             ? this._filename?.name ||
-              this._localize!("ui.components.selectors.file.unknown_file")
+              this._localize("ui.components.selectors.file.unknown_file")
             : undefined
         }
         @file-picked=${this._uploadFile}
@@ -73,12 +77,16 @@ export class HaFileSelector extends LitElement {
     const file = ev.detail.files![0];
 
     try {
-      const fileId = await uploadFile(this.hass, file);
+      const fileId = await uploadFile(
+        this._api.fetchWithAuth,
+        this._localize,
+        file
+      );
       this._filename = { fileId, name: file.name };
       fireEvent(this, "value-changed", { value: fileId });
     } catch (err: any) {
       showAlertDialog(this, {
-        text: this._localize!("ui.components.selectors.file.upload_failed", {
+        text: this._localize("ui.components.selectors.file.upload_failed", {
           reason: err.message || err,
         }),
       });
@@ -90,7 +98,7 @@ export class HaFileSelector extends LitElement {
   private _removeFile = async () => {
     this._busy = true;
     try {
-      await removeFile(this.hass, this.value!);
+      await removeFile(this._api.callApi, this.value!);
     } catch (_err) {
       // Not ideal if removal fails, but will be cleaned up later
     } finally {

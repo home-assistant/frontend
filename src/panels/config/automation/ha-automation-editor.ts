@@ -26,6 +26,7 @@ import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { goBack, navigate } from "../../../common/navigate";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button";
@@ -290,7 +291,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 <ha-button
                   appearance="plain"
                   size="s"
-                  @click=${this._showTrace}
+                  href="/config/automation/trace/${encodeURIComponent(
+                    this.config.id
+                  )}"
+                  @click=${this._traceClicked}
                   slot="toolbar-icon"
                 >
                   ${this.hass.localize(
@@ -849,6 +853,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       scope: "automation",
       entityReg: this.registryEntry,
     });
+  }
+
+  private async _traceClicked(ev: MouseEvent) {
+    if (isNavigationClick(ev)) {
+      await this._showTrace();
+    }
   }
 
   private async _showTrace() {

@@ -4610,6 +4610,7 @@
             }
           },
           "delete_source": "Are you sure you want to remove this source?",
+          "save_config_failed": "Failed to save config: {error}",
           "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
           "grid": {
             "title": "Electricity grid",
@@ -4697,6 +4698,20 @@
               "dont_forecast_production": "Don't forecast production",
               "forecast_production": "Forecast production",
               "add_forecast": "Add forecast"
+            }
+          },
+          "home": {
+            "title": "Home consumption",
+            "sub": "If you have a meter that measures your whole house consumption, you can configure it here.",
+            "add_home_meter": "Add home meter",
+            "remove_home_meter": "Remove home meter",
+            "edit_home_meter": "Edit home meter",
+            "dialog": {
+              "header": "Configure home consumption",
+              "entity_para": "Pick a sensor which measures home consumption in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
+              "home_energy": "Home energy",
+              "home_power": "Home power"
             }
           },
           "battery": {
@@ -9261,7 +9276,14 @@
             "failed": "The command failed. Additional information may be available in the logs.",
             "success": "Your device is ready to be added to another Matter platform.",
             "scan_code": "With their app, scan the QR code or enter the sharing code below to finish setup.",
-            "copy_code": "Copy code"
+            "scan_code_add_to_apple_home": "If you use Apple Home on this device, select \"{button}\". Otherwise, scan the QR code or enter the sharing code below in the other app to finish setup.",
+            "scan_code_share_with_app": "If the other app, such as Google Home, is on this device, select \"{button}\". Otherwise, scan the QR code or enter the sharing code below in that app to finish setup.",
+            "copy_code": "Copy code",
+            "add_to_apple_home": "Add to Apple Home",
+            "share_with_app": "Share with app",
+            "share_failed": "Couldn't share the device. Try again, or close this dialog to get a new code.",
+            "share_expired": "This code has expired.",
+            "new_code": "Get new code"
           },
           "lock": {
             "manage": "Manage access",
@@ -10953,7 +10975,8 @@
                 "solar": "Solar",
                 "battery": "Battery",
                 "gas": "Gas",
-                "water": "Water"
+                "water": "Water",
+                "home": "Home"
               }
             },
             "energy-compare": {

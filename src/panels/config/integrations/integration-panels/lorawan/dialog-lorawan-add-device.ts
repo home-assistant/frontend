@@ -13,6 +13,7 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/item/ha-list-item-button";
 import "../../../../../components/list/ha-list-nav";
 import {
+  brandsAccessTokenContext,
   connectionContext,
   internationalizationContext,
   uiContext,
@@ -34,6 +35,11 @@ class DialogLoRaWANAddDevice extends DialogMixin<{
   @state()
   @consume({ context: uiContext, subscribe: true })
   private _ui!: ContextType<typeof uiContext>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
 
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: ContextType<typeof connectionContext>;

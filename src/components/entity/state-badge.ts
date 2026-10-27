@@ -18,7 +18,10 @@ import {
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
-import { connectionContext } from "../../data/context";
+import {
+  brandsAccessTokenContext,
+  connectionContext,
+} from "../../data/context";
 import { isBrandUrl } from "../../util/brands-url";
 import "../ha-state-icon";
 
@@ -47,6 +50,11 @@ export class StateBadge extends LitElement {
   @state()
   @consume({ context: connectionContext, subscribe: true })
   private _connection?: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore read in willUpdate through changedProps only
+  private _brandsAccessToken?: string;
 
   @state() private _iconStyle: Record<string, string | undefined> = {};
 
@@ -132,7 +140,8 @@ export class StateBadge extends LitElement {
       !changedProps.has("overrideIcon") &&
       !changedProps.has("stateColor") &&
       !changedProps.has("color") &&
-      !changedProps.has("_connection")
+      !changedProps.has("_connection") &&
+      !changedProps.has("_brandsAccessToken")
     ) {
       return;
     }
