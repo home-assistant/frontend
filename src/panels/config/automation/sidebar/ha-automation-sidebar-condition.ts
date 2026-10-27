@@ -261,7 +261,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
       <ha-dropdown-item
         slot="menu-items"
         value="toggle_yaml_mode"
-        .disabled=${!this.config.uiSupported || !!this._warnings}
+        .disabled=${!this.canToggleYamlMode}
       >
         <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
         <div class="overflow-label">
@@ -410,9 +410,22 @@ export default class HaAutomationSidebarCondition extends LitElement {
     );
   }
 
-  private _toggleYamlMode = () => {
+  public get canToggleYamlMode(): boolean {
+    return this.config.uiSupported && !this._warnings;
+  }
+
+  public toggleYamlMode() {
+    if (!this.canToggleYamlMode) {
+      return;
+    }
     fireEvent(this, "toggle-yaml-mode", { yamlMode: !this.yamlMode });
-  };
+  }
+
+  public async focusYamlEditor() {
+    await this.updateComplete;
+    await this.editor?.updateComplete;
+    this.editor?.yamlEditor?.focus();
+  }
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
@@ -444,7 +457,7 @@ export default class HaAutomationSidebarCondition extends LitElement {
         this.config.paste();
         break;
       case "toggle_yaml_mode":
-        this._toggleYamlMode();
+        this.toggleYamlMode();
         break;
       case "disable":
         this.config.disable();

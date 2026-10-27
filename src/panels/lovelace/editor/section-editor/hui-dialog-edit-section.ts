@@ -70,6 +70,7 @@ import type { EditSectionDialogParams } from "./show-edit-section-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
 import { getViewType } from "../../views/get-view-type";
 import { DEFAULT_MAX_COLUMNS, SECTIONS_VIEW_LAYOUT } from "../../views/const";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 import { LOVELACE_EDIT_TOAST_ID } from "../../types";
 
 const TABS = ["tab-strategy", "tab-appearance", "tab-visibility"] as const;
@@ -85,7 +86,9 @@ const TWO_COLUMNS_MIN_WIDTH = 2 * 320 + 3 * 32;
 
 @customElement("hui-dialog-edit-section")
 export class HuiDialogEditSection
-  extends DirtyStateProviderMixin<LovelaceSectionRawConfig>()(LitElement)
+  extends DirtyStateProviderMixin<LovelaceSectionRawConfig>()(
+    KeyboardShortcutMixin(LitElement)
+  )
   implements HassDialog<EditSectionDialogParams>
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -210,7 +213,6 @@ export class HuiDialogEditSection
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          autofocus
           in-dialog
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
@@ -514,11 +516,21 @@ export class HuiDialogEditSection
     }
   }
 
-  private _toggleMode(): void {
+  private async _toggleMode(): Promise<void> {
     if (this._yamlMode && this._yamlError) return;
-    withViewTransition(() => {
+    await withViewTransition(() => {
       this._yamlMode = !this._yamlMode;
     });
+    if (this._yamlMode) {
+      await this.updateComplete;
+      this._editor?.focus();
+    }
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return this._params && !(this._yamlMode && this._yamlError)
+      ? { Y: () => this._toggleMode() }
+      : {};
   }
 
   private _openSelectView(): void {
