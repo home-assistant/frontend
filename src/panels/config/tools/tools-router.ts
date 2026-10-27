@@ -30,6 +30,10 @@ class ToolsRouter extends HassRouterPage {
         tag: "tools-action",
         load: () => import("./action/tools-action"),
       },
+      "action-history": {
+        tag: "tools-action-history",
+        load: () => import("./action_history/tools-action-history"),
+      },
       state: {
         tag: "tools-state",
         load: () => import("./state/tools-state"),

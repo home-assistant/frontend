@@ -218,7 +218,7 @@ export class HaConfigUsers extends LitElement {
 
   private async _fetchUsers() {
     try {
-      this._users = await fetchUsers(this.hass);
+      this._users = await fetchUsers(this.hass.callWS);
       this._loadFailed = false;
     } catch {
       this._loadFailed = true;

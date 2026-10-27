@@ -12,7 +12,11 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { clamp } from "../../../common/number/clamp";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-number-buttons";
-import { apiContext, internationalizationContext } from "../../../data/context";
+import {
+  apiContext,
+  formattersContext,
+  internationalizationContext,
+} from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   MediaPlayerEntityFeature,
@@ -22,6 +26,7 @@ import type { FrontendLocaleData } from "../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantApi,
+  HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../types";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
@@ -76,6 +81,10 @@ class HuiMediaPlayerVolumeButtonsCardFeature
   private _api!: HomeAssistantApi;
 
   @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
   @consume({ context: internationalizationContext, subscribe: true })
   @transform<HomeAssistantInternationalization, FrontendLocaleData>({
     transformer: ({ locale }) => locale,
@@ -125,6 +134,10 @@ class HuiMediaPlayerVolumeButtonsCardFeature
 
     return html`
       <ha-control-number-buttons
+        .label=${this._formatters.formatEntityAttributeName(
+          stateObj,
+          "volume_level"
+        )}
         .disabled=${disabled}
         .locale=${this._locale}
         min="0"

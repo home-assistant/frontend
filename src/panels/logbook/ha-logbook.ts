@@ -525,7 +525,7 @@ export class HaLogbook extends LitElement {
     const personUserIds = new Set<string>();
 
     // Start loading users
-    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
+    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass.callWS);
 
     // Process persons
     for (const entity of Object.values(this.hass.states)) {

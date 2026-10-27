@@ -599,7 +599,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-categories
-          .hass=${this.hass}
           scope="scene"
           .value=${this._filters["ha-filter-categories"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -830,13 +829,17 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         // the filters below only expose the selected options (as filter.value);
         // applying the filter must be done here
       } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
-        // category filter only allows a single selected option
-        filteredEntityIds = filteredEntityIds.filter(
-          (entityId) =>
-            filter.value![0] ===
-            this._entityReg.find((reg) => reg.entity_id === entityId)
-              ?.categories.scene
-        );
+        filteredEntityIds = filteredEntityIds.filter((entityId) => {
+          const category = this._entityReg.find(
+            (reg) => reg.entity_id === entityId
+          )?.categories.scene;
+
+          return (
+            category !== undefined &&
+            Array.isArray(filter.value) &&
+            filter.value.includes(category)
+          );
+        });
       } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
           this._entityReg
@@ -1141,7 +1144,7 @@ ${rejected
       scope: "scene",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
-          this.hass,
+          this.hass.callWS,
           "scene",
           values
         );

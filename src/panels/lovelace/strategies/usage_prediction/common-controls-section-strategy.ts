@@ -40,6 +40,10 @@ export class CommonControlsSectionStrategy extends ReactiveElement {
     );
   }
 
+  public static getStubConfig(): CommonControlsSectionStrategyConfig {
+    return { type: "common-controls" };
+  }
+
   static async generate(
     config: CommonControlsSectionStrategyConfig,
     hass: HomeAssistant

@@ -15,6 +15,10 @@ import {
 
 const DEBOUNCE_WAIT = 300;
 
+// A page can be opened with or without a trailing slash
+const trimSlash = (path: string) =>
+  path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path;
+
 export interface QueryParamsControllerOptions {
   /** Whether the host keeps its state in the URL. */
   enabled: () => boolean;
@@ -24,6 +28,12 @@ export interface QueryParamsControllerOptions {
    * the URL with `searchParams()` and apply it, then `write()` the state back.
    */
   navigated: () => void;
+  /**
+   * The path of the host's page, for a page that can first be connected on
+   * a sub-path it sends on to itself, like an add link. Defaults to the path
+   * the host is first connected on.
+   */
+  path?: string;
 }
 
 /**
@@ -57,7 +67,7 @@ export class QueryParamsController<
   public hostConnected() {
     // A cached page is reconnected on the way to another page, before its
     // router has moved on, so it keeps the page it was first connected on
-    this._path ??= currentPath();
+    this._path ??= this._options.path ?? currentPath();
     this._connected = true;
     mainWindow.addEventListener("location-changed", this._navigated);
     mainWindow.addEventListener("popstate", this._navigated);
@@ -127,7 +137,9 @@ export class QueryParamsController<
 
   private _isActive(): boolean {
     return (
-      this._connected && this._options.enabled() && currentPath() === this._path
+      this._connected &&
+      this._options.enabled() &&
+      trimSlash(currentPath()) === trimSlash(this._path ?? "")
     );
   }
 
@@ -158,7 +170,9 @@ export class QueryParamsController<
     const current = mainWindow.location.search;
     const queryString = updateQueryString(current, values, this._config);
     if (current !== (queryString ? `?${queryString}` : "")) {
-      replaceCurrentUrl(constructUrlCurrentPath(queryString));
+      // Keep a fragment like #config_entry=, the demo already routes with it
+      const hash = __DEMO__ ? "" : mainWindow.location.hash;
+      replaceCurrentUrl(`${constructUrlCurrentPath(queryString)}${hash}`);
     }
   }
 }

@@ -18,6 +18,14 @@ import type { HassServiceTargetWithExclude } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import "../ha-target-picker";
 
+type TargetSelectorFilters = NonNullable<TargetSelector["target"]>;
+
+// The pickers hide devices, areas and labels without entities only when they
+// get a filter function, so one is always passed.
+const ALL_ENTITIES = () => true;
+
+const ALL_DEVICES = () => true;
+
 @customElement("ha-selector-target")
 export class HaTargetSelector extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -80,8 +88,11 @@ export class HaTargetSelector extends LitElement {
         .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
-        .deviceFilter=${this._filterDevices}
-        .entityFilter=${this._filterEntities}
+        .deviceFilter=${this._deviceFilter(this.selector.target?.device)}
+        .entityFilter=${this._entityFilter(
+          this.selector.target?.entity,
+          this._entitySources
+        )}
         .disabled=${this.disabled}
         .createDomains=${this._createDomains}
         .primaryEntitiesOnly=${this.selector.target?.primary_entities_only}
@@ -89,37 +100,51 @@ export class HaTargetSelector extends LitElement {
       ></ha-target-picker>`;
   }
 
-  private _filterEntities = (entity: HassEntity): boolean => {
-    if (!this.selector.target?.entity) {
-      return true;
+  // The picker caches its lists per filter function, so a new function is
+  // only made when the selector filters change.
+  private _entityFilter = memoizeOne(
+    (
+      filters: TargetSelectorFilters["entity"],
+      entitySources: EntitySources | undefined
+    ) => {
+      if (!filters) {
+        return ALL_ENTITIES;
+      }
+      return (entity: HassEntity): boolean =>
+        ensureArray(filters).some((filter) =>
+          filterSelectorEntities(
+            filter,
+            entity,
+            entitySources,
+            this.hass.entities,
+            this.hass.devices
+          )
+        );
     }
+  );
 
-    return ensureArray(this.selector.target.entity).some((filter) =>
-      filterSelectorEntities(
-        filter,
-        entity,
-        this._entitySources,
-        this.hass.entities,
-        this.hass.devices
-      )
-    );
-  };
-
-  private _filterDevices = (device: DeviceRegistryEntry): boolean => {
-    if (!this.selector.target?.device) {
-      return true;
+  private _deviceFilter = memoizeOne(
+    (filters: TargetSelectorFilters["device"]) => {
+      if (!filters) {
+        return ALL_DEVICES;
+      }
+      return (device: DeviceRegistryEntry): boolean => {
+        const deviceIntegrations = this._hasIntegration(this.selector)
+          ? this._deviceIntegrationLookup(this.hass.entities)
+          : undefined;
+        return ensureArray(filters).some((filter) =>
+          filterSelectorDevices(filter, device, deviceIntegrations)
+        );
+      };
     }
-
-    const deviceIntegrations = this._hasIntegration(this.selector)
-      ? this._deviceIntegrationLookup(this.hass.entities)
-      : undefined;
-
-    return ensureArray(this.selector.target.device).some((filter) =>
-      filterSelectorDevices(filter, device, deviceIntegrations)
-    );
-  };
+  );
 
   static styles = css`
+    label {
+      display: block;
+      margin-bottom: var(--ha-space-2);
+      font-weight: var(--ha-font-weight-medium);
+    }
     ha-target-picker {
       display: block;
     }

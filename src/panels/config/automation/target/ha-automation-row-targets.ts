@@ -195,18 +195,14 @@ export class HaAutomationRowTargets extends LitElement {
       return referencedEntities.length;
     }
 
+    const entityRegistry = hasDeviceFilter
+      ? Object.values(this._registries.entities)
+      : [];
+
     return referencedEntities.filter((entityId) => {
       if (hasEntityFilter) {
         const stateObj = this._states[entityId];
-        if (
-          !entityMeetsTargetSelector(
-            stateObj,
-            targetSelector!,
-            undefined,
-            this._registries.entities,
-            this._registries.devices
-          )
-        ) {
+        if (!entityMeetsTargetSelector(stateObj, targetSelector!)) {
           return false;
         }
       }
@@ -218,7 +214,7 @@ export class HaAutomationRowTargets extends LitElement {
             device &&
             !deviceMeetsTargetSelector(
               this._states,
-              this._registries.entities,
+              entityRegistry,
               device,
               targetSelector!
             )
@@ -277,12 +273,7 @@ export class HaAutomationRowTargets extends LitElement {
     if (!count) {
       return " (-)";
     }
-    return count.excluded
-      ? ` ${this._i18n.localize(
-          "ui.panel.config.automation.editor.target_summary.count_excluded",
-          { count: count.count, excluded: count.excluded }
-        )}`
-      : ` (${count.count})`;
+    return ` (${count.count})`;
   }
 
   private _renderCount(
@@ -315,12 +306,7 @@ export class HaAutomationRowTargets extends LitElement {
             const remaining = result.referenced_entities.filter(
               (entityId) => !excluded.has(entityId)
             );
-            const count = this._countMatchingEntities(remaining);
-            return {
-              count,
-              excluded:
-                this._countMatchingEntities(result.referenced_entities) - count,
-            };
+            return { count: this._countMatchingEntities(remaining) };
           })
           .catch((err) => {
             // eslint-disable-next-line no-console
@@ -856,7 +842,6 @@ export class HaAutomationRowTargets extends LitElement {
 
 interface TargetCount {
   count: number;
-  excluded: number;
 }
 
 declare global {

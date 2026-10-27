@@ -27,8 +27,13 @@ import {
   saveEnergyPreferences,
   EMPTY_PREFERENCES,
   CompareMode,
+  computeConsumptionData,
 } from "../../src/data/energy";
-import type { EnergyData, EnergySource } from "../../src/data/energy";
+import type {
+  EnergyData,
+  EnergySource,
+  EnergySumData,
+} from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
 import { StatisticMeanType } from "../../src/data/recorder";
@@ -2145,12 +2150,50 @@ describe("computeEnergyLabel", () => {
       }
     );
 
-  it("composes the device and entity name", () => {
+  it("uses the device name without the entity name", () => {
     const hass = createHass(
       "Washer Energy",
       { name: "Energy", device_id: "device1" },
       { name: "Washer" }
     );
+
+    assert.equal(
+      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
+      "Washer"
+    );
+  });
+
+  it("prefixes a sub-device with its parent device", () => {
+    const hass = createMockHass(
+      {
+        [ENTITY_ID]: createMockEntityState(ENTITY_ID, "1", {
+          friendly_name: "Shelly EM Channel 1 Energy",
+        }),
+      },
+      {
+        entities: {
+          [ENTITY_ID]: createEntry({ name: "Energy", device_id: "channel1" }),
+        },
+        devices: {
+          shelly: createDevice({ id: "shelly", name: "Shelly EM" }),
+          channel1: createDevice({
+            id: "channel1",
+            name: "Channel 1",
+            parent_device_id: "shelly",
+            next_name_part: "parent_device",
+          }),
+        },
+      }
+    );
+
+    assert.equal(
+      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
+      "Shelly EM Channel 1"
+    );
+  });
+
+  it("uses the entity name when the entity has no device", () => {
+    const hass = createHass("Washer Energy", { name: "Washer Energy" });
 
     assert.equal(
       computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
@@ -2168,19 +2211,6 @@ describe("computeEnergyLabel", () => {
     assert.equal(
       computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
       "Washer"
-    );
-  });
-
-  it("distinguishes entities sharing a name by their device", () => {
-    const hass = createHass(
-      "Energy",
-      { name: "Energy", device_id: "device1" },
-      { name: "Dishwasher" }
-    );
-
-    assert.equal(
-      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
-      "Dishwasher Energy"
     );
   });
 
@@ -2218,7 +2248,7 @@ describe("computeEnergyLabel", () => {
         undefined,
         ""
       ),
-      "Washer Energy"
+      "Washer"
     );
   });
 
@@ -2292,5 +2322,35 @@ describe("computeEnergyDeviceLabels", () => {
       ),
       { "sensor.washer_power": "Washer Power" }
     );
+  });
+});
+
+describe("computeConsumptionData with a home meter", () => {
+  const summed: EnergySumData = {
+    from_grid: { 1: 4, 2: 4, 3: 4 },
+    solar: { 1: 3, 2: 3, 3: 3 },
+    home: { 1: 9, 2: 0 },
+    total: { from_grid: 12, solar: 9, home: 9 },
+    timestamps: [1, 2, 3],
+  };
+  const { home: _home, ...withoutHome } = summed;
+  const baseline = computeConsumptionData(withoutHome, undefined).consumption;
+  const { consumption } = computeConsumptionData(summed, undefined);
+
+  it("uses the home reading as used_total", () => {
+    assert.equal(consumption.used_total[1], 9);
+  });
+
+  it("keeps a real zero reading", () => {
+    assert.equal(consumption.used_total[2], 0);
+  });
+
+  it("falls back to the calculated value when a bucket has no reading", () => {
+    assert.equal(consumption.used_total[3], baseline.used_total[3]);
+    assert.equal(consumption.used_grid[3], baseline.used_grid[3]);
+  });
+
+  it("never changes the measured grid value", () => {
+    assert.equal(consumption.used_grid[1], baseline.used_grid[1]);
   });
 });

@@ -600,7 +600,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-categories
-          .hass=${this.hass}
           scope="automation"
           .value=${this._filters["ha-filter-categories"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -618,7 +617,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-voice-assistants>
         <ha-filter-blueprints
-          .hass=${this.hass}
           .type=${"automation"}
           .value=${this._filters["ha-filter-blueprints"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -980,13 +978,17 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
         // the filters below only expose the selected options (as filter.value);
         // applying the filter must be done here
       } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
-        // category filter only allows a single selected option
-        filteredEntityIds = filteredEntityIds.filter(
-          (entityId) =>
-            filter.value![0] ===
-            this._entityReg.find((reg) => reg.entity_id === entityId)
-              ?.categories.automation
-        );
+        filteredEntityIds = filteredEntityIds.filter((entityId) => {
+          const category = this._entityReg.find(
+            (reg) => reg.entity_id === entityId
+          )?.categories.automation;
+
+          return (
+            category !== undefined &&
+            Array.isArray(filter.value) &&
+            filter.value.includes(category)
+          );
+        });
       } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
           this._entityReg
@@ -1400,7 +1402,7 @@ ${rejected
       scope: "automation",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
-          this.hass,
+          this.hass.callWS,
           "automation",
           values
         );

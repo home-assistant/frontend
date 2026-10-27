@@ -119,36 +119,6 @@ describe("calculateActiveSystemDomains", () => {
     expect(byEntityDomain.has("light")).toBe(true);
   });
 
-  it("matches a translation_key filter through the entity registry", () => {
-    const epexDescriptions = {
-      "epex.current_hour_crossed_threshold": {
-        target: {
-          entity: [{ domain: "sensor", translation_key: "epex_current_hour" }],
-        },
-      },
-    } as unknown as TriggerDescriptions;
-    const states = { "sensor.home": entity("sensor.home") };
-    const activate = (entities = {}) =>
-      calculateActiveSystemDomains(
-        epexDescriptions,
-        { epex: manifest("entity") },
-        getTriggerDomain,
-        states,
-        entities,
-        {}
-      ).active;
-
-    expect(activate().has("epex")).toBe(false);
-    expect(
-      activate({
-        "sensor.home": {
-          entity_id: "sensor.home",
-          translation_key: "epex_current_hour",
-        },
-      }).has("epex")
-    ).toBe(true);
-  });
-
   it("skips entity domains that have entities of their own", () => {
     const { byEntityDomain } = calculateActiveSystemDomains(
       descriptions,

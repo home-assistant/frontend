@@ -2,22 +2,28 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { ReactiveController, ReactiveControllerHost } from "lit";
 import { html, nothing } from "lit";
 import { isComponentLoaded } from "../../../../../../common/config/is_component_loaded";
+import { ContextSubscriptionController } from "../../../../../../common/decorators/consume";
 import { computeDeviceNameDisplay } from "../../../../../../common/entity/compute_device_name";
+import { configEntriesContext } from "../../../../../../data/context";
 import {
   fetchESPHomeDeviceCapabilities,
+  fetchESPHomeDeviceWizard,
   type ESPHomeDeviceCapabilities,
+  type ESPHomeDeviceWizard,
 } from "../../../../../../data/esphome";
 import {
   countRemainingESPHomeCapabilities,
   type ESPHomeDeviceEntityRef,
   deriveESPHomeSetupStatus,
   getESPHomeAudioControls,
-  getESPHomeBluetoothSwitch,
-  hasESPHomeBluetoothSwitch,
+  getESPHomeSwitch,
   getESPHomeSetupCapabilityIds,
+  getESPHomeWizardSwitches,
+  hasESPHomeBluetoothSwitch,
   hasESPHomeSetupCapabilities,
   isESPHomeSerialConfigured,
   isESPHomeSetupDeferred,
+  isMusicAssistantConfigured,
   withDeferredESPHomeDevice,
 } from "../../../../../../data/esphome_setup";
 import {
@@ -47,6 +53,8 @@ export class ESPHomeSetupController implements ReactiveController {
 
   private _capabilities?: ESPHomeDeviceCapabilities;
 
+  private _wizard?: ESPHomeDeviceWizard;
+
   /** Undefined until a USB usage scan succeeds. Failures keep the previous value. */
   private _serialConfigured?: boolean;
 
@@ -64,11 +72,24 @@ export class ESPHomeSetupController implements ReactiveController {
 
   private _capabilitiesRequest = 0;
 
+  private _musicAssistantConfigured = false;
+
   constructor(
     private readonly _host: ESPHomeSetupHost,
     private readonly _getEntities: () => ESPHomeDeviceEntityRef[]
   ) {
     this._host.addController(this);
+    new ContextSubscriptionController(
+      this._host,
+      configEntriesContext,
+      (entries) => {
+        const configured = isMusicAssistantConfigured(entries);
+        if (configured !== this._musicAssistantConfigured) {
+          this._musicAssistantConfigured = configured;
+          this._host.requestUpdate();
+        }
+      }
+    );
   }
 
   public hostConnected(): void {
@@ -101,7 +122,10 @@ export class ESPHomeSetupController implements ReactiveController {
     this._subscribeUserData();
     const hass = this._host.hass;
     try {
-      const capabilities = await fetchESPHomeDeviceCapabilities(hass, deviceId);
+      const [capabilities, wizard] = await Promise.all([
+        fetchESPHomeDeviceCapabilities(hass, deviceId),
+        fetchESPHomeDeviceWizard(hass, deviceId),
+      ]);
       if (!stillCurrent()) {
         return;
       }
@@ -132,6 +156,7 @@ export class ESPHomeSetupController implements ReactiveController {
         serialConfigured = false;
       }
       this._capabilities = capabilities;
+      this._wizard = wizard;
       this._serialConfigured = serialConfigured;
       this._serialError = serialError;
       this._host.requestUpdate();
@@ -184,15 +209,17 @@ export class ESPHomeSetupController implements ReactiveController {
       return undefined;
     }
     const hass = this._host.hass;
+    const switches = getESPHomeWizardSwitches(this._wizard);
     const audio = getESPHomeAudioControls(
       deviceId,
       this._getEntities(),
-      hass.states
+      hass.states,
+      switches.sendspin
     );
     if (
       !hasESPHomeSetupCapabilities(this._capabilities, {
         bluetoothSwitch: hasESPHomeBluetoothSwitch(
-          deviceId,
+          switches.bluetooth,
           this._getEntities()
         ),
         mediaPlayerSupported: audio.supported,
@@ -201,15 +228,11 @@ export class ESPHomeSetupController implements ReactiveController {
       return undefined;
     }
     let status = deriveESPHomeSetupStatus(this._capabilities, {
-      bluetoothEnabled: getESPHomeBluetoothSwitch(
-        deviceId,
-        this._getEntities(),
-        hass.states
-      )?.on,
+      bluetoothEnabled: getESPHomeSwitch(switches.bluetooth, hass.states)?.on,
       mediaPlayerSupported: audio.supported,
       sendspinSupported: Boolean(audio.sendspinEntityId),
       sendspinEnabled: audio.sendspinOn,
-      musicAssistantLoaded: isComponentLoaded(hass.config, "music_assistant"),
+      musicAssistantConfigured: this._musicAssistantConfigured,
       serialConfigured: this._serialConfigured,
     });
     // Unknown usage is not a completed setup. List the row so the banner stays,
@@ -230,6 +253,7 @@ export class ESPHomeSetupController implements ReactiveController {
 
   private _clearCapabilities() {
     this._capabilities = undefined;
+    this._wizard = undefined;
     this._serialConfigured = undefined;
     this._serialError = undefined;
     this._host.requestUpdate();
@@ -290,10 +314,12 @@ export class ESPHomeSetupController implements ReactiveController {
         ? computeDeviceNameDisplay(device, hass.localize)
         : undefined,
       capabilities: this._capabilities,
+      wizard: this._wizard,
       mediaPlayerSupported: getESPHomeAudioControls(
         deviceId,
         this._getEntities(),
-        hass.states
+        hass.states,
+        getESPHomeWizardSwitches(this._wizard).sendspin
       ).supported,
       dialogClosedCallback: () => {
         if (this._deviceId === deviceId) {

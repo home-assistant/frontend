@@ -1,4 +1,7 @@
-import { DEFAULT_SECTION_COLUMN_SPAN } from "../../../data/lovelace/config/section";
+import {
+  DEFAULT_SECTION_COLUMN_SPAN,
+  hasSectionBackground,
+} from "../../../data/lovelace/config/section";
 import type { HuiSection } from "../sections/hui-section";
 
 /**
@@ -43,7 +46,7 @@ export function computeSectionsBackgroundAlignment(
     columnsUsed += span;
     currentRow.indices.push(idx);
 
-    if (section.config.background !== undefined) {
+    if (hasSectionBackground(section.config)) {
       currentRow.hasBackground = true;
     }
   }
@@ -53,7 +56,7 @@ export function computeSectionsBackgroundAlignment(
   for (const row of rows) {
     if (!row.hasBackground) continue;
     for (const idx of row.indices) {
-      if (sections[idx].config.background === undefined) {
+      if (!hasSectionBackground(sections[idx].config)) {
         sectionsNeedingMargin.add(idx);
       }
     }
