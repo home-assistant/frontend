@@ -15,6 +15,7 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { findSectionTitle } from "./list/find-section-title";
+import { searchResultsStatus } from "./list/search-results-status";
 import { consume } from "../common/decorators/consume";
 import {
   fireEvent,
@@ -373,28 +374,17 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   }
 
   // DOM focus stays in the search field, so screen readers hear nothing when
-  // the list changes. Announce how many items match instead. A live region is
-  // only read out when its text changes, so the message names the search.
+  // the list changes. Announce how many items match instead.
   private _searchResultsStatus() {
-    if (!this._search) {
-      return nothing;
-    }
-    const count = this._items.filter(
-      (item) => this._isOption(item) && !this._actionItems.has(item)
-    ).length;
-    const term = `‘${this._search}’`;
-    if (!count) {
-      // A not found label that takes the search names it already.
-      return typeof this.notFoundLabel === "function"
-        ? this.notFoundLabel(this._search)
-        : this.i18n?.localize?.("ui.components.combo-box.no_results", {
-            term,
-          });
-    }
-    return this.i18n?.localize?.("ui.components.combo-box.result_count", {
-      count,
-      term,
-    });
+    return (
+      searchResultsStatus(
+        this._search,
+        this._items,
+        (item) => this._isOption(item) && !this._actionItems.has(item),
+        this.i18n?.localize,
+        this.notFoundLabel
+      ) ?? nothing
+    );
   }
 
   private _renderPlainList() {
