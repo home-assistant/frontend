@@ -88,6 +88,7 @@ export interface EntityCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
+  color?: string;
   attribute?: string;
   unit?: string;
   theme?: string;
@@ -639,6 +640,7 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
+  color?: string;
   graph?: string;
   unit?: string;
   detail?: number;
