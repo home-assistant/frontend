@@ -244,21 +244,28 @@ export class DialogEnergyDeviceSettings
   }
 
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
-    const statRate = this._device?.stat_rate;
-    if (!ev.detail.value) {
-      this._device = statRate ? { stat_rate: statRate } : undefined;
-      this._computePossibleParents();
-      this._updateDirtyState(this._device ?? null);
-      return;
+    const device: DeviceConsumptionDraft = { ...this._device };
+    if (ev.detail.value) {
+      device.stat_consumption = ev.detail.value;
+    } else {
+      delete device.stat_consumption;
     }
-    this._device = {
-      stat_consumption: ev.detail.value,
-      ...(statRate ? { stat_rate: statRate } : {}),
-    };
+    this._device =
+      device.stat_consumption || device.stat_rate ? device : undefined;
     this._computePossibleParents();
-    this._updateDirtyState(this._device);
+    // The new energy sensor can rule out the picked upstream device
+    if (
+      device.included_in_stat &&
+      !this._possibleParents.some(
+        (parent) => parent.stat_consumption === device.included_in_stat
+      )
+    ) {
+      delete device.included_in_stat;
+    }
+    this._updateDirtyState(this._device ?? null);
 
     if (
+      ev.detail.value &&
       isExternalStatistic(ev.detail.value) &&
       this._params?.statsMetadata &&
       !(ev.detail.value in this._params.statsMetadata)
