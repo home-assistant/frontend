@@ -118,6 +118,10 @@ export class HaMoreInfoFanFavorites extends LitElement {
   // Last save blocker reported to more-info-fan for the edit banner.
   private _reportedBlocker?: FanFavoriteSaveBlocker;
 
+  // Saves still waiting for the registry. Only the last response resyncs
+  // the list: the counter drops before the dialog passes the entry back.
+  private _pendingSaves = 0;
+
   private _snapshot?: StoredSnapshot;
 
   // Applies run one after the other, so a restore never interleaves with a
@@ -132,7 +136,13 @@ export class HaMoreInfoFanFavorites extends LitElement {
   }
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
-    if (changedProps.has("entry") && this.entry) {
+    // A pending save keeps the local list, unless the entry is for another fan.
+    if (
+      changedProps.has("entry") &&
+      this.entry &&
+      (!this._pendingSaves ||
+        changedProps.get("entry")?.entity_id !== this.entry.entity_id)
+    ) {
       this._favorites = normalizeFanFavorites(
         this.entry.options?.fan?.favorites
       );
@@ -251,6 +261,7 @@ export class HaMoreInfoFanFavorites extends LitElement {
       favorites: favorites.length ? favorites : undefined,
     };
 
+    this._pendingSaves++;
     try {
       const result = await updateEntityRegistryEntry(
         this._api,
@@ -277,6 +288,8 @@ export class HaMoreInfoFanFavorites extends LitElement {
               : String(err),
         }),
       });
+    } finally {
+      this._pendingSaves--;
     }
   }
 
