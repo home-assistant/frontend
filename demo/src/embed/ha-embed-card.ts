@@ -4,6 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consume } from "../../../src/common/decorators/consume";
 import type { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
+import { handleAction } from "../../../src/panels/lovelace/common/handle-action";
 import "../../../src/panels/lovelace/cards/hui-card";
 import type { HomeAssistant } from "../../../src/types";
 import { embedHassContext } from "./context";
@@ -38,6 +39,8 @@ export class HaEmbedCard extends LitElement {
   // card and its content. Context requests only reach ancestors by themselves.
   private _linkedProvider?: HTMLElement;
 
+  private _scriptRead = false;
+
   constructor() {
     super();
     this.addEventListener("context-request", (ev) => {
@@ -54,6 +57,12 @@ export class HaEmbedCard extends LitElement {
         )
       );
     });
+    // Cards fire their tap, hold and double tap actions for the app to handle
+    this.addEventListener("hass-action", (ev) => {
+      if (this._hass) {
+        handleAction(this, this._hass, ev.detail.config, ev.detail.action);
+      }
+    });
   }
 
   public connectedCallback() {
@@ -64,6 +73,14 @@ export class HaEmbedCard extends LitElement {
         ? undefined
         : pageProvider();
     super.connectedCallback();
+
+    // Only once, so that moving the card keeps a config set since
+    if (this._scriptRead) {
+      return;
+    }
+
+    this._scriptRead = true;
+
     const config = readScriptData(this) as LovelaceCardConfig | undefined;
     if (config) {
       this.config = config;
