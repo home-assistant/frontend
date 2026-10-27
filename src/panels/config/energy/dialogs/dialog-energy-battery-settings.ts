@@ -259,6 +259,7 @@ export class DialogEnergyBatterySettings
             "ui.panel.config.energy.battery.dialog.state_of_charge_helper"
           )}
           @value-changed=${this._statisticSocChanged}
+          .disabled=${this._saving}
         ></ha-statistic-picker>
 
         <ha-input
@@ -275,6 +276,7 @@ export class DialogEnergyBatterySettings
           step="any"
           min="0"
           @input=${this._capacityChanged}
+          .disabled=${this._saving}
         >
           <span slot="end">kWh</span>
         </ha-input>
