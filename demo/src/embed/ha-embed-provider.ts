@@ -8,7 +8,7 @@ import { listenMediaQuery } from "../../../src/common/dom/media_query";
 import type { AreaRegistryEntry } from "../../../src/data/area/area_registry";
 import type { CalendarEventApiData } from "../../../src/data/calendar";
 import { reducedMotionContext } from "../../../src/data/context";
-import type { EnergyPreferences } from "../../../src/data/energy";
+import type { EnergyInfo, EnergyPreferences } from "../../../src/data/energy";
 import { EMPTY_PREFERENCES } from "../../../src/data/energy";
 import type { EntityRegistryEntry } from "../../../src/data/entity/entity_registry";
 import type { EntityInput } from "../../../src/fake_data/entities/types";
@@ -171,6 +171,10 @@ export class HaEmbedProvider extends LitElement {
     hass.mockWS("energy/get_prefs", (): EnergyPreferences => ({
       ...EMPTY_PREFERENCES,
       ...this.energy,
+    }));
+    hass.mockWS("energy/info", (): EnergyInfo => ({
+      cost_sensors: {},
+      solar_forecast_domains: [],
     }));
     this._applyColorScheme();
   }
