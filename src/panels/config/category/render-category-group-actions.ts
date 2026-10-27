@@ -1,5 +1,6 @@
 import { mdiDelete, mdiDotsVertical, mdiPencil } from "@mdi/js";
 import { html, nothing } from "lit";
+import { repeat } from "lit/directives/repeat";
 import { groupActionsSlot } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-dropdown";
 import type {
@@ -79,7 +80,9 @@ export const renderCategoryGroupActions = (
   onDeleted: (categoryId: string) => void
 ) =>
   grouping === "category"
-    ? categories?.map(
+    ? repeat(
+        categories ?? [],
+        (category) => category.category_id,
         (category) =>
           html`<ha-dropdown
             slot=${groupActionsSlot(category.name)}
