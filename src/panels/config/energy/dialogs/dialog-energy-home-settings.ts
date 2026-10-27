@@ -209,8 +209,9 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
         }
         source = { ...source, stat_energy_to: statEnergyTo };
         if (isCurrent()) {
-          this._source = source;
-          this._updateDirtyState(source);
+          // Keep edits made meanwhile, only fill in the new energy sensor
+          this._source = { ...this._source!, stat_energy_to: statEnergyTo };
+          this._updateDirtyState(this._source);
         }
       }
       await params.saveCallback(source);
