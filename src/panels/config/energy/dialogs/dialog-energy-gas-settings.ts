@@ -261,6 +261,7 @@ export class DialogEnergyGasSettings
         </ha-input>
 
         <ha-radio-group
+          .disabled=${this._saving}
           .label=${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.cost_para"
           )}
@@ -288,6 +289,7 @@ export class DialogEnergyGasSettings
         ${
           this._costs === "statistic"
             ? html`<ha-statistic-picker
+                .disabled=${this._saving}
                 class="price-options"
                 .hass=${this.hass}
                 statistic-types="sum"
@@ -299,6 +301,7 @@ export class DialogEnergyGasSettings
               ></ha-statistic-picker>`
             : this._costs === "entity"
               ? html`<ha-entity-picker
+                  .disabled=${this._saving}
                   class="price-options"
                   include-domains='["sensor", "input_number"]'
                   .value=${this._source.entity_energy_price}
@@ -335,6 +338,7 @@ export class DialogEnergyGasSettings
                 ></ha-entity-picker>`
               : this._costs === "number"
                 ? html`<ha-input
+                    .disabled=${this._saving}
                     .label=${`${this.hass.localize(
                       "ui.panel.config.energy.gas.dialog.cost_number_input"
                     )} ${unitPrice ? ` (${unitPrice})` : ""}`}
