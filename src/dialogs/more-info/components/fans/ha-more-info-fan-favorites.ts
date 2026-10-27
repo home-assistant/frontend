@@ -148,19 +148,6 @@ export class HaMoreInfoFanFavorites extends LitElement {
       );
     }
 
-    // The dialog can switch to another fan without ending edit mode, like
-    // when going back to a fan group from one of its members. Restore the
-    // fan that was edited and start over from the new one.
-    if (
-      changedProps.has("stateObj") &&
-      !changedProps.has("editMode") &&
-      this.editMode &&
-      changedProps.get("stateObj")?.entity_id !== this.stateObj?.entity_id
-    ) {
-      this._restoreSnapshot();
-      this._takeSnapshot();
-    }
-
     if (changedProps.has("editMode")) {
       const wasEditing = Boolean(changedProps.get("editMode"));
       if (this.editMode && !wasEditing) {
