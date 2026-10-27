@@ -236,6 +236,7 @@ export class DialogEnergyGridSettings
             this._source.stat_energy_to,
           ].filter((id): id is string => Boolean(id))}
           @value-changed=${this._statisticFromChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.grid.dialog.energy_from_helper",
             { unit: this._energy_units?.join(", ") || "" }
@@ -256,6 +257,7 @@ export class DialogEnergyGridSettings
             this._source.stat_energy_from,
           ].filter((id): id is string => Boolean(id))}
           @value-changed=${this._statisticToChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.grid.dialog.energy_to_helper",
             { unit: this._energy_units?.join(", ") || "" }
@@ -268,7 +270,7 @@ export class DialogEnergyGridSettings
             "ui.panel.config.energy.grid.dialog.display_name"
           )}
           type="text"
-          .disabled=${!labelStatistic}
+          .disabled=${!labelStatistic || this._saving}
           .value=${this._source?.name || ""}
           .placeholder=${
             labelStatistic
@@ -735,37 +737,45 @@ export class DialogEnergyGridSettings
   }
 
   private async _save() {
+    // Closing or reopening the dialog replaces its state, but created helpers
+    // must still be saved with the submitted source
     const params = this._params!;
+    const powerType = this._powerType;
+    const powerConfig = this._powerConfig;
+    let draft = this._source!;
+    const isCurrent = () => this._params === params;
     this._error = undefined;
     this._saving = true;
     try {
       const pending = this._pendingIntegrals();
       if (pending.length) {
-        const sensors = await this._energyFromPower(pending);
+        const sensors = await this._energyFromPower(draft, pending);
         if (sensors) {
-          const updated = { ...this._source! };
+          draft = { ...draft };
           pending.forEach(({ energy }, index) => {
-            updated[energy] = sensors[index];
+            draft[energy] = sensors[index];
           });
-          this._source = updated;
-          this._updateFormDirtyState();
+          if (isCurrent()) {
+            this._source = draft;
+            this._updateFormDirtyState();
+          }
         }
       }
 
       const source: GridSourceTypeEnergyPreference = {
         type: "grid",
-        stat_energy_from: this._source!.stat_energy_from,
-        stat_energy_to: this._source!.stat_energy_to,
-        stat_cost: this._source!.stat_cost,
-        stat_compensation: this._source!.stat_compensation,
-        entity_energy_price: this._source!.entity_energy_price,
-        number_energy_price: this._source!.number_energy_price,
-        entity_energy_price_export: this._source!.entity_energy_price_export,
-        number_energy_price_export: this._source!.number_energy_price_export,
-        cost_adjustment_day: this._source!.cost_adjustment_day,
+        stat_energy_from: draft.stat_energy_from,
+        stat_energy_to: draft.stat_energy_to,
+        stat_cost: draft.stat_cost,
+        stat_compensation: draft.stat_compensation,
+        entity_energy_price: draft.entity_energy_price,
+        number_energy_price: draft.number_energy_price,
+        entity_energy_price_export: draft.entity_energy_price_export,
+        number_energy_price_export: draft.number_energy_price_export,
+        cost_adjustment_day: draft.cost_adjustment_day,
       };
-      if (this._source?.name) {
-        source.name = this._source.name;
+      if (draft.name) {
+        source.name = draft.name;
       }
       // Compensation can be set for an export sensor that was then skipped
       if (!source.stat_energy_to) {
@@ -775,21 +785,26 @@ export class DialogEnergyGridSettings
       }
 
       // Only include power_config if a power type is selected
-      if (this._powerType !== "none") {
-        source.power_config = { ...this._powerConfig };
+      if (powerType !== "none") {
+        source.power_config = { ...powerConfig };
       }
 
       await params.saveCallback(source);
-      this._markDirtyStateClean();
-      this.closeDialog();
+      if (isCurrent()) {
+        this._markDirtyStateClean();
+        this.closeDialog();
+      }
     } catch (err: any) {
-      this._error = err.message;
+      if (isCurrent()) {
+        this._error = err.message;
+      }
     } finally {
       this._saving = false;
     }
   }
 
   private _energyFromPower(
+    draft: GridSourceTypeEnergyPreference,
     pending: PowerIntegral[]
   ): Promise<string[] | undefined> {
     return confirmIntegrals(this, this.hass, {
@@ -807,7 +822,7 @@ export class DialogEnergyGridSettings
               this.hass.formatEntityName,
               rate,
               this._params?.statsMetadata?.[rate],
-              this._source?.name
+              draft.name
             ),
           }
         ),
@@ -819,8 +834,8 @@ export class DialogEnergyGridSettings
       // Neither direction may reuse the statistic of the other
       exclude: [
         ...(this._excludeList || []),
-        this._source?.stat_energy_from,
-        this._source?.stat_energy_to,
+        draft.stat_energy_from,
+        draft.stat_energy_to,
       ].filter((id): id is string => Boolean(id)),
       statsMetadata: this._params?.statsMetadata,
     });

@@ -98,6 +98,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
             "ui.panel.config.energy.home.dialog.home_energy"
           )}
           @value-changed=${this._statisticChanged}
+          .disabled=${this._saving}
           .helper=${this._i18n.localize(
             "ui.panel.config.energy.home.dialog.entity_para",
             { unit: this._energy_units?.join(", ") || "" }
@@ -110,7 +111,10 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
             "ui.panel.config.energy.home.dialog.display_name"
           )}
           type="text"
-          .disabled=${!(this._source.stat_energy_to || this._source.stat_rate)}
+          .disabled=${
+            !(this._source.stat_energy_to || this._source.stat_rate) ||
+            this._saving
+          }
           .value=${this._source.name || ""}
           .placeholder=${this._hassConfig.config.location_name}
           @input=${this._nameChanged}
@@ -125,6 +129,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
             "ui.panel.config.energy.home.dialog.home_power"
           )}
           @value-changed=${this._powerStatisticChanged}
+          .disabled=${this._saving}
           .helper=${this._i18n.localize(
             "ui.panel.config.energy.home.dialog.entity_para",
             { unit: this._power_units?.join(", ") || "" }
@@ -189,31 +194,44 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
   }
 
   private async _save() {
+    // Closing or reopening the dialog replaces its state, but a created helper
+    // must still be saved with the submitted source
     const params = this.params!;
+    let source = this._source!;
+    const isCurrent = () => this.params === params;
     this._error = undefined;
     this._saving = true;
     try {
-      if (!this._source!.stat_energy_to) {
-        const statEnergyTo = await this._energyFromPower();
+      if (!source.stat_energy_to) {
+        const statEnergyTo = await this._energyFromPower(source);
         if (!statEnergyTo) {
           return;
         }
-        this._source = { ...this._source!, stat_energy_to: statEnergyTo };
-        this._updateDirtyState(this._source);
+        source = { ...source, stat_energy_to: statEnergyTo };
+        if (isCurrent()) {
+          this._source = source;
+          this._updateDirtyState(source);
+        }
       }
-      await params.saveCallback(this._source!);
-      this._markDirtyStateClean();
-      this.closeDialog();
+      await params.saveCallback(source);
+      if (isCurrent()) {
+        this._markDirtyStateClean();
+        this.closeDialog();
+      }
     } catch (err: any) {
-      this._error = err.message;
+      if (isCurrent()) {
+        this._error = err.message;
+      }
     } finally {
       this._saving = false;
     }
   }
 
-  private async _energyFromPower(): Promise<string | undefined> {
+  private async _energyFromPower(
+    draft: HomeSourceTypeEnergyPreference
+  ): Promise<string | undefined> {
     const hass = this.params!.hass;
-    const statRate = this._source!.stat_rate!;
+    const statRate = draft.stat_rate!;
     const units = this._integralUnits();
     if (!units) {
       return undefined;
@@ -232,7 +250,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
                 hass.formatEntityName,
                 statRate,
                 undefined,
-                this._source?.name
+                draft.name
               ),
             }
           ),
