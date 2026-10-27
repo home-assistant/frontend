@@ -87,6 +87,19 @@ export class HaEmbedCard extends LitElement {
       :host {
         display: block;
       }
+      /* The text styles the app sets on html and body, so that the card does
+         not inherit the text styles of the page that embeds it. */
+      .theme {
+        color: var(--primary-text-color);
+        font-family: var(--ha-font-family-body);
+        font-size: var(--ha-font-size-m);
+        font-weight: var(--ha-font-weight-body);
+        line-height: normal;
+        letter-spacing: normal;
+        text-align: start;
+        -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+        -webkit-font-smoothing: var(--ha-font-smoothing);
+      }
     `,
   ];
 }
