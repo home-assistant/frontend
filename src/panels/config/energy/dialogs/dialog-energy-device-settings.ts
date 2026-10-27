@@ -100,8 +100,11 @@ export class DialogEnergyDeviceSettings
         }
       });
     }
-    if (this._device.stat_consumption) {
-      getChildren(this._device.stat_consumption);
+    // Saving without an energy sensor can reuse the original one
+    const stat =
+      this._device.stat_consumption ?? this._params.device?.stat_consumption;
+    if (stat) {
+      getChildren(stat);
     }
     this._possibleParents = this._params.device_consumptions.filter(
       (d) =>
