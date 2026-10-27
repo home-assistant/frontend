@@ -218,7 +218,6 @@ class DialogSceneSave extends DirtyStateProviderMixin<SceneSaveState>()(
             ? nothing
             : html` <ha-suggest-with-ai-button
                 slot="headerActionItems"
-                .hass=${this.hass}
                 .generateTask=${this._generateTask}
                 @suggestion=${this._handleSuggestion}
               ></ha-suggest-with-ai-button>`
