@@ -4821,7 +4821,14 @@
               "selected_stat_intro": "Select the sensor that measures the device's electricity usage in either of {unit}.",
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
-              "no_upstream_devices": "No eligible upstream devices"
+              "no_upstream_devices": "No eligible upstream devices",
+              "create_energy_sensor_title": "Create energy sensor?",
+              "create_energy_sensor_text": "To track this device, you need an energy sensor. Home Assistant can create one that calculates the energy from {power}. It starts counting now, so earlier usage is not included.",
+              "create_energy_sensor_failed": "Failed to create the energy sensor.",
+              "use_energy_sensor_title": "Use existing energy sensor?",
+              "use_energy_sensor_text": "To track this device, you need an energy sensor. {energy} already calculates the energy from {power}.",
+              "use_energy_sensor": "Use sensor",
+              "energy_sensor_name": "{name} energy"
             }
           },
           "device_consumption_water": {
