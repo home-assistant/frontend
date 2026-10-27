@@ -292,6 +292,11 @@ export class HaTriggerCondition extends LitElement {
         text-overflow: ellipsis;
         white-space: nowrap;
       }
+      /* Reveal the full ID to keyboard users, who cannot hover for the title. */
+      ha-list-item-option:focus-visible .trigger-id-text {
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
     `,
   ];
 }
