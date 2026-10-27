@@ -216,7 +216,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         </div>
         <div
           class="footer"
-          style=${styleMap({ "--accent-color": color })}
+          style=${styleMap({
+            "--accent-color": color ? "var(--state-color)" : undefined,
+          })}
           @touchcancel=${stopPropagation}
           @touchend=${stopPropagation}
           @keydown=${stopPropagation}
