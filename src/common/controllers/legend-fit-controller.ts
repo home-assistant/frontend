@@ -45,6 +45,8 @@ export class LegendFitController {
 
   private _element?: Element;
 
+  private _more?: Element;
+
   private _widths: number[] = [];
 
   private _rowWidth?: number;
@@ -71,6 +73,7 @@ export class LegendFitController {
     }
     this._resizeObserver?.disconnect();
     this._element = element;
+    this._more = undefined;
     if (element) {
       this._resizeObserver ??= new ResizeObserver(() => this._fit());
       this._resizeObserver.observe(element);
@@ -87,6 +90,16 @@ export class LegendFitController {
     const more = children.find((child) =>
       child.classList.contains("legend-more")
     );
+    // Switching between More and Less resizes it, not always the list
+    if (more !== this._more) {
+      if (this._more) {
+        this._resizeObserver?.unobserve(this._more);
+      }
+      if (more) {
+        this._resizeObserver?.observe(more);
+      }
+      this._more = more;
+    }
     const widths = children
       .filter((child) => child !== more)
       .map((child) => child.getBoundingClientRect().width);
