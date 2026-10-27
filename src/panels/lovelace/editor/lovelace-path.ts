@@ -40,6 +40,10 @@ export const getParentPath = (path: LovelacePath): LovelacePath =>
 export const getViewPath = (path: LovelacePath): LovelacePath =>
   path.slice(0, 2);
 
+export const isViewSectionPath = (path: LovelacePath): boolean =>
+  path[path.length - 2] === "sections" &&
+  pathEquals(getParentPath(getParentPath(path)), getViewPath(path));
+
 export const getPathTarget = (path: LovelacePath): LovelacePathTarget => {
   const last = path[path.length - 1];
   if (typeof last === "number") {

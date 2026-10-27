@@ -17,6 +17,7 @@ import {
   getParentPath,
   insertAtPath,
   getPathTarget,
+  isViewSectionPath,
   moveAtPath,
   pathEquals,
   setAtPath,
@@ -102,7 +103,15 @@ export const getCardSectionConfig = (
   if (!section || isStrategySection(section)) {
     return undefined;
   }
-  return section;
+  if (isViewSectionPath(containerPath)) {
+    return section;
+  }
+  // Nested sections take the width of the section placed in the view
+  const viewSectionPath = containerPath.slice(0, 4);
+  const viewSection = isViewSectionPath(viewSectionPath)
+    ? getAtPath<LovelaceSectionRawConfig>(config, viewSectionPath)
+    : undefined;
+  return { ...section, column_span: viewSection?.column_span };
 };
 
 export const addView = (

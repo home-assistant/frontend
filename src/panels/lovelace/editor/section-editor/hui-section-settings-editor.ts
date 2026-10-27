@@ -99,6 +99,8 @@ export class HuiDialogEditSection extends LitElement {
 
   @property({ attribute: false }) public viewConfig!: LovelaceViewConfig;
 
+  @property({ attribute: false }) public nested = false;
+
   private get _maxColumns() {
     return this.viewConfig.max_columns || DEFAULT_MAX_COLUMNS;
   }
@@ -120,9 +122,9 @@ export class HuiDialogEditSection extends LitElement {
   }
 
   private _schema = memoizeOne(
-    (localize: LocalizeFunc, maxColumns: number) =>
+    (localize: LocalizeFunc, maxColumns: number, nested: boolean) =>
       [
-        ...computeColumnSpanSchemas(maxColumns, localize),
+        ...(nested ? [] : computeColumnSpanSchemas(maxColumns, localize)),
         {
           name: "background_enabled",
           selector: { boolean: {} },
@@ -189,7 +191,7 @@ export class HuiDialogEditSection extends LitElement {
       theme: this.config.theme,
     };
 
-    const schema = this._schema(this._localize, this._maxColumns);
+    const schema = this._schema(this._localize, this._maxColumns, this.nested);
 
     return html`
       <ha-form

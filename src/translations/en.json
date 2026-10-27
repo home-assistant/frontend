@@ -10199,6 +10199,7 @@
           "undo_redo_failed_to_apply_changes": "Unable to apply changes: {error}",
           "menu": {
             "open": "Open dashboard menu",
+            "add_sidebar": "Add sidebar",
             "raw_editor": "Raw configuration editor",
             "manage_dashboards": "Manage dashboards",
             "manage_resources": "Manage resources"
@@ -10531,6 +10532,12 @@
             "header": "Choose an automatic section",
             "built_in": "Built-in sections",
             "custom": "Community sections"
+          },
+          "sidebar": {
+            "title": "Sidebar",
+            "menu": "Sidebar menu",
+            "delete_title": "Delete sidebar",
+            "delete_text": "The sidebar and all its sections will be deleted."
           },
           "edit_section": {
             "header": "Section configuration",

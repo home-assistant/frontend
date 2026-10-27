@@ -49,6 +49,15 @@ export const normalizeViewConfig = (
       .map(normalizeSectionConfig);
   }
 
+  if (updatedView.sidebar?.sections) {
+    updatedView.sidebar = {
+      ...updatedView.sidebar,
+      sections: updatedView.sidebar.sections
+        .filter(Boolean)
+        .map(normalizeSectionConfig),
+    };
+  }
+
   return updatedView;
 };
 

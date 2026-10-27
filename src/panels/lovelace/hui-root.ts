@@ -8,6 +8,7 @@ import {
   mdiFormatListBulletedTriangle,
   mdiHelpCircleOutline,
   mdiMagnify,
+  mdiPageLayoutSidebarRight,
   mdiPencil,
   mdiPlus,
   mdiRedo,
@@ -58,6 +59,7 @@ import type {
 } from "../../data/lovelace/config/types";
 import { isStrategyDashboard } from "../../data/lovelace/config/types";
 import type { LovelaceViewConfig } from "../../data/lovelace/config/view";
+import { isStrategyView } from "../../data/lovelace/config/view";
 import {
   deleteDashboard,
   fetchDashboards,
@@ -87,6 +89,7 @@ import { showAddIntegrationDialog } from "../config/integrations/show-add-integr
 import { showDashboardDetailDialog } from "../config/lovelace/dashboards/show-dialog-lovelace-dashboard-detail";
 import { showPersonDetailDialog } from "../config/person/show-dialog-person-detail";
 import { swapView } from "./editor/config-util";
+import { setAtPath } from "./editor/lovelace-path";
 import { showDashboardStrategyEditorDialog } from "./editor/dashboard-strategy-editor/dialogs/show-dialog-dashboard-strategy-editor";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
@@ -97,6 +100,8 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+import { SECTIONS_VIEW_LAYOUT } from "./views/const";
+import { getViewType } from "./views/get-view-type";
 import { LOVELACE_EDIT_TOAST_ID } from "./types";
 
 interface ActionItem {
@@ -219,7 +224,24 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 
     const isLovelaceDashboard = this.panel?.component_name === "lovelace";
 
+    const curViewConfig =
+      typeof this._curView === "number"
+        ? this.lovelace?.config.views[this._curView]
+        : undefined;
+    const canAddSidebar =
+      curViewConfig !== undefined &&
+      !isStrategyView(curViewConfig) &&
+      getViewType(curViewConfig) === SECTIONS_VIEW_LAYOUT &&
+      !curViewConfig.sidebar;
+
     const items: ActionItem[] = [
+      {
+        icon: mdiPageLayoutSidebarRight,
+        key: "ui.panel.lovelace.editor.menu.add_sidebar",
+        overflowAction: this._handleAddSidebar,
+        visible: this._editMode && canAddSidebar,
+        overflow: true,
+      },
       {
         icon: mdiFormatListBulletedTriangle,
         key: "ui.panel.lovelace.unused_entities.title",
@@ -970,6 +992,13 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         });
       },
     });
+  };
+
+  private _handleAddSidebar = () => {
+    const sidebarPath = ["views", this._curView as number, "sidebar"];
+    this.lovelace!.saveConfig(
+      setAtPath(this.lovelace!.config, sidebarPath, { sections: [] })
+    );
   };
 
   private _handleRawEditor = () => {

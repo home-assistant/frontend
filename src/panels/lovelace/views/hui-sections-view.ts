@@ -8,6 +8,7 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { clamp } from "../../../common/number/clamp";
 import { getHistoryState, updateHistoryState } from "../../../common/navigate";
 import "../../../components/ha-icon-button";
@@ -17,19 +18,25 @@ import "../../../components/ha-svg-icon";
 import { maxColumnsContext } from "../common/context";
 import type { LovelaceViewElement } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
+import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import {
   DEFAULT_SECTION_COLUMN_SPAN,
   isStrategySection,
 } from "../../../data/lovelace/config/section";
-import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import type {
+  LovelaceViewConfig,
+  LovelaceViewSidebarConfig,
+} from "../../../data/lovelace/config/view";
 import { DEFAULT_MAX_COLUMNS } from "./const";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-section-edit-mode";
+import "../components/hui-sidebar-edit-header";
 import { addSection } from "../editor/config-util";
 import type { LovelacePath } from "../editor/lovelace-path";
 import { getAtPath, moveAtPath } from "../editor/lovelace-path";
+import "../sections/hui-section";
 import { showCreateSectionDialog } from "../editor/section-editor/show-create-section-dialog";
 import type { HuiSection } from "../sections/hui-section";
 import {
@@ -40,7 +47,6 @@ import type { Lovelace } from "../types";
 import { generateDefaultSection } from "./default-section";
 import "./hui-view-footer";
 import "./hui-view-header";
-import "./hui-view-sidebar";
 import { computeSectionsBackgroundAlignment } from "./sections-background-alignment";
 
 const parsePx = (value: string) => parseInt(value.replace("px", ""));
@@ -181,8 +187,11 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
     const sections = this.sections;
     const editMode = this.lovelace.editMode;
+    const sidebar = this._config?.sidebar;
+    const sidebarEditMode = editMode && !this.isStrategy;
     const hasSidebar =
-      this._config?.sidebar && (this._sidebarVisible || editMode);
+      sidebar &&
+      (editMode || (this._sidebarVisible && Boolean(sidebar.sections?.length)));
     const singleColumn = this._maxColumns <= 1;
 
     // The tab switcher is opt-in: a sidebar enables it by labelling both tabs,
@@ -258,6 +267,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           <ha-sortable
             .disabled=${!editMode}
             @item-moved=${this._sectionMoved}
+            @item-added=${this._sectionAdded}
+            @item-removed=${this._sectionRemoved}
             group="section"
             handle-selector=".handle"
             draggable-selector=".section"
@@ -281,6 +292,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                   return html`
                     <div
                       class="section"
+                      .sortableData=${[...this.path!, "sections", idx]}
                       style=${styleMap({
                         "--column-span": columnSpan,
                         "--row-span": rowSpan,
@@ -348,23 +360,41 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
             </div>
           </ha-sortable>
           ${
-            this._config?.sidebar
+            sidebar
               ? html`
-                  <hui-view-sidebar
+                  <div
                     class=${classMap({
+                      sidebar: true,
+                      "edit-mode": sidebarEditMode,
                       hidden:
                         !hasSidebar ||
                         (useSidebarTabs && !this._sidebarTabActive),
                     })}
-                    .hass=${this.hass}
-                    .badges=${this.badges}
-                    .lovelace=${this.lovelace}
-                    .path=${this.path!}
-                    .config=${this._config.sidebar}
-                    @sidebar-visibility-changed=${
-                      this._handleSidebarVisibilityChanged
+                  >
+                    ${
+                      sidebarEditMode
+                        ? html`
+                            <hui-sidebar-edit-header
+                              .lovelace=${this.lovelace}
+                              .path=${this._sidebarPath(this.path!)}
+                            ></hui-sidebar-edit-header>
+                          `
+                        : nothing
                     }
-                  ></hui-view-sidebar>
+                    <div class="sidebar-content">
+                      <hui-section
+                        .hass=${this.hass}
+                        .lovelace=${this.lovelace}
+                        .config=${this._sidebarSectionConfig(sidebar)}
+                        .path=${this._sidebarPath(this.path!)}
+                        .preview=${editMode}
+                        .insideStrategy=${this.isStrategy}
+                        @section-visibility-changed=${
+                          this._handleSidebarVisibilityChanged
+                        }
+                      ></hui-section>
+                    </div>
+                  </div>
                 `
               : nothing
           }
@@ -481,6 +511,22 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     this.lovelace!.saveConfig(newConfig);
   }
 
+  private _sectionAdded(ev: HASSDomEvent<HASSDomEvents["item-added"]>) {
+    ev.stopPropagation();
+    const { index, data } = ev.detail;
+    const newConfig = moveAtPath(this.lovelace!.config, data as LovelacePath, [
+      ...this.path!,
+      "sections",
+      index,
+    ]);
+    this.lovelace!.saveConfig(newConfig);
+  }
+
+  private _sectionRemoved(ev: HASSDomEvent<HASSDomEvents["item-removed"]>) {
+    // The list the section is dropped in moves it
+    ev.stopPropagation();
+  }
+
   private _viewChanged(ev: CustomEvent) {
     const newValue = ev.detail.value;
     const shouldShowSidebar = newValue === "sidebar";
@@ -512,12 +558,30 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     });
   }
 
+  // A stack section also hides when all its sections are hidden
+  private _sidebarSectionConfig = memoizeOne(
+    (sidebar: LovelaceViewSidebarConfig): LovelaceSectionConfig => ({
+      type: "stack",
+      sections: sidebar.sections,
+      visibility: sidebar.visibility,
+    })
+  );
+
+  private _sidebarPath = memoizeOne((path: LovelacePath): LovelacePath => [
+    ...path,
+    "sidebar",
+  ]);
+
   private _handleSidebarVisibilityChanged = (
-    e: CustomEvent<{ visible: boolean }>
+    ev: CustomEvent<{ value: boolean }>
   ) => {
-    this._sidebarVisible = e.detail.visible;
+    // Sections inside the sidebar fire the same event
+    if (ev.target !== ev.currentTarget) {
+      return;
+    }
+    this._sidebarVisible = ev.detail.value;
     // Reset sidebar tab when sidebar becomes hidden
-    if (!e.detail.visible) {
+    if (!ev.detail.value) {
       this._sidebarTabActive = false;
     }
   };
@@ -575,10 +639,9 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       .container {
         display: grid;
-        grid-template-columns: [content-start] repeat(
-            var(--content-column-count),
-            1fr
-          );
+        grid-template-columns:
+          [content-start] repeat(var(--content-column-count), 1fr)
+          [content-end];
         gap: var(--row-gap) var(--column-gap);
         padding: var(--row-gap) 0;
         align-items: flex-start;
@@ -588,7 +651,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       .wrapper.has-sidebar .container {
         grid-template-columns:
           [content-start] repeat(var(--content-column-count), 1fr)
-          [sidebar-start] 1fr;
+          [content-end sidebar-start] 1fr [sidebar-end];
       }
 
       /* With a single column, content and sidebar stack at full width */
@@ -596,15 +659,29 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         grid-template-columns: 1fr;
       }
 
-      hui-view-sidebar {
-        grid-column: sidebar-start / -1;
+      .sidebar {
+        grid-column: sidebar-start / sidebar-end;
       }
 
-      .wrapper.single-column hui-view-sidebar {
+      .sidebar hui-section {
+        display: block;
+      }
+
+      .sidebar.edit-mode .sidebar-content {
+        padding: var(--ha-space-2);
+        border: 2px dashed var(--divider-color);
+        border-radius: var(
+          --ha-section-border-radius,
+          var(--ha-border-radius-xl)
+        );
+        border-start-end-radius: 0;
+      }
+
+      .wrapper.single-column .sidebar {
         grid-column: 1 / -1;
       }
 
-      .wrapper.has-sidebar-tabs hui-view-sidebar {
+      .wrapper.has-sidebar-tabs .sidebar {
         padding-bottom: calc(
           var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
         );
@@ -641,7 +718,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       }
 
       .content {
-        grid-column: content-start / sidebar-start;
+        grid-column: content-start / content-end;
         grid-row: 1 / -1;
         display: grid;
         align-items: start;

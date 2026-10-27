@@ -55,6 +55,7 @@ import {
   getAtPath,
   getViewPath,
   insertAtPath,
+  isViewSectionPath,
   moveAtPath,
   setAtPath,
 } from "../lovelace-path";
@@ -224,6 +225,7 @@ export class HuiDialogEditSection
             <hui-section-settings-editor
               .config=${this._config}
               .viewConfig=${this._viewConfig}
+              .nested=${!isViewSectionPath(this._params.path)}
               @value-changed=${this._configChanged}
             >
             </hui-section-settings-editor>
