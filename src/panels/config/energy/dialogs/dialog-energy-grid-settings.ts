@@ -489,6 +489,7 @@ export class DialogEnergyGridSettings
             this._powerConfig
           )}
           .localizeBaseKey=${"ui.panel.config.energy.grid.dialog"}
+          .disabled=${this._saving}
           @power-config-changed=${this._handlePowerConfigChanged}
         ></ha-energy-power-config>
 
@@ -751,12 +752,13 @@ export class DialogEnergyGridSettings
       if (pending.length) {
         const sensors = await this._energyFromPower(draft, pending);
         if (sensors) {
-          draft = { ...draft };
-          pending.forEach(({ energy }, index) => {
-            draft[energy] = sensors[index];
-          });
+          const created = Object.fromEntries(
+            pending.map(({ energy }, index) => [energy, sensors[index]])
+          );
+          draft = { ...draft, ...created };
           if (isCurrent()) {
-            this._source = draft;
+            // Keep edits made meanwhile, only fill in the new energy sensors
+            this._source = { ...this._source!, ...created };
             this._updateFormDirtyState();
           }
         }
