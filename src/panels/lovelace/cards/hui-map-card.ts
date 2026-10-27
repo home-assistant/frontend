@@ -86,6 +86,7 @@ import {
   extractSearchParam,
   removeSearchParam,
 } from "../../../common/url/search-params";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
@@ -97,8 +98,10 @@ import {
   extractConditionEntityIds,
 } from "../common/validate-condition";
 
-const hasLocationCondition = (conditions: Condition[]): boolean =>
-  conditions.some((condition) =>
+const hasLocationCondition = (
+  conditions: Condition[] | Condition | undefined
+): boolean =>
+  (ensureArray(conditions) ?? []).some((condition) =>
     "conditions" in condition && condition.conditions
       ? hasLocationCondition(condition.conditions)
       : condition.condition === "location"

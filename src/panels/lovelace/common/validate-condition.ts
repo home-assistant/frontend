@@ -542,15 +542,28 @@ export function checkConditionsMet(
   });
 }
 
+/**
+ * Collects every entity ID the conditions read, so a card can track only
+ * those states. Accepts a single condition because logical groups may hold
+ * one child instead of a list.
+ */
 export function extractConditionEntityIds(
-  conditions: Condition[]
+  conditions:
+    (Condition | LegacyCondition)[] | Condition | LegacyCondition | undefined
 ): Set<string> {
   const entityIds = new Set<string>();
-  for (const condition of conditions) {
-    if (condition.condition === "numeric_state") {
-      if (condition.entity) {
-        entityIds.add(condition.entity);
-      }
+  // Core format `entity_id` is checked before lovelace `entity`
+  const addEntity = (condition: { entity?: string; entity_id?: string }) => {
+    if (typeof condition.entity_id === "string") {
+      entityIds.add(condition.entity_id);
+    }
+    if (condition.entity) {
+      entityIds.add(condition.entity);
+    }
+  };
+  for (const condition of ensureArray(conditions) ?? []) {
+    if ("condition" in condition && condition.condition === "numeric_state") {
+      addEntity(condition);
       if (
         typeof condition.above === "string" &&
         isValidEntityId(condition.above)
@@ -563,10 +576,8 @@ export function extractConditionEntityIds(
       ) {
         entityIds.add(condition.below);
       }
-    } else if (condition.condition === "state") {
-      if (condition.entity) {
-        entityIds.add(condition.entity);
-      }
+    } else if (!("condition" in condition) || condition.condition === "state") {
+      addEntity(condition);
       [
         ...(ensureArray(condition.state) ?? []),
         ...(ensureArray(condition.state_not) ?? []),
