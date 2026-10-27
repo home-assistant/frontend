@@ -1114,7 +1114,13 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     }
   }
 
-  private _entryUpdated(ev: CustomEvent<ExtEntityRegistryEntry>) {
+  private _entryUpdated(
+    ev: HASSDomEvent<HASSDomEvents["entity-entry-updated"]>
+  ) {
+    // A late save response can bubble from the subtree of a previous entity.
+    if (ev.detail.entity_id !== this._entityId) {
+      return;
+    }
     this._entry = ev.detail;
   }
 
