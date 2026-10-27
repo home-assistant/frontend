@@ -79,6 +79,7 @@ export class HaTriggerCondition extends LitElement {
               <ha-button
                 slot="action"
                 size="s"
+                variant="warning"
                 appearance="filled"
                 .disabled=${this.disabled}
                 @click=${this._fixDuplicateIds}
@@ -118,20 +119,27 @@ export class HaTriggerCondition extends LitElement {
                 )}
               </span>
               ${
-                option.duplicate
-                  ? html`<span slot="end" class="duplicate-trigger-badge">
-                      <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
-                      <span class="duplicate-trigger-id">${option.id}</span>
-                    </span>`
-                  : hasCustomTriggerId(option)
-                    ? html`<span
-                        slot="end"
-                        class="custom-trigger-badge"
-                        title=${option.id}
+                option.duplicate || hasCustomTriggerId(option)
+                  ? html`<span
+                      slot="supporting-text"
+                      class="trigger-id ${option.duplicate ? "duplicate" : ""}"
+                    >
+                      ${
+                        option.duplicate
+                          ? html`<ha-svg-icon
+                              .path=${mdiAlert}
+                              role="img"
+                              aria-label=${this.hass.localize(
+                                "ui.panel.config.automation.editor.conditions.type.trigger.duplicate_id"
+                              )}
+                            ></ha-svg-icon>`
+                          : nothing
+                      }
+                      <span class="trigger-id-text" title=${option.id}
+                        >${option.id}</span
                       >
-                        <span class="custom-trigger-id">${option.id}</span>
-                      </span>`
-                    : nothing
+                    </span>`
+                  : nothing
               }
             </ha-list-item-option>
           `
@@ -240,8 +248,7 @@ export class HaTriggerCondition extends LitElement {
         --mdc-icon-size: 20px;
         color: var(--ha-color-on-neutral-quiet);
       }
-      .missing-trigger-badge,
-      .duplicate-trigger-badge {
+      .missing-trigger-badge {
         display: inline-flex;
         align-items: center;
         gap: var(--ha-space-1);
@@ -251,26 +258,36 @@ export class HaTriggerCondition extends LitElement {
         color: var(--ha-color-on-warning-normal);
         line-height: 18px;
       }
-      .missing-trigger-badge ha-svg-icon,
-      .duplicate-trigger-badge ha-svg-icon {
+      .missing-trigger-badge ha-svg-icon {
         --mdc-icon-size: 18px;
         flex-shrink: 0;
       }
-      .custom-trigger-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 2px var(--ha-space-2);
-        border-radius: var(--ha-border-radius-md);
-        background: var(--ha-color-fill-neutral-quiet-resting);
-        color: var(--ha-color-on-neutral-normal);
-        line-height: 18px;
-      }
-      .missing-trigger-id,
-      .duplicate-trigger-id,
-      .custom-trigger-id {
+      .missing-trigger-id {
         font-family: var(--ha-font-family-code);
         font-size: var(--ha-font-size-s);
         max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .trigger-id {
+        display: flex;
+        align-items: center;
+        gap: var(--ha-space-1);
+        min-width: 0;
+      }
+      .trigger-id.duplicate {
+        color: var(--ha-color-on-warning-normal);
+      }
+      .trigger-id ha-svg-icon {
+        --mdc-icon-size: 16px;
+        flex-shrink: 0;
+      }
+      .trigger-id-text {
+        flex: 1 1 auto;
+        min-width: 0;
+        font-family: var(--ha-font-family-code);
+        font-size: var(--ha-font-size-s);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
