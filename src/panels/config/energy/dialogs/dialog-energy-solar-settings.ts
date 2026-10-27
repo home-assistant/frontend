@@ -150,6 +150,7 @@ export class DialogEnergySolarSettings
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.solar.dialog.entity_para",
             { unit: this._energy_units?.join(", ") || "" }
@@ -162,7 +163,7 @@ export class DialogEnergySolarSettings
             "ui.panel.config.energy.solar.dialog.display_name"
           )}
           type="text"
-          .disabled=${!labelStatistic}
+          .disabled=${!labelStatistic || this._saving}
           .value=${this._source?.name || ""}
           .placeholder=${
             labelStatistic
@@ -187,6 +188,7 @@ export class DialogEnergySolarSettings
           )}
           .excludeStatistics=${this._excludeListPower}
           @value-changed=${this._powerStatisticChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.solar.dialog.entity_para",
             { unit: this._power_units?.join(", ") || "" }
@@ -399,33 +401,47 @@ export class DialogEnergySolarSettings
   }
 
   private async _save() {
+    // Closing or reopening the dialog replaces its state, but a created helper
+    // must still be saved with the submitted source
     const params = this._params!;
+    const forecast = this._forecast;
+    let source = this._source!;
+    const isCurrent = () => this._params === params;
     this._error = undefined;
     this._saving = true;
     try {
-      if (!this._source!.stat_energy_from) {
-        const statEnergyFrom = await this._energyFromPower();
+      if (!source.stat_energy_from) {
+        const statEnergyFrom = await this._energyFromPower(source);
         if (!statEnergyFrom) {
           return;
         }
-        this._source = { ...this._source!, stat_energy_from: statEnergyFrom };
-        this._updateFormDirtyState();
+        source = { ...source, stat_energy_from: statEnergyFrom };
+        if (isCurrent()) {
+          this._source = source;
+          this._updateFormDirtyState();
+        }
       }
-      if (!this._forecast) {
-        this._source!.config_entry_solar_forecast = null;
+      if (!forecast) {
+        source = { ...source, config_entry_solar_forecast: null };
       }
-      await params.saveCallback(this._source!);
-      this._markDirtyStateClean();
-      this.closeDialog();
+      await params.saveCallback(source);
+      if (isCurrent()) {
+        this._markDirtyStateClean();
+        this.closeDialog();
+      }
     } catch (err: any) {
-      this._error = err.message;
+      if (isCurrent()) {
+        this._error = err.message;
+      }
     } finally {
       this._saving = false;
     }
   }
 
-  private async _energyFromPower(): Promise<string | undefined> {
-    const statRate = this._source!.stat_rate!;
+  private async _energyFromPower(
+    draft: SolarSourceTypeEnergyPreference
+  ): Promise<string | undefined> {
+    const statRate = draft.stat_rate!;
     const units = this._integralUnits();
     if (!units) {
       return undefined;
@@ -444,7 +460,7 @@ export class DialogEnergySolarSettings
                 this.hass.formatEntityName,
                 statRate,
                 this._params?.statsMetadata?.[statRate],
-                this._source?.name
+                draft.name
               ),
             }
           ),
