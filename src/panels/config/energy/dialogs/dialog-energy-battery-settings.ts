@@ -83,6 +83,7 @@ export class DialogEnergyBatterySettings
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
+    this._saving = false;
     this._source = params.source
       ? { ...params.source }
       : emptyBatteryEnergyPreference();
@@ -464,7 +465,9 @@ export class DialogEnergyBatterySettings
         this._error = err.message;
       }
     } finally {
-      this._saving = false;
+      if (isCurrent()) {
+        this._saving = false;
+      }
     }
   }
 

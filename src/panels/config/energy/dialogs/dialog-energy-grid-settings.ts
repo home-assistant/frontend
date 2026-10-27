@@ -96,6 +96,7 @@ export class DialogEnergyGridSettings
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
+    this._saving = false;
     this._source = params.source
       ? { ...params.source }
       : emptyGridSourceEnergyPreference();
@@ -759,16 +760,17 @@ export class DialogEnergyGridSettings
       const pending = this._pendingIntegrals();
       if (pending.length) {
         const sensors = await this._energyFromPower(draft, pending);
-        if (sensors) {
-          const created = Object.fromEntries(
-            pending.map(({ energy }, index) => [energy, sensors[index]])
-          );
-          draft = { ...draft, ...created };
-          if (isCurrent()) {
-            // Keep edits made meanwhile, only fill in the new energy sensors
-            this._source = { ...this._source!, ...created };
-            this._updateFormDirtyState();
-          }
+        if (!sensors) {
+          return;
+        }
+        const created = Object.fromEntries(
+          pending.map(({ energy }, index) => [energy, sensors[index]])
+        );
+        draft = { ...draft, ...created };
+        if (isCurrent()) {
+          // Keep edits made meanwhile, only fill in the new energy sensors
+          this._source = { ...this._source!, ...created };
+          this._updateFormDirtyState();
         }
       }
 
@@ -787,12 +789,6 @@ export class DialogEnergyGridSettings
       if (draft.name) {
         source.name = draft.name;
       }
-      // Compensation can be set for an export sensor that was then skipped
-      if (!source.stat_energy_to) {
-        source.stat_compensation = null;
-        source.entity_energy_price_export = null;
-        source.number_energy_price_export = null;
-      }
 
       // Only include power_config if a power type is selected
       if (powerType !== "none") {
@@ -809,7 +805,9 @@ export class DialogEnergyGridSettings
         this._error = err.message;
       }
     } finally {
-      this._saving = false;
+      if (isCurrent()) {
+        this._saving = false;
+      }
     }
   }
 
@@ -840,7 +838,6 @@ export class DialogEnergyGridSettings
       intro: this.hass.localize(
         "ui.panel.config.energy.grid.dialog.energy_sensors_needed"
       ),
-      optional: true,
       // Neither direction may reuse the statistic of the other
       exclude: [
         ...(this._excludeList || []),
