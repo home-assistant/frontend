@@ -4609,6 +4609,7 @@
             }
           },
           "delete_source": "Are you sure you want to remove this source?",
+          "save_config_failed": "Failed to save config: {error}",
           "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
           "grid": {
             "title": "Electricity grid",
@@ -4696,6 +4697,20 @@
               "dont_forecast_production": "Don't forecast production",
               "forecast_production": "Forecast production",
               "add_forecast": "Add forecast"
+            }
+          },
+          "home": {
+            "title": "Home consumption",
+            "sub": "If you have a meter that measures your whole house consumption, you can configure it here.",
+            "add_home_meter": "Add home meter",
+            "remove_home_meter": "Remove home meter",
+            "edit_home_meter": "Edit home meter",
+            "dialog": {
+              "header": "Configure home consumption",
+              "entity_para": "Pick a sensor which measures home consumption in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
+              "home_energy": "Home energy",
+              "home_power": "Home power"
             }
           },
           "battery": {
@@ -10959,7 +10974,8 @@
                 "solar": "Solar",
                 "battery": "Battery",
                 "gas": "Gas",
-                "water": "Water"
+                "water": "Water",
+                "home": "Home"
               }
             },
             "energy-compare": {
