@@ -404,7 +404,7 @@ export class HaControlSlider extends LitElement {
                     class=${classMap({
                       "slider-track-bar": true,
                       [this.mode ?? "start"]: true,
-                      "show-handle": this.showHandle,
+                      "show-handle": this.showHandle && this.value != null,
                     })}
                   ></div>
                 `

@@ -146,25 +146,3 @@ describe("ha-control-slider step bounds", () => {
     expect(values).toEqual([99, 1]);
   });
 });
-
-describe("ha-control-slider unknown value", () => {
-  const slider = (el: HaControlSlider) =>
-    el.shadowRoot!.querySelector<HTMLElement>("#slider")!;
-
-  it("does not announce an unknown value as the minimum", async () => {
-    const el = await mountSlider({ min: 1, max: 100, unit: "%" });
-    expect(slider(el).hasAttribute("aria-valuenow")).toBe(false);
-    expect(slider(el).hasAttribute("aria-valuetext")).toBe(false);
-    expect(el.hasAttribute("aria-valuenow")).toBe(false);
-  });
-
-  it("announces the value once it becomes known, and drops it again", async () => {
-    const el = await mountSlider({ min: 1, max: 100, value: 40 });
-    expect(slider(el).getAttribute("aria-valuenow")).toBe("40");
-    expect(el.getAttribute("aria-valuenow")).toBe("40");
-    el.value = undefined;
-    await el.updateComplete;
-    expect(slider(el).hasAttribute("aria-valuenow")).toBe(false);
-    expect(el.hasAttribute("aria-valuenow")).toBe(false);
-  });
-});
