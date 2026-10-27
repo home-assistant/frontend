@@ -84,6 +84,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
+  private _subscribedTo?: { connection: Connection; user?: string };
+
   public getCardSize(): number {
     return this._config === undefined
       ? 3
@@ -209,7 +211,15 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    if (changedProps.has("_connection") || changedProps.has("_user")) {
+    // The first context values arrive before connectedCallback() subscribes,
+    // so only drop a subscription when the connection or user it was made
+    // with differs. _tryConnect() keeps a live subscription and retries a
+    // missing one.
+    if (
+      this._subscribedTo !== undefined &&
+      (this._subscribedTo.connection !== this._connection ||
+        this._subscribedTo.user !== this._user?.name)
+    ) {
       this._tryDisconnect();
     }
     if (
@@ -256,6 +266,10 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
     this._error = undefined;
     this._errorLevel = undefined;
+    this._subscribedTo = {
+      connection: this._connection,
+      user: this._user?.name,
+    };
 
     try {
       this._unsubRenderTemplate = subscribeRenderTemplate(
@@ -293,6 +307,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         listeners: { all: false, domains: [], entities: [], time: false },
       };
       this._unsubRenderTemplate = undefined;
+      this._subscribedTo = undefined;
     }
   }
 
@@ -303,6 +318,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
     this._unsubRenderTemplate.then((unsub) => unsub()).catch(/* ignore */);
     this._unsubRenderTemplate = undefined;
+    this._subscribedTo = undefined;
     this._error = undefined;
     this._errorLevel = undefined;
   }
