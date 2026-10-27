@@ -82,6 +82,9 @@ export function integralFlowInput(
     max_sub_interval: { hours: 0, minutes: 5, seconds: 0 },
     round: 3,
     ...units,
+    // The helper only infers energy from a power device class, and the energy
+    // dashboard needs it
+    device_class: "energy",
   };
 }
 
