@@ -48,8 +48,22 @@ export interface LovelaceViewFooterConfig {
   max_width?: number;
 }
 
+export const SIDEBAR_POSITIONS = ["start", "end"] as const;
+
+export type SidebarPosition = (typeof SIDEBAR_POSITIONS)[number];
+
+export const DEFAULT_SIDEBAR_POSITION: SidebarPosition = "end";
+
+export const SIDEBAR_MOBILE_POSITIONS = ["tabs", "top", "bottom"] as const;
+
+export type SidebarMobilePosition = (typeof SIDEBAR_MOBILE_POSITIONS)[number];
+
+export const DEFAULT_SIDEBAR_MOBILE_POSITION: SidebarMobilePosition = "bottom";
+
 export interface LovelaceViewSidebarConfig {
   sections?: LovelaceSectionConfig[];
+  position?: SidebarPosition;
+  mobile_position?: SidebarMobilePosition;
   content_label?: string;
   sidebar_label?: string;
   visibility?: VisibilityCondition[];

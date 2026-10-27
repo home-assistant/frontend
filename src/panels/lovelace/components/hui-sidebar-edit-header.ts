@@ -1,4 +1,5 @@
-import { mdiDelete, mdiDotsVertical } from "@mdi/js";
+import { mdiDelete, mdiDotsVertical, mdiPencil } from "@mdi/js";
+import "@home-assistant/webawesome/dist/components/divider/divider";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
@@ -12,6 +13,7 @@ import type { LovelaceViewSidebarConfig } from "../../../data/lovelace/config/vi
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { LovelacePath } from "../editor/lovelace-path";
 import { deleteAtPath, getAtPath } from "../editor/lovelace-path";
+import { showEditSidebarDialog } from "../editor/sidebar-editor/show-edit-sidebar-dialog";
 import type { Lovelace } from "../types";
 
 @customElement("hui-sidebar-edit-header")
@@ -38,6 +40,11 @@ export class HuiSidebarEditHeader extends LitElement {
             .label=${this._localize("ui.panel.lovelace.editor.sidebar.menu")}
             .path=${mdiDotsVertical}
           ></ha-icon-button>
+          <ha-dropdown-item value="edit">
+            <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
+            ${this._localize("ui.common.edit")}
+          </ha-dropdown-item>
+          <wa-divider></wa-divider>
           <ha-dropdown-item value="delete" variant="danger">
             <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
             ${this._localize("ui.common.delete")}
@@ -49,8 +56,16 @@ export class HuiSidebarEditHeader extends LitElement {
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent): void {
     const action = ev.detail?.item?.value;
-    if (action === "delete") {
-      this._deleteSidebar();
+    switch (action) {
+      case "edit":
+        showEditSidebarDialog(this, {
+          lovelace: this.lovelace,
+          path: this.path,
+        });
+        break;
+      case "delete":
+        this._deleteSidebar();
+        break;
     }
   }
 

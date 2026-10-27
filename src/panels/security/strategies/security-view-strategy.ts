@@ -398,6 +398,7 @@ export class SecurityViewStrategy extends ReactiveElement {
                 ],
               }
             : {}),
+          mobile_position: "tabs",
           content_label: hass.localize(
             "ui.panel.lovelace.strategy.security.devices"
           ),

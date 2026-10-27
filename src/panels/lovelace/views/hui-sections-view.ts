@@ -23,9 +23,10 @@ import {
   DEFAULT_SECTION_COLUMN_SPAN,
   isStrategySection,
 } from "../../../data/lovelace/config/section";
-import type {
-  LovelaceViewConfig,
-  LovelaceViewSidebarConfig,
+import {
+  DEFAULT_SIDEBAR_MOBILE_POSITION,
+  type LovelaceViewConfig,
+  type LovelaceViewSidebarConfig,
 } from "../../../data/lovelace/config/view";
 import { DEFAULT_MAX_COLUMNS } from "./const";
 import type { HomeAssistant } from "../../../types";
@@ -194,14 +195,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       (editMode || (this._sidebarVisible && Boolean(sidebar.sections?.length)));
     const singleColumn = this._maxColumns <= 1;
 
-    // The tab switcher is opt-in: a sidebar enables it by labelling both tabs,
-    // otherwise the sidebar stacks below the content.
+    const mobilePosition =
+      this._config?.sidebar?.mobile_position ?? DEFAULT_SIDEBAR_MOBILE_POSITION;
     const useSidebarTabs = Boolean(
-      singleColumn &&
-      hasSidebar &&
-      this._config?.sidebar?.content_label &&
-      this._config?.sidebar?.sidebar_label
+      singleColumn && hasSidebar && mobilePosition === "tabs"
     );
+    const sidebarOnTop = singleColumn && mobilePosition === "top";
 
     const totalSectionCount =
       this._sectionColumnCount + (editMode ? 1 : 0) + (hasSidebar ? 1 : 0);
@@ -227,6 +226,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           "has-sidebar": Boolean(hasSidebar),
           "single-column": singleColumn,
           "has-sidebar-tabs": useSidebarTabs,
+          "sidebar-top": sidebarOnTop,
+          "sidebar-at-start": sidebar?.position === "start",
         })}"
         style=${styleMap({
           "--column-count": columnCount,
@@ -250,11 +251,19 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                     .options=${[
                       {
                         value: "content",
-                        label: this._config!.sidebar!.content_label,
+                        label:
+                          this._config!.sidebar!.content_label ||
+                          this.hass.localize(
+                            "ui.panel.lovelace.views.sidebar_tabs.content"
+                          ),
                       },
                       {
                         value: "sidebar",
-                        label: this._config!.sidebar!.sidebar_label,
+                        label:
+                          this._config!.sidebar!.sidebar_label ||
+                          this.hass.localize(
+                            "ui.panel.lovelace.views.sidebar_tabs.sidebar"
+                          ),
                       },
                     ]}
                   >
@@ -654,6 +663,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           [content-end sidebar-start] 1fr [sidebar-end];
       }
 
+      .wrapper.has-sidebar.sidebar-at-start .container {
+        grid-template-columns:
+          [sidebar-start] 1fr [sidebar-end content-start]
+          repeat(var(--content-column-count), 1fr) [content-end];
+      }
+
       /* With a single column, content and sidebar stack at full width */
       .wrapper.single-column.has-sidebar .container {
         grid-template-columns: 1fr;
@@ -675,6 +690,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           var(--ha-border-radius-xl)
         );
         border-start-end-radius: 0;
+      }
+
+      .wrapper.sidebar-top .sidebar {
+        order: -1;
       }
 
       .wrapper.single-column .sidebar {
@@ -730,6 +749,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
       .wrapper.single-column .content {
         grid-column: 1 / -1;
+        grid-row: auto;
       }
 
       .wrapper.has-sidebar-tabs .content {

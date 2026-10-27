@@ -10158,6 +10158,10 @@
           "saving_failed": "Saving dashboard configuration failed."
         },
         "views": {
+          "sidebar_tabs": {
+            "content": "Main",
+            "sidebar": "Sidebar"
+          },
           "unnamed_view": "Unnamed view",
           "delete_title": "Delete view",
           "delete_named_view_only": "''{name}'' view will be deleted.",
@@ -10535,7 +10539,24 @@
           },
           "sidebar": {
             "title": "Sidebar",
+            "settings": "Sidebar settings",
+            "tab_settings": "[%key:ui::panel::lovelace::editor::edit_view::tab_settings%]",
+            "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_view::tab_visibility%]",
             "menu": "Sidebar menu",
+            "saving_failed": "[%key:ui::panel::lovelace::editor::edit_view::saving_failed%]",
+            "position": "On large screens",
+            "position_options": {
+              "left": "Left",
+              "right": "Right"
+            },
+            "mobile_position": "On small screens",
+            "mobile_position_options": {
+              "tabs": "In a separate tab",
+              "top": "Above the content",
+              "bottom": "Below the content"
+            },
+            "content_label": "Main tab name",
+            "sidebar_label": "Sidebar tab name",
             "delete_title": "Delete sidebar",
             "delete_text": "The sidebar and all its sections will be deleted."
           },
