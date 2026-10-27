@@ -91,7 +91,9 @@ export const renderCategoryGroupActions = (
           >
             <ha-icon-button
               slot="trigger"
-              .label=${hass.localize("ui.common.menu")}
+              .label=${hass.localize("ui.common.overflow_menu_for", {
+                name: category.name,
+              })}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
             <ha-dropdown-item value="edit">
