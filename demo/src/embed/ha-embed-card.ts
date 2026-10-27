@@ -16,6 +16,23 @@ const pageProvider = (): HTMLElement =>
   document.querySelector("ha-embed-provider") ??
   document.body.appendChild(document.createElement("ha-embed-provider"));
 
+// Looks past shadow roots, so a card inside another component still finds
+// the provider around that component.
+const insideProvider = (element: Element): boolean => {
+  let current: Element | null = element;
+
+  while (current) {
+    if (current.closest("ha-embed-provider")) {
+      return true;
+    }
+
+    const root = current.getRootNode();
+    current = root instanceof ShadowRoot ? root.host : null;
+  }
+
+  return false;
+};
+
 /**
  * Renders a Lovelace card. The card uses the provider with the ID in
  * `provider`, else the closest provider around it, else the first provider on
@@ -70,7 +87,7 @@ export class HaEmbedCard extends LitElement {
     // Before super.connectedCallback(), which sends the context requests.
     this._linkedProvider = this.provider
       ? (document.getElementById(this.provider) ?? undefined)
-      : this.closest("ha-embed-provider")
+      : insideProvider(this)
         ? undefined
         : pageProvider();
     super.connectedCallback();
