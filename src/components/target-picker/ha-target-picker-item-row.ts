@@ -857,7 +857,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
   private async _getDeviceDomain(configEntryId: string) {
     try {
-      const data = await getConfigEntry(this.hass, configEntryId);
+      const data = await getConfigEntry(this.hass.callWS, configEntryId);
       const domain = data.config_entry.domain;
       this._iconImg = brandsUrl(
         {

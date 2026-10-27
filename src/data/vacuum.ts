@@ -71,10 +71,10 @@ export interface Segment {
 }
 
 export const getVacuumSegments = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   entity_id: string
 ): Promise<{ segments: Segment[] }> =>
-  hass.callWS({
+  callWS({
     type: "vacuum/get_segments",
     entity_id,
   });

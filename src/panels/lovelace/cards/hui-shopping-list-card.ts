@@ -9,12 +9,17 @@ class HuiShoppingListCard extends HuiTodoListCard {
   }
 
   override getEntityId(): string | undefined {
-    const todoLists = getTodoLists(this.hass!);
+    const todoLists = getTodoLists(
+      this._states,
+      this._entities,
+      this._formatters.formatEntityName,
+      this._i18n.locale.language
+    );
     if (todoLists.length) {
       if (todoLists.length > 1) {
         // find first entity provided by "shopping_list"
         for (const list of todoLists) {
-          const entityReg = this.hass!.entities[list.entity_id];
+          const entityReg = this._entities[list.entity_id];
           if (entityReg?.platform === "shopping_list") {
             return list.entity_id;
           }

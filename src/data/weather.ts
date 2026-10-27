@@ -293,13 +293,14 @@ export const getWeatherUnit = (
 };
 
 export const getSecondaryWeatherAttribute = (
-  hass: Pick<HomeAssistant, "formatEntityAttributeValue" | "localize">,
+  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
+  localize: LocalizeFunc,
   stateObj: WeatherEntity,
   forecast: ForecastAttribute[],
   temperatureFractionDigits?: number
 ): TemplateResult | undefined => {
   const extrema = getWeatherExtrema(
-    hass.formatEntityAttributeValue,
+    formatEntityAttributeValue,
     stateObj,
     forecast,
     temperatureFractionDigits
@@ -339,9 +340,9 @@ export const getSecondaryWeatherAttribute = (
               .path=${weatherAttrIcon}
             ></ha-svg-icon>
           `
-        : hass.localize(`ui.card.weather.attributes.${attribute}`)
+        : localize(`ui.card.weather.attributes.${attribute}`)
     }
-    ${hass.formatEntityAttributeValue(stateObj, attribute, roundedValue)}
+    ${formatEntityAttributeValue(stateObj, attribute, roundedValue)}
   `;
 };
 

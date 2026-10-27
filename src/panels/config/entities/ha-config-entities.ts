@@ -1447,7 +1447,7 @@ ${rejected
   private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
-        const label = await createLabelRegistryEntry(this.hass, values);
+        const label = await createLabelRegistryEntry(this.hass.callWS, values);
         this._bulkLabel(label.label_id, "add");
       },
     });
@@ -1548,7 +1548,7 @@ ${rejected
   }
 
   private async _loadSubEntries(entryId: string) {
-    this._subEntries = await getSubEntries(this.hass, entryId);
+    this._subEntries = await getSubEntries(this.hass.callWS, entryId);
   }
 
   private _addDevice() {
