@@ -95,7 +95,6 @@ export class HaFloorSelector extends LitElement {
     if (!this.selector.floor?.multiple) {
       return html`
         <ha-floor-picker
-          .hass=${this.hass}
           .value=${this.value}
           .label=${this.label}
           .helper=${this.helper}
@@ -114,7 +113,6 @@ export class HaFloorSelector extends LitElement {
 
     return html`
       <ha-floors-picker
-        .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
         .pickFloorLabel=${this.label}
