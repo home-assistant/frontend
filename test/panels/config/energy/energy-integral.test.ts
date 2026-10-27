@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   findIntegral,
   integralUnits,
+  pendingPowerIntegrals,
 } from "../../../../src/panels/config/energy/dialogs/energy-integral";
 import type { HomeAssistant } from "../../../../src/types";
 
@@ -85,5 +86,45 @@ describe("findIntegral", () => {
     expect(
       findIntegral(states, entities, "sensor.oven_power", "energy")
     ).toBeUndefined();
+  });
+});
+
+describe("pendingPowerIntegrals", () => {
+  const states = {
+    "sensor.import_power": { attributes: { unit_of_measurement: "W" } },
+    "sensor.export_power": { attributes: { unit_of_measurement: "kW" } },
+  } as unknown as HomeAssistant["states"];
+
+  it("offers the missing energy of two power sensors", () => {
+    expect(
+      pendingPowerIntegrals(
+        states,
+        { stat_energy_from: "sensor.import_energy", stat_energy_to: null },
+        "two_sensors",
+        {
+          stat_rate_from: "sensor.import_power",
+          stat_rate_to: "sensor.export_power",
+        },
+        ENERGY_UNITS
+      )
+    ).toEqual([
+      {
+        energy: "stat_energy_to",
+        rate: "sensor.export_power",
+        units: { unit_time: "h" },
+      },
+    ]);
+  });
+
+  it("skips a signed power sensor", () => {
+    expect(
+      pendingPowerIntegrals(
+        states,
+        {},
+        "standard",
+        { stat_rate: "sensor.import_power" },
+        ENERGY_UNITS
+      )
+    ).toEqual([]);
   });
 });
