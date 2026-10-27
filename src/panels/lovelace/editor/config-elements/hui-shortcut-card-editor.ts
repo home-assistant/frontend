@@ -59,13 +59,9 @@ export class HuiShortcutCardEditor
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
-    if (
-      (changedProps.has("hass") || changedProps.has("_config")) &&
-      this.hass
-    ) {
+    if (changedProps.has("_config")) {
       const action = this._config?.tap_action;
       this._navInfo.update(
-        this.hass,
         action?.action === "navigate" ? action.navigation_path : undefined
       );
       this._serviceInfo.updateService(
@@ -192,7 +188,7 @@ export class HuiShortcutCardEditor
     }
 
     const defaults = getShortcutCardDefaults(
-      this.hass,
+      this.hass.localize,
       this._config.tap_action,
       this._navInfo.info,
       this._serviceInfo.info

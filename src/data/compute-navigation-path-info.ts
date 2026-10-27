@@ -28,6 +28,11 @@ import {
 import type { LocalizeKeys } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 
+export type NavigationPathInfoSources = Pick<
+  HomeAssistant,
+  "localize" | "panels" | "areas" | "devices" | "config" | "connection"
+>;
+
 export interface NavigationPathInfo {
   label: string;
   icon?: string;
@@ -81,7 +86,7 @@ export const CONFIG_SUB_ROUTES: Record<
  * For lovelace views, pass the dashboard config to resolve view title/icon.
  */
 export const computeNavigationPathInfo = (
-  hass: HomeAssistant,
+  hass: NavigationPathInfoSources,
   path: string,
   lovelaceConfig?: LovelaceRawConfig,
   ingressPanels?: IngressPanelInfoMap
@@ -161,7 +166,7 @@ export const computeNavigationPathInfo = (
 };
 
 const computeAreaNavigationPathInfo = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "areas">,
   areaId: string
 ): NavigationPathInfo => {
   const area = hass.areas[areaId];
@@ -173,7 +178,7 @@ const computeAreaNavigationPathInfo = (
 };
 
 const computeDeviceNavigationPathInfo = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "devices">,
   deviceId: string
 ): NavigationPathInfo => {
   const device = hass.devices[deviceId];
@@ -201,7 +206,7 @@ const computeIngressNavigationPathInfo = (
  * updates for view paths and ingress panel info for app paths.
  */
 export const subscribeNavigationPathInfo = (
-  hass: HomeAssistant,
+  hass: NavigationPathInfoSources,
   path: string,
   onChange: (info: NavigationPathInfo) => void
 ): UnsubscribeFunc | undefined => {
