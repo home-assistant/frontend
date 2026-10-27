@@ -62,6 +62,9 @@ interface ControlButtonElement extends HTMLElement {
   control: NormalizedControl;
 }
 
+const DEFAULT_AREA_CONTROLS: AreaControl[] = [...AREA_CONTROL_DOMAINS];
+const EMPTY_STATES: HassEntities = {};
+
 export const supportsAreaControlsCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -125,7 +128,8 @@ class HuiAreaControlsCardFeature
       this._domainControls(this._controls),
       this.context.area_id,
       this.context.exclude_entities,
-      this._registries
+      this._registries,
+      states
     );
     const entityIds = new Set(Object.values(controlEntities).flat());
     for (const control of this._controls) {
@@ -145,7 +149,8 @@ class HuiAreaControlsCardFeature
   }
 
   private get _controls(): AreaControl[] {
-    return this._config?.controls || [...AREA_CONTROL_DOMAINS];
+    // Stable default so the memoized lookups hit between renders
+    return this._config?.controls || DEFAULT_AREA_CONTROLS;
   }
 
   private _normalizeControl(control: AreaControl): NormalizedControl {
@@ -209,7 +214,8 @@ class HuiAreaControlsCardFeature
       domainControls,
       this.context.area_id,
       this.context.exclude_entities,
-      this._registries
+      this._registries,
+      this._states ?? EMPTY_STATES
     );
 
     const entities = controlEntities[normalized.value]
@@ -230,15 +236,18 @@ class HuiAreaControlsCardFeature
       .map((n) => n.value)
   );
 
+  // States are part of the key: the filter reads device classes from them,
+  // so an entity can only match once its state exists.
   private _controlEntities = memoizeOne(
     (
       controls: AreaControlDomain[],
       areaId: string,
       excludeEntities: string[] | undefined,
-      registries: HomeAssistantRegistries
+      registries: HomeAssistantRegistries,
+      states: HassEntities
     ) =>
       getAreaControlEntities(controls, areaId, excludeEntities, {
-        states: this._states ?? {},
+        states,
         ...registries,
       })
   );
@@ -267,7 +276,8 @@ class HuiAreaControlsCardFeature
       domainControls,
       this.context.area_id,
       this.context.exclude_entities,
-      this._registries
+      this._registries,
+      this._states ?? EMPTY_STATES
     );
 
     // Filter controls while preserving original order
