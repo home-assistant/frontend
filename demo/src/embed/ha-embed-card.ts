@@ -3,6 +3,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consume } from "../../../src/common/decorators/consume";
+import { computeRTLDirection } from "../../../src/common/util/compute_rtl";
 import type { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
 import { handleAction } from "../../../src/panels/lovelace/common/handle-action";
 import "../../../src/panels/lovelace/cards/hui-card";
@@ -93,6 +94,7 @@ export class HaEmbedCard extends LitElement {
     }
     return html`<div
       class=${classMap({ theme: true, dark: this._hass.themes.darkMode })}
+      dir=${computeRTLDirection(this._hass)}
     >
       <hui-card .hass=${this._hass} .config=${this.config}></hui-card>
     </div>`;
@@ -116,6 +118,14 @@ export class HaEmbedCard extends LitElement {
         text-align: start;
         -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
         -webkit-font-smoothing: var(--ha-font-smoothing);
+      }
+      /* What setDirectionStyles sets on the app for a right-to-left language,
+         here only for the card */
+      .theme[dir="rtl"] {
+        --direction: rtl;
+        --float-start: right;
+        --float-end: left;
+        --scale-direction: -1;
       }
     `,
   ];
