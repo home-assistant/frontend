@@ -159,7 +159,6 @@ class HaPanelDevEvent extends LitElement {
           max-width: var(--ha-content-width-wide);
           margin: auto;
           height: 100%;
-          box-sizing: border-box;
         }
 
         :host {
