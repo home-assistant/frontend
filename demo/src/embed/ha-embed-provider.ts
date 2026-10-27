@@ -1,13 +1,17 @@
-import { provide } from "@lit/context";
+import { ContextProvider, provide } from "@lit/context";
 import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import { listenMediaQuery } from "../../../src/common/dom/media_query";
+import { reducedMotionContext } from "../../../src/data/context";
 import type { EntityInput } from "../../../src/fake_data/entities/types";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { provideHass } from "../../../src/fake_data/provide_hass";
+import { mockHistory } from "../stubs/history";
 import { mockIcons } from "../stubs/icons";
+import { mockTemplate } from "../stubs/template";
 import { embedHassContext } from "./context";
 import { readScriptData } from "./script-data";
 
@@ -31,19 +35,26 @@ export class HaEmbedProvider extends LitElement {
   @property({ attribute: "color-scheme" }) public colorScheme?:
     "light" | "dark";
 
-  private _darkQuery = matchMedia("(prefers-color-scheme: dark)");
+  private _reducedMotion = new ContextProvider(this, {
+    context: reducedMotionContext,
+    initialValue: false,
+  });
 
-  private _applyColorScheme = () => {
+  private _prefersDark = matchMedia("(prefers-color-scheme: dark)").matches;
+
+  private _unsubMediaQueries: (() => void)[] = [];
+
+  private _applyColorScheme() {
     const dark = this.colorScheme
       ? this.colorScheme === "dark"
-      : this._darkQuery.matches;
+      : this._prefersDark;
     if (this.hass.themes.darkMode !== dark) {
       this.hass.updateHass({
         themes: { ...this.hass.themes, darkMode: dark },
         selectedTheme: { ...this.hass.selectedTheme!, dark },
       });
     }
-  };
+  }
 
   constructor() {
     super();
@@ -53,12 +64,25 @@ export class HaEmbedProvider extends LitElement {
     hass.updateTranslations(null);
     hass.updateTranslations("lovelace");
     mockIcons(hass);
+    mockHistory(hass);
+    mockTemplate(hass);
+    // The history graph card asks for long-term statistics as well. The demo
+    // recorder stub only knows the energy demo's statistics, so return none.
+    hass.mockWS("recorder/statistics_during_period", () => ({}));
     this._applyColorScheme();
   }
 
   public connectedCallback() {
     super.connectedCallback();
-    this._darkQuery.addEventListener("change", this._applyColorScheme);
+    this._unsubMediaQueries = [
+      listenMediaQuery("(prefers-color-scheme: dark)", (matches) => {
+        this._prefersDark = matches;
+        this._applyColorScheme();
+      }),
+      listenMediaQuery("(prefers-reduced-motion: reduce)", (matches) =>
+        this._reducedMotion.setValue(matches)
+      ),
+    ];
     const entities = readScriptData(this) as EntityInput[] | undefined;
     if (entities) {
       this.entities = entities;
@@ -67,7 +91,8 @@ export class HaEmbedProvider extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._darkQuery.removeEventListener("change", this._applyColorScheme);
+    this._unsubMediaQueries.forEach((unsub) => unsub());
+    this._unsubMediaQueries = [];
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -75,11 +100,6 @@ export class HaEmbedProvider extends LitElement {
       this._applyColorScheme();
     }
     if (changedProps.has("entities")) {
-      // Remove the old entities, so that services cannot bring them back.
-      for (const entityId of Object.keys(this.hass.mockEntities)) {
-        delete this.hass.mockEntities[entityId];
-      }
-      this.hass.updateHass({ entities: {} });
       this.hass.addEntities(this.entities, true);
     }
   }

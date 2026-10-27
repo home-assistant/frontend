@@ -301,6 +301,15 @@ export const provideHass = (
     newEntities: EntityInput | EntityInput[],
     replace = false
   ) {
+    if (replace) {
+      // Drop the old mock entities too, so that services cannot bring them back.
+      for (const entityId of Object.keys(entities)) {
+        delete entities[entityId];
+      }
+
+      hass().updateHass({ entities: {} });
+    }
+
     const states = {};
     ensureArray(newEntities).forEach((input) => {
       const ent = getEntity(input);
