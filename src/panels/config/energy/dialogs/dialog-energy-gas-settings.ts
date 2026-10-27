@@ -35,6 +35,7 @@ import type { HaInput } from "../../../../components/input/ha-input";
 import type { IntegralUnits } from "./energy-integral";
 import {
   confirmIntegrals,
+  findIntegral,
   integralTotalUnit,
   integralUnits,
 } from "./energy-integral";
@@ -492,13 +493,24 @@ export class DialogEnergyGasSettings
 
   private _integralTotalUnit(): string | undefined {
     const units = this._integralUnits();
-    return units
-      ? integralTotalUnit(
-          this.hass.states[this._source!.stat_rate!].attributes
-            .unit_of_measurement!,
+    if (!units) {
+      return undefined;
+    }
+    const statRate = this._source!.stat_rate!;
+    // A reused helper can display another unit than a new one would
+    const existing = findIntegral(
+      this.hass.states,
+      this.hass.entities,
+      statRate,
+      "gas",
+      this._excludeList
+    );
+    return existing
+      ? getDisplayUnit(this.hass.states, existing, undefined) || undefined
+      : integralTotalUnit(
+          this.hass.states[statRate].attributes.unit_of_measurement!,
           units
-        )
-      : undefined;
+        );
   }
 
   private async _save() {
