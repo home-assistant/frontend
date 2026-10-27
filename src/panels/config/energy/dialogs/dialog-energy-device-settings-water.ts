@@ -159,6 +159,7 @@ export class DialogEnergyDeviceSettingsWater
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.device_consumption_water.dialog.selected_stat_intro",
             { unit: pickableUnit }
@@ -175,6 +176,7 @@ export class DialogEnergyDeviceSettingsWater
           )}
           .excludeStatistics=${this._excludeListFlowRate}
           @value-changed=${this._flowRateStatisticChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.device_consumption_water.dialog.selected_stat_intro",
             { unit: this._flow_rate_units?.join(", ") || "" }
@@ -186,7 +188,7 @@ export class DialogEnergyDeviceSettingsWater
             "ui.panel.config.energy.device_consumption_water.dialog.display_name"
           )}
           type="text"
-          .disabled=${!this._device}
+          .disabled=${!this._device || this._saving}
           .value=${this._device?.name || ""}
           .placeholder=${
             labelStatistic
@@ -216,7 +218,7 @@ export class DialogEnergyDeviceSettingsWater
           .emptyLabel=${this.hass.localize(
             "ui.panel.config.energy.device_consumption_water.dialog.no_upstream_devices"
           )}
-          .disabled=${!this._device}
+          .disabled=${!this._device || this._saving}
           @value-changed=${this._parentChanged}
         ></ha-energy-upstream-device-picker>
 
