@@ -7,7 +7,10 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
-import { formatNumber } from "../../../../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../../../../common/number/format_number";
 import { preserveUnchangedRecord } from "../../../../common/util/preserve-unchanged-record";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
@@ -193,12 +196,12 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumber(
+                        ${formatNumberWithUnit(
                           this._total,
+                          this._unit,
                           this._i18n.locale,
                           this._gasFormatOptions
                         )}
-                        ${this._unit}
                       </hui-energy-graph-chip>`
                     : nothing
                 }

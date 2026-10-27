@@ -29,7 +29,7 @@ import { calcDateRange } from "../common/datetime/calc_date_range";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { getEntityAreaId } from "../common/entity/context/get_entity_context";
 import type { EntityNameItem } from "../common/entity/entity_name_config";
-import { formatNumber } from "../common/number/format_number";
+import { formatNumberWithUnit } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
 import type { HomeAssistant, HomeAssistantRegistries } from "../types";
@@ -1894,22 +1894,19 @@ export const formatConsumptionShort = (
     }
     pickedUnit = units[unitIndex];
   }
-  return (
-    formatNumber(
-      val,
-      locale,
-      displayPrecision !== undefined && pickedUnit === unit
-        ? {
-            minimumFractionDigits: displayPrecision,
-            maximumFractionDigits: displayPrecision,
-          }
-        : {
-            maximumFractionDigits:
-              Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
-          }
-    ) +
-    " " +
-    pickedUnit
+  return formatNumberWithUnit(
+    val,
+    pickedUnit,
+    locale,
+    displayPrecision !== undefined && pickedUnit === unit
+      ? {
+          minimumFractionDigits: displayPrecision,
+          maximumFractionDigits: displayPrecision,
+        }
+      : {
+          maximumFractionDigits:
+            Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
+        }
   );
 };
 
@@ -2129,10 +2126,14 @@ export const formatFlowRateShort = (
 ): string => {
   const isMetric = lengthUnitSystem === "km";
   if (isMetric) {
-    return `${formatNumber(litersPerMin, hassLocale, { maximumFractionDigits: 1 })} L/min`;
+    return formatNumberWithUnit(litersPerMin, "L/min", hassLocale, {
+      maximumFractionDigits: 1,
+    });
   }
   const galPerMin = litersPerMin / LITERS_PER_GALLON;
-  return `${formatNumber(galPerMin, hassLocale, { maximumFractionDigits: 1 })} gal/min`;
+  return formatNumberWithUnit(galPerMin, "gal/min", hassLocale, {
+    maximumFractionDigits: 1,
+  });
 };
 
 /**
@@ -2175,14 +2176,10 @@ export const formatPowerShort = (
     unitIndex++;
   }
 
-  return (
-    formatNumber(value, locale, {
-      // For watts, show no decimals. For kW and above, always show 3 decimals.
-      maximumFractionDigits: units[unitIndex] === "W" ? 0 : 3,
-    }) +
-    " " +
-    units[unitIndex]
-  );
+  return formatNumberWithUnit(value, units[unitIndex], locale, {
+    // For watts, show no decimals. For kW and above, always show 3 decimals.
+    maximumFractionDigits: units[unitIndex] === "W" ? 0 : 3,
+  });
 };
 
 export function getSuggestedPeriod(

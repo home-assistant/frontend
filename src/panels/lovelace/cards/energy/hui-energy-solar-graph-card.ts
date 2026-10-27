@@ -7,7 +7,10 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
-import { formatNumber } from "../../../../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import {
@@ -139,7 +142,7 @@ export class HuiEnergySolarGraphCard
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumber(this._total, this._i18n.locale)} kWh
+                        ${formatNumberWithUnit(this._total, "kWh", this._i18n.locale)}
                       </hui-energy-graph-chip>`
                     : nothing
                 }

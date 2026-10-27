@@ -38,7 +38,7 @@ import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { EnergySankeyCardConfig } from "../types";
 import "../../../../components/chart/ha-sankey-chart";
 import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
@@ -392,7 +392,12 @@ class HuiEnergySankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `${formatNumber(value, this._i18n.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} kWh`;
+    formatNumberWithUnit(
+      value,
+      "kWh",
+      this._i18n.locale,
+      value < 0.1 ? { maximumFractionDigits: 3 } : undefined
+    );
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     fireSankeyNodeMoreInfo(this, ev.detail.node);

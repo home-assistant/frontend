@@ -93,139 +93,151 @@ describe("Energy Short Format Test", () => {
   };
 
   it("No Unit conversion", () => {
-    assert.strictEqual(formatConsumptionShort(defaultLocale, 0, "Wh"), "0 Wh");
-    assert.strictEqual(formatConsumptionShort(defaultLocale, 0, "kWh"), "0 Wh");
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 0, "Wh"),
+      "0\u00A0Wh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 0, "kWh"),
+      "0\u00A0Wh"
+    );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0, "kWh", "kWh"),
-      "0 kWh"
+      "0\u00A0kWh"
     );
-    assert.strictEqual(formatConsumptionShort(defaultLocale, 0, "GWh"), "0 Wh");
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 0, "GWh"),
+      "0\u00A0Wh"
+    );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0, "GWh", "GWh"),
-      "0 GWh"
+      "0\u00A0GWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0, "gal"),
-      "0 gal"
+      "0\u00A0gal"
     );
 
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 10000.12345, "gal"),
-      "10,000 gal"
+      "10,000\u00A0gal"
     );
 
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 1.2345, "kWh"),
-      "1.23 kWh"
+      "1.23\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 10.12345, "kWh"),
-      "10.1 kWh"
+      "10.1\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 500.12345, "kWh"),
-      "500 kWh"
+      "500\u00A0kWh"
     );
 
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 10.01, "kWh"),
-      "10 kWh"
+      "10\u00A0kWh"
     );
   });
   it("Upward Unit conversion", () => {
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 1512.34567, "kWh"),
-      "1.51 MWh"
+      "1.51\u00A0MWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 15123.4567, "kWh"),
-      "15.1 MWh"
+      "15.1\u00A0MWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 151234.5678, "kWh"),
-      "151 MWh"
+      "151\u00A0MWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 1512345.6789, "kWh"),
-      "1.51 GWh"
+      "1.51\u00A0GWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 15123456789.9, "kWh"),
-      "15.1 TWh"
+      "15.1\u00A0TWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 15123456789000.9, "kWh"),
-      "15,123 TWh"
+      "15,123\u00A0TWh"
     );
   });
   it("Downward Unit conversion", () => {
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.00012, "kWh"),
-      "0.12 Wh"
+      "0.12\u00A0Wh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.12345, "kWh"),
-      "123 Wh"
+      "123\u00A0Wh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.00001234, "TWh"),
-      "12.3 MWh"
+      "12.3\u00A0MWh"
     );
   });
   it("Negativ Consumption", () => {
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, -500.123, "kWh"),
-      "-500 kWh"
+      "-500\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, -1234.56, "kWh"),
-      "-1.23 MWh"
+      "-1.23\u00A0MWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, -0.001234, "kWh"),
-      "-1.23 Wh"
+      "-1.23\u00A0Wh"
     );
   });
   it("Conversion with target unit", () => {
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.00012, "kWh", "Wh"),
-      "0.12 Wh"
+      "0.12\u00A0Wh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.00012, "kWh", "kWh"),
-      "0 kWh"
+      "0\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.01012, "kWh", "kWh"),
-      "0.01 kWh"
+      "0.01\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.00012, "kWh", "MWh"),
-      "0 MWh"
+      "0\u00A0MWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 10.12345, "kWh", "kWh"),
-      "10.1 kWh"
+      "10.1\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 10.12345, "kWh", "ZZZZZWh"),
-      "10.1 kWh"
+      "10.1\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 151234.5678, "kWh", "MWh"),
-      "151 MWh"
+      "151\u00A0MWh"
     );
   });
   it("Power Short Format", () => {
-    assert.strictEqual(formatPowerShort(defaultLocale, 0), "0 W");
-    assert.strictEqual(formatPowerShort(defaultLocale, 10), "10 W");
-    assert.strictEqual(formatPowerShort(defaultLocale, 12.2), "12 W");
-    assert.strictEqual(formatPowerShort(defaultLocale, 999), "999 W");
-    assert.strictEqual(formatPowerShort(defaultLocale, 1000), "1 kW");
-    assert.strictEqual(formatPowerShort(defaultLocale, 1234), "1.234 kW");
-    assert.strictEqual(formatPowerShort(defaultLocale, 10_500), "10.5 kW");
-    assert.strictEqual(formatPowerShort(defaultLocale, 1_500_000), "1.5 MW");
-    assert.strictEqual(formatPowerShort(defaultLocale, -1500), "-1.5 kW");
+    assert.strictEqual(formatPowerShort(defaultLocale, 0), "0\u00A0W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 10), "10\u00A0W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 12.2), "12\u00A0W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 999), "999\u00A0W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 1000), "1\u00A0kW");
+    assert.strictEqual(formatPowerShort(defaultLocale, 1234), "1.234\u00A0kW");
+    assert.strictEqual(formatPowerShort(defaultLocale, 10_500), "10.5\u00A0kW");
+    assert.strictEqual(
+      formatPowerShort(defaultLocale, 1_500_000),
+      "1.5\u00A0MW"
+    );
+    assert.strictEqual(formatPowerShort(defaultLocale, -1500), "-1.5\u00A0kW");
   });
 });
 

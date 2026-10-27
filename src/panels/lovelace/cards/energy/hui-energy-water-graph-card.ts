@@ -48,7 +48,10 @@ import {
   getCompareTransform,
 } from "./common/energy-chart-options";
 import type { HaECOption } from "../../../../resources/echarts/echarts";
-import { formatNumber } from "../../../../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../../../../common/number/format_number";
 import "./common/hui-energy-graph-chip";
 import "../../../../components/ha-tooltip";
 
@@ -147,8 +150,11 @@ export class HuiEnergyWaterGraphCard
                     ? html`<hui-energy-graph-chip
                         .tooltip=${this._formatTotal(this._total)}
                       >
-                        ${formatNumber(this._total, this._i18n.locale)}
-                        ${this._unit}
+                        ${formatNumberWithUnit(
+                          this._total,
+                          this._unit,
+                          this._i18n.locale
+                        )}
                       </hui-energy-graph-chip>`
                     : nothing
                 }

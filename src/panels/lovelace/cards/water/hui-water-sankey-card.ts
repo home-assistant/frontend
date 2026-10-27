@@ -35,7 +35,7 @@ import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { WaterSankeyCardConfig } from "../types";
 import "../../../../components/chart/ha-sankey-chart";
 import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
@@ -336,7 +336,12 @@ class HuiWaterSankeyCard
   }
 
   private _valueFormatter = (value: number) =>
-    `${formatNumber(value, this._i18n.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} ${this._data!.waterUnit}`;
+    formatNumberWithUnit(
+      value,
+      this._data!.waterUnit,
+      this._i18n.locale,
+      value < 0.1 ? { maximumFractionDigits: 3 } : undefined
+    );
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     fireSankeyNodeMoreInfo(this, ev.detail.node);

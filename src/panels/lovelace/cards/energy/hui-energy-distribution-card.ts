@@ -49,7 +49,7 @@ import type {
 } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import { round } from "../../../../common/number/round";
 import {
   ENERGY_DISTRIBUTION_HOME_CIRCLE_CIRCUMFERENCE as CIRCLE_CIRCUMFERENCE,
@@ -427,7 +427,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       maxEnergy,
       "kWh"
     )
-      .split(" ")
+      .split(/\s/)
       .pop();
 
     return html`
@@ -731,14 +731,14 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                               ${
                                 averageBatterySoc !== null
                                   ? html`<span
-                                      >${formatNumber(
+                                      >${formatNumberWithUnit(
                                         averageBatterySoc,
+                                        "%",
                                         this._i18n.locale,
                                         {
                                           maximumFractionDigits: 0,
                                         }
-                                      )}
-                                      %</span
+                                      )}</span
                                     >`
                                   : nothing
                               }

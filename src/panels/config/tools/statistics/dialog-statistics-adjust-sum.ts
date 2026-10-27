@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
@@ -239,11 +239,10 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
             @click=${this._setChosenStatistic}
           >
             <span
-              >${formatNumber(stat.change!, this.hass.locale, {
+              >${formatNumberWithUnit(stat.change!, unit, this.hass.locale, {
                 minimumFractionDigits: digits,
                 maximumFractionDigits: digits,
-              })}
-              ${unit}</span
+              })}</span
             >
             <span slot="secondary">
               ${formatDateTime(
