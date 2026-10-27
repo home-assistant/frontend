@@ -295,6 +295,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _renderedLegendFit?: number;
 
+  private _legendItemsKey?: string;
+
   // Zoom window in percent
   @state() private _zoomRange: [number, number] = [0, 100];
 
@@ -525,7 +527,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
   }
 
-  protected updated() {
+  protected updated(changedProps: PropertyValues) {
     const room = this._showZoomSlider();
     if (this.chart && room !== this._zoomSliderRoom) {
       this._zoomSliderRoom = room;
@@ -547,6 +549,18 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       this._resizeChartIfNeeded();
     }
     this._renderedLegendFit = this._legendFit.fit;
+    if (changedProps.has("options") || changedProps.has("data")) {
+      // New values keep the widest widths, but other items are fitted afresh
+      const legendItemsKey = JSON.stringify(
+        this._getLegendItems()?.map((item) =>
+          typeof item === "string" ? item : [item.id, item.name]
+        )
+      );
+      if (legendItemsKey !== this._legendItemsKey) {
+        this._legendItemsKey = legendItemsKey;
+        this._legendFit.refit();
+      }
+    }
   }
 
   protected render() {
