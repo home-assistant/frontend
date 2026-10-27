@@ -463,7 +463,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     if (
       !this._config ||
       !this._themes ||
-      !this._stateObj ||
       (!changedProps.has("_config") && !changedProps.has("_themes"))
     ) {
       return;
