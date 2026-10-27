@@ -83,6 +83,7 @@ export class DialogEnergySolarSettings
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
+    this._saving = false;
     this._fetchSolarForecastConfigEntries();
     this._source = params.source
       ? { ...params.source }
@@ -435,7 +436,9 @@ export class DialogEnergySolarSettings
         this._error = err.message;
       }
     } finally {
-      this._saving = false;
+      if (isCurrent()) {
+        this._saving = false;
+      }
     }
   }
 
