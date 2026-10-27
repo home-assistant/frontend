@@ -789,6 +789,13 @@ export class DialogEnergyGridSettings
       if (draft.name) {
         source.name = draft.name;
       }
+      // Compensation can be left over from an export that was pending until the
+      // power sensors changed
+      if (!source.stat_energy_to) {
+        source.stat_compensation = null;
+        source.entity_energy_price_export = null;
+        source.number_energy_price_export = null;
+      }
 
       // Only include power_config if a power type is selected
       if (powerType !== "none") {
