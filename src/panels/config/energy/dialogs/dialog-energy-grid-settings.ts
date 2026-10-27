@@ -20,6 +20,7 @@ import type {
   PowerConfig,
 } from "../../../../data/energy";
 import {
+  computeEnergyLabel,
   emptyGridSourceEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
@@ -33,6 +34,8 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type { PowerIntegral } from "./energy-integral";
+import { confirmIntegrals, pendingPowerIntegrals } from "./energy-integral";
 import "./ha-energy-power-config";
 import {
   buildPowerExcludeList,
@@ -82,6 +85,8 @@ export class DialogEnergyGridSettings
 
   @state() private _error?: string;
 
+  @state() private _saving = false;
+
   private _excludeList?: string[];
 
   private _excludeListPower?: string[];
@@ -90,6 +95,7 @@ export class DialogEnergyGridSettings
     params: EnergySettingsGridDialogParams
   ): Promise<void> {
     this._params = params;
+    this._error = undefined;
     this._source = params.source
       ? { ...params.source }
       : emptyGridSourceEnergyPreference();
@@ -191,7 +197,12 @@ export class DialogEnergyGridSettings
       return nothing;
     }
 
-    const hasExport = !!this._source.stat_energy_to;
+    const pending = this._pendingIntegrals();
+    const hasExport = this._hasExport(pending);
+    const labelStatistic =
+      this._source.stat_energy_from ||
+      this._source.stat_energy_to ||
+      pending[0]?.rate;
 
     // External statistics (from integrations) cannot use entity/number cost tracking
     const externalImportSource =
@@ -257,26 +268,17 @@ export class DialogEnergyGridSettings
             "ui.panel.config.energy.grid.dialog.display_name"
           )}
           type="text"
-          .disabled=${!(
-            this._source?.stat_energy_from || this._source?.stat_energy_to
-          )}
+          .disabled=${!labelStatistic}
           .value=${this._source?.name || ""}
           .placeholder=${
-            this._source?.stat_energy_from
+            labelStatistic
               ? getStatisticLabel(
                   this.hass.states,
                   this.hass.formatEntityName,
-                  this._source.stat_energy_from,
-                  this._params?.statsMetadata?.[this._source.stat_energy_from]
+                  labelStatistic,
+                  this._params?.statsMetadata?.[labelStatistic]
                 )
-              : this._source?.stat_energy_to
-                ? getStatisticLabel(
-                    this.hass.states,
-                    this.hass.formatEntityName,
-                    this._source.stat_energy_to,
-                    this._params?.statsMetadata?.[this._source.stat_energy_to]
-                  )
-                : ""
+              : ""
           }
           @input=${this._nameChanged}
         >
@@ -499,8 +501,11 @@ export class DialogEnergyGridSettings
           <ha-button
             @click=${this._save}
             .disabled=${
-              !this._isValid() || (!!this._params?.source && !this.isDirtyState)
+              this._saving ||
+              !this._isValid(pending) ||
+              (!!this._params?.source && !this.isDirtyState && !pending.length)
             }
+            .loading=${this._saving}
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -510,10 +515,17 @@ export class DialogEnergyGridSettings
     `;
   }
 
-  private _isValid(): boolean {
+  private _hasExport(pending: PowerIntegral[]): boolean {
+    return (
+      !!this._source?.stat_energy_to ||
+      pending.some(({ energy }) => energy === "stat_energy_to")
+    );
+  }
+
+  private _isValid(pending: PowerIntegral[]): boolean {
     // Grid must have at least one of: import, export, or power
     const hasImport = !!this._source?.stat_energy_from;
-    const hasExport = !!this._source?.stat_energy_to;
+    const hasExport = this._hasExport(pending);
     const hasPower = this._powerType !== "none";
 
     if (!hasImport && !hasExport && !hasPower) {
@@ -709,8 +721,37 @@ export class DialogEnergyGridSettings
     });
   }
 
+  private _pendingIntegrals(): PowerIntegral[] {
+    if (!this._source || !this._energy_units) {
+      return [];
+    }
+    return pendingPowerIntegrals(
+      this.hass.states,
+      this._source,
+      this._powerType,
+      this._powerConfig,
+      this._energy_units
+    );
+  }
+
   private async _save() {
+    const params = this._params!;
+    this._error = undefined;
+    this._saving = true;
     try {
+      const pending = this._pendingIntegrals();
+      if (pending.length) {
+        const sensors = await this._energyFromPower(pending);
+        if (sensors) {
+          const updated = { ...this._source! };
+          pending.forEach(({ energy }, index) => {
+            updated[energy] = sensors[index];
+          });
+          this._source = updated;
+          this._updateFormDirtyState();
+        }
+      }
+
       const source: GridSourceTypeEnergyPreference = {
         type: "grid",
         stat_energy_from: this._source!.stat_energy_from,
@@ -726,18 +767,58 @@ export class DialogEnergyGridSettings
       if (this._source?.name) {
         source.name = this._source.name;
       }
+      // Compensation can be set for an export sensor that was then skipped
+      if (!source.stat_energy_to) {
+        source.stat_compensation = null;
+        source.entity_energy_price_export = null;
+        source.number_energy_price_export = null;
+      }
 
       // Only include power_config if a power type is selected
       if (this._powerType !== "none") {
         source.power_config = { ...this._powerConfig };
       }
 
-      await this._params!.saveCallback(source);
+      await params.saveCallback(source);
       this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
+    } finally {
+      this._saving = false;
     }
+  }
+
+  private _energyFromPower(
+    pending: PowerIntegral[]
+  ): Promise<string[] | undefined> {
+    return confirmIntegrals(this, this.hass, {
+      deviceClass: "energy",
+      requests: pending.map(({ energy, rate, units }) => ({
+        rate,
+        units,
+        name: this.hass.localize(
+          energy === "stat_energy_from"
+            ? "ui.panel.config.energy.grid.dialog.imported_energy_name"
+            : "ui.panel.config.energy.grid.dialog.exported_energy_name",
+          {
+            name: computeEnergyLabel(
+              this.hass.states,
+              this.hass.formatEntityName,
+              rate,
+              this._params?.statsMetadata?.[rate],
+              this._source?.name
+            ),
+          }
+        ),
+      })),
+      intro: this.hass.localize(
+        "ui.panel.config.energy.grid.dialog.energy_sensors_needed"
+      ),
+      optional: true,
+      exclude: this._excludeList,
+      statsMetadata: this._params?.statsMetadata,
+    });
   }
 
   static get styles(): CSSResultGroup {
