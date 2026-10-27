@@ -1,10 +1,18 @@
 import { mdiChartBox, mdiChevronDown, mdiChevronUp } from "@mdi/js";
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, type TemplateResult } from "lit";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type PropertyValues,
+  type TemplateResult,
+} from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { LegendFitController } from "../../../common/controllers/legend-fit-controller";
 import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityStates,
@@ -17,7 +25,6 @@ import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { normalizeValueBySIPrefix } from "../../../common/number/normalize-by-si-prefix";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { MobileAwareMixin } from "../../../mixins/mobile-aware-mixin";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-card";
@@ -46,9 +53,6 @@ import type {
 } from "../types";
 import type { DistributionCardConfig, DistributionEntityConfig } from "./types";
 
-const LEGEND_OVERFLOW_LIMIT = 10;
-const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
-
 interface ProcessedEntity {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
@@ -66,10 +70,7 @@ interface LegendItem {
 }
 
 @customElement("hui-distribution-card")
-export class HuiDistributionCard
-  extends MobileAwareMixin(LitElement)
-  implements LovelaceCard
-{
+export class HuiDistributionCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-distribution-card-editor");
     return document.createElement("hui-distribution-card-editor");
@@ -175,6 +176,8 @@ export class HuiDistributionCard
   @state() private _hiddenEntities = new Set<string>();
 
   @state() private _expandLegend = false;
+
+  private _legendFit = new LegendFitController(this);
 
   public setConfig(config: DistributionCardConfig): void {
     this._config = config;
@@ -388,22 +391,18 @@ export class HuiDistributionCard
 
   private _renderLegend(): TemplateResult {
     const legendItems = this._computeLegendItems();
-    const overflowLimit = this._isMobileSize
-      ? LEGEND_OVERFLOW_LIMIT_MOBILE
-      : LEGEND_OVERFLOW_LIMIT;
+    const fit = this._legendFit.fit ?? legendItems.length;
 
     return html`
-      <ul class="legend">
-        ${legendItems.map((item, index) => {
-          if (!this._expandLegend && index >= overflowLimit) {
-            return nothing;
-          }
-          return html`
+      <ul class="legend" ${this._legendFit.target()}>
+        ${legendItems.map(
+          (item, index) => html`
             <li
               class=${classMap({
                 "legend-item": true,
                 hidden: item.isHidden,
                 disabled: item.isDisabled,
+                overflow: !this._expandLegend && index >= fit,
               })}
               data-entity=${item.entity}
               data-disabled=${item.isDisabled}
@@ -432,12 +431,17 @@ export class HuiDistributionCard
                   : nothing
               }
             </li>
-          `;
-        })}
+          `
+        )}
         ${
-          legendItems.length > overflowLimit
+          legendItems.length
             ? html`
-                <li>
+                <li
+                  class=${classMap({
+                    "legend-more": true,
+                    overflow: fit >= legendItems.length,
+                  })}
+                >
                   <ha-assist-chip
                     @click=${this._toggleExpandLegend}
                     filled
@@ -448,7 +452,7 @@ export class HuiDistributionCard
                           )
                         : `${this._localize(
                             "ui.components.history_charts.expand_legend"
-                          )} (${legendItems.length - overflowLimit})`
+                          )} (${legendItems.length - fit})`
                     }
                   >
                     <ha-svg-icon
@@ -462,6 +466,13 @@ export class HuiDistributionCard
         }
       </ul>
     `;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("_configEntities")) {
+      this._legendFit.refit();
+    }
   }
 
   protected render(): TemplateResult | typeof nothing {
@@ -570,6 +581,7 @@ export class HuiDistributionCard
     }
 
     .legend {
+      position: relative;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
@@ -577,6 +589,11 @@ export class HuiDistributionCard
       margin: var(--ha-space-3) 0 0 0;
       padding: 0;
       list-style: none;
+    }
+
+    .legend > .overflow {
+      position: absolute;
+      visibility: hidden;
     }
 
     .legend-item {
