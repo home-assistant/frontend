@@ -30,8 +30,8 @@ export class HaEmbedCard extends LitElement {
   /** The ID of the `ha-embed-provider` to use. */
   @property() public provider?: string;
 
-  @consume({ context: embedHassContext, subscribe: true })
   @state()
+  @consume({ context: embedHassContext, subscribe: true })
   private _hass?: HomeAssistant;
 
   // A provider that is not an ancestor, which gets the context requests of the
