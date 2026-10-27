@@ -280,18 +280,25 @@ export async function confirmIntegrals(
     dismissText: options.optional
       ? localize("ui.panel.config.energy.integral.skip")
       : undefined,
-    // The dialog shows its progress while the helpers are created
+    // The dialog shows its progress while the helpers are created. It waits for
+    // all of them, so a retry after a failure reuses the ones that were created
     action: async () => {
-      try {
-        result = await Promise.all(
-          plan.map(
-            ({ request, existing }) =>
-              existing ?? createIntegral(hass, request, deviceClass)
-          )
-        );
-      } catch (err) {
-        error = err;
+      const settled = await Promise.allSettled(
+        plan.map(
+          ({ request, existing }) =>
+            existing ?? createIntegral(hass, request, deviceClass)
+        )
+      );
+      const failure = settled.find(
+        (item): item is PromiseRejectedResult => item.status === "rejected"
+      );
+      if (failure) {
+        error = failure.reason;
+        return;
       }
+      result = settled.flatMap((item) =>
+        item.status === "fulfilled" ? [item.value] : []
+      );
     },
   });
   if (!confirmed) {
