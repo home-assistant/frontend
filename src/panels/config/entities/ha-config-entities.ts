@@ -67,6 +67,7 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-entity-id-icon";
+import "../../../components/ha-filter-device-classes";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -160,6 +161,7 @@ export interface EntityRow extends StateEntity {
   status: string | undefined;
   area?: string;
   device?: string;
+  device_class: string | null;
   device_full?: string;
   localized_platform: string;
   domain: string;
@@ -297,6 +299,26 @@ export class HaConfigEntities extends LitElement {
       this._fetchExposedEntities
     );
   }
+  private _getDeviceClass(entry: StateEntity): string | null {
+    return this.hass.states[entry.entity_id]?.attributes.device_class ?? null;
+  }
+
+  private get _deviceClasses() {
+    const classes = new Set<string>();
+
+    for (const entry of [...this._entities, ...this._entitiesWithoutUniqueId]) {
+      const deviceClass = this._getDeviceClass(entry);
+
+      if (deviceClass) {
+        classes.add(deviceClass);
+      }
+    }
+
+    return [...classes].sort().map((value) => ({
+      value,
+      label: value,
+    }));
+  }
 
   private _states = memoize((localize: LocalizeFunc) => [
     {
@@ -392,6 +414,13 @@ export class HaConfigEntities extends LitElement {
         filterable: true,
       },
       domain: getDomainTableColumn(localize),
+      device_class: {
+        title: localize("ui.components.device-class-picker.device_class"),
+        sortable: true,
+        filterable: true,
+        defaultHidden: true,
+        template: (entry) => entry.device_class || "—",
+      },
       disabled_by: {
         title: localize("ui.panel.config.entities.picker.headers.disabled_by"),
         hidden: true,
@@ -630,6 +659,15 @@ export class HaConfigEntities extends LitElement {
           );
           filter!.forEach((domain) => filteredDomains.add(domain));
         } else if (
+          key === "ha-filter-device-classes" &&
+          Array.isArray(filter) &&
+          filter.length
+        ) {
+          filteredEntities = filteredEntities.filter((entry) => {
+            const deviceClass = this._getDeviceClass(entry);
+            return deviceClass != null && filter.includes(deviceClass);
+          });
+        } else if (
           key === "ha-filter-domains" &&
           Array.isArray(filter) &&
           filter.length
@@ -716,6 +754,7 @@ export class HaConfigEntities extends LitElement {
 
         result.push({
           ...entry,
+          device_class: this._getDeviceClass(entry),
           name:
             entityName ||
             deviceName ||
@@ -1064,6 +1103,18 @@ export class HaConfigEntities extends LitElement {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
+        <ha-filter-device-classes
+          .label=${this.hass.localize(
+            "ui.components.device-class-picker.device_class"
+          )}
+          .value=${this._filters["ha-filter-device-classes"]}
+          .states=${this._deviceClasses}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-device-classes"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-device-classes>
         <ha-filter-domains
           .value=${this._filters["ha-filter-domains"]}
           @data-table-filter-changed=${this._filterChanged}
