@@ -182,6 +182,7 @@ export class DialogEnergyBatterySettings
             this._source.stat_energy_to,
           ]}
           @value-changed=${this._statisticFromChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_helper_out",
             { unit: this._energy_units?.join(", ") || "" }
@@ -202,6 +203,7 @@ export class DialogEnergyBatterySettings
             this._source.stat_energy_from,
           ]}
           @value-changed=${this._statisticToChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_helper_into",
             { unit: this._energy_units?.join(", ") || "" }
@@ -213,7 +215,7 @@ export class DialogEnergyBatterySettings
             "ui.panel.config.energy.battery.dialog.display_name"
           )}
           type="text"
-          .disabled=${!labelStatistic}
+          .disabled=${!labelStatistic || this._saving}
           .value=${this._source?.name || ""}
           .placeholder=${
             labelStatistic
@@ -402,57 +404,70 @@ export class DialogEnergyBatterySettings
   }
 
   private async _save() {
+    // Closing or reopening the dialog replaces its state, but created helpers
+    // must still be saved with the submitted source
     const params = this._params!;
+    const powerType = this._powerType;
+    const powerConfig = this._powerConfig;
+    let draft = this._source!;
+    const isCurrent = () => this._params === params;
     this._error = undefined;
     this._saving = true;
     try {
       const pending = this._pendingIntegrals();
       if (pending.length) {
-        const sensors = await this._energyFromPower(pending);
+        const sensors = await this._energyFromPower(draft, pending);
         if (!sensors) {
           return;
         }
-        const updated = { ...this._source! };
+        draft = { ...draft };
         pending.forEach(({ energy }, index) => {
-          updated[energy] = sensors[index];
+          draft[energy] = sensors[index];
         });
-        this._source = updated;
-        this._updateFormDirtyState();
+        if (isCurrent()) {
+          this._source = draft;
+          this._updateFormDirtyState();
+        }
       }
 
       const source: BatterySourceTypeEnergyPreference = {
         type: "battery",
-        stat_energy_from: this._source!.stat_energy_from,
-        stat_energy_to: this._source!.stat_energy_to,
+        stat_energy_from: draft.stat_energy_from,
+        stat_energy_to: draft.stat_energy_to,
       };
-      if (this._source?.name) {
-        source.name = this._source.name;
+      if (draft.name) {
+        source.name = draft.name;
       }
 
       // Only include power_config if a power type is selected
-      if (this._powerType !== "none") {
-        source.power_config = { ...this._powerConfig };
+      if (powerType !== "none") {
+        source.power_config = { ...powerConfig };
       }
 
-      if (this._source!.stat_soc) {
-        source.stat_soc = this._source!.stat_soc;
+      if (draft.stat_soc) {
+        source.stat_soc = draft.stat_soc;
       }
 
-      if (this._source!.capacity != null) {
-        source.capacity = this._source!.capacity;
+      if (draft.capacity != null) {
+        source.capacity = draft.capacity;
       }
 
       await params.saveCallback(source);
-      this._markDirtyStateClean();
-      this.closeDialog();
+      if (isCurrent()) {
+        this._markDirtyStateClean();
+        this.closeDialog();
+      }
     } catch (err: any) {
-      this._error = err.message;
+      if (isCurrent()) {
+        this._error = err.message;
+      }
     } finally {
       this._saving = false;
     }
   }
 
   private _energyFromPower(
+    draft: BatterySourceTypeEnergyPreference,
     pending: PowerIntegral[]
   ): Promise<string[] | undefined> {
     return confirmIntegrals(this, this.hass, {
@@ -470,7 +485,7 @@ export class DialogEnergyBatterySettings
               this.hass.formatEntityName,
               rate,
               this._params?.statsMetadata?.[rate],
-              this._source?.name
+              draft.name
             ),
           }
         ),
@@ -481,8 +496,8 @@ export class DialogEnergyBatterySettings
       // Neither direction may reuse the statistic of the other
       exclude: [
         ...(this._excludeList || []),
-        this._source?.stat_energy_from,
-        this._source?.stat_energy_to,
+        draft.stat_energy_from,
+        draft.stat_energy_to,
       ].filter((id): id is string => Boolean(id)),
       statsMetadata: this._params?.statsMetadata,
     });
