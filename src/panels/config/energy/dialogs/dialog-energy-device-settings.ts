@@ -337,32 +337,42 @@ export class DialogEnergyDeviceSettings
   }
 
   private async _save() {
-    // Closing the dialog clears the params, but a created helper must still be
-    // saved to the device
+    // Closing or reopening the dialog replaces its state, but a created helper
+    // must still be saved with the submitted device
     const params = this._params!;
+    const draft = this._device!;
+    const isCurrent = () => this._params === params;
     this._error = undefined;
     this._saving = true;
     try {
       const statConsumption =
-        this._device!.stat_consumption ?? (await this._energyFromPower());
+        draft.stat_consumption ?? (await this._energyFromPower(draft));
       if (!statConsumption) {
         return;
       }
-      const device = { ...this._device, stat_consumption: statConsumption };
-      this._device = device;
-      this._updateDirtyState(device);
+      const device = { ...draft, stat_consumption: statConsumption };
+      if (isCurrent()) {
+        this._device = device;
+        this._updateDirtyState(device);
+      }
       await params.saveCallback(device);
-      this._markDirtyStateClean();
-      this.closeDialog();
+      if (isCurrent()) {
+        this._markDirtyStateClean();
+        this.closeDialog();
+      }
     } catch (err: any) {
-      this._error = err.message;
+      if (isCurrent()) {
+        this._error = err.message;
+      }
     } finally {
       this._saving = false;
     }
   }
 
-  private async _energyFromPower(): Promise<string | undefined> {
-    const statRate = this._device!.stat_rate!;
+  private async _energyFromPower(
+    draft: DeviceConsumptionDraft
+  ): Promise<string | undefined> {
+    const statRate = draft.stat_rate!;
     const unitPrefix = this._energyIntegralUnitPrefix();
     if (unitPrefix === undefined) {
       return undefined;
@@ -415,13 +425,14 @@ export class DialogEnergyDeviceSettings
       confirmText: this.hass.localize("ui.common.create"),
     });
     return create
-      ? this._createEnergyIntegral(statRate, unitPrefix)
+      ? this._createEnergyIntegral(statRate, unitPrefix, draft.name)
       : undefined;
   }
 
   private async _createEnergyIntegral(
     statRate: string,
-    unitPrefix: EnergyIntegralUnitPrefix
+    unitPrefix: EnergyIntegralUnitPrefix,
+    customName?: string
   ): Promise<string> {
     const name = this.hass.localize(
       "ui.panel.config.energy.device_consumption.dialog.energy_sensor_name",
@@ -431,7 +442,7 @@ export class DialogEnergyDeviceSettings
           this.hass.formatEntityName,
           statRate,
           this._params?.statsMetadata?.[statRate],
-          this._device?.name
+          customName
         ),
       }
     );
