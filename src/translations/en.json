@@ -4877,7 +4877,6 @@
             },
             "counting_note": "New sensors start counting now, so earlier usage is not included.",
             "use": "{count, plural,\n one {Use sensor}\n other {Use sensors}\n}",
-            "skip": "Skip",
             "create_failed": "Failed to create the sensor."
           }
         },

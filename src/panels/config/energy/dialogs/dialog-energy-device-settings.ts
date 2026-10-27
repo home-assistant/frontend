@@ -67,6 +67,7 @@ export class DialogEnergyDeviceSettings
     this._params = params;
     this._device = this._params.device;
     this._error = undefined;
+    this._saving = false;
     this._computePossibleParents();
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
@@ -358,7 +359,9 @@ export class DialogEnergyDeviceSettings
         this._error = err.message;
       }
     } finally {
-      this._saving = false;
+      if (isCurrent()) {
+        this._saving = false;
+      }
     }
   }
 

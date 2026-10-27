@@ -196,8 +196,6 @@ export interface ConfirmIntegralsOptions {
   requests: IntegralRequest[];
   /** Why the sensors are needed, shown first. */
   intro: string;
-  /** Saving works without the sensors, so the dialog offers to skip them. */
-  optional?: boolean;
   /** Sensors that are already used elsewhere and can't be reused. */
   exclude?: string[];
   statsMetadata?: Record<string, StatisticsMetaData>;
@@ -277,9 +275,6 @@ export async function confirmIntegrals(
       : localize("ui.panel.config.energy.integral.use", {
           count: plan.length,
         }),
-    dismissText: options.optional
-      ? localize("ui.panel.config.energy.integral.skip")
-      : undefined,
     // The dialog shows its progress while the helpers are created. It waits for
     // all of them, so a retry after a failure reuses the ones that were created
     action: async () => {

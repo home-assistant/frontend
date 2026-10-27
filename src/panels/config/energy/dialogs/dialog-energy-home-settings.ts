@@ -224,7 +224,9 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
         this._error = err.message;
       }
     } finally {
-      this._saving = false;
+      if (isCurrent()) {
+        this._saving = false;
+      }
     }
   }
 
