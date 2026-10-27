@@ -1129,6 +1129,10 @@ export class HaMarketplaceDashboard extends LitElement {
     return [
       haStyle,
       css`
+        hass-tabs-subpage-data-table {
+          --data-table-group-actions-button-size: 36px;
+          --data-table-group-actions-icon-size: 20px;
+        }
         .toolbar-actions {
           display: flex;
           align-items: center;
