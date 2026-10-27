@@ -298,6 +298,7 @@ export class DialogEnergyGridSettings
         </p>
 
         <ha-radio-group
+          .disabled=${this._saving}
           .value=${this._importCostType}
           name="importCostType"
           @change=${this._handleImportCostTypeChanged}
@@ -328,6 +329,7 @@ export class DialogEnergyGridSettings
           this._importCostType === "stat"
             ? html`
                 <ha-statistic-picker
+                  .disabled=${this._saving}
                   .hass=${this.hass}
                   .value=${this._source.stat_cost}
                   .label=${this.hass.localize(
@@ -342,6 +344,7 @@ export class DialogEnergyGridSettings
           this._importCostType === "entity"
             ? html`
                 <ha-entity-picker
+                  .disabled=${this._saving}
                   .value=${this._source.entity_energy_price}
                   .label=${this.hass.localize(
                     "ui.panel.config.energy.grid.dialog.cost_entity_label"
@@ -356,6 +359,7 @@ export class DialogEnergyGridSettings
           this._importCostType === "number"
             ? html`
                 <ha-input
+                  .disabled=${this._saving}
                   .value=${
                     this._source.number_energy_price !== null
                       ? String(this._source.number_energy_price)
@@ -390,6 +394,7 @@ export class DialogEnergyGridSettings
                 </p>
 
                 <ha-radio-group
+                  .disabled=${this._saving}
                   .value=${this._exportCostType}
                   name="exportCostType"
                   @change=${this._handleExportCostTypeChanged}
@@ -426,6 +431,7 @@ export class DialogEnergyGridSettings
                   this._exportCostType === "stat"
                     ? html`
                         <ha-statistic-picker
+                          .disabled=${this._saving}
                           .hass=${this.hass}
                           .value=${this._source.stat_compensation}
                           .label=${this.hass.localize(
@@ -440,6 +446,7 @@ export class DialogEnergyGridSettings
                   this._exportCostType === "entity"
                     ? html`
                         <ha-entity-picker
+                          .disabled=${this._saving}
                           .value=${this._source.entity_energy_price_export}
                           .label=${this.hass.localize(
                             "ui.panel.config.energy.grid.dialog.compensation_entity_label"
@@ -454,6 +461,7 @@ export class DialogEnergyGridSettings
                   this._exportCostType === "number"
                     ? html`
                         <ha-input
+                          .disabled=${this._saving}
                           .value=${
                             this._source.number_energy_price_export !== null
                               ? String(this._source.number_energy_price_export)
