@@ -214,6 +214,7 @@ export class DialogEnergyGasSettings
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.entity_para",
             { unit: pickableUnit }
@@ -230,6 +231,7 @@ export class DialogEnergyGasSettings
           )}
           .excludeStatistics=${this._excludeListFlowRate}
           @value-changed=${this._flowRateStatisticChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.flow_rate_para",
             { unit: this._flow_rate_units?.join(", ") || "" }
@@ -241,7 +243,7 @@ export class DialogEnergyGasSettings
             "ui.panel.config.energy.gas.dialog.display_name"
           )}
           type="text"
-          .disabled=${!labelStatistic}
+          .disabled=${!labelStatistic || this._saving}
           .value=${this._source?.name || ""}
           .placeholder=${
             labelStatistic
@@ -514,37 +516,56 @@ export class DialogEnergyGasSettings
   }
 
   private async _save() {
+    // Closing or reopening the dialog replaces its state, but a created helper
+    // must still be saved with the submitted source
     const params = this._params!;
+    const costs = this._costs;
+    let source = this._source!;
+    const isCurrent = () => this._params === params;
     this._error = undefined;
     this._saving = true;
     try {
-      if (!this._source!.stat_energy_from) {
-        const statEnergyFrom = await this._gasFromFlowRate();
+      if (!source.stat_energy_from) {
+        const statEnergyFrom = await this._gasFromFlowRate(source);
         if (!statEnergyFrom) {
           return;
         }
-        this._pickedDisplayUnit = this._integralTotalUnit();
-        this._source = { ...this._source!, stat_energy_from: statEnergyFrom };
-        this._updateFormDirtyState();
+        source = { ...source, stat_energy_from: statEnergyFrom };
+        if (isCurrent()) {
+          this._pickedDisplayUnit = this._integralTotalUnit();
+          this._source = source;
+          this._updateFormDirtyState();
+        }
       }
-      if (this._costs === "no-costs") {
-        this._source!.entity_energy_price = null;
-        this._source!.number_energy_price = null;
-        this._source!.stat_cost = null;
-        this._numberPriceText = "";
+      if (costs === "no-costs") {
+        source = {
+          ...source,
+          entity_energy_price: null,
+          number_energy_price: null,
+          stat_cost: null,
+        };
+        if (isCurrent()) {
+          this._numberPriceText = "";
+        }
       }
-      await params.saveCallback(this._source!);
-      this._markDirtyStateClean();
-      this.closeDialog();
+      await params.saveCallback(source);
+      if (isCurrent()) {
+        this._markDirtyStateClean();
+        this.closeDialog();
+      }
     } catch (err: any) {
-      this._error = err.message;
+      if (isCurrent()) {
+        this._error = err.message;
+      }
     } finally {
       this._saving = false;
     }
   }
 
-  private async _gasFromFlowRate(): Promise<string | undefined> {
-    const statRate = this._source!.stat_rate!;
+  private async _gasFromFlowRate(
+    draft: GasSourceTypeEnergyPreference
+  ): Promise<string | undefined> {
+    const statRate = draft.stat_rate!;
     const units = this._integralUnits();
     if (!units) {
       return undefined;
@@ -563,7 +584,7 @@ export class DialogEnergyGasSettings
                 this.hass.formatEntityName,
                 statRate,
                 this._params?.statsMetadata?.[statRate],
-                this._source?.name
+                draft.name
               ),
             }
           ),
