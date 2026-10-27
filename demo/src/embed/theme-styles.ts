@@ -1,7 +1,6 @@
 import { unsafeCSS } from "lit";
-import { darkColorStyles } from "../../../src/resources/theme/color/color.globals";
-import { darkSemanticColorStyles } from "../../../src/resources/theme/color/semantic.globals";
-import { darkSemanticStyles } from "../../../src/resources/theme/semantic.globals";
+import { darkColorVariables } from "../../../src/resources/theme/color";
+import { darkSemanticVariables } from "../../../src/resources/theme/semantic.globals";
 import { themeStyles } from "../../../src/resources/theme/theme";
 
 // The theme styles set variables on `html`, next to fonts and other page
@@ -38,10 +37,12 @@ const scopeThemeStyles = (cssText: string, selector: string): string => {
   return convert(style.sheet!.cssRules);
 };
 
+const darkVariables = Object.entries({
+  ...darkSemanticVariables,
+  ...darkColorVariables,
+}).map(([name, value]) => `--${name}:${value};`);
+
 export const embedThemeStyles = unsafeCSS(
   scopeThemeStyles(themeStyles, ".theme") +
-    scopeThemeStyles(
-      [darkSemanticStyles, darkColorStyles, darkSemanticColorStyles].join(""),
-      ".theme.dark"
-    )
+    `.theme.dark{${darkVariables.join("")}}`
 );
