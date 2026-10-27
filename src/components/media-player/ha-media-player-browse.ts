@@ -1383,6 +1383,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
         .search-input {
           flex: 1;
+          min-width: 0;
           --ha-input-padding-top: 0;
           --ha-input-padding-bottom: 0;
         }

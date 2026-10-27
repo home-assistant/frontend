@@ -91,6 +91,12 @@ export const emptySolarEnergyPreference =
     config_entry_solar_forecast: null,
   });
 
+export const emptyHomeEnergyPreference =
+  (): HomeSourceTypeEnergyPreference => ({
+    type: "home",
+    stat_energy_to: "",
+  });
+
 export const emptyBatteryEnergyPreference =
   (): BatterySourceTypeEnergyPreference => ({
     type: "battery",
@@ -176,6 +182,14 @@ export interface SolarSourceTypeEnergyPreference {
   name?: string;
 }
 
+export interface HomeSourceTypeEnergyPreference {
+  type: "home";
+
+  stat_energy_to: string;
+  stat_rate?: string;
+  name?: string;
+}
+
 export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
@@ -228,6 +242,7 @@ export interface WaterSourceTypeEnergyPreference {
 
 export type EnergySource =
   | SolarSourceTypeEnergyPreference
+  | HomeSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference
   | GasSourceTypeEnergyPreference
@@ -313,6 +328,7 @@ export const getFossilEnergyConsumption = async (
 export interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
+  home?: HomeSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];
   gas?: GasSourceTypeEnergyPreference[];
   water?: WaterSourceTypeEnergyPreference[];
@@ -435,6 +451,11 @@ export const getReferencedStatisticIds = (
       continue;
     }
 
+    if (source.type === "home") {
+      statIDs.push(source.stat_energy_to);
+      continue;
+    }
+
     if (source.type === "gas" || source.type === "water") {
       statIDs.push(source.stat_energy_from);
 
@@ -502,7 +523,7 @@ export const getReferencedStatisticIdsPower = (
       continue;
     }
 
-    if (source.type === "solar") {
+    if (source.type === "solar" || source.type === "home") {
       statIDs.push(source.stat_rate);
       continue;
     }
@@ -582,6 +603,7 @@ const getEnergyData = async (
   const energyStatIds = getReferencedStatisticIds(prefs, info, [
     "grid",
     "solar",
+    "home",
     "battery",
     "gas",
     "device",
@@ -1440,6 +1462,9 @@ const getEnergyGasUnit = (
         if (source.type === "solar") {
           return [source.stat_energy_from];
         }
+        if (source.type === "home") {
+          return [source.stat_energy_to];
+        }
         if (source.type === "battery") {
           return [source.stat_energy_from, source.stat_energy_to];
         }
@@ -1516,12 +1541,14 @@ export interface EnergySumData {
   to_battery?: Record<number, number>;
   from_battery?: Record<number, number>;
   solar?: Record<number, number>;
+  home?: Record<number, number>;
   total: {
     to_grid?: number;
     from_grid?: number;
     to_battery?: number;
     from_battery?: number;
     solar?: number;
+    home?: number;
   };
   timestamps: number[];
 }
@@ -1569,6 +1596,7 @@ const getSummedDataPartial = (
     solar?: string[];
     to_battery?: string[];
     from_battery?: string[];
+    home?: string[];
   } = {};
 
   for (const source of data.prefs.energy_sources) {
@@ -1578,6 +1606,11 @@ const getSummedDataPartial = (
       } else {
         statIds.solar = [source.stat_energy_from];
       }
+      continue;
+    }
+
+    if (source.type === "home") {
+      statIds.home = [source.stat_energy_to];
       continue;
     }
 
@@ -1691,6 +1724,8 @@ const computeConsumptionDataPartial = (
   const total = outData.total;
 
   data.timestamps.forEach((t) => {
+    const homeUsed = data.home?.[t];
+    const hasHome = homeUsed !== undefined && homeUsed !== null;
     const {
       grid_to_battery,
       battery_to_grid,
@@ -1708,18 +1743,19 @@ const computeConsumptionDataPartial = (
       from_battery: fromBattery && (fromBattery[t] ?? 0),
     });
 
-    outData.used_total[t] = used_total;
-    total.used_total += used_total;
-    outData.grid_to_battery[t] = grid_to_battery;
-    total.grid_to_battery += grid_to_battery;
-    outData.battery_to_grid![t] = battery_to_grid;
-    total.battery_to_grid += battery_to_grid;
-    outData.used_battery![t] = used_battery;
-    total.used_battery += used_battery;
+    const usedTotal = hasHome ? Math.max(homeUsed, 0) : used_total;
+    outData.used_total[t] = usedTotal;
+    total.used_total += usedTotal;
     outData.used_grid![t] = used_grid;
     total.used_grid += used_grid;
     outData.used_solar![t] = used_solar;
     total.used_solar += used_solar;
+    outData.used_battery![t] = used_battery;
+    total.used_battery += used_battery;
+    outData.grid_to_battery[t] = grid_to_battery;
+    total.grid_to_battery += grid_to_battery;
+    outData.battery_to_grid![t] = battery_to_grid;
+    total.battery_to_grid += battery_to_grid;
     outData.solar_to_battery[t] = solar_to_battery;
     total.solar_to_battery += solar_to_battery;
     outData.solar_to_grid[t] = solar_to_grid;
@@ -2291,6 +2327,16 @@ export const downloadEnergyData = (
 
   printCategory("solar_production", solar_productions, electricUnit);
 
+  const home_consumptions: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "home")
+    .forEach((source) => {
+      source = source as HomeSourceTypeEnergyPreference;
+      home_consumptions.push(source.stat_energy_to);
+    });
+
+  printCategory("home_consumption", home_consumptions, electricUnit);
+
   const gas_consumptions: string[] = [];
   const gas_consumptions_cost: string[] = [];
   energy_sources
@@ -2375,6 +2421,7 @@ export const downloadEnergyData = (
   };
 
   const hasSolar = !!solar_productions.length;
+  const hasHome = !!home_consumptions.length;
   const hasBattery = !!battery_ins.length;
   const hasGridReturn = !!grid_productions.length;
   const hasGridSource = !!grid_consumptions.length;
@@ -2430,7 +2477,10 @@ export const downloadEnergyData = (
     }
   }
 
-  if ((hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) > 1) {
+  if (
+    hasHome ||
+    (hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) > 1
+  ) {
     processConsumptionData(
       "calculated_total_consumption",
       electricUnit,

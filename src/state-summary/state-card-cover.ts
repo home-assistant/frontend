@@ -7,12 +7,9 @@ import "../components/ha-cover-tilt-controls";
 import type { CoverEntity } from "../data/cover";
 import { isTiltOnly } from "../data/cover";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 
 @customElement("state-card-cover")
 class StateCardCover extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: CoverEntity;
 
   @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
@@ -21,7 +18,6 @@ class StateCardCover extends LitElement {
     return html`
       <div class="horizontal justified layout">
         <state-info
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info>

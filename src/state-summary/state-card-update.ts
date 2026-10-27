@@ -18,11 +18,7 @@ export class StateCardUpdate extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="horizontal justified layout">
-        <state-info
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-          .inDialog=${this.inDialog}
-        >
+        <state-info .stateObj=${this.stateObj} .inDialog=${this.inDialog}>
         </state-info>
         <div class="state">
           ${computeUpdateStateDisplay(this.stateObj, this.hass)}

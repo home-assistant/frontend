@@ -225,7 +225,7 @@ export class EnergyViewStrategy extends ReactiveElement {
         ),
         type: "energy-sources-table",
         collection_key: collectionKey,
-        types: ["grid", "solar", "battery"],
+        types: ["grid", "solar", "battery", "home"],
         grid_options: { columns: 36 },
       });
     }

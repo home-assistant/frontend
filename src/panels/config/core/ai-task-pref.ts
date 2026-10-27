@@ -65,7 +65,7 @@ export class AITaskPref extends LitElement {
     if (!this.hass || !isComponentLoaded(this.hass.config, "ai_task")) {
       return;
     }
-    fetchAITaskPreferences(this.hass).then((prefs) => {
+    fetchAITaskPreferences(this.hass.callWS).then((prefs) => {
       this._prefs = prefs;
       this._updateConfigFlow("gen_data_entity_id");
       this._updateConfigFlow("gen_image_entity_id");

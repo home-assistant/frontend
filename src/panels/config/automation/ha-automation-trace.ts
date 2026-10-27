@@ -168,7 +168,9 @@ export class HaAutomationTrace extends LitElement {
                   appearance="plain"
                   size="s"
                   class="trace-link"
-                  @click=${this._navigateToAutomation}
+                  href="/config/automation/edit/${encodeURIComponent(
+                    stateObj.attributes.id
+                  )}"
                   slot="toolbar-icon"
                 >
                   ${this.hass.localize(

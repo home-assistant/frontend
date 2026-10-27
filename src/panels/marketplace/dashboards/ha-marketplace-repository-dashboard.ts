@@ -38,6 +38,7 @@ import "../../../components/ha-svg-icon";
 import { getConfigEntries } from "../../../data/config_entries";
 import {
   apiContext,
+  brandsAccessTokenContext,
   configContext,
   internationalizationContext,
   uiContext,
@@ -145,6 +146,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     transformer: ({ auth }) => auth.data.hassUrl,
   })
   private _hassUrl!: string;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
 
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;

@@ -500,8 +500,8 @@ importers:
         specifier: 0.67.0
         version: 0.67.0(eslint@10.13.0(supports-color@8.1.1))
       '@lokalise/node-api':
-        specifier: 16.6.0
-        version: 16.6.0
+        specifier: 17.0.1
+        version: 17.0.1
       '@octokit/auth-oauth-device':
         specifier: 8.0.5
         version: 8.0.5
@@ -2221,8 +2221,8 @@ packages:
   '@lit/task@1.0.3':
     resolution: {integrity: sha512-1gJGJl8WON+2j0y9xfcD+XsS1rvcy3XDgsIhcdUW++yTR8ESjZW6o7dn8M8a4SZM8NnJe6ynS2cKWwsbfLOurg==}
 
-  '@lokalise/node-api@16.6.0':
-    resolution: {integrity: sha512-2Urk4wow8HLtyvNHUUobzjlqCuynWpC/xy6UY8LtxUdC5NI+h8I/FC1c91GoLljE+9EBwIlQ7VGvTw5tYhSrwA==}
+  '@lokalise/node-api@17.0.1':
+    resolution: {integrity: sha512-CI2jlIpR5G7z1/pU4wxAKM1uQJllwhN3mXJvMNCsHj6e369W+w55HTQ/n+oiKYx3tC6hosTOvDuLnzWn8yJFSg==}
     engines: {node: '>=22.19.0'}
 
   '@mapbox/jsonlint-lines-primitives@2.0.3':
@@ -9764,7 +9764,7 @@ snapshots:
     dependencies:
       '@lit/reactive-element': 2.1.2
 
-  '@lokalise/node-api@16.6.0': {}
+  '@lokalise/node-api@17.0.1': {}
 
   '@mapbox/jsonlint-lines-primitives@2.0.3': {}
 
