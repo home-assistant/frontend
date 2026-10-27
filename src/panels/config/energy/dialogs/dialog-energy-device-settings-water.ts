@@ -67,6 +67,7 @@ export class DialogEnergyDeviceSettingsWater
     this._params = params;
     this._device = this._params.device;
     this._error = undefined;
+    this._saving = false;
     this._computePossibleParents();
     this._volume_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "water")
@@ -362,7 +363,9 @@ export class DialogEnergyDeviceSettingsWater
         this._error = err.message;
       }
     } finally {
-      this._saving = false;
+      if (isCurrent()) {
+        this._saving = false;
+      }
     }
   }
 

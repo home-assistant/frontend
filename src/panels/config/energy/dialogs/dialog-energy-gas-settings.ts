@@ -89,6 +89,7 @@ export class DialogEnergyGasSettings
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
+    this._saving = false;
     this._source = params.source
       ? { ...params.source }
       : emptyGasEnergyPreference();
@@ -556,7 +557,9 @@ export class DialogEnergyGasSettings
         this._error = err.message;
       }
     } finally {
-      this._saving = false;
+      if (isCurrent()) {
+        this._saving = false;
+      }
     }
   }
 
