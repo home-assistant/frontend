@@ -816,7 +816,12 @@ export class DialogEnergyGridSettings
         "ui.panel.config.energy.grid.dialog.energy_sensors_needed"
       ),
       optional: true,
-      exclude: this._excludeList,
+      // Neither direction may reuse the statistic of the other
+      exclude: [
+        ...(this._excludeList || []),
+        this._source?.stat_energy_from,
+        this._source?.stat_energy_to,
+      ].filter((id): id is string => Boolean(id)),
       statsMetadata: this._params?.statsMetadata,
     });
   }
