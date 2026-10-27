@@ -98,6 +98,8 @@ export class HaEmbedProvider extends LitElement {
 
   private _unsubMediaQueries: (() => void)[] = [];
 
+  private _scriptRead = false;
+
   private _applyColorScheme() {
     const dark = this.colorScheme
       ? this.colorScheme === "dark"
@@ -185,6 +187,13 @@ export class HaEmbedProvider extends LitElement {
       ),
     ];
 
+    // Only once, so that moving the provider keeps the current entities
+    if (this._scriptRead) {
+      return;
+    }
+
+    this._scriptRead = true;
+
     const data = readScriptData(this) as
       EntityInput[] | EmbedProviderData | undefined;
 
@@ -226,7 +235,14 @@ export class HaEmbedProvider extends LitElement {
       });
       // Before the entities, so that their names can include the area
       this.hass.updateHass({ areas: areasById });
-      this.hass.addEntities(this.entities, true);
+
+      // Entities that services changed keep their state when only the areas
+      // change
+      if (changedProps.has("entities")) {
+        this.hass.addEntities(this.entities, true);
+      } else {
+        this.hass.updateFormatFunctions();
+      }
     }
   }
 
