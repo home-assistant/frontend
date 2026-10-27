@@ -563,7 +563,12 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
-        ${renderCategoryGroupActions(this.hass, "scene", this._categories)}
+        ${renderCategoryGroupActions(
+          this.hass,
+          "scene",
+          this._categories,
+          this._tableSettings.grouping
+        )}
 
         <ha-filter-floor-areas
           .type=${"scene"}

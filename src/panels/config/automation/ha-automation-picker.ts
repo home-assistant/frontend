@@ -565,7 +565,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
-        ${renderCategoryGroupActions(this.hass, "automation", this._categories)}
+        ${renderCategoryGroupActions(
+          this.hass,
+          "automation",
+          this._categories,
+          this._tableSettings.grouping
+        )}
         <ha-filter-floor-areas
           .type=${"automation"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
