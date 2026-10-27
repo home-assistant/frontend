@@ -201,16 +201,26 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       value?: string,
       idPrefix?: string
     ) =>
-      getDevices(hass, configEntryLookup, {
-        includeDomains,
-        includeDeviceClasses,
-        deviceFilter,
-        entityFilter,
-        excludeDevices,
-        value,
-        idPrefix,
-        nested: true,
-      })
+      getDevices(
+        hass.states,
+        hass.areas,
+        hass.devices,
+        hass.entities,
+        hass.localize,
+        hass.locale.language,
+        hass.translationMetadata,
+        configEntryLookup,
+        {
+          includeDomains,
+          includeDeviceClasses,
+          deviceFilter,
+          entityFilter,
+          excludeDevices,
+          value,
+          idPrefix,
+          nested: true,
+        }
+      )
   );
 
   private _getLabelsMemoized = memoizeOne(getLabels);
