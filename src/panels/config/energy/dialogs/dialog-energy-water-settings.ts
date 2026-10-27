@@ -15,6 +15,7 @@ import "../../../../components/radio/ha-radio-option";
 import "../../../../components/input/ha-input";
 import type { WaterSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
+  computeEnergyLabel,
   emptyWaterEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
@@ -30,6 +31,8 @@ import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { EnergySettingsWaterDialogParams } from "./show-dialogs-energy";
 import type { HaInput } from "../../../../components/input/ha-input";
+import type { IntegralUnits } from "./energy-integral";
+import { confirmIntegrals, integralUnits } from "./energy-integral";
 
 type CostType = "no-costs" | "number" | "entity" | "statistic";
 
@@ -63,6 +66,8 @@ export class DialogEnergyWaterSettings
 
   @state() private _error?: string;
 
+  @state() private _saving = false;
+
   private _excludeList?: string[];
 
   private _excludeListFlowRate?: string[];
@@ -71,6 +76,7 @@ export class DialogEnergyWaterSettings
     params: EnergySettingsWaterDialogParams
   ): Promise<void> {
     this._params = params;
+    this._error = undefined;
     this._source = params.source
       ? { ...params.source }
       : emptyWaterEnergyPreference();
@@ -134,6 +140,9 @@ export class DialogEnergyWaterSettings
       this._source.stat_energy_from &&
       isExternalStatistic(this._source.stat_energy_from);
 
+    const labelStatistic =
+      this._source.stat_energy_from || this._source.stat_rate;
+
     return html`
       <ha-dialog
         .open=${this._open}
@@ -183,15 +192,15 @@ export class DialogEnergyWaterSettings
             "ui.panel.config.energy.water.dialog.display_name"
           )}
           type="text"
-          .disabled=${!this._source?.stat_energy_from}
+          .disabled=${!labelStatistic}
           .value=${this._source?.name || ""}
           .placeholder=${
-            this._source?.stat_energy_from
+            labelStatistic
               ? getStatisticLabel(
                   this.hass.states,
                   this.hass.formatEntityName,
-                  this._source.stat_energy_from,
-                  this._params?.statsMetadata?.[this._source.stat_energy_from]
+                  labelStatistic,
+                  this._params?.statsMetadata?.[labelStatistic]
                 )
               : ""
           }
@@ -283,11 +292,13 @@ export class DialogEnergyWaterSettings
           <ha-button
             @click=${this._save}
             .disabled=${
-              !this._source!.stat_energy_from ||
+              this._saving ||
+              !(this._source!.stat_energy_from || this._integralUnits()) ||
               (this._costs === "number" &&
                 typeof this._source!.number_energy_price !== "number") ||
               (!!this._params?.source && !this.isDirtyState)
             }
+            .loading=${this._saving}
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -391,20 +402,79 @@ export class DialogEnergyWaterSettings
     this._updateDirtyState({ source: this._source!, costs: this._costs! });
   }
 
+  private _integralUnits(): IntegralUnits | undefined {
+    const statRate = this._source?.stat_rate;
+    if (!statRate || !this._water_units) {
+      return undefined;
+    }
+    return integralUnits(
+      this.hass.states[statRate]?.attributes.unit_of_measurement,
+      this._water_units
+    );
+  }
+
   private async _save() {
+    const params = this._params!;
+    this._error = undefined;
+    this._saving = true;
     try {
+      if (!this._source!.stat_energy_from) {
+        const statEnergyFrom = await this._waterFromFlowRate();
+        if (!statEnergyFrom) {
+          return;
+        }
+        this._source = { ...this._source!, stat_energy_from: statEnergyFrom };
+        this._updateFormDirtyState();
+      }
       if (this._costs === "no-costs") {
         this._source!.entity_energy_price = null;
         this._source!.number_energy_price = null;
         this._source!.stat_cost = null;
         this._numberPriceText = "";
       }
-      await this._params!.saveCallback(this._source!);
+      await params.saveCallback(this._source!);
       this._markDirtyStateClean();
       this.closeDialog();
     } catch (err: any) {
       this._error = err.message;
+    } finally {
+      this._saving = false;
     }
+  }
+
+  private async _waterFromFlowRate(): Promise<string | undefined> {
+    const statRate = this._source!.stat_rate!;
+    const units = this._integralUnits();
+    if (!units) {
+      return undefined;
+    }
+    const sensors = await confirmIntegrals(this, this.hass, {
+      deviceClass: "water",
+      requests: [
+        {
+          rate: statRate,
+          units,
+          name: this.hass.localize(
+            "ui.panel.config.energy.integral.water.sensor_name",
+            {
+              name: computeEnergyLabel(
+                this.hass.states,
+                this.hass.formatEntityName,
+                statRate,
+                this._params?.statsMetadata?.[statRate],
+                this._source?.name
+              ),
+            }
+          ),
+        },
+      ],
+      intro: this.hass.localize(
+        "ui.panel.config.energy.water.dialog.water_sensor_needed"
+      ),
+      exclude: this._excludeList,
+      statsMetadata: this._params?.statsMetadata,
+    });
+    return sensors?.[0];
   }
 
   static get styles(): CSSResultGroup {
