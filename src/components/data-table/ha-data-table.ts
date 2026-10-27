@@ -1974,6 +1974,8 @@ export class HaDataTable extends LitElement {
           position: sticky;
           inset-inline-end: 0;
           cursor: default;
+          /* Don't pass the group name's weight on to slotted menus */
+          font-weight: var(--ha-font-weight-normal);
           /* Inherited by the slotted icon buttons, like the rows' icon cells */
           color: var(
             --data-table-group-actions-color,
