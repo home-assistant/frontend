@@ -325,32 +325,42 @@ export class DialogEnergyDeviceSettingsWater
   }
 
   private async _save() {
-    // Closing the dialog clears the params, but a created helper must still be
-    // saved to the device
+    // Closing or reopening the dialog replaces its state, but a created helper
+    // must still be saved with the submitted device
     const params = this._params!;
+    const draft = this._device!;
+    const isCurrent = () => this._params === params;
     this._error = undefined;
     this._saving = true;
     try {
       const statConsumption =
-        this._device!.stat_consumption ?? (await this._waterFromFlowRate());
+        draft.stat_consumption ?? (await this._waterFromFlowRate(draft));
       if (!statConsumption) {
         return;
       }
-      const device = { ...this._device, stat_consumption: statConsumption };
-      this._device = device;
-      this._updateDirtyState(device);
+      const device = { ...draft, stat_consumption: statConsumption };
+      if (isCurrent()) {
+        this._device = device;
+        this._updateDirtyState(device);
+      }
       await params.saveCallback(device);
-      this._markDirtyStateClean();
-      this.closeDialog();
+      if (isCurrent()) {
+        this._markDirtyStateClean();
+        this.closeDialog();
+      }
     } catch (err: any) {
-      this._error = err.message;
+      if (isCurrent()) {
+        this._error = err.message;
+      }
     } finally {
       this._saving = false;
     }
   }
 
-  private async _waterFromFlowRate(): Promise<string | undefined> {
-    const statRate = this._device!.stat_rate!;
+  private async _waterFromFlowRate(
+    draft: DeviceConsumptionDraft
+  ): Promise<string | undefined> {
+    const statRate = draft.stat_rate!;
     const units = this._integralUnits();
     if (!units) {
       return undefined;
@@ -369,7 +379,7 @@ export class DialogEnergyDeviceSettingsWater
                 this.hass.formatEntityName,
                 statRate,
                 this._params?.statsMetadata?.[statRate],
-                this._device?.name
+                draft.name
               ),
             }
           ),
