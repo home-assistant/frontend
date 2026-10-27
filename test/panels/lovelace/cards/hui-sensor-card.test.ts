@@ -68,7 +68,7 @@ describe("hui-sensor-card color and configuration", () => {
     ).toBeUndefined();
   });
 
-  it("computes state color for battery sensor when color is default", () => {
+  it("computes state color for battery sensor when color is state", () => {
     const card = makeCard();
 
     const batteryState = {
@@ -77,28 +77,36 @@ describe("hui-sensor-card color and configuration", () => {
       attributes: { device_class: "battery" },
     } as HassEntity;
 
-    const color = (card as any)._computeColor(batteryState, undefined);
+    const color = (card as any)._computeColor(batteryState, "state");
     expect(color).toContain("--state-sensor-battery-low-color");
   });
 
-  it("getStateColor defaults to true on sensor card and respects state_color: false", () => {
-    const card = makeCard();
+  it("getStateColor defaults to false on sensor card and enables when color or state_color is set", () => {
     const stateObj = {
       entity_id: "sensor.temperature",
       state: "21.5",
       attributes: {},
     } as HassEntity;
 
-    expect((card as any)._getStateColor(stateObj, (card as any)._config)).toBe(
-      true
-    );
-
-    const cardDisabled = makeCard({ state_color: false });
+    const defaultCard = makeCard();
     expect(
-      (cardDisabled as any)._getStateColor(
+      (defaultCard as any)._getStateColor(
         stateObj,
-        (cardDisabled as any)._config
+        (defaultCard as any)._config
       )
     ).toBe(false);
+
+    const colorCard = makeCard({ color: "teal" });
+    expect(
+      (colorCard as any)._getStateColor(stateObj, (colorCard as any)._config)
+    ).toBe(true);
+
+    const stateColorConfigCard = makeCard({ state_color: true });
+    expect(
+      (stateColorConfigCard as any)._getStateColor(
+        stateObj,
+        (stateColorConfigCard as any)._config
+      )
+    ).toBe(true);
   });
 });

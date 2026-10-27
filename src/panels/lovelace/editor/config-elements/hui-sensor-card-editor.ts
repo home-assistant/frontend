@@ -92,7 +92,6 @@ export class HuiSensorCardEditor
               name: "color",
               selector: {
                 ui_color: {
-                  default_color: "state",
                   include_state: true,
                 },
               },
