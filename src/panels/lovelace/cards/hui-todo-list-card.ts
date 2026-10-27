@@ -374,20 +374,32 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private _setRefreshTimer() {
     this._clearRefreshTimer();
-    if (!this._i18n || !this._hassConfig || !this._config?.due_date_period) {
+    if (!this._i18n || !this._hassConfig) {
       return;
     }
+    // Due labels such as "Today" and the overdue styling depend on the time,
+    // so refresh at midnight or at the next item deadline, whichever is first.
     const nowDate = new Date();
-    const timeout = calcDate(
+    const now = nowDate.getTime();
+    let refreshAt = calcDate(
       nowDate,
       endOfDay,
       this._i18n.locale,
       this._hassConfig
+    ).getTime();
+    for (const item of this._items ?? []) {
+      const due = this._getDueDate(item)?.getTime();
+      if (due !== undefined && due > now && due < refreshAt) {
+        refreshAt = due;
+      }
+    }
+    this._refreshTimer = window.setTimeout(
+      () => {
+        this._refreshTimer = undefined;
+        this.requestUpdate();
+      },
+      refreshAt - now + 1000
     );
-    this._refreshTimer = window.setTimeout(() => {
-      this._refreshTimer = undefined;
-      this.requestUpdate();
-    }, timeout.getTime() - nowDate.getTime());
   }
 
   private _clearRefreshTimer() {
@@ -409,7 +421,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       this._subscribeItems();
     }
 
-    if (!this._refreshTimer) {
+    if (!this._refreshTimer || changedProperties.has("_items")) {
       this._setRefreshTimer();
     }
   }
