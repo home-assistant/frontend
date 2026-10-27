@@ -622,11 +622,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const name = this._config.name || computeAreaName(area);
 
-    const primary = name;
     const secondary = this._computeSensorsDisplay();
 
     const featurePosition = this._featurePosition(this._config);
     const features = this._featureLayout(this._config);
+    const hasFeatures = features.inline.length > 0 || features.below.length > 0;
 
     const displayType = this._config.display_type || "picture";
 
@@ -652,7 +652,11 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
       this._config.grid_options?.rows !== "auto";
 
     return html`
-      <ha-card style=${styleMap(style)}>
+      <ha-card
+        style=${styleMap(style)}
+        role=${ifDefined(hasFeatures ? "group" : undefined)}
+        aria-labelledby=${ifDefined(hasFeatures ? "name" : undefined)}
+      >
         ${
           displayType === "compact"
             ? nothing
@@ -734,9 +738,10 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
             class=${ifDefined(
               this._config.vertical && fixedInfoHeight ? "twoline" : undefined
             )}
-            .primary=${primary}
             .secondary=${secondary}
-          ></ha-tile-info>
+          >
+            <span slot="primary" id="name">${name}</span>
+          </ha-tile-info>
           ${
             features.inline.length > 0
               ? html`
@@ -872,7 +877,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
         /* two wrapped lines inside the 32px ha-tile-container reserves */
         --_tile-info-fixed-primary-line-height: var(--ha-space-4);
       }
-      ha-tile-info.twoline::part(primary) {
+      ha-tile-info.twoline > [slot="primary"] {
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;

@@ -40,7 +40,7 @@
   "license": "Apache-2.0",
   "type": "module",
   "dependencies": {
-    "@babel/runtime": "8.0.7",
+    "@babel/runtime": "8.0.8",
     "@braintree/sanitize-url": "7.1.2",
     "@codemirror/autocomplete": "6.20.4",
     "@codemirror/commands": "6.11.1",
@@ -137,7 +137,7 @@
   },
   "devDependencies": {
     "@ampproject/remapping": "2.3.0",
-    "@babel/core": "8.0.7",
+    "@babel/core": "8.0.9",
     "@babel/helper-compilation-targets": "8.0.7",
     "@babel/helper-define-polyfill-provider": "1.0.0",
     "@babel/plugin-transform-class-properties": "8.0.1",
@@ -148,7 +148,7 @@
     "@eslint/js": "10.0.1",
     "@gfx/zopfli": "1.0.15",
     "@html-eslint/eslint-plugin": "0.67.0",
-    "@lokalise/node-api": "16.6.0",
+    "@lokalise/node-api": "17.0.1",
     "@octokit/auth-oauth-device": "8.0.5",
     "@octokit/rest": "22.0.1",
     "@playwright/test": "1.64.1",

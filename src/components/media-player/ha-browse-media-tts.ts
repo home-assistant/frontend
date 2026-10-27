@@ -83,7 +83,6 @@ class BrowseMediaTTS extends LitElement {
                     @value-changed=${this._languageChanged}
                   ></ha-language-picker>
                   <ha-tts-voice-picker
-                    .hass=${this.hass}
                     .value=${this._voice}
                     .engineId=${this._provider.engine_id}
                     .language=${this._language}
@@ -149,7 +148,7 @@ class BrowseMediaTTS extends LitElement {
         );
         if (provider !== this._provider?.engine_id) {
           this._provider = undefined;
-          getTTSEngine(this.hass, provider).then((engine) => {
+          getTTSEngine(this.hass.callWS, provider).then((engine) => {
             this._provider = engine.provider;
             if (
               !this._language &&

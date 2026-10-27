@@ -528,7 +528,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                                     ? html`
                                         <div class="img">
                                           <ha-media-browser-thumbnail
-                                            .hass=${this.hass}
                                             .url=${currentItem.thumbnail}
                                           ></ha-media-browser-thumbnail>
                                           ${
@@ -1002,7 +1001,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                       })} image"
                     >
                       <ha-media-browser-thumbnail
-                        .hass=${this.hass}
                         .url=${child.thumbnail}
                       ></ha-media-browser-thumbnail>
                     </div>
@@ -1085,7 +1083,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                 ${
                   showImage
                     ? html`<ha-media-browser-thumbnail
-                        .hass=${this.hass}
                         .url=${child.thumbnail}
                       ></ha-media-browser-thumbnail>`
                     : nothing
@@ -1383,6 +1380,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         }
         .search-input {
           flex: 1;
+          min-width: 0;
           --ha-input-padding-top: 0;
           --ha-input-padding-bottom: 0;
         }

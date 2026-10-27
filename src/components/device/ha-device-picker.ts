@@ -133,16 +133,26 @@ export class HaDevicePicker extends LitElement {
       excludeDevices?: string[],
       value?: string
     ) =>
-      getDevices(this.hass, configEntryLookup, {
-        includeDomains,
-        excludeDomains,
-        includeDeviceClasses,
-        deviceFilter,
-        entityFilter,
-        excludeDevices,
-        value,
-        nested: true,
-      })
+      getDevices(
+        this.hass.states,
+        this.hass.areas,
+        this.hass.devices,
+        this.hass.entities,
+        this.hass.localize,
+        this.hass.locale.language,
+        this.hass.translationMetadata,
+        configEntryLookup,
+        {
+          includeDomains,
+          excludeDomains,
+          includeDeviceClasses,
+          deviceFilter,
+          entityFilter,
+          excludeDevices,
+          value,
+          nested: true,
+        }
+      )
   );
 
   protected firstUpdated(_changedProperties: PropertyValues<this>): void {

@@ -1,11 +1,21 @@
+import type { ContextType } from "@lit/context";
 import { mdiClose } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { HassEntities } from "home-assistant-js-websocket";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
+import {
+  consumeLocalize,
+  preserveUnchangedEntityStatesRecord,
+} from "../../common/decorators/consume-context-entry";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { supportsFeature } from "../../common/entity/supports-feature";
-import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { apiContext, entitiesContext, statesContext } from "../../data/context";
 import { extractApiErrorMessage } from "../../data/hassio/common";
 import {
   type MediaPlayerEntity,
@@ -14,7 +24,6 @@ import {
   mediaPlayerUnjoin,
 } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 import "../ha-alert";
 import "../ha-button";
 import "../ha-dialog-footer";
@@ -25,7 +34,29 @@ import type { JoinMediaPlayersDialogParams } from "./show-join-media-players-dia
 
 @customElement("dialog-join-media-players")
 class DialogJoinMediaPlayers extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, HassEntities>({
+    transformer: function (this: DialogJoinMediaPlayers, states) {
+      const mediaPlayers: HassEntities = {};
+      Object.entries(states ?? {}).forEach(([entityId, stateObj]) => {
+        if (computeDomain(entityId) === "media_player") {
+          mediaPlayers[entityId] = stateObj;
+        }
+      });
+      return preserveUnchangedEntityStatesRecord(this._states, mediaPlayers);
+    },
+  })
+  private _states: HassEntities = {};
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @state() private _entityId?: string;
 
@@ -42,14 +73,18 @@ class DialogJoinMediaPlayers extends LitElement {
   public showDialog(params: JoinMediaPlayersDialogParams): void {
     this._entityId = params.entityId;
     this._open = true;
+  }
 
-    const stateObj = this.hass.states[params.entityId] as
-      MediaPlayerEntity | undefined;
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (!changedProps.has("_entityId") || !this._entityId) {
+      return;
+    }
+    const entityId = this._entityId;
+    const stateObj = this._states[entityId] as MediaPlayerEntity | undefined;
 
     this._groupMembers =
-      stateObj?.attributes.group_members?.filter(
-        (entityId) => entityId !== params.entityId
-      ) || [];
+      stateObj?.attributes.group_members?.filter((id) => id !== entityId) || [];
 
     this._selectedEntities = this._groupMembers;
   }
@@ -78,20 +113,20 @@ class DialogJoinMediaPlayers extends LitElement {
       <ha-dialog .open=${this._open} flexcontent @closed=${this._dialogClosed}>
         <ha-dialog-header show-border slot="header">
           <ha-icon-button
-            .label=${this.hass.localize("ui.common.close")}
+            .label=${this._localize("ui.common.close")}
             .path=${mdiClose}
             data-dialog="close"
             slot="navigationIcon"
           ></ha-icon-button>
           <span slot="title"
-            >${this.hass.localize("ui.card.media_player.media_players")}</span
+            >${this._localize("ui.card.media_player.media_players")}</span
           >
           <ha-button
             appearance="plain"
             slot="actionItems"
             @click=${this._selectAll}
           >
-            ${this.hass.localize("ui.card.media_player.select_all")}
+            ${this._localize("ui.card.media_player.select_all")}
           </ha-button>
         </ha-dialog-header>
         ${
@@ -105,11 +140,15 @@ class DialogJoinMediaPlayers extends LitElement {
             checked
             disabled
           ></ha-media-player-toggle>
-          ${this._mediaPlayerEntities(this.hass.entities).map(
-            (entity) =>
+          ${this._mediaPlayerEntities(
+            entityId,
+            this._entities,
+            this._states
+          ).map(
+            (id) =>
               html`<ha-media-player-toggle
-                .entityId=${entity.entity_id}
-                .checked=${this._selectedEntities.includes(entity.entity_id)}
+                .entityId=${id}
+                .checked=${this._selectedEntities.includes(id)}
                 @change=${this._handleSelectedChange}
               ></ha-media-player-toggle>`
           )}
@@ -120,59 +159,61 @@ class DialogJoinMediaPlayers extends LitElement {
             slot="secondaryAction"
             @click=${this.closeDialog}
           >
-            ${this.hass.localize("ui.common.cancel")}
+            ${this._localize("ui.common.cancel")}
           </ha-button>
           <ha-button
             .disabled=${!!this._submitting}
             slot="primaryAction"
             @click=${this._submit}
           >
-            ${this.hass.localize("ui.common.apply")}
+            ${this._localize("ui.common.apply")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
-  private _mediaPlayerEntities = (
-    entities: Record<string, EntityRegistryDisplayEntry>
-  ) => {
-    if (!this._entityId) {
-      return [];
+  private _mediaPlayerEntities = memoizeOne(
+    (
+      entityId: string,
+      entities: ContextType<typeof entitiesContext>,
+      states: HassEntities
+    ): string[] => {
+      const currentPlatform = entities?.[entityId]?.platform;
+
+      if (!currentPlatform) {
+        return [];
+      }
+
+      return Object.values(entities)
+        .filter((entity) => {
+          if (entity.entity_id === entityId) {
+            return false;
+          }
+          if (computeDomain(entity.entity_id) !== "media_player") {
+            return false;
+          }
+          if (entity.platform !== currentPlatform) {
+            return false;
+          }
+          const stateObj = states[entity.entity_id];
+          return (
+            !!stateObj &&
+            supportsFeature(stateObj, MediaPlayerEntityFeature.GROUPING)
+          );
+        })
+        .map((entity) => entity.entity_id);
     }
-
-    const currentPlatform = this.hass.entities[this._entityId]?.platform;
-
-    if (!currentPlatform) {
-      return [];
-    }
-
-    return Object.values(entities).filter((entity) => {
-      if (entity.entity_id === this._entityId) {
-        return false;
-      }
-      if (computeDomain(entity.entity_id) !== "media_player") {
-        return false;
-      }
-      if (this.hass.entities[entity.entity_id]?.platform !== currentPlatform) {
-        return false;
-      }
-      if (
-        !this.hass.states[entity.entity_id] ||
-        !supportsFeature(
-          this.hass.states[entity.entity_id],
-          MediaPlayerEntityFeature.GROUPING
-        )
-      ) {
-        return false;
-      }
-      return true;
-    });
-  };
+  );
 
   private _selectAll() {
-    this._selectedEntities = this._mediaPlayerEntities(this.hass.entities).map(
-      (entity) => entity.entity_id
+    if (!this._entityId) {
+      return;
+    }
+    this._selectedEntities = this._mediaPlayerEntities(
+      this._entityId,
+      this._entities,
+      this._states
     );
   }
 
@@ -195,11 +236,15 @@ class DialogJoinMediaPlayers extends LitElement {
     this._submitting = true;
     try {
       // If media is already playing
-      await mediaPlayerJoin(this.hass, this._entityId, this._selectedEntities);
+      await mediaPlayerJoin(
+        this._api.callService,
+        this._entityId,
+        this._selectedEntities
+      );
       await Promise.all(
         this._groupMembers
           .filter((entityId) => !this._selectedEntities.includes(entityId))
-          .map((entityId) => mediaPlayerUnjoin(this.hass, entityId))
+          .map((entityId) => mediaPlayerUnjoin(this._api.callService, entityId))
       );
       this.closeDialog();
     } catch (err) {

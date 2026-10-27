@@ -150,11 +150,15 @@ export abstract class HuiElementEditor<
     });
   }
 
-  public toggleMode() {
+  public async toggleMode() {
     if (!this.GUImode) {
       this._yamlEditor?.disableCodeEditorFullscreen();
     }
     this.GUImode = !this.GUImode;
+    if (!this.GUImode) {
+      await this.updateComplete;
+      this._yamlEditor?.focus();
+    }
   }
 
   public focusYamlEditor() {
@@ -253,7 +257,6 @@ export abstract class HuiElementEditor<
                 <div class="yaml-editor">
                   <ha-yaml-editor
                     .defaultValue=${this._config}
-                    autofocus
                     .inDialog=${this.inDialog}
                     @value-changed=${this._handleYAMLChanged}
                     @keydown=${this._ignoreKeydown}

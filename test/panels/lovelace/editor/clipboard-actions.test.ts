@@ -7,6 +7,7 @@ import {
   performCut,
   performPaste,
 } from "../../../../src/panels/lovelace/editor/clipboard-actions";
+import { takeCardHighlight } from "../../../../src/panels/lovelace/editor/card-highlight";
 import type { LovelacePath } from "../../../../src/panels/lovelace/editor/lovelace-path";
 import { getAtPath } from "../../../../src/panels/lovelace/editor/lovelace-path";
 import type { Lovelace } from "../../../../src/panels/lovelace/types";
@@ -193,6 +194,7 @@ describe("performPaste", () => {
       { path: ["views", 0, "cards", 0] }
     );
     expect(cardsAt(["views", 0, "cards"])).toEqual([CARD_A, CLIPBOARD, CARD_B]);
+    expect(takeCardHighlight(cardsAt(["views", 0, "cards"])[1])).toBe(true);
 
     const { cardsAt: nestedCardsAt } = await pasteInto(
       { views: [{ sections: [{ cards: [CARD_A, CARD_B] }] }] },
@@ -221,6 +223,7 @@ describe("performPaste", () => {
       { path: ["views", 0, "cards", 0], replace: true }
     );
     expect(cardsAt(["views", 0, "cards"])).toEqual([CLIPBOARD]);
+    expect(takeCardHighlight(cardsAt(["views", 0, "cards"])[0])).toBe(true);
     expect(showToast).toHaveBeenLastCalledWith(
       expect.objectContaining({
         message: "ui.panel.lovelace.editor.edit_card.replaced",
@@ -235,7 +238,7 @@ describe("performPaste", () => {
     const lovelace = {
       config,
       rawConfig: config,
-      saveConfig: () => Promise.reject(new Error("save failed")),
+      saveConfig: vi.fn(() => Promise.reject(new Error("save failed"))),
       showToast: vi.fn(),
     } as Partial<Lovelace> as Lovelace;
 
@@ -250,5 +253,12 @@ describe("performPaste", () => {
         message: "ui.panel.lovelace.editor.edit_card.paste_error",
       })
     );
+    const attempted = vi.mocked(lovelace.saveConfig).mock
+      .calls[0][0] as LovelaceConfig;
+    expect(
+      takeCardHighlight(
+        getAtPath<LovelaceCardConfig[]>(attempted, ["views", 0, "cards"])![1]
+      )
+    ).toBe(false);
   });
 });

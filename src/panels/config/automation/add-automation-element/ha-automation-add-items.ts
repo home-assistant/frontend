@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import { mdiInformationOutline, mdiPlus, mdiSwapHorizontal } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import {
@@ -10,6 +11,8 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-svg-icon";
@@ -17,11 +20,16 @@ import "../../../../components/ha-tooltip";
 import "../../../../components/item/ha-list-item-button";
 import "../../../../components/list/ha-list-base";
 import type { ConfigEntry } from "../../../../data/config_entries";
+import {
+  configEntriesContext,
+  labelsContext,
+  registriesContext,
+  statesContext,
+} from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import { haStyleScrollbar } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
 import { getTargetIcon } from "../target/get_target_icon";
+import type { AddAutomationElementListItem, ItemsSection } from "./types";
 
 type Target = [string, string | undefined, string | undefined];
 
@@ -36,12 +44,7 @@ type Target = [string, string | undefined, string | undefined];
  */
 @customElement("ha-automation-add-items")
 export class HaAutomationAddItems extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ attribute: false }) public items?: {
-    title: string;
-    items: AddAutomationElementListItem[];
-  }[];
+  @property({ attribute: false }) public items?: ItemsSection[];
 
   @property() public error?: string;
 
@@ -51,15 +54,6 @@ export class HaAutomationAddItems extends LitElement {
 
   @property({ attribute: false }) public target?: Target;
 
-  @property({ attribute: false }) public getLabel!: (
-    id: string
-  ) => LabelRegistryEntry | undefined;
-
-  @property({ attribute: false }) public configEntryLookup: Record<
-    string,
-    ConfigEntry
-  > = {};
-
   @property({ type: Boolean, attribute: "tooltip-description" })
   public tooltipDescription = false;
 
@@ -68,6 +62,28 @@ export class HaAutomationAddItems extends LitElement {
   @property({ type: Boolean }) public replacing = false;
 
   @state() private _itemsScrolled = false;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: labelsContext, subscribe: true })
+  private _labelRegistry?: LabelRegistryEntry[];
+
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<ConfigEntry[], Record<string, ConfigEntry>>({
+    transformer: function (value) {
+      return value
+        ? Object.fromEntries(value.map((entry) => [entry.entry_id, entry]))
+        : undefined;
+    },
+  })
+  private _configEntryLookup?: Record<string, ConfigEntry>;
 
   @query(".items")
   private _itemsDiv!: HTMLDivElement;
@@ -88,12 +104,12 @@ export class HaAutomationAddItems extends LitElement {
             ? this.selectLabel
             : this.error
               ? html`${this.error}
-                  <div>${this._renderTarget(this.target)}</div>`
+                  <div>${this._renderCurrentTarget()}</div>`
               : this.items && !this.items.length
                 ? html`${this.emptyLabel}
                   ${
                     this.target
-                      ? html`<div>${this._renderTarget(this.target)}</div>`
+                      ? html`<div>${this._renderCurrentTarget()}</div>`
                       : nothing
                   }`
                 : repeat(
@@ -121,7 +137,7 @@ export class HaAutomationAddItems extends LitElement {
           (item) => html`
             <ha-list-item-button .value=${item.key} @click=${this._selected}>
               <div slot="headline" class=${this.target ? "item-headline" : ""}>
-                ${item.name}${this._renderTarget(this.target)}
+                ${item.name}${this._renderCurrentTarget()}
               </div>
 
               ${
@@ -171,28 +187,41 @@ export class HaAutomationAddItems extends LitElement {
     `;
   }
 
-  private _renderTarget = memoizeOne((target?: Target) => {
-    if (!target) {
-      return nothing;
-    }
+  private _renderCurrentTarget() {
+    return this._renderTarget(
+      this.target,
+      this._registries,
+      this._states,
+      this._labelRegistry,
+      this._configEntryLookup
+    );
+  }
 
-    return html`<div class="selected-target">
-      ${getTargetIcon(
-        {
-          entities: this.hass.entities,
-          devices: this.hass.devices,
-          areas: this.hass.areas,
-          floors: this.hass.floors,
-        },
-        this.hass.states,
-        target[0],
-        target[1],
-        this.configEntryLookup,
-        this.getLabel
-      )}
-      <div class="label">${target[2]}</div>
-    </div>`;
-  });
+  private _renderTarget = memoizeOne(
+    (
+      target: Target | undefined,
+      registries: ContextType<typeof registriesContext>,
+      states: ContextType<typeof statesContext>,
+      labels: LabelRegistryEntry[] | undefined,
+      configEntryLookup: Record<string, ConfigEntry> | undefined
+    ) => {
+      if (!target) {
+        return nothing;
+      }
+
+      return html`<div class="selected-target">
+        ${getTargetIcon(
+          registries,
+          states,
+          target[0],
+          target[1],
+          configEntryLookup ?? {},
+          (id) => labels?.find(({ label_id }) => label_id === id)
+        )}
+        <div class="label">${target[2]}</div>
+      </div>`;
+    }
+  );
 
   private _selected(ev) {
     const item = ev.currentTarget;

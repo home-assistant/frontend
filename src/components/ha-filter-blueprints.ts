@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -8,16 +9,17 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
+import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import { deepEqual } from "../common/util/deep-equal";
 import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
+import { apiContext } from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
 import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon-button";
@@ -25,11 +27,12 @@ import "./ha-list";
 
 @customElement("ha-filter-blueprints")
 export class HaFilterBlueprints extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public value?: string[];
 
@@ -116,7 +119,7 @@ export class HaFilterBlueprints extends LitElement {
     if (!this.type) {
       return;
     }
-    this._blueprints = await fetchBlueprints(this.hass, this.type);
+    this._blueprints = await fetchBlueprints(this._api.callWS, this.type);
   }
 
   private _expandedChanged(ev) {
@@ -163,7 +166,7 @@ export class HaFilterBlueprints extends LitElement {
     for (const blueprintId of this.value) {
       if (this.type) {
         relatedPromises.push(
-          findRelated(this.hass, `${this.type}_blueprint`, blueprintId)
+          findRelated(this._api, `${this.type}_blueprint`, blueprintId)
         );
       }
     }

@@ -362,7 +362,13 @@ export class HaDataTable extends LitElement {
     }
 
     if (properties.has("filter")) {
-      this._debounceSearch(this.filter);
+      if (!this.hasUpdated) {
+        // A restored search must apply before the first filter pass, so the
+        // unfiltered rows are never shown
+        this._filter = this.filter;
+      } else {
+        this._debounceSearch(this.filter);
+      }
       this._lastSelectedRowId = null;
     }
 

@@ -52,7 +52,6 @@ class StateCardNumber extends LitElement {
   protected render() {
     return html`
       <state-info
-        .hass=${this.hass}
         .stateObj=${this.stateObj}
         .inDialog=${this.inDialog}
       ></state-info>
