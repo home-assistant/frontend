@@ -20,6 +20,7 @@ export const entitiesFilterQueryParamConfig = {
     "floor",
     "area",
     "device",
+    "device_class",
     "domain",
     "entity_domain",
     "label",
@@ -50,6 +51,7 @@ export const entitiesFilterQueryParams = (
   floor: floorAreas(filters["ha-filter-floor-areas"])?.floors,
   area: floorAreas(filters["ha-filter-floor-areas"])?.areas,
   device: list(filters["ha-filter-devices"]),
+  device_class: list(filters["ha-filter-device-classes"]),
   domain: list(filters["ha-filter-integrations"]),
   entity_domain: list(filters["ha-filter-domains"]),
   label: list(filters["ha-filter-labels"]),
@@ -114,6 +116,7 @@ export const entitiesLinkFromUrl = (
       "ha-filter-floor-areas":
         floors.length || areas.length ? { floors, areas } : undefined,
       "ha-filter-devices": values("device"),
+      "ha-filter-device-classes": values("device_class"),
       "ha-filter-integrations": values("domain"),
       "ha-filter-domains": values("entity_domain"),
       "ha-filter-labels": values("label"),
