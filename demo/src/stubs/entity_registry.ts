@@ -8,7 +8,7 @@ import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 let entries: EntityRegistryEntry[] = [];
 
-const newEntry = (
+export const newEntry = (
   entry: Pick<EntityRegistryEntry, "entity_id" | "platform" | "unique_id">
 ): EntityRegistryEntry => {
   const now = Date.now() / 1000;

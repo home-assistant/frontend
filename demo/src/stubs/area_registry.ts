@@ -12,6 +12,20 @@ export interface DemoArea {
 
 let areas: AreaRegistryEntry[] = [];
 
+export const toAreaRegistryEntry = (area: DemoArea): AreaRegistryEntry => ({
+  area_id: area.area_id,
+  name: area.name,
+  floor_id: area.floor_id ?? null,
+  icon: area.icon ?? null,
+  temperature_entity_id: area.temperature_entity_id ?? null,
+  humidity_entity_id: area.humidity_entity_id ?? null,
+  aliases: [],
+  labels: [],
+  picture: null,
+  created_at: 0,
+  modified_at: 0,
+});
+
 export const mockAreaRegistry = (
   hass: MockHomeAssistant,
   data: DemoArea[] = []
@@ -25,19 +39,7 @@ export const setDemoAreas = (
   hass: MockHomeAssistant,
   demoAreas: DemoArea[] = []
 ) => {
-  areas = demoAreas.map((area) => ({
-    area_id: area.area_id,
-    name: area.name,
-    floor_id: area.floor_id ?? null,
-    icon: area.icon ?? null,
-    temperature_entity_id: area.temperature_entity_id ?? null,
-    humidity_entity_id: area.humidity_entity_id ?? null,
-    aliases: [],
-    labels: [],
-    picture: null,
-    created_at: 0,
-    modified_at: 0,
-  }));
+  areas = demoAreas.map(toAreaRegistryEntry);
   const areasById: Record<string, AreaRegistryEntry> = {};
   areas.forEach((area) => {
     areasById[area.area_id] = area;

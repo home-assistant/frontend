@@ -375,6 +375,73 @@ provider.entities = Object.values(provider.hass.states).map((entity) =&gt;
         <code>provider.hass.states</code>.
       </p>
 
+      <h2>Areas, calendars and energy</h2>
+      <p>
+        Some cards need data that is not an entity. To set it, put an object in
+        the script tag of the provider instead of the list. The object has the
+        list in <code>entities</code>, and any of these keys:
+      </p>
+      <ul>
+        <li>
+          <code>areas</code>: a list of areas, each with an
+          <code>area_id</code> and a <code>name</code>. Without it, each
+          <code>area_id</code> of the entities becomes an area.
+        </li>
+        <li>
+          <code>calendars</code>: the events of calendar entities, by entity
+          ID. Each event has a <code>summary</code>, a <code>start</code> and
+          an <code>end</code>. Calendars without events here get sample events
+          around today.
+        </li>
+        <li>
+          <code>energy</code>: the energy settings, the same as the
+          <code>energy/get_prefs</code> response. Without it, energy is not
+          set up.
+        </li>
+      </ul>
+      <p>
+        Weather entities get a forecast made up from their condition and
+        temperature, or their <code>forecast</code> attribute when they have
+        one. Set <code>supported_features</code> to show forecasts.
+      </p>
+      <pre><code>&lt;ha-embed-provider&gt;
+  &lt;script type="text/yaml"&gt;
+    entities:
+      - entity_id: calendar.family
+        state: "off"
+        attributes:
+          friendly_name: Family
+    areas:
+      - area_id: kitchen
+        name: Kitchen
+    calendars:
+      calendar.family:
+        - summary: Dentist
+          start: "2026-11-02T15:30:00+00:00"
+          end: "2026-11-02T16:15:00+00:00"
+  &lt;/script&gt;
+  …
+&lt;/ha-embed-provider&gt;</code></pre>
+      <p>This calendar card uses the sample events.</p>
+      <ha-embed-provider>
+        <script type="application/json">
+          {
+            "entities": [
+              {
+                "entity_id": "calendar.family",
+                "state": "off",
+                "attributes": { "friendly_name": "Family" }
+              }
+            ]
+          }
+        </script>
+        <div class="single">
+          <ha-embed-card
+            config='{ "type": "calendar", "entities": ["calendar.family"], "initial_view": "listWeek" }'
+          ></ha-embed-card>
+        </div>
+      </ha-embed-provider>
+
       <h2>Custom cards</h2>
       <p>
         Custom cards work too. Load the script of the custom card on the page,
@@ -385,10 +452,10 @@ provider.entities = Object.values(provider.hass.states).map((entity) =&gt;
       </p>
       <p>
         The mocked backend only knows a part of the Home Assistant API. History
-        is made up from the current state of each entity. Templates are not
-        rendered, they come back as they are. Statistics come back empty. Other
-        requests get an error. From another site, the script of the custom card
-        needs CORS headers, like the embed script.
+        and statistics are made up from the current state of each entity.
+        Templates are not rendered, they come back as they are. The logbook is
+        empty. Other requests get an error. From another site, the script of
+        the custom card needs CORS headers, like the embed script.
       </p>
       <pre><code>&lt;script type="module" src="https://example.com/embed-demo-custom-card.js"&gt;&lt;/script&gt;
 &lt;ha-embed-card&gt;
