@@ -1,3 +1,4 @@
+import type { SystemLogLevel } from "../../data/system_log";
 import {
   decodeQueryParams,
   hasQueryParams,
@@ -17,7 +18,7 @@ export const logSearchQueryParamConfig = {
 // `raw` shows the full Home Assistant Core log instead of the errors.
 export const logsQueryParamConfig = {
   string: ["provider", "search", "filter"],
-  list: ["integration"],
+  list: ["integration", "level"],
   boolean: [{ key: "raw", trueValue: "1" }],
 } as const satisfies QueryParamConfig;
 
@@ -28,13 +29,25 @@ export interface LogsState {
   search: string;
   // Only apply to the Home Assistant Core log
   integrations: string[];
+  // Only apply to the Home Assistant Core errors, not the raw log
+  levels: SystemLogLevel[];
   raw: boolean;
 }
+
+const LEVELS: readonly string[] = [
+  "critical",
+  "error",
+  "warning",
+] satisfies SystemLogLevel[];
+
+const isLevel = (level: string): level is SystemLogLevel =>
+  LEVELS.includes(level);
 
 export const DEFAULT_LOGS_STATE: LogsState = {
   provider: DEFAULT_LOG_PROVIDER,
   search: "",
   integrations: [],
+  levels: [],
   raw: false,
 };
 
@@ -53,6 +66,7 @@ export const logsQueryParams = (state: LogsState): LogsQueryParams => ({
   search: state.search,
   integration:
     state.provider === DEFAULT_LOG_PROVIDER ? state.integrations : undefined,
+  level: state.provider === DEFAULT_LOG_PROVIDER ? state.levels : undefined,
   raw: state.provider === DEFAULT_LOG_PROVIDER && state.raw,
 });
 
@@ -71,6 +85,7 @@ export const logsLinkFromUrl = (
     provider,
     search: params.search ?? params.filter ?? "",
     integrations: core ? (params.integration?.filter(Boolean) ?? []) : [],
+    levels: core ? (params.level?.filter(isLevel) ?? []) : [],
     raw: core && !!params.raw,
   };
 };
