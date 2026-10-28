@@ -1,23 +1,27 @@
 import { mdiDevices, mdiLink, mdiPuzzle, mdiTextureBox } from "@mdi/js";
 import { describe, expect, it } from "vitest";
-import { computeNavigationPathInfo } from "../../src/data/compute-navigation-path-info";
+import {
+  computeNavigationPathInfo,
+  type NavigationPathInfoOptions,
+} from "../../src/data/compute-navigation-path-info";
 import type { IngressPanelInfoMap } from "../../src/data/hassio/ingress";
 import type { HomeAssistant } from "../../src/types";
 import type { LovelaceConfig } from "../../src/data/lovelace/config/types";
 
-const createHass = (overrides: Partial<HomeAssistant> = {}): HomeAssistant =>
-  ({
-    panels: {},
-    areas: {},
-    devices: {},
-    localize: () => "",
-    ...overrides,
-  }) as unknown as HomeAssistant;
+const createOptions = (
+  overrides: Partial<NavigationPathInfoOptions> = {}
+): NavigationPathInfoOptions => ({
+  panels: {},
+  areas: {},
+  devices: {},
+  localize: () => "",
+  ...overrides,
+});
 
 describe("computeNavigationPathInfo", () => {
   describe("panel paths", () => {
     it("resolves a panel with icon", () => {
-      const hass = createHass({
+      const options = createOptions({
         panels: {
           "my-panel": {
             url_path: "my-panel",
@@ -28,15 +32,15 @@ describe("computeNavigationPathInfo", () => {
         } as unknown as HomeAssistant["panels"],
       });
 
-      const result = computeNavigationPathInfo(hass, "/my-panel");
+      const result = computeNavigationPathInfo(options, "/my-panel");
       expect(result.label).toBe("My Panel");
       expect(result.icon).toBe("mdi:star");
       expect(result.iconPath).toBe(mdiLink);
     });
 
     it("falls back to url path for unknown panel", () => {
-      const hass = createHass();
-      const result = computeNavigationPathInfo(hass, "/unknown");
+      const options = createOptions();
+      const result = computeNavigationPathInfo(options, "/unknown");
       expect(result.label).toBe("unknown");
       expect(result.icon).toBeUndefined();
       expect(result.iconPath).toBe(mdiLink);
@@ -45,7 +49,7 @@ describe("computeNavigationPathInfo", () => {
 
   describe("area paths", () => {
     it("resolves /config/areas/area/{areaId}", () => {
-      const hass = createHass({
+      const options = createOptions({
         areas: {
           living_room: {
             area_id: "living_room",
@@ -56,7 +60,7 @@ describe("computeNavigationPathInfo", () => {
       });
 
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/config/areas/area/living_room"
       );
       expect(result.label).toBe("Living Room");
@@ -65,7 +69,7 @@ describe("computeNavigationPathInfo", () => {
     });
 
     it("resolves /home/areas-{areaId}", () => {
-      const hass = createHass({
+      const options = createOptions({
         areas: {
           kitchen: {
             area_id: "kitchen",
@@ -75,16 +79,16 @@ describe("computeNavigationPathInfo", () => {
         } as unknown as HomeAssistant["areas"],
       });
 
-      const result = computeNavigationPathInfo(hass, "/home/areas-kitchen");
+      const result = computeNavigationPathInfo(options, "/home/areas-kitchen");
       expect(result.label).toBe("Kitchen");
       expect(result.icon).toBeUndefined();
       expect(result.iconPath).toBe(mdiTextureBox);
     });
 
     it("falls back to area id for unknown area", () => {
-      const hass = createHass();
+      const options = createOptions();
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/config/areas/area/unknown_area"
       );
       expect(result.label).toBe("unknown_area");
@@ -94,7 +98,7 @@ describe("computeNavigationPathInfo", () => {
 
   describe("device paths", () => {
     it("resolves /config/devices/device/{deviceId}", () => {
-      const hass = createHass({
+      const options = createOptions({
         devices: {
           abc123: {
             id: "abc123",
@@ -105,7 +109,7 @@ describe("computeNavigationPathInfo", () => {
       });
 
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/config/devices/device/abc123"
       );
       expect(result.label).toBe("Smart Light");
@@ -113,7 +117,7 @@ describe("computeNavigationPathInfo", () => {
     });
 
     it("prefers user-defined device name", () => {
-      const hass = createHass({
+      const options = createOptions({
         devices: {
           abc123: {
             id: "abc123",
@@ -124,16 +128,16 @@ describe("computeNavigationPathInfo", () => {
       });
 
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/config/devices/device/abc123"
       );
       expect(result.label).toBe("My Light");
     });
 
     it("falls back to device id for unknown device", () => {
-      const hass = createHass();
+      const options = createOptions();
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/config/devices/device/unknown_device"
       );
       expect(result.label).toBe("unknown_device");
@@ -152,7 +156,7 @@ describe("computeNavigationPathInfo", () => {
     };
 
     it("resolves view with title and icon", () => {
-      const hass = createHass({
+      const options = createOptions({
         panels: {
           lovelace: {
             url_path: "lovelace",
@@ -163,7 +167,7 @@ describe("computeNavigationPathInfo", () => {
       });
 
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/lovelace/overview",
         lovelaceConfig
       );
@@ -172,7 +176,7 @@ describe("computeNavigationPathInfo", () => {
     });
 
     it("resolves view without icon using default", () => {
-      const hass = createHass({
+      const options = createOptions({
         panels: {
           lovelace: {
             url_path: "lovelace",
@@ -183,7 +187,7 @@ describe("computeNavigationPathInfo", () => {
       });
 
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/lovelace/lights",
         lovelaceConfig
       );
@@ -192,7 +196,7 @@ describe("computeNavigationPathInfo", () => {
     });
 
     it("uses titleCase of path when view has no title", () => {
-      const hass = createHass({
+      const options = createOptions({
         panels: {
           lovelace: {
             url_path: "lovelace",
@@ -203,7 +207,7 @@ describe("computeNavigationPathInfo", () => {
       });
 
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/lovelace/my-view",
         lovelaceConfig
       );
@@ -211,7 +215,7 @@ describe("computeNavigationPathInfo", () => {
     });
 
     it("uses index as name when view has no title or path", () => {
-      const hass = createHass({
+      const options = createOptions({
         panels: {
           lovelace: {
             url_path: "lovelace",
@@ -222,7 +226,7 @@ describe("computeNavigationPathInfo", () => {
       });
 
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/lovelace/3",
         lovelaceConfig
       );
@@ -230,7 +234,7 @@ describe("computeNavigationPathInfo", () => {
     });
 
     it("falls back to panel info when view not found", () => {
-      const hass = createHass({
+      const options = createOptions({
         panels: {
           lovelace: {
             url_path: "lovelace",
@@ -241,7 +245,7 @@ describe("computeNavigationPathInfo", () => {
       });
 
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/lovelace/nonexistent",
         lovelaceConfig
       );
@@ -249,7 +253,7 @@ describe("computeNavigationPathInfo", () => {
     });
 
     it("falls back to panel info when no lovelace config provided", () => {
-      const hass = createHass({
+      const options = createOptions({
         panels: {
           lovelace: {
             url_path: "lovelace",
@@ -259,7 +263,7 @@ describe("computeNavigationPathInfo", () => {
         } as unknown as HomeAssistant["panels"],
       });
 
-      const result = computeNavigationPathInfo(hass, "/lovelace/overview");
+      const result = computeNavigationPathInfo(options, "/lovelace/overview");
       expect(result.label).toBe("Dashboard");
     });
   });
@@ -277,9 +281,9 @@ describe("computeNavigationPathInfo", () => {
     };
 
     it("resolves /app/<slug> with ingress panels data", () => {
-      const hass = createHass();
+      const options = createOptions();
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/app/my_addon",
         undefined,
         ingressPanels
@@ -290,17 +294,17 @@ describe("computeNavigationPathInfo", () => {
     });
 
     it("falls back to slug when ingress panels not provided", () => {
-      const hass = createHass();
-      const result = computeNavigationPathInfo(hass, "/app/my_addon");
+      const options = createOptions();
+      const result = computeNavigationPathInfo(options, "/app/my_addon");
       expect(result.label).toBe("my_addon");
       expect(result.icon).toBeUndefined();
       expect(result.iconPath).toBe(mdiPuzzle);
     });
 
     it("falls back to slug when addon not found in ingress panels", () => {
-      const hass = createHass();
+      const options = createOptions();
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/app/unknown_addon",
         undefined,
         ingressPanels
@@ -311,9 +315,9 @@ describe("computeNavigationPathInfo", () => {
     });
 
     it("resolves addon with empty icon as undefined", () => {
-      const hass = createHass();
+      const options = createOptions();
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/app/no_icon_addon",
         undefined,
         ingressPanels
@@ -324,7 +328,7 @@ describe("computeNavigationPathInfo", () => {
     });
 
     it("does not resolve /app without a slug", () => {
-      const hass = createHass({
+      const options = createOptions({
         panels: {
           app: {
             url_path: "app",
@@ -334,7 +338,7 @@ describe("computeNavigationPathInfo", () => {
         } as unknown as HomeAssistant["panels"],
       });
       const result = computeNavigationPathInfo(
-        hass,
+        options,
         "/app",
         undefined,
         ingressPanels
