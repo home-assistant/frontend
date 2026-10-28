@@ -7,7 +7,7 @@ import {
   type ExtractFromTargetResultReferenced,
   type TargetItem,
 } from "../../data/target";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantRegistries } from "../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 
 export interface TargetEntriesFilters {
@@ -26,7 +26,10 @@ export interface TargetEntriesFilters {
 export const filterTargetEntries = <
   T extends ExtractFromTargetResultReferenced,
 >(
-  hass: HomeAssistant,
+  states: HomeAssistant["states"],
+  entities: HomeAssistantRegistries["entities"],
+  devices: HomeAssistantRegistries["devices"],
+  areas: HomeAssistantRegistries["areas"],
   item: TargetItem,
   entries: T,
   filters: TargetEntriesFilters
@@ -35,7 +38,7 @@ export const filterTargetEntries = <
   const hiddenAreaIds: string[] = [];
   if (item.type === "floor" || item.type === "label") {
     referencedAreas = referencedAreas.filter((area_id) => {
-      const area = hass.areas[area_id];
+      const area = areas[area_id];
       // Absent from the registry is not a filter decision: drop the id
       // without marking it hidden, so entities targeted through their
       // own area or label are not dropped along with it.
@@ -46,12 +49,12 @@ export const filterTargetEntries = <
         (item.type === "floor" || area.labels.includes(item.id)) &&
         areaMeetsFilter(
           area,
-          hass.devices,
-          hass.entities,
+          devices,
+          entities,
           filters.deviceFilter,
           filters.includeDomains,
           filters.includeDeviceClasses,
-          hass.states,
+          states,
           filters.entityFilter,
           !filters.primaryEntitiesOnly
         )
@@ -72,19 +75,17 @@ export const filterTargetEntries = <
   if (item.type === "floor" || item.type === "area" || item.type === "label") {
     const matchingDeviceIds = new Set(
       referencedDevices.filter((device_id) => {
-        const device = hass.devices[device_id];
+        const device = devices[device_id];
         return (
           !!device &&
-          !hiddenAreaIds.includes(
-            getDeviceAreaId(device, hass.devices) || ""
-          ) &&
+          !hiddenAreaIds.includes(getDeviceAreaId(device, devices) || "") &&
           deviceMeetsFilter(
             device,
-            hass.entities,
+            entities,
             filters.deviceFilter,
             filters.includeDomains,
             filters.includeDeviceClasses,
-            hass.states,
+            states,
             filters.entityFilter,
             !filters.primaryEntitiesOnly
           )
@@ -93,13 +94,13 @@ export const filterTargetEntries = <
     );
     const parentsOfMatching = new Set(
       [...matchingDeviceIds].map(
-        (device_id) => hass.devices[device_id].parent_device_id
+        (device_id) => devices[device_id].parent_device_id
       )
     );
     referencedDevices = referencedDevices.filter((device_id) => {
       // Absent from the registry is not a filter decision: drop the id
       // without marking it hidden, like the area filtering above.
-      if (!hass.devices[device_id]) {
+      if (!devices[device_id]) {
         return false;
       }
       if (matchingDeviceIds.has(device_id)) {
@@ -115,7 +116,7 @@ export const filterTargetEntries = <
   }
 
   const referencedEntities = entries.referenced_entities.filter((entity_id) => {
-    const entity = hass.entities[entity_id];
+    const entity = entities[entity_id];
     // Core can reference entities that are absent from the display
     // registry (e.g. disabled ones expanded from an area).
     if (!entity) {
@@ -140,7 +141,7 @@ export const filterTargetEntries = <
         item.type === "label" || !filters.primaryEntitiesOnly,
         filters.includeDomains,
         filters.includeDeviceClasses,
-        hass.states,
+        states,
         filters.entityFilter
       );
     }
