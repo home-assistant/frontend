@@ -26,6 +26,7 @@ describe("dropInvalidConditions", () => {
       state,
       { condition: "or", conditions: [null, nested] },
       { condition: "not", conditions: "screen" },
+      { condition: "and", conditions: "" },
     ]);
 
     expect(dropInvalidConditions(conditions)).toEqual([
@@ -35,6 +36,7 @@ describe("dropInvalidConditions", () => {
         conditions: [{ condition: "and", conditions: [screen] }],
       },
       { condition: "not", conditions: [] },
+      { condition: "and", conditions: [] },
     ]);
     expect(nested.conditions).toEqual([screen, undefined, 5]);
   });

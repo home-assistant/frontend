@@ -19,7 +19,7 @@ export const dropInvalidConditions = (
       changed = true;
       continue;
     }
-    if ("conditions" in c && c.conditions) {
+    if ("conditions" in c && c.conditions != null) {
       const children = ensureArray(c.conditions);
       const validChildren = dropInvalidConditions(children);
       if (validChildren !== children) {
