@@ -635,7 +635,6 @@ export class HaMediaPlayerBrowse extends LitElement {
                     ? html`
                         <ha-browse-media-tts
                           .item=${currentItem}
-                          .hass=${this.hass}
                           .action=${this.action}
                           @tts-picked=${this._ttsPicked}
                         ></ha-browse-media-tts>
