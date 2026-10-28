@@ -1,11 +1,14 @@
-import { mdiDelete, mdiPencil, mdiPlus, mdiSolarPower } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { mdiDelete, mdiPlus, mdiSolarPower } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-card";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import "../../../../components/automation/ha-automation-row";
 import "../../../../components/ha-button";
+import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-svg-icon";
 import type {
   EnergyInfo,
   EnergyPreferences,
@@ -17,15 +20,22 @@ import { saveEnergyPreferences } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
-import { showEnergySettingsSolarDialog } from "../dialogs/show-dialogs-energy";
+import { showEnergySettingsDialog } from "../dialogs/show-dialogs-energy";
+import type { EnergyEditorConfig } from "../editors/energy-editor";
+import type { EnergySidebarConfig } from "../ha-energy-sidebar";
 import "./ha-energy-validation-result";
+import { scrollSelectedRowIntoView } from "./scroll-selected-row";
 import { energyCardStyles } from "./styles";
+
+const isSolarSource = (
+  source: EnergyPreferences["energy_sources"][number]
+): source is SolarSourceTypeEnergyPreference => source.type === "solar";
 
 @customElement("ha-energy-solar-settings")
 export class EnergySolarSettings extends LitElement {
@@ -43,12 +53,24 @@ export class EnergySolarSettings extends LitElement {
   @property({ attribute: false })
   public info?: EnergyInfo;
 
+  /** Edit in the sidebar of the page instead of a dialog */
+  @property({ type: Boolean }) public sidebar = false;
+
+  @property({ attribute: false }) public selectedKey?: string;
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+    if (changedProps.has("selectedKey") && this.selectedKey) {
+      scrollSelectedRowIntoView(this.renderRoot);
+    }
+  }
+
   protected render(): TemplateResult {
     const solarSources: SolarSourceTypeEnergyPreference[] = [];
     const solarValidation: EnergyValidationIssue[][] = [];
 
     this.preferences.energy_sources.forEach((source, idx) => {
-      if (source.type !== "solar") {
+      if (!isSolarSource(source)) {
         return;
       }
       solarSources.push(source);
@@ -88,123 +110,201 @@ export class EnergySolarSettings extends LitElement {
           ${
             solarSources.length > 0
               ? html`
-                  <div class="items-container">
+                  <div class="items">
                     ${solarSources.map((source) => {
                       const entityState =
                         this.hass.states[source.stat_energy_from];
                       return html`
-                        <div class="row" .source=${source}>
-                          ${
-                            entityState?.attributes.icon
-                              ? html`<ha-icon
-                                  .icon=${entityState.attributes.icon}
-                                ></ha-icon>`
-                              : html`<ha-svg-icon
-                                  .path=${mdiSolarPower}
-                                ></ha-svg-icon>`
-                          }
-                          <span class="content"
-                            >${
-                              source.name ||
-                              getStatisticLabel(
-                                this.hass.states,
-                                this.hass.formatEntityName,
-                                source.stat_energy_from,
-                                this.statsMetadata?.[source.stat_energy_from]
-                              )
-                            }</span
+                        <ha-card outlined>
+                          <ha-automation-row
+                            .selected=${
+                              this.selectedKey ===
+                              `solar:${source.stat_energy_from}`
+                            }
+                            .source=${source}
+                            @click=${this._editSource}
                           >
-                          ${
-                            this.info
-                              ? html`
-                                  <ha-icon-button
-                                    .label=${this.hass.localize(
-                                      "ui.panel.config.energy.solar.edit_solar_production"
-                                    )}
-                                    @click=${this._editSource}
-                                    .path=${mdiPencil}
-                                  ></ha-icon-button>
-                                `
-                              : ""
-                          }
-                          <ha-icon-button
-                            .label=${this.hass.localize(
-                              "ui.panel.config.energy.solar.delete_solar_production"
-                            )}
-                            @click=${this._deleteSource}
-                            .path=${mdiDelete}
-                          ></ha-icon-button>
-                        </div>
+                            ${
+                              entityState?.attributes.icon
+                                ? html`<ha-icon
+                                    slot="leading-icon"
+                                    .icon=${entityState.attributes.icon}
+                                  ></ha-icon>`
+                                : html`<ha-svg-icon
+                                    slot="leading-icon"
+                                    .path=${mdiSolarPower}
+                                  ></ha-svg-icon>`
+                            }
+                            <div slot="header" class="row-header">
+                              <span class="label"
+                                >${this._sourceName(source)}</span
+                              >
+                            </div>
+                            <ha-icon-button
+                              slot="icons"
+                              .label=${this.hass.localize(
+                                "ui.panel.config.energy.solar.delete_solar_production"
+                              )}
+                              .path=${mdiDelete}
+                              .source=${source}
+                              @click=${this._deleteSourceClicked}
+                              @keydown=${stopPropagation}
+                            ></ha-icon-button>
+                          </ha-automation-row>
+                        </ha-card>
                       `;
                     })}
                   </div>
                 `
-              : ""
+              : nothing
           }
           ${
             this.info
               ? html`
-                  <div class="row">
-                    <ha-button
-                      @click=${this._addSource}
-                      appearance="filled"
-                      size="s"
-                    >
-                      <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                      ${this.hass.localize(
-                        "ui.panel.config.energy.solar.add_solar_production"
-                      )}
-                    </ha-button>
-                  </div>
+                  <ha-button
+                    @click=${this._addSource}
+                    appearance="filled"
+                    size="s"
+                  >
+                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.solar.add_solar_production"
+                    )}
+                  </ha-button>
                 `
-              : ""
+              : nothing
           }
         </div>
       </ha-card>
     `;
   }
 
+  private _sourceName(source: SolarSourceTypeEnergyPreference) {
+    return (
+      source.name ||
+      getStatisticLabel(
+        this.hass.states,
+        this.hass.formatEntityName,
+        source.stat_energy_from,
+        this.statsMetadata?.[source.stat_energy_from]
+      )
+    );
+  }
+
   private _addSource() {
-    showEnergySettingsSolarDialog(this, {
-      statsMetadata: this.statsMetadata,
-      info: this.info!,
-      solar_sources: this.preferences.energy_sources.filter(
-        (src) => src.type === "solar"
-      ) as SolarSourceTypeEnergyPreference[],
-      saveCallback: async (source) => {
-        await this._savePreferences({
-          ...this.preferences,
-          energy_sources: this.preferences.energy_sources.concat(source),
-        });
-      },
-    });
+    this._openEditor();
   }
 
   private _editSource(ev) {
-    const origSource: SolarSourceTypeEnergyPreference =
-      ev.currentTarget.closest(".row").source;
-    showEnergySettingsSolarDialog(this, {
-      statsMetadata: this.statsMetadata,
-      info: this.info!,
-      source: { ...origSource },
-      solar_sources: this.preferences.energy_sources.filter(
-        (src) => src.type === "solar"
-      ) as SolarSourceTypeEnergyPreference[],
-      saveCallback: async (newSource) => {
-        await this._savePreferences({
-          ...this.preferences,
-          energy_sources: this.preferences.energy_sources.map((src) =>
-            src === origSource ? newSource : src
-          ),
-        });
-      },
-    });
+    if (!this.info) {
+      return;
+    }
+    this._openEditor(ev.currentTarget.source);
   }
 
-  private async _deleteSource(ev) {
-    const sourceToDelete: SolarSourceTypeEnergyPreference =
-      ev.currentTarget.closest(".row").source;
+  private _openEditor(source?: SolarSourceTypeEnergyPreference) {
+    const editor = this._editorConfig(this.preferences, source);
+    if (this.sidebar) {
+      fireEvent(
+        this,
+        "energy-open-sidebar",
+        this._sidebarConfig(editor, source)
+      );
+    } else {
+      showEnergySettingsDialog(this, { hass: this.hass, editor });
+    }
+  }
 
+  private _editorConfig(
+    preferences: EnergyPreferences,
+    source?: SolarSourceTypeEnergyPreference
+  ): EnergyEditorConfig {
+    return {
+      kind: "solar",
+      params: {
+        statsMetadata: this.statsMetadata,
+        info: this.info!,
+        source: source ? { ...source } : undefined,
+        solar_sources: preferences.energy_sources.filter(isSolarSource),
+        saveCallback: (newSource) => this._saveSource(newSource, source),
+      },
+    };
+  }
+
+  private _sourceIndex(source: SolarSourceTypeEnergyPreference) {
+    const sources = this.preferences.energy_sources;
+    const index = sources.indexOf(source);
+    if (index !== -1) {
+      return index;
+    }
+    // Saving anything replaces the preferences while the sidebar stays open
+    return sources.findIndex(
+      (src) =>
+        isSolarSource(src) && src.stat_energy_from === source.stat_energy_from
+    );
+  }
+
+  private _sidebarConfig(
+    editor: EnergyEditorConfig,
+    source?: SolarSourceTypeEnergyPreference
+  ): EnergySidebarConfig {
+    const subtitle = this.hass.localize("ui.panel.config.energy.solar.title");
+    if (!source) {
+      return {
+        editor,
+        title: this.hass.localize(
+          "ui.panel.config.energy.solar.add_solar_production"
+        ),
+        subtitle,
+      };
+    }
+    return {
+      key: `solar:${source.stat_energy_from}`,
+      editor,
+      title: this._sourceName(source),
+      subtitle,
+      delete: {
+        label: this.hass.localize(
+          "ui.panel.config.energy.solar.delete_solar_production"
+        ),
+        action: () => this._deleteSource(source),
+      },
+    };
+  }
+
+  private async _saveSource(
+    source: SolarSourceTypeEnergyPreference,
+    original?: SolarSourceTypeEnergyPreference
+  ) {
+    const sources = [...this.preferences.energy_sources];
+    const index = original ? this._sourceIndex(original) : -1;
+    if (index === -1) {
+      sources.push(source);
+    } else {
+      sources[index] = source;
+    }
+    const result = await this._savePreferences({
+      ...this.preferences,
+      energy_sources: sources,
+    });
+    if (this.sidebar) {
+      const saved = result.energy_sources[
+        index === -1 ? sources.length - 1 : index
+      ] as SolarSourceTypeEnergyPreference;
+      fireEvent(
+        this,
+        "energy-sidebar-saved",
+        this._sidebarConfig(this._editorConfig(result, saved), saved)
+      );
+    }
+  }
+
+  private _deleteSourceClicked(ev) {
+    ev.stopPropagation();
+    this._deleteSource(ev.currentTarget.source);
+  }
+
+  private async _deleteSource(source: SolarSourceTypeEnergyPreference) {
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize("ui.panel.config.energy.delete_source"),
@@ -213,21 +313,34 @@ export class EnergySolarSettings extends LitElement {
       return;
     }
 
+    const index = this._sourceIndex(source);
+    if (index === -1) {
+      return;
+    }
     try {
       await this._savePreferences({
         ...this.preferences,
         energy_sources: this.preferences.energy_sources.filter(
-          (source) => source !== sourceToDelete
+          (_src, idx) => idx !== index
         ),
       });
     } catch (err: any) {
-      showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.energy.save_config_failed", {
+          error: err.message,
+        }),
+      });
+      return;
+    }
+    if (this.selectedKey === `solar:${source.stat_energy_from}`) {
+      fireEvent(this, "energy-close-sidebar");
     }
   }
 
   private async _savePreferences(preferences: EnergyPreferences) {
     const result = await saveEnergyPreferences(this.hass, preferences);
     fireEvent(this, "value-changed", { value: result });
+    return result;
   }
 
   static get styles(): CSSResultGroup {

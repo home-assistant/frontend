@@ -57,4 +57,45 @@ export const energyCardStyles = css`
     flex-direction: column;
     gap: var(--ha-space-2);
   }
+  .items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ha-space-2);
+    margin-bottom: var(--ha-space-3);
+  }
+  .items ha-card {
+    /* The part the open bottom sheet covers, see scrollSelectedRowIntoView */
+    scroll-margin-bottom: var(--energy-bottom-sheet-height, 0px);
+  }
+  ha-automation-row img[slot="leading-icon"] {
+    display: block;
+    height: 24px;
+  }
+  .row-header {
+    /* Two lines fit the row's 48px, which keeps its icons centered */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 48px;
+    padding: var(--ha-space-1) 0;
+  }
+  .row-header .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .row-header .secondary {
+    color: var(--secondary-text-color);
+    font-size: var(--ha-font-size-s);
+    line-height: var(--ha-line-height-condensed);
+  }
+  .handle {
+    display: flex;
+    padding: var(--ha-space-3);
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    color: var(--secondary-text-color);
+  }
 `;

@@ -1,21 +1,18 @@
+import "@home-assistant/webawesome/dist/components/divider/divider";
+import type { ContextType } from "@lit/context";
 import { mdiPlus } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
+import { consume } from "../../../../common/decorators/consume";
 import "../../../../components/entity/ha-statistic-picker";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
-import "../../../../components/ha-dialog";
-import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-svg-icon";
-import "../../../../components/radio/ha-radio-group";
 import "../../../../components/input/ha-input";
-import { domainToName } from "../../../../data/integration";
-import type { HaRadioGroup } from "../../../../components/radio/ha-radio-group";
-import "../../../../components/radio/ha-radio-option";
+import type { HaInput } from "../../../../components/input/ha-input";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import { getConfigEntries } from "../../../../data/config_entries";
 import type { SolarSourceTypeEnergyPreference } from "../../../../data/energy";
@@ -24,47 +21,48 @@ import {
   emptySolarEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
-import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
-import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
-import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
-import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
-import { haStyle, haStyleDialog } from "../../../../resources/styles";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
-import { brandsUrl } from "../../../../util/brands-url";
-import type { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
+import { domainToName } from "../../../../data/integration";
 import {
   getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
 } from "../../../../data/recorder";
-import type { HaInput } from "../../../../components/input/ha-input";
-import type { IntegralUnits } from "./energy-integral";
-import { confirmIntegrals, integralUnits } from "./energy-integral";
-
-interface SolarFormState {
-  source: SolarSourceTypeEnergyPreference;
-  forecast: boolean;
-}
+import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
+import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
+import { entitiesContext, statesContext } from "../../../../data/context";
+import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
+import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import { brandsUrl } from "../../../../util/brands-url";
+import type { IntegralUnits } from "../dialogs/energy-integral";
+import { confirmIntegrals, integralUnits } from "../dialogs/energy-integral";
+import type {
+  EnergyEditorStatus,
+  EnergySolarSourceEditorParams,
+} from "./energy-editor";
+import { EnergyEditorMixin, energyEditorStyles } from "./energy-editor";
 
 const energyUnitClasses = ["energy"];
 const powerUnitClasses = ["power"];
 
-@customElement("dialog-energy-solar-settings")
-export class DialogEnergySolarSettings
-  extends DirtyStateProviderMixin<SolarFormState>()(LitElement)
-  implements HassDialog<EnergySettingsSolarDialogParams>
-{
+@customElement("ha-energy-solar-source-editor")
+export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
+  DirtyStateProviderMixin<SolarSourceTypeEnergyPreference>()(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _params?: EnergySettingsSolarDialogParams;
+  @property({ attribute: false })
+  public params!: EnergySolarSourceEditorParams;
 
-  @state() private _open = false;
+  // Live, so a retry finds the helpers already created
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
 
   @state() private _source?: SolarSourceTypeEnergyPreference;
 
   @state() private _configEntries?: ConfigEntry[];
-
-  @state() private _forecast?: boolean;
 
   @state() private _energy_units?: string[];
 
@@ -78,52 +76,50 @@ export class DialogEnergySolarSettings
 
   private _excludeListPower?: string[];
 
-  public async showDialog(
-    params: EnergySettingsSolarDialogParams
-  ): Promise<void> {
-    this._params = params;
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    if (changedProps.has("params")) {
+      this._init();
+    }
+  }
+
+  private _init() {
+    const params = this.params;
     this._error = undefined;
     this._saving = false;
-    this._fetchSolarForecastConfigEntries();
     this._source = params.source
       ? { ...params.source }
       : emptySolarEnergyPreference();
-    this._forecast = this._source.config_entry_solar_forecast !== null;
-    this._energy_units = (
-      await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
-    ).units;
-    this._power_units = (
-      await getSensorDeviceClassConvertibleUnits(this.hass, "power")
-    ).units;
-    this._excludeList = this._params.solar_sources
+    this._excludeList = params.solar_sources
       .map((entry) => entry.stat_energy_from)
       .filter((id) => id !== this._source?.stat_energy_from);
-    this._excludeListPower = this._params.solar_sources
+    this._excludeListPower = params.solar_sources
       .map((entry) => entry.stat_rate)
       .filter((id) => id && id !== this._source?.stat_rate) as string[];
-
-    this._open = true;
-    this._initDirtyTracking(
-      { type: "deep" },
-      { source: this._source!, forecast: this._forecast! }
-    );
+    this._initDirtyTracking({ type: "deep" }, this._source);
+    this._fetchSolarForecastConfigEntries();
+    this._loadUnits();
   }
 
-  public closeDialog() {
-    this._open = false;
-    return true;
+  private async _loadUnits() {
+    const [energy, power] = await Promise.all([
+      getSensorDeviceClassConvertibleUnits(this.hass, "energy"),
+      getSensorDeviceClassConvertibleUnits(this.hass, "power"),
+    ]);
+    this._energy_units = energy.units;
+    this._power_units = power.units;
   }
 
-  private _dialogClosed() {
-    this._params = undefined;
-    this._source = undefined;
-    this._error = undefined;
-    this._excludeList = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  protected get editorStatus(): EnergyEditorStatus {
+    return {
+      dirty: this.isDirtyState,
+      valid: !!(this._source?.stat_energy_from || this._integralUnits()),
+      saving: this._saving,
+    };
   }
 
   protected render() {
-    if (!this._params || !this._source) {
+    if (!this._source) {
       return nothing;
     }
 
@@ -131,16 +127,12 @@ export class DialogEnergySolarSettings
       this._source.stat_energy_from || this._source.stat_rate;
 
     return html`
-      <ha-dialog
-        .open=${this._open}
-        header-title=${this.hass.localize(
-          "ui.panel.config.energy.solar.dialog.header"
-        )}
-        .preventScrimClose=${this.isDirtyState}
-        @closed=${this._dialogClosed}
-      >
-        ${this._error ? html`<p class="error">${this._error}</p>` : ""}
-
+      ${
+        this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : nothing
+      }
+      <div class="group">
         <ha-statistic-picker
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
@@ -155,77 +147,65 @@ export class DialogEnergySolarSettings
             "ui.panel.config.energy.solar.dialog.entity_para",
             { unit: this._energy_units?.join(", ") || "" }
           )}
-          autofocus
         ></ha-statistic-picker>
-
         <ha-input
           .label=${this.hass.localize(
             "ui.panel.config.energy.solar.dialog.display_name"
           )}
           type="text"
           .disabled=${!labelStatistic || this._saving}
-          .value=${this._source?.name || ""}
+          .value=${this._source.name || ""}
           .placeholder=${
             labelStatistic
               ? getStatisticLabel(
                   this.hass.states,
                   this.hass.formatEntityName,
                   labelStatistic,
-                  this._params?.statsMetadata?.[labelStatistic]
+                  this.params.statsMetadata?.[labelStatistic]
                 )
               : ""
           }
           @input=${this._nameChanged}
         >
         </ha-input>
+      </div>
 
-        <ha-statistic-picker
-          .includeUnitClass=${powerUnitClasses}
-          .value=${this._source.stat_rate}
-          .label=${this.hass.localize(
-            "ui.panel.config.energy.solar.dialog.solar_production_power"
-          )}
-          .excludeStatistics=${this._excludeListPower}
-          @value-changed=${this._powerStatisticChanged}
-          .disabled=${this._saving}
-          .helper=${this.hass.localize(
-            "ui.panel.config.energy.solar.dialog.entity_para",
-            { unit: this._power_units?.join(", ") || "" }
-          )}
-        ></ha-statistic-picker>
+      <wa-divider></wa-divider>
 
-        <h3>
-          ${this.hass.localize(
-            "ui.panel.config.energy.solar.dialog.solar_production_forecast"
-          )}
-        </h3>
-        <p>
-          ${this.hass.localize(
-            "ui.panel.config.energy.solar.dialog.solar_production_forecast_description"
-          )}
-        </p>
+      <ha-statistic-picker
+        .includeUnitClass=${powerUnitClasses}
+        .value=${this._source.stat_rate}
+        .label=${this.hass.localize(
+          "ui.panel.config.energy.solar.dialog.solar_production_power"
+        )}
+        .excludeStatistics=${this._excludeListPower}
+        @value-changed=${this._powerStatisticChanged}
+        .disabled=${this._saving}
+        .helper=${this.hass.localize(
+          "ui.panel.config.energy.solar.dialog.entity_para",
+          { unit: this._power_units?.join(", ") || "" }
+        )}
+      ></ha-statistic-picker>
 
-        <ha-radio-group
-          .value=${this._forecast ? "true" : "false"}
-          .disabled=${this._saving}
-          name="forecast"
-          @change=${this._handleForecastChanged}
-        >
-          <ha-radio-option value="false">
+      <wa-divider></wa-divider>
+
+      <div class="group">
+        <div class="group-header">
+          <h3>
             ${this.hass.localize(
-              "ui.panel.config.energy.solar.dialog.dont_forecast_production"
+              "ui.panel.config.energy.solar.dialog.solar_production_forecast"
             )}
-          </ha-radio-option>
-          <ha-radio-option value="true">
+          </h3>
+          <p>
             ${this.hass.localize(
-              "ui.panel.config.energy.solar.dialog.forecast_production"
+              "ui.panel.config.energy.solar.dialog.solar_production_forecast_description"
             )}
-          </ha-radio-option>
-        </ha-radio-group>
+          </p>
+        </div>
         ${
-          this._forecast
+          this._configEntries?.length
             ? html`<div class="forecast-options">
-                ${this._configEntries?.map(
+                ${this._configEntries.map(
                   (entry) =>
                     html`<ha-checkbox
                       .entry=${entry}
@@ -235,12 +215,11 @@ export class DialogEnergySolarSettings
                         entry.entry_id
                       )}
                     >
-                      <div style="display: flex; align-items: center;">
+                      <div class="forecast-option">
                         <img
                           alt=""
                           crossorigin="anonymous"
                           referrerpolicy="no-referrer"
-                          style="height: 24px; margin-right: 16px; margin-inline-end: 16px; margin-inline-start: initial;"
                           src=${brandsUrl(
                             {
                               domain: entry.domain,
@@ -253,48 +232,26 @@ export class DialogEnergySolarSettings
                       </div>
                     </ha-checkbox>`
                 )}
-                <ha-button
-                  appearance="filled"
-                  size="s"
-                  @click=${this._addForecast}
-                  .disabled=${this._saving}
-                >
-                  <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
-                  ${this.hass.localize(
-                    "ui.panel.config.energy.solar.dialog.add_forecast"
-                  )}
-                </ha-button>
               </div>`
-            : ""
+            : nothing
         }
-
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            appearance="plain"
-            @click=${this.closeDialog}
-            slot="secondaryAction"
-          >
-            ${this.hass.localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button
-            @click=${this._save}
-            .disabled=${
-              this._saving ||
-              !(this._source!.stat_energy_from || this._integralUnits()) ||
-              (!!this._params?.source && !this.isDirtyState)
-            }
-            .loading=${this._saving}
-            slot="primaryAction"
-          >
-            ${this.hass.localize("ui.common.save")}
-          </ha-button>
-        </ha-dialog-footer>
-      </ha-dialog>
+        <ha-button
+          appearance="filled"
+          size="s"
+          @click=${this._addForecast}
+          .disabled=${this._saving}
+        >
+          <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
+          ${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.add_forecast"
+          )}
+        </ha-button>
+      </div>
     `;
   }
 
   private async _fetchSolarForecastConfigEntries() {
-    const domains = this._params!.info.solar_forecast_domains;
+    const domains = this.params.info.solar_forecast_domains;
     this._configEntries =
       domains.length === 0
         ? []
@@ -306,11 +263,6 @@ export class DialogEnergySolarSettings
           : (await getConfigEntries(this.hass, { type: ["service"] })).filter(
               (entry) => domains.includes(entry.domain)
             );
-  }
-
-  private _handleForecastChanged(ev: HASSDomCurrentTargetEvent<HaRadioGroup>) {
-    this._forecast = (ev.currentTarget as HaRadioGroup).value === "true";
-    this._updateFormDirtyState();
   }
 
   private _forecastCheckChanged(ev) {
@@ -325,8 +277,11 @@ export class DialogEnergySolarSettings
     } else {
       list.splice(list.indexOf(entry.entry_id), 1);
     }
-    this._source = { ...this._source!, config_entry_solar_forecast: list };
-    this._updateFormDirtyState();
+    this._source = {
+      ...this._source!,
+      config_entry_solar_forecast: list.length ? list : null,
+    };
+    this._updateDirtyState(this._source);
   }
 
   private _addForecast() {
@@ -343,7 +298,7 @@ export class DialogEnergySolarSettings
             config_entry_solar_forecast: list,
           };
           this._fetchSolarForecastConfigEntries();
-          this._updateFormDirtyState();
+          this._updateDirtyState(this._source);
         }
       },
     });
@@ -351,26 +306,26 @@ export class DialogEnergySolarSettings
 
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_energy_from: ev.detail.value };
+    this._updateDirtyState(this._source);
     if (
       ev.detail.value &&
       isExternalStatistic(ev.detail.value) &&
-      this._params?.statsMetadata &&
-      !(ev.detail.value in this._params.statsMetadata)
+      this.params.statsMetadata &&
+      !(ev.detail.value in this.params.statsMetadata)
     ) {
       const [metadata] = await getStatisticMetadata(this.hass.callWS, [
         ev.detail.value,
       ]);
       if (metadata) {
-        this._params.statsMetadata[ev.detail.value] = metadata;
-        this.requestUpdate("_params");
+        this.params.statsMetadata[ev.detail.value] = metadata;
+        this.requestUpdate();
       }
     }
-    this._updateFormDirtyState();
   }
 
   private _powerStatisticChanged(ev: ValueChangedEvent<string>) {
     this._source = { ...this._source!, stat_rate: ev.detail.value };
-    this._updateFormDirtyState();
+    this._updateDirtyState(this._source);
   }
 
   private _nameChanged(ev: InputEvent) {
@@ -381,14 +336,7 @@ export class DialogEnergySolarSettings
     if (!this._source.name) {
       delete this._source.name;
     }
-    this._updateFormDirtyState();
-  }
-
-  private _updateFormDirtyState(): void {
-    this._updateDirtyState({
-      source: this._source!,
-      forecast: this._forecast!,
-    });
+    this._updateDirtyState(this._source);
   }
 
   private _integralUnits(): IntegralUnits | undefined {
@@ -402,40 +350,37 @@ export class DialogEnergySolarSettings
     );
   }
 
-  private async _save() {
-    // Closing or reopening the dialog replaces its state, but a created helper
-    // must still be saved with the submitted source
-    const params = this._params!;
-    const forecast = this._forecast;
+  public async save(): Promise<boolean> {
+    // The editor can be replaced while saving, but a created helper must still
+    // be saved with the submitted source
+    const params = this.params;
     let source = this._source!;
-    const isCurrent = () => this._params === params;
+    const isCurrent = () => this.params === params && this.isConnected;
     this._error = undefined;
     this._saving = true;
     try {
       if (!source.stat_energy_from) {
         const statEnergyFrom = await this._energyFromPower(source);
         if (!statEnergyFrom) {
-          return;
+          return false;
         }
         source = { ...source, stat_energy_from: statEnergyFrom };
         if (isCurrent()) {
           // Keep edits made meanwhile, only fill in the new energy sensor
           this._source = { ...this._source!, stat_energy_from: statEnergyFrom };
-          this._updateFormDirtyState();
+          this._updateDirtyState(this._source);
         }
-      }
-      if (!forecast) {
-        source = { ...source, config_entry_solar_forecast: null };
       }
       await params.saveCallback(source);
       if (isCurrent()) {
         this._markDirtyStateClean();
-        this.closeDialog();
       }
+      return true;
     } catch (err: any) {
       if (isCurrent()) {
         this._error = err.message;
       }
+      return false;
     } finally {
       if (isCurrent()) {
         this._saving = false;
@@ -453,8 +398,8 @@ export class DialogEnergySolarSettings
     }
     const sensors = await confirmIntegrals(this, this.hass, {
       deviceClass: "energy",
-      states: this.hass.states,
-      entities: this.hass.entities,
+      states: this._states,
+      entities: this._entities,
       requests: [
         {
           rate: statRate,
@@ -466,7 +411,7 @@ export class DialogEnergySolarSettings
                 this.hass.states,
                 this.hass.formatEntityName,
                 statRate,
-                this._params?.statsMetadata?.[statRate],
+                this.params.statsMetadata?.[statRate],
                 draft.name
               ),
             }
@@ -477,46 +422,35 @@ export class DialogEnergySolarSettings
         "ui.panel.config.energy.solar.dialog.energy_sensor_needed"
       ),
       exclude: this._excludeList,
-      statsMetadata: this._params?.statsMetadata,
+      statsMetadata: this.params.statsMetadata,
     });
     return sensors?.[0];
   }
 
   static get styles(): CSSResultGroup {
     return [
-      haStyle,
-      haStyleDialog,
+      energyEditorStyles,
       css`
-        ha-statistic-picker {
-          display: block;
-          margin-bottom: var(--ha-space-4);
-        }
-        img {
-          height: 24px;
-          margin-right: 16px;
-          margin-inline-end: 16px;
-          margin-inline-start: initial;
-        }
-        ha-statistic-picker {
-          width: 100%;
-        }
-        ha-radio-group {
-          margin-bottom: var(--ha-space-3);
-        }
         .forecast-options {
           display: flex;
           flex-direction: column;
           min-width: 0;
           gap: var(--ha-space-2);
-          margin-inline-start: var(--ha-space-3);
-        }
-        .forecast-options ha-button {
-          margin-top: var(--ha-space-4);
-          width: fit-content;
         }
         .forecast-options ha-checkbox {
           justify-content: center;
           min-height: 40px;
+        }
+        .forecast-option {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-4);
+        }
+        .forecast-option img {
+          height: 24px;
+        }
+        ha-button {
+          width: fit-content;
         }
       `,
     ];
@@ -525,6 +459,6 @@ export class DialogEnergySolarSettings
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-energy-solar-settings": DialogEnergySolarSettings;
+    "ha-energy-solar-source-editor": HaEnergySolarSourceEditor;
   }
 }
