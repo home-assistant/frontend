@@ -40,8 +40,9 @@ import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
-import "./ha-list-item";
+import "./item/ha-list-item-button";
 import "./item/ha-list-item-option";
+import "./list/ha-list-base";
 import "./list/ha-list-selectable";
 
 @customElement("ha-filter-categories")
@@ -226,10 +227,16 @@ export class HaFilterCategories extends LitElement {
                       </ha-list-item-option>`
                   )}
                 </ha-list-selectable>
-                <ha-list-item graphic="icon" @click=${this._addCategory}>
-                  <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
-                  ${this._localize("ui.panel.config.category.editor.add")}
-                </ha-list-item>
+                <ha-list-base>
+                  <ha-list-item-button @click=${this._addCategory}>
+                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                    <span slot="headline"
+                      >${this._localize(
+                        "ui.panel.config.category.editor.add"
+                      )}</span
+                    >
+                  </ha-list-item-button>
+                </ha-list-base>
               </div>
             `
           : nothing
@@ -388,9 +395,6 @@ export class HaFilterCategories extends LitElement {
         }
         ha-list-item-option ha-icon-button {
           --ha-icon-button-size: 32px;
-        }
-        ha-list-item {
-          --mdc-list-item-graphic-margin: var(--ha-space-4);
         }
         ha-dropdown-item {
           font-size: var(--ha-font-size-m);

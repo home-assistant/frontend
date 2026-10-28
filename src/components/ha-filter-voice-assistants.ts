@@ -1,4 +1,3 @@
-import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -12,13 +11,13 @@ import {
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
-import { haStyleScrollbar } from "../resources/styles";
-import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-icon-button";
-import "./ha-label";
-import "./ha-list";
+import "./item/ha-list-item-option";
+import type { HaListItemOption } from "./item/ha-list-item-option";
+import "./list/ha-list-selectable";
+import type { HaListSelectable } from "./list/ha-list-selectable";
 import "./voice-assistant-brand-icon";
 import { voiceAssistants } from "../data/expose";
 
@@ -64,30 +63,35 @@ export class HaFilterVoiceAssistants extends LitElement {
       ${
         this._panel.showContent
           ? html`<div class="content" ${ref(this._content)}>
-              <ha-list
-                @selected=${this._assistantsSelected}
-                class="ha-scrollbar"
+              <ha-list-selectable
                 multi
+                aria-label=${this._localize(
+                  "ui.panel.config.dashboard.voice_assistants.main"
+                )}
+                @ha-list-item-selected=${this._handleItemToggled}
+                @ha-list-item-deselected=${this._handleItemToggled}
               >
                 ${repeat(
                   this._voiceAssistantOptions,
                   (voiceAssistantId) => voiceAssistantId,
                   (voiceAssistantId) =>
-                    html`<ha-check-list-item
+                    html`<ha-list-item-option
+                      appearance="checkbox"
+                      selection-position="end"
                       .value=${voiceAssistantId}
-                      .selected=${(this.value || []).includes(voiceAssistantId)}
-                      hasMeta
-                      graphic="icon"
+                      .selected=${this.value?.includes(voiceAssistantId) ?? false}
                     >
                       <voice-assistant-brand-icon
-                        slot="graphic"
+                        slot="start"
                         .voiceAssistantId=${voiceAssistantId}
                       >
                       </voice-assistant-brand-icon>
-                      ${voiceAssistants[voiceAssistantId].name}
-                    </ha-check-list-item>`
+                      <span slot="headline"
+                        >${voiceAssistants[voiceAssistantId].name}</span
+                      >
+                    </ha-list-item-option>`
                 )}
-              </ha-list>
+              </ha-list-selectable>
             </div>`
           : nothing
       }
@@ -103,23 +107,19 @@ export class HaFilterVoiceAssistants extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private async _assistantsSelected(
-    ev: CustomEvent<SelectedDetail<Set<number>>>
-  ) {
-    if (!ev.detail.index) {
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
-      this.value = [];
+  private _handleItemToggled(ev: CustomEvent<number>) {
+    const option = (ev.currentTarget as HaListSelectable).items[ev.detail] as
+      HaListItemOption | undefined;
+    const voiceAssistantId = option?.value;
+    if (!voiceAssistantId) {
       return;
     }
 
-    const newvalue: string[] = [];
-    for (const index of ev.detail.index) {
-      newvalue.push(this._voiceAssistantOptions![index]);
+    const value = (this.value ?? []).filter((v) => v !== voiceAssistantId);
+    if (ev.type === "ha-list-item-selected") {
+      value.push(voiceAssistantId);
     }
-    this.value = newvalue;
+    this.value = value;
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,
@@ -138,10 +138,14 @@ export class HaFilterVoiceAssistants extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyleScrollbar,
       filterPanelStyles,
       css`
-        ha-list {
+        ha-list-selectable {
+          display: flex;
+          flex: 1;
+          min-height: 0;
+        }
+        ha-list-selectable::part(base) {
           flex: 1;
           min-height: 0;
         }
@@ -152,9 +156,6 @@ export class HaFilterVoiceAssistants extends LitElement {
         .header ha-icon-button {
           margin-inline-start: auto;
           margin-inline-end: 8px;
-        }
-        ha-check-list-item {
-          --mdc-list-item-graphic-margin: var(--ha-space-4);
         }
         .badge {
           display: inline-block;

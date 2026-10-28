@@ -1,5 +1,4 @@
 import type { ContextType } from "@lit/context";
-import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -19,11 +18,12 @@ import { fetchBlueprints } from "../data/blueprint";
 import { apiContext } from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
-import { haStyleScrollbar } from "../resources/styles";
-import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon-button";
-import "./ha-list";
+import "./item/ha-list-item-option";
+import type { HaListItemOption } from "./item/ha-list-item-option";
+import "./list/ha-list-selectable";
+import type { HaListSelectable } from "./list/ha-list-selectable";
 
 @customElement("ha-filter-blueprints")
 export class HaFilterBlueprints extends LitElement {
@@ -88,23 +88,30 @@ export class HaFilterBlueprints extends LitElement {
                 ${
                   this._blueprints
                     ? html`
-                        <ha-list
-                          @selected=${this._blueprintsSelected}
+                        <ha-list-selectable
                           multi
-                          class="ha-scrollbar"
+                          aria-label=${this._localize(
+                            "ui.panel.config.blueprint.caption"
+                          )}
+                          @ha-list-item-selected=${this._handleItemToggled}
+                          @ha-list-item-deselected=${this._handleItemToggled}
                         >
                           ${Object.entries(this._blueprints).map(
                             ([id, blueprint]) =>
                               "error" in blueprint
                                 ? nothing
-                                : html`<ha-check-list-item
+                                : html`<ha-list-item-option
+                                    appearance="checkbox"
+                                    selection-position="end"
                                     .value=${id}
-                                    .selected=${(this.value || []).includes(id)}
+                                    .selected=${this.value?.includes(id) ?? false}
                                   >
-                                    ${blueprint.metadata.name || id}
-                                  </ha-check-list-item>`
+                                    <span slot="headline"
+                                      >${blueprint.metadata.name || id}</span
+                                    >
+                                  </ha-list-item-option>`
                           )}
-                        </ha-list>
+                        </ha-list-selectable>
                       `
                     : nothing
                 }
@@ -126,27 +133,18 @@ export class HaFilterBlueprints extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private async _blueprintsSelected(
-    ev: CustomEvent<SelectedDetail<Set<number>>>
-  ) {
-    const blueprints = this._blueprints!;
-
-    if (!ev.detail.index.size) {
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
-      this.value = [];
+  private _handleItemToggled(ev: CustomEvent<number>) {
+    const option = (ev.currentTarget as HaListSelectable).items[ev.detail] as
+      HaListItemOption | undefined;
+    const blueprintId = option?.value;
+    if (!blueprintId) {
       return;
     }
 
-    const value: string[] = [];
-
-    for (const index of ev.detail.index) {
-      const blueprintId = Object.keys(blueprints)[index];
+    const value = (this.value ?? []).filter((id) => id !== blueprintId);
+    if (ev.type === "ha-list-item-selected") {
       value.push(blueprintId);
     }
-
     this.value = value;
   }
 
@@ -202,10 +200,14 @@ export class HaFilterBlueprints extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyleScrollbar,
       filterPanelStyles,
       css`
-        ha-list {
+        ha-list-selectable {
+          display: flex;
+          flex: 1;
+          min-height: 0;
+        }
+        ha-list-selectable::part(base) {
           flex: 1;
           min-height: 0;
         }

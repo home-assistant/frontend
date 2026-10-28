@@ -1,20 +1,21 @@
-import type { SelectedDetail } from "@material/mwc-list";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { createRef, ref } from "lit/directives/ref";
 import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { fireEvent } from "../common/dom/fire_event";
-import { haStyleScrollbar } from "../resources/styles";
-import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
 import "./ha-icon-button";
-import "./ha-list";
+import "./item/ha-list-item-option";
+import type { HaListItemOption } from "./item/ha-list-item-option";
+import "./list/ha-list-selectable";
+import type { HaListSelectable } from "./list/ha-list-selectable";
 
 @customElement("ha-filter-states")
 export class HaFilterStates extends LitElement {
@@ -40,7 +41,6 @@ export class HaFilterStates extends LitElement {
     if (!this.states) {
       return nothing;
     }
-    const hasIcon = this.states.find((item) => item.icon);
     return html`
       <ha-expansion-panel
         left-chevron
@@ -64,30 +64,32 @@ export class HaFilterStates extends LitElement {
         this._panel.showContent
           ? html`
               <div class="content" ${ref(this._content)}>
-                <ha-list
-                  @selected=${this._statesSelected}
+                <ha-list-selectable
                   multi
-                  class="ha-scrollbar"
+                  aria-label=${ifDefined(this.label)}
+                  @ha-list-item-selected=${this._handleItemToggled}
+                  @ha-list-item-deselected=${this._handleItemToggled}
                 >
                   ${this.states.map(
                     (item) =>
-                      html`<ha-check-list-item
+                      html`<ha-list-item-option
+                        appearance="checkbox"
+                        selection-position="end"
                         .value=${item.value}
                         .selected=${this.value?.includes(item.value) ?? false}
-                        .graphic=${hasIcon ? "icon" : null}
                       >
                         ${
                           item.icon
                             ? html`<ha-icon
-                                slot="graphic"
+                                slot="start"
                                 .icon=${item.icon}
                               ></ha-icon>`
                             : nothing
                         }
-                        ${item.label}
-                      </ha-check-list-item>`
+                        <span slot="headline">${item.label}</span>
+                      </ha-list-item-option>`
                   )}
-                </ha-list>
+                </ha-list-selectable>
               </div>
             `
           : nothing
@@ -99,21 +101,17 @@ export class HaFilterStates extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private async _statesSelected(ev: CustomEvent<SelectedDetail<Set<number>>>) {
-    if (!ev.detail.index.size) {
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
-      this.value = [];
+  private _handleItemToggled(ev: CustomEvent<number>) {
+    const option = (ev.currentTarget as HaListSelectable).items[ev.detail] as
+      HaListItemOption | undefined;
+    const state = option?.value;
+    if (!state) {
       return;
     }
 
-    const value: string[] = [];
-
-    for (const index of ev.detail.index) {
-      const val = this.states![index].value;
-      value.push(val);
+    const value = (this.value ?? []).filter((v) => v !== state);
+    if (ev.type === "ha-list-item-selected") {
+      value.push(state);
     }
     this.value = value;
 
@@ -134,10 +132,14 @@ export class HaFilterStates extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyleScrollbar,
       filterPanelStyles,
       css`
-        ha-list {
+        ha-list-selectable {
+          display: flex;
+          flex: 1;
+          min-height: 0;
+        }
+        ha-list-selectable::part(base) {
           flex: 1;
           min-height: 0;
         }
