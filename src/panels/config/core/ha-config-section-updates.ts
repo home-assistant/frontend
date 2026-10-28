@@ -96,7 +96,10 @@ class HaConfigSectionUpdates extends SubscribeMixin(LitElement) {
 
   private async _loadEntitySources() {
     try {
-      this._entitySources = await fetchEntitySourcesWithCache(this.hass);
+      this._entitySources = await fetchEntitySourcesWithCache(
+        this.hass.callWS,
+        this.hass.states
+      );
     } catch (_err) {
       // Non-fatal: grouping falls back to entity registry platform lookup.
     }

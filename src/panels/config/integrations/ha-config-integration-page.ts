@@ -268,7 +268,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchEntitySources() {
-    const entitySources = await fetchEntitySourcesWithCache(this.hass);
+    const entitySources = await fetchEntitySourcesWithCache(
+      this.hass.callWS,
+      this.hass.states
+    );
 
     const entitiesByDomain = {};
 

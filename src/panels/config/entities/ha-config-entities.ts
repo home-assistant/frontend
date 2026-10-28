@@ -1164,9 +1164,11 @@ export class HaConfigEntities extends LitElement {
 
   protected firstUpdated() {
     this._fetchExposedEntities();
-    fetchEntitySourcesWithCache(this.hass).then((sources) => {
-      this._entitySources = sources;
-    });
+    fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states).then(
+      (sources) => {
+        this._entitySources = sources;
+      }
+    );
   }
 
   // Links, like the ones on a device or integration page, say in the URL what

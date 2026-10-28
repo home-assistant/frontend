@@ -1252,7 +1252,7 @@ ${rejected
 
   private async _fetchEntitySources() {
     const [entitySources, fetchedManifests] = await Promise.all([
-      fetchEntitySourcesWithCache(this.hass),
+      fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states),
       fetchIntegrationManifests(this.hass),
     ]);
 
