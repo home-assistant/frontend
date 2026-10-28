@@ -5,6 +5,7 @@ import {
   logsLinkFromUrl,
   logsQueryParamConfig,
   logsQueryParams,
+  type LogsState,
 } from "../../../src/common/url/logs-query-params";
 import {
   createQueryString,
@@ -30,15 +31,24 @@ describe("logs query params", () => {
       provider: "core",
       search: "timeout",
       integrations: ["hue", "mqtt"],
+      levels: [],
       raw: false,
     });
     expect(logsLinkFromUrl("?provider=supervisor")).toEqual({
       provider: "supervisor",
       search: "",
       integrations: [],
+      levels: [],
       raw: false,
     });
     expect(logsLinkFromUrl("?integration=hue&raw=1")?.raw).toBe(true);
+  });
+
+  it("reads the known levels of a link", () => {
+    expect(logsLinkFromUrl("?level=error,verbose,warning")?.levels).toEqual([
+      "error",
+      "warning",
+    ]);
   });
 
   it("reads the old filter name as the search", () => {
@@ -46,9 +56,12 @@ describe("logs query params", () => {
     expect(logsLinkFromUrl("?search=new&filter=old")?.search).toBe("new");
   });
 
-  it("ignores integrations and the raw view for other providers", () => {
-    const link = logsLinkFromUrl("?provider=supervisor&integration=hue&raw=1");
+  it("ignores integrations, levels and the raw view for other providers", () => {
+    const link = logsLinkFromUrl(
+      "?provider=supervisor&integration=hue&level=error&raw=1"
+    );
     expect(link?.integrations).toEqual([]);
+    expect(link?.levels).toEqual([]);
     expect(link?.raw).toBe(false);
   });
 
@@ -59,6 +72,7 @@ describe("logs query params", () => {
           provider: "core",
           search: "",
           integrations: [],
+          levels: [],
           raw: false,
         }),
         logsQueryParamConfig
@@ -74,6 +88,7 @@ describe("logs query params", () => {
           provider: "core",
           search: "old",
           integrations: [],
+          levels: [],
           raw: false,
         }),
         logsQueryParamConfig
@@ -82,10 +97,11 @@ describe("logs query params", () => {
   });
 
   it("round trips the state", () => {
-    const state = {
+    const state: LogsState = {
       provider: "core",
       search: "timeout",
       integrations: ["hue", "mqtt"],
+      levels: ["critical", "error"],
       raw: true,
     };
     expect(

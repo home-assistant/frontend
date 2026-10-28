@@ -1,14 +1,9 @@
 import type { ContextType } from "@lit/context";
 import {
-  mdiAlert,
-  mdiAlertCircle,
-  mdiAlertOctagon,
-  mdiBugOutline,
   mdiChevronDown,
   mdiChip,
   mdiDns,
   mdiFilterVariant,
-  mdiInformationOutline,
   mdiPackageVariant,
   mdiPuzzle,
   mdiRadar,
@@ -67,22 +62,14 @@ import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route, ValueChangedEvent } from "../../../types";
 import "./error-log-card";
+import "./ha-filter-log-levels";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
+import { LOG_LEVELS } from "./util";
 
 const NO_INTEGRATIONS: string[] = [];
 
-const LOG_LEVELS: {
-  level: SystemLogLevel;
-  path: string;
-  color?: string;
-}[] = [
-  { level: "critical", path: mdiAlertOctagon, color: "var(--error-color)" },
-  { level: "error", path: mdiAlertCircle, color: "var(--error-color)" },
-  { level: "warning", path: mdiAlert, color: "var(--warning-color)" },
-  { level: "info", path: mdiInformationOutline },
-  { level: "debug", path: mdiBugOutline },
-];
+const NO_LEVELS: SystemLogLevel[] = [];
 
 const logProviders: LogProvider[] = [
   {
@@ -144,6 +131,10 @@ export class HaConfigLogs extends LitElement {
 
   @state() private _integrationsExpanded = true;
 
+  @state() private _levels: SystemLogLevel[] = [];
+
+  @state() private _levelsExpanded = true;
+
   @state() private _logItems?: LoggedError[];
 
   // What the user picked, shown again when the page is opened without params,
@@ -163,6 +154,14 @@ export class HaConfigLogs extends LitElement {
     subscribe: false,
   })
   private _storedIntegrations: string[] = [];
+
+  @storage({
+    storage: "sessionStorage",
+    key: "logs-levels",
+    state: false,
+    subscribe: false,
+  })
+  private _storedLevels: SystemLogLevel[] = [];
 
   @storage({ key: "logs-raw", state: false, subscribe: false })
   private _storedRaw = false;
@@ -217,6 +216,8 @@ export class HaConfigLogs extends LitElement {
   protected render(): TemplateResult {
     const core = this._selectedLogProvider === DEFAULT_LOG_PROVIDER;
     const integrations = core ? this._integrations : NO_INTEGRATIONS;
+    const levels = core && !this._detail ? this._levels : NO_LEVELS;
+    const filterCount = integrations.length + levels.length;
     const filtersShown = core && this._showFilters;
     const filtersLabel = this.hass.localize(
       "ui.components.subpage-data-table.filters"
@@ -267,9 +268,9 @@ export class HaConfigLogs extends LitElement {
             filtersShown
               ? html`<ha-filter-pane
                   .narrow=${this.narrow}
-                  .count=${this._integrations.length}
+                  .count=${filterCount}
                   @close-filter-pane=${this._closeFilters}
-                  @clear-filter=${this._clearIntegrations}
+                  @clear-filter=${this._clearFilters}
                 >
                   <ha-filter-integrations
                     .narrow=${this.narrow}
@@ -287,6 +288,17 @@ export class HaConfigLogs extends LitElement {
                     @data-table-filter-changed=${this._integrationsChanged}
                     @expanded-changed=${this._integrationsExpandedChanged}
                   ></ha-filter-integrations>
+                  ${
+                    this._detail
+                      ? nothing
+                      : html`<ha-filter-log-levels
+                          .value=${this._levels}
+                          .expanded=${this._levelsExpanded}
+                          .counts=${this._getLevelCounts(this._logItems)}
+                          @data-table-filter-changed=${this._levelsChanged}
+                          @expanded-changed=${this._levelsExpandedChanged}
+                        ></ha-filter-log-levels>`
+                  }
                 </ha-filter-pane>`
               : nothing
           }
@@ -297,8 +309,8 @@ export class HaConfigLogs extends LitElement {
                   ? html`<ha-filter-pane-chip
                       .label=${filtersLabel}
                       .path=${mdiFilterVariant}
-                      .count=${this._integrations.length}
-                      .active=${this._integrations.length > 0}
+                      .count=${filterCount}
+                      .active=${filterCount > 0}
                       @click=${this._toggleFilters}
                     ></ha-filter-pane-chip>`
                   : nothing
@@ -328,6 +340,7 @@ export class HaConfigLogs extends LitElement {
                           integrations,
                           this._manifests
                         )}
+                        .levels=${levels}
                         @switch-log-view=${this._showDetail}
                         @system-log-items-changed=${this._logItemsChanged}
                       ></system-log-card>
@@ -374,8 +387,10 @@ export class HaConfigLogs extends LitElement {
     this._selectedLogProvider = provider;
     this._filter = "";
     this._integrations = [];
+    this._levels = [];
     this._storedSearch = "";
     this._storedIntegrations = [];
+    this._storedLevels = [];
     // Keep the search typed so far on the entry Back returns to
     this._queryParams.flush();
     // Picking another provider is a navigation of its own, so Back returns
@@ -385,6 +400,7 @@ export class HaConfigLogs extends LitElement {
         provider,
         search: "",
         integrations: [],
+        levels: [],
         raw: this._detail,
       }),
       logsQueryParamConfig
@@ -422,11 +438,22 @@ export class HaConfigLogs extends LitElement {
     this._writeUrl();
   }
 
-  private _clearIntegrations() {
+  private _clearFilters() {
+    const core = this._currentProvider() === DEFAULT_LOG_PROVIDER;
+
     this._integrations = [];
 
-    if (this._currentProvider() === DEFAULT_LOG_PROVIDER) {
+    if (core) {
       this._storedIntegrations = [];
+    }
+
+    // Levels don't apply to the raw log, so they're kept for the errors view
+    if (!this._detail) {
+      this._levels = [];
+
+      if (core) {
+        this._storedLevels = [];
+      }
     }
     this._writeUrl();
   }
@@ -435,6 +462,30 @@ export class HaConfigLogs extends LitElement {
     ev: HASSDomEvent<{ expanded: boolean }>
   ) {
     this._integrationsExpanded = ev.detail.expanded;
+  }
+
+  private _levelsChanged(ev: HASSDomEvent<{ value: DataTableFiltersValue }>) {
+    ev.stopPropagation();
+
+    const value = ev.detail.value;
+
+    const levels = Array.isArray(value)
+      ? LOG_LEVELS.map((item) => item.level).filter((level) =>
+          value.includes(level)
+        )
+      : [];
+
+    this._levels = levels;
+
+    if (this._currentProvider() === DEFAULT_LOG_PROVIDER) {
+      this._storedLevels = levels;
+    }
+
+    this._writeUrl();
+  }
+
+  private _levelsExpandedChanged(ev: HASSDomEvent<{ expanded: boolean }>) {
+    this._levelsExpanded = ev.detail.expanded;
   }
 
   // Until the apps are loaded, the provider is the one the URL asks for
@@ -454,6 +505,7 @@ export class HaConfigLogs extends LitElement {
       provider: this._currentProvider(),
       search: this._filter,
       integrations: this._integrations,
+      levels: this._levels,
       raw: this._detail,
     };
   }
@@ -510,6 +562,7 @@ export class HaConfigLogs extends LitElement {
               ...DEFAULT_LOGS_STATE,
               search: this._storedSearch,
               integrations: this._storedIntegrations,
+              levels: this._storedLevels,
               raw: this._storedRaw,
             }
           : DEFAULT_LOGS_STATE
@@ -532,6 +585,10 @@ export class HaConfigLogs extends LitElement {
       this._filter = link.search;
       if (link.provider === DEFAULT_LOG_PROVIDER) {
         this._detail = link.raw;
+      }
+
+      if (!deepEqual(link.levels, this._levels)) {
+        this._levels = link.levels;
       }
       const integrations = link.integrations.filter((domain) =>
         loaded.includes(domain)
@@ -595,6 +652,24 @@ export class HaConfigLogs extends LitElement {
             ...(manifests?.[domain]?.loggers ?? []),
           ])
         : undefined
+  );
+
+  private _getLevelCounts = memoizeOne(
+    (
+      items: LoggedError[] | undefined
+    ): Partial<Record<SystemLogLevel, number>> | undefined => {
+      if (!items) {
+        return undefined;
+      }
+
+      const counts: Partial<Record<SystemLogLevel, number>> = {};
+
+      for (const item of items) {
+        counts[item.level] = (counts[item.level] ?? 0) + 1;
+      }
+
+      return counts;
+    }
   );
 
   // Matches entries to integrations by logger name, the same way
