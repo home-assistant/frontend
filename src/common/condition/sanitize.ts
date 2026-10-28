@@ -2,7 +2,7 @@ import type { VisibilityCondition } from "../../panels/lovelace/common/validate-
 import { ensureArray } from "../array/ensure-array";
 
 // YAML dashboards can hold entries like `- ` (null) or a bare string.
-export const isConditionObject = (c: unknown): c is VisibilityCondition =>
+const isConditionObject = (c: unknown): c is VisibilityCondition =>
   typeof c === "object" && c !== null;
 
 /**

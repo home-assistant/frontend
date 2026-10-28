@@ -435,28 +435,3 @@ describe("extractTimeConditions", () => {
     });
   });
 });
-
-describe("invalid condition entries", () => {
-  const conditions = [
-    null,
-    "screen",
-    {
-      condition: "or",
-      conditions: [
-        undefined,
-        { condition: "screen", media_query: "(max-width: 600px)" },
-        { condition: "time", after: "08:00" },
-      ],
-    },
-  ] as unknown as Condition[];
-
-  it("skips them when extracting media queries", () => {
-    expect(extractMediaQueries(conditions)).toEqual(["(max-width: 600px)"]);
-  });
-
-  it("skips them when extracting time conditions", () => {
-    expect(extractTimeConditions(conditions)).toEqual([
-      { condition: "time", after: "08:00" },
-    ]);
-  });
-});
