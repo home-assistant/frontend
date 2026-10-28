@@ -170,10 +170,10 @@ export class HaAutomationRowTargets extends LitElement {
     }
     this._loadingCompositeSplits = true;
     try {
-      this._compositeSplits = await fetchDeviceCompositeSplits({
-        connection: this._connection.connection,
-        callWS: this._api.callWS,
-      });
+      this._compositeSplits = await fetchDeviceCompositeSplits(
+        this._connection.connection,
+        this._api.callWS
+      );
     } catch (_err) {
       this._compositeSplits = {};
     } finally {

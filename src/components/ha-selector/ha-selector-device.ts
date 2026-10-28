@@ -1,12 +1,17 @@
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import {
+  consume,
+  ContextSubscriptionController,
+} from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { ConfigEntry } from "../../data/config_entries";
-import { getConfigEntries } from "../../data/config_entries";
+import { configEntriesContext, registriesContext } from "../../data/context";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
 import type { DeviceSelector } from "../../data/selector";
@@ -20,13 +25,14 @@ import "../device/ha-devices-picker";
 
 @customElement("ha-selector-device")
 export class HaDeviceSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: DeviceSelector;
+
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
 
   @state() private _configEntries?: ConfigEntry[];
 
-  private _fetchedConfigEntries = false;
+  private _configEntriesConsumer?: ContextSubscriptionController<ConfigEntry[]>;
 
   @property() public value?: any;
 
@@ -67,6 +73,15 @@ export class HaDeviceSelector extends LitElement {
   }
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
+    if (!this._configEntriesConsumer && this._hasIntegration(this.selector)) {
+      this._configEntriesConsumer = new ContextSubscriptionController(
+        this,
+        configEntriesContext,
+        (entries) => {
+          this._configEntries = entries;
+        }
+      );
+    }
     if (changedProperties.get("selector") && this.value !== undefined) {
       if (this.selector.device?.multiple && !Array.isArray(this.value)) {
         this.value = [this.value];
@@ -78,20 +93,6 @@ export class HaDeviceSelector extends LitElement {
     }
   }
 
-  protected updated(changedProperties: PropertyValues<this>): void {
-    super.updated(changedProperties);
-    if (!this._fetchedConfigEntries && this._hasIntegration(this.selector)) {
-      this._fetchedConfigEntries = true;
-      getConfigEntries(this.hass)
-        .then((entries) => {
-          this._configEntries = entries;
-        })
-        .catch(() => {
-          this._configEntries = [];
-        });
-    }
-  }
-
   protected render() {
     if (this._hasIntegration(this.selector) && !this._configEntries) {
       return nothing;
@@ -100,7 +101,6 @@ export class HaDeviceSelector extends LitElement {
     if (!this.selector.device?.multiple) {
       return html`
         <ha-device-picker
-          .hass=${this.hass}
           .value=${this.value}
           .label=${this.label}
           .helper=${this.helper}
@@ -118,7 +118,6 @@ export class HaDeviceSelector extends LitElement {
     return html`
       ${this.label ? html`<label>${this.label}</label>` : ""}
       <ha-devices-picker
-        .hass=${this.hass}
         .value=${this.value}
         .helper=${this.helper}
         .deviceFilter=${this._filterDevices}
@@ -137,8 +136,8 @@ export class HaDeviceSelector extends LitElement {
     }
     const deviceIntegrations = this._hasIntegration(this.selector)
       ? this._deviceIntegrationLookup(
-          this.hass.entities,
-          this.hass.devices,
+          this._registries.entities,
+          this._registries.devices,
           this._configEntries
         )
       : undefined;
@@ -154,8 +153,8 @@ export class HaDeviceSelector extends LitElement {
         filter,
         entity,
         undefined,
-        this.hass.entities,
-        this.hass.devices
+        this._registries.entities,
+        this._registries.devices
       )
     );
 }
