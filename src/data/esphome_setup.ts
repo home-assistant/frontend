@@ -1,18 +1,16 @@
-import {
-  mdiAccessPoint,
-  mdiBluetooth,
-  mdiMusic,
-  mdiSwapHorizontal,
-} from "@mdi/js";
+import { mdiAccessPoint, mdiBluetooth, mdiSwapHorizontal } from "@mdi/js";
 import { computeDomain } from "../common/entity/compute_domain";
-import { computeObjectId } from "../common/entity/compute_object_id";
 import type { LocalizeKeys } from "../common/translations/localize";
+import { mdiSendspin } from "../resources/sendspin-logo-svg";
+import type { ConfigEntry } from "./config_entries";
 import type { DataEntryFlowProgress } from "./data_entry_flow";
-import type { ESPHomeDeviceCapabilities, ESPHomeSerialProxy } from "./esphome";
+import type {
+  ESPHomeDeviceCapabilities,
+  ESPHomeDeviceWizard,
+  ESPHomeSerialProxy,
+} from "./esphome";
 import type { ESPHomeFrontendUserData } from "./frontend";
 import type { SerialPortUsage } from "./usb";
-
-export const MUSIC_ASSISTANT_ADDON_SLUG = "d5369777_music_assistant";
 
 export const MUSIC_ASSISTANT_DOCS_URL = "https://music-assistant.io/";
 
@@ -22,7 +20,7 @@ export type ESPHomeCapabilityId =
 export type ESPHomeCapabilityStatus = "not-started" | "detected" | "completed";
 
 export interface ESPHomeSetupStatus {
-  bluetooth?: "completed";
+  bluetooth?: "not-started" | "completed";
   audio?: "not-started" | "completed";
   connectivity?: "not-started" | "detected" | "completed";
   serial?: "not-started" | "completed";
@@ -32,6 +30,7 @@ export interface ESPHomeDeviceEntityRef {
   entity_id: string;
   device_id?: string | null;
   platform?: string;
+  disabled_by?: string | null;
 }
 
 export interface ESPHomeEntityStateRef {
@@ -41,8 +40,8 @@ export interface ESPHomeEntityStateRef {
 export interface ESPHomeAudioControls {
   supported: boolean;
   sendspinEntityId?: string;
-  /** True when the Sendspin client switch is on. On means the client is running. */
-  sendspinOn: boolean;
+  /** Undefined when the Sendspin switch cannot be switched now, e.g. while offline. */
+  sendspinOn?: boolean;
 }
 
 export const CAPABILITY_ORDER: ESPHomeCapabilityId[] = [
@@ -52,17 +51,19 @@ export const CAPABILITY_ORDER: ESPHomeCapabilityId[] = [
   "serial",
 ];
 
-/** Theme colors for each setup capability. */
+const SENDSPIN_RED = "#e25c4c";
+
+/** Colors for each setup capability. */
 export const ESPHOME_CAPABILITY_ACCENTS: Record<ESPHomeCapabilityId, string> = {
   bluetooth: "var(--blue-color)",
-  audio: "var(--light-green-color)",
+  audio: SENDSPIN_RED,
   connectivity: "var(--cyan-color)",
   serial: "var(--deep-purple-color)",
 };
 
 export const ESPHOME_CAPABILITY_ICONS: Record<ESPHomeCapabilityId, string> = {
   bluetooth: mdiBluetooth,
-  audio: mdiMusic,
+  audio: mdiSendspin,
   connectivity: mdiAccessPoint,
   serial: mdiSwapHorizontal,
 };
@@ -78,25 +79,59 @@ export const ESPHOME_CAPABILITY_TITLE_KEYS: Record<
   serial: "ui.panel.config.devices.esphome.setup_capability_serial_title",
 };
 
-/**
- * Object id of the Sendspin client switch.
- *
- * The platform does not set a default name, translation_key, or device class
- * (https://github.com/esphome/esphome/pull/19361). Home Assistant slugs the
- * YAML name, so this matches `sendspin_enabled` or a device-prefixed
- * `*_sendspin_enabled` only. The published docs and tests use
- * "Sendspin Enabled". A different YAML name, or a renamed entity id, does
- * not match. On starts the client (the restore default); off stops it.
- * Guest mode has no entity yet.
- */
-const SENDSPIN_ENABLED_OBJECT_ID = "sendspin_enabled";
+/** Switches the device's wizard lists for parts of this checklist. */
+export interface ESPHomeWizardSwitches {
+  bluetooth?: string;
+  sendspin?: string;
+  /** On lets anyone on the network stream without a pairing code. */
+  sendspinUnpairedAccess?: string;
+}
 
-const isSendspinEnabledSwitch = (entityId: string): boolean => {
-  const objectId = computeObjectId(entityId);
-  return (
-    objectId === SENDSPIN_ENABLED_OBJECT_ID ||
-    objectId.endsWith(`_${SENDSPIN_ENABLED_OBJECT_ID}`)
+const wizardPageEntityIds = (
+  wizard: ESPHomeDeviceWizard | undefined,
+  title: string
+): (string | undefined)[] =>
+  wizard?.pages
+    .find((page) => page.title.trim().toLowerCase() === title)
+    ?.entities.map((entity) =>
+      entity.entity_id && computeDomain(entity.entity_id) === "switch"
+        ? entity.entity_id
+        : undefined
+    ) ?? [];
+
+/**
+ * Find the switches in the device's wizard. Its pages have no ids yet, so they
+ * are matched by title. The Sendspin page lists the Sendspin switch first and
+ * the unpaired access switch second.
+ */
+export const getESPHomeWizardSwitches = (
+  wizard: ESPHomeDeviceWizard | undefined
+): ESPHomeWizardSwitches => {
+  const [sendspin, sendspinUnpairedAccess] = wizardPageEntityIds(
+    wizard,
+    "sendspin"
   );
+  return {
+    bluetooth: wizardPageEntityIds(wizard, "bluetooth")[0],
+    sendspin,
+    sendspinUnpairedAccess,
+  };
+};
+
+// The device page passes full registry entries, including disabled ones
+const isEnabledEntity = (
+  entityId: string | undefined,
+  entities: Iterable<ESPHomeDeviceEntityRef>
+): entityId is string => {
+  if (!entityId) {
+    return false;
+  }
+  for (const entity of entities) {
+    if (entity.entity_id === entityId) {
+      return !entity.disabled_by;
+    }
+  }
+  return false;
 };
 
 export const deviceHasMediaPlayerEntity = (
@@ -114,28 +149,26 @@ export const deviceHasMediaPlayerEntity = (
   return false;
 };
 
+/** A wizard switch, if it can be switched now. */
+export const getESPHomeSwitch = (
+  entityId: string | undefined,
+  states: Readonly<Record<string, ESPHomeEntityStateRef>> = {}
+): { entityId: string; on: boolean } | undefined => {
+  // Disabled has no state and unavailable cannot be switched, so neither counts as off
+  const state = entityId ? states[entityId]?.state : undefined;
+  return entityId && (state === "on" || state === "off")
+    ? { entityId, on: state === "on" }
+    : undefined;
+};
+
 export const getESPHomeAudioControls = (
   deviceId: string,
   entities: Iterable<ESPHomeDeviceEntityRef>,
-  states: Readonly<Record<string, ESPHomeEntityStateRef>> = {}
+  states: Readonly<Record<string, ESPHomeEntityStateRef>> = {},
+  wizardSendspinEntityId?: string
 ): ESPHomeAudioControls => {
-  let sendspinEntityId: string | undefined;
-
-  for (const entity of entities) {
-    if (
-      entity.device_id !== deviceId ||
-      computeDomain(entity.entity_id) !== "switch" ||
-      (entity.platform && entity.platform !== "esphome") ||
-      !isSendspinEnabledSwitch(entity.entity_id)
-    ) {
-      continue;
-    }
-    sendspinEntityId = entity.entity_id;
-    break;
-  }
-
-  const sendspinState = sendspinEntityId
-    ? states[sendspinEntityId]?.state
+  const sendspinEntityId = isEnabledEntity(wizardSendspinEntityId, entities)
+    ? wizardSendspinEntityId
     : undefined;
 
   return {
@@ -143,24 +176,45 @@ export const getESPHomeAudioControls = (
       deviceHasMediaPlayerEntity(deviceId, entities) ||
       Boolean(sendspinEntityId),
     sendspinEntityId,
-    sendspinOn: sendspinState === "on",
+    sendspinOn: getESPHomeSwitch(sendspinEntityId, states)?.on,
   };
 };
 
+/** Whether the wizard's Bluetooth switch is enabled, whatever its state. */
+export const hasESPHomeBluetoothSwitch = (
+  wizardBluetoothEntityId: string | undefined,
+  entities: Iterable<ESPHomeDeviceEntityRef>
+): boolean => isEnabledEntity(wizardBluetoothEntityId, entities);
+
 /**
- * Whether the device page should show the setup banner.
- * Bluetooth is status inside the wizard and is not enough on its own.
- * Zigbee has no separate capability bit; the Z-Wave proxy row covers it.
+ * Whether the device page should show the setup wizard: the device supports
+ * at least one of its parts. Bluetooth only counts with its switch, since
+ * without one there is nothing to set up on older Bluetooth proxies. Zigbee
+ * has no separate capability bit; the Z-Wave proxy row covers it.
  */
 export const hasESPHomeSetupCapabilities = (
   capabilities: ESPHomeDeviceCapabilities | undefined | null,
-  options: { mediaPlayerSupported?: boolean } = {}
+  options: { mediaPlayerSupported?: boolean; bluetoothSwitch?: boolean } = {}
 ): boolean =>
   Boolean(
     capabilities &&
-    (options.mediaPlayerSupported ||
+    ((capabilities.bluetooth_proxy.supported && options.bluetoothSwitch) ||
+      options.mediaPlayerSupported ||
       capabilities.zwave_proxy.supported ||
       capabilities.serial_proxies.length > 0)
+  );
+
+/**
+ * Whether Music Assistant is set up. Its integration stays loaded after the
+ * entry is deleted, until Home Assistant restarts.
+ */
+export const isMusicAssistantConfigured = (
+  entries: readonly Pick<ConfigEntry, "domain" | "source">[] | undefined
+): boolean =>
+  Boolean(
+    entries?.some(
+      (entry) => entry.domain === "music_assistant" && entry.source !== "ignore"
+    )
   );
 
 export const isESPHomeSerialConfigured = (
@@ -175,8 +229,11 @@ export const deriveESPHomeSetupStatus = (
   capabilities: ESPHomeDeviceCapabilities,
   options: {
     mediaPlayerSupported: boolean;
-    musicAssistantLoaded: boolean;
+    musicAssistantConfigured: boolean;
+    /** Undefined when the device has no Bluetooth switch to turn it off. */
+    bluetoothEnabled?: boolean;
     sendspinSupported?: boolean;
+    /** Undefined when the Sendspin switch cannot be read, e.g. while offline. */
     sendspinEnabled?: boolean;
     serialConfigured?: boolean;
     zwaveFlowInProgress?: boolean;
@@ -185,15 +242,16 @@ export const deriveESPHomeSetupStatus = (
   const status: ESPHomeSetupStatus = {};
 
   if (capabilities.bluetooth_proxy.supported) {
-    status.bluetooth = "completed";
+    status.bluetooth =
+      options.bluetoothEnabled === false ? "not-started" : "completed";
   }
 
   if (options.mediaPlayerSupported || options.sendspinSupported) {
     // ESPHome does not always expose the Sendspin switch. When it is missing,
     // Music Assistant is enough to finish the row.
     status.audio =
-      options.musicAssistantLoaded &&
-      (!options.sendspinSupported || options.sendspinEnabled)
+      options.musicAssistantConfigured &&
+      (!options.sendspinSupported || options.sendspinEnabled !== false)
         ? "completed"
         : "not-started";
   }

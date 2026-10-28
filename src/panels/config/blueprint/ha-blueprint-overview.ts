@@ -10,22 +10,25 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, html } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import { storage } from "../../../common/decorators/storage";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
 } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { navigate } from "../../../common/navigate";
+import { mainWindow } from "../../../common/dom/get_main_window";
+import { navigate, replaceCurrentUrl } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import { currentPath } from "../../../common/url/current-path";
 import { extractSearchParam } from "../../../common/url/search-params";
+import { hasRejectedItems } from "../../../common/util/promise-all-settled-results";
 import type {
   DataTableColumnContainer,
   RowClickedEvent,
-  SortingChangedEvent,
+  SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
@@ -50,12 +53,17 @@ import {
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { configSections } from "../config-sections";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
+
+const BARE_PATH = "/config/blueprint";
+const DASHBOARD_PATH = `${BARE_PATH}/dashboard`;
+const IMPORT_PATH = `${DASHBOARD_PATH}/import`;
 
 type BlueprintMetaDataPath = BlueprintMetaData & {
   path: string;
@@ -95,11 +103,11 @@ class HaBlueprintOverview extends LitElement {
     Blueprints
   >;
 
-  @storage({ key: "blueprint-table-sort", state: false, subscribe: false })
-  private _activeSorting?: SortingChangedEvent;
-
-  @storage({ key: "blueprint-table-grouping", state: false, subscribe: false })
-  private _activeGrouping?: string;
+  private _tableSettings = new DataTableSettingsController(this, {
+    search: "blueprint-table-search",
+    sorting: "blueprint-table-sort",
+    grouping: "blueprint-table-grouping",
+  });
 
   @storage({
     key: "blueprint-table-collapsed",
@@ -122,29 +130,34 @@ class HaBlueprintOverview extends LitElement {
   })
   private _activeHiddenColumns?: string[];
 
-  @state()
-  @storage({
-    storage: "sessionStorage",
-    key: "blueprint-table-search",
-    state: true,
-    subscribe: false,
-  })
-  private _filter = "";
-
   @state() private _usageCounts: Record<string, number> = {};
 
   private _usageCountRequest = 0;
+
+  @state() private _usageCountsLoading = false;
+
+  @state() private _selected: string[] = [];
+
+  @state() private _deletedFullpaths: string[] = [];
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
 
   private _processedBlueprints = memoizeOne(
     (
       blueprints: Record<string, Blueprints>,
       localize: LocalizeFunc,
-      usageCounts: Record<string, number>
+      usageCounts: Record<string, number>,
+      deleted: string[]
     ): BlueprintMetaDataPath[] => {
+      const deletedFullpaths = new Set(deleted);
       const result: any[] = [];
       Object.entries(blueprints).forEach(([type, typeBlueprints]) =>
         Object.entries(typeBlueprints).forEach(([path, blueprint]) => {
           const fullpath = `${type}/${path}`;
+          if (deletedFullpaths.has(fullpath)) {
+            return;
+          }
           if ("error" in blueprint) {
             result.push({
               name: blueprint.error,
@@ -193,6 +206,7 @@ class HaBlueprintOverview extends LitElement {
         sortable: true,
         filterable: true,
         groupable: true,
+        urlName: "type",
       },
       path: {
         title: localize("ui.panel.config.blueprint.overview.headers.file_name"),
@@ -303,15 +317,44 @@ class HaBlueprintOverview extends LitElement {
     })
   );
 
+  public connectedCallback() {
+    // Move to the dashboard path before the URL controllers connect, they
+    // keep the path they connected on. The router only gets there from the
+    // bare path after this, and the import path is left for the dashboard.
+    // Reads the URL, as a cached config panel reconnects this page with its
+    // old route on the way to another page.
+    const path = currentPath().replace(/\/$/, "");
+    const importUrl =
+      path === IMPORT_PATH
+        ? (extractSearchParam("blueprint_url") ?? "")
+        : undefined;
+
+    if (path === BARE_PATH || importUrl !== undefined) {
+      const search = importUrl === undefined ? mainWindow.location.search : "";
+      replaceCurrentUrl(
+        __DEMO__
+          ? `${mainWindow.location.pathname}${search}#${DASHBOARD_PATH}`
+          : `${DASHBOARD_PATH}${search}`
+      );
+      fireEvent(mainWindow, "location-changed", { replace: true });
+    }
+
+    super.connectedCallback();
+
+    if (importUrl) {
+      this._addBlueprint(importUrl);
+    }
+  }
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadUsageCounts();
-    if (this.route.path === "/import") {
-      const url = extractSearchParam("blueprint_url");
-      navigate("/config/blueprint/dashboard", { replace: true });
-      if (url) {
-        this._addBlueprint(url);
-      }
+  }
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+    if (changedProps.has("blueprints") && this._deletedFullpaths.length) {
+      this._deletedFullpaths = [];
     }
   }
 
@@ -334,7 +377,8 @@ class HaBlueprintOverview extends LitElement {
         .data=${this._processedBlueprints(
           this.blueprints,
           this.hass.localize,
-          this._usageCounts
+          this._usageCounts,
+          this._deletedFullpaths
         )}
         id="fullpath"
         .noDataText=${this.hass.localize(
@@ -343,6 +387,9 @@ class HaBlueprintOverview extends LitElement {
         has-fab
         clickable
         @row-click=${this._handleRowClicked}
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
         .appendRow=${html`<div
           class="mdc-data-table__cell"
           style="width: 100%; text-align: center;"
@@ -361,17 +408,18 @@ class HaBlueprintOverview extends LitElement {
             <ha-svg-icon slot="end" .path=${mdiOpenInNew}></ha-svg-icon>
           </ha-button>
         </div>`}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
-        .initialSorting=${this._activeSorting}
+        .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
-        @sorting-changed=${this._handleSortingChanged}
-        @grouping-changed=${this._handleGroupingChanged}
+        @sorting-changed=${this._tableSettings.sortingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
-        .filter=${this._filter}
-        @search-changed=${this._handleSearchChange}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
+        sync-url
       >
         <ha-icon-button
           slot="toolbar-icon"
@@ -379,6 +427,14 @@ class HaBlueprintOverview extends LitElement {
           .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
+        <ha-assist-chip
+          slot="selection-bar"
+          .label=${this.hass.localize(
+            "ui.panel.config.blueprint.overview.delete_selected"
+          )}
+          .disabled=${this._usageCountsLoading || !this._selected.length}
+          @click=${this._removeSelected}
+        ></ha-assist-chip>
         <ha-button slot="fab" size="l" @click=${this._addBlueprintClicked}>
           <ha-svg-icon slot="start" .path=${mdiDownload}></ha-svg-icon>
           ${this.hass.localize(
@@ -433,12 +489,14 @@ class HaBlueprintOverview extends LitElement {
     }
 
     const request = ++this._usageCountRequest;
+    this._usageCountsLoading = true;
     const usageCounts: Record<string, number> = {};
 
     const blueprintList = this._processedBlueprints(
       this.blueprints,
       this.hass.localize,
-      {}
+      {},
+      this._deletedFullpaths
     );
 
     await Promise.all(
@@ -464,6 +522,7 @@ class HaBlueprintOverview extends LitElement {
 
     if (request === this._usageCountRequest) {
       this._usageCounts = usageCounts;
+      this._usageCountsLoading = false;
     }
   }
 
@@ -471,7 +530,8 @@ class HaBlueprintOverview extends LitElement {
     const blueprint = this._processedBlueprints(
       this.blueprints,
       this.hass.localize,
-      this._usageCounts
+      this._usageCounts,
+      this._deletedFullpaths
     ).find((b) => b.fullpath === ev.detail.id)!;
     if (blueprint.error) {
       showAlertDialog(this, {
@@ -496,7 +556,8 @@ class HaBlueprintOverview extends LitElement {
     const blueprint = this._processedBlueprints(
       this.blueprints,
       this.hass.localize,
-      this._usageCounts
+      this._usageCounts,
+      this._deletedFullpaths
     ).find((item) => item.fullpath === fullpath);
     if (!blueprint || blueprint.error) {
       return;
@@ -611,7 +672,7 @@ class HaBlueprintOverview extends LitElement {
                   return html`<li>
                     ${
                       automationState
-                        ? `${computeStateName(automationState)} (${item})`
+                        ? `${this.hass.formatEntityName(automationState)} (${item})`
                         : item
                     }
                   </li>`;
@@ -653,20 +714,104 @@ class HaBlueprintOverview extends LitElement {
     fireEvent(this, "reload-blueprints");
   };
 
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
-  }
+  private _handleSelectionChanged = (
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void => {
+    this._selected = ev.detail.value;
+  };
 
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
-  }
+  private _removeSelected = async () => {
+    const rows = this._processedBlueprints(
+      this.blueprints,
+      this.hass.localize,
+      this._usageCounts,
+      this._deletedFullpaths
+    );
+    const selectedRows = rows.filter((row) =>
+      this._selected.includes(row.fullpath)
+    );
+    const usageChecks = await Promise.allSettled(
+      selectedRows.map((row) =>
+        findRelated(this.hass, `${row.type}_blueprint`, row.path)
+      )
+    );
+    if (usageChecks.some((check) => check.status === "rejected")) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.blueprint.overview.delete_check_failed_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.blueprint.overview.delete_check_failed"
+        ),
+      });
+      return;
+    }
+    const deletable = selectedRows.filter((_row, index) => {
+      const check = usageChecks[index];
+      return (
+        check.status === "fulfilled" &&
+        !check.value.automation?.length &&
+        !check.value.script?.length
+      );
+    });
+    if (!deletable.length) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.blueprint.overview.delete_none_deletable_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.blueprint.overview.delete_none_deletable"
+        ),
+      });
+      return;
+    }
+    const allDeletable = deletable.length === selectedRows.length;
+    let deleteFailed = false;
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.blueprint.overview.confirm_delete_selected_title"
+      ),
+      text: this.hass.localize(
+        allDeletable
+          ? "ui.panel.config.blueprint.overview.confirm_delete_selected"
+          : "ui.panel.config.blueprint.overview.confirm_delete_selected_partly",
+        allDeletable
+          ? { count: deletable.length }
+          : { deletable: deletable.length, selected: selectedRows.length }
+      ),
+      confirmText: this.hass.localize("ui.common.delete"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+      action: async () => {
+        const results = await Promise.allSettled(
+          deletable.map((row) => deleteBlueprint(this.hass, row.type, row.path))
+        );
+        const deleted = new Set(
+          deletable
+            .filter((_row, index) => results[index].status === "fulfilled")
+            .map((row) => row.fullpath)
+        );
+        this._deletedFullpaths = [...this._deletedFullpaths, ...deleted];
+        deleteFailed = hasRejectedItems(results);
+        this._dataTable.clearSelection();
+        fireEvent(this, "reload-blueprints");
+      },
+    }).then((confirmed) => {
+      if (confirmed && deleteFailed) {
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.blueprint.overview.delete_failed_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.blueprint.overview.delete_failed"
+          ),
+        });
+      }
+    });
+  };
 
   private _handleCollapseChanged(ev: CustomEvent) {
     this._activeCollapsed = ev.detail.value;
-  }
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
   }
 
   private _handleColumnsChanged(ev: CustomEvent) {

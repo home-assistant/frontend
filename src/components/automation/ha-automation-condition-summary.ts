@@ -7,6 +7,7 @@ import memoizeOne from "memoize-one";
 import { consume } from "../../common/decorators/consume";
 import { truncateWithEllipsis } from "../../common/string/truncate-with-ellipsis";
 import type { Condition } from "../../data/automation";
+import { getRowNote } from "../../data/automation";
 import type { ConditionDescription } from "../../data/condition";
 import { internationalizationContext } from "../../data/context";
 import "../../panels/config/automation/ha-automation-row-options";
@@ -42,7 +43,7 @@ export class HaAutomationConditionSummary extends LitElement {
       this.condition?.condition === "numeric_state";
     const targetRequired =
       (descriptionHasTarget || hasEntityTarget) && !this.isNew;
-    const note = this.condition?.note?.trim();
+    const note = getRowNote(this.condition?.note);
 
     let target: HassServiceTarget | undefined;
     if (this.condition) {

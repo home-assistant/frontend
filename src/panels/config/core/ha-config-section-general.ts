@@ -271,7 +271,6 @@ class HaConfigSectionGeneral extends LitElement {
           </div>
           <div>
             <ha-currency-picker
-              .hass=${this.hass}
               .label=${this.hass.localize(
                 "ui.panel.config.core.section.core.core_config.currency"
               )}
@@ -291,7 +290,6 @@ class HaConfigSectionGeneral extends LitElement {
             >
           </div>
           <ha-country-picker
-            .hass=${this.hass}
             .label=${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.country"
             )}
@@ -301,7 +299,6 @@ class HaConfigSectionGeneral extends LitElement {
             @value-changed=${this._handleValueChanged}
           ></ha-country-picker>
           <ha-language-picker
-            .hass=${this.hass}
             native-name
             .label=${this.hass.localize(
               "ui.panel.config.core.section.core.core_config.language"

@@ -73,6 +73,16 @@ const isDisabled = (config: unknown, parentDisabled: boolean): boolean =>
     "enabled" in config &&
     (config as { enabled?: boolean }).enabled === false);
 
+/** The automation's triggers, flattened like the trace paths count them. */
+export const getTraceTriggers = (
+  config: TraceExtended["config"]
+): Trigger[] | undefined => {
+  const triggerKey = "triggers" in config ? "triggers" : "trigger";
+  return triggerKey in config
+    ? flattenTriggers(ensureArray(config[triggerKey]))
+    : undefined;
+};
+
 /** Configuration-shaped tree annotated with the execution tracked by Core. */
 export class TraceTree {
   public readonly triggers?: TraceNode<Trigger>[];
@@ -97,15 +107,11 @@ export class TraceTree {
 
   constructor(public readonly trace: TraceExtended) {
     const config = trace.config;
-    const triggerKey = "triggers" in config ? "triggers" : "trigger";
     const conditionKey = "conditions" in config ? "conditions" : "condition";
     const actionKey = "actions" in config ? "actions" : "action";
-    this.triggers =
-      triggerKey in config
-        ? flattenTriggers(ensureArray(config[triggerKey])).map((trigger, i) =>
-            this._triggerNode(trigger, `trigger/${i}`)
-          )
-        : undefined;
+    this.triggers = getTraceTriggers(config)?.map((trigger, i) =>
+      this._triggerNode(trigger, `trigger/${i}`)
+    );
     this.conditions =
       conditionKey in config
         ? ensureArray<Condition>(config[conditionKey] ?? []).map(
@@ -198,12 +204,14 @@ export class TraceTree {
     const node = this._base(config, path, type, parentDisabled);
     const records = this.trace.trace[path] as ConditionTraceStep[] | undefined;
     const executed = !!records?.some((record) => record.result || record.error);
+    // A disabled condition is still recorded by Core, with a `null` result
+    // (or `enabled: false` in a sequence). It is skipped, so the run passes.
     node.condition = {
       executed,
-      passed: !!records?.some((record) => record.result?.result),
-      failed: !!records?.some(
-        (record) => record.result && !record.result.result
+      passed: !!records?.some(
+        (record) => record.result && record.result.result !== false
       ),
+      failed: !!records?.some((record) => record.result?.result === false),
     };
     node.track = executed;
     return node;

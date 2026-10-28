@@ -84,7 +84,6 @@ export class HuiDialogWebBrowserPlayMedia extends LitElement {
                       controls
                       autoplay
                       playsinline
-                      .hass=${this.hass}
                       .url=${this._params.sourceUrl}
                     ></ha-hls-player>
                   `

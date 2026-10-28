@@ -119,7 +119,7 @@ export class HuiUnusedEntities extends LitElement {
       showSuggestCardDialog(this, {
         lovelaceConfig: this.lovelace.config!,
         saveConfig: this.lovelace.saveConfig,
-        path: [0],
+        path: ["views", 0],
         entities: this._selectedEntities,
         cardConfig,
         sectionConfig,
@@ -133,7 +133,7 @@ export class HuiUnusedEntities extends LitElement {
         showSuggestCardDialog(this, {
           lovelaceConfig: this.lovelace.config!,
           saveConfig: this.lovelace.saveConfig,
-          path: [viewIndex],
+          path: ["views", viewIndex],
           entities: this._selectedEntities,
           cardConfig,
           sectionConfig,

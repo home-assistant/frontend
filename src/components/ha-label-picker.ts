@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiPlus } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -15,7 +16,13 @@ import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
 import { computeCssColor } from "../common/color/compute-color";
 import { fireEvent } from "../common/dom/fire_event";
-import { labelsContext } from "../data/context";
+import {
+  apiContext,
+  internationalizationContext,
+  labelsContext,
+  registriesContext,
+  statesContext,
+} from "../data/context";
 import {
   getLabels,
   labelComboBoxKeys,
@@ -27,7 +34,7 @@ import {
 } from "../data/label/label_registry";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { showLabelDetailDialog } from "../panels/config/labels/show-dialog-label-detail";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
@@ -53,8 +60,6 @@ export const renderLabelColorBadge = (color: string | undefined) =>
 
 @customElement("ha-label-picker")
 export class HaLabelPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public label?: string;
 
   @property() public value?: string;
@@ -112,6 +117,19 @@ export class HaLabelPicker extends LitElement {
   @state()
   private _labels?: LabelRegistryEntry[];
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: ContextType<typeof statesContext>;
+
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries?: ContextType<typeof registriesContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
   @queryAssignedElements({ flatten: true })
   private _slotNodes?: NodeListOf<HTMLElement>;
 
@@ -149,12 +167,16 @@ export class HaLabelPicker extends LitElement {
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
-  private _getItems = () =>
-    this._getLabelsMemoized(
-      this.hass.states,
-      this.hass.areas,
-      this.hass.devices,
-      this.hass.entities,
+  private _getItems = () => {
+    const { areas, devices, entities } = this._registries ?? {};
+    if (!this._states || !areas || !devices || !entities) {
+      return [];
+    }
+    return this._getLabelsMemoized(
+      this._states,
+      areas,
+      devices,
+      entities,
       this._labels,
       this.includeDomains,
       this.excludeDomains,
@@ -163,6 +185,7 @@ export class HaLabelPicker extends LitElement {
       this.entityFilter,
       this.excludeLabels
     );
+  };
 
   private _allLabelNames = memoizeOne((labels?: LabelRegistryEntry[]) => {
     if (!labels) {
@@ -190,7 +213,7 @@ export class HaLabelPicker extends LitElement {
       return [
         {
           id: ADD_NEW_ID + searchString,
-          primary: this.hass.localize(
+          primary: this._i18n.localize(
             "ui.components.label-picker.add_new_suggestion",
             {
               name: searchString,
@@ -204,7 +227,7 @@ export class HaLabelPicker extends LitElement {
     return [
       {
         id: ADD_NEW_ID,
-        primary: this.hass.localize("ui.components.label-picker.add_new"),
+        primary: this._i18n.localize("ui.components.label-picker.add_new"),
         icon_path: mdiPlus,
       },
     ];
@@ -213,20 +236,19 @@ export class HaLabelPicker extends LitElement {
   protected render(): TemplateResult {
     const placeholder =
       this.placeholder ??
-      this.hass.localize("ui.components.label-picker.label");
+      this._i18n.localize("ui.components.label-picker.label");
 
     return html`
       <ha-generic-picker
         .disabled=${this.disabled}
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
         .helper=${this.helper}
         .notFoundLabel=${this._notFoundLabel}
-        .emptyLabel=${this.hass.localize(
+        .emptyLabel=${this._i18n.localize(
           "ui.components.label-picker.no_labels"
         )}
-        .addButtonLabel=${this.hass.localize("ui.components.label-picker.add")}
+        .addButtonLabel=${this._i18n.localize("ui.components.label-picker.add")}
         .placeholder=${placeholder}
         .value=${this.value}
         .getItems=${this._getItems}
@@ -254,7 +276,7 @@ export class HaLabelPicker extends LitElement {
     }
 
     if (value.startsWith(ADD_NEW_ID)) {
-      this.hass.loadFragmentTranslation("config");
+      this._i18n.loadFragmentTranslation("config");
 
       const suggestedName = value.substring(ADD_NEW_ID.length);
 
@@ -262,7 +284,10 @@ export class HaLabelPicker extends LitElement {
         suggestedName: suggestedName,
         createEntry: async (values) => {
           try {
-            const label = await createLabelRegistryEntry(this.hass, values);
+            const label = await createLabelRegistryEntry(
+              this._api.callWS,
+              values
+            );
             if (this._labels?.some((l) => l.label_id === label.label_id)) {
               this._setValue(label.label_id);
             } else {
@@ -270,7 +295,7 @@ export class HaLabelPicker extends LitElement {
             }
           } catch (err: any) {
             showAlertDialog(this, {
-              title: this.hass.localize(
+              title: this._i18n.localize(
                 "ui.components.label-picker.failed_create_label"
               ),
               text: err.message,
@@ -293,7 +318,7 @@ export class HaLabelPicker extends LitElement {
   }
 
   private _notFoundLabel = (search: string) =>
-    this.hass.localize("ui.components.label-picker.no_match", {
+    this._i18n.localize("ui.components.label-picker.no_match", {
       term: html`<b>‘${search}’</b>`,
     });
 

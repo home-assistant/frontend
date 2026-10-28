@@ -1,89 +1,76 @@
+import type { ContextType } from "@lit/context";
 import Cropper from "cropperjs";
 // @ts-ignore
 import cropperCss from "cropperjs/dist/cropper.css";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing, unsafeCSS } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { fireEvent } from "../../common/dom/fire_event";
+import { consume } from "../../common/decorators/consume";
 import "../../components/ha-button";
 import "../../components/ha-dialog-footer";
 import "../../components/ha-dialog";
+import { internationalizationContext } from "../../data/context";
 import { DirtyStateProviderMixin } from "../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
-import type { HassDialog } from "../make-dialog-manager";
+import { DialogMixin } from "../dialog-mixin";
 import type { HaImageCropperDialogParams } from "./show-image-cropper-dialog";
 
 @customElement("image-cropper-dialog")
-export class HaImagecropperDialog
-  extends DirtyStateProviderMixin<Cropper.Data>()(LitElement)
-  implements HassDialog<HaImageCropperDialogParams>
-{
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @state() private _params?: HaImageCropperDialogParams;
-
-  @state() private _open = false;
+export class HaImagecropperDialog extends DirtyStateProviderMixin<Cropper.Data>()(
+  DialogMixin<HaImageCropperDialogParams>(LitElement)
+) {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
 
   @query("img") private _image!: HTMLImageElement;
 
   private _cropper?: Cropper;
 
-  private _cropReady = false;
+  @state() private _cropReady = false;
 
   @state() private _isTargetAspectRatio?: boolean;
 
-  public showDialog(params: HaImageCropperDialogParams): void {
-    this._params = params;
-    this._open = true;
-  }
+  private _cropped = false;
 
-  public closeDialog(): boolean {
-    this._open = false;
+  private _closing = false;
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (!this._cropped) {
+      this.params?.cancelCallback?.();
+    }
     this._cropper?.destroy();
     this._cropper = undefined;
-    this._cropReady = false;
-    this._isTargetAspectRatio = false;
-    return true;
   }
 
-  private _dialogClosed(): void {
-    this._params = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
-    if (!changedProperties.has("_params") || !this._params) {
+  protected firstUpdated() {
+    if (!this.params) {
       return;
     }
-    if (!this._cropper) {
-      this._image.src = URL.createObjectURL(this._params.file);
-      this._cropper = new Cropper(this._image, {
-        aspectRatio: this._params.options.aspectRatio,
-        viewMode: 1,
-        dragMode: "move",
-        minCropBoxWidth: 50,
-        ready: () => {
-          this._isTargetAspectRatio = this._checkMatchAspectRatio();
-          URL.revokeObjectURL(this._image!.src);
-          this._initDirtyTracking({ type: "deep" }, this._cropper!.getData());
-          this._cropReady = true;
-        },
-        crop: () => {
-          if (this._cropReady) {
-            this._updateDirtyState(this._cropper!.getData());
-          }
-        },
-      });
-    } else {
-      this._cropper.replace(URL.createObjectURL(this._params.file));
-    }
+    this._image.src = URL.createObjectURL(this.params.file);
+    this._cropper = new Cropper(this._image, {
+      aspectRatio: this.params.options.aspectRatio,
+      viewMode: 1,
+      dragMode: "move",
+      minCropBoxWidth: 50,
+      ready: () => {
+        this._isTargetAspectRatio = this._checkMatchAspectRatio();
+        URL.revokeObjectURL(this._image!.src);
+        this._initDirtyTracking({ type: "deep" }, this._cropper!.getData());
+        this._cropReady = true;
+      },
+      crop: () => {
+        if (this._cropReady) {
+          this._updateDirtyState(this._cropper!.getData());
+        }
+      },
+    });
   }
 
   private _checkMatchAspectRatio(): boolean {
-    const targetRatio = this._params?.options.aspectRatio;
+    const targetRatio = this.params?.options.aspectRatio;
     if (!targetRatio) {
       return true;
     }
@@ -102,26 +89,26 @@ export class HaImagecropperDialog
   }
 
   protected render(): TemplateResult | typeof nothing {
-    if (!this._params) {
+    if (!this.params) {
       return nothing;
     }
 
     return html`
       <ha-dialog
-        .open=${this._open}
-        header-title=${this.hass.localize(
+        open
+        header-title=${this._i18n.localize(
           "ui.dialogs.image_cropper.crop_image"
         )}
         .preventScrimClose=${this.isDirtyState}
-        @closed=${this._dialogClosed}
+        @wa-hide=${this._handleHide}
       >
         <div
           class="container ${classMap({
-            round: Boolean(this._params?.options.round),
+            round: Boolean(this.params.options.round),
           })}"
         >
           <img
-            alt=${this.hass.localize("ui.dialogs.image_cropper.crop_image")}
+            alt=${this._i18n.localize("ui.dialogs.image_cropper.crop_image")}
           />
         </div>
         <ha-dialog-footer slot="footer">
@@ -130,7 +117,7 @@ export class HaImagecropperDialog
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this.hass.localize("ui.common.cancel")}
+            ${this._i18n.localize("ui.common.cancel")}
           </ha-button>
           ${
             this._isTargetAspectRatio
@@ -140,38 +127,60 @@ export class HaImagecropperDialog
                     appearance="plain"
                     @click=${this._useOriginal}
                   >
-                    ${this.hass.localize("ui.dialogs.image_cropper.use_original")}
+                    ${this._i18n.localize(
+                      "ui.dialogs.image_cropper.use_original"
+                    )}
                   </ha-button>
                 `
               : nothing
           }
-          <ha-button slot="primaryAction" @click=${this._cropImage}>
-            ${this.hass.localize("ui.dialogs.image_cropper.crop")}
+          <ha-button
+            slot="primaryAction"
+            .disabled=${!this._cropReady}
+            @click=${this._cropImage}
+          >
+            ${this._i18n.localize("ui.dialogs.image_cropper.crop")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
     `;
   }
 
+  private _handleHide(ev: Event) {
+    // Ignore hide events from nested overlays and blocked dismissals.
+    if (ev.eventPhase !== Event.AT_TARGET || ev.defaultPrevented) {
+      return;
+    }
+    this._closing = true;
+  }
+
   private _cropImage() {
-    this._cropper!.getCroppedCanvas().toBlob(
+    const canvas = this._cropper?.getCroppedCanvas();
+    if (!canvas) {
+      return;
+    }
+    const params = this.params!;
+    canvas.toBlob(
       (blob) => {
-        if (!blob) {
+        // The dialog may have started closing while the blob was being created.
+        if (!blob || this._closing || !this.isConnected) {
           return;
         }
-        const file = new File([blob], this._params!.file.name, {
-          type: this._params!.options.type || this._params!.file.type,
+        const file = new File([blob], params.file.name, {
+          type: params.options.type || params.file.type,
         });
-        this._params!.croppedCallback(file);
+        this._cropped = true;
+        params.croppedCallback(file);
         this.closeDialog();
       },
-      this._params!.options.type || this._params!.file.type,
-      this._params!.options.quality
+      params.options.type || params.file.type,
+      params.options.quality
     );
   }
 
   private _useOriginal() {
-    this._params!.croppedCallback(this._params!.file);
+    this._cropped = true;
+    this.params!.croppedCallback(this.params!.file);
     this.closeDialog();
   }
 
@@ -188,7 +197,7 @@ export class HaImagecropperDialog
         }
         .container.round .cropper-view-box,
         .container.round .cropper-face {
-          border-radius: var(--ha-border-radius-circle);
+          border-radius: var(--ha-picture-border-radius);
         }
         .cropper-line,
         .cropper-point,

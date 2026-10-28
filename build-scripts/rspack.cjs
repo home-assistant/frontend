@@ -3,6 +3,7 @@ const fs = require("fs");
 const { existsSync } = fs;
 const path = require("path");
 const rspack = require("@rspack/core");
+const browserslist = require("browserslist");
 // eslint-disable-next-line @typescript-eslint/naming-convention
 const { RsdoctorRspackPlugin } = require("@rsdoctor/rspack-plugin");
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -40,6 +41,21 @@ const TOOLCHAIN_PACKAGES = [
   "caniuse-lite",
 ];
 
+// Not direct dependencies: read the copy the package that loads them uses.
+const TOOLCHAIN_PACKAGE_PARENTS = {
+  terser: "terser-webpack-plugin",
+  "caniuse-lite": "browserslist",
+};
+
+const toolchainVersion = (pkg) => {
+  const parent = TOOLCHAIN_PACKAGE_PARENTS[pkg];
+  const lookup = parent && [
+    path.dirname(require.resolve(`${parent}/package.json`)),
+  ];
+  return require(require.resolve(`${pkg}/package.json`, { paths: lookup }))
+    .version;
+};
+
 // Our own build logic — the config, loaders and babel plugins. Their contents
 // (not their paths) go into the cache version, so a change invalidates the
 // cache the same way `buildDependencies` would, but without tying validity to
@@ -63,9 +79,7 @@ const PATCHES_DIR = path.join(paths.root_dir, "patches");
 // stays valid when reused on a different machine or checkout path.
 const cacheVersion = () => {
   const parts = [
-    ...TOOLCHAIN_PACKAGES.map(
-      (pkg) => `${pkg}@${require(`${pkg}/package.json`).version}`
-    ),
+    ...TOOLCHAIN_PACKAGES.map((pkg) => `${pkg}@${toolchainVersion(pkg)}`),
     ...CONFIG_FILES.map(
       (file) => `${path.basename(file)}:${fs.readFileSync(file, "utf8")}`
     ),
@@ -115,7 +129,10 @@ const createRspackConfig = ({
     dontHash = new Set();
   }
   const ignorePackages = bundle.ignorePackages({ latestBuild });
-  const litHtmlRoot = path.resolve(__dirname, "../node_modules/lit-html");
+  // pnpm links node_modules/lit-html into its store; rspack compares real paths
+  const litHtmlRoot = fs.realpathSync(
+    path.resolve(__dirname, "../node_modules/lit-html")
+  );
   const litHtmlDevelopmentRoot = path.join(litHtmlRoot, "development");
   const litDisableDevModeLoader = path.join(
     __dirname,
@@ -212,6 +229,22 @@ const createRspackConfig = ({
         {
           test: /\.css$/,
           type: "asset/source",
+          // Imported stylesheets skip the minifier that compiles css``
+          // templates, so legacy builds compile logical properties and :is()
+          // here
+          use: latestBuild
+            ? []
+            : [
+                {
+                  loader: "builtin:lightningcss-loader",
+                  options: {
+                    targets: browserslist.loadConfig({
+                      path: paths.root_dir,
+                      env: "legacy",
+                    }),
+                  },
+                },
+              ],
         },
       ],
     },
@@ -377,6 +410,14 @@ const createRspackConfig = ({
     resolve: {
       extensions: [".ts", ".js", ".json"],
       alias: {
+        // @formatjs/bigdecimal uses BigInt (Safari 14, Chrome 67), which
+        // breaks the NumberFormat and PluralRules polyfills
+        ...(!latestBuild && {
+          "@formatjs/bigdecimal$": path.join(
+            paths.root_dir,
+            "src/resources/polyfills/bigdecimal.ts"
+          ),
+        }),
         "lit/static-html$": "lit/static-html.js",
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",
@@ -393,8 +434,6 @@ const createRspackConfig = ({
         "lit/directives/keyed$": "lit/directives/keyed.js",
         "@lit-labs/virtualizer/layouts/grid":
           "@lit-labs/virtualizer/layouts/grid.js",
-        "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver":
-          "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js",
         "@lit-labs/observers/resize-controller":
           "@lit-labs/observers/resize-controller.js",
         "@formatjs/intl-durationformat/should-polyfill$":

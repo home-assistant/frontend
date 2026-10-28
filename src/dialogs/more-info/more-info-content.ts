@@ -4,14 +4,17 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
-import { computeEntityName } from "../../common/entity/compute_entity_name";
-import type { EntityNameItem } from "../../common/entity/compute_entity_name_display";
+import {
+  computeEntityNameParts,
+  type EntityNameItem,
+} from "../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
 import "../../components/ha-badge";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
 import { supportsCoverPositionCardFeature } from "../../panels/lovelace/card-features/hui-cover-position-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../panels/lovelace/card-features/hui-light-brightness-card-feature";
+import { supportsLightColorCardFeature } from "../../panels/lovelace/card-features/hui-light-color-card-feature";
 import { supportsLightColorTempCardFeature } from "../../panels/lovelace/card-features/hui-light-color-temp-card-feature";
 import type { LovelaceCardFeatureConfig } from "../../panels/lovelace/card-features/types";
 import type { TileCardConfig } from "../../panels/lovelace/cards/types";
@@ -137,11 +140,7 @@ class MoreInfoContent extends LitElement {
           if (!stateObj) {
             return null;
           }
-          const entityName = computeEntityName(
-            stateObj,
-            hass.entities,
-            hass.devices
-          );
+          const entityName = computeEntityNameParts(stateObj, hass).entity;
           const { area, device } = getEntityContext(
             stateObj,
             hass.entities,
@@ -192,10 +191,13 @@ class MoreInfoContent extends LitElement {
           features.push({
             type: "cover-position",
           });
-        } else if (lightMainControl === "color") {
-          // There is no RGB tile feature yet, so when the group is set to
-          // color the members show no control rather than a mismatched
-          // brightness slider.
+        } else if (
+          lightMainControl === "color" &&
+          supportsLightColorCardFeature(hass, context)
+        ) {
+          features.push({
+            type: "light-color",
+          });
         } else if (
           lightMainControl === "color_temp" &&
           supportsLightColorTempCardFeature(hass, context)

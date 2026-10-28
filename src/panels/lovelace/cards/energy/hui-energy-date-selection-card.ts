@@ -1,9 +1,7 @@
-import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import "../../../../components/ha-card";
 import type { HomeAssistant } from "../../../../types";
-import { hasConfigChanged } from "../../common/has-changed";
 import "../../components/hui-energy-period-selector";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { EnergyDateSelectorCardConfig } from "../types";
@@ -18,8 +16,6 @@ export class HuiEnergyDateSelectionCard
     await import("../../editor/config-elements/hui-energy-date-selection-card-editor");
     return document.createElement("hui-energy-date-selection-card-editor");
   }
-
-  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyDateSelectorCardConfig;
 
@@ -53,16 +49,8 @@ export class HuiEnergyDateSelectionCard
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return (
-      hasConfigChanged(this, changedProps) ||
-      changedProps.size > 1 ||
-      !changedProps.has("hass")
-    );
-  }
-
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this._config) {
       return nothing;
     }
 
@@ -80,7 +68,6 @@ export class HuiEnergyDateSelectionCard
       <ha-card>
         <div class="card-content">
           <hui-energy-period-selector
-            .hass=${this.hass}
             .collectionKey=${this._config.collection_key}
             .verticalOpeningDirection=${verticalOpeningDirection}
             .openingDirection=${openingDirection}

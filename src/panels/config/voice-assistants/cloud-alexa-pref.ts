@@ -265,6 +265,10 @@ export class CloudAlexaPref extends LitElement {
     ha-row-item {
       --ha-row-item-padding-inline: 0;
     }
+    ha-row-item::part(headline),
+    ha-row-item::part(supporting-text) {
+      white-space: normal;
+    }
     .header-actions {
       position: absolute;
       right: 24px;

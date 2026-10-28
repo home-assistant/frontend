@@ -1,3 +1,4 @@
+import type { LocalizeFunc } from "../common/translations/localize";
 import { timeCacheEntityPromiseFunc } from "../common/util/time-cache-entity-promise-func";
 import type { HomeAssistant } from "../types";
 import type { MediaPlayerItem, SearchMediaResult } from "./media-player";
@@ -77,28 +78,26 @@ export const getImageEntityIdFromMediaSourceContentId = (
     : undefined;
 
 export const uploadLocalMedia = async (
-  hass: HomeAssistant,
+  fetchWithAuth: HomeAssistant["fetchWithAuth"],
+  localize: LocalizeFunc,
   media_content_id: string,
   file: File
 ) => {
   const fd = new FormData();
   fd.append("media_content_id", media_content_id);
   fd.append("file", file);
-  const resp = await hass.fetchWithAuth(
-    "/api/media_source/local_source/upload",
-    {
-      method: "POST",
-      body: fd,
-    }
-  );
+  const resp = await fetchWithAuth("/api/media_source/local_source/upload", {
+    method: "POST",
+    body: fd,
+  });
   if (resp.status === 413) {
     throw new Error(
-      hass.localize("ui.common.upload_file_too_large", {
+      localize("ui.common.upload_file_too_large", {
         name: file.name,
       })
     );
   } else if (resp.status !== 200) {
-    throw new Error(hass.localize("ui.common.unknown_error"));
+    throw new Error(localize("ui.common.unknown_error"));
   }
   return resp.json();
 };

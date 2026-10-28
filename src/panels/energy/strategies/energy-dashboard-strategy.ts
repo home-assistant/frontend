@@ -155,7 +155,13 @@ async function fetchEnergyPrefs(
   hass: HomeAssistant,
   defaultCollection?: string
 ): Promise<EnergyPreferences> {
-  const collection = getEnergyDataCollection(hass, {
+  const collection = getEnergyDataCollection(hass.connection, {
+    callWS: hass.callWS,
+    entities: hass.entities,
+    states: hass.states,
+    locale: hass.locale,
+    config: hass.config,
+    panelUrl: hass.panelUrl,
     key: defaultCollection || DEFAULT_ENERGY_COLLECTION_KEY,
     // When landing directly on the "Now" view this warms its real-time
     // collection, so it must be created with midnight rollover too.

@@ -49,6 +49,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { fileDownload } from "../../../../../util/file_download";
+import { renderConfigEntryError } from "../../ha-config-integration-page";
 
 @customElement("zha-config-dashboard")
 class ZHAConfigDashboard extends LitElement {
@@ -89,7 +90,8 @@ class ZHAConfigDashboard extends LitElement {
 
   private async _load(): Promise<void> {
     await this._fetchConfigEntry();
-    if (!this._configEntry) {
+    // Core only has the ZHA commands once the config entry is loaded
+    if (!this._configEntry || this._configEntry.state !== "loaded") {
       return;
     }
     this._fetchConfiguration();
@@ -125,7 +127,8 @@ class ZHAConfigDashboard extends LitElement {
       }
     }
     const deviceOnline =
-      this._offlineDevices < deviceCount || deviceCount === 0;
+      configEntry.state === "loaded" &&
+      (this._offlineDevices < deviceCount || deviceCount === 0);
     return html`
       <hass-subpage
         .hass=${this.hass}
@@ -154,9 +157,16 @@ class ZHAConfigDashboard extends LitElement {
     return html`
       <ha-card class="content network-status">
         ${
-          this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
-            : nothing
+          this._configEntry!.state !== "loaded"
+            ? html`<ha-alert alert-type="error">
+                ${this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.state.${this._configEntry!.state}`
+                )}:
+                ${renderConfigEntryError(this.hass, this._configEntry!)}
+              </ha-alert>`
+            : this._error
+              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              : nothing
         }
         <div class="card-content">
           <div class="heading">
@@ -227,7 +237,7 @@ class ZHAConfigDashboard extends LitElement {
             )}
           >
             <ha-list-item-button
-              href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+              href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}&status=disabled`}
             >
               <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
               <div slot="headline">
@@ -239,7 +249,7 @@ class ZHAConfigDashboard extends LitElement {
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
             <ha-list-item-button
-              href=${`/config/entities/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+              href=${`/config/entities?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
               <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
               <div slot="headline">
@@ -371,6 +381,7 @@ class ZHAConfigDashboard extends LitElement {
                 size="s"
                 .iconPath=${mdiDownload}
                 .progress=${this._generatingBackup}
+                .disabled=${this._configEntry?.state !== "loaded"}
                 @click=${this._createAndDownloadBackup}
               >
                 ${this.hass.localize(

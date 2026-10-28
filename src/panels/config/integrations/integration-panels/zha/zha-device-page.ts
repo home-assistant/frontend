@@ -61,6 +61,13 @@ class ZHADevicePage extends LitElement {
 
   private _deviceRefreshInterval?: number;
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._device) {
+      this._startDeviceRefreshInterval();
+    }
+  }
+
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._clearDeviceRefreshInterval();
@@ -191,7 +198,9 @@ class ZHADevicePage extends LitElement {
       if (!tabs.includes(this._currTab)) {
         this._currTab = tabs[0];
       }
-      this._startDeviceRefreshInterval();
+      if (this.isConnected) {
+        this._startDeviceRefreshInterval();
+      }
     } catch (_err: any) {
       if (this.ieee === ieee) {
         this._error = this.hass.localize(

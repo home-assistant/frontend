@@ -1,22 +1,27 @@
-import { mdiRestore } from "@mdi/js";
+import { mdiGrid, mdiGridLarge } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { conditionalClamp } from "../common/number/clamp";
 import type { CardGridSize } from "../panels/lovelace/common/compute-card-grid-size";
 import { DEFAULT_GRID_SIZE } from "../panels/lovelace/common/compute-card-grid-size";
 import "../panels/lovelace/editor/card-editor/ha-grid-layout-slider";
-import "./ha-icon-button";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
+import "./ha-icon-button";
+
+export const GRID_SIZE_PICKER_ROWS = 8;
 
 @customElement("ha-grid-size-picker")
 export class HaGridSizeEditor extends LitElement {
   @property({ attribute: false }) public value?: CardGridSize;
 
-  @property({ attribute: false }) public rows = 8;
+  @property({ attribute: false }) public autoRows?: number;
+
+  @property({ attribute: false }) public rows = GRID_SIZE_PICKER_ROWS;
 
   @property({ attribute: false }) public columns = 12;
 
@@ -28,9 +33,9 @@ export class HaGridSizeEditor extends LitElement {
 
   @property({ attribute: false }) public columnMax?: number;
 
-  @property({ attribute: false }) public isDefault?: boolean;
-
   @property({ attribute: false }) public step = 1;
+
+  @property({ attribute: false }) public precise = false;
 
   @state() public _localValue?: CardGridSize = { rows: 1, columns: 1 };
 
@@ -42,6 +47,24 @@ export class HaGridSizeEditor extends LitElement {
     if (changedProperties.has("value")) {
       this._localValue = this.value;
     }
+  }
+
+  private _columnsText(columns: CardGridSize["columns"]): string {
+    if (columns === "full") {
+      return this._localize("ui.components.grid-size-picker.full_width");
+    }
+    return this._localize("ui.components.grid-size-picker.columns_value", {
+      count: columns,
+    });
+  }
+
+  private _rowsText(rows: CardGridSize["rows"]): string {
+    if (rows === "auto") {
+      return this._localize("ui.components.grid-size-picker.fit_content");
+    }
+    return this._localize("ui.components.grid-size-picker.rows_value", {
+      count: rows,
+    });
   }
 
   protected render() {
@@ -59,11 +82,23 @@ export class HaGridSizeEditor extends LitElement {
     const columnMin = Math.ceil((this.columnMin ?? 1) / this.step) * this.step;
     const columnMax =
       Math.ceil((this.columnMax ?? this.columns) / this.step) * this.step;
-    const rowValue = autoHeight ? rowMin : this._localValue?.rows;
+    const autoRows = conditionalClamp(this.autoRows ?? rowMin, rowMin, rowMax);
+    const rowValue = autoHeight ? autoRows : this._localValue?.rows;
     const columnValue = this._localValue?.columns;
 
     return html`
       <div class="grid">
+        <ha-icon-button
+          class="precise"
+          .label=${this._localize(
+            this.precise
+              ? "ui.components.grid-size-picker.exit_precise_mode"
+              : "ui.components.grid-size-picker.enter_precise_mode"
+          )}
+          .path=${this.precise ? mdiGrid : mdiGridLarge}
+          .selected=${this.precise}
+          @click=${this._togglePrecise}
+        ></ha-icon-button>
         <ha-grid-layout-slider
           aria-label=${this._localize("ui.components.grid-size-picker.columns")}
           id="columns"
@@ -71,6 +106,11 @@ export class HaGridSizeEditor extends LitElement {
           .max=${columnMax}
           .range=${this.columns}
           .value=${fullWidth ? this.columns : this.value?.columns}
+          .valueText=${
+            columnValue !== undefined
+              ? this._columnsText(columnValue)
+              : undefined
+          }
           .step=${this.step}
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
@@ -85,30 +125,17 @@ export class HaGridSizeEditor extends LitElement {
           .max=${rowMax}
           .range=${this.rows}
           vertical
-          .value=${autoHeight ? rowMin : this.value?.rows}
+          .value=${autoHeight ? autoRows : this.value?.rows}
+          .valueText=${
+            this._localValue?.rows !== undefined
+              ? this._rowsText(this._localValue.rows)
+              : undefined
+          }
           @value-changed=${this._valueChanged}
           @slider-moved=${this._sliderMoved}
           .disabled=${disabledRows}
           tooltip-mode=${disabledRows ? "never" : "always"}
         ></ha-grid-layout-slider>
-        ${
-          !this.isDefault
-            ? html`
-                <ha-icon-button
-                  @click=${this._reset}
-                  class="reset"
-                  .path=${mdiRestore}
-                  label=${this._localize(
-                    "ui.components.grid-size-picker.reset_default"
-                  )}
-                  title=${this._localize(
-                    "ui.components.grid-size-picker.reset_default"
-                  )}
-                >
-                </ha-icon-button>
-              `
-            : nothing
-        }
         <div class="preview">
           <table>
             ${Array(this.rows)
@@ -140,7 +167,7 @@ export class HaGridSizeEditor extends LitElement {
               })}
           </table>
           <div
-            class="preview-card"
+            class=${classMap({ "preview-card": true, auto: autoHeight })}
             style=${styleMap({
               "--rows": rowValue,
               "--columns": fullWidth ? this.columns : columnValue,
@@ -150,6 +177,10 @@ export class HaGridSizeEditor extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  private _togglePrecise() {
+    fireEvent(this, "precise-mode-changed", { value: !this.precise });
   }
 
   private _cellClick(ev) {
@@ -179,32 +210,8 @@ export class HaGridSizeEditor extends LitElement {
   private _valueChanged(ev) {
     ev.stopPropagation();
     const key = ev.currentTarget.id as "rows" | "columns";
-    const currentSize = this.value ?? DEFAULT_GRID_SIZE;
-    let value = ev.detail.value as CardGridSize[typeof key];
-
-    if (
-      key === "columns" &&
-      currentSize.columns === "full" &&
-      value === this.columns
-    ) {
-      value = "full";
-    }
-
-    const newSize = {
-      ...currentSize,
-      [key]: value,
-    };
-    fireEvent(this, "value-changed", { value: newSize });
-  }
-
-  private _reset(ev) {
-    ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: {
-        rows: undefined,
-        columns: undefined,
-      },
-    });
+    const value = ev.detail.value as number;
+    fireEvent(this, "value-changed", { value: { [key]: value } });
   }
 
   private _sliderMoved(ev) {
@@ -226,21 +233,26 @@ export class HaGridSizeEditor extends LitElement {
       .grid {
         display: grid;
         grid-template-areas:
-          "reset column-slider"
+          "precise column-slider"
           "row-slider preview";
         grid-template-rows: auto auto;
         grid-template-columns: auto 1fr;
         gap: var(--ha-space-2);
+      }
+      .precise {
+        grid-area: precise;
+        --ha-icon-button-size: 36px;
+      }
+      .precise[selected] {
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: var(--text-primary-color);
       }
       #columns {
         grid-area: column-slider;
       }
       #rows {
         grid-area: row-slider;
-      }
-      .reset {
-        grid-area: reset;
-        --ha-icon-button-size: 36px;
       }
       .preview {
         position: relative;
@@ -275,6 +287,9 @@ export class HaGridSizeEditor extends LitElement {
           width ease-in-out 180ms,
           height ease-in-out 180ms;
       }
+      .preview-card.auto {
+        mask-image: linear-gradient(to bottom, black 60%, transparent);
+      }
     `,
   ];
 }
@@ -282,5 +297,8 @@ export class HaGridSizeEditor extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-grid-size-picker": HaGridSizeEditor;
+  }
+  interface HASSDomEvents {
+    "precise-mode-changed": { value: boolean };
   }
 }

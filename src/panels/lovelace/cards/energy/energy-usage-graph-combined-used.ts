@@ -1,5 +1,9 @@
 import { round } from "../../../../common/number/round";
 
+// Sources below this share of a period's total can't move a bar visibly,
+// e.g. a tariff meter's last increment just after the tariff switch.
+const NEGLIGIBLE_SHARE = 0.01;
+
 /**
  * In periods where part of the sources' energy did not reach the home (grid
  * charging a battery, a battery exporting), per-source attribution is
@@ -19,26 +23,20 @@ export function buildCombinedUsed(
     if (!round(notUsedInPeriod, 3)) {
       continue;
     }
-    let noOfSources = 0;
-    let source: string | undefined;
-    for (const [key, stats] of Object.entries(bySource)) {
-      if (stats[start]) {
-        source = key;
-        noOfSources++;
-      }
-      if (noOfSources > 1) {
-        break;
-      }
-    }
-    if (noOfSources === 1 && source) {
-      bySource[source][start] = used[start];
-    } else {
-      Object.values(bySource).forEach((stats) => {
-        delete stats[start];
-      });
-      if (round(used[start], 3)) {
-        combined[start] = used[start];
-      }
+    const total = Object.values(bySource).reduce(
+      (sum, stats) => sum + (stats[start] ?? 0),
+      0
+    );
+    const sources = Object.keys(bySource).filter(
+      (key) => bySource[key][start] > total * NEGLIGIBLE_SHARE
+    );
+    Object.values(bySource).forEach((stats) => {
+      delete stats[start];
+    });
+    if (sources.length === 1) {
+      bySource[sources[0]][start] = used[start];
+    } else if (round(used[start], 3)) {
+      combined[start] = used[start];
     }
   }
   return Object.keys(combined).length > 0 ? combined : undefined;

@@ -63,7 +63,30 @@ type LoadedDialogsDict = Record<string, LoadedDialogInfo>;
 
 const LOADED: LoadedDialogsDict = {};
 const OPEN_DIALOG_STACK: DialogState[] = [];
+// Tags of all open dialogs in opening order, including those opened without
+// browser history, which OPEN_DIALOG_STACK doesn't track
+const OPEN_DIALOG_TAGS: string[] = [];
+// Shown through the dialog manager but not modal, and never fire
+// `dialog-closed`, so they must not be tracked as open dialogs
+const NON_MODAL_DIALOG_TAGS = new Set(["notification-manager"]);
 export const FOCUS_TARGET = Symbol.for("HA focus target");
+
+const _removeOpenDialogTag = (dialogTag: string) => {
+  const index = OPEN_DIALOG_TAGS.indexOf(dialogTag);
+  if (index !== -1) {
+    OPEN_DIALOG_TAGS.splice(index, 1);
+  }
+};
+
+/**
+ * Returns the tag name of the topmost open dialog, or `undefined` when no
+ * dialog is open.
+ */
+export const getTopOpenDialogTag = (): string | undefined =>
+  OPEN_DIALOG_TAGS[OPEN_DIALOG_TAGS.length - 1];
+
+/** The URL of the last dialog's entry, when the dialog went back to close. */
+let closedDialogUrl: { pathname: string; search: string } | undefined;
 
 /**
  * Shows a dialog element, lazy-loading it if needed, and optionally integrates
@@ -185,6 +208,11 @@ export const showDialog = async (
     dialogElement = await LOADED[dialogTag].element;
   }
 
+  if (!NON_MODAL_DIALOG_TAGS.has(dialogTag)) {
+    _removeOpenDialogTag(dialogTag);
+    OPEN_DIALOG_TAGS.push(dialogTag);
+  }
+
   if ("dialogNext" in dialogElement! && dialogElement.dialogNext) {
     dialogElement.dialogAnchor = dialogAnchor;
     dialogElement.params = dialogParams;
@@ -240,6 +268,41 @@ export const closeLastDialog = async (historyState?: any) => {
   return true;
 };
 
+/**
+ * Called on the back() of a dialog that closed itself. The page's entry still
+ * has the URL from before the dialog opened, so a change to the search made
+ * while it was open, like a filter written after a delete, is kept. Must run
+ * before anything else reads the URL on that popstate.
+ */
+export const restoreClosedDialogSearch = () => {
+  const closedUrl = closedDialogUrl;
+  closedDialogUrl = undefined;
+  const { history, location } = mainWindow;
+
+  if (
+    closedUrl?.pathname === location.pathname &&
+    closedUrl.search !== location.search
+  ) {
+    history.replaceState(
+      history.state,
+      "",
+      `${location.pathname}${closedUrl.search}${location.hash}`
+    );
+  }
+};
+
+/**
+ * Called after the current entry's URL is rewritten. Until the back() of a
+ * closed dialog lands, that is still the dialog's entry, so keep its search
+ * for restoreClosedDialogSearch().
+ */
+export const updateClosedDialogSearch = () => {
+  if (closedDialogUrl) {
+    const { pathname, search } = mainWindow.location;
+    closedDialogUrl = { pathname, search };
+  }
+};
+
 export const closeAllDialogs = async () => {
   for (let i = OPEN_DIALOG_STACK.length - 1; i >= 0; i--) {
     const closed =
@@ -254,6 +317,17 @@ export const closeAllDialogs = async () => {
 };
 
 const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
+  // Not every dialog passes its tag in the event detail. Without it, only
+  // untrack this dialog when it fired the event itself, not a dialog nested in it
+  const closedElement = ev.currentTarget as HTMLElement;
+  const dialogTag =
+    ev.detail.dialog ??
+    (ev.composedPath()[0] === closedElement
+      ? closedElement.localName
+      : undefined);
+  if (dialogTag) {
+    _removeOpenDialogTag(dialogTag);
+  }
   // If not closed by navigating back, remove the open state from history
   const dialogIndex = OPEN_DIALOG_STACK.findIndex(
     (state) => state.dialogTag === ev.detail.dialog
@@ -270,6 +344,8 @@ const _handleClosed = (ev: HASSDomEvent<DialogClosedParams>) => {
       );
     } else if (dialogIndex !== -1) {
       // if the dialog is the last one and it was indeed open, go back
+      const { pathname, search } = mainWindow.location;
+      closedDialogUrl = { pathname, search };
       mainWindow.history.back();
     }
   }

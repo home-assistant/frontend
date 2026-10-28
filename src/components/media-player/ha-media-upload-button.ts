@@ -1,14 +1,18 @@
+import type { ContextType } from "@lit/context";
 import { mdiUpload } from "@mdi/js";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { apiContext } from "../../data/context";
 import type { MediaPlayerItem } from "../../data/media-player";
 import {
   isLocalMediaSourceContentId,
   uploadLocalMedia,
 } from "../../data/media_source";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
-import type { HomeAssistant } from "../../types";
 import "../ha-button";
 import "../ha-svg-icon";
 
@@ -21,9 +25,12 @@ declare global {
 
 @customElement("ha-media-upload-button")
 class MediaUploadButton extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) currentItem?: MediaPlayerItem;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @state() _uploading = 0;
 
@@ -43,13 +50,13 @@ class MediaUploadButton extends LitElement {
         <ha-svg-icon .path=${mdiUpload} slot="start"></ha-svg-icon>
         ${
           this._uploading > 0
-            ? this.hass.localize(
+            ? this._localize(
                 "ui.components.media-browser.file_management.uploading",
                 {
                   count: this._uploading,
                 }
               )
-            : this.hass.localize(
+            : this._localize(
                 "ui.components.media-browser.file_management.add_media"
               )
         }
@@ -78,10 +85,15 @@ class MediaUploadButton extends LitElement {
 
           try {
             // eslint-disable-next-line no-await-in-loop
-            await uploadLocalMedia(this.hass, target, files[i]);
+            await uploadLocalMedia(
+              this._api.fetchWithAuth,
+              this._localize,
+              target,
+              files[i]
+            );
           } catch (err: any) {
             showAlertDialog(this, {
-              text: this.hass.localize(
+              text: this._localize(
                 "ui.components.media-browser.file_management.upload_failed",
                 {
                   reason: err.message || err,

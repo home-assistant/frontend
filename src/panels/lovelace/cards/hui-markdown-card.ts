@@ -1,25 +1,37 @@
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import hash from "object-hash";
+import { consume } from "../../../common/decorators/consume";
+import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
 import "../../../components/ha-ripple";
+import {
+  configContext,
+  connectionContext,
+  uiContext,
+} from "../../../data/context";
+import type { Themes } from "../../../data/ws-themes";
 import type { RenderTemplateResult } from "../../../data/ws-templates";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
-import type { HomeAssistant } from "../../../types";
+import type {
+  CurrentUser,
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+  HomeAssistantUI,
+} from "../../../types";
 import { CacheManager } from "../../../util/cache-manager";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { MarkdownCardConfig } from "./types";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 
 const templateCache = new CacheManager<RenderTemplateResult>(1000);
@@ -39,9 +51,28 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ type: Boolean }) public preview = false;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection?: Connection;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, CurrentUser | undefined>({
+    transformer: ({ user }) => user,
+  })
+  private _user?: CurrentUser;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes!: Themes;
 
   @state() private _config?: MarkdownCardConfig;
 
@@ -52,6 +83,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   @state() private _templateResult?: RenderTemplateResult;
 
   private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+
+  private _subscribedTo?: { connection: Connection; user?: string };
 
   public getCardSize(): number {
     return this._config === undefined
@@ -174,11 +207,26 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return;
     }
 
-    if (changedProps.has("_config")) {
+    // The first context values arrive before connectedCallback() subscribes,
+    // so only drop a subscription when the connection or user it was made
+    // with differs. _tryConnect() keeps a live subscription and retries a
+    // missing one.
+    if (
+      this._subscribedTo !== undefined &&
+      (this._subscribedTo.connection !== this._connection ||
+        this._subscribedTo.user !== this._user?.name)
+    ) {
+      this._tryDisconnect();
+    }
+    if (
+      changedProps.has("_config") ||
+      changedProps.has("_connection") ||
+      changedProps.has("_user")
+    ) {
       this._tryConnect();
     }
     const shouldBeHidden =
@@ -190,24 +238,27 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       this.toggleAttribute("hidden", shouldBeHidden);
       fireEvent(this, "card-visibility-changed", { value: !shouldBeHidden });
     }
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!this._themes) {
+      return;
+    }
+    const oldThemes = changedProps.get("_themes") as Themes | undefined;
     const oldConfig = changedProps.get("_config") as
       MarkdownCardConfig | undefined;
 
     if (
-      !oldHass ||
+      !oldThemes ||
       !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
+      oldThemes !== this._themes ||
       oldConfig.theme !== this._config.theme
     ) {
-      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+      applyThemesOnElement(this, this._themes, this._config.theme);
     }
   }
 
   private async _tryConnect(): Promise<void> {
     if (
       this._unsubRenderTemplate !== undefined ||
-      !this.hass ||
+      !this._connection ||
       !this._config
     ) {
       return;
@@ -215,10 +266,14 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
     this._error = undefined;
     this._errorLevel = undefined;
+    this._subscribedTo = {
+      connection: this._connection,
+      user: this._user?.name,
+    };
 
     try {
       this._unsubRenderTemplate = subscribeRenderTemplate(
-        this.hass.connection,
+        this._connection,
         (result) => {
           if ("error" in result) {
             // We show the latest error, or a warning if there are no errors
@@ -235,7 +290,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
           entity_ids: this._config.entity_id,
           variables: {
             config: this._config,
-            user: this.hass.user!.name,
+            user: this._user?.name,
           },
           strict: true,
           report_errors: this.preview,
@@ -252,6 +307,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         listeners: { all: false, domains: [], entities: [], time: false },
       };
       this._unsubRenderTemplate = undefined;
+      this._subscribedTo = undefined;
     }
   }
 
@@ -262,12 +318,16 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
     this._unsubRenderTemplate.then((unsub) => unsub()).catch(/* ignore */);
     this._unsubRenderTemplate = undefined;
+    this._subscribedTo = undefined;
     this._error = undefined;
     this._errorLevel = undefined;
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+    fireEvent(this, "hass-action", {
+      config: this._config!,
+      action: ev.detail.action,
+    });
   }
 
   private _handleFocus(ev: FocusEvent) {

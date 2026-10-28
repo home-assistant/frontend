@@ -26,6 +26,7 @@ import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { goBack, navigate } from "../../../common/navigate";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button";
@@ -108,6 +109,9 @@ declare global {
     "insert-after": {
       value: Trigger | Condition | Action | Trigger[] | Condition[] | Action[];
     };
+    "replace-item": {
+      value: Trigger | Condition | Action;
+    };
     "save-automation": undefined;
     paste: {
       item: Trigger | Condition | Action;
@@ -149,7 +153,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
   protected domainHooks: EditorDomainHooks<AutomationConfig> = {
     domain: "automation",
     fetchFileConfig: fetchAutomationFileConfig,
-    normalizeConfig: normalizeAutomationConfig,
+    // The YAML editor hides the id and puts it back first, so load it first
+    // too. Otherwise the key order check marks unchanged YAML as dirty.
+    normalizeConfig: (config, report) => {
+      const { id, ...rest } = normalizeAutomationConfig(config, report);
+      return { id, ...rest };
+    },
     checkValidation: () => this._checkValidation(),
   };
 
@@ -285,7 +294,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                 <ha-button
                   appearance="plain"
                   size="s"
-                  @click=${this._showTrace}
+                  href="/config/automation/trace/${encodeURIComponent(
+                    this.config.id
+                  )}"
+                  @click=${this._traceClicked}
                   slot="toolbar-icon"
                 >
                   ${this.hass.localize(
@@ -711,7 +723,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         ...(initData ? normalizeAutomationConfig(initData) : initData),
       } as AutomationConfig;
       this._initDirtyTracking(
-        { type: "deep" },
+        { type: "deep", compareKeyOrder: true },
         {
           config: baseConfig as AutomationConfig,
           entityRegistryUpdate: this.entityRegistryUpdate,
@@ -729,7 +741,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       getAutomationStateConfig(this.hass, this.entityId).then((c) => {
         this.config = normalizeAutomationConfig(c.config);
         this._initDirtyTracking(
-          { type: "deep" },
+          { type: "deep", compareKeyOrder: true },
           {
             config: this.config,
             entityRegistryUpdate: this.entityRegistryUpdate,
@@ -844,6 +856,12 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       scope: "automation",
       entityReg: this.registryEntry,
     });
+  }
+
+  private async _traceClicked(ev: MouseEvent) {
+    if (isNavigationClick(ev)) {
+      await this._showTrace();
+    }
   }
 
   private async _showTrace() {
@@ -1189,6 +1207,36 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     };
   }
 
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    if (this._manualEditor?.sidebarOpen) {
+      return this._manualEditor.canToggleSidebarYamlMode
+        ? { Y: () => this._manualEditor?.toggleSidebarYamlMode() }
+        : {};
+    }
+    return {
+      Y: () => this._toggleYamlMode(),
+    };
+  }
+
+  private async _toggleYamlMode() {
+    if (this.mode === "gui") {
+      this.switchYamlMode();
+      await this.updateComplete;
+      this._yamlEditor?.focus();
+    } else {
+      this.switchUiMode();
+    }
+  }
+
+  protected supportedSingleKeyShortcuts(): SupportedShortcuts {
+    if (!this._manualEditor?.sidebarOpen) {
+      return {};
+    }
+    return {
+      Escape: () => this._manualEditor?.triggerCloseSidebar(),
+    };
+  }
+
   // @ts-ignore
   private _collapseAll() {
     this._manualEditor?.collapseAll();
@@ -1267,11 +1315,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         this._takeControl();
         break;
       case "toggle_yaml_mode":
-        if (this.mode === "gui") {
-          this.switchYamlMode();
-          break;
-        }
-        this.switchUiMode();
+        this._toggleYamlMode();
         break;
       case "disable":
         this._toggle();

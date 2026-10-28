@@ -1,13 +1,10 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { TTSVoiceSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-tts-voice-picker";
 
 @customElement("ha-selector-tts_voice")
 export class HaTTSVoiceSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: TTSVoiceSelector;
 
   @property() public value?: any;
@@ -27,7 +24,6 @@ export class HaTTSVoiceSelector extends LitElement {
 
   protected render() {
     return html`<ha-tts-voice-picker
-      .hass=${this.hass}
       .value=${this.value}
       .label=${this.label}
       .helper=${this.helper}

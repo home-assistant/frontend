@@ -202,13 +202,7 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
         }
 
         const { friendlyName, deviceName, parentDeviceName, areaName } =
-          computeEntitySearchLabels(
-            entity,
-            registries.entities,
-            registries.devices,
-            registries.areas,
-            registries.floors
-          );
+          computeEntitySearchLabels(entity, registries);
 
         if (
           [friendlyName, deviceName, parentDeviceName, areaName].some((name) =>
@@ -226,7 +220,10 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
   private _renderItem = (entityState: HassEntity) => {
     const { primary, secondary: context } = computeEntityPickerDisplay(
       {
-        ...this._registries,
+        entities: this._registries.entities,
+        devices: this._registries.devices,
+        areas: this._registries.areas,
+        floors: this._registries.floors,
         language: this._i18n.language,
         translationMetadata: this._i18n.translationMetadata,
       },

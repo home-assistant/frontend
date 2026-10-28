@@ -40,8 +40,8 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
@@ -68,6 +68,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
               ? html`
                   <ha-date-input
                     .label=${stateObj.attributes.has_time ? name : undefined}
+                    .accessibleLabel=${stateObj.attributes.has_time ? undefined : name}
                     .locale=${this.hass.locale}
                     .disabled=${stateObj.state === UNAVAILABLE}
                     .value=${stateToIsoDateString(stateObj)}
@@ -88,6 +89,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                           ? stateObj.state.split(" ")[1]
                           : stateObj.state
                     }
+                    .accessibleLabel=${name}
                     .locale=${this.hass.locale}
                     .disabled=${stateObj.state === UNAVAILABLE}
                     @value-changed=${this._timeChanged}

@@ -13,6 +13,7 @@ import { clamp } from "../../common/number/clamp";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
+import { PendingValueSync } from "../../common/util/pending-value-sync";
 import "../../components/ha-big-number";
 import "../../components/ha-control-circular-slider";
 import "../../components/ha-outlined-icon-button";
@@ -53,11 +54,24 @@ export class HaStateControlClimateHumidity extends LitElement {
 
   private _sizeController = createStateControlCircularSliderController(this);
 
+  private _pendingSync = new PendingValueSync();
+
   protected willUpdate(changedProp: PropertyValues<this>): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("stateObj")) {
-      this._targetHumidity = this.stateObj.attributes.humidity;
+    if (!changedProp.has("stateObj")) {
+      return;
     }
+    if (changedProp.get("stateObj")?.entity_id !== this.stateObj.entity_id) {
+      this._debouncedCallService.cancel();
+      this._pendingSync.reset();
+      this._syncTargetHumidity();
+    } else if (this._pendingSync.shouldSync()) {
+      this._syncTargetHumidity();
+    }
+  }
+
+  private _syncTargetHumidity() {
+    this._targetHumidity = this.stateObj.attributes.humidity;
   }
 
   private get _step() {
@@ -76,6 +90,7 @@ export class HaStateControlClimateHumidity extends LitElement {
     const { value } = ev.detail;
     if (typeof value !== "number" || isNaN(value)) return;
     this._targetHumidity = value;
+    this._debouncedCallService.cancel();
     this._callService();
   }
 
@@ -88,10 +103,14 @@ export class HaStateControlClimateHumidity extends LitElement {
   private _debouncedCallService = debounce(() => this._callService(), 1000);
 
   private _callService() {
-    this._api.callService("climate", "set_humidity", {
+    const data = {
       entity_id: this.stateObj!.entity_id,
       humidity: this._targetHumidity,
-    });
+    };
+    return this._pendingSync.run(
+      () => this._api.callService("climate", "set_humidity", data),
+      () => this._syncTargetHumidity()
+    );
   }
 
   private _handleButton(ev) {
@@ -102,6 +121,7 @@ export class HaStateControlClimateHumidity extends LitElement {
     humidity = clamp(humidity, this._min, this._max);
 
     this._targetHumidity = humidity;
+    this._pendingSync.schedule();
     this._debouncedCallService();
   }
 
@@ -127,17 +147,28 @@ export class HaStateControlClimateHumidity extends LitElement {
     `;
   }
 
+  private _formatTarget = (humidity: number) =>
+    this._formatters.formatEntityAttributeValue(
+      this.stateObj,
+      "humidity",
+      humidity
+    );
+
   private _renderButtons() {
     return html`
       <div class="buttons">
         <ha-outlined-icon-button
           .step=${-this._step}
+          .label=${this._localize(
+            "ui.components.climate-control.humidity_down"
+          )}
           @click=${this._handleButton}
         >
           <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
         </ha-outlined-icon-button>
         <ha-outlined-icon-button
           .step=${this._step}
+          .label=${this._localize("ui.components.climate-control.humidity_up")}
           @click=${this._handleButton}
         >
           <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
@@ -223,6 +254,11 @@ export class HaStateControlClimateHumidity extends LitElement {
             .max=${this._max}
             .step=${this._step}
             .current=${currentHumidity}
+            .label=${this._formatters.formatEntityAttributeName(
+              this.stateObj,
+              "humidity"
+            )}
+            .formatValue=${this._formatTarget}
             @value-changed=${this._valueChanged}
             @value-changing=${this._valueChanging}
           >

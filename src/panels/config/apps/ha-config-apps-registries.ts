@@ -174,7 +174,6 @@ export class HaConfigAppsRegistries extends LitElement {
     :host {
       display: block;
       height: 100%;
-      background-color: var(--primary-background-color);
     }
     ha-data-table {
       width: 100%;

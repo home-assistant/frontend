@@ -1,15 +1,26 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import "../components/entity/state-info";
 import "../components/ha-button";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantFormatters } from "../types";
 import { haStyle } from "../resources/styles";
+import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
+import { formattersContext } from "../data/context";
 
 @customElement("state-card-configurator")
 class StateCardConfigurator extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityState"] | undefined
+  >({
+    transformer: (formatters) => formatters?.formatEntityState,
+  })
+  private _formatEntityState?: HomeAssistantFormatters["formatEntityState"];
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
@@ -19,14 +30,13 @@ class StateCardConfigurator extends LitElement {
     return html`
       <div class="horizontal justified layout">
         <state-info
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
         ${
           this.inDialog
             ? html`<ha-button appearance="plain" size="s"
-                >${this.hass.formatEntityState(this.stateObj)}</ha-button
+                >${this._formatEntityState?.(this.stateObj)}</ha-button
               >`
             : nothing
         }

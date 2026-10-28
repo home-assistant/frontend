@@ -1,13 +1,10 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { LanguageSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-language-picker";
 
 @customElement("ha-selector-language")
 export class HaLanguageSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: LanguageSelector;
 
   @property() public value?: any;
@@ -23,7 +20,6 @@ export class HaLanguageSelector extends LitElement {
   protected render() {
     return html`
       <ha-language-picker
-        .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}

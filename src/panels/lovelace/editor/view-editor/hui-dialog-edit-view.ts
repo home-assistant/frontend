@@ -59,12 +59,14 @@ import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import type { EditViewDialogParams } from "./show-edit-view-dialog";
 import type { HaDropdownSelectEvent } from "../../../../components/ha-dropdown";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
+import { LOVELACE_EDIT_TOAST_ID } from "../../types";
 
 const TABS = ["tab-settings", "tab-background", "tab-visibility"] as const;
 
 @customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfig>()(
-  LitElement
+  KeyboardShortcutMixin(LitElement)
 ) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -159,7 +161,6 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
     if (this._yamlMode) {
       content = html`
         <ha-yaml-editor
-          autofocus
           in-dialog
           @value-changed=${this._viewYamlChanged}
         ></ha-yaml-editor>
@@ -355,12 +356,24 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
 
     switch (action) {
       case "toggle-mode":
-        this._yamlMode = !this._yamlMode;
+        this._toggleMode();
         break;
       case "move-to-dashboard":
         this._openSelectDashboard();
         break;
     }
+  }
+
+  private async _toggleMode() {
+    this._yamlMode = !this._yamlMode;
+    if (this._yamlMode) {
+      await this.updateComplete;
+      this._editor?.focus();
+    }
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return this._params ? { Y: () => this._toggleMode() } : {};
   }
 
   private _openSelectDashboard(): void {
@@ -439,6 +452,7 @@ export class HuiDialogEditView extends DirtyStateProviderMixin<LovelaceViewConfi
       });
     } else {
       this._lovelace!.showToast({
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass!.localize(
           "ui.panel.lovelace.editor.select_dashboard.success"
         ),

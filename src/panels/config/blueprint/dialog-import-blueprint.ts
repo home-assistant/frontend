@@ -238,7 +238,7 @@ class DialogImportBlueprint extends DirtyStateProviderMixin<BlueprintImportState
                     @click=${this._import}
                     .disabled=${this._importing}
                     .loading=${this._importing}
-                    .ariaLabel=${this.hass.localize(
+                    .accessibleLabel=${this.hass.localize(
                       `ui.panel.config.blueprint.add.${this._importing ? "importing" : "import_btn"}`
                     )}
                   >
@@ -253,7 +253,7 @@ class DialogImportBlueprint extends DirtyStateProviderMixin<BlueprintImportState
                     @click=${this._save}
                     .disabled=${this._saving || !!this._result.validation_errors}
                     .loading=${this._saving}
-                    .ariaLabel=${this.hass.localize(
+                    .accessibleLabel=${this.hass.localize(
                       `ui.panel.config.blueprint.add.${this._saving ? "saving" : this._result.exists ? "save_btn_override" : "save_btn"}`
                     )}
                   >

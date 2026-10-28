@@ -1,7 +1,8 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import { mdiClose, mdiPlus } from "@mdi/js";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, queryAll } from "lit/decorators";
 import { ensureArray } from "../../../../../common/array/ensure-array";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-icon-button";
@@ -27,8 +28,23 @@ export class HaConversationTrigger
 
   @query("#option_input", true) private _optionInput?: HaInput;
 
+  @queryAll("ha-input.option") private _options!: NodeListOf<HaInput>;
+
   public static get defaultConfig(): ConversationTrigger {
     return { trigger: "conversation", command: "" };
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+    if (changedProps.has("trigger")) {
+      this._validateOptions();
+    }
+  }
+
+  private async _validateOptions() {
+    const options = [...this._options];
+    await Promise.all(options.map((option) => option.updateComplete));
+    options.forEach((option) => option.reportValidity());
   }
 
   protected render() {
@@ -41,14 +57,12 @@ export class HaConversationTrigger
                 (option, index) => html`
                   <ha-input
                     class="option"
-                    iconTrailing
                     .index=${index}
                     .value=${option}
                     .validationMessage=${this.hass.localize(
                       "ui.panel.config.automation.editor.triggers.type.conversation.no_punctuation"
                     )}
                     auto-validate
-                    validateOnInitialRender
                     pattern=${PATTERN}
                     @change=${this._updateOption}
                   >

@@ -1,20 +1,34 @@
+import type { ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
-import { computeStateName } from "../common/entity/compute_state_name";
+import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
 import "../components/entity/state-badge";
 import "../components/ha-control-select-menu";
 import type { HaDropdownSelectEvent } from "../components/ha-dropdown";
+import { apiContext, formattersContext } from "../data/context";
 import { UNAVAILABLE } from "../data/entity/entity";
 import type { InputSelectEntity } from "../data/input_select";
 import { setInputSelectOption } from "../data/input_select";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantFormatters } from "../types";
 
 @customElement("state-card-input_select")
 class StateCardInputSelect extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: InputSelectEntity;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"] | undefined
+  >({
+    transformer: (formatters) => formatters?.formatEntityName,
+  })
+  private _formatEntityName?: HomeAssistantFormatters["formatEntityName"];
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   protected render(): TemplateResult {
     const options = this.stateObj.attributes.options.map((option) => ({
@@ -25,7 +39,7 @@ class StateCardInputSelect extends LitElement {
     return html`
       <state-badge .stateObj=${this.stateObj}></state-badge>
       <ha-control-select-menu
-        .label=${computeStateName(this.stateObj)}
+        .label=${this._formatEntityName?.(this.stateObj, { type: "entity" })}
         .value=${this.stateObj.state}
         .options=${options}
         .disabled=${
@@ -47,7 +61,11 @@ class StateCardInputSelect extends LitElement {
     ) {
       return;
     }
-    await setInputSelectOption(this.hass, this.stateObj.entity_id, option);
+    await setInputSelectOption(
+      this._api.callService,
+      this.stateObj.entity_id,
+      option
+    );
   }
 
   static styles = css`

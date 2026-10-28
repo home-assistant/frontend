@@ -35,6 +35,12 @@ const ENTITIES = [
 
 const triggers = [
   { trigger: "state", entity_id: "light.kitchen", from: "off", to: "on" },
+  {
+    trigger: "state",
+    entity_id: "light.kitchen",
+    not_from: ["unavailable", "unknown"],
+    not_to: "off",
+  },
   { trigger: "mqtt" },
   {
     trigger: "geo_location",

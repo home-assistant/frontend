@@ -1,6 +1,27 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 
+/**
+ * @element ha-dialog-header
+ * @extends {LitElement}
+ *
+ * @summary
+ * Dialog header bar with a navigation icon, title, subtitle, and action items.
+ *
+ * @slot navigationIcon - Leading action, such as a close or back button.
+ * @slot title - Title text.
+ * @slot subtitle - Subtitle text.
+ * @slot actionItems - Trailing actions, such as buttons or menus.
+ * @slot - Content below the header bar.
+ *
+ * @cssprop --ha-dialog-header-white-space - White space of the title and subtitle, set to `normal` to let them wrap. Defaults to `nowrap`.
+ * @cssprop --ha-dialog-header-title-height - Height of the title, set to `auto` when it wraps.
+ * @cssprop --ha-dialog-header-title-color - Color of the title.
+ * @cssprop --ha-dialog-header-subtitle-color - Color of the subtitle.
+ *
+ * @attr {("above"|"below")} subtitle-position - Position of the subtitle relative to the title. Defaults to "below".
+ * @attr {boolean} show-border - Shows a border below the header.
+ */
 @customElement("ha-dialog-header")
 export class HaDialogHeader extends LitElement {
   @property({ type: String, attribute: "subtitle-position" })
@@ -67,7 +88,7 @@ export class HaDialogHeader extends LitElement {
           min-width: 0;
           overflow: hidden;
           text-overflow: ellipsis;
-          white-space: nowrap;
+          white-space: var(--ha-dialog-header-white-space, nowrap);
         }
         .header-title {
           height: var(

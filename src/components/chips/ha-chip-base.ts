@@ -332,6 +332,7 @@ export class HaChipBase extends HaButton {
           display: inline-flex;
           max-width: 100%;
           vertical-align: middle;
+          border-radius: var(--ha-button-border-radius);
           --ha-button-height: 32px;
           --ha-button-border-radius: var(--ha-border-radius-pill);
           --wa-font-weight-action: var(--ha-font-weight-normal);

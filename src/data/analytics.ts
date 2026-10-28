@@ -10,6 +10,7 @@ export interface AnalyticsPreferences {
 
 export interface Analytics {
   preferences: AnalyticsPreferences;
+  onboarded: boolean;
 }
 
 export const getAnalyticsDetails = (hass: HomeAssistant) =>
@@ -21,7 +22,7 @@ export const setAnalyticsPreferences = (
   hass: HomeAssistant,
   preferences: AnalyticsPreferences
 ) =>
-  hass.callWS<AnalyticsPreferences>({
+  hass.callWS<{ preferences: AnalyticsPreferences }>({
     type: "analytics/preferences",
     preferences,
   });

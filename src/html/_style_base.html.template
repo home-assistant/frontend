@@ -1,5 +1,10 @@
 <meta name="viewport" content="width=device-width, user-scalable=no, viewport-fit=cover, initial-scale=1">
 <style>
+  html {
+    /* Prevent iOS Safari from inflating text when rotating to landscape */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
   body {
     font-family: Roboto, Noto, sans-serif;
     -moz-osx-font-smoothing: grayscale;

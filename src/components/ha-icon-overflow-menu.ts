@@ -35,6 +35,8 @@ export class HaIconOverflowMenu extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property() public label?: string;
+
   protected render(): TemplateResult | typeof nothing {
     if (this.items.length === 0) {
       return nothing;
@@ -48,7 +50,7 @@ export class HaIconOverflowMenu extends LitElement {
                 @click=${stopPropagation}
               >
                 <ha-icon-button
-                  .label=${this._localize("ui.common.overflow_menu")}
+                  .label=${this.label ?? this._localize("ui.common.overflow_menu")}
                   .path=${mdiDotsVertical}
                   slot="trigger"
                 ></ha-icon-button>

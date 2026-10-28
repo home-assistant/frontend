@@ -58,6 +58,8 @@ export class DialogEnergyGasSettings
 
   @state() private _costs?: CostType;
 
+  @state() private _numberPriceText = "";
+
   @state() private _pickedDisplayUnit?: string | null;
 
   @state() private _energy_units?: string[];
@@ -80,7 +82,7 @@ export class DialogEnergyGasSettings
       ? { ...params.source }
       : emptyGasEnergyPreference();
     this._pickedDisplayUnit = getDisplayUnit(
-      this.hass,
+      this.hass.states,
       params.source?.stat_energy_from,
       params.source?.stat_energy_from
         ? params.statsMetadata?.[params.source?.stat_energy_from]
@@ -88,11 +90,15 @@ export class DialogEnergyGasSettings
     );
     this._costs = this._source.entity_energy_price
       ? "entity"
-      : this._source.number_energy_price
+      : typeof this._source.number_energy_price === "number"
         ? "number"
         : this._source.stat_cost
           ? "statistic"
           : "no-costs";
+    this._numberPriceText =
+      typeof this._source.number_energy_price === "number"
+        ? String(this._source.number_energy_price)
+        : "";
     this._energy_units = (
       await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
     ).units;
@@ -180,7 +186,6 @@ export class DialogEnergyGasSettings
         </div>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${
             this._params.allowedGasUnitClass || gasUnitClasses
@@ -200,7 +205,6 @@ export class DialogEnergyGasSettings
         ></ha-statistic-picker>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .includeUnitClass=${flowRateUnitClasses}
           .value=${this._source.stat_rate}
           .label=${this.hass.localize(
@@ -224,7 +228,8 @@ export class DialogEnergyGasSettings
           .placeholder=${
             this._source?.stat_energy_from
               ? getStatisticLabel(
-                  this.hass,
+                  this.hass.states,
+                  this.hass.formatEntityName,
                   this._source.stat_energy_from,
                   this._params?.statsMetadata?.[this._source.stat_energy_from]
                 )
@@ -263,7 +268,6 @@ export class DialogEnergyGasSettings
           this._costs === "statistic"
             ? html`<ha-statistic-picker
                 class="price-options"
-                .hass=${this.hass}
                 statistic-types="sum"
                 .value=${this._source.stat_cost}
                 .label=${`${this.hass.localize(
@@ -315,12 +319,10 @@ export class DialogEnergyGasSettings
                     class="price-options"
                     step="any"
                     type="number"
-                    .value=${
-                      this._source.number_energy_price !== null
-                        ? String(this._source.number_energy_price)
-                        : ""
-                    }
-                    @change=${this._numberPriceChanged}
+                    required
+                    auto-validate
+                    .value=${this._numberPriceText}
+                    @input=${this._numberPriceChanged}
                   >
                     ${
                       unitPrice
@@ -343,6 +345,8 @@ export class DialogEnergyGasSettings
             @click=${this._save}
             .disabled=${
               !this._source!.stat_energy_from ||
+              (this._costs === "number" &&
+                typeof this._source!.number_energy_price !== "number") ||
               (!!this._params?.source && !this.isDirtyState)
             }
             slot="primaryAction"
@@ -359,10 +363,14 @@ export class DialogEnergyGasSettings
     this._updateFormDirtyState();
   }
 
-  private _numberPriceChanged(ev: InputEvent) {
+  private _numberPriceChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    // Render the typed text so partial input such as "0." is not rewritten
+    this._numberPriceText = ev.currentTarget.value ?? "";
     this._source = {
       ...this._source!,
-      number_energy_price: Number((ev.target as HTMLInputElement).value),
+      number_energy_price: this._numberPriceText
+        ? parseFloat(this._numberPriceText)
+        : null,
       entity_energy_price: null,
       stat_cost: null,
     };
@@ -370,6 +378,7 @@ export class DialogEnergyGasSettings
   }
 
   private _priceStatChanged(ev: CustomEvent) {
+    this._numberPriceText = "";
     this._source = {
       ...this._source!,
       entity_energy_price: null,
@@ -380,6 +389,7 @@ export class DialogEnergyGasSettings
   }
 
   private _priceEntityChanged(ev: CustomEvent) {
+    this._numberPriceText = "";
     this._source = {
       ...this._source!,
       entity_energy_price: ev.detail.value,
@@ -399,7 +409,7 @@ export class DialogEnergyGasSettings
 
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (ev.detail.value) {
-      const [metadata] = await getStatisticMetadata(this.hass, [
+      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
         ev.detail.value,
       ]);
       if (
@@ -412,7 +422,7 @@ export class DialogEnergyGasSettings
         this.requestUpdate("_params");
       }
       this._pickedDisplayUnit = getDisplayUnit(
-        this.hass,
+        this.hass.states,
         ev.detail.value,
         metadata
       );
@@ -450,6 +460,7 @@ export class DialogEnergyGasSettings
         this._source!.entity_energy_price = null;
         this._source!.number_energy_price = null;
         this._source!.stat_cost = null;
+        this._numberPriceText = "";
       }
       await this._params!.saveCallback(this._source!);
       this._markDirtyStateClean();

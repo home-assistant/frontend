@@ -8,7 +8,7 @@ import { FIXED_EPOCH_MS } from "../fixtures/history-states";
 import { generateStatistics } from "../fixtures/statistics";
 
 const computedStyle = createMockComputedStyle();
-const hass = createMockHass();
+const { states, formatEntityName, localize } = createMockHass();
 const dayMs = 24 * 60 * 60 * 1000;
 
 const buildMetadata = (
@@ -54,7 +54,9 @@ const sumMonth = generateStatistics(3, {
 });
 
 const base = {
-  hass,
+  states,
+  formatEntityName,
+  localize,
   computedStyle,
   now: new Date(FIXED_EPOCH_MS + 31 * dayMs),
   hiddenStats: new Set<string>(),

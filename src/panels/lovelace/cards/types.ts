@@ -41,6 +41,10 @@ import type {
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
+import type {
+  PICTURE_ELEMENTS_EDITOR_BRIDGE,
+  PictureElementsEditorBridge,
+} from "./picture-elements/editor-bridge";
 
 export type AlarmPanelCardConfigState =
   "arm_away" | "arm_home" | "arm_night" | "arm_vacation" | "arm_custom_bypass";
@@ -88,6 +92,7 @@ export interface EntityCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
+  color?: string;
   attribute?: string;
   unit?: string;
   theme?: string;
@@ -429,6 +434,7 @@ export interface MapCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   auto_fit?: boolean;
   fit_zones?: boolean;
+  show_zone_radius?: boolean;
   default_zoom?: number;
   show_all?: boolean;
   entities?: (MapEntityConfig | string)[];
@@ -489,6 +495,15 @@ export type ClockCardDatePart =
   | "separator-dot"
   | "separator-new-line";
 
+export interface DateCardConfig extends LovelaceCardConfig {
+  type: "date";
+  title?: string;
+  date_size?: "small" | "medium" | "large";
+  date_format?: ClockCardDatePart[];
+  time_zone?: string;
+  no_background?: boolean;
+}
+
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
@@ -506,6 +521,7 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   title?: string;
   show_names?: boolean;
+  label_position?: "side" | "below";
   logarithmic_scale?: boolean;
   min_y_axis?: number;
   max_y_axis?: number;
@@ -555,10 +571,6 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   alt_text?: string;
 }
 
-// Symbol for preview click callback - preserved through spreads, not serialized
-// This allows the editor to attach a callback that only exists on the edited card's config
-export const PREVIEW_CLICK_CALLBACK = Symbol("previewClickCallback");
-
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string | MediaSelectorValue;
@@ -573,7 +585,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   theme?: string;
   dark_mode_image?: string | MediaSelectorValue;
   dark_mode_filter?: string;
-  [PREVIEW_CLICK_CALLBACK]?: (x: number, y: number) => void;
+  [PICTURE_ELEMENTS_EDITOR_BRIDGE]?: PictureElementsEditorBridge;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
@@ -628,6 +640,7 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
+  color?: string;
   graph?: string;
   unit?: string;
   detail?: number;
@@ -685,7 +698,16 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
-export interface TileCardConfig extends LovelaceCardConfig {
+export interface TileActionsConfig {
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+  icon_tap_action?: ActionConfig;
+  icon_hold_action?: ActionConfig;
+  icon_double_tap_action?: ActionConfig;
+}
+
+export interface TileCardConfig extends LovelaceCardConfig, TileActionsConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   hide_state?: boolean;
@@ -694,12 +716,6 @@ export interface TileCardConfig extends LovelaceCardConfig {
   color?: string;
   show_entity_picture?: boolean;
   vertical?: boolean;
-  tap_action?: ActionConfig;
-  hold_action?: ActionConfig;
-  double_tap_action?: ActionConfig;
-  icon_tap_action?: ActionConfig;
-  icon_hold_action?: ActionConfig;
-  icon_double_tap_action?: ActionConfig;
   features?: LovelaceCardFeatureConfig[];
   features_position?: LovelaceCardFeaturePosition;
   time_format?: TimestampRenderingFormat;
@@ -738,8 +754,16 @@ export interface ShortcutCardConfig extends LovelaceCardConfig {
 export interface AlertCardConfig extends LovelaceCardConfig {
   type: "alert";
   entity: string;
-  color?: string;
+  name?: string | EntityNameItem | EntityNameItem[];
+  icon?: string;
+  alert_color?: string;
+  clear_color?: string;
   pulse?: boolean;
+  hide_state?: boolean;
+  vertical?: boolean;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface ToggleGroupCardConfig extends LovelaceCardConfig {

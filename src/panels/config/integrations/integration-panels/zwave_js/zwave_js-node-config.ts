@@ -34,7 +34,6 @@ import type {
   ZwaveJSNodeMetadata,
 } from "../../../../../data/zwave_js";
 import {
-  computeSetConfigParamStatus,
   fetchZwaveNodeCapabilities,
   fetchZwaveNodeConfigParameters,
   fetchZwaveNodeMetadata,
@@ -62,7 +61,7 @@ const icons = {
 };
 
 interface ConfigParamResult {
-  status: ZWaveJSSetConfigParamStatus;
+  status: ZWaveJSSetConfigParamStatus | "error";
   error?: string;
 }
 
@@ -148,7 +147,7 @@ class ZWaveJSNodeConfig extends LitElement {
     const device = this.hass.devices[this.deviceId];
 
     const deviceName = device
-      ? computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
+      ? computeDeviceNameDisplay(device, this.hass.localize)
       : "";
 
     return html`
@@ -207,7 +206,7 @@ class ZWaveJSNodeConfig extends LitElement {
           </div>
           ${Object.entries(
             groupBy(Object.entries(this._config), ([_, item]) =>
-              item.endpoint.toString()
+              String(item.endpoint ?? 0)
             )
           ).map(
             ([endpoint, configParamEntries]) =>
@@ -390,7 +389,6 @@ class ZWaveJSNodeConfig extends LitElement {
         return html`
           ${labelAndDescription}
           <ha-generic-picker
-            .hass=${this.hass}
             .value=${item.value?.toString()}
             allow-custom-value
             hide-clear-icon
@@ -458,7 +456,6 @@ class ZWaveJSNodeConfig extends LitElement {
       return html`
         ${labelAndDescription}
         <ha-generic-picker
-          .hass=${this.hass}
           .disabled=${!item.metadata.writeable}
           .value=${item.value?.toString()}
           .key=${id}
@@ -687,13 +684,13 @@ class ZWaveJSNodeConfig extends LitElement {
         this.hass,
         this.deviceId,
         target.property,
-        target.endpoint,
+        target.endpoint ?? 0,
         value,
         target.propertyKey ? target.propertyKey : undefined
       );
       this._config![target.key].value = value;
 
-      this._setResult(target.key, computeSetConfigParamStatus(result.status));
+      this._setResult(target.key, result.status);
     } catch (err: any) {
       this._setError(target.key, err.message);
     }

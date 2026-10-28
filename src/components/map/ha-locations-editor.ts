@@ -8,7 +8,7 @@ import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { MAP_MAX_ZOOM } from "../../common/map/base-layer";
-import type { MapLatLng } from "../../common/map/map-engine";
+import type { MapLatLng, MapView } from "../../common/map/map-engine";
 import { circleBoundsPoints } from "../../common/map/map-engine";
 import { internationalizationContext, uiContext } from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
@@ -43,13 +43,20 @@ export interface MarkerLocation {
   icon?: string;
   iconPath?: string;
   radius_color?: string;
+  /** Draw as a zone marker, without a radius */
+  zone_marker?: boolean;
   location_editable?: boolean;
   radius_editable?: boolean;
   /** Clicking or activating the marker fires marker-clicked */
   clickable?: boolean;
+  /** Counts toward the map fit; defaults to true */
+  fit?: boolean;
 }
 
 const ICON_SIZE = 24;
+
+const isZoneMarker = (location: MarkerLocation): boolean =>
+  !!location.radius || !!location.zone_marker;
 
 /**
  * A map with draggable markers and zone circles, drawn by ha-map. Without
@@ -90,6 +97,16 @@ export class HaLocationsEditor extends LitElement {
 
   public fitMap(options?: { zoom?: number; pad?: number }): void {
     this.map.fitMap(options);
+  }
+
+  public getView(): MapView | undefined {
+    const view = this.map.getView();
+    return (
+      view && {
+        ...view,
+        center: [view.center[0], this._normalizeLongitude(view.center[1])],
+      }
+    );
   }
 
   public fitBounds(
@@ -178,7 +195,7 @@ export class HaLocationsEditor extends LitElement {
         location: [location.latitude, location.longitude],
         radius: location.radius,
         element: this._elementFor(location),
-        elementSize: location.radius
+        elementSize: isZoneMarker(location)
           ? [ZONE_CIRCLE_SIZE, ZONE_CIRCLE_SIZE]
           : [ICON_SIZE, ICON_SIZE],
         title: location.name,
@@ -186,6 +203,7 @@ export class HaLocationsEditor extends LitElement {
         locationEditable: location.location_editable,
         radiusEditable: location.radius_editable,
         activatable: location.clickable,
+        fit: location.fit,
       }));
     }
   );
@@ -196,7 +214,7 @@ export class HaLocationsEditor extends LitElement {
   private _elementsThemes?: Themes;
 
   private _elementFor(location: MarkerLocation): HTMLElement | undefined {
-    const isZone = !!location.radius;
+    const isZone = isZoneMarker(location);
     const key = JSON.stringify([
       isZone,
       location.icon,
@@ -334,7 +352,7 @@ export class HaLocationsEditor extends LitElement {
   static styles = css`
     .map {
       position: relative;
-      height: 100%;
+      height: var(--ha-locations-editor-map-height, 100%);
     }
     ha-map {
       display: block;

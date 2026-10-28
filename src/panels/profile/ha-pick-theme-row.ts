@@ -47,7 +47,6 @@ export class HaPickThemeRow extends SubscribeMixin(LitElement) {
 
     return html`
       <ha-theme-settings
-        .hass=${this.hass}
         .selectedTheme=${this.hass.selectedTheme}
         .narrow=${this.narrow}
         .heading=${this.hass.localize("ui.panel.profile.themes.header")}

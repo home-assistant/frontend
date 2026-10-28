@@ -1,4 +1,4 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -10,6 +10,7 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import {
   consumeEntityRegistryEntry,
   consumeEntityState,
+  consumeLocalize,
 } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -26,11 +27,21 @@ import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
-import { uiContext } from "../../../data/context";
+import {
+  configContext,
+  formattersContext,
+  uiContext,
+} from "../../../data/context";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { Themes } from "../../../data/ws-themes";
-import type { HomeAssistant, HomeAssistantUI } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantUI,
+} from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasAction } from "../common/has-action";
@@ -89,7 +100,20 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     };
   }
 
-  public hass!: HomeAssistant;
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
 
   @state() private _config?: ButtonCardConfig;
 
@@ -161,13 +185,13 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
     if (this._config.entity && !stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this._localize, this._hassConfig)}
         </hui-warning>
       `;
     }
 
-    const name = this.hass.formatEntityName(
+    const name = this._formatters.formatEntityName(
       stateObj || EMPTY_STATE_OBJ,
       this._config.name
     );
@@ -223,7 +247,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         ${
           this._config.show_state && stateObj
             ? html`<span class="state">
-                ${this.hass.formatEntityState(stateObj)}
+                ${this._formatters.formatEntityState(stateObj)}
               </span>`
             : nothing
         }
@@ -239,8 +263,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     if (!changedProps.has("_themes") && !changedProps.has("_config")) {
       return;
     }
-    const oldThemes = changedProps.get("_themes") as
-      HomeAssistant["themes"] | undefined;
+    const oldThemes = changedProps.get("_themes") as Themes | undefined;
     const oldConfig = changedProps.get("_config") as
       ButtonCardConfig | undefined;
 

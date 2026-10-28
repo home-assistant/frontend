@@ -9,6 +9,7 @@
 //   await checkTaskAuthorization({ github, context, core });
 
 import type { GitHubScriptArgs, IssuePayload } from "./github-script.d.ts";
+import { withRetry } from "./github-retry.mts";
 
 export default async function checkTaskAuthorization({
   github,
@@ -19,17 +20,20 @@ export default async function checkTaskAuthorization({
 
   // Check if user is an organization member
   try {
-    await github.rest.orgs.checkMembershipForUser({
-      org: "home-assistant",
-      username: issueAuthor,
-    });
+    await withRetry("organization membership check", () =>
+      github.rest.orgs.checkMembershipForUser({
+        org: "home-assistant",
+        username: issueAuthor,
+      })
+    );
     core.info(`✅ ${issueAuthor} is an organization member`);
     return; // Authorized
   } catch (_error) {
     core.info(`❌ ${issueAuthor} is not authorized to create Task issues`);
   }
 
-  // Close the issue with a comment
+  // Close the issue with a comment. Not retried, as a retry after GitHub
+  // created the comment would post it twice.
   await github.rest.issues.createComment({
     owner: context.repo.owner,
     repo: context.repo.repo,
@@ -43,18 +47,22 @@ export default async function checkTaskAuthorization({
       `If you believe you should have access to create Task issues, please contact the maintainers.`,
   });
 
-  await github.rest.issues.update({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    issue_number: context.issue.number,
-    state: "closed",
-  });
+  await withRetry("issue close", () =>
+    github.rest.issues.update({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      issue_number: context.issue.number,
+      state: "closed",
+    })
+  );
 
   // Add a label to indicate this was auto-closed
-  await github.rest.issues.addLabels({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    issue_number: context.issue.number,
-    labels: ["auto-closed"],
-  });
+  await withRetry("auto-closed label", () =>
+    github.rest.issues.addLabels({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      issue_number: context.issue.number,
+      labels: ["auto-closed"],
+    })
+  );
 }

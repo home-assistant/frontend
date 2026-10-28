@@ -8,6 +8,7 @@ import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { PendingValueSync } from "../../../common/util/pending-value-sync";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-control-slider";
 import type { ClimateEntity } from "../../../data/climate";
@@ -85,6 +86,8 @@ class HuiTargetHumidityCardFeature
 
   @state() private _targetHumidity?: number;
 
+  private _pendingSync = new PendingValueSync();
+
   static getStubConfig(): TargetHumidityCardFeatureConfig {
     return {
       type: "target-humidity",
@@ -106,9 +109,23 @@ class HuiTargetHumidityCardFeature
 
   protected willUpdate(changedProp: PropertyValues): void {
     super.willUpdate(changedProp);
-    if (changedProp.has("_stateObj") && this._stateObj) {
-      this._targetHumidity = this._stateObj.attributes.humidity;
+    if (!changedProp.has("_stateObj")) {
+      return;
     }
+    const oldStateObj = changedProp.get("_stateObj") as HassEntity | undefined;
+    if (oldStateObj?.entity_id !== this._stateObj?.entity_id) {
+      this._pendingSync.reset();
+      this._syncTargetHumidity();
+    } else if (this._pendingSync.shouldSync()) {
+      this._syncTargetHumidity();
+    }
+  }
+
+  private _syncTargetHumidity() {
+    if (!this._stateObj) {
+      return;
+    }
+    this._targetHumidity = this._stateObj.attributes.humidity;
   }
 
   private get _min() {
@@ -128,10 +145,14 @@ class HuiTargetHumidityCardFeature
 
   private _callService() {
     const domain = computeStateDomain(this._stateObj!);
-    this._api.callService(domain, "set_humidity", {
+    const data = {
       entity_id: this._stateObj!.entity_id,
       humidity: this._targetHumidity,
-    });
+    };
+    return this._pendingSync.run(
+      () => this._api.callService(domain, "set_humidity", data),
+      () => this._syncTargetHumidity()
+    );
   }
 
   protected render() {
@@ -148,7 +169,7 @@ class HuiTargetHumidityCardFeature
       return html`
         <ha-control-button-group>
           <ha-control-number-buttons
-            .value=${this._stateObj.attributes.humidity}
+            .value=${this._targetHumidity}
             .min=${this._min}
             .max=${this._max}
             .disabled=${this._stateObj.state === UNAVAILABLE}
@@ -167,7 +188,7 @@ class HuiTargetHumidityCardFeature
 
     return html`
       <ha-control-slider
-        .value=${this._stateObj.attributes.humidity}
+        .value=${this._targetHumidity}
         .min=${this._min}
         .max=${this._max}
         .disabled=${this._stateObj!.state === UNAVAILABLE}

@@ -105,4 +105,4 @@ To help with the load of incoming pull requests:
   Below, some useful links you could explore:
 -->
 [docs-repository]: https://github.com/home-assistant/home-assistant.io
-[perfect-pr]: https://developers.home-assistant.io/docs/review-process/#creating-the-perfect-pr
+[perfect-pr]: https://contributors.home-assistant.io/start/pull-requests/#before-you-open-it

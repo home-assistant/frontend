@@ -49,7 +49,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           }
         );
       });
-      mql.addListener((ev) => this._applyTheme(ev.matches));
+      mql.addEventListener("change", (ev) => this._applyTheme(ev.matches));
       if (!this._themeApplied && mql.matches) {
         applyThemesOnElement(
           document.documentElement,
@@ -152,14 +152,21 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         this._updateHass({
           themes: { ...this.hass.themes!, darkMode },
         });
+      }
 
-        const schemeMeta = document.querySelector("meta[name=color-scheme]");
-        if (schemeMeta) {
-          schemeMeta.setAttribute(
-            "content",
-            darkMode ? "dark" : themeName === "default" ? "light" : "dark light"
-          );
-        }
+      // Themes with modes are resolved to light or dark above. Only themes
+      // without modes may be dark themes, so let the browser choose for them.
+      const schemeMeta = document.querySelector("meta[name=color-scheme]");
+      if (schemeMeta) {
+        schemeMeta.setAttribute(
+          "content",
+          darkMode
+            ? "dark"
+            : themeName === "default" ||
+                (selectedTheme?.modes && "light" in selectedTheme.modes)
+              ? "light"
+              : "dark light"
+        );
       }
 
       const themeMeta = document.querySelector("meta[name=theme-color]");

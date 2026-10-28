@@ -39,6 +39,9 @@
       html {
         background-color: var(--primary-background-color, #fafafa);
         color: var(--primary-text-color, #212121);
+        /* Prevent iOS Safari from inflating text when rotating to landscape */
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
       }
       @media (prefers-color-scheme: dark) {
         html {

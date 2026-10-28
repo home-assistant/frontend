@@ -1,4 +1,4 @@
-import { type LitElement, css } from "lit";
+import { type LitElement, type PropertyValues, css } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { supportsNativeElementInternals } from "../../common/feature-detect/support-native-element-internals";
@@ -23,6 +23,7 @@ export interface WaInput {
   ): void;
   checkValidity(): boolean;
   validationMessage: string;
+  updateComplete?: Promise<boolean>;
 }
 
 export interface WaInputMixinInterface {
@@ -224,6 +225,18 @@ export const WaInputMixin = <T extends Constructor<LitElement>>(
       if (this.autoValidate) {
         this._invalid = !this.checkValidity();
       }
+    }
+
+    protected updated(changedProperties: PropertyValues): void {
+      super.updated(changedProperties);
+      if (this._invalid && changedProperties.has("value")) {
+        this._revalidate();
+      }
+    }
+
+    private async _revalidate(): Promise<void> {
+      await this._formControl?.updateComplete;
+      this._invalid = !this.checkValidity();
     }
 
     protected _handleInvalid(): void {

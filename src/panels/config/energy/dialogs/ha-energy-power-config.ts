@@ -112,7 +112,6 @@ export class HaEnergyPowerConfig extends LitElement {
         this.powerType === "standard"
           ? html`
               <ha-statistic-picker
-                .hass=${this.hass}
                 .includeUnitClass=${powerUnitClasses}
                 .value=${this.powerConfig.stat_rate}
                 .label=${this.hass.localize(
@@ -135,7 +134,6 @@ export class HaEnergyPowerConfig extends LitElement {
         this.powerType === "inverted"
           ? html`
               <ha-statistic-picker
-                .hass=${this.hass}
                 .includeUnitClass=${powerUnitClasses}
                 .value=${this.powerConfig.stat_rate_inverted}
                 .label=${this.hass.localize(
@@ -159,7 +157,6 @@ export class HaEnergyPowerConfig extends LitElement {
         this.powerType === "two_sensors"
           ? html`
               <ha-statistic-picker
-                .hass=${this.hass}
                 .includeUnitClass=${powerUnitClasses}
                 .value=${this.powerConfig.stat_rate_from}
                 .label=${this.hass.localize(
@@ -174,7 +171,6 @@ export class HaEnergyPowerConfig extends LitElement {
                 .errorMessage=${this._requiredError}
               ></ha-statistic-picker>
               <ha-statistic-picker
-                .hass=${this.hass}
                 .includeUnitClass=${powerUnitClasses}
                 .value=${this.powerConfig.stat_rate_to}
                 .label=${this.hass.localize(

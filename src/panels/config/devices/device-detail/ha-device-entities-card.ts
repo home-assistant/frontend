@@ -9,7 +9,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-list";
 import "../../../../components/ha-list-item";
-import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name";
+import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name_display";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import { entryIcon } from "../../../../data/icons";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
@@ -63,7 +63,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     const mainEntities: EntityRegistryStateEntry[] = [];
     const additionalEntities: EntityRegistryStateEntry[] = [];
     enabledEntities.forEach((entry) => {
-      if (computeEntityEntryName(entry, this.hass.devices)) {
+      if (computeEntityEntryName(entry)) {
         additionalEntities.push(entry);
       } else {
         mainEntities.push(entry);
@@ -197,9 +197,12 @@ export class HaDeviceEntitiesCard extends LitElement {
     addEntitiesToLovelaceView(
       this,
       this.hass,
-      computeCards(this.hass, entities, {
-        title: this.deviceName,
-      }),
+      computeCards(
+        this.hass,
+        entities,
+        { title: this.deviceName },
+        { entityName: { type: "entity" } }
+      ),
       computeSection(entities, {
         title: this.deviceName,
       }),

@@ -17,9 +17,73 @@ import {
   type LovelaceSectionRawConfig,
 } from "../../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
+import { DEFAULT_MAX_COLUMNS } from "../../views/const";
+
+const COLUMN_SPAN_NAMES = ["single", "double", "triple"] as const;
+
+const MAX_NAMED_COLUMN_SPAN = COLUMN_SPAN_NAMES.length + 1;
+
+const computeColumnSpanLabel = (
+  span: number,
+  maxColumns: number,
+  localize: LocalizeFunc
+) => {
+  if (span >= maxColumns) {
+    return localize(
+      "ui.panel.lovelace.editor.edit_section.settings.column_span_options.full"
+    );
+  }
+  return localize(
+    `ui.panel.lovelace.editor.edit_section.settings.column_span_options.${COLUMN_SPAN_NAMES[span - 1]}`
+  );
+};
+
+const computeColumnSpanSchemas = (
+  maxColumns: number,
+  localize: LocalizeFunc
+) => {
+  if (maxColumns <= 1) {
+    return [];
+  }
+  if (maxColumns > MAX_NAMED_COLUMN_SPAN) {
+    return [
+      {
+        name: "column_span",
+        selector: {
+          number: { min: 1, max: maxColumns, slider_ticks: true },
+        },
+      },
+    ] as const;
+  }
+  const options = Array.from({ length: maxColumns }, (_, i) => {
+    const span = i + 1;
+    return {
+      value: String(span),
+      label: computeColumnSpanLabel(span, maxColumns, localize),
+      image: {
+        src: `/static/images/form/section_column_span_${span}_of_${maxColumns}.svg`,
+        src_dark: `/static/images/form/section_column_span_${span}_of_${maxColumns}_dark.svg`,
+        flip_rtl: true,
+      },
+    };
+  });
+  return [
+    {
+      name: "column_span",
+      selector: {
+        select: {
+          mode: "box",
+          box_max_columns:
+            maxColumns === MAX_NAMED_COLUMN_SPAN ? 2 : maxColumns,
+          options,
+        },
+      },
+    },
+  ] as const;
+};
 
 interface SettingsData {
-  column_span?: number;
+  column_span?: string | number;
   background_enabled?: boolean;
   background_color?: string;
   background_opacity?: number;
@@ -35,20 +99,30 @@ export class HuiDialogEditSection extends LitElement {
 
   @property({ attribute: false }) public viewConfig!: LovelaceViewConfig;
 
+  private get _maxColumns() {
+    return this.viewConfig.max_columns || DEFAULT_MAX_COLUMNS;
+  }
+
+  private get _displayedColumnSpan() {
+    return String(
+      Math.min(
+        this.config.column_span ?? DEFAULT_SECTION_COLUMN_SPAN,
+        this._maxColumns
+      )
+    );
+  }
+
+  private get _columnSpanFormValue() {
+    if (this._maxColumns > MAX_NAMED_COLUMN_SPAN) {
+      return Number(this._displayedColumnSpan);
+    }
+    return this._displayedColumnSpan;
+  }
+
   private _schema = memoizeOne(
-    (maxColumns: number, localize: LocalizeFunc) =>
+    (localize: LocalizeFunc, maxColumns: number) =>
       [
-        {
-          name: "column_span",
-          default: DEFAULT_SECTION_COLUMN_SPAN,
-          selector: {
-            number: {
-              min: 1,
-              max: maxColumns,
-              slider_ticks: true,
-            },
-          },
-        },
+        ...computeColumnSpanSchemas(maxColumns, localize),
         {
           name: "background_enabled",
           selector: { boolean: {} },
@@ -104,21 +178,18 @@ export class HuiDialogEditSection extends LitElement {
   );
 
   render() {
-    const backgroundEnabled = this.config.background !== undefined;
     const background = resolveSectionBackground(this.config.background);
+    const backgroundEnabled = background !== undefined;
 
     const data: SettingsData = {
-      column_span: this.config.column_span,
+      column_span: this._columnSpanFormValue,
       background_enabled: backgroundEnabled,
       background_color: background?.color,
       background_opacity: background?.opacity,
       theme: this.config.theme,
     };
 
-    const schema = this._schema(
-      this.viewConfig.max_columns || 4,
-      this._localize
-    );
+    const schema = this._schema(this._localize, this._maxColumns);
 
     return html`
       <ha-form
@@ -153,10 +224,15 @@ export class HuiDialogEditSection extends LitElement {
       ...this.config,
     };
 
-    if (newData.column_span) {
-      newConfig.column_span = newData.column_span;
-    } else {
+    if (newData.column_span === undefined) {
       delete newConfig.column_span;
+    } else if (String(newData.column_span) !== this._displayedColumnSpan) {
+      const columnSpan = Number(newData.column_span);
+      if (columnSpan === DEFAULT_SECTION_COLUMN_SPAN) {
+        delete newConfig.column_span;
+      } else {
+        newConfig.column_span = columnSpan;
+      }
     }
 
     if (newData.background_enabled) {

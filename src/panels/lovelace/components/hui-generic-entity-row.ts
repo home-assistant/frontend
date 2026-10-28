@@ -46,8 +46,8 @@ export class HuiGenericEntityRow extends LitElement {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this.config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
@@ -97,7 +97,6 @@ export class HuiGenericEntityRow extends LitElement {
                             this.secondaryText ||
                             html`<state-display
                               .stateObj=${stateObj}
-                              .hass=${this.hass}
                               .content=${this.config.secondary_info}
                               .timeFormat=${this.config.time_format}
                               .name=${name}

@@ -54,6 +54,10 @@ http://localhost:8090/?demo=<second slug>#/energy/water
 - `demo/src/stubs/`: Mocked WebSocket and REST APIs.
 - `demo/script/develop_demo`, `demo/script/build_demo`: Development server and static build wrappers.
 
+## Core Data
+
+The service descriptions in `src/fake_data/demo_services.ts` and the trigger and condition descriptions and icons in `demo/src/stubs/automation_platforms_*.ts` are generated from Home Assistant Core. Do not edit them by hand. Run `script/gen_demo_core_data` to regenerate them from the core `dev` branch, and add a domain to the lists in `build-scripts/gulp/gen-demo-core-data.js` when the demo needs its services, triggers, or conditions. Their translations come from the backend translations merged into the demo build.
+
 ## Shared Gallery Stubs
 
 `demo/src/stubs/` is shared, not demo-private: gallery pages import from it directly. Before changing or removing anything a stub does, search for its callers across `demo/src/` and `gallery/src/`, then check the affected gallery pages as well as the demo.

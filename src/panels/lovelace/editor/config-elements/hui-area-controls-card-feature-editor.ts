@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-area-controls-picker";
 import "../../../../components/ha-form/ha-form";
 import type {
@@ -195,7 +194,7 @@ export class HuiAreaControlsCardFeatureEditor
     if ("entity_id" in item) {
       const entityState = this.hass.states[item.entity_id];
       if (entityState) {
-        return computeStateName(entityState);
+        return this.hass.formatEntityName(entityState);
       }
       return item.entity_id;
     }

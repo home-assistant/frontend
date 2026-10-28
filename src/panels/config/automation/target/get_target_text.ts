@@ -1,6 +1,6 @@
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
-import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
+import { computeEntityNameParts } from "../../../../common/entity/compute_entity_name_display";
 import { computeFloorName } from "../../../../common/entity/compute_floor_name";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
@@ -43,13 +43,9 @@ export const getTargetText = (
   }
   if (targetType === "entity" && states[targetId]) {
     const stateObj = states[targetId];
-    const [entityName, deviceName] = computeEntityNameList(
+    const { entity: entityName, device: deviceName } = computeEntityNameParts(
       stateObj,
-      [{ type: "entity" }, { type: "device" }, { type: "area" }],
-      registries.entities,
-      registries.devices,
-      registries.areas,
-      registries.floors
+      registries
     );
 
     return entityName || deviceName || targetId;

@@ -74,7 +74,6 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
     if (this.selector.state?.multiple) {
       return html`
         <ha-entity-states-picker
-          .hass=${this.hass}
           .entityId=${this._entityIds}
           .attribute=${
             this.selector.state?.attribute || this.context?.filter_attribute
@@ -92,7 +91,6 @@ export class HaSelectorState extends SubscribeMixin(LitElement) {
     }
     return html`
       <ha-entity-state-picker
-        .hass=${this.hass}
         .entityId=${this._entityIds}
         .attribute=${
           this.selector.state?.attribute || this.context?.filter_attribute

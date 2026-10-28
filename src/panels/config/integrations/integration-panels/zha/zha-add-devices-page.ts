@@ -190,16 +190,18 @@ class ZHAAddDevicesPage extends LitElement {
     }
   }
 
-  private _unsubscribe(): void {
+  private _unsubscribe(): Promise<void> {
     this._active = false;
     if (this._addDevicesTimeoutHandle) {
       clearTimeout(this._addDevicesTimeoutHandle);
     }
+    let unsubscribed = Promise.resolve();
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
+      unsubscribed = this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
     this._wakeLock?.then((wakeLock) => wakeLock.release());
+    return unsubscribed;
   }
 
   private _deactivate(): void {
@@ -214,15 +216,25 @@ class ZHAAddDevicesPage extends LitElement {
     if (!this.hass) {
       return;
     }
+    // "Search again" lands here with the previous subscription still open.
+    // Only subscribe once it is closed, so the backend ends that debug logging
+    // session before starting the next one
+    const unsubscribed = this._unsubscribe();
     this._active = true;
     const data: any = { type: "zha/devices/permit", duration: 254 };
     if (this._ieeeAddress) {
       data.ieee = this._ieeeAddress;
     }
-    this._subscribed = this.hass.connection.subscribeMessage(
-      (message) => this._handleMessage(message),
-      data
-    );
+    const connection = this.hass.connection;
+    this._subscribed = unsubscribed
+      // A failed unsubscribe leaves nothing to wait for
+      .catch(() => undefined)
+      .then(() =>
+        connection.subscribeMessage(
+          (message) => this._handleMessage(message),
+          data
+        )
+      );
     this._addDevicesTimeoutHandle = setTimeout(
       () => this._deactivate(),
       254000

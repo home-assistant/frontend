@@ -80,6 +80,9 @@ export class HaControlCircularSlider extends LitElement {
   @property({ type: String, attribute: "high-label" })
   public highLabel?: string;
 
+  @property({ attribute: false })
+  public formatValue?: (value: number) => string;
+
   @property({ type: Number }) public value?: number;
 
   @property({ type: Number }) public low?: number;
@@ -562,13 +565,22 @@ export class HaControlCircularSlider extends LitElement {
                 aria-valuemin=${this.min}
                 aria-valuemax=${this.max}
                 aria-valuenow=${
-                  this._localValue != null
-                    ? this._steppedValue(this._localValue)
-                    : undefined
+                  value != null ? this._steppedValue(value) : undefined
                 }
+                aria-valuetext=${ifDefined(
+                  value != null && this.formatValue
+                    ? this.formatValue(this._steppedValue(value))
+                    : undefined
+                )}
                 aria-disabled=${this.disabled}
                 aria-readonly=${this.readonly}
-                aria-label=${ifDefined(this.lowLabel ?? this.label)}
+                aria-label=${ifDefined(
+                  id === "low"
+                    ? (this.lowLabel ?? this.label)
+                    : id === "high"
+                      ? (this.highLabel ?? this.label)
+                      : this.label
+                )}
                 @keydown=${this._handleKeyDown}
                 @keyup=${this._handleKeyUp}
               />

@@ -5,12 +5,9 @@ import { customElement, property } from "lit/decorators";
 import "../components/entity/state-info";
 import { haStyle } from "../resources/styles";
 import "../state-display/ha-timer-remaining-time";
-import type { HomeAssistant } from "../types";
 
 @customElement("state-card-timer")
 class StateCardTimer extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
@@ -19,13 +16,11 @@ class StateCardTimer extends LitElement {
     return html`
       <div class="horizontal justified layout">
         <state-info
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
         <div class="state">
           <ha-timer-remaining-time
-            .hass=${this.hass}
             .stateObj=${this.stateObj}
           ></ha-timer-remaining-time>
         </div>

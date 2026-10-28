@@ -7,7 +7,6 @@ import { formatShortDateTimeWithConditionalYear } from "../../common/datetime/fo
 import { resolveTimeZone } from "../../common/datetime/resolve-time-zone";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import { supportsMarkdownHelper } from "../../common/translations/markdown_support";
 import "../../components/ha-alert";
@@ -140,7 +139,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
       this._params.item === undefined || !("uid" in this._params.item);
     const listName =
       this._params.entity in this.hass.states
-        ? computeStateName(this.hass.states[this._params.entity])
+        ? this.hass.formatEntityName(this.hass.states[this._params.entity])
         : this._params.entity;
 
     const { dueDate, dueTime } = this._getLocaleStrings(this._due);
@@ -385,7 +384,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
 
     this._submitting = true;
     try {
-      await createItem(this.hass!, this._params!.entity, {
+      await createItem(this.hass!.callService, this._params!.entity, {
         summary: this._summary,
         description: this._description,
         due: this._due
@@ -415,7 +414,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
     const entry = this._params!.item!;
 
     try {
-      await updateItem(this.hass!, this._params!.entity, {
+      await updateItem(this.hass!.callService, this._params!.entity, {
         ...(entry as TodoItem),
         summary: this._summary,
         description:
@@ -468,7 +467,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
       return;
     }
     try {
-      await deleteItems(this.hass!, this._params!.entity, [
+      await deleteItems(this.hass!.callService, this._params!.entity, [
         (entry as TodoItem).uid,
       ]);
     } catch (err: any) {

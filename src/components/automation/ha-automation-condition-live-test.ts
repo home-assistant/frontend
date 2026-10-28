@@ -1,18 +1,25 @@
+import type { ContextType } from "@lit/context";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { debounce } from "../../common/util/debounce";
 import type { Condition } from "../../data/automation";
 import { subscribeCondition } from "../../data/automation";
-import type { HomeAssistant } from "../../types";
+import { connectionContext } from "../../data/context";
 import "../ha-tooltip";
 import "./ha-automation-row-live-test";
 import type { LiveTestState } from "./ha-automation-row-live-test";
 
 @customElement("ha-automation-condition-live-test")
 export class HaAutomationConditionLiveTest extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @property({ attribute: false }) public condition!: Condition;
 
@@ -51,7 +58,7 @@ export class HaAutomationConditionLiveTest extends LitElement {
         <slot></slot>
         <ha-automation-row-live-test
           .state=${this._liveTestResult.state}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             `ui.panel.config.automation.editor.conditions.live_test_state.${this._liveTestResult.state}`
           )}
         ></ha-automation-row-live-test>
@@ -69,7 +76,7 @@ export class HaAutomationConditionLiveTest extends LitElement {
   private _resetSubscription() {
     this._liveTestResult = {
       state: "unknown",
-      message: this.hass.localize(
+      message: this._localize(
         "ui.panel.config.automation.editor.conditions.live_test_state.unknown"
       ),
     };
@@ -92,14 +99,14 @@ export class HaAutomationConditionLiveTest extends LitElement {
     }
 
     const conditionUnsub = subscribeCondition(
-      this.hass.connection,
+      this._connection.connection,
       (result) => {
         if (result.error) {
           this._handleLiveTestError(result.error);
         } else {
           this._liveTestResult = {
             state: result.result ? "pass" : "fail",
-            message: this.hass.localize(
+            message: this._localize(
               `ui.panel.config.automation.editor.conditions.testing_${result.result ? "pass" : "error"}`
             ),
           };
@@ -121,7 +128,7 @@ export class HaAutomationConditionLiveTest extends LitElement {
       typeof error !== "string" && error.code === "invalid_format";
     this._liveTestResult = {
       state: invalid ? "invalid" : "unknown",
-      message: this.hass.localize(
+      message: this._localize(
         `ui.panel.config.automation.editor.conditions.${invalid ? "invalid_condition" : "live_test_state.unknown"}`
       ),
     };

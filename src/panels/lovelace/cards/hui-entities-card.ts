@@ -310,6 +310,14 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         position: relative;
       }
 
+      #states > div:first-child > hui-section-row::part(divider) {
+        display: none;
+      }
+
+      #states > div:first-child > hui-section-row::part(label) {
+        margin-top: 0;
+      }
+
       .icon {
         padding: 0px 18px 0px 8px;
       }

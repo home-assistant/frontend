@@ -3,8 +3,8 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import type { HomeAssistant } from "../../../../../../types";
 
-import "../../../../../../components/ha-alert";
 import "../../../../../../components/ha-icon-next";
+import "../../../../../../components/ha-secure-connection-alert";
 import "../../../../../../components/item/ha-list-item-button";
 import "../../../../../../components/list/ha-list-base";
 
@@ -19,11 +19,9 @@ export class ZWaveJsAddNodeSelectMethod extends LitElement {
     return html`
       ${
         !this.hideQrWebcam && !window.isSecureContext
-          ? html`<ha-alert alert-type="warning">
-              ${this.hass.localize(
-                "ui.panel.config.zwave_js.add_node.select_method.webcam_unsupported"
-              )}</ha-alert
-            >`
+          ? html`<ha-secure-connection-alert
+              feature="camera"
+            ></ha-secure-connection-alert>`
           : nothing
       }
       <ha-list-base>

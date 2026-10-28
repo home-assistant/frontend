@@ -99,6 +99,11 @@
       "matchPackageNames": ["date-fns", "date-fns-tz"]
     },
     {
+      "description": "Group ECharts with zrender, which we import directly and must match the version echarts depends on",
+      "groupName": "echarts",
+      "matchPackageNames": ["echarts", "zrender"]
+    },
+    {
       "description": "Group formatjs monorepo package",
       "groupName": "formatjs",
       "matchPackageNames": ["@formatjs/**"]
@@ -144,6 +149,21 @@
       "matchPackageNames": ["/^actions\\/cache(?:\\/|$)/"],
       "groupName": "actions/cache",
       "groupSlug": "actions-cache"
+    },
+    {
+      "description": "First-party packages and actions are reviewed and published by us, so skip the release delay. Keep in sync with minimumReleaseAgeExclude in pnpm-workspace.yaml",
+      "matchPackageNames": [
+        "home-assistant-js-websocket",
+        "@home-assistant/**",
+        "home-assistant/**"
+      ],
+      "minimumReleaseAge": null
+    },
+    {
+      "description": "Follow webawesome fork releases (X.Y.Z-ha.N) across upstream versions, and skip the plain upstream syncs",
+      "matchPackageNames": ["@home-assistant/webawesome"],
+      "allowedVersions": "/-ha\\.\\d+$/",
+      "ignoreUnstable": false
     }
   ]
 }

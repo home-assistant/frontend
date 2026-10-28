@@ -10,6 +10,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../../../common/datetime/relative_time";
 import type { HASSDomTargetEvent } from "../../../../../common/dom/fire_event";
+import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import { navigate } from "../../../../../common/navigate";
 import type { LocalizeKeys } from "../../../../../common/translations/localize";
@@ -20,6 +21,7 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   MatterNetworkTopology,
   MatterNetworkTopologyConnection,
@@ -34,6 +36,8 @@ import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
 import {
   createMatterNetworkChartData,
+  getBridgedDeviceId,
+  getBridgedDevices,
   getTopologyNodeName,
   HOME_ASSISTANT_NODE_ID,
 } from "./matter-network-data";
@@ -59,6 +63,9 @@ export class MatterNetworkVisualization extends LitElement {
   @state() private _refreshing = false;
 
   @state() private _searchFilter = "";
+
+  // topology node ids of the bridges whose bridged devices are shown
+  @state() private _expandedBridges: ReadonlySet<string> = new Set();
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
@@ -153,14 +160,14 @@ export class MatterNetworkVisualization extends LitElement {
     }
     return html`
       <ha-network-graph
-        .hass=${this.hass}
         .searchFilter=${this._searchFilter}
         .data=${this._formatNetworkData(
           this._topology,
           this.hass.devices,
           this.hass.areas,
           this.hass.themes,
-          this.hass.language
+          this.hass.language,
+          this._expandedBridges
         )}
         .searchableAttributes=${this._getSearchableAttributes}
         .tooltipFormatter=${this._tooltipFormatter}
@@ -216,12 +223,19 @@ export class MatterNetworkVisualization extends LitElement {
       // node/link colors and labels also depend on the theme and language,
       // so both take part in the cache key even though they are read via hass
       _themes: HomeAssistant["themes"],
-      _language: HomeAssistant["language"]
-    ) => createMatterNetworkChartData(topology, this.hass, this)
+      _language: HomeAssistant["language"],
+      expandedBridges: ReadonlySet<string>
+    ) =>
+      createMatterNetworkChartData(topology, this.hass, this, expandedBridges)
   );
 
   private _getTopologyNode(id: string): MatterNetworkTopologyNode | undefined {
     return this._topology?.nodes.find((node) => node.id === id);
+  }
+
+  private _getBridgedDevice(id: string): DeviceRegistryEntry | undefined {
+    const deviceId = getBridgedDeviceId(id);
+    return deviceId ? this.hass.devices[deviceId] : undefined;
   }
 
   private _getConnection(
@@ -236,11 +250,35 @@ export class MatterNetworkVisualization extends LitElement {
   }
 
   private _getNodeName(id: string): string {
+    const bridgedDevice = this._getBridgedDevice(id);
+    if (bridgedDevice) {
+      return computeDeviceName(bridgedDevice) || id;
+    }
     const node = this._getTopologyNode(id);
     return node ? getTopologyNodeName(node, this.hass) : id;
   }
 
+  private _getDeviceSearchableAttributes(
+    device: DeviceRegistryEntry | undefined
+  ): string[] {
+    const attributes: string[] = [];
+    if (device?.manufacturer) {
+      attributes.push(device.manufacturer);
+    }
+    if (device?.model) {
+      attributes.push(device.model);
+    }
+    device?.connections.forEach((connection) => {
+      attributes.push(connection[1]);
+    });
+    return attributes;
+  }
+
   private _getSearchableAttributes = (nodeId: string): string[] => {
+    const bridgedDevice = this._getBridgedDevice(nodeId);
+    if (bridgedDevice) {
+      return this._getDeviceSearchableAttributes(bridgedDevice);
+    }
     const node = this._getTopologyNode(nodeId);
     if (!node) {
       return [];
@@ -267,15 +305,17 @@ export class MatterNetworkVisualization extends LitElement {
     const device = node.ha_device_id
       ? this.hass.devices[node.ha_device_id]
       : undefined;
-    if (device?.manufacturer) {
-      attributes.push(device.manufacturer);
+    attributes.push(...this._getDeviceSearchableAttributes(device));
+    if (node.is_bridge && node.ha_device_id) {
+      getBridgedDevices(node.ha_device_id, this.hass.devices).forEach(
+        (bridged) => {
+          const name = computeDeviceName(bridged);
+          if (name) {
+            attributes.push(name);
+          }
+        }
+      );
     }
-    if (device?.model) {
-      attributes.push(device.model);
-    }
-    device?.connections.forEach((connection) => {
-      attributes.push(connection[1]);
-    });
     return attributes;
   };
 
@@ -305,6 +345,18 @@ export class MatterNetworkVisualization extends LitElement {
     const { dataType, data } = params as CallbackDataParams;
     if (dataType === "edge") {
       const { source, target } = data as { source: string; target: string };
+      if (this._getBridgedDevice(target)) {
+        return html`<b
+            >${this._getNodeName(source)} ↔ ${this._getNodeName(target)}</b
+          ><br /><b
+            >${this.hass.localize(
+              "ui.panel.config.matter.visualization.network"
+            )}:</b
+          >
+          ${this.hass.localize(
+            "ui.panel.config.matter.visualization.bridged"
+          )}`;
+      }
       const conn = this._getConnection(source, target);
       if (!conn) {
         return nothing;
@@ -358,6 +410,10 @@ export class MatterNetworkVisualization extends LitElement {
     if (id === HOME_ASSISTANT_NODE_ID) {
       return html`<b>Home Assistant</b>`;
     }
+    const bridgedDevice = this._getBridgedDevice(id);
+    if (bridgedDevice) {
+      return this._bridgedDeviceTooltip(id, bridgedDevice);
+    }
     const node = this._getTopologyNode(id);
     if (!node) {
       return nothing;
@@ -389,6 +445,16 @@ export class MatterNetworkVisualization extends LitElement {
           node.network_name ? html` (${node.network_name})` : nothing
         }`
     );
+    if (node.is_bridge && node.ha_device_id) {
+      lines.push(
+        html`<br /><b
+            >${this.hass.localize(
+              "ui.panel.config.matter.visualization.bridged_devices"
+            )}:</b
+          >
+          ${getBridgedDevices(node.ha_device_id, this.hass.devices).length}`
+      );
+    }
     if (node.role) {
       lines.push(
         html`<br /><b
@@ -453,20 +519,101 @@ export class MatterNetworkVisualization extends LitElement {
           ${relativeTime(new Date(node.last_seen), this.hass.locale)}`
       );
     }
+    if (
+      node.is_bridge &&
+      node.ha_device_id &&
+      getBridgedDevices(node.ha_device_id, this.hass.devices).length
+    ) {
+      lines.push(
+        html`<br /><i
+            >${this.hass.localize(
+              this._expandedBridges.has(id)
+                ? "ui.panel.config.matter.visualization.hide_bridged_devices"
+                : "ui.panel.config.matter.visualization.show_bridged_devices"
+            )}</i
+          >`
+      );
+    }
     return html`<b>${this._getNodeName(id)}</b>${lines}`;
   };
 
-  private _handleChartClick(e: CustomEvent): void {
-    if (
-      e.detail.dataType === "node" &&
-      e.detail.event.target.cursor === "pointer"
-    ) {
-      const { id } = e.detail.data;
-      const node = this._getTopologyNode(id);
-      if (node?.ha_device_id) {
-        navigate(`/config/devices/device/${node.ha_device_id}`);
-      }
+  private _bridgedDeviceTooltip(
+    id: string,
+    device: DeviceRegistryEntry
+  ): TemplateResult {
+    const bridge = device.via_device_id
+      ? this.hass.devices[device.via_device_id]
+      : undefined;
+    const area = getDeviceArea(device, this.hass.areas, this.hass.devices);
+    const lines: TemplateResult[] = [];
+    if (bridge) {
+      lines.push(
+        html`<br /><b
+            >${this.hass.localize(
+              "ui.panel.config.matter.visualization.bridged_by"
+            )}:</b
+          >
+          ${computeDeviceName(bridge) || bridge.id}`
+      );
     }
+    if (device.manufacturer) {
+      lines.push(
+        html`<br /><b
+            >${this.hass.localize(
+              "ui.panel.config.matter.visualization.manufacturer"
+            )}:</b
+          >
+          ${device.manufacturer}`
+      );
+    }
+    if (device.model) {
+      lines.push(
+        html`<br /><b
+            >${this.hass.localize(
+              "ui.panel.config.matter.visualization.model"
+            )}:</b
+          >
+          ${device.model}`
+      );
+    }
+    if (area) {
+      lines.push(
+        html`<br /><b
+            >${this.hass.localize(
+              "ui.panel.config.matter.visualization.area"
+            )}:</b
+          >
+          ${area.name}`
+      );
+    }
+    return html`<b>${this._getNodeName(id)}</b>${lines}`;
+  }
+
+  private _handleChartClick(e: CustomEvent): void {
+    if (e.detail.dataType !== "node") {
+      return;
+    }
+    const { id } = e.detail.data;
+    const node = this._getTopologyNode(id);
+    // the label has a pointer cursor, the draggable symbol a move cursor
+    if (e.detail.event.target.cursor === "pointer") {
+      const deviceId = getBridgedDeviceId(id) ?? node?.ha_device_id;
+      if (deviceId) {
+        navigate(`/config/devices/device/${deviceId}`);
+      }
+      return;
+    }
+    if (node?.is_bridge) {
+      this._toggleBridge(id);
+    }
+  }
+
+  private _toggleBridge(id: string): void {
+    const expanded = new Set(this._expandedBridges);
+    if (!expanded.delete(id)) {
+      expanded.add(id);
+    }
+    this._expandedBridges = expanded;
   }
 
   static get styles(): CSSResultGroup {

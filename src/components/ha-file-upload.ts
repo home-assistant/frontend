@@ -76,6 +76,15 @@ export class HaFileUpload extends LitElement {
     }
   }
 
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // Reset the native input when the value is cleared from outside, so
+    // picking the same file again still fires a change event.
+    if (changedProperties.has("value") && !this.value && this._input) {
+      this._input.value = "";
+    }
+  }
+
   private get _name() {
     if (this.value === undefined) {
       return "";

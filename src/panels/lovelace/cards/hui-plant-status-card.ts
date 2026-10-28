@@ -4,10 +4,22 @@ import {
   mdiWaterPercent,
   mdiWhiteBalanceSunny,
 } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type {
+  HassConfig,
+  HassEntities,
+  HassEntity,
+} from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
+import {
+  consumeEntityRegistryEntry,
+  consumeEntityState,
+  consumeLocalize,
+  preserveUnchangedEntityStatesRecord,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { batteryLevelIcon } from "../../../common/entity/battery_icon";
@@ -15,11 +27,24 @@ import { batteryStateColorProperty } from "../../../common/entity/color/battery_
 import { valueFromParts } from "../../../common/entity/value_parts";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
+import {
+  configContext,
+  formattersContext,
+  statesContext,
+  uiContext,
+} from "../../../data/context";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
+import type { Themes } from "../../../data/ws-themes";
 import { computeCssVariable } from "../../../resources/css-variables";
-import type { HomeAssistant } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantUI,
+} from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
@@ -57,9 +82,47 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     return { type: "plant-status", entity: foundEntities[0] || "" };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @state() private _config?: PlantStatusCardConfig;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["_config", "entity"] })
+  private _stateObj?: HassEntity;
+
+  @state()
+  @consumeEntityRegistryEntry({ entityIdPath: ["_config", "entity"] })
+  _entity?: EntityRegistryDisplayEntry;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, Record<string, HassEntity>>({
+    transformer: function (this: HuiPlantStatusCard, states) {
+      return this._selectSensorStates(states);
+    },
+    watch: ["_config"],
+  })
+  private _sensorStates?: Record<string, HassEntity>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes!: Themes;
 
   public getCardSize(): number {
     return 3;
@@ -73,40 +136,36 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
-  }
-
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this._config || !this.hass) {
+    if (!this._config || !this._themes) {
       return;
     }
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldThemes = changedProps.get("_themes") as Themes | undefined;
     const oldConfig = changedProps.get("_config") as
       PlantStatusCardConfig | undefined;
 
     if (
-      !oldHass ||
+      !oldThemes ||
       !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
+      oldThemes !== this._themes ||
       oldConfig.theme !== this._config.theme
     ) {
-      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+      applyThemesOnElement(this, this._themes, this._config.theme);
     }
   }
 
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this._config) {
       return nothing;
     }
 
-    const stateObj = this.hass.states[this._config!.entity];
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this._localize, this._hassConfig)}
         </hui-warning>
       `;
     }
@@ -130,7 +189,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
           style="background-image:url(${stateObj.attributes.entity_picture})"
         >
           <div class="header">
-            ${this.hass.formatEntityName(stateObj, this._config.name)}
+            ${this._formatters.formatEntityName(stateObj, this._config.name)}
           </div>
         </div>
         <div class="content">
@@ -256,14 +315,31 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     }
   `;
 
+  private _selectSensorStates(
+    states: HassEntities | undefined
+  ): Record<string, HassEntity> | undefined {
+    const plantId = this._config?.entity;
+    const sensors = plantId ? states?.[plantId]?.attributes.sensors : undefined;
+    if (!states || !sensors) {
+      return undefined;
+    }
+    const next: Record<string, HassEntity> = {};
+    for (const entityId of Object.values(sensors) as string[]) {
+      if (states[entityId]) {
+        next[entityId] = states[entityId];
+      }
+    }
+    return preserveUnchangedEntityStatesRecord(this._sensorStates, next);
+  }
+
   private _formatSensorValue(stateObj: HassEntity, attribute: string): string {
     const sensorEntityId = stateObj.attributes.sensors?.[attribute];
     const sensorStateObj = sensorEntityId
-      ? this.hass!.states[sensorEntityId]
+      ? this._sensorStates?.[sensorEntityId]
       : undefined;
     if (sensorStateObj) {
       return valueFromParts(
-        this.hass!.formatEntityStateToParts(sensorStateObj)
+        this._formatters.formatEntityStateToParts(sensorStateObj)
       );
     }
     return stateObj.attributes[attribute] ?? "";
@@ -277,9 +353,9 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
   private _handleMoreInfo(ev: Event): void {
     const target = ev.currentTarget! as PlantAttributeTarget;
-    const stateObj = this.hass!.states[this._config!.entity];
+    const stateObj = this._stateObj;
 
-    if (target.value) {
+    if (target.value && stateObj) {
       fireEvent(this, "hass-more-info", {
         entityId: stateObj.attributes.sensors[target.value],
       });

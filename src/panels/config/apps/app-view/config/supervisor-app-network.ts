@@ -8,7 +8,6 @@ import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../../components/ha-form/types";
-import "../../../../../components/ha-formfield";
 import type {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
@@ -78,18 +77,14 @@ class SupervisorAppNetwork extends DirtyStateProviderMixin<
         </div>
         ${
           hasHiddenOptions
-            ? html`<ha-formfield
+            ? html`<ha-switch
+                @change=${this._toggleOptional}
+                .checked=${this._showOptional}
                 class="show-optional"
-                .label=${this.hass.localize(
+                >${this.hass.localize(
                   "ui.panel.config.apps.configuration.network.show_disabled"
-                )}
-              >
-                <ha-switch
-                  @change=${this._toggleOptional}
-                  .checked=${this._showOptional}
-                >
-                </ha-switch>
-              </ha-formfield>`
+                )}</ha-switch
+              >`
             : nothing
         }
         <div class="card-actions">

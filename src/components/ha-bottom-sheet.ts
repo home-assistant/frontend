@@ -6,6 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { consume } from "../common/decorators/consume";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
+import { isSwipeLocked } from "../common/dom/is-swipe-locked";
 import { SwipeGestureRecognizer } from "../common/util/swipe-gesture-recognizer";
 import { configContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
@@ -13,19 +14,6 @@ import { haStyleScrollbar } from "../resources/styles";
 import { isIosApp } from "../util/is_ios";
 
 export const BOTTOM_SHEET_ANIMATION_DURATION_MS = 300;
-
-const SWIPE_LOCKED_COMPONENTS = new Set([
-  "ha-control-slider",
-  "ha-slider",
-  "ha-control-switch",
-  "ha-control-circular-slider",
-  "ha-hs-color-picker",
-  "ha-map",
-  "ha-more-info-control-select-container",
-  "ha-filter-chip",
-]);
-
-const SWIPE_LOCKED_CLASSES = new Set(["volume-slider-container", "forecast"]);
 
 /**
  * Home Assistant bottom sheet component.
@@ -255,28 +243,8 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
       return;
     }
 
-    const path = ev.composedPath();
-
-    for (const target of path) {
-      if (target === this._drawer) {
-        break;
-      }
-
-      if (!(target instanceof HTMLElement)) {
-        continue;
-      }
-
-      if (
-        // Check if any element inside drawer in the composed path has scrollTop > 0 (list)
-        target.scrollTop > 0 ||
-        // Check if the element is a swipe locked component or has a swipe locked class
-        SWIPE_LOCKED_COMPONENTS.has(target.localName) ||
-        Array.from(target.classList).some((cls) =>
-          SWIPE_LOCKED_CLASSES.has(cls)
-        )
-      ) {
-        return;
-      }
+    if (isSwipeLocked(ev.composedPath(), this._drawer)) {
+      return;
     }
 
     // Stop propagation so parent bottom sheets don't also start tracking

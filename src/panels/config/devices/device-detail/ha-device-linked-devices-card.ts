@@ -44,8 +44,8 @@ export class HaDeviceLinkedDevicesCard extends LitElement {
         .filter((device): device is DeviceRegistryEntry => Boolean(device))
         .sort((d1, d2) =>
           caseInsensitiveStringCompare(
-            computeDeviceNameDisplay(d1, this.hass.localize, this.hass.states),
-            computeDeviceNameDisplay(d2, this.hass.localize, this.hass.states),
+            computeDeviceNameDisplay(d1, this.hass.localize),
+            computeDeviceNameDisplay(d2, this.hass.localize),
             this.hass.locale.language
           )
         )
@@ -111,11 +111,7 @@ export class HaDeviceLinkedDevicesCard extends LitElement {
                       />`
                     : nothing
                 }
-                ${computeDeviceNameDisplay(
-                  linkedDevice,
-                  this.hass.localize,
-                  this.hass.states
-                )}
+                ${computeDeviceNameDisplay(linkedDevice, this.hass.localize)}
                 ${
                   integrationName
                     ? html`<span slot="secondary">${integrationName}</span>`

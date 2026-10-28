@@ -36,13 +36,15 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
 
     const unavailable = stateObj.state === UNAVAILABLE;
+
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
@@ -52,6 +54,7 @@ class HuiTimeEntityRow extends LitElement implements LovelaceRow {
               ? undefined
               : stateObj.state
           }
+          .accessibleLabel=${name}
           .locale=${this.hass.locale}
           .disabled=${unavailable}
           @value-changed=${this._timeChanged}

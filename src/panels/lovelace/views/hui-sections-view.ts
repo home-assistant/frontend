@@ -22,27 +22,26 @@ import {
   isStrategySection,
 } from "../../../data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
+import { DEFAULT_MAX_COLUMNS } from "./const";
 import type { HomeAssistant } from "../../../types";
 import type { HuiBadge } from "../badges/hui-badge";
 import type { HuiCard } from "../cards/hui-card";
 import "../components/hui-section-edit-mode";
-import { addSection, moveCard, moveSection } from "../editor/config-util";
-import type { LovelaceCardPath } from "../editor/lovelace-path";
-import {
-  findLovelaceItems,
-  getLovelaceContainerPath,
-  parseLovelaceCardPath,
-} from "../editor/lovelace-path";
+import { addSection } from "../editor/config-util";
+import type { LovelacePath } from "../editor/lovelace-path";
+import { getAtPath, moveAtPath } from "../editor/lovelace-path";
+import { showCreateSectionDialog } from "../editor/section-editor/show-create-section-dialog";
 import type { HuiSection } from "../sections/hui-section";
-import "../sections/hui-section-background";
+import {
+  renderSectionContainer,
+  sectionContainerStyles,
+} from "../sections/section-container";
 import type { Lovelace } from "../types";
 import { generateDefaultSection } from "./default-section";
 import "./hui-view-footer";
 import "./hui-view-header";
 import "./hui-view-sidebar";
 import { computeSectionsBackgroundAlignment } from "./sections-background-alignment";
-
-export const DEFAULT_MAX_COLUMNS = 4;
 
 const parsePx = (value: string) => parseInt(value.replace("px", ""));
 
@@ -52,7 +51,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  @property({ type: Number }) public index?: number;
+  @property({ attribute: false }) public path?: LovelacePath;
 
   @property({ attribute: false }) public isStrategy = false;
 
@@ -229,7 +228,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
           .hass=${this.hass}
           .badges=${this.badges}
           .lovelace=${this.lovelace}
-          .viewIndex=${this.index}
+          .path=${this.path!}
           .config=${this._config?.header}
         ></hui-view-header>
         ${
@@ -293,8 +292,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                               <hui-section-edit-mode
                                 .hass=${this.hass}
                                 .lovelace=${this.lovelace}
-                                .index=${idx}
-                                .viewIndex=${this.index}
+                                .path=${[...this.path!, "sections", idx]}
                                 .isStrategy=${isStrategySection(section.config)}
                               >
                                 ${this._renderSection(
@@ -361,7 +359,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                     .hass=${this.hass}
                     .badges=${this.badges}
                     .lovelace=${this.lovelace}
-                    .viewIndex=${this.index}
+                    .path=${this.path!}
                     .config=${this._config.sidebar}
                     @sidebar-visibility-changed=${
                       this._handleSidebarVisibilityChanged
@@ -374,7 +372,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
         <hui-view-footer
           .hass=${this.hass}
           .lovelace=${this.lovelace}
-          .viewIndex=${this.index}
+          .path=${this.path!}
           .config=${this._config?.footer}
         ></hui-view-footer>
         <div class="imported-cards-section">
@@ -401,7 +399,7 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
                       .config=${this._importedCardSectionConfig(
                         this._config.cards
                       )}
-                      .viewIndex=${this.index}
+                      .path=${this.path!}
                       preview
                       import-only
                     ></hui-section>
@@ -415,32 +413,36 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _handleCardAdded(ev) {
-    const { data } = ev.detail;
-    const oldPath = data as LovelaceCardPath;
-
-    const { cardIndex } = parseLovelaceCardPath(oldPath);
-    const containerPath = getLovelaceContainerPath(oldPath);
-    const cards = findLovelaceItems(
-      "cards",
-      this.lovelace!.config,
-      containerPath
-    );
-    const cardConfig = cards![cardIndex];
+    ev.stopPropagation();
+    // The dropped node only serves as a drop target, the new section renders the card from the config
+    (ev.detail.item as HTMLElement).remove();
+    const oldPath = ev.detail.data as LovelacePath;
+    const config = this.lovelace!.config;
+    const cardConfig = getAtPath<LovelaceCardConfig>(config, oldPath);
+    if (!cardConfig) {
+      return;
+    }
 
     const configWithNewSection = addSection(
-      this.lovelace!.config,
-      this.index!,
+      config,
+      this.path!,
       generateDefaultSection(this.hass.localize, cardConfig.type !== "heading") // If we move a heading card, we don't want to include a heading in the new section
     );
-    const viewConfig = configWithNewSection.views[
-      this.index!
-    ] as LovelaceViewConfig;
-    const newPath = [
-      this.index!,
-      viewConfig.sections!.length - 1,
-      1,
-    ] as LovelaceCardPath;
-    const newConfig = moveCard(configWithNewSection, oldPath, newPath);
+    const sectionsPath = [...this.path!, "sections"];
+    const newIndex =
+      getAtPath<unknown[]>(configWithNewSection, sectionsPath)!.length - 1;
+    const cardCount =
+      getAtPath<unknown[]>(configWithNewSection, [
+        ...sectionsPath,
+        newIndex,
+        "cards",
+      ])?.length ?? 0;
+    const newConfig = moveAtPath(configWithNewSection, oldPath, [
+      ...sectionsPath,
+      newIndex,
+      "cards",
+      cardCount,
+    ]);
     this.lovelace!.saveConfig(newConfig);
   }
 
@@ -452,46 +454,29 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   );
 
   private _renderSection(section: HuiSection, alignBackground: boolean) {
-    const hasBackground = section.config.background !== undefined;
-
-    return html`
-      <div
-        class="section-container ${classMap({
-          "has-background": hasBackground,
-          "align-background": alignBackground,
-        })}"
-      >
-        ${
-          hasBackground
-            ? html`<hui-section-background
-                .hass=${this.hass}
-                .background=${section.config.background}
-                .theme=${section.config.theme}
-              ></hui-section-background>`
-            : nothing
-        }
-        ${section}
-      </div>
-    `;
+    return renderSectionContainer(
+      this.hass,
+      section.config,
+      section,
+      alignBackground
+    );
   }
 
   private _createSection(): void {
-    const newConfig = addSection(
-      this.lovelace!.config,
-      this.index!,
-      generateDefaultSection(this.hass.localize, true)
-    );
-    this.lovelace!.saveConfig(newConfig);
+    showCreateSectionDialog(this, {
+      lovelace: this.lovelace!,
+      containerPath: this.path!,
+    });
   }
 
   private _sectionMoved(ev: CustomEvent) {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
 
-    const newConfig = moveSection(
+    const newConfig = moveAtPath(
       this.lovelace!.config,
-      [this.index!, oldIndex],
-      [this.index!, newIndex]
+      [...this.path!, "sections", oldIndex],
+      [...this.path!, "sections", newIndex]
     );
     this.lovelace!.saveConfig(newConfig);
   }
@@ -537,286 +522,272 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
     }
   };
 
-  static styles = css`
-    :host {
-      --row-height: var(--ha-view-sections-row-height, 56px);
-      --row-gap: var(--ha-view-sections-row-gap, 24px);
-      --column-gap: var(--ha-view-sections-column-gap, 32px);
-      --column-max-width: var(--ha-view-sections-column-max-width, 500px);
-      --column-min-width: var(--ha-view-sections-column-min-width, 320px);
-      --narrow-column-gap: var(--ha-view-sections-narrow-column-gap, 8px);
-      --top-margin: var(--ha-view-sections-extra-top-margin, 80px);
-      display: block;
-      flex: 1;
-    }
-
-    @media (max-width: 600px) {
+  static styles = [
+    sectionContainerStyles,
+    css`
       :host {
-        --column-gap: var(--narrow-column-gap);
+        --row-height: var(--ha-view-sections-row-height, 56px);
+        --row-gap: var(--ha-view-sections-row-gap, 24px);
+        --column-gap: var(--ha-view-sections-column-gap, 32px);
+        --column-max-width: var(--ha-view-sections-column-max-width, 500px);
+        --column-min-width: var(--ha-view-sections-column-min-width, 320px);
+        --narrow-column-gap: var(--ha-view-sections-narrow-column-gap, 8px);
+        --top-margin: var(--ha-view-sections-extra-top-margin, 80px);
+        display: block;
+        flex: 1;
       }
-    }
 
-    .wrapper {
-      display: flex;
-      flex-direction: column;
-      min-height: 100%;
-      padding: 0 var(--column-gap);
-      box-sizing: content-box;
-      margin: 0 auto;
-      max-width: calc(
-        var(--column-count) * var(--column-max-width) +
-          (var(--column-count) - 1) * var(--column-gap)
-      );
-    }
+      @media (max-width: 600px) {
+        :host {
+          --column-gap: var(--narrow-column-gap);
+        }
+      }
 
-    .wrapper.top-margin {
-      margin-top: var(--top-margin);
-    }
-
-    .section {
-      border-radius: var(
-        --ha-section-border-radius,
-        var(--ha-border-radius-xl)
-      );
-      grid-column: span var(--column-span);
-      grid-row: span var(--row-span);
-    }
-
-    .section:has(hui-section[hidden]) {
-      display: none;
-    }
-
-    .section-container {
-      position: relative;
-    }
-
-    .section-container.has-background {
-      padding: var(--ha-space-2);
-      border-radius: var(
-        --ha-section-border-radius,
-        var(--ha-border-radius-xl)
-      );
-    }
-
-    .section-container.align-background {
-      margin-top: var(--ha-space-2);
-      margin-bottom: var(--ha-space-2);
-    }
-
-    .container {
-      display: grid;
-      grid-template-columns: [content-start] repeat(
-          var(--content-column-count),
-          1fr
+      .wrapper {
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
+        padding: 0 var(--column-gap);
+        box-sizing: content-box;
+        margin: 0 auto;
+        max-width: calc(
+          var(--column-count) * var(--column-max-width) +
+            (var(--column-count) - 1) * var(--column-gap)
         );
-      gap: var(--row-gap) var(--column-gap);
-      padding: var(--row-gap) 0;
-      align-items: flex-start;
-      flex: 1 0 auto;
-    }
+      }
 
-    .wrapper.has-sidebar .container {
-      grid-template-columns:
-        [content-start] repeat(var(--content-column-count), 1fr)
-        [sidebar-start] 1fr;
-    }
+      .wrapper.top-margin {
+        margin-top: var(--top-margin);
+      }
 
-    /* With a single column, content and sidebar stack at full width */
-    .wrapper.single-column.has-sidebar .container {
-      grid-template-columns: 1fr;
-    }
+      .section {
+        border-radius: var(
+          --ha-section-border-radius,
+          var(--ha-border-radius-xl)
+        );
+        grid-column: span var(--column-span);
+        grid-row: span var(--row-span);
+      }
 
-    hui-view-sidebar {
-      grid-column: sidebar-start / -1;
-    }
+      .section:has(hui-section[hidden]) {
+        display: none;
+      }
 
-    .wrapper.single-column hui-view-sidebar {
-      grid-column: 1 / -1;
-    }
+      .container {
+        display: grid;
+        grid-template-columns: [content-start] repeat(
+            var(--content-column-count),
+            1fr
+          );
+        gap: var(--row-gap) var(--column-gap);
+        padding: var(--row-gap) 0;
+        align-items: flex-start;
+        flex: 1 0 auto;
+      }
 
-    .wrapper.has-sidebar-tabs hui-view-sidebar {
-      padding-bottom: calc(
-        var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
-      );
-    }
+      .wrapper.has-sidebar .container {
+        grid-template-columns:
+          [content-start] repeat(var(--content-column-count), 1fr)
+          [sidebar-start] 1fr;
+      }
 
-    .hidden {
-      display: none !important;
-    }
+      /* With a single column, content and sidebar stack at full width */
+      .wrapper.single-column.has-sidebar .container {
+        grid-template-columns: 1fr;
+      }
 
-    .sidebar-tabs {
-      position: fixed;
-      bottom: calc(var(--ha-space-3) + var(--safe-area-inset-bottom));
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 0;
-      z-index: 1;
-    }
+      hui-view-sidebar {
+        grid-column: sidebar-start / -1;
+      }
 
-    .sidebar-tabs ha-control-select {
-      width: max-content;
-      min-width: 280px;
-      max-width: 90%;
-      --control-select-thickness: var(--ha-space-14);
-      --control-select-border-radius: var(--ha-border-radius-pill);
-      --control-select-background: var(--card-background-color);
-      --control-select-background-opacity: 1;
-      --control-select-color: var(--primary-color);
-      --control-select-padding: 6px;
-      box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 10px 0px;
-    }
+      .wrapper.single-column hui-view-sidebar {
+        grid-column: 1 / -1;
+      }
 
-    ha-sortable {
-      display: contents;
-    }
+      .wrapper.has-sidebar-tabs hui-view-sidebar {
+        padding-bottom: calc(
+          var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
+        );
+      }
 
-    .content {
-      grid-column: content-start / sidebar-start;
-      grid-row: 1 / -1;
-      display: grid;
-      align-items: start;
-      justify-content: center;
-      grid-template-columns: repeat(var(--content-column-count), 1fr);
-      grid-auto-flow: row;
-      gap: var(--row-gap) var(--column-gap);
-    }
+      .hidden {
+        display: none !important;
+      }
 
-    .wrapper.single-column .content {
-      grid-column: 1 / -1;
-    }
+      .sidebar-tabs {
+        position: fixed;
+        bottom: calc(var(--ha-space-3) + var(--safe-area-inset-bottom));
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0;
+        z-index: 1;
+      }
 
-    .wrapper.has-sidebar-tabs .content {
-      padding-bottom: calc(
-        var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
-      );
-    }
+      .sidebar-tabs ha-control-select {
+        width: max-content;
+        min-width: 280px;
+        max-width: 90%;
+        --control-select-thickness: var(--ha-space-14);
+        --control-select-border-radius: var(--ha-border-radius-pill);
+        --control-select-background: var(--card-background-color);
+        --control-select-background-opacity: 1;
+        --control-select-color: var(--primary-color);
+        --control-select-padding: 6px;
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 4px 10px 0px;
+      }
 
-    .content.dense {
-      grid-auto-flow: row dense;
-    }
+      ha-sortable {
+        display: contents;
+      }
 
-    .create-section-container {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      margin-top: 36px;
-    }
+      .content {
+        grid-column: content-start / sidebar-start;
+        grid-row: 1 / -1;
+        display: grid;
+        align-items: start;
+        justify-content: center;
+        grid-template-columns: repeat(var(--content-column-count), 1fr);
+        grid-auto-flow: row;
+        gap: var(--row-gap) var(--column-gap);
+      }
 
-    .create-section-container .card {
-      display: none;
-    }
+      .wrapper.single-column .content {
+        grid-column: 1 / -1;
+      }
 
-    .create-section-container:has(.card) .drop-helper {
-      display: flex;
-    }
-    .create-section-container:has(.card) .create-section {
-      display: none;
-    }
+      .wrapper.has-sidebar-tabs .content {
+        padding-bottom: calc(
+          var(--ha-space-14) + var(--ha-space-3) + var(--safe-area-inset-bottom)
+        );
+      }
 
-    .drop-helper {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      outline: none;
-      background: none;
-      cursor: pointer;
-      border-radius: var(
-        --ha-section-border-radius,
-        var(--ha-border-radius-xl)
-      );
-      border: 2px dashed var(--primary-color);
-      height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
-      padding: 8px;
-      box-sizing: border-box;
-      width: 100%;
-      --ha-ripple-color: var(--primary-color);
-      --ha-ripple-hover-opacity: 0.04;
-      --ha-ripple-pressed-opacity: 0.12;
-    }
+      .content.dense {
+        grid-auto-flow: row dense;
+      }
 
-    .drop-helper p {
-      color: var(--primary-text-color);
-      font-size: var(--ha-font-size-l);
-      font-weight: var(--ha-font-weight-normal);
-      line-height: var(--ha-line-height-normal);
-      text-align: center;
-    }
+      .create-section-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        margin-top: 36px;
+      }
 
-    .create-section {
-      display: block;
-      position: relative;
-      outline: none;
-      background: none;
-      cursor: pointer;
-      border-radius: var(
-        --ha-section-border-radius,
-        var(--ha-border-radius-xl)
-      );
-      border: 2px dashed var(--primary-color);
-      order: 1;
-      height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
-      padding: 8px;
-      box-sizing: border-box;
-      width: 100%;
-      --ha-ripple-color: var(--primary-color);
-      --ha-ripple-hover-opacity: 0.04;
-      --ha-ripple-pressed-opacity: 0.12;
-    }
+      .create-section-container .card {
+        display: none;
+      }
 
-    .create-section:focus {
-      border: 2px solid var(--primary-color);
-    }
+      .create-section-container:has(.card) .drop-helper {
+        display: flex;
+      }
+      .create-section-container:has(.card) .create-section {
+        display: none;
+      }
 
-    .sortable-ghost {
-      border-radius: var(
-        --ha-section-border-radius,
-        var(--ha-border-radius-xl)
-      );
-    }
+      .drop-helper {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        outline: none;
+        background: none;
+        cursor: pointer;
+        border-radius: var(
+          --ha-section-border-radius,
+          var(--ha-border-radius-xl)
+        );
+        border: 2px dashed var(--primary-color);
+        height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
+        padding: 8px;
+        box-sizing: border-box;
+        width: 100%;
+        --ha-ripple-color: var(--primary-color);
+        --ha-ripple-hover-opacity: 0.04;
+        --ha-ripple-pressed-opacity: 0.12;
+      }
 
-    hui-view-header {
-      display: block;
-      padding-top: var(--row-gap);
-    }
+      .drop-helper p {
+        color: var(--primary-text-color);
+        font-size: var(--ha-font-size-l);
+        font-weight: var(--ha-font-weight-normal);
+        line-height: var(--ha-line-height-normal);
+        text-align: center;
+      }
 
-    hui-view-footer {
-      display: block;
-    }
+      .create-section {
+        display: block;
+        position: relative;
+        outline: none;
+        background: none;
+        cursor: pointer;
+        border-radius: var(
+          --ha-section-border-radius,
+          var(--ha-border-radius-xl)
+        );
+        border: 2px dashed var(--primary-color);
+        order: 1;
+        height: calc(var(--row-height) + 2 * (var(--row-gap) + 2px));
+        padding: 8px;
+        box-sizing: border-box;
+        width: 100%;
+        --ha-ripple-color: var(--primary-color);
+        --ha-ripple-hover-opacity: 0.04;
+        --ha-ripple-pressed-opacity: 0.12;
+      }
 
-    .imported-cards {
-      --column-span: var(--column-count);
-      --row-span: 1;
-      order: 2;
-    }
+      .create-section:focus {
+        border: 2px solid var(--primary-color);
+      }
 
-    .imported-card-header {
-      margin-top: 36px;
-      padding: 32px 0 16px 0;
-      border-top: 4px dotted var(--divider-color);
-    }
+      .sortable-ghost {
+        border-radius: var(
+          --ha-section-border-radius,
+          var(--ha-border-radius-xl)
+        );
+      }
 
-    .imported-card-header .title {
-      margin: 0;
-      color: var(--primary-text-color);
-      font-size: var(--ha-font-size-l);
-      font-weight: var(--ha-font-weight-normal);
-      line-height: var(--ha-line-height-normal);
-      --mdc-icon-size: 18px;
-      display: flex;
-      align-items: center;
-      gap: var(--ha-space-3);
-      margin-bottom: 8px;
-    }
-    .imported-card-header .subtitle {
-      margin: 0;
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-m);
-      font-weight: var(--ha-font-weight-normal);
-      line-height: var(--ha-line-height-condensed);
-    }
-  `;
+      hui-view-header {
+        display: block;
+        padding-top: var(--row-gap);
+      }
+
+      hui-view-footer {
+        display: block;
+      }
+
+      .imported-cards {
+        --column-span: var(--column-count);
+        --row-span: 1;
+        order: 2;
+      }
+
+      .imported-card-header {
+        margin-top: 36px;
+        padding: 32px 0 16px 0;
+        border-top: 4px dotted var(--divider-color);
+      }
+
+      .imported-card-header .title {
+        margin: 0;
+        color: var(--primary-text-color);
+        font-size: var(--ha-font-size-l);
+        font-weight: var(--ha-font-weight-normal);
+        line-height: var(--ha-line-height-normal);
+        --mdc-icon-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: var(--ha-space-3);
+        margin-bottom: 8px;
+      }
+      .imported-card-header .subtitle {
+        margin: 0;
+        color: var(--secondary-text-color);
+        font-size: var(--ha-font-size-m);
+        font-weight: var(--ha-font-weight-normal);
+        line-height: var(--ha-line-height-condensed);
+      }
+    `,
+  ];
 }
 
 declare global {

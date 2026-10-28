@@ -69,7 +69,7 @@ export const SENSOR_STATE_CLASSES: string[] = [
 ${stateClasses.map((stateClass) => `  "${stateClass}",`).join("\n")}
 ];
 
-export const SENSOR_STATE_CLASS_UNITS: Record<string, string[]> = {
+export const SENSOR_STATE_CLASS_UNITS: Record<string, (string | null)[]> = {
 ${Object.entries(stateClassUnits)
   .map(
     ([stateClass, units]) =>

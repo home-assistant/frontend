@@ -60,6 +60,7 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
       },
       integration: {
         tag: "ha-config-integration-page",
+        itemId: true,
       },
     },
   };
@@ -201,7 +202,12 @@ class HaConfigIntegrations extends SubscribeMixin(HassRouterPage) {
         if (urlParams.has("domain")) {
           const domain = urlParams.get("domain");
           pageEl.domain = domain;
-          navigate(`/config/integrations/integration/${domain}`);
+          urlParams.delete("domain");
+          const search = urlParams.toString();
+          navigate(
+            `/config/integrations/integration/${domain}${search ? `?${search}` : ""}`,
+            { replace: true }
+          );
         }
       }
     }

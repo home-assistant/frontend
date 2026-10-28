@@ -3,15 +3,17 @@ import { customElement, property, query, state } from "lit/decorators";
 import { tinykeys } from "tinykeys";
 import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import "../../../components/ha-resizable-bottom-sheet";
-import type { HaResizableBottomSheet } from "../../../components/ha-resizable-bottom-sheet";
+import "../../../components/ha-snap-bottom-sheet";
+import type { HaSnapBottomSheet } from "../../../components/ha-snap-bottom-sheet";
 import {
   isCondition,
   isScriptField,
   isTrigger,
   type ActionSidebarConfig,
   type ConditionSidebarConfig,
+  type OptionSidebarConfig,
   type ScriptFieldSidebarConfig,
   type SidebarConfig,
   type TriggerSidebarConfig,
@@ -21,11 +23,20 @@ import type { DomainManifestLookup } from "../../../data/integration";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
 import "./sidebar/ha-automation-sidebar-action";
+import type HaAutomationSidebarAction from "./sidebar/ha-automation-sidebar-action";
 import "./sidebar/ha-automation-sidebar-condition";
+import type HaAutomationSidebarCondition from "./sidebar/ha-automation-sidebar-condition";
 import "./sidebar/ha-automation-sidebar-option";
+import type HaAutomationSidebarOption from "./sidebar/ha-automation-sidebar-option";
 import "./sidebar/ha-automation-sidebar-script-field";
+import type HaAutomationSidebarScriptField from "./sidebar/ha-automation-sidebar-script-field";
 import "./sidebar/ha-automation-sidebar-script-field-selector";
+import type HaAutomationSidebarScriptFieldSelector from "./sidebar/ha-automation-sidebar-script-field-selector";
 import "./sidebar/ha-automation-sidebar-trigger";
+import type HaAutomationSidebarTrigger from "./sidebar/ha-automation-sidebar-trigger";
+
+// The sidebar card header: the dialog header's 48px minimum plus its padding
+const COLLAPSED_SHEET_HEIGHT = 68;
 
 @customElement("ha-automation-sidebar")
 export default class HaAutomationSidebar extends LitElement {
@@ -50,18 +61,40 @@ export default class HaAutomationSidebar extends LitElement {
   @consume({ context: manifestsContext, subscribe: true })
   private _manifests?: DomainManifestLookup;
 
-  @query("ha-resizable-bottom-sheet")
-  private _bottomSheetElement?: HaResizableBottomSheet;
+  @query("ha-snap-bottom-sheet")
+  private _bottomSheetElement?: HaSnapBottomSheet;
 
   @query(".handle")
   private _handleElement?: HTMLDivElement;
 
+  @query(".sidebar-content")
+  private _contentElement?:
+    | HaAutomationSidebarAction
+    | HaAutomationSidebarCondition
+    | HaAutomationSidebarOption
+    | HaAutomationSidebarScriptField
+    | HaAutomationSidebarScriptFieldSelector
+    | HaAutomationSidebarTrigger;
+
   private _resizeStartX = 0;
+
+  // Set when the user switches to YAML, consumed once the sidebar reopens
+  private _focusYamlEditor = false;
 
   private _tinykeysUnsub?: () => void;
 
   protected updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+    if (
+      changedProperties.has("sidebarKey") &&
+      this._bottomSheetElement?.position === "collapsed"
+    ) {
+      this._bottomSheetElement.snapTo("half");
+    }
+    if (changedProperties.has("sidebarKey") && this._focusYamlEditor) {
+      this._focusYamlEditor = false;
+      this._contentElement?.focusYamlEditor();
+    }
     if (changedProperties.has("config") || changedProperties.has("narrow")) {
       if (!this.config || this.narrow) {
         this._tinykeysUnsub?.();
@@ -138,6 +171,9 @@ export default class HaAutomationSidebar extends LitElement {
           .isWide=${this.isWide}
           .narrow=${this.narrow}
           .disabled=${this.disabled}
+          .yamlMode=${this._yamlMode}
+          .sidebarKey=${this.sidebarKey}
+          @toggle-yaml-mode=${this._toggleYamlMode}
           @close-sidebar=${this.triggerCloseSidebar}
         ></ha-automation-sidebar-option>
       `;
@@ -185,9 +221,16 @@ export default class HaAutomationSidebar extends LitElement {
 
     if (this.narrow) {
       return html`
-        <ha-resizable-bottom-sheet @bottom-sheet-closed=${this._closeSidebar}>
+        <ha-snap-bottom-sheet
+          dismissable
+          .minHeight=${COLLAPSED_SHEET_HEIGHT}
+          .label=${this.hass.localize(
+            "ui.panel.config.automation.editor.sidebar_label"
+          )}
+          @bottom-sheet-closed=${this._closeSidebar}
+        >
           ${this._renderContent()}
-        </ha-resizable-bottom-sheet>
+        </ha-snap-bottom-sheet>
       `;
     }
 
@@ -227,8 +270,9 @@ export default class HaAutomationSidebar extends LitElement {
         : "script-field";
     }
 
-    // option is always a building block and doesn't have a config
-    if (this.config && !(this.config as any)?.config) {
+    // option is a building block; its config only carries the option itself
+    const optionConfig = (this.config as OptionSidebarConfig)?.config;
+    if (this.config && (!optionConfig || "option" in optionConfig)) {
       return "option";
     }
 
@@ -249,12 +293,25 @@ export default class HaAutomationSidebar extends LitElement {
     this._closeSidebar();
   }
 
+  public get canToggleYamlMode(): boolean {
+    return !!this._contentElement?.canToggleYamlMode;
+  }
+
+  public toggleYamlMode() {
+    this._contentElement?.toggleYamlMode();
+  }
+
   private _closeSidebar() {
     this.config?.close(true);
   }
 
-  private _toggleYamlMode = () => {
-    (this.config as ActionSidebarConfig)?.toggleYamlMode();
+  private _toggleYamlMode = (
+    ev: HASSDomEvent<HASSDomEvents["toggle-yaml-mode"]>
+  ) => {
+    // Script field sidebars don't pass the target mode, focusing is a no-op
+    // when the result is the visual editor
+    this._focusYamlEditor = ev.detail?.yamlMode !== false;
+    (this.config as ActionSidebarConfig)?.toggleYamlMode(ev.detail?.yamlMode);
   };
 
   private _handleMouseDown = (ev: MouseEvent | TouchEvent) => {
@@ -389,9 +446,6 @@ export default class HaAutomationSidebar extends LitElement {
         var(--ha-border-radius-2xl)
       );
       border-radius: var(--ha-card-border-radius);
-      --ha-bottom-sheet-border-width: 2px;
-      --ha-bottom-sheet-border-style: solid;
-      --ha-bottom-sheet-border-color: var(--primary-color);
       margin-top: var(--safe-area-inset-top);
 
       --ha-bottom-sheet-surface-background: var(--card-background-color);
@@ -446,7 +500,7 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "toggle-yaml-mode": undefined;
+    "toggle-yaml-mode": { yamlMode: boolean } | undefined;
     "yaml-changed": {
       value: unknown;
     };

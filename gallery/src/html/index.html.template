@@ -12,6 +12,11 @@
       <script type="module" src="<%= entry %>"></script>
     <% } %>
     <style>
+      html {
+        /* Prevent iOS Safari from inflating text when rotating to landscape */
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
       body {
         font-family: Roboto, Noto, sans-serif;
         margin: 0;

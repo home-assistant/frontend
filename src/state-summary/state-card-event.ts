@@ -1,14 +1,18 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../components/entity/state-info";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
+import { consume } from "../common/decorators/consume";
+import { formattersContext } from "../data/context";
+import type { HomeAssistantFormatters } from "../types";
 
 @customElement("state-card-event")
 class StateCardEvent extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters?: HomeAssistantFormatters;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
@@ -18,16 +22,18 @@ class StateCardEvent extends LitElement {
     return html`
       <div class="horizontal justified layout">
         <state-info
-          .hass=${this.hass}
           .stateObj=${this.stateObj}
           .inDialog=${this.inDialog}
         ></state-info>
         <div class="container">
           <div class="event_type">
-            ${this.hass.formatEntityState(this.stateObj)}
+            ${this._formatters?.formatEntityState(this.stateObj)}
           </div>
           <div class="event_data">
-            ${this.hass.formatEntityAttributeValue(this.stateObj, "event_type")}
+            ${this._formatters?.formatEntityAttributeValue(
+              this.stateObj,
+              "event_type"
+            )}
           </div>
         </div>
       </div>

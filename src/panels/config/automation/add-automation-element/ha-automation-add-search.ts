@@ -1,5 +1,12 @@
 import "@material/mwc-list/mwc-list";
-import { mdiPlus, mdiTextureBox, mdiUnfoldMoreHorizontal } from "@mdi/js";
+import type { ContextType } from "@lit/context";
+import {
+  mdiCheck,
+  mdiPlus,
+  mdiSwapHorizontal,
+  mdiTextureBox,
+  mdiUnfoldMoreHorizontal,
+} from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import {
@@ -12,7 +19,9 @@ import {
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
+import { findSectionTitle } from "../../../../components/list/find-section-title";
 import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import {
   fireEvent,
   type HASSDomEvent,
@@ -44,16 +53,22 @@ import type {
   HaListVirtualizedItem,
 } from "../../../../components/list/ha-list-virtualized";
 import type { HaListVisibilityChangedDetail } from "../../../../components/list/types";
-import { ACTION_BUILDING_BLOCKS_GROUP } from "../../../../data/action";
 import {
   areaFloorComboBoxKeys,
   getAreasAndFloors,
   type AreaFloorValue,
   type FloorComboBoxItem,
 } from "../../../../data/area_floor_picker";
-import { CONDITION_BUILDING_BLOCKS_GROUP } from "../../../../data/condition";
 import type { ConfigEntry } from "../../../../data/config_entries";
-import { labelsContext, relatedContext } from "../../../../data/context";
+import {
+  configContext,
+  configEntriesContext,
+  internationalizationContext,
+  labelsContext,
+  registriesContext,
+  relatedContext,
+  statesContext,
+} from "../../../../data/context";
 import {
   deviceComboBoxKeys,
   getDevices,
@@ -64,7 +79,6 @@ import {
   getEntities,
   type EntityComboBoxItem,
 } from "../../../../data/entity/entity_picker";
-import type { DomainManifestLookup } from "../../../../data/integration";
 import {
   getLabels,
   labelComboBoxKeys,
@@ -81,11 +95,26 @@ import {
 } from "../../../../resources/fuseMultiTerm";
 import { loadVirtualizer } from "../../../../resources/virtualizer";
 import type { HomeAssistant } from "../../../../types";
+import { BUILDING_BLOCKS } from "./constants";
+import { convertToItem } from "./element-items";
 import type {
   AddAutomationElementListItem,
+  AddElementType,
   AutomationItemComboBoxItem,
-} from "../add-automation-element-dialog";
-import type { AddAutomationElementDialogParams } from "../show-add-automation-element-dialog";
+} from "./types";
+
+type PickerSources = Pick<
+  HomeAssistant,
+  | "states"
+  | "entities"
+  | "devices"
+  | "areas"
+  | "floors"
+  | "localize"
+  | "language"
+  | "locale"
+  | "translationMetadata"
+>;
 
 const TARGET_SEARCH_SECTIONS = [
   "separator",
@@ -103,11 +132,13 @@ export const ITEM_SEARCH_KEYS: FuseWeightedKey[] = [
   },
   {
     name: "secondary",
-    weight: 7,
+    weight: 3,
   },
 ];
 
 const MAX_SEARCH_ITEMS_PER_SECTION = 5;
+
+const NO_CONFIG_ENTRIES: Record<string, ConfigEntry> = {};
 
 type SearchSection = "item" | "block" | "entity" | "device" | "area" | "label";
 
@@ -131,31 +162,46 @@ interface SearchResultRow extends HaListVirtualizedItem {
 
 @customElement("ha-automation-add-search")
 export class HaAutomationAddSearch extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public filter!: string;
-
-  @property({ attribute: false }) public configEntryLookup: Record<
-    string,
-    ConfigEntry
-  > = {};
-
-  @property({ attribute: false }) public manifests?: DomainManifestLookup;
 
   @property({ attribute: false }) public items!: AddAutomationElementListItem[];
 
   @property({ type: Boolean }) public narrow = false;
 
-  @property({ attribute: false })
-  public convertToItem!: (
-    key: string,
-    options,
-    type: AddAutomationElementDialogParams["type"],
-    localize: LocalizeFunc
-  ) => AddAutomationElementListItem;
+  @property({ attribute: false }) public replacingItemKey?: string;
 
-  @property({ attribute: "add-element-type" }) public addElementType!:
-    "trigger" | "condition" | "action";
+  @property({ attribute: "add-element-type" })
+  public addElementType!: AddElementType;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  // The search results are built when the search changes, registry and state
+  // changes don't rebuild them
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<ContextType<typeof configContext>, boolean | undefined>({
+    transformer: ({ userData }) => userData?.showEntityIdPicker,
+  })
+  private _showEntityId?: boolean;
+
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<ConfigEntry[], Record<string, ConfigEntry>>({
+    transformer: function (value) {
+      return value
+        ? Object.fromEntries(value.map((entry) => [entry.entry_id, entry]))
+        : undefined;
+    },
+  })
+  private _configEntryLookup?: Record<string, ConfigEntry>;
 
   @state()
   @consume({ context: relatedContext, subscribe: true })
@@ -173,25 +219,51 @@ export class HaAutomationAddSearch extends LitElement {
 
   private _getDevicesMemoized = memoizeOne(
     (
-      hass: HomeAssistant,
+      sources: PickerSources,
       configEntryLookup: Record<string, ConfigEntry>,
       idPrefix: string
-    ) => getDevices(hass, configEntryLookup, { idPrefix })
+    ) =>
+      getDevices(
+        sources.states,
+        sources.areas,
+        sources.devices,
+        sources.entities,
+        sources.localize,
+        sources.locale.language,
+        sources.translationMetadata,
+        configEntryLookup,
+        { idPrefix }
+      )
   );
 
   private _getLabelsMemoized = memoizeOne(getLabels);
 
   private _getEntitiesMemoized = memoizeOne(
-    (hass: HomeAssistant, idPrefix: string) => getEntities(hass, { idPrefix })
+    (sources: PickerSources, idPrefix: string) =>
+      getEntities(sources, { idPrefix })
   );
 
   private _getAreasAndFloorsMemoized = memoizeOne(getAreasAndFloors);
 
-  private _removeKeyboardShortcuts?: () => void;
+  private _formatAreaFloorId = (value: AreaFloorValue): string =>
+    [value.type, value.id].join(TARGET_SEPARATOR);
 
-  private get _showEntityId() {
-    return this.hass.userData?.showEntityIdPicker;
-  }
+  private _getPickerSources = memoizeOne(
+    (
+      states: HomeAssistant["states"],
+      registries: ContextType<typeof registriesContext>,
+      i18n: ContextType<typeof internationalizationContext>
+    ): PickerSources => ({
+      states,
+      ...registries,
+      localize: i18n.localize,
+      language: i18n.language,
+      locale: i18n.locale,
+      translationMetadata: i18n.translationMetadata,
+    })
+  );
+
+  private _removeKeyboardShortcuts?: () => void;
 
   protected willUpdate(changedProps: PropertyValues<this>) {
     if (!this.hasUpdated) {
@@ -230,15 +302,7 @@ export class HaAutomationAddSearch extends LitElement {
   }
 
   protected render() {
-    const items = this._getFilteredItems(
-      this.addElementType,
-      this.hass.localize,
-      this.filter,
-      this.configEntryLookup,
-      this.items,
-      this._selectedSearchSection,
-      this._relatedIdSets
-    );
+    const items = this._currentItems;
 
     let emptySearchTranslation: string | undefined;
 
@@ -255,7 +319,7 @@ export class HaAutomationAddSearch extends LitElement {
       ${
         emptySearchTranslation
           ? html`<div class="empty-search">
-              ${this.hass.localize(emptySearchTranslation as LocalizeKeys, {
+              ${this._i18n.localize(emptySearchTranslation as LocalizeKeys, {
                 term: html`<b>‘${this.filter}’</b>`,
               })}
             </div>`
@@ -273,7 +337,7 @@ export class HaAutomationAddSearch extends LitElement {
                 <ha-list-virtualized
                   virtual-focus
                   tabindex="0"
-                  .rows=${this._getRows(items)}
+                  .rows=${this._getRows(items, this.replacingItemKey)}
                   .rowRenderer=${this._getRowRenderer(
                     this._showEntityId,
                     this.narrow
@@ -314,13 +378,29 @@ export class HaAutomationAddSearch extends LitElement {
   }
 
   private _getRows = memoizeOne(
-    (items: (SearchResultItem | string)[]): SearchResultRow[] =>
+    (
+      items: (SearchResultItem | string)[],
+      _replacingItemKey?: string
+    ): SearchResultRow[] =>
       items.map((item) =>
         typeof item === "string"
           ? { id: `___title___${item}`, value: item }
-          : { id: item.id, interactive: true, value: item }
+          : {
+              id: item.id,
+              interactive: true,
+              disabled: this._isCurrent(item),
+              value: item,
+            }
       )
   );
+
+  private _isCurrent(item: SearchResultItem) {
+    return (
+      ["trigger", "condition", "action", "block"].includes(
+        (item as AutomationItemComboBoxItem).type
+      ) && item.id === this.replacingItemKey
+    );
+  }
 
   private _getRowRenderer = memoizeOne(
     (_showEntityId?: boolean, _narrow?: boolean) =>
@@ -360,8 +440,8 @@ export class HaAutomationAddSearch extends LitElement {
 
     if (type === "area" || type === "floor") {
       rtl = computeRTL(
-        this.hass.language,
-        this.hass.translationMetadata.translations
+        this._i18n.language,
+        this._i18n.translationMetadata.translations
       );
       hasFloor =
         type === "area" && !!(item as FloorComboBoxItem).area?.floor_id;
@@ -371,8 +451,17 @@ export class HaAutomationAddSearch extends LitElement {
       showEntityId = !!this._showEntityId;
     }
 
+    const current = this._isCurrent(item);
+
     return html`<ha-list-item-button
       .value=${item}
+      style=${
+        current
+          ? "--disabled-text-color: var(--primary-text-color); background-color: var(--ha-color-fill-primary-quiet-resting);"
+          : ""
+      }
+      .disabled=${current}
+      aria-current=${current ? "true" : nothing}
       @click=${this._selectSearchResult}
     >
       <ha-combo-box-item
@@ -469,7 +558,7 @@ export class HaAutomationAddSearch extends LitElement {
             ? html`<ha-svg-icon
                 slot="end"
                 style="color: var(--primary-color);"
-                .path=${mdiPlus}
+                .path=${current ? mdiCheck : this.replacingItemKey ? mdiSwapHorizontal : mdiPlus}
               ></ha-svg-icon>`
             : this.narrow
               ? html`<ha-icon-next slot="end"></ha-icon-next>`
@@ -482,9 +571,9 @@ export class HaAutomationAddSearch extends LitElement {
   private get _currentItems(): (SearchResultItem | string)[] {
     return this._getFilteredItems(
       this.addElementType,
-      this.hass.localize,
+      this._i18n.localize,
       this.filter,
-      this.configEntryLookup,
+      this._configEntryLookup ?? NO_CONFIG_ENTRIES,
       this.items,
       this._selectedSearchSection,
       this._relatedIdSets
@@ -493,35 +582,9 @@ export class HaAutomationAddSearch extends LitElement {
 
   @eventOptions({ passive: true })
   private _visibilityChanged(ev: HASSDomEvent<HaListVisibilityChangedDetail>) {
-    const items = this._currentItems;
-    const firstItem = items[ev.detail.first];
-    const secondItem = items[ev.detail.first + 1];
-
-    if (
-      firstItem === undefined ||
-      secondItem === undefined ||
-      typeof firstItem === "string" ||
-      typeof secondItem === "string" ||
-      ev.detail.first === 0
-    ) {
-      this._searchSectionTitle = undefined;
-      return;
-    }
-
-    let section: SearchSection;
-
-    if (
-      (firstItem as AutomationItemComboBoxItem).type &&
-      !["area", "floor"].includes(
-        (firstItem as AutomationItemComboBoxItem).type
-      )
-    ) {
-      section = (firstItem as AutomationItemComboBoxItem).type as SearchSection;
-    } else {
-      section = getTargetComboBoxItemType(firstItem as any) as SearchSection;
-    }
-
-    this._searchSectionTitle = this._getSearchSectionLabel(section);
+    this._searchSectionTitle = !this._selectedSearchSection
+      ? findSectionTitle(this._currentItems, ev.detail.first)
+      : undefined;
   }
 
   private _createFuseIndex = (
@@ -552,8 +615,8 @@ export class HaAutomationAddSearch extends LitElement {
 
   private _getFilteredItems = memoizeOne(
     (
-      type: AddAutomationElementDialogParams["type"],
-      localize: HomeAssistant["localize"],
+      type: AddElementType,
+      localize: LocalizeFunc,
       searchTerm: string,
       configEntryLookup: Record<string, ConfigEntry>,
       automationItems: AddAutomationElementListItem[],
@@ -594,16 +657,9 @@ export class HaAutomationAddSearch extends LitElement {
         type !== "trigger" &&
         (!selectedSection || selectedSection === "block")
       ) {
-        const groups =
-          type === "action"
-            ? ACTION_BUILDING_BLOCKS_GROUP
-            : type === "condition"
-              ? CONDITION_BUILDING_BLOCKS_GROUP
-              : {};
-
         let blocks = this._convertItemsToComboBoxItems(
-          Object.keys(groups).map((key) =>
-            this.convertToItem(key, {}, type, localize)
+          Object.keys(BUILDING_BLOCKS[type]).map((key) =>
+            convertToItem(key, {}, type, localize)
           ),
           "block"
         );
@@ -628,7 +684,7 @@ export class HaAutomationAddSearch extends LitElement {
 
       if (!selectedSection || selectedSection === "entity") {
         let entityItems = this._getEntitiesMemoized(
-          this.hass,
+          this._getPickerSources(this._states, this._registries, this._i18n),
           `entity${TARGET_SEPARATOR}`
         );
 
@@ -665,7 +721,7 @@ export class HaAutomationAddSearch extends LitElement {
 
       if (!selectedSection || selectedSection === "device") {
         let deviceItems = this._getDevicesMemoized(
-          this.hass,
+          this._getPickerSources(this._states, this._registries, this._i18n),
           configEntryLookup,
           `device${TARGET_SEPARATOR}`
         );
@@ -703,14 +759,12 @@ export class HaAutomationAddSearch extends LitElement {
 
       if (!selectedSection || selectedSection === "area") {
         let areasAndFloors = this._getAreasAndFloorsMemoized(
-          this.hass.states,
-          this.hass.floors,
-          this.hass.areas,
-          this.hass.devices,
-          this.hass.entities,
-          memoizeOne((value: AreaFloorValue): string =>
-            [value.type, value.id].join(TARGET_SEPARATOR)
-          ),
+          this._states,
+          this._registries.floors,
+          this._registries.areas,
+          this._registries.devices,
+          this._registries.entities,
+          this._formatAreaFloorId,
           undefined,
           undefined,
           undefined,
@@ -773,10 +827,10 @@ export class HaAutomationAddSearch extends LitElement {
 
       if (!selectedSection || selectedSection === "label") {
         let labels = this._getLabelsMemoized(
-          this.hass.states,
-          this.hass.areas,
-          this.hass.devices,
-          this.hass.entities,
+          this._states,
+          this._registries.areas,
+          this._registries.devices,
+          this._registries.entities,
           this._labelRegistry,
           undefined,
           undefined,
@@ -898,19 +952,19 @@ export class HaAutomationAddSearch extends LitElement {
 
   private _getSearchSectionLabel(section: SearchSection) {
     if (section === "block") {
-      return this.hass.localize("ui.panel.config.automation.editor.blocks");
+      return this._i18n.localize("ui.panel.config.automation.editor.blocks");
     }
 
     if (
       section === "item" ||
       ["trigger", "condition", "action"].includes(section)
     ) {
-      return this.hass.localize(
+      return this._i18n.localize(
         `ui.panel.config.automation.editor.${this.addElementType}s.name`
       );
     }
 
-    return this.hass.localize(
+    return this._i18n.localize(
       `ui.components.target-picker.type.${section === "entity" ? "entities" : `${section as "area" | "device" | "floor"}s`}` as LocalizeKeys
     );
   }
@@ -1026,6 +1080,9 @@ export class HaAutomationAddSearch extends LitElement {
       | DevicePickerItem
       | AutomationItemComboBoxItem
   ) {
+    if (this._isCurrent(item)) {
+      return;
+    }
     fireEvent(this, "search-element-picked", item);
   }
 
@@ -1063,7 +1120,7 @@ export class HaAutomationAddSearch extends LitElement {
 
     .sections ha-filter-chip {
       flex-shrink: 0;
-      --md-filter-chip-selected-container-color: var(
+      --ha-filter-chip-selected-container-color: var(
         --ha-color-fill-primary-normal-hover
       );
       color: var(--primary-color);

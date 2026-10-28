@@ -104,6 +104,20 @@ export const floorsContext = createContext<HomeAssistant["floors"]>("floors");
  */
 export const narrowViewportContext = createContext<boolean>("narrowViewport");
 
+/**
+ * Whether the user prefers reduced motion.
+ */
+export const reducedMotionContext = createContext<boolean>("reducedMotion");
+
+/**
+ * The token that brand image URLs carry, `undefined` until it is fetched.
+ * Consume it to re-render brand images when it arrives or rotates; the
+ * helpers in `util/brands-url` read the token themselves.
+ */
+export const brandsAccessTokenContext = createContext<string | undefined>(
+  "brandsAccessToken"
+);
+
 // #region lazy-contexts
 
 /**

@@ -42,7 +42,7 @@ export const ConditionalListenerMixin = <
 
     public config?: TConfig;
 
-    public hass?: HomeAssistant;
+    public abstract hass?: HomeAssistant;
 
     @state()
     @consume({ context: maxColumnsContext, subscribe: true })

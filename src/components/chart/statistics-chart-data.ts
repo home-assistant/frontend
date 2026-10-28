@@ -3,7 +3,9 @@ import type {
   LineSeriesOption,
   ZRColor,
 } from "echarts/types/dist/shared";
+import type { HassEntities } from "home-assistant-js-websocket";
 import { getGraphColorByIndex } from "../../common/color/colors";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import type {
   Statistics,
   StatisticsMetaData,
@@ -15,7 +17,7 @@ import {
   isExternalStatistic,
   statisticsHaveType,
 } from "../../data/recorder";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistantFormatters } from "../../types";
 import { fillDataGapsAndRoundCaps } from "./round-caps";
 import { computeYAxisFractionDigits } from "./y-axis-fraction-digits";
 
@@ -28,7 +30,9 @@ export interface StatisticsChartLegendItem {
 }
 
 export interface StatisticsChartDataParams {
-  hass: HomeAssistant;
+  states: HassEntities;
+  formatEntityName: HomeAssistantFormatters["formatEntityName"];
+  localize: LocalizeFunc;
   statisticsData: Statistics;
   statisticsMetaData: Record<string, StatisticsMetaData>;
   names?: Record<string, string>;
@@ -91,12 +95,21 @@ function alignStackedLines(datasets: LineSeriesOption[]) {
 /**
  * Transforms raw statistics into ECharts series for `statistics-chart`.
  * Pure data processing: all environment inputs (current time, theme style,
- * hass) are injected so the transform is deterministic and benchmarkable.
+ * entity states, names and localize) are injected so the transform is
+ * deterministic and benchmarkable.
  */
 export function generateStatisticsChartData(
   params: StatisticsChartDataParams
 ): StatisticsChartData | undefined {
-  const { hass, statisticsMetaData, computedStyle, now, hiddenStats } = params;
+  const {
+    states,
+    formatEntityName,
+    localize,
+    statisticsMetaData,
+    computedStyle,
+    now,
+    hiddenStats,
+  } = params;
 
   let colorIndex = 0;
   const chartType = params.chartType.startsWith("line") ? "line" : "bar";
@@ -147,7 +160,7 @@ export function generateStatisticsChartData(
     let inferredUnit: string | undefined | null;
     statisticsData.forEach(([statistic_id, _stats]) => {
       const meta = statisticsMetaData?.[statistic_id];
-      const statisticUnit = getDisplayUnit(hass, statistic_id, meta);
+      const statisticUnit = getDisplayUnit(states, statistic_id, meta);
       if (inferredUnit === undefined) {
         inferredUnit = statisticUnit;
       } else if (inferredUnit !== null && inferredUnit !== statisticUnit) {
@@ -166,7 +179,7 @@ export function generateStatisticsChartData(
     const meta = statisticsMetaData?.[statistic_id];
     let name = names[statistic_id];
     if (name === undefined) {
-      name = getStatisticLabel(hass, statistic_id, meta);
+      name = getStatisticLabel(states, formatEntityName, statistic_id, meta);
     }
 
     // array containing [value1, value2, etc]
@@ -290,10 +303,10 @@ export function generateStatisticsChartData(
           cursor: "default",
           data: [],
           name: name
-            ? `${name} (${hass.localize(
+            ? `${name} (${localize(
                 `ui.components.statistics_charts.statistic_types.${type}`
               )})`
-            : hass.localize(
+            : localize(
                 `ui.components.statistics_charts.statistic_types.${type}`
               ),
           symbol: "none",
@@ -432,7 +445,7 @@ export function generateStatisticsChartData(
     }
 
     // Show current state if required, and units match (or are unknown)
-    const statisticUnit = getDisplayUnit(hass, statistic_id, meta);
+    const statisticUnit = getDisplayUnit(states, statistic_id, meta);
     if (
       displayCurrentState &&
       !chartStacked &&
@@ -440,7 +453,7 @@ export function generateStatisticsChartData(
     ) {
       // Skip external statistics
       if (!isExternalStatistic(statistic_id)) {
-        const stateObj = hass.states[statistic_id];
+        const stateObj = states[statistic_id];
         if (stateObj) {
           const currentValue = parseFloat(stateObj.state);
           if (isFinite(currentValue) && !hiddenStats.has(statistic_id)) {

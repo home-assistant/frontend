@@ -11,7 +11,6 @@ import type { DataZoomComponentOption } from "echarts/components";
 import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
-  ElementEvent,
   LegendComponentOption,
   LineSeriesOption,
   TooltipOption,
@@ -30,6 +29,8 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import type { HassConfig } from "home-assistant-js-websocket";
+import { LegendFitController } from "../../common/controllers/legend-fit-controller";
 import { consume } from "../../common/decorators/consume";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
@@ -42,7 +43,11 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { afterNextRender } from "../../common/util/render-status";
 import { MobileAwareMixin } from "../../mixins/mobile-aware-mixin";
-import { uiContext } from "../../data/context";
+import {
+  configContext,
+  internationalizationContext,
+  uiContext,
+} from "../../data/context";
 import type { Themes } from "../../data/ws-themes";
 import type {
   ECOption,
@@ -51,10 +56,15 @@ import type {
   HaECSeriesItem,
   HaTooltipOption,
 } from "../../resources/echarts/echarts";
-import type { HomeAssistant, HomeAssistantUI } from "../../types";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+  HomeAssistantUI,
+} from "../../types";
 import { isMac } from "../../util/is_mac";
 import "../chips/ha-assist-chip";
 import "../ha-icon-button";
+import { ZOOM_SLIDER_HEIGHT } from "./ha-chart-zoom-slider";
 import { formatTimeLabel } from "./axis-label";
 import type { ChartSonification } from "./chart-sonification";
 import { canSonifyChart, sonifyChart } from "./chart-sonification";
@@ -62,11 +72,18 @@ import { downSampleLineData } from "./down-sample";
 import { wrapLitTooltipFormatter } from "./lit-tooltip-formatter";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
-const LEGEND_OVERFLOW_LIMIT = 10;
-const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
 // echarts' own default, restored when switching back from touch input
 const DEFAULT_TOOLTIP_TRIGGER_ON = "mousemove|click|mousewheel";
+const ZOOM_SLIDER_BOTTOM = 4;
+// Room the plot gives up at its bottom while the zoom slider shows
+const ZOOM_SLIDER_SPACE = ZOOM_SLIDER_BOTTOM + ZOOM_SLIDER_HEIGHT + 8;
+// Grid bottom that just fits the x-axis labels, as in line charts
+const X_AXIS_LABEL_SPACE = 20;
+const ZOOM_RESET_SIZE = 24;
+const ZOOM_RESET_OFFSET = ZOOM_RESET_SIZE + 4;
+// A narrower drag selection is a sloppy click rather than a zoom
+const MIN_DRAG_ZOOM_WIDTH = 8;
 export const DEFAULT_CHART_WIDTH = 500;
 // Slack so a chart is up to date before a scroll can reach it. A phone screen
 // is short enough for a whole screenful; on a desktop that would cover the page.
@@ -129,8 +146,6 @@ export type CustomLegendOption = ECOption["legend"] & {
 export class HaChartBase extends MobileAwareMixin(LitElement) {
   public chart?: EChartsType;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public data: HaECSeries = [];
 
   @property({ attribute: false }) public options?: HaECOption;
@@ -148,8 +163,14 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   @property({ attribute: "small-controls", type: Boolean })
   public smallControls?: boolean;
 
-  @property({ attribute: "hide-reset-button", type: Boolean })
-  public hideResetButton?: boolean;
+  // For charts zoomed from outside, like the synced History charts
+  @property({ attribute: "hide-zoom-controls", type: Boolean })
+  public hideZoomControls = false;
+
+  // For charts sized to their content, like timelines, which grow to fit the
+  // zoom slider instead of giving up plot height
+  @property({ attribute: "grow-for-zoom-slider", type: Boolean })
+  public growForZoomSlider = false;
 
   // extraComponents is not reactive and should not trigger updates
   public extraComponents?: any[];
@@ -161,12 +182,23 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   })
   private _themes!: Themes;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
   @property({ attribute: "click-label-for-more-info", type: Boolean })
   public clickLabelForMoreInfo = false;
 
   @state() private _isZoomed = false;
 
-  @state() private _zoomRatio = 1;
+  // Separate from _isZoomed, whose touch handling reruns graph layouts
+  @state() private _isGraphRoamed = false;
 
   @state() private _minutesDifference = 24 * 60;
 
@@ -185,8 +217,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   @state() private _sonificationFocusHeld = false;
 
-  private _modifierPressed = false;
-
   private _isTouchDevice = "ontouchstart" in window;
 
   // Whether the chart was last used with touch rather than a mouse. With touch
@@ -196,10 +226,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _lastTapTime?: number;
 
-  // A mouse button is held on the chart, so zooming now is a drag that pans it
-  private _mouseDown = false;
+  private _doubleTapped = false;
 
-  private _tooltipHiddenWhilePanning = false;
+  private _dragToZoom = false;
 
   private _longPressTimer?: ReturnType<typeof setTimeout>;
 
@@ -260,20 +289,38 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   private _pendingUpdate?: Set<PropertyKey>;
 
-  private _pendingOptions?: HaECOption;
+  private _legendItemCount?: number;
 
-  private _pendingZoom?: [number, number, boolean];
+  private _legendFit = new LegendFitController(this);
+
+  private _renderedLegendFit?: number;
+
+  private _legendItemsKey?: string;
+
+  // Zoom window in percent
+  @state() private _zoomRange: [number, number] = [0, 100];
+
+  // Keeps the zoom slider while in use, also once it reaches the full range
+  @state() private _zoomSliderHeld = false;
+
+  // Whether the grid currently leaves room for the zoom slider
+  private _zoomSliderRoom = false;
+
+  private _wheelPanPixels = 0;
+
+  private _wheelPanFrame?: number;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._removeOutsideTapListener();
     this._legendPointerCancel();
-    this._mouseDown = false;
-    this._tooltipHiddenWhilePanning = false;
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
-    this._pendingOptions = undefined;
-    this._pendingZoom = undefined;
+    if (this._wheelPanFrame !== undefined) {
+      cancelAnimationFrame(this._wheelPanFrame);
+      this._wheelPanFrame = undefined;
+    }
+    this._wheelPanPixels = 0;
     // The observers are about to be torn down, so nothing would correct a stale
     // value if this element is reattached inside a hidden container.
     this._intersecting = false;
@@ -325,52 +372,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         }
       })
     );
-
-    if (!this.options?.dataZoom) {
-      // Add keyboard event listeners
-      const handleKeyDown = (ev: KeyboardEvent) => {
-        if (
-          !this._modifierPressed &&
-          ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
-        ) {
-          this._modifierPressed = true;
-          if (!this.options?.dataZoom) {
-            this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
-          }
-          this._updateSankeyRoam();
-          // drag to zoom
-          this.chart?.dispatchAction({
-            type: "takeGlobalCursor",
-            key: "dataZoomSelect",
-            dataZoomSelectActive: true,
-          });
-        }
-      };
-
-      const handleKeyUp = (ev: KeyboardEvent) => {
-        if (
-          this._modifierPressed &&
-          ((isMac && ev.key === "Meta") || (!isMac && ev.key === "Control"))
-        ) {
-          this._modifierPressed = false;
-          if (!this.options?.dataZoom) {
-            this._setChartOptions({ dataZoom: this._getDataZoomConfig() });
-          }
-          this._updateSankeyRoam();
-          this.chart?.dispatchAction({
-            type: "takeGlobalCursor",
-            key: "dataZoomSelect",
-            dataZoomSelectActive: false,
-          });
-        }
-      };
-      window.addEventListener("keydown", handleKeyDown);
-      window.addEventListener("keyup", handleKeyUp);
-      this._listeners.push(
-        () => window.removeEventListener("keydown", handleKeyDown),
-        () => window.removeEventListener("keyup", handleKeyUp)
-      );
-    }
 
     const handleLayoutTransition: EventListener = (ev) => {
       const event = ev as HASSDomEvent<HASSDomEvents["hass-layout-transition"]>;
@@ -425,11 +426,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (!this._pendingUpdate) {
         this._pendingUpdate = new Set();
       }
-      if (prop === "options" && !this._pendingUpdate.has(prop)) {
-        // The one previous value a replay reads, and it has to stay the options
-        // the chart currently renders, not those of a later deferred change.
-        this._pendingOptions = changedProps.get(prop) as HaECOption | undefined;
-      }
       this._pendingUpdate.add(prop);
     }
   }
@@ -446,10 +442,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       return;
     }
     const pending = this._pendingUpdate!;
-    const previousOptions = this._pendingOptions;
     this._pendingUpdate = undefined;
-    this._pendingOptions = undefined;
-    this._applyChartUpdate(pending, previousOptions);
+    this._applyChartUpdate(pending);
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -465,7 +459,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (invisible) {
         this._pendingSetup = true;
         this._pendingUpdate = undefined;
-        this._pendingOptions = undefined;
       } else {
         this._setupChart();
       }
@@ -483,16 +476,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
       return;
     }
-    this._applyChartUpdate(
-      changedProps,
-      changedProps.get("options") as HaECOption | undefined
-    );
+    this._applyChartUpdate(changedProps);
   }
 
-  private _applyChartUpdate(
-    changedProps: { has: (prop: string) => boolean },
-    previousOptions: HaECOption | undefined
-  ) {
+  private _applyChartUpdate(changedProps: { has: (prop: string) => boolean }) {
     let chartOptions: ECOption = {};
     if (changedProps.has("data") || changedProps.has("_hiddenDatasets")) {
       chartOptions.series = this._getSeries();
@@ -511,18 +498,67 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
-      if (this._compareCustomLegendOptions(previousOptions, this.options)) {
-        // custom legend changes may require a resize to layout properly
-        this._shouldResizeChart = true;
-        this._resizeAnimationDuration = 250;
-      }
-    } else if (this._isTouchDevice && changedProps.has("_isZoomed")) {
-      chartOptions.dataZoom = this._getDataZoomConfig();
+      this._disposeSonification();
+    }
+    let legendChanged = false;
+    if (changedProps.has("options") || changedProps.has("data")) {
+      const legendItemCount = this._getLegendItems()?.length;
+      legendChanged = legendItemCount !== this._legendItemCount;
+      this._legendItemCount = legendItemCount;
     }
     if (Object.keys(chartOptions).length > 0) {
       this._setChartOptions(chartOptions);
-      if (chartOptions.series || changedProps.has("_isZoomed")) {
-        this._updateSankeyRoam();
+      if (changedProps.has("options")) {
+        this._updateDragToZoom();
+      }
+    }
+    if (
+      chartOptions.series ||
+      (this._isTouchDevice && changedProps.has("_isZoomed"))
+    ) {
+      this._updateSankeyRoam();
+    }
+    if (legendChanged) {
+      // Within a fixed height the host does not resize when the legend grows.
+      // Without animation, setOption has already fired "finished" by now.
+      this._shouldResizeChart = true;
+      this._resizeAnimationDuration = 250;
+      this.updateComplete.then(() => this._resizeChartIfNeeded());
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    const room = this._showZoomSlider();
+    if (this.chart && room !== this._zoomSliderRoom) {
+      this._zoomSliderRoom = room;
+      if (this.growForZoomSlider) {
+        // The host grows by the room the grid gives up, so apply both in one
+        // render to keep the plot still instead of shrinking and regrowing it
+        this.chart.setOption(
+          { grid: this._getGridOption() },
+          { lazyUpdate: true }
+        );
+        this.chart.resize();
+      } else {
+        this.chart.setOption({ grid: this._getGridOption() });
+      }
+    }
+    if (this.chart && this._legendFit.fit !== this._renderedLegendFit) {
+      // Within a fixed height the host does not resize when the legend does.
+      this._shouldResizeChart = true;
+      this._resizeChartIfNeeded();
+    }
+    this._renderedLegendFit = this._legendFit.fit;
+    if (changedProps.has("options") || changedProps.has("data")) {
+      // New values keep the widest widths, but other items are fitted afresh
+      const legendItemsKey = JSON.stringify(
+        this._getLegendItems()?.map((item) =>
+          typeof item === "string" ? item : [item.id, item.name]
+        )
+      );
+      if (legendItemsKey !== this._legendItemsKey) {
+        this._legendItemsKey = legendItemsKey;
+        this._legendFit.refit();
       }
     }
   }
@@ -531,10 +567,16 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     const sonifiable =
       !this._sonificationUnavailable &&
       canSonifyChart(this.data, this._hiddenDatasets);
+    const showZoomSlider = this._showZoomSlider();
     return html`
       <div
         class="container ${classMap({ "has-height": !!this.height })}"
-        style=${styleMap({ height: this.height })}
+        style=${styleMap({
+          height:
+            showZoomSlider && this.growForZoomSlider && this.height
+              ? `calc(${this.height} + ${this._getZoomSliderSpace()}px)`
+              : this.height,
+        })}
       >
         <div
           class="chart-container"
@@ -543,14 +585,16 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
           })}
         >
           <div
-            class="chart"
+            class="chart ${classMap({
+              "touch-scrub": this._isTouchDevice && this._hasZoomableXAxis(),
+            })}"
             role=${ifDefined(sonifiable ? "application" : undefined)}
             tabindex=${ifDefined(
               sonifiable ? "0" : this._sonificationFocusHeld ? "-1" : undefined
             )}
             aria-label=${ifDefined(
               sonifiable
-                ? this.hass.localize("ui.components.history_charts.chart")
+                ? this._i18n.localize("ui.components.history_charts.chart")
                 : undefined
             )}
             aria-busy=${ifDefined(this._sonificationLoading ? "true" : undefined)}
@@ -558,7 +602,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             @blur=${this._handleChartBlur}
             @pointerdown=${this._handleChartPointer}
             @pointermove=${this._handleChartPointer}
+            @pointercancel=${this._handleChartPointerCancel}
+            @mousedown=${this._handleChartMouseDown}
+            @wheel=${this._handleWheel}
           ></div>
+          ${showZoomSlider ? this._renderZoomSlider() : nothing}
         </div>
         <div class="sonification-output"></div>
         ${this._renderLegend()}
@@ -568,12 +616,14 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             class="chart-controls ${classMap({ small: this.smallControls })}"
           >
             ${
-              this._isZoomed && !this.hideResetButton
+              (this._isZoomed || this._isGraphRoamed) &&
+              !this.hideZoomControls &&
+              !showZoomSlider
                 ? html`<ha-icon-button
                     class="zoom-reset"
                     .path=${mdiRestart}
                     @click=${this._handleZoomReset}
-                    title=${this.hass.localize(
+                    title=${this._i18n.localize(
                       "ui.components.history_charts.zoom_reset"
                     )}
                   ></ha-icon-button>`
@@ -624,20 +674,15 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
     }
 
-    const overflowLimit = this._isMobileSize
-      ? LEGEND_OVERFLOW_LIMIT_MOBILE
-      : LEGEND_OVERFLOW_LIMIT;
+    const fit = this._legendFit.fit ?? items.length;
     return html`<div
       class=${classMap({
         "chart-legend": true,
         "multiple-items": items.length > 1,
       })}
     >
-      <ul>
+      <ul ${this._legendFit.target()}>
         ${items.map((item, index) => {
-          if (!this.expandLegend && index >= overflowLimit) {
-            return nothing;
-          }
           let itemStyle: Record<string, any> = {};
           let value = "";
           let noLabelClick = false;
@@ -666,14 +711,17 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             @pointerleave=${this._legendPointerCancel}
             @pointercancel=${this._legendPointerCancel}
             @contextmenu=${this._legendContextMenu}
-            class=${classMap({ hidden: this._hiddenDatasets.has(id) })}
+            class=${classMap({
+              hidden: this._hiddenDatasets.has(id),
+              overflow: !this.expandLegend && index >= fit,
+            })}
           >
             <button
               type="button"
               class="legend-toggle"
               data-id=${id}
               aria-pressed=${!this._hiddenDatasets.has(id)}
-              .title=${this.hass.localize(
+              .title=${this._i18n.localize(
                 "ui.components.history_charts.toggle_visibility"
               )}
               @click=${this._toggleDataset}
@@ -702,19 +750,24 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
           </li>`;
         })}
         ${
-          items.length > overflowLimit
-            ? html`<li>
+          items.length
+            ? html`<li
+                class=${classMap({
+                  "legend-more": true,
+                  overflow: fit >= items.length,
+                })}
+              >
                 <ha-assist-chip
                   @click=${this._toggleExpandedLegend}
                   filled
                   label=${
                     this.expandLegend
-                      ? this.hass.localize(
+                      ? this._i18n.localize(
                           "ui.components.history_charts.collapse_legend"
                         )
-                      : `${this.hass.localize(
+                      : `${this._i18n.localize(
                           "ui.components.history_charts.expand_legend"
-                        )} (${items.length - overflowLimit})`
+                        )} (${items.length - fit})`
                   }
                 >
                   <ha-svg-icon
@@ -754,9 +807,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     try {
       const sonification = await sonifyChart(this.chart, {
         cc: this._sonificationOutput!,
-        localize: this.hass.localize,
-        locale: this.hass.locale,
-        config: this.hass.config,
+        localize: this._i18n.localize,
+        locale: this._i18n.locale,
+        config: this._hassConfig,
         formatLabel: this.sonificationLabelFormatter,
         onError: () => {
           // Charts the extension cannot describe stay silent rather than
@@ -798,9 +851,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _formatTimeLabel = (value: number | Date) =>
     formatTimeLabel(
       value,
-      this.hass.locale,
-      this.hass.config,
-      this._minutesDifference * this._zoomRatio
+      this._i18n.locale,
+      this._hassConfig,
+      (this._minutesDifference * (this._zoomRange[1] - this._zoomRange[0])) /
+        100
     );
 
   private async _setupChart() {
@@ -811,12 +865,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this._loading = true;
     this._pendingSetup = false;
     this._pendingUpdate = undefined;
-    this._pendingOptions = undefined;
     try {
       // The connection holds a reference to the chart instance, so it cannot
       // outlive it. Focusing the chart again reconnects.
       this._disposeSonification();
-      // the new chart starts with its handle hidden, so nothing would remove it
+      // the new chart starts with its tooltip hidden, so nothing would remove it
       this._removeOutsideTapListener();
       if (this.chart) {
         this.chart.dispose();
@@ -833,25 +886,18 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       echarts.registerTheme("custom", this._createTheme(style));
 
       this.chart = echarts.init(this._chartContainer!, "custom");
+      this._dragToZoom = false;
+      // Restored once the new chart is set up
+      const [zoomStart, zoomEnd] = this._zoomRange;
+      this._zoomRange = [0, 100];
       if (this._isZoomed) {
         this._isZoomed = false;
-        this._zoomRatio = 1;
         fireEvent(this, "chart-sankeyroam", { zoom: 1 });
       }
+      this._isGraphRoamed = false;
       this.chart.on("datazoom", (e: any) => {
         this._handleDataZoomEvent(e);
       });
-      this.chart.getZr().on("mousedown", (e: ElementEvent) => {
-        // Only the primary button pans. zrender does not mark touch and pen as
-        // touch when it listens to pointer events, as on Edge, so check that too.
-        const ev = e.event;
-        const isMouse = !("pointerType" in ev) || ev.pointerType === "mouse";
-        if (!e.zrByTouch && isMouse && "button" in ev && ev.button === 0) {
-          this._mouseDown = true;
-        }
-      });
-      // zrender also fires this when a drag is released outside the chart
-      this.chart.getZr().on("mouseup", this._handleMouseUp);
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
       });
@@ -861,15 +907,23 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         const sankeySeries = series?.find((s: any) => s.type === "sankey");
         const zoomed = Math.abs(sankeySeries.zoom - 1) > 1e-6;
         this._isZoomed = zoomed;
+        // Before setOption, which lays the labels out again
+        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
         if (!zoomed) {
           // Reset center when fully zoomed out
           this.chart!.setOption({
             series: [{ id: sankeySeries.id, center: null }],
           });
         }
-        fireEvent(this, "chart-sankeyroam", { zoom: sankeySeries.zoom });
         // Clear cached emphasis states so labels don't revert to pre-zoom sizes
         this.chart!.dispatchAction({ type: "downplay" });
+      });
+
+      this.chart.on("graphroam", () => {
+        this._isGraphRoamed = this._getGraphRoams().some(
+          ({ zoom, x, y }) =>
+            Math.abs(zoom - 1) > 1e-6 || Math.abs(x) > 0.5 || Math.abs(y) > 0.5
+        );
       });
 
       if (!this.options?.dataZoom) {
@@ -877,94 +931,30 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
       this.chart.on("finished", this._handleChartRenderFinished);
       if (this._isTouchDevice) {
-        this.chart.getZr().on("click", (e: ECElementEvent) => {
-          if (!e.zrByTouch) {
-            return;
-          }
+        // Timed from the first tap's release, as on Android
+        const zr = this.chart.getZr();
+        zr.on("mousedown", (e: ECElementEvent) => {
+          // The second tap's click is often lost, so this cannot wait for it
+          this._doubleTapped = false;
           if (
+            e.zrByTouch &&
+            (e.event as unknown as TouchEvent).touches?.length === 1 &&
             this._lastTapTime &&
             Date.now() - this._lastTapTime < DOUBLE_TAP_TIME
           ) {
+            this._lastTapTime = undefined;
+            this._doubleTapped = true;
             this._handleClickZoom(e);
-          } else {
-            this._lastTapTime = Date.now();
           }
         });
-        // show axis pointer handle on touch devices
-        let dragJustEnded = false;
-        let handleShown = false;
-        let lastTipX: number | undefined;
-        let lastTipY: number | undefined;
-        // showTip fires on every pointer move, so only touch the chart options
-        // when the handle state changes. The update is a partial xAxis merge
-        // built from this.options: getOption() would deep clone all series data.
-        const setAxisPointerHandle = (show: boolean) => {
-          handleShown = show;
-          // the tooltip only opens on a tap, so a tap anywhere else closes it
-          if (show) {
-            document.addEventListener("pointerdown", this._handleOutsideTap, {
-              capture: true,
-              passive: true,
-            });
-          } else {
-            this._removeOutsideTapListener();
-          }
-          this.chart?.setOption({
-            xAxis: ensureArray(this.options?.xAxis ?? []).map(
-              (axis: XAXisOption) =>
-                axis.show === false
-                  ? {}
-                  : {
-                      axisPointer: show
-                        ? {
-                            status: "show",
-                            handle: {
-                              color: style.getPropertyValue("--primary-color"),
-                              margin: 0,
-                              size: 20,
-                              ...axis.axisPointer?.handle,
-                              show: true,
-                            },
-                            label: { show: false },
-                          }
-                        : { status: "hide", handle: { show: false } },
-                    }
-            ),
-          });
-        };
-        this.chart.on("showTip", (e: any) => {
-          lastTipX = e.x;
-          lastTipY = e.y;
-          if (!handleShown) {
-            setAxisPointerHandle(true);
+        zr.on("click", (e: ECElementEvent) => {
+          if (e.zrByTouch) {
+            this._lastTapTime = this._doubleTapped ? undefined : Date.now();
           }
         });
-        this.chart.on("hideTip", (e: any) => {
-          // the drag end event doesn't have a `from` property
-          if (e.from) {
-            if (dragJustEnded) {
-              // hideTip is fired twice when the drag ends, so we need to ignore the second one
-              dragJustEnded = false;
-              return;
-            }
-            // hiding the handle makes echarts fire hideTip again from inside
-            // setOption; the flag is already cleared, so that one is skipped
-            if (handleShown) {
-              setAxisPointerHandle(false);
-            }
-            this.chart?.dispatchAction({
-              type: "downplay",
-            });
-          } else if (lastTipX != null && lastTipY != null) {
-            // echarts hides the tip as soon as the drag ends, so we need to show it again
-            dragJustEnded = true;
-            this.chart?.dispatchAction({
-              type: "showTip",
-              x: lastTipX,
-              y: lastTipY,
-            });
-          }
-        });
+        // the tooltip only opens on a tap, so a tap anywhere else closes it
+        this.chart.on("showTip", this._addOutsideTapListener);
+        this.chart.on("hideTip", this._removeOutsideTapListener);
       }
 
       this._updateHiddenStatsFromOptions(this.options);
@@ -973,11 +963,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         ...this._createOptions(),
         series: this._getSeries(),
       });
+      this._legendItemCount = this._getLegendItems()?.length;
       this._updateSankeyRoam();
-      if (this._pendingZoom) {
-        const [start, end, silent] = this._pendingZoom;
-        this._pendingZoom = undefined;
-        this.chart.dispatchAction({ type: "dataZoom", start, end, silent });
+      this._updateDragToZoom();
+      if (zoomStart !== 0 || zoomEnd !== 100) {
+        this.zoom(zoomStart, zoomEnd, true);
       }
     } finally {
       this._loading = false;
@@ -1010,6 +1000,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (!options) return;
     const legend = ensureArray(this.options?.legend || [])[0] as
       LegendComponentOption | undefined;
+    const hiddenCount = this._hiddenDatasets.size;
     Object.entries(legend?.selected || {}).forEach(([stat, selected]) => {
       if (selected === false) {
         this._getAllIdsFromLegend(options, stat).forEach((id) =>
@@ -1017,28 +1008,146 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         );
       }
     });
-    this.requestUpdate("_hiddenDatasets");
+    // Flagging this rebuilds and downsamples every series, so only when needed
+    if (this._hiddenDatasets.size !== hiddenCount) {
+      this.requestUpdate("_hiddenDatasets");
+    }
   }
 
-  private _getDataZoomConfig(): DataZoomComponentOption | undefined {
-    const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
+  // A chart can switch type (e.g. pie and bar) without being rebuilt
+  private _updateDragToZoom() {
+    const active = !this._touchInput && this._hasZoomableXAxis();
+    if (!this.chart || active === this._dragToZoom) {
+      return;
+    }
+    this._dragToZoom = active;
+    this.chart.dispatchAction({
+      type: "takeGlobalCursor",
+      key: "dataZoomSelect",
+      dataZoomSelectActive: active,
+    });
+  }
+
+  private _hasZoomableXAxis() {
+    const xAxis = ensureArray(this.options?.xAxis)?.[0] as
       XAXisOption | undefined;
-    const yAxis = (this.options?.yAxis?.[0] ?? this.options?.yAxis) as
+    const yAxis = ensureArray(this.options?.yAxis)?.[0] as
       YAXisOption | undefined;
-    if (xAxis?.type === "value" && yAxis?.type === "category") {
+    return Boolean(
+      xAxis &&
+      xAxis.show !== false &&
+      !this.options?.dataZoom &&
       // vertical data zoom doesn't work well in this case and horizontal is pointless
+      !(xAxis.type === "value" && yAxis?.type === "category")
+    );
+  }
+
+  private _getDataZoomConfig(): DataZoomComponentOption[] | undefined {
+    if (!this._hasZoomableXAxis()) {
       return undefined;
     }
-    return {
-      id: "dataZoom",
-      type: "inside",
-      orient: "horizontal",
-      filterMode: this._getDataZoomFilterMode() as any,
-      xAxisIndex: 0,
-      moveOnMouseMove: !this._isTouchDevice || this._isZoomed,
-      preventDefaultMouseMove: !this._isTouchDevice || this._isZoomed,
-      zoomLock: !this._isTouchDevice && !this._modifierPressed,
-    };
+    return [
+      {
+        id: "dataZoom",
+        type: "inside",
+        orient: "horizontal",
+        filterMode: this._getDataZoomFilterMode() as any,
+        xAxisIndex: 0,
+        // Panning is left to the slider and horizontal scrolling
+        moveOnMouseMove: false,
+        preventDefaultMouseMove: false,
+      },
+    ];
+  }
+
+  private _showZoomSlider() {
+    const [start, end] = this._zoomRange;
+    return (
+      !this.hideZoomControls &&
+      this._hasZoomableXAxis() &&
+      (this._zoomSliderHeld || start !== 0 || end !== 100)
+    );
+  }
+
+  private _renderZoomSlider() {
+    const resetLabel = this._i18n.localize(
+      "ui.components.history_charts.zoom_reset"
+    );
+    return html`
+      ${
+        this._isZoomed
+          ? html`<ha-icon-button
+              class="slider-reset"
+              .path=${mdiRestart}
+              .label=${resetLabel}
+              @click=${this._handleZoomReset}
+            ></ha-icon-button>`
+          : nothing
+      }
+      <ha-chart-zoom-slider
+        class="zoom-slider"
+        .start=${this._zoomRange[0]}
+        .end=${this._zoomRange[1]}
+        @zoom-slider-changed=${this._handleZoomSliderChanged}
+        @zoom-slider-reset=${this._handleZoomSliderReset}
+        @pointerdown=${this._holdZoomSlider}
+        @focusin=${this._holdZoomSlider}
+        @pointerup=${this._releaseZoomSlider}
+        @pointercancel=${this._releaseZoomSlider}
+        @focusout=${this._releaseZoomSlider}
+      ></ha-chart-zoom-slider>
+    `;
+  }
+
+  private _handleZoomSliderChanged(
+    ev: HASSDomEvent<HASSDomEvents["zoom-slider-changed"]>
+  ) {
+    this._setZoomWindow(ev.detail.start, ev.detail.end);
+  }
+
+  // A held slider stays at the full range, so release it to hide it
+  private _handleZoomSliderReset() {
+    this._zoomSliderHeld = false;
+    this._handleZoomReset();
+  }
+
+  private _holdZoomSlider() {
+    this._zoomSliderHeld = true;
+  }
+
+  private _releaseZoomSlider(
+    ev: Event & HASSDomCurrentTargetEvent<HTMLElement>
+  ) {
+    // A mouse press focuses the slider, so it is kept until it loses focus
+    this._zoomSliderHeld =
+      ev.type !== "focusout" && ev.currentTarget.matches(":focus-within");
+  }
+
+  private _getGridOption() {
+    const grid = this.options?.grid;
+    if (!grid || !this._zoomSliderRoom) {
+      return grid;
+    }
+    const [first, ...rest] = ensureArray(grid);
+    return [
+      { ...first, bottom: this._getGridBottom() + this._getZoomSliderSpace() },
+      ...rest,
+    ];
+  }
+
+  private _getGridBottom() {
+    const bottom =
+      this.options?.grid && ensureArray(this.options.grid)[0].bottom;
+    return typeof bottom === "number" ? bottom : 0;
+  }
+
+  // Charts that grow for the slider let it take their padding below the
+  // x-axis labels, so it sits as close to the labels as in other charts
+  private _getZoomSliderSpace() {
+    return this.growForZoomSlider
+      ? ZOOM_SLIDER_SPACE -
+          Math.max(0, this._getGridBottom() - X_AXIS_LABEL_SPACE)
+      : ZOOM_SLIDER_SPACE;
   }
 
   // "boundaryFilter" is a custom mode added via axis-proxy-patch.ts.
@@ -1122,6 +1231,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         iconStyle: { opacity: 0 },
       },
       ...this.options,
+      grid: this._getGridOption(),
       legend,
       xAxis,
     };
@@ -1282,6 +1392,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         },
       },
       timeAxis: {
+        axisPointer: {
+          lineStyle: { color: style.getPropertyValue("--info-color") },
+        },
         axisLine: {
           show: true,
           lineStyle: { color: style.getPropertyValue("--divider-color") },
@@ -1425,6 +1538,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (this._isZoomed) {
         this._handleZoomReset();
       } else {
+        fireEvent(this, "chart-sankeyroam", { zoom: 2 });
         this.chart.setOption({
           series: sankeySeries.map((s: any) => ({
             id: s.id,
@@ -1437,12 +1551,15 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         return;
       }
     }
-    const range = this._isZoomed
-      ? [0, 100]
-      : [
-          (e.offsetX / this.chart.getWidth()) * 100 - 15,
-          (e.offsetX / this.chart.getWidth()) * 100 + 15,
-        ];
+    if (!this._hasZoomableXAxis()) {
+      return;
+    }
+    // Kept within the axis, as ECharts does, so the datazoom event matches it
+    const start = Math.min(
+      Math.max((e.offsetX / this.chart.getWidth()) * 100 - 15, 0),
+      70
+    );
+    const range = this._isZoomed ? [0, 100] : [start, start + 30];
     this.chart.dispatchAction({
       type: "dataZoom",
       start: range[0],
@@ -1452,29 +1569,82 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   public zoom(start: number, end: number, silent = false) {
     if (!this.chart || this._pendingSetup) {
-      // Sibling charts sync their zoom imperatively, so a range that arrives
-      // before a deferred setup or rebuild has to be replayed rather than
-      // dropped. A reset to the full range is what a fresh chart is built with,
-      // so it just clears.
-      this._pendingZoom =
-        start === 0 && end === 100 ? undefined : [start, end, silent];
+      // Replayed by _setupChart
+      this._setZoomRange(start, end);
       return;
     }
-    this.chart.dispatchAction({
-      type: "dataZoom",
-      start,
-      end,
-      silent,
-    });
+    this._setZoomWindow(start, end, silent);
+  }
+
+  // Captured: ECharts cancels every wheel event over the plot, even one it
+  // ignores. Only a zoom gesture (Ctrl/Cmd, or a trackpad pinch) goes on to it.
+  @eventOptions({ capture: true })
+  private _handleWheel(ev: WheelEvent) {
+    if (this.options?.dataZoom || ev.ctrlKey || ev.metaKey) {
+      return;
+    }
+    ev.stopPropagation();
+    // Not _isZoomed, which a Sankey roam sets without an axis to pan
+    const [start, end] = this._zoomRange;
+    if (!this.chart || (start === 0 && end === 100)) {
+      return;
+    }
+    const delta = ev.shiftKey ? ev.deltaX || ev.deltaY : ev.deltaX;
+    if (!delta || (!ev.shiftKey && Math.abs(ev.deltaX) < Math.abs(ev.deltaY))) {
+      return;
+    }
+    ev.preventDefault();
+    this._wheelPanPixels +=
+      ev.deltaMode === WheelEvent.DOM_DELTA_PAGE
+        ? delta * this.chart.getWidth()
+        : ev.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? delta * 16
+          : delta;
+    // Trackpads fire many wheel events per frame
+    this._wheelPanFrame ??= requestAnimationFrame(this._flushWheelPan);
+  }
+
+  private _flushWheelPan = () => {
+    this._wheelPanFrame = undefined;
+    const pixels = this._wheelPanPixels;
+    this._wheelPanPixels = 0;
+    if (!this.chart || !pixels) {
+      return;
+    }
+    const [start, end] = this._zoomRange;
+    const shift = (pixels * (end - start)) / this._getXAxisPixelWidth();
+    const clamped = Math.max(-start, Math.min(100 - end, shift));
+    if (clamped) {
+      this._setZoomWindow(start + clamped, end + clamped);
+    }
+  };
+
+  private _setZoomWindow(start: number, end: number, silent = false) {
+    // An update animation would restart on every move and lag the gesture
+    this.chart?.dispatchAction(
+      { type: "dataZoom", start, end, animation: { duration: 0 } },
+      { silent }
+    );
+    if (silent) {
+      // Otherwise recorded by the datazoom handler
+      this._setZoomRange(start, end);
+    }
   }
 
   private _handleZoomReset() {
-    this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
-    // Reset sankey roam zoom
     const option = this.chart?.getOption();
     const sankeySeries = (option?.series as any[])?.filter(
       (s: any) => s.type === "sankey"
     );
+    // Before the dataZoom action and setOption, which lay the labels out again
+    if (sankeySeries?.length) {
+      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
+    }
+    // A dataZoom action reruns the layout of every series, graphs included
+    if (this._isZoomed) {
+      this.chart?.dispatchAction({ type: "dataZoom", start: 0, end: 100 });
+    }
+    // Reset sankey roam zoom
     if (sankeySeries?.length) {
       this.chart?.setOption({
         series: sankeySeries.map((s: any) => ({
@@ -1484,8 +1654,36 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         })),
       });
       this._isZoomed = false;
-      fireEvent(this, "chart-sankeyroam", { zoom: 1 });
     }
+    this._getGraphRoams().forEach(({ series, zoom, x, y }) => {
+      this.chart!.dispatchAction({
+        type: "graphRoam",
+        seriesId: series.id,
+        dx: -x,
+        dy: -y,
+        zoom: 1 / zoom,
+        originX: 0,
+        originY: 0,
+      });
+      // The action stores an absolute center, which a later re-fit would keep
+      series.option.center = null;
+      series.option.zoom = 1;
+    });
+  }
+
+  private _getGraphRoams(): {
+    series: any;
+    zoom: number;
+    x: number;
+    y: number;
+  }[] {
+    const graphSeries: any[] =
+      // @ts-ignore private method but no other way to get the roam transform
+      this.chart?.getModel().getSeriesByType("graph") ?? [];
+    return graphSeries.flatMap((series) => {
+      const roam = series.coordinateSystem?.getRoamTransform?.();
+      return roam ? [{ series, zoom: roam[0], x: roam[4], y: roam[5] }] : [];
+    });
   }
 
   private _updateSankeyRoam() {
@@ -1505,123 +1703,172 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   // On touch devices a drag pans only once zoomed, so an unzoomed chart
   // does not swallow page scrolling. Pinch still zooms via "scale".
-  private _getSankeyRoam(): boolean | "move" | "scale" {
-    if (this._modifierPressed) {
-      return true;
-    }
+  // A plain wheel never reaches ECharts, see _handleWheel.
+  private _getSankeyRoam(): boolean | "scale" {
     if (this._isTouchDevice) {
       return this._isZoomed ? true : "scale";
     }
-    return "move";
+    return true;
   }
 
-  // Captured, so the trigger is switched before echarts handles the same event:
-  // before it acts on a tap, and before the first mouse move after touch input.
-  // Only on touch devices, which install the handle and outside tap handlers. A
-  // pen counts as touch, as it does for echarts.
+  // Captured, so the trigger and drag to zoom are switched before echarts
+  // handles the same event: before it acts on a tap, and before the first
+  // mouse move after touch input. Only on touch devices. A pen counts as
+  // touch, as it does for echarts.
   @eventOptions({ capture: true })
   private _handleChartPointer(ev: PointerEvent) {
     const touchInput = this._isTouchDevice && ev.pointerType !== "mouse";
-    if (touchInput === this._touchInput) {
-      return;
+    if (ev.type === "pointerdown") {
+      // zrender listens to pointer events instead of mouse events on Edge
+      this._handleChartMouseDown(ev);
+      // Drag to zoom cancels the press, so a focused slider would never blur
+      this._zoomSliderHeld = false;
     }
-    this._touchInput = touchInput;
-    if (!this.chart || !this.options?.tooltip) {
-      return;
+    if (touchInput !== this._touchInput) {
+      this._touchInput = touchInput;
+      this._updateDragToZoom();
+      if (this.chart && this.options?.tooltip) {
+        const tooltip = this._createOptions().tooltip;
+        this.chart.setOption({
+          tooltip: ensureArray(tooltip ?? []).map((t) => ({
+            triggerOn: t.triggerOn ?? DEFAULT_TOOLTIP_TRIGGER_ON,
+          })),
+        });
+      }
     }
-    const tooltip = this._createOptions().tooltip;
-    this.chart.setOption({
-      tooltip: ensureArray(tooltip ?? []).map((t) => ({
-        triggerOn: t.triggerOn ?? DEFAULT_TOOLTIP_TRIGGER_ON,
-      })),
-    });
+    // zrender only follows a drag outside the chart once it has moved inside
+    // it, so a quick drag out would lose the release and its selection
+    if (
+      ev.type === "pointerdown" &&
+      this._dragToZoom &&
+      this._isZoomPress(ev)
+    ) {
+      this.chart
+        ?.getZr()
+        .painter.getViewportRoot()
+        .setPointerCapture(ev.pointerId);
+    }
+    // A finger drag along a time axis moves the tooltip, which touch opens on tap
+    if (
+      touchInput &&
+      ev.type === "pointermove" &&
+      ev.isPrimary &&
+      this.chart &&
+      this._hasZoomableXAxis()
+    ) {
+      const rect = this._chartContainer!.getBoundingClientRect();
+      this.chart.dispatchAction({
+        type: "showTip",
+        x: ev.clientX - rect.left,
+        y: ev.clientY - rect.top,
+      });
+    }
   }
 
-  private _removeOutsideTapListener() {
+  // The browser took the touch to scroll the page
+  private _handleChartPointerCancel(ev: PointerEvent) {
+    if (ev.pointerType !== "mouse") {
+      this._hideTooltip();
+    }
+  }
+
+  // Only a primary press starts a drag to zoom; a context menu leaves it stuck
+  @eventOptions({ capture: true })
+  private _handleChartMouseDown(ev: MouseEvent) {
+    if (!this._isZoomPress(ev)) {
+      ev.stopPropagation();
+    }
+  }
+
+  private _isZoomPress(ev: MouseEvent) {
+    return ev.button === 0 && !(isMac && ev.ctrlKey);
+  }
+
+  private _addOutsideTapListener = () => {
+    document.addEventListener("pointerdown", this._handleOutsideTap, {
+      capture: true,
+      passive: true,
+    });
+  };
+
+  private _removeOutsideTapListener = () => {
     document.removeEventListener("pointerdown", this._handleOutsideTap, {
       capture: true,
     });
-  }
+  };
 
   // A pen does not reliably fire touch events, so this listens to pointer
   // events. The mouse is left out: echarts already hides the tooltip when it
   // leaves the chart, even when the tooltip only opens on click.
   private _handleOutsideTap = (ev: PointerEvent) => {
     if (ev.pointerType !== "mouse" && !ev.composedPath().includes(this)) {
-      this.chart?.dispatchAction({ type: "hideTip", from: "outside" });
+      this._hideTooltip();
     }
   };
+
+  private _hideTooltip() {
+    this.chart?.dispatchAction({ type: "hideTip" });
+    this.chart?.dispatchAction({
+      type: "updateAxisPointer",
+      currTrigger: "leave",
+    });
+  }
+
+  private _getXAxisPixelWidth(): number {
+    const axisModel = this.chart
+      // @ts-ignore private method but no public way to get the axis extent
+      ?.getModel()
+      .getComponent("xAxis", 0) as
+      { axis?: { getExtent(): [number, number] } } | undefined;
+    const extent = axisModel?.axis?.getExtent();
+    const width = extent ? Math.abs(extent[1] - extent[0]) : 0;
+    return width || this.chart!.getWidth();
+  }
+
+  private _setZoomRange(start: number, end: number) {
+    this._zoomRange = [start, end];
+    this._isZoomed = start !== 0 || end !== 100;
+  }
 
   private _handleDataZoomEvent(e: any) {
     const zoomData = e.batch?.[0] ?? e;
-    let start = typeof zoomData.start === "number" ? zoomData.start : 0;
-    let end = typeof zoomData.end === "number" ? zoomData.end : 100;
-
-    if (
-      start === 0 &&
-      end === 100 &&
-      zoomData.startValue !== undefined &&
-      zoomData.endValue !== undefined
-    ) {
-      const option = this.chart!.getOption();
-      const xAxis = option.xAxis?.[0] ?? option.xAxis;
-
-      if (xAxis?.min && xAxis?.max) {
-        const axisMin = new Date(xAxis.min).getTime();
-        const axisMax = new Date(xAxis.max).getTime();
-        const axisRange = axisMax - axisMin;
-
-        start = Math.max(
-          0,
-          Math.min(100, ((zoomData.startValue - axisMin) / axisRange) * 100)
+    let start: number = zoomData.start;
+    let end: number = zoomData.end;
+    if (typeof start !== "number" || typeof end !== "number") {
+      // A drag selection reports axis values; ECharts already moved the window
+      const dataZoom = this.chart
+        // @ts-ignore private method, getOption() would clone all series data
+        ?.getModel()
+        .queryComponents({ mainType: "dataZoom", id: "dataZoom" })[0] as
+        { getPercentRange(): [number, number] | undefined } | undefined;
+      [start, end] = dataZoom?.getPercentRange() ?? [0, 100];
+      const [prevStart, prevEnd] = this._zoomRange;
+      const pixels =
+        ((end - start) / (prevEnd - prevStart)) * this._getXAxisPixelWidth();
+      if (pixels < MIN_DRAG_ZOOM_WIDTH) {
+        this.chart!.dispatchAction(
+          {
+            type: "dataZoom",
+            start: prevStart,
+            end: prevEnd,
+            animation: { duration: 0 },
+          },
+          { silent: true }
         );
-        end = Math.max(
-          0,
-          Math.min(100, ((zoomData.endValue - axisMin) / axisRange) * 100)
-        );
+        return;
       }
+      // In percent, like every other zoom, so it stays in step with _zoomRange
+      this.chart!.dispatchAction(
+        { type: "dataZoom", start, end },
+        { silent: true }
+      );
     }
 
-    this._isZoomed = start !== 0 || end !== 100;
-    this._zoomRatio = (end - start) / 100;
-    // the tooltip would follow the pointer across the moving data; a modifier
-    // drag only zooms once, on release
-    if (
-      this._mouseDown &&
-      !this._modifierPressed &&
-      !this._tooltipHiddenWhilePanning
-    ) {
-      this._tooltipHiddenWhilePanning = true;
-      this._setPanTooltipsHidden(true);
-    }
+    this._setZoomRange(start, end);
     if (this._isTouchDevice) {
-      this.chart?.dispatchAction({
-        type: "hideTip",
-        from: "datazoom",
-      });
+      this.chart?.dispatchAction({ type: "hideTip" });
     }
     fireEvent(this, "chart-zoom", { start, end });
-  }
-
-  private _handleMouseUp = () => {
-    this._mouseDown = false;
-    if (this._tooltipHiddenWhilePanning) {
-      this._tooltipHiddenWhilePanning = false;
-      this._setPanTooltipsHidden(false);
-    }
-  };
-
-  // Restores the configured visibility of each tooltip rather than forcing it
-  // on, so a chart without a tooltip, or with a hidden one, stays that way.
-  private _setPanTooltipsHidden(hidden: boolean) {
-    if (!this.options?.tooltip) {
-      return;
-    }
-    this.chart?.setOption({
-      tooltip: ensureArray(this.options.tooltip).map((tooltip) => ({
-        show: hidden ? false : (tooltip.show ?? true),
-      })),
-    });
   }
 
   // Long-press to solo on touch/pen devices (500ms, consistent with action-handler-directive)
@@ -1807,22 +2054,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     this._resizeAnimationDuration = undefined;
   }
 
-  private _compareCustomLegendOptions(
-    oldOptions: HaECOption | undefined,
-    newOptions: HaECOption | undefined
-  ): boolean {
-    const oldLegends = ensureArray(
-      oldOptions?.legend || []
-    ) as LegendComponentOption[];
-    const newLegends = ensureArray(
-      newOptions?.legend || []
-    ) as LegendComponentOption[];
-    return (
-      oldLegends.some((l) => l.show && l.type === "custom") !==
-      newLegends.some((l) => l.show && l.type === "custom")
-    );
-  }
-
   static styles = css`
     :host {
       display: block;
@@ -1845,9 +2076,36 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       max-height: var(--chart-max-height, 350px);
     }
     .chart-container {
+      position: relative;
       width: 100%;
       max-height: var(--chart-max-height, 350px);
       overflow: visible;
+    }
+    /* The chart is not mirrored in RTL, so neither is the slider */
+    .slider-reset {
+      position: absolute;
+      left: 0;
+      bottom: ${ZOOM_SLIDER_BOTTOM + ZOOM_SLIDER_HEIGHT / 2 - ZOOM_RESET_SIZE / 2}px;
+      --ha-icon-button-size: ${ZOOM_RESET_SIZE}px;
+      --mdc-icon-size: 18px;
+      --ha-icon-button-padding-inline: 0;
+      color: var(--secondary-text-color);
+    }
+    .zoom-slider {
+      position: absolute;
+      left: ${ZOOM_RESET_OFFSET}px;
+      right: 0;
+      bottom: ${ZOOM_SLIDER_BOTTOM}px;
+    }
+    .slider-reset,
+    .zoom-slider {
+      animation: zoom-slider-fade-in var(--ha-animation-duration-normal)
+        ease-out;
+    }
+    @keyframes zoom-slider-fade-in {
+      from {
+        opacity: 0;
+      }
     }
     .has-height .chart-container {
       flex: 1;
@@ -1855,6 +2113,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     .chart {
       height: 100%;
       width: 100%;
+    }
+    /* Vertical drags scroll the page; horizontal drags and pinches go to the
+       chart */
+    .chart.touch-scrub {
+      touch-action: pan-y;
     }
     .chart:focus-visible {
       outline: 2px solid var(--primary-color);
@@ -1929,6 +2192,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       color: var(--primary-text-color);
     }
     .chart-legend ul {
+      position: relative;
       margin: 0;
       padding: 0;
       display: flex;
@@ -1950,6 +2214,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     .chart-legend.multiple-items li:has(.value) {
       max-width: 300px;
+    }
+    .chart-legend li.overflow {
+      position: absolute;
+      visibility: hidden;
     }
     .chart-legend .hidden {
       color: var(--secondary-text-color);
@@ -2029,9 +2297,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       height: 100%;
       --ha-button-height: 24px;
       --ha-chip-label-weight: 500;
-      --md-assist-chip-leading-space: var(--ha-space-2);
-      --md-assist-chip-trailing-space: var(--ha-space-2);
-      --md-assist-chip-icon-label-space: var(--ha-space-1);
+      --ha-assist-chip-leading-space: var(--ha-space-2);
+      --ha-assist-chip-trailing-space: var(--ha-space-2);
+      --ha-assist-chip-icon-label-space: var(--ha-space-1);
     }
   `;
 }

@@ -2,7 +2,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import type { HomeAssistant } from "../../types";
-import { getHiddenFields } from "./conditions";
+import { getHiddenSchemaFields } from "./conditions";
 import "./ha-form";
 import type { HaForm } from "./ha-form";
 import type {
@@ -68,7 +68,7 @@ export class HaFormGrid extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
-    const hiddenFields = getHiddenFields(this.schema.schema, this.data);
+    const hiddenFields = getHiddenSchemaFields(this.schema.schema, this.data);
 
     return html`
       ${this.schema.schema

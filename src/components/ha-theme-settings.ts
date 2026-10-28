@@ -1,13 +1,16 @@
+import type { ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { normalizeLuminance } from "../common/color/palette";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
+import { uiContext } from "../data/context";
 import {
   DefaultAccentColor,
   DefaultPrimaryColor,
 } from "../resources/theme/color/color.globals";
-import type { HomeAssistant, ThemeSettings, ValueChangedEvent } from "../types";
+import type { ThemeSettings, ValueChangedEvent } from "../types";
 import "./ha-button";
 import "./item/ha-list-item-base";
 import "./list/ha-list-base";
@@ -34,7 +37,9 @@ export interface ThemeSettingsLabels {
 
 @customElement("ha-theme-settings")
 export class HaThemeSettings extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  private _ui!: ContextType<typeof uiContext>;
 
   @property({ attribute: false }) public selectedTheme?: ThemeSettings | null;
 
@@ -56,19 +61,19 @@ export class HaThemeSettings extends LitElement {
   public themePickerDisabled = false;
 
   protected render(): TemplateResult {
-    const themeSettings = this.selectedTheme ?? this.hass.selectedTheme;
+    const themeSettings = this.selectedTheme ?? this._ui.selectedTheme;
     const curThemeIsUseDefault = themeSettings?.theme === "";
     const curTheme = themeSettings?.theme
       ? themeSettings.theme
-      : this.hass.themes.darkMode
-        ? this.hass.themes.default_dark_theme || this.hass.themes.default_theme
-        : this.hass.themes.default_theme;
+      : this._ui.themes.darkMode
+        ? this._ui.themes.default_dark_theme || this._ui.themes.default_theme
+        : this._ui.themes.default_theme;
 
     const showDarkMode =
       curTheme === HOME_ASSISTANT_THEME ||
       (curThemeIsUseDefault &&
-        this.hass.themes.default_dark_theme &&
-        this.hass.themes.default_theme) ||
+        this._ui.themes.default_dark_theme &&
+        this._ui.themes.default_theme) ||
       this._supportsModeSelection(curTheme);
 
     return html`
@@ -203,7 +208,7 @@ export class HaThemeSettings extends LitElement {
   }
 
   private _supportsModeSelection(themeName: string): boolean {
-    const theme = this.hass.themes.themes[themeName];
+    const theme = this._ui.themes.themes[themeName];
     if (!theme) {
       return false;
     }
@@ -231,7 +236,7 @@ export class HaThemeSettings extends LitElement {
     const theme = ev.detail.value;
 
     if (theme === undefined) {
-      if (this.selectedTheme?.theme || this.hass.selectedTheme?.theme) {
+      if (this.selectedTheme?.theme || this._ui.selectedTheme?.theme) {
         fireEvent(this, "theme-settings-changed", {
           theme: "",
           primaryColor: undefined,
@@ -241,7 +246,7 @@ export class HaThemeSettings extends LitElement {
       return;
     }
 
-    if (theme === (this.selectedTheme ?? this.hass.selectedTheme)?.theme) {
+    if (theme === (this.selectedTheme ?? this._ui.selectedTheme)?.theme) {
       return;
     }
 

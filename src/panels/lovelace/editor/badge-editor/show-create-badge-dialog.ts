@@ -1,10 +1,11 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
+import type { LovelacePath } from "../lovelace-path";
 
 export interface CreateBadgeDialogParams {
   lovelaceConfig: LovelaceConfig;
   saveConfig: (config: LovelaceConfig) => void;
-  path: [number];
+  path: LovelacePath;
   suggestedBadges?: string[];
   entities?: string[]; // We can pass entity id's that will be added to the config when a badge is picked
 }

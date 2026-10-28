@@ -131,7 +131,7 @@ class HaBackupConfigData extends LitElement {
   }
 
   private _hasLocalAddons(addons: BackupAddonItem[]): boolean {
-    return addons.some((addon) => addon.slug === "local");
+    return addons.some((addon) => addon.slug.startsWith("local_"));
   }
 
   private _estimateBackupSize = memoizeOne(

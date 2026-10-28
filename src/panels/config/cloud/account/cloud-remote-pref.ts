@@ -226,7 +226,7 @@ export class CloudRemotePref extends LitElement {
                       </ha-list-base>
                     </div>
                   </ha-card>
-                  <ha-tip .hass=${this.hass}>
+                  <ha-tip>
                     ${this.hass.localize(
                       "ui.panel.config.cloud.account.remote.tip_custom_domain"
                     )}

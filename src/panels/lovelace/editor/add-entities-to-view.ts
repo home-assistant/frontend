@@ -128,7 +128,7 @@ export const addEntitiesToLovelaceView = async (
           alert(hass.localize("ui.panel.lovelace.add_entities.saving_failed"));
         }
       },
-      path: [0],
+      path: ["views", 0],
       entities,
     });
     return;
@@ -154,7 +154,7 @@ export const addEntitiesToLovelaceView = async (
             );
           }
         },
-        path: [viewIndex],
+        path: ["views", viewIndex],
         entities,
       });
     },

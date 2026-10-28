@@ -152,6 +152,16 @@ export const createMediaPlayerEntities = () => [
     },
   },
   {
+    entity_id: "media_player.theater_off_assumed",
+    state: "off",
+    attributes: {
+      friendly_name: "TV Off (assumed state, cannot be switched on)",
+      assumed_state: true,
+      // Off + Next + Pause
+      supported_features: 289,
+    },
+  },
+  {
     entity_id: "media_player.theater_on_static",
     state: "on",
     attributes: {

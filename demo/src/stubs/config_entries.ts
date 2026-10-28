@@ -91,6 +91,15 @@ export const demoConfigEntries: {
       supports_options: true,
     },
   },
+  {
+    type: "system",
+    entry: {
+      ...baseEntry,
+      entry_id: "mock-marketplace",
+      domain: "marketplace",
+      title: "Marketplace",
+    },
+  },
   ...connectivityConfigEntries,
 ];
 

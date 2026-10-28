@@ -1,3 +1,4 @@
+import type { ContextType } from "@lit/context";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiClose, mdiConnection, mdiMemory, mdiPencil, mdiUsb } from "@mdi/js";
 import Fuse from "fuse.js";
@@ -6,9 +7,17 @@ import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { caseInsensitiveStringCompare } from "../../common/string/compare";
+import {
+  apiContext,
+  areasContext,
+  configContext,
+  devicesContext,
+  internationalizationContext,
+} from "../../data/context";
 import type { SerialPortSelector } from "../../data/selector";
 import { listSerialPorts, type SerialPort } from "../../data/usb";
 import { mdiEsphomeLogo } from "../../resources/esphome-logo-svg";
@@ -110,8 +119,6 @@ const getPortType = (
 
 @customElement("ha-selector-serial_port")
 export class HaSerialPortSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: SerialPortSelector;
 
   @property() public value?: string;
@@ -131,6 +138,25 @@ export class HaSerialPortSelector extends LitElement {
   @state() private _serialPorts?: SerialPort[];
 
   @state() private _manualEntry = false;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config?: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices?: ContextType<typeof devicesContext>;
+
+  @state()
+  @consume({ context: areasContext, subscribe: true })
+  private _areas?: ContextType<typeof areasContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @query("ha-input") private _input?: HTMLElement;
 
@@ -155,9 +181,8 @@ export class HaSerialPortSelector extends LitElement {
 
   private _canLoadPorts(): boolean {
     return Boolean(
-      this.hass &&
-      this.hass.user?.is_admin &&
-      isComponentLoaded(this.hass.config, "usb")
+      this._config?.user?.is_admin &&
+      isComponentLoaded(this._config.config, "usb")
     );
   }
 
@@ -174,7 +199,7 @@ export class HaSerialPortSelector extends LitElement {
     }
     this._loadInFlight = true;
     try {
-      this._serialPorts = await listSerialPorts(this.hass);
+      this._serialPorts = await listSerialPorts(this._api.callWS);
     } catch (err: unknown) {
       // eslint-disable-next-line no-console
       console.error(err);
@@ -213,8 +238,8 @@ export class HaSerialPortSelector extends LitElement {
     (
       ports: SerialPort[],
       language: string,
-      devices: HomeAssistant["devices"],
-      areas: HomeAssistant["areas"],
+      devices: HomeAssistant["devices"] | undefined,
+      areas: HomeAssistant["areas"] | undefined,
       localize: HomeAssistant["localize"],
       recommendedDomains: Set<string>
     ): Record<SerialPortType, SerialPickerItem[]> => {
@@ -246,13 +271,13 @@ export class HaSerialPortSelector extends LitElement {
             const url = new URL(port.device);
             primary = url.searchParams.get("port_name") || port.device;
             const configEntryId = url.pathname.replace(/^\/+/, "");
-            const device = Object.values(devices).find(
+            const device = Object.values(devices ?? {}).find(
               (d) => d.primary_config_entry === configEntryId
             );
             const deviceName = device ? computeDeviceName(device) : undefined;
             const areaName =
               device && device.area_id
-                ? areas[device.area_id]?.name
+                ? areas?.[device.area_id]?.name
                 : undefined;
             if (deviceName && areaName) {
               secondary = localize(
@@ -343,11 +368,11 @@ export class HaSerialPortSelector extends LitElement {
   private _sectionLabel(type: SerialPortType): string {
     const key = `ui.components.selectors.serial_port.type.${type}` as const;
     if (type === "recommended" && this._selectorDomain) {
-      return this.hass.localize(key, {
-        integration: integrationName(this.hass.localize, this._selectorDomain),
+      return this._i18n.localize(key, {
+        integration: integrationName(this._i18n.localize, this._selectorDomain),
       });
     }
-    return this.hass.localize(key);
+    return this._i18n.localize(key);
   }
 
   private get _selectorDomain(): string | undefined {
@@ -388,10 +413,10 @@ export class HaSerialPortSelector extends LitElement {
 
     const grouped = this._buildGroupedItems(
       this._serialPorts,
-      this.hass.locale.language,
-      this.hass.devices,
-      this.hass.areas,
-      this.hass.localize,
+      this._i18n.locale.language,
+      this._devices,
+      this._areas,
+      this._i18n.localize,
       this._recommendedDomains
     );
 
@@ -425,7 +450,7 @@ export class HaSerialPortSelector extends LitElement {
   private _getAdditionalItems = (): PickerComboBoxItem[] => [
     {
       id: MANUAL_ENTRY_ID,
-      primary: this.hass.localize(
+      primary: this._i18n.localize(
         "ui.components.selectors.serial_port.enter_manually"
       ),
       icon_path: mdiPencil,
@@ -482,7 +507,8 @@ export class HaSerialPortSelector extends LitElement {
   };
 
   protected render() {
-    const usbLoaded = this.hass && isComponentLoaded(this.hass.config, "usb");
+    const usbLoaded =
+      !!this._config && isComponentLoaded(this._config.config, "usb");
 
     if (!usbLoaded || !this._serialPorts || this._manualEntry) {
       return html`
@@ -515,7 +541,6 @@ export class HaSerialPortSelector extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}
@@ -540,10 +565,10 @@ export class HaSerialPortSelector extends LitElement {
     const item = Object.values(
       this._buildGroupedItems(
         this._serialPorts,
-        this.hass.locale.language,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.localize,
+        this._i18n.locale.language,
+        this._devices,
+        this._areas,
+        this._i18n.localize,
         this._recommendedDomains
       )
     )
@@ -563,10 +588,10 @@ export class HaSerialPortSelector extends LitElement {
     }
     const grouped = this._buildGroupedItems(
       this._serialPorts,
-      this.hass.locale.language,
-      this.hass.devices,
-      this.hass.areas,
-      this.hass.localize,
+      this._i18n.locale.language,
+      this._devices,
+      this._areas,
+      this._i18n.localize,
       this._recommendedDomains
     );
     return SECTION_ORDER.filter((type) => grouped[type].length).map((type) => ({

@@ -7,8 +7,11 @@ export interface RelatedResult {
   config_entry?: string[];
   device?: string[];
   entity?: string[];
+  floor?: string[];
   group?: string[];
   integration?: string[];
+  label?: string[];
+  person?: string[];
   scene?: string[];
   script?: string[];
   script_blueprint?: string[];
@@ -29,7 +32,9 @@ export type ItemType =
   | "entity"
   | "floor"
   | "group"
+  | "integration"
   | "label"
+  | "person"
   | "scene"
   | "script"
   | "automation_blueprint"

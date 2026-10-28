@@ -1,15 +1,5 @@
-import { ContextProvider } from "@lit/context";
 import { vi } from "vitest";
-import {
-  apiContext,
-  connectionContext,
-  internationalizationContext,
-} from "../../../src/data/context";
-import type {
-  HomeAssistantApi,
-  HomeAssistantConnection,
-  HomeAssistantInternationalization,
-} from "../../../src/types";
+import { provideHass } from "../../../src/fake_data/provide_hass";
 
 export interface Deferred<T> {
   promise: Promise<T>;
@@ -72,26 +62,9 @@ export const openDialog = async <Tag extends keyof HTMLElementTagNameMap>(
   connection: MockConnection = mockConnection()
 ): Promise<HTMLElementTagNameMap[Tag]> => {
   const host = document.createElement("div");
-  new ContextProvider(host, {
-    context: internationalizationContext,
-    initialValue: {
-      localize: (key: string) => key,
-      locale: { language: "en" },
-    } as unknown as HomeAssistantInternationalization,
-  });
-  new ContextProvider(host, {
-    context: connectionContext,
-    initialValue: { connection } as unknown as HomeAssistantConnection,
-  });
-  new ContextProvider(host, {
-    context: apiContext,
-    initialValue: {
-      callApi: vi.fn(async () => undefined),
-      // Like the real one, it answers through the connection
-      callWS: (message: Parameters<MockConnection["sendMessagePromise"]>[0]) =>
-        connection.sendMessagePromise(message),
-    } as unknown as HomeAssistantApi,
-  });
+  const hass = provideHass(host, { localize: (key: string) => key });
+  // The default callWS answers through the connection, like the real one
+  Object.assign(hass.connection, connection);
   document.body.appendChild(host);
 
   const dialog = document.createElement(tag);

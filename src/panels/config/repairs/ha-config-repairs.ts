@@ -144,7 +144,7 @@ class HaConfigRepairs extends LitElement {
         issue.domain,
         issue.issue_id
       );
-      if ("flow_id" in data.issue_data) {
+      if (data.issue_data && "flow_id" in data.issue_data) {
         showConfigFlowDialog(this, {
           continueFlowId: data.issue_data.flow_id as string,
         });
@@ -159,6 +159,7 @@ class HaConfigRepairs extends LitElement {
         issue.issue_id
       );
       if (
+        data.issue_data &&
         "entity_id" in data.issue_data &&
         typeof data.issue_data.entity_id === "string"
       ) {
@@ -177,7 +178,7 @@ class HaConfigRepairs extends LitElement {
         issue.domain,
         issue.issue_id
       );
-      if ("issue_type" in data.issue_data) {
+      if (data.issue_data && "issue_type" in data.issue_data) {
         await fixStatisticsIssue(this, {
           type: data.issue_data
             .issue_type as StatisticsValidationResult["type"],

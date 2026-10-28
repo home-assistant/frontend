@@ -9,6 +9,7 @@ import "../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../components/ha-form/types";
 import "../../components/ha-markdown";
 import "../../components/ha-spinner";
+import { fireEvent } from "../../common/dom/fire_event";
 import { autocompleteLoginFields } from "../../data/auth";
 import type {
   DataEntryFlowStep,
@@ -71,6 +72,7 @@ class HaMfaModuleSetupFlow extends DirtyStateProviderMixin<
   }
 
   private _dialogClosed() {
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
     if (this._step) {
       this._flowDone();
       return;

@@ -56,7 +56,16 @@ export const hasClimateEntities = (hass: HomeAssistant): boolean => {
   const entityIds = Object.keys(hass.states);
 
   return climateEntityFilters.some((filter) =>
-    entityIds.some(generateEntityFilter(hass, filter))
+    entityIds.some(
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        filter
+      )
+    )
   );
 };
 
@@ -66,15 +75,22 @@ const processAreasForClimate = (
   entities: string[]
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
-  const computeTileCard = computeAreaTileCardConfig(hass, "", true);
+  const computeTileCard = computeAreaTileCardConfig(hass, true);
 
   for (const areaId of areaIds) {
     const area = hass.areas[areaId];
     if (!area) continue;
 
-    const areaFilter = generateEntityFilter(hass, {
-      area: area.area_id,
-    });
+    const areaFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        area: area.area_id,
+      }
+    );
     const areaClimateEntities = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
@@ -145,12 +161,19 @@ const processUnassignedEntities = (
   hass: HomeAssistant,
   entities: string[]
 ): LovelaceCardConfig[] => {
-  const unassignedFilter = generateEntityFilter(hass, {
-    area: null,
-  });
+  const unassignedFilter = generateEntityFilter(
+    hass.states,
+    hass.entities,
+    hass.devices,
+    hass.areas,
+    hass.floors,
+    {
+      area: null,
+    }
+  );
   const unassignedEntities = entities.filter(unassignedFilter);
   const areaCards: LovelaceCardConfig[] = [];
-  const computeTileCard = computeAreaTileCardConfig(hass, "", true);
+  const computeTileCard = computeAreaTileCardConfig(hass, true);
 
   for (const entityId of unassignedEntities) {
     areaCards.push(computeTileCard(entityId));
@@ -174,7 +197,14 @@ export class ClimateViewStrategy extends ReactiveElement {
     const allEntities = Object.keys(hass.states);
 
     const climateFilters = climateEntityFilters.map((filter) =>
-      generateEntityFilter(hass, filter)
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        filter
+      )
     );
 
     const entities = findEntities(allEntities, climateFilters);

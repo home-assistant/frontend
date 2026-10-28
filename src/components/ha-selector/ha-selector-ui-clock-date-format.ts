@@ -1,13 +1,10 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { UiClockDateFormatSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-clock-date-format-picker";
 
 @customElement("ha-selector-ui_clock_date_format")
 export class HaSelectorUiClockDateFormat extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: UiClockDateFormatSelector;
 
   @property() public value?: string | string[];
@@ -23,7 +20,6 @@ export class HaSelectorUiClockDateFormat extends LitElement {
   protected render() {
     return html`
       <ha-clock-date-format-picker
-        .hass=${this.hass}
         .value=${this.value}
         .label=${this.label}
         .helper=${this.helper}

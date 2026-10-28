@@ -35,6 +35,24 @@ describe("buildCombinedUsed", () => {
     assert.isUndefined(fromGridBySource["sensor.grid_import_b"][t]);
   });
 
+  it("attributes a period to the dominant source when the others are negligible", () => {
+    const fromGridBySource = {
+      "sensor.peak": { [t]: 0.001 },
+      "sensor.off_peak": { [t]: 6.869 },
+    };
+
+    // The peak meter's last 1 Wh lands after the switch to off-peak
+    const result = buildCombinedUsed(
+      fromGridBySource,
+      { [t]: 5 },
+      { [t]: 1.87 }
+    );
+
+    assert.isUndefined(result);
+    assert.isUndefined(fromGridBySource["sensor.peak"][t]);
+    assert.equal(fromGridBySource["sensor.off_peak"][t], 1.87);
+  });
+
   it("does not add a combined series when battery is present but not charging from grid", () => {
     const fromGridBySource = {
       "sensor.grid_import": { [t]: 10 },

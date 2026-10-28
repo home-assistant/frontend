@@ -22,7 +22,11 @@ import type {
   LogbookNameDetail,
   LogbookValue,
 } from "./logbook-entry-model";
-import { computeLogbookItem, nodeColor } from "./logbook-entry-model";
+import {
+  computeCausePhrase,
+  computeLogbookItem,
+  nodeColor,
+} from "./logbook-entry-model";
 import {
   renderLogbookCauseIcon,
   renderLogbookGlyph,
@@ -280,7 +284,7 @@ class HaLogbookEntry extends LitElement {
       </span>`;
     }
     return html`<span class="cause-line"
-      >${this._renderCausePhrase(cause)}</span
+      >${computeCausePhrase(this.hass.localize, cause)}</span
     >`;
   }
 
@@ -312,41 +316,9 @@ class HaLogbookEntry extends LitElement {
     return (
       entityName ||
       (entityId && entityId in this.hass.states
-        ? this.hass.states[entityId].attributes.friendly_name || entityId
+        ? this.hass.formatEntityName(this.hass.states[entityId])
         : entityId)
     );
-  }
-
-  private _renderCausePhrase(cause: LogbookCause): string {
-    const { localize } = this.hass;
-    switch (cause.type) {
-      case "user":
-        return localize("ui.components.logbook.cause.by", {
-          name: cause.name,
-        });
-      case "automation":
-        return localize("ui.components.logbook.cause.by_automation", {
-          name: cause.name,
-        });
-      case "script":
-        return localize("ui.components.logbook.cause.by_script", {
-          name: cause.name,
-        });
-      case "state":
-        return localize("ui.components.logbook.cause.by_state_change", {
-          name: cause.name,
-        });
-      case "scheduled":
-        return localize("ui.components.logbook.cause.scheduled");
-      case "homeassistant":
-        return cause.name;
-      case "integration":
-        return localize("ui.components.logbook.cause.via", {
-          name: cause.name,
-        });
-      default:
-        return cause.name;
-    }
   }
 
   private _formatMessageWithPossibleEntity(
@@ -365,10 +337,7 @@ class HaLogbookEntry extends LitElement {
           const messageEnd = messageParts.splice(i);
           messageEnd.shift();
           return html`${messageParts.join(" ")}
-          ${this._entityName(
-            entityId,
-            this.hass.states[entityId].attributes.friendly_name
-          )}
+          ${this.hass.formatEntityName(this.hass.states[entityId])}
           ${messageEnd.join(" ")}`;
         }
       }

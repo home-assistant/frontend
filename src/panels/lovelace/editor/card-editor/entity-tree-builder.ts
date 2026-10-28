@@ -11,10 +11,9 @@ import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import {
-  computeEntityNameList,
+  computeEntityNameParts,
   computeEntitySearchLabels,
 } from "../../../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import { stringCompare } from "../../../../common/string/compare";
@@ -137,6 +136,7 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
   const unassignedHelperByDomain = new Map<string, string[]>();
   const unassignedEntityByDomain = new Map<string, string[]>();
   const searchableEntities: SearchableEntity[] = [];
+  const entityNames = new Map<string, string>();
 
   const addDeviceEntity = (
     bucket: Map<string, string[]>,
@@ -180,28 +180,22 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
     const domain = computeDomain(entityId);
     const domainName = domainToName(localize, domain);
 
-    const searchLabels = computeEntitySearchLabels(
-      stateObj,
-      entityReg,
-      deviceReg,
-      areaReg,
-      floorReg
-    );
-    const [deviceName, parentDeviceName, areaName] = computeEntityNameList(
-      stateObj,
-      [{ type: "device" }, { type: "parent_device" }, { type: "area" }],
-      entityReg,
-      deviceReg,
-      areaReg,
-      floorReg
-    );
+    const searchLabels = computeEntitySearchLabels(stateObj, input);
+    const {
+      device: deviceName,
+      parent_device: parentDeviceName,
+      area: areaName,
+    } = computeEntityNameParts(stateObj, input);
+
+    const name = searchLabels.entityName || searchLabels.deviceName || entityId;
+    entityNames.set(entityId, name);
 
     searchableEntities.push({
       id: entityId,
-      name: searchLabels.entityName || searchLabels.friendlyName || entityId,
+      name,
       area: areaName ?? "",
       parentDevice: parentDeviceName ?? "",
-      device: deviceName ?? "",
+      device: (searchLabels.entityName && deviceName) || "",
       domain: domainName,
       search_labels: {
         ...searchLabels,
@@ -241,11 +235,8 @@ export function buildEntityTree(input: BuildEntityTreeInput): EntityTree {
     }
   }
 
-  const sortByName = (a: string, b: string) => {
-    const an = computeStateName(states[a]) || a;
-    const bn = computeStateName(states[b]) || b;
-    return stringCompare(an, bn, language);
-  };
+  const sortByName = (a: string, b: string) =>
+    stringCompare(entityNames.get(a) ?? a, entityNames.get(b) ?? b, language);
 
   const sortDeviceNodes = (nodes: DeviceNode[]) => {
     nodes.sort((a, b) => stringCompare(a.name, b.name, language));

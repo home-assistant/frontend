@@ -84,7 +84,7 @@ export class AssistPref extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
-    listAssistPipelines(this.hass).then((pipelines) => {
+    listAssistPipelines(this.hass.callWS).then((pipelines) => {
       this._pipelines = pipelines.pipelines;
       this._preferred = pipelines.preferred_pipeline;
     });
@@ -414,6 +414,10 @@ export class AssistPref extends LitElement {
   static styles = css`
     a {
       color: var(--primary-color);
+    }
+    ha-row-item::part(headline),
+    ha-row-item::part(supporting-text) {
+      white-space: normal;
     }
     .header-actions {
       position: absolute;

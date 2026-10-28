@@ -32,7 +32,8 @@ export interface TriggerTraceStep extends BaseTraceStep {
 }
 
 export interface ConditionTraceStep extends BaseTraceStep {
-  result?: { result: boolean };
+  // `null` when the condition is disabled.
+  result?: { result: boolean | null };
 }
 
 export interface CallServiceActionTraceStep extends BaseTraceStep {
@@ -40,11 +41,8 @@ export interface CallServiceActionTraceStep extends BaseTraceStep {
     running_script: boolean;
     params: Record<string, unknown>;
   };
-  child_id?: {
-    domain: string;
-    item_id: string;
-    run_id: string;
-  };
+  // The script or automation run this step started.
+  child_id?: TraceId;
 }
 
 export interface ChooseActionTraceStep extends BaseTraceStep {
@@ -195,10 +193,19 @@ export const loadTraces = <T extends keyof TraceTypes>(
     item_id,
   });
 
-export type TraceContexts = Record<
-  string,
-  { run_id: string; domain: string; item_id: string }
->;
+export interface TraceId {
+  domain: string;
+  item_id: string;
+  run_id: string;
+}
+
+export const getTracePath = (domain: string, itemId: string): string =>
+  `/config/${domain}/trace/${encodeURIComponent(itemId)}`;
+
+export const getTraceUrl = ({ domain, item_id, run_id }: TraceId): string =>
+  `${getTracePath(domain, item_id)}?run_id=${run_id}`;
+
+export type TraceContexts = Record<string, TraceId>;
 
 export const loadTraceContexts = (
   hass: HomeAssistant,
@@ -258,6 +265,65 @@ export const getDataFromPath = (
   }
 
   return result;
+};
+
+/**
+ * Follows a trace path relative to a step config (for example
+ * `choose/0/conditions/1`) and returns the deepest config it reaches. A
+ * template condition written as a plain string is returned as that string.
+ */
+export const getNestedStepConfig = (config: unknown, path: string): unknown => {
+  let currentDetail = config;
+  const parts = path.split("/");
+  for (const [index, part] of parts.entries()) {
+    if (typeof currentDetail !== "object" || currentDetail === null) {
+      break;
+    }
+    // Core traces each entity of a state condition one level deeper than the
+    // config, as `entity_id/<index>`. The condition itself is the deepest step.
+    if (part === "entity_id") {
+      break;
+    }
+    // Core traces the conditions of an `if` action as `if/condition/<index>`,
+    // while the config keeps them directly in `if`, as a list or as a single
+    // condition.
+    if (part === "condition" && parts[index - 1] === "if") {
+      continue;
+    }
+    // A list of conditions or actions can also be written as a single item,
+    // which Core traces as index 0.
+    if (!Array.isArray(currentDetail) && /^\d+$/.test(part)) {
+      if (part !== "0") {
+        break;
+      }
+      continue;
+    }
+    const child = (currentDetail as Record<string, unknown>)[part];
+    if (child === undefined) {
+      break;
+    }
+    currentDetail = child;
+  }
+  return currentDetail;
+};
+
+/**
+ * Returns the entity a condition trace step such as `entity_id/1` checked.
+ * Core traces each entity of a condition with a list of entities separately.
+ */
+export const getTracedEntityId = (
+  config: unknown,
+  path: string
+): string | undefined => {
+  const match = /(?:^|\/)entity_id\/(\d+)$/.exec(path);
+  if (!match || typeof config !== "object" || config === null) {
+    return undefined;
+  }
+  const entityIds = (config as { entity_id?: unknown }).entity_id;
+  const entityId = Array.isArray(entityIds)
+    ? entityIds[Number(match[1])]
+    : entityIds;
+  return typeof entityId === "string" ? entityId : undefined;
 };
 
 // It is 'trigger' if manually triggered by the user via UI

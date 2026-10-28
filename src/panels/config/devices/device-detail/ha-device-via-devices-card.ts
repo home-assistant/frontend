@@ -48,8 +48,8 @@ export class HaDeviceViaDevicesCard extends LitElement {
         .filter((device) => device.via_device_id === deviceId)
         .sort((d1, d2) =>
           caseInsensitiveStringCompare(
-            computeDeviceNameDisplay(d1, this.hass.localize, this.hass.states),
-            computeDeviceNameDisplay(d2, this.hass.localize, this.hass.states),
+            computeDeviceNameDisplay(d1, this.hass.localize),
+            computeDeviceNameDisplay(d2, this.hass.localize),
             this.hass.locale.language
           )
         )
@@ -95,11 +95,7 @@ export class HaDeviceViaDevicesCard extends LitElement {
           return html`
             <a href=${`/config/devices/device/${viaDevice.id}`}>
               <ha-list-item hasMeta .twoline=${!!secondary}>
-                ${computeDeviceNameDisplay(
-                  viaDevice,
-                  this.hass.localize,
-                  this.hass.states
-                )}
+                ${computeDeviceNameDisplay(viaDevice, this.hass.localize)}
                 ${
                   secondary
                     ? html`<span slot="secondary">${secondary}</span>`

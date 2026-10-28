@@ -1,5 +1,11 @@
-import { mdiInformationOutline, mdiPlus } from "@mdi/js";
-import { LitElement, css, html, nothing } from "lit";
+import type { ContextType } from "@lit/context";
+import {
+  mdiCheck,
+  mdiInformationOutline,
+  mdiPlus,
+  mdiSwapHorizontal,
+} from "@mdi/js";
+import { LitElement, css, html, nothing, type PropertyValues } from "lit";
 import {
   customElement,
   eventOptions,
@@ -10,6 +16,8 @@ import {
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-svg-icon";
@@ -17,22 +25,31 @@ import "../../../../components/ha-tooltip";
 import "../../../../components/item/ha-list-item-button";
 import "../../../../components/list/ha-list-base";
 import type { ConfigEntry } from "../../../../data/config_entries";
+import {
+  configEntriesContext,
+  labelsContext,
+  registriesContext,
+  statesContext,
+} from "../../../../data/context";
 import type { LabelRegistryEntry } from "../../../../data/label/label_registry";
 import { haStyleScrollbar } from "../../../../resources/styles";
-import type { HomeAssistant } from "../../../../types";
-import type { AddAutomationElementListItem } from "../add-automation-element-dialog";
 import { getTargetIcon } from "../target/get_target_icon";
+import type { AddAutomationElementListItem, ItemsSection } from "./types";
 
 type Target = [string, string | undefined, string | undefined];
 
+/**
+ * @element ha-automation-add-items
+ *
+ * @summary List of automation elements to add, grouped by title.
+ *
+ * @slot - Footer below the scrolling items, e.g. an action bar.
+ *
+ * @cssprop --ha-automation-add-items-padding-bottom - Bottom padding of the items list.
+ */
 @customElement("ha-automation-add-items")
 export class HaAutomationAddItems extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @property({ attribute: false }) public items?: {
-    title: string;
-    items: AddAutomationElementListItem[];
-  }[];
+  @property({ attribute: false }) public items?: ItemsSection[];
 
   @property() public error?: string;
 
@@ -42,57 +59,97 @@ export class HaAutomationAddItems extends LitElement {
 
   @property({ attribute: false }) public target?: Target;
 
-  @property({ attribute: false }) public getLabel!: (
-    id: string
-  ) => LabelRegistryEntry | undefined;
-
-  @property({ attribute: false }) public configEntryLookup: Record<
-    string,
-    ConfigEntry
-  > = {};
-
   @property({ type: Boolean, attribute: "tooltip-description" })
   public tooltipDescription = false;
 
   @property({ type: Boolean, reflect: true }) scrollable = false;
 
+  @property({ attribute: false }) public replacingItemKey?: string;
+
   @state() private _itemsScrolled = false;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: labelsContext, subscribe: true })
+  private _labelRegistry?: LabelRegistryEntry[];
+
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<ConfigEntry[], Record<string, ConfigEntry>>({
+    transformer: function (value) {
+      return value
+        ? Object.fromEntries(value.map((entry) => [entry.entry_id, entry]))
+        : undefined;
+    },
+  })
+  private _configEntryLookup?: Record<string, ConfigEntry>;
 
   @query(".items")
   private _itemsDiv!: HTMLDivElement;
 
+  @query("ha-list-item-button.current")
+  private _currentItem?: HTMLElement;
+
+  private _scrollToCurrent = false;
+
+  /** Scrolls to the item being replaced once it is rendered. */
+  public scrollToCurrent() {
+    this._scrollToCurrent = true;
+    this._scrollIfPending();
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+    this._scrollIfPending();
+  }
+
+  private _scrollIfPending() {
+    if (!this._scrollToCurrent || !this._currentItem) {
+      return;
+    }
+    this._scrollToCurrent = false;
+    this._currentItem.scrollIntoView({ block: "center" });
+  }
+
   protected render() {
     return html`<div
-      class=${classMap({
-        items: true,
-        blank: this.error || !this.items || !this.items.length,
-        error: this.error,
-        scrolled: this._itemsScrolled,
-        "ha-scrollbar": this.scrollable,
-      })}
-      @scroll=${this._onItemsScroll}
-    >
-      ${
-        !this.items && !this.error
-          ? this.selectLabel
-          : this.error
-            ? html`${this.error}
-                <div>${this._renderTarget(this.target)}</div>`
-            : this.items && !this.items.length
-              ? html`${this.emptyLabel}
-                ${
-                  this.target
-                    ? html`<div>${this._renderTarget(this.target)}</div>`
-                    : nothing
-                }`
-              : repeat(
-                  this.items,
-                  (_, index) => `item-group-${index}`,
-                  (itemGroup) =>
-                    this._renderItemList(itemGroup.title, itemGroup.items)
-                )
-      }
-    </div>`;
+        class=${classMap({
+          items: true,
+          blank: this.error || !this.items || !this.items.length,
+          error: this.error,
+          scrolled: this._itemsScrolled,
+          "ha-scrollbar": this.scrollable,
+        })}
+        @scroll=${this._onItemsScroll}
+      >
+        ${
+          !this.items && !this.error
+            ? this.selectLabel
+            : this.error
+              ? html`${this.error}
+                  <div>${this._renderCurrentTarget()}</div>`
+              : this.items && !this.items.length
+                ? html`${this.emptyLabel}
+                  ${
+                    this.target
+                      ? html`<div>${this._renderCurrentTarget()}</div>`
+                      : nothing
+                  }`
+                : repeat(
+                    this.items,
+                    (_, index) => `item-group-${index}`,
+                    (itemGroup) =>
+                      this._renderItemList(itemGroup.title, itemGroup.items)
+                  )
+        }
+      </div>
+      <slot></slot>`;
   }
 
   private _renderItemList(title, items?: AddAutomationElementListItem[]) {
@@ -107,9 +164,15 @@ export class HaAutomationAddItems extends LitElement {
           items,
           (item) => item.key,
           (item) => html`
-            <ha-list-item-button .value=${item.key} @click=${this._selected}>
+            <ha-list-item-button
+              .value=${item.key}
+              class=${this._isCurrent(item) ? "current" : ""}
+              .disabled=${this._isCurrent(item)}
+              aria-current=${this._isCurrent(item) ? "true" : nothing}
+              @click=${this._selected}
+            >
               <div slot="headline" class=${this.target ? "item-headline" : ""}>
-                ${item.name}${this._renderTarget(this.target)}
+                ${item.name}${this._renderCurrentTarget()}
               </div>
 
               ${
@@ -150,7 +213,13 @@ export class HaAutomationAddItems extends LitElement {
               <ha-svg-icon
                 slot="end"
                 class="plus"
-                .path=${mdiPlus}
+                .path=${
+                  this._isCurrent(item)
+                    ? mdiCheck
+                    : this.replacingItemKey
+                      ? mdiSwapHorizontal
+                      : mdiPlus
+                }
               ></ha-svg-icon>
             </ha-list-item-button>
           `
@@ -159,28 +228,46 @@ export class HaAutomationAddItems extends LitElement {
     `;
   }
 
-  private _renderTarget = memoizeOne((target?: Target) => {
-    if (!target) {
-      return nothing;
-    }
+  // With a target, the same item can still replace its target.
+  private _isCurrent(item: AddAutomationElementListItem) {
+    return !this.target && item.key === this.replacingItemKey;
+  }
 
-    return html`<div class="selected-target">
-      ${getTargetIcon(
-        {
-          entities: this.hass.entities,
-          devices: this.hass.devices,
-          areas: this.hass.areas,
-          floors: this.hass.floors,
-        },
-        this.hass.states,
-        target[0],
-        target[1],
-        this.configEntryLookup,
-        this.getLabel
-      )}
-      <div class="label">${target[2]}</div>
-    </div>`;
-  });
+  private _renderCurrentTarget() {
+    return this._renderTarget(
+      this.target,
+      this._registries,
+      this._states,
+      this._labelRegistry,
+      this._configEntryLookup
+    );
+  }
+
+  private _renderTarget = memoizeOne(
+    (
+      target: Target | undefined,
+      registries: ContextType<typeof registriesContext>,
+      states: ContextType<typeof statesContext>,
+      labels: LabelRegistryEntry[] | undefined,
+      configEntryLookup: Record<string, ConfigEntry> | undefined
+    ) => {
+      if (!target) {
+        return nothing;
+      }
+
+      return html`<div class="selected-target">
+        ${getTargetIcon(
+          registries,
+          states,
+          target[0],
+          target[1],
+          configEntryLookup ?? {},
+          (id) => labels?.find(({ label_id }) => label_id === id)
+        )}
+        <div class="label">${target[2]}</div>
+      </div>`;
+    }
+  );
 
   private _selected(ev) {
     const item = ev.currentTarget;
@@ -215,6 +302,7 @@ export class HaAutomationAddItems extends LitElement {
     css`
       :host {
         display: flex;
+        flex-direction: column;
         flex-grow: 1;
       }
       :host([scrollable]) .items {
@@ -225,6 +313,7 @@ export class HaAutomationAddItems extends LitElement {
         flex-direction: column;
         flex: 1;
         min-width: 0;
+        min-height: 0;
       }
       .items.blank {
         border-radius: var(--ha-border-radius-xl);
@@ -248,7 +337,10 @@ export class HaAutomationAddItems extends LitElement {
         --ha-list-gap: var(--ha-space-3);
         gap: var(--ha-space-2);
         padding: 0 var(--ha-space-4);
-        padding-bottom: max(var(--safe-area-inset-bottom), var(--ha-space-3));
+        padding-bottom: var(
+          --ha-automation-add-items-padding-bottom,
+          max(var(--safe-area-inset-bottom), var(--ha-space-3))
+        );
       }
       .items ha-list-base ha-list-item-button {
         border-radius: var(--ha-border-radius-lg);
@@ -297,6 +389,15 @@ export class HaAutomationAddItems extends LitElement {
         color: var(--primary-color);
       }
 
+      .items ha-list-base ha-list-item-button.current {
+        color: var(--primary-text-color);
+        background-color: var(--ha-color-fill-primary-quiet-resting);
+        border-color: var(--ha-color-border-primary-quiet);
+      }
+      .items ha-list-base ha-list-item-button.current::part(base) {
+        color: inherit;
+      }
+
       .selected-target {
         display: inline-flex;
         gap: var(--ha-space-1);
@@ -314,6 +415,12 @@ export class HaAutomationAddItems extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+      }
+
+      .selected-target state-badge {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
       }
 
       .selected-target ha-icon,

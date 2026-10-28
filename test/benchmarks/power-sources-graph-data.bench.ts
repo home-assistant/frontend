@@ -114,6 +114,7 @@ const manySeries = buildManySeriesEnergyData(4, 31, "hour", 6);
 
 const base = {
   localize: mockLocalize,
+  formatPower: (w: number) => `${w} W`,
   states: {},
   computedStyles,
   start: new Date(FIXED_EPOCH_MS),

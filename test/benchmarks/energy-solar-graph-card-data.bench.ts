@@ -5,7 +5,6 @@ import type {
   EnergySolarForecasts,
   SolarSourceTypeEnergyPreference,
 } from "../../src/data/energy";
-import type { HomeAssistant } from "../../src/types";
 import { createMockComputedStyle } from "../fixtures/computed-style";
 import { createMockHass } from "../fixtures/hass";
 import { generateEnergyData } from "../fixtures/energy";
@@ -17,10 +16,8 @@ const computedStyles = createMockComputedStyle({
   "--energy-solar-color": "#ff9800",
   "--primary-text-color": "#212121",
 });
-const hass = {
-  ...createMockHass(),
-  themes: { darkMode: false },
-} as unknown as HomeAssistant;
+const { localize, states, formatEntityName } = createMockHass();
+const baseParams = { localize, states, formatEntityName, darkMode: false };
 
 const solarPrefs = (sources: number, forecast: boolean): EnergyPreferences => {
   const energySources: SolarSourceTypeEnergyPreference[] = [];
@@ -94,7 +91,7 @@ describe("generateEnergySolarGraphData", () => {
   test("small (2 days hourly, 1 source)", async ({ bench }) => {
     await bench("small (2 days hourly, 1 source)", () => {
       generateEnergySolarGraphData({
-        hass,
+        ...baseParams,
         energyData: { ...small },
         forecasts: undefined,
         computedStyles,
@@ -106,7 +103,7 @@ describe("generateEnergySolarGraphData", () => {
   test("medium (month hourly + compare, 2 sources)", async ({ bench }) => {
     await bench("medium (month hourly + compare, 2 sources)", () => {
       generateEnergySolarGraphData({
-        hass,
+        ...baseParams,
         energyData: { ...medium },
         forecasts: undefined,
         computedStyles,
@@ -118,7 +115,7 @@ describe("generateEnergySolarGraphData", () => {
   test("large (month 5-minute + compare, 2 sources)", async ({ bench }) => {
     await bench("large (month 5-minute + compare, 2 sources)", () => {
       generateEnergySolarGraphData({
-        hass,
+        ...baseParams,
         energyData: { ...large },
         forecasts: undefined,
         computedStyles,
@@ -132,7 +129,7 @@ describe("generateEnergySolarGraphData", () => {
   }) => {
     await bench("with forecast (month hourly, 2 sources + forecast)", () => {
       generateEnergySolarGraphData({
-        hass,
+        ...baseParams,
         energyData: { ...forecastData },
         forecasts,
         computedStyles,

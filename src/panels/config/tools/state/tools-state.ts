@@ -15,6 +15,7 @@ import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_da
 import { storage } from "../../../../common/decorators/storage";
 import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";
 import { escapeRegExp } from "../../../../common/string/escape_regexp";
+import { computeEntitySearchLabels } from "../../../../common/entity/compute_entity_name_display";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -542,8 +543,11 @@ class HaPanelDevState extends LitElement {
         if (
           entityFilterRegExp &&
           !entityFilterRegExp.test(value.entity_id) &&
-          (value.attributes.friendly_name === undefined ||
-            !entityFilterRegExp.test(value.attributes.friendly_name))
+          !entityFilterRegExp.test(this.hass.formatEntityName(value)) &&
+          !entityFilterRegExp.test(
+            computeEntitySearchLabels(value, this._registries).friendlyName ??
+              ""
+          )
         ) {
           return false;
         }

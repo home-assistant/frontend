@@ -231,8 +231,29 @@ export const manualEditorStyles = css`
     transition: padding-bottom 180ms ease-in-out;
   }
 
-  .content.has-bottom-sheet {
-    padding-bottom: calc(90vh - max(var(--safe-area-inset-bottom), 32px));
+  .has-bottom-sheet {
+    --automation-bottom-sheet-height: 50vh;
+    /* The backdrop covers the editor when the sheet is at full height */
+    --automation-bottom-sheet-covered-height: min(
+      var(--automation-bottom-sheet-settled-height, 100vh),
+      var(--automation-bottom-sheet-height)
+    );
+  }
+  /* A custom property can't fall back from dvh to vh by being declared twice */
+  @supports (height: 1dvh) {
+    .has-bottom-sheet {
+      --automation-bottom-sheet-height: 50dvh;
+    }
+  }
+  .has-bottom-sheet .content {
+    padding-bottom: calc(
+      var(--automation-bottom-sheet-covered-height) + var(--ha-space-4)
+    );
+  }
+  .has-bottom-sheet .fab-positioner ha-button[slot="fab"].dirty {
+    bottom: calc(
+      var(--automation-bottom-sheet-covered-height) + var(--ha-space-4)
+    );
   }
 
   ha-automation-sidebar {
@@ -280,6 +301,13 @@ export const automationRowsStyles = css`
   ha-automation-action-row {
     display: block;
     scroll-margin-top: 48px;
+  }
+  /* The part the open bottom sheet covers, see scrollRowIntoView */
+  ha-automation-trigger-row,
+  ha-automation-condition-row,
+  ha-automation-action-row,
+  ha-automation-option-row {
+    scroll-margin-bottom: var(--automation-bottom-sheet-height, 0px);
   }
   .handle {
     padding: 4px;
@@ -347,22 +375,5 @@ export const overflowStyles = css`
     .shortcut-placeholder {
       display: none;
     }
-  }
-`;
-
-export const shortcutStyles = css`
-  .shortcut {
-    direction: ltr;
-    --mdc-icon-size: var(--ha-space-3);
-    display: inline-flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 2px;
-    margin-right: var(--ha-space-4);
-  }
-  .shortcut span {
-    font-size: var(--ha-font-size-s);
-    font-family: var(--ha-font-family-code);
-    color: var(--ha-color-text-secondary);
   }
 `;

@@ -1,17 +1,27 @@
-import { LitElement, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { LitElement, html } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import { consume } from "../../common/decorators/consume";
+import {
+  consumeEntityStates,
+  consumeLocalize,
+} from "../../common/decorators/consume-context-entry";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { formattersContext } from "../../data/context";
+import type { HomeAssistantFormatters, ValueChangedEvent } from "../../types";
 import "../ha-generic-picker";
 import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
 
+type FormatEntityAttributeName =
+  HomeAssistantFormatters["formatEntityAttributeName"];
+
 @customElement("ha-entity-attribute-picker")
 class HaEntityAttributePicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public entityId?: string | string[];
 
   /**
@@ -38,18 +48,32 @@ class HaEntityAttributePicker extends LitElement {
 
   @property() public helper?: string;
 
+  @state()
+  @consumeEntityStates({ entityIdPath: ["entityId"] })
+  private _stateObjs?: Record<string, HassEntity>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<HomeAssistantFormatters, FormatEntityAttributeName>({
+    transformer: (formatters) => formatters?.formatEntityAttributeName,
+  })
+  private _formatEntityAttributeName!: FormatEntityAttributeName;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
   private _getItemsMemoized = memoizeOne(
     (
       entityId: string | string[] | undefined,
+      stateObjs: Record<string, HassEntity> | undefined,
       hideAttributes: string[] | undefined,
-      hass: HomeAssistant
+      formatEntityAttributeName: FormatEntityAttributeName
     ): PickerComboBoxItem[] => {
       const entityIds = entityId ? ensureArray(entityId) : [];
       const options: PickerComboBoxItem[] = [];
       const optionsSet = new Set<string>();
 
       for (const id of entityIds) {
-        const stateObj = hass.states[id];
+        const stateObj = stateObjs?.[id];
         if (!stateObj) {
           continue;
         }
@@ -63,7 +87,7 @@ class HaEntityAttributePicker extends LitElement {
             optionsSet.add(attribute);
             options.push({
               id: attribute,
-              primary: hass.formatEntityAttributeName(stateObj, attribute),
+              primary: formatEntityAttributeName(stateObj, attribute),
               sorting_label: attribute,
             });
           }
@@ -75,20 +99,28 @@ class HaEntityAttributePicker extends LitElement {
   );
 
   private _getItems = () =>
-    this._getItemsMemoized(this.entityId, this.hideAttributes, this.hass);
+    this._getItemsMemoized(
+      this.entityId,
+      this._stateObjs,
+      this.hideAttributes,
+      this._formatEntityAttributeName
+    );
+
+  private _valueRenderer = memoizeOne(
+    (items: PickerComboBoxItem[]): PickerValueRenderer =>
+      (value: string) => {
+        const item = items.find((option) => option.id === value);
+        return html`<span slot="headline">${item?.primary ?? value}</span>`;
+      }
+  );
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
-
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .value=${this.value}
         .label=${
           this.label ??
-          this.hass.localize(
+          this._localize(
             "ui.components.entity.entity-attribute-picker.attribute"
           )
         }
@@ -97,18 +129,12 @@ class HaEntityAttributePicker extends LitElement {
         .helper=${this.helper}
         .allowCustomValue=${this.allowCustomValue}
         .getItems=${this._getItems}
-        .valueRenderer=${this._valueRenderer}
+        .valueRenderer=${this._valueRenderer(this._getItems())}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
     `;
   }
-
-  private _valueRenderer: PickerValueRenderer = (value: string) => {
-    const items = this._getItems();
-    const item = items.find((option) => option.id === value);
-    return html`<span slot="headline">${item?.primary ?? value}</span>`;
-  };
 
   private _valueChanged(ev: ValueChangedEvent<string>) {
     ev.stopPropagation();

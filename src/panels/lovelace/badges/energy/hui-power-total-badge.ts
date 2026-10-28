@@ -1,11 +1,11 @@
-import type { ContextType } from "@lit/context";
 import { mdiHomeLightningBolt } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { HassEntities } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
-import { formatNumber } from "../../../../common/number/format_number";
+import { preserveUnchangedEntityStatesRecord } from "../../../../common/decorators/consume-context-entry";
+import { transform } from "../../../../common/decorators/transform";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
 import {
@@ -13,28 +13,36 @@ import {
   statesContext,
 } from "../../../../data/context";
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
-import {
-  getEnergyDataCollection,
-  getPowerFromState,
-} from "../../../../data/energy";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import type {
-  HomeAssistant,
-  HomeAssistantInternationalization,
-} from "../../../../types";
+import { getPowerFromState } from "../../../../data/energy";
+import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
+import type { HomeAssistantInternationalization } from "../../../../types";
 import type { LovelaceBadge } from "../../types";
 import type { PowerTotalBadgeConfig } from "../types";
 
 @customElement("hui-power-total-badge")
-export class HuiPowerTotalBadge
-  extends SubscribeMixin(LitElement)
-  implements LovelaceBadge
-{
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+export class HuiPowerTotalBadge extends LitElement implements LovelaceBadge {
   @state()
   @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
+  @transform<HassEntities, HassEntities>({
+    transformer: function (this: HuiPowerTotalBadge, states) {
+      const tracked: HassEntities = {};
+      this._data?.prefs.energy_sources.forEach((source) => {
+        if (
+          (source.type === "solar" ||
+            source.type === "home" ||
+            source.type === "grid" ||
+            source.type === "battery") &&
+          source.stat_rate &&
+          states?.[source.stat_rate]
+        ) {
+          tracked[source.stat_rate] = states[source.stat_rate];
+        }
+      });
+      return preserveUnchangedEntityStatesRecord(this._states, tracked);
+    },
+    watch: ["_data"],
+  })
+  private _states: HassEntities = {};
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -44,54 +52,34 @@ export class HuiPowerTotalBadge
 
   @state() private _data?: EnergyData;
 
-  private _entities = new Set<string>();
-
-  protected hassSubscribeRequiredHostProps = ["_config"];
+  constructor() {
+    super();
+    new EnergyCollectionController(this, {
+      config: () => this._config,
+      onData: (data) => {
+        this._data = data;
+      },
+    });
+  }
 
   public setConfig(config: PowerTotalBadgeConfig): void {
     this._config = config;
   }
 
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => {
-        this._data = data;
-      }),
-    ];
-  }
-
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config") || changedProps.has("_data")) {
-      return true;
-    }
-
-    if (changedProps.has("_states")) {
-      const oldStates = changedProps.get("_states") as
-        ContextType<typeof statesContext> | undefined;
-      if (!oldStates || !this._entities.size) {
-        return true;
-      }
-
-      for (const entityId of this._entities) {
-        if (oldStates[entityId] !== this._states?.[entityId]) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
   private _getCurrentPower(entityId: string): number {
-    this._entities.add(entityId);
     return getPowerFromState(this._states[entityId]) ?? 0;
   }
 
   private _computeTotalPower(prefs: EnergyPreferences): number {
-    this._entities.clear();
-
+    const homeSource = prefs.energy_sources.find(
+      (source) => source.type === "home" && source.stat_rate
+    );
+    if (homeSource?.type === "home" && homeSource.stat_rate) {
+      const home = getPowerFromState(this._states[homeSource.stat_rate]);
+      if (home !== undefined) {
+        return Math.max(0, home);
+      }
+    }
     let solar = 0;
     let fromGrid = 0;
     let toGrid = 0;
@@ -126,13 +114,18 @@ export class HuiPowerTotalBadge
 
     let displayValue: string;
     if (power >= 1000) {
-      displayValue = `${formatNumber(power / 1000, this._i18n.locale, {
-        maximumFractionDigits: 2,
-      })} kW`;
+      displayValue = formatNumberWithUnit(
+        power / 1000,
+        "kW",
+        this._i18n.locale,
+        {
+          maximumFractionDigits: 2,
+        }
+      );
     } else {
-      displayValue = `${formatNumber(power, this._i18n.locale, {
+      displayValue = formatNumberWithUnit(power, "W", this._i18n.locale, {
         maximumFractionDigits: 0,
-      })} W`;
+      });
     }
 
     const name =

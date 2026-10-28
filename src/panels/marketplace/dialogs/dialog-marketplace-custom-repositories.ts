@@ -1,10 +1,8 @@
 import type { ContextType } from "@lit/context";
-import { mdiDelete, mdiDeleteOff } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
-import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -12,18 +10,9 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../components/ha-form/types";
-import "../../../components/ha-icon-button";
-import "../../../components/item/ha-list-item-base";
-import "../../../components/list/ha-list-base";
-import type { HaIconButton } from "../../../components/ha-icon-button";
-import "../../../components/ha-tooltip";
-import "../../../components/ha-svg-icon";
 import "../../../components/progress/ha-progress-bar";
 import { apiContext, internationalizationContext } from "../../../data/context";
-import type {
-  RepositoryBase,
-  RepositoryType,
-} from "../../../data/marketplace/repository";
+import type { RepositoryType } from "../../../data/marketplace/repository";
 import {
   ERROR_GITHUB_NOT_CONNECTED,
   isWebSocketError,
@@ -32,11 +21,8 @@ import {
 import {
   addMarketplaceRepository,
   detectMarketplaceRepository,
-  fetchMarketplaceRepositories,
-  removeMarketplaceRepository,
 } from "../../../data/marketplace/repository";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showConnectGitHubFlow } from "../tools/connect-github";
 import type { MarketplaceCustomRepositoriesDialogParams } from "./show-dialog-marketplace-custom-repositories";
 
@@ -51,8 +37,6 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
   @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
-
-  @state() private _repositories: RepositoryBase[] = [];
 
   @state() private _waiting?: boolean;
 
@@ -71,7 +55,6 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
       return;
     }
 
-    this._repositories = this.params.marketplace.repositories;
     this._githubConnected = this.params.marketplace.info.github_connected;
   }
 
@@ -92,7 +75,6 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
               "ui.panel.marketplace.dialog_custom_repositories.intro"
             )}
           </p>
-          ${this._renderAdded()}
           ${
             this._githubConnected
               ? nothing
@@ -152,56 +134,6 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
         </ha-dialog-footer>
       </ha-dialog>
     `;
-  }
-
-  // Only what was added from a link, and only once there is any
-  private _renderAdded() {
-    const added = this._repositories
-      .filter((repository) => repository.custom)
-      .filter((repository) =>
-        this.params!.marketplace.info.categories.includes(repository.category)
-      );
-    if (!added.length) {
-      return nothing;
-    }
-
-    return html`<h3>
-        ${this._i18n.localize(
-          "ui.panel.marketplace.dialog_custom_repositories.added"
-        )}
-      </h3>
-      <ha-list-base>
-        ${added.map(
-          (repository) =>
-            html`<ha-list-item-base>
-              <span slot="headline">${repository.name}</span>
-              <span slot="supporting-text"
-                >${repository.full_name}
-                (${this._i18n.localize(
-                  `ui.panel.marketplace.common.type.${repository.category}`
-                )})</span
-              >
-              <ha-icon-button
-                slot="end"
-                id="remove-${repository.id}"
-                class="delete"
-                .label=${this._i18n.localize("ui.common.remove")}
-                .path=${repository.installed ? mdiDeleteOff : mdiDelete}
-                .disabled=${repository.installed}
-                data-repository-id=${repository.id}
-                @click=${this._handleRemoveClick}
-              ></ha-icon-button>
-              <ha-tooltip slot="end" .for=${`remove-${repository.id}`}>
-                ${this._i18n.localize(
-                  // Forgetting an installed repository would leave its files running
-                  repository.installed
-                    ? "ui.panel.marketplace.dialog_custom_repositories.remove_installed"
-                    : "ui.common.remove"
-                )}
-              </ha-tooltip>
-            </ha-list-item-base>`
-        )}
-      </ha-list-base>`;
   }
 
   // Only when the type could not be found out, from what it might be
@@ -265,33 +197,6 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
     this._data = data;
   }
 
-  private async _handleRemoveClick(
-    ev: HASSDomCurrentTargetEvent<HaIconButton>
-  ) {
-    ev.preventDefault();
-    const repositoryId = ev.currentTarget.dataset.repositoryId!;
-    const repository = this._repositories.find(
-      (item) => item.id === repositoryId
-    );
-
-    // Like removing an app repository, and it can be added again later. Asked
-    // first, a failure then shows here instead of behind a closed question.
-    const confirmed = await showConfirmationDialog(this, {
-      title: this._i18n.localize(
-        "ui.panel.marketplace.dialog_custom_repositories.remove_title",
-        { name: repository?.name ?? repositoryId }
-      ),
-      text: this._i18n.localize(
-        "ui.panel.marketplace.dialog_custom_repositories.remove_text"
-      ),
-      confirmText: this._i18n.localize("ui.common.remove"),
-      destructive: true,
-    });
-    if (confirmed) {
-      await this._removeRepository(repositoryId);
-    }
-  }
-
   private async _addRepository() {
     this._errors = {};
 
@@ -338,8 +243,8 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
       }
 
       await addMarketplaceRepository(this._api, repository, category);
-      this._detected = undefined;
-      await this._updateRepositories();
+      // The panel hears the change from the backend and lists it
+      this.closeDialog();
     } catch (err: unknown) {
       // The dialog can be closed while waiting for the backend.
       if (!this.isConnected) {
@@ -353,36 +258,11 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
         return;
       }
 
-      this._errors = { base: this._errorMessage(err) };
+      this._errors = {
+        base: marketplaceErrorMessage(err, this._i18n.localize),
+      };
     } finally {
       this._waiting = false;
-    }
-  }
-
-  private async _removeRepository(repository: string) {
-    this._waiting = true;
-    try {
-      await removeMarketplaceRepository(this._api, repository);
-      await this._updateRepositories();
-    } catch (err: unknown) {
-      if (this.isConnected) {
-        this._errors = { base: this._errorMessage(err) };
-      }
-    } finally {
-      this._waiting = false;
-    }
-  }
-
-  private _errorMessage(err: unknown): string {
-    return marketplaceErrorMessage(err, this._i18n.localize);
-  }
-
-  private async _updateRepositories() {
-    // The panel hears the change from the backend, this is for the dialog
-    const repositories = await fetchMarketplaceRepositories(this._api);
-
-    if (this.isConnected) {
-      this._repositories = repositories;
     }
   }
 
@@ -396,21 +276,9 @@ export class DialogMarketplaceCustomRepositories extends DialogMixin<Marketplace
         .intro {
           margin: 0 0 var(--ha-space-4);
         }
-        h3 {
-          margin: 0;
-          font-size: var(--ha-font-size-m);
-          font-weight: var(--ha-font-weight-medium);
-        }
-        ha-list-base {
-          padding: 0;
-          margin-block-end: var(--ha-space-4);
-        }
         ha-alert {
           display: block;
           margin-bottom: var(--ha-space-2);
-        }
-        .delete {
-          color: var(--error-color);
         }
       `,
     ];

@@ -18,6 +18,7 @@ import "./components/landing-page-network";
 import {
   getSupervisorJobsInfo,
   getSupervisorNetworkInfo,
+  getSupervisorResolutionInfo,
   pingSupervisor,
   type NetworkInfo,
 } from "./data/supervisor";
@@ -49,6 +50,9 @@ class HaLandingPage extends provideLiteI18nMixin(LandingPageBaseElement) {
 
   render() {
     const networkIssue = this._networkInfo && !this._networkInfo.host_internet;
+    // Supervisor retries some failures, so keep showing a running install
+    const showProgress =
+      !networkIssue && (!this._supervisorError || this._progress >= 0);
 
     if (!this.localize) {
       return html`
@@ -63,7 +67,7 @@ class HaLandingPage extends provideLiteI18nMixin(LandingPageBaseElement) {
         <div class="card-content">
           <h1>${this.localize("header")}</h1>
           ${
-            !networkIssue && !this._supervisorError
+            showProgress
               ? html`
                   <p>${this.localize("subheader")}</p>
                   <ha-progress-bar
@@ -179,6 +183,8 @@ class HaLandingPage extends provideLiteI18nMixin(LandingPageBaseElement) {
       this._networkInfo = await getSupervisorNetworkInfo();
       this._networkInfoError = false;
       this._coreStatusChecked = false;
+
+      await this._fetchSupervisorResolutionInfo();
     } catch (err: any) {
       if (await this._checkCoreAvailability()) {
         // core is available, page reload in progress -> don't show an error
@@ -195,6 +201,19 @@ class HaLandingPage extends provideLiteI18nMixin(LandingPageBaseElement) {
 
     if (schedule) {
       this._scheduleFetchSupervisorInfo();
+    }
+  }
+
+  private async _fetchSupervisorResolutionInfo() {
+    try {
+      const resolutionInfo = await getSupervisorResolutionInfo();
+      if (
+        resolutionInfo.issues.some((issue) => issue.type === "update_failed")
+      ) {
+        this._supervisorError = true;
+      }
+    } catch (_err: any) {
+      // Ignore, the logs are checked for errors as well
     }
   }
 

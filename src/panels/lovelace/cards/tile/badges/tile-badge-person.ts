@@ -6,6 +6,7 @@ import { stateColorCss } from "../../../../../common/entity/state_color";
 import "../../../../../components/ha-icon";
 import "../../../../../components/ha-svg-icon";
 import "../../../../../components/tile/ha-tile-badge";
+import { computeZoneTrackerState } from "../../../../../data/zone";
 import type { HomeAssistant } from "../../../../../types";
 import type { RenderBadgeFunction } from "./tile-badge";
 
@@ -13,11 +14,17 @@ function getZone(entity: HassEntity, hass: HomeAssistant) {
   const state = entity.state;
   if (state === "home" || state === "not_home") return undefined;
 
-  const zones = Object.values(hass.states).filter((stateObj) =>
-    stateObj.entity_id.startsWith("zone.")
-  );
+  // Zone names aren't unique, so check the zones the entity is in first
+  const zoneIds: string[] = [
+    ...(entity.attributes.in_zones ?? []),
+    ...Object.keys(hass.states).filter((entityId) =>
+      entityId.startsWith("zone.")
+    ),
+  ];
 
-  return zones.find((z) => state === z.attributes.friendly_name);
+  return zoneIds
+    .map((zoneId) => hass.states[zoneId])
+    .find((zone) => zone && state === computeZoneTrackerState(zone));
 }
 
 export const renderPersonBadge: RenderBadgeFunction = (stateObj, hass) => {

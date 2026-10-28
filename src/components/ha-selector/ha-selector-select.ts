@@ -11,15 +11,11 @@ import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { internationalizationContext } from "../../data/context";
 import type { SelectOption, SelectSelector } from "../../data/selector";
 import type { FrontendLocaleData } from "../../data/translation";
-import type {
-  HomeAssistant,
-  HomeAssistantInternationalization,
-} from "../../types";
+import type { HomeAssistantInternationalization } from "../../types";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
 import "../ha-checkbox";
 import "../ha-dropdown-item";
-import "../ha-formfield";
 import "../ha-generic-picker";
 import "../ha-input-helper-text";
 import "../ha-select";
@@ -30,8 +26,6 @@ import "../radio/ha-radio-option";
 
 @customElement("ha-selector-select")
 export class HaSelectSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   @transform<HomeAssistantInternationalization, FrontendLocaleData>({
@@ -217,7 +211,6 @@ export class HaSelectSelector extends LitElement {
 
         <ha-generic-picker
           no-sort
-          .hass=${this.hass}
           .helper=${this.helper}
           .disabled=${this.disabled}
           .required=${this.required && !value.length}
@@ -234,7 +227,6 @@ export class HaSelectSelector extends LitElement {
       return html`
         <ha-generic-picker
           no-sort
-          .hass=${this.hass}
           .label=${this.label}
           .helper=${this.helper}
           .disabled=${this.disabled}
@@ -400,8 +392,7 @@ export class HaSelectSelector extends LitElement {
     :host {
       position: relative;
     }
-    ha-select,
-    ha-formfield {
+    ha-select {
       display: block;
     }
 

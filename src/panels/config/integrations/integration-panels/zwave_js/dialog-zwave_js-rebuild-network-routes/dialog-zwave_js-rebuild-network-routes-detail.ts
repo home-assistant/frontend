@@ -22,12 +22,8 @@ import {
   devicesContext,
   internationalizationContext,
   registriesContext,
-  statesContext,
 } from "../../../../../../data/context";
-import {
-  getDeviceEntityDisplayLookup,
-  type DeviceRegistryEntry,
-} from "../../../../../../data/device/device_registry";
+import type { DeviceRegistryEntry } from "../../../../../../data/device/device_registry";
 import { DialogMixin } from "../../../../../../dialogs/dialog-mixin";
 import { zwaveJsRebuildNetworkRoutesProgressContext } from "./context";
 import type { ZWaveJSRebuildNetworkRoutesDetailDialogParams } from "./show-dialog-zwave_js-rebuild-network-routes-detail";
@@ -79,10 +75,6 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
     },
   })
   private _progress?: number[];
-
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
 
   @state()
   @consume({ context: registriesContext, subscribe: true })
@@ -161,10 +153,6 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
         }
       });
 
-      const deviceEntityLookup = getDeviceEntityDisplayLookup(
-        Object.values(this._registries.entities)
-      );
-
       const configEntryLookup = Object.fromEntries(
         this._configEntries!.map((entry) => [entry.entry_id, entry])
       );
@@ -172,12 +160,7 @@ class DialogZWaveJSRebuildNetworkRoutesDetail extends DialogMixin<ZWaveJSRebuild
       return nodes
         .map((device) => {
           const name =
-            computeDeviceNameDisplay(
-              device,
-              this._i18n.localize,
-              this._states,
-              deviceEntityLookup[device.id]
-            ) ||
+            computeDeviceNameDisplay(device, this._i18n.localize) ||
             this._i18n.localize("ui.components.device-picker.unnamed_device");
 
           const area = getDeviceArea(

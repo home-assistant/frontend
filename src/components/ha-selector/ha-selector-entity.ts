@@ -45,31 +45,26 @@ export class HaEntitySelector extends LitElement {
 
   private _deviceIntegrationLookup = memoizeOne(
     (
-      entitySources: EntitySources,
       entities: HomeAssistant["entities"],
       devices: HomeAssistant["devices"],
       configEntries?: ConfigEntry[]
     ) =>
       getDeviceIntegrationLookup(
-        entitySources,
         Object.values(entities),
         Object.values(devices),
         configEntries
       )
   );
 
-  // Which async data the current filter needs to be evaluated: a top-level or
-  // device `integration` filter needs entity sources, and a `device.integration`
-  // filter additionally needs config entries (the device integration lookup is
-  // built from both).
+  // Which async data the current filter needs to be evaluated: a top-level
+  // `integration` filter needs entity sources, and a `device.integration`
+  // filter needs config entries.
   private _dataNeeds = memoizeOne((selector: EntitySelector) => {
     const filters = selector.entity?.filter
       ? ensureArray(selector.entity.filter)
       : [];
     return {
-      entitySources: filters.some(
-        (f) => f.integration || f.device?.integration
-      ),
+      entitySources: filters.some((f) => f.integration),
       configEntries: filters.some((f) => f.device?.integration),
     };
   });
@@ -172,15 +167,13 @@ export class HaEntitySelector extends LitElement {
     if (!this.selector?.entity?.filter) {
       return true;
     }
-    const deviceIntegrationLookup =
-      this._entitySources && this._dataNeeds(this.selector).configEntries
-        ? this._deviceIntegrationLookup(
-            this._entitySources,
-            this.hass.entities,
-            this.hass.devices,
-            this._configEntries
-          )
-        : undefined;
+    const deviceIntegrationLookup = this._dataNeeds(this.selector).configEntries
+      ? this._deviceIntegrationLookup(
+          this.hass.entities,
+          this.hass.devices,
+          this._configEntries
+        )
+      : undefined;
 
     return ensureArray(this.selector.entity.filter).some((filter) =>
       filterSelectorEntities(

@@ -90,7 +90,7 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchLanguages() {
-    const { agents } = await listAgents(this.hass);
+    const { agents } = await listAgents(this.hass.callWS);
     const assistAgent = agents.find(
       (agent) => agent.id === "conversation.home_assistant"
     );
@@ -133,7 +133,6 @@ class HaPanelDevAssist extends SubscribeMixin(LitElement) {
                 ? html`
                     <ha-language-picker
                       .languages=${this.supportedLanguages}
-                      .hass=${this.hass}
                       .value=${this._language}
                       @value-changed=${this._languageChanged}
                     ></ha-language-picker>

@@ -9,4 +9,8 @@ export const coreBadges: Badge[] = [
     type: "shortcut",
     showElement: true,
   },
+  {
+    type: "alert",
+    showElement: true,
+  },
 ];

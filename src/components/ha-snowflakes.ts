@@ -1,10 +1,13 @@
+import type { Connection, UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import type { HomeAssistant } from "../types";
+import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
+import { connectionContext, uiContext } from "../data/context";
 import { subscribeLabFeature } from "../data/labs";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
+import type { HomeAssistantConnection, HomeAssistantUI } from "../types";
 
 interface Snowflake {
   id: number;
@@ -16,10 +19,21 @@ interface Snowflake {
 }
 
 @customElement("ha-snowflakes")
-export class HaSnowflakes extends SubscribeMixin(LitElement) {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
+export class HaSnowflakes extends LitElement {
   @property({ type: Boolean }) public narrow = false;
+
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection?: Connection;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: ({ themes }) => themes?.darkMode,
+  })
+  private _darkMode?: boolean;
 
   @state() private _enabled = false;
 
@@ -27,17 +41,53 @@ export class HaSnowflakes extends SubscribeMixin(LitElement) {
 
   private _maxSnowflakes = 50;
 
-  public hassSubscribe() {
-    return [
-      subscribeLabFeature(
-        this.hass!.connection,
-        "frontend",
-        "winter_mode",
-        (feature) => {
+  private _labFeatureConnection?: Connection;
+
+  private _unsubLabFeature?: Promise<UnsubscribeFunc>;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._subscribeLabFeature();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._unsubscribeLabFeature();
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("_connection")) {
+      this._subscribeLabFeature();
+    }
+  }
+
+  private _subscribeLabFeature() {
+    if (this._connection === this._labFeatureConnection) {
+      return;
+    }
+    this._unsubscribeLabFeature();
+    if (!this._connection || !this.isConnected) {
+      return;
+    }
+    const connection = this._connection;
+    this._labFeatureConnection = connection;
+    this._unsubLabFeature = subscribeLabFeature(
+      connection,
+      "frontend",
+      "winter_mode",
+      (feature) => {
+        if (this._labFeatureConnection === connection) {
           this._enabled = feature.enabled;
         }
-      ),
-    ];
+      }
+    );
+  }
+
+  private _unsubscribeLabFeature() {
+    this._unsubLabFeature?.then((unsub) => unsub()).catch(() => undefined);
+    this._unsubLabFeature = undefined;
+    this._labFeatureConnection = undefined;
   }
 
   private _generateSnowflakes() {
@@ -72,10 +122,11 @@ export class HaSnowflakes extends SubscribeMixin(LitElement) {
       return nothing;
     }
 
-    const isDark = this.hass?.themes.darkMode ?? false;
-
     return html`
-      <div class="snowflakes ${isDark ? "dark" : "light"}" aria-hidden="true">
+      <div
+        class="snowflakes ${this._darkMode ? "dark" : "light"}"
+        aria-hidden="true"
+      >
         ${this._snowflakes.map(
           (flake) => html`
             <svg

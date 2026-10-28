@@ -1,3 +1,4 @@
+import { mockLoRaWAN } from "./lorawan/mock";
 import type { MockHomeAssistant } from "../../../../src/fake_data/provide_hass";
 import { mockBluetooth } from "./bluetooth/mock";
 import { mockMatter } from "./matter/mock";
@@ -11,6 +12,7 @@ import { mockZwaveJs } from "./zwave_js/mock";
 
 // The WebSocket mocks, code-split into the config panel chunk.
 const MOCKS = [
+  mockLoRaWAN,
   mockBluetooth,
   mockSerial,
   mockModbus,

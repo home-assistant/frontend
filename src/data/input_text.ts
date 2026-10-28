@@ -22,8 +22,12 @@ export interface InputTextMutableParams {
   mode: "text" | "password";
 }
 
-export const setValue = (hass: HomeAssistant, entity: string, value: string) =>
-  hass.callService(entity.split(".", 1)[0], "set_value", {
+export const setValue = (
+  callService: HomeAssistant["callService"],
+  entity: string,
+  value: string
+) =>
+  callService(entity.split(".", 1)[0], "set_value", {
     value,
     entity_id: entity,
   });

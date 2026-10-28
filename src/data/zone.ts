@@ -1,3 +1,6 @@
+import type { HassEntity } from "home-assistant-js-websocket";
+import { computeStateName } from "../common/entity/compute_state_name";
+import { HOME_ZONE_ENTITY_ID } from "../common/map/entity-map-colors";
 import { navigate } from "../common/navigate";
 import type { HomeAssistant } from "../types";
 
@@ -26,6 +29,11 @@ export interface ZoneMutableParams {
   passive?: boolean;
   radius?: number;
 }
+
+// Same rule as the backend device tracker: "home" for the home zone, the zone
+// state name (friendly_name, or the object id) for any other zone.
+export const computeZoneTrackerState = (zone: HassEntity): string =>
+  zone.entity_id === HOME_ZONE_ENTITY_ID ? "home" : computeStateName(zone);
 
 export const fetchZones = (hass: HomeAssistant) =>
   hass.callWS<Zone[]>({ type: "zone/list" });

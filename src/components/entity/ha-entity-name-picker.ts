@@ -1,20 +1,34 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
+import type { ContextType } from "@lit/context";
+import { mdiDragHorizontalVariant, mdiPlus, mdiRestore } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import { consume } from "../../common/decorators/consume";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../common/decorators/consume-context-entry";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
+  computeDefaultEntityNameItems,
   ENTITY_NAME_TYPES,
   type EntityNameItem,
   type EntityNameType,
 } from "../../common/entity/compute_entity_name_display";
 import { getEntityContext } from "../../common/entity/context/get_entity_context";
-import type { LocalizeKeys } from "../../common/translations/localize";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../common/translations/localize";
+import { formattersContext, registriesContext } from "../../data/context";
+import type { HomeAssistantFormatters, ValueChangedEvent } from "../../types";
 import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
@@ -22,13 +36,14 @@ import "../ha-button-toggle-group";
 import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { HaGenericPicker } from "../ha-generic-picker";
+import "../ha-icon-button";
 import "../ha-input-helper-text";
 import type { PickerComboBoxItem } from "../ha-picker-combo-box";
 import "../ha-sortable";
 import "../input/ha-input";
 
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
-  <ha-combo-box-item>
+  <ha-combo-box-item .disabled=${!!item.disabled}>
     <span slot="headline">${item.primary}</span>
     ${
       item.secondary
@@ -39,6 +54,11 @@ const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
 `;
 
 const KNOWN_TYPES = new Set<string>(ENTITY_NAME_TYPES);
+
+const DEFAULT_NAME_WITHOUT_ENTITY: EntityNameItem[] = [
+  { type: "device" },
+  { type: "entity" },
+];
 
 const formatOptionValue = (item: EntityNameItem) => {
   if (item.type === "text" && item.text) {
@@ -59,11 +79,12 @@ const parseOptionValue = (value: string): EntityNameItem => {
 
 @customElement("ha-entity-name-picker")
 export class HaEntityNamePicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public entityId?: string;
 
   @property({ attribute: false }) public value?:
+    string | EntityNameItem | EntityNameItem[];
+
+  @property({ attribute: false }) public defaultValue?:
     string | EntityNameItem | EntityNameItem[];
 
   @property() public label?: string;
@@ -74,7 +95,29 @@ export class HaEntityNamePicker extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
+  @property({ attribute: false }) public allowCustom = true;
+
   @state() private _mode?: "composed" | "custom";
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["entityId"] })
+  private _stateObj?: HassEntity;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
@@ -83,7 +126,7 @@ export class HaEntityNamePicker extends LitElement {
   connectedCallback(): void {
     super.connectedCallback();
     if (this.hasUpdated) {
-      const items = this._toItems(this.value);
+      const items = this._toItems(this.value ?? this.defaultValue);
       this._mode =
         items.length === 1 && items[0].type === "text" ? "custom" : "composed";
     }
@@ -91,7 +134,7 @@ export class HaEntityNamePicker extends LitElement {
 
   protected willUpdate(_changedProperties: PropertyValues<this>): void {
     if (this._mode === undefined) {
-      const items = this._toItems(this.value);
+      const items = this._toItems(this.value ?? this.defaultValue);
       this._mode =
         items.length === 1 && items[0].type === "text" ? "custom" : "composed";
     }
@@ -100,13 +143,13 @@ export class HaEntityNamePicker extends LitElement {
   protected render() {
     const modeButtons = [
       {
-        label: this.hass.localize(
+        label: this._localize(
           "ui.components.entity.entity-name-picker.mode_composed"
         ),
         value: "composed",
       },
       {
-        label: this.hass.localize(
+        label: this._localize(
           "ui.components.entity.entity-name-picker.mode_custom"
         ),
         value: "custom",
@@ -117,17 +160,23 @@ export class HaEntityNamePicker extends LitElement {
       <div class="container">
         <div class="header">
           ${this.label ? html`<label>${this.label}</label>` : nothing}
-          <ha-button-toggle-group
-            size="s"
-            .buttons=${modeButtons}
-            .active=${this._mode}
-            .disabled=${this.disabled}
-            @value-changed=${this._modeChanged}
-          ></ha-button-toggle-group>
+          ${
+            this.allowCustom
+              ? html`
+                  <ha-button-toggle-group
+                    size="s"
+                    .buttons=${modeButtons}
+                    .active=${this._mode}
+                    .disabled=${this.disabled}
+                    @value-changed=${this._modeChanged}
+                  ></ha-button-toggle-group>
+                `
+              : nothing
+          }
         </div>
         <div class="content">
           ${
-            this._mode === "custom"
+            this.allowCustom && this._mode === "custom"
               ? this._renderTextInput()
               : this._renderPicker()
           }
@@ -147,36 +196,63 @@ export class HaEntityNamePicker extends LitElement {
     const items = this._items;
     const value =
       items.length === 1 && items[0].type === "text" ? items[0].text || "" : "";
+    const stateObj = this._stateObj;
     return html`
       <ha-input
         .disabled=${this.disabled}
         .required=${this.required}
         .value=${value}
+        .placeholder=${
+          stateObj
+            ? this._formatEntityName(stateObj, this.value ?? this.defaultValue)
+            : undefined
+        }
         @input=${this._textInputChanged}
-      ></ha-input>
+      >
+        ${this._renderRestoreButton("end")}
+      </ha-input>
+    `;
+  }
+
+  private _renderRestoreButton(slot?: string) {
+    if (this.value === undefined || this.disabled) {
+      return nothing;
+    }
+    return html`
+      <ha-icon-button
+        class="restore"
+        slot=${ifDefined(slot)}
+        .path=${mdiRestore}
+        .label=${this._localize(
+          "ui.components.entity.entity-name-picker.restore"
+        )}
+        @click=${this._restore}
+      ></ha-icon-button>
     `;
   }
 
   private _renderPicker() {
     const value = this._items;
-    const validTypes = this._validTypes(this.entityId);
+    const validTypes = this._validTypes(this._stateObj, this._registries);
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .required=${this.required && !value.length}
         .getItems=${this._getFilteredItems}
         .rowRenderer=${rowRenderer}
         .value=${this._getPickerValue()}
         no-sort
-        allow-custom-value
-        .customValueLabel=${this.hass.localize(
+        ?allow-custom-value=${this.allowCustom}
+        .customValueLabel=${this._localize(
           "ui.components.entity.entity-name-picker.custom_name"
+        )}
+        .emptyLabel=${this._localize(
+          "ui.components.entity.entity-name-picker.no_more_parts"
         )}
         @value-changed=${this._pickerValueChanged}
         .searchFn=${this._searchFn}
-        .searchLabel=${this.hass.localize(
+        .searchLabel=${this._localize(
           "ui.components.entity.entity-name-picker.search"
         )}
       >
@@ -221,7 +297,7 @@ export class HaEntityNamePicker extends LitElement {
                       <ha-assist-chip
                         @click=${this._addItem}
                         .disabled=${this.disabled}
-                        label=${this.hass.localize(
+                        label=${this._localize(
                           "ui.components.entity.entity-name-picker.add"
                         )}
                         class="add"
@@ -232,6 +308,7 @@ export class HaEntityNamePicker extends LitElement {
               }
             </ha-chip-set>
           </ha-sortable>
+          ${this._renderRestoreButton()}
         </div>
       </ha-generic-picker>
     `;
@@ -240,6 +317,13 @@ export class HaEntityNamePicker extends LitElement {
   private _modeChanged(ev: CustomEvent) {
     ev.stopPropagation();
     this._mode = ev.detail.value as "composed" | "custom";
+  }
+
+  private _restore(ev: Event) {
+    ev.stopPropagation();
+    this._mode = undefined;
+    this.value = undefined;
+    fireEvent(this, "value-changed", { value: undefined });
   }
 
   private _textInputChanged(ev: Event) {
@@ -326,8 +410,26 @@ export class HaEntityNamePicker extends LitElement {
   }
 
   private get _items(): EntityNameItem[] {
-    return this._toItems(this.value);
+    if (this.value !== undefined) {
+      return this._toItems(this.value);
+    }
+    if (this.defaultValue !== undefined) {
+      return this._toItems(this.defaultValue);
+    }
+    return this._defaultItems(this._stateObj, this._registries);
   }
+
+  private _defaultItems = memoizeOne(
+    (
+      stateObj: HassEntity | undefined,
+      registries: ContextType<typeof registriesContext>
+    ): EntityNameItem[] => {
+      if (!stateObj) {
+        return DEFAULT_NAME_WITHOUT_ENTITY;
+      }
+      return computeDefaultEntityNameItems(stateObj, registries);
+    }
+  );
 
   private _toItems = memoizeOne((value?: typeof this.value) => {
     if (typeof value === "string") {
@@ -342,7 +444,7 @@ export class HaEntityNamePicker extends LitElement {
   private _toValue = memoizeOne(
     (items: EntityNameItem[]): typeof this.value => {
       if (items.length === 0) {
-        return undefined;
+        return "";
       }
       if (items.length === 1) {
         const item = items[0];
@@ -357,88 +459,88 @@ export class HaEntityNamePicker extends LitElement {
       return `"${item.text}"`;
     }
     if (KNOWN_TYPES.has(item.type)) {
-      return this.hass.localize(
+      return this._localize(
         `ui.components.entity.entity-name-picker.types.${item.type as EntityNameType}`
       );
     }
     return item.type;
   };
 
-  private _validTypes = memoizeOne((entityId?: string) => {
-    const options = new Set<string>(["text"]);
-    if (!entityId) {
-      return options;
-    }
+  private _validTypes = memoizeOne(
+    (
+      stateObj: HassEntity | undefined,
+      registries: ContextType<typeof registriesContext>
+    ) => {
+      if (!stateObj) {
+        return new Set<string>(["text", ...ENTITY_NAME_TYPES]);
+      }
 
-    const stateObj = this.hass.states[entityId];
+      const options = new Set<string>(["text", "entity"]);
 
-    if (!stateObj) {
-      return options;
-    }
-
-    options.add("entity");
-
-    const context = getEntityContext(
-      stateObj,
-      this.hass.entities,
-      this.hass.devices,
-      this.hass.areas,
-      this.hass.floors
-    );
-
-    if (context.device) options.add("device");
-    if (context.parentDevice) options.add("parent_device");
-    if (context.area) options.add("area");
-    if (context.floor) options.add("floor");
-    return options;
-  });
-
-  private _getItems = memoizeOne((entityId?: string) => {
-    if (!entityId) {
-      return [];
-    }
-
-    const types = this._validTypes(entityId);
-
-    const items = ENTITY_NAME_TYPES.filter(
-      (name) => name !== "parent_device" || types.has(name)
-    ).map<PickerComboBoxItem>((name) => {
-      const stateObj = this.hass.states[entityId];
-      const isValid = types.has(name);
-      const primary = this.hass.localize(
-        `ui.components.entity.entity-name-picker.types.${name}`
+      const context = getEntityContext(
+        stateObj,
+        registries.entities,
+        registries.devices,
+        registries.areas,
+        registries.floors
       );
-      const secondary =
-        (stateObj && isValid
-          ? this.hass.formatEntityName(stateObj, { type: name })
-          : this.hass.localize(
-              `ui.components.entity.entity-name-picker.types.${name}_missing` as LocalizeKeys
-            )) || "-";
 
-      const id = formatOptionValue({ type: name });
+      if (context.device) options.add("device");
+      if (context.parentDevice) options.add("parent_device");
+      if (context.area) options.add("area");
+      if (context.floor) options.add("floor");
+      return options;
+    }
+  );
 
-      return {
-        id,
-        primary,
-        secondary,
-        search_labels: {
-          primary,
-          secondary: secondary || null,
+  private _getItems = memoizeOne(
+    (
+      stateObj: HassEntity | undefined,
+      registries: ContextType<typeof registriesContext>,
+      localize: LocalizeFunc,
+      formatEntityName: HomeAssistantFormatters["formatEntityName"]
+    ) => {
+      const types = this._validTypes(stateObj, registries);
+
+      const items = ENTITY_NAME_TYPES.filter(
+        (name) => name !== "parent_device" || types.has(name)
+      ).map<PickerComboBoxItem>((name) => {
+        const isValid = types.has(name);
+        const primary = localize(
+          `ui.components.entity.entity-name-picker.types.${name}`
+        );
+        const secondary = stateObj
+          ? (isValid
+              ? formatEntityName(stateObj, { type: name })
+              : localize(
+                  `ui.components.entity.entity-name-picker.types.${name}_missing` as LocalizeKeys
+                )) || "-"
+          : undefined;
+
+        const id = formatOptionValue({ type: name });
+
+        return {
           id,
-        },
-        sorting_label: primary,
-      };
-    });
+          primary,
+          secondary,
+          disabled: !isValid,
+          search_labels: {
+            primary,
+            secondary: secondary || null,
+            id,
+          },
+          sorting_label: primary,
+        };
+      });
 
-    return items;
-  });
+      return items;
+    }
+  );
 
   private _customNameOption = memoizeOne(
-    (text: string): PickerComboBoxItem => ({
+    (text: string, localize: LocalizeFunc): PickerComboBoxItem => ({
       id: formatOptionValue({ type: "text", text }),
-      primary: this.hass.localize(
-        "ui.components.entity.entity-name-picker.custom_name"
-      ),
+      primary: localize("ui.components.entity.entity-name-picker.custom_name"),
       secondary: `"${text}"`,
       search_labels: {
         primary: text,
@@ -458,7 +560,12 @@ export class HaEntityNamePicker extends LitElement {
   }
 
   private _getFilteredItems = (): PickerComboBoxItem[] => {
-    const items = this._getItems(this.entityId);
+    const items = this._getItems(
+      this._stateObj,
+      this._registries,
+      this._localize,
+      this._formatEntityName
+    );
     const currentItem =
       this._editIndex != null ? this._items[this._editIndex] : undefined;
     const currentValue = currentItem ? formatOptionValue(currentItem) : "";
@@ -475,7 +582,9 @@ export class HaEntityNamePicker extends LitElement {
 
     // When editing an existing text item, include it in the base items
     if (currentItem?.type === "text" && currentItem.text) {
-      filteredItems.push(this._customNameOption(currentItem.text));
+      filteredItems.push(
+        this._customNameOption(currentItem.text, this._localize)
+      );
     }
 
     return filteredItems;
@@ -489,7 +598,7 @@ export class HaEntityNamePicker extends LitElement {
       this._editIndex != null ? this._items[this._editIndex] : undefined;
     const currentId =
       currentItem?.type === "text" && currentItem.text
-        ? this._customNameOption(currentItem.text).id
+        ? this._customNameOption(currentItem.text, this._localize).id
         : undefined;
 
     // Remove custom name option if search string is present to avoid duplicates
@@ -536,6 +645,8 @@ export class HaEntityNamePicker extends LitElement {
 
     .field {
       position: relative;
+      display: flex;
+      align-items: center;
       background-color: var(--mdc-text-field-fill-color, whitesmoke);
       border-radius: var(--ha-border-radius-sm);
       border-end-end-radius: var(--ha-border-radius-square);
@@ -570,8 +681,22 @@ export class HaEntityNamePicker extends LitElement {
       background-color: var(--mdc-theme-primary);
     }
 
+    .field ha-sortable {
+      flex: 1;
+      min-width: 0;
+    }
+
     ha-chip-set {
       padding: var(--ha-space-3);
+    }
+
+    .restore {
+      --ha-icon-button-size: 36px;
+      --mdc-icon-size: 20px;
+    }
+
+    .field .restore {
+      margin-inline-end: var(--ha-space-2);
     }
 
     .add {

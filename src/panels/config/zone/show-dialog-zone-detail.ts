@@ -3,6 +3,8 @@ import type { Zone, ZoneMutableParams } from "../../../data/zone";
 
 export interface ZoneDetailDialogParams {
   entry?: Zone;
+  /** Where a new zone starts when nothing else names a location */
+  location?: [latitude: number, longitude: number];
   createEntry: (values: ZoneMutableParams) => Promise<unknown>;
   updateEntry?: (updates: Partial<ZoneMutableParams>) => Promise<unknown>;
   removeEntry?: () => Promise<boolean>;

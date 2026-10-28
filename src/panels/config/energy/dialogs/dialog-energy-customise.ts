@@ -197,7 +197,7 @@ export class DialogEnergyCustomise
         <ha-switch
           .checked=${applicable && !this._hidden!.has(card.key)}
           .disabled=${!applicable}
-          .ariaLabel=${label}
+          .accessibleLabel=${label}
           data-card-key=${card.key}
           @change=${this._toggleCard}
         ></ha-switch>

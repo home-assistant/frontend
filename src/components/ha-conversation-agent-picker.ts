@@ -1,18 +1,21 @@
+import type { ContextType } from "@lit/context";
 import { mdiCog } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { debounce } from "../common/util/debounce";
-import type { ConfigEntry, SubEntry } from "../data/config_entries";
-import { getConfigEntry, getSubEntries } from "../data/config_entries";
+import { apiContext, configContext, entitiesContext } from "../data/context";
 import type { Agent } from "../data/conversation";
 import { listAgents } from "../data/conversation";
-import { getExtendedEntityRegistryEntry } from "../data/entity/entity_registry";
-import { fetchIntegrationManifest } from "../data/integration";
-import { showOptionsFlowDialog } from "../dialogs/config-flow/show-dialog-options-flow";
-import { showSubConfigFlowDialog } from "../dialogs/config-flow/show-dialog-sub-config-flow";
-import type { HomeAssistant } from "../types";
+import type { EntityConfigFlow } from "../dialogs/config-flow/entity-config-flow";
+import {
+  fetchEntityConfigFlow,
+  showEntityConfigFlow,
+} from "../dialogs/config-flow/entity-config-flow";
 import "./ha-select";
 import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 
@@ -26,17 +29,24 @@ export class HaConversationAgentPicker extends LitElement {
 
   @property() public label?: string;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
 
   @state() _agents?: Agent[];
 
-  @state() private _configEntry?: ConfigEntry;
+  @state() private _configFlow?: EntityConfigFlow;
 
-  @state() private _subConfigEntry?: SubEntry;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
 
   protected render() {
     if (!this._agents) {
@@ -58,9 +68,7 @@ export class HaConversationAgentPicker extends LitElement {
     if (!this.required) {
       options.unshift({
         value: NONE,
-        label: this.hass.localize(
-          "ui.components.conversation-agent-picker.none"
-        ),
+        label: this._localize("ui.components.conversation-agent-picker.none"),
       });
     }
 
@@ -68,7 +76,7 @@ export class HaConversationAgentPicker extends LitElement {
       <ha-select
         .label=${
           this.label ||
-          this.hass!.localize(
+          this._localize(
             "ui.components.conversation-agent-picker.conversation_agent"
           )
         }
@@ -79,16 +87,15 @@ export class HaConversationAgentPicker extends LitElement {
         .options=${options}
       ></ha-select
       >${
-        (this._subConfigEntry &&
-          this._configEntry?.supported_subentry_types[
-            this._subConfigEntry.subentry_type
-          ]?.supports_reconfigure) ||
-        this._configEntry?.supports_options
+        this._configFlow
           ? html`<ha-icon-button
+              .label=${this._localize(
+                "ui.components.conversation-agent-picker.settings"
+              )}
               .path=${mdiCog}
-              @click=${this._openOptionsFlow}
+              @click=${this._openConfigFlow}
             ></ha-icon-button>`
-          : ""
+          : nothing
       }
     `;
   }
@@ -102,40 +109,23 @@ export class HaConversationAgentPicker extends LitElement {
     }
 
     if (changedProperties.has("value")) {
-      this._maybeFetchConfigEntry();
+      this._fetchConfigFlow();
     }
   }
 
-  private async _maybeFetchConfigEntry() {
-    if (!this.value || !(this.value in this.hass.entities)) {
-      this._configEntry = undefined;
-      return;
-    }
+  private async _fetchConfigFlow() {
+    const entityId = this.value;
+    this._configFlow = undefined;
+    let configFlow: EntityConfigFlow | undefined;
     try {
-      const regEntry = await getExtendedEntityRegistryEntry(
-        this.hass,
-        this.value
-      );
-
-      if (!regEntry.config_entry_id) {
-        this._configEntry = undefined;
-        return;
-      }
-
-      this._configEntry = (
-        await getConfigEntry(this.hass, regEntry.config_entry_id)
-      ).config_entry;
-
-      if (!regEntry.config_subentry_id) {
-        this._subConfigEntry = undefined;
-      } else {
-        this._subConfigEntry = (
-          await getSubEntries(this.hass, regEntry.config_entry_id)
-        ).find((entry) => entry.subentry_id === regEntry.config_subentry_id);
-      }
+      configFlow = entityId
+        ? await fetchEntityConfigFlow(this._api, this._entities, entityId)
+        : undefined;
     } catch (_err) {
-      this._configEntry = undefined;
-      this._subConfigEntry = undefined;
+      configFlow = undefined;
+    }
+    if (entityId === this.value) {
+      this._configFlow = configFlow;
     }
   }
 
@@ -143,9 +133,9 @@ export class HaConversationAgentPicker extends LitElement {
 
   private async _updateAgents() {
     const { agents } = await listAgents(
-      this.hass,
+      this._api.callWS,
       this.language,
-      this.hass.config.country || undefined
+      this._config.config.country || undefined
     );
 
     this._agents = agents;
@@ -203,35 +193,10 @@ export class HaConversationAgentPicker extends LitElement {
     }
   }
 
-  private async _openOptionsFlow() {
-    if (!this._configEntry) {
-      return;
+  private _openConfigFlow() {
+    if (this._configFlow) {
+      showEntityConfigFlow(this, this._api, this._configFlow);
     }
-
-    if (
-      this._subConfigEntry &&
-      this._configEntry.supported_subentry_types[
-        this._subConfigEntry.subentry_type
-      ]?.supports_reconfigure
-    ) {
-      showSubConfigFlowDialog(
-        this,
-        this._configEntry,
-        this._subConfigEntry.subentry_type,
-        {
-          startFlowHandler: this._configEntry.entry_id,
-          subEntryId: this._subConfigEntry.subentry_id,
-        }
-      );
-      return;
-    }
-
-    showOptionsFlowDialog(this, this._configEntry, {
-      manifest: await fetchIntegrationManifest(
-        this.hass,
-        this._configEntry.domain
-      ),
-    });
   }
 
   static styles = css`
@@ -250,7 +215,6 @@ export class HaConversationAgentPicker extends LitElement {
   private _changed(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
     if (
-      !this.hass ||
       value === "" ||
       value === this.value ||
       (this.value === undefined && value === NONE)

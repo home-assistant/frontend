@@ -190,7 +190,6 @@ export class DialogAddApplicationCredential extends DirtyStateProviderMixin<Cred
                       ? nothing
                       : html`<ha-generic-picker
                           name="domain"
-                          .hass=${this.hass}
                           .label=${this.hass.localize(
                             "ui.panel.config.application_credentials.editor.domain"
                           )}

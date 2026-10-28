@@ -29,7 +29,7 @@ export class HaConfigSectionEntityIdFormat extends LitElement {
 
   static styles = css`
     .content {
-      padding: var(--ha-space-7) var(--ha-space-5) 0;
+      padding: var(--ha-space-7) var(--ha-space-5) var(--ha-space-6);
       max-width: 1040px;
       margin: 0 auto;
       display: flex;

@@ -17,7 +17,6 @@ import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 
 import { storage } from "../../../../../common/decorators/storage";
-import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-switch";
 
 const qosLevel = ["0", "1", "2"];
@@ -78,16 +77,13 @@ class MqttSubscribeCard extends LitElement {
         <div class="card-content">
           <form>
             <p>
-              <ha-formfield
-                label=${this.hass!.localize(
+              <ha-switch
+                @change=${this._handleJSONFormat}
+                .checked=${this._json_format}
+                >${this.hass!.localize(
                   "ui.panel.config.mqtt.json_formatting"
-                )}
+                )}</ha-switch
               >
-                <ha-switch
-                  @change=${this._handleJSONFormat}
-                  .checked=${this._json_format}
-                ></ha-switch>
-              </ha-formfield>
             </p>
             <div class="panel-dev-mqtt-subscribe-fields">
               <ha-input
@@ -189,12 +185,17 @@ class MqttSubscribeCard extends LitElement {
       this._subscribed();
       this._subscribed = undefined;
     } else {
-      this._subscribed = await subscribeMQTTTopic(
+      const unsubscribe = await subscribeMQTTTopic(
         this.hass!,
         this._topic,
         (message) => this._handleMessage(message),
         parseInt(this._qos)
       );
+      if (!this.isConnected) {
+        unsubscribe();
+        return;
+      }
+      this._subscribed = unsubscribe;
     }
   }
 

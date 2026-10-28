@@ -1,15 +1,24 @@
+import type { ContextType } from "@lit/context";
 import { mdiCheckCircle, mdiDownload, mdiStar } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
+import { transform } from "../../../common/decorators/transform";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import "../../../components/ha-svg-icon";
+import {
+  brandsAccessTokenContext,
+  configContext,
+  internationalizationContext,
+  uiContext,
+} from "../../../data/context";
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
 import type { RepositoryBase } from "../../../data/marketplace/repository";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantConfig, HomeAssistantUI } from "../../../types";
 import { browseUrl, timestamp } from "../dashboards/dashboard-repositories";
 import { renderRepositoryIcon } from "../tools/repository-icon";
 
@@ -60,27 +69,48 @@ const discoverSections = (
 
 @customElement("ha-marketplace-discover")
 export class HaMarketplaceDiscover extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public marketplace!: MarketplaceData;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: ({ themes }) => themes?.darkMode,
+  })
+  private _darkMode?: boolean;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, string>({
+    transformer: ({ auth }) => auth.data.hassUrl,
+  })
+  private _hassUrl!: string;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
 
   private _sections = memoizeOne(discoverSections);
 
   protected render() {
-    const localize = this.hass.localize;
+    const localize = this._i18n.localize;
 
     return html`<div class="content">
       <div class="intro">
-        <h1>${localize("ui.panel.marketplace.discover.title")}</h1>
+        <h2>${localize("ui.panel.marketplace.discover.title")}</h2>
         <p>${localize("ui.panel.marketplace.discover.intro")}</p>
       </div>
       ${this._sections(this.marketplace.repositories).map(
         (section) =>
           html`<section class=${section.name}>
             <div class="section-header">
-              <h2>
+              <h3>
                 ${localize(`ui.panel.marketplace.discover.${section.name}`)}
-              </h2>
+              </h3>
               <a class="see-all" href=${section.seeAll}>
                 ${localize("ui.panel.marketplace.discover.see_all")}
               </a>
@@ -96,15 +126,15 @@ export class HaMarketplaceDiscover extends LitElement {
   }
 
   private _renderRow(repository: RepositoryBase) {
-    const localize = this.hass.localize;
-    const locale = this.hass.locale;
+    const localize = this._i18n.localize;
+    const locale = this._i18n.locale;
     const compact = { notation: "compact" } as const;
 
     return html`<div class="row">
       <div class="icon">
         ${renderRepositoryIcon(repository, {
-          darkMode: this.hass.themes?.darkMode,
-          hassUrl: this.hass.auth.data.hassUrl,
+          darkMode: this._darkMode,
+          hassUrl: this._hassUrl,
         })}
       </div>
       <div class="text">
@@ -160,10 +190,14 @@ export class HaMarketplaceDiscover extends LitElement {
           padding: var(--ha-space-8) var(--ha-space-4);
         }
 
-        h1 {
+        .intro h2 {
           margin: 0;
+          font-family: var(--ha-font-family-heading);
           font-size: var(--ha-font-size-3xl);
           font-weight: var(--ha-font-weight-medium);
+          line-height: var(--ha-line-height-condensed);
+          white-space: normal;
+          overflow: visible;
         }
 
         .intro p {
@@ -178,10 +212,13 @@ export class HaMarketplaceDiscover extends LitElement {
           margin-block-end: var(--ha-space-3);
         }
 
-        h2 {
+        h3 {
           margin: 0;
           font-size: var(--ha-font-size-xl);
           font-weight: var(--ha-font-weight-medium);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .see-all {

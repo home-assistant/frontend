@@ -1051,6 +1051,7 @@ exports[`generatePowerSourcesGraphData > appends current state when showing toda
       },
       "name": "ui.panel.lovelace.cards.energy.power_graph.solar",
       "secondaryIds": [],
+      "value": "-800 W",
     },
     {
       "id": "grid",
@@ -1062,6 +1063,7 @@ exports[`generatePowerSourcesGraphData > appends current state when showing toda
       "secondaryIds": [
         "grid-negative",
       ],
+      "value": "1500 W",
     },
     {
       "id": "battery",
@@ -1073,6 +1075,7 @@ exports[`generatePowerSourcesGraphData > appends current state when showing toda
       "secondaryIds": [
         "battery-negative",
       ],
+      "value": "200 W",
     },
     {
       "id": "usage",
@@ -1080,6 +1083,7 @@ exports[`generatePowerSourcesGraphData > appends current state when showing toda
         "color": "#212121",
       },
       "name": "ui.panel.lovelace.cards.energy.power_graph.usage",
+      "value": "900 W",
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
@@ -2094,6 +2098,7 @@ exports[`generatePowerSourcesGraphData > does not append current state when not 
       },
       "name": "ui.panel.lovelace.cards.energy.power_graph.solar",
       "secondaryIds": [],
+      "value": undefined,
     },
     {
       "id": "grid",
@@ -2105,6 +2110,7 @@ exports[`generatePowerSourcesGraphData > does not append current state when not 
       "secondaryIds": [
         "grid-negative",
       ],
+      "value": "9999 W",
     },
     {
       "id": "battery",
@@ -2116,6 +2122,7 @@ exports[`generatePowerSourcesGraphData > does not append current state when not 
       "secondaryIds": [
         "battery-negative",
       ],
+      "value": undefined,
     },
     {
       "id": "usage",
@@ -2123,6 +2130,7 @@ exports[`generatePowerSourcesGraphData > does not append current state when not 
         "color": "#212121",
       },
       "name": "ui.panel.lovelace.cards.energy.power_graph.usage",
+      "value": "9999 W",
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
@@ -3156,6 +3164,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot for grid + solar + bat
       },
       "name": "ui.panel.lovelace.cards.energy.power_graph.solar",
       "secondaryIds": [],
+      "value": undefined,
     },
     {
       "id": "grid",
@@ -3167,6 +3176,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot for grid + solar + bat
       "secondaryIds": [
         "grid-negative",
       ],
+      "value": undefined,
     },
     {
       "id": "battery",
@@ -3178,6 +3188,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot for grid + solar + bat
       "secondaryIds": [
         "battery-negative",
       ],
+      "value": undefined,
     },
     {
       "id": "usage",
@@ -3185,6 +3196,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot for grid + solar + bat
         "color": "#212121",
       },
       "name": "ui.panel.lovelace.cards.energy.power_graph.usage",
+      "value": undefined,
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
@@ -3677,6 +3689,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot for grid-only (hour) 1
       "secondaryIds": [
         "grid-negative",
       ],
+      "value": undefined,
     },
     {
       "id": "usage",
@@ -3684,6 +3697,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot for grid-only (hour) 1
         "color": "#212121",
       },
       "name": "ui.panel.lovelace.cards.energy.power_graph.usage",
+      "value": undefined,
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
@@ -4352,6 +4366,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot for solar + battery, n
       },
       "name": "ui.panel.lovelace.cards.energy.power_graph.solar",
       "secondaryIds": [],
+      "value": undefined,
     },
     {
       "id": "battery",
@@ -4363,6 +4378,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot for solar + battery, n
       "secondaryIds": [
         "battery-negative",
       ],
+      "value": undefined,
     },
     {
       "id": "usage",
@@ -4370,6 +4386,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot for solar + battery, n
         "color": "#212121",
       },
       "name": "ui.panel.lovelace.cards.energy.power_graph.usage",
+      "value": undefined,
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,
@@ -5394,6 +5411,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot with compare period 1`
       },
       "name": "ui.panel.lovelace.cards.energy.power_graph.solar",
       "secondaryIds": [],
+      "value": undefined,
     },
     {
       "id": "grid",
@@ -5405,6 +5423,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot with compare period 1`
       "secondaryIds": [
         "grid-negative",
       ],
+      "value": undefined,
     },
     {
       "id": "battery",
@@ -5416,6 +5435,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot with compare period 1`
       "secondaryIds": [
         "battery-negative",
       ],
+      "value": undefined,
     },
     {
       "id": "usage",
@@ -5423,6 +5443,7 @@ exports[`generatePowerSourcesGraphData > matches snapshot with compare period 1`
         "color": "#212121",
       },
       "name": "ui.panel.lovelace.cards.energy.power_graph.usage",
+      "value": undefined,
     },
   ],
   "start": 2024-01-01T00:00:00.000Z,

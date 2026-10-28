@@ -9,6 +9,7 @@ import {
   apiContext,
   areasContext,
   authContext,
+  brandsAccessTokenContext,
   conditionDescriptionsContext,
   configContext,
   configEntriesContext,
@@ -26,6 +27,7 @@ import {
   localizeContext,
   manifestsContext,
   panelsContext,
+  reducedMotionContext,
   registriesContext,
   selectedThemeContext,
   servicesContext,
@@ -36,6 +38,7 @@ import {
   userContext,
   userDataContext,
 } from "../data/context";
+import { listenMediaQuery } from "../common/dom/media_query";
 import { updateHassGroups } from "../data/context/updateContext";
 import { subscribeEntityRegistry } from "../data/entity/entity_registry";
 import { fetchIntegrationManifestsCollection } from "../data/integration";
@@ -47,6 +50,7 @@ import type {
   HomeAssistant,
   HomeAssistantInternationalization,
 } from "../types";
+import { subscribeBrandsAccessToken } from "../util/brands-url";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { LazyContextProvider } from "./lazy-context-provider";
 import { RelatedContextProvider } from "./related-context-provider";
@@ -238,6 +242,30 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
 
     private __relatedContextProvider = new RelatedContextProvider(this);
 
+    private __reducedMotionProvider = new ContextProvider(this, {
+      context: reducedMotionContext,
+      initialValue: false,
+    });
+
+    private __unsubReducedMotion?: () => void;
+
+    private __brandsAccessTokenProvider = new ContextProvider(this, {
+      context: brandsAccessTokenContext,
+    });
+
+    private __unsubBrandsAccessToken?: () => void;
+
+    public connectedCallback() {
+      super.connectedCallback();
+      this.__unsubReducedMotion = listenMediaQuery(
+        "(prefers-reduced-motion: reduce)",
+        (matches) => this.__reducedMotionProvider.setValue(matches)
+      );
+      this.__unsubBrandsAccessToken = subscribeBrandsAccessToken((token) =>
+        this.__brandsAccessTokenProvider.setValue(token)
+      );
+    }
+
     protected hassConnected() {
       super.hassConnected();
       for (const [key, value] of Object.entries(this.hass!)) {
@@ -290,6 +318,10 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
 
     public disconnectedCallback() {
       super.disconnectedCallback();
+      this.__unsubReducedMotion?.();
+      this.__unsubReducedMotion = undefined;
+      this.__unsubBrandsAccessToken?.();
+      this.__unsubBrandsAccessToken = undefined;
       for (const provider of Object.values(this.__lazyContextProviders)) {
         provider.unsubscribe();
       }

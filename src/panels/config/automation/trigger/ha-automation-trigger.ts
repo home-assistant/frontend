@@ -12,15 +12,11 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import {
-  getValueFromDynamic,
-  isDynamic,
-  type Trigger,
-  type TriggerList,
-} from "../../../../data/automation";
+import type { Trigger } from "../../../../data/automation";
 import { triggerDescriptionsContext } from "../../../../data/context";
 import type { TriggerDescriptions } from "../../../../data/trigger";
 import { isTriggerList } from "../../../../data/trigger";
+import { createTrigger } from "../automation-element-config";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   getAddAutomationElementTargetFromQuery,
@@ -95,6 +91,7 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
                 @duplicate=${this.duplicateItem}
                 @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
+                @replace-item=${this.replaceItem}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}
                 @value-changed=${this.itemChanged}
@@ -166,30 +163,12 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
   }
 
   private _addTrigger = (value: string, target?: HassServiceTarget) => {
-    let triggers: Trigger[];
-    if (value === PASTE_VALUE) {
-      triggers = this.triggers.concat(
-        stripGeneratedTriggerIds(deepClone(this._clipboard!.trigger!))
-      );
-    } else if (isDynamic(value)) {
-      triggers = this.triggers.concat({
-        trigger: getValueFromDynamic(value),
-        target,
-      });
-    } else {
-      const trigger = value as Exclude<Trigger, TriggerList>["trigger"];
-      const elClass = customElements.get(
-        `ha-automation-trigger-${trigger}`
-      ) as CustomElementConstructor & {
-        defaultConfig: Trigger;
-      };
-      triggers = this.triggers.concat({
-        ...elClass.defaultConfig,
-        ...(target?.entity_id ? { entity_id: target.entity_id } : {}),
-      });
-    }
+    const trigger =
+      value === PASTE_VALUE
+        ? stripGeneratedTriggerIds(deepClone(this._clipboard!.trigger!))
+        : createTrigger(value, target);
     this.focusLastItemOnChange = true;
-    fireEvent(this, "value-changed", { value: triggers });
+    fireEvent(this, "value-changed", { value: this.triggers.concat(trigger) });
   };
 
   protected updated(changedProps: PropertyValues<this>) {
@@ -237,12 +216,6 @@ export default class HaAutomationTrigger extends AutomationSortableListMixin<Tri
       row.updateComplete.then(() => {
         if (this.optionsInSidebar) {
           row.openSidebar();
-          if (this.narrow) {
-            row.scrollIntoView({
-              block: "start",
-              behavior: "smooth",
-            });
-          }
         } else {
           row.expand();
           row.focus();

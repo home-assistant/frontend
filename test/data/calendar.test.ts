@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { getCalendarColors } from "../../src/data/calendar";
+import {
+  getCalendarColors,
+  normalizeSubscriptionEventData,
+} from "../../src/data/calendar";
 
 const style = {
   getPropertyValue: (prop: string) => (prop === "--color-1" ? "#4269d0" : ""),
@@ -54,5 +57,15 @@ describe("getCalendarColors", () => {
     expect(
       getCalendarColors("rgba(255, 255, 255, 0.1)", 0, style).textColor
     ).toBeUndefined();
+  });
+});
+
+describe("normalizeSubscriptionEventData", () => {
+  it("leaves the event text color empty when the calendar has none", () => {
+    const event = normalizeSubscriptionEventData(
+      { summary: "Event", start: "2026-10-15", end: "2026-10-16" },
+      { entity_id: "calendar.home", backgroundColor: "rgba(0, 0, 0, 0.1)" }
+    );
+    expect(event?.contrastColor).toBe("");
   });
 });

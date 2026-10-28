@@ -108,6 +108,10 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: "header-title" })
   public headerTitle?: string;
 
+  /** Accessible name for dialogs that put their title in a slot. */
+  @property({ attribute: false })
+  public accessibleLabel?: string;
+
   @property({ attribute: "header-subtitle" })
   public headerSubtitle?: string;
 
@@ -157,15 +161,16 @@ export class HaDialog extends ScrollableFadeMixin(LitElement) {
   }
 
   protected render() {
+    // The title lives in a shadow root that an aria-labelledby IDREF on
+    // wa-dialog's inner <dialog> can't reach. Name the dialog with the title
+    // text instead, which wa-dialog uses as aria-label without its own header.
     return html`
       <wa-dialog
         .open=${this._open}
         .lightDismiss=${!this.preventScrimClose}
         without-header
-        aria-labelledby=${ifDefined(
-          this.ariaLabelledBy ||
-            (this.headerTitle !== undefined ? "ha-dialog-title" : undefined)
-        )}
+        .label=${this.accessibleLabel ?? this.headerTitle ?? ""}
+        aria-labelledby=${ifDefined(this.ariaLabelledBy)}
         aria-describedby=${ifDefined(this.ariaDescribedBy)}
         @keydown=${this._handleKeyDown}
         @wa-hide=${this._handleHide}

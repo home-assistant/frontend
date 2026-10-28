@@ -17,8 +17,8 @@ export class HaAssistChip extends HaChipBase {
       css`
         :host {
           --ha-chip-label-color: var(
-            --md-assist-chip-label-text-color,
-            var(--md-sys-color-on-surface, var(--primary-text-color))
+            --ha-assist-chip-label-text-color,
+            var(--primary-text-color)
           );
           --ha-button-border-radius: var(
             --ha-assist-chip-container-shape,
@@ -33,11 +33,11 @@ export class HaAssistChip extends HaChipBase {
             1
           );
           --ha-chip-outline-color: var(
-            --md-assist-chip-outline-color,
+            --ha-assist-chip-outline-color,
             var(--outline-color)
           );
           --ha-chip-icon-label-space: var(
-            --md-assist-chip-icon-label-space,
+            --ha-assist-chip-icon-label-space,
             var(--ha-space-2)
           );
         }
@@ -58,11 +58,11 @@ export class HaAssistChip extends HaChipBase {
         }
         .primary {
           padding-inline-start: var(
-            --md-assist-chip-leading-space,
+            --ha-assist-chip-leading-space,
             var(--ha-space-4)
           );
           padding-inline-end: var(
-            --md-assist-chip-trailing-space,
+            --ha-assist-chip-trailing-space,
             var(--ha-space-4)
           );
         }

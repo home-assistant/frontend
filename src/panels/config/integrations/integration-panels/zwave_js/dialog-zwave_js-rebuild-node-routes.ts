@@ -75,11 +75,7 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                         "ui.panel.config.zwave_js.rebuild_node_routes.introduction",
                         {
                           device: html`<em>
-                            ${computeDeviceNameDisplay(
-                              this.device,
-                              this.hass!.localize,
-                              this.hass!.states
-                            )}
+                            ${computeDeviceNameDisplay(this.device, this.hass!.localize)}
                           </em>`,
                         }
                       )}
@@ -107,11 +103,7 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                         "ui.panel.config.zwave_js.rebuild_node_routes.in_progress",
                         {
                           device: html`<em>
-                            ${computeDeviceNameDisplay(
-                              this.device,
-                              this.hass!.localize,
-                              this.hass!.states
-                            )}
+                            ${computeDeviceNameDisplay(this.device, this.hass!.localize)}
                           </em>`,
                         }
                       )}
@@ -135,11 +127,7 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                         "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_failed",
                         {
                           device: html`<em
-                            >${computeDeviceNameDisplay(
-                              this.device,
-                              this.hass!.localize,
-                              this.hass!.states
-                            )}</em
+                            >${computeDeviceNameDisplay(this.device, this.hass!.localize)}</em
                           >`,
                         }
                       )}
@@ -174,11 +162,7 @@ class DialogZWaveJSRebuildNodeRoutes extends LitElement {
                         "ui.panel.config.zwave_js.rebuild_node_routes.rebuilding_routes_complete",
                         {
                           device: html`<em>
-                            ${computeDeviceNameDisplay(
-                              this.device,
-                              this.hass!.localize,
-                              this.hass!.states
-                            )}
+                            ${computeDeviceNameDisplay(this.device, this.hass!.localize)}
                           </em>`,
                         }
                       )}

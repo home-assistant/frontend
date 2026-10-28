@@ -1,4 +1,5 @@
 import type { BarSeriesOption } from "echarts/charts";
+import type { HassEntities } from "home-assistant-js-websocket";
 import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import { fillDataGapsAndRoundCaps } from "../../../../components/chart/round-caps";
 import type {
@@ -17,7 +18,9 @@ import {
 } from "./common/energy-chart-options";
 
 export interface EnergyGasGraphDataParams {
-  hass: HomeAssistant;
+  states: HassEntities;
+  formatEntityName: HomeAssistant["formatEntityName"];
+  darkMode: boolean;
   energyData: EnergyData;
   computedStyles: CSSStyleDeclaration;
   /** Current time, injected so the transform is deterministic. */
@@ -38,13 +41,14 @@ export interface EnergyGasGraphData {
 /**
  * Transforms an energy collection update (`EnergyData` + config + environment)
  * into the gas graph card's chart series and derived state. Pure data
- * processing: every environment read (current time, theme style, hass) is
- * injected so the transform is deterministic and benchmarkable.
+ * processing: every environment read (current time, theme style, entity
+ * states and names) is injected so the transform is deterministic and
+ * benchmarkable.
  */
 export function generateEnergyGasGraphData(
   params: EnergyGasGraphDataParams
 ): EnergyGasGraphData {
-  const { hass, energyData, computedStyles, now } = params;
+  const { energyData, computedStyles, now } = params;
 
   const start = energyData.start;
   const end = energyData.end || now;
@@ -78,7 +82,7 @@ export function generateEnergyGasGraphData(
   if (energyData.statsCompare) {
     datasets.push(
       ...processDataSet(
-        hass,
+        params,
         compareTransform,
         period,
         energyData.statsCompare,
@@ -103,7 +107,7 @@ export function generateEnergyGasGraphData(
 
   datasets.push(
     ...processDataSet(
-      hass,
+      params,
       compareTransform,
       period,
       energyData.stats,
@@ -153,7 +157,7 @@ function processTotal(
 }
 
 function processDataSet(
-  hass: HomeAssistant,
+  { states, formatEntityName, darkMode }: EnergyGasGraphDataParams,
   compareTransform: (ts: Date) => Date,
   period: ReturnType<typeof getSuggestedPeriod>,
   statistics: Statistics,
@@ -218,12 +222,17 @@ function processDataSet(
       id: compare ? "compare-" + statId : statId,
       name:
         source.name ||
-        getStatisticLabel(hass, statId, statisticsMetaData[statId]),
+        getStatisticLabel(
+          states,
+          formatEntityName,
+          statId,
+          statisticsMetaData[statId]
+        ),
       barMaxWidth: 50,
       itemStyle: {
         borderColor: getEnergyColor(
           computedStyles,
-          hass.themes.darkMode,
+          darkMode,
           false,
           compare,
           "--energy-gas-color",
@@ -232,7 +241,7 @@ function processDataSet(
       },
       color: getEnergyColor(
         computedStyles,
-        hass.themes.darkMode,
+        darkMode,
         true,
         compare,
         "--energy-gas-color",

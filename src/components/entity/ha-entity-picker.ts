@@ -77,6 +77,9 @@ export class HaEntityPicker extends LitElement {
 
   @property() public label?: string;
 
+  @property({ attribute: "aria-label" })
+  public ariaLabel: string | null = null;
+
   @property() public value?: string;
 
   @property() public helper?: string;
@@ -250,7 +253,10 @@ export class HaEntityPicker extends LitElement {
 
     const { primary, secondary } = computeEntityPickerDisplay(
       {
-        ...this._registries,
+        entities: this._registries.entities,
+        devices: this._registries.devices,
+        areas: this._registries.areas,
+        floors: this._registries.floors,
         language: this._i18n.language,
         translationMetadata: this._i18n.translationMetadata,
       },
@@ -449,6 +455,7 @@ export class HaEntityPicker extends LitElement {
         .allowCustomValue=${this.allowCustomEntity}
         .required=${this.required}
         .label=${this.label}
+        .ariaLabel=${this.ariaLabel}
         .placeholder=${placeholder}
         .helper=${this.helper}
         .value=${this.addButton ? undefined : this.value}

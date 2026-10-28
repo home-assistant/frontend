@@ -1,9 +1,13 @@
+import type { ContextType } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, nothing, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { configContext, connectionContext } from "../../data/context";
 import { documentationUrl } from "../../util/documentation-url";
 import "../ha-code-editor";
 import "../ha-input-helper-text";
@@ -17,7 +21,14 @@ const WARNING_STRINGS = ["template:", "sensor:", "state:", "trigger: template"];
 
 @customElement("ha-selector-template")
 export class HaTemplateSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @property({ attribute: false }) public selector!: TemplateSelector;
 
@@ -79,7 +90,7 @@ export class HaTemplateSelector extends LitElement {
       ${
         this.warn
           ? html`<ha-alert alert-type="warning"
-              >${this.hass.localize(
+              >${this._localize(
                 "ui.components.selectors.template.yaml_warning",
                 { string: this.warn }
               )}
@@ -88,10 +99,10 @@ export class HaTemplateSelector extends LitElement {
                 target="_blank"
                 rel="noopener noreferrer"
                 href=${documentationUrl(
-                  this.hass,
+                  this._config,
                   "/docs/configuration/templating/"
                 )}
-                >${this.hass.localize(
+                >${this._localize(
                   "ui.components.selectors.template.learn_more"
                 )}</a
               ></ha-alert
@@ -154,7 +165,7 @@ ${
 
     try {
       this._unsubRenderTemplate = subscribeRenderTemplate(
-        this.hass.connection,
+        this._connection.connection,
         (result) => {
           if ("error" in result) {
             // We show the latest error, or a warning if there are no errors

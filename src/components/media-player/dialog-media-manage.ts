@@ -123,7 +123,6 @@ class DialogMediaManage extends LitElement {
           ${
             this._selected.size === 0
               ? html`<ha-media-upload-button
-                  .hass=${this.hass}
                   .currentItem=${this._params.currentItem}
                   @uploading=${this._startUploading}
                   @media-refresh=${this._doneUploading}

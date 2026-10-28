@@ -1,4 +1,3 @@
-import { startOfYesterday } from "date-fns";
 import {
   mdiDelete,
   mdiDevices,
@@ -12,22 +11,22 @@ import {
   mdiShape,
   mdiTools,
 } from "@mdi/js";
+import { startOfYesterday } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
-import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { consume } from "../../../common/decorators/consume";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { goBack, navigate } from "../../../common/navigate";
-import { createSearchParam } from "../../../common/url/search-params";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
+import { createSearchParam } from "../../../common/url/search-params";
 import { groupBy } from "../../../common/util/group-by";
 import { afterNextRender } from "../../../common/util/render-status";
 import { createColumnsController } from "../../../common/util/responsive-columns";
@@ -37,9 +36,10 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-button-next";
+import "../../../components/ha-icon-next";
 import "../../../components/ha-list";
+import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
@@ -67,8 +67,8 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { isHelperDomain } from "../helpers/const";
 import "../../logbook/ha-logbook";
+import { isHelperDomain } from "../helpers/const";
 import {
   loadAreaAddToDialog,
   showAreaAddToDialog,
@@ -89,12 +89,14 @@ type AreaQuickLinkKey =
 const NAVIGATION_ACTIONS: {
   value: string;
   path: string;
+  params?: string;
   icon: string;
   countKey: AreaQuickLinkKey;
 }[] = [
   {
     value: "navigate-devices",
     path: "/config/devices/dashboard",
+    params: "&status=disabled",
     icon: mdiDevices,
     countKey: "devices",
   },
@@ -273,11 +275,7 @@ class HaConfigAreaPage extends LitElement {
     // them without mutating the shared registry objects.
     const devices = memberships.devices.map((entry) => ({
       ...entry,
-      name: computeDeviceNameDisplay(
-        entry,
-        this.hass.localize,
-        this.hass.states
-      ),
+      name: computeDeviceNameDisplay(entry, this.hass.localize),
     }));
     sortDeviceRegistryByName(devices, this.hass.locale.language);
 
@@ -660,7 +658,9 @@ class HaConfigAreaPage extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          ${NAVIGATION_ACTIONS.map(
+          ${NAVIGATION_ACTIONS.filter(
+            (action) => quickLinkCounts[action.countKey]
+          ).map(
             (action) => html`
               <ha-dropdown-item value=${action.value}>
                 <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
@@ -672,8 +672,13 @@ class HaConfigAreaPage extends LitElement {
               </ha-dropdown-item>
             `
           )}
-
-          <wa-divider></wa-divider>
+          ${
+            NAVIGATION_ACTIONS.some(
+              (action) => quickLinkCounts[action.countKey]
+            )
+              ? html`<wa-divider></wa-divider>`
+              : nothing
+          }
 
           <ha-dropdown-item value="edit" .data=${area}>
             <ha-svg-icon slot="icon" .path=${mdiPencil}> </ha-svg-icon>
@@ -712,7 +717,7 @@ class HaConfigAreaPage extends LitElement {
         ] as unknown as EntityType;
         if (entityState) {
           groupedEntities.push({
-            name: computeStateName(entityState),
+            name: this.hass.formatEntityName(entityState),
             entity: entityState,
           });
         }
@@ -730,7 +735,7 @@ class HaConfigAreaPage extends LitElement {
         const entityState = this.hass.states[entity] as EntityType;
         if (entityState) {
           relatedEntities.push({
-            name: entityState ? computeStateName(entityState) : "",
+            name: this.hass.formatEntityName(entityState),
             entity: entityState,
           });
         }
@@ -849,7 +854,9 @@ class HaConfigAreaPage extends LitElement {
 
     const navAction = NAVIGATION_ACTIONS.find((a) => a.value === action);
     if (navAction) {
-      navigate(`${navAction.path}?historyBack=1&area=${this.areaId}`);
+      navigate(
+        `${navAction.path}?historyBack=1&area=${this.areaId}${navAction.params ?? ""}`
+      );
       return;
     }
 
@@ -883,7 +890,7 @@ class HaConfigAreaPage extends LitElement {
     showAreaRegistryDetailDialog(this, {
       entry,
       updateEntry: async (values) =>
-        updateAreaRegistryEntry(this.hass!, entry!.area_id, values),
+        updateAreaRegistryEntry(this.hass!.callWS, entry!.area_id, values),
     });
   }
 
