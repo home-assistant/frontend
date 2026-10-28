@@ -81,8 +81,8 @@ export const updateImage = (
     ...updates,
   });
 
-export const deleteImage = (hass: HomeAssistant, id: string) =>
-  hass.callWS({
+export const deleteImage = (callWS: HomeAssistant["callWS"], id: string) =>
+  callWS({
     type: "image/delete",
     image_id: id,
   });

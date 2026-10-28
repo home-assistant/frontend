@@ -7,10 +7,12 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import type {
   MediaPickedEvent,
   MediaPlayerBrowseAction,
@@ -18,7 +20,6 @@ import type {
   MediaPlayerLayoutType,
 } from "../../data/media-player";
 import { haStyleDialog, haStyleDialogFixedTop } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 import "../ha-dialog-header";
 import "../ha-dropdown";
 import type { HaDropdownSelectEvent } from "../ha-dropdown";
@@ -35,7 +36,7 @@ import type { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog"
 
 @customElement("dialog-media-player-browse")
 class DialogMediaPlayerBrowse extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
 
   @state() private _currentItem?: MediaPlayerItem;
 
@@ -97,7 +98,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           <span slot="title">
             ${
               !this._currentItem
-                ? this.hass.localize(
+                ? this._localize(
                     "ui.components.media-browser.media-player-browser"
                   )
                 : this._currentItem.title
@@ -115,7 +116,7 @@ class DialogMediaPlayerBrowse extends LitElement {
           >
             <ha-icon-button
               slot="trigger"
-              .label=${this.hass.localize("ui.common.menu")}
+              .label=${this._localize("ui.common.menu")}
               .path=${mdiDotsVertical}
             ></ha-icon-button>
             <ha-dropdown-item value="auto">
@@ -126,7 +127,7 @@ class DialogMediaPlayerBrowse extends LitElement {
                 slot="icon"
                 .path=${mdiAlphaABoxOutline}
               ></ha-svg-icon>
-              ${this.hass.localize("ui.components.media-browser.auto")}
+              ${this._localize("ui.components.media-browser.auto")}
             </ha-dropdown-item>
             <ha-dropdown-item value="grid">
               <ha-svg-icon
@@ -136,7 +137,7 @@ class DialogMediaPlayerBrowse extends LitElement {
                 slot="icon"
                 .path=${mdiGrid}
               ></ha-svg-icon>
-              ${this.hass.localize("ui.components.media-browser.grid")}
+              ${this._localize("ui.components.media-browser.grid")}
             </ha-dropdown-item>
             <ha-dropdown-item value="list">
               <ha-svg-icon
@@ -146,11 +147,11 @@ class DialogMediaPlayerBrowse extends LitElement {
                 }
                 .path=${mdiListBoxOutline}
               ></ha-svg-icon>
-              ${this.hass.localize("ui.components.media-browser.list")}
+              ${this._localize("ui.components.media-browser.list")}
             </ha-dropdown-item>
           </ha-dropdown>
           <ha-icon-button
-            .label=${this.hass.localize("ui.common.close")}
+            .label=${this._localize("ui.common.close")}
             .path=${mdiClose}
             data-dialog="close"
             slot="actionItems"
@@ -158,7 +159,6 @@ class DialogMediaPlayerBrowse extends LitElement {
         </ha-dialog-header>
         <ha-media-player-browse
           dialog
-          .hass=${this.hass}
           .entityId=${this._params.entityId}
           .navigateIds=${this._navigateIds}
           .action=${this._action}
