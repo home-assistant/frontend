@@ -820,6 +820,8 @@ export class DialogEnergyGridSettings
   ): Promise<string[] | undefined> {
     return confirmIntegrals(this, this.hass, {
       deviceClass: "energy",
+      states: this.hass.states,
+      entities: this.hass.entities,
       requests: pending.map(({ energy, rate, units }) => ({
         rate,
         units,
