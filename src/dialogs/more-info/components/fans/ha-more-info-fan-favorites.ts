@@ -148,6 +148,15 @@ export class HaMoreInfoFanFavorites extends LitElement {
       );
     }
 
+    // Checked against the local list: the entry lags behind pending saves.
+    // Another client may have removed the selected favorite.
+    if (
+      this.selectedIndex !== undefined &&
+      this.selectedIndex >= this._favorites.length
+    ) {
+      this._select(undefined);
+    }
+
     if (changedProps.has("editMode")) {
       const wasEditing = Boolean(changedProps.get("editMode"));
       if (this.editMode && !wasEditing) {
