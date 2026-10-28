@@ -31,7 +31,10 @@ const DEVICE_TYPE_TRANSLATION_KEYS = {
 export const computeZHADeviceType = (
   device: ZHADevice,
   localize: LocalizeFunc
-): string => localize(DEVICE_TYPE_TRANSLATION_KEYS[device.device_type]);
+): string => {
+  const key = DEVICE_TYPE_TRANSLATION_KEYS[device.device_type];
+  return key ? localize(key) : device.device_type;
+};
 
 export const sortZHADevices = (a: ZHADevice, b: ZHADevice): number => {
   const nameA = a.user_given_name ? a.user_given_name : a.name;
