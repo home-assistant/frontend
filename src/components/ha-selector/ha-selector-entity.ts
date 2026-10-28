@@ -1,19 +1,18 @@
 import type { ContextType } from "@lit/context";
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { Connection, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
-import {
-  consume,
-  ContextSubscriptionController,
-} from "../../common/decorators/consume";
+import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { ConfigEntry } from "../../data/config_entries";
+import { getConfigEntries } from "../../data/config_entries";
 import {
   apiContext,
-  configEntriesContext,
+  connectionContext,
   devicesContext,
   entitiesContext,
   statesContext,
@@ -26,7 +25,7 @@ import {
   computeCreateDomains,
   filterSelectorEntities,
 } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantConnection } from "../../types";
 import "../entity/ha-entities-picker";
 import "../entity/ha-entity-picker";
 
@@ -55,6 +54,13 @@ export class HaEntitySelector extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection?: Connection;
+
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
@@ -63,8 +69,6 @@ export class HaEntitySelector extends LitElement {
 
   @consume({ context: devicesContext, subscribe: true })
   private _devices!: ContextType<typeof devicesContext>;
-
-  private _configEntriesConsumer?: ContextSubscriptionController<ConfigEntry[]>;
 
   private _deviceIntegrationLookup = memoizeOne(
     (
@@ -91,6 +95,8 @@ export class HaEntitySelector extends LitElement {
       configEntries: filters.some((f) => f.device?.integration),
     };
   });
+
+  private _fetchedConfigEntries = false;
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.get("selector") && this.value !== undefined) {
@@ -146,8 +152,17 @@ export class HaEntitySelector extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues<this>): void {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+
+    // The connection changed (e.g. reconnect); refetch.
+    const oldConnection = changedProps.get("_connection") as
+      Connection | undefined;
+    if (oldConnection && oldConnection !== this._connection) {
+      this._entitySources = undefined;
+      this._fetchedConfigEntries = false;
+      this._configEntries = undefined;
+    }
 
     const needs = this._dataNeeds(this.selector);
 
@@ -161,14 +176,19 @@ export class HaEntitySelector extends LitElement {
         });
     }
 
-    if (needs.configEntries && !this._configEntriesConsumer) {
-      this._configEntriesConsumer = new ContextSubscriptionController(
-        this,
-        configEntriesContext,
-        (entries) => {
+    if (needs.configEntries && !this._fetchedConfigEntries) {
+      this._fetchedConfigEntries = true;
+      getConfigEntries(this._api)
+        .then((entries) => {
           this._configEntries = entries;
-        }
-      );
+        })
+        .catch(() => {
+          // Fall back to no entries so the picker still renders. We keep
+          // `_fetchedConfigEntries` set so the failed fetch is not retried on
+          // every re-render; the connection-change handler above retries on
+          // reconnect.
+          this._configEntries = [];
+        });
     }
 
     if (changedProps.has("selector")) {
