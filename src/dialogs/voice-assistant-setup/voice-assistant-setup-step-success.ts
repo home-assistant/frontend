@@ -335,7 +335,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       return;
     }
 
-    const cloudStatus = await fetchCloudStatus(this.hass);
+    const cloudStatus = await fetchCloudStatus(this.hass.callWS);
 
     showVoiceAssistantPipelineDetailDialog(this, {
       cloudActiveSubscription:
