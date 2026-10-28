@@ -244,6 +244,7 @@ export class HuiSectionEditMode extends LitElement {
         this.hass,
         true
       );
+      if (!this.isConnected || this._getSection() !== section) return;
       await this.lovelace!.saveConfig(
         setAtPath(this.lovelace!.config, this.path, manualSection)
       );
