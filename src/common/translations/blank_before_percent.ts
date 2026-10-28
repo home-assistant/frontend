@@ -11,7 +11,7 @@ export const blankBeforePercent = (
     case "fr":
     case "sk":
     case "sv":
-      return " ";
+      return "\u00A0";
     default:
       return "";
   }
