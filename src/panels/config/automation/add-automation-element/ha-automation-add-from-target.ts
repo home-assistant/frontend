@@ -27,6 +27,7 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 import { computeEntityNameParts } from "../../../../common/entity/compute_entity_name_display";
 import { getDeviceAreaId } from "../../../../common/entity/context/get_device_context";
 import { stringCompare } from "../../../../common/string/compare";
+import "../../../../components/entity/state-badge";
 import "../../../../components/ha-button";
 import "../../../../components/ha-floor-icon";
 import "../../../../components/ha-icon";
@@ -1067,10 +1068,16 @@ export default class HaAutomationAddFromTarget extends LitElement {
 
   private _renderEntityIcon =
     (stateObj: HassEntity) => (slot: string | undefined) =>
-      html`<ha-state-icon
-        slot=${ifDefined(slot)}
-        .stateObj=${stateObj}
-      ></ha-state-icon>`;
+      stateObj.attributes.entity_picture ||
+      stateObj.attributes.entity_picture_local
+        ? html`<state-badge
+            slot=${ifDefined(slot)}
+            .stateObj=${stateObj}
+          ></state-badge>`
+        : html`<ha-state-icon
+            slot=${ifDefined(slot)}
+            .stateObj=${stateObj}
+          ></ha-state-icon>`;
 
   private _renderItem(
     label: string,
@@ -1895,6 +1902,8 @@ export default class HaAutomationAddFromTarget extends LitElement {
     state-badge {
       width: 24px;
       height: 24px;
+      flex-shrink: 0;
+      margin: var(--ha-space-1);
     }
 
     wa-tree-item[selected]::part(item):hover {
