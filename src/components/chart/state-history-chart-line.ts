@@ -1,3 +1,4 @@
+import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -5,10 +6,23 @@ import type { VisualMapComponentOption } from "echarts/components";
 import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
 import { computeRTL } from "../../common/util/compute_rtl";
-
+import {
+  configContext,
+  entitiesContext,
+  formattersContext,
+  internationalizationContext,
+  statesContext,
+} from "../../data/context";
 import type { LineChartEntity } from "../../data/history";
-import type { HomeAssistant } from "../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../../types";
 import { MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
@@ -50,8 +64,6 @@ const ENTITY_DATASET_SUFFIXES = [
 
 @customElement("state-history-chart-line")
 export class StateHistoryChartLine extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public data: LineChartEntity[] = [];
 
   @property({ attribute: false }) public names?: Record<string, string>;
@@ -114,6 +126,28 @@ export class StateHistoryChartLine extends LitElement {
 
   private _yAxisFractionDigits = 1;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: HomeAssistant["entities"];
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: HassEntities;
+
+  private _optionsEntityStates: Record<string, string | undefined> = {};
+
   protected render() {
     return html`
       <ha-chart-base
@@ -136,8 +170,8 @@ export class StateHistoryChartLine extends LitElement {
     const time = params[0].axisValue;
     const title = formatDateTimeWithSeconds(
       new Date(time),
-      this.hass.locale,
-      this.hass.config
+      this._i18n.locale,
+      this._hassConfig
     );
     const datapoints: Record<string, any>[] = [];
     // Index the hovered points by series so the per-dataset lookup below is
@@ -181,15 +215,15 @@ export class StateHistoryChartLine extends LitElement {
 
     return html`${title}${datapoints.map((param) => {
       const entityId = this._entityIds[param.seriesIndex];
-      const stateObj = this.hass.states[entityId];
-      const entry = this.hass.entities[entityId];
+      const stateObj = this._states?.[entityId];
+      const entry = this._entities?.[entityId];
       const stateValue = String(param.value[1]);
       const value = stateObj
-        ? this.hass.formatEntityState(stateObj, stateValue)
+        ? this._formatters.formatEntityState(stateObj, stateValue)
         : formatNumberWithUnit(
             stateValue,
             this.unit,
-            this.hass.locale,
+            this._i18n.locale,
             getNumberFormatOptions(undefined, entry)
           );
       const dataIndex = this._datasetToDataIndex[param.seriesIndex];
@@ -199,8 +233,10 @@ export class StateHistoryChartLine extends LitElement {
         const source =
           data.states.length === 0 ||
           param.value[0] < data.states[0].last_changed
-            ? this.hass.localize("ui.components.history_charts.source_stats")
-            : this.hass.localize("ui.components.history_charts.source_history");
+            ? this._i18n.localize("ui.components.history_charts.source_stats")
+            : this._i18n.localize(
+                "ui.components.history_charts.source_history"
+              );
         // Five non-breaking spaces indent the source label.
         statSuffix = html`<br />${"\u00a0".repeat(5)}${source}`;
       }
@@ -241,7 +277,7 @@ export class StateHistoryChartLine extends LitElement {
   ) {
     const id = ev.detail.id;
     let entityId = id;
-    if (!this.hass.states[entityId]) {
+    if (!this._states?.[entityId]) {
       for (const suffix of ENTITY_DATASET_SUFFIXES) {
         if (id.endsWith(suffix)) {
           entityId = id.slice(0, -suffix.length);
@@ -249,7 +285,7 @@ export class StateHistoryChartLine extends LitElement {
         }
       }
     }
-    if (this.hass.states[entityId]) {
+    if (this._states?.[entityId]) {
       fireEvent(this, "hass-more-info", { entityId });
     }
   }
@@ -280,12 +316,19 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("paddingYAxis") ||
       changedProps.has("_visualMap") ||
       changedProps.has("_yWidth") ||
-      (changedProps.has("hass") &&
-        this._hasEntityStatesChanged(changedProps.get("hass")))
+      changedProps.has("_i18n") ||
+      changedProps.has("_hassConfig") ||
+      this._hasEntityStatesChanged()
     ) {
+      this._optionsEntityStates = Object.fromEntries(
+        this._entityIds.map((entityId) => [
+          entityId,
+          this._states?.[entityId]?.state,
+        ])
+      );
       const rtl = computeRTL(
-        this.hass.language,
-        this.hass.translationMetadata.translations
+        this._i18n.language,
+        this._i18n.translationMetadata.translations
       );
       let minYAxis: number | ((values: { min: number }) => number) | undefined =
         this.minYAxis;
@@ -356,7 +399,7 @@ export class StateHistoryChartLine extends LitElement {
             .map((d, i) => ({ dataset: d, entityId: this._entityIds[i] }))
             .filter((item) => !(item.dataset as LineSeriesOption).areaStyle)
             .map((item) => {
-              const stateObj = this.hass.states[item.entityId];
+              const stateObj = this._states?.[item.entityId];
               let value: string | undefined;
 
               if (stateObj) {
@@ -382,18 +425,18 @@ export class StateHistoryChartLine extends LitElement {
                   }
                   // Use the helper to format temperature with proper unit
                   value = computeAttributeValueDisplay(
-                    this.hass.localize,
+                    this._i18n.localize,
                     stateObj,
-                    this.hass.locale,
-                    this.hass.config,
-                    this.hass.entities,
+                    this._i18n.locale,
+                    this._hassConfig,
+                    this._entities,
                     attribute
                   );
                 }
 
                 // Default for non-temperature datasets / missing attribute
                 if (value === undefined) {
-                  value = this.hass.formatEntityState(stateObj);
+                  value = this._formatters.formatEntityState(stateObj);
                 }
               }
 
@@ -422,10 +465,10 @@ export class StateHistoryChartLine extends LitElement {
     }
   }
 
-  private _hasEntityStatesChanged(oldHass: HomeAssistant): boolean {
+  private _hasEntityStatesChanged(): boolean {
     return this._entityIds.some(
       (entityId) =>
-        this.hass.states[entityId]?.state !== oldHass.states[entityId]?.state
+        this._states?.[entityId]?.state !== this._optionsEntityStates[entityId]
     );
   }
 
@@ -437,7 +480,8 @@ export class StateHistoryChartLine extends LitElement {
     this._chartTime = new Date();
 
     const data = generateStateHistoryChartLineData({
-      hass: this.hass,
+      localize: this._i18n.localize,
+      states: this._states ?? {},
       data: this.data,
       endTime: this.endTime,
       names: this.names,
@@ -459,7 +503,7 @@ export class StateHistoryChartLine extends LitElement {
   }
 
   private _formatYAxisLabel = (value: number) => {
-    const label = formatNumber(value, this.hass.locale, {
+    const label = formatNumber(value, this._i18n.locale, {
       minimumFractionDigits: value === 0 ? 0 : this._yAxisFractionDigits,
       maximumFractionDigits: this._yAxisFractionDigits,
     });
