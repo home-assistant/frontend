@@ -8402,18 +8402,19 @@
             }
           },
           "add_device_page": {
-            "spinner": "Searching for Zigbee devices…",
+            "spinner": "Waiting for Zigbee devices to join…",
             "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device or {documentation_link} on how to do this.",
             "pairing_mode_link": "the documentation",
-            "discovered_text": "Devices will show up here once discovered.",
-            "no_devices_found": "No devices were found, make sure they are in pairing mode and keep them awake while Home Assistant is searching.",
-            "search_again": "Search again"
+            "discovered_text": "Devices will show up here once they join.",
+            "no_devices_found": "No devices joined. Make sure they are in pairing mode and keep them awake while the network is open for joining.",
+            "search_again": "Try again"
           },
           "device_page": {
             "heading": "Manage Zigbee device",
             "information": "Device information",
             "ieee": "IEEE",
             "nwk": "NWK",
+            "src_id": "Source ID",
             "bindings_error": "Failed to load binding options",
             "no_bindings": "No bindable devices or groups were found",
             "not_found": "Zigbee device not found",
@@ -8509,6 +8510,7 @@
             "coordinator": "Coordinator",
             "router": "Router",
             "end_device": "End device",
+            "green_power": "Green Power",
             "offline": "Offline"
           },
           "device_binding": {
