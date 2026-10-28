@@ -1645,6 +1645,7 @@ export class HaConfigDevicePage extends LitElement {
       css`
         :host {
           display: block;
+          height: 100%;
         }
         .container {
           display: flex;
