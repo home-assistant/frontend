@@ -118,7 +118,10 @@ export class HaDeviceCondition extends LitElement {
     try {
       // Resolve the candidates before exposing the split map, so the picker
       // never offers one that cannot host the automation.
-      const compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      const compositeSplits = await fetchDeviceCompositeSplits(
+        this.hass.connection,
+        this.hass.callWS
+      );
       await this._resolveReplacements(compositeSplits);
       this._compositeSplits = compositeSplits;
     } catch (_err) {
@@ -136,7 +139,6 @@ export class HaDeviceCondition extends LitElement {
         .value=${deviceId}
         .replacementDeviceIds=${this._replacementDeviceIds}
         @value-changed=${this._devicePicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type.device.label"

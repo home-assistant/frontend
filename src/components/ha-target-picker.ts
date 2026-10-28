@@ -201,26 +201,24 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       value?: string,
       idPrefix?: string
     ) =>
-      getDevices(
-        hass.states,
-        hass.areas,
-        hass.devices,
-        hass.entities,
-        hass.localize,
-        hass.locale.language,
-        hass.translationMetadata,
+      getDevices({
+        states: hass.states,
+        areas: hass.areas,
+        devices: hass.devices,
+        entities: hass.entities,
+        localize: hass.localize,
+        language: hass.locale.language,
+        translationMetadata: hass.translationMetadata,
         configEntryLookup,
-        {
-          includeDomains,
-          includeDeviceClasses,
-          deviceFilter,
-          entityFilter,
-          excludeDevices,
-          value,
-          idPrefix,
-          nested: true,
-        }
-      )
+        includeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeDevices,
+        value,
+        idPrefix,
+        nested: true,
+      })
   );
 
   private _getLabelsMemoized = memoizeOne(getLabels);
@@ -1434,7 +1432,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private async _loadCompositeSplits() {
     this._loadingCompositeSplits = true;
     try {
-      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      this._compositeSplits = await fetchDeviceCompositeSplits(
+        this.hass.connection,
+        this.hass.callWS
+      );
     } catch (_err) {
       this._compositeSplits = {};
     } finally {
