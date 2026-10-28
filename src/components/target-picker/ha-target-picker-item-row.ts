@@ -58,7 +58,6 @@ import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-di
 import type { HomeAssistant } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
-import "../entity/state-badge";
 import { floorDefaultIconPath } from "../ha-floor-icon";
 import "../ha-button";
 import "../ha-checkbox";
@@ -550,15 +549,6 @@ export class HaTargetPickerItemRow extends LitElement {
       ></ha-svg-icon>`;
     }
     if (item.type === "entity") {
-      if (
-        stateObject?.attributes.entity_picture ||
-        stateObject?.attributes.entity_picture_local
-      ) {
-        return html`<state-badge
-          slot=${ifDefined(slot)}
-          .stateObj=${stateObject}
-        ></state-badge>`;
-      }
       return html`<ha-state-icon
         slot=${ifDefined(slot)}
         .stateObj=${
@@ -1034,13 +1024,6 @@ export class HaTargetPickerItemRow extends LitElement {
 
       state-badge {
         color: var(--ha-color-on-neutral-quiet);
-        width: 24px;
-        height: 24px;
-        flex-shrink: 0;
-      }
-      ha-label state-badge {
-        width: 16px;
-        height: 16px;
       }
 
       .icon {
