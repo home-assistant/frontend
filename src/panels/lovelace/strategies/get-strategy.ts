@@ -323,13 +323,9 @@ export const expandLovelaceSectionStrategies = async (
 ): Promise<LovelaceSectionConfig> => {
   let newSection: LovelaceSectionConfig;
   if (isStrategySection(section)) {
-    // Strategies disable their section while they have nothing to show
     const { disabled: _disabled, ...generated } =
       await generateLovelaceSectionStrategy(section, hass, throwOnError);
-    newSection =
-      section.disabled === undefined
-        ? generated
-        : { ...generated, disabled: section.disabled };
+    newSection = generated;
   } else {
     newSection = { ...section };
   }
