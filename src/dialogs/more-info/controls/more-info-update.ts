@@ -271,7 +271,9 @@ class MoreInfoUpdate extends LitElement {
                           class="release-notes-message"
                           alert-type=${message.severity}
                         >
-                          ${message.message}
+                          <ha-markdown
+                            .content=${message.message}
+                          ></ha-markdown>
                         </ha-alert>
                       `
                     )}
