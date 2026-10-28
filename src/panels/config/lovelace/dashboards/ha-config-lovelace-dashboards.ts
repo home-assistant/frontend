@@ -6,6 +6,7 @@ import {
   mdiHomeEdit,
   mdiPencil,
   mdiPlus,
+  mdiMenuDown,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -459,14 +460,41 @@ export class HaConfigLovelaceDashboards extends LitElement {
             </ha-dropdown-item>
           </a>
         </ha-dropdown>
-        <ha-assist-chip
-          slot="selection-bar"
-          .label=${this.hass.localize(
-            "ui.panel.config.lovelace.dashboards.delete_selected"
-          )}
-          .disabled=${!this._deletableSelected().length}
-          @click=${this._removeSelected}
-        ></ha-assist-chip>
+        ${
+          this.narrow
+            ? html`<ha-dropdown
+                slot="selection-bar"
+                @wa-select=${this._removeSelected}
+              >
+                <ha-assist-chip
+                  slot="trigger"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_action"
+                  )}
+                >
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${mdiMenuDown}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+                <ha-dropdown-item
+                  value="delete"
+                  .disabled=${!this._deletableSelected().length}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.delete_selected"
+                  )}
+                </ha-dropdown-item>
+              </ha-dropdown>`
+            : html`<ha-assist-chip
+                slot="selection-bar"
+                .label=${this.hass.localize(
+                  "ui.panel.config.lovelace.dashboards.delete_selected"
+                )}
+                .disabled=${!this._deletableSelected().length}
+                @click=${this._removeSelected}
+              ></ha-assist-chip>`
+        }
         <ha-button slot="fab" size="l" @click=${this._addDashboard}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize(
