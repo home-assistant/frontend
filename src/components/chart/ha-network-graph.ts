@@ -571,8 +571,9 @@ export class HaNetworkGraph extends LitElement {
         );
       }
     }
+    const zoomChanged = Math.abs(zoom - targetZoom) >= 1e-3;
     if (
-      Math.abs(zoom - targetZoom) < 1e-3 &&
+      !zoomChanged &&
       Math.abs(centerX - x) < 0.5 &&
       Math.abs(centerY - y) < 0.5
     ) {
@@ -584,7 +585,8 @@ export class HaNetworkGraph extends LitElement {
       seriesId: "network",
       dx: centerX - x,
       dy: centerY - y,
-      zoom: targetZoom / zoom,
+      // Any zoom, even 1, rescales every node and edge
+      zoom: zoomChanged ? targetZoom / zoom : undefined,
       originX: centerX,
       originY: centerY,
     });
