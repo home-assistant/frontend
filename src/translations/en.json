@@ -4751,8 +4751,8 @@
               "type_two_sensors": "Two sensors",
               "power_from": "Discharge power",
               "power_to": "Charge power",
-              "helper_sensor_note": "Home Assistant will create a helper sensor entity for this option.",
-              "helper_sensor_in_use": "Currently using helper {entity}",
+              "helper_sensor_note": "Home Assistant will create a derived sensor entity for this option.",
+              "helper_sensor_in_use": "Currently using entity {entity}",
               "energy_sensors_needed": "To track your battery, you need sensors for the energy charged into and discharged from it.",
               "discharged_energy_name": "{name} discharged energy",
               "charged_energy_name": "{name} charged energy"
