@@ -94,11 +94,7 @@ export class HaEntitySelector extends LitElement {
 
   private _fetchedConfigEntries = false;
 
-  private _configEntriesFailed = false;
-
   private _fetchedEntitySources = false;
-
-  private _entitySourcesFailed = false;
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.get("selector") && this.value !== undefined) {
@@ -167,17 +163,14 @@ export class HaEntitySelector extends LitElement {
 
     const oldConnection = changedProps.get("_connection") as
       HomeAssistantConnection | undefined;
-    if (oldConnection && this._connection) {
-      const newConnection =
-        oldConnection.connection !== this._connection.connection;
-      const reconnected =
-        !oldConnection.connected && this._connection.connected;
-      if (newConnection || (reconnected && this._entitySourcesFailed)) {
-        this._fetchedEntitySources = false;
-      }
-      if (newConnection || (reconnected && this._configEntriesFailed)) {
-        this._fetchedConfigEntries = false;
-      }
+    if (
+      oldConnection &&
+      this._connection &&
+      (oldConnection.connection !== this._connection.connection ||
+        (!oldConnection.connected && this._connection.connected))
+    ) {
+      this._fetchedEntitySources = false;
+      this._fetchedConfigEntries = false;
     }
 
     const needs = this._dataNeeds(this.selector);
@@ -186,11 +179,9 @@ export class HaEntitySelector extends LitElement {
       this._fetchedEntitySources = true;
       fetchEntitySourcesWithCache(this._api.callWS, this._states ?? {})
         .then((sources) => {
-          this._entitySourcesFailed = false;
           this._entitySources = sources;
         })
         .catch(() => {
-          this._entitySourcesFailed = true;
           this._entitySources ??= {};
         });
     }
@@ -199,13 +190,11 @@ export class HaEntitySelector extends LitElement {
       this._fetchedConfigEntries = true;
       getConfigEntries(this._api)
         .then((entries) => {
-          this._configEntriesFailed = false;
           this._configEntries = entries;
         })
         .catch(() => {
           // Keep what we have, or fall back to no entries so the picker still
-          // renders. A reconnect retries the failed fetch.
-          this._configEntriesFailed = true;
+          // renders. A reconnect fetches again.
           this._configEntries ??= [];
         });
     }
