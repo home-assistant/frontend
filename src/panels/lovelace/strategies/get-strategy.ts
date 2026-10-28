@@ -310,7 +310,7 @@ export const checkStrategyShouldRegenerate = (
   return dependencies.some((key) => oldHass[key] !== newHass[key]);
 };
 
-const expandLovelaceSectionStrategies = async (
+export const expandLovelaceSectionStrategies = async (
   section: LovelaceSectionRawConfig,
   hass: HomeAssistant
 ): Promise<LovelaceSectionConfig> => {
