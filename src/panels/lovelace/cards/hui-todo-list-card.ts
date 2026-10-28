@@ -387,6 +387,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       this._i18n.locale,
       this._hassConfig
     ).getTime();
+    // "Today" follows the browser day, which can end before the day in the
+    // configured time zone does.
+    const browserMidnight = endOfDay(nowDate).getTime();
+    if (browserMidnight < refreshAt) {
+      refreshAt = browserMidnight;
+    }
     for (const item of this._items ?? []) {
       const due = this._getDueDate(item)?.getTime();
       if (due !== undefined && due > now && due < refreshAt) {
