@@ -60,7 +60,7 @@ export function createZHANetworkChartData(
   const style = getComputedStyle(element);
 
   const primaryColor = style.getPropertyValue("--primary-color");
-  const routerColor = style.getPropertyValue("--cyan-color");
+  const routerColor = style.getPropertyValue("--color-5");
   const endDeviceColor = style.getPropertyValue("--teal-color");
   const greenPowerColor = style.getPropertyValue("--green-color");
   const offlineColor = style.getPropertyValue("--error-color");
