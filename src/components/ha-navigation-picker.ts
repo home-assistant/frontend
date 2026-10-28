@@ -495,6 +495,7 @@ export class HaNavigationPicker extends LitElement {
         ...this._navigationGroups.apps,
         ...this._navigationGroups.other_routes,
       ];
+      this.requestUpdate();
     };
 
     if (!this.context?.entity_id && !this.context?.area_id) {
