@@ -47,7 +47,12 @@ export class HaDeviceInfoZha extends LitElement {
           this._zhaDevice.device_type !== ZHADeviceType.GreenPower
             ? html`<div>Nwk: ${formatAsPaddedHex(this._zhaDevice.nwk)}</div>`
             : srcId
-              ? html`<div>Source ID: ${srcId}</div>`
+              ? html`<div>
+                  ${this.hass.localize(
+                    "ui.panel.config.zha.device_page.src_id"
+                  )}:
+                  ${srcId}
+                </div>`
               : html`<div>IEEE: ${this._zhaDevice.ieee}</div>`
         }
         <div>
