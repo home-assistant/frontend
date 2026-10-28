@@ -117,6 +117,8 @@ import type { ESPHomeSetupController } from "./device-detail/integration-element
 import "./device-detail/ha-device-linked-devices-card";
 import "./device-detail/ha-device-via-devices-card";
 import { showDeviceAddToDialog } from "./device-detail/show-dialog-device-add-to";
+import { addEntitiesToLovelaceView } from "../../lovelace/editor/add-entities-to-view";
+import { showAddDeviceCardDialog } from "../../lovelace/editor/card-editor/show-add-device-card-dialog";
 import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
@@ -1446,6 +1448,16 @@ export class HaConfigDevicePage extends LitElement {
       canCreateScene:
         isComponentLoaded(this.hass.config, "scene") &&
         sceneEntityIds.length > 0,
+      addToDashboard: () => this._addToDashboard(),
+    });
+  }
+
+  private _addToDashboard() {
+    const deviceId = this.deviceId;
+    addEntitiesToLovelaceView(this, this.hass, [], undefined, undefined, {
+      sectionStrategy: { type: "device", device_id: deviceId },
+      showCardDialog: (params) =>
+        showAddDeviceCardDialog(this, { ...params, deviceId }),
     });
   }
 

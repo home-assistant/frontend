@@ -5,7 +5,7 @@ import type { Lovelace } from "../../types";
 import type { LovelacePath } from "../lovelace-path";
 
 export interface EditSectionDialogParams {
-  lovelace: Lovelace;
+  lovelace?: Lovelace;
   lovelaceConfig: LovelaceConfig;
   saveConfig: (config: LovelaceConfig) => void;
   path: LovelacePath;
