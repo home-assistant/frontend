@@ -164,11 +164,6 @@ export class HaSelectSelector extends LitElement {
         !this.value || this.value === "" ? [] : ensureArray(this.value);
 
       const addLabel = this._i18n.localize("ui.common.add");
-      const canAdd =
-        this.selector.select.custom_value ||
-        options.some(
-          (option) => !option.disabled && !value.includes(option.value)
-        );
 
       return html`
         ${
@@ -229,24 +224,15 @@ export class HaSelectSelector extends LitElement {
                   `;
                 }
               )}
-              ${
-                canAdd
-                  ? html`
-                      <ha-button
-                        size="s"
-                        appearance="filled"
-                        .disabled=${this.disabled}
-                        @click=${this._openPicker}
-                      >
-                        <ha-svg-icon
-                          slot="start"
-                          .path=${mdiPlus}
-                        ></ha-svg-icon>
-                        ${addLabel}
-                      </ha-button>
-                    `
-                  : nothing
-              }
+              <ha-button
+                size="s"
+                appearance="filled"
+                .disabled=${this.disabled}
+                @click=${this._openPicker}
+              >
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${addLabel}
+              </ha-button>
             </ha-chip-set>
           </ha-sortable>
         </ha-generic-picker>

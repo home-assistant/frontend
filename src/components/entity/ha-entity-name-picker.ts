@@ -236,9 +236,6 @@ export class HaEntityNamePicker extends LitElement {
   private _renderPicker() {
     const value = this._items;
     const validTypes = this._validTypes(this._stateObj, this._registries);
-    const canAdd =
-      this.allowCustom ||
-      this._getFilteredItems().some((item) => !item.disabled);
 
     return html`
       <ha-generic-picker
@@ -256,7 +253,6 @@ export class HaEntityNamePicker extends LitElement {
           "ui.components.entity.entity-name-picker.no_more_parts"
         )}
         @value-changed=${this._pickerValueChanged}
-        @picker-closed=${this._pickerClosed}
         .searchFn=${this._searchFn}
         .searchLabel=${this._localize(
           "ui.components.entity.entity-name-picker.search"
@@ -298,25 +294,16 @@ export class HaEntityNamePicker extends LitElement {
                   `;
                 }
               )}
-              ${
-                canAdd
-                  ? html`
-                      <ha-button
-                        class="add"
-                        size="s"
-                        appearance="filled"
-                        .disabled=${this.disabled}
-                        @click=${this._addItem}
-                      >
-                        <ha-svg-icon
-                          slot="start"
-                          .path=${mdiPlus}
-                        ></ha-svg-icon>
-                        ${this._localize("ui.common.add")}
-                      </ha-button>
-                    `
-                  : nothing
-              }
+              <ha-button
+                class="add"
+                size="s"
+                appearance="filled"
+                .disabled=${this.disabled}
+                @click=${this._addItem}
+              >
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${this._localize("ui.common.add")}
+              </ha-button>
             </ha-chip-set>
           </ha-sortable>
           ${this._renderRestoreButton()}
@@ -350,10 +337,6 @@ export class HaEntityNamePicker extends LitElement {
     this._editIndex = undefined;
     await this.updateComplete;
     await this._picker?.open();
-  }
-
-  private _pickerClosed() {
-    this._editIndex = undefined;
   }
 
   private async _editItem(ev: Event) {

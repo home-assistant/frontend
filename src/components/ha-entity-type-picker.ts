@@ -246,8 +246,6 @@ export class HaEntityTypePicker extends LitElement {
     const value = this.value ?? [];
     const chipLabels = localize ? this._chipLabels(localize, value) : undefined;
     const addLabel = localize?.("ui.common.add");
-    const canAdd = this._getItems().length > 0;
-
     return html`
       ${this.label ? html`<label id="label">${this.label}</label>` : nothing}
       <ha-generic-picker
@@ -284,21 +282,15 @@ export class HaEntityTypePicker extends LitElement {
               `;
             }
           )}
-          ${
-            canAdd
-              ? html`
-                  <ha-button
-                    size="s"
-                    appearance="filled"
-                    .disabled=${this.disabled}
-                    @click=${this._openPicker}
-                  >
-                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                    ${addLabel}
-                  </ha-button>
-                `
-              : nothing
-          }
+          <ha-button
+            size="s"
+            appearance="filled"
+            .disabled=${this.disabled}
+            @click=${this._openPicker}
+          >
+            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+            ${addLabel}
+          </ha-button>
         </ha-chip-set>
       </ha-generic-picker>
       ${
