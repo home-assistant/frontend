@@ -2,6 +2,7 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { getShadowRootHost } from "../../../common/dom/get-shadow-root-host";
 import {
@@ -274,8 +275,10 @@ class HaDomainIntegrations extends LitElement {
     </ha-list-base> `;
   }
 
-  private async _integrationPicked(ev: MouseEvent) {
-    const domain = (ev.currentTarget as any).domain;
+  private async _integrationPicked(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { domain: string }>
+  ) {
+    const domain = ev.currentTarget.domain;
 
     if (
       ["cloud", "google_assistant", "alexa"].includes(domain) &&
@@ -340,8 +343,10 @@ class HaDomainIntegrations extends LitElement {
     navigate("/config/integrations/dashboard?historyBack=1");
   }
 
-  private _standardPicked(ev: MouseEvent) {
-    const domain = (ev.currentTarget as any).domain;
+  private _standardPicked(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { domain: string }>
+  ) {
+    const domain = ev.currentTarget.domain;
     const dialogParentElement = getShadowRootHost(this) ?? this;
     fireEvent(this, "close-dialog");
     protocolIntegrationPicked(dialogParentElement, this.hass, domain, {

@@ -3,6 +3,7 @@ import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import type { HASSDomCurrentTargetEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-card";
 import type { HaDropdownSelectEvent } from "../../../../src/components/ha-dropdown";
 import "../../../../src/components/ha-control-select-menu";
@@ -93,8 +94,10 @@ export class DemoHaControlSelectMenu extends LitElement {
     `;
   }
 
-  private _handleSelect(ev: HaDropdownSelectEvent) {
-    const label = (ev.currentTarget as HTMLElement).dataset.label;
+  private _handleSelect(
+    ev: HaDropdownSelectEvent & HASSDomCurrentTargetEvent<HTMLElement>
+  ) {
+    const label = ev.currentTarget.dataset.label;
     const value = ev.detail.item.value;
     if (!label || !value) {
       return;
