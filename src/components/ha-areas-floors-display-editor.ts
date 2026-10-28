@@ -245,15 +245,15 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     const newOrder: string[] = [];
 
     for (const floorId of floorIds) {
+      const isOnFloor = (areaId: string) =>
+        (this._areas[areaId]?.floor_id ?? UNASSIGNED_FLOOR) === floorId;
       if ((currentFloorId ?? UNASSIGNED_FLOOR) === floorId) {
-        newHidden.push(...(value.hidden ?? []));
+        // Reordering returns the hidden areas of every floor, not just this one
+        newHidden.push(...(value.hidden ?? []).filter(isOnFloor));
         newOrder.push(...(value.order ?? []));
         continue;
       }
-      const hidden = oldHidden.filter((areaId) => {
-        const id = this._areas[areaId]?.floor_id ?? UNASSIGNED_FLOOR;
-        return id === floorId;
-      });
+      const hidden = oldHidden.filter(isOnFloor);
       if (hidden?.length) {
         newHidden.push(...hidden);
       }
