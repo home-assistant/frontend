@@ -3,7 +3,11 @@ import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HassConfig } from "home-assistant-js-websocket";
 import { consume } from "../../../../common/decorators/consume";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { transform } from "../../../../common/decorators/transform";
 import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
@@ -16,7 +20,13 @@ import type {
 } from "../../../../components/ha-select";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
-import { entitiesContext, statesContext } from "../../../../data/context";
+import {
+  apiContext,
+  configContext,
+  entitiesContext,
+  formattersContext,
+  statesContext,
+} from "../../../../data/context";
 import type { WaterSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
   computeEnergyLabel,
@@ -30,7 +40,12 @@ import {
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  ValueChangedEvent,
+} from "../../../../types";
 import type { IntegralUnits } from "../dialogs/energy-integral";
 import { confirmIntegrals, integralUnits } from "../dialogs/energy-integral";
 import type {
@@ -52,17 +67,50 @@ const flowRateUnitClasses = ["volume_flow_rate"];
 export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
   DirtyStateProviderMixin<WaterFormState>()(LitElement)
 ) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false })
   public params!: EnergyWaterSourceEditorParams;
 
-  // Live, so a retry finds the helpers already created
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  // Kept current without rendering on every state change
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
   @consume({ context: entitiesContext, subscribe: true })
   private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<ContextType<typeof statesContext>, string>({
+    transformer: function (this: HaEnergyWaterSourceEditor, states) {
+      const statRate = this._source?.stat_rate;
+      return statRate
+        ? states?.[statRate]?.attributes.unit_of_measurement
+        : undefined;
+    },
+    watch: ["_source"],
+  })
+  private _rateUnit?: string;
 
   @state() private _source?: WaterSourceTypeEnergyPreference;
 
@@ -122,8 +170,11 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
 
   private async _loadUnits() {
     const [water, flowRate] = await Promise.all([
-      getSensorDeviceClassConvertibleUnits(this.hass, "water"),
-      getSensorDeviceClassConvertibleUnits(this.hass, "volume_flow_rate"),
+      getSensorDeviceClassConvertibleUnits(this._api.callWS, "water"),
+      getSensorDeviceClassConvertibleUnits(
+        this._api.callWS,
+        "volume_flow_rate"
+      ),
     ]);
     this._water_units = water.units;
     this._flow_rate_units = flowRate.units;
@@ -160,19 +211,19 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
           include-unit-class="volume"
           include-device-class="water"
           .value=${this._source.stat_energy_from}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.water.dialog.water_usage"
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           .disabled=${this._saving}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.water.dialog.entity_para",
             { unit: this._water_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
         <ha-input
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.water.dialog.display_name"
           )}
           type="text"
@@ -181,8 +232,8 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
           .placeholder=${
             labelStatistic
               ? getStatisticLabel(
-                  this.hass.states,
-                  this.hass.formatEntityName,
+                  this._states,
+                  this._formatEntityName,
                   labelStatistic,
                   this.params.statsMetadata?.[labelStatistic]
                 )
@@ -198,7 +249,7 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
       <ha-statistic-picker
         .includeUnitClass=${flowRateUnitClasses}
         .value=${this._source.stat_rate}
-        .label=${this.hass.localize(
+        .label=${this._localize(
           "ui.panel.config.energy.water.dialog.water_flow_rate"
         )}
         .excludeStatistics=${this._excludeListFlowRate}
@@ -206,7 +257,7 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
         .disabled=${this._saving}
         .invalid=${!!this._flowRateError()}
         .errorMessage=${this._flowRateError()}
-        .helper=${this.hass.localize(
+        .helper=${this._localize(
           "ui.panel.config.energy.water.dialog.flow_rate_para",
           { unit: this._flow_rate_units?.join(", ") || "" }
         )}
@@ -216,10 +267,10 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
 
       <div class="group">
         <ha-select
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.water.dialog.cost_tracking"
           )}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.water.dialog.cost_para"
           )}
           .value=${this._costs}
@@ -240,26 +291,22 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
     return [
       {
         value: "no-costs",
-        label: this.hass.localize(
-          "ui.panel.config.energy.water.dialog.no_cost"
-        ),
+        label: this._localize("ui.panel.config.energy.water.dialog.no_cost"),
       },
       {
         value: "statistic",
-        label: this.hass.localize(
-          "ui.panel.config.energy.water.dialog.cost_stat"
-        ),
+        label: this._localize("ui.panel.config.energy.water.dialog.cost_stat"),
       },
       {
         value: "entity",
-        label: this.hass.localize(
+        label: this._localize(
           "ui.panel.config.energy.water.dialog.cost_entity"
         ),
         disabled: externalSource,
       },
       {
         value: "number",
-        label: this.hass.localize(
+        label: this._localize(
           "ui.panel.config.energy.water.dialog.cost_number"
         ),
         disabled: externalSource,
@@ -268,8 +315,8 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
   }
 
   private _renderCost() {
-    const unitPriceFixed = `${this.hass.config.currency}/${
-      this.hass.config.unit_system.volume === "gal" ? "gal" : "m³"
+    const unitPriceFixed = `${this._hassConfig.currency}/${
+      this._hassConfig.unit_system.volume === "gal" ? "gal" : "m³"
     }`;
 
     switch (this._costs) {
@@ -278,9 +325,9 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
           .disabled=${this._saving}
           statistic-types="sum"
           .value=${this._source!.stat_cost}
-          .label=${`${this.hass.localize(
+          .label=${`${this._localize(
             "ui.panel.config.energy.water.dialog.cost_stat_input"
-          )} (${this.hass.config.currency})`}
+          )} (${this._hassConfig.currency})`}
           @value-changed=${this._priceStatChanged}
         ></ha-statistic-picker>`;
       case "entity":
@@ -288,13 +335,13 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
           .disabled=${this._saving}
           include-domains='["sensor", "input_number"]'
           .value=${this._source!.entity_energy_price}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.water.dialog.cost_entity_input"
           )}
           .helper=${html`<ha-markdown
-            .content=${this.hass.localize(
+            .content=${this._localize(
               "ui.panel.config.energy.water.dialog.cost_entity_helper",
-              { currency: this.hass.config.currency }
+              { currency: this._hassConfig.currency }
             )}
           ></ha-markdown>`}
           @value-changed=${this._priceEntityChanged}
@@ -302,7 +349,7 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
       case "number":
         return html`<ha-input
           .disabled=${this._saving}
-          .label=${`${this.hass.localize(
+          .label=${`${this._localize(
             "ui.panel.config.energy.water.dialog.cost_number_input"
           )} (${unitPriceFixed})`}
           step="any"
@@ -387,7 +434,7 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
       this.params.statsMetadata &&
       !(ev.detail.value in this.params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
+      const [metadata] = await getStatisticMetadata(this._api.callWS, [
         ev.detail.value,
       ]);
       if (metadata) {
@@ -422,7 +469,7 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
     ) {
       return undefined;
     }
-    return this.hass.localize(
+    return this._localize(
       "ui.panel.config.energy.water.dialog.flow_rate_no_volume"
     );
   }
@@ -432,10 +479,7 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
     if (!statRate || !this._water_units) {
       return undefined;
     }
-    return integralUnits(
-      this.hass.states[statRate]?.attributes.unit_of_measurement,
-      this._water_units
-    );
+    return integralUnits(this._rateUnit, this._water_units);
   }
 
   public async save(): Promise<boolean> {
@@ -493,7 +537,10 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
     if (!units) {
       return undefined;
     }
-    const sensors = await confirmIntegrals(this, this.hass, {
+    const sensors = await confirmIntegrals(this, {
+      api: this._api,
+      localize: this._localize,
+      formatEntityName: this._formatEntityName,
       deviceClass: "water",
       states: this._states,
       entities: this._entities,
@@ -501,12 +548,12 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
         {
           rate: statRate,
           units,
-          name: this.hass.localize(
+          name: this._localize(
             "ui.panel.config.energy.integral.water.sensor_name",
             {
               name: computeEnergyLabel(
-                this.hass.states,
-                this.hass.formatEntityName,
+                this._states,
+                this._formatEntityName,
                 statRate,
                 this.params.statsMetadata?.[statRate],
                 draft.name
@@ -515,7 +562,7 @@ export class HaEnergyWaterSourceEditor extends EnergyEditorMixin(
           ),
         },
       ],
-      intro: this.hass.localize(
+      intro: this._localize(
         "ui.panel.config.energy.water.dialog.water_sensor_needed"
       ),
       exclude: this._excludeList,

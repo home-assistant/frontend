@@ -26,7 +26,7 @@ export const showConfigFlowDialog = (
     showDevices: true,
     createFlow: async (hass, handler) => {
       const [step] = await Promise.all([
-        createConfigFlow(hass, handler, dialogParams.entryId),
+        createConfigFlow(hass.callApi, handler, dialogParams.entryId),
         hass.loadFragmentTranslation("config"),
         hass.loadBackendTranslation("config", handler),
         hass.loadBackendTranslation("selector", handler),
@@ -51,7 +51,7 @@ export const showConfigFlowDialog = (
       return step;
     },
     handleFlowStep: async (hass, flowId, data) => {
-      const step = await handleConfigFlowStep(hass, flowId, data);
+      const step = await handleConfigFlowStep(hass.callApi, flowId, data);
       await loadFlowStepTranslations(hass, step);
       return step;
     },

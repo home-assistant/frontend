@@ -34,7 +34,7 @@ export class DialogEnergySettings extends DialogMixin<EnergySettingsDialogParams
 
   @state() private _status?: EnergyEditorStatus;
 
-  @query(".editor") private _editor?: EnergyEditorElement;
+  @query(".energy-editor") private _editor?: EnergyEditorElement;
 
   protected render() {
     if (!this.params) {
@@ -48,7 +48,7 @@ export class DialogEnergySettings extends DialogMixin<EnergySettingsDialogParams
         .preventScrimClose=${!!this._status?.dirty}
         @energy-editor-status-changed=${this._statusChanged}
       >
-        ${renderEnergyEditor(this.params.hass, this.params.editor)}
+        ${renderEnergyEditor(this.params.editor)}
         <ha-dialog-footer slot="footer">
           <ha-button
             appearance="plain"

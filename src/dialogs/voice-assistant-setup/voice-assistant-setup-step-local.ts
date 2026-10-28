@@ -310,7 +310,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     if (configFlow) {
       const step = await handleConfigFlowStep(
-        this.hass,
+        this.hass.callApi,
         configFlow.flow_id,
         {}
       );
@@ -343,11 +343,15 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   }
 
   private async _createConfigEntry(type: "tts" | "stt") {
-    const configFlow = await createConfigFlow(this.hass, "wyoming");
-    const step = await handleConfigFlowStep(this.hass, configFlow.flow_id, {
-      host: type === "tts" ? this._ttsHostName : this._sttHostName,
-      port: type === "tts" ? this._ttsPort : this._sttPort,
-    });
+    const configFlow = await createConfigFlow(this.hass.callApi, "wyoming");
+    const step = await handleConfigFlowStep(
+      this.hass.callApi,
+      configFlow.flow_id,
+      {
+        host: type === "tts" ? this._ttsHostName : this._sttHostName,
+        port: type === "tts" ? this._ttsPort : this._sttPort,
+      }
+    );
     if (step.type !== "create_entry") {
       throw new Error(
         `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { app: type === "tts" ? this._ttsProviderName : this._sttProviderName })}${"errors" in step ? `: ${step.errors?.base}` : ""}`

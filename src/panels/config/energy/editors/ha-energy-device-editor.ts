@@ -4,6 +4,9 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-alert";
 import "../../../../components/input/ha-input";
@@ -18,9 +21,18 @@ import {
   isExternalStatistic,
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
-import { entitiesContext, statesContext } from "../../../../data/context";
+import {
+  apiContext,
+  entitiesContext,
+  formattersContext,
+  statesContext,
+} from "../../../../data/context";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantFormatters,
+  ValueChangedEvent,
+} from "../../../../types";
 import type { IntegralUnits } from "../dialogs/energy-integral";
 import { confirmIntegrals, integralUnits } from "../dialogs/energy-integral";
 import "../dialogs/ha-energy-upstream-device-picker";
@@ -40,16 +52,42 @@ type DeviceConsumptionDraft = Partial<DeviceConsumptionEnergyPreference>;
 export class HaEnergyDeviceEditor extends EnergyEditorMixin(
   DirtyStateProviderMixin<DeviceConsumptionDraft | null>()(LitElement)
 ) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public params!: EnergyDeviceEditorParams;
 
-  // Live, so a retry finds the helpers already created
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  // Kept current without rendering on every state change
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
   @consume({ context: entitiesContext, subscribe: true })
   private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<ContextType<typeof statesContext>, string>({
+    transformer: function (this: HaEnergyDeviceEditor, states) {
+      const statRate = this._device?.stat_rate;
+      return statRate
+        ? states?.[statRate]?.attributes.unit_of_measurement
+        : undefined;
+    },
+    watch: ["_device"],
+  })
+  private _rateUnit?: string;
 
   @state() private _device?: DeviceConsumptionDraft;
 
@@ -92,8 +130,8 @@ export class HaEnergyDeviceEditor extends EnergyEditorMixin(
 
   private async _loadUnits() {
     const [energy, power] = await Promise.all([
-      getSensorDeviceClassConvertibleUnits(this.hass, "energy"),
-      getSensorDeviceClassConvertibleUnits(this.hass, "power"),
+      getSensorDeviceClassConvertibleUnits(this._api.callWS, "energy"),
+      getSensorDeviceClassConvertibleUnits(this._api.callWS, "power"),
     ]);
     this._energy_units = energy.units;
     this._power_units = power.units;
@@ -151,19 +189,19 @@ export class HaEnergyDeviceEditor extends EnergyEditorMixin(
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._device?.stat_consumption}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.device_consumption.dialog.device_consumption_energy"
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           .disabled=${this._saving}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.device_consumption.dialog.selected_stat_intro",
             { unit: this._energy_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
         <ha-input
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.device_consumption.dialog.display_name"
           )}
           .disabled=${!this._device || this._saving}
@@ -171,8 +209,8 @@ export class HaEnergyDeviceEditor extends EnergyEditorMixin(
           .placeholder=${
             labelStatistic
               ? computeEnergyLabel(
-                  this.hass.states,
-                  this.hass.formatEntityName,
+                  this._states,
+                  this._formatEntityName,
                   labelStatistic,
                   this.params.statsMetadata?.[labelStatistic]
                 )
@@ -188,13 +226,13 @@ export class HaEnergyDeviceEditor extends EnergyEditorMixin(
       <ha-statistic-picker
         .includeUnitClass=${powerUnitClasses}
         .value=${this._device?.stat_rate}
-        .label=${this.hass.localize(
+        .label=${this._localize(
           "ui.panel.config.energy.device_consumption.dialog.device_consumption_power"
         )}
         .excludeStatistics=${this._excludeListPower}
         @value-changed=${this._powerStatisticChanged}
         .disabled=${this._saving}
-        .helper=${this.hass.localize(
+        .helper=${this._localize(
           "ui.panel.config.energy.device_consumption.dialog.selected_stat_intro",
           { unit: this._power_units?.join(", ") || "" }
         )}
@@ -203,17 +241,16 @@ export class HaEnergyDeviceEditor extends EnergyEditorMixin(
       <wa-divider></wa-divider>
 
       <ha-energy-upstream-device-picker
-        .hass=${this.hass}
-        .label=${this.hass.localize(
+        .label=${this._localize(
           "ui.panel.config.energy.device_consumption.dialog.included_in_device"
         )}
-        .helper=${this.hass.localize(
+        .helper=${this._localize(
           "ui.panel.config.energy.device_consumption.dialog.included_in_device_helper"
         )}
         .value=${this._device?.included_in_stat}
         .possibleParents=${this._possibleParents}
         .statsMetadata=${this.params.statsMetadata}
-        .emptyLabel=${this.hass.localize(
+        .emptyLabel=${this._localize(
           "ui.panel.config.energy.device_consumption.dialog.no_upstream_devices"
         )}
         .disabled=${!this._device || this._saving}
@@ -249,7 +286,7 @@ export class HaEnergyDeviceEditor extends EnergyEditorMixin(
       this.params.statsMetadata &&
       !(ev.detail.value in this.params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
+      const [metadata] = await getStatisticMetadata(this._api.callWS, [
         ev.detail.value,
       ]);
       if (metadata) {
@@ -302,10 +339,7 @@ export class HaEnergyDeviceEditor extends EnergyEditorMixin(
     if (!statRate || !this._energy_units) {
       return undefined;
     }
-    return integralUnits(
-      this.hass.states[statRate]?.attributes.unit_of_measurement,
-      this._energy_units
-    );
+    return integralUnits(this._rateUnit, this._energy_units);
   }
 
   public async save(): Promise<boolean> {
@@ -352,7 +386,10 @@ export class HaEnergyDeviceEditor extends EnergyEditorMixin(
     if (!units) {
       return undefined;
     }
-    const sensors = await confirmIntegrals(this, this.hass, {
+    const sensors = await confirmIntegrals(this, {
+      api: this._api,
+      localize: this._localize,
+      formatEntityName: this._formatEntityName,
       deviceClass: "energy",
       states: this._states,
       entities: this._entities,
@@ -360,12 +397,12 @@ export class HaEnergyDeviceEditor extends EnergyEditorMixin(
         {
           rate: statRate,
           units,
-          name: this.hass.localize(
+          name: this._localize(
             "ui.panel.config.energy.integral.energy.sensor_name",
             {
               name: computeEnergyLabel(
-                this.hass.states,
-                this.hass.formatEntityName,
+                this._states,
+                this._formatEntityName,
                 statRate,
                 this.params.statsMetadata?.[statRate],
                 draft.name
@@ -374,7 +411,7 @@ export class HaEnergyDeviceEditor extends EnergyEditorMixin(
           ),
         },
       ],
-      intro: this.hass.localize(
+      intro: this._localize(
         "ui.panel.config.energy.device_consumption.dialog.energy_sensor_needed"
       ),
       exclude: this._excludeList,

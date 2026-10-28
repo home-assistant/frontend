@@ -193,7 +193,7 @@ export class EnergyGasSettings extends LitElement {
         this._sidebarConfig(editor, source)
       );
     } else {
-      showEnergySettingsDialog(this, { hass: this.hass, editor });
+      showEnergySettingsDialog(this, { editor });
     }
   }
 

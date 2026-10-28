@@ -3,7 +3,12 @@ import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HassConfig } from "home-assistant-js-websocket";
 import { consume } from "../../../../common/decorators/consume";
+import { deepEqual } from "../../../../common/util/deep-equal";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { transform } from "../../../../common/decorators/transform";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
@@ -33,9 +38,20 @@ import {
   isExternalStatistic,
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
-import { entitiesContext, statesContext } from "../../../../data/context";
+import {
+  apiContext,
+  configContext,
+  entitiesContext,
+  formattersContext,
+  statesContext,
+} from "../../../../data/context";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  ValueChangedEvent,
+} from "../../../../types";
 import type { PowerIntegral } from "../dialogs/energy-integral";
 import {
   confirmIntegrals,
@@ -72,16 +88,58 @@ interface GridFormState {
 export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
   DirtyStateProviderMixin<GridFormState>()(LitElement)
 ) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public params!: EnergyGridSourceEditorParams;
 
-  // Live, so a retry finds the helpers already created
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  // Kept current without rendering on every state change
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
   @consume({ context: entitiesContext, subscribe: true })
   private _entities!: ContextType<typeof entitiesContext>;
+
+  // Keeps the previous array while the result is unchanged, so other state
+  // changes don't render
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<ContextType<typeof statesContext>, PowerIntegral[]>({
+    transformer: function (this: HaEnergyGridSourceEditor, states) {
+      const pending =
+        states && this._source && this._energy_units
+          ? pendingPowerIntegrals(
+              states,
+              this._source,
+              this._powerType,
+              this._powerConfig,
+              this._energy_units
+            )
+          : [];
+      return deepEqual(pending, this._pending) ? this._pending : pending;
+    },
+    watch: ["_source", "_powerType", "_powerConfig", "_energy_units"],
+  })
+  private _pending?: PowerIntegral[];
 
   @state() private _source?: GridSourceTypeEnergyPreference;
 
@@ -185,12 +243,12 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
 
   private async _loadUnits() {
     this._energy_units = (
-      await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
+      await getSensorDeviceClassConvertibleUnits(this._api.callWS, "energy")
     ).units;
   }
 
   protected get editorStatus(): EnergyEditorStatus {
-    const pending = this._pendingIntegrals();
+    const pending = this._pending ?? [];
     return {
       dirty: this.isDirtyState || (!!this.params.source && !!pending.length),
       valid: this._isValid(pending),
@@ -203,7 +261,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
       return nothing;
     }
 
-    const pending = this._pendingIntegrals();
+    const pending = this._pending ?? [];
     const hasExport = this._hasExport(pending);
     const labelStatistic =
       this._source.stat_energy_from ||
@@ -229,7 +287,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.grid.dialog.energy_from_grid"
           )}
           .excludeStatistics=${[
@@ -238,7 +296,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
           ].filter((id): id is string => Boolean(id))}
           @value-changed=${this._statisticFromChanged}
           .disabled=${this._saving}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.grid.dialog.energy_from_helper",
             { unit: this._energy_units?.join(", ") || "" }
           )}
@@ -247,7 +305,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_to}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.grid.dialog.energy_to_grid"
           )}
           .excludeStatistics=${[
@@ -256,13 +314,13 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
           ].filter((id): id is string => Boolean(id))}
           @value-changed=${this._statisticToChanged}
           .disabled=${this._saving}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.grid.dialog.energy_to_helper",
             { unit: this._energy_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
         <ha-input
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.grid.dialog.display_name"
           )}
           type="text"
@@ -271,8 +329,8 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
           .placeholder=${
             labelStatistic
               ? getStatisticLabel(
-                  this.hass.states,
-                  this.hass.formatEntityName,
+                  this._states,
+                  this._formatEntityName,
                   labelStatistic,
                   this.params.statsMetadata?.[labelStatistic]
                 )
@@ -287,7 +345,6 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
 
       <ha-energy-power-config
         class="group"
-        .hass=${this.hass}
         .powerType=${this._powerType}
         .powerConfig=${this._powerConfig}
         .excludeList=${this._excludeListPower}
@@ -304,10 +361,10 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
 
       <div class="group">
         <ha-select
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.grid.dialog.import_cost"
           )}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.grid.dialog.import_cost_para"
           )}
           .value=${this._importCostType}
@@ -324,10 +381,10 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
               <wa-divider></wa-divider>
               <div class="group">
                 <ha-select
-                  .label=${this.hass.localize(
+                  .label=${this._localize(
                     "ui.panel.config.energy.grid.dialog.export_compensation"
                   )}
-                  .helper=${this.hass.localize(
+                  .helper=${this._localize(
                     "ui.panel.config.energy.grid.dialog.export_compensation_para"
                   )}
                   .value=${this._exportCostType}
@@ -351,16 +408,16 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
     const labels =
       direction === "import"
         ? {
-            no_cost: this.hass.localize(`${key}.no_cost_tracking`),
-            stat: this.hass.localize(`${key}.cost_stat`),
-            entity: this.hass.localize(`${key}.cost_entity`),
-            number: this.hass.localize(`${key}.cost_number`),
+            no_cost: this._localize(`${key}.no_cost_tracking`),
+            stat: this._localize(`${key}.cost_stat`),
+            entity: this._localize(`${key}.cost_entity`),
+            number: this._localize(`${key}.cost_number`),
           }
         : {
-            no_cost: this.hass.localize(`${key}.no_compensation_tracking`),
-            stat: this.hass.localize(`${key}.compensation_stat`),
-            entity: this.hass.localize(`${key}.compensation_entity`),
-            number: this.hass.localize(`${key}.compensation_number`),
+            no_cost: this._localize(`${key}.no_compensation_tracking`),
+            stat: this._localize(`${key}.compensation_stat`),
+            entity: this._localize(`${key}.compensation_entity`),
+            number: this._localize(`${key}.compensation_number`),
           };
     return [
       { value: "no_cost", label: labels.no_cost },
@@ -377,7 +434,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
           <ha-statistic-picker
             .disabled=${this._saving}
             .value=${this._source!.stat_cost}
-            .label=${this.hass.localize(
+            .label=${this._localize(
               "ui.panel.config.energy.grid.dialog.cost_stat_label"
             )}
             @value-changed=${this._statCostChanged}
@@ -388,7 +445,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
           <ha-entity-picker
             .disabled=${this._saving}
             .value=${this._source!.entity_energy_price}
-            .label=${this.hass.localize(
+            .label=${this._localize(
               "ui.panel.config.energy.grid.dialog.cost_entity_label"
             )}
             include-domains='["sensor", "input_number"]'
@@ -404,7 +461,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
                 ? String(this._source!.number_energy_price)
                 : ""
             }
-            .label=${this.hass.localize(
+            .label=${this._localize(
               "ui.panel.config.energy.grid.dialog.cost_number_label"
             )}
             type="number"
@@ -413,7 +470,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
             auto-validate
             @input=${this._numberCostChanged}
           >
-            <span slot="end">${this.hass.config.currency}/kWh</span>
+            <span slot="end">${this._hassConfig.currency}/kWh</span>
           </ha-input>
         `;
       default:
@@ -428,7 +485,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
           <ha-statistic-picker
             .disabled=${this._saving}
             .value=${this._source!.stat_compensation}
-            .label=${this.hass.localize(
+            .label=${this._localize(
               "ui.panel.config.energy.grid.dialog.compensation_stat_label"
             )}
             @value-changed=${this._statCompensationChanged}
@@ -439,7 +496,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
           <ha-entity-picker
             .disabled=${this._saving}
             .value=${this._source!.entity_energy_price_export}
-            .label=${this.hass.localize(
+            .label=${this._localize(
               "ui.panel.config.energy.grid.dialog.compensation_entity_label"
             )}
             include-domains='["sensor", "input_number"]'
@@ -455,7 +512,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
                 ? String(this._source!.number_energy_price_export)
                 : ""
             }
-            .label=${this.hass.localize(
+            .label=${this._localize(
               "ui.panel.config.energy.grid.dialog.compensation_number_label"
             )}
             type="number"
@@ -464,7 +521,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
             auto-validate
             @input=${this._numberCompensationChanged}
           >
-            <span slot="end">${this.hass.config.currency}/kWh</span>
+            <span slot="end">${this._hassConfig.currency}/kWh</span>
           </ha-input>
         `;
       default:
@@ -518,7 +575,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
       this.params.statsMetadata &&
       !(statId in this.params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass.callWS, [statId]);
+      const [metadata] = await getStatisticMetadata(this._api.callWS, [statId]);
       if (metadata) {
         this.params.statsMetadata[statId] = metadata;
         this.requestUpdate();
@@ -673,19 +730,6 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
     });
   }
 
-  private _pendingIntegrals(): PowerIntegral[] {
-    if (!this._source || !this._energy_units) {
-      return [];
-    }
-    return pendingPowerIntegrals(
-      this.hass.states,
-      this._source,
-      this._powerType,
-      this._powerConfig,
-      this._energy_units
-    );
-  }
-
   public async save(): Promise<boolean> {
     // The editor can be replaced while saving, but created helpers must still
     // be saved with the submitted source
@@ -697,7 +741,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
     this._error = undefined;
     this._saving = true;
     try {
-      const pending = this._pendingIntegrals();
+      const pending = this._pending ?? [];
       if (pending.length) {
         const sensors = await this._energyFromPower(draft, pending);
         if (!sensors) {
@@ -762,21 +806,24 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
     draft: GridSourceTypeEnergyPreference,
     pending: PowerIntegral[]
   ): Promise<string[] | undefined> {
-    return confirmIntegrals(this, this.hass, {
+    return confirmIntegrals(this, {
+      api: this._api,
+      localize: this._localize,
+      formatEntityName: this._formatEntityName,
       deviceClass: "energy",
       states: this._states,
       entities: this._entities,
       requests: pending.map(({ energy, rate, units }) => ({
         rate,
         units,
-        name: this.hass.localize(
+        name: this._localize(
           energy === "stat_energy_from"
             ? "ui.panel.config.energy.grid.dialog.imported_energy_name"
             : "ui.panel.config.energy.grid.dialog.exported_energy_name",
           {
             name: computeEnergyLabel(
-              this.hass.states,
-              this.hass.formatEntityName,
+              this._states,
+              this._formatEntityName,
               rate,
               this.params.statsMetadata?.[rate],
               draft.name
@@ -784,7 +831,7 @@ export class HaEnergyGridSourceEditor extends EnergyEditorMixin(
           }
         ),
       })),
-      intro: this.hass.localize(
+      intro: this._localize(
         "ui.panel.config.energy.grid.dialog.energy_sensors_needed"
       ),
       // Neither direction may reuse the statistic of the other

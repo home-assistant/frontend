@@ -5,6 +5,9 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
@@ -29,9 +32,22 @@ import {
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
-import { entitiesContext, statesContext } from "../../../../data/context";
+import {
+  apiContext,
+  brandsAccessTokenContext,
+  connectionContext,
+  entitiesContext,
+  formattersContext,
+  statesContext,
+  uiContext,
+} from "../../../../data/context";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantFormatters,
+  HomeAssistantUI,
+  ValueChangedEvent,
+} from "../../../../types";
 import { brandsUrl } from "../../../../util/brands-url";
 import type { IntegralUnits } from "../dialogs/energy-integral";
 import { confirmIntegrals, integralUnits } from "../dialogs/energy-integral";
@@ -48,17 +64,58 @@ const powerUnitClasses = ["power"];
 export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
   DirtyStateProviderMixin<SolarSourceTypeEnergyPreference>()(LitElement)
 ) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false })
   public params!: EnergySolarSourceEditorParams;
 
-  // Live, so a retry finds the helpers already created
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: ({ themes }) => themes?.darkMode,
+  })
+  private _darkMode?: boolean;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
+
+  // Kept current without rendering on every state change
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
   @consume({ context: entitiesContext, subscribe: true })
   private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<ContextType<typeof statesContext>, string>({
+    transformer: function (this: HaEnergySolarSourceEditor, states) {
+      const statRate = this._source?.stat_rate;
+      return statRate
+        ? states?.[statRate]?.attributes.unit_of_measurement
+        : undefined;
+    },
+    watch: ["_source"],
+  })
+  private _rateUnit?: string;
 
   @state() private _source?: SolarSourceTypeEnergyPreference;
 
@@ -103,8 +160,8 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
 
   private async _loadUnits() {
     const [energy, power] = await Promise.all([
-      getSensorDeviceClassConvertibleUnits(this.hass, "energy"),
-      getSensorDeviceClassConvertibleUnits(this.hass, "power"),
+      getSensorDeviceClassConvertibleUnits(this._api.callWS, "energy"),
+      getSensorDeviceClassConvertibleUnits(this._api.callWS, "power"),
     ]);
     this._energy_units = energy.units;
     this._power_units = power.units;
@@ -137,19 +194,19 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.solar.dialog.solar_production_energy"
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           .disabled=${this._saving}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.solar.dialog.entity_para",
             { unit: this._energy_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
         <ha-input
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.solar.dialog.display_name"
           )}
           type="text"
@@ -158,8 +215,8 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
           .placeholder=${
             labelStatistic
               ? getStatisticLabel(
-                  this.hass.states,
-                  this.hass.formatEntityName,
+                  this._states,
+                  this._formatEntityName,
                   labelStatistic,
                   this.params.statsMetadata?.[labelStatistic]
                 )
@@ -175,13 +232,13 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
       <ha-statistic-picker
         .includeUnitClass=${powerUnitClasses}
         .value=${this._source.stat_rate}
-        .label=${this.hass.localize(
+        .label=${this._localize(
           "ui.panel.config.energy.solar.dialog.solar_production_power"
         )}
         .excludeStatistics=${this._excludeListPower}
         @value-changed=${this._powerStatisticChanged}
         .disabled=${this._saving}
-        .helper=${this.hass.localize(
+        .helper=${this._localize(
           "ui.panel.config.energy.solar.dialog.entity_para",
           { unit: this._power_units?.join(", ") || "" }
         )}
@@ -192,12 +249,12 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
       <div class="group">
         <div class="group-header">
           <h3>
-            ${this.hass.localize(
+            ${this._localize(
               "ui.panel.config.energy.solar.dialog.solar_production_forecast"
             )}
           </h3>
           <p>
-            ${this.hass.localize(
+            ${this._localize(
               "ui.panel.config.energy.solar.dialog.solar_production_forecast_description"
             )}
           </p>
@@ -224,11 +281,11 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
                             {
                               domain: entry.domain,
                               type: "icon",
-                              darkOptimized: this.hass.themes?.darkMode,
+                              darkOptimized: this._darkMode,
                             },
-                            this.hass.auth.data.hassUrl
+                            this._connection.hassUrl()
                           )}
-                        />${entry.title || domainToName(this.hass.localize, entry.domain)}
+                        />${entry.title || domainToName(this._localize, entry.domain)}
                       </div>
                     </ha-checkbox>`
                 )}
@@ -242,9 +299,7 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
           .disabled=${this._saving}
         >
           <ha-svg-icon .path=${mdiPlus} slot="start"></ha-svg-icon>
-          ${this.hass.localize(
-            "ui.panel.config.energy.solar.dialog.add_forecast"
-          )}
+          ${this._localize("ui.panel.config.energy.solar.dialog.add_forecast")}
         </ha-button>
       </div>
     `;
@@ -256,11 +311,11 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
       domains.length === 0
         ? []
         : domains.length === 1
-          ? await getConfigEntries(this.hass, {
+          ? await getConfigEntries(this._api, {
               type: ["service"],
               domain: domains[0],
             })
-          : (await getConfigEntries(this.hass, { type: ["service"] })).filter(
+          : (await getConfigEntries(this._api, { type: ["service"] })).filter(
               (entry) => domains.includes(entry.domain)
             );
   }
@@ -313,7 +368,7 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
       this.params.statsMetadata &&
       !(ev.detail.value in this.params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
+      const [metadata] = await getStatisticMetadata(this._api.callWS, [
         ev.detail.value,
       ]);
       if (metadata) {
@@ -344,10 +399,7 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
     if (!statRate || !this._energy_units) {
       return undefined;
     }
-    return integralUnits(
-      this.hass.states[statRate]?.attributes.unit_of_measurement,
-      this._energy_units
-    );
+    return integralUnits(this._rateUnit, this._energy_units);
   }
 
   public async save(): Promise<boolean> {
@@ -396,7 +448,10 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
     if (!units) {
       return undefined;
     }
-    const sensors = await confirmIntegrals(this, this.hass, {
+    const sensors = await confirmIntegrals(this, {
+      api: this._api,
+      localize: this._localize,
+      formatEntityName: this._formatEntityName,
       deviceClass: "energy",
       states: this._states,
       entities: this._entities,
@@ -404,12 +459,12 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
         {
           rate: statRate,
           units,
-          name: this.hass.localize(
+          name: this._localize(
             "ui.panel.config.energy.integral.energy.sensor_name",
             {
               name: computeEnergyLabel(
-                this.hass.states,
-                this.hass.formatEntityName,
+                this._states,
+                this._formatEntityName,
                 statRate,
                 this.params.statsMetadata?.[statRate],
                 draft.name
@@ -418,7 +473,7 @@ export class HaEnergySolarSourceEditor extends EnergyEditorMixin(
           ),
         },
       ],
-      intro: this.hass.localize(
+      intro: this._localize(
         "ui.panel.config.energy.solar.dialog.energy_sensor_needed"
       ),
       exclude: this._excludeList,

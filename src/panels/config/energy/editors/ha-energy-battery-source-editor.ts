@@ -4,6 +4,10 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
+import { deepEqual } from "../../../../common/util/deep-equal";
+import { transform } from "../../../../common/decorators/transform";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-alert";
@@ -24,9 +28,18 @@ import {
   isExternalStatistic,
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
-import { entitiesContext, statesContext } from "../../../../data/context";
+import {
+  apiContext,
+  entitiesContext,
+  formattersContext,
+  statesContext,
+} from "../../../../data/context";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantFormatters,
+  ValueChangedEvent,
+} from "../../../../types";
 import type { PowerIntegral } from "../dialogs/energy-integral";
 import {
   confirmIntegrals,
@@ -61,17 +74,52 @@ const socDeviceClass = "battery";
 export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
   DirtyStateProviderMixin<BatteryFormState>()(LitElement)
 ) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false })
   public params!: EnergyBatterySourceEditorParams;
 
-  // Live, so a retry finds the helpers already created
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  // Kept current without rendering on every state change
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
   @consume({ context: entitiesContext, subscribe: true })
   private _entities!: ContextType<typeof entitiesContext>;
+
+  // Keeps the previous array while the result is unchanged, so other state
+  // changes don't render
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<ContextType<typeof statesContext>, PowerIntegral[]>({
+    transformer: function (this: HaEnergyBatterySourceEditor, states) {
+      const pending =
+        states && this._source && this._energy_units
+          ? pendingPowerIntegrals(
+              states,
+              this._source,
+              this._powerType,
+              this._powerConfig,
+              this._energy_units
+            )
+          : [];
+      return deepEqual(pending, this._pending) ? this._pending : pending;
+    },
+    watch: ["_source", "_powerType", "_powerConfig", "_energy_units"],
+  })
+  private _pending?: PowerIntegral[];
 
   @state() private _source?: BatterySourceTypeEnergyPreference;
 
@@ -143,14 +191,14 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
 
   private async _loadUnits() {
     this._energy_units = (
-      await getSensorDeviceClassConvertibleUnits(this.hass, "energy")
+      await getSensorDeviceClassConvertibleUnits(this._api.callWS, "energy")
     ).units;
   }
 
   protected get editorStatus(): EnergyEditorStatus {
     return {
       dirty: this.isDirtyState,
-      valid: this._isValid(this._pendingIntegrals()),
+      valid: this._isValid(this._pending ?? []),
       saving: this._saving,
     };
   }
@@ -160,7 +208,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
       return nothing;
     }
 
-    const pending = this._pendingIntegrals();
+    const pending = this._pending ?? [];
     const labelStatistic =
       this._source.stat_energy_from ||
       this._source.stat_energy_to ||
@@ -177,7 +225,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.battery.dialog.energy_out_of_battery"
           )}
           .excludeStatistics=${[
@@ -186,7 +234,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
           ]}
           @value-changed=${this._statisticFromChanged}
           .disabled=${this._saving}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.battery.dialog.energy_helper_out",
             { unit: this._energy_units?.join(", ") || "" }
           )}
@@ -195,7 +243,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_to}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.battery.dialog.energy_into_battery"
           )}
           .excludeStatistics=${[
@@ -204,13 +252,13 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
           ]}
           @value-changed=${this._statisticToChanged}
           .disabled=${this._saving}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.battery.dialog.energy_helper_into",
             { unit: this._energy_units?.join(", ") || "" }
           )}
         ></ha-statistic-picker>
         <ha-input
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.battery.dialog.display_name"
           )}
           type="text"
@@ -219,8 +267,8 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
           .placeholder=${
             labelStatistic
               ? getStatisticLabel(
-                  this.hass.states,
-                  this.hass.formatEntityName,
+                  this._states,
+                  this._formatEntityName,
                   labelStatistic,
                   this.params.statsMetadata?.[labelStatistic]
                 )
@@ -234,7 +282,6 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
       <wa-divider></wa-divider>
 
       <ha-energy-power-config
-        .hass=${this.hass}
         .powerType=${this._powerType}
         .powerConfig=${this._powerConfig}
         .excludeList=${this._excludeListPower}
@@ -255,10 +302,10 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
           .value=${this._source.stat_soc}
           .includeStatisticsUnitOfMeasurement=${socStatisticsUnits}
           .includeDeviceClass=${socDeviceClass}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.battery.dialog.state_of_charge"
           )}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.battery.dialog.state_of_charge_helper"
           )}
           @value-changed=${this._statisticSocChanged}
@@ -268,10 +315,10 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
           .value=${
             this._source.capacity != null ? String(this._source.capacity) : ""
           }
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.battery.dialog.capacity"
           )}
-          .hint=${this.hass.localize(
+          .hint=${this._localize(
             "ui.panel.config.energy.battery.dialog.capacity_helper"
           )}
           type="number"
@@ -305,7 +352,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
       this.params.statsMetadata &&
       !(statId in this.params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass.callWS, [statId]);
+      const [metadata] = await getStatisticMetadata(this._api.callWS, [statId]);
       if (metadata) {
         this.params.statsMetadata[statId] = metadata;
         this.requestUpdate();
@@ -373,19 +420,6 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
     this._updateFormDirtyState();
   }
 
-  private _pendingIntegrals(): PowerIntegral[] {
-    if (!this._source || !this._energy_units) {
-      return [];
-    }
-    return pendingPowerIntegrals(
-      this.hass.states,
-      this._source,
-      this._powerType,
-      this._powerConfig,
-      this._energy_units
-    );
-  }
-
   public async save(): Promise<boolean> {
     // The editor can be replaced while saving, but created helpers must still
     // be saved with the submitted source
@@ -397,7 +431,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
     this._error = undefined;
     this._saving = true;
     try {
-      const pending = this._pendingIntegrals();
+      const pending = this._pending ?? [];
       if (pending.length) {
         const sensors = await this._energyFromPower(draft, pending);
         if (!sensors) {
@@ -456,21 +490,24 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
     draft: BatterySourceTypeEnergyPreference,
     pending: PowerIntegral[]
   ): Promise<string[] | undefined> {
-    return confirmIntegrals(this, this.hass, {
+    return confirmIntegrals(this, {
+      api: this._api,
+      localize: this._localize,
+      formatEntityName: this._formatEntityName,
       deviceClass: "energy",
       states: this._states,
       entities: this._entities,
       requests: pending.map(({ energy, rate, units }) => ({
         rate,
         units,
-        name: this.hass.localize(
+        name: this._localize(
           energy === "stat_energy_from"
             ? "ui.panel.config.energy.battery.dialog.discharged_energy_name"
             : "ui.panel.config.energy.battery.dialog.charged_energy_name",
           {
             name: computeEnergyLabel(
-              this.hass.states,
-              this.hass.formatEntityName,
+              this._states,
+              this._formatEntityName,
               rate,
               this.params.statsMetadata?.[rate],
               draft.name
@@ -478,7 +515,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
           }
         ),
       })),
-      intro: this.hass.localize(
+      intro: this._localize(
         "ui.panel.config.energy.battery.dialog.energy_sensors_needed"
       ),
       // Neither direction may reuse the statistic of the other

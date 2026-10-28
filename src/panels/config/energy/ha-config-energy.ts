@@ -12,6 +12,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { classMap } from "lit/directives/class-map";
+import { keyed } from "lit/directives/keyed";
 import { styleMap } from "lit/directives/style-map";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -49,7 +50,11 @@ import { fileDownload } from "../../../util/file_download";
 import { showToast } from "../../../util/toast";
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import { showEnergyCustomiseDialog } from "./dialogs/show-dialog-energy-customise";
-import type { EnergyEditorStatus } from "./editors/energy-editor";
+import type {
+  EnergyEditorElement,
+  EnergyEditorStatus,
+} from "./editors/energy-editor";
+import { renderEnergyEditor } from "./editors/render-energy-editor";
 import "./ha-energy-sidebar";
 import type { EnergySidebarConfig, HaEnergySidebar } from "./ha-energy-sidebar";
 
@@ -110,6 +115,9 @@ class HaConfigEnergy extends PreventUnsavedMixin(LitElement) {
   @state() private _bottomSheetHeight?: number;
 
   @query("ha-energy-sidebar") private _sidebarElement?: HaEnergySidebar;
+
+  @query("ha-energy-sidebar > .energy-editor")
+  private _editorElement?: EnergyEditorElement;
 
   public isDirtyState = false;
 
@@ -195,7 +203,7 @@ class HaConfigEnergy extends PreventUnsavedMixin(LitElement) {
                   : `${this._bottomSheetHeight}px`,
             })}
           >
-            <div class="sections">
+            <div class="sections" ?inert=${!!this._editorStatus?.saving}>
               <ha-alert>
                 ${this.hass.localize("ui.panel.config.energy.new_device_info")}
               </ha-alert>
@@ -232,7 +240,9 @@ class HaConfigEnergy extends PreventUnsavedMixin(LitElement) {
                     @close-sidebar=${this._requestCloseSidebar}
                     @bottom-sheet-closed=${this._closeSidebar}
                     @bottom-sheet-resized=${this._bottomSheetResized}
-                  ></ha-energy-sidebar>`
+                  >
+                    ${keyed(this._sidebar, renderEnergyEditor(this._sidebar.editor))}
+                  </ha-energy-sidebar>`
                 : nothing
             }
           </div>
@@ -390,7 +400,7 @@ class HaConfigEnergy extends PreventUnsavedMixin(LitElement) {
   }
 
   private _save() {
-    this._sidebarElement?.save();
+    this._editorElement?.save();
   }
 
   private async _confirmDiscard(addHistory = true): Promise<boolean> {

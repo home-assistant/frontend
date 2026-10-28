@@ -260,7 +260,7 @@ export class EnergyDeviceSettingsWater extends LitElement {
         this._sidebarConfig(editor, device)
       );
     } else {
-      showEnergySettingsDialog(this, { hass: this.hass, editor });
+      showEnergySettingsDialog(this, { editor });
     }
   }
 

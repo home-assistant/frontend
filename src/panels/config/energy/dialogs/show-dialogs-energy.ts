@@ -1,9 +1,7 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import type { HomeAssistant } from "../../../../types";
 import type { EnergyEditorConfig } from "../editors/energy-editor";
 
 export interface EnergySettingsDialogParams {
-  hass: HomeAssistant;
   editor: EnergyEditorConfig;
 }
 

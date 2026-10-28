@@ -2,7 +2,6 @@ import { mdiDelete } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { keyed } from "lit/directives/keyed";
 import "../../../components/ha-dropdown-item";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-snap-bottom-sheet";
@@ -10,11 +9,7 @@ import type { HaSnapBottomSheet } from "../../../components/ha-snap-bottom-sheet
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
 import "../automation/sidebar/ha-automation-sidebar-card";
-import type {
-  EnergyEditorConfig,
-  EnergyEditorElement,
-} from "./editors/energy-editor";
-import { renderEnergyEditor } from "./editors/render-energy-editor";
+import type { EnergyEditorConfig } from "./editors/energy-editor";
 
 // The sidebar card header: the dialog header's 48px minimum plus its padding
 const COLLAPSED_SHEET_HEIGHT = 68;
@@ -41,6 +36,11 @@ declare global {
   }
 }
 
+/**
+ * Shows the slotted editor in a card, or in a bottom sheet on narrow screens.
+ * The editor stays a child of this element, so switching between the two keeps
+ * its unsaved changes.
+ */
 @customElement("ha-energy-sidebar")
 export class HaEnergySidebar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -54,14 +54,8 @@ export class HaEnergySidebar extends LitElement {
   /** Unsaved changes keep the sheet from being swiped away */
   @property({ type: Boolean }) public dirty = false;
 
-  @query(".editor") private _editor?: EnergyEditorElement;
-
   @query("ha-snap-bottom-sheet")
   private _bottomSheetElement?: HaSnapBottomSheet;
-
-  public save(): Promise<boolean> {
-    return this._editor?.save() ?? Promise.resolve(false);
-  }
 
   /** Resolves once the bottom sheet slid out, on narrow screens */
   public async closeSheet() {
@@ -106,7 +100,7 @@ export class HaEnergySidebar extends LitElement {
               `
             : html`<span slot="overflow-menu"></span>`
         }
-        ${keyed(this.config, renderEnergyEditor(this.hass, this.config.editor))}
+        <slot></slot>
       </ha-automation-sidebar-card>
     `;
 
@@ -149,7 +143,7 @@ export class HaEnergySidebar extends LitElement {
     ha-snap-bottom-sheet ha-automation-sidebar-card {
       max-height: 100%;
     }
-    .editor {
+    ::slotted(*) {
       padding-top: var(--ha-space-2);
     }
   `;

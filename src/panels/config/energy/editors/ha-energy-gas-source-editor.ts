@@ -3,7 +3,11 @@ import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HassConfig } from "home-assistant-js-websocket";
 import { consume } from "../../../../common/decorators/consume";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
+import { transform } from "../../../../common/decorators/transform";
 import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
@@ -16,7 +20,13 @@ import type {
 } from "../../../../components/ha-select";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
-import { entitiesContext, statesContext } from "../../../../data/context";
+import {
+  apiContext,
+  configContext,
+  entitiesContext,
+  formattersContext,
+  statesContext,
+} from "../../../../data/context";
 import type { GasSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
   computeEnergyLabel,
@@ -31,7 +41,12 @@ import {
 } from "../../../../data/recorder";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  ValueChangedEvent,
+} from "../../../../types";
 import type { IntegralUnits } from "../dialogs/energy-integral";
 import {
   confirmIntegrals,
@@ -60,16 +75,49 @@ const flowRateUnitClasses = ["volume_flow_rate"];
 export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
   DirtyStateProviderMixin<GasFormState>()(LitElement)
 ) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public params!: EnergyGasSourceEditorParams;
 
-  // Live, so a retry finds the helpers already created
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  // Kept current without rendering on every state change
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
   @consume({ context: entitiesContext, subscribe: true })
   private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<ContextType<typeof statesContext>, string>({
+    transformer: function (this: HaEnergyGasSourceEditor, states) {
+      const statRate = this._source?.stat_rate;
+      return statRate
+        ? states?.[statRate]?.attributes.unit_of_measurement
+        : undefined;
+    },
+    watch: ["_source"],
+  })
+  private _rateUnit?: string;
 
   @state() private _source?: GasSourceTypeEnergyPreference;
 
@@ -108,7 +156,7 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
       ? { ...params.source }
       : emptyGasEnergyPreference();
     this._pickedDisplayUnit = getDisplayUnit(
-      this.hass.states,
+      this._states,
       params.source?.stat_energy_from,
       params.source?.stat_energy_from
         ? params.statsMetadata?.[params.source.stat_energy_from]
@@ -140,9 +188,12 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
 
   private async _loadUnits() {
     const [energy, gas, flowRate] = await Promise.all([
-      getSensorDeviceClassConvertibleUnits(this.hass, "energy"),
-      getSensorDeviceClassConvertibleUnits(this.hass, "gas"),
-      getSensorDeviceClassConvertibleUnits(this.hass, "volume_flow_rate"),
+      getSensorDeviceClassConvertibleUnits(this._api.callWS, "energy"),
+      getSensorDeviceClassConvertibleUnits(this._api.callWS, "gas"),
+      getSensorDeviceClassConvertibleUnits(
+        this._api.callWS,
+        "volume_flow_rate"
+      ),
     ]);
     this._energy_units = energy.units;
     this._gas_units = gas.units;
@@ -184,10 +235,10 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
       <div class="group">
         <div class="group-header">
           <p>
-            ${this.hass.localize("ui.panel.config.energy.gas.dialog.paragraph")}
+            ${this._localize("ui.panel.config.energy.gas.dialog.paragraph")}
           </p>
           <p>
-            ${this.hass.localize("ui.panel.config.energy.gas.dialog.note_para")}
+            ${this._localize("ui.panel.config.energy.gas.dialog.note_para")}
           </p>
         </div>
         <ha-statistic-picker
@@ -195,19 +246,19 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
           .includeUnitClass=${this.params.allowedGasUnitClass || gasUnitClasses}
           .includeDeviceClass=${gasDeviceClasses}
           .value=${this._source.stat_energy_from}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.gas.dialog.gas_usage"
           )}
           .excludeStatistics=${this._excludeList}
           @value-changed=${this._statisticChanged}
           .disabled=${this._saving}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.gas.dialog.entity_para",
             { unit: pickableUnit }
           )}
         ></ha-statistic-picker>
         <ha-input
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.gas.dialog.display_name"
           )}
           type="text"
@@ -216,8 +267,8 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
           .placeholder=${
             labelStatistic
               ? getStatisticLabel(
-                  this.hass.states,
-                  this.hass.formatEntityName,
+                  this._states,
+                  this._formatEntityName,
                   labelStatistic,
                   this.params.statsMetadata?.[labelStatistic]
                 )
@@ -233,7 +284,7 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
       <ha-statistic-picker
         .includeUnitClass=${flowRateUnitClasses}
         .value=${this._source.stat_rate}
-        .label=${this.hass.localize(
+        .label=${this._localize(
           "ui.panel.config.energy.gas.dialog.gas_flow_rate"
         )}
         .excludeStatistics=${this._excludeListFlowRate}
@@ -241,7 +292,7 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
         .disabled=${this._saving}
         .invalid=${!!this._flowRateError()}
         .errorMessage=${this._flowRateError()}
-        .helper=${this.hass.localize(
+        .helper=${this._localize(
           "ui.panel.config.energy.gas.dialog.flow_rate_para",
           { unit: this._flow_rate_units?.join(", ") || "" }
         )}
@@ -251,10 +302,10 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
 
       <div class="group">
         <ha-select
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.gas.dialog.cost_tracking"
           )}
-          .helper=${this.hass.localize(
+          .helper=${this._localize(
             "ui.panel.config.energy.gas.dialog.cost_para"
           )}
           .value=${this._costs}
@@ -275,26 +326,20 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
     return [
       {
         value: "no-costs",
-        label: this.hass.localize("ui.panel.config.energy.gas.dialog.no_cost"),
+        label: this._localize("ui.panel.config.energy.gas.dialog.no_cost"),
       },
       {
         value: "statistic",
-        label: this.hass.localize(
-          "ui.panel.config.energy.gas.dialog.cost_stat"
-        ),
+        label: this._localize("ui.panel.config.energy.gas.dialog.cost_stat"),
       },
       {
         value: "entity",
-        label: this.hass.localize(
-          "ui.panel.config.energy.gas.dialog.cost_entity"
-        ),
+        label: this._localize("ui.panel.config.energy.gas.dialog.cost_entity"),
         disabled: externalSource,
       },
       {
         value: "number",
-        label: this.hass.localize(
-          "ui.panel.config.energy.gas.dialog.cost_number"
-        ),
+        label: this._localize("ui.panel.config.energy.gas.dialog.cost_number"),
         disabled: externalSource,
       },
     ];
@@ -305,7 +350,7 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
       ? this._pickedDisplayUnit
       : this._integralTotalUnit();
     const unitPrice = displayUnit
-      ? `${this.hass.config.currency}/${displayUnit}`
+      ? `${this._hassConfig.currency}/${displayUnit}`
       : undefined;
     const pickedUnitClass =
       displayUnit && this._energy_units?.includes(displayUnit)
@@ -320,9 +365,9 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
           .disabled=${this._saving}
           statistic-types="sum"
           .value=${this._source!.stat_cost}
-          .label=${`${this.hass.localize(
+          .label=${`${this._localize(
             "ui.panel.config.energy.gas.dialog.cost_stat_input"
-          )} (${this.hass.config.currency})`}
+          )} (${this._hassConfig.currency})`}
           @value-changed=${this._priceStatChanged}
         ></ha-statistic-picker>`;
       case "entity":
@@ -330,26 +375,26 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
           .disabled=${this._saving}
           include-domains='["sensor", "input_number"]'
           .value=${this._source!.entity_energy_price}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.panel.config.energy.gas.dialog.cost_entity_input"
           )}
           .helper=${
             pickedUnitClass
               ? html`<ha-markdown
-                  .content=${this.hass.localize(
+                  .content=${this._localize(
                     "ui.panel.config.energy.gas.dialog.cost_entity_helper",
                     pickedUnitClass === "energy"
                       ? {
-                          currency: this.hass.config.currency,
-                          class: this.hass.localize(
+                          currency: this._hassConfig.currency,
+                          class: this._localize(
                             "ui.panel.config.energy.gas.dialog.cost_entity_helper_energy"
                           ),
                           unit1: "kWh",
                           unit2: "Wh",
                         }
                       : {
-                          currency: this.hass.config.currency,
-                          class: this.hass.localize(
+                          currency: this._hassConfig.currency,
+                          class: this._localize(
                             "ui.panel.config.energy.gas.dialog.cost_entity_helper_volume"
                           ),
                           unit1: "m³",
@@ -364,7 +409,7 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
       case "number":
         return html`<ha-input
           .disabled=${this._saving}
-          .label=${`${this.hass.localize(
+          .label=${`${this._localize(
             "ui.panel.config.energy.gas.dialog.cost_number_input"
           )} ${unitPrice ? ` (${unitPrice})` : ""}`}
           step="any"
@@ -432,7 +477,7 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
 
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
     if (ev.detail.value) {
-      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
+      const [metadata] = await getStatisticMetadata(this._api.callWS, [
         ev.detail.value,
       ]);
       if (
@@ -444,7 +489,7 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
         this.params.statsMetadata[ev.detail.value] = metadata;
       }
       this._pickedDisplayUnit = getDisplayUnit(
-        this.hass.states,
+        this._states,
         ev.detail.value,
         metadata
       );
@@ -486,10 +531,7 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
     ) {
       return undefined;
     }
-    return integralUnits(
-      this.hass.states[statRate]?.attributes.unit_of_measurement,
-      this._gas_units
-    );
+    return integralUnits(this._rateUnit, this._gas_units);
   }
 
   private _flowRateError(): string | undefined {
@@ -501,7 +543,7 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
     ) {
       return undefined;
     }
-    return this.hass.localize(
+    return this._localize(
       this.params.allowedGasUnitClass === "energy"
         ? "ui.panel.config.energy.gas.dialog.flow_rate_energy_sources"
         : "ui.panel.config.energy.gas.dialog.flow_rate_no_volume"
@@ -516,18 +558,15 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
     const statRate = this._source!.stat_rate!;
     // A reused helper can display another unit than a new one would
     const existing = findIntegral(
-      this.hass.states,
-      this.hass.entities,
+      this._states,
+      this._entities,
       statRate,
       "gas",
       this._excludeList
     );
     return existing
-      ? getDisplayUnit(this.hass.states, existing, undefined) || undefined
-      : integralTotalUnit(
-          this.hass.states[statRate].attributes.unit_of_measurement!,
-          units
-        );
+      ? getDisplayUnit(this._states, existing, undefined) || undefined
+      : integralTotalUnit(this._rateUnit!, units);
   }
 
   public async save(): Promise<boolean> {
@@ -586,7 +625,10 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
     if (!units) {
       return undefined;
     }
-    const sensors = await confirmIntegrals(this, this.hass, {
+    const sensors = await confirmIntegrals(this, {
+      api: this._api,
+      localize: this._localize,
+      formatEntityName: this._formatEntityName,
       deviceClass: "gas",
       states: this._states,
       entities: this._entities,
@@ -594,12 +636,12 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
         {
           rate: statRate,
           units,
-          name: this.hass.localize(
+          name: this._localize(
             "ui.panel.config.energy.integral.gas.sensor_name",
             {
               name: computeEnergyLabel(
-                this.hass.states,
-                this.hass.formatEntityName,
+                this._states,
+                this._formatEntityName,
                 statRate,
                 this.params.statsMetadata?.[statRate],
                 draft.name
@@ -608,7 +650,7 @@ export class HaEnergyGasSourceEditor extends EnergyEditorMixin(
           ),
         },
       ],
-      intro: this.hass.localize(
+      intro: this._localize(
         "ui.panel.config.energy.gas.dialog.gas_sensor_needed"
       ),
       exclude: this._excludeList,

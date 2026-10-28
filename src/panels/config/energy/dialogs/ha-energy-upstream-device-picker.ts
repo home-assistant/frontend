@@ -1,20 +1,30 @@
+import type { ContextType } from "@lit/context";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { mdiChartLine, mdiShape } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
+import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
+import { transform } from "../../../../common/decorators/transform";
 import {
   computeEntityNameParts,
   computeEntitySearchLabels,
 } from "../../../../common/entity/compute_entity_name_display";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-combo-box-item";
 import "../../../../components/ha-generic-picker";
 import type { PickerComboBoxItem } from "../../../../components/ha-picker-combo-box";
 import type { PickerValueRenderer } from "../../../../components/ha-picker-field";
 import "../../../../components/ha-svg-icon";
+import {
+  formattersContext,
+  registriesContext,
+  statesContext,
+} from "../../../../data/context";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import { computeEnergyLabel } from "../../../../data/energy";
 import { domainToName } from "../../../../data/integration";
@@ -22,7 +32,10 @@ import {
   getStatisticLabel,
   type StatisticsMetaData,
 } from "../../../../data/recorder";
-import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type {
+  HomeAssistantFormatters,
+  ValueChangedEvent,
+} from "../../../../types";
 
 interface UpstreamDeviceComboBoxItem extends PickerComboBoxItem {
   stateObj?: HassEntity;
@@ -41,8 +54,6 @@ const SEARCH_KEYS = [
 
 @customElement("ha-energy-upstream-device-picker")
 export class HaEnergyUpstreamDevicePicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public value?: string;
 
   @property() public label?: string;
@@ -59,35 +70,58 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
   @property({ attribute: false })
   public statsMetadata?: Record<string, StatisticsMetaData>;
 
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
   private _computeItem = (statisticId: string): UpstreamDeviceComboBoxItem => {
     // Use the energy config's custom display name when the user has set one.
     const name = this.possibleParents.find(
       (parent) => parent.stat_consumption === statisticId
     )?.name;
-    const stateObj = this.hass.states[statisticId];
+    const stateObj = this._states[statisticId];
 
     if (stateObj) {
-      const { area: areaName } = computeEntityNameParts(stateObj, this.hass);
+      const { area: areaName } = computeEntityNameParts(
+        stateObj,
+        this._registries
+      );
 
       return {
         id: statisticId,
         // Match the label shown in the device list and the graphs.
         primary: computeEnergyLabel(
-          this.hass.states,
-          this.hass.formatEntityName,
+          this._states,
+          this._formatEntityName,
           statisticId,
           this.statsMetadata?.[statisticId],
           name
         ),
         secondary: areaName,
         stateObj,
-        search_labels: computeEntitySearchLabels(stateObj, this.hass),
+        search_labels: computeEntitySearchLabels(stateObj, this._registries),
       };
     }
 
     const label = getStatisticLabel(
-      this.hass.states,
-      this.hass.formatEntityName,
+      this._states,
+      this._formatEntityName,
       statisticId,
       this.statsMetadata?.[statisticId]
     );
@@ -95,7 +129,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
 
     if (isExternal) {
       const domainName = domainToName(
-        this.hass.localize,
+        this._localize,
         statisticId.split(":")[0]
       );
       return {
@@ -110,7 +144,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     return {
       id: statisticId,
       primary: name || label,
-      secondary: this.hass.localize("ui.components.statistic-picker.no_state"),
+      secondary: this._localize("ui.components.statistic-picker.no_state"),
       icon_path: mdiShape,
       search_labels: { label },
     };
@@ -118,7 +152,10 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
 
   private _items = memoizeOne(
     (
-      _hass: HomeAssistant,
+      _states: ContextType<typeof statesContext>,
+      _registries: ContextType<typeof registriesContext>,
+      _formatEntityName: HomeAssistantFormatters["formatEntityName"],
+      _localize: LocalizeFunc,
       _value: string | undefined,
       _possibleParents: DeviceConsumptionEnergyPreference[],
       _statsMetadata?: Record<string, StatisticsMetaData>
@@ -139,7 +176,10 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
 
   private _getItems = () =>
     this._items(
-      this.hass,
+      this._states,
+      this._registries,
+      this._formatEntityName,
+      this._localize,
       this.value,
       this.possibleParents,
       this.statsMetadata
