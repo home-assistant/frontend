@@ -1,17 +1,24 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../common/entity/supports-feature";
 import "../components/entity/state-info";
 import "../components/ha-button";
 import { callProtectedLockService, LockEntityFeature } from "../data/lock";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantApi } from "../types";
 import { haStyle } from "../resources/styles";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { apiContext } from "../data/context";
 
 @customElement("state-card-lock")
 class StateCardLock extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
@@ -34,7 +41,7 @@ class StateCardLock extends LitElement {
                 size="s"
                 @click=${this._callService}
                 data-service="open"
-                >${this.hass.localize("ui.card.lock.open")}</ha-button
+                >${this._localize("ui.card.lock.open")}</ha-button
               >`
             : nothing
         }
@@ -45,7 +52,7 @@ class StateCardLock extends LitElement {
                 size="s"
                 @click=${this._callService}
                 data-service="unlock"
-                >${this.hass.localize("ui.card.lock.unlock")}</ha-button
+                >${this._localize("ui.card.lock.unlock")}</ha-button
               >`
             : nothing
         }
@@ -56,7 +63,7 @@ class StateCardLock extends LitElement {
                 size="s"
                 @click=${this._callService}
                 data-service="lock"
-                >${this.hass.localize("ui.card.lock.lock")}</ha-button
+                >${this._localize("ui.card.lock.lock")}</ha-button
               >`
             : nothing
         }
@@ -67,10 +74,17 @@ class StateCardLock extends LitElement {
   private async _callService(ev) {
     ev.stopPropagation();
     const service = ev.target.dataset.service;
-    if (!this.hass || !this.stateObj) {
+    if (!this.stateObj) {
       return;
     }
-    await callProtectedLockService(this, this.hass, this.stateObj, service);
+    await callProtectedLockService(
+      this,
+      this._api.callService,
+      this._api.callWS,
+      this._localize,
+      this.stateObj,
+      service
+    );
   }
 
   static get styles(): CSSResultGroup {
