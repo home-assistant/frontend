@@ -100,9 +100,17 @@ describe("snapFanPercentage", () => {
   it("snaps to the step the fan reports for that speed", () => {
     // The core reports 33 and 66 for a three speed fan, and maps 67 to high.
     const stateObj = fan(100 / 3);
-    expect(snapFanPercentage(stateObj, 67)).toBe(66);
+    expect(snapFanPercentage(stateObj, 67)).toBe(100);
     expect(snapFanPercentage(stateObj, 100)).toBe(100);
     expect(snapFanPercentage(fan(100 / 6), 50)).toBe(50);
+  });
+
+  it("keeps the percentages reported by fans with many speeds", () => {
+    // From 53 speeds on, the core's floor(k * 100 / n) falls closer to the
+    // step below: rounding moved speed 9 of 53 (16%) to 15%.
+    expect(snapFanPercentage(fan(100 / 53), 16)).toBe(16);
+    // Speed 2 of 128 is reported as 1%: rounding turned it into 0%, off.
+    expect(snapFanPercentage(fan(100 / 128), 1)).toBe(1);
   });
 
   it("never snaps a favorite down to off", () => {

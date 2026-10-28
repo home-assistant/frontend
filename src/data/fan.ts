@@ -153,10 +153,10 @@ export const fanSupportsFavorites = (stateObj: FanEntity): boolean =>
 const isFanDirection = (value: unknown): value is FanDirection =>
   value === "forward" || value === "reverse";
 
-// Snap a stored percentage to the nearest speed step the fan reports. Floor
-// matches fanSpeedToPercentage and the core, which maps a percentage to the
-// step above it: rounding up would select the next speed. The epsilon absorbs
-// float error such as 3 * (100 / 6) = 49.999…
+// Snap a stored percentage to the speed step the core selects for it. The
+// core reports floor(k * 100 / n) for speed k and maps a percentage to the
+// step at or above it, so ceil keeps every reported percentage unchanged.
+// The epsilons absorb float error such as 3 * (100 / 6) = 49.999…
 export const snapFanPercentage = (
   stateObj: FanEntity,
   percentage: number
@@ -165,9 +165,9 @@ export const snapFanPercentage = (
   const stepCount = Math.round(100 / step);
   const stepIndex = Math.min(
     stepCount,
-    Math.max(1, Math.round(percentage / step))
+    Math.max(1, Math.ceil(percentage / step - 1e-9))
   );
-  return Math.min(100, Math.floor(stepIndex * step + 1e-9));
+  return Math.max(1, Math.min(100, Math.floor(stepIndex * step + 1e-9)));
 };
 
 // The favorite as it applies to the fan now: values of features the fan no
