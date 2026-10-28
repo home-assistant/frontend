@@ -136,8 +136,8 @@ export class HaSelectSelector extends LitElement {
       const value =
         !this.value || this.value === "" ? [] : ensureArray(this.value);
       return html`
-        <div>
-          ${this.label}
+        <div class="checkbox-list">
+          ${this.label} ${this._renderHelper()}
           ${options.map(
             (item: SelectOption) => html`
               <ha-checkbox
@@ -151,7 +151,6 @@ export class HaSelectSelector extends LitElement {
             `
           )}
         </div>
-        ${this._renderHelper()}
       `;
     }
 
@@ -414,6 +413,11 @@ export class HaSelectSelector extends LitElement {
     }
 
     ha-select-box + ha-input-helper-text {
+      margin-top: 4px;
+    }
+
+    .checkbox-list ha-input-helper-text {
+      padding: 0;
       margin-top: 4px;
     }
 
