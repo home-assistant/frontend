@@ -15,6 +15,7 @@
     "light": "Lights",
     "security": "Security",
     "climate": "Climate",
+    "weather": "Weather",
     "home": "Overview",
     "maintenance": "Maintenance",
     "notfound": "Page not found"
@@ -413,7 +414,81 @@
         "hourly": "Hourly",
         "twice_daily": "Twice daily",
         "high": "High",
-        "low": "Low"
+        "low": "Low",
+        "now": "Now",
+        "today": "Today",
+        "feels_like": "Feels like {temperature}",
+        "high_low": "High {high} · Low {low}",
+        "next_hours": "Next hours",
+        "hourly_modes": {
+          "temperature": "Temperature",
+          "precipitation": "Rain",
+          "wind": "Wind"
+        },
+        "sunrise": "Sunrise",
+        "sunset": "Sunset",
+        "daily_forecast": "{count} day forecast",
+        "sun": "Sun",
+        "daylight": "{hours}h {minutes}m of daylight",
+        "moon": "Moon",
+        "moon_phase": {
+          "new_moon": "New moon",
+          "waxing_crescent": "Waxing crescent",
+          "first_quarter": "First quarter",
+          "waxing_gibbous": "Waxing gibbous",
+          "full_moon": "Full moon",
+          "waning_gibbous": "Waning gibbous",
+          "last_quarter": "Last quarter",
+          "waning_crescent": "Waning crescent"
+        },
+        "illumination": "Illumination",
+        "moonrise": "Moonrise",
+        "moonset": "Moonset",
+        "next_full_moon": "Next full moon",
+        "in_days": "{count, plural,\n  one {In # day}\n  other {In # days}\n}",
+        "wind": "Wind",
+        "speed": "Speed",
+        "gusts": "Gusts",
+        "from": "From",
+        "beaufort": "Bft",
+        "air_quality": "Air quality",
+        "fine_particles": "fine particles",
+        "air_quality_level": {
+          "good": "Good",
+          "fair": "Fair",
+          "moderate": "Moderate",
+          "poor": "Poor",
+          "very_poor": "Very poor",
+          "extremely_poor": "Extremely poor"
+        },
+        "uv_level": {
+          "low": "Low",
+          "moderate": "Moderate",
+          "high": "High",
+          "very_high": "Very high",
+          "extreme": "Extreme"
+        },
+        "metrics": {
+          "humidity": "Humidity",
+          "pressure": "Pressure",
+          "visibility": "Visibility",
+          "uv_index": "UV index",
+          "precipitation": "Precipitation",
+          "compared_to_average": "Compared to average"
+        },
+        "notes": {
+          "dew_point": "The dew point is {dew_point} right now.",
+          "pressure_rising": "Rising over the last 3 hours.",
+          "pressure_falling": "Falling over the last 3 hours.",
+          "pressure_steady": "Steady over the last 3 hours.",
+          "uv_peak": "Up to {uv_index} at {time}.",
+          "rain_last_24h": "{unit} in the last 24 hours",
+          "rain_expected": "{amount} expected in the next 24 hours.",
+          "average_above": "above the average high",
+          "average_below": "below the average high",
+          "average_same": "same as the average high",
+          "average_detail": "Today {today}. The average high of the last {days} days was {average}."
+        }
       }
     },
     "card_features": {
@@ -13144,6 +13219,51 @@
         "download_data": "[%key:ui::panel::history::download_data%]",
         "download_data_error": "[%key:ui::panel::history::download_data_error%]",
         "error_no_data": "No activity for the selected target in the selected time range."
+      },
+      "weather": {
+        "edit": "Edit weather page",
+        "refresh": "Update weather now",
+        "updated": "Updated {time}",
+        "empty": {
+          "title": "No weather yet",
+          "description": "An administrator can add a weather service to show the weather here.",
+          "description_admin": "Add a weather service to see the forecast, the sun and moon, and the air quality around your home.",
+          "action": "Add a weather service"
+        },
+        "editor": {
+          "title": "Edit weather page",
+          "load_failed": "Failed to load weather page configuration",
+          "save_failed": "Failed to save weather page configuration",
+          "sources": {
+            "title": "Sources",
+            "description": "For every value, the page uses the first source that has it. Drag to change the order.",
+            "empty": "There are no weather sources yet. Add a weather service below.",
+            "add": "Add source",
+            "remove": "Remove source"
+          },
+          "add_service": {
+            "title": "Add a service",
+            "description": "Integrations for weather and air quality. These are the connectors that power this page.",
+            "suggested": "Suggested for your home",
+            "add": "Add",
+            "browse": "Browse weather services"
+          },
+          "sensors": {
+            "title": "Sensors",
+            "description": "Measurements from around your home. These are found automatically, you can change them here.",
+            "rain_gauge": "Rain gauge",
+            "rain_gauge_helper": "Shows how much rain fell in the last 24 hours. Leave empty to hide it.",
+            "air_quality": "Air quality",
+            "air_quality_helper": "Air quality index, fine particles, ozone and nitrogen dioxide.",
+            "pollen": "Pollen",
+            "pollen_helper": "Pollen sensors from your air quality services."
+          },
+          "settings": {
+            "title": "Settings",
+            "show_on_home": "Show on home",
+            "show_on_home_description": "Show the weather on the home overview."
+          }
+        }
       }
     },
     "tips": {
