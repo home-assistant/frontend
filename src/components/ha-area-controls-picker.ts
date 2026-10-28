@@ -192,7 +192,14 @@ export class HaAreaControlsPicker extends LitElement {
             }
 
             const { primary, secondary } = computeEntityPickerDisplay(
-              this.hass!,
+              {
+                entities: this.hass!.entities,
+                devices: this.hass!.devices,
+                areas: this.hass!.areas,
+                floors: this.hass!.floors,
+                language: this.hass!.language,
+                translationMetadata: this.hass!.translationMetadata,
+              },
               stateObj
             );
 
