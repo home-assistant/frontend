@@ -213,7 +213,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       (isOffState &&
         !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON));
     const hasNoImage = !this._image;
-    const controls = computeMediaControls(stateObj, false);
+    const allControls = computeMediaControls(stateObj, false);
+    const hasPlayPause = allControls?.some((c) =>
+      ["media_play_pause", "media_pause", "media_play"].includes(c.action)
+    );
+    const controls = hasPlayPause
+      ? allControls!.filter((c) => c.action !== "media_stop")
+      : allControls;
     const showControls =
       !isUnavailable &&
       controls &&
@@ -758,17 +764,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       --mdc-icon-size: 40px;
     }
 
-    /* Stop is only a main button when there is no play/pause */
-    ha-icon-button:is(
-        [action="media_play"],
-        [action="media_play_pause"],
-        [action="media_pause"]
-      )
-      ~ ha-icon-button[action="media_stop"] {
-      --ha-icon-button-size: 44px;
-      --mdc-icon-size: 30px;
-    }
-
     ha-icon-button.browse-media {
       --mdc-icon-size: 24px;
       inset-inline-end: 4px;
@@ -853,21 +848,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     .narrow ha-icon-button[action="media_play"],
     .narrow ha-icon-button[action="media_play_pause"],
-    .narrow ha-icon-button[action="media_pause"],
-    .narrow ha-icon-button[action="media_stop"] {
+    .narrow
+      ha-icon-button[action="media_pause"]
+      .narrow
+      ha-icon-button[action="media_stop"] {
       --ha-icon-button-size: 50px;
       --mdc-icon-size: 36px;
-    }
-
-    .narrow
-      ha-icon-button:is(
-        [action="media_play"],
-        [action="media_play_pause"],
-        [action="media_pause"]
-      )
-      ~ ha-icon-button[action="media_stop"] {
-      --ha-icon-button-size: 40px;
-      --mdc-icon-size: 28px;
     }
 
     .narrow ha-icon-button.browse-media {
