@@ -5798,6 +5798,9 @@
                 "entity": {
                   "label": "Entity"
                 },
+                "event": {
+                  "label": "Event"
+                },
                 "time": {
                   "label": "Time"
                 },
