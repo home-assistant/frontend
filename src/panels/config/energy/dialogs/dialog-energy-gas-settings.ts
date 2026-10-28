@@ -231,6 +231,8 @@ export class DialogEnergyGasSettings
           .excludeStatistics=${this._excludeListFlowRate}
           @value-changed=${this._flowRateStatisticChanged}
           .disabled=${this._saving}
+          .invalid=${!!this._flowRateError()}
+          .errorMessage=${this._flowRateError()}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.gas.dialog.flow_rate_para",
             { unit: this._flow_rate_units?.join(", ") || "" }
@@ -492,6 +494,22 @@ export class DialogEnergyGasSettings
     return integralUnits(
       this.hass.states[statRate]?.attributes.unit_of_measurement,
       this._gas_units
+    );
+  }
+
+  private _flowRateError(): string | undefined {
+    if (
+      this._source?.stat_energy_from ||
+      !this._source?.stat_rate ||
+      !this._gas_units ||
+      this._integralUnits()
+    ) {
+      return undefined;
+    }
+    return this.hass.localize(
+      this._params?.allowedGasUnitClass === "energy"
+        ? "ui.panel.config.energy.gas.dialog.flow_rate_energy_sources"
+        : "ui.panel.config.energy.gas.dialog.flow_rate_no_volume"
     );
   }
 

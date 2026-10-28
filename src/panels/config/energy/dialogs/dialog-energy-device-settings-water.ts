@@ -176,6 +176,8 @@ export class DialogEnergyDeviceSettingsWater
           .excludeStatistics=${this._excludeListFlowRate}
           @value-changed=${this._flowRateStatisticChanged}
           .disabled=${this._saving}
+          .invalid=${!!this._flowRateError()}
+          .errorMessage=${this._flowRateError()}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.device_consumption_water.dialog.selected_stat_intro",
             { unit: this._flow_rate_units?.join(", ") || "" }
@@ -319,6 +321,20 @@ export class DialogEnergyDeviceSettingsWater
     }
     this._device = newDevice;
     this._updateDirtyState(this._device);
+  }
+
+  private _flowRateError(): string | undefined {
+    if (
+      this._device?.stat_consumption ||
+      !this._device?.stat_rate ||
+      !this._volume_units ||
+      this._integralUnits()
+    ) {
+      return undefined;
+    }
+    return this.hass.localize(
+      "ui.panel.config.energy.device_consumption_water.dialog.flow_rate_no_volume"
+    );
   }
 
   private _integralUnits(): IntegralUnits | undefined {

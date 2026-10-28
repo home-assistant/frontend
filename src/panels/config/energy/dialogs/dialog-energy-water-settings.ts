@@ -182,6 +182,8 @@ export class DialogEnergyWaterSettings
           .excludeStatistics=${this._excludeListFlowRate}
           @value-changed=${this._flowRateStatisticChanged}
           .disabled=${this._saving}
+          .invalid=${!!this._flowRateError()}
+          .errorMessage=${this._flowRateError()}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.water.dialog.flow_rate_para",
             { unit: this._flow_rate_units?.join(", ") || "" }
@@ -404,6 +406,20 @@ export class DialogEnergyWaterSettings
 
   private _updateFormDirtyState(): void {
     this._updateDirtyState({ source: this._source!, costs: this._costs! });
+  }
+
+  private _flowRateError(): string | undefined {
+    if (
+      this._source?.stat_energy_from ||
+      !this._source?.stat_rate ||
+      !this._water_units ||
+      this._integralUnits()
+    ) {
+      return undefined;
+    }
+    return this.hass.localize(
+      "ui.panel.config.energy.water.dialog.flow_rate_no_volume"
+    );
   }
 
   private _integralUnits(): IntegralUnits | undefined {

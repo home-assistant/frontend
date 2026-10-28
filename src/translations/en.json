@@ -4785,7 +4785,9 @@
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "gas_usage": "Gas consumption",
               "gas_flow_rate": "Gas flow rate",
-              "flow_rate_para": "Pick a sensor which measures the gas flow rate in either of {unit}.",
+              "flow_rate_para": "Optionally pick a sensor which measures the gas flow rate in either of {unit}.",
+              "flow_rate_no_volume": "Home Assistant cannot calculate the gas volume from this flow rate, so pick a gas sensor above.",
+              "flow_rate_energy_sources": "Your gas sources measure energy, which a flow rate cannot provide, so pick a gas sensor above.",
               "gas_sensor_needed": "To track your gas consumption, you need a gas sensor."
             }
           },
@@ -4813,7 +4815,8 @@
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "water_usage": "Water consumption",
               "water_flow_rate": "Water flow rate",
-              "flow_rate_para": "Pick a sensor which measures the water flow rate in either of {unit}.",
+              "flow_rate_para": "Optionally pick a sensor which measures the water flow rate in either of {unit}.",
+              "flow_rate_no_volume": "Home Assistant cannot calculate the water volume from this flow rate, so pick a water sensor above.",
               "water_sensor_needed": "To track your water consumption, you need a water sensor."
             }
           },
@@ -4852,7 +4855,8 @@
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a water meter measured by the main water supply), selecting the upstream device prevents duplicate water tracking.",
               "no_upstream_devices": "No eligible upstream devices",
-              "water_sensor_needed": "To track this device, you need a water sensor."
+              "water_sensor_needed": "To track this device, you need a water sensor.",
+              "flow_rate_no_volume": "[%key:ui::panel::config::energy::water::dialog::flow_rate_no_volume%]"
             }
           },
           "integral": {
