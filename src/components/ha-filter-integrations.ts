@@ -6,6 +6,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
 import {
@@ -23,9 +24,20 @@ import { haStyleScrollbar } from "../resources/styles";
 import "./ha-check-list-item";
 import "./ha-domain-icon";
 import "./ha-expansion-panel";
+import "./ha-badge";
 import "./ha-list";
+import "./ha-svg-icon";
+import "./ha-tooltip";
 import "./input/ha-input-search";
 import type { HaInputSearch } from "./input/ha-input-search";
+
+export interface IntegrationFilterCount {
+  key: string;
+  path: string;
+  count: number;
+  label: string;
+  color?: string;
+}
 
 @customElement("ha-filter-integrations")
 export class HaFilterIntegrations extends LitElement {
@@ -34,6 +46,12 @@ export class HaFilterIntegrations extends LitElement {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public expanded = false;
+
+  /** Counts to show beside each integration, by domain. */
+  @property({ attribute: false }) public counts?: Record<
+    string,
+    IntegrationFilterCount[]
+  >;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -120,6 +138,7 @@ export class HaFilterIntegrations extends LitElement {
                                 brand-fallback
                               ></ha-domain-icon>
                               ${integration.name}
+                              ${this._renderCounts(integration.domain)}
                             </ha-check-list-item>`
                         )}
                       </ha-list>`
@@ -129,6 +148,32 @@ export class HaFilterIntegrations extends LitElement {
           : nothing
       }
     `;
+  }
+
+  private _renderCounts(domain: string) {
+    const counts = this.counts?.[domain];
+
+    if (!counts?.length) {
+      return nothing;
+    }
+
+    return html`<span class="counts">
+      ${counts.map(
+        (item) =>
+          html`<ha-badge
+              id="count-${domain}-${item.key}"
+              role="img"
+              aria-label=${item.label}
+              style=${styleMap({ "--badge-color": item.color })}
+            >
+              <ha-svg-icon slot="icon" .path=${item.path}></ha-svg-icon>
+              ${item.count}
+            </ha-badge>
+            <ha-tooltip for="count-${domain}-${item.key}">
+              ${item.label}
+            </ha-tooltip>`
+      )}
+    </span>`;
   }
 
   private _expandedChanged(ev) {
@@ -245,6 +290,15 @@ export class HaFilterIntegrations extends LitElement {
         ha-input-search {
           display: block;
           padding: var(--ha-space-1) var(--ha-space-2) 0;
+        }
+        .counts {
+          display: inline-flex;
+          gap: var(--ha-space-1);
+          margin-inline-start: var(--ha-space-2);
+          vertical-align: middle;
+          --ha-badge-size: 22px;
+          --ha-badge-icon-size: 14px;
+          --ha-badge-font-size: var(--ha-font-size-xs);
         }
       `,
     ];

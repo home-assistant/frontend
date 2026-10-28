@@ -5084,6 +5084,13 @@
             "info": "INFO",
             "debug": "DEBUG"
           },
+          "level_count": {
+            "critical": "{count} critical {count, plural,\n one {entry}\n other {entries}\n}",
+            "error": "{count} {count, plural,\n one {error}\n other {errors}\n}",
+            "warning": "{count} {count, plural,\n one {warning}\n other {warnings}\n}",
+            "info": "{count} info {count, plural,\n one {entry}\n other {entries}\n}",
+            "debug": "{count} debug {count, plural,\n one {entry}\n other {entries}\n}"
+          },
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This log entry is from a custom integration.",
           "show_full_logs": "Show raw logs",
