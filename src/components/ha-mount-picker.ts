@@ -21,7 +21,6 @@ import {
   supervisorMountDescription,
 } from "../data/supervisor/mounts";
 import "./ha-alert";
-import "./ha-list-item";
 import "./ha-select";
 import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 

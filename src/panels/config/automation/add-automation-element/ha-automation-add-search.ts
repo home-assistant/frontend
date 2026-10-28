@@ -1,4 +1,3 @@
-import "@material/mwc-list/mwc-list";
 import type { ContextType } from "@lit/context";
 import {
   mdiCheck,
