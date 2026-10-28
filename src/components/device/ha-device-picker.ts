@@ -86,7 +86,6 @@ export class HaDevicePicker extends LitElement {
 
   @state()
   @consume({ context: brandsAccessTokenContext, subscribe: true })
-  // @ts-ignore re-render trigger only, its value is never read
   private _brandsAccessToken?: string;
 
   @consume({ context: apiContext, subscribe: true })
@@ -345,7 +344,8 @@ export class HaDevicePicker extends LitElement {
       registries: ContextType<typeof registriesContext>,
       localize: ContextType<typeof internationalizationContext>["localize"],
       darkMode: boolean | undefined,
-      hassUrl: string | undefined
+      hassUrl: string | undefined,
+      _brandsAccessToken: string | undefined
     ) =>
       (value: string) => {
         const deviceId = value;
@@ -511,7 +511,8 @@ export class HaDevicePicker extends LitElement {
       this._registries,
       this._i18n.localize,
       this._darkMode,
-      this._hassUrl
+      this._hassUrl,
+      this._brandsAccessToken
     );
 
     return html`
