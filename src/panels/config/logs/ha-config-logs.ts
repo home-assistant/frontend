@@ -275,11 +275,15 @@ export class HaConfigLogs extends LitElement {
                     .narrow=${this.narrow}
                     .value=${this._integrations}
                     .expanded=${this._integrationsExpanded}
-                    .counts=${this._getIntegrationCounts(
-                      this._logItems,
-                      this._manifests,
-                      this.hass.localize
-                    )}
+                    .counts=${
+                      this._detail
+                        ? undefined
+                        : this._getIntegrationCounts(
+                            this._logItems,
+                            this._manifests,
+                            this.hass.localize
+                          )
+                    }
                     @data-table-filter-changed=${this._integrationsChanged}
                     @expanded-changed=${this._integrationsExpandedChanged}
                   ></ha-filter-integrations>

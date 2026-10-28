@@ -162,6 +162,8 @@ export class HaFilterIntegrations extends LitElement {
         (item) =>
           html`<ha-badge
               id="count-${domain}-${item.key}"
+              role="img"
+              aria-label=${item.label}
               style=${styleMap({ "--badge-color": item.color })}
             >
               <ha-svg-icon slot="icon" .path=${item.path}></ha-svg-icon>
