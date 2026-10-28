@@ -97,8 +97,8 @@ export class HaNetworkGraph extends LitElement {
   @property({ attribute: false }) public searchFilter = "";
 
   /**
-   * Id of a node to highlight. The view centers on it, zoomed in as far as its
-   * neighbors stay visible, and follows it until the user moves the view.
+   * Id of a node to highlight. The view centers on it, zoomed so its neighbors
+   * stay visible, and follows it until the user moves the view.
    */
   @property({ attribute: false }) public selectedNode?: string;
 
@@ -345,9 +345,7 @@ export class HaNetworkGraph extends LitElement {
           itemStyle: selected
             ? { ...node.itemStyle, borderWidth: 3 }
             : node.itemStyle || {},
-          label: selected
-            ? { ...node.label, show: true, fontWeight: "bold" }
-            : node.label,
+          label: selected ? { ...node.label, fontWeight: "bold" } : node.label,
           fixed: node.fixed,
           x: node.x,
           y: node.y,
@@ -558,7 +556,7 @@ export class HaNetworkGraph extends LitElement {
     const zoom = series.coordinateSystem.getRoamTransform()[0];
     const centerX = chart.getWidth() / 2;
     const centerY = chart.getHeight() / 2;
-    // Zoom in only as far as the neighbors stay in view
+    // Zoom so the neighbors stay in view
     let targetZoom = SELECTED_NODE_MAX_ZOOM;
     for (const edge of node.edges) {
       const neighbor: number[] | undefined = (
@@ -573,7 +571,6 @@ export class HaNetworkGraph extends LitElement {
         );
       }
     }
-    targetZoom = Math.max(targetZoom, 1);
     if (
       Math.abs(zoom - targetZoom) < 1e-3 &&
       Math.abs(centerX - x) < 0.5 &&
