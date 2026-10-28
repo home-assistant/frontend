@@ -1,7 +1,7 @@
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -38,7 +38,11 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
 import { hasAction, hasAnyAction } from "../common/has-action";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { GaugeCardConfig } from "./types";
 
 export const DEFAULT_MIN = 0;
@@ -79,6 +83,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     return { type: "gauge", entity: foundEntities[0] || "" };
   }
+
+  @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: GaugeCardConfig;
 
@@ -187,10 +193,17 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     const name = this._formatters.formatEntityName(stateObj, this._config.name);
 
+    // In a sections view with a set number of rows the card height is fixed,
+    // so the gauge also has to fit in the height, not only in the width.
+    const fixedHeight =
+      this.layout === "grid" &&
+      typeof this._config.grid_options?.rows === "number";
+
     return html`
       <ha-card
         class=${classMap({
           action: hasAnyAction(this._config),
+          "fixed-height": fixedHeight,
         })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
@@ -203,22 +216,32 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             : undefined
         )}
       >
-        <ha-gauge
-          .min=${this._config.min!}
-          .max=${this._config.max!}
-          .value=${value}
-          .valueText=${valueToDisplay}
-          .locale=${this._i18n.locale}
-          .label=${customUnit ?? ""}
-          style=${styleMap({
-            "--gauge-color": this._computeSeverity(Number(value)),
-          })}
-          .needle=${this._config!.needle}
-          .levels=${this._config!.needle ? this._severityLevels() : undefined}
-        ></ha-gauge>
+        <div class="gauge-container">
+          <ha-gauge
+            .min=${this._config.min!}
+            .max=${this._config.max!}
+            .value=${value}
+            .valueText=${valueToDisplay}
+            .locale=${this._i18n.locale}
+            .label=${customUnit ?? ""}
+            style=${styleMap({
+              "--gauge-color": this._computeSeverity(Number(value)),
+            })}
+            .needle=${this._config!.needle}
+            .levels=${this._config!.needle ? this._severityLevels() : undefined}
+          ></ha-gauge>
+        </div>
         <p class="title" .title=${name}>${name}</p>
       </ha-card>
     `;
+  }
+
+  public getGridOptions(): LovelaceGridOptions {
+    // With one row there is almost no room left for the gauge after the
+    // padding and the name, so the card needs at least 2 rows.
+    return {
+      min_rows: 2,
+    };
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -365,6 +388,25 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     ha-gauge {
       width: 100%;
       max-width: 250px;
+    }
+
+    .gauge-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* With a fixed card height the container takes the space left after
+       the name, and the gauge is sized to fit inside it. */
+    ha-card.fixed-height .gauge-container {
+      flex: 1;
+      min-height: 0;
+      container-type: size;
+    }
+
+    ha-card.fixed-height ha-gauge {
+      width: min(250px, 100cqw, 100cqh * 100 / 55);
     }
   `;
 }
