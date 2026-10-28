@@ -804,12 +804,12 @@ exports[`generateEnergyGasGraphData > matches snapshot for multiple gas sources 
     },
     {
       "barMaxWidth": 50,
-      "color": "#00527132",
+      "color": "#206c9532",
       "cursor": "default",
       "data": [],
       "id": "compare-sensor.gas_consumption_1",
       "itemStyle": {
-        "borderColor": "#0052717F",
+        "borderColor": "#206c957F",
       },
       "name": "sensor.gas_consumption_1",
       "stack": "compare-gas",
@@ -817,12 +817,12 @@ exports[`generateEnergyGasGraphData > matches snapshot for multiple gas sources 
     },
     {
       "barMaxWidth": 50,
-      "color": "#00294632",
+      "color": "#2390a832",
       "cursor": "default",
       "data": [],
       "id": "compare-sensor.gas_consumption_2",
       "itemStyle": {
-        "borderColor": "#0029467F",
+        "borderColor": "#2390a87F",
       },
       "name": "sensor.gas_consumption_2",
       "stack": "compare-gas",
@@ -1084,7 +1084,7 @@ exports[`generateEnergyGasGraphData > matches snapshot for multiple gas sources 
     },
     {
       "barMaxWidth": 50,
-      "color": "#0052717F",
+      "color": "#206c957F",
       "cursor": "default",
       "data": [
         [
@@ -1350,7 +1350,7 @@ exports[`generateEnergyGasGraphData > matches snapshot for multiple gas sources 
       ],
       "id": "sensor.gas_consumption_1",
       "itemStyle": {
-        "borderColor": "#005271",
+        "borderColor": "#206c95",
       },
       "name": "sensor.gas_consumption_1",
       "stack": "gas",
@@ -1358,7 +1358,7 @@ exports[`generateEnergyGasGraphData > matches snapshot for multiple gas sources 
     },
     {
       "barMaxWidth": 50,
-      "color": "#0029467F",
+      "color": "#2390a87F",
       "cursor": "default",
       "data": [
         {
@@ -2072,7 +2072,7 @@ exports[`generateEnergyGasGraphData > matches snapshot for multiple gas sources 
       ],
       "id": "sensor.gas_consumption_2",
       "itemStyle": {
-        "borderColor": "#002946",
+        "borderColor": "#2390a8",
       },
       "name": "sensor.gas_consumption_2",
       "stack": "gas",
@@ -2107,12 +2107,12 @@ exports[`generateEnergyGasGraphData > matches snapshot in dark mode 1`] = `
     },
     {
       "barMaxWidth": 50,
-      "color": "#5aadd132",
+      "color": "#478bb532",
       "cursor": "default",
       "data": [],
       "id": "compare-sensor.gas_consumption_1",
       "itemStyle": {
-        "borderColor": "#5aadd17F",
+        "borderColor": "#478bb57F",
       },
       "name": "sensor.gas_consumption_1",
       "stack": "compare-gas",
@@ -2402,7 +2402,7 @@ exports[`generateEnergyGasGraphData > matches snapshot in dark mode 1`] = `
     },
     {
       "barMaxWidth": 50,
-      "color": "#5aadd17F",
+      "color": "#478bb57F",
       "cursor": "default",
       "data": [
         {
@@ -3116,7 +3116,7 @@ exports[`generateEnergyGasGraphData > matches snapshot in dark mode 1`] = `
       ],
       "id": "sensor.gas_consumption_1",
       "itemStyle": {
-        "borderColor": "#5aadd1",
+        "borderColor": "#478bb5",
       },
       "name": "sensor.gas_consumption_1",
       "stack": "gas",
@@ -3828,7 +3828,7 @@ exports[`generateEnergyGasGraphData > matches snapshot with compare data 1`] = `
     },
     {
       "barMaxWidth": 50,
-      "color": "#00527132",
+      "color": "#206c9532",
       "cursor": "default",
       "data": [
         {
@@ -4986,7 +4986,7 @@ exports[`generateEnergyGasGraphData > matches snapshot with compare data 1`] = `
       ],
       "id": "compare-sensor.gas_consumption_1",
       "itemStyle": {
-        "borderColor": "#0052717F",
+        "borderColor": "#206c957F",
       },
       "name": "sensor.gas_consumption_1",
       "stack": "compare-gas",
@@ -5688,7 +5688,7 @@ exports[`generateEnergyGasGraphData > matches snapshot with compare data 1`] = `
     },
     {
       "barMaxWidth": 50,
-      "color": "#0052717F",
+      "color": "#206c957F",
       "cursor": "default",
       "data": [
         {
@@ -6846,7 +6846,7 @@ exports[`generateEnergyGasGraphData > matches snapshot with compare data 1`] = `
       ],
       "id": "sensor.gas_consumption_1",
       "itemStyle": {
-        "borderColor": "#005271",
+        "borderColor": "#206c95",
       },
       "name": "sensor.gas_consumption_1",
       "stack": "gas",
@@ -6881,12 +6881,12 @@ exports[`generateEnergyGasGraphData > uses the source name when provided, and th
     },
     {
       "barMaxWidth": 50,
-      "color": "#00527132",
+      "color": "#206c9532",
       "cursor": "default",
       "data": [],
       "id": "compare-sensor.gas_from_state",
       "itemStyle": {
-        "borderColor": "#0052717F",
+        "borderColor": "#206c957F",
       },
       "name": "Kitchen gas",
       "stack": "compare-gas",
@@ -7162,7 +7162,7 @@ exports[`generateEnergyGasGraphData > uses the source name when provided, and th
     },
     {
       "barMaxWidth": 50,
-      "color": "#0052717F",
+      "color": "#206c957F",
       "cursor": "default",
       "data": [
         {
@@ -7882,7 +7882,7 @@ exports[`generateEnergyGasGraphData > uses the source name when provided, and th
       ],
       "id": "sensor.gas_from_state",
       "itemStyle": {
-        "borderColor": "#005271",
+        "borderColor": "#206c95",
       },
       "name": "Kitchen gas",
       "stack": "gas",

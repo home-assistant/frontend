@@ -1,11 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   hex2rgb,
-  lab2rgb,
-  rgb2hex,
   rgb2lab,
 } from "../../../../../../src/common/color/convert-color";
-import { labBrighten, labDarken } from "../../../../../../src/common/color/lab";
 import { getEnergyColor } from "../../../../../../src/panels/lovelace/cards/energy/common/color";
 
 const createStyles = (vars: Record<string, string> = {}): CSSStyleDeclaration =>
@@ -70,101 +67,54 @@ describe("getEnergyColor", () => {
     expect(outBg).toBe(SOLAR_COLOR + "32");
   });
 
-  it("prefers an indexed theme color and does not modify it", () => {
-    const styles = createStyles({
-      "--energy-solar-color": SOLAR_COLOR,
-      "--energy-solar-color-4": "#abcdef",
+  describe("fallback for multiple sources", () => {
+    it("prefers an indexed theme color and does not modify it", () => {
+      const styles = createStyles({
+        "--energy-solar-color": SOLAR_COLOR,
+        "--energy-solar-color-4": "#abcdef",
+      });
+      const out = getEnergyColor(
+        styles,
+        false,
+        true,
+        false,
+        "--energy-solar-color",
+        4
+      );
+      expect(out).toBe("#abcdef7F");
     });
-    const out = getEnergyColor(
-      styles,
-      false,
-      true,
-      false,
-      "--energy-solar-color",
-      4
-    );
-    expect(out).toBe("#abcdef7F");
-  });
 
-  describe("legacy lightness stepping (idx 1 and 2)", () => {
-    it.each([[1], [2]])("idx %i matches the previous implementation", (idx) => {
-      const styles = stylesWithBase();
-      for (const darkMode of [false, true]) {
-        const expected =
-          rgb2hex(
-            lab2rgb(
-              darkMode
-                ? labBrighten(rgb2lab(hex2rgb(SOLAR_COLOR)), idx)
-                : labDarken(rgb2lab(hex2rgb(SOLAR_COLOR)), idx)
-            )
-          ) + "7F";
+    it("keeps hues within the family band", () => {
+      const styles = createStyles({ "--energy-solar-color": GEOMETRY_BASE });
+      for (let idx = 1; idx <= 8; idx++) {
         const out = getEnergyColor(
           styles,
-          darkMode,
-          true,
+          false,
+          false,
           false,
           "--energy-solar-color",
           idx
         );
-        expect(out).toBe(expected);
+        expect(
+          Math.abs(hueDeg(out) - hueDeg(GEOMETRY_BASE))
+        ).toBeLessThanOrEqual(47);
       }
     });
 
-    it("differs from the base color only in lightness", () => {
+    it("shifts hue and lightness from the first extra series", () => {
+      const styles = createStyles({ "--energy-solar-color": GEOMETRY_BASE });
       const out = getEnergyColor(
-        createStyles({ "--energy-solar-color": GEOMETRY_BASE }),
-        true,
+        styles,
+        false,
         false,
         false,
         "--energy-solar-color",
         1
       );
-      // Values survive an 8-bit round-trip, so allow a few degrees / units.
-      expect(Math.abs(hueDeg(out) - hueDeg(GEOMETRY_BASE))).toBeLessThan(5);
-      expect(Math.abs(chroma(out) - chroma(GEOMETRY_BASE))).toBeLessThan(3);
-      expect(lightness(out)).toBeGreaterThan(lightness(GEOMETRY_BASE));
-    });
-  });
-
-  describe("hue rotation (idx >= 3)", () => {
-    it("rotates hue away from the base color", () => {
-      const out = getEnergyColor(
-        createStyles({ "--energy-solar-color": GEOMETRY_BASE }),
-        false,
-        false,
-        false,
-        "--energy-solar-color",
-        3
-      );
-      // Gamut clipping may reduce chroma, but the series must stay visibly
-      // colorful and clearly re-hued.
-      expect(chroma(out)).toBeGreaterThan(chroma(GEOMETRY_BASE) * 0.5);
-      const delta = Math.abs(hueDeg(out) - hueDeg(GEOMETRY_BASE));
-      expect(delta).toBeGreaterThan(90);
-      expect(delta).toBeLessThan(270);
-    });
-
-    it("spaces consecutive rotated series by the golden angle", () => {
-      const base = createStyles({ "--energy-solar-color": GEOMETRY_BASE });
-      const s3 = getEnergyColor(
-        base,
-        false,
-        false,
-        false,
-        "--energy-solar-color",
-        3
-      );
-      const s4 = getEnergyColor(
-        base,
-        false,
-        false,
-        false,
-        "--energy-solar-color",
-        4
-      );
-      // Allow slack for 8-bit quantization and mild gamut clipping.
-      const delta = Math.abs(((hueDeg(s4) - hueDeg(s3) + 540) % 360) - 180);
-      expect(Math.abs(delta - 137.5)).toBeLessThan(15);
+      expect(Math.abs(hueDeg(out) - hueDeg(GEOMETRY_BASE))).toBeGreaterThan(5);
+      expect(
+        Math.abs(lightness(out) - lightness(GEOMETRY_BASE))
+      ).toBeGreaterThan(2);
     });
 
     it("rescues near-grey base colors so rotation is visible", () => {
@@ -211,7 +161,7 @@ describe("getEnergyColor", () => {
           false,
           "--energy-solar-color",
           idx
-        ).replace(/(..)$/, "")
+        )
       );
       expect(new Set(colors).size).toBe(colors.length);
     });
