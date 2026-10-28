@@ -4785,7 +4785,10 @@
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "gas_usage": "Gas consumption",
               "gas_flow_rate": "Gas flow rate",
-              "flow_rate_para": "Optionally pick a sensor which measures the gas flow rate in either of {unit}."
+              "flow_rate_para": "Optionally pick a sensor which measures the gas flow rate in either of {unit}.",
+              "flow_rate_no_volume": "Home Assistant cannot calculate the gas volume from this flow rate, so pick a gas sensor above.",
+              "flow_rate_energy_sources": "Your gas sources measure energy, which a flow rate cannot provide, so pick a gas sensor above.",
+              "gas_sensor_needed": "To track your gas consumption, you need a gas sensor."
             }
           },
           "water": {
@@ -4812,7 +4815,9 @@
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "water_usage": "Water consumption",
               "water_flow_rate": "Water flow rate",
-              "flow_rate_para": "Optionally pick a sensor which measures the water flow rate in either of {unit}."
+              "flow_rate_para": "Optionally pick a sensor which measures the water flow rate in either of {unit}.",
+              "flow_rate_no_volume": "Home Assistant cannot calculate the water volume from this flow rate, so pick a water sensor above.",
+              "water_sensor_needed": "To track your water consumption, you need a water sensor."
             }
           },
           "device_consumption": {
@@ -4849,7 +4854,9 @@
               "selected_stat_intro": "Select the water sensor that measures the device's water consumption in either of {unit}.",
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a water meter measured by the main water supply), selecting the upstream device prevents duplicate water tracking.",
-              "no_upstream_devices": "No eligible upstream devices"
+              "no_upstream_devices": "No eligible upstream devices",
+              "water_sensor_needed": "To track this device, you need a water sensor.",
+              "flow_rate_no_volume": "[%key:ui::panel::config::energy::water::dialog::flow_rate_no_volume%]"
             }
           },
           "integral": {
@@ -4859,6 +4866,20 @@
               "create_item": "Home Assistant can create {name}, which calculates the energy from {rate}.",
               "use_item": "{total} already calculates the energy from {rate}.",
               "sensor_name": "{name} energy"
+            },
+            "gas": {
+              "create_title": "{count, plural,\n one {Create gas sensor?}\n other {Create gas sensors?}\n}",
+              "use_title": "{count, plural,\n one {Use existing gas sensor?}\n other {Use existing gas sensors?}\n}",
+              "create_item": "Home Assistant can create {name}, which calculates the gas volume from {rate}.",
+              "use_item": "{total} already calculates the gas volume from {rate}.",
+              "sensor_name": "{name} gas"
+            },
+            "water": {
+              "create_title": "{count, plural,\n one {Create water sensor?}\n other {Create water sensors?}\n}",
+              "use_title": "{count, plural,\n one {Use existing water sensor?}\n other {Use existing water sensors?}\n}",
+              "create_item": "Home Assistant can create {name}, which calculates the water volume from {rate}.",
+              "use_item": "{total} already calculates the water volume from {rate}.",
+              "sensor_name": "{name} water"
             },
             "counting_note": "New sensors start counting now, so earlier values are not included.",
             "use": "{count, plural,\n one {Use sensor}\n other {Use sensors}\n}",

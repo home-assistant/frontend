@@ -3,12 +3,15 @@ import { describe, expect, it } from "vitest";
 
 import {
   findIntegral,
+  integralTotalUnit,
   integralUnits,
   pendingPowerIntegrals,
 } from "../../../../src/panels/config/energy/dialogs/energy-integral";
 import type { HomeAssistant } from "../../../../src/types";
 
 const ENERGY_UNITS = ["GJ", "kWh", "MJ", "mWh", "MWh", "Wh"];
+const WATER_UNITS = ["CCF", "ft³", "m³", "gal", "L", "MCF"];
+const GAS_UNITS = ["CCF", "ft³", "m³", "L", "MCF"];
 
 describe("integralUnits", () => {
   it("scales watt-hours up to kWh", () => {
@@ -28,6 +31,26 @@ describe("integralUnits", () => {
     expect(integralUnits("BTU/h", ENERGY_UNITS)).toBeUndefined();
     expect(integralUnits("A", ENERGY_UNITS)).toBeUndefined();
     expect(integralUnits(undefined, ENERGY_UNITS)).toBeUndefined();
+  });
+
+  it("cancels the time divisor of flow rates", () => {
+    expect(integralUnits("L/min", WATER_UNITS)).toEqual({ unit_time: "min" });
+    expect(integralUnits("m³/h", GAS_UNITS)).toEqual({ unit_time: "h" });
+    expect(integralUnits("gal/d", WATER_UNITS)).toEqual({ unit_time: "d" });
+  });
+
+  it("rejects flow rates that do not integrate to a volume unit", () => {
+    expect(integralUnits("mL/s", WATER_UNITS)).toBeUndefined();
+    expect(integralUnits("gal/min", GAS_UNITS)).toBeUndefined();
+  });
+});
+
+describe("integralTotalUnit", () => {
+  it("returns the unit the helper reports", () => {
+    expect(integralTotalUnit("W", { unit_time: "h", unit_prefix: "k" })).toBe(
+      "kWh"
+    );
+    expect(integralTotalUnit("ft³/min", { unit_time: "min" })).toBe("ft³");
   });
 });
 

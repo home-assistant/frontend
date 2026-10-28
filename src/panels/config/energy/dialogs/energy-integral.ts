@@ -13,7 +13,9 @@ import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-
 import type { HomeAssistant } from "../../../../types";
 import type { PowerType } from "./power-config";
 
-export type IntegralDeviceClass = "energy";
+export type IntegralDeviceClass = "energy" | "gas" | "water";
+
+const TIME_UNITS = ["s", "min", "h", "d"];
 
 export interface IntegralUnits {
   unit_time: string;
@@ -39,8 +41,17 @@ export function integralUnits(
   if (!rateUnit) {
     return undefined;
   }
-  // The helper multiplies the unit by hours, which cancels a "/h" divisor
-  const unit = rateUnit.endsWith("/h") ? rateUnit.slice(0, -2) : `${rateUnit}h`;
+  // The helper multiplies the unit by its time unit, which cancels a matching
+  // divisor
+  const divisor = rateUnit.lastIndexOf("/");
+  if (divisor !== -1) {
+    const unitTime = rateUnit.slice(divisor + 1);
+    return TIME_UNITS.includes(unitTime) &&
+      totalUnits.includes(rateUnit.slice(0, divisor))
+      ? { unit_time: unitTime }
+      : undefined;
+  }
+  const unit = `${rateUnit}h`;
   // Energy sensors usually report kWh
   if (unit === "Wh") {
     return { unit_time: "h", unit_prefix: "k" };
@@ -86,6 +97,20 @@ export function pendingPowerIntegrals(
 }
 
 /**
+ * Returns the unit the Integral helper reports for the rate unit.
+ */
+export function integralTotalUnit(
+  rateUnit: string,
+  units: IntegralUnits
+): string {
+  const divisor = `/${units.unit_time}`;
+  const unit = rateUnit.endsWith(divisor)
+    ? rateUnit.slice(0, -divisor.length)
+    : `${rateUnit}${units.unit_time}`;
+  return `${units.unit_prefix ?? ""}${unit}`;
+}
+
+/**
  * Finds an Integral helper that already integrates the rate statistic.
  */
 export function findIntegral(
@@ -110,7 +135,8 @@ export function findIntegral(
 export function integralFlowInput(
   name: string,
   rate: string,
-  units: IntegralUnits
+  units: IntegralUnits,
+  deviceClass: IntegralDeviceClass
 ) {
   return {
     name,
@@ -121,15 +147,16 @@ export function integralFlowInput(
     max_sub_interval: { hours: 0, minutes: 5, seconds: 0 },
     round: 3,
     ...units,
-    // The helper only infers energy from a power device class, and the energy
-    // dashboard needs it
-    device_class: "energy",
+    // The helper only infers energy from a power device class and never gas or
+    // water from a flow rate, and the energy dashboard needs it
+    device_class: deviceClass,
   };
 }
 
 async function createIntegral(
   hass: HomeAssistant,
-  request: IntegralRequest
+  request: IntegralRequest,
+  deviceClass: IntegralDeviceClass
 ): Promise<string> {
   let flowId: string | undefined;
   let entityId: string | undefined;
@@ -138,7 +165,7 @@ async function createIntegral(
     const step = await handleConfigFlowStep(
       hass,
       flowId,
-      integralFlowInput(request.name, request.rate, request.units)
+      integralFlowInput(request.name, request.rate, request.units, deviceClass)
     );
     if (step.type === "create_entry" && step.result) {
       flowId = undefined;
@@ -256,7 +283,8 @@ export async function confirmIntegrals(
     action: async () => {
       const settled = await Promise.allSettled(
         plan.map(
-          ({ request, existing }) => existing ?? createIntegral(hass, request)
+          ({ request, existing }) =>
+            existing ?? createIntegral(hass, request, deviceClass)
         )
       );
       const failure = settled.find(
