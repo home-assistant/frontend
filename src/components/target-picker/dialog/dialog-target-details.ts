@@ -245,7 +245,6 @@ class DialogTargetDetails extends LitElement implements HassDialog {
                 ? nothing
                 : html`
                     <ha-target-picker-item-row
-                      .hass=${this.hass}
                       .type=${this._params.type}
                       .itemId=${this._params.itemId}
                       .deviceFilter=${deviceFilter}
