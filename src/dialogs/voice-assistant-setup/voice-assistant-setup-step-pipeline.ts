@@ -130,7 +130,6 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           { language }
         )}
         <ha-language-picker
-          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.voice_assistants.satellite_wizard.pipeline.unsupported_language.language_picker"
           )}
@@ -262,7 +261,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     // instead of leaving the step blank.
     let cloudStatus: CloudStatus;
     try {
-      cloudStatus = await fetchCloudStatus(this.hass);
+      cloudStatus = await fetchCloudStatus(this.hass.callWS);
     } catch (_err: any) {
       return false;
     }
@@ -291,7 +290,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
       }
     }
     try {
-      const pipelines = await listAssistPipelines(this.hass);
+      const pipelines = await listAssistPipelines(this.hass.callWS);
 
       if (pipelines.preferred_pipeline) {
         pipelines.pipelines.sort((a) =>
@@ -311,7 +310,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
       if (!cloudPipeline) {
         const agent = (
           await listAgents(
-            this.hass,
+            this.hass.callWS,
             this.language || this.hass.config.language,
             this.hass.config.country || undefined
           )
@@ -323,7 +322,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
         const ttsEngine = (
           await listTTSEngines(
-            this.hass,
+            this.hass.callWS,
             this.language || this.hass.config.language,
             this.hass.config.country || undefined
           )
@@ -334,14 +333,14 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         }
 
         const ttsVoices = await listTTSVoices(
-          this.hass,
+          this.hass.callWS,
           cloudTtsEntityId!,
           ttsEngine.supported_languages[0]
         );
 
         const sttEngine = (
           await listSTTEngines(
-            this.hass,
+            this.hass.callWS,
             this.language || this.hass.config.language,
             this.hass.config.country || undefined
           )

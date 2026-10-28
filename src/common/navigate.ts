@@ -1,4 +1,7 @@
-import { closeAllDialogs } from "../dialogs/make-dialog-manager";
+import {
+  closeAllDialogs,
+  updateClosedDialogSearch,
+} from "../dialogs/make-dialog-manager";
 import { fireEvent } from "./dom/fire_event";
 import { mainWindow } from "./dom/get_main_window";
 import { currentPath } from "./url/current-path";
@@ -42,6 +45,7 @@ export const updateHistoryState = (patch: Record<string, unknown>) => {
  */
 export const replaceCurrentUrl = (url: string) => {
   mainWindow.history.replaceState(mainWindow.history.state, "", url);
+  updateClosedDialogSearch();
   rememberCurrentEntry();
 };
 

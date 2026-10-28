@@ -4,7 +4,10 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../common/decorators/consume";
 import { transform } from "../common/decorators/transform";
-import { formatNumber } from "../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../common/number/format_number";
 import {
   configContext,
   formattersContext,
@@ -51,25 +54,30 @@ export class HaWaterHeaterState extends LitElement {
   private _computeTarget() {
     if (!this._locale || !this._hassConfig || !this.stateObj) return null;
     const stateObj = this.stateObj;
+    const unit = this._hassConfig.config.unit_system.temperature;
     // We're using "!= null" on purpose so that we match both null and undefined.
 
     if (
       stateObj.attributes.target_temp_low != null &&
       stateObj.attributes.target_temp_high != null
     ) {
-      return `${formatNumber(
+      const low = formatNumber(
         stateObj.attributes.target_temp_low,
         this._locale
-      )} – ${formatNumber(
+      );
+      const high = formatNumberWithUnit(
         stateObj.attributes.target_temp_high,
+        unit,
         this._locale
-      )} ${this._hassConfig.config.unit_system.temperature}`;
+      );
+      return `${low} – ${high}`;
     }
     if (stateObj.attributes.temperature != null) {
-      return `${formatNumber(
+      return formatNumberWithUnit(
         stateObj.attributes.temperature,
+        unit,
         this._locale
-      )} ${this._hassConfig.config.unit_system.temperature}`;
+      );
     }
 
     return "";

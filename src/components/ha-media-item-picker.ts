@@ -166,7 +166,6 @@ export class HaMediaItemPicker extends LitElement {
                           image"
                             >
                               <ha-media-browser-thumbnail
-                                .hass=${this.hass}
                                 .url=${this.value.metadata.thumbnail}
                               ></ha-media-browser-thumbnail>
                             </div>

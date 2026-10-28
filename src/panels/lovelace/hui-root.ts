@@ -76,6 +76,7 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { haStyle } from "../../resources/styles";
 import { handleBackClick } from "../../layouts/back-navigation";
 import { ChildPanelReady } from "../../layouts/panel-ready";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 import { isMobileClient } from "../../util/is_mobile";
@@ -96,6 +97,7 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+import { LOVELACE_EDIT_TOAST_ID } from "./types";
 
 interface ActionItem {
   icon: string;
@@ -129,7 +131,7 @@ interface UndoStackItem {
 }
 
 @customElement("hui-root")
-class HUIRoot extends LitElement {
+class HUIRoot extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public panel?: PanelInfo;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -465,14 +467,20 @@ class HUIRoot extends LitElement {
         !view.visible.some((e) => e.user === this.hass!.user?.id)) ||
         view.visible === false);
 
-    const tabs = html`<ha-tab-group @wa-tab-show=${this._handleViewSelected}>
+    const tabs = html`<ha-tab-group
+      .active=${typeof this._curView === "number" ? String(this._curView) : ""}
+      @wa-tab-show=${this._handleViewSelected}
+    >
       ${views.map((view, index) => {
         const icon_and_title =
           view.show_icon_and_title && view.icon && view.title;
         const icon_only = view.icon && !icon_and_title;
         const title_only = !icon_only && !icon_and_title;
+        const current = this._curView === index;
         const hidden =
-          !this._editMode && (view.subview || _isTabHiddenForUser(view));
+          !this._editMode &&
+          !current &&
+          (view.subview || _isTabHiddenForUser(view));
         const tabContent = html`
           ${
             icon_only || icon_and_title
@@ -497,7 +505,7 @@ class HUIRoot extends LitElement {
           <ha-tab-group-tab
             slot="nav"
             panel=${index}
-            .active=${this._curView === index}
+            .active=${current}
             .disabled=${hidden}
             aria-label=${ifDefined(view.title)}
             data-path=${view.path || index}
@@ -968,6 +976,10 @@ class HUIRoot extends LitElement {
     this.lovelace!.enableFullEditMode();
   };
 
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return this.lovelace?.editMode ? { Y: this._handleRawEditor } : {};
+  }
+
   private _handleManageDashboards = () => {
     navigate("/config/lovelace/dashboards");
   };
@@ -1200,8 +1212,6 @@ class HUIRoot extends LitElement {
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
       this._navigateToView(path);
-    } else if (!this._editMode) {
-      scrollTo({ behavior: "smooth", top: 0 });
     }
   }
 
@@ -1283,6 +1293,7 @@ class HUIRoot extends LitElement {
     } catch (err: any) {
       this._configChangedByUndo = false;
       showToast(this, {
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass.localize(
           "ui.panel.lovelace.editor.undo_redo_failed_to_apply_changes",
           {

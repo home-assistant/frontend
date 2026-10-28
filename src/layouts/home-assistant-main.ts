@@ -66,7 +66,7 @@ export class HomeAssistantMain extends LitElement {
       this.hass.panels && this.hass.userData && this.hass.systemData;
 
     return html`
-      <ha-snowflakes .hass=${this.hass} .narrow=${this.narrow}></ha-snowflakes>
+      <ha-snowflakes .narrow=${this.narrow}></ha-snowflakes>
       <ha-drawer
         .type=${sidebarNarrow ? "modal" : ""}
         .open=${sidebarNarrow ? this._drawerOpen : false}
@@ -197,6 +197,20 @@ export class HomeAssistantMain extends LitElement {
     ha-sidebar {
       /* allow a light tap highlight on the actual interface elements  */
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    }
+    partial-panel-resolver {
+      display: block;
+      height: 100%;
+      isolation: isolate;
+    }
+    partial-panel-resolver::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: var(--ha-panel-background, var(--primary-background-color));
+      background-attachment: scroll !important;
     }
   `;
 }

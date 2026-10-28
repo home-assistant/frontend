@@ -80,7 +80,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
     }
 
     if (newValue !== stateObj.state) {
-      setValue(this.hass!, stateObj.entity_id, newValue);
+      setValue(this.hass!.callService, stateObj.entity_id, newValue);
     }
 
     target.blur();

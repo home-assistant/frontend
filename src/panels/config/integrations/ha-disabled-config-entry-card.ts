@@ -42,6 +42,7 @@ export class HaDisabledConfigEntryCard extends LitElement {
       >
         <ha-icon-button
           .path=${mdiCog}
+          .label=${this.hass.localize("ui.panel.config.integrations.details")}
           href=${`/config/integrations/integration/${this.entry.domain}`}
           slot="header-button"
         ></ha-icon-button>

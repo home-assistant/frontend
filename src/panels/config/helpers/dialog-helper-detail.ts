@@ -40,7 +40,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import type { Helper, HelperDomain } from "./const";
+import type { Helper, HelperDomain, HelperFormItem } from "./const";
 import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
@@ -104,11 +104,11 @@ const HELPERS: HelperCreators = {
 
 @customElement("dialog-helper-detail")
 export class DialogHelperDetail extends DirtyStateProviderMixin<
-  Helper | undefined
+  HelperFormItem | undefined
 >()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _item?: Helper;
+  @state() private _item?: HelperFormItem;
 
   @state() private _open = false;
 
@@ -138,7 +138,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   public async showDialog(params: ShowDialogHelperDetailParams): Promise<void> {
     this._params = params;
     this._domain = params.domain;
-    this._item = undefined;
+    this._item = params.item;
     if (this._domain && this._domain in HELPERS) {
       this._loading = true;
       try {

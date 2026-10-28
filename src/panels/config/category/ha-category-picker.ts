@@ -232,7 +232,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         suggestedName: suggestedName,
         createEntry: async (values) => {
           const category = await createCategoryRegistryEntry(
-            this.hass,
+            this.hass.callWS,
             this.scope!,
             values
           );

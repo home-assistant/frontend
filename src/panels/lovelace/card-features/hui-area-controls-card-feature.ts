@@ -1,10 +1,16 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
+import { consume } from "../../../common/decorators/consume";
+import {
+  consumeLocalize,
+  preserveUnchangedEntityStatesRecord,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import {
   computeGroupEntitiesState,
@@ -12,6 +18,7 @@ import {
 } from "../../../common/entity/group_entities";
 import { stateActive } from "../../../common/entity/state_active";
 import { domainColorProperties } from "../../../common/entity/state_color";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-domain-icon";
@@ -23,9 +30,18 @@ import {
   MAX_DEFAULT_AREA_CONTROLS,
 } from "../../../data/area/area_controls";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
+import {
+  apiContext,
+  registriesContext,
+  statesContext,
+} from "../../../data/context";
 import { forwardHaptic } from "../../../data/haptics";
 import { computeCssVariable } from "../../../resources/css-variables";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantRegistries,
+} from "../../../types";
 import type { AreaCardFeatureContext } from "../cards/hui-area-card";
 import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
@@ -46,6 +62,9 @@ interface ControlButtonElement extends HTMLElement {
   control: NormalizedControl;
 }
 
+const DEFAULT_AREA_CONTROLS: AreaControl[] = [...AREA_CONTROL_DOMAINS];
+const EMPTY_STATES: HassEntities = {};
+
 export const supportsAreaControlsCardFeature = (
   hass: HomeAssistant,
   context: LovelaceCardFeatureContext
@@ -59,8 +78,6 @@ class HuiAreaControlsCardFeature
   extends LitElement
   implements LovelaceCardFeature
 {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public context?: AreaCardFeatureContext;
 
   @property({ attribute: false })
@@ -68,16 +85,72 @@ class HuiAreaControlsCardFeature
 
   @state() private _config?: AreaControlsCardFeatureConfig;
 
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries?: HomeAssistantRegistries;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: HassEntities;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, Record<string, HassEntity>>({
+    transformer: function (this: HuiAreaControlsCardFeature, states) {
+      return this._selectControlStates(states);
+    },
+    watch: ["_config", "context", "_registries"],
+  })
+  private _controlStates?: Record<string, HassEntity>;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
   private get _area() {
-    if (!this.hass || !this.context || !this.context.area_id) {
+    if (!this._registries || !this.context?.area_id) {
       return undefined;
     }
-    return this.hass.areas[this.context.area_id!] as
+    return this._registries.areas[this.context.area_id] as
       AreaRegistryEntry | undefined;
   }
 
+  /** The states of every entity a control can show or toggle. */
+  private _selectControlStates(
+    states: HassEntities | undefined
+  ): Record<string, HassEntity> | undefined {
+    if (!states || !this._registries || !this.context?.area_id) {
+      return undefined;
+    }
+    const controlEntities = this._controlEntities(
+      this._domainControls(this._controls),
+      this.context.area_id,
+      this.context.exclude_entities,
+      this._registries,
+      states
+    );
+    const entityIds = new Set(Object.values(controlEntities).flat());
+    for (const control of this._controls) {
+      const normalized = this._normalizeControl(control);
+      if (normalized.type === "entity") {
+        entityIds.add(normalized.value);
+      }
+    }
+    const next: Record<string, HassEntity> = {};
+    for (const entityId of entityIds) {
+      const stateObj = states[entityId];
+      if (stateObj) {
+        next[entityId] = stateObj;
+      }
+    }
+    return preserveUnchangedEntityStatesRecord(this._controlStates, next);
+  }
+
   private get _controls(): AreaControl[] {
-    return this._config?.controls || [...AREA_CONTROL_DOMAINS];
+    // Stable default so the memoized lookups hit between renders
+    return this._config?.controls || DEFAULT_AREA_CONTROLS;
   }
 
   private _normalizeControl(control: AreaControl): NormalizedControl {
@@ -116,22 +189,22 @@ class HuiAreaControlsCardFeature
   private _handleButtonTap(ev: MouseEvent) {
     ev.stopPropagation();
 
-    if (!this.hass || !this._config) {
+    if (!this._config || !this._controlStates) {
       return;
     }
 
     const normalized = (ev.currentTarget as ControlButtonElement).control;
 
     if (normalized.type === "entity") {
-      const entity = this.hass.states[normalized.value];
+      const entity = this._controlStates[normalized.value];
       if (entity) {
         forwardHaptic(this, "light");
-        toggleGroupEntities(this.hass, [entity]);
+        toggleGroupEntities(this._api, [entity]);
       }
       return;
     }
 
-    if (!this.context?.area_id) {
+    if (!this.context?.area_id || !this._registries) {
       return;
     }
 
@@ -141,17 +214,16 @@ class HuiAreaControlsCardFeature
       domainControls,
       this.context.area_id,
       this.context.exclude_entities,
-      this.hass.entities,
-      this.hass.devices,
-      this.hass.areas
+      this._registries,
+      this._states ?? EMPTY_STATES
     );
 
     const entities = controlEntities[normalized.value]
-      .map((entityId) => this.hass!.states[entityId] as HassEntity | undefined)
+      .map((entityId) => this._controlStates![entityId])
       .filter((v): v is HassEntity => Boolean(v));
 
     forwardHaptic(this, "light");
-    toggleGroupEntities(this.hass, entities);
+    toggleGroupEntities(this._api, entities);
   }
 
   private _domainControls = memoizeOne((controls: AreaControl[]) =>
@@ -164,28 +236,34 @@ class HuiAreaControlsCardFeature
       .map((n) => n.value)
   );
 
+  // States are part of the key: the filter reads device classes from them,
+  // so an entity can only match once its state exists.
   private _controlEntities = memoizeOne(
     (
       controls: AreaControlDomain[],
       areaId: string,
       excludeEntities: string[] | undefined,
-      // needed to update memoized function when entities, devices or areas change
-      _entities: HomeAssistant["entities"],
-      _devices: HomeAssistant["devices"],
-      _areas: HomeAssistant["areas"]
-    ) => getAreaControlEntities(controls, areaId, excludeEntities, this.hass!)
+      registries: HomeAssistantRegistries,
+      states: HassEntities
+    ) =>
+      getAreaControlEntities(controls, areaId, excludeEntities, {
+        states,
+        ...registries,
+      })
   );
 
   protected render() {
     if (
       !this._config ||
-      !this.hass ||
-      !this.context ||
-      !this._area ||
-      !supportsAreaControlsCardFeature(this.hass, this.context)
+      !this.context?.area_id ||
+      !this._registries ||
+      !this._controlStates ||
+      !this._area
     ) {
       return nothing;
     }
+
+    const controlStates = this._controlStates;
 
     const normalizedControls = this._controls.map((c) =>
       this._normalizeControl(c)
@@ -196,18 +274,17 @@ class HuiAreaControlsCardFeature
 
     const controlEntities = this._controlEntities(
       domainControls,
-      this.context.area_id!,
+      this.context.area_id,
       this.context.exclude_entities,
-      this.hass!.entities,
-      this.hass!.devices,
-      this.hass!.areas
+      this._registries,
+      this._states ?? EMPTY_STATES
     );
 
     // Filter controls while preserving original order
     const allControls = normalizedControls.filter((n) =>
       n.type === "domain"
         ? controlEntities[n.value].length > 0
-        : this.hass!.states[n.value] &&
+        : controlStates[n.value] &&
           !this.context?.exclude_entities?.includes(n.value)
     );
 
@@ -238,16 +315,13 @@ class HuiAreaControlsCardFeature
             const controlEntityIds = controlEntities[normalized.value];
 
             const entities = controlEntityIds
-              .map(
-                (entityId) =>
-                  this.hass!.states[entityId] as HassEntity | undefined
-              )
+              .map((entityId) => controlStates[entityId])
               .filter((v): v is HassEntity => Boolean(v));
 
             const groupState = computeGroupEntitiesState(entities);
 
             active = entities[0] ? stateActive(entities[0], groupState) : false;
-            label = this.hass!.localize(
+            label = this._localize(
               `ui.card_features.area_controls.${normalized.value}.${active ? "off" : "on"}`
             );
             domain = button.filter.domain;
@@ -256,13 +330,13 @@ class HuiAreaControlsCardFeature
               : undefined;
             entityState = groupState;
           } else if (normalized.type === "entity") {
-            entity = this.hass!.states[normalized.value];
+            entity = controlStates[normalized.value];
             if (!entity) {
               return nothing;
             }
 
             active = stateActive(entity);
-            label = this.hass!.localize(
+            label = this._localize(
               `ui.card.common.turn_${active ? "off" : "on"}`
             );
             domain = computeDomain(entity.entity_id);
@@ -280,8 +354,7 @@ class HuiAreaControlsCardFeature
               style=${styleMap({
                 "--active-color": activeColor,
               })}
-              .title=${label}
-              aria-label=${label}
+              .label=${label}
               class=${active ? "active" : ""}
               .control=${normalized}
               @click=${this._handleButtonTap}

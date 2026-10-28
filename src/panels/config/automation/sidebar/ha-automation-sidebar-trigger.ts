@@ -5,11 +5,13 @@ import {
   mdiContentCut,
   mdiContentPaste,
   mdiDelete,
+  mdiIdentifier,
   mdiPlayCircleOutline,
   mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
+  mdiSwapHorizontal,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
@@ -25,6 +27,7 @@ import type {
   TriggerList,
   TriggerSidebarConfig,
 } from "../../../../data/automation";
+import { getRowNote } from "../../../../data/automation";
 import {
   getTriggerDomain,
   getTriggerObjectId,
@@ -82,6 +85,10 @@ export default class HaAutomationSidebarTrigger extends LitElement {
       ? "list"
       : this.config.config.trigger;
 
+    const note = !isTriggerList(this.config.config)
+      ? getRowNote(this.config.config.note)
+      : undefined;
+
     const subtitle = this.hass.localize(
       "ui.panel.config.automation.editor.triggers.trigger"
     );
@@ -116,6 +123,28 @@ export default class HaAutomationSidebarTrigger extends LitElement {
               : ""
           }</span
         >
+        ${
+          this.config.replace
+            ? html`<ha-dropdown-item
+                slot="menu-items"
+                value="replace"
+                .disabled=${this.disabled}
+              >
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiSwapHorizontal}
+                ></ha-svg-icon>
+                <div class="overflow-label">
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.replace"
+                  )}
+                  <span
+                    class="shortcut-placeholder ${isMac ? "mac" : ""}"
+                  ></span>
+                </div>
+              </ha-dropdown-item>`
+            : nothing
+        }
         <ha-dropdown-item
           slot="menu-items"
           value="rename"
@@ -132,23 +161,38 @@ export default class HaAutomationSidebarTrigger extends LitElement {
         ${
           type !== "list"
             ? html`<ha-dropdown-item
-                slot="menu-items"
-                value="edit_note"
-                .disabled=${this.disabled}
-              >
-                <ha-svg-icon
-                  slot="icon"
-                  .path=${mdiCommentEditOutline}
-                ></ha-svg-icon>
-                <div class="overflow-label">
-                  ${this.hass.localize(
-                    `ui.panel.config.automation.editor.note.${(this.config.config as Exclude<Trigger, TriggerList>).note ? "edit" : "add"}`
-                  )}
-                  <span
-                    class="shortcut-placeholder ${isMac ? "mac" : ""}"
-                  ></span>
-                </div>
-              </ha-dropdown-item>`
+                  slot="menu-items"
+                  value="edit_note"
+                  .disabled=${this.disabled}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiCommentEditOutline}
+                  ></ha-svg-icon>
+                  <div class="overflow-label">
+                    ${this.hass.localize(
+                      `ui.panel.config.automation.editor.note.${(this.config.config as Exclude<Trigger, TriggerList>).note ? "edit" : "add"}`
+                    )}
+                    <span
+                      class="shortcut-placeholder ${isMac ? "mac" : ""}"
+                    ></span>
+                  </div>
+                </ha-dropdown-item>
+                <ha-dropdown-item
+                  slot="menu-items"
+                  value="edit_id"
+                  .disabled=${this.disabled}
+                >
+                  <ha-svg-icon slot="icon" .path=${mdiIdentifier}></ha-svg-icon>
+                  <div class="overflow-label">
+                    ${this.hass.localize(
+                      "ui.panel.config.automation.editor.triggers.edit_id"
+                    )}
+                    <span
+                      class="shortcut-placeholder ${isMac ? "mac" : ""}"
+                    ></span>
+                  </div>
+                </ha-dropdown-item>`
             : nothing
         }
         <wa-divider slot="menu-items"></wa-divider>
@@ -239,7 +283,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
         <ha-dropdown-item
           slot="menu-items"
           value="toggle_yaml_mode"
-          .disabled=${!this.config.uiSupported || !!this._warnings}
+          .disabled=${!this.canToggleYamlMode}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlaylistEdit}></ha-svg-icon>
           <div class="overflow-label">
@@ -309,12 +353,10 @@ export default class HaAutomationSidebarTrigger extends LitElement {
           ></ha-automation-trigger-editor>`
         )}
         ${
-          !isTriggerList(this.config.config) &&
-          this.config.config.note?.trim() &&
-          !this.yamlMode
+          note && !this.yamlMode
             ? html`<ha-automation-note
                 @edit-note=${this.config.editNote}
-                .note=${this.config.config.note}
+                .note=${note}
               ></ha-automation-note>`
             : nothing
         }
@@ -366,9 +408,22 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     );
   }
 
-  private _toggleYamlMode = () => {
+  public get canToggleYamlMode(): boolean {
+    return this.config.uiSupported && !this._warnings;
+  }
+
+  public toggleYamlMode() {
+    if (!this.canToggleYamlMode) {
+      return;
+    }
     fireEvent(this, "toggle-yaml-mode", { yamlMode: !this.yamlMode });
-  };
+  }
+
+  public async focusYamlEditor() {
+    await this.updateComplete;
+    await this.editor?.updateComplete;
+    this.editor?.yamlEditor?.focus();
+  }
 
   private _handleDropdownSelect(ev: HaDropdownSelectEvent) {
     const action = ev.detail?.item?.value;
@@ -378,11 +433,17 @@ export default class HaAutomationSidebarTrigger extends LitElement {
     }
 
     switch (action) {
+      case "replace":
+        this.config.replace?.();
+        break;
       case "rename":
         this.config.rename();
         break;
       case "edit_note":
         this.config.editNote();
+        break;
+      case "edit_id":
+        this.config.editId();
         break;
       case "duplicate":
         this.config.duplicate();
@@ -397,7 +458,7 @@ export default class HaAutomationSidebarTrigger extends LitElement {
         this.config.paste();
         break;
       case "toggle_yaml_mode":
-        this._toggleYamlMode();
+        this.toggleYamlMode();
         break;
       case "disable":
         this.config.disable();

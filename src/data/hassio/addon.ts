@@ -148,6 +148,7 @@ export const reloadHassioAddons = async (hass: HomeAssistant) => {
     type: "supervisor/api",
     endpoint: "/store/reload",
     method: "post",
+    timeout: null,
   });
 };
 

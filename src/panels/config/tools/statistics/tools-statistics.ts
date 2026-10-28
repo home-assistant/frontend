@@ -2,6 +2,7 @@ import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
+  mdiDeleteClock,
   mdiFormatListChecks,
   mdiMenuDown,
   mdiSlopeUphill,
@@ -24,6 +25,8 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
+import { QueryParamsController } from "../../../../common/controllers/query-params-controller";
+import { transform } from "../../../../common/decorators/transform";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
@@ -36,8 +39,12 @@ import {
   getDuplicatedDeviceNames,
 } from "../../../../common/entity/compute_device_name";
 import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import {
+  dataTableQueryParamConfig,
+  dataTableQueryParamsFromState,
+  dataTableQueryStateFromUrl,
+} from "../../../../common/url/data-table-query-params";
 import "../../../../components/chips/ha-assist-chip";
 import "../../../../components/data-table/ha-data-table";
 import type {
@@ -67,6 +74,7 @@ import {
 import { getStatisticIds } from "../../../../data/recorder_statistic_ids";
 import {
   apiContext,
+  formattersContext,
   internationalizationContext,
   registriesContext,
   statesContext,
@@ -74,10 +82,14 @@ import {
 import { getAreaTableColumn } from "../../common/data-table-columns";
 import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 import { haStyle } from "../../../../resources/styles";
-import type { HomeAssistantRegistries } from "../../../../types";
+import type {
+  HomeAssistantFormatters,
+  HomeAssistantRegistries,
+} from "../../../../types";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { fixStatisticsIssue } from "./fix-statistics";
 import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
+import { showStatisticsClearRangeDialog } from "./show-dialog-statistics-clear-range";
 
 const FIX_ISSUES_ORDER: Record<StatisticsValidationResult["type"], number> = {
   no_state: 0,
@@ -149,6 +161,16 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
   private _registries!: ContextType<typeof registriesContext>;
 
   @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @state()
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
 
@@ -156,11 +178,23 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   @query("ha-input-search") private _searchInput!: HaInputSearch;
 
+  // Nothing is stored, so opening the page again without params, like from
+  // another tools tab, keeps what was picked and writes it back
+  private _queryParams = new QueryParamsController(
+    this,
+    dataTableQueryParamConfig,
+    {
+      enabled: () => true,
+      navigated: () => this._applyUrl(),
+    }
+  );
+
   protected willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
 
     if (!this.hasUpdated) {
       this._validateStatistics();
+      this._applyUrl();
     }
   }
 
@@ -170,7 +204,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       localize: LocalizeFunc,
       entities: HomeAssistantRegistries["entities"],
       devices: HomeAssistantRegistries["devices"],
-      areas: HomeAssistantRegistries["areas"]
+      areas: HomeAssistantRegistries["areas"],
+      formatEntityName: HomeAssistantFormatters["formatEntityName"]
     ): DisplayedStatisticData[] => {
       const duplicatedDeviceNames = getDuplicatedDeviceNames(devices);
 
@@ -194,7 +229,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           displayName:
             entityName ||
             deviceName ||
-            (item.state ? computeStateName(item.state) : undefined) ||
+            (item.state ? formatEntityName(item.state) : undefined) ||
             item.name ||
             item.statistic_id,
           device: deviceName,
@@ -225,6 +260,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         main: true,
         sortable: true,
         filterable: true,
+        urlName: "name",
         flex: 2,
       },
       device: {
@@ -236,6 +272,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         title: localize("ui.panel.config.entities.picker.headers.device"),
         filterable: true,
         groupable: true,
+        urlName: "device",
         hidden: true,
       },
       area: getAreaTableColumn(localize),
@@ -253,6 +290,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         ),
         sortable: true,
         filterable: true,
+        urlName: "unit",
         forceLTR: true,
       },
       source: {
@@ -262,6 +300,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
+        urlName: "source",
       },
       issues_string: {
         title: localize(
@@ -270,6 +309,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         sortable: true,
         filterable: true,
         groupable: true,
+        urlName: "issue",
         direction: "asc",
         flex: 2,
         template: (statistic) =>
@@ -304,6 +344,24 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         minWidth: "113px",
         maxWidth: "113px",
         showNarrow: true,
+      },
+      clear_range: {
+        title: "",
+        label: localize(
+          "ui.panel.config.tools.tabs.statistics.clear_range.title"
+        ),
+        type: "icon-button",
+        showNarrow: true,
+        template: (statistic) => html`
+          <ha-icon-button
+            .label=${localize(
+              "ui.panel.config.tools.tabs.statistics.clear_range.title"
+            )}
+            .path=${mdiDeleteClock}
+            .statistic=${statistic}
+            @click=${this._showStatisticsClearRangeDialog}
+          ></ha-icon-button>
+        `,
       },
       actions: {
         title: "",
@@ -347,6 +405,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       appearance="outlined"
       .value=${this.filter}
       @input=${this._handleSearchChange}
+      @blur=${this._flushUrl}
     >
     </ha-input-search>`;
 
@@ -573,7 +632,8 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
             this._i18n.localize,
             this._registries.entities,
             this._registries.devices,
-            this._registries.areas
+            this._registries.areas,
+            this._formatEntityName
           )}
           .noDataText=${this._i18n.localize(
             "ui.panel.config.tools.tabs.statistics.data_table.no_statistics"
@@ -618,6 +678,51 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       return;
     }
     this.filter = ev.target.value ?? "";
+    this._writeUrl(true);
+  }
+
+  // A link with table params wins over what was picked before
+  private _applyUrl() {
+    const searchParams = this._queryParams.searchParams();
+
+    const linked = searchParams
+      ? dataTableQueryStateFromUrl(
+          searchParams,
+          this._columns(this._i18n.localize)
+        )
+      : undefined;
+
+    if (linked) {
+      this.filter = linked.search;
+
+      if (linked.sorting) {
+        this._sortColumn = linked.sorting.column;
+        this._sortDirection = linked.sorting.direction;
+      }
+
+      if (linked.groupColumn) {
+        this._groupColumn = linked.groupColumn;
+      }
+    }
+
+    this._writeUrl();
+  }
+
+  private _flushUrl() {
+    this._queryParams.flush();
+  }
+
+  private _writeUrl(debounced = false) {
+    this._queryParams.write(
+      dataTableQueryParamsFromState(
+        this._columns(this._i18n.localize),
+        this.filter,
+        this._sortColumn,
+        this._sortDirection,
+        this._groupColumn
+      ),
+      debounced
+    );
   }
 
   private _handleSelectionChanged(
@@ -632,6 +737,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     const { column, direction } = ev.detail;
     this._sortColumn = column;
     this._sortDirection = direction;
+    this._writeUrl();
   }
 
   private _handleSortBy(ev: HaDropdownSelectEvent) {
@@ -645,6 +751,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
       this._sortDirection = "asc";
     }
     this._sortColumn = columnId;
+    this._writeUrl();
   }
 
   private _handleOverflowGroupBy = (ev: HaDropdownSelectEvent) => {
@@ -671,6 +778,7 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
 
   private _setGroupColumn(columnId?: string) {
     this._groupColumn = columnId;
+    this._writeUrl();
   }
 
   private _openSettings() {
@@ -685,7 +793,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         this.columnOrder = columnOrder;
         this.hiddenColumns = hiddenColumns;
       },
-      localizeFunc: this._i18n.localize,
     });
   }
 
@@ -724,6 +831,19 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     ev.stopPropagation();
     showStatisticsAdjustSumDialog(this, {
       statistic: ev.currentTarget.statistic,
+    });
+  }
+
+  private _showStatisticsClearRangeDialog(
+    ev: HASSDomCurrentTargetEvent<
+      HTMLElement & { statistic: DisplayedStatisticData }
+    >
+  ) {
+    ev.stopPropagation();
+    const statistic = ev.currentTarget.statistic;
+    showStatisticsClearRangeDialog(this, {
+      statistic,
+      name: statistic.displayName,
     });
   }
 
@@ -863,10 +983,13 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
           );
           gap: var(--ha-space-4);
           box-sizing: border-box;
-          background: var(--primary-background-color);
           border-bottom: 1px solid var(--divider-color);
           overflow-x: auto;
           scrollbar-width: none;
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--ha-panel-background, var(--primary-background-color))
+          );
         }
         ha-input-search {
           flex: 1;

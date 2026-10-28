@@ -4,7 +4,11 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html } from "lit";
 import { consume } from "../common/decorators/consume";
 import { haStyle } from "../resources/styles";
-import { configContext, uiContext } from "../data/context";
+import {
+  brandsAccessTokenContext,
+  configContext,
+  uiContext,
+} from "../data/context";
 import { voiceAssistants } from "../data/expose";
 import { brandsUrl } from "../util/brands-url";
 
@@ -17,6 +21,11 @@ export class VoiceAssistantBrandicon extends LitElement {
   @state()
   @consume({ context: configContext, subscribe: true })
   private _config!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
 
   @property({ attribute: false }) public voiceAssistantId!: string;
 

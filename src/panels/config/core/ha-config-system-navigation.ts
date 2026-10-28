@@ -145,7 +145,6 @@ class HaConfigSystemNavigation extends LitElement {
         >
           <ha-card outlined>
             <ha-config-navigation-list
-              .hass=${this.hass}
               .narrow=${this.narrow}
               .pages=${pages}
               has-secondary
@@ -216,7 +215,7 @@ class HaConfigSystemNavigation extends LitElement {
 
   private async _fetchNetworkStatus() {
     if (isComponentLoaded(this.hass.config, "cloud")) {
-      const cloudStatus = await fetchCloudStatus(this.hass);
+      const cloudStatus = await fetchCloudStatus(this.hass.callWS);
       if (cloudStatus.logged_in) {
         this._externalAccess = true;
         return;

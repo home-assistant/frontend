@@ -1,8 +1,10 @@
+import { TZDate } from "@date-fns/tz";
 import {
   addDays,
   addHours,
   addMinutes,
   addMonths,
+  constructFrom,
   differenceInHours,
   endOfDay,
 } from "date-fns";
@@ -12,6 +14,18 @@ import type {
   StatisticValue,
 } from "../../../src/data/recorder";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+
+const getFirstDate = (
+  start: Date,
+  period: "5minute" | "hour" | "day" | "month"
+): Date => {
+  if (period === "day" || period === "month") {
+    return constructFrom(start, start);
+  }
+  // Core returns UTC-aligned buckets whose start is at or after the request.
+  const interval = (period === "hour" ? 60 : 5) * 60 * 1000;
+  return constructFrom(start, Math.ceil(start.getTime() / interval) * interval);
+};
 
 const getNextDate = (
   currentDate: Date,
@@ -33,8 +47,7 @@ const generateMeanStatistics = (
   maxDiff: number
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = new Date(start);
-  currentDate.setMinutes(0, 0, 0);
+  let currentDate = getFirstDate(start, period);
   const now = new Date();
   while (end > currentDate && currentDate < now) {
     const delta = Math.random() * maxDiff;
@@ -63,8 +76,7 @@ const generateSumStatistics = (
   maxDiff: number | ((start: Date, end: Date) => number)
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = new Date(start);
-  currentDate.setMinutes(0, 0, 0);
+  let currentDate = getFirstDate(start, period);
   let sum = initValue;
   const now = new Date();
   while (end > currentDate && currentDate < now) {
@@ -98,8 +110,7 @@ const generateCurvedStatistics = (
   metered: boolean
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = new Date(start);
-  currentDate.setMinutes(0, 0, 0);
+  let currentDate = getFirstDate(start, period);
   let sum = initValue;
   const hours = differenceInHours(end, start) - 1;
   let i = 0;
@@ -162,9 +173,9 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const morningEnd = new Date(start.getTime() + 10 * 60 * 60 * 1000);
+    const morningEnd = addHours(start, 10);
     const morningLow = generateSumStatistics(start, morningEnd, period, 0, 0.7);
-    const eveningStart = new Date(start.getTime() + 20 * 60 * 60 * 1000);
+    const eveningStart = addHours(start, 20);
     const morningFinalVal = morningLow.length
       ? morningLow[morningLow.length - 1].sum!
       : 0;
@@ -199,8 +210,8 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const morningEnd = new Date(start.getTime() + 9 * 60 * 60 * 1000);
-    const eveningStart = new Date(start.getTime() + 20 * 60 * 60 * 1000);
+    const morningEnd = addHours(start, 9);
+    const eveningStart = addHours(start, 20);
     const highTarif = generateSumStatistics(
       morningEnd,
       eveningStart,
@@ -239,9 +250,12 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const productionStart = new Date(start.getTime() + 9 * 60 * 60 * 1000);
-    const productionEnd = new Date(start.getTime() + 21 * 60 * 60 * 1000);
-    const dayEnd = new Date(endOfDay(productionEnd));
+    const productionStart = addHours(start, 9);
+    const productionEnd = addHours(start, 21);
+    const dayEnd = constructFrom(
+      end,
+      Math.min(endOfDay(productionEnd).getTime(), end.getTime())
+    );
     const production = generateCurvedStatistics(
       productionStart,
       productionEnd,
@@ -280,9 +294,12 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const productionStart = new Date(start.getTime() + 7 * 60 * 60 * 1000);
-    const productionEnd = new Date(start.getTime() + 23 * 60 * 60 * 1000);
-    const dayEnd = new Date(endOfDay(productionEnd));
+    const productionStart = addHours(start, 7);
+    const productionEnd = addHours(start, 23);
+    const dayEnd = constructFrom(
+      end,
+      Math.min(endOfDay(productionEnd).getTime(), end.getTime())
+    );
     const production = generateCurvedStatistics(
       productionStart,
       productionEnd,
@@ -329,8 +346,9 @@ export const mockRecorder = (mockHass: MockHomeAssistant) => {
   mockHass.mockWS(
     "recorder/statistics_during_period",
     ({ statistic_ids, start_time, end_time, period }, hass): Statistics => {
-      const start = new Date(start_time);
-      const end = end_time ? new Date(end_time) : new Date();
+      // Calendar buckets follow the server timezone, independent of the browser.
+      const start = new TZDate(start_time, hass.config.time_zone);
+      const end = new TZDate(end_time ?? Date.now(), hass.config.time_zone);
 
       const statistics: Record<string, StatisticValue[]> = {};
       const cache: Record<string, StatisticValue[]> = {};

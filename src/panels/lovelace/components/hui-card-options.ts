@@ -2,6 +2,7 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiContentCopy,
   mdiContentCut,
+  mdiContentPaste,
   mdiDelete,
   mdiDotsVertical,
   mdiFileMoveOutline,
@@ -11,9 +12,15 @@ import {
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, queryAssignedElements } from "lit/decorators";
+import {
+  customElement,
+  property,
+  queryAssignedElements,
+  state,
+} from "lit/decorators";
 import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { highlightElement } from "../../../common/dom/highlight-element";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
@@ -29,7 +36,9 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
+import type { HuiCard } from "../cards/hui-card";
 import { computeCardSize } from "../common/compute-card-size";
+import { takeCardHighlight } from "../editor/card-highlight";
 import {
   addCard,
   moveCardToContainer,
@@ -46,6 +55,7 @@ import {
 import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
 import type { Lovelace, LovelaceCard } from "../types";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+import { LOVELACE_EDIT_TOAST_ID } from "../types";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -57,16 +67,20 @@ export class HuiCardOptions extends LitElement {
 
   @queryAssignedElements() private _assignedElements?: LovelaceCard[];
 
+  @queryAssignedElements({ selector: "hui-card" })
+  private _huiCards?: HuiCard[];
+
   @property({ attribute: "hide-position", type: Boolean })
   public hidePosition = false;
 
+  @state()
   @storage({
     key: "dashboardCardClipboard",
-    state: false,
-    subscribe: false,
+    state: true,
+    subscribe: true,
     storage: "sessionStorage",
   })
-  protected _clipboard?: LovelaceCardConfig;
+  private _clipboard?: LovelaceCardConfig;
 
   public getCardSize() {
     return this._assignedElements
@@ -91,6 +105,9 @@ export class HuiCardOptions extends LitElement {
       viewPath
     );
     this.classList.toggle("panel", viewConfig?.panel);
+    if (takeCardHighlight(this._huiCards?.[0]?.config)) {
+      highlightElement(this);
+    }
   }
 
   private get _cards() {
@@ -188,6 +205,21 @@ export class HuiCardOptions extends LitElement {
                 <ha-svg-icon slot="icon" .path=${mdiContentCut}></ha-svg-icon>
                 ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.cut")}
               </ha-dropdown-item>
+              ${
+                this._clipboard
+                  ? html`
+                      <ha-dropdown-item value="paste">
+                        <ha-svg-icon
+                          slot="icon"
+                          .path=${mdiContentPaste}
+                        ></ha-svg-icon>
+                        ${this.hass!.localize(
+                          "ui.panel.lovelace.editor.edit_card.paste"
+                        )}
+                      </ha-dropdown-item>
+                    `
+                  : nothing
+              }
               <wa-divider></wa-divider>
               <ha-dropdown-item value="delete" variant="danger">
                 <ha-svg-icon
@@ -282,6 +314,9 @@ export class HuiCardOptions extends LitElement {
       case "cut":
         this._cutCard();
         break;
+      case "paste":
+        this._pasteCard();
+        break;
       case "delete":
         this._deleteCard();
         break;
@@ -297,12 +332,15 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _cutCard(): void {
-    fireEvent(this, "ll-copy-card", { path: this.path! });
-    fireEvent(this, "ll-delete-card", { path: this.path!, silent: true });
+    fireEvent(this, "ll-cut-card", { path: this.path! });
   }
 
   private _copyCard(): void {
     fireEvent(this, "ll-copy-card", { path: this.path! });
+  }
+
+  private _pasteCard(): void {
+    fireEvent(this, "ll-paste-card", { path: this.path! });
   }
 
   private _deleteCard(): void {
@@ -386,6 +424,7 @@ export class HuiCardOptions extends LitElement {
             moveCardToContainer(newConfig, this.path!, toPath)
           );
           this.lovelace.showToast({
+            id: LOVELACE_EDIT_TOAST_ID,
             message: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.success"
             ),
@@ -412,6 +451,7 @@ export class HuiCardOptions extends LitElement {
           );
 
           this.lovelace.showToast({
+            id: LOVELACE_EDIT_TOAST_ID,
             message: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.success"
             ),
@@ -423,6 +463,7 @@ export class HuiCardOptions extends LitElement {
           });
         } catch (_err: any) {
           this.lovelace.showToast({
+            id: LOVELACE_EDIT_TOAST_ID,
             message: this.hass!.localize(
               "ui.panel.lovelace.editor.move_card.error"
             ),

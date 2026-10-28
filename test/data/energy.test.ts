@@ -24,10 +24,16 @@ import {
   getEnergyLiveDayPeriod,
   shouldFallbackEnergyPeriodToYesterday,
   getEnergyDataCollection,
+  saveEnergyPreferences,
   EMPTY_PREFERENCES,
   CompareMode,
+  computeConsumptionData,
 } from "../../src/data/energy";
-import type { EnergySource } from "../../src/data/energy";
+import type {
+  EnergyData,
+  EnergySource,
+  EnergySumData,
+} from "../../src/data/energy";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import type { EntityRegistryDisplayEntry } from "../../src/data/entity/entity_registry";
 import { StatisticMeanType } from "../../src/data/recorder";
@@ -87,139 +93,151 @@ describe("Energy Short Format Test", () => {
   };
 
   it("No Unit conversion", () => {
-    assert.strictEqual(formatConsumptionShort(defaultLocale, 0, "Wh"), "0 Wh");
-    assert.strictEqual(formatConsumptionShort(defaultLocale, 0, "kWh"), "0 Wh");
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 0, "Wh"),
+      "0\u00A0Wh"
+    );
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 0, "kWh"),
+      "0\u00A0Wh"
+    );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0, "kWh", "kWh"),
-      "0 kWh"
+      "0\u00A0kWh"
     );
-    assert.strictEqual(formatConsumptionShort(defaultLocale, 0, "GWh"), "0 Wh");
+    assert.strictEqual(
+      formatConsumptionShort(defaultLocale, 0, "GWh"),
+      "0\u00A0Wh"
+    );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0, "GWh", "GWh"),
-      "0 GWh"
+      "0\u00A0GWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0, "gal"),
-      "0 gal"
+      "0\u00A0gal"
     );
 
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 10000.12345, "gal"),
-      "10,000 gal"
+      "10,000\u00A0gal"
     );
 
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 1.2345, "kWh"),
-      "1.23 kWh"
+      "1.23\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 10.12345, "kWh"),
-      "10.1 kWh"
+      "10.1\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 500.12345, "kWh"),
-      "500 kWh"
+      "500\u00A0kWh"
     );
 
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 10.01, "kWh"),
-      "10 kWh"
+      "10\u00A0kWh"
     );
   });
   it("Upward Unit conversion", () => {
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 1512.34567, "kWh"),
-      "1.51 MWh"
+      "1.51\u00A0MWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 15123.4567, "kWh"),
-      "15.1 MWh"
+      "15.1\u00A0MWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 151234.5678, "kWh"),
-      "151 MWh"
+      "151\u00A0MWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 1512345.6789, "kWh"),
-      "1.51 GWh"
+      "1.51\u00A0GWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 15123456789.9, "kWh"),
-      "15.1 TWh"
+      "15.1\u00A0TWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 15123456789000.9, "kWh"),
-      "15,123 TWh"
+      "15,123\u00A0TWh"
     );
   });
   it("Downward Unit conversion", () => {
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.00012, "kWh"),
-      "0.12 Wh"
+      "0.12\u00A0Wh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.12345, "kWh"),
-      "123 Wh"
+      "123\u00A0Wh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.00001234, "TWh"),
-      "12.3 MWh"
+      "12.3\u00A0MWh"
     );
   });
   it("Negativ Consumption", () => {
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, -500.123, "kWh"),
-      "-500 kWh"
+      "-500\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, -1234.56, "kWh"),
-      "-1.23 MWh"
+      "-1.23\u00A0MWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, -0.001234, "kWh"),
-      "-1.23 Wh"
+      "-1.23\u00A0Wh"
     );
   });
   it("Conversion with target unit", () => {
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.00012, "kWh", "Wh"),
-      "0.12 Wh"
+      "0.12\u00A0Wh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.00012, "kWh", "kWh"),
-      "0 kWh"
+      "0\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.01012, "kWh", "kWh"),
-      "0.01 kWh"
+      "0.01\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 0.00012, "kWh", "MWh"),
-      "0 MWh"
+      "0\u00A0MWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 10.12345, "kWh", "kWh"),
-      "10.1 kWh"
+      "10.1\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 10.12345, "kWh", "ZZZZZWh"),
-      "10.1 kWh"
+      "10.1\u00A0kWh"
     );
     assert.strictEqual(
       formatConsumptionShort(defaultLocale, 151234.5678, "kWh", "MWh"),
-      "151 MWh"
+      "151\u00A0MWh"
     );
   });
   it("Power Short Format", () => {
-    assert.strictEqual(formatPowerShort(defaultLocale, 0), "0 W");
-    assert.strictEqual(formatPowerShort(defaultLocale, 10), "10 W");
-    assert.strictEqual(formatPowerShort(defaultLocale, 12.2), "12 W");
-    assert.strictEqual(formatPowerShort(defaultLocale, 999), "999 W");
-    assert.strictEqual(formatPowerShort(defaultLocale, 1000), "1 kW");
-    assert.strictEqual(formatPowerShort(defaultLocale, 1234), "1.234 kW");
-    assert.strictEqual(formatPowerShort(defaultLocale, 10_500), "10.5 kW");
-    assert.strictEqual(formatPowerShort(defaultLocale, 1_500_000), "1.5 MW");
-    assert.strictEqual(formatPowerShort(defaultLocale, -1500), "-1.5 kW");
+    assert.strictEqual(formatPowerShort(defaultLocale, 0), "0\u00A0W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 10), "10\u00A0W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 12.2), "12\u00A0W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 999), "999\u00A0W");
+    assert.strictEqual(formatPowerShort(defaultLocale, 1000), "1\u00A0kW");
+    assert.strictEqual(formatPowerShort(defaultLocale, 1234), "1.234\u00A0kW");
+    assert.strictEqual(formatPowerShort(defaultLocale, 10_500), "10.5\u00A0kW");
+    assert.strictEqual(
+      formatPowerShort(defaultLocale, 1_500_000),
+      "1.5\u00A0MW"
+    );
+    assert.strictEqual(formatPowerShort(defaultLocale, -1500), "-1.5\u00A0kW");
   });
 });
 
@@ -1130,6 +1148,453 @@ describe("getEnergyLiveDayPeriod", () => {
   });
 });
 
+describe("getEnergyDataCollection cache", () => {
+  it("reuses collections per connection and key and clears their preferences", async () => {
+    const hass = createMockHass();
+    const otherHass = createMockHass();
+    for (const mockHass of [hass, otherHass]) {
+      Object.assign(mockHass, {
+        connection: {
+          addEventListener: vi.fn(),
+          removeEventListener: vi.fn(),
+          connected: true,
+        },
+      });
+    }
+    const options = {
+      callWS: hass.callWS,
+      entities: hass.entities,
+      states: hass.states,
+      locale: hass.locale,
+      config: hass.config,
+      panelUrl: hass.panelUrl,
+      prefs: EMPTY_PREFERENCES,
+      key: "energy_cache",
+    };
+    const collection = getEnergyDataCollection(hass.connection, options);
+    const otherKey = getEnergyDataCollection(hass.connection, {
+      ...options,
+      key: "energy_cache_other",
+    });
+    const otherConnection = getEnergyDataCollection(
+      otherHass.connection,
+      options
+    );
+    assert.strictEqual(
+      getEnergyDataCollection(hass.connection, options),
+      collection
+    );
+    assert.strictEqual(
+      Reflect.get(hass.connection, "_energy_cache"),
+      collection
+    );
+    assert.strictEqual(
+      Reflect.get(hass.connection, "_energy_cache_other"),
+      otherKey
+    );
+    assert.strictEqual(
+      Reflect.get(otherHass.connection, "_energy_cache"),
+      otherConnection
+    );
+    assert.notStrictEqual(otherKey, collection);
+    assert.notStrictEqual(otherConnection, collection);
+
+    hass.callWS = vi.fn().mockResolvedValue(EMPTY_PREFERENCES);
+    await saveEnergyPreferences(hass, EMPTY_PREFERENCES);
+    assert.isUndefined(collection.prefs);
+    assert.isUndefined(otherKey.prefs);
+    assert.strictEqual(otherConnection.prefs, EMPTY_PREFERENCES);
+    assert.strictEqual(
+      getEnergyDataCollection(hass.connection, options),
+      collection
+    );
+  });
+});
+
+describe("getEnergyDataCollection overlapping refreshes", () => {
+  afterEach(() => {
+    localStorage.clear();
+    vi.useRealTimers();
+  });
+
+  const createCollection = (key = "energy_overlapping") => {
+    const hass = createMockHass();
+    const pending: {
+      resolve: (info: {
+        cost_sensors: Record<string, string>;
+        solar_forecast_domains: string[];
+      }) => void;
+      reject: (error: Error) => void;
+    }[] = [];
+    const callWS = vi.fn((msg: { type: string }) => {
+      if (msg.type !== "energy/info") {
+        throw new Error(`unexpected ${msg.type}`);
+      }
+      return new Promise((resolve, reject) => {
+        pending.push({ resolve, reject });
+      });
+    });
+    Object.assign(hass, {
+      connection: {
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        connected: true,
+      },
+      callWS,
+    });
+    const collection = getEnergyDataCollection(hass.connection, {
+      callWS: hass.callWS,
+      entities: hass.entities,
+      states: hass.states,
+      locale: hass.locale,
+      config: hass.config,
+      panelUrl: hass.panelUrl,
+      key,
+      prefs: EMPTY_PREFERENCES,
+    });
+    collection.setPeriod(
+      new Date("2026-01-01T00:00:00Z"),
+      new Date("2026-01-31T23:59:59Z")
+    );
+    return { collection, pending, connection: hass.connection, callWS };
+  };
+
+  const complete = async (
+    request: ReturnType<typeof createCollection>["pending"][number]
+  ) => {
+    request.resolve({ cost_sensors: {}, solar_forecast_domains: [] });
+    await vi.advanceTimersByTimeAsync(0);
+  };
+
+  it.each([true, false])(
+    "keeps today's data on resubscribe within the grace period (already loaded: %s)",
+    async (loaded) => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-01-01T12:00:00Z"));
+      const { collection, pending } = createCollection();
+      collection.setPeriod(startOfDay(new Date()), endOfDay(new Date()));
+      const unsub = collection.subscribe(() => undefined);
+      if (loaded) {
+        await complete(pending[0]);
+      }
+      unsub();
+      // The Home summary reapplies today's range before every subscription.
+      collection.setPeriod(startOfDay(new Date()), endOfDay(new Date()));
+      const received = vi.fn();
+      const unsubAgain = collection.subscribe(received);
+      if (!loaded) {
+        await complete(pending[0]);
+      }
+      await vi.advanceTimersByTimeAsync(0);
+      assert.equal(pending.length, 1);
+      assert.equal(received.mock.calls.length, 1);
+      assert.strictEqual(received.mock.calls[0][0], collection.state);
+      unsubAgain();
+      await vi.advanceTimersByTimeAsync(5000);
+    }
+  );
+
+  it.each([true, false])(
+    "refreshes Home across midnight within the grace period (already loaded: %s)",
+    async (loaded) => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-01-01T23:59:58Z"));
+      const { collection, pending } = createCollection();
+      collection.setPeriod(startOfDay(new Date()), endOfDay(new Date()));
+      const unsub = collection.subscribe(() => undefined);
+      if (loaded) {
+        await complete(pending[0]);
+      }
+      unsub();
+      await vi.advanceTimersByTimeAsync(3000);
+      // Home selects today before subscribing, so the collection's live-day
+      // catch-up sees no further period change.
+      collection.setPeriod(startOfDay(new Date()), endOfDay(new Date()));
+      const received = vi.fn();
+      const unsubAgain = collection.subscribe(received);
+      await vi.advanceTimersByTimeAsync(0);
+      assert.equal(pending.length, 2);
+      assert.equal(received.mock.calls.length, 0);
+      if (!loaded) {
+        await complete(pending[0]);
+      }
+      // An obsolete completion must not clear the current request's marker.
+      const unsubSecond = collection.subscribe(() => undefined);
+      assert.equal(pending.length, 2);
+      await complete(pending[1]);
+      assert.equal(received.mock.calls.length, 1);
+      assert.equal(
+        collection.state?.start.getTime(),
+        startOfDay(new Date()).getTime()
+      );
+      unsubSecond();
+      unsubAgain();
+      await vi.advanceTimersByTimeAsync(5000);
+    }
+  );
+
+  it("keeps an in-flight result when the comparison mode is reapplied", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    collection.setCompare(CompareMode.PREVIOUS);
+    const received = vi.fn();
+    const unsub = collection.subscribe(received);
+    collection.setCompare(CompareMode.PREVIOUS);
+    await complete(pending[0]);
+    assert.equal(received.mock.calls.length, 1);
+    assert.equal(collection.state?.compareMode, CompareMode.PREVIOUS);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it.each([true, false])(
+    "discards an older response (latest completes first: %s)",
+    async (latestFirst) => {
+      vi.useFakeTimers();
+      const { collection, pending } = createCollection();
+      const received: EnergyData[] = [];
+      const unsub = collection.subscribe((data) => received.push(data));
+      collection.setPeriod(
+        new Date("2026-02-01T00:00:00Z"),
+        new Date("2026-02-28T23:59:59Z")
+      );
+      const refresh = collection.refresh();
+      const [older, latest] = pending;
+      await complete(latestFirst ? latest : older);
+      if (!latestFirst) {
+        assert.equal(received.length, 0);
+        assert.equal(collection.state, undefined);
+      }
+      await complete(latestFirst ? older : latest);
+      await refresh;
+      assert.equal(received.length, 1);
+      assert.equal(
+        collection.state?.start.getTime(),
+        collection.start.getTime()
+      );
+      assert.strictEqual(received[0], collection.state);
+      unsub();
+      await vi.advanceTimersByTimeAsync(5000);
+    }
+  );
+
+  it("invalidates a load when the selection changes before another refresh starts", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const received = vi.fn();
+    const unsub = collection.subscribe(received);
+    collection.setCompare(CompareMode.PREVIOUS);
+    await complete(pending[0]);
+    assert.equal(received.mock.calls.length, 0);
+    assert.equal(collection.state, undefined);
+    const refresh = collection.refresh();
+    await complete(pending[1]);
+    await refresh;
+    assert.equal(collection.state?.compareMode, CompareMode.PREVIOUS);
+    assert.equal(received.mock.calls.length, 1);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("distinguishes requests when navigating away and back to the same period", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const received = vi.fn();
+    const unsub = collection.subscribe(received);
+    const { start, end } = collection;
+    collection.setPeriod(
+      new Date("2026-02-01T00:00:00Z"),
+      new Date("2026-02-28T23:59:59Z")
+    );
+    collection.setPeriod(start, end);
+    const refresh = collection.refresh();
+    await complete(pending[0]);
+    assert.equal(received.mock.calls.length, 0);
+    await complete(pending[1]);
+    await refresh;
+    assert.equal(received.mock.calls.length, 1);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("ignores obsolete failures but rejects failures for the current request", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const oldRefresh = collection.refresh();
+    const oldResult = oldRefresh.then(
+      () => "resolved",
+      () => "rejected"
+    );
+    const latestRefresh = collection.refresh();
+    const latestError = new Error("current load failed");
+    const latestResult = latestRefresh.then(
+      () => undefined,
+      (error: unknown) => error
+    );
+    pending[0].reject(new Error("obsolete load failed"));
+    assert.equal(await oldResult, "resolved");
+    pending[1].reject(latestError);
+    assert.strictEqual(await latestResult, latestError);
+  });
+
+  it.each(["period", "comparison"])(
+    "retains loaded preferences when the %s changes during a refresh",
+    async (selection) => {
+      vi.useFakeTimers();
+      const { collection, pending, callWS } = createCollection();
+      const prefs = { ...EMPTY_PREFERENCES };
+      let resolvePrefs!: (prefs: typeof EMPTY_PREFERENCES) => void;
+      callWS.mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolvePrefs = resolve;
+          })
+      );
+      collection.clearPrefs();
+      // View strategies await refresh before reading collection.prefs.
+      const refresh = collection.refresh();
+      if (selection === "period") {
+        collection.setPeriod(
+          new Date("2026-02-01T00:00:00Z"),
+          new Date("2026-02-28T23:59:59Z")
+        );
+      } else {
+        collection.setCompare(CompareMode.PREVIOUS);
+      }
+      resolvePrefs(prefs);
+      await vi.advanceTimersByTimeAsync(0);
+      await complete(pending[0]);
+      await refresh;
+      assert.strictEqual(collection.prefs, prefs);
+      // The preferences remain usable, but the superseded data is discarded.
+      assert.isUndefined(collection.state);
+    }
+  );
+
+  it("replays relevant cached data while refreshing the same selection", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const unsub = collection.subscribe(() => undefined);
+    await complete(pending[0]);
+    const cachedData = collection.state;
+    const refresh = collection.refresh();
+    const received = vi.fn();
+    const unsubSecond = collection.subscribe(received);
+    await vi.advanceTimersByTimeAsync(0);
+    assert.equal(received.mock.calls.length, 1);
+    assert.strictEqual(received.mock.calls[0][0], cachedData);
+    await complete(pending[1]);
+    await refresh;
+    assert.equal(received.mock.calls.length, 2);
+    unsubSecond();
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("does not replay obsolete cached data to a newly attached subscriber", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const unsub = collection.subscribe(() => undefined);
+    await complete(pending[0]);
+    collection.setPeriod(
+      new Date("2026-02-01T00:00:00Z"),
+      new Date("2026-02-28T23:59:59Z")
+    );
+    const refresh = collection.refresh();
+    const received = vi.fn();
+    const unsubSecond = collection.subscribe(received);
+    await vi.advanceTimersByTimeAsync(0);
+    assert.equal(received.mock.calls.length, 0);
+    await complete(pending[1]);
+    await refresh;
+    assert.equal(received.mock.calls.length, 1);
+    unsubSecond();
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("consumes initial and reconnect failures and recovers on the next reconnect", async () => {
+    vi.useFakeTimers();
+    const { collection, pending, connection } = createCollection();
+    const received = vi.fn();
+    const unsub = collection.subscribe(received);
+    const ready = vi
+      .mocked(connection.addEventListener)
+      .mock.calls.find(([event]) => event === "ready")![1];
+
+    // Leave lifecycle promises unhandled by the test, just as the connection
+    // does. Vitest reports an unhandled rejection if either failure escapes.
+    pending[0].reject(new Error("initial load failed"));
+    await vi.advanceTimersByTimeAsync(0);
+    ready(connection, undefined);
+    pending[1].reject(new Error("reconnect load failed"));
+    await vi.advanceTimersByTimeAsync(0);
+    assert.equal(received.mock.calls.length, 0);
+    assert.isUndefined(collection.state);
+
+    ready(connection, undefined);
+    await complete(pending[2]);
+    assert.equal(received.mock.calls.length, 1);
+    assert.strictEqual(received.mock.calls[0][0], collection.state);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("guards reconnect refreshes and removes their listener on teardown", async () => {
+    vi.useFakeTimers();
+    const { collection, pending, connection } = createCollection();
+    const received = vi.fn();
+    const unsub = collection.subscribe(received);
+    const addListener = vi.mocked(connection.addEventListener);
+    const ready = addListener.mock.calls.find(
+      ([event]) => event === "ready"
+    )![1];
+    ready(connection, undefined);
+    await complete(pending[1]);
+    await complete(pending[0]);
+    assert.equal(received.mock.calls.length, 1);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+    assert.equal(collection.state, undefined);
+    assert.isTrue(
+      vi
+        .mocked(connection.removeEventListener)
+        .mock.calls.some(
+          ([event, listener]) => event === "ready" && listener === ready
+        )
+    );
+  });
+
+  it("discards responses after the last subscriber's grace period expires", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const unsub = collection.subscribe(() => undefined);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+    await complete(pending[0]);
+    assert.equal(collection.state, undefined);
+    const received = vi.fn();
+    const unsubSecond = collection.subscribe(received);
+    await complete(pending[1]);
+    assert.equal(received.mock.calls.length, 1);
+    unsubSecond();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("keeps refreshes independent between collections", async () => {
+    vi.useFakeTimers();
+    const first = createCollection("energy_first");
+    const second = createCollection("energy_second");
+    const firstRefresh = first.collection.refresh();
+    const secondRefresh = second.collection.refresh();
+    await complete(first.pending[0]);
+    await complete(second.pending[0]);
+    await Promise.all([firstRefresh, secondRefresh]);
+    assert.isDefined(first.collection.state);
+    assert.isDefined(second.collection.state);
+  });
+});
+
 describe("getEnergyDataCollection live day", () => {
   afterEach(() => {
     localStorage.clear();
@@ -1697,12 +2162,50 @@ describe("computeEnergyLabel", () => {
       }
     );
 
-  it("composes the device and entity name", () => {
+  it("uses the device name without the entity name", () => {
     const hass = createHass(
       "Washer Energy",
       { name: "Energy", device_id: "device1" },
       { name: "Washer" }
     );
+
+    assert.equal(
+      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
+      "Washer"
+    );
+  });
+
+  it("prefixes a sub-device with its parent device", () => {
+    const hass = createMockHass(
+      {
+        [ENTITY_ID]: createMockEntityState(ENTITY_ID, "1", {
+          friendly_name: "Shelly EM Channel 1 Energy",
+        }),
+      },
+      {
+        entities: {
+          [ENTITY_ID]: createEntry({ name: "Energy", device_id: "channel1" }),
+        },
+        devices: {
+          shelly: createDevice({ id: "shelly", name: "Shelly EM" }),
+          channel1: createDevice({
+            id: "channel1",
+            name: "Channel 1",
+            parent_device_id: "shelly",
+            next_name_part: "parent_device",
+          }),
+        },
+      }
+    );
+
+    assert.equal(
+      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
+      "Shelly EM Channel 1"
+    );
+  });
+
+  it("uses the entity name when the entity has no device", () => {
+    const hass = createHass("Washer Energy", { name: "Washer Energy" });
 
     assert.equal(
       computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
@@ -1720,19 +2223,6 @@ describe("computeEnergyLabel", () => {
     assert.equal(
       computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
       "Washer"
-    );
-  });
-
-  it("distinguishes entities sharing a name by their device", () => {
-    const hass = createHass(
-      "Energy",
-      { name: "Energy", device_id: "device1" },
-      { name: "Dishwasher" }
-    );
-
-    assert.equal(
-      computeEnergyLabel(hass.states, hass.formatEntityName, ENTITY_ID),
-      "Dishwasher Energy"
     );
   });
 
@@ -1770,7 +2260,7 @@ describe("computeEnergyLabel", () => {
         undefined,
         ""
       ),
-      "Washer Energy"
+      "Washer"
     );
   });
 
@@ -1844,5 +2334,35 @@ describe("computeEnergyDeviceLabels", () => {
       ),
       { "sensor.washer_power": "Washer Power" }
     );
+  });
+});
+
+describe("computeConsumptionData with a home meter", () => {
+  const summed: EnergySumData = {
+    from_grid: { 1: 4, 2: 4, 3: 4 },
+    solar: { 1: 3, 2: 3, 3: 3 },
+    home: { 1: 9, 2: 0 },
+    total: { from_grid: 12, solar: 9, home: 9 },
+    timestamps: [1, 2, 3],
+  };
+  const { home: _home, ...withoutHome } = summed;
+  const baseline = computeConsumptionData(withoutHome, undefined).consumption;
+  const { consumption } = computeConsumptionData(summed, undefined);
+
+  it("uses the home reading as used_total", () => {
+    assert.equal(consumption.used_total[1], 9);
+  });
+
+  it("keeps a real zero reading", () => {
+    assert.equal(consumption.used_total[2], 0);
+  });
+
+  it("falls back to the calculated value when a bucket has no reading", () => {
+    assert.equal(consumption.used_total[3], baseline.used_total[3]);
+    assert.equal(consumption.used_grid[3], baseline.used_grid[3]);
+  });
+
+  it("never changes the measured grid value", () => {
+    assert.equal(consumption.used_grid[1], baseline.used_grid[1]);
   });
 });

@@ -16,6 +16,9 @@ const HALF_VIEWPORT_SHARE = 0.5;
 // How far a touch moves before its direction decides what it drags
 const TOUCH_SLOP_PX = 4;
 
+// How much of the lowest stop a drag hides before it closes the sheet
+const DISMISS_DRAG_SHARE = 0.75;
+
 interface Stop {
   position: BottomSheetPosition;
   height: number;
@@ -31,9 +34,11 @@ interface Stop {
  * them when a drag ends, or to the next one in the direction of a quick swipe.
  * The handle drags with a mouse or a finger. On touch the whole sheet drags
  * too, until it is at full height: then its content scrolls, and pulling down
- * from the top brings the sheet down again. Dragging down never closes it; it
- * collapses to `minHeight` so a host keeps a strip of content reachable, and
- * only `closeSheet` closes it.
+ * from the top brings the sheet down again. Dragging down collapses it to
+ * `minHeight` so a host keeps a strip of content reachable. Only `closeSheet`
+ * closes it, unless it is `dismissable`: then a drag that pulls it below its
+ * lowest stop closes it with a downward swipe, or once it is almost out of the
+ * screen. A quick swipe that ends above the lowest stop still stops there.
  *
  * @fires bottom-sheet-closed - Fired when the bottom sheet is closed
  * @fires bottom-sheet-resized - Fired with the sheet's height in pixels
@@ -61,11 +66,16 @@ export class HaSnapBottomSheet extends LitElement {
   /** Names the sheet for assistive technologies */
   @property() public label?: string;
 
+  @property({ type: Boolean }) public dismissable = false;
+
   @state() private _shown = false;
 
   @state() private _position: BottomSheetPosition = "half";
 
   @state() private _dragHeight?: number;
+
+  // How far below its lowest stop a drag has pulled the sheet
+  @state() private _dismissOffset?: number;
 
   private _gesture = new SwipeGestureRecognizer();
 
@@ -118,15 +128,26 @@ export class HaSnapBottomSheet extends LitElement {
         @click=${this._handleBackdropClick}
       ></div>
       <div
-        class="sheet ${classMap({ show: this._shown, full, dragging })}"
+        class="sheet ${classMap({
+          show: this._shown,
+          full,
+          dragging,
+          dismissing: Boolean(this._dismissOffset),
+        })}"
         popover=${popover}
         role="region"
         aria-label=${ifDefined(this.label)}
         style=${styleMap({
           height: this._height(),
           "min-height": this._collapsedHeight(),
+          transform: this._dismissOffset
+            ? `translateY(${this._dismissOffset}px)`
+            : undefined,
         })}
         @touchstart=${this._handleTouchStart}
+        @touchmove=${this._handleTouchMove}
+        @touchend=${this._handleTouchEnd}
+        @touchcancel=${this._handleTouchEnd}
       >
         <div class="handle-wrapper">
           <div @mousedown=${this._handleMouseDown} class="handle"></div>
@@ -165,13 +186,6 @@ export class HaSnapBottomSheet extends LitElement {
       this._reported = undefined;
       this._reportWhenSettled();
     }
-    document.addEventListener("mousemove", this._handleMouseMove);
-    document.addEventListener("mouseup", this._handleMouseUp);
-    document.addEventListener("touchmove", this._handleTouchMove, {
-      passive: false,
-    });
-    document.addEventListener("touchend", this._handleTouchEnd);
-    document.addEventListener("touchcancel", this._handleTouchEnd);
     window.addEventListener("resize", this._handleViewportResize);
   }
 
@@ -183,11 +197,8 @@ export class HaSnapBottomSheet extends LitElement {
     this._dragging = false;
     this._pendingTouch = undefined;
     this._dragHeight = undefined;
-    document.removeEventListener("mousemove", this._handleMouseMove);
-    document.removeEventListener("mouseup", this._handleMouseUp);
-    document.removeEventListener("touchmove", this._handleTouchMove);
-    document.removeEventListener("touchend", this._handleTouchEnd);
-    document.removeEventListener("touchcancel", this._handleTouchEnd);
+    this._dismissOffset = undefined;
+    this._removeMouseListeners();
     window.removeEventListener("resize", this._handleViewportResize);
   }
 
@@ -239,6 +250,8 @@ export class HaSnapBottomSheet extends LitElement {
 
   private _handleMouseDown = (ev: MouseEvent) => {
     document.body.style.setProperty("cursor", "grabbing");
+    document.addEventListener("mousemove", this._handleMouseMove);
+    document.addEventListener("mouseup", this._handleMouseUp);
     this._startDrag(ev.clientY);
   };
 
@@ -249,13 +262,22 @@ export class HaSnapBottomSheet extends LitElement {
   };
 
   private _handleMouseUp = () => {
+    this._removeMouseListeners();
     this._endDrag();
   };
+
+  private _removeMouseListeners() {
+    document.removeEventListener("mousemove", this._handleMouseMove);
+    document.removeEventListener("mouseup", this._handleMouseUp);
+  }
 
   private _handleTouchStart = (ev: TouchEvent) => {
     if (ev.touches.length !== 1) {
       return;
     }
+    // The previous touch never ended here if its target was removed
+    this._pendingTouch = undefined;
+    this._endDrag();
     const touch = ev.touches[0];
     const path = ev.composedPath();
     if (path.includes(this._handle)) {
@@ -317,15 +339,20 @@ export class HaSnapBottomSheet extends LitElement {
   private _startDrag(clientY: number) {
     this._dragging = true;
     this._dragStartHeight = this._sheet.offsetHeight;
+    if (this.dismissable) {
+      this._dismissOffset = 0;
+    }
     this._gesture.start(clientY);
   }
 
   private _moveDrag(clientY: number) {
     const delta = this._gesture.move(clientY);
-    this._dragHeight = Math.max(
-      this._stops()[0].height,
-      this._dragStartHeight + delta
-    );
+    const lowestHeight = this._stops()[0].height;
+    const height = this._dragStartHeight + delta;
+    this._dragHeight = Math.max(lowestHeight, height);
+    if (this._dismissOffset !== undefined) {
+      this._dismissOffset = Math.max(0, lowestHeight - height);
+    }
   }
 
   private _endDrag() {
@@ -335,6 +362,18 @@ export class HaSnapBottomSheet extends LitElement {
     this._dragging = false;
     document.body.style.removeProperty("cursor");
     const { isSwipe, isDownwardSwipe } = this._gesture.end();
+    const dismissOffset = this._dismissOffset;
+    this._dismissOffset = undefined;
+    if (
+      dismissOffset &&
+      ((isSwipe && isDownwardSwipe) ||
+        dismissOffset > this._stops()[0].height * DISMISS_DRAG_SHARE)
+    ) {
+      this._position = this._stops()[0].position;
+      this._dragHeight = undefined;
+      this.closeSheet();
+      return;
+    }
     this._position = this._stopAfterDrag(
       this._sheet.offsetHeight,
       isSwipe ? (isDownwardSwipe ? "down" : "up") : undefined
@@ -555,6 +594,10 @@ export class HaSnapBottomSheet extends LitElement {
 
     .sheet.show {
       transform: translateY(0);
+    }
+
+    .sheet.dismissing {
+      transition: none;
     }
   `;
 }

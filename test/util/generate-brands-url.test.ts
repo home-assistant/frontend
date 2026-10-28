@@ -9,6 +9,7 @@ import {
   hardwareBrandsUrl,
   marketplaceBrandsUrl,
   scheduleBrandsTokenRefresh,
+  subscribeBrandsAccessToken,
 } from "../../src/util/brands-url";
 
 // NOTE: the cached brands token is module-level state that persists across
@@ -235,6 +236,41 @@ describe("scheduleBrandsTokenRefresh", () => {
     // Advance 30 minutes — should not have refreshed because we cleared
     await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
     assert.strictEqual(callCount, 1);
+  });
+});
+
+describe("subscribeBrandsAccessToken", () => {
+  afterEach(() => {
+    clearBrandsTokenRefresh();
+    vi.useRealTimers();
+  });
+
+  it("reports the current token, then each change until unsubscribed", async () => {
+    vi.useFakeTimers();
+    let token = "subscribed-token-1";
+    const mockHass = {
+      callWS: async () => ({ token }),
+    } as unknown as HomeAssistant;
+    await fetchBrandsAccessToken(mockHass);
+
+    const listener = vi.fn();
+    const unsubscribe = subscribeBrandsAccessToken(listener);
+    assert.deepEqual(listener.mock.calls, [["subscribed-token-1"]]);
+
+    // Unchanged token: no call
+    await fetchBrandsAccessToken(mockHass);
+    assert.strictEqual(listener.mock.calls.length, 1);
+
+    // The 30 minute refresh reports the rotated token
+    token = "subscribed-token-2";
+    scheduleBrandsTokenRefresh(mockHass);
+    await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
+    assert.deepEqual(listener.mock.calls[1], ["subscribed-token-2"]);
+
+    unsubscribe();
+    token = "subscribed-token-3";
+    await fetchBrandsAccessToken(mockHass);
+    assert.strictEqual(listener.mock.calls.length, 2);
   });
 });
 

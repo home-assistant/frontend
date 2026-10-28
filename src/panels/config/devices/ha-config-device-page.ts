@@ -25,13 +25,11 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { ASSIST_ENTITIES, SENSOR_ENTITIES } from "../../../common/const";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
@@ -66,6 +64,11 @@ import {
   sortConfigEntries,
 } from "../../../data/config_entries";
 import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
+import {
+  DEVICE_ENTITY_CATEGORIES,
+  computeDeviceEntityCategory,
+  type DeviceEntityCategory,
+} from "../../../data/device/device_entity_category";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import {
   removeDeviceFromRegistry,
@@ -267,8 +270,8 @@ export class HaConfigDevicePage extends LitElement {
   private _getEntitiesSorted = (entities: HassEntity[]) =>
     entities.sort((ent1, ent2) =>
       stringCompare(
-        ent1.attributes.friendly_name || `zzz${ent1.entity_id}`,
-        ent2.attributes.friendly_name || `zzz${ent2.entity_id}`,
+        this.hass.formatEntityName(ent1) || `zzz${ent1.entity_id}`,
+        this.hass.formatEntityName(ent2) || `zzz${ent2.entity_id}`,
         this.hass.locale.language
       )
     );
@@ -306,44 +309,11 @@ export class HaConfigDevicePage extends LitElement {
 
   private _entitiesByCategory = memoizeOne(
     (entities: EntityRegistryEntry[]) => {
-      const result = groupBy(entities, (entry) => {
-        const domain = computeDomain(entry.entity_id);
-
-        if (ASSIST_ENTITIES.includes(domain)) {
-          return "assist";
-        }
-
-        if (domain === "event" || domain === "notify") {
-          return domain;
-        }
-
-        if (entry.entity_category) {
-          return entry.entity_category;
-        }
-
-        if (SENSOR_ENTITIES.includes(domain)) {
-          return "sensor";
-        }
-
-        return "control";
-      }) as Record<
-        | "control"
-        | "event"
-        | "sensor"
-        | "assist"
-        | "notify"
-        | NonNullable<EntityRegistryEntry["entity_category"]>,
+      const result = groupBy(entities, computeDeviceEntityCategory) as Record<
+        DeviceEntityCategory,
         EntityRegistryStateEntry[]
       >;
-      for (const key of [
-        "assist",
-        "config",
-        "control",
-        "diagnostic",
-        "event",
-        "notify",
-        "sensor",
-      ]) {
+      for (const key of DEVICE_ENTITY_CATEGORIES) {
         if (!(key in result)) {
           result[key] = [];
         }
@@ -418,11 +388,7 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
-    const deviceName = computeDeviceNameDisplay(
-      device,
-      this.hass.localize,
-      this.hass.states
-    );
+    const deviceName = computeDeviceNameDisplay(device, this.hass.localize);
     const integrations = this._integrations(
       device,
       this.entries,
@@ -583,7 +549,8 @@ export class HaConfigDevicePage extends LitElement {
                       this._related.scene?.length
                     ? html`
                         ${
-                          isComponentLoaded(this.hass.config, "automation")
+                          isComponentLoaded(this.hass.config, "automation") &&
+                          this._related.automation?.length
                             ? html`
                                 <h3 class="section-header">
                                   ${this.hass.localize(
@@ -595,40 +562,31 @@ export class HaConfigDevicePage extends LitElement {
                                     "ui.panel.config.devices.automation.automations_heading"
                                   )}
                                 >
-                                  ${
-                                    this._related.automation?.length
-                                      ? this._getRelated(
-                                          this._related
-                                        ).automation.map((automation) =>
-                                          automation
-                                            ? html`<ha-list-item-button
-                                                .headline=${computeStateName(
-                                                  automation
-                                                )}
-                                                .href=${
-                                                  automation.attributes.id
-                                                    ? `/config/automation/edit/${encodeURIComponent(automation.attributes.id)}`
-                                                    : `/config/automation/show/${automation.entity_id}`
-                                                }
-                                              >
-                                                <ha-icon-next
-                                                  slot="end"
-                                                ></ha-icon-next>
-                                              </ha-list-item-button>`
-                                            : nothing
-                                        )
-                                      : html`<ha-list-item-base
-                                          .headline=${this.hass.localize(
-                                            "ui.panel.config.devices.automation.no_automations"
-                                          )}
-                                        ></ha-list-item-base>`
-                                  }
+                                  ${this._getRelated(
+                                    this._related
+                                  ).automation.map((automation) =>
+                                    automation
+                                      ? html`<ha-list-item-button
+                                          .headline=${this.hass.formatEntityName(automation)}
+                                          .href=${
+                                            automation.attributes.id
+                                              ? `/config/automation/edit/${encodeURIComponent(automation.attributes.id)}`
+                                              : `/config/automation/show/${automation.entity_id}`
+                                          }
+                                        >
+                                          <ha-icon-next
+                                            slot="end"
+                                          ></ha-icon-next>
+                                        </ha-list-item-button>`
+                                      : nothing
+                                  )}
                                 </ha-list-nav>
                               `
                             : nothing
                         }
                         ${
-                          isComponentLoaded(this.hass.config, "script")
+                          isComponentLoaded(this.hass.config, "script") &&
+                          this._related.script?.length
                             ? html`
                                 <h3 class="section-header">
                                   ${this.hass.localize(
@@ -640,117 +598,95 @@ export class HaConfigDevicePage extends LitElement {
                                     "ui.panel.config.devices.script.scripts_heading"
                                   )}
                                 >
-                                  ${
-                                    this._related.script?.length
-                                      ? this._getRelated(
-                                          this._related
-                                        ).script.map((script) => {
-                                          if (!script) {
-                                            return nothing;
-                                          }
-                                          const entry = this._entityReg.find(
-                                            (e) =>
-                                              e.entity_id === script.entity_id
-                                          );
-                                          const url = entry
-                                            ? `/config/script/edit/${entry.unique_id}`
-                                            : `/config/script/show/${script.entity_id}`;
-                                          return html`
+                                  ${this._getRelated(this._related).script.map(
+                                    (script) => {
+                                      if (!script) {
+                                        return nothing;
+                                      }
+                                      const entry = this._entityReg.find(
+                                        (e) => e.entity_id === script.entity_id
+                                      );
+                                      const url = entry
+                                        ? `/config/script/edit/${entry.unique_id}`
+                                        : `/config/script/show/${script.entity_id}`;
+                                      return html`
+                                        <ha-list-item-button
+                                          .headline=${this.hass.formatEntityName(script)}
+                                          .href=${url}
+                                        >
+                                          <ha-icon-next
+                                            slot="end"
+                                          ></ha-icon-next>
+                                        </ha-list-item-button>
+                                      `;
+                                    }
+                                  )}
+                                </ha-list-nav>
+                              `
+                            : nothing
+                        }
+                        ${
+                          hasSceneSupport && this._related.scene?.length
+                            ? html`
+                                <h3 class="section-header">
+                                  ${this.hass.localize(
+                                    "ui.panel.config.devices.scene.scenes_heading"
+                                  )}
+                                </h3>
+                                <ha-list-nav
+                                  .ariaLabel=${this.hass.localize(
+                                    "ui.panel.config.devices.scene.scenes_heading"
+                                  )}
+                                >
+                                  ${this._getRelated(this._related).scene.map(
+                                    (scene) => {
+                                      if (!scene) {
+                                        return nothing;
+                                      }
+
+                                      const sceneId = `scene-${slugify(
+                                        scene.entity_id
+                                      )}`;
+
+                                      return scene.attributes.id
+                                        ? html`
                                             <ha-list-item-button
-                                              .headline=${computeStateName(script)}
-                                              .href=${url}
+                                              .headline=${this.hass.formatEntityName(scene)}
+                                              .href=${`/config/scene/edit/${scene.attributes.id}`}
                                             >
                                               <ha-icon-next
                                                 slot="end"
                                               ></ha-icon-next>
                                             </ha-list-item-button>
+                                          `
+                                        : html`
+                                            <ha-list-item-base
+                                              id=${sceneId}
+                                              .headline=${this.hass.formatEntityName(scene)}
+                                            >
+                                              <ha-icon-next
+                                                slot="end"
+                                              ></ha-icon-next>
+                                            </ha-list-item-base>
+                                            <ha-tooltip
+                                              .for=${sceneId}
+                                              placement=${
+                                                computeRTL(
+                                                  this.hass.language,
+                                                  this.hass.translationMetadata
+                                                    .translations
+                                                )
+                                                  ? "left"
+                                                  : "right"
+                                              }
+                                            >
+                                              ${this.hass.localize(
+                                                "ui.panel.config.devices.cant_edit"
+                                              )}
+                                            </ha-tooltip>
                                           `;
-                                        })
-                                      : html`<ha-list-item-base
-                                          .headline=${this.hass.localize(
-                                            "ui.panel.config.devices.script.no_scripts"
-                                          )}
-                                        ></ha-list-item-base>`
-                                  }
-                                </ha-list-nav>
-                              `
-                            : nothing
-                        }
-                        ${
-                          hasSceneSupport
-                            ? html`
-                                <h3 class="section-header">
-                                  ${this.hass.localize(
-                                    "ui.panel.config.devices.scene.scenes_heading"
+                                    }
                                   )}
-                                </h3>
-                                <ha-list-nav
-                                  .ariaLabel=${this.hass.localize(
-                                    "ui.panel.config.devices.scene.scenes_heading"
-                                  )}
-                                >
-                                  ${
-                                    this._related.scene?.length
-                                      ? this._getRelated(
-                                          this._related
-                                        ).scene.map((scene) => {
-                                          if (!scene) {
-                                            return nothing;
-                                          }
-
-                                          const sceneId = `scene-${slugify(
-                                            scene.entity_id
-                                          )}`;
-
-                                          return scene.attributes.id
-                                            ? html`
-                                                <ha-list-item-button
-                                                  .headline=${computeStateName(
-                                                    scene
-                                                  )}
-                                                  .href=${`/config/scene/edit/${scene.attributes.id}`}
-                                                >
-                                                  <ha-icon-next
-                                                    slot="end"
-                                                  ></ha-icon-next>
-                                                </ha-list-item-button>
-                                              `
-                                            : html`
-                                                <ha-list-item-base
-                                                  id=${sceneId}
-                                                  .headline=${computeStateName(
-                                                    scene
-                                                  )}
-                                                >
-                                                  <ha-icon-next
-                                                    slot="end"
-                                                  ></ha-icon-next>
-                                                </ha-list-item-base>
-                                                <ha-tooltip
-                                                  .for=${sceneId}
-                                                  placement=${
-                                                    computeRTL(
-                                                      this.hass.language,
-                                                      this.hass
-                                                        .translationMetadata
-                                                        .translations
-                                                    )
-                                                      ? "left"
-                                                      : "right"
-                                                  }
-                                                >
-                                                  ${this.hass.localize(
-                                                    "ui.panel.config.devices.cant_edit"
-                                                  )}
-                                                </ha-tooltip>
-                                              `;
-                                        })
-                                      : html`<ha-list-item-base
-                                          .headline=${this.hass.localize(
-                                            "ui.panel.config.devices.scene.no_scenes"
-                                          )}
-                                        ></ha-list-item-base>`
-                                  }
                                 </ha-list-nav>
                               `
                             : nothing
@@ -920,17 +856,7 @@ export class HaConfigDevicePage extends LitElement {
     `;
 
     const entitiesColumn = html`
-      ${(
-        [
-          "control",
-          "sensor",
-          "notify",
-          "event",
-          "assist",
-          "config",
-          "diagnostic",
-        ] as const
-      ).map((category) =>
+      ${DEVICE_ENTITY_CATEGORIES.map((category) =>
         // Make sure we render controls if no other cards will be rendered
         entitiesByCategory[category].length > 0 ||
         (entities.length === 0 && category === "control")
@@ -1024,7 +950,9 @@ export class HaConfigDevicePage extends LitElement {
           .path=${mdiDotsVertical}
         ></ha-icon-button>
 
-        ${NAVIGATION_ACTIONS.map(
+        ${NAVIGATION_ACTIONS.filter(
+          (action) => quickLinkCounts[action.countKey]
+        ).map(
           (action) => html`
             <ha-dropdown-item value=${action.value}>
               <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
@@ -1036,8 +964,11 @@ export class HaConfigDevicePage extends LitElement {
             </ha-dropdown-item>
           `
         )}
-
-        <wa-divider></wa-divider>
+        ${
+          NAVIGATION_ACTIONS.some((action) => quickLinkCounts[action.countKey])
+            ? html`<wa-divider></wa-divider>`
+            : nothing
+        }
 
         <ha-dropdown-item value="reset_entity_ids">
           <ha-svg-icon slot="icon" .path=${mdiRestore}></ha-svg-icon>
@@ -1158,8 +1089,10 @@ export class HaConfigDevicePage extends LitElement {
       if (request !== this._esphomeSetupRequest || this.deviceId !== deviceId) {
         return;
       }
-      this._esphomeSetup ??= new esphomeSetup.ESPHomeSetupController(this, () =>
-        this._entities(this.deviceId, this._entityReg, this.hass.devices)
+      // The wizard may list entities of sub-devices
+      this._esphomeSetup ??= new esphomeSetup.ESPHomeSetupController(
+        this,
+        () => this._entityReg
       );
     }
     this._esphomeSetup.refresh(deviceId);
@@ -1478,7 +1411,7 @@ export class HaConfigDevicePage extends LitElement {
     const device = devices[this.deviceId];
     return (
       computeEntityEntryName(entity) ||
-      computeDeviceNameDisplay(device, this.hass.localize, this.hass.states)
+      computeDeviceNameDisplay(device, this.hass.localize)
     );
   }
 
@@ -1522,6 +1455,22 @@ export class HaConfigDevicePage extends LitElement {
     deviceInfo: TemplateResult[]
   ) {
     const domains = integrations.map((int) => int.domain);
+    if (
+      this.hass.user?.is_admin &&
+      this.manifests.some(
+        (manifest) =>
+          domains.includes(manifest.domain) &&
+          manifest.dependencies?.includes("lorawan")
+      )
+    ) {
+      import("./device-detail/integration-elements/lorawan/ha-device-info-lorawan");
+      deviceInfo.push(
+        html`<ha-device-info-lorawan
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-lorawan>`
+      );
+    }
     if (domains.includes("zha")) {
       import("./device-detail/integration-elements/zha/ha-device-info-zha");
       deviceInfo.push(html`

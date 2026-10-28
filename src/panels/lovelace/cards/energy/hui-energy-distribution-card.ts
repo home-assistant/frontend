@@ -49,7 +49,7 @@ import type {
 } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import { round } from "../../../../common/number/round";
 import {
   ENERGY_DISTRIBUTION_HOME_CIRCLE_CIRCUMFERENCE as CIRCLE_CIRCUMFERENCE,
@@ -213,6 +213,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
+    const homeName = types.home?.[0]?.name || this._locationName;
 
     const hasGrid = types.grid?.some(
       (g) => g.stat_energy_from || g.stat_energy_to
@@ -315,6 +316,13 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       }
     }
 
+    const formattedBatterySoc =
+      averageBatterySoc !== null
+        ? formatNumberWithUnit(averageBatterySoc, "%", this._i18n.locale, {
+            maximumFractionDigits: 0,
+          })
+        : undefined;
+
     let returnedToGrid: number | null = null;
 
     if (hasReturnToGrid) {
@@ -349,6 +357,12 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     const gridConsumption = hasGrid
       ? Math.max(consumption.total.used_grid, 0)
       : 0;
+
+    // Export not covered by solar or battery comes from unconfigured generation
+    const homeToGrid = Math.max(
+      (returnedToGrid ?? 0) - (solarToGrid ?? 0) - (batteryToGrid ?? 0),
+      0
+    );
 
     const totalHomeConsumption = Math.max(0, consumption.total.used_total);
 
@@ -403,6 +417,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
     const totalLines =
       gridConsumption +
+      homeToGrid +
       (solarConsumption || 0) +
       (solarToGrid || 0) +
       (solarToBattery || 0) +
@@ -425,7 +440,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       maxEnergy,
       "kWh"
     )
-      .split(" ")
+      .split(/\s/)
       .pop();
 
     return html`
@@ -696,7 +711,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
               ${
                 hasGas && hasWater
                   ? ""
-                  : html`<span class="label">${this._locationName}</span>`
+                  : html`<span class="label">${homeName}</span>`
               }
             </div>
           </div>
@@ -713,17 +728,8 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                                 .path=${batteryIconPath}
                               ></ha-svg-icon>
                               ${
-                                averageBatterySoc !== null
-                                  ? html`<span
-                                      >${formatNumber(
-                                        averageBatterySoc,
-                                        this._i18n.locale,
-                                        {
-                                          maximumFractionDigits: 0,
-                                        }
-                                      )}
-                                      %</span
-                                    >`
+                                formattedBatterySoc
+                                  ? html`<span>${formattedBatterySoc}</span>`
                                   : nothing
                               }
                             </div>
@@ -893,6 +899,12 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                         path: "grid",
                         className: "grid",
                         duration: 6 - (gridConsumption / totalLines) * 5,
+                      },
+                      hasFlow(homeToGrid) && {
+                        path: "grid",
+                        className: "return",
+                        duration: 6 - (homeToGrid / totalLines) * 5,
+                        reverse: true,
                       },
                       hasFlow(solarToBattery) && {
                         path: "battery-solar",
