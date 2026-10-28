@@ -1,3 +1,9 @@
+import {
+  mdiHelpNetworkOutline,
+  mdiLanDisconnect,
+  mdiLeaf,
+  mdiZigbee,
+} from "@mdi/js";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import type {
   NetworkData,
@@ -22,6 +28,23 @@ const RELATIONSHIP_PRIORITY: Record<string, number> = {
 };
 const UNKNOWN_RELATIONSHIP_PRIORITY = 4;
 
+// virtual parents are not Zigbee devices, so their ids cannot collide with an IEEE
+const VIRTUAL_PARENT_PREFIX = "virtual_";
+
+const iconSymbol = (
+  shape: "circle" | "roundRect",
+  color: string,
+  iconColor: string,
+  iconPath: string
+): string => {
+  const background =
+    shape === "circle"
+      ? `<circle cx="16" cy="16" r="16" fill="${color.trim()}"/>`
+      : `<rect width="32" height="32" rx="6" fill="${color.trim()}"/>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">${background}<path transform="translate(6 6) scale(0.8333)" fill="${iconColor}" d="${iconPath}"/></svg>`;
+  return `image://data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+};
+
 export function createZHANetworkChartData(
   devices: ZHADevice[],
   hass: HomeAssistant,
@@ -34,6 +57,7 @@ export function createZHANetworkChartData(
   const endDeviceColor = style.getPropertyValue("--teal-color");
   const greenPowerColor = style.getPropertyValue("--green-color");
   const offlineColor = style.getPropertyValue("--error-color");
+  const iconColor = style.getPropertyValue("--text-primary-color").trim();
   const nodes: NetworkNode[] = [];
   const links: NetworkLink[] = [];
   const categories = [
@@ -103,7 +127,7 @@ export function createZHANetworkChartData(
           ? 30
           : 20,
       symbol: isCoordinator
-        ? "roundRect"
+        ? iconSymbol("roundRect", primaryColor, iconColor, mdiZigbee)
         : isGreenPower
           ? "triangle"
           : "circle",
@@ -200,6 +224,10 @@ export function createZHANetworkChartData(
   // splitting the graph into islands depending on backend device order.
   const fallbackTargets = new Map<string, { ieee: string; lqi: string }>();
   devices.forEach((device) => {
+    // Green Power devices have no parent, they go under a virtual parent below
+    if (device.device_type === ZHADeviceType.GreenPower) {
+      return;
+    }
     const hasLink = links.some(
       (link) => link.source === device.ieee || link.target === device.ieee
     );
@@ -261,6 +289,71 @@ export function createZHANetworkChartData(
       ignoreForceLayout: true,
     });
   });
+
+  // Group devices that are still unlinked under a virtual parent, so they
+  // gather in one place instead of floating around the graph
+  const virtualParents = {
+    green_power: { color: greenPowerColor, icon: mdiLeaf, category: 3 },
+    offline: { color: offlineColor, icon: mdiLanDisconnect, category: 4 },
+    no_parent: {
+      color: style.getPropertyValue("--disabled-color"),
+      icon: mdiHelpNetworkOutline,
+      category: undefined,
+    },
+  };
+  const virtualChildren: Record<keyof typeof virtualParents, string[]> = {
+    green_power: [],
+    offline: [],
+    no_parent: [],
+  };
+  devices.forEach((device) => {
+    if (device.device_type === ZHADeviceType.Coordinator) {
+      return;
+    }
+    if (device.device_type === ZHADeviceType.GreenPower) {
+      virtualChildren.green_power.push(device.ieee);
+      return;
+    }
+    const hasLink = links.some(
+      (link) => link.source === device.ieee || link.target === device.ieee
+    );
+    if (!hasLink) {
+      virtualChildren[device.available ? "no_parent" : "offline"].push(
+        device.ieee
+      );
+    }
+  });
+  (Object.keys(virtualParents) as (keyof typeof virtualParents)[]).forEach(
+    (key) => {
+      if (!virtualChildren[key].length) {
+        return;
+      }
+      const { color, icon, category } = virtualParents[key];
+      const id = `${VIRTUAL_PARENT_PREFIX}${key}`;
+      nodes.push({
+        id,
+        name: hass.localize(`ui.panel.config.zha.visualization.${key}`),
+        category,
+        value: 2,
+        symbolSize: 30,
+        symbol: iconSymbol("circle", color, iconColor, icon),
+        itemStyle: { color },
+        // the force layout pushes a cluster with no link to the mesh off screen
+        polarDistance: 0.75,
+        fixed: true,
+      });
+      virtualChildren[key].forEach((ieee) => {
+        // not a radio link, so no LQI and no arrow
+        links.push({
+          source: id,
+          target: ieee,
+          value: 0,
+          symbol: "none",
+          lineStyle: { width: 1, color, type: "dashed" },
+        });
+      });
+    }
+  );
 
   // Now set ignoreForceLayout to false for the best connection of each device
   // Except for the coordinator which can have multiple strong connections

@@ -8512,7 +8512,8 @@
             "router": "Router",
             "end_device": "End device",
             "green_power": "Green Power",
-            "offline": "Offline"
+            "offline": "Offline",
+            "no_parent": "No parent"
           },
           "device_binding": {
             "header": "Device binding",
