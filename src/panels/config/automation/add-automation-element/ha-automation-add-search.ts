@@ -455,7 +455,11 @@ export class HaAutomationAddSearch extends LitElement {
 
     return html`<ha-list-item-button
       .value=${item}
-      class=${current ? "current" : ""}
+      style=${
+        current
+          ? "--disabled-text-color: var(--primary-text-color); background-color: var(--ha-color-fill-primary-quiet-resting);"
+          : ""
+      }
       .disabled=${current}
       aria-current=${current ? "true" : nothing}
       @click=${this._selectSearchResult}
@@ -1086,13 +1090,6 @@ export class HaAutomationAddSearch extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
-    }
-    ha-list-item-button.current {
-      color: var(--primary-text-color);
-      background-color: var(--ha-color-fill-primary-quiet-resting);
-    }
-    ha-list-item-button.current::part(base) {
-      color: inherit;
     }
     .empty-search {
       display: flex;
