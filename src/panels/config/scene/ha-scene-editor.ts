@@ -449,7 +449,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                           }
                           const { primary, secondary } =
                             computeEntityPickerDisplay(
-                              this.hass,
+                              {
+                                entities: this.hass.entities,
+                                devices: this.hass.devices,
+                                areas: this.hass.areas,
+                                floors: this.hass.floors,
+                                language: this.hass.language,
+                                translationMetadata:
+                                  this.hass.translationMetadata,
+                              },
                               entityStateObj
                             );
                           const platform =
@@ -557,7 +565,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                               }
                               const { primary, secondary } =
                                 computeEntityPickerDisplay(
-                                  this.hass,
+                                  {
+                                    entities: this.hass.entities,
+                                    devices: this.hass.devices,
+                                    areas: this.hass.areas,
+                                    floors: this.hass.floors,
+                                    language: this.hass.language,
+                                    translationMetadata:
+                                      this.hass.translationMetadata,
+                                  },
                                   entityStateObj
                                 );
                               const domainName = domainToName(

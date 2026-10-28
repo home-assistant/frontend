@@ -798,7 +798,17 @@ export class HaTargetPickerItemRow extends LitElement {
     if (type === "entity") {
       const stateObject: HassEntity | undefined = this.hass.states[item];
       const { primary, secondary } = stateObject
-        ? computeEntityPickerDisplay(this.hass, stateObject)
+        ? computeEntityPickerDisplay(
+            {
+              entities: this.hass.entities,
+              devices: this.hass.devices,
+              areas: this.hass.areas,
+              floors: this.hass.floors,
+              language: this.hass.language,
+              translationMetadata: this.hass.translationMetadata,
+            },
+            stateObject
+          )
         : { primary: item, secondary: undefined };
       return {
         name: primary,

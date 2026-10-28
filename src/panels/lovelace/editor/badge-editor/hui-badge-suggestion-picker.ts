@@ -175,7 +175,17 @@ export class HuiBadgeSuggestionPicker extends LitElement {
   private _renderSelectedEntity(): TemplateResult {
     const stateObj = this.hass.states[this._entityId!];
     const { primary, secondary } = stateObj
-      ? computeEntityPickerDisplay(this.hass, stateObj)
+      ? computeEntityPickerDisplay(
+          {
+            entities: this.hass.entities,
+            devices: this.hass.devices,
+            areas: this.hass.areas,
+            floors: this.hass.floors,
+            language: this.hass.language,
+            translationMetadata: this.hass.translationMetadata,
+          },
+          stateObj
+        )
       : { primary: this._entityId!, secondary: undefined };
     return html`
       <ha-section-title>
