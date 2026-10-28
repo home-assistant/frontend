@@ -592,6 +592,8 @@ export class DialogEnergyGasSettings
     }
     const sensors = await confirmIntegrals(this, this.hass, {
       deviceClass: "gas",
+      states: this.hass.states,
+      entities: this.hass.entities,
       requests: [
         {
           rate: statRate,

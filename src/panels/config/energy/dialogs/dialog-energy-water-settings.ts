@@ -489,6 +489,8 @@ export class DialogEnergyWaterSettings
     }
     const sensors = await confirmIntegrals(this, this.hass, {
       deviceClass: "water",
+      states: this.hass.states,
+      entities: this.hass.entities,
       requests: [
         {
           rate: statRate,
