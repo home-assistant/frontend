@@ -526,10 +526,16 @@ export interface SelectSelector {
   } | null;
 }
 
+// Maps a context key to the name of another field or blueprint input
+export interface DeviceClassSelectorContext {
+  filter_unit_of_measurement?: string;
+}
+
 export interface DeviceClassSelector {
   device_class: {
     domain: string;
     multiple?: boolean;
+    context?: DeviceClassSelectorContext;
   } | null;
 }
 

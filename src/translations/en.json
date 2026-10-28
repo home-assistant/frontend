@@ -1047,7 +1047,8 @@
         "device_class": "Device class",
         "add": "Add device class",
         "no_device_classes": "No device classes available",
-        "no_match": "No device classes found for {term}"
+        "no_match": "No device classes found for {term}",
+        "unit_not_supported": "Does not support {unit}"
       },
       "category-picker": {
         "clear": "Clear",
