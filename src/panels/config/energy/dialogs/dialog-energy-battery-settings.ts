@@ -13,6 +13,7 @@ import type {
   PowerConfig,
 } from "../../../../data/energy";
 import {
+  computeEnergyLabel,
   emptyBatteryEnergyPreference,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
@@ -26,6 +27,8 @@ import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyle, haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
+import type { PowerIntegral } from "./energy-integral";
+import { confirmIntegrals, pendingPowerIntegrals } from "./energy-integral";
 import "./ha-energy-power-config";
 import {
   buildPowerExcludeList,
@@ -69,6 +72,8 @@ export class DialogEnergyBatterySettings
 
   @state() private _error?: string;
 
+  @state() private _saving = false;
+
   private _excludeList?: string[];
 
   private _excludeListPower?: string[];
@@ -77,6 +82,8 @@ export class DialogEnergyBatterySettings
     params: EnergySettingsBatteryDialogParams
   ): Promise<void> {
     this._params = params;
+    this._error = undefined;
+    this._saving = false;
     this._source = params.source
       ? { ...params.source }
       : emptyBatteryEnergyPreference();
@@ -146,6 +153,12 @@ export class DialogEnergyBatterySettings
       return nothing;
     }
 
+    const pending = this._pendingIntegrals();
+    const labelStatistic =
+      this._source.stat_energy_from ||
+      this._source.stat_energy_to ||
+      pending[0]?.rate;
+
     return html`
       <ha-dialog
         .open=${this._open}
@@ -169,6 +182,7 @@ export class DialogEnergyBatterySettings
             this._source.stat_energy_to,
           ]}
           @value-changed=${this._statisticFromChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_helper_out",
             { unit: this._energy_units?.join(", ") || "" }
@@ -188,6 +202,7 @@ export class DialogEnergyBatterySettings
             this._source.stat_energy_from,
           ]}
           @value-changed=${this._statisticToChanged}
+          .disabled=${this._saving}
           .helper=${this.hass.localize(
             "ui.panel.config.energy.battery.dialog.energy_helper_into",
             { unit: this._energy_units?.join(", ") || "" }
@@ -199,26 +214,17 @@ export class DialogEnergyBatterySettings
             "ui.panel.config.energy.battery.dialog.display_name"
           )}
           type="text"
-          .disabled=${!(
-            this._source?.stat_energy_from || this._source?.stat_energy_to
-          )}
+          .disabled=${!labelStatistic || this._saving}
           .value=${this._source?.name || ""}
           .placeholder=${
-            this._source?.stat_energy_from
+            labelStatistic
               ? getStatisticLabel(
                   this.hass.states,
                   this.hass.formatEntityName,
-                  this._source.stat_energy_from,
-                  this._params?.statsMetadata?.[this._source.stat_energy_from]
+                  labelStatistic,
+                  this._params?.statsMetadata?.[labelStatistic]
                 )
-              : this._source?.stat_energy_to
-                ? getStatisticLabel(
-                    this.hass.states,
-                    this.hass.formatEntityName,
-                    this._source.stat_energy_to,
-                    this._params?.statsMetadata?.[this._source.stat_energy_to]
-                  )
-                : ""
+              : ""
           }
           @input=${this._nameChanged}
         >
@@ -234,6 +240,7 @@ export class DialogEnergyBatterySettings
             this._powerConfig
           )}
           .localizeBaseKey=${"ui.panel.config.energy.battery.dialog"}
+          .disabled=${this._saving}
           @power-config-changed=${this._handlePowerConfigChanged}
         ></ha-energy-power-config>
 
@@ -249,6 +256,7 @@ export class DialogEnergyBatterySettings
             "ui.panel.config.energy.battery.dialog.state_of_charge_helper"
           )}
           @value-changed=${this._statisticSocChanged}
+          .disabled=${this._saving}
         ></ha-statistic-picker>
 
         <ha-input
@@ -265,6 +273,7 @@ export class DialogEnergyBatterySettings
           step="any"
           min="0"
           @input=${this._capacityChanged}
+          .disabled=${this._saving}
         >
           <span slot="end">kWh</span>
         </ha-input>
@@ -280,8 +289,11 @@ export class DialogEnergyBatterySettings
           <ha-button
             @click=${this._save}
             .disabled=${
-              !this._isValid() || (!!this._params?.source && !this.isDirtyState)
+              this._saving ||
+              !this._isValid(pending) ||
+              (!!this._params?.source && !this.isDirtyState)
             }
+            .loading=${this._saving}
             slot="primaryAction"
           >
             ${this.hass.localize("ui.common.save")}
@@ -291,9 +303,12 @@ export class DialogEnergyBatterySettings
     `;
   }
 
-  private _isValid(): boolean {
-    // Energy fields are always required
-    if (!this._source?.stat_energy_from || !this._source?.stat_energy_to) {
+  private _isValid(pending: PowerIntegral[]): boolean {
+    // Energy fields are always required, but power sensors can provide them
+    const isProvided = (energy: PowerIntegral["energy"]) =>
+      !!this._source?.[energy] ||
+      pending.some((item) => item.energy === energy);
+    if (!isProvided("stat_energy_from") || !isProvided("stat_energy_to")) {
       return false;
     }
 
@@ -376,36 +391,122 @@ export class DialogEnergyBatterySettings
     this._updateFormDirtyState();
   }
 
+  private _pendingIntegrals(): PowerIntegral[] {
+    if (!this._source || !this._energy_units) {
+      return [];
+    }
+    return pendingPowerIntegrals(
+      this.hass.states,
+      this._source,
+      this._powerType,
+      this._powerConfig,
+      this._energy_units
+    );
+  }
+
   private async _save() {
+    // Closing or reopening the dialog replaces its state, but created helpers
+    // must still be saved with the submitted source
+    const params = this._params!;
+    const powerType = this._powerType;
+    const powerConfig = this._powerConfig;
+    let draft = this._source!;
+    const isCurrent = () => this._params === params;
+    this._error = undefined;
+    this._saving = true;
     try {
+      const pending = this._pendingIntegrals();
+      if (pending.length) {
+        const sensors = await this._energyFromPower(draft, pending);
+        if (!sensors) {
+          return;
+        }
+        const created = Object.fromEntries(
+          pending.map(({ energy }, index) => [energy, sensors[index]])
+        );
+        draft = { ...draft, ...created };
+        if (isCurrent()) {
+          // Keep edits made meanwhile, only fill in the new energy sensors
+          this._source = { ...this._source!, ...created };
+          this._updateFormDirtyState();
+        }
+      }
+
       const source: BatterySourceTypeEnergyPreference = {
         type: "battery",
-        stat_energy_from: this._source!.stat_energy_from,
-        stat_energy_to: this._source!.stat_energy_to,
+        stat_energy_from: draft.stat_energy_from,
+        stat_energy_to: draft.stat_energy_to,
       };
-      if (this._source?.name) {
-        source.name = this._source.name;
+      if (draft.name) {
+        source.name = draft.name;
       }
 
       // Only include power_config if a power type is selected
-      if (this._powerType !== "none") {
-        source.power_config = { ...this._powerConfig };
+      if (powerType !== "none") {
+        source.power_config = { ...powerConfig };
       }
 
-      if (this._source!.stat_soc) {
-        source.stat_soc = this._source!.stat_soc;
+      if (draft.stat_soc) {
+        source.stat_soc = draft.stat_soc;
       }
 
-      if (this._source!.capacity != null) {
-        source.capacity = this._source!.capacity;
+      if (draft.capacity != null) {
+        source.capacity = draft.capacity;
       }
 
-      await this._params!.saveCallback(source);
-      this._markDirtyStateClean();
-      this.closeDialog();
+      await params.saveCallback(source);
+      if (isCurrent()) {
+        this._markDirtyStateClean();
+        this.closeDialog();
+      }
     } catch (err: any) {
-      this._error = err.message;
+      if (isCurrent()) {
+        this._error = err.message;
+      }
+    } finally {
+      if (isCurrent()) {
+        this._saving = false;
+      }
     }
+  }
+
+  private _energyFromPower(
+    draft: BatterySourceTypeEnergyPreference,
+    pending: PowerIntegral[]
+  ): Promise<string[] | undefined> {
+    return confirmIntegrals(this, this.hass, {
+      deviceClass: "energy",
+      states: this.hass.states,
+      entities: this.hass.entities,
+      requests: pending.map(({ energy, rate, units }) => ({
+        rate,
+        units,
+        name: this.hass.localize(
+          energy === "stat_energy_from"
+            ? "ui.panel.config.energy.battery.dialog.discharged_energy_name"
+            : "ui.panel.config.energy.battery.dialog.charged_energy_name",
+          {
+            name: computeEnergyLabel(
+              this.hass.states,
+              this.hass.formatEntityName,
+              rate,
+              this._params?.statsMetadata?.[rate],
+              draft.name
+            ),
+          }
+        ),
+      })),
+      intro: this.hass.localize(
+        "ui.panel.config.energy.battery.dialog.energy_sensors_needed"
+      ),
+      // Neither direction may reuse the statistic of the other
+      exclude: [
+        ...(this._excludeList || []),
+        draft.stat_energy_from,
+        draft.stat_energy_to,
+      ].filter((id): id is string => Boolean(id)),
+      statsMetadata: this._params?.statsMetadata,
+    });
   }
 
   static get styles(): CSSResultGroup {

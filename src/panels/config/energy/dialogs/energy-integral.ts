@@ -5,11 +5,13 @@ import {
   deleteConfigFlow,
   handleConfigFlowStep,
 } from "../../../../data/config_flow";
+import type { PowerConfig } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import { findRelated } from "../../../../data/search";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
+import type { PowerType } from "./power-config";
 
 export type IntegralDeviceClass = "energy";
 
@@ -44,6 +46,43 @@ export function integralUnits(
     return { unit_time: "h", unit_prefix: "k" };
   }
   return totalUnits.includes(unit) ? { unit_time: "h" } : undefined;
+}
+
+export interface PowerIntegral extends Omit<IntegralRequest, "name"> {
+  /** Energy statistic the helper provides. */
+  energy: "stat_energy_from" | "stat_energy_to";
+}
+
+/**
+ * Returns the energy statistics of a source that are not set yet and can be
+ * calculated from its power sensors. Only a source with two power sensors
+ * qualifies, as an Integral helper can't split a signed sensor.
+ */
+export function pendingPowerIntegrals(
+  states: HomeAssistant["states"],
+  source: Partial<Record<PowerIntegral["energy"], string | null>>,
+  powerType: PowerType,
+  powerConfig: PowerConfig,
+  totalUnits: string[]
+): PowerIntegral[] {
+  if (powerType !== "two_sensors") {
+    return [];
+  }
+  const rates = {
+    stat_energy_from: powerConfig.stat_rate_from,
+    stat_energy_to: powerConfig.stat_rate_to,
+  };
+  return (["stat_energy_from", "stat_energy_to"] as const).flatMap((energy) => {
+    const rate = rates[energy];
+    if (!rate || source[energy]) {
+      return [];
+    }
+    const units = integralUnits(
+      states[rate]?.attributes.unit_of_measurement,
+      totalUnits
+    );
+    return units ? [{ energy, rate, units }] : [];
+  });
 }
 
 /**
@@ -212,17 +251,24 @@ export async function confirmIntegrals(
       : localize("ui.panel.config.energy.integral.use", {
           count: plan.length,
         }),
-    // The dialog shows its progress while the helpers are created
+    // The dialog shows its progress while the helpers are created. It waits for
+    // all of them, so a retry after a failure reuses the ones that were created
     action: async () => {
-      try {
-        result = await Promise.all(
-          plan.map(
-            ({ request, existing }) => existing ?? createIntegral(hass, request)
-          )
-        );
-      } catch (err) {
-        error = err;
+      const settled = await Promise.allSettled(
+        plan.map(
+          ({ request, existing }) => existing ?? createIntegral(hass, request)
+        )
+      );
+      const failure = settled.find(
+        (item): item is PromiseRejectedResult => item.status === "rejected"
+      );
+      if (failure) {
+        error = failure.reason;
+        return;
       }
+      result = settled.flatMap((item) =>
+        item.status === "fulfilled" ? [item.value] : []
+      );
     },
   });
   if (!confirmed) {

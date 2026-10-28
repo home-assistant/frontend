@@ -4664,7 +4664,10 @@
               "power_from": "Power imported from grid",
               "power_to": "Power exported to grid",
               "helper_sensor_note": "[%key:ui::panel::config::energy::battery::dialog::helper_sensor_note%]",
-              "helper_sensor_in_use": "[%key:ui::panel::config::energy::battery::dialog::helper_sensor_in_use%]"
+              "helper_sensor_in_use": "[%key:ui::panel::config::energy::battery::dialog::helper_sensor_in_use%]",
+              "energy_sensors_needed": "To track the energy you import and export, you need energy sensors.",
+              "imported_energy_name": "{name} imported energy",
+              "exported_energy_name": "{name} exported energy"
             },
             "flow_dialog": {
               "from": {
@@ -4749,7 +4752,10 @@
               "power_from": "Discharge power",
               "power_to": "Charge power",
               "helper_sensor_note": "Home Assistant will create a helper sensor entity for this option.",
-              "helper_sensor_in_use": "Currently using helper {entity}"
+              "helper_sensor_in_use": "Currently using helper {entity}",
+              "energy_sensors_needed": "To track your battery, you need sensors for the energy charged into and discharged from it.",
+              "discharged_energy_name": "{name} discharged energy",
+              "charged_energy_name": "{name} charged energy"
             }
           },
           "gas": {
