@@ -48,6 +48,7 @@ import {
   handleMediaControlClick,
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
+  removeSecondaryStopControl,
 } from "../../../data/media-player";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { Themes } from "../../../data/ws-themes";
@@ -213,7 +214,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       (isOffState &&
         !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON));
     const hasNoImage = !this._image;
-    const controls = computeMediaControls(stateObj, false);
+    const controls = removeSecondaryStopControl(
+      stateObj,
+      computeMediaControls(stateObj, false)
+    );
     const showControls =
       !isUnavailable &&
       controls &&
