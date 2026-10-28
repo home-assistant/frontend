@@ -171,7 +171,7 @@ export class HaConfigPerson extends LitElement {
   }
 
   private async _fetchData() {
-    this._usersLoad = fetchUsers(this.hass!);
+    this._usersLoad = fetchUsers(this.hass!.callWS);
     const personData = await fetchPersons(this.hass!);
 
     this._storageItems = personData.storage.sort((ent1, ent2) =>
@@ -279,7 +279,7 @@ export class HaConfigPerson extends LitElement {
         }
       },
       refreshUsers: () => {
-        this._usersLoad = fetchUsers(this.hass!);
+        this._usersLoad = fetchUsers(this.hass!.callWS);
       },
     });
   }

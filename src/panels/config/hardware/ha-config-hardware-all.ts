@@ -4,6 +4,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type {
   DataTableColumnContainer,
@@ -37,6 +38,10 @@ class HaConfigHardwareAll extends LitElement {
   @state() private _hardware?: HassioHardwareInfo;
 
   @state() private _error?: string;
+
+  @state() private _loading = true;
+
+  private _tableSettings = new DataTableSettingsController(this, {});
 
   private _columns = memoizeOne(
     (localize: LocalizeFunc): DataTableColumnContainer<HardwareDeviceRow> => ({
@@ -98,12 +103,16 @@ class HaConfigHardwareAll extends LitElement {
         .tabs=${hardwareTabs(this.hass)}
         clickable
         .columns=${this._columns(this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._hardware ? this._data(this._hardware) : []}
         .noDataText=${
           this._error ||
           this.hass.localize("ui.panel.config.hardware.loading_system_data")
         }
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         @row-click=${this._handleRowClicked}
+        sync-url
       ></hass-tabs-subpage-data-table>
     `;
   }
@@ -113,6 +122,8 @@ class HaConfigHardwareAll extends LitElement {
       this._hardware = await fetchHassioHardwareInfo(this.hass);
     } catch (err: any) {
       this._error = extractApiErrorMessage(err);
+    } finally {
+      this._loading = false;
     }
   }
 

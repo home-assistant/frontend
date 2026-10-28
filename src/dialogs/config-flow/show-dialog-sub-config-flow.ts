@@ -69,7 +69,7 @@ export const showSubConfigFlowDialog = (
 
       return description
         ? html`
-            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+            <ha-markdown allow-svg breaks .content=${description}></ha-markdown>
           `
         : step.reason;
     },
@@ -90,7 +90,7 @@ export const showSubConfigFlowDialog = (
       );
       return description
         ? html`
-            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+            <ha-markdown allow-svg breaks .content=${description}></ha-markdown>
           `
         : "";
     },
@@ -144,8 +144,11 @@ export const showSubConfigFlowDialog = (
       );
     },
 
-    renderShowFormStepFieldLocalizeValue(hass, _step, key) {
-      return hass.localize(`component.${configEntry.domain}.selector.${key}`);
+    renderShowFormStepFieldLocalizeValue(hass, _step, key, values) {
+      return hass.localize(
+        `component.${configEntry.domain}.selector.${key}`,
+        values
+      );
     },
 
     renderShowFormStepSubmitButton(hass, step) {
@@ -188,7 +191,7 @@ export const showSubConfigFlowDialog = (
           description
             ? html`
                 <ha-markdown
-                  allowsvg
+                  allow-svg
                   breaks
                   .content=${description}
                 ></ha-markdown>
@@ -211,7 +214,7 @@ export const showSubConfigFlowDialog = (
           description
             ? html`
                 <ha-markdown
-                  allowsvg
+                  allow-svg
                   breaks
                   .content=${description}
                 ></ha-markdown>
@@ -236,7 +239,7 @@ export const showSubConfigFlowDialog = (
       );
       return description
         ? html`
-            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+            <ha-markdown allow-svg breaks .content=${description}></ha-markdown>
           `
         : "";
     },
@@ -257,7 +260,7 @@ export const showSubConfigFlowDialog = (
       );
       return description
         ? html`
-            <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
+            <ha-markdown allow-svg breaks .content=${description}></ha-markdown>
           `
         : "";
     },

@@ -1,9 +1,9 @@
-import { consume } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stateColorCss } from "../../common/entity/state_color";
@@ -86,11 +86,9 @@ export class HaStateControlLockToggle extends LitElement {
     fireEvent(this, "lock-service-called");
     callProtectedLockService(
       this,
-      {
-        callService: this._api.callService,
-        callWS: this._api.callWS,
-        localize: this._localize,
-      },
+      this._api.callService,
+      this._api.callWS,
+      this._localize,
       this.stateObj,
       turnOn ? "lock" : "unlock"
     );

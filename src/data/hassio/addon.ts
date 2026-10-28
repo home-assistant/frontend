@@ -148,12 +148,13 @@ export const reloadHassioAddons = async (hass: HomeAssistant) => {
     type: "supervisor/api",
     endpoint: "/store/reload",
     method: "post",
+    timeout: null,
   });
 };
 
-export const fetchHassioAddonsInfo = async (
-  hass: HomeAssistant
-): Promise<HassioAddonsInfo> => {
+export const fetchHassioAddonsInfo = async (hass: {
+  callWS: CallWS;
+}): Promise<HassioAddonsInfo> => {
   return hass.callWS({
     type: "supervisor/api",
     endpoint: "/addons",

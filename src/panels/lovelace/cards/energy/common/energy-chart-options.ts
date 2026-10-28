@@ -26,7 +26,10 @@ import type {
 } from "echarts/types/dist/shared";
 import type { LineDataItemOption } from "echarts/types/src/chart/line/LineSeries";
 import type { FrontendLocaleData } from "../../../../../data/translation";
-import { formatNumber } from "../../../../../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../../../../../common/number/format_number";
 import {
   formatDateMonthYear,
   formatDateShort,
@@ -119,7 +122,8 @@ export function getCommonOptions(
   compareEnd?: Date,
   formatTotal?: (total: number) => string,
   detailedDailyData = false,
-  yAxisFractionDigits = 1
+  yAxisFractionDigits = 1,
+  getSeriesArea?: (seriesId: string) => string | undefined
 ): HaECOption {
   const suggestedPeriod = getSuggestedPeriod(start, end, detailedDailyData);
   let suggestedMax = getSuggestedMax(suggestedPeriod, end, detailedDailyData);
@@ -225,7 +229,8 @@ export function getCommonOptions(
                 compare,
                 showCompareYear,
                 unit,
-                formatTotal
+                formatTotal,
+                getSeriesArea
               )
             )
             .filter((s): s is TemplateResult => s !== nothing);
@@ -243,7 +248,8 @@ export function getCommonOptions(
           compare,
           showCompareYear,
           unit,
-          formatTotal
+          formatTotal,
+          getSeriesArea
         );
       },
     },
@@ -259,7 +265,8 @@ function formatTooltip(
   compare: boolean | null,
   showCompareYear: boolean,
   unit?: string,
-  formatTotal?: (total: number) => string
+  formatTotal?: (total: number) => string,
+  getSeriesArea?: (seriesId: string) => string | undefined
 ): TemplateResult | typeof nothing {
   if (!params[0]?.value) {
     return nothing;
@@ -292,12 +299,8 @@ function formatTooltip(
   const rows: TemplateResult[] = [];
   for (const param of params) {
     const y = param.value?.[1] as number;
-    const value = formatNumber(
-      y,
-      locale,
-      y < 0.1 ? { maximumFractionDigits: 3 } : undefined
-    );
-    if (value === "0") {
+    const formatOptions = y < 0.1 ? { maximumFractionDigits: 3 } : undefined;
+    if (formatNumber(y, locale, formatOptions) === "0") {
       continue;
     }
     // Only the positive bars (consumption) are summed into a total. Negative
@@ -307,12 +310,22 @@ function formatTooltip(
       sumPositive += y;
       countPositive++;
     }
+    const area = param.seriesId ? getSeriesArea?.(param.seriesId) : undefined;
     rows.push(
       html`<ha-chart-tooltip-marker
           .color=${String(param.color ?? "")}
         ></ha-chart-tooltip-marker>
-        ${param.seriesName}:
-        <div style="direction:ltr; display: inline;">${value} ${unit}</div>`
+        ${param.seriesName}${
+          area
+            ? html` ·
+                <span style="color: var(--secondary-text-color);"
+                  >${area}</span
+                >`
+            : nothing
+        }:
+        <div style="direction:ltr; display: inline;">
+          ${formatNumberWithUnit(y, unit, locale, formatOptions)}
+        </div>`
     );
   }
   if (rows.length === 0) {
@@ -324,6 +337,28 @@ function formatTooltip(
         ? html`<br /><b>${formatTotal(sumPositive)}</b>`
         : nothing
     }`;
+}
+
+/**
+ * Sum of a series' y values over the displayed period, formatted for the
+ * legend (e.g. "1.2 kWh"). Returns undefined when the series has no data.
+ */
+export function formatSeriesTotal(
+  series: BarSeriesOption | LineSeriesOption | undefined,
+  locale: FrontendLocaleData,
+  unit: string
+): string | undefined {
+  const data = series?.data as any[] | undefined;
+  if (!data?.length) {
+    return undefined;
+  }
+  const total = data.reduce(
+    (acc, point) => acc + ((point?.value ?? point)?.[1] ?? 0),
+    0
+  );
+  return formatNumberWithUnit(total, unit, locale, {
+    maximumFractionDigits: 2,
+  });
 }
 
 export function fillLineGaps(datasets: LineSeriesOption[]) {

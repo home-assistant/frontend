@@ -1,5 +1,5 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   mdiApplicationImport,
   mdiArrowUpBoldCircleOutline,
@@ -36,6 +36,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { consumeEntityState } from "../../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../../common/entity/compute_domain";
@@ -51,7 +52,6 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-dropdown";
 import "../../../../../components/ha-dropdown-item";
-import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-markdown";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
@@ -103,6 +103,7 @@ import { getAppDisplayName } from "../../common/app";
 import "../../components/supervisor-apps-state";
 import "../../components/supervisor-apps-tag";
 import "../components/supervisor-app-metric";
+import { showLogsDialog } from "../../../logs/show-dialog-logs";
 import { extractChangelog } from "../util/supervisor-app";
 import "./supervisor-app-system-managed";
 
@@ -143,6 +144,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
   @consume({ context: internationalizationContext, subscribe: true })
   private i18n!: ContextType<typeof internationalizationContext>;
 
+  @state()
   @consume({ context: registriesContext, subscribe: true })
   private registries!: ContextType<typeof registriesContext>;
 
@@ -547,7 +549,17 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         <div class="description">
           ${
             this._error
-              ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+              ? html`<ha-alert alert-type="error">
+                  ${this._error}
+                  <ha-button
+                    slot="action"
+                    appearance="plain"
+                    size="small"
+                    @click=${this._showSupervisorLogs}
+                  >
+                    ${this.i18n.localize("ui.panel.config.logs.supervisor_logs")}
+                  </ha-button>
+                </ha-alert>`
               : nothing
           }
           <div class="description-text">${this._currentAddon.description}</div>
@@ -1312,7 +1324,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
         dismissText: this.i18n.localize(
           "ui.panel.config.apps.dashboard.action_error.view_supervisor_logs"
         ),
-        cancel: () => navigate("/config/logs?provider=supervisor"),
+        cancel: () => this._showSupervisorLogs(),
       });
     }
     button.progress = false;
@@ -1488,19 +1500,16 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
             }
           )}
         </p>
-        <ha-formfield
-          .label=${html`<p>
+        <ha-switch
+          @change=${_removeConfigToggled}
+          .checked=${removeConfig}
+          haptic
+          ><p>
             ${this.i18n.localize(
               "ui.panel.config.apps.dashboard.uninstall_dialog.remove_config"
             )}
-          </p>`}
+          </p></ha-switch
         >
-          <ha-switch
-            @change=${_removeConfigToggled}
-            .checked=${removeConfig}
-            haptic
-          ></ha-switch>
-        </ha-formfield>
       `,
       confirmText: this.i18n.localize(
         "ui.panel.config.apps.dashboard.uninstall_dialog.uninstall"
@@ -1559,6 +1568,15 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
       )?.entity_id;
     }
   );
+
+  // Supervisor errors often only say "Check Supervisor logs for details".
+  private _showSupervisorLogs() {
+    showLogsDialog(this, {
+      provider: "supervisor",
+      title: this.i18n.localize("ui.panel.config.logs.supervisor_logs"),
+      filter: this.addon.slug,
+    });
+  }
 
   private _openUpdate() {
     showMoreInfoDialog(this, { entityId: this._updateEntityId! });
@@ -1687,8 +1705,7 @@ class SupervisorAppInfo extends MobileAwareMixin(LitElement) {
           margin-bottom: var(--ha-space-2);
         }
         ha-assist-chip {
-          --md-sys-color-primary: var(--text-primary-color);
-          --md-sys-color-on-surface: var(--text-primary-color);
+          --ha-assist-chip-label-text-color: var(--text-primary-color);
           --ha-assist-chip-filled-container-color: var(--primary-color);
         }
 

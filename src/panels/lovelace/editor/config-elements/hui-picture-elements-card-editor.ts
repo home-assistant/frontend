@@ -1,7 +1,8 @@
 import memoizeOne from "memoize-one";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import {
   any,
   array,
@@ -22,9 +23,11 @@ import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import {
-  PREVIEW_CLICK_CALLBACK,
-  type PictureElementsCardConfig,
-} from "../../cards/types";
+  PICTURE_ELEMENTS_EDITOR_BRIDGE,
+  PictureElementsEditorBridge,
+} from "../../cards/picture-elements/editor-bridge";
+import { isMovableElement } from "../../cards/picture-elements/movable-element";
+import type { PictureElementsCardConfig } from "../../cards/types";
 import type { LovelaceCardEditor } from "../../types";
 import "../hui-sub-element-editor";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
@@ -65,47 +68,110 @@ export class HuiPictureElementsCardEditor
 
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
+  // Bumped when the preview moves an element, as the sub-editor's YAML mode
+  // doesn't pick up outside changes.
+  private _movedFromPreview = 0;
+
   public setConfig(config: PictureElementsCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
+    // The same config can come back without the bridge, so always check.
+    this.requestUpdate();
   }
 
-  private _onPreviewClick = (x: number, y: number): void => {
-    if (this._subElementEditorConfig?.type === "element") {
-      this._handlePositionClick(x, y);
-    }
-  };
+  private _bridge = new PictureElementsEditorBridge({
+    selectElement: (index) => this._selectElement(index),
+    moveElement: (index, left, top) =>
+      this._setElementPosition(index, left, top),
+    clickImage: (x, y) => {
+      if (
+        this._subElementEditorConfig?.type === "element" &&
+        this._subElementEditorConfig.index !== undefined
+      ) {
+        this._setElementPosition(this._subElementEditorConfig.index, x, y);
+      }
+    },
+  });
 
-  private _handlePositionClick(x: number, y: number): void {
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._updateBridge();
+    // Back from the YAML editor, whose edits come without the bridge.
+    this.requestUpdate();
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    // The YAML editor replaces this editor; the preview acts normally then.
+    this._bridge.setState(false);
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("_subElementEditorConfig")) {
+      this._updateBridge();
+    }
+    this._handOverBridge();
+  }
+
+  private _handOverBridge(): void {
     if (
-      !this._subElementEditorConfig?.elementConfig ||
-      this._subElementEditorConfig.type !== "element" ||
-      this._subElementEditorConfig.elementConfig.type === "conditional"
+      this.isConnected &&
+      this._config &&
+      this._bridge.needsHandOver(this._config)
     ) {
+      this._fireConfigChanged(this._config);
+    }
+  }
+
+  private _updateBridge(): void {
+    this._bridge.setState(
+      this.isConnected,
+      this._subElementEditorConfig?.type === "element"
+        ? this._subElementEditorConfig.index
+        : undefined
+    );
+  }
+
+  private _fireConfigChanged(config: PictureElementsCardConfig): void {
+    fireEvent(this, "config-changed", {
+      config: { ...config, [PICTURE_ELEMENTS_EDITOR_BRIDGE]: this._bridge },
+    });
+  }
+
+  private _selectElement(index: number): void {
+    const elementConfig = this._config?.elements[index];
+    if (!elementConfig || this._subElementEditorConfig?.index === index) {
       return;
     }
+    this._subElementEditorConfig = { index, type: "element", elementConfig };
+  }
 
-    const elementConfig = this._subElementEditorConfig
-      .elementConfig as LovelaceElementConfig;
-    const currentPosition = (elementConfig.style as Record<string, string>)
-      ?.position;
-    if (currentPosition && currentPosition !== "absolute") {
+  // left/top are in percent of the image.
+  private _setElementPosition(index: number, left: number, top: number): void {
+    const elementConfig = this._config?.elements[index];
+    if (!elementConfig || !isMovableElement(elementConfig)) {
       return;
     }
-
-    const newElement = {
+    const round = (value: number) => Math.round(value * 10) / 10;
+    const newElement: LovelaceElementConfig = {
       ...elementConfig,
       style: {
-        ...((elementConfig.style as Record<string, string>) || {}),
-        left: `${Math.round(x)}%`,
-        top: `${Math.round(y)}%`,
+        ...elementConfig.style,
+        left: `${round(left)}%`,
+        top: `${round(top)}%`,
       },
     };
-
-    const updateEvent = new CustomEvent("config-changed", {
-      detail: { config: newElement },
-    });
-    this._handleSubElementChanged(updateEvent);
+    const elements = this._config!.elements.concat();
+    elements[index] = newElement;
+    this._config = { ...this._config!, elements };
+    this._movedFromPreview++;
+    this._subElementEditorConfig = {
+      index,
+      type: "element",
+      elementConfig: newElement,
+    };
+    this._fireConfigChanged(this._config);
   }
 
   private _schema = memoizeOne(
@@ -177,26 +243,34 @@ export class HuiPictureElementsCardEditor
     }
 
     if (this._subElementEditorConfig) {
+      const elementConfig = this._subElementEditorConfig.elementConfig as
+        LovelaceElementConfig | undefined;
       return html`
         ${
           this._subElementEditorConfig.type === "element" &&
-          this._subElementEditorConfig.elementConfig?.type !== "conditional"
+          elementConfig &&
+          isMovableElement(elementConfig)
             ? html`
                 <ha-alert alert-type="info">
                   ${this.hass.localize(
-                    "ui.panel.lovelace.editor.card.picture-elements.position_hint"
+                    "ui.panel.lovelace.editor.card.picture-elements.move_hint"
                   )}
                 </ha-alert>
               `
             : nothing
         }
-        <hui-sub-element-editor
-          .hass=${this.hass}
-          .config=${this._subElementEditorConfig}
-          @go-back=${this._goBack}
-          @config-changed=${this._handleSubElementChanged}
-        >
-        </hui-sub-element-editor>
+        ${keyed(
+          `${this._subElementEditorConfig.index}-${this._movedFromPreview}`,
+          html`
+            <hui-sub-element-editor
+              .hass=${this.hass}
+              .config=${this._subElementEditorConfig}
+              @go-back=${this._goBack}
+              @config-changed=${this._handleSubElementChanged}
+            >
+            </hui-sub-element-editor>
+          `
+        )}
       `;
     }
 
@@ -208,6 +282,17 @@ export class HuiPictureElementsCardEditor
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._formChanged}
       ></ha-form>
+      ${
+        this._config.elements.length
+          ? html`
+              <ha-alert alert-type="info">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.card.picture-elements.select_hint"
+                )}
+              </ha-alert>
+            `
+          : nothing
+      }
       <hui-picture-elements-card-row-editor
         .hass=${this.hass}
         .elements=${this._config.elements}
@@ -233,8 +318,7 @@ export class HuiPictureElementsCardEditor
       return;
     }
 
-    // no need to attach the preview click callback here, no element is being edited
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    this._fireConfigChanged(ev.detail.value);
   }
 
   private _elementsChanged(ev: CustomEvent): void {
@@ -244,10 +328,9 @@ export class HuiPictureElementsCardEditor
     const config = {
       ...this._config,
       elements: ev.detail.elements as LovelaceElementConfig[],
-      [PREVIEW_CLICK_CALLBACK]: this._onPreviewClick,
     } as PictureElementsCardConfig;
 
-    fireEvent(this, "config-changed", { config });
+    this._fireConfigChanged(config);
 
     const newLength = ev.detail.elements?.length || 0;
     if (newLength === oldLength + 1) {
@@ -288,12 +371,7 @@ export class HuiPictureElementsCardEditor
       elementConfig: value,
     };
 
-    fireEvent(this, "config-changed", {
-      config: {
-        ...this._config,
-        [PREVIEW_CLICK_CALLBACK]: this._onPreviewClick,
-      },
-    });
+    this._fireConfigChanged(this._config);
   }
 
   private _editDetailElement(ev: HASSDomEvent<EditDetailElementEvent>): void {

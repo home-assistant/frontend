@@ -39,8 +39,8 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
@@ -81,7 +81,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
     }
 
     if (newValue !== stateObj.state) {
-      setValue(this.hass!, stateObj.entity_id, newValue);
+      setValue(this.hass!.callService, stateObj.entity_id, newValue);
     }
 
     target.blur();

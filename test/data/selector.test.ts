@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import {
+  fillFieldDefaults,
   filterSelectorEntities,
   resolveEntityIDs,
 } from "../../src/data/selector";
@@ -192,5 +193,77 @@ describe("resolveEntityIDs", () => {
       "sensor.hallway_probe",
       "sensor.kitchen_hub_temp",
     ]);
+  });
+
+  // Excludes are global: resolved like a target and taken out of everything
+  // the target includes, so logbook, history and state selectors only show
+  // what the action or trigger actually acts on.
+  describe("exclude", () => {
+    it("takes an excluded entity out of an area", () => {
+      expect(
+        resolve({
+          area_id: "kitchen",
+          exclude: { entity_id: "light.kitchen" },
+        })
+      ).toEqual(["sensor.kitchen_hub_temp"]);
+    });
+
+    it("takes an excluded area out of a device", () => {
+      expect(
+        resolve({ device_id: "hub", exclude: { area_id: "hallway" } })
+      ).toEqual(["light.kitchen", "sensor.kitchen_hub_temp"]);
+    });
+
+    it("takes an excluded device out of every included target", () => {
+      expect(
+        resolve({
+          area_id: ["kitchen", "hallway"],
+          exclude: { device_id: ["hub"] },
+        })
+      ).toEqual([]);
+    });
+
+    it("wins over an explicit include of the same entity", () => {
+      expect(
+        resolve({
+          entity_id: ["light.kitchen", "sensor.hallway_probe"],
+          exclude: { entity_id: "light.kitchen" },
+        })
+      ).toEqual(["sensor.hallway_probe"]);
+    });
+
+    it("leaves the target alone when the exclude matches nothing", () => {
+      expect(
+        resolve({ area_id: "kitchen", exclude: { area_id: "deleted_area" } })
+      ).toEqual(["light.kitchen", "sensor.kitchen_hub_temp"]);
+    });
+
+    it("resolves nothing for an exclude on its own", () => {
+      expect(resolve({ exclude: { area_id: "kitchen" } })).toEqual([]);
+    });
+  });
+});
+
+describe("fillFieldDefaults", () => {
+  const fields: Parameters<typeof fillFieldDefaults>[1] = [
+    ["flash", { required: true, selector: { boolean: {} } }],
+    ["transition", { default: 2, selector: { number: {} } }],
+    ["effect", { default: "none" }],
+  ];
+
+  it("only sets required booleans unless defaults are loaded", () => {
+    expect(fillFieldDefaults({}, fields, false)).toEqual({
+      values: { flash: false },
+      changed: true,
+    });
+  });
+
+  it("loads defaults for fields with a selector, without touching set ones", () => {
+    const values = { transition: 5 };
+    expect(fillFieldDefaults(values, fields, true)).toEqual({
+      values: { flash: false, transition: 5 },
+      changed: true,
+    });
+    expect(values).toEqual({ transition: 5 });
   });
 });

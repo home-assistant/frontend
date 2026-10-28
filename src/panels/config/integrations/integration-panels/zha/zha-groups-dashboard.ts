@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { DataTableSettingsController } from "../../../../../common/controllers/data-table-settings-controller";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
@@ -45,7 +46,13 @@ export class ZHAGroupsDashboard extends LitElement {
 
   @state() private _groups: ZHAGroup[] = [];
 
+  @state() private _loading = true;
+
+  @state() private _loadFailed = false;
+
   private _firstUpdatedCalled = false;
+
+  private _tableSettings = new DataTableSettingsController(this, {});
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -114,10 +121,20 @@ export class ZHAGroupsDashboard extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.hass.localize)}
+        .loading=${this._loading}
         .data=${this._formattedGroups(this._groups)}
+        .loadError=${
+          this._loadFailed
+            ? this.hass.localize("ui.panel.config.zha.groups.load_failed")
+            : undefined
+        }
+        @retry-load=${this._retryFetchGroups}
+        .filter=${this._tableSettings.search}
+        @search-changed=${this._tableSettings.searchChanged}
         @row-click=${this._handleRowClicked}
         clickable
         has-fab
+        sync-url
       >
         <ha-button href="/config/zha/group-add" slot="fab" size="l">
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
@@ -128,7 +145,19 @@ export class ZHAGroupsDashboard extends LitElement {
   }
 
   private async _fetchGroups() {
-    this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
+    try {
+      this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
+      this._loadFailed = false;
+    } catch {
+      this._loadFailed = true;
+    } finally {
+      this._loading = false;
+    }
+  }
+
+  private _retryFetchGroups() {
+    this._loading = true;
+    this._fetchGroups();
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {

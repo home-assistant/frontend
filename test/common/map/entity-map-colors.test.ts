@@ -19,23 +19,34 @@ const entry = (entityId: string, createdAt: number, id = entityId) =>
     id,
   }) as EntityRegistryEntry;
 
-describe("entity map colors", () => {
-  it("colors zones, persons and trackers in one creation order", () => {
+describe("entityMapColor", () => {
+  it("colors zones by creation date, whatever the trackers", () => {
     const entries = [
-      entry("zone.work", 40),
+      entry("zone.work", 30),
+      entry("device_tracker.beacon", 5),
       entry("zone.school", 10),
       entry("person.anne", 20),
-      entry("device_tracker.phone", 30),
-      entry("light.kitchen", 25),
     ];
 
     expect(entityMapColor("zone.school", entries, styles)).toBe("color-1");
-    // A person takes the next slot, never a zone's color
-    expect(entityMapColor("person.anne", entries, styles)).toBe("color-2");
+    expect(entityMapColor("zone.work", entries, styles)).toBe("color-2");
+  });
+
+  it("colors persons before trackers, then by creation date", () => {
+    const entries = [
+      entry("device_tracker.phone", 30),
+      entry("device_tracker.beacon", 5),
+      entry("person.anne", 20),
+      entry("zone.work", 1),
+    ];
+
+    expect(entityMapColor("person.anne", entries, styles)).toBe("color-1");
+    expect(entityMapColor("device_tracker.beacon", entries, styles)).toBe(
+      "color-2"
+    );
     expect(entityMapColor("device_tracker.phone", entries, styles)).toBe(
       "color-3"
     );
-    expect(entityMapColor("zone.work", entries, styles)).toBe("color-4");
   });
 
   it("breaks creation ties by registry id", () => {
@@ -49,6 +60,23 @@ describe("entity map colors", () => {
     const entries = [entry(HOME_ZONE_ENTITY_ID, 10), entry("zone.work", 20)];
 
     expect(entityMapColor("zone.work", entries, styles)).toBe("color-1");
+  });
+
+  it("gives entities outside the registry a stable color", () => {
+    const entries = [entry("zone.work", 10)];
+
+    const color = entityMapColor("zone.yaml_zone", entries, styles);
+    expect(entityMapColor("zone.yaml_zone", entries, styles)).toBe(color);
+    expect(entityMapColor("zone.other_yaml_zone", entries, styles)).not.toBe(
+      color
+    );
+  });
+});
+
+describe("zoneColor", () => {
+  it("uses the primary color for the home zone", () => {
+    const entries = [entry(HOME_ZONE_ENTITY_ID, 10)];
+
     expect(zoneColor(HOME_ZONE_ENTITY_ID, false, entries, styles)).toBe(
       "primary-color"
     );
@@ -62,31 +90,23 @@ describe("entity map colors", () => {
     );
     expect(zoneColor("zone.quiet", false, entries, styles)).toBe("color-1");
   });
+});
 
-  it("previews the next slot for a new zone", () => {
+describe("nextZoneColor", () => {
+  it("takes the slot after the last zone", () => {
     const entries = [
-      entry(HOME_ZONE_ENTITY_ID, 10), // excluded from the palette
+      entry(HOME_ZONE_ENTITY_ID, 10),
       entry("zone.work", 20),
       entry("person.anne", 30),
+      entry("device_tracker.phone", 40),
     ];
 
-    // Two ordered entities take color-1 and color-2, so the next is color-3
-    expect(nextZoneColor(false, entries, styles)).toBe("color-3");
+    expect(nextZoneColor(false, entries, styles)).toBe("color-2");
   });
 
   it("mutes a new passive zone", () => {
     expect(nextZoneColor(true, [entry("zone.work", 10)], styles)).toBe(
       "secondary-text-color"
-    );
-  });
-
-  it("gives entities outside the registry a stable color", () => {
-    const entries = [entry("zone.work", 10)];
-
-    const color = entityMapColor("zone.yaml_zone", entries, styles);
-    expect(entityMapColor("zone.yaml_zone", entries, styles)).toBe(color);
-    expect(entityMapColor("zone.other_yaml_zone", entries, styles)).not.toBe(
-      color
     );
   });
 });

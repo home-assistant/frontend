@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { stateColorCss } from "../../../common/entity/state_color";
 import type { LocalizeFunc } from "../../../common/translations/localize";

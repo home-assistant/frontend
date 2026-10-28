@@ -39,8 +39,8 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
@@ -102,7 +102,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
   private async _runScript(ev): Promise<void> {
     ev.stopPropagation();
 
-    if (hasScriptFields(this.hass!, this._config!.entity)) {
+    if (hasScriptFields(this.hass!.services, this._config!.entity)) {
       showMoreInfoDialog(this, { entityId: this._config!.entity });
     } else if (
       !this._config?.confirmation ||

@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { mdiTimerOutline } from "@mdi/js";
 import type {
   Connection,
@@ -8,6 +7,7 @@ import type {
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityState,
   consumeLocalize,

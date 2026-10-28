@@ -1,5 +1,6 @@
 import type { NavigateOptions } from "../common/navigate";
 import type { AutomationConfig } from "../data/automation";
+import type { MatterShareDeviceParams } from "../data/matter";
 
 const CALLBACK_EXTERNAL_BUS = "externalBus";
 
@@ -13,7 +14,7 @@ export interface EMMessage {
   type: string;
 }
 
-interface EMError {
+export interface EMError {
   code: string;
   message: string;
 }
@@ -41,6 +42,11 @@ interface EMOutgoingMessageEntityAddToGetActions extends EMMessage {
   payload: {
     entity_id: string;
   };
+}
+
+interface EMOutgoingMessageMatterShareDevice extends EMMessage {
+  type: "matter/share_device";
+  payload: MatterShareDeviceParams;
 }
 
 interface EMOutgoingMessageBarCodeScan extends EMMessage {
@@ -77,6 +83,38 @@ interface EMOutgoingMessageImportThreadCredentials extends EMMessage {
   type: "thread/import_credentials";
 }
 
+// Streams the app can send to a camera itself
+export type WebRtcStreamType = "microphone";
+
+// Error codes the app rejects webrtc/stream/start with, or stops a stream with
+export const WEBRTC_STREAM_ERROR_CODES = [
+  "microphone_denied", // User denied the microphone permission
+  "server_unavailable", // No API for the server, or its connection never became ready
+  "signaling_failed", // camera/webrtc/offer failed, or Home Assistant sent an error event
+  "connection_failed", // WebRTC connection failed, or dropped for more than 5 seconds
+  "timeout", // Not connected 25 seconds after the permission step
+  "interrupted", // App went to the background, a new start replaced it, or a page load cleared it
+  "unsupported_stream_type", // App does not know the requested stream type
+  "unknown", // Unexpected error, message holds the error of the app
+] as const;
+
+export type WebRtcStreamErrorCode = (typeof WEBRTC_STREAM_ERROR_CODES)[number];
+
+interface EMOutgoingMessageWebRtcStreamStart extends EMMessage {
+  type: "webrtc/stream/start";
+  payload: {
+    stream_type: WebRtcStreamType;
+    entity_id: string;
+  };
+}
+
+interface EMOutgoingMessageWebRtcStreamStop extends EMMessage {
+  type: "webrtc/stream/stop";
+  payload: {
+    session_id: string;
+  };
+}
+
 interface EMOutgoingMessageWithAnswer {
   "config/get": {
     request: EMOutgoingMessageConfigGet;
@@ -85,6 +123,16 @@ interface EMOutgoingMessageWithAnswer {
   "entity/add_to/get_actions": {
     request: EMOutgoingMessageEntityAddToGetActions;
     response: ExternalEntityAddToActions;
+  };
+  "matter/share_device": {
+    request: EMOutgoingMessageMatterShareDevice;
+    // The app answers with an empty object; the outcome is the resolution itself.
+    response: Record<string, never>;
+  };
+  // Replies once the stream is connected
+  "webrtc/stream/start": {
+    request: EMOutgoingMessageWebRtcStreamStart;
+    response: { session_id: string };
   };
 }
 
@@ -251,7 +299,8 @@ type EMOutgoingMessageWithoutAnswer =
   | EMOutgoingMessageEntityControlled
   | EMOutgoingMessageFocusElement
   | EMOutgoingMessageReloadAndClearCache
-  | EMOutgoingMessageAssistSettings;
+  | EMOutgoingMessageAssistSettings
+  | EMOutgoingMessageWebRtcStreamStop;
 
 export interface EMIncomingMessageRestart {
   id: number;
@@ -368,6 +417,20 @@ export interface EMIncomingMessageMatterCommissionFinish extends EMMessage {
   payload: MatterCommissionFinish;
 }
 
+export interface WebRtcStreamStopped {
+  session_id: string;
+  code: WebRtcStreamErrorCode;
+  message: string; // Fallback error message from the app
+}
+
+// Sent when a connected stream ends without the frontend stopping it
+export interface EMIncomingMessageWebRtcStreamStopped extends EMMessage {
+  id: number;
+  type: "command";
+  command: "webrtc/stream/stopped";
+  payload: WebRtcStreamStopped;
+}
+
 export type EMIncomingMessageCommands =
   | EMIncomingMessageRestart
   | EMIncomingMessageNavigate
@@ -380,7 +443,8 @@ export type EMIncomingMessageCommands =
   | EMIncomingMessageImprovDeviceDiscovered
   | EMIncomingMessageImprovDeviceSetupDone
   | EMIncomingMessageMatterCommissionFinish
-  | EMIncomingMessageKioskModeSet;
+  | EMIncomingMessageKioskModeSet
+  | EMIncomingMessageWebRtcStreamStopped;
 
 type EMIncomingMessage =
   EMMessageResultSuccess | EMMessageResultError | EMIncomingMessageCommands;
@@ -394,6 +458,8 @@ export interface ExternalConfig {
   hasExoPlayer?: boolean;
   canCommissionMatter?: boolean;
   hasMatterStatusReport?: boolean;
+  canShareMatterDeviceToAppleHome?: boolean;
+  canShareMatterDeviceToOtherApps?: boolean;
   canImportThreadCredentials?: boolean;
   canTransferThreadCredentialsToKeychain?: boolean;
   hasAssist?: boolean;
@@ -403,6 +469,9 @@ export interface ExternalConfig {
   hasEntityAddTo?: boolean; // Supports "Add to" from more-info dialog, with action coming from external app
   hasAssistSettings?: boolean; // Shows the "This device" section in voice assistant settings
   hasSplashscreen?: boolean; // App covers the frontend with its own loading screen until frontend/loaded, so the launch screen is removed without animation
+  webrtc?: {
+    hasCameraMicrophoneStream?: boolean; // App streams the microphone to a camera itself with webrtc/stream/start, used when the frontend has no secure context
+  };
 }
 
 export interface ExternalEntityAddToAction {

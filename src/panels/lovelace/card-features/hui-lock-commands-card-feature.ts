@@ -1,9 +1,9 @@
-import { consume } from "@lit/context";
 import { mdiLock, mdiLockOpenVariant } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityState,
   consumeLocalize,
@@ -87,11 +87,9 @@ class HuiLockCommandsCardFeature
     forwardHaptic(this, "light");
     callProtectedLockService(
       this,
-      {
-        callService: this._api.callService,
-        callWS: this._api.callWS,
-        localize: this._localize,
-      },
+      this._api.callService,
+      this._api.callWS,
+      this._localize,
       this._stateObj,
       service
     );

@@ -277,7 +277,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                           step="1"
                           .withTooltip=${false}
                           size="s"
-                          aria-label=${this.hass.localize(
+                          .accessibleLabel=${this.hass.localize(
                             "ui.card.media_player.track_position"
                           )}
                           ?disabled=${!supportsFeature(
@@ -300,7 +300,7 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                               step="1"
                               .withTooltip=${false}
                               size="s"
-                              aria-label=${this.hass.localize(
+                              .accessibleLabel=${this.hass.localize(
                                 "ui.card.media_player.track_position"
                               )}
                               ?disabled=${!supportsFeature(
@@ -377,7 +377,18 @@ export class BarMediaPlayer extends SubscribeMixin(LitElement) {
                   : stateObj
                     ? (() => {
                         const { primary, secondary } =
-                          computeEntityPickerDisplay(this.hass, stateObj);
+                          computeEntityPickerDisplay(
+                            {
+                              entities: this.hass.entities,
+                              devices: this.hass.devices,
+                              areas: this.hass.areas,
+                              floors: this.hass.floors,
+                              language: this.hass.language,
+                              translationMetadata:
+                                this.hass.translationMetadata,
+                            },
+                            stateObj
+                          );
                         return html`<div class="player-label">
                           <div>${primary}</div>
                           ${

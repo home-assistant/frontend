@@ -22,11 +22,11 @@ import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_tim
 import {
   getNumberFormatOptions,
   formatNumber,
+  formatNumberWithUnit,
 } from "../../common/number/format_number";
 import { measureTextWidth } from "../../util/text";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
-import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import { computeAttributeValueDisplay } from "../../common/entity/compute_attribute_display";
 
 // Minimum width reserved for the Y-axis labels; also the value _yWidth is
@@ -93,8 +93,8 @@ export class StateHistoryChartLine extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
-  @property({ attribute: "hide-reset-button", type: Boolean })
-  public hideResetButton?: boolean;
+  @property({ attribute: "hide-zoom-controls", type: Boolean })
+  public hideZoomControls = false;
 
   @state() private _chartData: LineSeriesOption[] = [];
 
@@ -106,7 +106,7 @@ export class StateHistoryChartLine extends LitElement {
 
   private _hiddenStats = new Set<string>();
 
-  @state() private _yWidth = MIN_Y_AXIS_WIDTH;
+  @state() private _yWidth = 0;
 
   @state() private _visualMap?: VisualMapComponentOption[];
 
@@ -117,7 +117,6 @@ export class StateHistoryChartLine extends LitElement {
   protected render() {
     return html`
       <ha-chart-base
-        .hass=${this.hass}
         .data=${this._chartData}
         .options=${this._chartOptions}
         .height=${this.height}
@@ -126,7 +125,7 @@ export class StateHistoryChartLine extends LitElement {
         @dataset-unhidden=${this._datasetUnhidden}
         @chart-zoom=${this._handleDataZoom}
         .expandLegend=${this.expandLegend}
-        .hideResetButton=${this.hideResetButton}
+        .hideZoomControls=${this.hideZoomControls}
         .clickLabelForMoreInfo=${this.clickForMoreInfo}
         @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
@@ -179,9 +178,6 @@ export class StateHistoryChartLine extends LitElement {
         color: dataset.color,
       });
     });
-    const unit = this.unit
-      ? `${blankBeforeUnit(this.unit, this.hass.locale)}${this.unit}`
-      : "";
 
     return html`${title}${datapoints.map((param) => {
       const entityId = this._entityIds[param.seriesIndex];
@@ -190,11 +186,12 @@ export class StateHistoryChartLine extends LitElement {
       const stateValue = String(param.value[1]);
       const value = stateObj
         ? this.hass.formatEntityState(stateObj, stateValue)
-        : `${formatNumber(
+        : formatNumberWithUnit(
             stateValue,
+            this.unit,
             this.hass.locale,
             getNumberFormatOptions(undefined, entry)
-          )}${unit}`;
+          );
       const dataIndex = this._datasetToDataIndex[param.seriesIndex];
       const data = this.data[dataIndex];
       let statSuffix: TemplateResult | typeof nothing = nothing;

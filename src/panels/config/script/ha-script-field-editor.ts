@@ -1,5 +1,5 @@
 import { LitElement, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { slugify } from "../../../common/string/slugify";
@@ -7,6 +7,7 @@ import "../../../components/ha-alert";
 import "../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../components/ha-form/types";
 import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type { Field } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -26,6 +27,8 @@ export default class HaScriptFieldEditor extends LitElement {
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
   @state() private _uiError?: Record<string, string>;
+
+  @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
   @state() private _yamlError?: undefined | "yaml_error" | "key_not_unique";
 

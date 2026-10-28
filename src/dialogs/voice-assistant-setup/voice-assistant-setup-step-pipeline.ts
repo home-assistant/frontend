@@ -14,6 +14,7 @@ import {
   listAssistPipelines,
 } from "../../data/assist_pipeline";
 import type { AssistSatelliteConfiguration } from "../../data/assist_satellite";
+import type { CloudStatus } from "../../data/cloud";
 import { fetchCloudStatus } from "../../data/cloud";
 import type { LanguageScore, LanguageScores } from "../../data/conversation";
 import { getLanguageScores, listAgents } from "../../data/conversation";
@@ -129,7 +130,6 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
           { language }
         )}
         <ha-language-picker
-          .hass=${this.hass}
           .label=${this.hass.localize(
             "ui.panel.config.voice_assistants.satellite_wizard.pipeline.unsupported_language.language_picker"
           )}
@@ -257,7 +257,14 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     if (!isComponentLoaded(this.hass.config, "cloud")) {
       return false;
     }
-    const cloudStatus = await fetchCloudStatus(this.hass);
+    // Fall back to a local pipeline when the cloud status can't be fetched,
+    // instead of leaving the step blank.
+    let cloudStatus: CloudStatus;
+    try {
+      cloudStatus = await fetchCloudStatus(this.hass.callWS);
+    } catch (_err: any) {
+      return false;
+    }
     if (!cloudStatus.logged_in || !cloudStatus.active_subscription) {
       return false;
     }
@@ -283,7 +290,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
       }
     }
     try {
-      const pipelines = await listAssistPipelines(this.hass);
+      const pipelines = await listAssistPipelines(this.hass.callWS);
 
       if (pipelines.preferred_pipeline) {
         pipelines.pipelines.sort((a) =>
@@ -303,7 +310,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
       if (!cloudPipeline) {
         const agent = (
           await listAgents(
-            this.hass,
+            this.hass.callWS,
             this.language || this.hass.config.language,
             this.hass.config.country || undefined
           )
@@ -315,7 +322,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
 
         const ttsEngine = (
           await listTTSEngines(
-            this.hass,
+            this.hass.callWS,
             this.language || this.hass.config.language,
             this.hass.config.country || undefined
           )
@@ -326,14 +333,14 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
         }
 
         const ttsVoices = await listTTSVoices(
-          this.hass,
+          this.hass.callWS,
           cloudTtsEntityId!,
           ttsEngine.supported_languages[0]
         );
 
         const sttEngine = (
           await listSTTEngines(
-            this.hass,
+            this.hass.callWS,
             this.language || this.hass.config.language,
             this.hass.config.country || undefined
           )

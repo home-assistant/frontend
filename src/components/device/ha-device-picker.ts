@@ -133,16 +133,26 @@ export class HaDevicePicker extends LitElement {
       excludeDevices?: string[],
       value?: string
     ) =>
-      getDevices(this.hass, configEntryLookup, {
-        includeDomains,
-        excludeDomains,
-        includeDeviceClasses,
-        deviceFilter,
-        entityFilter,
-        excludeDevices,
-        value,
-        nested: true,
-      })
+      getDevices(
+        this.hass.states,
+        this.hass.areas,
+        this.hass.devices,
+        this.hass.entities,
+        this.hass.localize,
+        this.hass.locale.language,
+        this.hass.translationMetadata,
+        configEntryLookup,
+        {
+          includeDomains,
+          excludeDomains,
+          includeDeviceClasses,
+          deviceFilter,
+          entityFilter,
+          excludeDevices,
+          value,
+          nested: true,
+        }
+      )
   );
 
   protected firstUpdated(_changedProperties: PropertyValues<this>): void {
@@ -333,10 +343,9 @@ export class HaDevicePicker extends LitElement {
     );
     return html`
       <ha-combo-box-item
-        type="button"
         style=${
           item.is_child
-            ? "--md-list-item-leading-space: var(--ha-space-12);"
+            ? "--ha-combo-box-item-padding-inline-start: var(--ha-space-12);"
             : ""
         }
       >
@@ -430,7 +439,6 @@ export class HaDevicePicker extends LitElement {
     return html`
       <ha-generic-picker
         .noUnknownState=${canReplace}
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .disabled=${this.disabled}
         .helper=${this.helper}

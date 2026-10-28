@@ -1,11 +1,12 @@
 import "@lit-labs/virtualizer";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import {
   computeEntityPickerDisplay,
@@ -59,6 +60,7 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
   @consume({ context: statesContext, subscribe: true })
   protected _states!: ContextType<typeof statesContext>;
 
+  @state()
   @consume({ context: registriesContext, subscribe: true })
   protected _registries!: ContextType<typeof registriesContext>;
 
@@ -200,13 +202,7 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
         }
 
         const { friendlyName, deviceName, parentDeviceName, areaName } =
-          computeEntitySearchLabels(
-            entity,
-            registries.entities,
-            registries.devices,
-            registries.areas,
-            registries.floors
-          );
+          computeEntitySearchLabels(entity, registries);
 
         if (
           [friendlyName, deviceName, parentDeviceName, areaName].some((name) =>
@@ -224,7 +220,10 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
   private _renderItem = (entityState: HassEntity) => {
     const { primary, secondary: context } = computeEntityPickerDisplay(
       {
-        ...this._registries,
+        entities: this._registries.entities,
+        devices: this._registries.devices,
+        areas: this._registries.areas,
+        floors: this._registries.floors,
         language: this._i18n.language,
         translationMetadata: this._i18n.translationMetadata,
       },

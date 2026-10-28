@@ -1,7 +1,7 @@
 import "@home-assistant/webawesome/dist/components/popover/popover";
 import type WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiPlaylistPlus } from "@mdi/js";
 import {
   css,
@@ -15,6 +15,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { tinykeys } from "tinykeys";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { configContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
@@ -35,6 +36,9 @@ import "./ha-svg-icon";
 
 @customElement("ha-generic-picker")
 export class HaGenericPicker extends PickerMixin(LitElement) {
+  @property({ attribute: "aria-label" })
+  public ariaLabel: string | null = null;
+
   @property({ type: Boolean, attribute: "allow-custom-value" })
   public allowCustomValue;
 
@@ -92,14 +96,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
       }
     | "separator"
   )[];
-
-  @property({ attribute: false }) public sectionTitleFunction?: (listInfo: {
-    firstIndex: number;
-    lastIndex: number;
-    firstItem: PickerComboBoxItem | string;
-    secondItem: PickerComboBoxItem | string;
-    itemsCount: number;
-  }) => string | undefined;
 
   @property({ attribute: "selected-section" }) public selectedSection?: string;
 
@@ -208,7 +204,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     compact
                     .unknown=${this._unknownValue}
                     .unknownItemText=${this.unknownItemText}
-                    aria-label=${ifDefined(this.label)}
+                    aria-label=${ifDefined(this.ariaLabel || this.label)}
                     @click=${this.open}
                     @clear=${this._clear}
                     .icon=${this.icon}
@@ -238,7 +234,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     @closed=${this._hidePicker}
                     role="dialog"
                     aria-modal="true"
-                    aria-label=${this.label || "Select option"}
+                    aria-label=${this.ariaLabel || this.label || "Select option"}
                   >
                     ${this._renderComboBox(true)}
                   </ha-bottom-sheet>
@@ -262,7 +258,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     trap-focus
                     role="dialog"
                     aria-modal="true"
-                    aria-label=${this.label || "Select option"}
+                    aria-label=${this.ariaLabel || this.label || "Select option"}
                   >
                     ${this._renderComboBox()}
                   </wa-popover>
@@ -294,7 +290,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .searchFn=${this.searchFn}
         .mode=${dialogMode ? "dialog" : "popover"}
         .sections=${this.sections}
-        .sectionTitleFunction=${this.sectionTitleFunction}
         .selectedSection=${this.selectedSection}
         .searchKeys=${this.searchKeys}
         .customValueLabel=${this.customValueLabel}

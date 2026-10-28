@@ -1,8 +1,10 @@
+import { TZDate } from "@date-fns/tz";
 import {
   addDays,
   addHours,
   addMinutes,
   addMonths,
+  constructFrom,
   differenceInHours,
   endOfDay,
 } from "date-fns";
@@ -12,6 +14,18 @@ import type {
   StatisticValue,
 } from "../../../src/data/recorder";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+
+const getFirstDate = (
+  start: Date,
+  period: "5minute" | "hour" | "day" | "month"
+): Date => {
+  if (period === "day" || period === "month") {
+    return constructFrom(start, start);
+  }
+  // Core returns UTC-aligned buckets whose start is at or after the request.
+  const interval = (period === "hour" ? 60 : 5) * 60 * 1000;
+  return constructFrom(start, Math.ceil(start.getTime() / interval) * interval);
+};
 
 const getNextDate = (
   currentDate: Date,
@@ -33,8 +47,7 @@ const generateMeanStatistics = (
   maxDiff: number
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = new Date(start);
-  currentDate.setMinutes(0, 0, 0);
+  let currentDate = getFirstDate(start, period);
   const now = new Date();
   while (end > currentDate && currentDate < now) {
     const delta = Math.random() * maxDiff;
@@ -60,16 +73,17 @@ const generateSumStatistics = (
   end: Date,
   period: "5minute" | "hour" | "day" | "month" = "hour",
   initValue: number,
-  maxDiff: number
+  maxDiff: number | ((start: Date, end: Date) => number)
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = new Date(start);
-  currentDate.setMinutes(0, 0, 0);
+  let currentDate = getFirstDate(start, period);
   let sum = initValue;
   const now = new Date();
   while (end > currentDate && currentDate < now) {
     const nextDate = getNextDate(currentDate, period);
-    const add = Math.random() * maxDiff;
+    const bound =
+      typeof maxDiff === "function" ? maxDiff(currentDate, nextDate) : maxDiff;
+    const add = Math.random() * bound;
     sum += add;
     statistics.push({
       start: currentDate.getTime(),
@@ -96,8 +110,7 @@ const generateCurvedStatistics = (
   metered: boolean
 ): StatisticValue[] => {
   const statistics: StatisticValue[] = [];
-  let currentDate = new Date(start);
-  currentDate.setMinutes(0, 0, 0);
+  let currentDate = getFirstDate(start, period);
   let sum = initValue;
   const hours = differenceInHours(end, start) - 1;
   let i = 0;
@@ -136,6 +149,15 @@ const statisticsFunctions: Record<
     period: "5minute" | "hour" | "day" | "month"
   ) => StatisticValue[]
 > = {
+  "sensor.energy_water": (_id, start, end, period = "hour") =>
+    generateSumStatistics(
+      start,
+      end,
+      period,
+      4000,
+      (bucketStart, bucketEnd) =>
+        (20 * (bucketEnd.getTime() - bucketStart.getTime())) / 3600000
+    ),
   "sensor.energy_consumption_tarif_1": (
     _id: string,
     start: Date,
@@ -151,9 +173,9 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const morningEnd = new Date(start.getTime() + 10 * 60 * 60 * 1000);
+    const morningEnd = addHours(start, 10);
     const morningLow = generateSumStatistics(start, morningEnd, period, 0, 0.7);
-    const eveningStart = new Date(start.getTime() + 20 * 60 * 60 * 1000);
+    const eveningStart = addHours(start, 20);
     const morningFinalVal = morningLow.length
       ? morningLow[morningLow.length - 1].sum!
       : 0;
@@ -188,8 +210,8 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const morningEnd = new Date(start.getTime() + 9 * 60 * 60 * 1000);
-    const eveningStart = new Date(start.getTime() + 20 * 60 * 60 * 1000);
+    const morningEnd = addHours(start, 9);
+    const eveningStart = addHours(start, 20);
     const highTarif = generateSumStatistics(
       morningEnd,
       eveningStart,
@@ -228,9 +250,12 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const productionStart = new Date(start.getTime() + 9 * 60 * 60 * 1000);
-    const productionEnd = new Date(start.getTime() + 21 * 60 * 60 * 1000);
-    const dayEnd = new Date(endOfDay(productionEnd));
+    const productionStart = addHours(start, 9);
+    const productionEnd = addHours(start, 21);
+    const dayEnd = constructFrom(
+      end,
+      Math.min(endOfDay(productionEnd).getTime(), end.getTime())
+    );
     const production = generateCurvedStatistics(
       productionStart,
       productionEnd,
@@ -269,9 +294,12 @@ const statisticsFunctions: Record<
         period === "day" ? 17 : 504
       );
     }
-    const productionStart = new Date(start.getTime() + 7 * 60 * 60 * 1000);
-    const productionEnd = new Date(start.getTime() + 23 * 60 * 60 * 1000);
-    const dayEnd = new Date(endOfDay(productionEnd));
+    const productionStart = addHours(start, 7);
+    const productionEnd = addHours(start, 23);
+    const dayEnd = constructFrom(
+      end,
+      Math.min(endOfDay(productionEnd).getTime(), end.getTime())
+    );
     const production = generateCurvedStatistics(
       productionStart,
       productionEnd,
@@ -301,6 +329,11 @@ const statisticsFunctions: Record<
     return [...morning, ...production, ...evening, ...rest];
   },
 };
+// Prices are per source unit; water uses litres (4 currency units per m³).
+const derivedCosts: Record<string, { source: string; price: number }> = {
+  "sensor.energy_water_cost": { source: "sensor.energy_water", price: 0.004 },
+};
+
 export const mockRecorder = (mockHass: MockHomeAssistant) => {
   mockHass.mockWS(
     "recorder/get_statistics_metadata",
@@ -313,14 +346,28 @@ export const mockRecorder = (mockHass: MockHomeAssistant) => {
   mockHass.mockWS(
     "recorder/statistics_during_period",
     ({ statistic_ids, start_time, end_time, period }, hass): Statistics => {
-      const start = new Date(start_time);
-      const end = end_time ? new Date(end_time) : new Date();
+      // Calendar buckets follow the server timezone, independent of the browser.
+      const start = new TZDate(start_time, hass.config.time_zone);
+      const end = new TZDate(end_time ?? Date.now(), hass.config.time_zone);
 
       const statistics: Record<string, StatisticValue[]> = {};
+      const cache: Record<string, StatisticValue[]> = {};
+      const getStats = (id: string) => {
+        cache[id] ??= statisticsFunctions[id](id, start, end, period);
+        return cache[id];
+      };
 
       statistic_ids.forEach((id: string) => {
-        if (id in statisticsFunctions) {
-          statistics[id] = statisticsFunctions[id](id, start, end, period);
+        if (id in derivedCosts) {
+          const { source, price } = derivedCosts[id];
+          let cost = 0;
+          statistics[id] = getStats(source).map((statistic) => {
+            const change = statistic.change! * price;
+            cost += change;
+            return { ...statistic, change, state: cost, sum: cost };
+          });
+        } else if (id in statisticsFunctions) {
+          statistics[id] = getStats(id);
         } else {
           const entityState = hass.states[id];
           const state = entityState ? Number(entityState.state) : 1;

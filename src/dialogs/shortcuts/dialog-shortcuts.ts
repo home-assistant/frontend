@@ -1,6 +1,7 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import "../../components/ha-alert";
@@ -124,10 +125,19 @@ const _SHORTCUTS: Section[] = [
     items: [
       {
         shortcut: [
-          CTRL_CMD,
           { shortcutTranslationKey: "ui.dialogs.shortcuts.shortcuts.drag" },
         ],
         descriptionTranslationKey: "ui.dialogs.shortcuts.charts.drag_to_zoom",
+      },
+      {
+        shortcut: [
+          "Shift",
+          {
+            shortcutTranslationKey:
+              "ui.dialogs.shortcuts.shortcuts.scroll_wheel",
+          },
+        ],
+        descriptionTranslationKey: "ui.dialogs.shortcuts.charts.scroll_to_pan",
       },
       {
         shortcut: [
@@ -170,6 +180,10 @@ const _SHORTCUTS: Section[] = [
       {
         shortcut: ["Shift", "/"],
         descriptionTranslationKey: "ui.dialogs.shortcuts.other.show_shortcuts",
+      },
+      {
+        shortcut: [CTRL_CMD, "Shift", "Y"],
+        descriptionTranslationKey: "ui.dialogs.shortcuts.other.toggle_yaml",
       },
     ],
   },

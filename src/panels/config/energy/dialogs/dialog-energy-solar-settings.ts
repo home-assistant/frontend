@@ -132,7 +132,6 @@ export class DialogEnergySolarSettings
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
@@ -158,7 +157,8 @@ export class DialogEnergySolarSettings
           .placeholder=${
             this._source?.stat_energy_from
               ? getStatisticLabel(
-                  this.hass,
+                  this.hass.states,
+                  this.hass.formatEntityName,
                   this._source.stat_energy_from,
                   this._params?.statsMetadata?.[this._source.stat_energy_from]
                 )
@@ -169,7 +169,6 @@ export class DialogEnergySolarSettings
         </ha-input>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .includeUnitClass=${powerUnitClasses}
           .value=${this._source.stat_rate}
           .label=${this.hass.localize(
@@ -341,7 +340,7 @@ export class DialogEnergySolarSettings
       this._params?.statsMetadata &&
       !(ev.detail.value in this._params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass, [
+      const [metadata] = await getStatisticMetadata(this.hass.callWS, [
         ev.detail.value,
       ]);
       if (metadata) {

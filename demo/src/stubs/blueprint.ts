@@ -42,4 +42,12 @@ export const mockBlueprint = (hass: MockHomeAssistant) => {
   hass.mockWS("blueprint/list", (msg: { domain: BlueprintDomain }) =>
     msg.domain === "script" ? scriptBlueprints : automationBlueprints
   );
+  hass.mockWS(
+    "blueprint/delete",
+    (msg: { domain: BlueprintDomain; path: string }) => {
+      const blueprints =
+        msg.domain === "script" ? scriptBlueprints : automationBlueprints;
+      delete blueprints[msg.path];
+    }
+  );
 };

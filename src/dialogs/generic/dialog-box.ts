@@ -43,9 +43,14 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
 
   private _closeResolve?: () => void;
 
+  // Set while a new opening waits for the previous one to finish closing
+  private _reopening = false;
+
   public async showDialog(params: DialogBoxParams): Promise<void> {
     if (this._closePromise) {
+      this._reopening = true;
       await this._closePromise;
+      this._reopening = false;
     }
     this._params = params;
     this._validInput = true;
@@ -90,12 +95,12 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
         type=${confirmPrompt ? "alert" : "standard"}
         .preventScrimClose=${!!this._params.confirmation || this.isDirtyState}
         @closed=${this._dialogClosed}
-        aria-labelledby="dialog-box-title"
+        .accessibleLabel=${this._accessibleLabel(dialogTitle)}
         aria-describedby="dialog-box-description"
       >
         <ha-dialog-header slot="header">
           ${
-            !confirmPrompt
+            !confirmPrompt || this._params.showCloseButton
               ? html`<slot name="headerNavigationIcon" slot="navigationIcon">
                   <ha-icon-button
                     data-dialog="close"
@@ -169,6 +174,13 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
                   `
                 : nothing
           }
+          ${
+            this._params.prompt && this._params.textBelowInput
+              ? html`<div class="after-input">
+                  ${this._params.textBelowInput}
+                </div>`
+              : nothing
+          }
         </div>
         <ha-dialog-footer slot="footer">
           ${
@@ -217,6 +229,17 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
     }
   }
 
+  // Alerts often have no title. Their message is what a screen reader should
+  // announce then, as long as it is plain text.
+  private _accessibleLabel(dialogTitle: string | false | undefined) {
+    if (dialogTitle) {
+      return dialogTitle;
+    }
+    return typeof this._params?.text === "string"
+      ? this._params.text
+      : undefined;
+  }
+
   private _dismiss(): void {
     this._closeState = "canceled";
     this._cancel();
@@ -263,7 +286,11 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
   }
 
   private _dialogClosed() {
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    // The dialog manager already tracks the new opening, which this close
+    // must not end
+    if (!this._reopening) {
+      fireEvent(this, "dialog-closed", { dialog: this.localName });
+    }
     if (!this._closeState) {
       this._cancel();
     }
@@ -295,6 +322,9 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
     }
     ha-input {
       width: 100%;
+    }
+    .after-input {
+      margin-top: var(--ha-space-4);
     }
     .title {
       font-weight: inherit;

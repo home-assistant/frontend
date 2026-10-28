@@ -1,6 +1,6 @@
-import { consume } from "@lit/context";
 import type { PropertyValues, ReactiveElement } from "lit";
 import { state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
 import type { ConditionEvaluation } from "../common/controllers/condition-evaluator-controller";
 import { ConditionEvaluatorController } from "../common/controllers/condition-evaluator-controller";
 import { maxColumnsContext } from "../panels/lovelace/common/context";
@@ -42,7 +42,7 @@ export const ConditionalListenerMixin = <
 
     public config?: TConfig;
 
-    public hass?: HomeAssistant;
+    public abstract hass?: HomeAssistant;
 
     @state()
     @consume({ context: maxColumnsContext, subscribe: true })

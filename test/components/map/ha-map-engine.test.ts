@@ -9,11 +9,17 @@ import type {
   MapEngineOptions,
   MapMarkerHandle,
 } from "../../../src/common/map/map-engine";
+import { computeEntityNameDisplayWithoutContext } from "../../../src/common/entity/compute_entity_name_display";
 import "../../../src/components/map/ha-map";
 import type {
   HaMap,
   HaMapEditableLocation,
 } from "../../../src/components/map/ha-map";
+import { createMockEntityState } from "../../fixtures/hass";
+
+const FORMATTERS = {
+  formatEntityName: computeEntityNameDisplayWithoutContext,
+};
 
 // ha-map picks its engine at runtime: MapLibre GL where WebGL2 is available,
 // Leaflet otherwise or after MapLibre fails. jsdom has no WebGL2 and cannot
@@ -25,7 +31,7 @@ const webgl2 = vi.hoisted(() => ({ supported: true }));
 
 vi.mock("../../../src/common/map/base-layer", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
-  supportsWebGL2: () => webgl2.supported,
+  supportsVectorMaps: () => webgl2.supported,
 }));
 
 const fakeEngine = vi.hoisted(() => {
@@ -67,13 +73,15 @@ const fakeEngine = vi.hoisted(() => {
 
     hasUsableSize = () => true;
 
-    setDarkMode = vi.fn();
+    setMapStyle = vi.fn();
 
     setZoomControlPosition = vi.fn();
 
     setScaleRuler = vi.fn();
 
     setView = vi.fn();
+
+    getView = () => undefined;
 
     setZoom = vi.fn();
 
@@ -89,9 +97,9 @@ const fakeEngine = vi.hoisted(() => {
       remove: vi.fn(),
     }));
 
-    addCircle = vi.fn(() => ({ remove: vi.fn() }));
+    addCircle = vi.fn(() => ({ update: vi.fn(), remove: vi.fn() }));
 
-    addPath = vi.fn(() => ({ remove: vi.fn() }));
+    addPath = vi.fn(() => ({ update: vi.fn(), remove: vi.fn() }));
 
     setClustering = vi.fn();
 
@@ -180,16 +188,37 @@ const STATES = {
   },
 } as unknown as HassEntities;
 
+const ZONES = {
+  "zone.paulus": createMockEntityState("zone.paulus", "0", {
+    friendly_name: "Work",
+    latitude: 52.372,
+    longitude: 4.89,
+    radius: 100,
+  }),
+  "zone.anne_therese": createMockEntityState("zone.anne_therese", "0", {
+    friendly_name: "Work",
+    latitude: 52.377,
+    longitude: 4.895,
+    radius: 100,
+  }),
+};
+
 const leafletMap = (el: HaMap) => (el as any)._engine?.leafletMap;
+const container = (el: HaMap) => el.shadowRoot!.getElementById("map")!;
+const isRevealed = (el: HaMap) => container(el).classList.contains("drawn");
 const isLoaded = (el: HaMap) => (el as any)._loaded as boolean;
 const entityHandles = (el: HaMap) =>
   (el as any)._entityHandles as MapMarkerHandle[];
 
-const createMap = async (): Promise<HaMap> => {
+const createMap = async (
+  states: HassEntities = STATES,
+  entities: string[] = Object.keys(states)
+): Promise<HaMap> => {
   const el = document.createElement("ha-map");
-  el.entities = ["device_tracker.paulus", "device_tracker.anne_therese"];
+  el.entities = entities;
   el.clusterMarkers = false;
-  (el as any)._states = STATES;
+  (el as any)._states = states;
+  (el as any)._formatters = FORMATTERS;
   (el as any)._config = {
     config: { latitude: 52.3731339, longitude: 4.8903147 },
   };
@@ -226,6 +255,125 @@ describe("ha-map engine selection", () => {
     expect(entityHandles(el)).toHaveLength(2);
   });
 
+  it("groups same-named zones by reported IDs", async () => {
+    const states: HassEntities = {
+      ...ZONES,
+      "person.paulus": createMockEntityState("person.paulus", "Work", {
+        in_zones: ["zone.paulus"],
+      }),
+      "device_tracker.anne_therese": createMockEntityState(
+        "device_tracker.anne_therese",
+        "Work",
+        {
+          latitude: ZONES["zone.paulus"].attributes.latitude,
+          longitude: ZONES["zone.paulus"].attributes.longitude,
+          in_zones: ["zone.anne_therese"],
+        }
+      ),
+    };
+    const el = await createMap(states);
+
+    expect(entityHandles(el).map((marker) => marker.clusterData)).toMatchObject(
+      [
+        { entityId: "person.paulus", zoneId: "zone.paulus" },
+        {
+          entityId: "device_tracker.anne_therese",
+          zoneId: "zone.anne_therese",
+        },
+      ]
+    );
+  });
+
+  it.each([
+    {
+      entityId: "device_tracker.paulus",
+      state: "Work",
+      inZones: undefined,
+      expectedZoneId: "zone.paulus",
+    },
+    {
+      entityId: "person.paulus",
+      state: "Work",
+      inZones: [],
+      expectedZoneId: "zone.paulus",
+    },
+    {
+      entityId: "person.paulus",
+      state: "not_home",
+      inZones: [],
+      expectedZoneId: undefined,
+    },
+  ])(
+    "handles zone membership for $entityId ($state, in_zones: $inZones)",
+    async ({ entityId, state, inZones, expectedZoneId }) => {
+      const el = await createMap({
+        ...ZONES,
+        [entityId]: createMockEntityState(entityId, state, {
+          latitude: ZONES["zone.paulus"].attributes.latitude,
+          longitude: ZONES["zone.paulus"].attributes.longitude,
+          in_zones: inZones,
+        }),
+      });
+
+      expect(entityHandles(el)).toMatchObject([
+        { clusterData: { entityId, zoneId: expectedZoneId } },
+      ]);
+    }
+  );
+
+  it("updates grouping when a hidden active zone becomes passive and is restored", async () => {
+    const hiddenZone = ZONES["zone.paulus"];
+    const states: HassEntities = {
+      ...ZONES,
+      "zone.enclosing": createMockEntityState("zone.enclosing", "0", {
+        ...hiddenZone.attributes,
+        friendly_name: "City",
+        radius: 1000,
+      }),
+      "person.paulus": createMockEntityState("person.paulus", "Work", {
+        in_zones: [hiddenZone.entity_id, "zone.enclosing"],
+      }),
+    };
+    const el = await createMap(states, ["zone.enclosing", "person.paulus"]);
+    expect(entityHandles(el)[0].clusterData).toMatchObject({
+      zoneId: undefined,
+    });
+
+    (el as any)._states = {
+      ...states,
+      [hiddenZone.entity_id]: createMockEntityState(
+        hiddenZone.entity_id,
+        hiddenZone.state,
+        { ...hiddenZone.attributes, passive: true }
+      ),
+    };
+    await el.updateComplete;
+    expect(entityHandles(el)[0].clusterData).toMatchObject({
+      zoneId: "zone.enclosing",
+    });
+
+    (el as any)._states = states;
+    await el.updateComplete;
+    expect(entityHandles(el)[0].clusterData).toMatchObject({
+      zoneId: undefined,
+    });
+  });
+
+  it("sets up while themes are not loaded yet, as during onboarding", async () => {
+    const el = document.createElement("ha-map");
+    el.themeMode = "auto";
+    (el as any)._ui = { themes: null };
+    (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
+    (el as any)._config = {
+      config: { latitude: 52.3731339, longitude: 4.8903147 },
+    };
+    document.body.appendChild(el);
+    await vi.waitUntil(() => isLoaded(el));
+
+    expect(fakeEngine.instances).toHaveLength(1);
+  });
+
   it("runs on Leaflet when WebGL2 is not available", async () => {
     webgl2.supported = false;
     const el = await createMap();
@@ -257,6 +405,7 @@ describe("ha-map engine selection", () => {
     el.entities = ["device_tracker.paulus", "device_tracker.anne_therese"];
     el.clusterMarkers = false;
     (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
     (el as any)._config = {
       config: { latitude: 52.3731339, longitude: 4.8903147 },
     };
@@ -287,6 +436,7 @@ describe("ha-map engine selection", () => {
     el.entities = ["device_tracker.paulus"];
     el.clusterMarkers = false;
     (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
     (el as any)._config = {
       config: { latitude: 52.3731339, longitude: 4.8903147 },
     };
@@ -321,6 +471,90 @@ describe("ha-map engine selection", () => {
     // Entities are redrawn on the new engine, not carried over
     expect(entityHandles(el)).toHaveLength(2);
     expect(entityHandles(el)).not.toBe(handlesBefore);
+  });
+});
+
+// The map is hidden until it has a frame to show, so markers are never placed
+// over an empty container and the sky is never drawn around a globe that is not
+// there yet. Which setup may reveal it, and what happens when no frame is ever
+// reported, is timing-dependent and invisible in a rendering test.
+describe("ha-map readiness", () => {
+  beforeEach(() => {
+    vi.stubGlobal("ResizeObserver", MockResizeObserver);
+    webgl2.supported = true;
+    fakeEngine.failInit = false;
+    fakeEngine.initGate = undefined;
+    fakeEngine.instances.length = 0;
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  it("shows the map once the engine reports its first frame", async () => {
+    const el = await createMap();
+
+    expect(isRevealed(el)).toBe(false);
+    fakeEngine.instances[0].options!.events.drawn!();
+    expect(isRevealed(el)).toBe(true);
+  });
+
+  it("shows the map anyway when no frame is ever reported", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const el = await createMap();
+    expect(isRevealed(el)).toBe(false);
+
+    await vi.advanceTimersByTimeAsync(3000);
+
+    expect(isRevealed(el)).toBe(true);
+  });
+
+  it("does not show the map from the fallback once disconnected", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const el = await createMap();
+    const map = container(el);
+
+    el.remove();
+    await vi.advanceTimersByTimeAsync(3000);
+
+    expect(map.classList.contains("drawn")).toBe(false);
+  });
+
+  it("shows a Leaflet map once its layer is in place", async () => {
+    webgl2.supported = false;
+    const el = await createMap();
+
+    expect(isRevealed(el)).toBe(true);
+  });
+
+  it("ignores a frame reported by a superseded setup", async () => {
+    let openGate!: () => void;
+    fakeEngine.initGate = new Promise<void>((resolve) => {
+      openGate = resolve;
+    });
+    const el = document.createElement("ha-map");
+    el.entities = ["device_tracker.paulus"];
+    (el as any)._states = STATES;
+    (el as any)._formatters = FORMATTERS;
+    (el as any)._config = {
+      config: { latitude: 52.3731339, longitude: 4.8903147 },
+    };
+    document.body.appendChild(el);
+    await vi.waitUntil(() => fakeEngine.instances[0]?.options);
+    const superseded = fakeEngine.instances[0];
+
+    el.remove();
+    openGate();
+    fakeEngine.initGate = undefined;
+    document.body.appendChild(el);
+    await vi.waitUntil(() => isLoaded(el));
+
+    superseded.options!.events.drawn!();
+    expect(isRevealed(el)).toBe(false);
+    fakeEngine.instances[1].options!.events.drawn!();
+    expect(isRevealed(el)).toBe(true);
   });
 });
 

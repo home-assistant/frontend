@@ -31,13 +31,44 @@ module.exports.emptyPackages = ({ isLandingPageBuild }) =>
       ),
   ].filter(Boolean);
 
-module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
+// MapLibre runs its tile work in a worker that it spawns from a URL. The
+// package ships that worker as untranspiled ES2022, so it is bundled here as
+// its own entry per build target, like the rest of MapLibre. One self-contained
+// file: the worker cannot import chunks, and a classic-compatible script runs
+// wherever the main bundle does, module workers or not. The layer keeps the
+// page's polyfills out of it; see `babelOptions`.
+const MAP_WORKER_NAME = "maplibre-gl-worker";
+module.exports.mapWorkerName = MAP_WORKER_NAME;
+module.exports.mapWorkerEntry = () => ({
+  [MAP_WORKER_NAME]: {
+    import: "maplibre-gl/dist/maplibre-gl-worker.mjs",
+    chunkLoading: false,
+    layer: "worker",
+  },
+});
+// MapLibre is handed the URL at build time, so the name cannot carry a content
+// hash. The frontend version stands in for it, in the file name rather than a
+// query string: the service worker precaches everything under the bundle
+// directory as immutable and matches it with the query stripped, so a `?v=`
+// would keep serving the worker of the first version it ever cached.
+module.exports.mapWorkerFilename = () =>
+  `${MAP_WORKER_NAME}.${env.version()}.js`;
+
+module.exports.definedVars = ({
+  isProdBuild,
+  latestBuild,
+  publicPath,
+  defineOverlay,
+}) => ({
   __DEV__: !isProdBuild,
   __BUILD__: JSON.stringify(latestBuild ? "modern" : "legacy"),
   __VERSION__: JSON.stringify(env.version()),
   __DEMO__: false,
   __BACKWARDS_COMPAT__: false,
   __STATIC_PATH__: "/static/",
+  __MAPLIBRE_WORKER_URL__: JSON.stringify(
+    `${publicPath}${module.exports.mapWorkerFilename()}`
+  ),
   __HASS_URL__: `\`${
     "HASS_URL" in process.env
       ? process.env.HASS_URL
@@ -65,8 +96,9 @@ module.exports.htmlMinifierOptions = {
 module.exports.terserOptions = ({ latestBuild, isTestBuild }) => ({
   // Highest syntax the minifier may emit; it never downlevels. Every browser
   // in [modern] is well past ES2020 (universal since spring 2020); the
-  // [legacy] floors (Chrome 59 / Safari 12) top out at ES2017.
-  ecma: latestBuild ? 2020 : 2017,
+  // [legacy] floors (Chrome 67 / Safari 15) top out at ES2019: optional
+  // catch binding is in, `?.` and `??` (Chrome 80) are not.
+  ecma: latestBuild ? 2020 : 2019,
   module: latestBuild,
   format: { comments: false },
   sourceMap: !isTestBuild,
@@ -85,7 +117,7 @@ module.exports.swcOptions = () => ({
   },
 });
 
-module.exports.babelOptions = ({ latestBuild, isTestBuild, sw }) => ({
+module.exports.babelOptions = ({ latestBuild, isTestBuild, sw, worker }) => ({
   babelrc: false,
   compact: false,
   assumptions: {
@@ -139,9 +171,11 @@ module.exports.babelOptions = ({ latestBuild, isTestBuild, sw }) => ({
   ],
   sourceMaps: !isTestBuild,
   overrides: [
-    {
-      // Add plugin to inject various polyfills, excluding the polyfills
-      // themselves to prevent self-injection.
+    // Add plugin to inject various polyfills, excluding the polyfills
+    // themselves to prevent self-injection. Not in a worker: these polyfill
+    // the page (Intl locale data, DOM APIs) and assume one, so injecting them
+    // into a worker's graph makes its bootstrap fail before it starts.
+    !worker && {
       plugins: [
         [
           path.join(BABEL_PLUGINS, "custom-polyfill-plugin.js"),
@@ -152,7 +186,6 @@ module.exports.babelOptions = ({ latestBuild, isTestBuild, sw }) => ({
         path.join(paths.root_dir, "src/resources/polyfills"),
         ...[
           "@formatjs/(?:ecma402-abstract|intl-\\w+)",
-          "@lit-labs/virtualizer/polyfills",
           "@webcomponents/scoped-custom-element-registry",
           "element-internals-polyfill",
         ].map((p) => new RegExp(`/node_modules/${p}/`)),
@@ -171,7 +204,7 @@ module.exports.babelOptions = ({ latestBuild, isTestBuild, sw }) => ({
         "@formatjs/(?:ecma402-abstract|intl-\\w+)",
       ].map((p) => new RegExp(`/node_modules/${p}/`)),
     },
-  ],
+  ].filter(Boolean),
 });
 
 const nameSuffix = (latestBuild) => (latestBuild ? "-modern" : "-legacy");
@@ -221,6 +254,7 @@ module.exports.config = {
         onboarding: "./src/entrypoints/onboarding.ts",
         core: "./src/entrypoints/core.ts",
         "custom-panel": "./src/entrypoints/custom-panel.ts",
+        ...module.exports.mapWorkerEntry(),
       },
       outputPath: outputPath(paths.app_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
@@ -237,6 +271,7 @@ module.exports.config = {
       name: "demo" + nameSuffix(latestBuild),
       entry: {
         main: path.resolve(paths.demo_dir, "src/entrypoint.ts"),
+        ...module.exports.mapWorkerEntry(),
       },
       outputPath: outputPath(paths.demo_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
@@ -257,11 +292,13 @@ module.exports.config = {
       media: path.resolve(paths.cast_dir, "src/media/entrypoint.ts"),
     };
 
+    // Only the receiver renders maps, and it is built for modern browsers only
     if (latestBuild) {
       entry.receiver = path.resolve(
         paths.cast_dir,
         "src/receiver/entrypoint.ts"
       );
+      Object.assign(entry, module.exports.mapWorkerEntry());
     }
 
     return {
@@ -282,6 +319,7 @@ module.exports.config = {
       name: "gallery" + nameSuffix(latestBuild),
       entry: {
         entrypoint: path.resolve(paths.gallery_dir, "src/entrypoint.js"),
+        ...module.exports.mapWorkerEntry(),
       },
       outputPath: outputPath(paths.gallery_output_root, latestBuild),
       publicPath: publicPath(latestBuild),
@@ -321,6 +359,7 @@ module.exports.config = {
           paths.e2eTestApp_dir,
           "src/onboarding-entrypoint.ts"
         ),
+        ...module.exports.mapWorkerEntry(),
       },
       outputPath: outputPath(paths.e2eTestApp_output_root, latestBuild),
       publicPath: publicPath(latestBuild),

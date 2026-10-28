@@ -1,26 +1,34 @@
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { HomeAssistant } from "../types";
 
-export const uploadFile = async (hass: HomeAssistant, file: File) => {
+export const uploadFile = async (
+  fetchWithAuth: HomeAssistant["fetchWithAuth"],
+  localize: LocalizeFunc,
+  file: File
+) => {
   const fd = new FormData();
   fd.append("file", file);
-  const resp = await hass.fetchWithAuth("/api/file_upload", {
+  const resp = await fetchWithAuth("/api/file_upload", {
     method: "POST",
     body: fd,
   });
   if (resp.status === 413) {
     throw new Error(
-      hass.localize("ui.common.upload_file_too_large", {
+      localize("ui.common.upload_file_too_large", {
         name: file.name,
       })
     );
   } else if (resp.status !== 200) {
-    throw new Error(hass.localize("ui.common.unknown_error"));
+    throw new Error(localize("ui.common.unknown_error"));
   }
   const data = await resp.json();
   return data.file_id;
 };
 
-export const removeFile = async (hass: HomeAssistant, file_id: string) =>
-  hass.callApi("DELETE", "file_upload", {
+export const removeFile = async (
+  callApi: HomeAssistant["callApi"],
+  file_id: string
+) =>
+  callApi("DELETE", "file_upload", {
     file_id,
   });

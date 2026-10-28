@@ -166,7 +166,7 @@ describe("computeAttributeValueDisplay", () => {
       entitiesMock,
       "temperature"
     );
-    expect(result).toBe("42 °C");
+    expect(result).toBe("42\u00A0°C");
   });
 
   it("should set temperature unit for temperature attribute", () => {
@@ -184,7 +184,7 @@ describe("computeAttributeValueDisplay", () => {
       entitiesMock,
       "temperature"
     );
-    expect(result).toBe("42 °C");
+    expect(result).toBe("42\u00A0°C");
   });
 
   it("should return translation from translation key", () => {
@@ -367,5 +367,27 @@ describe("computeAttributeNameDisplay", () => {
       "brightness__ip_id_mac_gps_GPS"
     );
     expect(result).toBe("Brightness  IP ID MAC GPS GPS");
+  });
+
+  // No integration translates the attributes every entity can have (#54691)
+  it("translates common attributes from the frontend", () => {
+    const localize = (key: string) =>
+      key === "ui.components.attributes.names.friendly_name"
+        ? "Friendly name (translated)"
+        : "";
+
+    const stateObj = {
+      entity_id: "sensor.test",
+      attributes: {},
+    } as HassEntity;
+
+    expect(
+      computeAttributeNameDisplay(
+        localize,
+        stateObj,
+        {} as HomeAssistant["entities"],
+        "friendly_name"
+      )
+    ).toBe("Friendly name (translated)");
   });
 });

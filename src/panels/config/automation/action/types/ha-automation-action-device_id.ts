@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-action-picker";
 import "../../../../../components/device/ha-device-picker";
@@ -146,7 +146,6 @@ export class HaDeviceAction extends LitElement {
         .deviceId=${deviceId}
         .disabled=${this.disabled}
         @value-changed=${this._deviceActionPicked}
-        .hass=${this.hass}
         label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.device_id.action"
         )}

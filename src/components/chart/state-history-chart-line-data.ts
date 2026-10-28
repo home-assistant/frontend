@@ -376,6 +376,18 @@ export function generateStateHistoryChartLineData(
       let lastDate: number;
       let lastNullDate: number | null = null;
 
+      // pushData(timestamp, [value]) for one dataset, minus the per-point array
+      const latestValues: (number | null)[] = [null];
+      const pushValue = (timestamp: number, value: number) => {
+        if (timestamp > endTimeMs) {
+          return;
+        }
+        data[0].data!.push([timestamp, value]);
+        trackY(value);
+        latestValues[0] = value;
+        prevValues = latestValues;
+      };
+
       // Process chart data.
       // When state is `unknown`, calculate the value and break the line.
       const processData = (entityState: LineChartState) => {
@@ -393,7 +405,7 @@ export function generateStateHistoryChartLineData(
           lastValue = value;
           lastNullDate = null;
         } else if (value !== null && lastNullDate === null) {
-          pushData(date, [value]);
+          pushValue(date, value);
           lastDate = date;
           lastValue = value;
         } else if (
@@ -436,7 +448,7 @@ export function generateStateHistoryChartLineData(
       const stateObj = hass.states[states.entity_id];
       const currentValue = stateObj ? safeParseFloat(stateObj.state) : null;
       if (currentValue !== null) {
-        data[0].data!.push([nowMs, currentValue]);
+        data[0].data!.push([Math.max(nowMs, endTimeMs), currentValue]);
         trackY(currentValue);
       }
     }

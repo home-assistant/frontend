@@ -1,5 +1,5 @@
 import { mdiContentCopy, mdiRefresh } from "@mdi/js";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { addHours } from "date-fns";
 import type {
   HassEntities,
@@ -10,10 +10,12 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../common/decorators/consume";
 import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
 import { storage } from "../../../../common/decorators/storage";
 import type { HASSDomTargetEvent } from "../../../../common/dom/fire_event";
 import { escapeRegExp } from "../../../../common/string/escape_regexp";
+import { computeEntitySearchLabels } from "../../../../common/entity/compute_entity_name_display";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -541,8 +543,11 @@ class HaPanelDevState extends LitElement {
         if (
           entityFilterRegExp &&
           !entityFilterRegExp.test(value.entity_id) &&
-          (value.attributes.friendly_name === undefined ||
-            !entityFilterRegExp.test(value.attributes.friendly_name))
+          !entityFilterRegExp.test(this.hass.formatEntityName(value)) &&
+          !entityFilterRegExp.test(
+            computeEntitySearchLabels(value, this._registries).friendlyName ??
+              ""
+          )
         ) {
           return false;
         }

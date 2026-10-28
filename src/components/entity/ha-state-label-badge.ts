@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import type { ContextType } from "@lit/context";
 import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -6,6 +5,7 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../../common/decorators/consume";
 import { arrayLiteralIncludes } from "../../common/array/literal-includes";
 import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import {
@@ -13,7 +13,6 @@ import {
   consumeLocalize,
 } from "../../common/decorators/consume-context-entry";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import { unitFromParts, valueFromParts } from "../../common/entity/value_parts";
 import { FIXED_DOMAIN_STATES } from "../../common/entity/get_states";
 import type { LocalizeFunc } from "../../common/translations/localize";
@@ -138,7 +137,7 @@ export class HaStateLabelBadge extends LitElement {
         )}
         .description=${
           this.showName
-            ? (this.name ?? computeStateName(entityState))
+            ? (this.name ?? this._formatters?.formatEntityName(entityState))
             : undefined
         }
       >

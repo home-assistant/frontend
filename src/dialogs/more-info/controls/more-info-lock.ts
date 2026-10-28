@@ -1,9 +1,9 @@
-import { consume } from "@lit/context";
 import { mdiCheck } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { stateColorCss } from "../../../common/entity/state_color";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -63,11 +63,9 @@ class MoreInfoLock extends LitElement {
 
     callProtectedLockService(
       this,
-      {
-        callService: this._api.callService,
-        callWS: this._api.callWS,
-        localize: this._localize,
-      },
+      this._api.callService,
+      this._api.callWS,
+      this._localize,
       this.stateObj!,
       "open"
     );
@@ -87,11 +85,9 @@ class MoreInfoLock extends LitElement {
   private async _lock() {
     callProtectedLockService(
       this,
-      {
-        callService: this._api.callService,
-        callWS: this._api.callWS,
-        localize: this._localize,
-      },
+      this._api.callService,
+      this._api.callWS,
+      this._localize,
       this.stateObj!,
       "lock"
     );
@@ -100,11 +96,9 @@ class MoreInfoLock extends LitElement {
   private async _unlock() {
     callProtectedLockService(
       this,
-      {
-        callService: this._api.callService,
-        callWS: this._api.callWS,
-        localize: this._localize,
-      },
+      this._api.callService,
+      this._api.callWS,
+      this._localize,
       this.stateObj!,
       "unlock"
     );

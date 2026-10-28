@@ -1,7 +1,8 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
 import type { LocalizeKeys } from "../../../../common/translations/localize";
@@ -196,7 +197,7 @@ export class DialogEnergyCustomise
         <ha-switch
           .checked=${applicable && !this._hidden!.has(card.key)}
           .disabled=${!applicable}
-          .ariaLabel=${label}
+          .accessibleLabel=${label}
           data-card-key=${card.key}
           @change=${this._toggleCard}
         ></ha-switch>

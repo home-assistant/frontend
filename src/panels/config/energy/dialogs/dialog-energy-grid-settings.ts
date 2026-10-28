@@ -213,7 +213,6 @@ export class DialogEnergyGridSettings
         ${this._error ? html`<p class="error">${this._error}</p>` : nothing}
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
@@ -233,7 +232,6 @@ export class DialogEnergyGridSettings
         ></ha-statistic-picker>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_to}
@@ -264,13 +262,15 @@ export class DialogEnergyGridSettings
           .placeholder=${
             this._source?.stat_energy_from
               ? getStatisticLabel(
-                  this.hass,
+                  this.hass.states,
+                  this.hass.formatEntityName,
                   this._source.stat_energy_from,
                   this._params?.statsMetadata?.[this._source.stat_energy_from]
                 )
               : this._source?.stat_energy_to
                 ? getStatisticLabel(
-                    this.hass,
+                    this.hass.states,
+                    this.hass.formatEntityName,
                     this._source.stat_energy_to,
                     this._params?.statsMetadata?.[this._source.stat_energy_to]
                   )
@@ -322,7 +322,6 @@ export class DialogEnergyGridSettings
           this._importCostType === "stat"
             ? html`
                 <ha-statistic-picker
-                  .hass=${this.hass}
                   .value=${this._source.stat_cost}
                   .label=${this.hass.localize(
                     "ui.panel.config.energy.grid.dialog.cost_stat_label"
@@ -360,6 +359,8 @@ export class DialogEnergyGridSettings
                   )}
                   type="number"
                   step="any"
+                  required
+                  auto-validate
                   @input=${this._numberCostChanged}
                 >
                   <span slot="end">${this.hass.config.currency}/kWh</span>
@@ -418,7 +419,6 @@ export class DialogEnergyGridSettings
                   this._exportCostType === "stat"
                     ? html`
                         <ha-statistic-picker
-                          .hass=${this.hass}
                           .value=${this._source.stat_compensation}
                           .label=${this.hass.localize(
                             "ui.panel.config.energy.grid.dialog.compensation_stat_label"
@@ -456,6 +456,8 @@ export class DialogEnergyGridSettings
                           )}
                           type="number"
                           step="any"
+                          required
+                          auto-validate
                           @input=${this._numberCompensationChanged}
                         >
                           <span slot="end"
@@ -519,6 +521,21 @@ export class DialogEnergyGridSettings
       return false;
     }
 
+    if (
+      this._importCostType === "number" &&
+      typeof this._source?.number_energy_price !== "number"
+    ) {
+      return false;
+    }
+
+    if (
+      hasExport &&
+      this._exportCostType === "number" &&
+      typeof this._source?.number_energy_price_export !== "number"
+    ) {
+      return false;
+    }
+
     return true;
   }
 
@@ -529,7 +546,7 @@ export class DialogEnergyGridSettings
       this._params?.statsMetadata &&
       !(statId in this._params.statsMetadata)
     ) {
-      const [metadata] = await getStatisticMetadata(this.hass, [statId]);
+      const [metadata] = await getStatisticMetadata(this.hass.callWS, [statId]);
       if (metadata) {
         this._params.statsMetadata[statId] = metadata;
         this.requestUpdate("_params");

@@ -1,11 +1,12 @@
 import { TZDate } from "@date-fns/tz";
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { ActionDetail } from "@material/mwc-list";
 import { mdiCalendarToday } from "@mdi/js";
 import "cally";
 import type { HassConfig } from "home-assistant-js-websocket/dist/types";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { firstWeekdayIndex } from "../../common/datetime/first_weekday";
 import {
   formatCallyDateRange,

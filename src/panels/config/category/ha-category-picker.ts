@@ -192,7 +192,6 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
         .placeholder=${this.placeholder}
@@ -233,7 +232,7 @@ export class HaCategoryPicker extends SubscribeMixin(LitElement) {
         suggestedName: suggestedName,
         createEntry: async (values) => {
           const category = await createCategoryRegistryEntry(
-            this.hass,
+            this.hass.callWS,
             this.scope!,
             values
           );

@@ -1,12 +1,16 @@
+import type { ContextType } from "@lit/context";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { TemplateResult, PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { apiContext } from "../../data/context";
 import type { User } from "../../data/user";
 import { fetchUsers } from "../../data/user";
-import type { HomeAssistant } from "../../types";
 import "../ha-combo-box-item";
 import "../ha-generic-picker";
 import type { PickerComboBoxItem } from "../ha-picker-combo-box";
@@ -25,8 +29,6 @@ const SEARCH_KEYS = [
 
 @customElement("ha-user-picker")
 class HaUserPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public label?: string;
 
   @property() public placeholder?: string;
@@ -39,6 +41,13 @@ class HaUserPicker extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (!this.users) {
@@ -47,7 +56,7 @@ class HaUserPicker extends LitElement {
   }
 
   private async _fetchUsers() {
-    this.users = await fetchUsers(this.hass);
+    this.users = await fetchUsers(this._api.callWS);
   }
 
   private usersMap = memoizeOne((users?: User[]): Map<string, User> => {
@@ -72,7 +81,7 @@ class HaUserPicker extends LitElement {
   private _rowRenderer: RenderItemFunction<UserComboBoxItem> = (item) => {
     const user = item.user;
     if (!user) {
-      return html`<ha-combo-box-item type="button" compact>
+      return html`<ha-combo-box-item>
         ${
           item.icon
             ? html`<ha-icon slot="start" .icon=${item.icon}></ha-icon>`
@@ -93,7 +102,7 @@ class HaUserPicker extends LitElement {
     }
 
     return html`
-      <ha-combo-box-item type="button" compact>
+      <ha-combo-box-item>
         <ha-user-badge slot="start" .user=${item.user}></ha-user-badge>
         <span slot="headline">${item.primary}</span>
       </ha-combo-box-item>
@@ -121,11 +130,10 @@ class HaUserPicker extends LitElement {
 
   protected render(): TemplateResult {
     const placeholder =
-      this.placeholder ?? this.hass.localize("ui.components.user-picker.user");
+      this.placeholder ?? this._localize("ui.components.user-picker.user");
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .label=${this.label}
         .placeholder=${placeholder}
@@ -135,9 +143,7 @@ class HaUserPicker extends LitElement {
         .valueRenderer=${this._valueRenderer}
         .rowRenderer=${this._rowRenderer}
         .searchKeys=${SEARCH_KEYS}
-        .unknownItemText=${this.hass.localize(
-          "ui.components.user-picker.unknown"
-        )}
+        .unknownItemText=${this._localize("ui.components.user-picker.unknown")}
         @value-changed=${this._valueChanged}
       >
       </ha-generic-picker>
@@ -153,7 +159,7 @@ class HaUserPicker extends LitElement {
   }
 
   private _notFoundLabel = (search: string) =>
-    this.hass.localize("ui.components.user-picker.no_match", {
+    this._localize("ui.components.user-picker.no_match", {
       term: html`<b>‘${search}’</b>`,
     });
 }

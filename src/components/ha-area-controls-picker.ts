@@ -192,7 +192,14 @@ export class HaAreaControlsPicker extends LitElement {
             }
 
             const { primary, secondary } = computeEntityPickerDisplay(
-              this.hass!,
+              {
+                entities: this.hass!.entities,
+                devices: this.hass!.devices,
+                areas: this.hass!.areas,
+                floors: this.hass!.floors,
+                language: this.hass!.language,
+                translationMetadata: this.hass!.translationMetadata,
+              },
               stateObj
             );
 
@@ -243,7 +250,7 @@ export class HaAreaControlsPicker extends LitElement {
   );
 
   private _rowRenderer = (item: AreaControlPickerItem) => html`
-    <ha-combo-box-item type="button" compact>
+    <ha-combo-box-item>
       ${
         item.type === "entity" && item.stateObj
           ? html`<ha-state-icon
@@ -281,7 +288,6 @@ export class HaAreaControlsPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .value=${this.value || ""}
         .disabled=${this.disabled}
         .required=${this.required}

@@ -8,12 +8,12 @@ import {
   mdiVolumeHigh,
   mdiVolumeOff,
 } from "@mdi/js";
-import { consume } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityState,
   consumeLocalize,

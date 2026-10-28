@@ -1,13 +1,21 @@
-import { getContrastedColorHex } from "../color/rgb";
+import { wcagContrast } from "culori";
+import { theme2hex } from "../color/convert-color";
 
 /** The zone marker: a colored circle with the zone's icon or initials, shared by the map and the zone editor */
 
 export const ZONE_CIRCLE_SIZE = 36;
+// Same as an entity marker's icon
+const ZONE_ICON_SIZE = 24;
 
-// Content color contrasting the fill; not every theme color parses
+// WCAG minimum contrast for icons and other graphics
+const MIN_CONTENT_CONTRAST = 3;
+
+// White content while it contrasts enough with the fill, black otherwise;
+// not every theme color parses
 export const contrastingZoneContent = (color: string): string => {
   try {
-    return getContrastedColorHex(color.trim());
+    const whiteContrast = wcagContrast(theme2hex(color.trim()), "#ffffff");
+    return whiteContrast >= MIN_CONTENT_CONTRAST ? "#ffffff" : "#000000";
   } catch {
     return "#ffffff";
   }
@@ -62,6 +70,6 @@ export const zoneMarkerStyles = `
     overflow: hidden;
     font-size: var(--ha-font-size-s);
     font-weight: var(--ha-font-weight-medium);
-    --mdc-icon-size: ${ZONE_CIRCLE_SIZE / 2}px;
+    --mdc-icon-size: ${ZONE_ICON_SIZE}px;
   }
 `;

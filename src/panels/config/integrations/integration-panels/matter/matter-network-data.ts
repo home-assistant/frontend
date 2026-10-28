@@ -1,9 +1,11 @@
+import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import type {
   NetworkData,
   NetworkLink,
   NetworkNode,
 } from "../../../../../components/chart/ha-network-graph";
+import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type {
   MatterNetworkTopology,
   MatterNetworkTopologyNode,
@@ -18,12 +20,49 @@ const CATEGORY_END_DEVICE = 3;
 const CATEGORY_WIFI_AP = 4;
 const CATEGORY_OFFLINE = 5;
 const CATEGORY_UNKNOWN = 6;
+const CATEGORY_BRIDGE = 7;
+const CATEGORY_BRIDGED = 8;
 
 const ROUTER_ROLES = new Set(["leader", "router", "reed"]);
 
 // HA is not a Matter node; the frontend synthesizes it as the graph root.
 export const HOME_ASSISTANT_NODE_ID = "ha";
 const HOME_ASSISTANT_LABEL = "Home Assistant";
+
+// bridged devices are not Matter nodes, so they are synthesized from the
+// device registry under an id that cannot collide with a topology node
+const BRIDGED_DEVICE_NODE_PREFIX = "bridged_";
+
+export const getBridgedDeviceId = (nodeId: string): string | undefined =>
+  nodeId.startsWith(BRIDGED_DEVICE_NODE_PREFIX)
+    ? nodeId.slice(BRIDGED_DEVICE_NODE_PREFIX.length)
+    : undefined;
+
+// a bridge exposes the devices behind it as endpoints of its own node, so
+// the topology never lists them; core registers each as a device whose
+// via_device is the bridge
+export const getBridgedDevices = (
+  bridgeDeviceId: string,
+  devices: HomeAssistant["devices"]
+): DeviceRegistryEntry[] =>
+  Object.values(devices).filter(
+    (device) => device.via_device_id === bridgeDeviceId && !device.disabled_by
+  );
+
+// ha-network-graph labels a node beside its symbol only, so the bridged
+// device count is drawn into the symbol itself
+const bridgeSymbol = (
+  color: string,
+  textColor: string,
+  count?: number
+): string => {
+  const text =
+    count === undefined
+      ? ""
+      : `<text x="16" y="16" dy="0.35em" text-anchor="middle" font-family="sans-serif" font-weight="bold" font-size="${count > 99 ? 10 : 13}" fill="${textColor}">${count}</text>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="${color}" fill-opacity="0.35"/><circle cx="16" cy="16" r="12" fill="${color}"/>${text}</svg>`;
+  return `image://data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+};
 
 // 0 is never returned: a falsy link value re-enables the direction arrow
 // in ha-network-graph
@@ -80,6 +119,9 @@ export const getTopologyNodeCategory = (
   if (node.available === false) {
     return CATEGORY_OFFLINE;
   }
+  if (node.is_bridge) {
+    return CATEGORY_BRIDGE;
+  }
   return node.role && ROUTER_ROLES.has(node.role)
     ? CATEGORY_ROUTER
     : CATEGORY_END_DEVICE;
@@ -128,7 +170,10 @@ const isHub = (category: number): boolean =>
 export function createMatterNetworkChartData(
   topology: MatterNetworkTopology,
   hass: HomeAssistant,
-  element: Element
+  element: Element,
+  // a bridge can expose many devices, so they stay behind their bridge until
+  // it is expanded
+  expandedBridges: ReadonlySet<string> = new Set()
 ): NetworkData {
   const style = getComputedStyle(element);
 
@@ -141,7 +186,13 @@ export function createMatterNetworkChartData(
     style.getPropertyValue(networkToColorVar("wifi")),
     style.getPropertyValue("--error-color"),
     style.getPropertyValue("--disabled-color"),
-  ];
+    // a bridge is an end device that aggregates others behind it
+    style.getPropertyValue("--teal-color"),
+    style.getPropertyValue("--blue-grey-color"),
+  ].map((color) => color.trim());
+  const textPrimaryColor = style
+    .getPropertyValue("--text-primary-color")
+    .trim();
   const categories = [
     {
       name: HOME_ASSISTANT_LABEL,
@@ -180,6 +231,18 @@ export function createMatterNetworkChartData(
       symbol: "circle",
       itemStyle: { color: categoryColors[CATEGORY_UNKNOWN] },
     },
+    {
+      name: hass.localize("ui.panel.config.matter.node_type.bridge"),
+      symbol: bridgeSymbol(categoryColors[CATEGORY_BRIDGE], textPrimaryColor),
+      itemStyle: { color: categoryColors[CATEGORY_BRIDGE] },
+    },
+    {
+      name: hass.localize(
+        "ui.panel.config.matter.visualization.bridged_device"
+      ),
+      symbol: "circle",
+      itemStyle: { color: categoryColors[CATEGORY_BRIDGED] },
+    },
   ];
 
   const threadNetworks = new Set(
@@ -201,6 +264,7 @@ export function createMatterNetworkChartData(
     },
   ];
   const nodeCategories = new Map<string, number>();
+  const bridgedDevices = new Map<string, DeviceRegistryEntry[]>();
   topology.nodes.forEach((node) => {
     const category = getTopologyNodeCategory(node);
     nodeCategories.set(node.id, category);
@@ -224,6 +288,31 @@ export function createMatterNetworkChartData(
     // skip a label that just repeats the name, e.g. an AP with no SSID
     if ((multiNetwork || !area) && networkLabel && networkLabel !== name) {
       contextParts.push(networkLabel);
+    }
+    if (node.is_bridge) {
+      // without a device the bridged devices are unknown, not zero
+      const bridged = node.ha_device_id
+        ? getBridgedDevices(node.ha_device_id, hass.devices)
+        : undefined;
+      if (bridged && expandedBridges.has(node.id)) {
+        bridgedDevices.set(node.id, bridged);
+      }
+      nodes.push({
+        id: node.id,
+        name,
+        context: contextParts.join(" • ") || undefined,
+        category,
+        value: 2,
+        symbol: bridgeSymbol(
+          categoryColors[category],
+          textPrimaryColor,
+          bridged?.length
+        ),
+        symbolSize: 30,
+        itemStyle: { color: categoryColors[category] },
+        polarDistance: 0.8,
+      });
+      return;
     }
     nodes.push({
       id: node.id,
@@ -305,9 +394,9 @@ export function createMatterNetworkChartData(
     });
   });
 
-  // Only a hub gets an edge to HA, and it is a real path. A node whose route we
-  // cannot see gets nothing: inventing an edge to HA reads as a physical link.
-  // It keeps the HA node's own color rather than a transport hue.
+  // Only a hub or a wired node gets an edge to HA, and it is a real path. A node
+  // whose route we cannot see gets nothing: inventing an edge to HA reads as a
+  // physical link.
   // `symbol: "none"` is what keeps the arrowhead off these edges -- ha-network-graph
   // keys arrow suppression on `reverseValue`, not on `value` -- so it must stay.
   const haLink = (target: string, network: string): NetworkLink => ({
@@ -320,16 +409,26 @@ export function createMatterNetworkChartData(
       // the same hue as the radio links behind this hub, so one transport
       // reads as one colour all the way back to Home Assistant
       color: style.getPropertyValue(networkToColorVar(network)),
-      type: "solid",
+      type:
+        nodeCategories.get(target) === CATEGORY_OFFLINE ? "dashed" : "solid",
     },
   });
 
-  // HA reaches the mesh through the border routers and Wi-Fi access points
-  topology.nodes
-    .filter((node) => node.kind === "border_router" || node.kind === "wifi_ap")
-    .forEach((node) =>
-      links.push(haLink(node.id, node.kind === "wifi_ap" ? "wifi" : "thread"))
-    );
+  // HA reaches the mesh through the border routers and Wi-Fi access points,
+  // and a wired node directly over the LAN
+  topology.nodes.forEach((node) => {
+    const network =
+      node.kind === "border_router"
+        ? "thread"
+        : node.kind === "wifi_ap"
+          ? "wifi"
+          : node.network_type === "ethernet"
+            ? "ethernet"
+            : undefined;
+    if (network) {
+      links.push(haLink(node.id, network));
+    }
+  });
 
   // keep the strongest link of every node in the force layout so
   // nodes hang near their best connection instead of floating free
@@ -354,6 +453,40 @@ export function createMatterNetworkChartData(
     if (!hasActiveLink && bestLink) {
       bestLink.ignoreForceLayout = false;
     }
+  });
+
+  bridgedDevices.forEach((devices, bridgeId) => {
+    devices.forEach((device) => {
+      const id = `${BRIDGED_DEVICE_NODE_PREFIX}${device.id}`;
+      const area = getDeviceArea(device, hass.areas, hass.devices);
+      nodes.push({
+        id,
+        name: computeDeviceName(device) || id,
+        context: area?.name,
+        category: CATEGORY_BRIDGED,
+        value: 1,
+        symbol: "circle",
+        symbolSize: 15,
+        itemStyle: { color: categoryColors[CATEGORY_BRIDGED] },
+        polarDistance: 0.9,
+      });
+      // not a radio link, so no strength and no arrow; it stays in the force
+      // layout so the devices gather around their bridge
+      links.push({
+        source: bridgeId,
+        target: id,
+        value: 0,
+        symbol: "none",
+        lineStyle: {
+          width: 1,
+          color: categoryColors[CATEGORY_BRIDGED],
+          type:
+            nodeCategories.get(bridgeId) === CATEGORY_OFFLINE
+              ? "dashed"
+              : "solid",
+        },
+      });
+    });
   });
 
   return { nodes, links, categories };

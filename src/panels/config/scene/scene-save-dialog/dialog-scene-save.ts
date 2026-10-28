@@ -175,7 +175,6 @@ class DialogSceneSave extends DirtyStateProviderMixin<SceneSaveState>()(
         this._visibleOptionals.includes("labels")
           ? html` <ha-labels-picker
               id="labels"
-              .hass=${this.hass}
               .value=${this._entryUpdates.labels}
               @value-changed=${this._registryEntryChanged}
             ></ha-labels-picker>`
@@ -218,7 +217,6 @@ class DialogSceneSave extends DirtyStateProviderMixin<SceneSaveState>()(
             ? nothing
             : html` <ha-suggest-with-ai-button
                 slot="headerActionItems"
-                .hass=${this.hass}
                 .generateTask=${this._generateTask}
                 @suggestion=${this._handleSuggestion}
               ></ha-suggest-with-ai-button>`
@@ -329,6 +327,7 @@ class DialogSceneSave extends DirtyStateProviderMixin<SceneSaveState>()(
       await buildEntityMetadataInspirations(
         this.hass.connection,
         this.hass.states,
+        this.hass.formatEntityName,
         "scene"
       ),
       SUGGESTION_INCLUDE
