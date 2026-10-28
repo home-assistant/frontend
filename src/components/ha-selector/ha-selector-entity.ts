@@ -94,6 +94,8 @@ export class HaEntitySelector extends LitElement {
 
   private _fetchedConfigEntries = false;
 
+  private _fetchedEntitySources = false;
+
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.get("selector") && this.value !== undefined) {
       if (this.selector.entity?.multiple && !Array.isArray(this.value)) {
@@ -124,7 +126,11 @@ export class HaEntitySelector extends LitElement {
         .includeEntities=${this.selector.entity?.include_entities}
         .excludeEntities=${this.selector.entity?.exclude_entities}
         .extraOptions=${this.selector.entity?.extra_options}
-        .entityFilter=${this._filterEntities}
+        .entityFilter=${this._filterEntities(
+          this.selector,
+          this._entitySources,
+          this._configEntries
+        )}
         .createDomains=${this._createDomains}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -140,7 +146,11 @@ export class HaEntitySelector extends LitElement {
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}
         .reorder=${this.selector.entity.reorder ?? false}
-        .entityFilter=${this._filterEntities}
+        .entityFilter=${this._filterEntities(
+          this.selector,
+          this._entitySources,
+          this._configEntries
+        )}
         .createDomains=${this._createDomains}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -151,7 +161,6 @@ export class HaEntitySelector extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    // The connection changed or came back after a drop; refetch.
     const oldConnection = changedProps.get("_connection") as
       HomeAssistantConnection | undefined;
     if (
@@ -160,20 +169,20 @@ export class HaEntitySelector extends LitElement {
       (oldConnection.connection !== this._connection.connection ||
         (!oldConnection.connected && this._connection.connected))
     ) {
-      this._entitySources = undefined;
+      this._fetchedEntitySources = false;
       this._fetchedConfigEntries = false;
-      this._configEntries = undefined;
     }
 
     const needs = this._dataNeeds(this.selector);
 
-    if (needs.entitySources && !this._entitySources) {
+    if (needs.entitySources && !this._fetchedEntitySources) {
+      this._fetchedEntitySources = true;
       fetchEntitySourcesWithCache(this._api.callWS, this._states ?? {})
         .then((sources) => {
           this._entitySources = sources;
         })
         .catch(() => {
-          this._entitySources = {};
+          this._entitySources ??= {};
         });
     }
 
@@ -184,11 +193,9 @@ export class HaEntitySelector extends LitElement {
           this._configEntries = entries;
         })
         .catch(() => {
-          // Fall back to no entries so the picker still renders. We keep
-          // `_fetchedConfigEntries` set so the failed fetch is not retried on
-          // every re-render; the connection-change handler above retries on
-          // reconnect.
-          this._configEntries = [];
+          // Keep what we have, or fall back to no entries so the picker still
+          // renders. A reconnect fetches again.
+          this._configEntries ??= [];
         });
     }
 
@@ -197,29 +204,36 @@ export class HaEntitySelector extends LitElement {
     }
   }
 
-  private _filterEntities = (entity: HassEntity): boolean => {
-    if (!this.selector?.entity?.filter) {
-      return true;
-    }
-    const deviceIntegrationLookup = this._dataNeeds(this.selector).configEntries
-      ? this._deviceIntegrationLookup(
-          this._entities,
-          this._devices,
-          this._configEntries
-        )
-      : undefined;
+  private _filterEntities = memoizeOne(
+    (
+      selector: EntitySelector,
+      entitySources: EntitySources | undefined,
+      configEntries: ConfigEntry[] | undefined
+    ) =>
+      (entity: HassEntity): boolean => {
+        if (!selector.entity?.filter) {
+          return true;
+        }
+        const deviceIntegrationLookup = this._dataNeeds(selector).configEntries
+          ? this._deviceIntegrationLookup(
+              this._entities,
+              this._devices,
+              configEntries
+            )
+          : undefined;
 
-    return ensureArray(this.selector.entity.filter).some((filter) =>
-      filterSelectorEntities(
-        filter,
-        entity,
-        this._entitySources,
-        this._entities ?? undefined,
-        this._devices ?? undefined,
-        deviceIntegrationLookup
-      )
-    );
-  };
+        return ensureArray(selector.entity.filter).some((filter) =>
+          filterSelectorEntities(
+            filter,
+            entity,
+            entitySources,
+            this._entities ?? undefined,
+            this._devices ?? undefined,
+            deviceIntegrationLookup
+          )
+        );
+      }
+  );
 }
 
 declare global {
