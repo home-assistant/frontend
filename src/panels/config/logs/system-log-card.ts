@@ -22,7 +22,7 @@ import {
 } from "../../../data/error_log";
 import { domainToName } from "../../../data/integration";
 import { formatListWithAnds } from "../../../common/string/format-list";
-import type { LoggedError } from "../../../data/system_log";
+import type { LoggedError, SystemLogLevel } from "../../../data/system_log";
 import {
   fetchSystemLog,
   getLoggedErrorIntegration,
@@ -45,6 +45,8 @@ export class SystemLogCard extends LitElement {
   @property({ attribute: false }) public integrations?: string[];
 
   @property({ attribute: false }) public integrationLoggers?: string[];
+
+  @property({ attribute: false }) public levels?: SystemLogLevel[];
 
   public loaded = false;
 
@@ -79,9 +81,13 @@ export class SystemLogCard extends LitElement {
       localize: LocalizeFunc,
       items: LoggedError[],
       filter: string,
-      loggers: string[] | undefined
+      loggers: string[] | undefined,
+      levels: SystemLogLevel[] | undefined
     ) =>
       items.filter((item: LoggedError) => {
+        if (levels?.length && !levels.includes(item.level)) {
+          return false;
+        }
         if (
           loggers &&
           !loggers.some(
@@ -119,7 +125,8 @@ export class SystemLogCard extends LitElement {
           this.hass.localize,
           this._items,
           this.filter.toLowerCase(),
-          this.integrations?.length ? this.integrationLoggers : undefined
+          this.integrations?.length ? this.integrationLoggers : undefined,
+          this.levels
         )
       : [];
     const integrations = filteredItems.length
@@ -203,7 +210,9 @@ export class SystemLogCard extends LitElement {
                           </div>
                         `
                       : filteredItems.length === 0 &&
-                          (this.filter || this.integrations?.length)
+                          (this.filter ||
+                            this.integrations?.length ||
+                            this.levels?.length)
                         ? html`<div class="card-content">
                             ${
                               this.filter
@@ -211,20 +220,24 @@ export class SystemLogCard extends LitElement {
                                     "ui.panel.config.logs.no_issues_search",
                                     { term: this.filter }
                                   )
-                                : this.hass.localize(
-                                    "ui.panel.config.logs.no_issues_integration",
-                                    {
-                                      integration: formatListWithAnds(
-                                        this.hass.locale,
-                                        this.integrations!.map((domain) =>
-                                          domainToName(
-                                            this.hass.localize,
-                                            domain
+                                : this.levels?.length
+                                  ? this.hass.localize(
+                                      "ui.panel.config.logs.no_issues_filters"
+                                    )
+                                  : this.hass.localize(
+                                      "ui.panel.config.logs.no_issues_integration",
+                                      {
+                                        integration: formatListWithAnds(
+                                          this.hass.locale,
+                                          this.integrations!.map((domain) =>
+                                            domainToName(
+                                              this.hass.localize,
+                                              domain
+                                            )
                                           )
-                                        )
-                                      ),
-                                    }
-                                  )
+                                        ),
+                                      }
+                                    )
                             }
                           </div>`
                         : html`<ha-list

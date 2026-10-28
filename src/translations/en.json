@@ -5063,6 +5063,7 @@
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
           "no_issues_integration": "No issues found for {integration}",
+          "no_issues_filters": "No issues match the selected filters",
           "integration_log_waiting": "[%key:ui::panel::config::integrations::config_entry::live_log::waiting%]",
           "integration_log_unsupported": "[%key:ui::panel::config::integrations::config_entry::live_log::unsupported%]",
           "no_matches_showing_all": "Nothing in the recent logs mentions ''{term}'', so all lines are shown.",
@@ -5084,12 +5085,16 @@
             "info": "INFO",
             "debug": "DEBUG"
           },
+          "level_filter": {
+            "caption": "Level",
+            "critical": "Critical",
+            "error": "Error",
+            "warning": "Warning"
+          },
           "level_count": {
             "critical": "{count} critical {count, plural,\n one {entry}\n other {entries}\n}",
             "error": "{count} {count, plural,\n one {error}\n other {errors}\n}",
-            "warning": "{count} {count, plural,\n one {warning}\n other {warnings}\n}",
-            "info": "{count} info {count, plural,\n one {entry}\n other {entries}\n}",
-            "debug": "{count} debug {count, plural,\n one {entry}\n other {entries}\n}"
+            "warning": "{count} {count, plural,\n one {warning}\n other {warnings}\n}"
           },
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This log entry is from a custom integration.",
