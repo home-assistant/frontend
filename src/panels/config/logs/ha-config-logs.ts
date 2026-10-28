@@ -17,15 +17,12 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { atLeastVersion } from "../../../common/config/version";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { consume } from "../../../common/decorators/consume";
+import { storage } from "../../../common/decorators/storage";
 import type {
   HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../../common/dom/fire_event";
-import {
-  getHistoryState,
-  navigate,
-  updateHistoryState,
-} from "../../../common/navigate";
+import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { currentPath } from "../../../common/url/current-path";
 import { deepEqual } from "../../../common/util/deep-equal";
@@ -93,8 +90,6 @@ const logProviders: LogProvider[] = [
   },
 ];
 
-const LOGS_HISTORY_STATE = "logsPage";
-
 interface LogProviderPickerItem extends PickerComboBoxItem {
   addon?: HassioAddonInfo;
   hasAppIcon?: boolean;
@@ -127,6 +122,27 @@ export class HaConfigLogs extends LitElement {
   @state() private _showFilters = false;
 
   @state() private _integrationsExpanded = true;
+
+  // What the user picked, shown again when the page is opened without params,
+  // like from the sidebar. What a link shows isn't stored.
+  @storage({
+    storage: "sessionStorage",
+    key: "logs-search",
+    state: false,
+    subscribe: false,
+  })
+  private _storedSearch = "";
+
+  @storage({
+    storage: "sessionStorage",
+    key: "logs-integrations",
+    state: false,
+    subscribe: false,
+  })
+  private _storedIntegrations: string[] = [];
+
+  @storage({ key: "logs-raw", state: false, subscribe: false })
+  private _storedRaw = false;
 
   @state()
   @consume({ context: manifestsContext, subscribe: true })
@@ -164,6 +180,10 @@ export class HaConfigLogs extends LitElement {
 
   private _filterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
     this._filter = ev.target.value ?? "";
+
+    if (this._selectedLogProvider === DEFAULT_LOG_PROVIDER) {
+      this._storedSearch = this._filter;
+    }
     this._writeUrl(true);
   }
 
@@ -301,6 +321,10 @@ export class HaConfigLogs extends LitElement {
 
   private _showDetail() {
     this._detail = !this._detail;
+
+    if (this._selectedLogProvider === DEFAULT_LOG_PROVIDER) {
+      this._storedRaw = this._detail;
+    }
     this._writeUrl();
   }
 
@@ -317,12 +341,12 @@ export class HaConfigLogs extends LitElement {
     this._selectedLogProvider = provider;
     this._filter = "";
     this._integrations = [];
+    this._storedSearch = "";
+    this._storedIntegrations = [];
     // Keep the search typed so far on the entry Back returns to
     this._queryParams.flush();
     // Picking another provider is a navigation of its own, so Back returns
-    // to the previous one. Both entries are marked, so going back to one
-    // without params shows the default view instead of keeping the provider.
-    updateHistoryState({ [LOGS_HISTORY_STATE]: true });
+    // to the previous one
     const search = createQueryString(
       logsQueryParams({
         provider,
@@ -332,10 +356,9 @@ export class HaConfigLogs extends LitElement {
       }),
       logsQueryParamConfig
     );
+
     // From the current path, so a trailing slash still matches the controller
-    navigate(`${currentPath()}${search ? `?${search}` : ""}`, {
-      data: { [LOGS_HISTORY_STATE]: true },
-    });
+    navigate(`${currentPath()}${search ? `?${search}` : ""}`);
   }
 
   private _toggleFilters() {
@@ -351,12 +374,21 @@ export class HaConfigLogs extends LitElement {
   ) {
     ev.stopPropagation();
     const value = ev.detail.value;
-    this._integrations = Array.isArray(value) ? value : [];
+    const integrations = Array.isArray(value) ? value : [];
+
+    // The filter also sends the value it was given once it has its items, so
+    // only a change is the user's
+    if (!deepEqual(integrations, this._integrations)) {
+      this._storedIntegrations = integrations;
+    }
+
+    this._integrations = integrations;
     this._writeUrl();
   }
 
   private _clearIntegrations() {
     this._integrations = [];
+    this._storedIntegrations = [];
     this._writeUrl();
   }
 
@@ -397,10 +429,18 @@ export class HaConfigLogs extends LitElement {
     if (!searchParams) {
       return;
     }
+    // A link is shown, but not stored. Opened without params, like from the
+    // sidebar or Back to before another provider was picked, the page shows
+    // what the user picked.
     const link =
       logsLinkFromUrl(searchParams) ??
-      (getHistoryState()?.[LOGS_HISTORY_STATE]
-        ? DEFAULT_LOGS_STATE
+      (searchParams.toString() === ""
+        ? {
+            ...DEFAULT_LOGS_STATE,
+            search: this._storedSearch,
+            integrations: this._storedIntegrations,
+            raw: this._storedRaw,
+          }
         : undefined);
     let missingProvider: string | undefined;
     if (link) {
