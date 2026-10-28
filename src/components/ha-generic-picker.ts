@@ -236,7 +236,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     aria-modal="true"
                     aria-label=${this.ariaLabel || this.label || "Select option"}
                   >
-                    ${this._renderComboBox(true)}
+                    ${this._renderComboBox(true)} ${this._renderFooter()}
                   </ha-bottom-sheet>
                 `
               : html`
@@ -260,7 +260,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     aria-modal="true"
                     aria-label=${this.ariaLabel || this.label || "Select option"}
                   >
-                    ${this._renderComboBox()}
+                    ${this._renderComboBox()} ${this._renderFooter()}
                   </wa-popover>
                 `
             : nothing
@@ -296,6 +296,12 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .noSort=${this.noSort}
       ></ha-picker-combo-box>
     `;
+  }
+
+  // Actions below the list, e.g. for the selected item. Content in the slot
+  // fires `close-picker` to close the picker after its action.
+  private _renderFooter() {
+    return html`<slot name="footer" @close-picker=${this.close}></slot>`;
   }
 
   private _setUnknownValue = () => {
@@ -425,6 +431,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     });
   }
 
+  public close = () => {
+    this._pickerWrapperOpen = false;
+  };
+
   connectedCallback() {
     super.connectedCallback();
     this._handleResize();
@@ -540,5 +550,6 @@ declare global {
   interface HASSDomEvents {
     "picker-closed": undefined;
     "picker-opened": undefined;
+    "close-picker": undefined;
   }
 }
