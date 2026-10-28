@@ -14,6 +14,7 @@ import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { computeDeviceEntityCategory } from "../../../../data/device/device_entity_category";
 import type { LovelaceCardConfig } from "../../../../data/lovelace/config/card";
+import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import {
   haStyleDialog,
   haStyleDialogFixedTop,
@@ -31,7 +32,10 @@ import { addCards } from "../config-util";
 import type { AddDeviceCardDialogParams } from "./show-add-device-card-dialog";
 
 @customElement("hui-dialog-add-device-card")
-export class HuiDialogAddDeviceCard extends LitElement {
+export class HuiDialogAddDeviceCard
+  extends LitElement
+  implements HassDialog<AddDeviceCardDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: AddDeviceCardDialogParams;
@@ -76,8 +80,9 @@ export class HuiDialogAddDeviceCard extends LitElement {
     }
   );
 
-  public closeDialog(): void {
+  public closeDialog(): boolean {
     this._open = false;
+    return true;
   }
 
   private _dialogClosed(): void {
