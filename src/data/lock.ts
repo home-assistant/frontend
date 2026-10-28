@@ -2,6 +2,7 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { showEnterCodeDialog } from "../dialogs/enter-code/show-enter-code-dialog";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE } from "./entity/entity";
@@ -80,13 +81,15 @@ export function canUnlock(stateObj: LockEntity) {
 
 export const callProtectedLockService = async (
   element: HTMLElement,
-  hass: Pick<HomeAssistant, "callService" | "localize" | "callWS">,
+  callService: HomeAssistant["callService"],
+  callWS: HomeAssistant["callWS"],
+  localize: LocalizeFunc,
   stateObj: LockEntity,
   service: ProtectedLockService
 ) => {
   let code: string | undefined;
   const lockRegistryEntry = await getExtendedEntityRegistryEntry(
-    hass,
+    { callWS },
     stateObj.entity_id
   ).catch(() => undefined);
   const defaultCode = lockRegistryEntry?.options?.lock?.default_code;
@@ -95,8 +98,8 @@ export const callProtectedLockService = async (
     const response = await showEnterCodeDialog(element, {
       codeFormat: "text",
       codePattern: stateObj!.attributes.code_format,
-      title: hass.localize(`ui.card.lock.${service}`),
-      submitText: hass.localize(`ui.card.lock.${service}`),
+      title: localize(`ui.card.lock.${service}`),
+      submitText: localize(`ui.card.lock.${service}`),
     });
     if (response == null) {
       throw new Error("Code dialog closed");
@@ -104,7 +107,7 @@ export const callProtectedLockService = async (
     code = response;
   }
 
-  await hass.callService("lock", service, {
+  await callService("lock", service, {
     entity_id: stateObj!.entity_id,
     code,
   });
