@@ -10,7 +10,7 @@ import {
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { toggleValue } from "../common/array/toggle-value";
+import { addValue, removeValue } from "../common/array/add-remove-value";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
@@ -122,11 +122,10 @@ export class HaFilterVoiceAssistants extends LitElement {
       return;
     }
 
-    this.value = toggleValue(
-      this.value,
-      voiceAssistantId,
+    this.value =
       ev.type === "ha-list-item-selected"
-    );
+        ? addValue(this.value, voiceAssistantId)
+        : removeValue(this.value, voiceAssistantId);
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,

@@ -8,7 +8,7 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
-import { toggleValue } from "../common/array/toggle-value";
+import { addValue, removeValue } from "../common/array/add-remove-value";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
@@ -116,11 +116,10 @@ export class HaFilterStates extends LitElement {
       return;
     }
 
-    this.value = toggleValue(
-      this.value,
-      state,
+    this.value =
       ev.type === "ha-list-item-selected"
-    );
+        ? addValue(this.value, state)
+        : removeValue(this.value, state);
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,

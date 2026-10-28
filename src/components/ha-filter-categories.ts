@@ -35,14 +35,13 @@ import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 import { showCategoryRegistryDetailDialog } from "../panels/config/category/show-dialog-category-registry-detail";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistantConnection } from "../types";
+import "./ha-button";
 import "./ha-dropdown";
 import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
-import "./item/ha-list-item-button";
 import "./item/ha-list-item-option";
-import "./list/ha-list-base";
 import "./list/ha-list-selectable";
 
 @customElement("ha-filter-categories")
@@ -227,16 +226,14 @@ export class HaFilterCategories extends LitElement {
                       </ha-list-item-option>`
                   )}
                 </ha-list-selectable>
-                <ha-list-base>
-                  <ha-list-item-button @click=${this._addCategory}>
-                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-                    <span slot="headline"
-                      >${this._localize(
-                        "ui.panel.config.category.editor.add"
-                      )}</span
-                    >
-                  </ha-list-item-button>
-                </ha-list-base>
+                <ha-button
+                  appearance="filled"
+                  size="s"
+                  @click=${this._addCategory}
+                >
+                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                  ${this._localize("ui.panel.config.category.editor.add")}
+                </ha-button>
               </div>
             `
           : nothing
@@ -392,6 +389,9 @@ export class HaFilterCategories extends LitElement {
         /* Keeps a row with its menu button as tall as the other filters. */
         ha-list-item-option {
           --ha-row-item-padding-block: var(--ha-space-2);
+        }
+        ha-button {
+          margin: var(--ha-space-2) var(--ha-space-4);
         }
         ha-list-item-option ha-icon-button {
           --ha-icon-button-size: 32px;

@@ -12,7 +12,7 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
-import { toggleValue } from "../common/array/toggle-value";
+import { addValue, removeValue } from "../common/array/add-remove-value";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
@@ -168,11 +168,10 @@ export class HaFilterEntities extends LitElement {
       return;
     }
 
-    this.value = toggleValue(
-      this.value,
-      entityId,
+    this.value =
       ev.type === "ha-list-item-selected"
-    );
+        ? addValue(this.value, entityId)
+        : removeValue(this.value, entityId);
   }
 
   private _currentEntities() {
