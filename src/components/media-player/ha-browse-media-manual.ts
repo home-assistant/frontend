@@ -55,8 +55,11 @@ class BrowseMediaManual extends LitElement {
           <ha-form
             .schema=${this._schema(this.hideContentType)}
             .data=${this.item}
-            .computeLabel=${this._computeLabel}
-            .computeHelper=${this._computeHelper}
+            .computeLabel=${this._computeLabel(this._localize)}
+            .computeHelper=${this._computeHelper(
+              this._localize,
+              this.contentIdHelper
+            )}
             @value-changed=${this._valueChanged}
           ></ha-form>
         </div>
@@ -75,33 +78,35 @@ class BrowseMediaManual extends LitElement {
     this.item = value;
   }
 
-  private _computeLabel = (
-    entry: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string => {
-    switch (entry.name) {
-      case "media_content_id":
-      case "media_content_type":
-        return this._localize(`ui.components.selectors.media.${entry.name}`);
-    }
-    return entry.name;
-  };
+  private _computeLabel = memoizeOne(
+    (localize: LocalizeFunc) =>
+      (entry: SchemaUnion<ReturnType<typeof this._schema>>): string => {
+        switch (entry.name) {
+          case "media_content_id":
+          case "media_content_type":
+            return localize(`ui.components.selectors.media.${entry.name}`);
+        }
+        return entry.name;
+      }
+  );
 
-  private _computeHelper = (
-    entry: SchemaUnion<ReturnType<typeof this._schema>>
-  ): string => {
-    switch (entry.name) {
-      case "media_content_id":
-        return (
-          this.contentIdHelper ||
-          this._localize(`ui.components.selectors.media.${entry.name}_detail`)
-        );
-      case "media_content_type":
-        return this._localize(
-          `ui.components.selectors.media.${entry.name}_detail`
-        );
-    }
-    return "";
-  };
+  private _computeHelper = memoizeOne(
+    (localize: LocalizeFunc, contentIdHelper?: string) =>
+      (entry: SchemaUnion<ReturnType<typeof this._schema>>): string => {
+        switch (entry.name) {
+          case "media_content_id":
+            return (
+              contentIdHelper ||
+              localize(`ui.components.selectors.media.${entry.name}_detail`)
+            );
+          case "media_content_type":
+            return localize(
+              `ui.components.selectors.media.${entry.name}_detail`
+            );
+        }
+        return "";
+      }
+  );
 
   private _mediaPicked() {
     fireEvent(this, "manual-media-picked", {
