@@ -49,7 +49,7 @@ import type {
 } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import { round } from "../../../../common/number/round";
 import {
   ENERGY_DISTRIBUTION_HOME_CIRCLE_CIRCUMFERENCE as CIRCLE_CIRCUMFERENCE,
@@ -310,6 +310,13 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       }
     }
 
+    const formattedBatterySoc =
+      averageBatterySoc !== null
+        ? formatNumberWithUnit(averageBatterySoc, "%", this._i18n.locale, {
+            maximumFractionDigits: 0,
+          })
+        : undefined;
+
     let returnedToGrid: number | null = null;
 
     if (hasReturnToGrid) {
@@ -427,7 +434,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       maxEnergy,
       "kWh"
     )
-      .split(" ")
+      .split(/\s/)
       .pop();
 
     return html`
@@ -729,17 +736,8 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                                 .path=${batteryIconPath}
                               ></ha-svg-icon>
                               ${
-                                averageBatterySoc !== null
-                                  ? html`<span
-                                      >${formatNumber(
-                                        averageBatterySoc,
-                                        this._i18n.locale,
-                                        {
-                                          maximumFractionDigits: 0,
-                                        }
-                                      )}
-                                      %</span
-                                    >`
+                                formattedBatterySoc
+                                  ? html`<span>${formattedBatterySoc}</span>`
                                   : nothing
                               }
                             </div>
