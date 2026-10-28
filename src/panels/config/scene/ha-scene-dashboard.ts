@@ -564,7 +564,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
         ${renderCategoryGroupActions(
-          this.hass,
           "scene",
           this._categories,
           this._tableSettings.grouping,

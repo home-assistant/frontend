@@ -881,7 +881,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
         ${renderCategoryGroupActions(
-          this.hass,
           "helpers",
           this._categories,
           this._tableSettings.grouping,

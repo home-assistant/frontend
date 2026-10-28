@@ -566,7 +566,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @click=${this._showHelp}
         ></ha-icon-button>
         ${renderCategoryGroupActions(
-          this.hass,
           "automation",
           this._categories,
           this._tableSettings.grouping,
