@@ -154,7 +154,9 @@ export function createZHANetworkChartData(
     const existingLinks = links.filter(
       (link) => link.source === device.ieee || link.target === device.ieee
     );
-    if (device.routes && device.routes.length > 0) {
+    // An offline device's tables are stale, so only links that online devices
+    // report towards it count
+    if (device.available && device.routes && device.routes.length > 0) {
       device.routes.forEach((route) => {
         const neighbor = device.neighbors.find((n) => n.nwk === route.next_hop);
         if (!neighbor) {
@@ -239,11 +241,11 @@ export function createZHANetworkChartData(
       return;
     }
     const neighbors: { ieee: string; lqi: string; relationship?: string }[] =
-      device.neighbors ?? [];
+      device.available ? [...(device.neighbors ?? [])] : [];
     if (neighbors.length === 0) {
       // If there are no neighbors, look for links from other devices
       devices.forEach((d) => {
-        if (d.neighbors && d.neighbors.length > 0) {
+        if (d.available && d.neighbors && d.neighbors.length > 0) {
           const neighbor = d.neighbors.find((n) => n.ieee === device.ieee);
           if (neighbor) {
             neighbors.push({ ieee: d.ieee, lqi: neighbor.lqi });
