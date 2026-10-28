@@ -155,7 +155,7 @@ export class HaConfigLogs extends LitElement {
 
   private _queryParams = new QueryParamsController(this, logsQueryParamConfig, {
     enabled: () => true,
-    navigated: () => this._navigated(),
+    navigated: (ev) => this._navigated(ev),
   });
 
   public connectedCallback() {
@@ -427,23 +427,24 @@ export class HaConfigLogs extends LitElement {
   }
 
   // Closing a dialog, like an entry's details, goes back to the URL the page
-  // is already showing, so there's nothing to apply
-  private _navigated() {
+  // is already showing, so there's nothing to apply. A link is always applied.
+  private _navigated(ev?: Event) {
     const searchParams = this._queryParams.searchParams();
 
-    const shown = createQueryString(
-      logsQueryParams(this._urlState()),
-      logsQueryParamConfig
-    );
+    if (ev?.type === "popstate" && searchParams) {
+      const shown = createQueryString(
+        logsQueryParams(this._urlState()),
+        logsQueryParamConfig
+      );
 
-    if (
-      searchParams &&
-      createQueryString(
+      const back = createQueryString(
         logsQueryParams(logsLinkFromUrl(searchParams) ?? DEFAULT_LOGS_STATE),
         logsQueryParamConfig
-      ) === shown
-    ) {
-      return;
+      );
+
+      if (back === shown) {
+        return;
+      }
     }
 
     this._applyUrl();
