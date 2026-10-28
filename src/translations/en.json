@@ -7350,7 +7350,7 @@
             "show_more": "+{count} devices not shown"
           },
           "child_devices": {
-            "heading": "Sub-devices",
+            "heading": "Child devices",
             "show_more": "+{count} devices not shown"
           },
           "linked_devices": {
