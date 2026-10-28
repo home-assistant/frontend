@@ -50,7 +50,7 @@ export const addEntitiesToLovelaceView = async (
         sectionConfig: options.sectionConfig,
         entities: options.entities,
       }));
-  hass.loadFragmentTranslation("lovelace");
+  await hass.loadFragmentTranslation("lovelace");
   const dashboards = await fetchDashboards(hass);
 
   const storageDashs = dashboards.filter(
