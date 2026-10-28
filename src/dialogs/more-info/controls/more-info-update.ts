@@ -2,6 +2,7 @@ import type { ContextType } from "@lit/context";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { consume } from "../../../common/decorators/consume";
 import { BINARY_STATE_OFF } from "../../../common/const";
@@ -13,6 +14,7 @@ import { transform } from "../../../common/decorators/transform";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
+import { estimateDirection } from "../../../common/util/estimate-direction";
 import { closestWithProperty } from "../../../common/dom/ancestors-with-property";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -272,6 +274,9 @@ class MoreInfoUpdate extends LitElement {
                           alert-type=${message.severity}
                         >
                           <ha-markdown
+                            class=${classMap({
+                              rtl: estimateDirection(message.message) === "rtl",
+                            })}
                             .content=${message.message}
                           ></ha-markdown>
                         </ha-alert>
@@ -669,6 +674,9 @@ class MoreInfoUpdate extends LitElement {
       direction: ltr;
       padding-bottom: var(--ha-space-4);
       box-sizing: border-box;
+    }
+    ha-markdown.rtl {
+      direction: rtl;
     }
     ha-markdown.hidden {
       display: none;
