@@ -9,7 +9,7 @@ import {
   mdiShareVariant,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
@@ -191,7 +191,8 @@ class HaBlueprintOverview extends LitElement {
 
   private _columns = memoizeOne(
     (
-      localize: LocalizeFunc
+      localize: LocalizeFunc,
+      narrow: boolean
     ): DataTableColumnContainer<BlueprintMetaDataPath> => ({
       name: {
         title: localize("ui.panel.config.blueprint.overview.headers.name"),
@@ -225,6 +226,13 @@ class HaBlueprintOverview extends LitElement {
         maxWidth: "90px",
         template: (blueprint) => {
           const count = blueprint.usageCount ?? 0;
+          if (narrow) {
+            return count
+              ? localize("ui.panel.config.blueprint.overview.used_count", {
+                  count,
+                })
+              : nothing;
+          }
           return html`
             <ha-assist-chip
               filled
@@ -373,7 +381,7 @@ class HaBlueprintOverview extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automations}
-        .columns=${this._columns(this.hass.localize)}
+        .columns=${this._columns(this.hass.localize, this.narrow)}
         .data=${this._processedBlueprints(
           this.blueprints,
           this.hass.localize,

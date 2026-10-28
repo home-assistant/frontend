@@ -6720,6 +6720,7 @@
               "script": "scripts"
             },
             "error": "{path} could not be loaded",
+            "used_count": "{count, plural,\n  one {Used once}\n  other {Used {count} times}\n}",
             "blueprint_in_use_title": "This blueprint is in use and cannot be deleted",
             "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
             "blueprint_in_use_view_automation": "View automations",
