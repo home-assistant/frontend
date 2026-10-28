@@ -84,6 +84,8 @@ export class HaListVirtualized extends HaListBase {
 
   protected rangeStart = -1;
   protected rangeEnd = -1;
+  private _visibleStart = -1;
+  private _visibleEnd = -1;
   private _activeItemFocus = false;
   private _scrollToActiveItem = false;
 
@@ -113,9 +115,7 @@ export class HaListVirtualized extends HaListBase {
     this.virtualizerElement?.requestUpdate();
   }
 
-  // Keep the active row while focus is in the list, like when the rows are
-  // replaced on a data update. Otherwise, like after a search, start again
-  // from the first row.
+  // Keep the active row if the list has focus, else reset to the first row
   private _followActiveRow(previousRows?: HaListVirtualizedItem[]): number {
     const activeId = this.matches(":focus-within")
       ? previousRows?.[this.activeItemIndex]?.id
@@ -238,16 +238,17 @@ export class HaListVirtualized extends HaListBase {
     }
   }
 
-  // The row that takes Tab. When the active row is scrolled out of the
-  // rendered rows, the first rendered one does, so the list stays reachable.
+  // The row that takes Tab: the active row while it is visible, else the
+  // first visible row, so Tab never lands on a row out of view
   private _tabStopIndex(): number {
-    if (
-      this.activeItemIndex >= this.rangeStart &&
-      this.activeItemIndex <= this.rangeEnd
-    ) {
+    const [start, end] =
+      this._visibleStart > -1
+        ? [this._visibleStart, this._visibleEnd]
+        : [this.rangeStart, this.rangeEnd];
+    if (this.activeItemIndex >= start && this.activeItemIndex <= end) {
       return this.activeItemIndex;
     }
-    for (let i = this.rangeStart; i <= this.rangeEnd; i++) {
+    for (let i = start; i <= end; i++) {
       if (this.isFocusable(i)) {
         return i;
       }
@@ -272,6 +273,12 @@ export class HaListVirtualized extends HaListBase {
 
   @eventOptions({ passive: true })
   private _handleVisibilityChanged(ev: { first: number; last: number }) {
+    this._visibleStart = ev.first;
+    this._visibleEnd = ev.last;
+
+    if (!this.virtualFocus) {
+      this.applyActive(false);
+    }
     fireEvent(this, "ha-list-visibility-changed", {
       first: ev.first,
       last: ev.last,
