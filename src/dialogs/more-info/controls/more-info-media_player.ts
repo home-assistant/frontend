@@ -57,6 +57,7 @@ import {
   handleMediaControlClick,
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
+  removeSecondaryStopControl,
 } from "../../../data/media-player";
 import type {
   HomeAssistantApi,
@@ -159,13 +160,9 @@ class MoreInfoMediaPlayer extends LitElement {
     const secondaryTitle = computeMediaDescription(stateObj);
     const turnOn = controls?.find((c) => c.action === "turn_on");
     const turnOff = controls?.find((c) => c.action === "turn_off");
-    // Stop is only a main control when there is no play/pause
+    const mainControls = removeSecondaryStopControl(stateObj, controls);
     const stop = controls?.find((c) => c.action === "media_stop");
-    const stopIsMain =
-      stop &&
-      !controls!.some((c) =>
-        ["media_play_pause", "media_pause", "media_play"].includes(c.action)
-      );
+    const secondaryStop = stop && !mainControls?.includes(stop);
 
     return html`
       ${
@@ -266,10 +263,9 @@ class MoreInfoMediaPlayer extends LitElement {
                   "media_play",
                   "media_stop",
                 ].map((action) => {
-                  const control =
-                    action !== "media_stop" || stopIsMain
-                      ? controls.find((c) => c.action === action)
-                      : undefined;
+                  const control = mainControls?.find(
+                    (c) => c.action === action
+                  );
                   return control
                     ? html`<ha-button
                         variant="brand"
@@ -308,7 +304,7 @@ class MoreInfoMediaPlayer extends LitElement {
         ${this._renderVolumeControl()}
         <div class="controls-row">
           ${
-            stop && !stopIsMain
+            secondaryStop
               ? this._renderControlButton(
                   "media_stop",
                   this._localize("ui.card.media_player.media_stop"),

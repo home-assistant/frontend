@@ -426,6 +426,27 @@ export const computeMediaControls = (
   return buttons.length > 0 ? buttons : undefined;
 };
 
+/**
+ * Removes stop when play or pause is available, as stop is then only shown as
+ * a secondary control in the more-info dialog. Assumed state players keep
+ * play, pause and stop together as main controls.
+ */
+export const removeSecondaryStopControl = (
+  stateObj: MediaPlayerEntity,
+  controls: ControlButton[] | undefined
+): ControlButton[] | undefined => {
+  if (
+    !controls ||
+    stateObj.attributes.assumed_state === true ||
+    !controls.some(
+      (c) => c.action === "media_play" || c.action === "media_pause"
+    )
+  ) {
+    return controls;
+  }
+  return controls.filter((c) => c.action !== "media_stop");
+};
+
 export const formatMediaTime = (seconds: number | undefined): string => {
   if (seconds === undefined || seconds === Infinity) {
     return "";
