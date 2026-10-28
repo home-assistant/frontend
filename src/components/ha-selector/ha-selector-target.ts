@@ -69,9 +69,11 @@ export class HaTargetSelector extends LitElement {
       this._hasIntegration(this.selector) &&
       !this._entitySources
     ) {
-      fetchEntitySourcesWithCache(this.hass).then((sources) => {
-        this._entitySources = sources;
-      });
+      fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states).then(
+        (sources) => {
+          this._entitySources = sources;
+        }
+      );
     }
     if (changedProperties.has("selector")) {
       this._createDomains = computeCreateDomains(this.selector);

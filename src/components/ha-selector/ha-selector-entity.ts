@@ -1,12 +1,21 @@
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { ConfigEntry } from "../../data/config_entries";
 import { getConfigEntries } from "../../data/config_entries";
+import {
+  apiContext,
+  connectionContext,
+  devicesContext,
+  entitiesContext,
+  statesContext,
+} from "../../data/context";
 import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
 import type { EntitySources } from "../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
@@ -15,14 +24,12 @@ import {
   computeCreateDomains,
   filterSelectorEntities,
 } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantConnection } from "../../types";
 import "../entity/ha-entities-picker";
 import "../entity/ha-entity-picker";
 
 @customElement("ha-selector-entity")
 export class HaEntitySelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: EntitySelector;
 
   @state() private _entitySources?: EntitySources;
@@ -43,15 +50,31 @@ export class HaEntitySelector extends LitElement {
 
   @state() private _createDomains: string[] | undefined;
 
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection?: ContextType<typeof connectionContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
+
   private _deviceIntegrationLookup = memoizeOne(
     (
-      entities: HomeAssistant["entities"],
-      devices: HomeAssistant["devices"],
+      entities: HomeAssistant["entities"] | null,
+      devices: HomeAssistant["devices"] | null,
       configEntries?: ConfigEntry[]
     ) =>
       getDeviceIntegrationLookup(
-        Object.values(entities),
-        Object.values(devices),
+        Object.values(entities ?? {}),
+        Object.values(devices ?? {}),
         configEntries
       )
   );
@@ -125,12 +148,19 @@ export class HaEntitySelector extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues<this>): void {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    // The connection changed (e.g. reconnect); refetch config entries.
-    const oldHass = changedProps.get("hass");
-    if (oldHass && oldHass.connection !== this.hass.connection) {
+    // The connection changed or came back after a drop; refetch.
+    const oldConnection = changedProps.get("_connection") as
+      HomeAssistantConnection | undefined;
+    if (
+      oldConnection &&
+      this._connection &&
+      (oldConnection.connection !== this._connection.connection ||
+        (!oldConnection.connected && this._connection.connected))
+    ) {
+      this._entitySources = undefined;
       this._fetchedConfigEntries = false;
       this._configEntries = undefined;
     }
@@ -138,14 +168,18 @@ export class HaEntitySelector extends LitElement {
     const needs = this._dataNeeds(this.selector);
 
     if (needs.entitySources && !this._entitySources) {
-      fetchEntitySourcesWithCache(this.hass).then((sources) => {
-        this._entitySources = sources;
-      });
+      fetchEntitySourcesWithCache(this._api.callWS, this._states ?? {})
+        .then((sources) => {
+          this._entitySources = sources;
+        })
+        .catch(() => {
+          this._entitySources = {};
+        });
     }
 
     if (needs.configEntries && !this._fetchedConfigEntries) {
       this._fetchedConfigEntries = true;
-      getConfigEntries(this.hass)
+      getConfigEntries(this._api)
         .then((entries) => {
           this._configEntries = entries;
         })
@@ -169,8 +203,8 @@ export class HaEntitySelector extends LitElement {
     }
     const deviceIntegrationLookup = this._dataNeeds(this.selector).configEntries
       ? this._deviceIntegrationLookup(
-          this.hass.entities,
-          this.hass.devices,
+          this._entities,
+          this._devices,
           this._configEntries
         )
       : undefined;
@@ -180,8 +214,8 @@ export class HaEntitySelector extends LitElement {
         filter,
         entity,
         this._entitySources,
-        this.hass.entities,
-        this.hass.devices,
+        this._entities ?? undefined,
+        this._devices ?? undefined,
         deviceIntegrationLookup
       )
     );

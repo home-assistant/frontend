@@ -459,9 +459,11 @@ class HaPanelHistory extends LitElement {
     super.firstUpdated(changedProps);
     // The filters label themselves with keys from the config panel.
     this.hass.loadFragmentTranslation("config");
-    fetchEntitySourcesWithCache(this.hass).then((sources) => {
-      this._entitySources = sources;
-    });
+    fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states).then(
+      (sources) => {
+        this._entitySources = sources;
+      }
+    );
     const searchParams = extractSearchParamsObject();
     if (searchParams.back === "1" && history.length > 1) {
       this._showBack = true;
