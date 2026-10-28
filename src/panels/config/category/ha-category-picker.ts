@@ -88,7 +88,10 @@ export class HaCategoryPicker extends LitElement {
 
   protected willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
-    if (changedProperties.get("scope") !== undefined) {
+    if (
+      changedProperties.has("scope") &&
+      this.scope !== this._categoriesScope
+    ) {
       this._categories = undefined;
     }
     if (
