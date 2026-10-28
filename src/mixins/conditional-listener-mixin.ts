@@ -159,16 +159,16 @@ export const ConditionalListenerMixin = <
         finalConditions !== this.__observedSource ||
         entityId !== this.__observedEntityId
       ) {
+        const validConditions =
+          finalConditions && dropInvalidConditions(finalConditions);
         // Tree content changed; don't keep the previous result for a frame.
-        const signature = finalConditions
-          ? JSON.stringify(finalConditions)
+        const signature = validConditions
+          ? JSON.stringify(validConditions)
           : undefined;
         if (signature !== this.__conditionsSignature) {
           this.__conditionsSignature = signature;
           this.__conditionResult = "unknown";
         }
-        const validConditions =
-          finalConditions && dropInvalidConditions(finalConditions);
         this.__conditions = validConditions;
         this.__observedSource = finalConditions;
         this.__observedEntityId = entityId;
