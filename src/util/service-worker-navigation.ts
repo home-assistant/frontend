@@ -15,8 +15,8 @@ const rootCacheKey = (request: Request) => new URL("/", request.url).href;
 // Core 404s panel paths until their integration loads and proxies 5xx during
 // a restart; serve the cached shell so the app reconnects. Runs on preloaded
 // responses too. A 404 for a /local/ file is real and passes through.
-// Install seeds only the root, so a deep link that times out or fails before
-// it was ever cached falls back to that shell.
+// Install seeds only the root, so a deep link that 404s, times out or fails
+// before it was ever cached falls back to that shell.
 export const createNavigationFallbackPlugin = (
   cacheName: string
 ): WorkboxPlugin => ({
@@ -35,7 +35,7 @@ export const createNavigationFallbackPlugin = (
     const cached = await caches.match(navigationCacheKey(request), {
       cacheName,
     });
-    if (cached || response.status === 404 || noFallback) {
+    if (cached || noFallback) {
       return cached ?? response;
     }
     return (

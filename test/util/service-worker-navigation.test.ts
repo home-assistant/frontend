@@ -136,10 +136,15 @@ describe("service-worker-navigation", () => {
     expect(match).not.toHaveBeenCalled();
   });
 
-  it("returns the 404 for a path that was never cached", async () => {
-    store.set(`${ORIGIN}/`, new Response("root"));
+  it("falls back to the cached root shell on a 404 for an uncached path", async () => {
+    const shell = new Response("root");
+    store.set(`${ORIGIN}/`, shell);
 
-    const response = await respond("/unknown", 404);
+    await expect(respond("/config/devices", 404)).resolves.toBe(shell);
+  });
+
+  it("returns the 404 when nothing is cached", async () => {
+    const response = await respond("/config/devices", 404);
 
     expect(response.status).toBe(404);
   });
