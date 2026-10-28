@@ -6,7 +6,7 @@ import type { LocalizeFunc } from "../common/translations/localize";
 import { showEnterCodeDialog } from "../dialogs/enter-code/show-enter-code-dialog";
 import type { HomeAssistant } from "../types";
 import { UNAVAILABLE } from "./entity/entity";
-import { getExtendedEntityRegistryEntry } from "./entity/entity_registry";
+import type { ExtEntityRegistryEntry } from "./entity/entity_registry";
 
 export enum LockEntityFeature {
   OPEN = 1,
@@ -88,10 +88,10 @@ export const callProtectedLockService = async (
   service: ProtectedLockService
 ) => {
   let code: string | undefined;
-  const lockRegistryEntry = await getExtendedEntityRegistryEntry(
-    { callWS },
-    stateObj.entity_id
-  ).catch(() => undefined);
+  const lockRegistryEntry = await callWS<ExtEntityRegistryEntry>({
+    type: "config/entity_registry/get",
+    entity_id: stateObj.entity_id,
+  }).catch(() => undefined);
   const defaultCode = lockRegistryEntry?.options?.lock?.default_code;
 
   if (stateObj!.attributes.code_format && !defaultCode) {
