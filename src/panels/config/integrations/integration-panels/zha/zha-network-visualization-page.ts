@@ -27,7 +27,10 @@ import {
   formatAsPaddedHex,
   formatGreenPowerSrcId,
 } from "./functions";
-import { createZHANetworkChartData } from "./zha-network-data";
+import {
+  createZHANetworkChartData,
+  VIRTUAL_PARENT_PREFIX,
+} from "./zha-network-data";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -167,8 +170,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
       const reverseValue = this._networkData.links.find(
         (link) => link.source === source && link.target === target
       )?.reverseValue;
+      // a virtual link value only sets the edge length, it is not an LQI
+      const isVirtual = source.startsWith(VIRTUAL_PARENT_PREFIX);
       return html`${sourceName} →
-      ${targetName}${value ? html` <b>LQI:</b> ${value}` : nothing}${
+      ${targetName}${
+        value && !isVirtual ? html` <b>LQI:</b> ${value}` : nothing
+      }${
         reverseValue
           ? html`<br />${targetName} → ${sourceName}
               <b>LQI:</b> ${reverseValue}`

@@ -29,7 +29,11 @@ const RELATIONSHIP_PRIORITY: Record<string, number> = {
 const UNKNOWN_RELATIONSHIP_PRIORITY = 4;
 
 // virtual parents are not Zigbee devices, so their ids cannot collide with an IEEE
-const VIRTUAL_PARENT_PREFIX = "virtual_";
+export const VIRTUAL_PARENT_PREFIX = "virtual_";
+
+// ECharts maps link value onto the edge length range, so the highest LQI
+// gives the shortest edge and the tightest pull
+const TIGHT_PULL_VALUE = 255;
 
 const iconSymbol = (
   shape: "circle" | "roundRect",
@@ -293,8 +297,16 @@ export function createZHANetworkChartData(
   // Group devices that are still unlinked under a virtual parent, so they
   // gather in one place instead of floating around the graph
   const virtualParents = {
-    green_power: { color: greenPowerColor, icon: mdiLeaf, category: 3 },
-    offline: { color: offlineColor, icon: mdiLanDisconnect, category: 4 },
+    green_power: {
+      color: greenPowerColor,
+      icon: mdiLeaf,
+      category: 3,
+    },
+    offline: {
+      color: offlineColor,
+      icon: mdiLanDisconnect,
+      category: 4,
+    },
     no_parent: {
       color: style.getPropertyValue("--disabled-color"),
       icon: mdiHelpNetworkOutline,
@@ -347,7 +359,7 @@ export function createZHANetworkChartData(
         links.push({
           source: id,
           target: ieee,
-          value: 0,
+          value: TIGHT_PULL_VALUE,
           symbol: "none",
           lineStyle: { width: 1, color, type: "dashed" },
         });
