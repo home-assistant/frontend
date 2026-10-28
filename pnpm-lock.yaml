@@ -250,8 +250,8 @@ importers:
         specifier: 12.3.16
         version: 12.3.16
       '@home-assistant/webawesome':
-        specifier: 3.14.0-ha.1
-        version: 3.14.0-ha.1(@floating-ui/utils@0.2.12)(@types/node@24.19.2)
+        specifier: 3.14.0-ha.2
+        version: 3.14.0-ha.2(@floating-ui/utils@0.2.12)(@types/node@24.19.2)
       '@lezer/common':
         specifier: 1.5.4
         version: 1.5.4
@@ -2024,8 +2024,8 @@ packages:
     resolution: {integrity: sha512-kjotm7XJrJ6v+7knhPaRgaT6q8F8K2jiafwYdNHLzmV0uGLuZY43FK6smNSHUPrhq5kX2slCUy+RGG/xGqmIKA==}
     engines: {node: '>=10.13.0'}
 
-  '@home-assistant/webawesome@3.14.0-ha.1':
-    resolution: {integrity: sha512-h/HVT3LnDIk9rQ2+xAm0WTXFG89sV1KEAqLwjxl5tYBDAftQZCxV+5adchRref8anvBtp1opctjxHtuNBwgQ2g==}
+  '@home-assistant/webawesome@3.14.0-ha.2':
+    resolution: {integrity: sha512-EX1qiX5h3LAoTjuE3rgfuRlNq3Rds5tGrgDGlHoFbxhXaCSTTtuYU6tdR8vgOXKGUDi5gBDrcoNdLYKFXSrknA==}
     engines: {node: '>=14.17.0'}
 
   '@html-eslint/core@0.67.0':
@@ -9483,7 +9483,7 @@ snapshots:
     dependencies:
       is-negated-glob: 1.0.0
 
-  '@home-assistant/webawesome@3.14.0-ha.1(@floating-ui/utils@0.2.12)(@types/node@24.19.2)':
+  '@home-assistant/webawesome@3.14.0-ha.2(@floating-ui/utils@0.2.12)(@types/node@24.19.2)':
     dependencies:
       '@ctrl/tinycolor': 4.1.0
       '@floating-ui/dom': 1.8.0
