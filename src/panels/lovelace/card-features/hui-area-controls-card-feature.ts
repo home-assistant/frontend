@@ -246,10 +246,16 @@ class HuiAreaControlsCardFeature
       registries: HomeAssistantRegistries,
       states: HassEntities
     ) =>
-      getAreaControlEntities(controls, areaId, excludeEntities, {
+      getAreaControlEntities(
         states,
-        ...registries,
-      })
+        registries.entities,
+        registries.devices,
+        registries.areas,
+        registries.floors,
+        controls,
+        areaId,
+        excludeEntities
+      )
   );
 
   protected render() {
