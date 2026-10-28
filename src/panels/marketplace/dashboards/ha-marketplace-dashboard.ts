@@ -423,33 +423,34 @@ export class HaMarketplaceDashboard extends LitElement {
           @click=${this._dismissNew}
         ></ha-icon-button>
         ${
-          this.tab === "installed" && this.narrow
-            ? html`<ha-dropdown
-                slot="selection-bar"
-                @wa-select=${this._uninstallSelected}
-              >
-                <ha-assist-chip
-                  slot="trigger"
-                  .label=${this._i18n.localize(
-                    "ui.panel.config.automation.picker.bulk_action"
-                  )}
+          this.tab !== "installed"
+            ? nothing
+            : this.narrow
+              ? html`<ha-dropdown
+                  slot="selection-bar"
+                  @wa-select=${this._uninstallSelected}
                 >
-                  <ha-svg-icon
-                    slot="trailing-icon"
-                    .path=${mdiMenuDown}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-                <ha-dropdown-item
-                  value="uninstall"
-                  .disabled=${!this._selected.length || this._checkingSelection}
-                >
-                  ${this._i18n.localize(
-                    "ui.panel.marketplace.dashboard.uninstall_selected"
-                  )}
-                </ha-dropdown-item>
-              </ha-dropdown>`
-            : this.tab === "installed"
-              ? html`<ha-assist-chip
+                  <ha-assist-chip
+                    slot="trigger"
+                    .label=${this._i18n.localize(
+                      "ui.panel.config.automation.picker.bulk_action"
+                    )}
+                  >
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiMenuDown}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                  <ha-dropdown-item
+                    value="uninstall"
+                    .disabled=${!this._selected.length || this._checkingSelection}
+                  >
+                    ${this._i18n.localize(
+                      "ui.panel.marketplace.dashboard.uninstall_selected"
+                    )}
+                  </ha-dropdown-item>
+                </ha-dropdown>`
+              : html`<ha-assist-chip
                   slot="selection-bar"
                   .label=${this._i18n.localize(
                     "ui.panel.marketplace.dashboard.uninstall_selected"
@@ -457,7 +458,6 @@ export class HaMarketplaceDashboard extends LitElement {
                   .disabled=${!this._selected.length || this._checkingSelection}
                   @click=${this._uninstallSelected}
                 ></ha-assist-chip>`
-              : nothing
         }
         ${
           this.marketplace.repositories.length
