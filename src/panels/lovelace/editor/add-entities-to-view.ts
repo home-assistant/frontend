@@ -28,6 +28,9 @@ export type AddToViewCardDialogParams = Pick<
 >;
 
 export interface AddEntitiesToViewOptions {
+  cardConfig?: LovelaceCardConfig[];
+  sectionConfig?: LovelaceSectionConfig;
+  entities?: string[];
   sectionStrategy?: LovelaceStrategyConfig;
   showCardDialog?: (params: AddToViewCardDialogParams) => void;
 }
@@ -35,10 +38,7 @@ export interface AddEntitiesToViewOptions {
 export const addEntitiesToLovelaceView = async (
   element: HTMLElement,
   hass: HomeAssistant,
-  cardConfig: LovelaceCardConfig[],
-  sectionConfig?: LovelaceSectionConfig,
-  entities?: string[],
-  options: AddEntitiesToViewOptions = {}
+  options: AddEntitiesToViewOptions
 ) => {
   const { sectionStrategy } = options;
   const showCardDialog =
@@ -46,9 +46,9 @@ export const addEntitiesToLovelaceView = async (
     ((params: AddToViewCardDialogParams) =>
       showSuggestCardDialog(element, {
         ...params,
-        cardConfig,
-        sectionConfig,
-        entities,
+        cardConfig: options.cardConfig ?? [],
+        sectionConfig: options.sectionConfig,
+        entities: options.entities,
       }));
   hass.loadFragmentTranslation("lovelace");
   const dashboards = await fetchDashboards(hass);

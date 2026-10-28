@@ -1435,7 +1435,7 @@ export class HaConfigDevicePage extends LitElement {
 
   private _addToDashboard() {
     const deviceId = this.deviceId;
-    addEntitiesToLovelaceView(this, this.hass, [], undefined, undefined, {
+    addEntitiesToLovelaceView(this, this.hass, {
       sectionStrategy: { type: "device", device_id: deviceId },
       showCardDialog: (params) =>
         showAddDeviceCardDialog(this, { ...params, deviceId }),
