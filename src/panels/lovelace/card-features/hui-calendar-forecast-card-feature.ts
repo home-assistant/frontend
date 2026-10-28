@@ -316,6 +316,8 @@ class HuiCalendarForecastCardFeature
 
   @state() private _error = false;
 
+  @state() private _loaded = false;
+
   private _fetchedRange?: FetchedRange;
 
   private _retryAfter = 0;
@@ -379,6 +381,13 @@ class HuiCalendarForecastCardFeature
         this._resetData();
       }
     }
+    if (changedProps.has("_locale")) {
+      const oldLocale = changedProps.get("_locale") as
+        FrontendLocaleData | undefined;
+      if (oldLocale && oldLocale.time_zone !== this._locale?.time_zone) {
+        this._resetData();
+      }
+    }
 
     let force = false;
     const entityId = this.context?.entity_id;
@@ -422,6 +431,7 @@ class HuiCalendarForecastCardFeature
     this._fetchedRange = undefined;
     this._retryAfter = 0;
     this._error = false;
+    this._loaded = false;
     this._segments = [];
     this._allDaySegments = [];
   }
@@ -431,6 +441,7 @@ class HuiCalendarForecastCardFeature
     this._fetchedRange = undefined;
     this._retryAfter = Date.now() + RETRY_DELAY;
     this._error = true;
+    this._loaded = true;
     this._segments = [];
     this._allDaySegments = [];
   }
@@ -441,6 +452,7 @@ class HuiCalendarForecastCardFeature
       !this.isConnected ||
       !this._config ||
       !this._hassConfig ||
+      !this._locale ||
       !entityId ||
       !this._stateObj
     ) {
@@ -506,7 +518,10 @@ class HuiCalendarForecastCardFeature
   }
 
   private _setCalendarEvents(events: CalendarEventApiData[]) {
-    const timeZone = this._hassConfig!.time_zone;
+    const timeZone = resolveTimeZone(
+      this._locale!.time_zone,
+      this._hassConfig!.time_zone
+    );
     const timed: TimeSegment[] = [];
     const allDay: TimeSegment[] = [];
     for (const event of events) {
@@ -520,6 +535,7 @@ class HuiCalendarForecastCardFeature
       (isAllDay ? allDay : timed).push({ start, end });
     }
     this._error = false;
+    this._loaded = true;
     this._segments = timed;
     this._allDaySegments = mergeSegments(allDay);
   }
@@ -538,6 +554,7 @@ class HuiCalendarForecastCardFeature
       if (request !== this._request) return;
       const schedule = result.response?.[range.entityId];
       this._error = false;
+      this._loaded = true;
       this._segments = schedule
         ? expandSchedule(
             schedule,
@@ -622,6 +639,11 @@ class HuiCalendarForecastCardFeature
   private _computeAriaLabel(start: number, end: number): string {
     const locale = this._locale!;
     const localize = this._localize!;
+    if (!this._loaded) {
+      return localize(
+        "ui.panel.lovelace.editor.features.types.calendar-forecast.loading"
+      );
+    }
     const formatter = rangeFormatter(
       locale.language,
       useAmPm(locale),
