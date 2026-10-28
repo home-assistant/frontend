@@ -3,7 +3,12 @@ import {
   mdiGoogleCirclesCommunities,
   mdiImageFilterCenterFocus,
 } from "@mdi/js";
-import type { HassEntities } from "home-assistant-js-websocket";
+import type {
+  Connection,
+  HassConfig,
+  HassEntities,
+  HassEntity,
+} from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -15,6 +20,8 @@ import {
   consume,
   ContextSubscriptionController,
 } from "../../../common/decorators/consume";
+import { preserveUnchangedEntityStatesRecord } from "../../../common/decorators/consume-context-entry";
+import { getUserPerson } from "../../../data/person";
 import { resolveThemeColor } from "../../../common/color/compute-color";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -46,10 +53,27 @@ import {
 import type { HistoryStates } from "../../../data/history";
 import { subscribeHistoryStatesTimeWindow } from "../../../data/history";
 import type { Themes } from "../../../data/ws-themes";
-import { fullEntitiesContext, uiContext } from "../../../data/context";
+import {
+  areasContext,
+  configContext,
+  connectionContext,
+  devicesContext,
+  entitiesContext,
+  formattersContext,
+  fullEntitiesContext,
+  internationalizationContext,
+  statesContext,
+  uiContext,
+} from "../../../data/context";
 import { transform } from "../../../common/decorators/transform";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
-import type { HomeAssistant } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import type { OverviewTab } from "./map/hui-map-overview";
 import { PANEL_VIEW_LAYOUT } from "../views/const";
@@ -62,18 +86,26 @@ import {
   extractSearchParam,
   removeSearchParam,
 } from "../../../common/url/search-params";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { findEntities } from "../common/find-entities";
-import {
-  hasConfigChanged,
-  hasConfigOrEntitiesChanged,
-} from "../common/has-changed";
 import { processConfigEntities } from "../common/process-config-entities";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import type { MapCardConfig, MapEntityConfig } from "./types";
+import type { Condition } from "../common/validate-condition";
 import {
   addEntityToCondition,
   checkConditionsMet,
+  extractConditionEntityIds,
 } from "../common/validate-condition";
+
+const hasLocationCondition = (
+  conditions: Condition[] | Condition | undefined
+): boolean =>
+  (ensureArray(conditions) ?? []).some((condition) =>
+    "conditions" in condition && condition.conditions
+      ? hasLocationCondition(condition.conditions)
+      : condition.condition === "location"
+  );
 
 export const DEFAULT_HOURS_TO_SHOW = 0;
 export const DEFAULT_ZOOM = 14;
@@ -103,8 +135,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       this._mapEntities = this._getMapEntities();
     });
   }
-
-  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public layout?: string;
 
@@ -142,6 +172,60 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   })
   private _themes?: Themes;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HomeAssistantConfig["user"]>({
+    transformer: ({ user }) => user,
+  })
+  private _user?: HomeAssistantConfig["user"];
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, Connection>({
+    transformer: ({ connection }) => connection,
+  })
+  private _connection!: Connection;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: HomeAssistant["entities"];
+
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: HomeAssistant["devices"];
+
+  @consume({ context: areasContext, subscribe: true })
+  private _areas!: HomeAssistant["areas"];
+
+  // Read on demand; rerenders come from _trackedStates
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HassEntities;
+
+  // The states the markers, trails and conditions are built from, so only
+  // changes to those rerender the card
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, Record<string, HassEntity> | undefined>({
+    transformer: function (this: HuiMapCard, states) {
+      return this._selectTrackedStates(states);
+    },
+    watch: ["_config"],
+  })
+  private _trackedStates?: Record<string, HassEntity>;
+
+  private _lastTrackedStates?: Record<string, HassEntity>;
+
   @state() private _clusterMarkers = true;
 
   @state() private _overviewSelected?: string;
@@ -161,11 +245,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _subscribed?: Promise<(() => Promise<void>) | undefined>;
 
   private _getAllEntities(): string[] {
-    const hass = this.hass!;
+    const states = this._states;
     const personSources = new Set<string>();
     const locationEntities: string[] = [];
-    Object.values(hass.states).forEach((entity) => {
-      if (!getEntityLocation(entity, hass.states)) {
+    Object.values(states).forEach((entity) => {
+      if (!getEntityLocation(entity, states)) {
         return;
       }
       locationEntities.push(entity.entity_id);
@@ -176,8 +260,52 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
     return locationEntities.filter(
       (entityId) =>
-        !hass.entities?.[entityId]?.hidden && !personSources.has(entityId)
+        !this._entities?.[entityId]?.hidden && !personSources.has(entityId)
     );
+  }
+
+  private _selectTrackedStates(
+    states: HassEntities | undefined
+  ): Record<string, HassEntity> | undefined {
+    const config = this._config;
+    if (!states || !config) {
+      return undefined;
+    }
+    const next: Record<string, HassEntity> = {};
+    const track = (entityId: string) => {
+      const stateObj = states[entityId];
+      if (stateObj) {
+        next[entityId] = stateObj;
+      }
+    };
+    (this._configEntities ?? []).forEach((entity) => track(entity.entity));
+    const conditions = config.conditions ?? [];
+    extractConditionEntityIds(conditions).forEach(track);
+    const trackLocation = hasLocationCondition(conditions);
+    if (trackLocation) {
+      const person = getUserPerson(this._user?.id, states);
+      if (person) {
+        next[person.entity_id] = person;
+      }
+    }
+    if (config.geo_location_sources || config.show_all || trackLocation) {
+      for (const stateObj of Object.values(states)) {
+        const domain = computeStateDomain(stateObj);
+        if (
+          (config.geo_location_sources && domain === "geo_location") ||
+          (config.show_all &&
+            (domain === "person" || domain === "device_tracker")) ||
+          ((config.show_all || trackLocation) && domain === "zone")
+        ) {
+          next[stateObj.entity_id] = stateObj;
+        }
+      }
+    }
+    this._lastTrackedStates = preserveUnchangedEntityStatesRecord(
+      this._lastTrackedStates,
+      next
+    );
+    return this._lastTrackedStates;
   }
 
   public setConfig(config: MapCardConfig): void {
@@ -209,7 +337,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       );
     }
     this._config = { ...config };
-    if (this.hass && config.show_all) {
+    if (this._states && config.show_all) {
       this._config.entities = this._getAllEntities();
     }
     this._configEntities = this._config.entities
@@ -261,13 +389,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this._config) {
+    if (!this._config || !this._i18n) {
       return nothing;
     }
     if (this._error) {
       return html`<ha-alert alert-type="error">
-        ${this.hass.localize("ui.components.map.error")}: ${this._error.message}
-        (${this._error.code})
+        ${this._i18n.localize("ui.components.map.error")}:
+        ${this._error.message} (${this._error.code})
       </ha-alert>`;
     }
 
@@ -276,7 +404,12 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         ? true
         : this._config.theme_mode === "light"
           ? false
-          : this.hass.themes.darkMode;
+          : !!this._themes?.darkMode;
+
+    const rtl = computeRTL(
+      this._i18n.language,
+      this._i18n.translationMetadata.translations
+    );
 
     const themeMode =
       this._config.theme_mode || (this._config.dark_mode ? "dark" : "auto");
@@ -287,10 +420,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           id="root"
           class=${classMap({
             "panel-layout": this.layout === PANEL_VIEW_LAYOUT,
-            rtl: computeRTL(
-              this.hass.language,
-              this.hass.translationMetadata.translations
-            ),
+            rtl,
           })}
           @hass-more-info=${this._handleMapMoreInfo}
         >
@@ -306,19 +436,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._stateHistory,
               this._entityReg,
               this._themes,
-              this.hass.formatEntityName
+              this._formatters.formatEntityName
             )}
             .autoFit=${this._config.auto_fit || false}
             .fitPadding=${this._overviewPadding()}
             .fitZones=${this._config.fit_zones || false}
             .zoomPosition=${
-              this.layout === PANEL_VIEW_LAYOUT &&
-              !computeRTL(
-                this.hass.language,
-                this.hass.translationMetadata.translations
-              )
-                ? "topright"
-                : "topleft"
+              this.layout === PANEL_VIEW_LAYOUT && !rtl ? "topright" : "topleft"
             }
             .themeMode=${themeMode}
             .mapStyle=${this._config.map_style}
@@ -333,7 +457,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._filteredMapEntities.length > 1
                 ? html`
                     <ha-icon-button
-                      .label=${this.hass!.localize(
+                      .label=${this._i18n.localize(
                         "ui.panel.lovelace.cards.map.toggle_grouping"
                       )}
                       .path=${
@@ -349,7 +473,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
                 : nothing
             }
             <ha-icon-button
-              .label=${this.hass!.localize(
+              .label=${this._i18n.localize(
                 "ui.panel.lovelace.cards.map.reset_focus"
               )}
               .path=${mdiImageFilterCenterFocus}
@@ -376,46 +500,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues) {
-    if (!changedProps.has("hass") || changedProps.size > 1) {
-      return true;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-    if (!oldHass || !this._configEntities) {
-      return true;
-    }
-
-    if (oldHass.themes.darkMode !== this.hass.themes.darkMode) {
-      return true;
-    }
-
-    // Allow update when components list changes so we can retry subscription
-    if (
-      !this._subscribed &&
-      !this._error &&
-      this._config &&
-      oldHass.config.components !== this.hass.config.components
-    ) {
-      return true;
-    }
-
-    if (changedProps.has("_stateHistory")) {
-      return true;
-    }
-
-    if (this._config?.geo_location_sources) {
-      if (oldHass.states !== this.hass.states) {
-        return true;
-      }
-    }
-
-    return this._config?.entities
-      ? hasConfigOrEntitiesChanged(this, changedProps)
-      : hasConfigChanged(this, changedProps);
-  }
-
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
     if (changedProps.has("layout")) {
@@ -424,11 +508,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (changedProps.has("preview") && this.preview) {
       this._overviewSize = { width: 0, height: 0 };
     }
+    // Private state is not in keyof this
+    const changed = changedProps as PropertyValues;
     if (
       this._config?.show_all &&
       !this._config?.entities &&
-      this.hass &&
-      changedProps.has("hass")
+      this._states &&
+      changed.has("_trackedStates")
     ) {
       this._config.entities = this._getAllEntities();
       this._configEntities = processConfigEntities<MapEntityConfig>(
@@ -437,17 +523,18 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       this._mapEntities = this._getMapEntities();
     }
     if (
-      changedProps.has("hass") &&
+      changed.has("_trackedStates") &&
       this._config?.geo_location_sources &&
       !deepEqual(
-        this._getSourceEntities(changedProps.get("hass")?.states),
-        this._getSourceEntities(this.hass.states)
+        this._getSourceEntities(
+          changed.get("_trackedStates") as HassEntities | undefined
+        ),
+        this._getSourceEntities(this._trackedStates)
       )
     ) {
       this._mapEntities = this._getMapEntities();
     }
-    // Private state is not in keyof this
-    if ((changedProps as PropertyValues).has("_themes") && this.hasUpdated) {
+    if (changed.has("_themes") && this.hasUpdated) {
       this._mapEntities = this._getMapEntities();
     }
 
@@ -495,7 +582,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     return checkConditionsMet(
       conditions.map((condition) => addEntityToCondition(condition, entityId)),
-      this.hass!,
+      {
+        states: this._states,
+        user: this._user,
+        locale: this._i18n.locale,
+        config: this._hassConfig,
+        entities: this._entities,
+        devices: this._devices,
+        areas: this._areas,
+      },
       {}
     );
   }
@@ -505,13 +600,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   // overview skip it until it has coordinates. Trackers owned by a person are
   // shown through that person, so they are left out here.
   private _withMissingTracked(entities: HaMapEntity[]): HaMapEntity[] {
-    const hass = this.hass;
-    if (!hass) {
+    const states = this._states;
+    if (!states) {
       return entities;
     }
     const present = new Set(entities.map((entity) => entity.entity_id));
     const personSources = new Set<string>();
-    Object.values(hass.states).forEach((stateObj) => {
+    Object.values(states).forEach((stateObj) => {
       if (
         computeStateDomain(stateObj) === "person" &&
         stateObj.attributes.source
@@ -520,7 +615,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       }
     });
     const extra: HaMapEntity[] = [];
-    Object.values(hass.states).forEach((stateObj) => {
+    Object.values(states).forEach((stateObj) => {
       const entityId = stateObj.entity_id;
       const domain = computeStateDomain(stateObj);
       const eligible =
@@ -529,7 +624,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       if (
         eligible &&
         !present.has(entityId) &&
-        !hass.entities?.[entityId]?.hidden &&
+        !this._entities?.[entityId]?.hidden &&
         this._meetsConditions(entityId)
       ) {
         extra.push({ entity_id: entityId, color: this._getColor(entityId) });
@@ -611,14 +706,23 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   private _subscribeHistory() {
     if (
-      !isComponentLoaded(this.hass!.config, "history") ||
+      !this._connection ||
+      !this._hassConfig ||
+      !isComponentLoaded(this._hassConfig, "history") ||
       this._subscribed ||
       !(this._config?.hours_to_show ?? DEFAULT_HOURS_TO_SHOW)
     ) {
       return;
     }
+    // Read live so a resubscribe after a reconnect sees current states.
+    const currentStates = () => this._states ?? {};
     this._subscribed = subscribeHistoryStatesTimeWindow(
-      this.hass!,
+      {
+        connection: this._connection,
+        get states() {
+          return currentStates();
+        },
+      },
       (combinedHistory) => {
         if (!this._subscribed) {
           // Message came in before we had a chance to unload
@@ -774,7 +878,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _focusEntity(entityId: string) {
-    const stateObj = this.hass.states[entityId];
+    const stateObj = this._states[entityId];
     const center = this._entityCenter(entityId);
     if (!stateObj || !center) {
       return;
@@ -795,8 +899,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   }
 
   private _entityCenter(entityId: string): MapLatLng | undefined {
-    const stateObj = this.hass.states[entityId];
-    const location = stateObj && getEntityLocation(stateObj, this.hass.states);
+    const stateObj = this._states[entityId];
+    const location = stateObj && getEntityLocation(stateObj, this._states);
     return location && [location.latitude, location.longitude];
   }
 
@@ -833,8 +937,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return this._paddingFor(
       phone,
       phone ? (fitHeight ?? height) : width,
-      this.hass.language,
-      this.hass.translationMetadata.translations
+      this._i18n.language,
+      this._i18n.translationMetadata.translations
     );
   }
 
@@ -863,7 +967,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   private _getColor(entityId: string): string {
     const computedStyles = getComputedStyle(this);
     if (computeDomain(entityId) === "zone") {
-      const stateObj = this.hass?.states[entityId];
+      const stateObj = this._states?.[entityId];
       return zoneColor(
         entityId,
         !!stateObj?.attributes.passive,
@@ -921,7 +1025,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         focus: entityConf.focus,
         name: entityConf.name,
       })),
-      ...this._getSourceEntities(this.hass?.states).map((entity) => ({
+      ...this._getSourceEntities(this._states).map((entity) => ({
         ...entity,
         color: this._getColor(entity.entity_id),
       })),
@@ -970,8 +1074,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         );
         const name =
           entityConfig?.name ??
-          (entityId in this.hass.states
-            ? formatEntityName(this.hass.states[entityId])
+          (entityId in this._states
+            ? formatEntityName(this._states[entityId])
             : entityId);
 
         paths.push({

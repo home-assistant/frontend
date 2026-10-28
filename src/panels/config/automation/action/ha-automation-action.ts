@@ -12,11 +12,10 @@ import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import {
   ACTION_BUILDING_BLOCKS,
-  VIRTUAL_ACTIONS,
   getAutomationActionType,
 } from "../../../../data/action";
-import { getValueFromDynamic, isDynamic } from "../../../../data/automation";
 import type { Action } from "../../../../data/script";
+import { createAction } from "../automation-element-config";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   getAddAutomationElementTargetFromQuery,
@@ -86,6 +85,7 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
                 @duplicate=${this.duplicateItem}
                 @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
+                @replace-item=${this.replaceItem}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}
                 @value-changed=${this.itemChanged}
@@ -231,27 +231,12 @@ export default class HaAutomationAction extends AutomationSortableListMixin<Acti
   }
 
   private _addAction = (action: string, target?: HassServiceTarget) => {
-    let actions: Action[];
-    if (action === PASTE_VALUE) {
-      actions = this.actions.concat(deepClone(this._clipboard!.action!));
-    } else if (action in VIRTUAL_ACTIONS) {
-      actions = this.actions.concat(VIRTUAL_ACTIONS[action]);
-    } else if (isDynamic(action)) {
-      actions = this.actions.concat({
-        action: getValueFromDynamic(action),
-        metadata: {},
-        target,
-      });
-    } else {
-      const elClass = customElements.get(
-        `ha-automation-action-${action}`
-      ) as CustomElementConstructor & { defaultConfig: Action };
-      actions = this.actions.concat(
-        elClass ? { ...elClass.defaultConfig } : { [action]: {} }
-      );
-    }
+    const newAction =
+      action === PASTE_VALUE
+        ? deepClone(this._clipboard!.action!)
+        : createAction(action, target);
     this.focusLastItemOnChange = true;
-    fireEvent(this, "value-changed", { value: actions });
+    fireEvent(this, "value-changed", { value: this.actions.concat(newAction) });
   };
 
   static styles = automationRowsStyles;

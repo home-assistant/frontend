@@ -2,6 +2,9 @@ import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { computeCssColor } from "../../../common/color/compute-color";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { fireEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-card";
 import "../../../components/tile/ha-tile-container";
 import "../../../components/tile/ha-tile-icon";
@@ -9,8 +12,6 @@ import "../../../components/tile/ha-tile-info";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import { NavigationPathInfoController } from "../../../data/navigation-path-controller";
 import { ServiceInfoController } from "../../../data/service-info-controller";
-import type { HomeAssistant } from "../../../types";
-import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import type {
   LovelaceCard,
@@ -38,11 +39,13 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: ShortcutCardConfig;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   private _navInfo = new NavigationPathInfoController(this);
 
@@ -79,13 +82,9 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
-    if (
-      (changedProps.has("hass") || changedProps.has("_config")) &&
-      this.hass
-    ) {
+    if (changedProps.has("_config")) {
       const action = this._config?.tap_action;
       this._navInfo.update(
-        this.hass,
         action?.action === "navigate" ? action.navigation_path : undefined
       );
       this._serviceInfo.updateService(
@@ -97,7 +96,10 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+    fireEvent(this, "hass-action", {
+      config: this._config!,
+      action: ev.detail.action,
+    });
   }
 
   private get _hasCardAction() {
@@ -109,12 +111,12 @@ export class HuiShortcutCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return nothing;
     }
 
     const defaults = getShortcutCardDefaults(
-      this.hass,
+      this._localize,
       this._config.tap_action,
       this._navInfo.info,
       this._serviceInfo.info

@@ -87,11 +87,9 @@ class HuiLockCommandsCardFeature
     forwardHaptic(this, "light");
     callProtectedLockService(
       this,
-      {
-        callService: this._api.callService,
-        callWS: this._api.callWS,
-        localize: this._localize,
-      },
+      this._api.callService,
+      this._api.callWS,
+      this._localize,
       this._stateObj,
       service
     );

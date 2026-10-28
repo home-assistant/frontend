@@ -146,7 +146,6 @@ export class DialogEnergyWaterSettings
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           include-unit-class="volume"
           include-device-class="water"
@@ -164,7 +163,6 @@ export class DialogEnergyWaterSettings
         ></ha-statistic-picker>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .includeUnitClass=${flowRateUnitClasses}
           .value=${this._source.stat_rate}
           .label=${this.hass.localize(
@@ -230,7 +228,6 @@ export class DialogEnergyWaterSettings
           this._costs === "statistic"
             ? html`<ha-statistic-picker
                 class="price-options"
-                .hass=${this.hass}
                 statistic-types="sum"
                 .value=${this._source.stat_cost}
                 .label=${`${this.hass.localize(

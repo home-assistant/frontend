@@ -114,7 +114,6 @@ class DialogDeviceRegistryDetail extends DirtyStateProviderMixin<DeviceFormState
               @value-changed=${this._areaPicked}
             ></ha-area-picker>
             <ha-labels-picker
-              .hass=${this.hass}
               .value=${this._labels}
               @value-changed=${this._labelsChanged}
             ></ha-labels-picker>

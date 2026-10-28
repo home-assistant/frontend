@@ -7,7 +7,7 @@ import { preserveUnchangedEntityStatesRecord } from "../../../../common/decorato
 import { transform } from "../../../../common/decorators/transform";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import {
   internationalizationContext,
   statesContext,
@@ -73,7 +73,9 @@ export class HuiGasTotalBadge extends LitElement implements LovelaceBadge {
       this._data.prefs,
       this._states
     );
-    const displayValue = `${formatNumber(value, this._i18n.locale, { maximumFractionDigits: 1 })} ${unit}`;
+    const displayValue = formatNumberWithUnit(value, unit, this._i18n.locale, {
+      maximumFractionDigits: 1,
+    });
 
     const name =
       this._config.title ||

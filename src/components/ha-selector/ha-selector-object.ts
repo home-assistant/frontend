@@ -5,15 +5,31 @@ import {
   mdiPencil,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
+import type { HassEntities } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
+import {
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../data/context";
 import type { ObjectSelector } from "../../data/selector";
-import { formatSelectorValue } from "../../data/selector/format_selector_value";
+import {
+  formatSelectorValue,
+  type FormatSelectorValueOptions,
+} from "../../data/selector/format_selector_value";
 import { showFormDialog } from "../../dialogs/form/show-form-dialog";
-import type { HomeAssistant } from "../../types";
+import type {
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+  HomeAssistantRegistries,
+} from "../../types";
 import { computeInitialHaFormData } from "../ha-form/compute-initial-ha-form-data";
 import type { HaFormSchema } from "../ha-form/types";
 import "../ha-input-helper-text";
@@ -26,8 +42,6 @@ import { deepEqual } from "../../common/util/deep-equal";
 
 @customElement("ha-selector-object")
 export class HaObjectSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: ObjectSelector;
 
   @property() public value?: any;
@@ -46,6 +60,28 @@ export class HaObjectSelector extends LitElement {
     key: string,
     values?: Record<string, string>
   ) => string;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: HomeAssistantRegistries;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HassEntities;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: (formatters) => formatters?.formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
 
   @query("ha-yaml-editor", true) private _yamlEditor?: HaYamlEditor;
 
@@ -83,7 +119,12 @@ export class HaObjectSelector extends LitElement {
   private _formatField(item: any, field: string): string {
     const fields = this.selector.object!.fields!;
     const value = formatSelectorValue(
-      this.hass,
+      this._formatOptions(
+        this._i18n,
+        this._registries,
+        this._states,
+        this._formatEntityName
+      ),
       item[field],
       fields[field]?.selector
     );
@@ -148,14 +189,14 @@ export class HaObjectSelector extends LitElement {
           slot="end"
           .item=${item}
           .index=${index}
-          .label=${this.hass.localize("ui.common.edit")}
+          .label=${this._i18n.localize("ui.common.edit")}
           .path=${mdiPencil}
           @click=${this._editItem}
         ></ha-icon-button>
         <ha-icon-button
           slot="end"
           .index=${index}
-          .label=${this.hass.localize("ui.common.delete")}
+          .label=${this._i18n.localize("ui.common.delete")}
           .path=${multiple ? mdiDelete : mdiClose}
           @click=${this._deleteItem}
         ></ha-icon-button>
@@ -180,7 +221,7 @@ export class HaObjectSelector extends LitElement {
               </ha-list-base>
             </ha-sortable>
             <ha-button appearance="filled" @click=${this._addItem}>
-              ${this.hass.localize("ui.common.add")}
+              ${this._i18n.localize("ui.common.add")}
             </ha-button>
           </div>
         `;
@@ -196,7 +237,7 @@ export class HaObjectSelector extends LitElement {
                 </ha-list-base>`
               : html`
                   <ha-button appearance="filled" @click=${this._addItem}>
-                    ${this.hass.localize("ui.common.add")}
+                    ${this._i18n.localize("ui.common.add")}
                   </ha-button>
                 `
           }
@@ -218,6 +259,23 @@ export class HaObjectSelector extends LitElement {
           : ""
       } `;
   }
+
+  private _formatOptions = memoizeOne(
+    (
+      i18n: HomeAssistantInternationalization,
+      registries: HomeAssistantRegistries,
+      states: HassEntities,
+      formatEntityName: HomeAssistantFormatters["formatEntityName"]
+    ): FormatSelectorValueOptions => ({
+      locale: i18n.locale,
+      localize: i18n.localize,
+      states,
+      devices: registries.devices,
+      areas: registries.areas,
+      floors: registries.floors,
+      formatEntityName,
+    })
+  );
 
   private _schema = memoizeOne((selector: ObjectSelector) => {
     if (!selector.object || !selector.object.fields) {
@@ -262,12 +320,12 @@ export class HaObjectSelector extends LitElement {
     };
 
     const newItem = await showFormDialog(this, {
-      title: this.hass.localize("ui.common.add"),
+      title: this._i18n.localize("ui.common.add"),
       schema,
       data,
       computeLabel: this._computeLabel,
       computeHelper: this._computeHelper,
-      submitText: this.hass.localize("ui.common.add"),
+      submitText: this._i18n.localize("ui.common.add"),
     });
 
     if (newItem === null) {
@@ -290,12 +348,12 @@ export class HaObjectSelector extends LitElement {
     const index = ev.currentTarget.index;
 
     const updatedItem = await showFormDialog(this, {
-      title: this.hass.localize("ui.common.edit"),
+      title: this._i18n.localize("ui.common.edit"),
       schema: this._schema(this.selector),
       data: item,
       computeLabel: this._computeLabel,
       computeHelper: this._computeHelper,
-      submitText: this.hass.localize("ui.common.save"),
+      submitText: this._i18n.localize("ui.common.save"),
     });
 
     if (updatedItem === null) {

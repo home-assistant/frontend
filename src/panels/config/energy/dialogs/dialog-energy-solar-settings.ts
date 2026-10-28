@@ -132,7 +132,6 @@ export class DialogEnergySolarSettings
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
@@ -170,7 +169,6 @@ export class DialogEnergySolarSettings
         </ha-input>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .includeUnitClass=${powerUnitClasses}
           .value=${this._source.stat_rate}
           .label=${this.hass.localize(

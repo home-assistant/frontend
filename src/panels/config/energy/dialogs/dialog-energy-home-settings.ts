@@ -85,7 +85,6 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
 
         <ha-statistic-picker
-          .hass=${this.params.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_to}
@@ -113,7 +112,6 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
         </ha-input>
 
         <ha-statistic-picker
-          .hass=${this.params.hass}
           .includeUnitClass=${powerUnitClasses}
           .value=${this._source.stat_rate}
           .label=${this._i18n.localize(

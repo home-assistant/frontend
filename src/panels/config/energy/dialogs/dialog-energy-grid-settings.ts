@@ -213,7 +213,6 @@ export class DialogEnergyGridSettings
         ${this._error ? html`<p class="error">${this._error}</p>` : nothing}
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
@@ -233,7 +232,6 @@ export class DialogEnergyGridSettings
         ></ha-statistic-picker>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_to}
@@ -324,7 +322,6 @@ export class DialogEnergyGridSettings
           this._importCostType === "stat"
             ? html`
                 <ha-statistic-picker
-                  .hass=${this.hass}
                   .value=${this._source.stat_cost}
                   .label=${this.hass.localize(
                     "ui.panel.config.energy.grid.dialog.cost_stat_label"
@@ -422,7 +419,6 @@ export class DialogEnergyGridSettings
                   this._exportCostType === "stat"
                     ? html`
                         <ha-statistic-picker
-                          .hass=${this.hass}
                           .value=${this._source.stat_compensation}
                           .label=${this.hass.localize(
                             "ui.panel.config.energy.grid.dialog.compensation_stat_label"
