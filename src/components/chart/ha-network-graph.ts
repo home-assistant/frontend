@@ -31,8 +31,9 @@ export interface NetworkNode {
     color?: string;
     borderColor?: string;
     borderWidth?: number;
+    opacity?: number;
   };
-  label?: { position: "left" | "right" | "top" | "bottom" };
+  label?: { position?: "left" | "right" | "top" | "bottom"; show?: boolean };
   fixed?: boolean;
   /**
    * Distance from the center, where 0 is the center and 1 is the edge
@@ -51,6 +52,7 @@ export interface NetworkLink {
     width?: number;
     color?: string;
     type?: "solid" | "dashed" | "dotted";
+    opacity?: number;
   };
   symbolSize?: number | number[];
   symbol?: string;

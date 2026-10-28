@@ -30,6 +30,11 @@ export const VIRTUAL_PARENT_PREFIX = "virtual_";
 // gives the shortest edge and the tightest pull
 const TIGHT_PULL_VALUE = 255;
 
+// Hidden nodes between the coordinator and each virtual parent. Every hop adds
+// up to one edge length, which pushes the groups out past the mesh.
+export const SPACER_PREFIX = "spacer_";
+const SPACER_COUNT = 2;
+
 const iconSymbol = (
   shape: "circle" | "roundRect",
   color: string,
@@ -322,6 +327,9 @@ export function createZHANetworkChartData(
       virtualChildren.no_parent.push(device.ieee);
     }
   });
+  const coordinator = devices.find(
+    (device) => device.device_type === ZHADeviceType.Coordinator
+  )!;
   (Object.keys(virtualParents) as (keyof typeof virtualParents)[]).forEach(
     (key) => {
       if (!virtualChildren[key].length) {
@@ -337,10 +345,31 @@ export function createZHANetworkChartData(
         symbolSize: 30,
         symbol: iconSymbol("circle", color, iconColor, icon),
         itemStyle: { color },
-        // the force layout pushes a cluster with no link to the mesh off screen
-        polarDistance: 0.75,
-        fixed: true,
       });
+      // An invisible chain makes each group a far branch of the coordinator,
+      // so the groups spread apart instead of drifting off or overlapping the mesh
+      const chain = [coordinator.ieee];
+      for (let i = 0; i < SPACER_COUNT; i++) {
+        const spacerId = `${SPACER_PREFIX}${key}_${i}`;
+        nodes.push({
+          id: spacerId,
+          value: 1,
+          symbolSize: 1,
+          itemStyle: { opacity: 0 },
+          label: { show: false },
+        });
+        chain.push(spacerId);
+      }
+      chain.push(id);
+      for (let i = 1; i < chain.length; i++) {
+        links.push({
+          source: chain[i - 1],
+          target: chain[i],
+          value: 0,
+          symbol: "none",
+          lineStyle: { opacity: 0 },
+        });
+      }
       virtualChildren[key].forEach((ieee) => {
         // not a radio link, so no LQI and no arrow
         links.push({
