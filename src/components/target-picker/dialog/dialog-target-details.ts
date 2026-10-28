@@ -135,7 +135,10 @@ class DialogTargetDetails extends LitElement implements HassDialog {
 
   private async _loadEntitySources(): Promise<void> {
     try {
-      this._entitySources = await fetchEntitySourcesWithCache(this.hass);
+      this._entitySources = await fetchEntitySourcesWithCache(
+        this.hass.callWS,
+        this.hass.states
+      );
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Failed to load entity sources for target details", err);
@@ -242,7 +245,6 @@ class DialogTargetDetails extends LitElement implements HassDialog {
                 ? nothing
                 : html`
                     <ha-target-picker-item-row
-                      .hass=${this.hass}
                       .type=${this._params.type}
                       .itemId=${this._params.itemId}
                       .deviceFilter=${deviceFilter}

@@ -151,7 +151,6 @@ class PanelMediaBrowser extends LitElement {
           </ha-dropdown-item>
         </ha-dropdown>
         <ha-media-player-browse
-          .hass=${this.hass}
           .entityId=${this._entityId}
           .navigateIds=${this._navigateIds}
           .preferredLayout=${this._preferredLayout}

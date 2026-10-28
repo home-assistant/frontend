@@ -201,26 +201,24 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       value?: string,
       idPrefix?: string
     ) =>
-      getDevices(
-        hass.states,
-        hass.areas,
-        hass.devices,
-        hass.entities,
-        hass.localize,
-        hass.locale.language,
-        hass.translationMetadata,
+      getDevices({
+        states: hass.states,
+        areas: hass.areas,
+        devices: hass.devices,
+        entities: hass.entities,
+        localize: hass.localize,
+        language: hass.locale.language,
+        translationMetadata: hass.translationMetadata,
         configEntryLookup,
-        {
-          includeDomains,
-          includeDeviceClasses,
-          deviceFilter,
-          entityFilter,
-          excludeDevices,
-          value,
-          idPrefix,
-          nested: true,
-        }
-      )
+        includeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeDevices,
+        value,
+        idPrefix,
+        nested: true,
+      })
   );
 
   private _getLabelsMemoized = memoizeOne(getLabels);
@@ -385,7 +383,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @remove-target-item=${this._handleRemove}
                   @replace-target-item=${this._handleReplace}
                   type="entity"
-                  .hass=${this.hass}
                   .exclusions=${perTarget}
                   .items=${{ entity: entityIds }}
                   .deviceFilter=${this.deviceFilter}
@@ -407,7 +404,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @replace-target-item=${this._handleReplace}
                   @migrate-target-item=${this._handleMigrate}
                   type="device"
-                  .hass=${this.hass}
                   .exclusions=${perTarget}
                   .items=${{ device: deviceIds }}
                   .deviceFilter=${this.deviceFilter}
@@ -429,7 +425,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @remove-target-item=${this._handleRemove}
                   @replace-target-item=${this._handleReplace}
                   type="area"
-                  .hass=${this.hass}
                   .exclusions=${perTarget}
                   .items=${{
                     floor: floorIds,
@@ -453,7 +448,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @remove-target-item=${this._handleRemove}
                   @replace-target-item=${this._handleReplace}
                   type="label"
-                  .hass=${this.hass}
                   .exclusions=${perTarget}
                   .items=${{ label: labelIds }}
                   .deviceFilter=${this.deviceFilter}
@@ -495,7 +489,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           (item) =>
             html`<ha-target-picker-item-row
               exclusion
-              .hass=${this.hass}
               .type=${item.type}
               .itemId=${item.id}
             ></ha-target-picker-item-row>`
@@ -653,13 +646,21 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       item,
       this.primaryEntitiesOnly ?? true
     );
-    return filterTargetEntries(this.hass, item, entries, {
-      deviceFilter: this.deviceFilter,
-      entityFilter: this.entityFilter,
-      includeDomains: this.includeDomains,
-      includeDeviceClasses: this.includeDeviceClasses,
-      primaryEntitiesOnly: this.primaryEntitiesOnly,
-    }).referenced_entities;
+    return filterTargetEntries(
+      this.hass.states,
+      this.hass.entities,
+      this.hass.devices,
+      this.hass.areas,
+      item,
+      entries,
+      {
+        deviceFilter: this.deviceFilter,
+        entityFilter: this.entityFilter,
+        includeDomains: this.includeDomains,
+        includeDeviceClasses: this.includeDeviceClasses,
+        primaryEntitiesOnly: this.primaryEntitiesOnly,
+      }
+    ).referenced_entities;
   }
 
   // Like core, an exclude takes out every entity of an item, not only the
@@ -1431,7 +1432,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private async _loadCompositeSplits() {
     this._loadingCompositeSplits = true;
     try {
-      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      this._compositeSplits = await fetchDeviceCompositeSplits(
+        this.hass.connection,
+        this.hass.callWS
+      );
     } catch (_err) {
       this._compositeSplits = {};
     } finally {

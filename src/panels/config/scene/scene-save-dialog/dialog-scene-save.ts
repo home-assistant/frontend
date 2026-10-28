@@ -161,7 +161,6 @@ class DialogSceneSave extends DirtyStateProviderMixin<SceneSaveState>()(
         this._visibleOptionals.includes("category")
           ? html` <ha-category-picker
               id="category"
-              .hass=${this.hass}
               .scope=${this._params.domain}
               .label=${this.hass.localize(
                 "ui.components.category-picker.category"

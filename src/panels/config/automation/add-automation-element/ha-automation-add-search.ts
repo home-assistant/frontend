@@ -223,17 +223,17 @@ export class HaAutomationAddSearch extends LitElement {
       configEntryLookup: Record<string, ConfigEntry>,
       idPrefix: string
     ) =>
-      getDevices(
-        sources.states,
-        sources.areas,
-        sources.devices,
-        sources.entities,
-        sources.localize,
-        sources.locale.language,
-        sources.translationMetadata,
+      getDevices({
+        states: sources.states,
+        areas: sources.areas,
+        devices: sources.devices,
+        entities: sources.entities,
+        localize: sources.localize,
+        language: sources.locale.language,
+        translationMetadata: sources.translationMetadata,
         configEntryLookup,
-        { idPrefix }
-      )
+        idPrefix,
+      })
   );
 
   private _getLabelsMemoized = memoizeOne(getLabels);

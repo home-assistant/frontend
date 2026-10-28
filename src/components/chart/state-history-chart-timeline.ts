@@ -1,3 +1,4 @@
+import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,9 +9,18 @@ import type {
 } from "echarts/types/dist/shared";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import millisecondsToDuration from "../../common/datetime/milliseconds_to_duration";
+import { consume } from "../../common/decorators/consume";
 import { computeRTL } from "../../common/util/compute_rtl";
+import {
+  configContext,
+  internationalizationContext,
+  statesContext,
+} from "../../data/context";
 import type { TimelineEntity } from "../../data/history";
-import type { HomeAssistant } from "../../types";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+} from "../../types";
 import { DEFAULT_CHART_WIDTH, MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
 import { itemTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
@@ -27,8 +37,6 @@ const GRID_BOTTOM = 30;
 
 @customElement("state-history-chart-timeline")
 export class StateHistoryChartTimeline extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public data: TimelineEntity[] = [];
 
   @property({ type: Boolean }) public narrow = false;
@@ -70,6 +78,16 @@ export class StateHistoryChartTimeline extends LitElement {
   @state() private _yWidth = 0;
 
   private _chartTime: Date = new Date();
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig!: HomeAssistantConfig;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states?: HassEntities;
 
   protected render() {
     return html`
@@ -151,13 +169,13 @@ export class StateHistoryChartTimeline extends LitElement {
       ? params[0]
       : params;
     const durationInMs = value![2] - value![1];
-    const formattedDuration = `${this.hass.localize(
+    const formattedDuration = `${this._i18n.localize(
       "ui.components.history_charts.duration"
     )}: ${millisecondsToDuration(durationInMs)}`;
 
     const rtl = computeRTL(
-      this.hass.language,
-      this.hass.translationMetadata.translations
+      this._i18n.language,
+      this._i18n.translationMetadata.translations
     );
     return html`${
         seriesName
@@ -169,12 +187,12 @@ export class StateHistoryChartTimeline extends LitElement {
       ></ha-chart-tooltip-marker
       >${name}<br />${formatDateTimeWithSeconds(
         new Date(value![1]),
-        this.hass.locale,
-        this.hass.config
+        this._i18n.locale,
+        this._hassConfig.config
       )}<br />${formatDateTimeWithSeconds(
         new Date(value![2]),
-        this.hass.locale,
-        this.hass.config
+        this._i18n.locale,
+        this._hassConfig.config
       )}<br />${formattedDuration}`;
   };
 
@@ -199,7 +217,8 @@ export class StateHistoryChartTimeline extends LitElement {
       changedProps.has("showNames") ||
       changedProps.has("insideLabels") ||
       changedProps.has("paddingYAxis") ||
-      changedProps.has("_yWidth")
+      changedProps.has("_yWidth") ||
+      changedProps.has("_i18n")
     ) {
       this._createOptions();
     }
@@ -216,8 +235,8 @@ export class StateHistoryChartTimeline extends LitElement {
         : this.paddingYAxis;
     const labelMargin = 5;
     const rtl = computeRTL(
-      this.hass.language,
-      this.hass.translationMetadata.translations
+      this._i18n.language,
+      this._i18n.translationMetadata.translations
     );
     this._chartOptions = {
       xAxis: {
@@ -322,7 +341,7 @@ export class StateHistoryChartTimeline extends LitElement {
   private _generateData() {
     this._chartTime = new Date();
     this._chartData = generateStateHistoryChartTimelineData({
-      states: this.hass.states,
+      states: this._states ?? {},
       data: this.data,
       startTime: this.startTime,
       endTime: this.endTime,

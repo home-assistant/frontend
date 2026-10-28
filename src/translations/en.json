@@ -7406,7 +7406,7 @@
             "show_more": "+{count} devices not shown"
           },
           "child_devices": {
-            "heading": "Sub-devices",
+            "heading": "Child devices",
             "show_more": "+{count} devices not shown"
           },
           "linked_devices": {
@@ -10550,6 +10550,10 @@
           "section": {
             "automatic": "Automatic section",
             "edit_automatic": "Edit automatic section",
+            "convert_to_manual": "Convert to manual section",
+            "convert_to_manual_text": "The section will no longer update on its own. In return, you get full control over it: you can edit each card, reorder them, remove the ones you don't need, and add your own.",
+            "convert_to_manual_confirm": "Convert",
+            "convert_to_manual_error": "Error while converting section",
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
             "paste": "Paste",
             "copied_to_clipboard": "Section copied to clipboard",
