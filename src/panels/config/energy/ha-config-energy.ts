@@ -15,7 +15,8 @@ import { classMap } from "lit/directives/class-map";
 import { keyed } from "lit/directives/keyed";
 import { styleMap } from "lit/directives/style-map";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import { navigate } from "../../../common/navigate";
+import { goBack, navigate } from "../../../common/navigate";
+import { afterNextRender } from "../../../common/util/render-status";
 import type {
   EnergyPreferencesValidation,
   EnergyInfo,
@@ -63,6 +64,8 @@ const INITIAL_CONFIG: EnergyPreferences = {
   device_consumption: [],
   device_consumption_water: [],
 };
+
+const BACK_PATH = "/config/lovelace/dashboards";
 
 const SIDEBAR_WIDTH = 500;
 const CONTENT_MIN_WIDTH = 350;
@@ -162,7 +165,8 @@ class HaConfigEnergy extends PreventUnsavedMixin(LitElement) {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
-        back-path="/config/lovelace/dashboards"
+        .backPath=${BACK_PATH}
+        .backCallback=${this._backTapped}
         .route=${this.route}
         .tabs=${TABS}
       >
@@ -231,6 +235,7 @@ class HaConfigEnergy extends PreventUnsavedMixin(LitElement) {
               this._sidebar
                 ? html`<ha-energy-sidebar
                     tabindex="-1"
+                    ?inert=${!!this._editorStatus?.saving}
                     .hass=${this.hass}
                     .config=${this._sidebar}
                     .isWide=${this.isWide}
@@ -402,6 +407,12 @@ class HaConfigEnergy extends PreventUnsavedMixin(LitElement) {
   private _save() {
     this._editorElement?.save();
   }
+
+  private _backTapped = async () => {
+    if (await this._confirmDiscard()) {
+      afterNextRender(() => goBack(BACK_PATH));
+    }
+  };
 
   private async _confirmDiscard(addHistory = true): Promise<boolean> {
     if (!this._editorStatus?.dirty) {
