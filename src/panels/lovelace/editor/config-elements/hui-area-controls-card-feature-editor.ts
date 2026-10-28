@@ -59,14 +59,13 @@ export class HuiAreaControlsCardFeatureEditor
     (
       areaId: string,
       excludeEntities: string[] | undefined,
-      states: HomeAssistant["states"],
       entities: HomeAssistant["entities"],
       devices: HomeAssistant["devices"],
       areas: HomeAssistant["areas"],
       floors: HomeAssistant["floors"]
     ) => {
       const controlEntities = getAreaControlEntities(
-        states,
+        this.hass!.states,
         entities,
         devices,
         areas,
@@ -89,7 +88,6 @@ export class HuiAreaControlsCardFeatureEditor
     const supportedControls = this._supportedControls(
       this.context.area_id,
       this.context.exclude_entities,
-      this.hass.states,
       this.hass.entities,
       this.hass.devices,
       this.hass.areas,
@@ -249,7 +247,6 @@ export class HuiAreaControlsCardFeatureEditor
       config.controls = this._supportedControls(
         this.context!.area_id!,
         this.context!.exclude_entities,
-        this.hass!.states,
         this.hass!.entities,
         this.hass!.devices,
         this.hass!.areas,
