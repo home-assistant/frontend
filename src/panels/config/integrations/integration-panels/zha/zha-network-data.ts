@@ -38,17 +38,20 @@ const OFFLINE_PULL_VALUE = 85;
 export const SPACER_PREFIX = "spacer_";
 const SPACER_COUNT = 2;
 
-const iconSymbol = (
-  shape: "circle" | "roundRect",
+// The coordinator and the virtual parents are the roots of the graph
+const ROOT_SYMBOL_SIZE = 60;
+const ROOT_LABEL = {
+  position: "bottom",
+  fontWeight: "bold",
+  fontSize: 14.4,
+} as const;
+
+const rootSymbol = (
   color: string,
   iconColor: string,
   iconPath: string
 ): string => {
-  const background =
-    shape === "circle"
-      ? `<circle cx="16" cy="16" r="16" fill="${color.trim()}"/>`
-      : `<rect width="32" height="32" rx="6" fill="${color.trim()}"/>`;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">${background}<path transform="translate(6 6) scale(0.8333)" fill="${iconColor}" d="${iconPath}"/></svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="${color.trim()}"/><path transform="translate(6 6) scale(0.8333)" fill="${iconColor}" d="${iconPath}"/></svg>`;
   return `image://data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 };
 
@@ -129,12 +132,12 @@ export function createZHANetworkChartData(
           ? 2
           : 1,
       symbolSize: isCoordinator
-        ? 40
+        ? ROOT_SYMBOL_SIZE
         : device.device_type === ZHADeviceType.Router
           ? 30
           : 20,
       symbol: isCoordinator
-        ? iconSymbol("roundRect", primaryColor, iconColor, mdiZigbee)
+        ? rootSymbol(primaryColor, iconColor, mdiZigbee)
         : isGreenPower
           ? "triangle"
           : "circle",
@@ -151,6 +154,7 @@ export function createZHANetworkChartData(
       },
       polarDistance: category === 0 ? 0 : category === 1 ? 0.5 : 0.9,
       fixed: isCoordinator,
+      label: isCoordinator ? ROOT_LABEL : undefined,
     });
 
     // Create links (edges)
@@ -347,8 +351,9 @@ export function createZHANetworkChartData(
         name: hass.localize(`ui.panel.config.zha.visualization.${key}`),
         category,
         value: 2,
-        symbolSize: 30,
-        symbol: iconSymbol("circle", color, iconColor, icon),
+        symbolSize: ROOT_SYMBOL_SIZE,
+        symbol: rootSymbol(color, iconColor, icon),
+        label: ROOT_LABEL,
         itemStyle: { color },
       });
       // An invisible chain makes each group a far branch of the coordinator,

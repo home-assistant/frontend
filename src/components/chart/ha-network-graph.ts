@@ -33,7 +33,12 @@ export interface NetworkNode {
     borderWidth?: number;
     opacity?: number;
   };
-  label?: { position?: "left" | "right" | "top" | "bottom"; show?: boolean };
+  label?: {
+    position?: "left" | "right" | "top" | "bottom";
+    show?: boolean;
+    fontWeight?: "normal" | "bold";
+    fontSize?: number;
+  };
   fixed?: boolean;
   /**
    * Distance from the center, where 0 is the center and 1 is the edge
@@ -288,9 +293,8 @@ export class HaNetworkGraph extends LitElement {
           return node.name ?? "";
         },
         rich: {
-          primary: {
-            fontSize: 12,
-          },
+          // inherits the node label font, so a node can override it
+          primary: {},
           secondary: {
             fontSize: 12,
             color: getComputedStyle(document.body).getPropertyValue(
