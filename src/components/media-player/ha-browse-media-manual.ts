@@ -1,8 +1,9 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
-import type { HomeAssistant } from "../../types";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import "../ha-button";
 import "../ha-card";
 import "../ha-form/ha-form";
@@ -15,13 +16,13 @@ export interface ManualMediaPickedEvent {
 
 @customElement("ha-browse-media-manual")
 class BrowseMediaManual extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public item!: MediaPlayerItemId;
 
   @property({ attribute: false }) public hideContentType = false;
 
   @property({ attribute: false }) public contentIdHelper?: string;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
 
   private _schema = memoizeOne(
     (hideContentType: boolean) =>
@@ -52,7 +53,6 @@ class BrowseMediaManual extends LitElement {
       <ha-card>
         <div class="card-content">
           <ha-form
-            .hass=${this.hass}
             .schema=${this._schema(this.hideContentType)}
             .data=${this.item}
             .computeLabel=${this._computeLabel}
@@ -62,7 +62,7 @@ class BrowseMediaManual extends LitElement {
         </div>
         <div class="card-actions">
           <ha-button @click=${this._mediaPicked}>
-            ${this.hass.localize("ui.common.submit")}
+            ${this._localize("ui.common.submit")}
           </ha-button>
         </div>
       </ha-card>
@@ -81,9 +81,7 @@ class BrowseMediaManual extends LitElement {
     switch (entry.name) {
       case "media_content_id":
       case "media_content_type":
-        return this.hass.localize(
-          `ui.components.selectors.media.${entry.name}`
-        );
+        return this._localize(`ui.components.selectors.media.${entry.name}`);
     }
     return entry.name;
   };
@@ -95,12 +93,10 @@ class BrowseMediaManual extends LitElement {
       case "media_content_id":
         return (
           this.contentIdHelper ||
-          this.hass.localize(
-            `ui.components.selectors.media.${entry.name}_detail`
-          )
+          this._localize(`ui.components.selectors.media.${entry.name}_detail`)
         );
       case "media_content_type":
-        return this.hass.localize(
+        return this._localize(
           `ui.components.selectors.media.${entry.name}_detail`
         );
     }

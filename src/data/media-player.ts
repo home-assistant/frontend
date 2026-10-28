@@ -200,12 +200,12 @@ export interface MediaPlayerItem {
 }
 
 export const browseMediaPlayer = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   entityId: string,
   mediaContentId?: string,
   mediaContentType?: string
 ): Promise<MediaPlayerItem> =>
-  hass.callWS<MediaPlayerItem>({
+  callWS<MediaPlayerItem>({
     type: "media_player/browse_media",
     entity_id: entityId,
     media_content_id: mediaContentId,
@@ -217,14 +217,14 @@ export interface SearchMediaResult {
 }
 
 export const searchMediaPlayer = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   entityId: string,
   searchQuery: string,
   mediaContentId?: string,
   mediaContentType?: string,
   mediaFilterClasses?: string[]
 ): Promise<SearchMediaResult> =>
-  hass.callWS<SearchMediaResult>({
+  callWS<SearchMediaResult>({
     type: "media_player/search_media",
     entity_id: entityId,
     search_query: searchQuery,
