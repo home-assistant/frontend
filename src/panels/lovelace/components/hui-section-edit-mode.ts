@@ -241,7 +241,8 @@ export class HuiSectionEditMode extends LitElement {
     try {
       const manualSection = await expandLovelaceSectionStrategies(
         section,
-        this.hass
+        this.hass,
+        true
       );
       await this.lovelace!.saveConfig(
         setAtPath(this.lovelace!.config, this.path, manualSection)

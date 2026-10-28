@@ -253,19 +253,25 @@ export const generateLovelaceViewStrategy = async (
 
 export const generateLovelaceSectionStrategy = async (
   config: LovelaceStrategySectionConfig,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  throwOnError = false
 ): Promise<LovelaceSectionConfig> => {
   const { strategy, ...base } = config;
   const generated = await generateStrategy(
     "section",
-    (err) => ({
-      cards: [
-        {
-          type: "markdown",
-          content: `Error loading the section strategy:\n> ${err}`,
-        },
-      ],
-    }),
+    (err) => {
+      if (throwOnError) {
+        throw err instanceof Error ? err : new Error(err);
+      }
+      return {
+        cards: [
+          {
+            type: "markdown",
+            content: `Error loading the section strategy:\n> ${err}`,
+          },
+        ],
+      };
+    },
     strategy,
     hass
   );
@@ -312,16 +318,17 @@ export const checkStrategyShouldRegenerate = (
 
 export const expandLovelaceSectionStrategies = async (
   section: LovelaceSectionRawConfig,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  throwOnError = false
 ): Promise<LovelaceSectionConfig> => {
   const newSection = isStrategySection(section)
-    ? await generateLovelaceSectionStrategy(section, hass)
+    ? await generateLovelaceSectionStrategy(section, hass, throwOnError)
     : { ...section };
 
   if (newSection.sections) {
     newSection.sections = await Promise.all(
       newSection.sections.map((childSection) =>
-        expandLovelaceSectionStrategies(childSection, hass)
+        expandLovelaceSectionStrategies(childSection, hass, throwOnError)
       )
     );
   }
