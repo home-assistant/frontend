@@ -256,6 +256,7 @@ export class HaEntityNamePicker extends LitElement {
           "ui.components.entity.entity-name-picker.no_more_parts"
         )}
         @value-changed=${this._pickerValueChanged}
+        @picker-closed=${this._pickerClosed}
         .searchFn=${this._searchFn}
         .searchLabel=${this._localize(
           "ui.components.entity.entity-name-picker.search"
@@ -349,6 +350,10 @@ export class HaEntityNamePicker extends LitElement {
     this._editIndex = undefined;
     await this.updateComplete;
     await this._picker?.open();
+  }
+
+  private _pickerClosed() {
+    this._editIndex = undefined;
   }
 
   private async _editItem(ev: Event) {
