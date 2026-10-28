@@ -498,7 +498,6 @@ class HaScriptPicker extends SubscribeMixin(LitElement) {
           @click=${this._showHelp}
         ></ha-icon-button>
         ${renderCategoryGroupActions(
-          this.hass,
           "script",
           this._categories,
           this._tableSettings.grouping,
