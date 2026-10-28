@@ -87,20 +87,46 @@ export class HaListVirtualized extends HaListBase {
   private _activeItemFocus = false;
   private _scrollToActiveItem = false;
 
-  public willUpdate(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues<this>) {
     if (!this.hasUpdated) {
       this._loadVirtualizer();
     }
 
     if (changedProps.has("rows")) {
       this.recomputeFocusableIndexes();
-      this.activeItemIndex = this.virtualFocus ? -1 : this.firstFocusableIndex;
+      this.activeItemIndex = this.virtualFocus
+        ? -1
+        : this._followActiveRow(changedProps.get("rows"));
     }
   }
 
   /** The element that scrolls the rows, once the virtualizer has rendered. */
   public get scrollElement(): HTMLElement | undefined {
     return this.virtualizerElement ?? undefined;
+  }
+
+  /**
+   * Render the rows in view again. Call it when `rowRenderer` reads state
+   * that is not part of `rows`, like the selection.
+   */
+  public requestRowsUpdate() {
+    this.virtualizerElement?.requestUpdate();
+  }
+
+  // Keep the active row while focus is in the list, like when the rows are
+  // replaced on a data update. Otherwise, like after a search, start again
+  // from the first row.
+  private _followActiveRow(previousRows?: HaListVirtualizedItem[]): number {
+    const activeId = this.matches(":focus-within")
+      ? previousRows?.[this.activeItemIndex]?.id
+      : undefined;
+    const index =
+      activeId === undefined
+        ? -1
+        : this.rows.findIndex((row) => row.id === activeId);
+    return index !== -1 && this.isFocusable(index)
+      ? index
+      : this.firstFocusableIndex;
   }
 
   /** Scroll the row at `index` into view. */
@@ -195,18 +221,38 @@ export class HaListVirtualized extends HaListBase {
       return;
     }
     if (this.virtualizerElement && this.rangeStart > -1) {
+      const tabStopIndex = this._tabStopIndex();
       Array.from(this.virtualizerElement.children).forEach((child, index) => {
         const el = child as HTMLElement;
-        if (index + this.rangeStart === this.activeItemIndex) {
-          el.tabIndex = 0;
-          if (focusItem) {
-            el.focus();
-          }
-        } else {
+        const rowIndex = index + this.rangeStart;
+        // Like the base list, keep other rows focusable by click
+        if (!this.isFocusable(rowIndex)) {
           el.removeAttribute("tabindex");
+          return;
+        }
+        el.tabIndex = rowIndex === tabStopIndex ? 0 : -1;
+        if (focusItem && rowIndex === this.activeItemIndex) {
+          el.focus();
         }
       });
     }
+  }
+
+  // The row that takes Tab. When the active row is scrolled out of the
+  // rendered rows, the first rendered one does, so the list stays reachable.
+  private _tabStopIndex(): number {
+    if (
+      this.activeItemIndex >= this.rangeStart &&
+      this.activeItemIndex <= this.rangeEnd
+    ) {
+      return this.activeItemIndex;
+    }
+    for (let i = this.rangeStart; i <= this.rangeEnd; i++) {
+      if (this.isFocusable(i)) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   private _applyVirtualActive(reveal: boolean) {

@@ -12,6 +12,7 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import { toggleValue } from "../common/array/toggle-value";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
@@ -90,6 +91,15 @@ export class HaFilterEntities extends LitElement {
     }
   }
 
+  protected updated(properties: PropertyValues<this>) {
+    super.updated(properties);
+
+    // The rows don't change with the value, so render the selection again
+    if (properties.has("value")) {
+      this._list?.requestRowsUpdate();
+    }
+  }
+
   protected render() {
     return html`
       <ha-expansion-panel
@@ -158,11 +168,11 @@ export class HaFilterEntities extends LitElement {
       return;
     }
 
-    const value = (this.value ?? []).filter((id) => id !== entityId);
-    if (ev.type === "ha-list-item-selected") {
-      value.push(entityId);
-    }
-    this.value = value;
+    this.value = toggleValue(
+      this.value,
+      entityId,
+      ev.type === "ha-list-item-selected"
+    );
   }
 
   private _currentEntities() {
@@ -255,7 +265,6 @@ export class HaFilterEntities extends LitElement {
       value: undefined,
       items: undefined,
     });
-    this._list?.clearSelection();
   }
 
   static get styles(): CSSResultGroup {

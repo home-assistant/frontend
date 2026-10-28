@@ -10,6 +10,11 @@ import {
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { toggleValue } from "../common/array/toggle-value";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-expansion-panel";
 import "./ha-icon";
@@ -107,19 +112,21 @@ export class HaFilterVoiceAssistants extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleItemToggled(ev: CustomEvent<number>) {
-    const option = (ev.currentTarget as HaListSelectable).items[ev.detail] as
-      HaListItemOption | undefined;
-    const voiceAssistantId = option?.value;
+  private _handleItemToggled(
+    ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
+  ) {
+    const voiceAssistantId = (
+      ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
+    )?.value;
     if (!voiceAssistantId) {
       return;
     }
 
-    const value = (this.value ?? []).filter((v) => v !== voiceAssistantId);
-    if (ev.type === "ha-list-item-selected") {
-      value.push(voiceAssistantId);
-    }
-    this.value = value;
+    this.value = toggleValue(
+      this.value,
+      voiceAssistantId,
+      ev.type === "ha-list-item-selected"
+    );
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value,

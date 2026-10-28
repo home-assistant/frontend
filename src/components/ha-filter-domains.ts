@@ -12,6 +12,11 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import { toggleValue } from "../common/array/toggle-value";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { stringCompare } from "../common/string/compare";
@@ -152,19 +157,21 @@ export class HaFilterDomains extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleItemToggled(ev: CustomEvent<number>) {
-    const option = (ev.currentTarget as HaListSelectable).items[ev.detail] as
-      HaListItemOption | undefined;
-    const domain = option?.value;
+  private _handleItemToggled(
+    ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
+  ) {
+    const domain = (
+      ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
+    )?.value;
     if (!domain) {
       return;
     }
 
-    const value = (this.value ?? []).filter((d) => d !== domain);
-    if (ev.type === "ha-list-item-selected") {
-      value.push(domain);
-    }
-    this.value = value;
+    this.value = toggleValue(
+      this.value,
+      domain,
+      ev.type === "ha-list-item-selected"
+    );
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value.length ? this.value : undefined,

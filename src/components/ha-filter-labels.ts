@@ -12,6 +12,11 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import { toggleValue } from "../common/array/toggle-value";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { navigate } from "../common/navigate";
 import { stringCompare } from "../common/string/compare";
@@ -169,22 +174,24 @@ export class HaFilterLabels extends LitElement {
     this._filter = value.toLowerCase();
   }
 
-  private _handleItemToggled(ev: CustomEvent<number>) {
-    const option = (ev.currentTarget as HaListSelectable).items[ev.detail] as
-      HaListItemOption | undefined;
-    const labelId = option?.value;
+  private _handleItemToggled(
+    ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
+  ) {
+    const labelId = (
+      ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
+    )?.value;
     if (!labelId) {
       return;
     }
 
-    const value = (this.value ?? []).filter((id) => id !== labelId);
-    if (ev.type === "ha-list-item-selected") {
-      value.push(labelId);
-    }
-    this.value = value;
+    this.value = toggleValue(
+      this.value,
+      labelId,
+      ev.type === "ha-list-item-selected"
+    );
 
     fireEvent(this, "data-table-filter-changed", {
-      value: value.length ? value : undefined,
+      value: this.value.length ? this.value : undefined,
       items: undefined,
     });
   }

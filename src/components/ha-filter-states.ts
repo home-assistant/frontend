@@ -8,6 +8,11 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
+import { toggleValue } from "../common/array/toggle-value";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-expansion-panel";
 import "./ha-icon";
@@ -101,22 +106,24 @@ export class HaFilterStates extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleItemToggled(ev: CustomEvent<number>) {
-    const option = (ev.currentTarget as HaListSelectable).items[ev.detail] as
-      HaListItemOption | undefined;
-    const state = option?.value;
+  private _handleItemToggled(
+    ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
+  ) {
+    const state = (
+      ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
+    )?.value;
     if (!state) {
       return;
     }
 
-    const value = (this.value ?? []).filter((v) => v !== state);
-    if (ev.type === "ha-list-item-selected") {
-      value.push(state);
-    }
-    this.value = value;
+    this.value = toggleValue(
+      this.value,
+      state,
+      ev.type === "ha-list-item-selected"
+    );
 
     fireEvent(this, "data-table-filter-changed", {
-      value,
+      value: this.value,
       items: undefined,
     });
   }

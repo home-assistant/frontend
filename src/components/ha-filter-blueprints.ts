@@ -11,6 +11,11 @@ import {
 import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { toggleValue } from "../common/array/toggle-value";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { deepEqual } from "../common/util/deep-equal";
 import type { Blueprints } from "../data/blueprint";
@@ -133,19 +138,21 @@ export class HaFilterBlueprints extends LitElement {
     this.expanded = ev.detail.expanded;
   }
 
-  private _handleItemToggled(ev: CustomEvent<number>) {
-    const option = (ev.currentTarget as HaListSelectable).items[ev.detail] as
-      HaListItemOption | undefined;
-    const blueprintId = option?.value;
+  private _handleItemToggled(
+    ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
+  ) {
+    const blueprintId = (
+      ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
+    )?.value;
     if (!blueprintId) {
       return;
     }
 
-    const value = (this.value ?? []).filter((id) => id !== blueprintId);
-    if (ev.type === "ha-list-item-selected") {
-      value.push(blueprintId);
-    }
-    this.value = value;
+    this.value = toggleValue(
+      this.value,
+      blueprintId,
+      ev.type === "ha-list-item-selected"
+    );
   }
 
   private async _findRelated() {
