@@ -433,7 +433,7 @@ export class HaMarketplaceDashboard extends LitElement {
                   <ha-assist-chip
                     slot="trigger"
                     .label=${this._i18n.localize(
-                      "ui.panel.config.automation.picker.bulk_action"
+                      "ui.panel.marketplace.dashboard.bulk_action"
                     )}
                   >
                     <ha-svg-icon
