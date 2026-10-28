@@ -1,33 +1,34 @@
 import { describe, it, expect } from "vitest";
-import { formatSelectorValue } from "../../src/data/selector/format_selector_value";
-import type { HomeAssistant } from "../../src/types";
+import {
+  formatSelectorValue,
+  type FormatSelectorValueOptions,
+} from "../../src/data/selector/format_selector_value";
 
-// formatSelectorValue only touches hass for floor/area/entity/device
-// selectors, none of which these tests exercise.
-const hass = {} as HomeAssistant;
+// These selectors read none of the options.
+const options = {} as FormatSelectorValueOptions;
 
 describe("formatSelectorValue", () => {
   it("returns an empty string for nullish values", () => {
-    expect(formatSelectorValue(hass, null)).toBe("");
-    expect(formatSelectorValue(hass, undefined)).toBe("");
+    expect(formatSelectorValue(options, null)).toBe("");
+    expect(formatSelectorValue(options, undefined)).toBe("");
   });
 
   it("renders a plain text value", () => {
-    expect(formatSelectorValue(hass, "hello", { text: { type: "text" } })).toBe(
-      "hello"
-    );
+    expect(
+      formatSelectorValue(options, "hello", { text: { type: "text" } })
+    ).toBe("hello");
   });
 
   it("applies prefix and suffix for text selectors", () => {
     expect(
-      formatSelectorValue(hass, "5", {
+      formatSelectorValue(options, "5", {
         text: { type: "text", prefix: "$", suffix: " each" },
       })
     ).toBe("$5 each");
   });
 
   it("masks a password text value instead of revealing it", () => {
-    const result = formatSelectorValue(hass, "hunter2", {
+    const result = formatSelectorValue(options, "hunter2", {
       text: { type: "password" },
     });
     expect(result).not.toContain("hunter2");
@@ -35,7 +36,7 @@ describe("formatSelectorValue", () => {
   });
 
   it("masks every value of a multiple password selector", () => {
-    const result = formatSelectorValue(hass, ["one", "two"], {
+    const result = formatSelectorValue(options, ["one", "two"], {
       text: { type: "password" },
     });
     expect(result).not.toContain("one");
@@ -45,7 +46,7 @@ describe("formatSelectorValue", () => {
 
   it("masks a nested password field in an object selector preview", () => {
     const result = formatSelectorValue(
-      hass,
+      options,
       { username: "admin", password: "hunter2" },
       {
         object: {
@@ -63,7 +64,7 @@ describe("formatSelectorValue", () => {
 });
 
 describe("formatSelectorValue duration selector", () => {
-  const localizedHass = {
+  const localizedOptions = {
     locale: { language: "en" },
     localize: (key: string, values?: Record<string, unknown>) => {
       const suffix = key.split("ui.components.selectors.duration.summary.")[1];
@@ -74,12 +75,12 @@ describe("formatSelectorValue duration selector", () => {
         signed_positive: `+${values?.duration}`,
       }[suffix]!;
     },
-  } as unknown as HomeAssistant;
+  } as unknown as FormatSelectorValueOptions;
 
   it("formats a positive duration without a sign", () => {
     expect(
       formatSelectorValue(
-        localizedHass,
+        localizedOptions,
         { hours: 1, minutes: 30 },
         { duration: {} }
       )
@@ -89,13 +90,13 @@ describe("formatSelectorValue duration selector", () => {
   it("formats signed durations with an explicit sign", () => {
     expect(
       formatSelectorValue(
-        localizedHass,
+        localizedOptions,
         { minutes: -30 },
         { duration: { mode: "signed" } }
       )
     ).toBe("-30 minutes");
     expect(
-      formatSelectorValue(localizedHass, "00:30:00", {
+      formatSelectorValue(localizedOptions, "00:30:00", {
         duration: { allow_negative: true },
       })
     ).toBe("+30 minutes");
@@ -104,22 +105,24 @@ describe("formatSelectorValue duration selector", () => {
   it("formats offsets as before or after", () => {
     expect(
       formatSelectorValue(
-        localizedHass,
+        localizedOptions,
         { hours: -1, minutes: -30 },
         { duration: { mode: "offset" } }
       )
     ).toBe("1 hour, 30 minutes before");
     expect(
-      formatSelectorValue(localizedHass, "-00:10:00", {
+      formatSelectorValue(localizedOptions, "-00:10:00", {
         duration: { mode: "offset" },
       })
     ).toBe("10 minutes before");
     expect(
-      formatSelectorValue(localizedHass, 45, { duration: { mode: "offset" } })
+      formatSelectorValue(localizedOptions, 45, {
+        duration: { mode: "offset" },
+      })
     ).toBe("45 seconds after");
     expect(
       formatSelectorValue(
-        localizedHass,
+        localizedOptions,
         { minutes: -5 },
         { duration: { mode: "offset" } }
       )
@@ -129,7 +132,7 @@ describe("formatSelectorValue duration selector", () => {
   it("returns an empty string for a zero offset", () => {
     expect(
       formatSelectorValue(
-        localizedHass,
+        localizedOptions,
         { hours: 0, minutes: 0, seconds: 0 },
         { duration: { mode: "offset" } }
       )

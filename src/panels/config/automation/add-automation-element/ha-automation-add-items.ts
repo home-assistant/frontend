@@ -1,6 +1,11 @@
 import type { ContextType } from "@lit/context";
-import { mdiInformationOutline, mdiPlus } from "@mdi/js";
-import { LitElement, css, html, nothing } from "lit";
+import {
+  mdiCheck,
+  mdiInformationOutline,
+  mdiPlus,
+  mdiSwapHorizontal,
+} from "@mdi/js";
+import { LitElement, css, html, nothing, type PropertyValues } from "lit";
 import {
   customElement,
   eventOptions,
@@ -59,6 +64,8 @@ export class HaAutomationAddItems extends LitElement {
 
   @property({ type: Boolean, reflect: true }) scrollable = false;
 
+  @property({ attribute: false }) public replacingItemKey?: string;
+
   @state() private _itemsScrolled = false;
 
   @state()
@@ -85,6 +92,30 @@ export class HaAutomationAddItems extends LitElement {
 
   @query(".items")
   private _itemsDiv!: HTMLDivElement;
+
+  @query("ha-list-item-button.current")
+  private _currentItem?: HTMLElement;
+
+  private _scrollToCurrent = false;
+
+  /** Scrolls to the item being replaced once it is rendered. */
+  public scrollToCurrent() {
+    this._scrollToCurrent = true;
+    this._scrollIfPending();
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+    this._scrollIfPending();
+  }
+
+  private _scrollIfPending() {
+    if (!this._scrollToCurrent || !this._currentItem) {
+      return;
+    }
+    this._scrollToCurrent = false;
+    this._currentItem.scrollIntoView({ block: "center" });
+  }
 
   protected render() {
     return html`<div
@@ -133,7 +164,13 @@ export class HaAutomationAddItems extends LitElement {
           items,
           (item) => item.key,
           (item) => html`
-            <ha-list-item-button .value=${item.key} @click=${this._selected}>
+            <ha-list-item-button
+              .value=${item.key}
+              class=${this._isCurrent(item) ? "current" : ""}
+              .disabled=${this._isCurrent(item)}
+              aria-current=${this._isCurrent(item) ? "true" : nothing}
+              @click=${this._selected}
+            >
               <div slot="headline" class=${this.target ? "item-headline" : ""}>
                 ${item.name}${this._renderCurrentTarget()}
               </div>
@@ -176,13 +213,24 @@ export class HaAutomationAddItems extends LitElement {
               <ha-svg-icon
                 slot="end"
                 class="plus"
-                .path=${mdiPlus}
+                .path=${
+                  this._isCurrent(item)
+                    ? mdiCheck
+                    : this.replacingItemKey
+                      ? mdiSwapHorizontal
+                      : mdiPlus
+                }
               ></ha-svg-icon>
             </ha-list-item-button>
           `
         )}
       </ha-list-base>
     `;
+  }
+
+  // With a target, the same item can still replace its target.
+  private _isCurrent(item: AddAutomationElementListItem) {
+    return !this.target && item.key === this.replacingItemKey;
   }
 
   private _renderCurrentTarget() {
@@ -339,6 +387,15 @@ export class HaAutomationAddItems extends LitElement {
 
       ha-svg-icon.plus {
         color: var(--primary-color);
+      }
+
+      .items ha-list-base ha-list-item-button.current {
+        color: var(--primary-text-color);
+        background-color: var(--ha-color-fill-primary-quiet-resting);
+        border-color: var(--ha-color-border-primary-quiet);
+      }
+      .items ha-list-base ha-list-item-button.current::part(base) {
+        color: inherit;
       }
 
       .selected-target {

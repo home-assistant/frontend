@@ -215,7 +215,7 @@ class HaConfigSystemNavigation extends LitElement {
 
   private async _fetchNetworkStatus() {
     if (isComponentLoaded(this.hass.config, "cloud")) {
-      const cloudStatus = await fetchCloudStatus(this.hass);
+      const cloudStatus = await fetchCloudStatus(this.hass.callWS);
       if (cloudStatus.logged_in) {
         this._externalAccess = true;
         return;

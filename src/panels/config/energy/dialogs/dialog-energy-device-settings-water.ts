@@ -151,7 +151,6 @@ export class DialogEnergyDeviceSettingsWater
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${volumeUnitClasses}
           .value=${this._device?.stat_consumption}
@@ -169,7 +168,6 @@ export class DialogEnergyDeviceSettingsWater
         ></ha-statistic-picker>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .includeUnitClass=${flowRateUnitClasses}
           .value=${this._device?.stat_rate}
           .label=${this.hass.localize(

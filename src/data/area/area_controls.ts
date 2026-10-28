@@ -65,7 +65,10 @@ export const getAreaControlEntities = (
   controls: readonly AreaControlDomain[],
   areaId: string,
   excludeEntities: string[] | undefined,
-  hass: HomeAssistant
+  hass: Pick<
+    HomeAssistant,
+    "states" | "entities" | "devices" | "areas" | "floors"
+  >
 ): Record<AreaControlDomain, string[]> =>
   controls.reduce(
     (acc, control) => {

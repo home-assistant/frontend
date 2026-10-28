@@ -449,7 +449,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                           }
                           const { primary, secondary } =
                             computeEntityPickerDisplay(
-                              this.hass,
+                              {
+                                entities: this.hass.entities,
+                                devices: this.hass.devices,
+                                areas: this.hass.areas,
+                                floors: this.hass.floors,
+                                language: this.hass.language,
+                                translationMetadata:
+                                  this.hass.translationMetadata,
+                              },
                               entityStateObj
                             );
                           const platform =
@@ -557,7 +565,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                               }
                               const { primary, secondary } =
                                 computeEntityPickerDisplay(
-                                  this.hass,
+                                  {
+                                    entities: this.hass.entities,
+                                    devices: this.hass.devices,
+                                    areas: this.hass.areas,
+                                    floors: this.hass.floors,
+                                    language: this.hass.language,
+                                    translationMetadata:
+                                      this.hass.translationMetadata,
+                                  },
                                   entityStateObj
                                 );
                               const domainName = domainToName(
@@ -793,7 +809,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
     switch (action) {
       case "apply":
-        activateScene(this.hass, this._scene!.entity_id);
+        activateScene(this.hass.callService, this._scene!.entity_id);
         break;
       case "show-info":
         fireEvent(this, "hass-more-info", { entityId: this._scene!.entity_id });
@@ -921,7 +937,10 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     if (!this._scene) {
       return;
     }
-    const { context } = await activateScene(this.hass, this._scene.entity_id);
+    const { context } = await activateScene(
+      this.hass.callService,
+      this._scene.entity_id
+    );
     this._activateContextId = context.id;
   }
 

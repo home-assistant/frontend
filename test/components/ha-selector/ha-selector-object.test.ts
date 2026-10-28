@@ -1,6 +1,16 @@
+import { ContextProvider } from "@lit/context";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  formattersContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+} from "../../../src/data/context";
 import type { ObjectSelector } from "../../../src/data/selector";
-import type { HomeAssistant } from "../../../src/types";
+import type {
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+} from "../../../src/types";
 import type { HaObjectSelector } from "../../../src/components/ha-selector/ha-selector-object";
 import type {
   FormDialogData,
@@ -33,16 +43,6 @@ vi.mock("../../../src/components/ha-yaml-editor", () => {
   return {};
 });
 
-const hass = {
-  localize: (key: string) => key,
-  locale: "en-US",
-  floors: {},
-  areas: {},
-  devices: {},
-  states: {},
-  formatEntityName: () => "",
-} as unknown as HomeAssistant;
-
 const selectorConfig = {
   object: {
     multiple: true,
@@ -67,13 +67,32 @@ const mountSelector = async (
   value: FormDialogData | FormDialogData[] | "",
   config: ObjectSelector = selectorConfig
 ) => {
+  const host = document.createElement("div");
+  new ContextProvider(host, {
+    context: internationalizationContext,
+    initialValue: {
+      localize: (key: string) => key,
+      locale: { language: "en" },
+    } as unknown as HomeAssistantInternationalization,
+  });
+  new ContextProvider(host, {
+    context: registriesContext,
+    initialValue: { entities: {}, devices: {}, areas: {}, floors: {} },
+  });
+  new ContextProvider(host, { context: statesContext, initialValue: {} });
+  new ContextProvider(host, {
+    context: formattersContext,
+    initialValue: {
+      formatEntityName: () => "",
+    } as unknown as HomeAssistantFormatters,
+  });
   const selector = document.createElement(
     "ha-selector-object"
   ) as HaObjectSelector;
-  selector.hass = hass;
   selector.selector = config;
   selector.value = value;
-  document.body.append(selector);
+  host.append(selector);
+  document.body.append(host);
   await selector.updateComplete;
   return selector;
 };
