@@ -14,6 +14,7 @@ import {
   query,
   state,
 } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { loadVirtualizer } from "../../resources/virtualizer";
 import { HaListItemBase } from "../item/ha-list-item-base";
@@ -128,7 +129,7 @@ export class HaListVirtualized extends HaListBase {
         tabindex="-1"
         scroller
         .items=${this.rows}
-        .renderItem=${this.rowRenderer}
+        .renderItem=${this._getRenderItem(this.rowRenderer)}
         style="min-height: 36px; height: 100%;"
         .layout=${
           !this._unpinned && this.pinIndex !== undefined
@@ -363,7 +364,19 @@ export class HaListVirtualized extends HaListBase {
     return Math.max(1, this.rangeEnd - this.rangeStart + 1);
   }
 
-  private _keyFunction = (item: HaListVirtualizedItem) => item.id;
+  // The virtualizer renders its last range again when it re-renders before it
+  // lays out shorter rows, so rows past the end arrive as undefined.
+  private _keyFunction = (
+    item: HaListVirtualizedItem | undefined,
+    index: number
+  ) => item?.id ?? index;
+
+  private _getRenderItem = memoizeOne(
+    (rowRenderer?: RenderItemFunction<HaListVirtualizedItem>) =>
+      rowRenderer &&
+      ((item: HaListVirtualizedItem | undefined, index: number) =>
+        item ? rowRenderer(item, index) : nothing)
+  );
 
   @eventOptions({ passive: true })
   private _handleUnpinned() {

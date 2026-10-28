@@ -5,6 +5,7 @@ import type { ConditionEvaluation } from "../common/controllers/condition-evalua
 import { ConditionEvaluatorController } from "../common/controllers/condition-evaluator-controller";
 import { maxColumnsContext } from "../panels/lovelace/common/context";
 import { evaluateConditionsLocally } from "../common/condition/evaluate-locally";
+import { dropInvalidConditions } from "../common/condition/sanitize";
 import type {
   ConditionContext,
   VisibilityCondition,
@@ -153,8 +154,6 @@ export const ConditionalListenerMixin = <
       const finalConditions = conditions ?? config?.visibility;
       const entityId = this._conditionContext.entity_id;
 
-      this.__conditions = finalConditions;
-
       // Fold in the host entity and keep a stable array across hass updates.
       if (
         finalConditions !== this.__observedSource ||
@@ -168,12 +167,15 @@ export const ConditionalListenerMixin = <
           this.__conditionsSignature = signature;
           this.__conditionResult = "unknown";
         }
+        const validConditions =
+          finalConditions && dropInvalidConditions(finalConditions);
+        this.__conditions = validConditions;
         this.__observedSource = finalConditions;
         this.__observedEntityId = entityId;
         this.__observed =
-          finalConditions && entityId
-            ? finalConditions.map((c) => addEntityToCondition(c, entityId))
-            : finalConditions;
+          validConditions && entityId
+            ? validConditions.map((c) => addEntityToCondition(c, entityId))
+            : validConditions;
       }
 
       this.__conditionEvaluator.observe(
