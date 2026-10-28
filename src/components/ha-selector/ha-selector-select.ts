@@ -1,6 +1,7 @@
 import { mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../../common/decorators/consume";
@@ -172,7 +173,9 @@ export class HaSelectSelector extends LitElement {
       return html`
         ${
           this.label
-            ? html`<span class="label chips-label">${this.label}</span>`
+            ? html`<span id="label" class="label chips-label"
+                >${this.label}</span
+              >`
             : nothing
         }
         <ha-generic-picker
@@ -193,7 +196,9 @@ export class HaSelectSelector extends LitElement {
             draggable-selector="ha-input-chip"
             handle-selector="button.primary.action"
           >
-            <ha-chip-set>
+            <ha-chip-set
+              aria-labelledby=${ifDefined(this.label ? "label" : undefined)}
+            >
               ${repeat(
                 value,
                 (item) => item,

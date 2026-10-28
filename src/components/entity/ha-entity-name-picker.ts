@@ -121,6 +121,8 @@ export class HaEntityNamePicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
+  @query("ha-button.add") private _addButton?: HTMLElement;
+
   private _editIndex?: number;
 
   connectedCallback(): void {
@@ -159,7 +161,7 @@ export class HaEntityNamePicker extends LitElement {
     return html`
       <div class="container">
         <div class="header">
-          ${this.label ? html`<label>${this.label}</label>` : nothing}
+          ${this.label ? html`<label id="label">${this.label}</label>` : nothing}
           ${
             this.allowCustom
               ? html`
@@ -267,7 +269,9 @@ export class HaEntityNamePicker extends LitElement {
             handle-selector="button.primary.action"
             filter=".add"
           >
-            <ha-chip-set>
+            <ha-chip-set
+              aria-labelledby=${ifDefined(this.label ? "label" : undefined)}
+            >
               ${repeat(
                 this._items,
                 (item) => item,
@@ -379,6 +383,10 @@ export class HaEntityNamePicker extends LitElement {
     const idx = parseInt((ev.target as HTMLElement).dataset.idx || "", 10);
     value.splice(idx, 1);
     this._setValue(value);
+    if (!value.length) {
+      await this.updateComplete;
+      this._addButton?.focus();
+    }
   }
 
   private _pickerValueChanged(ev: ValueChangedEvent<string>): void {

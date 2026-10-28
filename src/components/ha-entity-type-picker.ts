@@ -3,6 +3,7 @@ import { mdiPlus } from "@mdi/js";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -248,7 +249,7 @@ export class HaEntityTypePicker extends LitElement {
     const canAdd = this._getItems().length > 0;
 
     return html`
-      ${this.label ? html`<label>${this.label}</label>` : nothing}
+      ${this.label ? html`<label id="label">${this.label}</label>` : nothing}
       <ha-generic-picker
         .label=${this.label}
         .disabled=${this.disabled}
@@ -261,7 +262,10 @@ export class HaEntityTypePicker extends LitElement {
         no-sort
         @value-changed=${this._itemAdded}
       >
-        <ha-chip-set slot="field">
+        <ha-chip-set
+          slot="field"
+          aria-labelledby=${ifDefined(this.label ? "label" : undefined)}
+        >
           ${repeat(
             value,
             (key) => key,
