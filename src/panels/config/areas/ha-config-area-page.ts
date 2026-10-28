@@ -942,6 +942,7 @@ class HaConfigAreaPage extends LitElement {
 
         :host {
           display: block;
+          height: 100%;
         }
         .container {
           display: flex;
