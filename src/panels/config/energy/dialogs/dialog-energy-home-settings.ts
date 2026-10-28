@@ -3,6 +3,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
@@ -51,6 +52,19 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
 
   @consume({ context: entitiesContext, subscribe: true })
   private _entities!: ContextType<typeof entitiesContext>;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<ContextType<typeof statesContext>, string>({
+    transformer: function (this: DialogEnergyHomeSettings, states) {
+      const statRate = this._source?.stat_rate;
+      return statRate
+        ? states?.[statRate]?.attributes.unit_of_measurement
+        : undefined;
+    },
+    watch: ["_source"],
+  })
+  private _rateUnit?: string;
 
   @state() private _source?: HomeSourceTypeEnergyPreference;
 
@@ -190,14 +204,9 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
   }
 
   private _integralUnits(): IntegralUnits | undefined {
-    const statRate = this._source?.stat_rate;
-    if (!statRate || !this._energy_units) {
-      return undefined;
-    }
-    return integralUnits(
-      this._states[statRate]?.attributes.unit_of_measurement,
-      this._energy_units
-    );
+    return this._energy_units
+      ? integralUnits(this._rateUnit, this._energy_units)
+      : undefined;
   }
 
   private async _save() {
