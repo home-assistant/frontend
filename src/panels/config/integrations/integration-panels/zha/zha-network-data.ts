@@ -307,7 +307,7 @@ export function createZHANetworkChartData(
       icon: mdiLeaf,
       category: 3,
     },
-    no_parent: {
+    unknown_parent: {
       color: style.getPropertyValue("--disabled-color"),
       icon: mdiHelpNetworkOutline,
       category: undefined,
@@ -315,7 +315,7 @@ export function createZHANetworkChartData(
   };
   const virtualChildren: Record<keyof typeof virtualParents, ZHADevice[]> = {
     green_power: [],
-    no_parent: [],
+    unknown_parent: [],
   };
   devices.forEach((device) => {
     if (device.device_type === ZHADeviceType.Coordinator) {
@@ -329,7 +329,7 @@ export function createZHANetworkChartData(
       (link) => link.source === device.ieee || link.target === device.ieee
     );
     if (!hasLink) {
-      virtualChildren.no_parent.push(device);
+      virtualChildren.unknown_parent.push(device);
     }
   });
   const coordinator = devices.find(

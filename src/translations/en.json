@@ -8513,7 +8513,7 @@
             "end_device": "End device",
             "green_power": "Green Power",
             "offline": "Offline",
-            "no_parent": "No parent"
+            "unknown_parent": "Unknown parent"
           },
           "device_binding": {
             "header": "Device binding",
