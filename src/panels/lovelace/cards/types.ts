@@ -41,6 +41,10 @@ import type {
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
+import type {
+  PICTURE_ELEMENTS_EDITOR_BRIDGE,
+  PictureElementsEditorBridge,
+} from "./picture-elements/editor-bridge";
 
 export type AlarmPanelCardConfigState =
   "arm_away" | "arm_home" | "arm_night" | "arm_vacation" | "arm_custom_bypass";
@@ -567,10 +571,6 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   alt_text?: string;
 }
 
-// Symbol for preview click callback - preserved through spreads, not serialized
-// This allows the editor to attach a callback that only exists on the edited card's config
-export const PREVIEW_CLICK_CALLBACK = Symbol("previewClickCallback");
-
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string | MediaSelectorValue;
@@ -585,7 +585,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   theme?: string;
   dark_mode_image?: string | MediaSelectorValue;
   dark_mode_filter?: string;
-  [PREVIEW_CLICK_CALLBACK]?: (x: number, y: number) => void;
+  [PICTURE_ELEMENTS_EDITOR_BRIDGE]?: PictureElementsEditorBridge;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
