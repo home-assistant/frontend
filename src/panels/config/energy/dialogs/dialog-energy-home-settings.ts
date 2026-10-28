@@ -25,7 +25,9 @@ import type { EnergySettingsHomeDialogParams } from "./show-dialogs-energy";
 import { DialogMixin } from "../../../../dialogs/dialog-mixin";
 import {
   configContext,
+  entitiesContext,
   internationalizationContext,
+  statesContext,
 } from "../../../../data/context";
 
 const energyUnitClasses = ["energy"];
@@ -42,6 +44,13 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
   @state()
   @consume({ context: configContext, subscribe: true })
   private _hassConfig!: ContextType<typeof configContext>;
+
+  // Kept current without rendering on every state change
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
 
   @state() private _source?: HomeSourceTypeEnergyPreference;
 
@@ -186,7 +195,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
       return undefined;
     }
     return integralUnits(
-      this.params!.hass.states[statRate]?.attributes.unit_of_measurement,
+      this._states[statRate]?.attributes.unit_of_measurement,
       this._energy_units
     );
   }
@@ -239,6 +248,8 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
     }
     const sensors = await confirmIntegrals(this, hass, {
       deviceClass: "energy",
+      states: this._states,
+      entities: this._entities,
       requests: [
         {
           rate: statRate,
@@ -247,7 +258,7 @@ export class DialogEnergyHomeSettings extends DirtyStateProviderMixin<HomeSource
             "ui.panel.config.energy.integral.energy.sensor_name",
             {
               name: computeEnergyLabel(
-                hass.states,
+                this._states,
                 hass.formatEntityName,
                 statRate,
                 undefined,

@@ -4854,7 +4854,7 @@
               "use_item": "{total} already calculates the energy from {rate}.",
               "sensor_name": "{name} energy"
             },
-            "counting_note": "New sensors start counting now, so earlier usage is not included.",
+            "counting_note": "New sensors start counting now, so earlier values are not included.",
             "use": "{count, plural,\n one {Use sensor}\n other {Use sensors}\n}",
             "create_failed": "Failed to create the sensor."
           }

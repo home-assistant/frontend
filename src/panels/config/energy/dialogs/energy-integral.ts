@@ -127,6 +127,9 @@ async function createIntegral(
 
 export interface ConfirmIntegralsOptions {
   deviceClass: IntegralDeviceClass;
+  /** Live states and entities, so a retry finds the helpers already created. */
+  states: HomeAssistant["states"];
+  entities: HomeAssistant["entities"];
   requests: IntegralRequest[];
   /** Why the sensors are needed, shown first. */
   intro: string;
@@ -145,8 +148,8 @@ export async function confirmIntegrals(
   hass: HomeAssistant,
   options: ConfirmIntegralsOptions
 ): Promise<string[] | undefined> {
-  const { localize, states, entities, formatEntityName } = hass;
-  const { deviceClass } = options;
+  const { localize, formatEntityName } = hass;
+  const { deviceClass, states, entities } = options;
   const label = (statisticId: string) =>
     getStatisticLabel(
       states,
