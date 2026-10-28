@@ -250,11 +250,12 @@ class StateDisplay extends LitElement {
     if (specialContent.includes(content)) {
       if (content === "install_status") {
         return html`
-          ${computeUpdateStateDisplay(stateObj as UpdateEntity, {
-            localize: i18n.localize,
-            locale: i18n.locale,
-            formatEntityState: formatters.formatEntityState,
-          })}
+          ${computeUpdateStateDisplay(
+            stateObj as UpdateEntity,
+            i18n.localize,
+            i18n.locale,
+            formatters.formatEntityState
+          )}
         `;
       }
       if (content === "remaining_time") {

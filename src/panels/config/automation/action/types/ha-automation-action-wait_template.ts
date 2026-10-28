@@ -1,6 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { isTemplate } from "../../../../../common/string/has-template";
 import type { WaitAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
@@ -25,7 +26,7 @@ export class HaWaitAction extends LitElement implements ActionElement {
   }
 
   private _schema = memoizeOne(
-    (timeoutType: TimeoutType) =>
+    (timeoutType: TimeoutType, timeoutSet: boolean) =>
       [
         {
           name: "wait_template",
@@ -44,7 +45,8 @@ export class HaWaitAction extends LitElement implements ActionElement {
         {
           name: "continue_on_timeout",
           selector: { boolean: {} },
-          default: true,
+          default: timeoutSet,
+          disabled: !timeoutSet,
         },
       ] as const satisfies readonly HaFormSchema[]
   );
@@ -65,9 +67,10 @@ export class HaWaitAction extends LitElement implements ActionElement {
       <ha-form
         .hass=${this.hass}
         .data=${this.action}
-        .schema=${this._schema(timeoutType)}
+        .schema=${this._schema(timeoutType, timeout !== undefined)}
         .disabled=${this.disabled}
         .computeLabel=${this._computeLabelCallback}
+        @value-changed=${this._formValueChanged}
       ></ha-form>
     `;
   }
@@ -80,6 +83,15 @@ export class HaWaitAction extends LitElement implements ActionElement {
         schema.name === "continue_on_timeout" ? "continue_timeout" : schema.name
       }`
     );
+
+  private _formValueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const value = { ...ev.detail.value };
+    if (value.timeout === undefined) {
+      delete value.continue_on_timeout;
+    }
+    fireEvent(this, "value-changed", { value });
+  }
 }
 
 declare global {

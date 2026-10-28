@@ -60,7 +60,7 @@ export class HuiButtonCardFeatureEditor
 
       if (
         domain === "script" &&
-        hasScriptFields(this.hass, this.context.entity_id)
+        hasScriptFields(this.hass.services, this.context.entity_id)
       ) {
         scriptData = {
           action: this.context.entity_id,

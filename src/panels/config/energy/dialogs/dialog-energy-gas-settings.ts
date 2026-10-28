@@ -186,7 +186,6 @@ export class DialogEnergyGasSettings
         </div>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${
             this._params.allowedGasUnitClass || gasUnitClasses
@@ -206,7 +205,6 @@ export class DialogEnergyGasSettings
         ></ha-statistic-picker>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .includeUnitClass=${flowRateUnitClasses}
           .value=${this._source.stat_rate}
           .label=${this.hass.localize(
@@ -270,7 +268,6 @@ export class DialogEnergyGasSettings
           this._costs === "statistic"
             ? html`<ha-statistic-picker
                 class="price-options"
-                .hass=${this.hass}
                 statistic-types="sum"
                 .value=${this._source.stat_cost}
                 .label=${`${this.hass.localize(

@@ -138,7 +138,10 @@ export const getTargetSubtitle = (
     }
     return computeEntityPickerDisplay(
       {
-        ...registries,
+        entities: registries.entities,
+        devices: registries.devices,
+        areas: registries.areas,
+        floors: registries.floors,
         language: i18n.language,
         translationMetadata: i18n.translationMetadata,
       },

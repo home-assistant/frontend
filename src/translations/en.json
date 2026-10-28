@@ -524,6 +524,7 @@
       "help": "Help",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
+      "successfully_replaced": "Successfully replaced",
       "deleting_failed": "Deleting failed",
       "error_required": "Required",
       "copied": "Copied",
@@ -2151,7 +2152,8 @@
         "faq": "documentation",
         "editor": {
           "name": "Name",
-          "use_device_name": "Use device name",
+          "main_entity": "Main entity of the device ({device})",
+          "main_entity_description": "Represents the device's main function and has no separate name.",
           "change_device_name_link": "change the device name",
           "restore_name": "Restore default name",
           "icon": "Icon",
@@ -2262,8 +2264,8 @@
           "note": "Note: This might not work yet with all integrations.",
           "use_device_area": "Use device area",
           "use_device_area_confirm_title": "Use the area of the device?",
-          "use_device_area_confirm_text": "This entity is in {area}. Because it has no name of its own, it will use the area of its device instead.",
-          "use_device_area_required": "An entity without its own name always uses the area of its device. You can {link} in the device settings.",
+          "use_device_area_confirm_text": "This entity is in {area}. As a main entity, it will use the area of its device instead.",
+          "use_device_area_required": "A main entity always uses the area of its device. You can {link} in the device settings.",
           "change_device_settings": "You can {link} in the device settings",
           "change_device_area_link": "change the device area",
           "configure_state": "{integration} options",
@@ -5769,6 +5771,7 @@
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
+              "replace_title": "Replace trigger",
               "empty_search": {
                 "global": "No triggers and targets found for {term}",
                 "item": "No triggers found for {term}"
@@ -5783,6 +5786,7 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "Re-order",
               "rename": "Rename",
+              "replace": "[%key:ui::common::replace%]",
               "cut": "Cut",
               "copy": "Copy",
               "paste": "Paste",
@@ -5793,6 +5797,7 @@
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
+              "describe_error": "Error in describing trigger: {error}",
               "triggering_event_detail": "Triggering event detail",
               "trigger": "Trigger",
               "copied_to_clipboard": "Trigger copied to clipboard",
@@ -5807,6 +5812,9 @@
                 },
                 "entity": {
                   "label": "Entity"
+                },
+                "event": {
+                  "label": "Event"
                 },
                 "time": {
                   "label": "Time"
@@ -6076,6 +6084,7 @@
               "description": "All conditions added here need to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
+              "replace_title": "Replace condition",
               "empty_search": {
                 "global": "No conditions, blocks and targets found for {term}",
                 "item": "No conditions found for {term}"
@@ -6100,6 +6109,7 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+              "replace": "[%key:ui::common::replace%]",
               "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
               "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
               "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
@@ -6110,6 +6120,7 @@
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
+              "describe_error": "Error in describing condition: {error}",
               "condition": "Condition",
               "copied_to_clipboard": "Condition copied to clipboard",
               "cut_to_clipboard": "Condition cut to clipboard",
@@ -6252,6 +6263,7 @@
                   "missing_triggers": "This condition references a trigger that no longer exists. Uncheck it to clear it.",
                   "duplicate_ids": "Some triggers share the same trigger ID. Avoid reusing a trigger ID to group triggers and select multiple triggers here instead.",
                   "duplicate_ids_fix": "Fix",
+                  "duplicate_id": "Duplicate trigger ID",
                   "assign_unique_ids_title": "Fix duplicate trigger IDs?",
                   "assign_unique_ids_description": "Triggers that share a used ID get a unique ID, and conditions using it are updated to match. IDs that nothing uses are removed. Templates or actions that use trigger.id directly may need to be updated.",
                   "description": {
@@ -6276,6 +6288,7 @@
               "description": "All actions added here will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
+              "replace_title": "Replace action",
               "empty_search": {
                 "global": "No actions, blocks and targets found for {term}",
                 "item": "No actions found for {term}"
@@ -6289,6 +6302,7 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+              "replace": "[%key:ui::common::replace%]",
               "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
               "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
               "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
@@ -6300,6 +6314,7 @@
               "disabled": "Disabled",
               "delete": "[%key:ui::common::delete%]",
               "unsupported_action": "No visual editor support for this action",
+              "describe_error": "Error in describing action: {error}",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "continue_on_error_description": "If this action fails, the next action will still run.",
@@ -7582,6 +7597,16 @@
               "button": "Disable selected",
               "confirm_title": "Do you want to disable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Disabled entities will not be added to Home Assistant."
+            },
+            "expose_selected": {
+              "button": "Expose to voice assistant",
+              "all_assistants": "All assistants",
+              "no_entities": "None of the selected entities can be exposed.",
+              "toast": "Exposed {count} {count, plural,\n  one {entity}\n  other {entities}\n} to {assistants}"
+            },
+            "unexpose_selected": {
+              "button": "Stop exposing to voice assistant",
+              "toast": "Stopped exposing {count} {count, plural,\n  one {entity}\n  other {entities}\n} to {assistants}"
             },
             "restore_entity_id_selected": {
               "button": "Recreate entity IDs of selected",
@@ -11446,7 +11471,8 @@
               "dark_mode_image": "Dark mode image path",
               "state_filter": "State filter",
               "dark_mode_filter": "Dark mode state filter",
-              "position_hint": "Click on the image preview to position this element",
+              "move_hint": "Drag this element in the image preview, or select the spot where it should go.",
+              "select_hint": "Select an element in the image preview to edit it, or drag it to move it.",
               "element_types": {
                 "state-badge": "State badge",
                 "state-icon": "State icon",
@@ -13107,6 +13133,11 @@
         "dialog": {
           "error": {
             "title": "Error"
+          },
+          "dismiss_new": {
+            "title": "Dismiss new repositories?",
+            "text": "{count, plural,\n  one {The new repository will no longer be marked as new.}\n  other {The {count} new repositories will no longer be marked as new.}\n}",
+            "confirm": "Dismiss"
           },
           "reload": {
             "description": "You need to reload your browser for the updated resources to be used.",

@@ -1,23 +1,33 @@
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/entity/state-info";
 import "../components/ha-button";
+import { apiContext, servicesContext } from "../data/context";
 import { UNAVAILABLE } from "../data/entity/entity";
 import type { ScriptEntity } from "../data/script";
 import { canRun, hasScriptFields } from "../data/script";
 import { showMoreInfoDialog } from "../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 
 @customElement("state-card-script")
 class StateCardScript extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: servicesContext, subscribe: true })
+  private _services!: ContextType<typeof servicesContext>;
 
   protected render() {
     const stateObj = this.stateObj as ScriptEntity;
@@ -37,10 +47,10 @@ class StateCardScript extends LitElement {
                 ${
                   stateObj.attributes.mode !== "single" &&
                   (stateObj.attributes.current || 0) > 0
-                    ? this.hass.localize("ui.card.script.cancel_multiple", {
+                    ? this._localize("ui.card.script.cancel_multiple", {
                         number: stateObj.attributes.current,
                       })
-                    : this.hass.localize("ui.card.script.cancel")
+                    : this._localize("ui.card.script.cancel")
                 }
               </ha-button>`
             : ""
@@ -53,7 +63,7 @@ class StateCardScript extends LitElement {
                 @click=${this._runScript}
                 .disabled=${stateObj.state === UNAVAILABLE || !canRun(stateObj)}
               >
-                ${this.hass!.localize("ui.card.script.run")}
+                ${this._localize("ui.card.script.run")}
               </ha-button>`
             : ""
         }
@@ -69,7 +79,7 @@ class StateCardScript extends LitElement {
   private _runScript(ev: Event) {
     ev.stopPropagation();
 
-    if (hasScriptFields(this.hass, this.stateObj.entity_id)) {
+    if (hasScriptFields(this._services, this.stateObj.entity_id)) {
       showMoreInfoDialog(this, { entityId: this.stateObj.entity_id });
     } else {
       this._callService("turn_on");
@@ -77,7 +87,7 @@ class StateCardScript extends LitElement {
   }
 
   private _callService(service: string): void {
-    this.hass.callService("script", service, {
+    this._api.callService("script", service, {
       entity_id: this.stateObj.entity_id,
     });
   }

@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
@@ -231,6 +231,15 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       const rows: TemplateResult[] = [];
       for (const stat of data) {
         const digits = this._fractionDigits(stat.change);
+        const change = formatNumberWithUnit(
+          stat.change!,
+          unit,
+          this.hass.locale,
+          {
+            minimumFractionDigits: digits,
+            maximumFractionDigits: digits,
+          }
+        );
         rows.push(html`
           <ha-list-item
             twoline
@@ -238,13 +247,7 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
             .stat=${stat}
             @click=${this._setChosenStatistic}
           >
-            <span
-              >${formatNumber(stat.change!, this.hass.locale, {
-                minimumFractionDigits: digits,
-                maximumFractionDigits: digits,
-              })}
-              ${unit}</span
-            >
+            <span>${change}</span>
             <span slot="secondary">
               ${formatDateTime(
                 new Date(stat.start),

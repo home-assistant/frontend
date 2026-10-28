@@ -1,6 +1,12 @@
 import "@material/mwc-list/mwc-list";
 import type { ContextType } from "@lit/context";
-import { mdiPlus, mdiTextureBox, mdiUnfoldMoreHorizontal } from "@mdi/js";
+import {
+  mdiCheck,
+  mdiPlus,
+  mdiSwapHorizontal,
+  mdiTextureBox,
+  mdiUnfoldMoreHorizontal,
+} from "@mdi/js";
 import Fuse from "fuse.js";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
 import {
@@ -161,6 +167,8 @@ export class HaAutomationAddSearch extends LitElement {
   @property({ attribute: false }) public items!: AddAutomationElementListItem[];
 
   @property({ type: Boolean }) public narrow = false;
+
+  @property({ attribute: false }) public replacingItemKey?: string;
 
   @property({ attribute: "add-element-type" })
   public addElementType!: AddElementType;
@@ -329,7 +337,7 @@ export class HaAutomationAddSearch extends LitElement {
                 <ha-list-virtualized
                   virtual-focus
                   tabindex="0"
-                  .rows=${this._getRows(items)}
+                  .rows=${this._getRows(items, this.replacingItemKey)}
                   .rowRenderer=${this._getRowRenderer(
                     this._showEntityId,
                     this.narrow
@@ -370,13 +378,29 @@ export class HaAutomationAddSearch extends LitElement {
   }
 
   private _getRows = memoizeOne(
-    (items: (SearchResultItem | string)[]): SearchResultRow[] =>
+    (
+      items: (SearchResultItem | string)[],
+      _replacingItemKey?: string
+    ): SearchResultRow[] =>
       items.map((item) =>
         typeof item === "string"
           ? { id: `___title___${item}`, value: item }
-          : { id: item.id, interactive: true, value: item }
+          : {
+              id: item.id,
+              interactive: true,
+              disabled: this._isCurrent(item),
+              value: item,
+            }
       )
   );
+
+  private _isCurrent(item: SearchResultItem) {
+    return (
+      ["trigger", "condition", "action", "block"].includes(
+        (item as AutomationItemComboBoxItem).type
+      ) && item.id === this.replacingItemKey
+    );
+  }
 
   private _getRowRenderer = memoizeOne(
     (_showEntityId?: boolean, _narrow?: boolean) =>
@@ -427,8 +451,17 @@ export class HaAutomationAddSearch extends LitElement {
       showEntityId = !!this._showEntityId;
     }
 
+    const current = this._isCurrent(item);
+
     return html`<ha-list-item-button
       .value=${item}
+      style=${
+        current
+          ? "--disabled-text-color: var(--primary-text-color); background-color: var(--ha-color-fill-primary-quiet-resting);"
+          : ""
+      }
+      .disabled=${current}
+      aria-current=${current ? "true" : nothing}
       @click=${this._selectSearchResult}
     >
       <ha-combo-box-item
@@ -525,7 +558,7 @@ export class HaAutomationAddSearch extends LitElement {
             ? html`<ha-svg-icon
                 slot="end"
                 style="color: var(--primary-color);"
-                .path=${mdiPlus}
+                .path=${current ? mdiCheck : this.replacingItemKey ? mdiSwapHorizontal : mdiPlus}
               ></ha-svg-icon>`
             : this.narrow
               ? html`<ha-icon-next slot="end"></ha-icon-next>`
@@ -1047,6 +1080,9 @@ export class HaAutomationAddSearch extends LitElement {
       | DevicePickerItem
       | AutomationItemComboBoxItem
   ) {
+    if (this._isCurrent(item)) {
+      return;
+    }
     fireEvent(this, "search-element-picked", item);
   }
 

@@ -148,7 +148,6 @@ export class DialogEnergyDeviceSettings
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._device?.stat_consumption}
@@ -166,7 +165,6 @@ export class DialogEnergyDeviceSettings
         ></ha-statistic-picker>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .includeUnitClass=${powerUnitClasses}
           .value=${this._device?.stat_rate}
           .label=${this.hass.localize(

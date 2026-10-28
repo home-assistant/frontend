@@ -86,11 +86,9 @@ export class HaStateControlLockToggle extends LitElement {
     fireEvent(this, "lock-service-called");
     callProtectedLockService(
       this,
-      {
-        callService: this._api.callService,
-        callWS: this._api.callWS,
-        localize: this._localize,
-      },
+      this._api.callService,
+      this._api.callWS,
+      this._localize,
       this.stateObj,
       turnOn ? "lock" : "unlock"
     );

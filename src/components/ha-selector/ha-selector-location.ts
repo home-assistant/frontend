@@ -186,7 +186,7 @@ export class HaLocationSelector extends LitElement {
   static styles = css`
     ha-locations-editor {
       display: block;
-      height: 400px;
+      --ha-locations-editor-map-height: 400px;
       margin-bottom: 16px;
     }
     p {
