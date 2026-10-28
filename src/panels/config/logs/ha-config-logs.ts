@@ -124,7 +124,7 @@ export class HaConfigLogs extends LitElement {
 
   @state() private _logProviders = logProviders;
 
-  @state() private _showFilters?: boolean;
+  @state() private _showFilters = false;
 
   @state() private _integrationsExpanded = true;
 
@@ -174,7 +174,7 @@ export class HaConfigLogs extends LitElement {
   protected render(): TemplateResult {
     const core = this._selectedLogProvider === DEFAULT_LOG_PROVIDER;
     const integrations = core ? this._integrations : NO_INTEGRATIONS;
-    const filtersShown = core && this._filtersShown();
+    const filtersShown = core && this._showFilters;
     const filtersLabel = this.hass.localize(
       "ui.components.subpage-data-table.filters"
     );
@@ -338,12 +338,8 @@ export class HaConfigLogs extends LitElement {
     });
   }
 
-  private _filtersShown(): boolean {
-    return this._showFilters ?? !this.narrow;
-  }
-
   private _toggleFilters() {
-    this._showFilters = !this._filtersShown();
+    this._showFilters = !this._showFilters;
   }
 
   private _closeFilters() {
