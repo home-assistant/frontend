@@ -32,6 +32,7 @@ import {
   logsLinkFromUrl,
   logsQueryParamConfig,
   logsQueryParams,
+  type LogsState,
 } from "../../../common/url/logs-query-params";
 import { createQueryString } from "../../../common/url/query-params";
 import "../../../components/ha-app-icon";
@@ -154,7 +155,7 @@ export class HaConfigLogs extends LitElement {
 
   private _queryParams = new QueryParamsController(this, logsQueryParamConfig, {
     enabled: () => true,
-    navigated: () => this._applyUrl(),
+    navigated: () => this._navigated(),
   });
 
   public connectedCallback() {
@@ -378,7 +379,10 @@ export class HaConfigLogs extends LitElement {
 
     // The filter also sends the value it was given once it has its items, in
     // its own order, so only a change is the user's
-    if (!deepEqual([...integrations].sort(), [...this._integrations].sort())) {
+    if (
+      this._currentProvider() === DEFAULT_LOG_PROVIDER &&
+      !deepEqual([...integrations].sort(), [...this._integrations].sort())
+    ) {
       this._storedIntegrations = integrations;
     }
 
@@ -388,7 +392,10 @@ export class HaConfigLogs extends LitElement {
 
   private _clearIntegrations() {
     this._integrations = [];
-    this._storedIntegrations = [];
+
+    if (this._currentProvider() === DEFAULT_LOG_PROVIDER) {
+      this._storedIntegrations = [];
+    }
     this._writeUrl();
   }
 
@@ -407,15 +414,39 @@ export class HaConfigLogs extends LitElement {
   }
 
   private _writeUrl(debounced = false) {
-    this._queryParams.write(
-      logsQueryParams({
-        provider: this._currentProvider(),
-        search: this._filter,
-        integrations: this._integrations,
-        raw: this._detail,
-      }),
-      debounced
+    this._queryParams.write(logsQueryParams(this._urlState()), debounced);
+  }
+
+  private _urlState(): LogsState {
+    return {
+      provider: this._currentProvider(),
+      search: this._filter,
+      integrations: this._integrations,
+      raw: this._detail,
+    };
+  }
+
+  // Closing a dialog, like an entry's details, goes back to the URL the page
+  // is already showing, so there's nothing to apply
+  private _navigated() {
+    const searchParams = this._queryParams.searchParams();
+
+    const shown = createQueryString(
+      logsQueryParams(this._urlState()),
+      logsQueryParamConfig
     );
+
+    if (
+      searchParams &&
+      createQueryString(
+        logsQueryParams(logsLinkFromUrl(searchParams) ?? DEFAULT_LOGS_STATE),
+        logsQueryParamConfig
+      ) === shown
+    ) {
+      return;
+    }
+
+    this._applyUrl();
   }
 
   private async _init() {
