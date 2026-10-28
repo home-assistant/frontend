@@ -6243,6 +6243,7 @@
                   "missing_triggers": "This condition references a trigger that no longer exists. Uncheck it to clear it.",
                   "duplicate_ids": "Some triggers share the same trigger ID. Avoid reusing a trigger ID to group triggers and select multiple triggers here instead.",
                   "duplicate_ids_fix": "Fix",
+                  "duplicate_id": "Duplicate trigger ID",
                   "assign_unique_ids_title": "Fix duplicate trigger IDs?",
                   "assign_unique_ids_description": "Triggers that share a used ID get a unique ID, and conditions using it are updated to match. IDs that nothing uses are removed. Templates or actions that use trigger.id directly may need to be updated.",
                   "description": {
