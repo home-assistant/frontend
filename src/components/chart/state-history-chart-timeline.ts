@@ -86,7 +86,6 @@ export class StateHistoryChartTimeline extends LitElement {
   @consume({ context: configContext, subscribe: true })
   private _hassConfig!: HomeAssistantConfig;
 
-  // Not reactive: read only when the data is generated
   @consume({ context: statesContext, subscribe: true })
   private _states?: HassEntities;
 

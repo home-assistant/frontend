@@ -1,8 +1,4 @@
-import type {
-  HassConfig,
-  HassEntities,
-  HassEntity,
-} from "home-assistant-js-websocket";
+import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -11,7 +7,6 @@ import type { LineSeriesOption } from "echarts/charts";
 import type { YAXisOption } from "echarts/types/dist/shared";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
-import { preserveUnchangedEntityStatesRecord } from "../../common/decorators/consume-context-entry";
 import { transform } from "../../common/decorators/transform";
 import { computeRTL } from "../../common/util/compute_rtl";
 import {
@@ -142,34 +137,16 @@ export class StateHistoryChartLine extends LitElement {
   })
   private _hassConfig!: HassConfig;
 
-  // Not reactive: formatters change with every registry update
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: HomeAssistantFormatters;
 
   @consume({ context: entitiesContext, subscribe: true })
   private _entities!: HomeAssistant["entities"];
 
-  // Not reactive: _entityStates only follows a new `data` after willUpdate.
   @consume({ context: statesContext, subscribe: true })
   private _states?: HassEntities;
 
-  // Rerender trigger for the charted entities only
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  @transform<HassEntities, Record<string, HassEntity>>({
-    transformer: function (this: StateHistoryChartLine, states) {
-      const picked: Record<string, HassEntity> = {};
-      for (const entity of this.data) {
-        const stateObj = states?.[entity.entity_id];
-        if (stateObj) {
-          picked[entity.entity_id] = stateObj;
-        }
-      }
-      return preserveUnchangedEntityStatesRecord(this._entityStates, picked);
-    },
-    watch: ["data"],
-  })
-  private _entityStates?: Record<string, HassEntity>;
+  private _optionsEntityStates: Record<string, string | undefined> = {};
 
   protected render() {
     return html`
@@ -341,9 +318,14 @@ export class StateHistoryChartLine extends LitElement {
       changedProps.has("_yWidth") ||
       changedProps.has("_i18n") ||
       changedProps.has("_hassConfig") ||
-      (changedProps.has("_entityStates") &&
-        this._hasEntityStatesChanged(changedProps.get("_entityStates")))
+      this._hasEntityStatesChanged()
     ) {
+      this._optionsEntityStates = Object.fromEntries(
+        this._entityIds.map((entityId) => [
+          entityId,
+          this._states?.[entityId]?.state,
+        ])
+      );
       const rtl = computeRTL(
         this._i18n.language,
         this._i18n.translationMetadata.translations
@@ -483,12 +465,10 @@ export class StateHistoryChartLine extends LitElement {
     }
   }
 
-  private _hasEntityStatesChanged(
-    oldStates?: Record<string, HassEntity>
-  ): boolean {
+  private _hasEntityStatesChanged(): boolean {
     return this._entityIds.some(
       (entityId) =>
-        this._entityStates?.[entityId]?.state !== oldStates?.[entityId]?.state
+        this._states?.[entityId]?.state !== this._optionsEntityStates[entityId]
     );
   }
 
