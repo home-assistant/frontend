@@ -5,9 +5,10 @@ import memoizeOne from "memoize-one";
 import { array, assert, literal, object, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
-import "../../../../../components/ha-check-list-item";
-import "../../../../../components/ha-list";
-import "../../../../../components/ha-switch";
+import "../../../../../components/item/ha-list-item-option";
+import type { HaListItemOption } from "../../../../../components/item/ha-list-item-option";
+import "../../../../../components/list/ha-list-selectable";
+import type { HaListSelectable } from "../../../../../components/list/ha-list-selectable";
 import "../../../../../components/user/ha-user-badge";
 import type { User } from "../../../../../data/user";
 import { fetchUsers } from "../../../../../data/user";
@@ -57,43 +58,42 @@ export class HaCardConditionUser extends LitElement {
     const selectedUsers = this.condition.users ?? [];
 
     return html`
-      <ha-list @selected=${this._handleSelected} multi>
+      <ha-list-selectable
+        multi
+        aria-label=${this.hass.localize(
+          "ui.panel.lovelace.editor.condition-editor.condition.user.label"
+        )}
+        @ha-list-item-selected=${this._handleUserToggled}
+        @ha-list-item-deselected=${this._handleUserToggled}
+      >
         ${this._sortedUsers(this._users).map(
           (user) => html`
-            <ha-check-list-item
-              graphic="avatar"
-              hasMeta
+            <ha-list-item-option
+              appearance="checkbox"
+              selection-position="end"
+              .value=${user.id}
               .selected=${selectedUsers.includes(user.id)}
             >
-              <ha-user-badge slot="graphic" .user=${user}></ha-user-badge>
-              <span>${user.name}</span>
-            </ha-check-list-item>
+              <ha-user-badge slot="start" .user=${user}></ha-user-badge>
+              <span slot="headline">${user.name}</span>
+            </ha-list-item-option>
           `
         )}
-      </ha-list>
+      </ha-list-selectable>
     `;
   }
 
-  private _handleSelected(
-    ev: CustomEvent<{ diff: { added: number[]; removed: number[] } }>
-  ) {
-    const sortedUsers = this._sortedUsers(this._users);
-    let users = this.condition.users ?? [];
-
-    if (ev.detail.diff.added.length) {
-      const added = sortedUsers[ev.detail.diff.added[0]].id;
-      if (users.includes(added)) {
-        return;
-      }
-      users = [...users, added];
-    } else if (ev.detail.diff.removed.length) {
-      const removed = sortedUsers[ev.detail.diff.removed[0]].id;
-      if (!users.includes(removed)) {
-        return;
-      }
-      users = users.filter((user) => user !== removed);
-    } else {
+  private _handleUserToggled(ev: CustomEvent<number>) {
+    const option = (ev.currentTarget as HaListSelectable).items[ev.detail] as
+      HaListItemOption | undefined;
+    const userId = option?.value;
+    if (!userId) {
       return;
+    }
+
+    const users = (this.condition.users ?? []).filter((id) => id !== userId);
+    if (ev.type === "ha-list-item-selected") {
+      users.push(userId);
     }
 
     const condition: UserCondition = {
@@ -107,9 +107,6 @@ export class HaCardConditionUser extends LitElement {
   static styles = css`
     :host {
       display: block;
-    }
-    ha-list {
-      --mdc-list-vertical-padding: 0;
     }
   `;
 }

@@ -6,11 +6,11 @@ import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-list";
-import "../../../../components/ha-radio-list-item";
 import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog";
+import "../../../../components/item/ha-list-item-option";
+import "../../../../components/list/ha-list-selectable";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { fetchConfig } from "../../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../../data/lovelace/config/view";
@@ -163,32 +163,37 @@ export class HuiDialogSelectView extends LitElement {
     const hasIcon = views.some(({ icon }) => icon);
 
     return html`
-      <ha-list>
+      <ha-list-selectable
+        aria-label=${this.hass.localize(
+          "ui.panel.lovelace.editor.select_view.views_label"
+        )}
+        @ha-list-item-selected=${this._viewChanged}
+      >
         ${views.map((view, idx) => {
           const isStrategy = isStrategyView(view);
 
           return html`
-            <ha-radio-list-item
-              .graphic=${hasIcon ? "icon" : nothing}
-              @click=${this._viewChanged}
-              .value=${idx.toString()}
+            <ha-list-item-option
               .selected=${this._selectedViewIdx === idx}
               .disabled=${isStrategy && !this._params?.includeStrategyViews}
               ?autofocus=${idx === 0 && !this._params!.allowDashboardChange}
             >
-              <span>
+              ${
+                hasIcon
+                  ? html`<ha-icon slot="start" .icon=${view.icon}></ha-icon>`
+                  : nothing
+              }
+              <span slot="headline">
                 ${view.title}${
                   isStrategy
                     ? ` (${this.hass.localize("ui.panel.lovelace.editor.select_view.strategy_type")})`
                     : nothing
                 }
               </span>
-
-              <ha-icon .icon=${view.icon} slot="graphic"></ha-icon>
-            </ha-radio-list-item>
+            </ha-list-item-option>
           `;
         })}
-      </ha-list>
+      </ha-list-selectable>
     `;
   }
 
@@ -223,12 +228,8 @@ export class HuiDialogSelectView extends LitElement {
     this._loading = false;
   }
 
-  private _viewChanged(e) {
-    const view = Number(e.target.value);
-
-    if (!isNaN(view)) {
-      this._selectedViewIdx = view;
-    }
+  private _viewChanged(ev: CustomEvent<number>) {
+    this._selectedViewIdx = ev.detail;
   }
 
   private _selectView(): void {
@@ -256,8 +257,8 @@ export class HuiDialogSelectView extends LitElement {
           display: flex;
           justify-content: center;
         }
-        mwc-radio-list-item {
-          direction: ltr;
+        ha-icon[slot="start"] {
+          width: var(--mdc-icon-size, 24px);
         }
       `,
     ];

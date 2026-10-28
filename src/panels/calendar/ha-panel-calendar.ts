@@ -8,17 +8,20 @@ import { customElement, property, state } from "lit/decorators";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
-import "../../components/ha-card";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
-import "../../components/ha-list";
-import "../../components/ha-list-item";
 import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
+import "../../components/item/ha-list-item-button";
+import "../../components/item/ha-list-item-option";
+import type { HaListItemOption } from "../../components/item/ha-list-item-option";
+import "../../components/list/ha-list-base";
+import "../../components/list/ha-list-selectable";
+import type { HaListSelectable } from "../../components/list/ha-list-selectable";
 import type { Calendar } from "../../data/calendar";
 import { getCalendars } from "../../data/calendar";
 import { CalendarEventsController } from "../../data/calendar-events-controller";
@@ -177,21 +180,50 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         ></ha-icon-button>
         ${
           showPane
-            ? html`<ha-list slot="pane" multi>${calendarItems}</ha-list>${
-                  this.hass.user?.is_admin
-                    ? html`<ha-list-item
-                        graphic="icon"
-                        slot="pane-footer"
-                        @click=${this._addCalendar}
-                      >
-                        <ha-svg-icon
-                          .path=${mdiPlus}
-                          slot="graphic"
-                        ></ha-svg-icon>
-                        ${this.hass.localize(
-                          "ui.components.calendar.create_calendar"
+            ? html`<ha-list-selectable
+                  slot="pane"
+                  multi
+                  aria-label=${this.hass.localize(
+                    "ui.components.calendar.my_calendars"
+                  )}
+                  @ha-list-item-selected=${this._handleCalendarToggled}
+                  @ha-list-item-deselected=${this._handleCalendarToggled}
+                >
+                  ${this._calendars.map(
+                    (selCal) => html`
+                      <ha-list-item-option
+                        appearance="checkbox"
+                        selection-position="end"
+                        .value=${selCal.entity_id}
+                        .selected=${!this._deSelectedCalendars.includes(
+                          selCal.entity_id
                         )}
-                      </ha-list-item>`
+                      >
+                        <ha-state-icon
+                          slot="start"
+                          .stateObj=${selCal}
+                          style="--icon-primary-color: ${selCal.backgroundColor}"
+                        ></ha-state-icon>
+                        <span slot="headline">${selCal.name}</span>
+                      </ha-list-item-option>
+                    `
+                  )}
+                </ha-list-selectable>
+                ${
+                  this.hass.user?.is_admin
+                    ? html`<ha-list-base slot="pane-footer">
+                        <ha-list-item-button @click=${this._addCalendar}>
+                          <ha-svg-icon
+                            slot="start"
+                            .path=${mdiPlus}
+                          ></ha-svg-icon>
+                          <span slot="headline"
+                            >${this.hass.localize(
+                              "ui.components.calendar.create_calendar"
+                            )}</span
+                          >
+                        </ha-list-item-button>
+                      </ha-list-base>`
                     : nothing
                 }`
             : nothing
@@ -227,10 +259,23 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
   private _requestSelected(ev: Event) {
     ev.stopPropagation();
     const item = ev.currentTarget as HaDropdownItem;
-    const entityId = item.value as string;
-    const checked = item.checked;
+    this._setCalendarSelected(item.value as string, !item.checked);
+  }
 
-    if (!checked) {
+  private _handleCalendarToggled(ev: CustomEvent<number>) {
+    const option = (ev.currentTarget as HaListSelectable).items[ev.detail] as
+      HaListItemOption | undefined;
+    if (!option?.value) {
+      return;
+    }
+    this._setCalendarSelected(
+      option.value,
+      ev.type === "ha-list-item-selected"
+    );
+  }
+
+  private _setCalendarSelected(entityId: string, selected: boolean) {
+    if (selected) {
       this._deSelectedCalendars = this._deSelectedCalendars.filter(
         (cal) => cal !== entityId
       );
