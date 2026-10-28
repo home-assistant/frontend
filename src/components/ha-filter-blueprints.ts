@@ -11,7 +11,7 @@ import {
 import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
-import { addValue, removeValue } from "../common/array/add-remove-value";
+import { arrayWith, arrayWithout } from "../common/array/array-with";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
@@ -150,8 +150,8 @@ export class HaFilterBlueprints extends LitElement {
 
     this.value =
       ev.type === "ha-list-item-selected"
-        ? addValue(this.value, blueprintId)
-        : removeValue(this.value, blueprintId);
+        ? arrayWith(this.value, blueprintId)
+        : arrayWithout(this.value, blueprintId);
   }
 
   private async _findRelated() {

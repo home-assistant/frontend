@@ -12,7 +12,7 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
-import { addValue, removeValue } from "../common/array/add-remove-value";
+import { arrayWith, arrayWithout } from "../common/array/array-with";
 import type {
   HASSDomCurrentTargetEvent,
   HASSDomEvent,
@@ -185,8 +185,8 @@ export class HaFilterIntegrations extends LitElement {
 
     this.value =
       ev.type === "ha-list-item-selected"
-        ? addValue(this.value, domain)
-        : removeValue(this.value, domain);
+        ? arrayWith(this.value, domain)
+        : arrayWithout(this.value, domain);
 
     fireEvent(this, "data-table-filter-changed", {
       value: this.value.length ? this.value : undefined,
