@@ -31,7 +31,7 @@ import {
 } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
-import type { UpdateEntity } from "../../../data/update";
+import type { UpdateEntity, UpdateReleaseNotes } from "../../../data/update";
 import {
   latestVersionIsSkipped,
   updateButtonIsDisabled,
@@ -97,7 +97,7 @@ class MoreInfoUpdate extends LitElement {
   })
   private _user?: CurrentUser;
 
-  @state() private _releaseNotes?: string | null;
+  @state() private _releaseNotes?: UpdateReleaseNotes;
 
   @state() private _error?: string;
 
@@ -261,15 +261,36 @@ class MoreInfoUpdate extends LitElement {
                   <hr />
                   ${this._markdownLoading ? this._renderLoader() : nothing}
                 `
-              : this._releaseNotes
+              : this._releaseNotes.messages.length ||
+                  this._releaseNotes.release_notes
                 ? html`
                     <hr />
-                    <ha-markdown
-                      @content-resize=${this._markdownLoaded}
-                      .content=${this._releaseNotes}
-                      class=${this._markdownLoading ? "hidden" : ""}
-                    ></ha-markdown>
-                    ${this._markdownLoading ? this._renderLoader() : nothing}
+                    ${this._releaseNotes.messages.map(
+                      (message) => html`
+                        <ha-alert
+                          class="release-notes-message"
+                          alert-type=${message.severity}
+                        >
+                          ${message.message}
+                        </ha-alert>
+                      `
+                    )}
+                    ${
+                      this._releaseNotes.release_notes
+                        ? html`
+                            <ha-markdown
+                              @content-resize=${this._markdownLoaded}
+                              .content=${this._releaseNotes.release_notes}
+                              class=${this._markdownLoading ? "hidden" : ""}
+                            ></ha-markdown>
+                            ${
+                              this._markdownLoading
+                                ? this._renderLoader()
+                                : nothing
+                            }
+                          `
+                        : nothing
+                    }
                   `
                 : nothing
             : this.stateObj.attributes.release_summary
@@ -580,6 +601,11 @@ class MoreInfoUpdate extends LitElement {
     }
 
     .summary {
+      margin-bottom: var(--ha-space-4);
+    }
+
+    .release-notes-message {
+      display: block;
       margin-bottom: var(--ha-space-4);
     }
 
