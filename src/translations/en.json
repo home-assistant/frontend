@@ -1911,10 +1911,12 @@
             "automation_condition": "Create as a new condition",
             "automation_action": "Create as a new action",
             "script_action": "Create as a new action",
-            "scene": "Create as a new scene"
+            "scene": "Create as a new scene",
+            "dashboard": "Add to a dashboard"
           },
           "automations_heading": "Automations",
           "scripts_heading": "Scripts",
+          "dashboards_heading": "Dashboards",
           "app_actions": "App actions",
           "no_actions": "No actions available",
           "action_failed": "Failed to perform the action {error}"
@@ -7474,7 +7476,6 @@
             "notify": "Notifiers",
             "assist": "[%key:ui::panel::lovelace::menu::assist%]",
             "config": "Configuration",
-            "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
             "show_less": "Show less",
             "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
@@ -10634,6 +10635,10 @@
               "theme": "Theme",
               "theme_helper": "Apply a specific theme to this section, overriding the view theme"
             }
+          },
+          "add_device_card": {
+            "header": "Add {device} to dashboard",
+            "add": "[%key:ui::panel::lovelace::editor::suggest_card::add%]"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",

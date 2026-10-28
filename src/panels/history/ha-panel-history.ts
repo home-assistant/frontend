@@ -901,16 +901,14 @@ class HaPanelHistory extends LitElement {
         entities,
       },
     ];
-    addEntitiesToLovelaceView(
-      this,
-      this.hass,
-      cards,
-      {
+    addEntitiesToLovelaceView(this, this.hass, {
+      cardConfig: cards,
+      sectionConfig: {
         title: this.hass.localize("panel.history"),
         cards,
       },
-      entities
-    );
+      entities,
+    });
   }
 
   static get styles() {
