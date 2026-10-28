@@ -71,6 +71,9 @@ const PHYSICS_DISABLE_THRESHOLD = 512;
 
 const SELECTED_NODE_MAX_ZOOM = 2;
 
+// Keeps neighbors clear of the search field, buttons and legend
+const SELECTED_NODE_FIT_MARGIN = 72;
+
 const FOLLOW_ROAM = "follow-selected-node";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/consistent-type-imports
@@ -557,6 +560,8 @@ export class HaNetworkGraph extends LitElement {
     const centerX = chart.getWidth() / 2;
     const centerY = chart.getHeight() / 2;
     // Zoom so the neighbors stay in view
+    const fitX = Math.max(centerX - SELECTED_NODE_FIT_MARGIN, centerX / 2);
+    const fitY = Math.max(centerY - SELECTED_NODE_FIT_MARGIN, centerY / 2);
     let targetZoom = SELECTED_NODE_MAX_ZOOM;
     for (const edge of node.edges) {
       const neighbor: number[] | undefined = (
@@ -566,8 +571,8 @@ export class HaNetworkGraph extends LitElement {
         const [neighborX, neighborY] = toPixel(neighbor);
         targetZoom = Math.min(
           targetZoom,
-          (0.8 * zoom * centerX) / Math.abs(neighborX - x),
-          (0.8 * zoom * centerY) / Math.abs(neighborY - y)
+          (zoom * fitX) / Math.abs(neighborX - x),
+          (zoom * fitY) / Math.abs(neighborY - y)
         );
       }
     }
