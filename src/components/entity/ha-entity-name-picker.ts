@@ -29,9 +29,9 @@ import type {
 } from "../../common/translations/localize";
 import { formattersContext, registriesContext } from "../../data/context";
 import type { HomeAssistantFormatters, ValueChangedEvent } from "../../types";
-import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
+import "../ha-button";
 import "../ha-button-toggle-group";
 import "../ha-combo-box-item";
 import "../ha-generic-picker";
@@ -234,6 +234,9 @@ export class HaEntityNamePicker extends LitElement {
   private _renderPicker() {
     const value = this._items;
     const validTypes = this._validTypes(this._stateObj, this._registries);
+    const canAdd =
+      this.allowCustom ||
+      this._getFilteredItems().some((item) => !item.disabled);
 
     return html`
       <ha-generic-picker
@@ -291,20 +294,23 @@ export class HaEntityNamePicker extends LitElement {
                 }
               )}
               ${
-                this.disabled
-                  ? nothing
-                  : html`
-                      <ha-assist-chip
-                        @click=${this._addItem}
-                        .disabled=${this.disabled}
-                        label=${this._localize(
-                          "ui.components.entity.entity-name-picker.add"
-                        )}
+                canAdd
+                  ? html`
+                      <ha-button
                         class="add"
+                        size="s"
+                        appearance="filled"
+                        .disabled=${this.disabled}
+                        @click=${this._addItem}
                       >
-                        <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-                      </ha-assist-chip>
+                        <ha-svg-icon
+                          slot="start"
+                          .path=${mdiPlus}
+                        ></ha-svg-icon>
+                        ${this._localize("ui.common.add")}
+                      </ha-button>
                     `
+                  : nothing
               }
             </ha-chip-set>
           </ha-sortable>
@@ -629,7 +635,7 @@ export class HaEntityNamePicker extends LitElement {
 
     label {
       display: block;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
     }
 
     .content {
@@ -722,7 +728,8 @@ export class HaEntityNamePicker extends LitElement {
 
     ha-input-helper-text {
       display: block;
-      margin: var(--ha-space-2) 0 0;
+      padding: 0;
+      margin: var(--ha-space-1) 0 0;
     }
   `;
 }

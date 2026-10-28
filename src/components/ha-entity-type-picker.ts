@@ -1,7 +1,8 @@
 import type { ContextType } from "@lit/context";
+import { mdiPlus } from "@mdi/js";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
@@ -26,6 +27,10 @@ import "./chips/ha-input-chip";
 import "./ha-combo-box-item";
 import "./ha-domain-icon";
 import "./ha-generic-picker";
+import type { HaGenericPicker } from "./ha-generic-picker";
+import "./ha-button";
+import "./ha-svg-icon";
+import "./ha-input-helper-text";
 import type {
   PickerComboBoxItem,
   PickerComboBoxSearchFn,
@@ -81,6 +86,8 @@ export class HaEntityTypePicker extends LitElement {
 
   @consume({ context: statesContext, subscribe: true })
   private _states?: ContextType<typeof statesContext>;
+
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   private _titlesLoaded = false;
 
@@ -237,40 +244,15 @@ export class HaEntityTypePicker extends LitElement {
     const localize = this._i18n?.localize;
     const value = this.value ?? [];
     const chipLabels = localize ? this._chipLabels(localize, value) : undefined;
+    const addLabel = localize?.("ui.common.add");
+    const canAdd = this._getItems().length > 0;
 
     return html`
       ${this.label ? html`<label>${this.label}</label>` : nothing}
-      ${
-        value.length && chipLabels
-          ? html`
-              <ha-chip-set>
-                ${repeat(
-                  value,
-                  (key) => key,
-                  (key) => {
-                    const label = chipLabels.get(key)!;
-                    return html`
-                      <ha-input-chip
-                        data-key=${key}
-                        .label=${label}
-                        .disabled=${this.disabled}
-                        @remove=${this._removeItem}
-                        selected
-                      >
-                        ${this._renderIcon(key, "icon")} ${label}
-                      </ha-input-chip>
-                    `;
-                  }
-                )}
-              </ha-chip-set>
-            `
-          : nothing
-      }
       <ha-generic-picker
-        .helper=${this.helper}
+        .label=${this.label}
         .disabled=${this.disabled}
         .value=${""}
-        .addButtonLabel=${localize?.("ui.components.entity-type-picker.add")}
         .getItems=${this._getItems}
         .rowRenderer=${this._rowRenderer}
         .searchFn=${this._searchFn}
@@ -278,8 +260,54 @@ export class HaEntityTypePicker extends LitElement {
         .emptyLabel=${localize?.("ui.components.entity-type-picker.no_types")}
         no-sort
         @value-changed=${this._itemAdded}
-      ></ha-generic-picker>
+      >
+        <ha-chip-set slot="field">
+          ${repeat(
+            value,
+            (key) => key,
+            (key) => {
+              const label = chipLabels?.get(key) ?? key;
+              return html`
+                <ha-input-chip
+                  data-key=${key}
+                  .label=${label}
+                  .disabled=${this.disabled}
+                  @remove=${this._removeItem}
+                  selected
+                >
+                  ${this._renderIcon(key, "icon")} ${label}
+                </ha-input-chip>
+              `;
+            }
+          )}
+          ${
+            canAdd
+              ? html`
+                  <ha-button
+                    size="s"
+                    appearance="filled"
+                    .disabled=${this.disabled}
+                    @click=${this._openPicker}
+                  >
+                    <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                    ${addLabel}
+                  </ha-button>
+                `
+              : nothing
+          }
+        </ha-chip-set>
+      </ha-generic-picker>
+      ${
+        this.helper
+          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
+          : nothing
+      }
     `;
+  }
+
+  private _openPicker(ev: Event) {
+    ev.stopPropagation();
+    this._picker?.open();
   }
 
   private _itemAdded(ev: CustomEvent<{ value?: string }>) {
@@ -320,7 +348,15 @@ export class HaEntityTypePicker extends LitElement {
       width: 100%;
     }
     ha-chip-set {
-      padding: var(--ha-space-2) 0;
+      background-color: var(--mdc-text-field-fill-color);
+      border-bottom: 1px solid var(--ha-color-border-neutral-normal);
+      border-top-right-radius: var(--ha-border-radius-sm);
+      border-top-left-radius: var(--ha-border-radius-sm);
+      padding: var(--ha-space-3);
+    }
+    ha-input-helper-text {
+      padding: 0;
+      margin-top: var(--ha-space-1);
     }
   `;
 }
