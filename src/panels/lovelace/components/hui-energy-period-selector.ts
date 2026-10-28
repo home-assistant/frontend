@@ -78,6 +78,7 @@ import type {
   HomeAssistantConfig,
   HomeAssistantInternationalization,
 } from "../../../types";
+import { animationStyles } from "../../../resources/theme/animations.globals";
 
 const RANGE_KEYS: DateRange[] = [
   "today",
@@ -377,13 +378,14 @@ export class HuiEnergyPeriodSelector extends LitElement {
                   </div>`
                 : nothing
             }
-            <ha-spinner
-              class=${classMap({
-                "loading-indicator": true,
-                "is-loading": this._loading,
-              })}
-              size="small"
-            ></ha-spinner>
+            ${
+              this._loading
+                ? html`<ha-spinner
+                    class="loading-indicator"
+                    size="small"
+                  ></ha-spinner>`
+                : nothing
+            }
           </section>
           <section class="date-actions">
             <div class="overflow">
@@ -776,6 +778,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
   );
 
   static styles = css`
+    ${animationStyles}
     :host {
       display: block;
     }
@@ -840,11 +843,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
       position: absolute;
       right: var(--ha-space-2);
       align-items: center;
-      opacity: 0;
-      transition: opacity var(--ha-animation-duration-normal) ease-in-out;
-    }
-    .loading-indicator.is-loading {
-      opacity: 1;
+      animation: fade-in var(--ha-animation-duration-normal) ease-in-out;
     }
     .date-actions .overflow {
       display: flex;
