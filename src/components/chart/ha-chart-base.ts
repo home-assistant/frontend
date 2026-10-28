@@ -969,6 +969,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (zoomStart !== 0 || zoomEnd !== 100) {
         this.zoom(zoomStart, zoomEnd, true);
       }
+      fireEvent(this, "chart-setup");
     } finally {
       this._loading = false;
       this._applyDeferredWork();
@@ -1296,6 +1297,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       },
       bar: { itemStyle: { barBorderWidth: 1.5 } },
       graph: {
+        itemStyle: {
+          borderColor: style.getPropertyValue("--primary-text-color"),
+          borderWidth: 0,
+        },
         label: {
           color: style.getPropertyValue("--primary-text-color"),
           textBorderColor,
@@ -2318,5 +2323,6 @@ declare global {
       end: number;
     };
     "chart-sankeyroam": { zoom: number };
+    "chart-setup": undefined;
   }
 }

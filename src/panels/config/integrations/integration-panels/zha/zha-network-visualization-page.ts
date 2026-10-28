@@ -39,6 +39,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
 
+  @property({ attribute: false }) public deviceId?: string;
+
   @state()
   private _networkData: NetworkData = {
     nodes: [],
@@ -78,6 +80,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
           .searchFilter=${this._searchFilter}
           .data=${this._networkData}
           .searchableAttributes=${this._getSearchableAttributes}
+          .selectedNode=${
+            this._devices.find(
+              (device) => device.device_reg_id === this.deviceId
+            )?.ieee
+          }
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         >
