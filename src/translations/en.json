@@ -7576,6 +7576,16 @@
               "confirm_title": "Do you want to disable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Disabled entities will not be added to Home Assistant."
             },
+            "expose_selected": {
+              "button": "Expose to voice assistant",
+              "all_assistants": "All assistants",
+              "no_entities": "None of the selected entities can be exposed.",
+              "toast": "Exposed {count} {count, plural,\n  one {entity}\n  other {entities}\n} to {assistants}"
+            },
+            "unexpose_selected": {
+              "button": "Stop exposing to voice assistant",
+              "toast": "Stopped exposing {count} {count, plural,\n  one {entity}\n  other {entities}\n} to {assistants}"
+            },
             "restore_entity_id_selected": {
               "button": "Recreate entity IDs of selected",
               "confirm_title": "Recreate entity IDs?",
