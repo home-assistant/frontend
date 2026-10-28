@@ -4699,7 +4699,8 @@
               "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
               "dont_forecast_production": "Don't forecast production",
               "forecast_production": "Forecast production",
-              "add_forecast": "Add forecast"
+              "add_forecast": "Add forecast",
+              "energy_sensor_needed": "To track your solar production, you need an energy sensor."
             }
           },
           "home": {
@@ -4713,7 +4714,8 @@
               "entity_para": "Pick a sensor which measures home consumption in either of {unit}.",
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "home_energy": "Home energy",
-              "home_power": "Home power"
+              "home_power": "Home power",
+              "energy_sensor_needed": "To track your home consumption, you need an energy sensor."
             }
           },
           "battery": {
@@ -4824,13 +4826,7 @@
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
               "no_upstream_devices": "No eligible upstream devices",
-              "create_energy_sensor_title": "Create energy sensor?",
-              "create_energy_sensor_text": "To track this device, you need an energy sensor. Home Assistant can create one that calculates the energy from {power}. It starts counting now, so earlier usage is not included.",
-              "create_energy_sensor_failed": "Failed to create the energy sensor.",
-              "use_energy_sensor_title": "Use existing energy sensor?",
-              "use_energy_sensor_text": "To track this device, you need an energy sensor. {energy} already calculates the energy from {power}.",
-              "use_energy_sensor": "Use sensor",
-              "energy_sensor_name": "{name} energy"
+              "energy_sensor_needed": "To track this device, you need an energy sensor."
             }
           },
           "device_consumption_water": {
@@ -4849,6 +4845,18 @@
               "included_in_device_helper": "If this device is already counted by another device (such as a water meter measured by the main water supply), selecting the upstream device prevents duplicate water tracking.",
               "no_upstream_devices": "No eligible upstream devices"
             }
+          },
+          "integral": {
+            "energy": {
+              "create_title": "{count, plural,\n one {Create energy sensor?}\n other {Create energy sensors?}\n}",
+              "use_title": "{count, plural,\n one {Use existing energy sensor?}\n other {Use existing energy sensors?}\n}",
+              "create_item": "Home Assistant can create {name}, which calculates the energy from {rate}.",
+              "use_item": "{total} already calculates the energy from {rate}.",
+              "sensor_name": "{name} energy"
+            },
+            "counting_note": "New sensors start counting now, so earlier values are not included.",
+            "use": "{count, plural,\n one {Use sensor}\n other {Use sensors}\n}",
+            "create_failed": "Failed to create the sensor."
           }
         },
         "helpers": {

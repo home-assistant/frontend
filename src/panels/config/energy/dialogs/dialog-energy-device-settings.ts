@@ -2,7 +2,6 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { computeDomain } from "../../../../common/entity/compute_domain";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
@@ -11,34 +10,22 @@ import "../../../../components/ha-dialog-footer";
 import "../../../../components/input/ha-input";
 import "./ha-energy-upstream-device-picker";
 import type { HaInput } from "../../../../components/input/ha-input";
-import {
-  createConfigFlow,
-  deleteConfigFlow,
-  handleConfigFlowStep,
-} from "../../../../data/config_flow";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
 import {
   computeEnergyLabel,
   energyStatisticHelpUrl,
 } from "../../../../data/energy";
 import {
-  getStatisticLabel,
   getStatisticMetadata,
   isExternalStatistic,
 } from "../../../../data/recorder";
-import { findRelated } from "../../../../data/search";
 import { getSensorDeviceClassConvertibleUnits } from "../../../../data/sensor";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { DirtyStateProviderMixin } from "../../../../mixins/dirty-state-provider-mixin";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
-import type { EnergyIntegralUnitPrefix } from "./energy-from-power";
-import {
-  energyIntegralFlowInput,
-  energyIntegralUnitPrefix,
-  findEnergyIntegral,
-} from "./energy-from-power";
+import type { IntegralUnits } from "./energy-integral";
+import { confirmIntegrals, integralUnits } from "./energy-integral";
 import type { EnergySettingsDeviceDialogParams } from "./show-dialogs-energy";
 
 const energyUnitClasses = ["energy"];
@@ -242,10 +229,7 @@ export class DialogEnergyDeviceSettings
             @click=${this._save}
             .disabled=${
               this._saving ||
-              !(
-                this._device?.stat_consumption ||
-                this._energyIntegralUnitPrefix() !== undefined
-              ) ||
+              !(this._device?.stat_consumption || this._integralUnits()) ||
               (!!this._params?.device && !this.isDirtyState)
             }
             .loading=${this._saving}
@@ -333,12 +317,12 @@ export class DialogEnergyDeviceSettings
     this._updateDirtyState(this._device);
   }
 
-  private _energyIntegralUnitPrefix(): EnergyIntegralUnitPrefix | undefined {
+  private _integralUnits(): IntegralUnits | undefined {
     const statRate = this._device?.stat_rate;
     if (!statRate || !this._energy_units) {
       return undefined;
     }
-    return energyIntegralUnitPrefix(
+    return integralUnits(
       this.hass.states[statRate]?.attributes.unit_of_measurement,
       this._energy_units
     );
@@ -383,112 +367,39 @@ export class DialogEnergyDeviceSettings
     draft: DeviceConsumptionDraft
   ): Promise<string | undefined> {
     const statRate = draft.stat_rate!;
-    const unitPrefix = this._energyIntegralUnitPrefix();
-    if (unitPrefix === undefined) {
+    const units = this._integralUnits();
+    if (!units) {
       return undefined;
     }
-    const power = getStatisticLabel(
-      this.hass.states,
-      this.hass.formatEntityName,
-      statRate,
-      this._params?.statsMetadata?.[statRate]
-    );
-
-    const existing = findEnergyIntegral(
-      this.hass.states,
-      this.hass.entities,
-      statRate,
-      this._excludeList
-    );
-    if (existing) {
-      const useExisting = await showConfirmationDialog(this, {
-        title: this.hass.localize(
-          "ui.panel.config.energy.device_consumption.dialog.use_energy_sensor_title"
-        ),
-        text: this.hass.localize(
-          "ui.panel.config.energy.device_consumption.dialog.use_energy_sensor_text",
-          {
-            energy: getStatisticLabel(
-              this.hass.states,
-              this.hass.formatEntityName,
-              existing,
-              undefined
-            ),
-            power,
-          }
-        ),
-        confirmText: this.hass.localize(
-          "ui.panel.config.energy.device_consumption.dialog.use_energy_sensor"
-        ),
-      });
-      return useExisting ? existing : undefined;
-    }
-
-    const create = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.energy.device_consumption.dialog.create_energy_sensor_title"
+    const sensors = await confirmIntegrals(this, this.hass, {
+      deviceClass: "energy",
+      states: this.hass.states,
+      entities: this.hass.entities,
+      requests: [
+        {
+          rate: statRate,
+          units,
+          name: this.hass.localize(
+            "ui.panel.config.energy.integral.energy.sensor_name",
+            {
+              name: computeEnergyLabel(
+                this.hass.states,
+                this.hass.formatEntityName,
+                statRate,
+                this._params?.statsMetadata?.[statRate],
+                draft.name
+              ),
+            }
+          ),
+        },
+      ],
+      intro: this.hass.localize(
+        "ui.panel.config.energy.device_consumption.dialog.energy_sensor_needed"
       ),
-      text: this.hass.localize(
-        "ui.panel.config.energy.device_consumption.dialog.create_energy_sensor_text",
-        { power }
-      ),
-      confirmText: this.hass.localize("ui.common.create"),
+      exclude: this._excludeList,
+      statsMetadata: this._params?.statsMetadata,
     });
-    return create
-      ? this._createEnergyIntegral(statRate, unitPrefix, draft.name)
-      : undefined;
-  }
-
-  private async _createEnergyIntegral(
-    statRate: string,
-    unitPrefix: EnergyIntegralUnitPrefix,
-    customName?: string
-  ): Promise<string> {
-    const name = this.hass.localize(
-      "ui.panel.config.energy.device_consumption.dialog.energy_sensor_name",
-      {
-        name: computeEnergyLabel(
-          this.hass.states,
-          this.hass.formatEntityName,
-          statRate,
-          this._params?.statsMetadata?.[statRate],
-          customName
-        ),
-      }
-    );
-    let flowId: string | undefined;
-    let entityId: string | undefined;
-    try {
-      flowId = (await createConfigFlow(this.hass, "integration")).flow_id;
-      const step = await handleConfigFlowStep(
-        this.hass,
-        flowId,
-        energyIntegralFlowInput(name, statRate, unitPrefix)
-      );
-      if (step.type === "create_entry" && step.result) {
-        flowId = undefined;
-        const related = await findRelated(
-          this.hass,
-          "config_entry",
-          step.result.entry_id
-        );
-        entityId = related.entity?.find((id) => computeDomain(id) === "sensor");
-      }
-    } catch (_err) {
-      // Reported below, the REST errors carry no readable message
-    }
-    if (flowId) {
-      // Rejected input keeps the flow open
-      await deleteConfigFlow(this.hass, flowId).catch(() => undefined);
-    }
-    if (!entityId) {
-      throw new Error(
-        this.hass.localize(
-          "ui.panel.config.energy.device_consumption.dialog.create_energy_sensor_failed"
-        )
-      );
-    }
-    return entityId;
+    return sensors?.[0];
   }
 
   static get styles(): CSSResultGroup {

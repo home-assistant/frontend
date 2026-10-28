@@ -2,32 +2,35 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 
 import {
-  energyIntegralUnitPrefix,
-  findEnergyIntegral,
-} from "../../../../src/panels/config/energy/dialogs/energy-from-power";
+  findIntegral,
+  integralUnits,
+} from "../../../../src/panels/config/energy/dialogs/energy-integral";
 import type { HomeAssistant } from "../../../../src/types";
 
 const ENERGY_UNITS = ["GJ", "kWh", "MJ", "mWh", "MWh", "Wh"];
 
-describe("energyIntegralUnitPrefix", () => {
+describe("integralUnits", () => {
   it("scales watt-hours up to kWh", () => {
-    expect(energyIntegralUnitPrefix("W", ENERGY_UNITS)).toBe("k");
+    expect(integralUnits("W", ENERGY_UNITS)).toEqual({
+      unit_time: "h",
+      unit_prefix: "k",
+    });
   });
 
   it("keeps units that already are energy units after integrating", () => {
-    expect(energyIntegralUnitPrefix("kW", ENERGY_UNITS)).toBeNull();
-    expect(energyIntegralUnitPrefix("MW", ENERGY_UNITS)).toBeNull();
-    expect(energyIntegralUnitPrefix("mW", ENERGY_UNITS)).toBeNull();
+    expect(integralUnits("kW", ENERGY_UNITS)).toEqual({ unit_time: "h" });
+    expect(integralUnits("MW", ENERGY_UNITS)).toEqual({ unit_time: "h" });
+    expect(integralUnits("mW", ENERGY_UNITS)).toEqual({ unit_time: "h" });
   });
 
   it("rejects units that do not integrate to an energy unit", () => {
-    expect(energyIntegralUnitPrefix("BTU/h", ENERGY_UNITS)).toBeUndefined();
-    expect(energyIntegralUnitPrefix("A", ENERGY_UNITS)).toBeUndefined();
-    expect(energyIntegralUnitPrefix(undefined, ENERGY_UNITS)).toBeUndefined();
+    expect(integralUnits("BTU/h", ENERGY_UNITS)).toBeUndefined();
+    expect(integralUnits("A", ENERGY_UNITS)).toBeUndefined();
+    expect(integralUnits(undefined, ENERGY_UNITS)).toBeUndefined();
   });
 });
 
-describe("findEnergyIntegral", () => {
+describe("findIntegral", () => {
   const state = (
     entityId: string,
     attributes: HassEntity["attributes"]
@@ -68,19 +71,19 @@ describe("findEnergyIntegral", () => {
   } as HomeAssistant["entities"];
 
   it("finds the Integral helper of the power sensor", () => {
-    expect(findEnergyIntegral(states, entities, "sensor.fridge_power")).toBe(
-      "sensor.fridge_energy"
-    );
+    expect(
+      findIntegral(states, entities, "sensor.fridge_power", "energy")
+    ).toBe("sensor.fridge_energy");
   });
 
   it("skips excluded helpers and other power sensors", () => {
     expect(
-      findEnergyIntegral(states, entities, "sensor.fridge_power", [
+      findIntegral(states, entities, "sensor.fridge_power", "energy", [
         "sensor.fridge_energy",
       ])
     ).toBeUndefined();
     expect(
-      findEnergyIntegral(states, entities, "sensor.oven_power")
+      findIntegral(states, entities, "sensor.oven_power", "energy")
     ).toBeUndefined();
   });
 });
