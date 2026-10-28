@@ -1,12 +1,11 @@
 import type { ContextType } from "@lit/context";
-import type { Connection, HassEntity } from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
 import { consume } from "../../common/decorators/consume";
-import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { ConfigEntry } from "../../data/config_entries";
 import { getConfigEntries } from "../../data/config_entries";
@@ -56,10 +55,7 @@ export class HaEntitySelector extends LitElement {
 
   @state()
   @consume({ context: connectionContext, subscribe: true })
-  @transform<HomeAssistantConnection, Connection>({
-    transformer: ({ connection }) => connection,
-  })
-  private _connection?: Connection;
+  private _connection?: ContextType<typeof connectionContext>;
 
   @consume({ context: statesContext, subscribe: true })
   private _states!: ContextType<typeof statesContext>;
@@ -155,10 +151,15 @@ export class HaEntitySelector extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    // The connection changed (e.g. reconnect); refetch.
+    // The connection changed or came back after a drop; refetch.
     const oldConnection = changedProps.get("_connection") as
-      Connection | undefined;
-    if (oldConnection && oldConnection !== this._connection) {
+      HomeAssistantConnection | undefined;
+    if (
+      oldConnection &&
+      this._connection &&
+      (oldConnection.connection !== this._connection.connection ||
+        (!oldConnection.connected && this._connection.connected))
+    ) {
       this._entitySources = undefined;
       this._fetchedConfigEntries = false;
       this._configEntries = undefined;
