@@ -1,9 +1,4 @@
-import {
-  mdiHelpNetworkOutline,
-  mdiLanDisconnect,
-  mdiLeaf,
-  mdiZigbee,
-} from "@mdi/js";
+import { mdiHelpNetworkOutline, mdiLeaf, mdiZigbee } from "@mdi/js";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import type {
   NetworkData,
@@ -302,11 +297,6 @@ export function createZHANetworkChartData(
       icon: mdiLeaf,
       category: 3,
     },
-    offline: {
-      color: offlineColor,
-      icon: mdiLanDisconnect,
-      category: 4,
-    },
     no_parent: {
       color: style.getPropertyValue("--disabled-color"),
       icon: mdiHelpNetworkOutline,
@@ -315,7 +305,6 @@ export function createZHANetworkChartData(
   };
   const virtualChildren: Record<keyof typeof virtualParents, string[]> = {
     green_power: [],
-    offline: [],
     no_parent: [],
   };
   devices.forEach((device) => {
@@ -330,9 +319,7 @@ export function createZHANetworkChartData(
       (link) => link.source === device.ieee || link.target === device.ieee
     );
     if (!hasLink) {
-      virtualChildren[device.available ? "no_parent" : "offline"].push(
-        device.ieee
-      );
+      virtualChildren.no_parent.push(device.ieee);
     }
   });
   (Object.keys(virtualParents) as (keyof typeof virtualParents)[]).forEach(

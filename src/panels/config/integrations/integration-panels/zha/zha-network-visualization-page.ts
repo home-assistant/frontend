@@ -29,6 +29,7 @@ import {
 } from "./functions";
 import {
   createZHANetworkChartData,
+  SPACER_PREFIX,
   VIRTUAL_PARENT_PREFIX,
 } from "./zha-network-data";
 
@@ -161,6 +162,13 @@ export class ZHANetworkVisualizationPage extends LitElement {
     const { dataType, data, name } = params as CallbackDataParams;
     if (dataType === "edge") {
       const { source, target, value } = data as any;
+      // the chain from the coordinator to a virtual parent is invisible
+      if (
+        target.startsWith(SPACER_PREFIX) ||
+        target.startsWith(VIRTUAL_PARENT_PREFIX)
+      ) {
+        return nothing;
+      }
       const targetName = this._networkData.nodes.find(
         (node) => node.id === target
       )!.name;
@@ -181,6 +189,9 @@ export class ZHANetworkVisualizationPage extends LitElement {
               <b>LQI:</b> ${reverseValue}`
           : nothing
       }`;
+    }
+    if ((data as any).id.startsWith(SPACER_PREFIX)) {
+      return nothing;
     }
     const device = this._devices.find((d) => d.ieee === (data as any).id);
     if (!device) {
