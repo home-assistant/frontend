@@ -405,18 +405,13 @@ export const getActionType = (action: Action): ActionType => {
 export const isAction = (value: unknown): value is Action =>
   getActionType(value as Action) !== "unknown";
 
-export const hasScriptFieldsForServices = (
+export const hasScriptFields = (
   services: HassServices,
   entityId: string
 ): boolean => {
   const fields = getScriptFields(services, entityId);
   return fields !== undefined && Object.keys(fields).length > 0;
 };
-
-export const hasScriptFields = (
-  hass: HomeAssistant,
-  entityId: string
-): boolean => hasScriptFieldsForServices(hass.services, entityId);
 
 export const hasRequiredScriptFieldsForServices = (
   services: HassServices,

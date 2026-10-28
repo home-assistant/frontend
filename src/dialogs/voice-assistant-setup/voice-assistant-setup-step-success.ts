@@ -261,7 +261,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     ) {
       return;
     }
-    setSelectOption(this.hass!, stateObj.entity_id, option);
+    setSelectOption(this.hass!.callService, stateObj.entity_id, option);
   }
 
   private async _setTtsSettings() {

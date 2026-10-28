@@ -1066,7 +1066,7 @@ ${rejected
   }
 
   private _activateScene = async (scene: SceneEntity) => {
-    await activateScene(this.hass, scene.entity_id);
+    await activateScene(this.hass.callService, scene.entity_id);
     showToast(this, {
       message: this.hass.localize("ui.panel.config.scene.activated", {
         name: this.hass.formatEntityName(scene),

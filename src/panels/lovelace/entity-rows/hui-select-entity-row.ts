@@ -116,7 +116,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
 
     this._selectedEntityRow = option;
 
-    setSelectOption(this.hass!, stateObj.entity_id, option)
+    setSelectOption(this.hass!.callService, stateObj.entity_id, option)
       .catch((_err) => {
         // silently swallow exception
       })

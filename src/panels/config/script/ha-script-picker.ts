@@ -1022,7 +1022,7 @@ ${rejected
       return;
     }
 
-    if (hasScriptFields(this.hass, entry.unique_id)) {
+    if (hasScriptFields(this.hass.services, entry.unique_id)) {
       this._showInfo(script);
     } else {
       await triggerScript(this.hass, entry.unique_id);
