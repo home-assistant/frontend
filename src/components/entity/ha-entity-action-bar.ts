@@ -15,6 +15,7 @@ import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-di
 import { showToast } from "../../util/toast";
 import { HaActionBar } from "../ha-action-bar";
 import "../ha-button";
+import "../ha-icon-next";
 import "../ha-svg-icon";
 
 /**
@@ -71,6 +72,7 @@ export class HaEntityActionBar extends HaActionBar {
         @click=${this._showMoreInfo}
       >
         ${this._i18n.localize("ui.components.entity.entity-action-bar.view")}
+        <ha-icon-next slot="end"></ha-icon-next>
       </ha-button>
       <ha-button
         appearance="filled"
@@ -90,8 +92,10 @@ export class HaEntityActionBar extends HaActionBar {
     if (!this.entityId) {
       return;
     }
-    fireEvent(this, "close-picker");
-    showMoreInfoDialog(this, { entityId: this.entityId });
+    const entityId = this.entityId;
+    fireEvent(this, "close-picker", {
+      afterClose: () => showMoreInfoDialog(this, { entityId }),
+    });
   }
 
   private async _copyEntityId() {

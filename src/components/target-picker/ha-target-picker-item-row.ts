@@ -549,17 +549,16 @@ export class HaTargetPickerItemRow extends LitElement {
         .path=${fallbackIconPath}
       ></ha-svg-icon>`;
     }
-    if (
-      item.type === "entity" &&
-      (stateObject?.attributes.entity_picture ||
-        stateObject?.attributes.entity_picture_local)
-    ) {
-      return html`<state-badge
-        slot=${ifDefined(slot)}
-        .stateObj=${stateObject}
-      ></state-badge>`;
-    }
     if (item.type === "entity") {
+      if (
+        stateObject?.attributes.entity_picture ||
+        stateObject?.attributes.entity_picture_local
+      ) {
+        return html`<state-badge
+          slot=${ifDefined(slot)}
+          .stateObj=${stateObject}
+        ></state-badge>`;
+      }
       return html`<ha-state-icon
         slot=${ifDefined(slot)}
         .stateObj=${
