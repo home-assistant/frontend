@@ -845,7 +845,9 @@
         },
         "entity-action-bar": {
           "view": "View",
-          "copy_id": "Copy ID"
+          "view_entity": "View {name}",
+          "copy_id": "Copy ID",
+          "copy_entity_id": "Copy ID of {name}"
         },
         "entity-name-picker": {
           "types": {

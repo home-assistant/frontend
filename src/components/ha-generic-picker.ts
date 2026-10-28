@@ -298,10 +298,11 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     `;
   }
 
-  // Actions below the list, e.g. for the selected item. Content in the slot
-  // fires `close-picker` to close the picker after its action.
+  // The wrapper keeps the bottom sheet's footer styles off the slotted content.
   private _renderFooter() {
-    return html`<slot name="footer" @close-picker=${this.close}></slot>`;
+    return html`<div>
+      <slot name="footer" @close-picker=${this.close}></slot>
+    </div>`;
   }
 
   private _setUnknownValue = () => {

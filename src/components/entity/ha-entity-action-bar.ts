@@ -1,11 +1,16 @@
 import type { ContextType } from "@lit/context";
-import { mdiContentCopy, mdiInformationOutline } from "@mdi/js";
-import { html } from "lit";
+import { mdiContentCopy } from "@mdi/js";
+import type { HassEntity } from "home-assistant-js-websocket";
+import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../common/decorators/consume";
+import { consumeEntityState } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
-import { internationalizationContext } from "../../data/context";
+import {
+  formattersContext,
+  internationalizationContext,
+} from "../../data/context";
 import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
 import { showToast } from "../../util/toast";
 import { HaActionBar } from "../ha-action-bar";
@@ -31,13 +36,50 @@ export class HaEntityActionBar extends HaActionBar {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
 
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: ContextType<typeof formattersContext>;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["entityId"] })
+  private _stateObj?: HassEntity;
+
   protected render() {
+    const name = this._stateObj
+      ? this._formatters.formatEntityName(this._stateObj)
+      : undefined;
+    const viewLabel = name
+      ? this._i18n.localize(
+          "ui.components.entity.entity-action-bar.view_entity",
+          { name }
+        )
+      : nothing;
+    const copyIdLabel = name
+      ? this._i18n.localize(
+          "ui.components.entity.entity-action-bar.copy_entity_id",
+          { name }
+        )
+      : nothing;
+
     return html`
-      <ha-button appearance="filled" size="s" @click=${this._showMoreInfo}>
-        <ha-svg-icon slot="start" .path=${mdiInformationOutline}></ha-svg-icon>
+      <ha-button
+        appearance="filled"
+        variant="neutral"
+        size="s"
+        title=${viewLabel}
+        accessible-label=${viewLabel}
+        @click=${this._showMoreInfo}
+      >
         ${this._i18n.localize("ui.components.entity.entity-action-bar.view")}
       </ha-button>
-      <ha-button appearance="filled" size="s" @click=${this._copyEntityId}>
+      <ha-button
+        appearance="filled"
+        variant="neutral"
+        size="s"
+        title=${copyIdLabel}
+        accessible-label=${copyIdLabel}
+        @click=${this._copyEntityId}
+      >
         <ha-svg-icon slot="start" .path=${mdiContentCopy}></ha-svg-icon>
         ${this._i18n.localize("ui.components.entity.entity-action-bar.copy_id")}
       </ha-button>
