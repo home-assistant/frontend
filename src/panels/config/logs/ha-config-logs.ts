@@ -1,9 +1,14 @@
 import type { ContextType } from "@lit/context";
 import {
+  mdiAlert,
+  mdiAlertCircle,
+  mdiAlertOctagon,
+  mdiBugOutline,
   mdiChevronDown,
   mdiChip,
   mdiDns,
   mdiFilterVariant,
+  mdiInformationOutline,
   mdiPackageVariant,
   mdiPuzzle,
   mdiRadar,
@@ -24,6 +29,7 @@ import type {
 } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { currentPath } from "../../../common/url/current-path";
 import { deepEqual } from "../../../common/util/deep-equal";
 import {
@@ -39,6 +45,7 @@ import "../../../components/ha-app-icon";
 import "../../../components/ha-button";
 import "../../../components/ha-combo-box-item";
 import "../../../components/ha-filter-integrations";
+import type { IntegrationFilterCount } from "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-pane";
 import "../../../components/ha-filter-pane-chip";
 import "../../../components/ha-generic-picker";
@@ -53,6 +60,7 @@ import {
   fetchHassioAddonsInfo,
   type HassioAddonInfo,
 } from "../../../data/hassio/addon";
+import type { LoggedError, SystemLogLevel } from "../../../data/system_log";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
@@ -63,6 +71,18 @@ import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
 
 const NO_INTEGRATIONS: string[] = [];
+
+const LOG_LEVELS: {
+  level: SystemLogLevel;
+  path: string;
+  color?: string;
+}[] = [
+  { level: "critical", path: mdiAlertOctagon, color: "var(--error-color)" },
+  { level: "error", path: mdiAlertCircle, color: "var(--error-color)" },
+  { level: "warning", path: mdiAlert, color: "var(--warning-color)" },
+  { level: "info", path: mdiInformationOutline },
+  { level: "debug", path: mdiBugOutline },
+];
 
 const logProviders: LogProvider[] = [
   {
@@ -123,6 +143,8 @@ export class HaConfigLogs extends LitElement {
   @state() private _showFilters = false;
 
   @state() private _integrationsExpanded = true;
+
+  @state() private _logItems?: LoggedError[];
 
   // What the user picked, shown again when the page is opened without params,
   // like from the sidebar. What a link shows isn't stored.
@@ -253,6 +275,11 @@ export class HaConfigLogs extends LitElement {
                     .narrow=${this.narrow}
                     .value=${this._integrations}
                     .expanded=${this._integrationsExpanded}
+                    .counts=${this._getIntegrationCounts(
+                      this._logItems,
+                      this._manifests,
+                      this.hass.localize
+                    )}
                     @data-table-filter-changed=${this._integrationsChanged}
                     @expanded-changed=${this._integrationsExpandedChanged}
                   ></ha-filter-integrations>
@@ -298,6 +325,7 @@ export class HaConfigLogs extends LitElement {
                           this._manifests
                         )}
                         @switch-log-view=${this._showDetail}
+                        @system-log-items-changed=${this._logItemsChanged}
                       ></system-log-card>
                     `
                   : html`<error-log-card
@@ -564,6 +592,87 @@ export class HaConfigLogs extends LitElement {
           ])
         : undefined
   );
+
+  // Matches entries to integrations by logger name, the same way
+  // `_getIntegrationLoggers` filters them
+  private _getIntegrationCounts = memoizeOne(
+    (
+      items: LoggedError[] | undefined,
+      manifests: ContextType<typeof manifestsContext> | undefined,
+      localize: LocalizeFunc
+    ): Record<string, IntegrationFilterCount[]> | undefined => {
+      if (!items?.length || !manifests) {
+        return undefined;
+      }
+
+      const loggerDomains = new Map<string, string[]>();
+
+      for (const { domain, loggers } of Object.values(manifests)) {
+        for (const logger of [
+          `homeassistant.components.${domain}`,
+          `custom_components.${domain}`,
+          ...(loggers ?? []),
+        ]) {
+          loggerDomains.set(logger, [
+            ...(loggerDomains.get(logger) ?? []),
+            domain,
+          ]);
+        }
+      }
+
+      const levelCounts: Record<
+        string,
+        Partial<Record<SystemLogLevel, number>>
+      > = {};
+
+      for (const item of items) {
+        const parts = item.name.split(".");
+
+        const domains = new Set(
+          parts.flatMap(
+            (_part, index) =>
+              loggerDomains.get(parts.slice(0, index + 1).join(".")) ?? []
+          )
+        );
+
+        for (const domain of domains) {
+          const counts = (levelCounts[domain] ??= {});
+
+          counts[item.level] = (counts[item.level] ?? 0) + 1;
+        }
+      }
+
+      return Object.fromEntries(
+        Object.entries(levelCounts).map(([domain, counts]) => [
+          domain,
+          LOG_LEVELS.flatMap(({ level, path, color }) => {
+            const count = counts[level];
+
+            return count
+              ? [
+                  {
+                    key: level,
+                    path,
+                    color,
+                    count,
+                    label: localize(
+                      `ui.panel.config.logs.level_count.${level}`,
+                      { count }
+                    ),
+                  },
+                ]
+              : [];
+          }),
+        ])
+      );
+    }
+  );
+
+  private _logItemsChanged(
+    ev: HASSDomEvent<HASSDomEvents["system-log-items-changed"]>
+  ) {
+    this._logItems = ev.detail.items;
+  }
 
   private _getLogProviderItems = (): LogProviderPickerItem[] =>
     this._logProviders.map((provider) => ({

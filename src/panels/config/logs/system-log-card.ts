@@ -294,6 +294,14 @@ export class SystemLogCard extends LitElement {
     );
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+
+    if (changedProps.has("_items")) {
+      fireEvent(this, "system-log-items-changed", { items: this._items });
+    }
+  }
+
   protected serviceCalled(ev): void {
     // Check if this is for us
     if (ev.detail.success && ev.detail.domain === "system_log") {
@@ -403,5 +411,9 @@ export class SystemLogCard extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "system-log-card": SystemLogCard;
+  }
+
+  interface HASSDomEvents {
+    "system-log-items-changed": { items: LoggedError[] | undefined };
   }
 }
