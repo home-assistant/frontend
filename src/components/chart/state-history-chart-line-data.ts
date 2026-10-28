@@ -1,9 +1,10 @@
 import type { LineSeriesOption } from "echarts/charts";
 import type { VisualMapComponentOption } from "echarts/components";
+import type { HassEntities } from "home-assistant-js-websocket";
 import { getGraphColorByIndex } from "../../common/color/colors";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
 import type { LineChartEntity, LineChartState } from "../../data/history";
-import type { HomeAssistant } from "../../types";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { computeYAxisFractionDigits } from "./y-axis-fraction-digits";
 
 const safeParseFloat = (value) => {
@@ -19,7 +20,8 @@ export const CLIMATE_MODE_CONFIGS = [
 ] as const;
 
 export interface StateHistoryChartLineDataParams {
-  hass: HomeAssistant;
+  localize: LocalizeFunc;
+  states: HassEntities;
   data: LineChartEntity[];
   endTime: Date;
   names?: Record<string, string>;
@@ -40,13 +42,13 @@ export interface StateHistoryChartLineData {
 /**
  * Transforms processed history (`LineChartEntity[]`) into ECharts series for
  * `state-history-chart-line`. Pure data processing: all environment inputs
- * (current time, theme style, hass) are injected so the transform is
+ * (current time, theme style, localize, states) are injected so the transform is
  * deterministic and benchmarkable.
  */
 export function generateStateHistoryChartLineData(
   params: StateHistoryChartLineDataParams
 ): StateHistoryChartLineData | undefined {
-  const { hass, computedStyles, endTime } = params;
+  const { localize, states: currentStates, computedStyles, endTime } = params;
   // Work with numeric epoch timestamps (ms) instead of Date objects below.
   // Charts can hold a huge number of points, and allocating a Date per point
   // is needless GC pressure; the "time" axis consumes numbers natively.
@@ -175,10 +177,10 @@ export function generateStateHistoryChartLineData(
       addDataSet(
         states.entity_id + "-current_temperature",
         params.showNames
-          ? hass.localize("ui.card.climate.current_temperature", {
+          ? localize("ui.card.climate.current_temperature", {
               name: name,
             })
-          : hass.localize(
+          : localize(
               "component.climate.entity_component._.state_attributes.current_temperature.name"
             )
       );
@@ -186,10 +188,10 @@ export function generateStateHistoryChartLineData(
         addDataSet(
           `${states.entity_id}-${action}`,
           params.showNames
-            ? hass.localize(`ui.card.climate.${action}`, {
+            ? localize(`ui.card.climate.${action}`, {
                 name: name,
               })
-            : hass.localize(
+            : localize(
                 `component.climate.entity_component._.state_attributes.hvac_action.state.${action}`
               ),
           computedStyles.getPropertyValue(cssVar),
@@ -201,22 +203,22 @@ export function generateStateHistoryChartLineData(
         addDataSet(
           states.entity_id + "-target_temperature_mode",
           params.showNames
-            ? hass.localize("ui.card.climate.target_temperature_mode", {
+            ? localize("ui.card.climate.target_temperature_mode", {
                 name: name,
-                mode: hass.localize("ui.card.climate.high"),
+                mode: localize("ui.card.climate.high"),
               })
-            : hass.localize(
+            : localize(
                 "component.climate.entity_component._.state_attributes.target_temp_high.name"
               )
         );
         addDataSet(
           states.entity_id + "-target_temperature_mode_low",
           params.showNames
-            ? hass.localize("ui.card.climate.target_temperature_mode", {
+            ? localize("ui.card.climate.target_temperature_mode", {
                 name: name,
-                mode: hass.localize("ui.card.climate.low"),
+                mode: localize("ui.card.climate.low"),
               })
-            : hass.localize(
+            : localize(
                 "component.climate.entity_component._.state_attributes.target_temp_low.name"
               )
         );
@@ -224,10 +226,10 @@ export function generateStateHistoryChartLineData(
         addDataSet(
           states.entity_id + "-target_temperature",
           params.showNames
-            ? hass.localize("ui.card.climate.target_temperature_entity", {
+            ? localize("ui.card.climate.target_temperature_entity", {
                 name: name,
               })
-            : hass.localize(
+            : localize(
                 "component.climate.entity_component._.state_attributes.temperature.name"
               )
         );
@@ -281,10 +283,10 @@ export function generateStateHistoryChartLineData(
       addDataSet(
         states.entity_id + "-target_humidity",
         params.showNames
-          ? hass.localize("ui.card.humidifier.target_humidity_entity", {
+          ? localize("ui.card.humidifier.target_humidity_entity", {
               name: name,
             })
-          : hass.localize(
+          : localize(
               "component.humidifier.entity_component._.state_attributes.humidity.name"
             )
       );
@@ -293,10 +295,10 @@ export function generateStateHistoryChartLineData(
         addDataSet(
           states.entity_id + "-current_humidity",
           params.showNames
-            ? hass.localize("ui.card.humidifier.current_humidity_entity", {
+            ? localize("ui.card.humidifier.current_humidity_entity", {
                 name: name,
               })
-            : hass.localize(
+            : localize(
                 "component.humidifier.entity_component._.state_attributes.current_humidity.name"
               )
         );
@@ -308,10 +310,10 @@ export function generateStateHistoryChartLineData(
         addDataSet(
           states.entity_id + "-humidifying",
           params.showNames
-            ? hass.localize("ui.card.humidifier.humidifying", {
+            ? localize("ui.card.humidifier.humidifying", {
                 name: name,
               })
-            : hass.localize(
+            : localize(
                 "component.humidifier.entity_component._.state_attributes.action.state.humidifying"
               ),
           computedStyles.getPropertyValue("--state-humidifier-on-color"),
@@ -321,10 +323,10 @@ export function generateStateHistoryChartLineData(
         addDataSet(
           states.entity_id + "-drying",
           params.showNames
-            ? hass.localize("ui.card.humidifier.drying", {
+            ? localize("ui.card.humidifier.drying", {
                 name: name,
               })
-            : hass.localize(
+            : localize(
                 "component.humidifier.entity_component._.state_attributes.action.state.drying"
               ),
           computedStyles.getPropertyValue("--state-humidifier-on-color"),
@@ -334,10 +336,10 @@ export function generateStateHistoryChartLineData(
         addDataSet(
           states.entity_id + "-on",
           params.showNames
-            ? hass.localize("ui.card.humidifier.on_entity", {
+            ? localize("ui.card.humidifier.on_entity", {
                 name: name,
               })
-            : hass.localize("component.humidifier.entity_component._.state.on"),
+            : localize("component.humidifier.entity_component._.state.on"),
           undefined,
           true
         );
@@ -445,7 +447,7 @@ export function generateStateHistoryChartLineData(
     // allow 1s of leeway for "now"
     const isUpToNow = nowMs - endTimeMs <= 1000;
     if (domain === "sensor" && isUpToNow && data.length === 1) {
-      const stateObj = hass.states[states.entity_id];
+      const stateObj = currentStates[states.entity_id];
       const currentValue = stateObj ? safeParseFloat(stateObj.state) : null;
       if (currentValue !== null) {
         data[0].data!.push([Math.max(nowMs, endTimeMs), currentValue]);

@@ -318,7 +318,6 @@ class HaPanelHistory extends LitElement {
                       ? this._renderEmptyState(hasTargets)
                       : html`
                           <state-history-charts
-                            .hass=${this.hass}
                             .historyData=${this._mungedStateHistory}
                             .startTime=${this._startDate}
                             .endTime=${this._endDate}
