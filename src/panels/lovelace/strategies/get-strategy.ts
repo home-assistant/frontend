@@ -321,9 +321,18 @@ export const expandLovelaceSectionStrategies = async (
   hass: HomeAssistant,
   throwOnError = false
 ): Promise<LovelaceSectionConfig> => {
-  const newSection = isStrategySection(section)
-    ? await generateLovelaceSectionStrategy(section, hass, throwOnError)
-    : { ...section };
+  let newSection: LovelaceSectionConfig;
+  if (isStrategySection(section)) {
+    // Strategies disable their section while they have nothing to show
+    const { disabled: _disabled, ...generated } =
+      await generateLovelaceSectionStrategy(section, hass, throwOnError);
+    newSection =
+      section.disabled === undefined
+        ? generated
+        : { ...generated, disabled: section.disabled };
+  } else {
+    newSection = { ...section };
+  }
 
   if (newSection.sections) {
     newSection.sections = await Promise.all(
