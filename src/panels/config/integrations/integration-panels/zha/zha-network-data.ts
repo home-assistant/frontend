@@ -26,9 +26,12 @@ const UNKNOWN_RELATIONSHIP_PRIORITY = 4;
 // virtual parents are not Zigbee devices, so their ids cannot collide with an IEEE
 export const VIRTUAL_PARENT_PREFIX = "virtual_";
 
-// ECharts maps link value onto the edge length range, so the highest LQI
-// gives the shortest edge and the tightest pull
+// ECharts maps link value linearly onto the edge length range [350, 200],
+// across all link values. With a virtual parent present, the values span
+// [0, 255]: the spacer chain uses 0 and the highest LQI is 255.
 const TIGHT_PULL_VALUE = 255;
+// 1.5x the edge length of TIGHT_PULL_VALUE: 300 instead of 200
+const OFFLINE_PULL_VALUE = 85;
 
 // Hidden nodes between the coordinator and each virtual parent. Every hop adds
 // up to one edge length, which pushes the groups out past the mesh.
@@ -310,7 +313,7 @@ export function createZHANetworkChartData(
       category: undefined,
     },
   };
-  const virtualChildren: Record<keyof typeof virtualParents, string[]> = {
+  const virtualChildren: Record<keyof typeof virtualParents, ZHADevice[]> = {
     green_power: [],
     no_parent: [],
   };
@@ -319,14 +322,14 @@ export function createZHANetworkChartData(
       return;
     }
     if (device.device_type === ZHADeviceType.GreenPower) {
-      virtualChildren.green_power.push(device.ieee);
+      virtualChildren.green_power.push(device);
       return;
     }
     const hasLink = links.some(
       (link) => link.source === device.ieee || link.target === device.ieee
     );
     if (!hasLink) {
-      virtualChildren.no_parent.push(device.ieee);
+      virtualChildren.no_parent.push(device);
     }
   });
   const coordinator = devices.find(
@@ -372,12 +375,12 @@ export function createZHANetworkChartData(
           lineStyle: { opacity: 0 },
         });
       }
-      virtualChildren[key].forEach((ieee) => {
+      virtualChildren[key].forEach((device) => {
         // not a radio link, so no LQI and no arrow
         links.push({
           source: id,
-          target: ieee,
-          value: TIGHT_PULL_VALUE,
+          target: device.ieee,
+          value: device.available ? TIGHT_PULL_VALUE : OFFLINE_PULL_VALUE,
           symbol: "none",
           lineStyle: { width: 1, color, type: "dashed" },
         });
