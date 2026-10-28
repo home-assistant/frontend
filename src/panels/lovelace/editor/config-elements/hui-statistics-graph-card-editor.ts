@@ -429,7 +429,6 @@ export class HuiStatisticsGraphCardEditor
         @value-changed=${this._valueChanged}
       ></ha-form>
       <ha-statistics-picker
-        .hass=${this.hass}
         .placeholder=${this.hass!.localize(
           "ui.panel.lovelace.editor.card.statistics-graph.pick_statistic"
         )}

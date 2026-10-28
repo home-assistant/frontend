@@ -250,8 +250,8 @@ importers:
         specifier: 12.3.16
         version: 12.3.16
       '@home-assistant/webawesome':
-        specifier: 3.14.0-ha.1
-        version: 3.14.0-ha.1(@floating-ui/utils@0.2.12)(@types/node@24.19.2)
+        specifier: 3.14.0-ha.2
+        version: 3.14.0-ha.2(@floating-ui/utils@0.2.12)(@types/node@24.19.2)
       '@lezer/common':
         specifier: 1.5.4
         version: 1.5.4
@@ -457,8 +457,8 @@ importers:
         specifier: 7.4.1
         version: 7.4.1
       xss:
-        specifier: 1.0.16
-        version: 1.0.16
+        specifier: 1.0.17
+        version: 1.0.17
       zrender:
         specifier: 6.1.0
         version: 6.1.0
@@ -2024,8 +2024,8 @@ packages:
     resolution: {integrity: sha512-kjotm7XJrJ6v+7knhPaRgaT6q8F8K2jiafwYdNHLzmV0uGLuZY43FK6smNSHUPrhq5kX2slCUy+RGG/xGqmIKA==}
     engines: {node: '>=10.13.0'}
 
-  '@home-assistant/webawesome@3.14.0-ha.1':
-    resolution: {integrity: sha512-h/HVT3LnDIk9rQ2+xAm0WTXFG89sV1KEAqLwjxl5tYBDAftQZCxV+5adchRref8anvBtp1opctjxHtuNBwgQ2g==}
+  '@home-assistant/webawesome@3.14.0-ha.2':
+    resolution: {integrity: sha512-EX1qiX5h3LAoTjuE3rgfuRlNq3Rds5tGrgDGlHoFbxhXaCSTTtuYU6tdR8vgOXKGUDi5gBDrcoNdLYKFXSrknA==}
     engines: {node: '>=14.17.0'}
 
   '@html-eslint/core@0.67.0':
@@ -7776,8 +7776,8 @@ packages:
   xmlchars@2.2.0:
     resolution: {integrity: sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==}
 
-  xss@1.0.16:
-    resolution: {integrity: sha512-CsEvZ0QNH9vVgf3qldg+mJmmIwreZZEu/JS1SgldJrJqZgwyMrmIfENt1BJlkj/cPxO0c+R80kB5OMRtUPgqpQ==}
+  xss@1.0.17:
+    resolution: {integrity: sha512-+SEr5IDSgTBnhT6bnnf0mVRHT91+HU517zkahLNhkWLz8retCgeR1YDT4OknLiExA5+chn2Wy7z3KyjvnD8A2w==}
     engines: {node: '>= 0.10.0'}
     hasBin: true
 
@@ -9483,7 +9483,7 @@ snapshots:
     dependencies:
       is-negated-glob: 1.0.0
 
-  '@home-assistant/webawesome@3.14.0-ha.1(@floating-ui/utils@0.2.12)(@types/node@24.19.2)':
+  '@home-assistant/webawesome@3.14.0-ha.2(@floating-ui/utils@0.2.12)(@types/node@24.19.2)':
     dependencies:
       '@ctrl/tinycolor': 4.1.0
       '@floating-ui/dom': 1.8.0
@@ -15770,7 +15770,7 @@ snapshots:
 
   xmlchars@2.2.0: {}
 
-  xss@1.0.16:
+  xss@1.0.17:
     dependencies:
       commander: 2.20.3
       cssfilter: 0.0.10

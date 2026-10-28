@@ -1,14 +1,10 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { EntityNameSelector } from "../../data/selector";
-import { SubscribeMixin } from "../../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../../types";
 import "../entity/ha-entity-name-picker";
 
 @customElement("ha-selector-entity_name")
-export class HaSelectorEntityName extends SubscribeMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+export class HaSelectorEntityName extends LitElement {
   @property({ attribute: false }) public selector!: EntityNameSelector;
 
   @property() public value?: string | string[];
@@ -28,7 +24,6 @@ export class HaSelectorEntityName extends SubscribeMixin(LitElement) {
   protected render() {
     return html`
       <ha-entity-name-picker
-        .hass=${this.hass}
         .entityId=${
           this.selector.entity_name?.entity_id || this.context?.entity
         }

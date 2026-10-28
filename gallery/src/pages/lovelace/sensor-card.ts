@@ -82,6 +82,15 @@ const CONFIGS = [
     },
   },
   {
+    heading: "With custom color",
+    config: {
+      type: "sensor",
+      entity: "sensor.outside_temperature",
+      color: "teal",
+      graph: "line",
+    },
+  },
+  {
     heading: "With name, icon and unit",
     config: {
       type: "sensor",

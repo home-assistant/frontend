@@ -171,7 +171,6 @@ export class DialogEnergyBatterySettings
         ${this._error ? html`<p class="error">${this._error}</p>` : nothing}
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_from}
@@ -192,7 +191,6 @@ export class DialogEnergyBatterySettings
         ></ha-statistic-picker>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .includeUnitClass=${energyUnitClasses}
           .value=${this._source.stat_energy_to}
@@ -247,7 +245,6 @@ export class DialogEnergyBatterySettings
         ></ha-energy-power-config>
 
         <ha-statistic-picker
-          .hass=${this.hass}
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
           .value=${this._source.stat_soc}
           .includeStatisticsUnitOfMeasurement=${socStatisticsUnits}
