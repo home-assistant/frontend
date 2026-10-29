@@ -1658,6 +1658,8 @@
         "add": "Add interaction"
       },
       "combo-box": {
+        "active_option": "Option {index} of {count}: {option}",
+        "selected_option": "Selected option {index} of {count}: {option}",
         "no_match": "No matching items found",
         "no_items": "No items available",
         "unknown_item": "Unknown item",

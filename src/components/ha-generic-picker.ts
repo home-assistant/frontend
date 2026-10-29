@@ -59,6 +59,11 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   public rowRenderer?: RenderItemFunction<PickerComboBoxItem>;
 
   @property({ attribute: false })
+  public getOptionAnnouncementDetail?: (
+    item: PickerComboBoxItem
+  ) => string | undefined;
+
+  @property({ attribute: false })
   public searchFn?: PickerComboBoxSearchFn<PickerComboBoxItem>;
 
   @property({ attribute: false })
@@ -280,9 +285,11 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .shown=${this._opened}
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel}
+        .ariaLabel=${this.ariaLabel || this.label}
         .value=${this._selectedValue ?? this.value}
         @value-changed=${this._valueChanged}
         .rowRenderer=${this.rowRenderer}
+        .getOptionAnnouncementDetail=${this.getOptionAnnouncementDetail}
         .notFoundLabel=${this.notFoundLabel}
         .emptyLabel=${this.emptyLabel}
         .getItems=${this.getItems}
