@@ -29,6 +29,7 @@ export abstract class HaLogicalCondition
   protected render() {
     return html`
       <ha-automation-condition
+        path-key="conditions"
         .conditions=${this.condition.conditions || []}
         @value-changed=${this._valueChanged}
         .hass=${this.hass}

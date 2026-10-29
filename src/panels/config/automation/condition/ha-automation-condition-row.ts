@@ -96,6 +96,7 @@ import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { scrollRowIntoView } from "../scroll-row-into-view";
+import { AutomationPathController } from "../automation-path";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;
@@ -113,6 +114,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean }) public root = false;
 
+  @property({ attribute: false }) public index!: number;
+
   @property({ type: Boolean }) public first?: boolean;
 
   @property({ type: Boolean }) public last?: boolean;
@@ -123,6 +126,11 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
+
+  protected readonly pathController = new AutomationPathController(this, {
+    segment: () => [this.index],
+    row: () => (this.optionsInSidebar ? this : undefined),
+  });
 
   @state() private _collapsed = true;
 

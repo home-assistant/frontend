@@ -126,6 +126,7 @@ import "./types/ha-automation-action-wait_for_trigger";
 import "./types/ha-automation-action-wait_template";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { scrollRowIntoView } from "../scroll-row-into-view";
+import { AutomationPathController } from "../automation-path";
 
 export interface ActionElement extends LitElement {
   action: Action;
@@ -175,6 +176,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public root = false;
 
+  @property({ attribute: false }) public index!: number;
+
   @property({ type: Boolean }) public first?: boolean;
 
   @property({ type: Boolean }) public last?: boolean;
@@ -186,6 +189,11 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
+
+  protected readonly pathController = new AutomationPathController(this, {
+    segment: () => [this.index],
+    row: () => (this.optionsInSidebar ? this : undefined),
+  });
 
   @storage({
     key: "automationClipboard",

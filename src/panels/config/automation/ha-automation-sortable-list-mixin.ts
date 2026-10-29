@@ -7,6 +7,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { nextRender } from "../../../common/util/render-status";
 import type { AutomationClipboard } from "../../../data/automation";
 import type { Constructor, HomeAssistant } from "../../../types";
+import { AutomationPathController } from "./automation-path";
 
 const rowKeys = new WeakMap<object, string>();
 
@@ -74,6 +75,13 @@ export const AutomationSortableListMixin = <T extends object>(
 
     @property({ type: Boolean, attribute: "sidebar" }) public optionsInSidebar =
       false;
+
+    /** Key of this list in the config of the row or editor rendering it. */
+    @property({ attribute: "path-key" }) public pathKey?: string;
+
+    protected readonly pathController = new AutomationPathController(this, {
+      segment: () => (this.pathKey === undefined ? [] : [this.pathKey]),
+    });
 
     @state() protected rowSortSelected?: number;
 

@@ -24,8 +24,12 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
+import {
+  ConfigChangeUndoRedoController,
+  type ConfigChangeStep,
+} from "../../../common/controllers/config-change-undo-redo-controller";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { afterNextRender } from "../../../common/util/render-status";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { goBack, navigate } from "../../../common/navigate";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
@@ -73,7 +77,9 @@ import { PreventUnsavedMixin } from "../../../mixins/prevent-unsaved-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries, ValueChangedEvent } from "../../../types";
 import { isMac } from "../../../util/is_mac";
+import { getUndoRevealTarget, type UndoStepMeta } from "./automation-path";
 import { showEditorToast } from "./editor-toast";
+import { preserveAutomationRowKey } from "./ha-automation-sortable-list-mixin";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { showAutomationModeDialog } from "./automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationSaveDialog } from "./automation-save-dialog/show-dialog-automation-save";
@@ -162,9 +168,13 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     checkValidation: () => this._checkValidation(),
   };
 
-  private _undoRedoController = new UndoRedoController<AutomationConfig>(this, {
-    apply: (config) => this._applyUndoRedo(config),
-    currentConfig: () => this.config!,
+  private _undoRedoController = new ConfigChangeUndoRedoController<
+    AutomationConfig,
+    UndoStepMeta
+  >(this, {
+    apply: (config, step, undo) => this._applyUndoRedo(config, step, undo),
+    currentConfig: () => this.config,
+    onCopy: preserveAutomationRowKey,
   });
 
   public override get isDirtyState(): boolean {
@@ -515,6 +525,8 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                           `
                         : html`
                             <manual-automation-editor
+                              @drag-start=${this._dragStarted}
+                              @drag-end=${this._dragEnded}
                               .hass=${this.hass}
                               .narrow=${this.narrow}
                               .isWide=${this.isWide}
@@ -819,7 +831,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
 
   private _updateConfig(config: AutomationConfig) {
     if (this.config) {
-      this._undoRedoController.commit(this.config);
+      this._undoRedoController.commit(this.config, config, (changes) => ({
+        sidebarRow: this._manualEditor?.findSidebarRow(changes),
+      }));
     }
 
     this.config = config;
@@ -1056,6 +1070,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
         config: this.config!,
         domain: "automation",
         updateConfig: async (config, entityRegistryUpdate) => {
+          this._undoRedoController.commit(this.config!, config);
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
           this._updateDirtyState({
@@ -1077,6 +1092,7 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
       showAutomationModeDialog(this, {
         config: this.config!,
         updateConfig: (config) => {
+          this._undoRedoController.commit(this.config!, config);
           this.config = config;
           this._updateDirtyState({
             config,
@@ -1259,14 +1275,32 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
     this._manualEditor?.deleteSelectedRow();
   }
 
-  private _applyUndoRedo(config: AutomationConfig) {
-    this._manualEditor?.triggerCloseSidebar();
+  private _applyUndoRedo(
+    config: AutomationConfig,
+    step: ConfigChangeStep<UndoStepMeta>,
+    undo: boolean
+  ) {
     this.config = config;
     this._updateDirtyState({
       config: this.config,
       entityRegistryUpdate: this.entityRegistryUpdate,
     });
+    const { paths, openSidebar } = getUndoRevealTarget(step, undo);
+    this._manualEditor?.revealPaths(paths, openSidebar);
   }
+
+  private _dragStarted = () => {
+    this._undoRedoController.startGroup();
+    this._manualEditor?.dragStarted();
+  };
+
+  // A drag between lists changes both, each after its next render
+  private _dragEnded = () => {
+    afterNextRender(() => {
+      this._undoRedoController.endGroup();
+      this._manualEditor?.dragEnded();
+    });
+  };
 
   private _undo() {
     this._undoRedoController.undo();

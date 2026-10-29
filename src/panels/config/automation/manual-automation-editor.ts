@@ -111,6 +111,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
       <ha-automation-trigger
         role="region"
+        path-key="triggers"
         aria-labelledby="triggers-heading"
         .triggers=${this.config.triggers || []}
         .highlightedTriggers=${this.pastedConfig?.triggers}
@@ -149,6 +150,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
       <ha-automation-condition
         role="region"
+        path-key="conditions"
         aria-labelledby="conditions-heading"
         .conditions=${this.config.conditions || []}
         .highlightedConditions=${this.pastedConfig?.conditions}
@@ -183,6 +185,7 @@ export class HaManualAutomationEditor extends ManualEditorMixin<ManualAutomation
 
       <ha-automation-action
         role="region"
+        path-key="actions"
         aria-labelledby="actions-heading"
         .actions=${this.config.actions || []}
         .highlightedActions=${this.pastedConfig?.actions}

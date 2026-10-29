@@ -151,6 +151,7 @@ export class HaManualScriptEditor extends ManualEditorMixin<ScriptConfig>(
 
     <ha-automation-action
       role="region"
+      path-key="sequence"
       aria-labelledby="sequence-heading"
       .actions=${this.config.sequence || []}
       .highlightedActions=${this.pastedConfig?.sequence}
