@@ -14,15 +14,14 @@ import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/radio/ha-radio-group";
 import type { HaRadioGroup } from "../../../components/radio/ha-radio-group";
 import "../../../components/radio/ha-radio-option";
-import "../../../components/ha-spinner";
 import "../../../components/ha-tab-group";
 import "../../../components/ha-tab-group-tab";
 import "../../../components/input/ha-input";
+import "../../../components/item/ha-list-item-option";
+import "../../../components/list/ha-list-selectable";
 import type { HaInput } from "../../../components/input/ha-input";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import {
@@ -169,29 +168,28 @@ export class HassioNetwork extends LitElement {
                   ${
                     this._accessPoints.length
                       ? html`
-                          <ha-list>
+                          <ha-list-selectable
+                            @ha-list-item-selected=${this._selectAP}
+                          >
                             ${this._accessPoints.map(
                               (ap) => html`
-                                <ha-list-item
-                                  twoline
-                                  @click=${this._selectAP}
-                                  .activated=${
+                                <ha-list-item-option
+                                  .headline=${ap.ssid}
+                                  .selected=${
                                     ap.ssid === this._wifiConfiguration?.ssid
                                   }
-                                  .ap=${ap}
                                 >
-                                  <span>${ap.ssid}</span>
-                                  <span slot="secondary">
+                                  <span slot="supporting-text">
                                     ${ap.mac} -
                                     ${this.hass.localize(
                                       "ui.panel.config.network.supervisor.signal_strength"
                                     )}:
                                     ${ap.signal}
                                   </span>
-                                </ha-list-item>
+                                </ha-list-item-option>
                               `
                             )}
-                          </ha-list>
+                          </ha-list-selectable>
                         `
                       : nothing
                   }
@@ -274,8 +272,14 @@ export class HassioNetwork extends LitElement {
       </div>`;
   }
 
-  private _selectAP(event) {
-    this._wifiConfiguration = event.currentTarget.ap;
+  private _selectAP(ev: CustomEvent<number>) {
+    const ap = this._accessPoints[ev.detail];
+    this._wifiConfiguration = {
+      mode: ap.mode,
+      ssid: ap.ssid,
+      signal: ap.signal,
+      auth: "open",
+    };
     IP_VERSIONS.forEach((version) => {
       if (this._interface![version]!.method === "disabled") {
         this._interface![version]!.method = "auto";
@@ -844,8 +848,8 @@ export class HassioNetwork extends LitElement {
         .add-nameserver {
           margin-top: 16px;
         }
-        ha-list-item {
-          --mdc-list-side-padding: 10px;
+        ha-list-item-option {
+          --ha-row-item-padding-inline: 10px;
         }
         .card-actions {
           display: flex;

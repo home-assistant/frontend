@@ -3,7 +3,8 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-icon-next";
-import "../../components/ha-list-item";
+import "../../components/item/ha-list-item-button";
+import "../../components/list/ha-list-base";
 import type { DataEntryFlowStepMenu } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
@@ -79,28 +80,27 @@ class StepFlowMenu extends LitElement {
 
     return html`
       ${description ? html`<div class="content">${description}</div>` : nothing}
-      <div class="options">
+      <ha-list-base class="options">
         ${options.map((option) => {
           const optionDescription = optionDescriptions[option];
           return html`
-            <ha-list-item
-              hasMeta
+            <ha-list-item-button
+              .headline=${translations[option]}
               .step=${option}
               @click=${this._handleStep}
-              ?twoline=${optionDescription}
-              ?multiline-secondary=${optionDescription}
             >
-              <span>${translations[option]}</span>
               ${
                 optionDescription
-                  ? html`<span slot="secondary"> ${optionDescription} </span>`
+                  ? html`<span slot="supporting-text" class="description"
+                      >${optionDescription}</span
+                    >`
                   : nothing
               }
-              <ha-icon-next slot="meta"></ha-icon-next>
-            </ha-list-item>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>
           `;
         })}
-      </div>
+      </ha-list-base>
     `;
   }
 
@@ -129,8 +129,14 @@ class StepFlowMenu extends LitElement {
       .content + .options {
         margin-top: var(--ha-space-2);
       }
-      ha-list-item {
-        --mdc-list-side-padding: var(--ha-space-6);
+      ha-list-item-button {
+        --ha-row-item-padding-inline: var(--ha-space-6);
+      }
+      .description {
+        white-space: normal;
+      }
+      ha-icon-next {
+        color: var(--secondary-text-color);
       }
     `,
   ];

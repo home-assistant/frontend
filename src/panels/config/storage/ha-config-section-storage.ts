@@ -18,12 +18,12 @@ import "../../../components/ha-bar";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-segmented-bar";
 import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
 import type { HassioHostInfo, HostDisksUsage } from "../../../data/hassio/host";
 import {
@@ -187,18 +187,18 @@ class HaConfigSectionStorage extends LitElement {
                     }
                   </ha-alert>`
                 : validMounts?.length
-                  ? html`<ha-list>
+                  ? html`<ha-list-base
+                      aria-label=${this.hass.localize(
+                        "ui.panel.config.storage.network_mounts.title"
+                      )}
+                    >
                       ${validMounts.map(
                         (mount) => html`
-                          <ha-list-item
-                            graphic="avatar"
+                          <ha-list-item-button
                             .mount=${mount}
-                            twoline
-                            multiline-secondary
-                            hasMeta
                             @click=${this._changeMount}
                           >
-                            <div slot="graphic">
+                            <div slot="start" class="mount-icon">
                               <ha-svg-icon
                                 .path=${
                                   mount.usage === SupervisorMountUsage.MEDIA
@@ -210,11 +210,12 @@ class HaConfigSectionStorage extends LitElement {
                               ></ha-svg-icon>
                             </div>
                             <span
+                              slot="headline"
                               class="mount-state-${mount.state || "unknown"}"
                             >
                               ${mount.name}
                             </span>
-                            <span slot="secondary">
+                            <span slot="supporting-text">
                               <span class="mount-address">
                                 ${supervisorMountDescription(mount)}
                               </span>
@@ -224,19 +225,17 @@ class HaConfigSectionStorage extends LitElement {
                               mount.state !== SupervisorMountState.ACTIVE
                                 ? html`<ha-icon-button
                                     class="reload-btn"
-                                    slot="meta"
+                                    slot="end"
                                     .mount=${mount}
                                     @click=${this._reloadMount}
                                     .path=${mdiReload}
                                   ></ha-icon-button>`
-                                : html`<ha-icon-next
-                                    slot="meta"
-                                  ></ha-icon-next>`
+                                : html`<ha-icon-next slot="end"></ha-icon-next>`
                             }
-                          </ha-list-item>
+                          </ha-list-item-button>
                         `
                       )}
-                    </ha-list>`
+                    </ha-list-base>`
                   : html`<div class="no-mounts">
                       <ha-svg-icon .path=${mdiNas}></ha-svg-icon>
                       <p>
@@ -490,8 +489,6 @@ class HaConfigSectionStorage extends LitElement {
       color: var(--warning-color);
     }
 
-    /* multiline-secondary lets the secondary slot wrap, so the address keeps its
-       own single ellipsized line and only the usage sits below it. */
     .mount-address {
       display: block;
       overflow: hidden;
@@ -560,13 +557,19 @@ class HaConfigSectionStorage extends LitElement {
       border-radius: var(--ha-border-radius-circle);
       margin-bottom: 8px;
     }
-    ha-list-item {
-      --mdc-list-item-meta-size: auto;
-      --mdc-list-item-meta-display: flex;
-    }
     ha-svg-icon,
     ha-icon-next {
       width: 24px;
+    }
+    .mount-icon {
+      display: flex;
+      justify-content: center;
+      width: 40px;
+    }
+    .mount-icon,
+    .reload-btn,
+    ha-list-item-button ha-icon-next {
+      color: var(--secondary-text-color);
     }
 
     ha-alert {

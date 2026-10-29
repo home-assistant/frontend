@@ -10,12 +10,11 @@ import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
-import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-selector/ha-selector-datetime";
 import "../../../../components/ha-selector/ha-selector-number";
-import "../../../../components/ha-svg-icon";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-base";
 import type { StatisticValue } from "../../../../data/recorder";
 import {
   adjustStatisticsSum,
@@ -241,25 +240,21 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
           }
         );
         rows.push(html`
-          <ha-list-item
-            twoline
-            hasMeta
+          <ha-list-item-button
+            .headline=${change}
+            .supportingText=${formatDateTime(
+              new Date(stat.start),
+              this.hass.locale,
+              this.hass.config
+            )}
             .stat=${stat}
             @click=${this._setChosenStatistic}
           >
-            <span>${change}</span>
-            <span slot="secondary">
-              ${formatDateTime(
-                new Date(stat.start),
-                this.hass.locale,
-                this.hass.config
-              )}
-            </span>
-            <ha-icon-next slot="meta"></ha-icon-next>
-          </ha-list-item>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-list-item-button>
         `);
       }
-      stats = html`${rows}`;
+      stats = html`<ha-list-base>${rows}</ha-list-base>`;
     }
 
     return html`
@@ -635,9 +630,14 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         ha-selector-number {
           margin-bottom: var(--ha-space-5);
         }
-        ha-list-item {
+        ha-list-base {
           margin: 0 -24px;
-          --mdc-list-side-padding: 24px;
+        }
+        ha-list-item-button {
+          --ha-row-item-padding-inline: var(--ha-space-6);
+        }
+        ha-list-item-button ha-icon-next {
+          color: var(--secondary-text-color);
         }
         .table-row {
           display: flex;

@@ -12,9 +12,9 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import { getSignedPath } from "../../../data/auth";
 import {
   getCoreLogFileDownloadUnavailableReason,
@@ -227,16 +227,18 @@ export class SystemLogCard extends LitElement {
                                   )
                             }
                           </div>`
-                        : html`<ha-list
+                        : html`<ha-list-base
                             >${filteredItems.map(
                               (item, idx) => html`
-                                <ha-list-item
+                                <ha-list-item-button
                                   @click=${this._openLog}
                                   .logItem=${item}
-                                  twoline
+                                  .headline=${item.message[0]}
                                 >
-                                  ${item.message[0]}
-                                  <span slot="secondary" class="secondary">
+                                  <span
+                                    slot="supporting-text"
+                                    class="secondary"
+                                  >
                                     ${this._timestamp(item)} –
                                     ${html`(<span class=${item.level}
                                         >${this.hass.localize(
@@ -265,9 +267,9 @@ export class SystemLogCard extends LitElement {
                                         : nothing
                                     }
                                   </span>
-                                </ha-list-item>
+                                </ha-list-item-button>
                               `
-                            )}</ha-list
+                            )}</ha-list-base
                           >`
                   }
 
@@ -338,8 +340,9 @@ export class SystemLogCard extends LitElement {
     :host {
       direction: var(--direction);
     }
-    ha-list {
+    ha-list-base {
       direction: ltr;
+      --ha-list-padding: var(--ha-space-2) 0;
     }
 
     .header {
