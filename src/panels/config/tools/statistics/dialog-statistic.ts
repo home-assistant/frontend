@@ -91,7 +91,7 @@ const periodStart = (date: Date, period: PreviewPeriod) => {
   return new Date(Math.floor(date.getTime() / periodMs) * periodMs);
 };
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+const DEFAULT_RANGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 const OUTLIER_COUNT = 10;
 
@@ -200,7 +200,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
       0,
       0
     );
-    this._start = new Date(this._end.getTime() - DAY_MS);
+    this._start = new Date(this._end.getTime() - DEFAULT_RANGE_MS);
     this._fetchStatistics();
     this._fetchBounds(true);
   }
@@ -1073,7 +1073,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
     // Statistics of removed entities can stop long before the default range
     if (moveToLastData && this._bounds.last < this._start) {
       this._end = this._bounds.last;
-      this._start = new Date(this._end.getTime() - DAY_MS);
+      this._start = new Date(this._end.getTime() - DEFAULT_RANGE_MS);
       this._fetchStatistics();
     }
   }
