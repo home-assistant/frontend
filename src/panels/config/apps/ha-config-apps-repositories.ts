@@ -81,7 +81,7 @@ export class HaConfigAppsRepositories extends LitElement {
     this._loadData();
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  protected willUpdate(changedProperties: PropertyValues) {
     if (
       changedProperties.has("_addon") &&
       this._addon &&
