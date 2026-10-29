@@ -568,6 +568,9 @@ class ViewMountDialog extends DirtyStateProviderMixin<
   // typed a name of their own.
   private _suggestName(previous?: MountFormData) {
     const data = this._data;
+    if (data?.name !== previous?.name) {
+      this._suggestedName = undefined;
+    }
     if (
       this._existing ||
       data?.type !== SupervisorMountType.DISK ||
