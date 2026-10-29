@@ -413,7 +413,20 @@
         "hourly": "Hourly",
         "twice_daily": "Twice daily",
         "high": "High",
-        "low": "Low"
+        "low": "Low",
+        "now": "Now",
+        "today": "Today",
+        "feels_like": "Feels like {temperature}",
+        "high_low": "High {high} · Low {low}",
+        "next_hours": "Next hours",
+        "hourly_modes": {
+          "temperature": "Temperature",
+          "precipitation": "Rain",
+          "wind": "Wind"
+        },
+        "sunrise": "Sunrise",
+        "sunset": "Sunset",
+        "daily_forecast": "{count} day forecast"
       }
     },
     "card_features": {
