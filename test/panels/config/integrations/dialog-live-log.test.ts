@@ -9,6 +9,7 @@ vi.mock("../../../../src/components/input/ha-input-search", () => ({}));
 vi.mock("../../../../src/components/ha-button", () => ({}));
 vi.mock("../../../../src/components/ha-dialog", () => ({}));
 vi.mock("../../../../src/components/ha-dialog-footer", () => ({}));
+vi.mock("../../../../src/components/skeleton/ha-skeleton-log", () => ({}));
 vi.mock("../../../../src/components/ha-log-viewer", () => {
   class HaLogViewerStub extends HTMLElement {
     public lines: string[] = [];
