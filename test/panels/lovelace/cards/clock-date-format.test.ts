@@ -341,6 +341,22 @@ describe("clock-date-format", () => {
     });
   });
 
+  it("matches date fields that a language formats with a suffix", () => {
+    assert.deepEqual(getClockCardDatePresetParts("short", "ja"), [
+      "year-numeric",
+      "separator-slash",
+      "month-2-digit",
+      "separator-slash",
+      "day-2-digit",
+    ]);
+    assert.deepEqual(
+      getClockCardDatePresetParts("short", "ko").filter(
+        (part) => !part.startsWith("separator-")
+      ),
+      ["year-2-digit", "month-numeric", "day-numeric"]
+    );
+  });
+
   it("renders a comma separator with a following space", () => {
     const result = formatClockCardDate(
       date,

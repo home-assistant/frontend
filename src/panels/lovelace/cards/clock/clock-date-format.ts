@@ -344,19 +344,32 @@ export const getClockCardDatePresetParts = (
     ];
   }
 
-  const formatUtc = (part: ClockCardValuePart) =>
-    formatDatePart(part, PRESET_REFERENCE_DATE, language, "UTC");
+  // Compares only the field itself, as standalone formats can add text around
+  // it, such as "05日" for a Japanese day.
+  const formatUtcField = (
+    formatter: Intl.DateTimeFormat,
+    fieldType: Intl.DateTimeFormatPartTypes
+  ) =>
+    formatter
+      .formatToParts(PRESET_REFERENCE_DATE)
+      .find(({ type }) => type === fieldType)?.value;
+
+  const formatUtc = (
+    part: ClockCardValuePart,
+    fieldType: Intl.DateTimeFormatPartTypes
+  ) => formatUtcField(getDatePartFormatter(part, language, "UTC"), fieldType);
 
   // Some languages, such as Polish and Russian, inflect the month next to a
   // day ("5 stycznia"), so it differs from the standalone form ("styczeń").
   const formatMonthWithDay = (part: ClockCardValuePart) =>
-    new Intl.DateTimeFormat(language, {
-      ...DATE_PART_OPTIONS[part],
-      day: "numeric",
-      timeZone: "UTC",
-    })
-      .formatToParts(PRESET_REFERENCE_DATE)
-      .find(({ type }) => type === "month")?.value;
+    formatUtcField(
+      new Intl.DateTimeFormat(language, {
+        ...DATE_PART_OPTIONS[part],
+        day: "numeric",
+        timeZone: "UTC",
+      }),
+      "month"
+    );
 
   const parts: ClockCardDatePart[] = [];
 
@@ -366,14 +379,16 @@ export const getClockCardDatePresetParts = (
       switch (type) {
         case "weekday":
           parts.push(
-            value === formatUtc("weekday-long")
+            value === formatUtc("weekday-long", type)
               ? "weekday-long"
               : "weekday-short"
           );
           break;
         case "day":
           parts.push(
-            value === formatUtc("day-2-digit") ? "day-2-digit" : "day-numeric"
+            value === formatUtc("day-2-digit", type)
+              ? "day-2-digit"
+              : "day-numeric"
           );
           break;
         case "month":
@@ -387,13 +402,14 @@ export const getClockCardDatePresetParts = (
               ] as const
             ).find(
               (part) =>
-                value === formatUtc(part) || value === formatMonthWithDay(part)
+                value === formatUtc(part, type) ||
+                value === formatMonthWithDay(part)
             ) ?? "month-short"
           );
           break;
         case "year":
           parts.push(
-            value === formatUtc("year-2-digit")
+            value === formatUtc("year-2-digit", type)
               ? "year-2-digit"
               : "year-numeric"
           );
