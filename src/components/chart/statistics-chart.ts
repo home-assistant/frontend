@@ -49,7 +49,11 @@ import type {
   HomeAssistantUI,
 } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
-import type { CustomLegendOption, HaChartBase } from "./ha-chart-base";
+import type {
+  CustomLegendOption,
+  HaChartBase,
+  ZoomSliderMode,
+} from "./ha-chart-base";
 import "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
@@ -131,8 +135,8 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: "select-range", type: Boolean })
   public selectRange = false;
 
-  @property({ attribute: "show-zoom-slider", type: Boolean })
-  public showZoomSlider = false;
+  @property({ attribute: "zoom-slider" })
+  public zoomSlider: ZoomSliderMode = "auto";
 
   // null keeps the highlight support but shows nothing
   @property({ attribute: false }) public highlight?: {
@@ -265,7 +269,7 @@ export class StatisticsChart extends LitElement {
         .options=${this._chartOptions}
         .height=${this.height}
         .selectRange=${this.selectRange}
-        .showZoomSlider=${this.showZoomSlider}
+        .zoomSlider=${this.zoomSlider}
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}

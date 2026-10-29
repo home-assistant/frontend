@@ -90,6 +90,8 @@ export const DEFAULT_CHART_WIDTH = 500;
 const VISIBILITY_ROOT_MARGIN_NARROW = "100%";
 const VISIBILITY_ROOT_MARGIN = "300px";
 const CLICK_DRAG_TOLERANCE = 4;
+
+export type ZoomSliderMode = "auto" | "always" | "never";
 const DEFERRED_PROPS = [
   "options",
   "data",
@@ -164,9 +166,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   @property({ attribute: "small-controls", type: Boolean })
   public smallControls?: boolean;
 
-  // For charts zoomed from outside, like the synced History charts
-  @property({ attribute: "hide-zoom-controls", type: Boolean })
-  public hideZoomControls = false;
+  // "auto" shows the zoom slider once zoomed. "never" hides every zoom
+  // control, for charts zoomed from outside like the synced History charts.
+  @property({ attribute: "zoom-slider" })
+  public zoomSlider: ZoomSliderMode = "auto";
 
   // For charts sized to their content, like timelines, which grow to fit the
   // zoom slider instead of giving up plot height
@@ -176,10 +179,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   // Dragging selects a time range instead of zooming
   @property({ attribute: "select-range", type: Boolean })
   public selectRange = false;
-
-  // Shows the zoom slider even when the chart is not zoomed
-  @property({ attribute: "show-zoom-slider", type: Boolean })
-  public showZoomSlider = false;
 
   // extraComponents is not reactive and should not trigger updates
   public extraComponents?: any[];
@@ -631,7 +630,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
           >
             ${
               (this._isZoomed || this._isGraphRoamed) &&
-              !this.hideZoomControls &&
+              this.zoomSlider !== "never" &&
               !showZoomSlider
                 ? html`<ha-icon-button
                     class="zoom-reset"
@@ -1135,9 +1134,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _showZoomSlider() {
     const [start, end] = this._zoomRange;
     return (
-      !this.hideZoomControls &&
+      this.zoomSlider !== "never" &&
       this._hasZoomableXAxis() &&
-      (this.showZoomSlider ||
+      (this.zoomSlider === "always" ||
         this._zoomSliderHeld ||
         start !== 0 ||
         end !== 100)

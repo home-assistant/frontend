@@ -16,7 +16,6 @@ import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { consume } from "../../../common/decorators/consume";
@@ -38,10 +37,12 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-button-next";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
+import "../../../components/list/ha-list-nav";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import {
   deleteAreaRegistryEntry,
@@ -375,18 +376,22 @@ class HaConfigAreaPage extends LitElement {
         .header=${this.hass.localize("ui.panel.config.devices.caption")}
         >${
           devices.length
-            ? html`<ha-list>
+            ? html`<ha-list-nav
+                .ariaLabel=${this.hass.localize(
+                  "ui.panel.config.devices.caption"
+                )}
+              >
                 ${devices.map(
                   (device) => html`
-                    <a href="/config/devices/device/${device.id}">
-                      <ha-list-item hasMeta>
-                        <span>${device.name}</span>
-                        <ha-icon-next slot="meta"></ha-icon-next>
-                      </ha-list-item>
-                    </a>
+                    <ha-list-item-button
+                      .href=${`/config/devices/device/${device.id}`}
+                      .headline=${device.name}
+                    >
+                      <ha-icon-next slot="end"></ha-icon-next>
+                    </ha-list-item-button>
                   `
                 )}
-              </ha-list>`
+              </ha-list-nav>`
             : html`
                 <div class="no-entries">
                   ${this.hass.localize("ui.panel.config.devices.no_devices")}
@@ -402,20 +407,23 @@ class HaConfigAreaPage extends LitElement {
       >
         ${
           nonAutomatedEntities.length
-            ? html`<ha-list>
+            ? html`<ha-list-base
+                aria-label=${this.hass.localize(
+                  "ui.panel.config.areas.editor.linked_entities_caption"
+                )}
+              >
                 ${nonAutomatedEntities.map(
                   (entity) => html`
-                    <ha-list-item
+                    <ha-list-item-button
                       @click=${this._openEntity}
                       .entity=${entity}
-                      hasMeta
+                      .headline=${entity.name ?? undefined}
                     >
-                      <span>${entity.name}</span>
-                      <ha-icon-next slot="meta"></ha-icon-next>
-                    </ha-list-item>
+                      <ha-icon-next slot="end"></ha-icon-next>
+                    </ha-list-item-button>
                   `
-                )}</ha-list
-              >`
+                )}
+              </ha-list-base>`
             : html`
                 <div class="no-entries">
                   ${this.hass.localize(
@@ -444,14 +452,19 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.assigned_to_area"
                           )}:
                         </h3>
-                        <ha-list>
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.automations_assigned",
+                            { area: area.name }
+                          )}
+                        >
                           ${groupedAutomations.map((automation) =>
                             this._renderAutomation(
                               automation.name,
                               automation.entity
                             )
-                          )}</ha-list
-                        >`
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -461,14 +474,19 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.targeting_area"
                           )}:
                         </h3>
-                        <ha-list>
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.automations_targeting",
+                            { area: area.name }
+                          )}
+                        >
                           ${relatedAutomations.map((automation) =>
                             this._renderAutomation(
                               automation.name,
                               automation.entity
                             )
-                          )}</ha-list
-                        >`
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -502,11 +520,16 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.assigned_to_area"
                           )}:
                         </h3>
-                        <ha-list>
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.scenes_assigned",
+                            { area: area.name }
+                          )}
+                        >
                           ${groupedScenes.map((scene) =>
                             this._renderScene(scene.name, scene.entity)
-                          )}</ha-list
-                        >`
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -516,11 +539,16 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.targeting_area"
                           )}:
                         </h3>
-                        <ha-list>
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.scenes_targeting",
+                            { area: area.name }
+                          )}
+                        >
                           ${relatedScenes.map((scene) =>
                             this._renderScene(scene.name, scene.entity)
-                          )}</ha-list
-                        >`
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -554,9 +582,16 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.assigned_to_area"
                           )}:
                         </h3>
-                        ${groupedScripts.map((script) =>
-                          this._renderScript(script.name, script.entity)
-                        )}`
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.scripts_assigned",
+                            { area: area.name }
+                          )}
+                        >
+                          ${groupedScripts.map((script) =>
+                            this._renderScript(script.name, script.entity)
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -566,9 +601,16 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.targeting_area"
                           )}:
                         </h3>
-                        ${relatedScripts.map((script) =>
-                          this._renderScript(script.name, script.entity)
-                        )}`
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.scripts_targeting",
+                            { area: area.name }
+                          )}
+                        >
+                          ${relatedScripts.map((script) =>
+                            this._renderScript(script.name, script.entity)
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -753,47 +795,41 @@ class HaConfigAreaPage extends LitElement {
   }
 
   private _renderScene(name: string, entityState: SceneEntity) {
-    return html`<ha-tooltip
-        .for="scene-${slugify(entityState.entity_id)}"
-        .distance=${-4}
-        .disabled=${!!entityState.attributes.id}
-      >
-        ${this.hass.localize("ui.panel.config.devices.cant_edit")}
-      </ha-tooltip>
-      <a
-        .id="scene-${slugify(entityState.entity_id)}"
-        href=${ifDefined(
-          entityState.attributes.id
-            ? `/config/scene/edit/${entityState.attributes.id}`
-            : undefined
-        )}
-      >
-        <ha-list-item .disabled=${!entityState.attributes.id} hasMeta>
-          <span>${name}</span>
-          <ha-icon-next slot="meta"></ha-icon-next>
-        </ha-list-item>
-      </a> `;
+    return entityState.attributes.id
+      ? this._renderLink(
+          name,
+          `/config/scene/edit/${entityState.attributes.id}`
+        )
+      : this._renderNotEditable(
+          name,
+          `scene-${slugify(entityState.entity_id)}`
+        );
   }
 
   private _renderAutomation(name: string, entityState: AutomationEntity) {
-    return html`<a
-        id="automation-${slugify(entityState.entity_id)}"
-        href=${ifDefined(
-          entityState.attributes.id
-            ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
-            : undefined
-        )}
-      >
-        <ha-list-item .disabled=${!entityState.attributes.id} hasMeta>
-          <span>${name}</span>
-          <ha-icon-next slot="meta"></ha-icon-next>
-        </ha-list-item>
-      </a>
-      <ha-tooltip
-        for="automation-${slugify(entityState.entity_id)}"
-        .disabled=${!!entityState.attributes.id}
-        .distance=${-4}
-        >${this.hass.localize("ui.panel.config.devices.cant_edit")}
+    return entityState.attributes.id
+      ? this._renderLink(
+          name,
+          `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
+        )
+      : this._renderNotEditable(
+          name,
+          `automation-${slugify(entityState.entity_id)}`
+        );
+  }
+
+  private _renderLink(name: string, href: string) {
+    return html`<ha-list-item-button .href=${href} .headline=${name}>
+      <ha-icon-next slot="end"></ha-icon-next>
+    </ha-list-item-button>`;
+  }
+
+  private _renderNotEditable(name: string, id: string) {
+    return html`<ha-list-item-base id=${id} .headline=${name}>
+        <ha-icon-next slot="end"></ha-icon-next>
+      </ha-list-item-base>
+      <ha-tooltip .for=${id} .distance=${-4}>
+        ${this.hass.localize("ui.panel.config.devices.cant_edit")}
       </ha-tooltip>`;
   }
 
@@ -805,12 +841,7 @@ class HaConfigAreaPage extends LitElement {
     if (entry) {
       url = `/config/script/edit/${entry.unique_id}`;
     }
-    return html`<a href=${url}>
-      <ha-list-item hasMeta>
-        <span>${name}</span>
-        <ha-icon-next slot="meta"></ha-icon-next>
-      </ha-list-item>
-    </a>`;
+    return this._renderLink(name, url);
   }
 
   private async _findRelated() {
@@ -977,8 +1008,15 @@ class HaConfigAreaPage extends LitElement {
           color: var(--primary-text-color);
         }
 
-        ha-card > a:first-child {
-          display: block;
+        ha-list-base,
+        ha-list-nav {
+          --ha-list-padding: var(--ha-space-2) 0;
+        }
+        ha-list-item-base {
+          color: var(--disabled-text-color);
+        }
+        ha-list-item-button ha-icon-next {
+          color: var(--secondary-text-color);
         }
         ha-card > *:first-child {
           margin-top: -16px;

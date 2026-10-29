@@ -3547,6 +3547,14 @@
           "add_picture": "Add a picture",
           "assigned_to_area": "Assigned to this area",
           "targeting_area": "Targeting this area",
+          "related_lists": {
+            "automations_assigned": "Automations assigned to {area}",
+            "automations_targeting": "Automations targeting {area}",
+            "scenes_assigned": "Scenes assigned to {area}",
+            "scenes_targeting": "Scenes targeting {area}",
+            "scripts_assigned": "Scripts assigned to {area}",
+            "scripts_targeting": "Scripts targeting {area}"
+          },
           "area_not_found": "[%key:ui::card::area::area_not_found%]",
           "data_table": {
             "area": "Area",
@@ -7483,6 +7491,7 @@
             "none": "This device has no entities",
             "show_less": "Show less",
             "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "disabled_entities_list": "Disabled entities",
             "hidden": "Hidden"
           },
           "confirm_disable_config_entry_title": "Disable config entry?",
@@ -10229,7 +10238,10 @@
         "add_entities": {
           "yaml_unsupported": "You cannot use this function when using your dashboard in YAML mode.",
           "generated_unsupported": "You can only use this function when you have taken control of your dashboard.",
-          "saving_failed": "Saving dashboard configuration failed."
+          "saving_failed": "Saving dashboard configuration failed.",
+          "added": "Added to {dashboard}",
+          "added_unnamed": "Added to the dashboard",
+          "open": "Open"
         },
         "views": {
           "unnamed_view": "Unnamed view",

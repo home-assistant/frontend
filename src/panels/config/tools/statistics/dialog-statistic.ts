@@ -469,7 +469,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
                         .selectRange=${this._correcting && !this._isSum}
                         .highlight=${this._selection ?? null}
                         hide-legend
-                        show-zoom-slider
+                        zoom-slider="always"
                         .clickForMoreInfo=${false}
                         height="300px"
                         @chart-grid-click=${this._chartClicked}

@@ -20,7 +20,6 @@ import {
   haStyleDialogFixedTop,
 } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import "../../cards/hui-card";
 import type { DeviceSectionCategory } from "../../strategies/device/device-section-strategy";
 import {
@@ -253,7 +252,6 @@ export class HuiDialogAddDeviceCard
       addCards(this._params.lovelaceConfig, this._params.path, this._cardConfig)
     );
     this._saving = false;
-    showSaveSuccessToast(this, this.hass);
     this.closeDialog();
   }
 

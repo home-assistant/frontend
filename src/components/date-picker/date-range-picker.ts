@@ -1,6 +1,5 @@
 import { TZDate } from "@date-fns/tz";
 import type { ContextType } from "@lit/context";
-import type { ActionDetail } from "@material/mwc-list";
 import { mdiCalendarToday } from "@mdi/js";
 import "cally";
 import type { HassConfig } from "home-assistant-js-websocket/dist/types";
@@ -343,7 +342,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     this._saveDateRangePreset(chip.range, chip.index);
   }
 
-  private _setDateRange(ev: HASSDomEvent<ActionDetail>) {
+  private _setDateRange(ev: HASSDomEvent<{ index: number }>) {
     const dateRange: [Date, Date] = Object.values(this.ranges!)[
       ev.detail.index
     ];
