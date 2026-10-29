@@ -4508,6 +4508,7 @@
                   "no_statistics_found": "No statistics found for this period.",
                   "info_text_1": "Sometimes the statistics end up being incorrect for a specific point in time. This can mess up your beautiful graphs! Select a time below to find the bad moment and adjust the data.",
                   "pick_a_time": "Pick a time",
+                  "statistic_values": "Statistic values",
                   "statistic": "Statistic:",
                   "start": "Start",
                   "end": "End",
@@ -9599,6 +9600,7 @@
             "title": "Configure network interfaces",
             "connected_to": "Connected to {ssid}",
             "scan_ap": "Search networks",
+            "access_points": "Wi-Fi networks",
             "reset": "Reset configuration",
             "signal_strength": "Signal strength",
             "open": "Open",
@@ -12746,6 +12748,7 @@
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "address_label": "Search address",
+          "address_results": "Address search results",
           "button_detect": "Detect",
           "finish": "Next"
         },

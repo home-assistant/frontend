@@ -169,6 +169,9 @@ export class HassioNetwork extends LitElement {
                     this._accessPoints.length
                       ? html`
                           <ha-list-selectable
+                            aria-label=${this.hass.localize(
+                              "ui.panel.config.network.supervisor.access_points"
+                            )}
                             @ha-list-item-selected=${this._selectAP}
                           >
                             ${this._accessPoints.map(

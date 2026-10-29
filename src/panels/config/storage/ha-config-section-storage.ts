@@ -215,7 +215,7 @@ class HaConfigSectionStorage extends LitElement {
                             >
                               ${mount.name}
                             </span>
-                            <span slot="supporting-text">
+                            <span slot="supporting-text" class="mount-details">
                               <span class="mount-address">
                                 ${supervisorMountDescription(mount)}
                               </span>
@@ -487,6 +487,10 @@ class HaConfigSectionStorage extends LitElement {
     .mount-state-inactive,
     .mount-state-unknown {
       color: var(--warning-color);
+    }
+
+    .mount-details {
+      white-space: normal;
     }
 
     .mount-address {

@@ -228,6 +228,10 @@ export class SystemLogCard extends LitElement {
                             }
                           </div>`
                         : html`<ha-list-base
+                            aria-label=${
+                              this.header ||
+                              this.hass.localize("ui.panel.config.logs.caption")
+                            }
                             >${filteredItems.map(
                               (item, idx) => html`
                                 <ha-list-item-button

@@ -27,14 +27,12 @@ export class HaPickAuthProvider extends LitElement {
 
   protected render() {
     return html`
-      <h3>
+      <h3 id="title">
         <span
           >${this._localize("ui.panel.page-authorize.pick_auth_provider")}</span
         >
       </h3>
-      <ha-list-base
-        aria-label=${this._localize("ui.panel.page-authorize.pick_auth_provider")}
-      >
+      <ha-list-base aria-labelledby="title">
         ${this.authProviders.map(
           (provider) => html`
             <ha-list-item-button

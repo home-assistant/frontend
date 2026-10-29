@@ -146,6 +146,9 @@ class OnboardingLocation extends LitElement {
                 ${
                   this._places?.length
                     ? html`<ha-list-selectable
+                        aria-label=${this._localize(
+                          "ui.panel.page-onboarding.core-config.address_results"
+                        )}
                         @ha-list-item-selected=${this._placeSelected}
                       >
                         ${this._places.map((place) => {
@@ -502,7 +505,6 @@ class OnboardingLocation extends LitElement {
         }
         ha-list-selectable,
         ha-list-base {
-          display: block;
           width: 100%;
           border: 1px solid var(--divider-color);
           box-sizing: border-box;

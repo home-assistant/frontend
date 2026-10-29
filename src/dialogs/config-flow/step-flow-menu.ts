@@ -80,7 +80,10 @@ class StepFlowMenu extends LitElement {
 
     return html`
       ${description ? html`<div class="content">${description}</div>` : nothing}
-      <ha-list-base class="options">
+      <ha-list-base
+        class="options"
+        aria-label=${this.flowConfig.renderMenuHeader(this.hass, this.step)}
+      >
         ${options.map((option) => {
           const optionDescription = optionDescriptions[option];
           return html`

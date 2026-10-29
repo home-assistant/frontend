@@ -254,7 +254,12 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
           </ha-list-item-button>
         `);
       }
-      stats = html`<ha-list-base>${rows}</ha-list-base>`;
+      stats = html`<ha-list-base
+        aria-label=${this.hass.localize(
+          "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.statistic_values"
+        )}
+        >${rows}</ha-list-base
+      >`;
     }
 
     return html`
