@@ -1,4 +1,5 @@
 import type { ContextType } from "@lit/context";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -42,19 +43,24 @@ export class HaSelectorUiClockDateFormat extends LitElement {
   @consume({ context: configContext, subscribe: true })
   private _hassConfig!: ContextType<typeof configContext>;
 
-  // Keeps custom mode open while its parts list is still empty.
   @state() private _custom = false;
+
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (
+      changedProperties.has("value") &&
+      Array.isArray(this.value) &&
+      this.value.length
+    ) {
+      this._custom = true;
+    }
+  }
 
   private get _mode(): ClockDateFormatMode | undefined {
     if (isClockCardDatePreset(this.value)) {
       return this.value;
     }
 
-    if ((Array.isArray(this.value) && this.value.length) || this._custom) {
-      return "custom";
-    }
-
-    return undefined;
+    return this._custom ? "custom" : undefined;
   }
 
   private _options = memoizeOne(
