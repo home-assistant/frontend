@@ -177,6 +177,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   @property({ attribute: "select-range", type: Boolean })
   public selectRange = false;
 
+  // Shows the zoom slider even when the chart is not zoomed
+  @property({ attribute: "show-zoom-slider", type: Boolean })
+  public showZoomSlider = false;
+
   // extraComponents is not reactive and should not trigger updates
   public extraComponents?: any[];
 
@@ -1073,12 +1077,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     if (!this.chart) {
       return;
     }
-    this.chart.setOption({
-      dataZoom: this._getDataZoomConfig(),
-      ...(this.selectRange && {
+    if (this.selectRange) {
+      this.chart.setOption({
         brush: { xAxisIndex: 0, transformable: false },
-      }),
-    });
+      });
+    }
     const brushCursor = {
       type: "takeGlobalCursor",
       key: "brush",
@@ -1122,7 +1125,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         orient: "horizontal",
         filterMode: this._getDataZoomFilterMode() as any,
         xAxisIndex: 0,
-        disabled: this.selectRange,
         // Panning is left to the slider and horizontal scrolling
         moveOnMouseMove: false,
         preventDefaultMouseMove: false,
@@ -1135,7 +1137,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     return (
       !this.hideZoomControls &&
       this._hasZoomableXAxis() &&
-      (this._zoomSliderHeld || start !== 0 || end !== 100)
+      (this.showZoomSlider ||
+        this._zoomSliderHeld ||
+        start !== 0 ||
+        end !== 100)
     );
   }
 

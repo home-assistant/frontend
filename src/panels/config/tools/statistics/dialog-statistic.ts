@@ -165,7 +165,8 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
   @state() private _selection?: Selection;
 
   // Hourly periods with the largest values, worst first
-  @state() private _outliers?: StatisticValue[];
+  // The whole hourly history, kept to update the outliers after adjusting
+  @state() private _outlierHours?: StatisticValue[];
 
   @state() private _outlierIndex?: number;
 
@@ -455,8 +456,9 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
                         .selectRange=${this._correcting && !this._isSum}
                         .highlight=${this._selection ?? null}
                         hide-legend
+                        show-zoom-slider
                         .clickForMoreInfo=${false}
-                        height="240px"
+                        height="300px"
                         @chart-grid-click=${this._chartClicked}
                         @chart-range-select=${this._chartRangeSelected}
                       ></statistics-chart>
@@ -475,13 +477,21 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
     `;
   }
 
+  private _outliers = memoizeOne(
+    (hours: StatisticValue[] | undefined): StatisticValue[] | undefined =>
+      hours &&
+      [...hours]
+        .sort((a, b) => changeSize(b) - changeSize(a))
+        .slice(0, OUTLIER_COUNT)
+  );
+
   // Only for sums: the hours with the largest changes, worst first
   private _renderOutliers() {
     if (!this._isSum || !this._bounds) {
       return nothing;
     }
     const localize = this._i18n.localize;
-    const outliers = this._outliers;
+    const outliers = this._outliers(this._outlierHours);
     return html`<ha-expansion-panel
       outlined
       .expanded=${this._outliersExpanded}
@@ -538,7 +548,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
     this._outliersExpanded = ev.detail.expanded;
     if (
       this._outliersExpanded &&
-      this._outliers === undefined &&
+      this._outlierHours === undefined &&
       !this._outliersLoading
     ) {
       this._loadOutliers();
@@ -566,11 +576,9 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
             this._statTypes
           )
         )[statisticId] ?? [];
-      this._outliers = [...rows]
-        .sort((a, b) => changeSize(b) - changeSize(a))
-        .slice(0, OUTLIER_COUNT);
+      this._outlierHours = rows;
     } catch (err: any) {
-      this._outliers = [];
+      this._outlierHours = [];
       this._error = err.message || err;
     } finally {
       this._outliersLoading = false;
@@ -578,7 +586,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
   }
 
   private async _showOutlier(index: number) {
-    const hour = this._outliers?.[index];
+    const hour = this._outliers(this._outlierHours)?.[index];
     if (!hour) {
       return;
     }
@@ -1117,7 +1125,19 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
     if (this._statistics) {
       this._statistics = this._applyAdjustedChanges(this._statistics);
     }
-    this._select(undefined);
+    // The recorder adjusts the hour that holds the period too
+    const adjustment = amount - (row.change ?? 0);
+    this._outlierHours = this._outlierHours?.map((hour) =>
+      hour.start <= row.start && row.end <= hour.end
+        ? { ...hour, change: (hour.change ?? 0) + adjustment }
+        : hour
+    );
+    this._outlierIndex = undefined;
+    this._select(
+      this._rows.find(
+        (updated) => updated.start === row.start && updated.end === row.end
+      )
+    );
   }
 
   private async _delete() {
@@ -1156,7 +1176,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
         "ui.panel.config.tools.tabs.statistics.statistic.deleted"
       ),
     });
-    this._outliers = undefined;
+    this._outlierHours = undefined;
     this._outlierIndex = undefined;
     this._fetchStatistics();
     this._fetchBounds();
@@ -1231,8 +1251,6 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
       }
       .outlier-list {
         display: block;
-        max-height: 240px;
-        overflow-y: auto;
       }
       .list-placeholder {
         display: flex;
@@ -1252,7 +1270,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
         margin-bottom: var(--ha-space-4);
       }
       .preview {
-        min-height: 240px;
+        min-height: 300px;
       }
       .center {
         display: flex;

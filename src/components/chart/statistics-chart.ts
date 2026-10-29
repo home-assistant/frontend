@@ -131,6 +131,9 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: "select-range", type: Boolean })
   public selectRange = false;
 
+  @property({ attribute: "show-zoom-slider", type: Boolean })
+  public showZoomSlider = false;
+
   // null keeps the highlight support but shows nothing
   @property({ attribute: false }) public highlight?: {
     start: number;
@@ -260,6 +263,7 @@ export class StatisticsChart extends LitElement {
         .options=${this._chartOptions}
         .height=${this.height}
         .selectRange=${this.selectRange}
+        .showZoomSlider=${this.showZoomSlider}
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
