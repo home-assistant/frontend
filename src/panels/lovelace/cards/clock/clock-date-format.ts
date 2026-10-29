@@ -325,10 +325,16 @@ const INLINE_SEPARATOR_PARTS = [
   "separator-comma",
 ] as const satisfies readonly ClockCardSeparatorPart[];
 
+// Direction marks Intl adds around separators in right-to-left languages,
+// such as Arabic.
+const BIDI_CONTROL_CHARACTERS =
+  /[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/g;
+
 /**
  * Approximates a preset as custom date parts in the given language, so
  * switching from a preset to custom starts from what the user already sees.
- * Literal text the parts can't express, such as commas, is dropped.
+ * Literal text the parts can't express, such as "de" in Spanish, is dropped,
+ * and each part renders in its standalone form.
  */
 export const getClockCardDatePresetParts = (
   preset: ClockCardDatePreset,
@@ -391,22 +397,21 @@ export const getClockCardDatePresetParts = (
               : "day-numeric"
           );
           break;
-        case "month":
+        case "month": {
+          const monthParts = [
+            "month-2-digit",
+            "month-numeric",
+            "month-long",
+            "month-short",
+          ] as const;
+
           parts.push(
-            (
-              [
-                "month-2-digit",
-                "month-numeric",
-                "month-long",
-                "month-short",
-              ] as const
-            ).find(
-              (part) =>
-                value === formatUtc(part, type) ||
-                value === formatMonthWithDay(part)
-            ) ?? "month-short"
+            monthParts.find((part) => value === formatUtc(part, type)) ??
+              monthParts.find((part) => value === formatMonthWithDay(part)) ??
+              (/^\p{Nd}+$/u.test(value) ? "month-numeric" : "month-short")
           );
           break;
+        }
         case "year":
           parts.push(
             value === formatUtc("year-2-digit", type)
@@ -415,11 +420,27 @@ export const getClockCardDatePresetParts = (
           );
           break;
         case "literal": {
+          const literal = value.replace(BIDI_CONTROL_CHARACTERS, "").trim();
           const separator = INLINE_SEPARATOR_PARTS.find(
-            (part) => value.trim() === DATE_SEPARATORS[part].trim()
+            (part) => literal === DATE_SEPARATORS[part].trim()
           );
 
-          if (separator) {
+          // Some languages render a part with the separator already after it,
+          // such as "5." for a Norwegian day, so adding it again would double
+          // it.
+          const previousPart = parts[parts.length - 1];
+
+          const previousPartEndsWithSeparator =
+            previousPart !== undefined &&
+            !isDateSeparatorPart(previousPart) &&
+            formatDatePart(
+              previousPart,
+              PRESET_REFERENCE_DATE,
+              language,
+              "UTC"
+            ).endsWith(literal);
+
+          if (separator && !previousPartEndsWithSeparator) {
             parts.push(separator);
           }
 

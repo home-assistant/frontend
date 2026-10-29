@@ -357,6 +357,35 @@ describe("clock-date-format", () => {
     );
   });
 
+  it("matches separators that a right-to-left language marks", () => {
+    assert.deepEqual(getClockCardDatePresetParts("short", "ar-EG"), [
+      "day-numeric",
+      "separator-slash",
+      "month-numeric",
+      "separator-slash",
+      "year-numeric",
+    ]);
+  });
+
+  it("prefers the standalone month width over the one next to a day", () => {
+    assert.deepEqual(getClockCardDatePresetParts("short", "es"), [
+      "day-numeric",
+      "separator-slash",
+      "month-numeric",
+      "separator-slash",
+      "year-2-digit",
+    ]);
+    assert.include(getClockCardDatePresetParts("short", "ga"), "month-numeric");
+  });
+
+  it("skips separators a part already renders", () => {
+    assert.deepEqual(getClockCardDatePresetParts("short", "nb"), [
+      "day-2-digit",
+      "month-2-digit",
+      "year-numeric",
+    ]);
+  });
+
   it("renders a comma separator with a following space", () => {
     const result = formatClockCardDate(
       date,
