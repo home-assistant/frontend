@@ -10233,7 +10233,10 @@
         "add_entities": {
           "yaml_unsupported": "You cannot use this function when using your dashboard in YAML mode.",
           "generated_unsupported": "You can only use this function when you have taken control of your dashboard.",
-          "saving_failed": "Saving dashboard configuration failed."
+          "saving_failed": "Saving dashboard configuration failed.",
+          "added": "Added to {dashboard}",
+          "added_unnamed": "Added to the dashboard",
+          "open": "Open"
         },
         "views": {
           "unnamed_view": "Unnamed view",
