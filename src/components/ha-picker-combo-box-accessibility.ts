@@ -49,7 +49,8 @@ export const getPickerOptionAnnouncement = <T extends PickerOption>(
   index: number,
   value: string | undefined,
   isOption: PickerOptionPredicate<T>,
-  localize?: LocalizeFunc
+  localize?: LocalizeFunc,
+  getAdditionalText?: (item: T) => string | undefined
 ): string | undefined => {
   const item = items[index];
   if (!item || !isOption(item) || item.disabled) {
@@ -59,7 +60,9 @@ export const getPickerOptionAnnouncement = <T extends PickerOption>(
   const options = items.filter(
     (candidate): candidate is T => isOption(candidate) && !candidate.disabled
   );
-  const label = [item.primary, item.secondary].filter(Boolean).join(", ");
+  const label = [item.primary, item.secondary, getAdditionalText?.(item)]
+    .filter(Boolean)
+    .join(", ");
   const selected = item.id === value;
   const key = selected
     ? "ui.components.combo-box.selected_option"
@@ -71,7 +74,7 @@ export const getPickerOptionAnnouncement = <T extends PickerOption>(
   };
 
   return (
-    localize?.(key, values) ??
+    localize?.(key, values) ||
     `${selected ? "Selected option" : "Option"} ${values.index} of ${values.count}: ${values.option}`
   );
 };
