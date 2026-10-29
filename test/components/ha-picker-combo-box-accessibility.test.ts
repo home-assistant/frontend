@@ -77,6 +77,37 @@ describe("picker keyboard accessibility", () => {
     ).toBe("Hall lamp, Main hall, Light");
   });
 
+  it("distinguishes devices sharing a name and area by displayed integration", () => {
+    const devices = [
+      { id: "device-zigbee", primary: "Kitchen switch", secondary: "Kitchen", domain_name: "Zigbee" },
+      { id: "device-matter", primary: "Kitchen switch", secondary: "Kitchen", domain_name: "Matter" },
+    ];
+    const localize: LocalizeFunc = (_key, values) => String(values?.option);
+    const getDeviceIntegration = (item: (typeof devices)[number]) =>
+      item.domain_name;
+
+    expect(
+      getPickerOptionAnnouncement(
+        devices,
+        0,
+        undefined,
+        isOption,
+        localize,
+        getDeviceIntegration
+      )
+    ).toBe("Kitchen switch, Kitchen, Zigbee");
+    expect(
+      getPickerOptionAnnouncement(
+        devices,
+        1,
+        undefined,
+        isOption,
+        localize,
+        getDeviceIntegration
+      )
+    ).toBe("Kitchen switch, Kitchen, Matter");
+  });
+
   it("falls back to a useful announcement when localization returns an empty string", () => {
     const missingTranslation: LocalizeFunc = () => "";
     expect(
