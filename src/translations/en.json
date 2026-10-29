@@ -4503,6 +4503,8 @@
                 "data_range": "Recorded data",
                 "correct_mode": "Correction mode",
                 "no_selection": "No period selected",
+                "outliers": "Outliers",
+                "no_outliers": "[%key:ui::common::none%]",
                 "correct": "Correct data",
                 "correct_sum_hint": "Select the bar with the wrong value.",
                 "correct_mean_hint": "Select the period with wrong values, or drag across the graph to select several periods.",

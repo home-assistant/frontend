@@ -17,7 +17,10 @@ import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { formatDurationLong } from "../../../../common/datetime/format_duration";
 import { formatTime } from "../../../../common/datetime/format_time";
 import { consume } from "../../../../common/decorators/consume";
-import type { HASSDomEvent } from "../../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { mainWindow } from "../../../../common/dom/get_main_window";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
@@ -31,12 +34,16 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
+import "../../../../components/ha-expansion-panel";
+import "../../../../components/ha-icon-next";
 import "../../../../components/ha-selector/ha-selector-number";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/item/ha-list-item-button";
+import type { HaListItemButton } from "../../../../components/item/ha-list-item-button";
 import "../../../../components/item/ha-list-item-value";
 import "../../../../components/list/ha-grouped-list";
+import "../../../../components/list/ha-list-base";
 import {
   apiContext,
   configContext,
@@ -48,6 +55,7 @@ import {
 import type {
   StatisticPeriod,
   Statistics,
+  StatisticsMetaData,
   StatisticType,
   StatisticValue,
 } from "../../../../data/recorder";
@@ -56,6 +64,7 @@ import {
   clearStatistics,
   fetchStatistics,
   getDisplayUnit,
+  StatisticMeanType,
 } from "../../../../data/recorder";
 import type { NumberSelector } from "../../../../data/selector";
 import { DialogMixin } from "../../../../dialogs/dialog-mixin";
@@ -83,6 +92,13 @@ const periodStart = (date: Date, period: PreviewPeriod) => {
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+const OUTLIER_COUNT = 10;
+
+const SUM_STAT_TYPES: StatisticType[] = ["change"];
+const MEAN_STAT_TYPES: StatisticType[] = ["mean", "min", "max"];
+
+const changeSize = (row: StatisticValue) => Math.abs(row.change ?? 0);
 
 const periodKey = (stat: StatisticValue) => `${stat.start}-${stat.end}`;
 
@@ -125,7 +141,11 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
 
   @state() private _previewStart?: Date;
 
+  @state() private _previewEnd?: Date;
+
   @state() private _previewPeriod?: PreviewPeriod;
+
+  @state() private _loading = false;
 
   // First and last time with statistics, null when there are none
   @state() private _bounds?: { first: Date; last: Date } | null;
@@ -137,6 +157,15 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
   private _copyFeedbackTimeout?: number;
 
   @state() private _selection?: Selection;
+
+  // Hourly periods with the largest values, worst first
+  @state() private _outliers?: StatisticValue[];
+
+  @state() private _outlierIndex?: number;
+
+  @state() private _outliersLoading = false;
+
+  @state() private _outliersExpanded = false;
 
   @state() private _amount?: number;
 
@@ -177,8 +206,17 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
   }
 
   private get _statTypes(): StatisticType[] {
-    return this._isSum ? ["change"] : ["mean", "min", "max"];
+    return this._isSum ? SUM_STAT_TYPES : MEAN_STAT_TYPES;
   }
+
+  // Stable inputs, so a rerender does not rebuild the graph
+  private _chartMetadata = memoizeOne((statistic: StatisticsMetaData) => ({
+    [statistic.statistic_id]: statistic,
+  }));
+
+  private _chartNames = memoizeOne((statisticId: string, name: string) => ({
+    [statisticId]: name,
+  }));
 
   private get _unit() {
     return getDisplayUnit(
@@ -300,6 +338,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
       <ha-dialog
         open
         width="large"
+        .accessibleLabel=${this.params.name}
         .headerSubtitle=${
           !breadcrumb.length && this.params.name !== statisticId
             ? statisticId
@@ -367,6 +406,11 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
             .disabled=${this._busy}
             @value-changed=${this._rangeChanged}
           ></ha-date-range-picker>
+          ${
+            this._loading && this._statistics
+              ? html`<ha-spinner size="small"></ha-spinner>`
+              : nothing
+          }
         </div>
 
         ${
@@ -394,12 +438,12 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
                 : html`<div class="preview">
                       <statistics-chart
                         .statisticsData=${this._statistics}
-                        .metadata=${{ [statisticId]: statistic }}
-                        .names=${{ [statisticId]: this.params.name }}
+                        .metadata=${this._chartMetadata(statistic)}
+                        .names=${this._chartNames(statisticId, this.params.name)}
                         .statTypes=${this._statTypes}
                         .chartType=${this._isSum ? "bar" : "line"}
                         .startTime=${this._previewStart}
-                        .endTime=${this._end}
+                        .endTime=${this._previewEnd}
                         .period=${this._previewPeriod}
                         .selectRange=${this._correcting && !this._isSum}
                         .highlight=${this._selection ?? null}
@@ -412,7 +456,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
                     </div>
                     ${this._correcting ? this._renderSelection() : nothing}`
         }
-        ${this._correcting ? nothing : this._renderDetails()}
+        ${this._correcting ? this._renderOutliers() : this._renderDetails()}
         ${
           this._correcting
             ? nothing
@@ -422,6 +466,136 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
         }
       </ha-dialog>
     `;
+  }
+
+  // Only for sums: the hours with the largest changes, worst first
+  private _renderOutliers() {
+    if (!this._isSum || !this._bounds) {
+      return nothing;
+    }
+    const localize = this._i18n.localize;
+    const outliers = this._outliers;
+    return html`<ha-expansion-panel
+      outlined
+      .expanded=${this._outliersExpanded}
+      @expanded-changed=${this._outliersExpandedChanged}
+      .header=${localize(
+        "ui.panel.config.tools.tabs.statistics.statistic.outliers"
+      )}
+    >
+      ${
+        !outliers
+          ? html`<div class="list-placeholder">
+              <ha-spinner size="small"></ha-spinner>
+            </div>`
+          : !outliers.length
+            ? html`<div class="list-placeholder">
+                ${localize(
+                  "ui.panel.config.tools.tabs.statistics.statistic.no_outliers"
+                )}
+              </div>`
+            : html`<ha-list-base class="outlier-list">
+                ${outliers.map(
+                  (row, index) =>
+                    html`<ha-list-item-button
+                      data-index=${index}
+                      .disabled=${this._busy}
+                      @click=${this._outlierClicked}
+                    >
+                      <div class="detail-row" slot="content">
+                        <div
+                          class=${
+                            index === this._outlierIndex
+                              ? "label current"
+                              : "label"
+                          }
+                        >
+                          ${this._formatPeriod(row.start, row.end)}
+                        </div>
+                        <div class="value">
+                          ${this._formatValue(row.change ?? 0)}
+                        </div>
+                      </div>
+                      <ha-icon-next slot="end"></ha-icon-next>
+                    </ha-list-item-button>`
+                )}
+              </ha-list-base>`
+      }
+    </ha-expansion-panel>`;
+  }
+
+  // The whole hourly history is only read once the list is opened
+  private _outliersExpandedChanged(
+    ev: HASSDomEvent<HASSDomEvents["expanded-changed"]>
+  ) {
+    this._outliersExpanded = ev.detail.expanded;
+    if (
+      this._outliersExpanded &&
+      this._outliers === undefined &&
+      !this._outliersLoading
+    ) {
+      this._loadOutliers();
+    }
+  }
+
+  private _outlierClicked(ev: HASSDomCurrentTargetEvent<HaListItemButton>) {
+    this._showOutlier(Number(ev.currentTarget.dataset.index));
+  }
+
+  private async _loadOutliers() {
+    const bounds = this._bounds!;
+    const statisticId = this.params!.statistic.statistic_id;
+    this._outliersLoading = true;
+    try {
+      const rows =
+        (
+          await fetchStatistics(
+            this._api.callWS,
+            bounds.first,
+            bounds.last,
+            [statisticId],
+            "hour",
+            undefined,
+            this._statTypes
+          )
+        )[statisticId] ?? [];
+      this._outliers = [...rows]
+        .sort((a, b) => changeSize(b) - changeSize(a))
+        .slice(0, OUTLIER_COUNT);
+    } catch (err: any) {
+      this._outliers = [];
+      this._error = err.message || err;
+    } finally {
+      this._outliersLoading = false;
+    }
+  }
+
+  private async _showOutlier(index: number) {
+    const hour = this._outliers?.[index];
+    if (!hour) {
+      return;
+    }
+    this._outlierIndex = index;
+    // As wide as the graph can go while it still shows 5 minute periods
+    const middle = (hour.start + hour.end) / 2;
+    this._start = new Date(middle - MAX_5MINUTE_PREVIEW_MS / 2);
+    this._end = new Date(middle + MAX_5MINUTE_PREVIEW_MS / 2);
+    const fetchId = await this._fetchStatistics();
+    if (fetchId !== this._fetchId) {
+      return;
+    }
+    // The graph can show 5 minute periods, select the largest one in that hour
+    const rows = this._rows.filter(
+      (row) => row.start >= hour.start && row.end <= hour.end
+    );
+    if (!rows.length) {
+      return;
+    }
+    this._select(
+      rows.reduce((result, row) =>
+        changeSize(row) > changeSize(result) ? row : result
+      )
+    );
   }
 
   private _renderDetails() {
@@ -670,7 +844,10 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
     return html`<div class="values">
       ${this._renderValue(
         localize("ui.panel.config.tools.tabs.statistics.statistic.mean"),
-        means.length
+        // An average of angles needs a circular mean, which the rows do not allow
+        means.length === 1 ||
+          (means.length &&
+            this.params!.statistic.mean_type !== StatisticMeanType.CIRCULAR)
           ? means.reduce((total, value) => total + value, 0) / means.length
           : undefined
       )}
@@ -716,6 +893,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
 
   private _stopCorrecting() {
     this._correcting = false;
+    this._outlierIndex = undefined;
     this._select(undefined);
   }
 
@@ -726,7 +904,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
   }
 
   private _chartClicked(ev: HASSDomEvent<HASSDomEvents["chart-grid-click"]>) {
-    if (!this._correcting || this._busy) {
+    if (!this._correcting || this._busy || this._loading) {
       return;
     }
     const time = ev.detail.x;
@@ -741,7 +919,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
   private _chartRangeSelected(
     ev: HASSDomEvent<HASSDomEvents["chart-range-select"]>
   ) {
-    if (!this._correcting || this._busy) {
+    if (!this._correcting || this._busy || this._loading) {
       return;
     }
     const { start, end } = ev.detail;
@@ -770,17 +948,16 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
     this._fetchStatistics();
   }
 
-  // A refresh keeps the current graph, and its zoom, until the data arrives
-  private async _fetchStatistics(refresh = false) {
+  // The current graph stays until the new data arrives, so nothing flickers
+  private async _fetchStatistics(): Promise<number> {
     const fetchId = ++this._fetchId;
-    if (!refresh) {
-      this._statistics = undefined;
-    }
-    this._select(undefined);
     this._error = undefined;
     if (!this._validRange) {
-      return;
+      this._select(undefined);
+      this._loading = false;
+      return fetchId;
     }
+    this._loading = true;
     const statisticId = this.params!.statistic.statistic_id;
     const fetchPreview = async (period: PreviewPeriod) => {
       const start = periodStart(this._start, period);
@@ -804,7 +981,9 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
         preview = await fetchPreview("hour");
       }
       if (fetchId === this._fetchId) {
+        this._select(undefined);
         this._previewStart = preview.start;
+        this._previewEnd = this._end;
         this._previewPeriod = preview.period;
         this._statistics = this._applyAdjustedChanges(preview.statistics);
       }
@@ -814,6 +993,10 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
         this._error = err.message || err;
       }
     }
+    if (fetchId === this._fetchId) {
+      this._loading = false;
+    }
+    return fetchId;
   }
 
   private async _fetchBounds(moveToLastData = false) {
@@ -911,7 +1094,9 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
       ),
     });
     this._adjustedChanges.set(periodKey(row), amount);
-    this._statistics = this._applyAdjustedChanges(this._statistics!);
+    if (this._statistics) {
+      this._statistics = this._applyAdjustedChanges(this._statistics);
+    }
     this._select(undefined);
   }
 
@@ -951,8 +1136,13 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
         "ui.panel.config.tools.tabs.statistics.statistic.deleted"
       ),
     });
-    this._fetchStatistics(true);
+    this._outliers = undefined;
+    this._outlierIndex = undefined;
+    this._fetchStatistics();
     this._fetchBounds();
+    if (this._outliersExpanded) {
+      this._loadOutliers();
+    }
   }
 
   static styles = [
@@ -1013,6 +1203,26 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
       ha-alert ha-button[slot="action"] {
         width: max-content;
         white-space: nowrap;
+      }
+      ha-expansion-panel {
+        display: block;
+        margin-top: var(--ha-space-4);
+        --expansion-panel-content-padding: 0;
+      }
+      .outlier-list {
+        display: block;
+        max-height: 240px;
+        overflow-y: auto;
+      }
+      .list-placeholder {
+        display: flex;
+        justify-content: center;
+        padding: var(--ha-space-3) var(--ha-space-4);
+        color: var(--secondary-text-color);
+      }
+      .detail-row .label.current {
+        color: var(--primary-text-color);
+        font-weight: var(--ha-font-weight-medium);
       }
       .range {
         display: flex;

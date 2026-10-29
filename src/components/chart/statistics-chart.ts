@@ -286,14 +286,22 @@ export class StatisticsChart extends LitElement {
         if (!highlight) {
           return data;
         }
-        // Bars outside the highlight fade, so the highlighted ones stand out
+        // Bars outside the highlight fade, so the highlighted ones stand out.
+        // Some points are already objects, like negative bars with round caps.
         return data.map((series) => ({
           ...series,
-          data: (series.data as unknown[][]).map((item) => {
-            const start = new Date(item[2] as Date).getTime();
+          data: (series.data as any[]).map((item) => {
+            const point =
+              item && typeof item === "object" && "value" in item
+                ? item
+                : { value: item };
+            const start = new Date(point.value[2]).getTime();
             return start >= highlight.start && start < highlight.end
               ? item
-              : { value: item, itemStyle: { opacity: 0.3 } };
+              : {
+                  ...point,
+                  itemStyle: { ...point.itemStyle, opacity: 0.3 },
+                };
           }),
         })) as BarSeriesOption[];
       }
