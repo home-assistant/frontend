@@ -2,6 +2,7 @@ import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
 import { ensureArray } from "../common/array/ensure-array";
@@ -35,16 +36,30 @@ export const getDeviceClassOptions = (
     return { id: deviceClass, primary, sorting_label: primary };
   });
 
+interface DeviceClassItem extends PickerComboBoxItem {
+  /** The device class does not support the unit, choosing it clears the unit */
+  unsupported?: boolean;
+}
+
 // The reason line of a device class that does not support the unit names the
-// unit, so searching it would match every disabled device class
+// unit, so searching it would match every unsupported device class
 const UNIT_FILTER_SEARCH_KEYS: FuseWeightedKey[] = [
   { name: "primary", weight: 10 },
   { name: "id", weight: 3 },
 ];
 
-// The default row does not fade out a disabled device class
+// An unsupported device class is greyed out but stays selectable: with both
+// fields required there is no clear button, so it is the way to another unit
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
-  <ha-combo-box-item .disabled=${!!item.disabled}>
+  <ha-combo-box-item
+    style=${styleMap(
+      (item as DeviceClassItem).unsupported
+        ? {
+            "--ha-combo-box-item-headline-color": "var(--secondary-text-color)",
+          }
+        : {}
+    )}
+  >
     ${DEFAULT_ROW_RENDERER_CONTENT(item)}
   </ha-combo-box-item>
 `;
@@ -65,7 +80,7 @@ export class HaDeviceClassPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  /** Unit of measurement: device classes that do not support it are listed last and disabled */
+  /** Unit of measurement: device classes that do not support it are listed last and greyed out */
   @property() public unit?: string;
 
   @state()
@@ -98,7 +113,7 @@ export class HaDeviceClassPicker extends LitElement {
       localize: LocalizeFunc | undefined,
       unit: string | undefined,
       language: string | undefined
-    ): PickerComboBoxItem[] => {
+    ): DeviceClassItem[] => {
       if (!domain || !localize) {
         return [];
       }
@@ -121,7 +136,7 @@ export class HaDeviceClassPicker extends LitElement {
       return options
         .map((option) =>
           rank(option.id) === 2
-            ? { ...option, secondary: notSupported, disabled: true }
+            ? { ...option, secondary: notSupported, unsupported: true }
             : option
         )
         .sort(
