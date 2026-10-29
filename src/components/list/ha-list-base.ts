@@ -208,12 +208,12 @@ export class HaListBase extends LitElement {
       ) {
         this.activeItemIndex = -1;
       }
-    } else if (
-      this.activeItemIndex >= this.itemCount ||
-      !this.hasFocusableItem ||
-      this.activeItemIndex < 0
-    ) {
+    } else if (!this.isFocusable(this.activeItemIndex)) {
+      // Also leave an active row that got disabled, so the list keeps a Tab stop
       this.activeItemIndex = this.firstFocusableIndex;
+      if (activeIndex !== -1) {
+        this._activeItem = this.items[this.activeItemIndex];
+      }
     }
     if (!this._activeItem) {
       this._activeItem = this.items[this.activeItemIndex];

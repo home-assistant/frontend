@@ -53,4 +53,12 @@ describe("ha-list-base", () => {
     expect(update).toHaveBeenCalledTimes(1);
     expect(items.slice(1).map((item) => item.tabIndex)).toEqual([0, -1]);
   });
+
+  it("moves the Tab stop off an active row that gets disabled", async () => {
+    const { items } = await renderList(2);
+
+    await setDisabled([items[0]], true);
+    expect(items[0].hasAttribute("tabindex")).toBe(false);
+    expect(items[1].tabIndex).toBe(0);
+  });
 });
