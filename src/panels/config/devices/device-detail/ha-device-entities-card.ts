@@ -70,11 +70,11 @@ export class HaDeviceEntitiesCard extends LitElement {
           enabledEntities.length
             ? html`
                 <div id="entities" class="move-up">
-                  <ha-list-base>
+                  <ha-list-base .ariaLabel=${this.header}>
                     ${this._renderEntities(mainEntities)}
                     ${
                       mainEntities.length && additionalEntities.length
-                        ? html`<div class="divider" role="separator"></div>`
+                        ? html`<div class="divider" aria-hidden="true"></div>`
                         : nothing
                     }
                     ${this._renderEntities(additionalEntities)}
@@ -102,7 +102,11 @@ export class HaDeviceEntitiesCard extends LitElement {
                         </button>
                       `
                     : html`
-                        <ha-list-base>
+                        <ha-list-base
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.devices.entities.disabled_entities_list"
+                          )}
+                        >
                           ${disabledEntities.map((entry) =>
                             this._renderUnavailableEntity(entry)
                           )}

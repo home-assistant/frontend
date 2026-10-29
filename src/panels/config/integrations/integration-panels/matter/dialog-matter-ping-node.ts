@@ -1,4 +1,9 @@
-import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import {
+  mdiAlertCircle,
+  mdiCheckCircle,
+  mdiCloseCircle,
+  mdiContentCopy,
+} from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -8,7 +13,8 @@ import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-dialog";
-import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/list/ha-list-base";
 import { pingMatterNode } from "../../../../../data/matter";
 import { haStyle, haStyleDialog } from "../../../../../resources/styles";
@@ -90,17 +96,20 @@ class DialogMatterPingNode extends LitElement {
                   >
                     ${this._pingResultEntries.map(
                       ([ip, success]) =>
-                        html`<ha-list-item-button
-                          .headline=${ip}
-                          .ip=${ip}
-                          @click=${this._copyIpToClipboard}
-                        >
+                        html`<ha-list-item-base .headline=${ip}>
                           <ha-svg-icon
                             slot="end"
                             .path=${success ? mdiCheckCircle : mdiAlertCircle}
                             class=${success ? "success" : "failed"}
                           ></ha-svg-icon>
-                        </ha-list-item-button>`
+                          <ha-icon-button
+                            slot="end"
+                            .label=${this.hass.localize("ui.common.copy")}
+                            .path=${mdiContentCopy}
+                            .ip=${ip}
+                            @click=${this._copyIpToClipboard}
+                          ></ha-icon-button>
+                        </ha-list-item-base>`
                     )}
                   </ha-list-base>
                 `
@@ -212,8 +221,14 @@ class DialogMatterPingNode extends LitElement {
           padding: 8px;
         }
 
-        ha-list-item-button {
+        ha-list-base {
+          --ha-list-padding: var(--ha-space-2) 0;
+        }
+
+        ha-list-item-base {
           --ha-row-item-padding-inline: 0;
+          --ha-row-item-padding-block: 0;
+          --ha-row-item-gap: var(--ha-space-2);
         }
 
         .flex-container ha-spinner,

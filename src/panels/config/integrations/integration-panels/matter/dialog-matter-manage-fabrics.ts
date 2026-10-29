@@ -171,6 +171,7 @@ class DialogMatterManageFabrics extends LitElement {
         }
         ha-list-item-base {
           --ha-row-item-padding-inline: var(--ha-space-6) var(--ha-space-4);
+          --ha-row-item-padding-block: 0;
         }
         p {
           margin: 8px 24px;

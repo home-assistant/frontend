@@ -7480,6 +7480,7 @@
             "none": "This device has no entities",
             "show_less": "Show less",
             "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "disabled_entities_list": "Disabled entities",
             "hidden": "Hidden"
           },
           "confirm_disable_config_entry_title": "Disable config entry?",
