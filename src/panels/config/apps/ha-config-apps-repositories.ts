@@ -308,16 +308,13 @@ export class HaConfigAppsRepositories extends LitElement {
     }
 
     this._removing = true;
-    const failures: string[] = [];
+    let results: PromiseSettledResult<void>[];
     try {
-      for (const repo of selectedRepositories) {
-        try {
-          // eslint-disable-next-line no-await-in-loop
-          await removeStoreRepository(this.hass, repo.slug);
-        } catch (err: any) {
-          failures.push(`${repo.name}: ${extractApiErrorMessage(err)}`);
-        }
-      }
+      results = await Promise.allSettled(
+        selectedRepositories.map((repo) =>
+          removeStoreRepository(this.hass, repo.slug)
+        )
+      );
       this._dataTable?.clearSelection();
       await this._loadData();
       fireEvent(this, "apps-collection-refresh", { collection: "store" });
@@ -325,6 +322,15 @@ export class HaConfigAppsRepositories extends LitElement {
       this._removing = false;
     }
 
+    const failures = results.flatMap((result, index) =>
+      result.status === "rejected"
+        ? [
+            `${selectedRepositories[index].name}: ${extractApiErrorMessage(
+              result.reason
+            )}`,
+          ]
+        : []
+    );
     if (failures.length) {
       showAlertDialog(this, {
         title: this.hass.localize(

@@ -161,7 +161,7 @@ describe("ha-config-apps-repositories", () => {
   });
 
   it.each([
-    { name: "removes them in order once confirmed", confirmed: true },
+    { name: "removes them once confirmed", confirmed: true },
     { name: "keeps them when declined", confirmed: false },
   ])("asks before removing the selection, $name", async ({ confirmed }) => {
     vi.mocked(showConfirmationDialog).mockResolvedValueOnce(confirmed);
@@ -183,29 +183,6 @@ describe("ha-config-apps-repositories", () => {
     expect(
       vi.mocked(removeStoreRepository).mock.calls.map(([, slug]) => slug)
     ).toEqual(confirmed ? ["one", "two"] : []);
-  });
-
-  it("removes one repository at a time", async () => {
-    vi.mocked(showConfirmationDialog).mockResolvedValueOnce(true);
-    const running: string[] = [];
-    let overlapped = false;
-    vi.mocked(removeStoreRepository).mockImplementation(async (_hass, slug) => {
-      overlapped ||= running.length > 0;
-      running.push(slug);
-      await Promise.resolve();
-      running.splice(running.indexOf(slug), 1);
-    });
-    const { page, table } = await openPage([
-      repository("one"),
-      repository("two"),
-    ]);
-    const refreshed = vi.fn();
-    page.addEventListener("apps-collection-refresh", refreshed);
-
-    await removeSelection(page, table, ["one", "two"]);
-    await vi.waitFor(() => expect(refreshed).toHaveBeenCalled());
-
-    expect(overlapped).toBe(false);
   });
 
   it("removes the rest and lists what failed", async () => {
