@@ -289,27 +289,27 @@ export class HaConfigAppsRepositories extends LitElement {
       return;
     }
 
-    const confirmed = await showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.apps.repositories.remove_selected_title"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.apps.repositories.remove_selected_text",
-        { count: selectedRepositories.length }
-      ),
-      confirmText: this.hass.localize(
-        "ui.panel.config.apps.repositories.remove"
-      ),
-      dismissText: this.hass.localize("ui.common.cancel"),
-      destructive: true,
-    });
-    if (!confirmed) {
-      return;
-    }
-
     this._removing = true;
     let results: PromiseSettledResult<void>[];
     try {
+      const confirmed = await showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.apps.repositories.remove_selected_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.config.apps.repositories.remove_selected_text",
+          { count: selectedRepositories.length }
+        ),
+        confirmText: this.hass.localize(
+          "ui.panel.config.apps.repositories.remove"
+        ),
+        dismissText: this.hass.localize("ui.common.cancel"),
+        destructive: true,
+      });
+      if (!confirmed) {
+        return;
+      }
+
       results = await Promise.allSettled(
         selectedRepositories.map((repo) =>
           removeStoreRepository(this.hass, repo.slug)

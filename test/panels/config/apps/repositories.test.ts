@@ -185,6 +185,32 @@ describe("ha-config-apps-repositories", () => {
     ).toEqual(confirmed ? ["one", "two"] : []);
   });
 
+  it("opens one confirmation while it is pending and unlocks on cancel", async () => {
+    let answer!: (confirmed: boolean) => void;
+    vi.mocked(showConfirmationDialog).mockImplementation(
+      () =>
+        new Promise<boolean>((resolve) => {
+          answer = resolve;
+        })
+    );
+    const { page, table } = await openPage([repository("one")]);
+    table.dispatchEvent(
+      new CustomEvent("selection-changed", { detail: { value: ["one"] } })
+    );
+    await page.updateComplete;
+    const removeSelected = Reflect.get(page, "_removeSelected");
+
+    const first = removeSelected();
+    const second = removeSelected();
+    await second;
+    expect(showConfirmationDialog).toHaveBeenCalledTimes(1);
+
+    answer(false);
+    await first;
+    expect(Reflect.get(page, "_removing")).toBe(false);
+    expect(removeStoreRepository).not.toHaveBeenCalled();
+  });
+
   it("removes the rest and lists what failed", async () => {
     vi.mocked(showConfirmationDialog).mockResolvedValueOnce(true);
     vi.mocked(removeStoreRepository).mockImplementation(async (_hass, slug) => {
