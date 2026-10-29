@@ -63,10 +63,6 @@ export const energyCardStyles = css`
     gap: var(--ha-space-2);
     margin-bottom: var(--ha-space-3);
   }
-  .items ha-card {
-    /* The part the open bottom sheet covers, see scrollSelectedRowIntoView */
-    scroll-margin-bottom: var(--energy-bottom-sheet-height, 0px);
-  }
   ha-automation-row img[slot="leading-icon"] {
     display: block;
     height: 24px;

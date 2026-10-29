@@ -1,9 +1,11 @@
 import { mdiDelete, mdiHome, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
+import memoizeOne from "memoize-one";
 import { customElement, property, state } from "lit/decorators";
 import type { ContextType } from "@lit/context";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { navigate } from "../../../../common/navigate";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/automation/ha-automation-row";
 import "../../../../components/ha-card";
@@ -30,9 +32,9 @@ import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showEnergySettingsDialog } from "../dialogs/show-dialogs-energy";
 import type { EnergyEditorConfig } from "../editors/energy-editor";
-import type { EnergySidebarConfig } from "../ha-energy-sidebar";
+import "../ha-energy-editor-page";
+import type { EnergyEditorPageConfig } from "../ha-energy-editor-page";
 import "./ha-energy-validation-result";
-import { scrollSelectedRowIntoView } from "./scroll-selected-row";
 import { energyCardStyles } from "./styles";
 
 const isHomeSource = (
@@ -61,19 +63,24 @@ export class EnergyHomeSettings extends LitElement {
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
 
-  /** Edit in the sidebar of the page instead of a dialog */
-  @property({ type: Boolean }) public sidebar = false;
+  /** Path of the list page, editors open on pages under it instead of dialogs */
+  @property({ attribute: false }) public listPath?: string;
 
-  @property({ attribute: false }) public selectedKey?: string;
+  /** Shows the editor page of the item with this key, or `new` to add one */
+  @property({ attribute: false }) public editKey?: string;
 
-  protected updated(changedProps: PropertyValues<this>) {
-    super.updated(changedProps);
-    if (changedProps.has("selectedKey") && this.selectedKey) {
-      scrollSelectedRowIntoView(this.renderRoot);
-    }
-  }
+  @property({ type: Boolean }) public narrow = false;
 
   protected render(): TemplateResult {
+    if (this.listPath && this.editKey !== undefined) {
+      return html`<ha-energy-editor-page
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .backPath=${this.listPath}
+        .config=${this._editorPage(this.editKey)}
+      ></ha-energy-editor-page>`;
+    }
+
     const homeSources: HomeSourceTypeEnergyPreference[] = [];
     const homeValidation: EnergyValidationIssue[][] = [];
 
@@ -114,10 +121,6 @@ export class EnergyHomeSettings extends LitElement {
                       return html`
                         <ha-card outlined>
                           <ha-automation-row
-                            .selected=${
-                              this.selectedKey ===
-                              `home:${source.stat_energy_to}`
-                            }
                             .source=${source}
                             @click=${this._editSource}
                           >
@@ -189,15 +192,12 @@ export class EnergyHomeSettings extends LitElement {
   }
 
   private _openEditor(source?: HomeSourceTypeEnergyPreference) {
-    const editor = this._editorConfig(source);
-    if (this.sidebar) {
-      fireEvent(
-        this,
-        "energy-open-sidebar",
-        this._sidebarConfig(editor, source)
+    if (this.listPath) {
+      navigate(
+        `${this.listPath}/home/${source ? encodeURIComponent(source.stat_energy_to) : "new"}`
       );
     } else {
-      showEnergySettingsDialog(this, { editor });
+      showEnergySettingsDialog(this, { editor: this._editorConfig(source) });
     }
   }
 
@@ -219,31 +219,41 @@ export class EnergyHomeSettings extends LitElement {
     if (index !== -1) {
       return index;
     }
-    // Saving anything replaces the preferences while the sidebar stays open
+    // Saving replaces the preferences, after which only the statistic matches
     return sources.findIndex(
       (src) => isHomeSource(src) && src.stat_energy_to === source.stat_energy_to
     );
   }
 
-  private _sidebarConfig(
+  // Kept per item: a save replaces the preferences right before the page leaves
+  private _editorPage = memoizeOne(
+    (key: string): EnergyEditorPageConfig | undefined => {
+      if (key === "new") {
+        return this._pageConfig(this._editorConfig());
+      }
+      const source = this.preferences.energy_sources.find(
+        (src): src is HomeSourceTypeEnergyPreference =>
+          isHomeSource(src) && src.stat_energy_to === key
+      );
+      return source && this._pageConfig(this._editorConfig(source), source);
+    }
+  );
+
+  private _pageConfig(
     editor: EnergyEditorConfig,
     source?: HomeSourceTypeEnergyPreference
-  ): EnergySidebarConfig {
-    const subtitle = this._i18n.localize("ui.panel.config.energy.home.title");
+  ): EnergyEditorPageConfig {
     if (!source) {
       return {
         editor,
         title: this._i18n.localize(
           "ui.panel.config.energy.home.add_home_meter"
         ),
-        subtitle,
       };
     }
     return {
-      key: `home:${source.stat_energy_to}`,
       editor,
       title: this._sourceName(source),
-      subtitle,
       delete: {
         label: this._i18n.localize(
           "ui.panel.config.energy.home.remove_home_meter"
@@ -264,20 +274,10 @@ export class EnergyHomeSettings extends LitElement {
     } else {
       sources[index] = source;
     }
-    const result = await this._savePreferences({
+    await this._savePreferences({
       ...this.preferences,
       energy_sources: sources,
     });
-    if (this.sidebar) {
-      const saved = result.energy_sources[
-        index === -1 ? sources.length - 1 : index
-      ] as HomeSourceTypeEnergyPreference;
-      fireEvent(
-        this,
-        "energy-sidebar-saved",
-        this._sidebarConfig(this._editorConfig(saved), saved)
-      );
-    }
   }
 
   private _deleteSourceClicked(ev) {
@@ -285,18 +285,20 @@ export class EnergyHomeSettings extends LitElement {
     this._deleteSource(ev.currentTarget.source);
   }
 
-  private async _deleteSource(source: HomeSourceTypeEnergyPreference) {
+  private async _deleteSource(
+    source: HomeSourceTypeEnergyPreference
+  ): Promise<boolean> {
     if (
       !(await showConfirmationDialog(this, {
         title: this._i18n.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
-      return;
+      return false;
     }
 
     const index = this._sourceIndex(source);
     if (index === -1) {
-      return;
+      return false;
     }
     try {
       await this._savePreferences({
@@ -312,11 +314,9 @@ export class EnergyHomeSettings extends LitElement {
           { error: err.message }
         ),
       });
-      return;
+      return false;
     }
-    if (this.selectedKey === `home:${source.stat_energy_to}`) {
-      fireEvent(this, "energy-close-sidebar");
-    }
+    return true;
   }
 
   private async _savePreferences(preferences: EnergyPreferences) {

@@ -95,7 +95,7 @@ declare global {
 }
 
 /**
- * Lets the dialog or sidebar hosting an energy editor render its save button.
+ * Lets the dialog or page hosting an energy editor render its save button.
  */
 export const EnergyEditorMixin = <T extends Constructor<LitElement>>(
   superClass: T

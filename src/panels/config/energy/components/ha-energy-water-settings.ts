@@ -1,8 +1,10 @@
 import { mdiDelete, mdiPlus, mdiWater } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
+import memoizeOne from "memoize-one";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { navigate } from "../../../../common/navigate";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/automation/ha-automation-row";
 import "../../../../components/ha-button";
@@ -27,9 +29,9 @@ import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsDialog } from "../dialogs/show-dialogs-energy";
 import type { EnergyEditorConfig } from "../editors/energy-editor";
-import type { EnergySidebarConfig } from "../ha-energy-sidebar";
+import "../ha-energy-editor-page";
+import type { EnergyEditorPageConfig } from "../ha-energy-editor-page";
 import "./ha-energy-validation-result";
-import { scrollSelectedRowIntoView } from "./scroll-selected-row";
 import { energyCardStyles } from "./styles";
 
 const isWaterSource = (
@@ -49,19 +51,24 @@ export class EnergyWaterSettings extends LitElement {
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
 
-  /** Edit in the sidebar of the page instead of a dialog */
-  @property({ type: Boolean }) public sidebar = false;
+  /** Path of the list page, editors open on pages under it instead of dialogs */
+  @property({ attribute: false }) public listPath?: string;
 
-  @property({ attribute: false }) public selectedKey?: string;
+  /** Shows the editor page of the item with this key, or `new` to add one */
+  @property({ attribute: false }) public editKey?: string;
 
-  protected updated(changedProps: PropertyValues<this>) {
-    super.updated(changedProps);
-    if (changedProps.has("selectedKey") && this.selectedKey) {
-      scrollSelectedRowIntoView(this.renderRoot);
-    }
-  }
+  @property({ type: Boolean }) public narrow = false;
 
   protected render(): TemplateResult {
+    if (this.listPath && this.editKey !== undefined) {
+      return html`<ha-energy-editor-page
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .backPath=${this.listPath}
+        .config=${this._editorPage(this.editKey)}
+      ></ha-energy-editor-page>`;
+    }
+
     const waterSources: WaterSourceTypeEnergyPreference[] = [];
     const waterValidation: EnergyValidationIssue[][] = [];
 
@@ -113,10 +120,6 @@ export class EnergyWaterSettings extends LitElement {
                       return html`
                         <ha-card outlined>
                           <ha-automation-row
-                            .selected=${
-                              this.selectedKey ===
-                              `water:${source.stat_energy_from}`
-                            }
                             .source=${source}
                             @click=${this._editSource}
                           >
@@ -186,15 +189,14 @@ export class EnergyWaterSettings extends LitElement {
   }
 
   private _openEditor(source?: WaterSourceTypeEnergyPreference) {
-    const editor = this._editorConfig(this.preferences, source);
-    if (this.sidebar) {
-      fireEvent(
-        this,
-        "energy-open-sidebar",
-        this._sidebarConfig(editor, source)
+    if (this.listPath) {
+      navigate(
+        `${this.listPath}/water/${source ? encodeURIComponent(source.stat_energy_from) : "new"}`
       );
     } else {
-      showEnergySettingsDialog(this, { editor });
+      showEnergySettingsDialog(this, {
+        editor: this._editorConfig(this.preferences, source),
+      });
     }
   }
 
@@ -219,32 +221,45 @@ export class EnergyWaterSettings extends LitElement {
     if (index !== -1) {
       return index;
     }
-    // Saving anything replaces the preferences while the sidebar stays open
+    // Saving replaces the preferences, after which only the statistic matches
     return sources.findIndex(
       (src) =>
         isWaterSource(src) && src.stat_energy_from === source.stat_energy_from
     );
   }
 
-  private _sidebarConfig(
+  // Kept per item: a save replaces the preferences right before the page leaves
+  private _editorPage = memoizeOne(
+    (key: string): EnergyEditorPageConfig | undefined => {
+      if (key === "new") {
+        return this._pageConfig(this._editorConfig(this.preferences));
+      }
+      const source = this.preferences.energy_sources.find(
+        (src): src is WaterSourceTypeEnergyPreference =>
+          isWaterSource(src) && src.stat_energy_from === key
+      );
+      return (
+        source &&
+        this._pageConfig(this._editorConfig(this.preferences, source), source)
+      );
+    }
+  );
+
+  private _pageConfig(
     editor: EnergyEditorConfig,
     source?: WaterSourceTypeEnergyPreference
-  ): EnergySidebarConfig {
-    const subtitle = this.hass.localize("ui.panel.config.energy.water.title");
+  ): EnergyEditorPageConfig {
     if (!source) {
       return {
         editor,
         title: this.hass.localize(
           "ui.panel.config.energy.water.add_water_source"
         ),
-        subtitle,
       };
     }
     return {
-      key: `water:${source.stat_energy_from}`,
       editor,
       title: this._sourceName(source),
-      subtitle,
       delete: {
         label: this.hass.localize(
           "ui.panel.config.energy.water.delete_water_source"
@@ -266,20 +281,10 @@ export class EnergyWaterSettings extends LitElement {
     } else {
       sources[index] = source;
     }
-    const result = await this._savePreferences({
+    await this._savePreferences({
       ...this.preferences,
       energy_sources: sources,
     });
-    if (this.sidebar) {
-      const saved = result.energy_sources[
-        index === -1 ? sources.length - 1 : index
-      ] as WaterSourceTypeEnergyPreference;
-      fireEvent(
-        this,
-        "energy-sidebar-saved",
-        this._sidebarConfig(this._editorConfig(result, saved), saved)
-      );
-    }
   }
 
   private _deleteSourceClicked(ev) {
@@ -287,18 +292,20 @@ export class EnergyWaterSettings extends LitElement {
     this._deleteSource(ev.currentTarget.source);
   }
 
-  private async _deleteSource(source: WaterSourceTypeEnergyPreference) {
+  private async _deleteSource(
+    source: WaterSourceTypeEnergyPreference
+  ): Promise<boolean> {
     if (
       !(await showConfirmationDialog(this, {
         title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
-      return;
+      return false;
     }
 
     const index = this._sourceIndex(source);
     if (index === -1) {
-      return;
+      return false;
     }
     try {
       await this._savePreferences({
@@ -313,11 +320,9 @@ export class EnergyWaterSettings extends LitElement {
           error: err.message,
         }),
       });
-      return;
+      return false;
     }
-    if (this.selectedKey === `water:${source.stat_energy_from}`) {
-      fireEvent(this, "energy-close-sidebar");
-    }
+    return true;
   }
 
   private async _savePreferences(preferences: EnergyPreferences) {

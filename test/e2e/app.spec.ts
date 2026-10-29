@@ -567,13 +567,13 @@ test.describe("Energy dashboard", () => {
       .locator("ha-energy-device-settings")
       .locator("ha-button")
       .first();
-    const sidebar = page.locator("ha-energy-sidebar");
+    const editorPage = page.locator("ha-energy-editor-page");
     const openAndCloseDeviceEditor = async () => {
       await addDevice.click();
-      const close = sidebar.getByRole("button", { name: "Close" });
-      await expect(close).toBeVisible({ timeout: QUICK_TIMEOUT });
-      await close.click();
-      await expect(sidebar).toHaveCount(0, { timeout: QUICK_TIMEOUT });
+      const back = editorPage.getByRole("link", { name: "Back" });
+      await expect(back).toBeVisible({ timeout: QUICK_TIMEOUT });
+      await back.click();
+      await expect(editorPage).toHaveCount(0, { timeout: QUICK_TIMEOUT });
     };
     await openAndCloseDeviceEditor();
     await openAndCloseDeviceEditor();
