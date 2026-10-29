@@ -9,7 +9,7 @@ import {
   mdiShareVariant,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, html } from "lit";
+import { LitElement, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
@@ -201,6 +201,44 @@ class HaBlueprintOverview extends LitElement {
         filterable: true,
         flex: 2,
       };
+      const usageCount: DataTableColumnData<BlueprintMetaDataPath> = {
+        title: localize(
+          "ui.panel.config.blueprint.overview.headers.usage_count"
+        ),
+        sortable: true,
+        valueColumn: "usageCount",
+        type: "numeric",
+        minWidth: "90px",
+        maxWidth: "90px",
+        template: (blueprint) => {
+          const count = blueprint.usageCount ?? 0;
+          if (narrow) {
+            if (blueprint.error) {
+              return nothing;
+            }
+            return localize("ui.panel.config.blueprint.overview.used_count", {
+              count,
+            });
+          }
+          return html`
+            <ha-assist-chip
+              filled
+              .active=${count > 0}
+              label=${String(count)}
+              title=${
+                blueprint.error
+                  ? String(count)
+                  : this.hass.localize(
+                      `ui.panel.config.blueprint.overview.view_${blueprint.type}`
+                    )
+              }
+              ?disabled=${blueprint.error}
+              data-fullpath=${blueprint.fullpath}
+              @click=${this._handleUsageClick}
+            ></ha-assist-chip>
+          `;
+        },
+      };
       return {
         name: {
           title: localize("ui.panel.config.blueprint.overview.headers.name"),
@@ -217,43 +255,9 @@ class HaBlueprintOverview extends LitElement {
           groupable: true,
           urlName: "type",
         },
-        ...(narrow ? {} : { path }),
-        usage_count: {
-          title: localize(
-            "ui.panel.config.blueprint.overview.headers.usage_count"
-          ),
-          sortable: true,
-          valueColumn: "usageCount",
-          type: "numeric",
-          minWidth: "90px",
-          maxWidth: "90px",
-          template: (blueprint) => {
-            const count = blueprint.usageCount ?? 0;
-            if (narrow) {
-              return localize("ui.panel.config.blueprint.overview.used_count", {
-                count,
-              });
-            }
-            return html`
-              <ha-assist-chip
-                filled
-                .active=${count > 0}
-                label=${String(count)}
-                title=${
-                  blueprint.error
-                    ? String(count)
-                    : this.hass.localize(
-                        `ui.panel.config.blueprint.overview.view_${blueprint.type}`
-                      )
-                }
-                ?disabled=${blueprint.error}
-                data-fullpath=${blueprint.fullpath}
-                @click=${this._handleUsageClick}
-              ></ha-assist-chip>
-            `;
-          },
-        },
-        ...(narrow ? { path } : {}),
+        ...(narrow
+          ? { usage_count: usageCount, path }
+          : { path, usage_count: usageCount }),
         fullpath: {
           title: "fullpath",
           hidden: true,
