@@ -10228,6 +10228,7 @@
           "generated_unsupported": "You can only use this function when you have taken control of your dashboard.",
           "saving_failed": "Saving dashboard configuration failed.",
           "added": "Added to {dashboard}",
+          "added_unnamed": "Added to the dashboard",
           "open": "Open"
         },
         "views": {

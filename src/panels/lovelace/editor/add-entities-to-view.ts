@@ -150,14 +150,15 @@ export const addEntitiesToLovelaceView = async (
         return;
       }
       const dashboardPath = viewUrlPath ?? LOVELACE_PANEL;
-      const viewPath = newConfig.views[viewIndex].path ?? viewIndex;
+      const viewPath = newConfig.views[viewIndex].path || viewIndex;
+      const dashboardTitle = getPanelTitleFromUrlPath(hass, dashboardPath);
       showToast(element, {
-        message: {
-          translationKey: "ui.panel.lovelace.add_entities.added",
-          args: {
-            dashboard: getPanelTitleFromUrlPath(hass, dashboardPath) ?? "",
-          },
-        },
+        message: dashboardTitle
+          ? {
+              translationKey: "ui.panel.lovelace.add_entities.added",
+              args: { dashboard: dashboardTitle },
+            }
+          : { translationKey: "ui.panel.lovelace.add_entities.added_unnamed" },
         action: {
           text: { translationKey: "ui.panel.lovelace.add_entities.open" },
           action: () => navigate(`/${dashboardPath}/${viewPath}`),
