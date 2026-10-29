@@ -15,11 +15,11 @@ import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-log-viewer";
-import "../../../components/ha-spinner";
 import type { HaLogViewer } from "../../../components/ha-log-viewer";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/skeleton/ha-skeleton-log";
 import {
   connectionContext,
   internationalizationContext,
@@ -218,12 +218,11 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
                       this._lineCount
                         ? nothing
                         : this._loading
-                          ? html`<div class="waiting">
-                              <ha-spinner size="tiny"></ha-spinner>
-                              ${this._i18n.localize(
+                          ? html`<ha-skeleton-log
+                              .label=${this._i18n.localize(
                                 "ui.panel.config.logs.loading_log"
                               )}
-                            </div>`
+                            ></ha-skeleton-log>`
                           : html`<div class="waiting">
                               ${this._i18n.localize(
                                 "ui.panel.config.integrations.config_entry.live_log.waiting",
@@ -312,9 +311,6 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
           }
         }
         .waiting {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-2);
           color: var(--secondary-text-color);
           padding: var(--ha-space-2);
         }

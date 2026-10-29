@@ -37,6 +37,7 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
+import "../../../components/skeleton/ha-skeleton-log";
 
 import { getSignedPath } from "../../../data/auth";
 
@@ -350,10 +351,9 @@ class ErrorLogCard extends LitElement {
                     )}
                   </ha-alert>`
                 : this._loadingState === "loading"
-                  ? html`<div class="loading">
-                      <ha-spinner size="tiny"></ha-spinner>
-                      ${localize("ui.panel.config.logs.loading_log")}
-                    </div>`
+                  ? html`<ha-skeleton-log
+                      .label=${localize("ui.panel.config.logs.loading_log")}
+                    ></ha-skeleton-log>`
                   : this._loadingState === "empty"
                     ? html`<div>
                         ${
@@ -1107,6 +1107,10 @@ class ErrorLogCard extends LitElement {
       overflow-wrap: break-word;
     }
 
+    ha-skeleton-log {
+      --ha-skeleton-log-padding: var(--ha-space-4);
+    }
+
     .error-log > div:hover {
       background-color: var(--secondary-background-color);
     }
@@ -1130,12 +1134,6 @@ class ErrorLogCard extends LitElement {
 
     .warning {
       color: var(--warning-color);
-    }
-
-    .loading {
-      display: flex;
-      align-items: center;
-      gap: var(--ha-space-2);
     }
 
     .loading-old {
