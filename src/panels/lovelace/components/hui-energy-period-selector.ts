@@ -151,6 +151,8 @@ export class HuiEnergyPeriodSelector extends LitElement {
 
   @state() private _loading = false;
 
+  @state() private _loadingLeaving = false;
+
   private _loadingTimer?: ReturnType<typeof setTimeout>;
 
   private _resizeObserver?: ResizeObserver;
@@ -379,10 +381,14 @@ export class HuiEnergyPeriodSelector extends LitElement {
                 : nothing
             }
             ${
-              this._loading
+              this._loading || this._loadingLeaving
                 ? html`<ha-spinner
-                    class="loading-indicator"
+                    class=${classMap({
+                      "loading-indicator": true,
+                      leaving: this._loadingLeaving,
+                    })}
                     size="small"
+                    @animationend=${this._loadingAnimationEnd}
                   ></ha-spinner>`
                 : nothing
             }
@@ -727,6 +733,9 @@ export class HuiEnergyPeriodSelector extends LitElement {
 
   private _updateDates(energyData: EnergyData): void {
     clearTimeout(this._loadingTimer);
+    if (this._loading) {
+      this._loadingLeaving = true;
+    }
     this._loading = false;
     this._compare = energyData.startCompare !== undefined;
     this._startDate = energyData.start;
@@ -759,8 +768,15 @@ export class HuiEnergyPeriodSelector extends LitElement {
     // Basically to ensure there's no "flash loading" when data is loaded quickly
     clearTimeout(this._loadingTimer);
     this._loadingTimer = setTimeout(() => {
+      this._loadingLeaving = false;
       this._loading = true;
     }, 200);
+  }
+
+  private _loadingAnimationEnd(ev: AnimationEvent) {
+    if (ev.animationName === "fade-out") {
+      this._loadingLeaving = false;
+    }
   }
 
   private _getDatePickerPlacement = memoizeOne(
@@ -844,6 +860,10 @@ export class HuiEnergyPeriodSelector extends LitElement {
       right: var(--ha-space-2);
       align-items: center;
       animation: fade-in var(--ha-animation-duration-normal) ease-in-out;
+    }
+    .loading-indicator.leaving {
+      animation: fade-out var(--ha-animation-duration-normal) ease-in-out
+        forwards;
     }
     .date-actions .overflow {
       display: flex;
