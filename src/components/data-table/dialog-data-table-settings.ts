@@ -12,11 +12,11 @@ import { haStyleDialog } from "../../resources/styles";
 import "../ha-button";
 import "../ha-dialog-footer";
 import "../ha-icon-button";
-import "../ha-list";
-import "../ha-list-item";
 import "../ha-sortable";
 import "../ha-svg-icon";
 import "../ha-dialog";
+import "../item/ha-list-item-base";
+import "../list/ha-list-base";
 import type {
   DataTableColumnContainer,
   DataTableColumnData,
@@ -139,7 +139,7 @@ export class DialogDataTableSettings extends LitElement {
           draggable-selector=".draggable"
           handle-selector=".handle"
         >
-          <ha-list>
+          <ha-list-base>
             ${repeat(
               columns,
               (col) => col.key,
@@ -152,21 +152,21 @@ export class DialogDataTableSettings extends LitElement {
                     col.defaultHidden)
                   : col.defaultHidden);
 
-                return html`<ha-list-item
-                  hasMeta
+                return html`<ha-list-item-base
                   class=${classMap({
                     hidden: !isVisible,
                     draggable: canMove && isVisible,
                   })}
-                  graphic="icon"
-                  noninteractive
-                  >${col.title || col.label || col.key}
+                >
+                  <span slot="headline"
+                    >${col.title || col.label || col.key}</span
+                  >
                   ${
                     canMove && isVisible
                       ? html`<ha-svg-icon
                           class="handle"
                           .path=${mdiDragHorizontalVariant}
-                          slot="graphic"
+                          slot="start"
                         ></ha-svg-icon>`
                       : nothing
                   }
@@ -176,7 +176,7 @@ export class DialogDataTableSettings extends LitElement {
                     .disabled=${!canHide}
                     .hidden=${!isVisible}
                     .path=${isVisible ? mdiEye : mdiEyeOff}
-                    slot="meta"
+                    slot="end"
                     .label=${localize(
                       `ui.components.data-table.settings.${isVisible ? "hide" : "show"}`,
                       { title: typeof col.title === "string" ? col.title : "" }
@@ -184,10 +184,10 @@ export class DialogDataTableSettings extends LitElement {
                     .column=${col.key}
                     @click=${this._toggle}
                   ></ha-icon-button>
-                </ha-list-item>`;
+                </ha-list-item-base>`;
               }
             )}
-          </ha-list>
+          </ha-list-base>
         </ha-sortable>
         <ha-dialog-footer slot="footer">
           <ha-button
@@ -326,8 +326,8 @@ export class DialogDataTableSettings extends LitElement {
           --dialog-z-index: 10;
           --dialog-content-padding: 0 8px;
         }
-        ha-list-item {
-          --mdc-list-side-padding: 12px;
+        ha-list-item-base {
+          --ha-row-item-padding-inline: 12px;
           overflow: visible;
         }
         .hidden {
