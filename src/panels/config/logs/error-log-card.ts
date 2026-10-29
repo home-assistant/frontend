@@ -350,7 +350,8 @@ class ErrorLogCard extends LitElement {
                     )}
                   </ha-alert>`
                 : this._loadingState === "loading"
-                  ? html`<div>
+                  ? html`<div class="loading">
+                      <ha-spinner size="tiny"></ha-spinner>
                       ${localize("ui.panel.config.logs.loading_log")}
                     </div>`
                   : this._loadingState === "empty"
@@ -1129,6 +1130,12 @@ class ErrorLogCard extends LitElement {
 
     .warning {
       color: var(--warning-color);
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: var(--ha-space-2);
     }
 
     .loading-old {
