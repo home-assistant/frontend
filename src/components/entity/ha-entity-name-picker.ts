@@ -29,9 +29,9 @@ import type {
 } from "../../common/translations/localize";
 import { formattersContext, registriesContext } from "../../data/context";
 import type { HomeAssistantFormatters, ValueChangedEvent } from "../../types";
-import "../chips/ha-assist-chip";
 import "../chips/ha-chip-set";
 import "../chips/ha-input-chip";
+import "../ha-button";
 import "../ha-button-toggle-group";
 import "../ha-combo-box-item";
 import "../ha-generic-picker";
@@ -121,6 +121,8 @@ export class HaEntityNamePicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
+  @query("ha-button.add") private _addButton?: HTMLElement;
+
   private _editIndex?: number;
 
   connectedCallback(): void {
@@ -159,7 +161,7 @@ export class HaEntityNamePicker extends LitElement {
     return html`
       <div class="container">
         <div class="header">
-          ${this.label ? html`<label>${this.label}</label>` : nothing}
+          ${this.label ? html`<label id="label">${this.label}</label>` : nothing}
           ${
             this.allowCustom
               ? html`
@@ -264,7 +266,9 @@ export class HaEntityNamePicker extends LitElement {
             handle-selector="button.primary.action"
             filter=".add"
           >
-            <ha-chip-set>
+            <ha-chip-set
+              aria-labelledby=${ifDefined(this.label ? "label" : undefined)}
+            >
               ${repeat(
                 this._items,
                 (item) => item,
@@ -290,22 +294,16 @@ export class HaEntityNamePicker extends LitElement {
                   `;
                 }
               )}
-              ${
-                this.disabled
-                  ? nothing
-                  : html`
-                      <ha-assist-chip
-                        @click=${this._addItem}
-                        .disabled=${this.disabled}
-                        label=${this._localize(
-                          "ui.components.entity.entity-name-picker.add"
-                        )}
-                        class="add"
-                      >
-                        <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-                      </ha-assist-chip>
-                    `
-              }
+              <ha-button
+                class="add"
+                size="s"
+                appearance="filled"
+                .disabled=${this.disabled}
+                @click=${this._addItem}
+              >
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+                ${this._localize("ui.common.add")}
+              </ha-button>
             </ha-chip-set>
           </ha-sortable>
           ${this._renderRestoreButton()}
@@ -373,6 +371,10 @@ export class HaEntityNamePicker extends LitElement {
     const idx = parseInt((ev.target as HTMLElement).dataset.idx || "", 10);
     value.splice(idx, 1);
     this._setValue(value);
+    if (!value.length) {
+      await this.updateComplete;
+      this._addButton?.focus();
+    }
   }
 
   private _pickerValueChanged(ev: ValueChangedEvent<string>): void {
@@ -629,7 +631,7 @@ export class HaEntityNamePicker extends LitElement {
 
     label {
       display: block;
-      font-weight: 500;
+      font-weight: var(--ha-font-weight-medium);
     }
 
     .content {
@@ -722,7 +724,8 @@ export class HaEntityNamePicker extends LitElement {
 
     ha-input-helper-text {
       display: block;
-      margin: var(--ha-space-2) 0 0;
+      padding: 0;
+      margin: var(--ha-space-1) 0 0;
     }
   `;
 }
