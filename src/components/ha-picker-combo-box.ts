@@ -24,6 +24,7 @@ import {
 } from "../common/dom/fire_event";
 import { ignoreRepeatedActivation } from "../common/keyboard/ignore-repeated-activation";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import { debounce } from "../common/util/debounce";
 import { internationalizationContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import {
@@ -165,6 +166,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false })
   public notFoundLabel?: string | ((search: string) => string);
 
+  /** Whether a row from `getItems` counts as a search result for screen readers, so a row offered for any search, like the quick bar's "Ask Assist", can be left out */
+  @property({ attribute: false })
+  public isSearchResult?: (item: PickerComboBoxItem) => boolean;
+
   @property({ attribute: "empty-label" })
   public emptyLabel?: string;
 
@@ -225,6 +230,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @state() private _sectionTitle?: string;
 
+  @state() private _status?: string;
+
   private _allItems: PickerComboBoxItem[] = [];
 
   // Rows from this index on are added by the combo box itself, like "Add custom
@@ -272,6 +279,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     if (changedProps.has("_items") && this._search) {
       this._highlightTopMatch();
     }
+    if (changedProps.has("_items")) {
+      this._updateStatus();
+    }
   }
 
   // Scroll before the surface animates in, so the list does not jump at the
@@ -308,6 +318,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   disconnectedCallback() {
     super.disconnectedCallback();
     this._removeKeyboardShortcuts?.();
+    this._updateStatus.cancel();
   }
 
   public refreshItems() {
@@ -369,23 +380,25 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         ${this.renderScrollableFades()}
       </div>
       <div class="visually-hidden" role="status">
-        ${this._searchResultsStatus()}
+        ${this._status ?? nothing}
       </div>`;
   }
 
   // DOM focus stays in the search field, so screen readers hear nothing when
-  // the list changes. Announce how many items match instead.
-  private _searchResultsStatus() {
-    return (
-      searchResultsStatus(
-        this._search,
-        this._items,
-        (item) => this._isOption(item) && !this._actionItems.has(item),
-        this.i18n?.localize,
-        this.notFoundLabel
-      ) ?? nothing
+  // the list changes. Announce how many items match instead, once typing
+  // pauses, so the count doesn't compete with each typed character.
+  private _updateStatus = debounce(() => {
+    this._status = searchResultsStatus(
+      this._search,
+      this._items,
+      (item) =>
+        this._isOption(item) &&
+        !this._actionItems.has(item) &&
+        (this.isSearchResult?.(item) ?? true),
+      this.i18n?.localize,
+      this.notFoundLabel
     );
-  }
+  }, 500);
 
   private _renderPlainList() {
     return html`

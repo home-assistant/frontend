@@ -55,9 +55,11 @@ row, or from the top match while searching. With one item in the list,
 DOM focus stays in the search field, so screen readers do not hear the list
 change. While searching, a visually hidden `role="status"` message says how
 many items match the search and names it, so a new search with the same count
-is still read out. When nothing matches, it reads a not found label that takes
-the search, or says there are no results for it. Section titles, placeholder
-rows, "Add custom item" and the additional items are not counted.
+is still read out. It updates once typing pauses for half a second, so it
+doesn't talk over each typed character. When nothing matches, it reads a not
+found label that takes the search, or says there are no results for it. Section
+titles, placeholder rows, "Add custom item", the additional items and rows that
+`isSearchResult` rejects are not counted.
 
 ## Implementation
 
@@ -88,6 +90,7 @@ means supplying one.
 | allowCustomValue   | Boolean            | false     | Offers the typed string as an item.                                                                                                     |
 | customValueLabel   | String             | -         | Label for that custom item.                                                                                                             |
 | notFoundLabel      | String/Function    | -         | Shown when a search matches nothing.                                                                                                    |
+| isSearchResult     | Function           | -         | Whether a row from `getItems` counts as a match for screen readers. The quick bar leaves out its "Ask Assist" row.                      |
 | emptyLabel         | String             | -         | Shown when there are no items at all.                                                                                                   |
 | noSort             | Boolean            | false     | Keeps the order `getItems` returned.                                                                                                    |
 | clearable          | Boolean            | false     | Adjusts search field padding for a clear affordance.                                                                                    |
