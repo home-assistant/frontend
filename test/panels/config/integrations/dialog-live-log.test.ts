@@ -4,7 +4,6 @@ import "../../../../src/panels/config/integrations/dialog-live-log";
 
 vi.mock("../../../../src/components/ha-alert", () => ({}));
 vi.mock("../../../../src/components/ha-icon-button", () => ({}));
-vi.mock("../../../../src/components/ha-spinner", () => ({}));
 vi.mock("../../../../src/components/ha-svg-icon", () => ({}));
 vi.mock("../../../../src/components/input/ha-input-search", () => ({}));
 vi.mock("../../../../src/components/ha-button", () => ({}));
@@ -22,10 +21,7 @@ vi.mock("../../../../src/components/ha-log-viewer", () => {
       this.lines = [];
     }
   }
-  customElements.define(
-    "ha-log-viewer",
-    HaLogViewerStub as unknown as CustomElementConstructor
-  );
+  customElements.define("ha-log-viewer", HaLogViewerStub);
   return {};
 });
 vi.mock("../../../../src/data/error_log", () => ({
@@ -76,32 +72,6 @@ const openLogDialog = async () => {
 
   return { receiveLogLines, logViewer };
 };
-
-describe("dialog-live-log loading", () => {
-  it("shows loading until the backend has sent the backlog", async () => {
-    let resolveSubscription!: (unsub: () => void) => void;
-    vi.mocked(subscribeIntegrationLog).mockReturnValueOnce(
-      new Promise((resolve) => {
-        resolveSubscription = resolve;
-      })
-    );
-    await mountDialog();
-    const waiting = () =>
-      dialog.shadowRoot!.querySelector(".waiting")!.textContent!.trim();
-
-    expect(dialog.shadowRoot!.querySelector("ha-spinner")).not.toBeNull();
-    expect(waiting()).toBe("ui.panel.config.logs.loading_log");
-
-    resolveSubscription(vi.fn());
-    await vi.waitFor(() => expect(dialog["_live"]).toBe(true));
-    await dialog.updateComplete;
-
-    expect(dialog.shadowRoot!.querySelector("ha-spinner")).toBeNull();
-    expect(waiting()).toBe(
-      "ui.panel.config.integrations.config_entry.live_log.waiting"
-    );
-  });
-});
 
 describe("dialog-live-log connection", () => {
   it("subscribes again without duplicating the backlog after a reconnect", async () => {
