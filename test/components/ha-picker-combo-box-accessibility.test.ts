@@ -53,6 +53,43 @@ describe("picker keyboard accessibility", () => {
     ).toBe("ui.components.combo-box.active_option:1/2:Hall lamp, Main hall");
   });
 
+  it("includes custom entity identifiers or domain text when displayed", () => {
+    const localize: LocalizeFunc = (_key, values) => String(values?.option);
+    expect(
+      getPickerOptionAnnouncement(
+        items,
+        2,
+        undefined,
+        isOption,
+        localize,
+        (item) => (item.id === "lamp" ? "light.hall" : undefined)
+      )
+    ).toBe("Hall lamp, Main hall, light.hall");
+    expect(
+      getPickerOptionAnnouncement(
+        items,
+        2,
+        undefined,
+        isOption,
+        localize,
+        (item) => (item.id === "lamp" ? "Light" : undefined)
+      )
+    ).toBe("Hall lamp, Main hall, Light");
+  });
+
+  it("falls back to a useful announcement when localization returns an empty string", () => {
+    const missingTranslation: LocalizeFunc = () => "";
+    expect(
+      getPickerOptionAnnouncement(
+        items,
+        2,
+        undefined,
+        isOption,
+        missingTranslation
+      )
+    ).toBe("Option 1 of 2: Hall lamp, Main hall");
+  });
+
   it("announces when the active option is the selected value", () => {
     const localize = vi.fn<LocalizeFunc>((key) => key);
 
