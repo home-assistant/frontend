@@ -252,6 +252,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         ></ha-input-search>
         <ha-list-selectable
           class="ha-scrollbar"
+          controlled
           aria-label=${this.hass.localize(
             "ui.panel.config.helpers.dialog.create_helper"
           )}
