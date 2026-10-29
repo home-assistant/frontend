@@ -73,6 +73,10 @@ const mountPartitionLabel = ({
   return drive ? `${drive} — ${identity}, ${size}` : `${identity}, ${size}`;
 };
 
+// Supervisor accepts only ASCII letters, digits and underscores.
+const mountNameFromLabel = (label?: string): string =>
+  (label ?? "").replace(/^\W+|\W+$/g, "").replace(/\W+/g, "_");
+
 const requiredFieldsFilled = (
   schema: readonly HaFormSchema[],
   data?: MountFormData
@@ -305,6 +309,8 @@ class ViewMountDialog extends DirtyStateProviderMixin<
 
   private _originalType?: SupervisorMountType;
 
+  private _suggestedName?: string;
+
   @state() private _diskIdentity?: string;
 
   public connectedCallback(): void {
@@ -529,7 +535,9 @@ class ViewMountDialog extends DirtyStateProviderMixin<
   private _valueChanged(ev: CustomEvent) {
     this._validationError = {};
     this._validationWarning = {};
+    const previous = this._data;
     this._data = ev.detail.value;
+    this._suggestName(previous);
     if (this._data?.name && !/^\w+$/.test(this._data.name)) {
       this._validationError.name = "invalid_name";
     }
@@ -554,6 +562,32 @@ class ViewMountDialog extends DirtyStateProviderMixin<
     this._updateDirtyState(
       (this._data ?? {}) as Partial<SupervisorMountRequestParams>
     );
+  }
+
+  // Name a new disk mount after the partition's volume label, unless the user
+  // typed a name of their own.
+  private _suggestName(previous?: MountFormData) {
+    const data = this._data;
+    if (data?.name !== previous?.name) {
+      this._suggestedName = undefined;
+    }
+    if (
+      this._existing ||
+      data?.type !== SupervisorMountType.DISK ||
+      (data.device === previous?.device &&
+        previous?.type === SupervisorMountType.DISK) ||
+      (data.name && data.name !== this._suggestedName)
+    ) {
+      return;
+    }
+    const name = mountNameFromLabel(
+      this._partitions?.find((entry) => entry.partition.device === data.device)
+        ?.partition.label
+    );
+    if (name !== (data.name ?? "")) {
+      data.name = name;
+    }
+    this._suggestedName = name;
   }
 
   private async _connectMount(ev) {
