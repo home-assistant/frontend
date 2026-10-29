@@ -55,8 +55,9 @@ row, or from the top match while searching. With one item in the list,
 DOM focus stays in the search field, so screen readers do not hear the list
 change. While searching, a visually hidden `role="status"` message says how
 many items match the search and names it, so a new search with the same count
-is still read out. It updates once typing pauses for half a second, so it
-doesn't talk over each typed character. When nothing matches, it reads a not
+is still read out. It is cleared as soon as the list changes and filled in once
+typing pauses for half a second, so it doesn't talk over each typed character
+or describe the previous search. When nothing matches, it reads a not
 found label that takes the search, or says there are no results for it. Section
 titles, placeholder rows, "Add custom item", the additional items and rows that
 `isSearchResult` rejects are not counted.

@@ -263,12 +263,17 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     }
   }
 
-  public willUpdate() {
+  public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this._selectedSection = this.selectedSection;
       this._allItems = this._getItems();
       this._items = this._allItems;
       this._updateListMode();
+    }
+    // New rows make the last message out of date, so clear it at once. The new
+    // one is then read out even when its text is the same as before.
+    if (changedProps.has("_items")) {
+      this._status = undefined;
     }
   }
 
@@ -280,7 +285,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       this._highlightTopMatch();
     }
     if (changedProps.has("_items")) {
-      this._updateStatus();
+      if (this._search) {
+        this._updateStatus();
+      } else {
+        this._updateStatus.cancel();
+      }
     }
   }
 
@@ -319,6 +328,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     super.disconnectedCallback();
     this._removeKeyboardShortcuts?.();
     this._updateStatus.cancel();
+    this._status = undefined;
   }
 
   public refreshItems() {
