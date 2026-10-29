@@ -857,7 +857,6 @@
           },
           "mode_composed": "Composed",
           "mode_custom": "Custom",
-          "add": "Add",
           "search": "Search name",
           "custom_name": "Custom name",
           "no_more_parts": "Nothing left to add",
@@ -944,7 +943,6 @@
         "collapse": "Collapse"
       },
       "entity-type-picker": {
-        "add": "Add type",
         "no_types": "No types available"
       },
       "subpage-data-table": {
