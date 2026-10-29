@@ -95,6 +95,8 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 const OUTLIER_COUNT = 10;
 
+const LOADER_DELAY = 300;
+
 const SUM_STAT_TYPES: StatisticType[] = ["change"];
 const MEAN_STAT_TYPES: StatisticType[] = ["mean", "min", "max"];
 
@@ -147,6 +149,10 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
 
   @state() private _loading = false;
 
+  @state() private _showLoader = false;
+
+  private _loaderTimeout?: number;
+
   // First and last time with statistics, null when there are none
   @state() private _bounds?: { first: Date; last: Date } | null;
 
@@ -183,6 +189,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
   disconnectedCallback() {
     super.disconnectedCallback();
     window.clearTimeout(this._copyFeedbackTimeout);
+    window.clearTimeout(this._loaderTimeout);
   }
 
   connectedCallback() {
@@ -407,7 +414,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
             @value-changed=${this._rangeChanged}
           ></ha-date-range-picker>
           ${
-            this._loading && this._statistics
+            this._showLoader && this._statistics
               ? html`<ha-spinner size="small"></ha-spinner>`
               : nothing
           }
@@ -948,16 +955,29 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
     this._fetchStatistics();
   }
 
+  // Quick loads show no loader, so it does not flash
+  private _setLoading(loading: boolean) {
+    this._loading = loading;
+    window.clearTimeout(this._loaderTimeout);
+    if (!loading) {
+      this._showLoader = false;
+      return;
+    }
+    this._loaderTimeout = window.setTimeout(() => {
+      this._showLoader = true;
+    }, LOADER_DELAY);
+  }
+
   // The current graph stays until the new data arrives, so nothing flickers
   private async _fetchStatistics(): Promise<number> {
     const fetchId = ++this._fetchId;
     this._error = undefined;
     if (!this._validRange) {
       this._select(undefined);
-      this._loading = false;
+      this._setLoading(false);
       return fetchId;
     }
-    this._loading = true;
+    this._setLoading(true);
     const statisticId = this.params!.statistic.statistic_id;
     const fetchPreview = async (period: PreviewPeriod) => {
       const start = periodStart(this._start, period);
@@ -994,7 +1014,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
       }
     }
     if (fetchId === this._fetchId) {
-      this._loading = false;
+      this._setLoading(false);
     }
     return fetchId;
   }
