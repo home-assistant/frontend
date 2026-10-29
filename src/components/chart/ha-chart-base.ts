@@ -89,6 +89,8 @@ export const DEFAULT_CHART_WIDTH = 500;
 // is short enough for a whole screenful; on a desktop that would cover the page.
 const VISIBILITY_ROOT_MARGIN_NARROW = "100%";
 const VISIBILITY_ROOT_MARGIN = "300px";
+
+export type ZoomSliderMode = "auto" | "always" | "never";
 const DEFERRED_PROPS = [
   "options",
   "data",
@@ -163,9 +165,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   @property({ attribute: "small-controls", type: Boolean })
   public smallControls?: boolean;
 
-  // For charts zoomed from outside, like the synced History charts
-  @property({ attribute: "hide-zoom-controls", type: Boolean })
-  public hideZoomControls = false;
+  // "auto" shows the zoom slider once zoomed. "never" hides every zoom
+  // control, for charts zoomed from outside like the synced History charts.
+  @property({ attribute: "zoom-slider" })
+  public zoomSlider: ZoomSliderMode = "auto";
 
   // For charts sized to their content, like timelines, which grow to fit the
   // zoom slider instead of giving up plot height
@@ -617,7 +620,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
           >
             ${
               (this._isZoomed || this._isGraphRoamed) &&
-              !this.hideZoomControls &&
+              this.zoomSlider !== "never" &&
               !showZoomSlider
                 ? html`<ha-icon-button
                     class="zoom-reset"
@@ -1064,9 +1067,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _showZoomSlider() {
     const [start, end] = this._zoomRange;
     return (
-      !this.hideZoomControls &&
+      this.zoomSlider !== "never" &&
       this._hasZoomableXAxis() &&
-      (this._zoomSliderHeld || start !== 0 || end !== 100)
+      (this.zoomSlider === "always" ||
+        this._zoomSliderHeld ||
+        start !== 0 ||
+        end !== 100)
     );
   }
 
