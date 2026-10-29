@@ -3263,7 +3263,7 @@
             "remove_selected": "Remove selected",
             "remove_selected_title": "Remove selected repositories?",
             "remove_selected_text": "{count, plural,\n  one {The selected repository and its apps will no longer show in the app store. You can add it again later.}\n  other {The {count} selected repositories and their apps will no longer show in the app store. You can add them again later.}\n}",
-            "remove_failed_title": "Remove failed",
+            "remove_failed_title": "Couldn't remove repositories",
             "remove_failed": "Some repositories could not be removed."
           },
           "registries": {
