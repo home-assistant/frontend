@@ -245,6 +245,7 @@ class PanelTodo extends LitElement {
               <ha-list-item-button
                 .entityId=${list.entity_id}
                 class=${list.entity_id === this._entityId ? "selected" : ""}
+                aria-current=${list.entity_id === this._entityId ? "true" : "false"}
                 @click=${this._setEntityIdFromRow}
               >
                 <ha-state-icon slot="start" .stateObj=${list}></ha-state-icon>
