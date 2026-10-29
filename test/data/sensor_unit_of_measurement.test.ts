@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { DOMAIN_DEVICE_CLASSES } from "../../src/data/device_classes";
 import {
   computeAllowedUnits,
+  computeDeviceClassForUnit,
   computeSelectorUnits,
+  computeUnitDeviceClasses,
 } from "../../src/data/sensor/unit_of_measurement";
+import { SENSOR_DEVICE_CLASS_UNITS } from "../../src/data/sensor_entity_constants";
 
 const sorted = (units?: (string | null)[]) =>
   units === undefined ? undefined : [...units].sort();
@@ -162,5 +166,92 @@ describe("computeSelectorUnits", () => {
         { filter_state_class: "measurement_angle" }
       )
     ).toEqual([]);
+  });
+});
+
+describe("computeUnitDeviceClasses", () => {
+  it("does not filter without a unit", () => {
+    expect(computeUnitDeviceClasses("sensor", undefined)).toBeUndefined();
+    expect(computeUnitDeviceClasses("sensor", null)).toBeUndefined();
+    expect(computeUnitDeviceClasses("sensor", "")).toBeUndefined();
+  });
+
+  it("does not filter domains without units", () => {
+    expect(computeUnitDeviceClasses("binary_sensor", "lx")).toBeUndefined();
+    expect(computeUnitDeviceClasses(undefined, "lx")).toBeUndefined();
+  });
+
+  it("finds the only device class of a unit", () => {
+    expect(computeUnitDeviceClasses("sensor", "lx")).toEqual({
+      matching: ["illuminance"],
+      unrestricted: ["monetary"],
+    });
+  });
+
+  it("finds all device classes of a unit", () => {
+    expect(computeUnitDeviceClasses("sensor", "°C")?.matching.sort()).toEqual([
+      "temperature",
+      "temperature_delta",
+    ]);
+  });
+
+  it("only accepts device classes without a unit table for a custom unit", () => {
+    expect(computeUnitDeviceClasses("sensor", "beans")).toEqual({
+      matching: [],
+      unrestricted: ["monetary"],
+    });
+  });
+
+  it("never accepts a unit for unitless and non-numeric device classes", () => {
+    const result = computeUnitDeviceClasses("sensor", "%")!;
+    for (const deviceClass of ["aqi", "ph", "enum", "date", "timestamp"]) {
+      expect(result.matching).not.toContain(deviceClass);
+      expect(result.unrestricted).not.toContain(deviceClass);
+    }
+  });
+
+  it("uses the sensor unit tables for numbers", () => {
+    expect(computeUnitDeviceClasses("number", "lx")).toEqual({
+      matching: ["illuminance"],
+      unrestricted: ["monetary"],
+    });
+  });
+
+  it("matches the units each device class allows", () => {
+    const units = new Set(
+      Object.values(SENSOR_DEVICE_CLASS_UNITS)
+        .flat()
+        .filter((unit): unit is string => unit !== null)
+    );
+    for (const unit of units) {
+      const { matching } = computeUnitDeviceClasses("sensor", unit)!;
+      for (const deviceClass of DOMAIN_DEVICE_CLASSES.sensor) {
+        const allowed = computeAllowedUnits([deviceClass]);
+        expect(matching.includes(deviceClass), `${unit} ${deviceClass}`).toBe(
+          allowed?.includes(unit) ?? false
+        );
+      }
+    }
+  });
+});
+
+describe("computeDeviceClassForUnit", () => {
+  it("preselects the only device class of a unit", () => {
+    expect(computeDeviceClassForUnit("sensor", "lx")).toBe("illuminance");
+    expect(computeDeviceClassForUnit("number", "lx")).toBe("illuminance");
+  });
+
+  it("does not preselect when several device classes fit", () => {
+    expect(computeDeviceClassForUnit("sensor", "°C")).toBeUndefined();
+    expect(computeDeviceClassForUnit("sensor", "%")).toBeUndefined();
+  });
+
+  it("does not preselect for a custom unit", () => {
+    expect(computeDeviceClassForUnit("sensor", "beans")).toBeUndefined();
+  });
+
+  it("does not preselect without a unit or for domains without units", () => {
+    expect(computeDeviceClassForUnit("sensor", undefined)).toBeUndefined();
+    expect(computeDeviceClassForUnit("binary_sensor", "lx")).toBeUndefined();
   });
 });

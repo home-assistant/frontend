@@ -1,22 +1,31 @@
+import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
 import { ensureArray } from "../common/array/ensure-array";
 import { fireEvent } from "../common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { internationalizationContext } from "../data/context";
 import { DOMAIN_DEVICE_CLASSES } from "../data/device_classes";
 import { computeDeviceClassName } from "../data/entity/device_class";
+import { computeUnitDeviceClasses } from "../data/sensor/unit_of_measurement";
+import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import type {
   HomeAssistantInternationalization,
   ValueChangedEvent,
 } from "../types";
 import "./chips/ha-chip-set";
 import "./chips/ha-input-chip";
+import "./ha-combo-box-item";
 import "./ha-generic-picker";
-import type { PickerComboBoxItem } from "./ha-picker-combo-box";
+import {
+  DEFAULT_ROW_RENDERER_CONTENT,
+  type PickerComboBoxItem,
+} from "./ha-picker-combo-box";
 
 export const getDeviceClassOptions = (
   domain: string,
@@ -26,6 +35,34 @@ export const getDeviceClassOptions = (
     const primary = computeDeviceClassName(localize, domain, deviceClass);
     return { id: deviceClass, primary, sorting_label: primary };
   });
+
+interface DeviceClassItem extends PickerComboBoxItem {
+  /** The device class does not support the unit, choosing it clears the unit */
+  unsupported?: boolean;
+}
+
+// The reason line of a device class that does not support the unit names the
+// unit, so searching it would match every unsupported device class
+const UNIT_FILTER_SEARCH_KEYS: FuseWeightedKey[] = [
+  { name: "primary", weight: 10 },
+  { name: "id", weight: 3 },
+];
+
+// An unsupported device class is greyed out but stays selectable: with both
+// fields required there is no clear button, so it is the way to another unit
+const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
+  <ha-combo-box-item
+    style=${styleMap(
+      (item as DeviceClassItem).unsupported
+        ? {
+            "--ha-combo-box-item-headline-color": "var(--secondary-text-color)",
+          }
+        : {}
+    )}
+  >
+    ${DEFAULT_ROW_RENDERER_CONTENT(item)}
+  </ha-combo-box-item>
+`;
 
 @customElement("ha-device-class-picker")
 export class HaDeviceClassPicker extends LitElement {
@@ -42,6 +79,9 @@ export class HaDeviceClassPicker extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
+
+  /** Unit of measurement: device classes that do not support it are listed last and greyed out */
+  @property() public unit?: string;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -70,10 +110,47 @@ export class HaDeviceClassPicker extends LitElement {
   private _options = memoizeOne(
     (
       domain: string | undefined,
-      localize: LocalizeFunc | undefined
-    ): PickerComboBoxItem[] =>
-      domain && localize ? getDeviceClassOptions(domain, localize) : []
+      localize: LocalizeFunc | undefined,
+      unit: string | undefined,
+      language: string | undefined
+    ): DeviceClassItem[] => {
+      if (!domain || !localize) {
+        return [];
+      }
+      const options = getDeviceClassOptions(domain, localize);
+      const fitting = computeUnitDeviceClasses(domain, unit);
+      if (!fitting) {
+        return options;
+      }
+      // Device classes of the unit first, then those that accept any unit
+      const rank = (deviceClass: string) =>
+        fitting.matching.includes(deviceClass)
+          ? 0
+          : fitting.unrestricted.includes(deviceClass)
+            ? 1
+            : 2;
+      const notSupported = localize(
+        "ui.components.device-class-picker.unit_not_supported",
+        { unit }
+      );
+      return options
+        .map((option) =>
+          rank(option.id) === 2
+            ? { ...option, secondary: notSupported, unsupported: true }
+            : option
+        )
+        .sort(
+          (a, b) =>
+            rank(a.id) - rank(b.id) ||
+            caseInsensitiveStringCompare(a.primary, b.primary, language)
+        );
+    }
   );
+
+  // The options are sorted here when the unit filters them
+  private get _filtered(): boolean {
+    return computeUnitDeviceClasses(this.domain, this.unit) !== undefined;
+  }
 
   private _availableOptions = memoizeOne(
     (options: PickerComboBoxItem[], selected: string[]) =>
@@ -81,7 +158,12 @@ export class HaDeviceClassPicker extends LitElement {
   );
 
   private _getItems = () => {
-    const options = this._options(this.domain, this._i18n?.localize);
+    const options = this._options(
+      this.domain,
+      this._i18n?.localize,
+      this.unit,
+      this._i18n?.language
+    );
     return this.multiple
       ? this._availableOptions(options, this._value)
       : options;
@@ -104,6 +186,8 @@ export class HaDeviceClassPicker extends LitElement {
     const emptyLabel = localize?.(
       "ui.components.device-class-picker.no_device_classes"
     );
+    const filtered = this._filtered;
+    const searchKeys = filtered ? UNIT_FILTER_SEARCH_KEYS : undefined;
 
     if (this.multiple) {
       const value = this._value;
@@ -145,6 +229,9 @@ export class HaDeviceClassPicker extends LitElement {
           .getItems=${this._getItems}
           .notFoundLabel=${this._notFoundLabel}
           .emptyLabel=${emptyLabel}
+          .noSort=${filtered}
+          .searchKeys=${searchKeys}
+          .rowRenderer=${rowRenderer}
           @value-changed=${this._itemAdded}
         ></ha-generic-picker>
       `;
@@ -164,6 +251,9 @@ export class HaDeviceClassPicker extends LitElement {
         .valueRenderer=${this._valueRenderer}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${emptyLabel}
+        .noSort=${filtered}
+        .searchKeys=${searchKeys}
+        .rowRenderer=${rowRenderer}
         @value-changed=${this._valueChanged}
       ></ha-generic-picker>
     `;
