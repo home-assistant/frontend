@@ -5,7 +5,6 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
-import { computeCssColor } from "../../../common/color/compute-color";
 import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityState,
@@ -14,7 +13,7 @@ import {
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
   ALERT_DOMAINS,
-  DEFAULT_ALERT_COLOR,
+  computeAlertColor,
   isAlertActive,
 } from "../../../common/entity/alert_active";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -121,12 +120,14 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
 
     const active = isAlertActive(stateObj);
 
-    const color = active
-      ? (this._config.alert_color ?? DEFAULT_ALERT_COLOR)
-      : this._config.clear_color;
+    const color = computeAlertColor(
+      stateObj,
+      active
+        ? (this._config.alert_color ?? "state")
+        : (this._config.clear_color ?? "none")
+    );
 
     const pulse = active && this._config.pulse === true;
-    const hasColor = color !== undefined && color !== "none";
 
     const name = this._formatters.formatEntityName(stateObj, this._config.name);
 
@@ -143,10 +144,9 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
         .type=${hasTileCardAction(this._config) ? "button" : "badge"}
         .label=${showState && showName ? name : undefined}
         .iconOnly=${!content}
-        class=${classMap({ alert: true, pulse, "no-color": !hasColor })}
+        class=${classMap({ alert: true, pulse })}
         style=${styleMap({
-          "--ha-alert-color":
-            color && hasColor ? computeCssColor(color) : undefined,
+          "--ha-alert-color": color,
         })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
@@ -205,10 +205,7 @@ export class HuiAlertBadge extends LitElement implements LovelaceBadge {
       );
       background: var(--ha-alert-badge-background);
       --ha-card-background: transparent;
-      --badge-color: var(--ha-alert-color);
-    }
-    ha-badge.alert.no-color {
-      --badge-color: var(--secondary-text-color);
+      --badge-color: var(--ha-alert-color, var(--secondary-text-color));
     }
     ha-badge.alert::before {
       position: absolute;
