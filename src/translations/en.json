@@ -13063,6 +13063,7 @@
           "remove_title": "Remove {name} from the list?",
           "remove_text": "It no longer shows in the Marketplace. You can add it again later.",
           "remove_installed": "Uninstall it first",
+          "bulk_action": "Action",
           "remove_selected": "Remove selected",
           "remove_selected_title": "Remove selected repositories?",
           "remove_selected_text": "{count, plural,\n  one {The selected repository no longer shows in the Marketplace. You can add it again later.}\n  other {The {count} selected repositories no longer show in the Marketplace. You can add them again later.}\n}",

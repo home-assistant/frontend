@@ -200,7 +200,7 @@ export class HaMarketplaceCustomRepositories extends LitElement {
                 <ha-assist-chip
                   slot="trigger"
                   .label=${this._i18n.localize(
-                    "ui.panel.config.automation.picker.bulk_action"
+                    "ui.panel.marketplace.custom_repositories.bulk_action"
                   )}
                 >
                   <ha-svg-icon

@@ -188,6 +188,18 @@ describe("ha-marketplace-custom-repositories", () => {
     ).toBe(tag);
   });
 
+  it("labels the action menu with a Marketplace string", async () => {
+    const page = await openPage(undefined, undefined, null, true);
+
+    expect(
+      (
+        page.shadowRoot!.querySelector(
+          'ha-dropdown ha-assist-chip[slot="trigger"]'
+        ) as unknown as { label: string }
+      ).label
+    ).toBe("ui.panel.marketplace.custom_repositories.bulk_action");
+  });
+
   it.each([
     {
       name: "removes them once confirmed",
