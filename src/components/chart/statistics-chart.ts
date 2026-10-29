@@ -138,11 +138,10 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: "zoom-slider" })
   public zoomSlider: ZoomSliderMode = "auto";
 
-  // null keeps the highlight support but shows nothing
   @property({ attribute: false }) public highlight?: {
     start: number;
     end: number;
-  } | null;
+  };
 
   @query("ha-chart-base") private _chartBase?: HaChartBase;
 
@@ -290,10 +289,10 @@ export class StatisticsChart extends LitElement {
   private _highlightedChartData = memoizeOne(
     (
       data: (LineSeriesOption | BarSeriesOption)[],
-      highlight: { start: number; end: number } | null | undefined,
+      highlight: { start: number; end: number } | undefined,
       color: string
     ): (LineSeriesOption | BarSeriesOption)[] => {
-      if (highlight === undefined || !data.length) {
+      if (!data.length) {
         return data;
       }
       if (data[0].type === "bar") {
@@ -309,7 +308,8 @@ export class StatisticsChart extends LitElement {
               item && typeof item === "object" && "value" in item
                 ? item
                 : { value: item };
-            const start = new Date(point.value[2]).getTime();
+            // Current state bars only carry their time
+            const start = new Date(point.value[2] ?? point.value[0]).getTime();
             return start >= highlight.start && start < highlight.end
               ? item
               : {
@@ -319,21 +319,19 @@ export class StatisticsChart extends LitElement {
           }),
         })) as BarSeriesOption[];
       }
-      const [first, ...rest] = data;
-      return [
-        {
-          ...first,
-          // An empty area, as the chart merges series and would keep the old one
-          markArea: {
-            silent: true,
-            itemStyle: { color, opacity: 0.15 },
-            data: highlight
+      // Every series gets an area, empty when not highlighted, as the chart
+      // merges series and would keep an old one
+      return data.map((series, index) => ({
+        ...series,
+        markArea: {
+          silent: true,
+          itemStyle: { color, opacity: 0.15 },
+          data:
+            highlight && index === 0
               ? [[{ xAxis: highlight.start }, { xAxis: highlight.end }]]
               : [],
-          },
         },
-        ...rest,
-      ];
+      }));
     }
   );
 
