@@ -89,6 +89,7 @@ export const DEFAULT_CHART_WIDTH = 500;
 // is short enough for a whole screenful; on a desktop that would cover the page.
 const VISIBILITY_ROOT_MARGIN_NARROW = "100%";
 const VISIBILITY_ROOT_MARGIN = "300px";
+const CLICK_DRAG_TOLERANCE = 4;
 const DEFERRED_PROPS = [
   "options",
   "data",
@@ -172,6 +173,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   @property({ attribute: "grow-for-zoom-slider", type: Boolean })
   public growForZoomSlider = false;
 
+  // Dragging selects a time range instead of zooming
+  @property({ attribute: "select-range", type: Boolean })
+  public selectRange = false;
+
   // extraComponents is not reactive and should not trigger updates
   public extraComponents?: any[];
 
@@ -196,6 +201,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   public clickLabelForMoreInfo = false;
 
   @state() private _isZoomed = false;
+
+  private _pointerDownX?: number;
 
   // Separate from _isZoomed, whose touch handling reruns graph layouts
   @state() private _isGraphRoamed = false;
@@ -449,6 +456,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   public willUpdate(changedProps: PropertyValues): void {
     if (!this.chart) {
       return;
+    }
+    if (changedProps.has("selectRange")) {
+      this._updateSelectRange();
     }
     const themeChanged = changedProps.has("_themes") && this.hasUpdated;
     if (!themeChanged && !DEFERRED_PROPS.some((p) => changedProps.has(p))) {
@@ -901,6 +911,32 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       this.chart.on("click", (e: ECElementEvent) => {
         fireEvent(this, "chart-click", e);
       });
+      this.chart.getZr().on("mousedown", (e: ECElementEvent) => {
+        this._pointerDownX = e.offsetX;
+      });
+      this.chart.getZr().on("click", (e: ECElementEvent) => {
+        const point = [e.offsetX, e.offsetY];
+        // A drag that ends on the plot is not a click
+        const dragged =
+          this._pointerDownX !== undefined &&
+          Math.abs(e.offsetX - this._pointerDownX) > CLICK_DRAG_TOLERANCE;
+        if (dragged || !this.chart?.containPixel("grid", point)) {
+          return;
+        }
+        const [x, y] = this.chart.convertFromPixel("grid", point) as number[];
+        fireEvent(this, "chart-grid-click", { x, y });
+      });
+      this.chart.on("brushEnd", (e: any) => {
+        const range = e.areas?.[0]?.coordRange as number[] | undefined;
+        // The caller shows the selection, snapped to its data
+        this.chart?.dispatchAction({ type: "brush", areas: [] });
+        if (range) {
+          fireEvent(this, "chart-range-select", {
+            start: range[0],
+            end: range[1],
+          });
+        }
+      });
       this.chart.on("sankeyroam", () => {
         const option = this.chart!.getOption();
         const series = option.series as any[];
@@ -966,6 +1002,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       this._legendItemCount = this._getLegendItems()?.length;
       this._updateSankeyRoam();
       this._updateDragToZoom();
+      if (this.selectRange) {
+        this._updateSelectRange();
+      }
       if (zoomStart !== 0 || zoomEnd !== 100) {
         this.zoom(zoomStart, zoomEnd, true);
       }
@@ -1017,7 +1056,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
   // A chart can switch type (e.g. pie and bar) without being rebuilt
   private _updateDragToZoom() {
-    const active = !this._touchInput && this._hasZoomableXAxis();
+    const active =
+      !this._touchInput && this._hasZoomableXAxis() && !this.selectRange;
     if (!this.chart || active === this._dragToZoom) {
       return;
     }
@@ -1027,6 +1067,34 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       key: "dataZoomSelect",
       dataZoomSelectActive: active,
     });
+  }
+
+  private _updateSelectRange() {
+    if (!this.chart) {
+      return;
+    }
+    this.chart.setOption({
+      dataZoom: this._getDataZoomConfig(),
+      ...(this.selectRange && {
+        brush: { xAxisIndex: 0, transformable: false },
+      }),
+    });
+    const brushCursor = {
+      type: "takeGlobalCursor",
+      key: "brush",
+      brushOption: {
+        brushType: this.selectRange ? "lineX" : false,
+        brushMode: "single",
+      },
+    };
+    // Brush and drag to zoom share the global cursor, the last one taken wins
+    if (this.selectRange) {
+      this._updateDragToZoom();
+      this.chart.dispatchAction(brushCursor);
+    } else {
+      this.chart.dispatchAction(brushCursor);
+      this._updateDragToZoom();
+    }
   }
 
   private _hasZoomableXAxis() {
@@ -1054,6 +1122,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         orient: "horizontal",
         filterMode: this._getDataZoomFilterMode() as any,
         xAxisIndex: 0,
+        disabled: this.selectRange,
         // Panning is left to the slider and horizontal scrolling
         moveOnMouseMove: false,
         preventDefaultMouseMove: false,
@@ -1532,7 +1601,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   }
 
   private _handleClickZoom = (e: ECElementEvent) => {
-    if (!this.chart) {
+    if (!this.chart || this.selectRange) {
       return;
     }
     // Handle sankey chart double-click zoom
@@ -2317,6 +2386,8 @@ declare global {
     "dataset-hidden": { id: string };
     "dataset-unhidden": { id: string };
     "chart-click": ECElementEvent;
+    "chart-grid-click": { x: number; y: number };
+    "chart-range-select": { start: number; end: number };
     "legend-label-click": { id: string };
     "chart-zoom": {
       start: number;

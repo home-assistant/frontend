@@ -107,6 +107,9 @@ export class HaDateRangePicker extends LitElement {
 
   @property({ attribute: false }) public ranges?: DateRangePickerRanges | false;
 
+  // Added after the default presets
+  @property({ attribute: false }) public extraRanges?: DateRangePickerRanges;
+
   @state() private _ranges?: DateRangePickerRanges;
 
   @property({ attribute: "time-picker", type: Boolean })
@@ -166,7 +169,8 @@ export class HaDateRangePicker extends LitElement {
     if (
       changedProps.has("_i18n") ||
       changedProps.has("_hassConfig") ||
-      changedProps.has("extendedPresets")
+      changedProps.has("extendedPresets") ||
+      changedProps.has("extraRanges")
     ) {
       const rangeKeys = this.extendedPresets
         ? [...RANGE_KEYS, ...EXTENDED_RANGE_KEYS]
@@ -178,7 +182,7 @@ export class HaDateRangePicker extends LitElement {
           this._i18n.localize(`ui.components.date-range-picker.ranges.${key}`)
         ] = calcDateRange(this._i18n.locale, this._hassConfig, key);
       });
-      this._ranges = ranges;
+      this._ranges = { ...ranges, ...this.extraRanges };
     }
   }
 

@@ -128,6 +128,15 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
+  @property({ attribute: "select-range", type: Boolean })
+  public selectRange = false;
+
+  // null keeps the highlight support but shows nothing
+  @property({ attribute: false }) public highlight?: {
+    start: number;
+    end: number;
+  } | null;
+
   @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
   @state() private _legendData: CustomLegendOption["data"];
@@ -243,9 +252,14 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        .data=${this._chartData}
+        .data=${this._highlightedChartData(
+          this._chartData,
+          this.highlight,
+          getComputedStyle(this).getPropertyValue("--primary-color").trim()
+        )}
         .options=${this._chartOptions}
         .height=${this.height}
+        .selectRange=${this.selectRange}
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
@@ -258,6 +272,48 @@ export class StatisticsChart extends LitElement {
       ></ha-chart-base>
     `;
   }
+
+  private _highlightedChartData = memoizeOne(
+    (
+      data: (LineSeriesOption | BarSeriesOption)[],
+      highlight: { start: number; end: number } | null | undefined,
+      color: string
+    ): (LineSeriesOption | BarSeriesOption)[] => {
+      if (highlight === undefined || !data.length) {
+        return data;
+      }
+      if (data[0].type === "bar") {
+        if (!highlight) {
+          return data;
+        }
+        // Bars outside the highlight fade, so the highlighted ones stand out
+        return data.map((series) => ({
+          ...series,
+          data: (series.data as unknown[][]).map((item) => {
+            const start = new Date(item[2] as Date).getTime();
+            return start >= highlight.start && start < highlight.end
+              ? item
+              : { value: item, itemStyle: { opacity: 0.3 } };
+          }),
+        })) as BarSeriesOption[];
+      }
+      const [first, ...rest] = data;
+      return [
+        {
+          ...first,
+          // An empty area, as the chart merges series and would keep the old one
+          markArea: {
+            silent: true,
+            itemStyle: { color, opacity: 0.15 },
+            data: highlight
+              ? [[{ xAxis: highlight.start }, { xAxis: highlight.end }]]
+              : [],
+          },
+        },
+        ...rest,
+      ];
+    }
+  );
 
   private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);

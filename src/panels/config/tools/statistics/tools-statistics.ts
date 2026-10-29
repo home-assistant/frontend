@@ -2,10 +2,8 @@ import {
   mdiArrowDown,
   mdiArrowUp,
   mdiClose,
-  mdiDeleteClock,
   mdiFormatListChecks,
   mdiMenuDown,
-  mdiSlopeUphill,
   mdiTableCog,
   mdiUnfoldLessHorizontal,
   mdiUnfoldMoreHorizontal,
@@ -28,11 +26,9 @@ import { consume } from "../../../../common/decorators/consume";
 import { QueryParamsController } from "../../../../common/controllers/query-params-controller";
 import { transform } from "../../../../common/decorators/transform";
 import type {
-  HASSDomCurrentTargetEvent,
   HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../../../common/dom/fire_event";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeAreaName } from "../../../../common/entity/compute_area_name";
 import {
   computeDeviceName,
@@ -87,26 +83,7 @@ import type {
   HomeAssistantRegistries,
 } from "../../../../types";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { fixStatisticsIssue } from "./fix-statistics";
-import { showStatisticsAdjustSumDialog } from "./show-dialog-statistics-adjust-sum";
-import { showStatisticsClearRangeDialog } from "./show-dialog-statistics-clear-range";
-
-const FIX_ISSUES_ORDER: Record<StatisticsValidationResult["type"], number> = {
-  no_state: 0,
-  entity_no_longer_recorded: 1,
-  entity_not_recorded: 1,
-  state_class_removed: 2,
-  units_changed: 3,
-  mean_type_changed: 4,
-};
-
-const FIXABLE_ISSUES: StatisticsValidationResult["type"][] = [
-  "no_state",
-  "entity_no_longer_recorded",
-  "state_class_removed",
-  "units_changed",
-  "mean_type_changed",
-];
+import { showStatisticDialog } from "./show-dialog-statistic";
 
 type StatisticData = StatisticsMetaData & {
   issues?: StatisticsValidationResult[];
@@ -317,70 +294,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
             statistic.issues_string ??
             localize("ui.panel.config.tools.tabs.statistics.no_issue")
           }`,
-      },
-      fix: {
-        title: "",
-        label: localize("ui.panel.config.tools.tabs.statistics.fix_issue.fix"),
-        type: "icon",
-        template: (statistic) =>
-          html`${
-            statistic.issues
-              ? html`<ha-button
-                  @click=${this._fixIssue}
-                  .data=${statistic.issues}
-                  appearance="plain"
-                  size="s"
-                >
-                  ${localize(
-                    statistic.issues.some((issue) =>
-                      FIXABLE_ISSUES.includes(issue.type)
-                    )
-                      ? "ui.panel.config.tools.tabs.statistics.fix_issue.fix"
-                      : "ui.panel.config.tools.tabs.statistics.fix_issue.info"
-                  )}
-                </ha-button>`
-              : "—"
-          }`,
-        minWidth: "113px",
-        maxWidth: "113px",
-        showNarrow: true,
-      },
-      clear_range: {
-        title: "",
-        label: localize(
-          "ui.panel.config.tools.tabs.statistics.clear_range.title"
-        ),
-        type: "icon-button",
-        showNarrow: true,
-        template: (statistic) => html`
-          <ha-icon-button
-            .label=${localize(
-              "ui.panel.config.tools.tabs.statistics.clear_range.title"
-            )}
-            .path=${mdiDeleteClock}
-            .statistic=${statistic}
-            @click=${this._showStatisticsClearRangeDialog}
-          ></ha-icon-button>
-        `,
-      },
-      actions: {
-        title: "",
-        label: localize("ui.panel.config.tools.tabs.statistics.adjust_sum"),
-        type: "icon-button",
-        showNarrow: true,
-        template: (statistic) =>
-          statistic.has_sum
-            ? html`
-                <ha-icon-button
-                  .label=${localize(
-                    "ui.panel.config.tools.tabs.statistics.adjust_sum"
-                  )}
-                  .path=${mdiSlopeUphill}
-                  .statistic=${statistic}
-                  @click=${this._showStatisticsAdjustSumDialog}
-                ></ha-icon-button>
-              `
-            : nothing,
       },
     })
   );
@@ -825,33 +738,26 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
     this._dataTable.selectAll((statistic) => statistic.issues);
   }
 
-  private _showStatisticsAdjustSumDialog(
-    ev: HASSDomCurrentTargetEvent<HTMLElement & { statistic: StatisticData }>
-  ) {
-    ev.stopPropagation();
-    showStatisticsAdjustSumDialog(this, {
-      statistic: ev.currentTarget.statistic,
-    });
-  }
-
-  private _showStatisticsClearRangeDialog(
-    ev: HASSDomCurrentTargetEvent<
-      HTMLElement & { statistic: DisplayedStatisticData }
-    >
-  ) {
-    ev.stopPropagation();
-    const statistic = ev.currentTarget.statistic;
-    showStatisticsClearRangeDialog(this, {
+  private _rowClicked(ev: HASSDomEvent<RowClickedEvent>) {
+    const statistic = this._displayData(
+      this._data,
+      this._i18n.localize,
+      this._registries.entities,
+      this._registries.devices,
+      this._registries.areas,
+      this._formatEntityName
+    ).find((stat) => stat.statistic_id === ev.detail.id);
+    if (!statistic) {
+      return;
+    }
+    showStatisticDialog(this, {
       statistic,
       name: statistic.displayName,
+      area: statistic.area,
+      device: statistic.device,
+      issues: statistic.issues,
+      issueFixedCallback: () => this._validateStatistics(),
     });
-  }
-
-  private _rowClicked(ev: HASSDomEvent<RowClickedEvent>) {
-    const id = ev.detail.id;
-    if (id in this._states) {
-      fireEvent(this, "hass-more-info", { entityId: id });
-    }
   }
 
   private async _validateStatistics() {
@@ -916,21 +822,6 @@ class HaPanelDevStatistics extends KeyboardShortcutMixin(LitElement) {
         this._dataTable.clearSelection();
       },
     });
-  };
-
-  private _fixIssue = async (
-    ev: HASSDomCurrentTargetEvent<
-      HTMLElement & { data: StatisticsValidationResult[] }
-    >
-  ) => {
-    const issues = ev.currentTarget.data.sort(
-      (itemA, itemB) =>
-        (FIX_ISSUES_ORDER[itemA.type] ?? 99) -
-        (FIX_ISSUES_ORDER[itemB.type] ?? 99)
-    );
-    const issue = issues[0];
-    await fixStatisticsIssue(this, issue);
-    this._validateStatistics();
   };
 
   protected supportedShortcuts(): SupportedShortcuts {
