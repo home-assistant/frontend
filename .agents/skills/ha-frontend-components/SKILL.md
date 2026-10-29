@@ -102,7 +102,7 @@ Pick the indicator by what is loading, following the [Loading pattern](https://c
 Wrap the indicator in `ha-fade-in` from `src/components/animation/ha-fade-in.ts`:
 
 - Fade a skeleton in straight away over about 300ms (`.duration=${300}`), as the data table does. It stands in for the content, so a delay would leave an empty gap.
-- Delay a spinner or progress bar (`.delay=${500}`, or `${1000}` for a whole page) so a fast load never flashes it.
+- Delay a spinner or progress bar, usually by `.delay=${500}`, so a load that finishes within that time never flashes it. Some slower areas, such as backups and updates, use `${1000}`.
 - Don't fade in the loaded content itself.
 
 Give a skeleton group the `progressbar` role and a translated label, as `ha-spinner` has, rather than visible "Loading" text. A loading state always ends in the content, an empty state, or an error.
