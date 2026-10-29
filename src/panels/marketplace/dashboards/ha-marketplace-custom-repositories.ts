@@ -1,20 +1,26 @@
 import type { ContextType } from "@lit/context";
-import { mdiDelete, mdiDeleteOff, mdiLinkPlus } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import { mdiDelete, mdiDeleteOff, mdiLinkPlus, mdiMenuDown } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
-import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import "../../../components/data-table/ha-data-table";
+import "../../../components/chips/ha-assist-chip";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
   RowClickedEvent,
+  SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import type { HaIconButton } from "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -31,9 +37,19 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import "../../../layouts/hass-subpage";
+import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
+import { haStyle } from "../../../resources/styles";
 import type { Route } from "../../../types";
 import { showMarketplaceAddFromLink } from "../tools/add-from-link";
+
+const pageTabs: PageNavigation[] = [
+  {
+    translationKey: "ui.panel.marketplace.custom_repositories.title",
+    path: "/marketplace/repositories",
+  },
+];
 
 @customElement("ha-marketplace-custom-repositories")
 export class HaMarketplaceCustomRepositories extends LitElement {
@@ -50,6 +66,13 @@ export class HaMarketplaceCustomRepositories extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
+  @state() private _selected: string[] = [];
+
+  @state() private _removing = false;
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
+
   // Only what was added from a link, of the types the Marketplace has on
   private _customRepositories = memoizeOne(
     (
@@ -62,6 +85,7 @@ export class HaMarketplaceCustomRepositories extends LitElement {
           ? [
               {
                 ...repository,
+                selectable: !repository.installed,
                 translated_category: localize(
                   `ui.panel.marketplace.common.type.${repository.category}`
                 ),
@@ -122,40 +146,87 @@ export class HaMarketplaceCustomRepositories extends LitElement {
     })
   );
 
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (
+      changedProperties.has("marketplace") &&
+      this._selected.length &&
+      this.marketplace.repositories.some(
+        (repository) =>
+          repository.installed && this._selected.includes(repository.id)
+      )
+    ) {
+      this._dataTable.clearSelection();
+    }
+  }
+
   protected render() {
     const repositories = this._customRepositories(
       this.marketplace.repositories,
       this.marketplace.info.categories,
       this._i18n.localize
     );
+    const removeLabel = this._i18n.localize(
+      "ui.panel.marketplace.custom_repositories.remove_selected"
+    );
 
     return html`
-      <hass-subpage
+      <hass-tabs-subpage-data-table
         .narrow=${this.narrow}
+        .route=${this.route}
+        .tabs=${pageTabs}
         back-path="/marketplace"
-        .header=${this._i18n.localize(
-          "ui.panel.marketplace.custom_repositories.title"
+        .columns=${this._columns(this._i18n.localize)}
+        .data=${repositories}
+        .searchLabel=${this._i18n.localize(
+          "ui.panel.marketplace.dashboard.search",
+          { number: repositories.length }
         )}
+        .noDataText=${this._i18n.localize(
+          "ui.panel.marketplace.custom_repositories.no_repositories"
+        )}
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
+        has-fab
+        clickable
+        @row-click=${this._handleRowClicked}
       >
-        <ha-data-table
-          .narrow=${this.narrow}
-          .columns=${this._columns(this._i18n.localize)}
-          .data=${repositories}
-          .searchLabel=${this._i18n.localize(
-            "ui.panel.marketplace.dashboard.search",
-            { number: repositories.length }
-          )}
-          .noDataText=${this._i18n.localize(
-            "ui.panel.marketplace.custom_repositories.no_repositories"
-          )}
-          clickable
-          @row-click=${this._handleRowClicked}
-        ></ha-data-table>
+        ${
+          this.narrow
+            ? html`<ha-dropdown
+                slot="selection-bar"
+                @wa-select=${this._removeSelected}
+              >
+                <ha-assist-chip
+                  slot="trigger"
+                  .label=${this._i18n.localize(
+                    "ui.panel.marketplace.custom_repositories.bulk_action"
+                  )}
+                >
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${mdiMenuDown}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+                <ha-dropdown-item
+                  value="remove"
+                  .disabled=${!this._selected.length || this._removing}
+                >
+                  ${removeLabel}
+                </ha-dropdown-item>
+              </ha-dropdown>`
+            : html`<ha-assist-chip
+                slot="selection-bar"
+                .label=${removeLabel}
+                .disabled=${!this._selected.length || this._removing}
+                @click=${this._removeSelected}
+              ></ha-assist-chip>`
+        }
         <ha-button slot="fab" size="l" @click=${this._addFromLink}>
           <ha-svg-icon slot="start" .path=${mdiLinkPlus}></ha-svg-icon>
           ${this._i18n.localize("ui.panel.marketplace.tabs.add_from_link")}
         </ha-button>
-      </hass-subpage>
+      </hass-tabs-subpage-data-table>
     `;
   }
 
@@ -165,6 +236,84 @@ export class HaMarketplaceCustomRepositories extends LitElement {
 
   private _addFromLink() {
     showMarketplaceAddFromLink(this, this._i18n.localize, this.marketplace);
+  }
+
+  private _handleSelectionChanged = (
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void => {
+    this._selected = ev.detail.value;
+  };
+
+  private _removeSelected = async () => {
+    if (this._removing) {
+      return;
+    }
+    const selectedRepositories = this.marketplace.repositories.filter(
+      (repository) =>
+        this._selected.includes(repository.id) && !repository.installed
+    );
+    if (!selectedRepositories.length) {
+      return;
+    }
+
+    this._removing = true;
+    try {
+      await this._removeRepositories(selectedRepositories);
+    } finally {
+      this._removing = false;
+    }
+  };
+
+  private async _removeRepositories(selectedRepositories: RepositoryBase[]) {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this._i18n.localize(
+        "ui.panel.marketplace.custom_repositories.remove_selected_title"
+      ),
+      text: this._i18n.localize(
+        "ui.panel.marketplace.custom_repositories.remove_selected_text",
+        { count: selectedRepositories.length }
+      ),
+      confirmText: this._i18n.localize("ui.common.remove"),
+      dismissText: this._i18n.localize("ui.common.cancel"),
+      destructive: true,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    const results = await Promise.allSettled(
+      selectedRepositories.map((repository) =>
+        removeMarketplaceRepository(this._api, repository.id)
+      )
+    );
+    const failures = results.flatMap((result, index) =>
+      result.status === "rejected"
+        ? [
+            `${selectedRepositories[index].name}: ${marketplaceErrorMessage(
+              result.reason,
+              this._i18n.localize
+            )}`,
+          ]
+        : []
+    );
+    this._dataTable.clearSelection();
+
+    if (failures.length) {
+      showAlertDialog(this, {
+        title: this._i18n.localize(
+          "ui.panel.marketplace.custom_repositories.remove_failed_title"
+        ),
+        text: html`
+          <p>
+            ${this._i18n.localize(
+              "ui.panel.marketplace.custom_repositories.remove_failed"
+            )}
+          </p>
+          <pre>${failures.join("\n")}</pre>
+        `,
+      });
+    }
   }
 
   // An arrow function, the data table renders the button and would be `this`
@@ -206,25 +355,14 @@ export class HaMarketplaceCustomRepositories extends LitElement {
     }
   };
 
-  static styles: CSSResultGroup = css`
-    :host {
-      display: block;
-      height: 100%;
-      background-color: var(--primary-background-color);
-    }
-    ha-data-table {
-      width: 100%;
-      height: 100%;
-      --data-table-border-width: 0;
-      /* Keeps the last row clear of the add button */
-      --data-table-empty-row-height: calc(
-        48px + var(--ha-space-4) * 2 + var(--safe-area-inset-bottom, 0px)
-      );
-    }
-    ha-icon-button.delete {
-      color: var(--error-color);
-    }
-  `;
+  static styles: CSSResultGroup = [
+    haStyle,
+    css`
+      ha-icon-button.delete {
+        color: var(--error-color);
+      }
+    `,
+  ];
 }
 
 declare global {
