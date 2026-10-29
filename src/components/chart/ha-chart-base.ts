@@ -1818,7 +1818,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     // it, so a quick drag out would lose the release and its selection
     if (
       ev.type === "pointerdown" &&
-      this._dragToZoom &&
+      (this._dragToZoom || this.selectRange) &&
       this._isZoomPress(ev)
     ) {
       this.chart
