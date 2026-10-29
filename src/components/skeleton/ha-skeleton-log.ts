@@ -14,8 +14,9 @@ const LINE_HEIGHT_EM = 1.5;
 /**
  * Placeholder for log lines while a log loads. It covers its nearest
  * positioned ancestor and shows as many whole lines as fit, so it never
- * scrolls. Like the data table's loading rows, the label is given to assistive
- * technology rather than shown.
+ * scrolls. Set `lines` to show that many lines in the flow instead. Like the
+ * data table's loading rows, the label is given to assistive technology
+ * rather than shown.
  *
  * @cssprop --ha-skeleton-log-padding - The space around the lines. Defaults to `var(--ha-space-2)`.
  */
@@ -23,7 +24,9 @@ const LINE_HEIGHT_EM = 1.5;
 export class HaSkeletonLog extends LitElement {
   @property() public label?: string;
 
-  private _lineCount = new ResizeController(this, {
+  @property({ type: Number, reflect: true }) public lines?: number;
+
+  private _fitLineCount = new ResizeController(this, {
     callback: (entries) => {
       const height = entries[0]?.contentRect.height ?? 0;
 
@@ -39,7 +42,7 @@ export class HaSkeletonLog extends LitElement {
       <ha-fade-in .duration=${300} easing="ease-in">
         <div role="progressbar" aria-label=${ifDefined(this.label)}>
           ${Array.from(
-            { length: this._lineCount.value ?? 0 },
+            { length: this.lines ?? this._fitLineCount.value ?? 0 },
             (_, i) =>
               html`<div class="line">
                 <ha-skeleton-text
@@ -61,6 +64,10 @@ export class HaSkeletonLog extends LitElement {
       box-sizing: border-box;
       padding: var(--ha-skeleton-log-padding, var(--ha-space-2));
       overflow: hidden;
+    }
+    :host([lines]) {
+      display: block;
+      position: static;
     }
     .line {
       display: flex;

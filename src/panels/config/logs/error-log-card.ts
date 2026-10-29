@@ -35,7 +35,6 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/skeleton/ha-skeleton-log";
 
@@ -338,9 +337,10 @@ class ErrorLogCard extends LitElement {
             <div id="scroll-top-marker"></div>
             ${
               this._loadingPrevState === "loading"
-                ? html`<div class="loading-old">
-                    <ha-spinner></ha-spinner>
-                  </div>`
+                ? html`<ha-skeleton-log
+                    lines="3"
+                    .label=${localize("ui.panel.config.logs.loading_log")}
+                  ></ha-skeleton-log>`
                 : nothing
             }
             ${
@@ -1117,6 +1117,10 @@ class ErrorLogCard extends LitElement {
       --ha-skeleton-log-padding: var(--ha-space-4);
     }
 
+    ha-skeleton-log[lines] {
+      --ha-skeleton-log-padding: var(--ha-space-2) 0;
+    }
+
     .error-log > div:hover {
       background-color: var(--secondary-background-color);
     }
@@ -1140,13 +1144,6 @@ class ErrorLogCard extends LitElement {
 
     .warning {
       color: var(--warning-color);
-    }
-
-    .loading-old {
-      display: flex;
-      width: 100%;
-      justify-content: center;
-      padding: 16px;
     }
 
     ha-assist-chip {
