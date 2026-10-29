@@ -193,22 +193,19 @@ const compositeSplitsCache = new WeakMap<
 >();
 
 export const fetchDeviceCompositeSplits = (
-  hass: Pick<HomeAssistant, "connection" | "callWS">
+  connection: HomeAssistant["connection"],
+  callWS: HomeAssistant["callWS"]
 ): Promise<DeviceCompositeSplits> => {
-  const conn = hass.connection;
-
-  let request = compositeSplitsCache.get(conn);
+  let request = compositeSplitsCache.get(connection);
   if (!request) {
-    request = hass
-      .callWS<DeviceCompositeSplits>({
-        type: "config/device_registry/list_composite_splits",
-      })
-      .catch((err) => {
-        // Don't cache failures so the next caller retries.
-        compositeSplitsCache.delete(conn);
-        throw err;
-      });
-    compositeSplitsCache.set(conn, request);
+    request = callWS<DeviceCompositeSplits>({
+      type: "config/device_registry/list_composite_splits",
+    }).catch((err) => {
+      // Don't cache failures so the next caller retries.
+      compositeSplitsCache.delete(connection);
+      throw err;
+    });
+    compositeSplitsCache.set(connection, request);
   }
   return request;
 };

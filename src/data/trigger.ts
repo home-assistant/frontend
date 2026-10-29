@@ -26,7 +26,6 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
         icon: mdiWeatherSunny,
         domains: ["sun"],
       },
-      event: {},
       geo_location: {},
       homeassistant: {},
       conversation: {},
@@ -43,6 +42,7 @@ export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
     groups: {
       device: {},
       entity: { icon: mdiShape, members: { state: {}, numeric_state: {} } },
+      event: { members: { event: {} }, domains: ["event"] },
     },
   },
   {

@@ -10,14 +10,12 @@ import { navigate } from "../../common/navigate";
 import { computeRouteTail } from "../../common/url/route";
 import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-icon-button";
-import type { HassioAddonDetails } from "../../data/hassio/addon";
-import {
-  fetchHassioAddonInfo,
-  startHassioAddon,
-} from "../../data/hassio/addon";
+import { startHassioAddon } from "../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../data/hassio/common";
+import type { IngressAppInfo } from "../../data/hassio/ingress";
 import {
   createHassioSession,
+  fetchIngressAppInfo,
   validateHassioSession,
 } from "../../data/hassio/ingress";
 import {
@@ -45,7 +43,7 @@ class HaPanelApp extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @state() private _addon?: HassioAddonDetails;
+  @state() private _addon?: IngressAppInfo;
 
   @state() private _loadingMessage?: string;
 
@@ -227,12 +225,15 @@ class HaPanelApp extends LitElement {
   }
 
   private async _fetchData(addonSlug: string) {
-    const createSessionPromise = createHassioSession(this.hass);
+    const createSessionPromise = createHassioSession(this.hass, addonSlug);
+    // The app info checks below may return before the session is awaited,
+    // and both fail when a non-admin opens an admin-only app
+    createSessionPromise.catch(() => undefined);
 
-    let addon: HassioAddonDetails;
+    let addon: IngressAppInfo;
 
     try {
-      addon = await fetchHassioAddonInfo(this.hass.callWS, addonSlug);
+      addon = await fetchIngressAppInfo(this.hass, addonSlug);
     } catch (err: any) {
       await this._showErrorAndNavigateHome(
         addonSlug,
@@ -339,7 +340,7 @@ class HaPanelApp extends LitElement {
       try {
         await validateHassioSession(this.hass, session);
       } catch (_err: any) {
-        session = await createHassioSession(this.hass);
+        session = await createHassioSession(this.hass, addonSlug);
       }
     }, 60000);
 

@@ -268,7 +268,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchEntitySources() {
-    const entitySources = await fetchEntitySourcesWithCache(this.hass);
+    const entitySources = await fetchEntitySourcesWithCache(
+      this.hass.callWS,
+      this.hass.states
+    );
 
     const entitiesByDomain = {};
 
@@ -1008,7 +1011,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       entriesWithSubs.map(async (entry) => {
         try {
           results[entry.entry_id] = (
-            await getSubEntries(this.hass, entry.entry_id)
+            await getSubEntries(this.hass.callWS, entry.entry_id)
           ).sort((a, b) =>
             caseInsensitiveStringCompare(
               a.title,

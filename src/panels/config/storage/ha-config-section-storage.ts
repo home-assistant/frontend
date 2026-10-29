@@ -408,7 +408,7 @@ class HaConfigSectionStorage extends LitElement {
 
   private async _reloadMounts(): Promise<void> {
     try {
-      this._mountsInfo = await fetchSupervisorMounts(this.hass);
+      this._mountsInfo = await fetchSupervisorMounts(this.hass.callWS);
     } catch (err: any) {
       this._error = err.message || err;
       this._mountsInfo = null;

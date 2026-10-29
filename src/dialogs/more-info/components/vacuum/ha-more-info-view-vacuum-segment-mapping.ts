@@ -109,7 +109,6 @@ export class HaMoreInfoViewVacuumSegmentMapping extends LitElement {
         }
 
         <ha-vacuum-segment-area-mapper
-          .hass=${this.hass}
           .entityId=${this.params.entityId}
           .value=${this._areaMapping}
           @value-changed=${this._valueChanged}

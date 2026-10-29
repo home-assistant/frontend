@@ -17,15 +17,12 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { atLeastVersion } from "../../../common/config/version";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { consume } from "../../../common/decorators/consume";
+import { storage } from "../../../common/decorators/storage";
 import type {
   HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../../common/dom/fire_event";
-import {
-  getHistoryState,
-  navigate,
-  updateHistoryState,
-} from "../../../common/navigate";
+import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { currentPath } from "../../../common/url/current-path";
 import { deepEqual } from "../../../common/util/deep-equal";
@@ -35,6 +32,7 @@ import {
   logsLinkFromUrl,
   logsQueryParamConfig,
   logsQueryParams,
+  type LogsState,
 } from "../../../common/url/logs-query-params";
 import { createQueryString } from "../../../common/url/query-params";
 import "../../../components/ha-app-icon";
@@ -93,8 +91,6 @@ const logProviders: LogProvider[] = [
   },
 ];
 
-const LOGS_HISTORY_STATE = "logsPage";
-
 interface LogProviderPickerItem extends PickerComboBoxItem {
   addon?: HassioAddonInfo;
   hasAppIcon?: boolean;
@@ -124,9 +120,30 @@ export class HaConfigLogs extends LitElement {
 
   @state() private _logProviders = logProviders;
 
-  @state() private _showFilters?: boolean;
+  @state() private _showFilters = false;
 
   @state() private _integrationsExpanded = true;
+
+  // What the user picked, shown again when the page is opened without params,
+  // like from the sidebar. What a link shows isn't stored.
+  @storage({
+    storage: "sessionStorage",
+    key: "logs-search",
+    state: false,
+    subscribe: false,
+  })
+  private _storedSearch = "";
+
+  @storage({
+    storage: "sessionStorage",
+    key: "logs-integrations",
+    state: false,
+    subscribe: false,
+  })
+  private _storedIntegrations: string[] = [];
+
+  @storage({ key: "logs-raw", state: false, subscribe: false })
+  private _storedRaw = false;
 
   @state()
   @consume({ context: manifestsContext, subscribe: true })
@@ -138,7 +155,7 @@ export class HaConfigLogs extends LitElement {
 
   private _queryParams = new QueryParamsController(this, logsQueryParamConfig, {
     enabled: () => true,
-    navigated: () => this._applyUrl(),
+    navigated: (ev) => this._navigated(ev),
   });
 
   public connectedCallback() {
@@ -164,6 +181,10 @@ export class HaConfigLogs extends LitElement {
 
   private _filterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
     this._filter = ev.target.value ?? "";
+
+    if (this._currentProvider() === DEFAULT_LOG_PROVIDER) {
+      this._storedSearch = this._filter;
+    }
     this._writeUrl(true);
   }
 
@@ -174,7 +195,7 @@ export class HaConfigLogs extends LitElement {
   protected render(): TemplateResult {
     const core = this._selectedLogProvider === DEFAULT_LOG_PROVIDER;
     const integrations = core ? this._integrations : NO_INTEGRATIONS;
-    const filtersShown = core && this._filtersShown();
+    const filtersShown = core && this._showFilters;
     const filtersLabel = this.hass.localize(
       "ui.components.subpage-data-table.filters"
     );
@@ -301,6 +322,10 @@ export class HaConfigLogs extends LitElement {
 
   private _showDetail() {
     this._detail = !this._detail;
+
+    if (this._currentProvider() === DEFAULT_LOG_PROVIDER) {
+      this._storedRaw = this._detail;
+    }
     this._writeUrl();
   }
 
@@ -317,12 +342,12 @@ export class HaConfigLogs extends LitElement {
     this._selectedLogProvider = provider;
     this._filter = "";
     this._integrations = [];
+    this._storedSearch = "";
+    this._storedIntegrations = [];
     // Keep the search typed so far on the entry Back returns to
     this._queryParams.flush();
     // Picking another provider is a navigation of its own, so Back returns
-    // to the previous one. Both entries are marked, so going back to one
-    // without params shows the default view instead of keeping the provider.
-    updateHistoryState({ [LOGS_HISTORY_STATE]: true });
+    // to the previous one
     const search = createQueryString(
       logsQueryParams({
         provider,
@@ -332,18 +357,13 @@ export class HaConfigLogs extends LitElement {
       }),
       logsQueryParamConfig
     );
-    // From the current path, so a trailing slash still matches the controller
-    navigate(`${currentPath()}${search ? `?${search}` : ""}`, {
-      data: { [LOGS_HISTORY_STATE]: true },
-    });
-  }
 
-  private _filtersShown(): boolean {
-    return this._showFilters ?? !this.narrow;
+    // From the current path, so a trailing slash still matches the controller
+    navigate(`${currentPath()}${search ? `?${search}` : ""}`);
   }
 
   private _toggleFilters() {
-    this._showFilters = !this._filtersShown();
+    this._showFilters = !this._showFilters;
   }
 
   private _closeFilters() {
@@ -355,12 +375,27 @@ export class HaConfigLogs extends LitElement {
   ) {
     ev.stopPropagation();
     const value = ev.detail.value;
-    this._integrations = Array.isArray(value) ? value : [];
+    const integrations = Array.isArray(value) ? value : [];
+
+    // The filter also sends the value it was given once it has its items, in
+    // its own order, so only a change is the user's
+    if (
+      this._currentProvider() === DEFAULT_LOG_PROVIDER &&
+      !deepEqual([...integrations].sort(), [...this._integrations].sort())
+    ) {
+      this._storedIntegrations = integrations;
+    }
+
+    this._integrations = integrations;
     this._writeUrl();
   }
 
   private _clearIntegrations() {
     this._integrations = [];
+
+    if (this._currentProvider() === DEFAULT_LOG_PROVIDER) {
+      this._storedIntegrations = [];
+    }
     this._writeUrl();
   }
 
@@ -370,20 +405,49 @@ export class HaConfigLogs extends LitElement {
     this._integrationsExpanded = ev.detail.expanded;
   }
 
+  // Until the apps are loaded, the provider is the one the URL asks for
+  private _currentProvider(): string {
+    return this._providersLoaded
+      ? this._selectedLogProvider
+      : (logsLinkFromUrl(this._queryParams.searchParams() ?? "")?.provider ??
+          DEFAULT_LOG_PROVIDER);
+  }
+
   private _writeUrl(debounced = false) {
-    this._queryParams.write(
-      logsQueryParams({
-        // Until the apps are loaded, keep the provider the URL asks for
-        provider: this._providersLoaded
-          ? this._selectedLogProvider
-          : (logsLinkFromUrl(this._queryParams.searchParams() ?? "")
-              ?.provider ?? DEFAULT_LOG_PROVIDER),
-        search: this._filter,
-        integrations: this._integrations,
-        raw: this._detail,
-      }),
-      debounced
-    );
+    this._queryParams.write(logsQueryParams(this._urlState()), debounced);
+  }
+
+  private _urlState(): LogsState {
+    return {
+      provider: this._currentProvider(),
+      search: this._filter,
+      integrations: this._integrations,
+      raw: this._detail,
+    };
+  }
+
+  // Closing a dialog, like an entry's details, goes back to the URL the page
+  // is already showing, so there's nothing to apply. A link is always applied.
+  private _navigated(ev?: Event) {
+    const searchParams = this._queryParams.searchParams();
+
+    if (ev?.type === "popstate" && searchParams) {
+      const shown = createQueryString(
+        logsQueryParams(this._urlState()),
+        logsQueryParamConfig
+      );
+
+      const back = createQueryString(
+        logsQueryParams(logsLinkFromUrl(searchParams) ?? DEFAULT_LOGS_STATE),
+        logsQueryParamConfig
+      );
+
+      if (back === shown) {
+        return;
+      }
+    }
+
+    this._applyUrl();
   }
 
   private async _init() {
@@ -393,18 +457,30 @@ export class HaConfigLogs extends LitElement {
     // Keep a search typed while the apps were loading
     this._queryParams.flush();
     this._providersLoaded = true;
-    this._applyUrl();
+    // What was stored is already applied, and an empty URL now is a link like
+    // `?provider=core` that was tidied up
+    this._applyUrl(false);
   }
 
-  private _applyUrl() {
+  private _applyUrl(restoreStored = true) {
     const searchParams = this._queryParams.searchParams();
     if (!searchParams) {
       return;
     }
+    // A link is shown, but not stored. Opened without params, like from the
+    // sidebar or Back to before another provider was picked, the page shows
+    // what the user picked.
     const link =
       logsLinkFromUrl(searchParams) ??
-      (getHistoryState()?.[LOGS_HISTORY_STATE]
-        ? DEFAULT_LOGS_STATE
+      (searchParams.toString() === ""
+        ? restoreStored
+          ? {
+              ...DEFAULT_LOGS_STATE,
+              search: this._storedSearch,
+              integrations: this._storedIntegrations,
+              raw: this._storedRaw,
+            }
+          : DEFAULT_LOGS_STATE
         : undefined);
     let missingProvider: string | undefined;
     if (link) {

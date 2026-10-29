@@ -1,12 +1,21 @@
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../../common/array/ensure-array";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { ConfigEntry } from "../../data/config_entries";
 import { getConfigEntries } from "../../data/config_entries";
+import {
+  apiContext,
+  connectionContext,
+  devicesContext,
+  entitiesContext,
+  statesContext,
+} from "../../data/context";
 import { getDeviceIntegrationLookup } from "../../data/device/device_registry";
 import type { EntitySources } from "../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../data/entity/entity_sources";
@@ -15,14 +24,12 @@ import {
   computeCreateDomains,
   filterSelectorEntities,
 } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistant, HomeAssistantConnection } from "../../types";
 import "../entity/ha-entities-picker";
 import "../entity/ha-entity-picker";
 
 @customElement("ha-selector-entity")
 export class HaEntitySelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: EntitySelector;
 
   @state() private _entitySources?: EntitySources;
@@ -43,15 +50,31 @@ export class HaEntitySelector extends LitElement {
 
   @state() private _createDomains: string[] | undefined;
 
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection?: ContextType<typeof connectionContext>;
+
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: ContextType<typeof entitiesContext>;
+
+  @consume({ context: devicesContext, subscribe: true })
+  private _devices!: ContextType<typeof devicesContext>;
+
   private _deviceIntegrationLookup = memoizeOne(
     (
-      entities: HomeAssistant["entities"],
-      devices: HomeAssistant["devices"],
+      entities: HomeAssistant["entities"] | null,
+      devices: HomeAssistant["devices"] | null,
       configEntries?: ConfigEntry[]
     ) =>
       getDeviceIntegrationLookup(
-        Object.values(entities),
-        Object.values(devices),
+        Object.values(entities ?? {}),
+        Object.values(devices ?? {}),
         configEntries
       )
   );
@@ -70,6 +93,8 @@ export class HaEntitySelector extends LitElement {
   });
 
   private _fetchedConfigEntries = false;
+
+  private _fetchedEntitySources = false;
 
   protected willUpdate(changedProperties: PropertyValues<this>): void {
     if (changedProperties.get("selector") && this.value !== undefined) {
@@ -101,7 +126,11 @@ export class HaEntitySelector extends LitElement {
         .includeEntities=${this.selector.entity?.include_entities}
         .excludeEntities=${this.selector.entity?.exclude_entities}
         .extraOptions=${this.selector.entity?.extra_options}
-        .entityFilter=${this._filterEntities}
+        .entityFilter=${this._filterEntities(
+          this.selector,
+          this._entitySources,
+          this._configEntries
+        )}
         .createDomains=${this._createDomains}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -117,7 +146,11 @@ export class HaEntitySelector extends LitElement {
         .includeEntities=${this.selector.entity.include_entities}
         .excludeEntities=${this.selector.entity.exclude_entities}
         .reorder=${this.selector.entity.reorder ?? false}
-        .entityFilter=${this._filterEntities}
+        .entityFilter=${this._filterEntities(
+          this.selector,
+          this._entitySources,
+          this._configEntries
+        )}
         .createDomains=${this._createDomains}
         .disabled=${this.disabled}
         .required=${this.required}
@@ -125,36 +158,44 @@ export class HaEntitySelector extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues<this>): void {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    // The connection changed (e.g. reconnect); refetch config entries.
-    const oldHass = changedProps.get("hass");
-    if (oldHass && oldHass.connection !== this.hass.connection) {
+    const oldConnection = changedProps.get("_connection") as
+      HomeAssistantConnection | undefined;
+    if (
+      oldConnection &&
+      this._connection &&
+      (oldConnection.connection !== this._connection.connection ||
+        (!oldConnection.connected && this._connection.connected))
+    ) {
+      this._fetchedEntitySources = false;
       this._fetchedConfigEntries = false;
-      this._configEntries = undefined;
     }
 
     const needs = this._dataNeeds(this.selector);
 
-    if (needs.entitySources && !this._entitySources) {
-      fetchEntitySourcesWithCache(this.hass).then((sources) => {
-        this._entitySources = sources;
-      });
+    if (needs.entitySources && !this._fetchedEntitySources) {
+      this._fetchedEntitySources = true;
+      fetchEntitySourcesWithCache(this._api.callWS, this._states ?? {})
+        .then((sources) => {
+          this._entitySources = sources;
+        })
+        .catch(() => {
+          this._entitySources ??= {};
+        });
     }
 
     if (needs.configEntries && !this._fetchedConfigEntries) {
       this._fetchedConfigEntries = true;
-      getConfigEntries(this.hass)
+      getConfigEntries(this._api)
         .then((entries) => {
           this._configEntries = entries;
         })
         .catch(() => {
-          // Fall back to no entries so the picker still renders. We keep
-          // `_fetchedConfigEntries` set so the failed fetch is not retried on
-          // every re-render; the connection-change handler above retries on
-          // reconnect.
-          this._configEntries = [];
+          // Keep what we have, or fall back to no entries so the picker still
+          // renders. A reconnect fetches again.
+          this._configEntries ??= [];
         });
     }
 
@@ -163,29 +204,36 @@ export class HaEntitySelector extends LitElement {
     }
   }
 
-  private _filterEntities = (entity: HassEntity): boolean => {
-    if (!this.selector?.entity?.filter) {
-      return true;
-    }
-    const deviceIntegrationLookup = this._dataNeeds(this.selector).configEntries
-      ? this._deviceIntegrationLookup(
-          this.hass.entities,
-          this.hass.devices,
-          this._configEntries
-        )
-      : undefined;
+  private _filterEntities = memoizeOne(
+    (
+      selector: EntitySelector,
+      entitySources: EntitySources | undefined,
+      configEntries: ConfigEntry[] | undefined
+    ) =>
+      (entity: HassEntity): boolean => {
+        if (!selector.entity?.filter) {
+          return true;
+        }
+        const deviceIntegrationLookup = this._dataNeeds(selector).configEntries
+          ? this._deviceIntegrationLookup(
+              this._entities,
+              this._devices,
+              configEntries
+            )
+          : undefined;
 
-    return ensureArray(this.selector.entity.filter).some((filter) =>
-      filterSelectorEntities(
-        filter,
-        entity,
-        this._entitySources,
-        this.hass.entities,
-        this.hass.devices,
-        deviceIntegrationLookup
-      )
-    );
-  };
+        return ensureArray(selector.entity.filter).some((filter) =>
+          filterSelectorEntities(
+            filter,
+            entity,
+            entitySources,
+            this._entities ?? undefined,
+            this._devices ?? undefined,
+            deviceIntegrationLookup
+          )
+        );
+      }
+  );
 }
 
 declare global {

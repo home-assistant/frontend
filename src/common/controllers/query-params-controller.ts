@@ -26,8 +26,10 @@ export interface QueryParamsControllerOptions {
    * Called when the page of the host is navigated to while the host is
    * connected, like a second link to an open page or coming back to it. Read
    * the URL with `searchParams()` and apply it, then `write()` the state back.
+   * Gets the `popstate` or `location-changed` event, or nothing when the host
+   * is connected again.
    */
-  navigated: () => void;
+  navigated: (ev?: Event) => void;
   /**
    * The path of the host's page, for a page that can first be connected on
    * a sub-path it sends on to itself, like an add link. Defaults to the path
@@ -159,7 +161,7 @@ export class QueryParamsController<
     }
     // Leaving the page gets here too, before the router swaps the page
     if (this._isActive()) {
-      this._options.navigated();
+      this._options.navigated(ev);
     }
   };
 

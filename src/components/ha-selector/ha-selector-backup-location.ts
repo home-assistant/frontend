@@ -1,13 +1,10 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { BackupLocationSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-mount-picker";
 
 @customElement("ha-selector-backup_location")
 export class HaBackupLocationSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: BackupLocationSelector;
 
   @property() public value?: any;
@@ -22,7 +19,6 @@ export class HaBackupLocationSelector extends LitElement {
 
   protected render() {
     return html`<ha-mount-picker
-      .hass=${this.hass}
       .value=${this.value}
       .label=${this.label}
       .helper=${this.helper}

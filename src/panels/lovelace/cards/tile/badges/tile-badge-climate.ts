@@ -7,7 +7,7 @@ import type { ClimateEntity } from "../../../../../data/climate";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../../../data/climate";
 import type { RenderBadgeFunction } from "./tile-badge";
 
-export const renderClimateBadge: RenderBadgeFunction = (stateObj) => {
+export const renderClimateBadge: RenderBadgeFunction = (stateObj, hass) => {
   const hvacAction = (stateObj as ClimateEntity).attributes.hvac_action;
 
   if (!hvacAction || hvacAction === "off") {
@@ -16,6 +16,8 @@ export const renderClimateBadge: RenderBadgeFunction = (stateObj) => {
 
   return html`
     <ha-tile-badge
+      role="img"
+      aria-label=${hass.formatEntityAttributeValue(stateObj, "hvac_action")}
       style=${styleMap({
         "--tile-badge-background-color": stateColorCss(
           stateObj,

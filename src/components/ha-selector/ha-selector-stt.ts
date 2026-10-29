@@ -1,13 +1,10 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { STTSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-stt-picker";
 
 @customElement("ha-selector-stt")
 export class HaSTTSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: STTSelector;
 
   @property() public value?: any;
@@ -26,7 +23,6 @@ export class HaSTTSelector extends LitElement {
 
   protected render() {
     return html`<ha-stt-picker
-      .hass=${this.hass}
       .value=${this.value}
       .label=${this.label}
       .helper=${this.helper}

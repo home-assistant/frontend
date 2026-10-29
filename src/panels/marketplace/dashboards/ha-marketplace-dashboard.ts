@@ -2,6 +2,7 @@ import "@home-assistant/webawesome/dist/components/divider/divider";
 import type { ContextType } from "@lit/context";
 import type { HassEntities } from "home-assistant-js-websocket";
 import {
+  mdiCheckAll,
   mdiCheckCircleOutline,
   mdiCompassOutline,
   mdiDotsVertical,
@@ -34,6 +35,7 @@ import {
   sortedMarketplaceFilterQueryString,
 } from "../../../common/url/marketplace-query-params";
 import { shallowEqual } from "../../../common/util/shallow-equal";
+import { groupActionsSlot } from "../../../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   SelectionChangedEvent,
@@ -73,6 +75,7 @@ import {
 import type { MarketplaceData } from "../../../data/marketplace/marketplace";
 import {
   apiContext,
+  brandsAccessTokenContext,
   configContext,
   devicesContext,
   entitiesContext,
@@ -186,6 +189,10 @@ export class HaMarketplaceDashboard extends LitElement {
   @state()
   @consume({ context: configContext, subscribe: true })
   private _config!: ContextType<typeof configContext>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  private _brandsAccessToken?: string;
 
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
@@ -364,7 +371,8 @@ export class HaMarketplaceDashboard extends LitElement {
           this.narrow,
           this._darkMode,
           // Everything on the installed tab is, a mark would say nothing
-          this.tab !== "installed"
+          this.tab !== "installed",
+          this._brandsAccessToken
         )}
         .data=${repositories}
         .searchLabel=${this._i18n.localize(
@@ -405,6 +413,14 @@ export class HaMarketplaceDashboard extends LitElement {
         @sorting-changed=${this._tableSettings.sortingChanged}
       >
         ${this._renderToolbar()}
+        <ha-icon-button
+          slot=${groupActionsSlot(
+            this._i18n.localize("ui.panel.marketplace.repository_status.new")
+          )}
+          .label=${this._i18n.localize("ui.panel.marketplace.menu.dismiss")}
+          .path=${mdiCheckAll}
+          @click=${this._dismissNew}
+        ></ha-icon-button>
         ${
           this.tab === "installed"
             ? html`<ha-assist-chip
@@ -563,7 +579,9 @@ export class HaMarketplaceDashboard extends LitElement {
       localizeFunc: LocalizeFunc,
       narrow: boolean,
       darkMode: boolean | undefined,
-      markInstalled: boolean
+      markInstalled: boolean,
+      // Cache key only: the icon URLs carry the brands access token
+      _brandsAccessToken: string | undefined
     ): DataTableColumnContainer<MarketplaceRepository> => ({
       icon: {
         title: "",
@@ -942,18 +960,43 @@ export class HaMarketplaceDashboard extends LitElement {
     showMarketplaceAddFromLink(this, this._i18n.localize, this.marketplace);
   }
 
-  private async _dismissNew() {
-    try {
-      await dismissNewMarketplaceRepositories(
-        this._api,
-        this.marketplace.info.categories
-      );
-    } catch (err: unknown) {
-      showAlertDialog(this, {
-        title: this._i18n.localize("ui.panel.marketplace.dialog.error.title"),
-        text: marketplaceErrorMessage(err, this._i18n.localize),
-      });
-    }
+  private _dismissNew() {
+    showConfirmationDialog(this, {
+      title: this._i18n.localize(
+        "ui.panel.marketplace.dialog.dismiss_new.title"
+      ),
+      // Dismissing clears all of them, not only the ones the filters show
+      text: this._i18n.localize(
+        "ui.panel.marketplace.dialog.dismiss_new.text",
+        {
+          count: this.marketplace.repositories.filter(
+            (repository) => repository.new
+          ).length,
+        }
+      ),
+      confirmText: this._i18n.localize(
+        "ui.panel.marketplace.dialog.dismiss_new.confirm"
+      ),
+      dismissText: this._i18n.localize("ui.common.cancel"),
+      action: async () => {
+        try {
+          await dismissNewMarketplaceRepositories(
+            this._api,
+            this.marketplace.info.categories
+          );
+        } catch (err: unknown) {
+          showAlertDialog(this, {
+            title: this._i18n.localize(
+              "ui.panel.marketplace.dialog.error.title"
+            ),
+            text: marketplaceErrorMessage(err, this._i18n.localize),
+          });
+          // The alert reuses the confirmation's dialog, which only stays open
+          // when its action fails
+          throw err;
+        }
+      },
+    });
   }
 
   private _statusStates = memoize(
@@ -1086,6 +1129,10 @@ export class HaMarketplaceDashboard extends LitElement {
     return [
       haStyle,
       css`
+        hass-tabs-subpage-data-table {
+          --data-table-group-actions-button-size: 36px;
+          --data-table-group-actions-icon-size: 20px;
+        }
         .toolbar-actions {
           display: flex;
           align-items: center;

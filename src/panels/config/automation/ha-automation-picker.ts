@@ -122,6 +122,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { turnOnOffEntity } from "../../lovelace/common/entity/turn-on-off-entity";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { renderCategoryGroupActions } from "../category/render-category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -564,6 +565,12 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           .path=${mdiHelpCircleOutline}
           @click=${this._showHelp}
         ></ha-icon-button>
+        ${renderCategoryGroupActions(
+          "automation",
+          this._categories,
+          this._tableSettings.grouping,
+          this._categoryDeleted
+        )}
         <ha-filter-floor-areas
           .type=${"automation"}
           .value=${this._filters["ha-filter-floor-areas"]?.value}
@@ -600,7 +607,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-categories
-          .hass=${this.hass}
           scope="automation"
           .value=${this._filters["ha-filter-categories"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -618,7 +624,6 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-voice-assistants>
         <ha-filter-blueprints
-          .hass=${this.hass}
           .type=${"automation"}
           .value=${this._filters["ha-filter-blueprints"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -932,6 +937,21 @@ class HaAutomationPicker extends SubscribeMixin(LitElement) {
     const label = ev.detail.label;
     this._setFilter("ha-filter-labels", {
       value: [label.label_id],
+      items: undefined,
+    });
+  };
+
+  private _categoryDeleted = (categoryId: string) => {
+    const value = this._filters["ha-filter-categories"]?.value;
+
+    if (!Array.isArray(value) || !value.includes(categoryId)) {
+      return;
+    }
+
+    const remaining = value.filter((id) => id !== categoryId);
+
+    this._setFilter("ha-filter-categories", {
+      value: remaining.length ? remaining : undefined,
       items: undefined,
     });
   };
@@ -1404,7 +1424,7 @@ ${rejected
       scope: "automation",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
-          this.hass,
+          this.hass.callWS,
           "automation",
           values
         );
@@ -1417,7 +1437,7 @@ ${rejected
   private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
-        const label = await createLabelRegistryEntry(this.hass, values);
+        const label = await createLabelRegistryEntry(this.hass.callWS, values);
         this._bulkLabel(label.label_id, "add");
       },
     });

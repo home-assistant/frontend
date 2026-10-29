@@ -473,7 +473,7 @@ export class DialogCloudOnboarding extends LitElement {
   }
 
   private async _refreshStatus() {
-    const status = await fetchCloudStatus(this.hass);
+    const status = await fetchCloudStatus(this.hass.callWS);
     if (status.logged_in) {
       this._cloudStatus = status;
     }

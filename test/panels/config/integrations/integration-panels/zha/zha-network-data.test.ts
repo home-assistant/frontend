@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createZHANetworkChartData } from "../../../../../../src/panels/config/integrations/integration-panels/zha/zha-network-data";
 import type { ZHADevice } from "../../../../../../src/data/zha";
+import { ZHADeviceType } from "../../../../../../src/data/zha";
 import type { HomeAssistant } from "../../../../../../src/types";
 
 const hass = {
@@ -40,12 +41,12 @@ describe("createZHANetworkChartData", () => {
     // allowed to hide the backbone connection.
     const coordinator = device({
       ieee: "coordinator",
-      device_type: "Coordinator",
+      device_type: ZHADeviceType.Coordinator,
       nwk: 0,
     });
     const upstreamRouter = device({
       ieee: "upstream-router",
-      device_type: "Router",
+      device_type: ZHADeviceType.Router,
       nwk: 1,
       neighbors: [
         {
@@ -59,7 +60,7 @@ describe("createZHANetworkChartData", () => {
     });
     const downstreamRouter = device({
       ieee: "downstream-router",
-      device_type: "Router",
+      device_type: ZHADeviceType.Router,
       nwk: 2,
       neighbors: [
         // Real backbone link: weaker signal, correctly flagged as a sibling router
@@ -82,7 +83,7 @@ describe("createZHANetworkChartData", () => {
     });
     const childEndDevice = device({
       ieee: "child-end-device",
-      device_type: "EndDevice",
+      device_type: ZHADeviceType.EndDevice,
       nwk: 3,
       neighbors: [
         {
@@ -137,7 +138,7 @@ describe("createZHANetworkChartData", () => {
   it("ranks NoneOfTheAbove above Child, and treats unrecognized relationships as better than PreviousChild", () => {
     const router = device({
       ieee: "router",
-      device_type: "Router",
+      device_type: ZHADeviceType.Router,
       nwk: 1,
       neighbors: [
         {
@@ -158,7 +159,7 @@ describe("createZHANetworkChartData", () => {
     });
     const unknownRelationship = device({
       ieee: "router-2",
-      device_type: "Router",
+      device_type: ZHADeviceType.Router,
       nwk: 2,
       neighbors: [
         {
@@ -203,12 +204,12 @@ describe("createZHANetworkChartData", () => {
     // triggered by device order instead of by LQI.
     const coordinator = device({
       ieee: "coordinator",
-      device_type: "Coordinator",
+      device_type: ZHADeviceType.Coordinator,
       nwk: 0,
     });
     const upstreamRouter = device({
       ieee: "upstream-router",
-      device_type: "Router",
+      device_type: ZHADeviceType.Router,
       nwk: 1,
       neighbors: [
         {
@@ -222,7 +223,7 @@ describe("createZHANetworkChartData", () => {
     });
     const downstreamRouter = device({
       ieee: "downstream-router",
-      device_type: "Router",
+      device_type: ZHADeviceType.Router,
       nwk: 2,
       neighbors: [
         {
@@ -243,7 +244,7 @@ describe("createZHANetworkChartData", () => {
     });
     const childEndDevice = device({
       ieee: "child-end-device",
-      device_type: "EndDevice",
+      device_type: ZHADeviceType.EndDevice,
       nwk: 3,
       neighbors: [
         {

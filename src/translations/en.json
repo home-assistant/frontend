@@ -99,6 +99,7 @@
         "turn_on": "Turn on",
         "turn_off": "Turn off",
         "toggle": "Toggle",
+        "value": "Value",
         "entity_not_found": "Entity not found"
       },
       "alarm_control_panel": {
@@ -248,7 +249,11 @@
       "toggle-group": {
         "all_off": "All off",
         "all_on": "All on",
-        "some_on": "{on_count} of {total_count} {on_count, plural, one {on} other {on}}"
+        "some_on": "{on_count} of {total_count} {on_count, plural, one {on} other {on}}",
+        "turn_all_on": "Turn all on",
+        "turn_all_off": "Turn all off",
+        "turn_on_name": "[%key:ui::components::entity::entity-toggle::turn_on%]",
+        "turn_off_name": "[%key:ui::components::entity::entity-toggle::turn_off%]"
       },
       "discovered-devices": {
         "title": "Devices discovered",
@@ -302,6 +307,11 @@
       },
       "scene": {
         "activate": "Activate"
+      },
+      "tile": {
+        "icon_activate": "Activate {name}",
+        "icon_press": "Press {name}",
+        "icon_toggle": "[%key:ui::components::entity::entity-toggle::toggle%]"
       },
       "script": {
         "run": "[%key:ui::card::service::run%]",
@@ -514,6 +524,7 @@
       "help": "Help",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
+      "successfully_replaced": "Successfully replaced",
       "deleting_failed": "Deleting failed",
       "error_required": "Required",
       "copied": "Copied",
@@ -754,6 +765,10 @@
           }
         }
       },
+      "log_viewer": {
+        "scroll_down_button": "New logs - Click to scroll",
+        "no_matches": "No log lines match the search"
+      },
       "logbook": {
         "entries_not_found": "No activity found.",
         "automation_triggered": "Triggered",
@@ -930,6 +945,10 @@
         "no_device_class": "No type",
         "expand": "Expand",
         "collapse": "Collapse"
+      },
+      "entity-type-picker": {
+        "add": "Add type",
+        "no_types": "No types available"
       },
       "subpage-data-table": {
         "filters": "Filters",
@@ -1895,10 +1914,12 @@
             "automation_condition": "Create as a new condition",
             "automation_action": "Create as a new action",
             "script_action": "Create as a new action",
-            "scene": "Create as a new scene"
+            "scene": "Create as a new scene",
+            "dashboard": "Add to a dashboard"
           },
           "automations_heading": "Automations",
           "scripts_heading": "Scripts",
+          "dashboards_heading": "Dashboards",
           "app_actions": "App actions",
           "no_actions": "No actions available",
           "action_failed": "Failed to perform the action {error}"
@@ -2136,7 +2157,8 @@
         "faq": "documentation",
         "editor": {
           "name": "Name",
-          "use_device_name": "Use device name",
+          "main_entity": "Main entity of the device ({device})",
+          "main_entity_description": "Represents the device's main function and has no separate name.",
           "change_device_name_link": "change the device name",
           "restore_name": "Restore default name",
           "icon": "Icon",
@@ -2247,8 +2269,8 @@
           "note": "Note: This might not work yet with all integrations.",
           "use_device_area": "Use device area",
           "use_device_area_confirm_title": "Use the area of the device?",
-          "use_device_area_confirm_text": "This entity is in {area}. Because it has no name of its own, it will use the area of its device instead.",
-          "use_device_area_required": "An entity without its own name always uses the area of its device. You can {link} in the device settings.",
+          "use_device_area_confirm_text": "This entity is in {area}. As a main entity, it will use the area of its device instead.",
+          "use_device_area_required": "A main entity always uses the area of its device. You can {link} in the device settings.",
           "change_device_settings": "You can {link} in the device settings",
           "change_device_area_link": "change the device area",
           "configure_state": "{integration} options",
@@ -2749,7 +2771,8 @@
         "other": {
           "title": "Other",
           "my_link": "get My Home Assistant link",
-          "show_shortcuts": "show keyboard shortcuts"
+          "show_shortcuts": "show keyboard shortcuts",
+          "toggle_yaml": "switch between visual and YAML editor"
         }
       }
     },
@@ -3087,6 +3110,10 @@
             "title": "Unable to check for updates",
             "description": "You do not have any integrations that provide updates."
           },
+          "update_integrations_not_loaded": {
+            "title": "[%key:ui::panel::config::updates::no_update_entities::title%]",
+            "description": "The integrations that provide updates are not loaded. Try again later."
+          },
           "check_updates": "Check for updates",
           "no_new_updates": "No new updates found",
           "updates_refreshed": "State of {count} {count, plural,\n  one {update}\n  other {updates}\n} refreshed",
@@ -3173,9 +3200,7 @@
           "gen_image_settings": "Image generation settings",
           "evaluate_header": "Decisions",
           "evaluate_description": "Evaluate questions.",
-          "evaluate_settings": "Decision settings",
-          "allow_automatic_evaluation": "Use decisions in Home Assistant features",
-          "allow_automatic_evaluation_description": "Allow Home Assistant to automatically use the selected decision model to improve built-in features."
+          "evaluate_settings": "Decision settings"
         },
         "mcp": {
           "header": "Model Context Protocol",
@@ -3186,8 +3211,8 @@
           "disable": "[%key:ui::common::disable%]",
           "disable_confirm_title": "Disable the Model Context Protocol server?",
           "disable_confirm_text": "AI agents connected to the server will lose access to Home Assistant.",
-          "your_api_header": "Your MCP API",
-          "apis_header": "Individual MCP APIs",
+          "your_api_header": "Main URL",
+          "apis_header": "Individual URLs",
           "copy_url": "Copy URL",
           "configure": "Configure",
           "error_load": "Failed to load the Model Context Protocol configuration",
@@ -3224,6 +3249,9 @@
           "store": {
             "title": "App store",
             "check_updates": "Check for updates",
+            "checking_updates": "Checking for app updates...",
+            "updates_available": "{count} {count, plural,\n  one {app update}\n  other {app updates}\n} available",
+            "no_updates": "No app updates available",
             "repositories": "Repositories",
             "registries": "Registry credentials",
             "no_results_found": "No results found in {repository}"
@@ -4262,6 +4290,21 @@
               "subscribe_prompt": "Subscribe to an event type above to see events here.",
               "buffer_disclaimer": "Showing the latest {count} events. Older events are discarded as new ones arrive.\n\nTip: Subscribe to a more specific event type, or use the filter to narrow results."
             },
+            "action_history": {
+              "title": "Action history",
+              "action": "Action",
+              "action_id": "Action ID",
+              "targets": "Targets",
+              "cause": "Cause",
+              "time": "Time",
+              "user": "User",
+              "context_id": "Context ID",
+              "data": "Data",
+              "perform_again": "Perform again",
+              "copy_yaml": "Copy as YAML",
+              "no_actions": "No actions were performed in this time range.",
+              "load_failed": "Could not load the action history: {error}"
+            },
             "actions": {
               "title": "Actions",
               "description": "The actions tool allows you to perform any action available in Home Assistant.",
@@ -4574,6 +4617,7 @@
             }
           },
           "delete_source": "Are you sure you want to remove this source?",
+          "save_config_failed": "Failed to save config: {error}",
           "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
           "grid": {
             "title": "Electricity grid",
@@ -4625,7 +4669,10 @@
               "power_from": "Power imported from grid",
               "power_to": "Power exported to grid",
               "helper_sensor_note": "[%key:ui::panel::config::energy::battery::dialog::helper_sensor_note%]",
-              "helper_sensor_in_use": "[%key:ui::panel::config::energy::battery::dialog::helper_sensor_in_use%]"
+              "helper_sensor_in_use": "[%key:ui::panel::config::energy::battery::dialog::helper_sensor_in_use%]",
+              "energy_sensors_needed": "To track the energy you import and export, you need energy sensors.",
+              "imported_energy_name": "{name} imported energy",
+              "exported_energy_name": "{name} exported energy"
             },
             "flow_dialog": {
               "from": {
@@ -4660,7 +4707,23 @@
               "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
               "dont_forecast_production": "Don't forecast production",
               "forecast_production": "Forecast production",
-              "add_forecast": "Add forecast"
+              "add_forecast": "Add forecast",
+              "energy_sensor_needed": "To track your solar production, you need an energy sensor."
+            }
+          },
+          "home": {
+            "title": "Home consumption",
+            "sub": "If you have a meter that measures your whole house consumption, you can configure it here.",
+            "add_home_meter": "Add home meter",
+            "remove_home_meter": "Remove home meter",
+            "edit_home_meter": "Edit home meter",
+            "dialog": {
+              "header": "Configure home consumption",
+              "entity_para": "Pick a sensor which measures home consumption in either of {unit}.",
+              "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
+              "home_energy": "Home energy",
+              "home_power": "Home power",
+              "energy_sensor_needed": "To track your home consumption, you need an energy sensor."
             }
           },
           "battery": {
@@ -4693,8 +4756,11 @@
               "type_two_sensors": "Two sensors",
               "power_from": "Discharge power",
               "power_to": "Charge power",
-              "helper_sensor_note": "Home Assistant will create a helper sensor entity for this option.",
-              "helper_sensor_in_use": "Currently using helper {entity}"
+              "helper_sensor_note": "Home Assistant will create a derived sensor entity for this option.",
+              "helper_sensor_in_use": "Currently using entity {entity}",
+              "energy_sensors_needed": "To track your battery, you need sensors for the energy charged into and discharged from it.",
+              "discharged_energy_name": "{name} discharged energy",
+              "charged_energy_name": "{name} charged energy"
             }
           },
           "gas": {
@@ -4724,7 +4790,10 @@
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "gas_usage": "Gas consumption",
               "gas_flow_rate": "Gas flow rate",
-              "flow_rate_para": "Optionally pick a sensor which measures the gas flow rate in either of {unit}."
+              "flow_rate_para": "Optionally pick a sensor which measures the gas flow rate in either of {unit}.",
+              "flow_rate_no_volume": "Home Assistant cannot calculate the gas volume from this flow rate, so pick a gas sensor above.",
+              "flow_rate_energy_sources": "Your gas sources measure energy, which a flow rate cannot provide, so pick a gas sensor above.",
+              "gas_sensor_needed": "To track your gas consumption, you need a gas sensor."
             }
           },
           "water": {
@@ -4751,7 +4820,9 @@
               "cost_number_input": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_number%]",
               "water_usage": "Water consumption",
               "water_flow_rate": "Water flow rate",
-              "flow_rate_para": "Optionally pick a sensor which measures the water flow rate in either of {unit}."
+              "flow_rate_para": "Optionally pick a sensor which measures the water flow rate in either of {unit}.",
+              "flow_rate_no_volume": "Home Assistant cannot calculate the water volume from this flow rate, so pick a water sensor above.",
+              "water_sensor_needed": "To track your water consumption, you need a water sensor."
             }
           },
           "device_consumption": {
@@ -4770,7 +4841,8 @@
               "selected_stat_intro": "Select the sensor that measures the device's electricity usage in either of {unit}.",
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
-              "no_upstream_devices": "No eligible upstream devices"
+              "no_upstream_devices": "No eligible upstream devices",
+              "energy_sensor_needed": "To track this device, you need an energy sensor."
             }
           },
           "device_consumption_water": {
@@ -4787,8 +4859,36 @@
               "selected_stat_intro": "Select the water sensor that measures the device's water consumption in either of {unit}.",
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a water meter measured by the main water supply), selecting the upstream device prevents duplicate water tracking.",
-              "no_upstream_devices": "No eligible upstream devices"
+              "no_upstream_devices": "No eligible upstream devices",
+              "water_sensor_needed": "To track this device, you need a water sensor.",
+              "flow_rate_no_volume": "[%key:ui::panel::config::energy::water::dialog::flow_rate_no_volume%]"
             }
+          },
+          "integral": {
+            "energy": {
+              "create_title": "{count, plural,\n one {Create energy sensor?}\n other {Create energy sensors?}\n}",
+              "use_title": "{count, plural,\n one {Use existing energy sensor?}\n other {Use existing energy sensors?}\n}",
+              "create_item": "Home Assistant can create {name}, which calculates the energy from {rate}.",
+              "use_item": "{total} already calculates the energy from {rate}.",
+              "sensor_name": "{name} energy"
+            },
+            "gas": {
+              "create_title": "{count, plural,\n one {Create gas sensor?}\n other {Create gas sensors?}\n}",
+              "use_title": "{count, plural,\n one {Use existing gas sensor?}\n other {Use existing gas sensors?}\n}",
+              "create_item": "Home Assistant can create {name}, which calculates the gas volume from {rate}.",
+              "use_item": "{total} already calculates the gas volume from {rate}.",
+              "sensor_name": "{name} gas"
+            },
+            "water": {
+              "create_title": "{count, plural,\n one {Create water sensor?}\n other {Create water sensors?}\n}",
+              "use_title": "{count, plural,\n one {Use existing water sensor?}\n other {Use existing water sensors?}\n}",
+              "create_item": "Home Assistant can create {name}, which calculates the water volume from {rate}.",
+              "use_item": "{total} already calculates the water volume from {rate}.",
+              "sensor_name": "{name} water"
+            },
+            "counting_note": "New sensors start counting now, so earlier values are not included.",
+            "use": "{count, plural,\n one {Use sensor}\n other {Use sensors}\n}",
+            "create_failed": "Failed to create the sensor."
           }
         },
         "helpers": {
@@ -4818,6 +4918,8 @@
             "delete_confirm_title": "Delete helper?",
             "delete_confirm_text": "Are you sure you want to delete {name}?",
             "delete_failed": "Failed to delete helper",
+            "duplicate_name": "{name} (Copy)",
+            "duplicate_failed": "Failed to duplicate helper",
             "no_category_support": "You can't assign a category to this helper",
             "no_category_entity_reg": "To assign a category to a helper it needs to have a unique ID."
           },
@@ -5000,7 +5102,7 @@
           "log_file_disabled_debug_download": {
             "environment": "Debug logging has been disabled, but no log file was downloaded because HA_DISABLE_LOG_FILE is set and Home Assistant is not writing a log file."
           },
-          "scroll_down_button": "New logs - Click to scroll",
+          "scroll_down_button": "[%key:ui::components::log_viewer::scroll_down_button%]",
           "live": "Live",
           "provider_not_found": "Log provider not found",
           "provider_not_available": "Logs for ''{provider}'' are not available on your system.",
@@ -5701,6 +5803,7 @@
               "learn_more": "Learn more about triggers",
               "triggered": "Triggered",
               "add": "Add trigger",
+              "replace_title": "Replace trigger",
               "empty_search": {
                 "global": "No triggers and targets found for {term}",
                 "item": "No triggers found for {term}"
@@ -5715,6 +5818,7 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "Re-order",
               "rename": "Rename",
+              "replace": "[%key:ui::common::replace%]",
               "cut": "Cut",
               "copy": "Copy",
               "paste": "Paste",
@@ -5725,6 +5829,7 @@
               "unsupported_platform": "No visual editor support for platform: {platform}",
               "type_select": "Trigger type",
               "unknown_trigger": "[%key:ui::panel::config::devices::automation::triggers::unknown_trigger%]",
+              "describe_error": "Error in describing trigger: {error}",
               "triggering_event_detail": "Triggering event detail",
               "trigger": "Trigger",
               "copied_to_clipboard": "Trigger copied to clipboard",
@@ -5739,6 +5844,9 @@
                 },
                 "entity": {
                   "label": "Entity"
+                },
+                "event": {
+                  "label": "Event"
                 },
                 "time": {
                   "label": "Time"
@@ -6008,6 +6116,7 @@
               "description": "All conditions added here need to be satisfied for the automation to run. A condition can be satisfied or not at any given time, for example: ''If {user} is home''. You can use building blocks to create more complex conditions.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
+              "replace_title": "Replace condition",
               "empty_search": {
                 "global": "No conditions, blocks and targets found for {term}",
                 "item": "No conditions found for {term}"
@@ -6032,6 +6141,7 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+              "replace": "[%key:ui::common::replace%]",
               "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
               "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
               "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
@@ -6042,6 +6152,7 @@
               "unsupported_condition": "No visual editor support for condition: {condition}",
               "type_select": "Condition type",
               "unknown_condition": "[%key:ui::panel::config::devices::automation::conditions::unknown_condition%]",
+              "describe_error": "Error in describing condition: {error}",
               "condition": "Condition",
               "copied_to_clipboard": "Condition copied to clipboard",
               "cut_to_clipboard": "Condition cut to clipboard",
@@ -6184,6 +6295,7 @@
                   "missing_triggers": "This condition references a trigger that no longer exists. Uncheck it to clear it.",
                   "duplicate_ids": "Some triggers share the same trigger ID. Avoid reusing a trigger ID to group triggers and select multiple triggers here instead.",
                   "duplicate_ids_fix": "Fix",
+                  "duplicate_id": "Duplicate trigger ID",
                   "assign_unique_ids_title": "Fix duplicate trigger IDs?",
                   "assign_unique_ids_description": "Triggers that share a used ID get a unique ID, and conditions using it are updated to match. IDs that nothing uses are removed. Templates or actions that use trigger.id directly may need to be updated.",
                   "description": {
@@ -6208,6 +6320,7 @@
               "description": "All actions added here will be performed in sequence when the automation runs. An action usually controls one of your areas, devices, or entities, for example: 'Turn on the lights'. You can use building blocks to create more complex sequences of actions.",
               "learn_more": "Learn more about actions",
               "add": "Add action",
+              "replace_title": "Replace action",
               "empty_search": {
                 "global": "No actions, blocks and targets found for {term}",
                 "item": "No actions found for {term}"
@@ -6221,6 +6334,7 @@
               "duplicate": "[%key:ui::common::duplicate%]",
               "re_order": "[%key:ui::panel::config::automation::editor::triggers::re_order%]",
               "rename": "[%key:ui::panel::config::automation::editor::triggers::rename%]",
+              "replace": "[%key:ui::common::replace%]",
               "cut": "[%key:ui::panel::config::automation::editor::triggers::cut%]",
               "copy": "[%key:ui::panel::config::automation::editor::triggers::copy%]",
               "paste": "[%key:ui::panel::config::automation::editor::triggers::paste%]",
@@ -6232,6 +6346,7 @@
               "disabled": "Disabled",
               "delete": "[%key:ui::common::delete%]",
               "unsupported_action": "No visual editor support for this action",
+              "describe_error": "Error in describing action: {error}",
               "type_select": "Action type",
               "continue_on_error": "Continue on error",
               "continue_on_error_description": "If this action fails, the next action will still run.",
@@ -7296,7 +7411,7 @@
             "show_more": "+{count} devices not shown"
           },
           "child_devices": {
-            "heading": "Sub-devices",
+            "heading": "Child devices",
             "show_more": "+{count} devices not shown"
           },
           "linked_devices": {
@@ -7364,7 +7479,6 @@
             "notify": "Notifiers",
             "assist": "[%key:ui::panel::lovelace::menu::assist%]",
             "config": "Configuration",
-            "add_entities_lovelace": "Add to dashboard",
             "none": "This device has no entities",
             "show_less": "Show less",
             "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
@@ -7514,6 +7628,16 @@
               "button": "Disable selected",
               "confirm_title": "Do you want to disable {number} {number, plural,\n  one {entity}\n  other {entities}\n}?",
               "confirm_text": "Disabled entities will not be added to Home Assistant."
+            },
+            "expose_selected": {
+              "button": "Expose to voice assistant",
+              "all_assistants": "All assistants",
+              "no_entities": "None of the selected entities can be exposed.",
+              "toast": "Exposed {count} {count, plural,\n  one {entity}\n  other {entities}\n} to {assistants}"
+            },
+            "unexpose_selected": {
+              "button": "Stop exposing to voice assistant",
+              "toast": "Stopped exposing {count} {count, plural,\n  one {entity}\n  other {entities}\n} to {assistants}"
             },
             "restore_entity_id_selected": {
               "button": "Recreate entity IDs of selected",
@@ -7782,8 +7906,7 @@
             "live_log": {
               "title": "Live log",
               "waiting": "Waiting for log messages from {integration}…",
-              "unsupported": "This version of Home Assistant can't stream the log.",
-              "no_matches": "No log lines match the search"
+              "unsupported": "This version of Home Assistant can't stream the log."
             },
             "state": {
               "loaded": "Loaded",
@@ -8283,18 +8406,19 @@
             }
           },
           "add_device_page": {
-            "spinner": "Searching for Zigbee devices…",
+            "spinner": "Waiting for Zigbee devices to join…",
             "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device or {documentation_link} on how to do this.",
             "pairing_mode_link": "the documentation",
-            "discovered_text": "Devices will show up here once discovered.",
-            "no_devices_found": "No devices were found, make sure they are in pairing mode and keep them awake while Home Assistant is searching.",
-            "search_again": "Search again"
+            "discovered_text": "Devices will show up here once they join.",
+            "no_devices_found": "No devices joined. Make sure they are in pairing mode and keep them awake while the network is open for joining.",
+            "search_again": "Try again"
           },
           "device_page": {
             "heading": "Manage Zigbee device",
             "information": "Device information",
             "ieee": "IEEE",
             "nwk": "NWK",
+            "src_id": "Source ID",
             "bindings_error": "Failed to load binding options",
             "no_bindings": "No bindable devices or groups were found",
             "not_found": "Zigbee device not found",
@@ -8390,6 +8514,7 @@
             "coordinator": "Coordinator",
             "router": "Router",
             "end_device": "End device",
+            "green_power": "Green Power",
             "offline": "Offline"
           },
           "device_binding": {
@@ -9224,7 +9349,14 @@
             "failed": "The command failed. Additional information may be available in the logs.",
             "success": "Your device is ready to be added to another Matter platform.",
             "scan_code": "With their app, scan the QR code or enter the sharing code below to finish setup.",
-            "copy_code": "Copy code"
+            "scan_code_add_to_apple_home": "If you use Apple Home on this device, select \"{button}\". Otherwise, scan the QR code or enter the sharing code below in the other app to finish setup.",
+            "scan_code_share_with_app": "If the other app, such as Google Home, is on this device, select \"{button}\". Otherwise, scan the QR code or enter the sharing code below in that app to finish setup.",
+            "copy_code": "Copy code",
+            "add_to_apple_home": "Add to Apple Home",
+            "share_with_app": "Share with app",
+            "share_failed": "Couldn't share the device. Try again, or close this dialog to get a new code.",
+            "share_expired": "This code has expired.",
+            "new_code": "Get new code"
           },
           "lock": {
             "manage": "Manage access",
@@ -9845,11 +9977,18 @@
               "diagnostic": "[%key:ui::panel::config::devices::entities::diagnostic%]"
             }
           },
+          "entities": {
+            "other": "Other",
+            "no_criteria": "Pick at least one type and one target.",
+            "no_entities": "No entities match this section."
+          },
           "light": {
             "lights": "Lights",
             "other_lights": "Other lights",
             "on": "On",
-            "off": "Off"
+            "off": "Off",
+            "turn_on_area": "Off, turn on all lights in {area}",
+            "turn_off_area": "On, turn off all lights in {area}"
           },
           "security": {
             "devices": "Devices",
@@ -10321,6 +10460,9 @@
             "cut": "Cut",
             "copied_to_clipboard": "Card copied to clipboard",
             "cut_to_clipboard": "Card cut to clipboard",
+            "paste": "Paste",
+            "paste_error": "Error while pasting card",
+            "replaced": "Card replaced",
             "duplicate": "Duplicate",
             "move": "Move to view",
             "move_before": "Move card before",
@@ -10365,6 +10507,8 @@
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
             "copied_to_clipboard": "Badge copied to clipboard",
             "cut_to_clipboard": "Badge cut to clipboard",
+            "paste_error": "Error while pasting badge",
+            "replaced": "Badge replaced",
             "duplicate": "[%key:ui::panel::lovelace::editor::edit_card::duplicate%]",
             "tab_config": "[%key:ui::panel::lovelace::editor::edit_card::tab_config%]",
             "tab_visibility": "[%key:ui::panel::lovelace::editor::edit_card::tab_visibility%]"
@@ -10412,6 +10556,10 @@
           "section": {
             "automatic": "Automatic section",
             "edit_automatic": "Edit automatic section",
+            "convert_to_manual": "Convert to manual section",
+            "convert_to_manual_text": "The section will no longer update on its own. In return, you get full control over it: you can edit each card, reorder them, remove the ones you don't need, and add your own.",
+            "convert_to_manual_confirm": "Convert",
+            "convert_to_manual_error": "Error while converting section",
             "cut": "[%key:ui::panel::lovelace::editor::edit_card::cut%]",
             "paste": "Paste",
             "copied_to_clipboard": "Section copied to clipboard",
@@ -10435,8 +10583,31 @@
           },
           "section_strategy": {
             "common-controls": {
-              "name": "Common controls"
+              "name": "Common controls",
+              "description": "Shows the entities you use most, based on your activity."
+            },
+            "device": {
+              "name": "Device",
+              "description": "Shows the controls and sensors of a device."
+            },
+            "entities": {
+              "name": "Entities",
+              "description": "Shows the entities of the types you pick, like all the lights in a room."
             }
+          },
+          "create_section": {
+            "header": "Create section",
+            "manual": "Manual section",
+            "manual_description": "Start empty and add your own cards.",
+            "automatic": "[%key:ui::panel::lovelace::editor::section::automatic%]",
+            "automatic_description": "Fills itself with cards and stays up to date.",
+            "paste": "Paste section",
+            "paste_description": "Add the section you copied."
+          },
+          "select_section_strategy": {
+            "header": "Choose an automatic section",
+            "built_in": "Built-in sections",
+            "custom": "Community sections"
           },
           "edit_section": {
             "header": "Section configuration",
@@ -10467,6 +10638,10 @@
               "theme": "Theme",
               "theme_helper": "Apply a specific theme to this section, overriding the view theme"
             }
+          },
+          "add_device_card": {
+            "header": "Add {device} to dashboard",
+            "add": "[%key:ui::panel::lovelace::editor::suggest_card::add%]"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -10881,7 +11056,8 @@
                 "solar": "Solar",
                 "battery": "Battery",
                 "gas": "Gas",
-                "water": "Water"
+                "water": "Water",
+                "home": "Home"
               }
             },
             "energy-compare": {
@@ -11303,6 +11479,20 @@
                 }
               }
             },
+            "date": {
+              "name": "Date",
+              "description": "This card displays the current date using your desired size and format.",
+              "date_size": "Date size",
+              "date_sizes": {
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large"
+              },
+              "date_format": "Date format",
+              "date_format_description": "[%key:ui::panel::lovelace::editor::card::clock::date::description%]",
+              "no_background": "[%key:ui::panel::lovelace::editor::card::clock::no_background%]",
+              "time_zone": "[%key:ui::panel::profile::time_zone::dropdown_label%]"
+            },
             "media-control": {
               "name": "Media control",
               "description": "This card is used to display media player entities on an interface with easy to use controls."
@@ -11322,7 +11512,8 @@
               "dark_mode_image": "Dark mode image path",
               "state_filter": "State filter",
               "dark_mode_filter": "Dark mode state filter",
-              "position_hint": "Click on the image preview to position this element",
+              "move_hint": "Drag this element in the image preview, or select the spot where it should go.",
+              "select_hint": "Select an element in the image preview to edit it, or drag it to move it.",
               "element_types": {
                 "state-badge": "State badge",
                 "state-icon": "State icon",
@@ -11913,6 +12104,21 @@
               "entities": "Entities",
               "exclude_entities": "Exclude entities",
               "exclude_entities_helper": "Not shown in this section, even if their category is selected"
+            },
+            "entities": {
+              "title": "Title",
+              "entity_types": "Types to show",
+              "target": "[%key:ui::panel::config::automation::editor::targets%]",
+              "group_by": "Group by",
+              "name": "Display name",
+              "group_by_options": {
+                "none": "No grouping",
+                "area": "Area",
+                "floor": "Floor",
+                "type": "Type"
+              },
+              "include_config_and_diagnostic": "Include configuration and diagnostic entities",
+              "include_config_and_diagnostic_helper": "By default, these only show when you add them as entities or through a label"
             },
             "original-states": {
               "areas": "Areas to display",
@@ -12968,6 +13174,11 @@
         "dialog": {
           "error": {
             "title": "Error"
+          },
+          "dismiss_new": {
+            "title": "Dismiss new repositories?",
+            "text": "{count, plural,\n  one {The new repository will no longer be marked as new.}\n  other {The {count} new repositories will no longer be marked as new.}\n}",
+            "confirm": "Dismiss"
           },
           "reload": {
             "description": "You need to reload your browser for the updated resources to be used.",

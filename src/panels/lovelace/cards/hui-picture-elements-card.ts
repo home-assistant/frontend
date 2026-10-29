@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-card";
@@ -16,12 +17,11 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import type { LovelaceElement, LovelaceElementConfig } from "../elements/types";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
+import { PICTURE_ELEMENTS_EDITOR_BRIDGE } from "./picture-elements/editor-bridge";
+import { PictureElementsEditorPreviewController } from "./picture-elements/editor-preview-controller";
 import type { HitTarget } from "./picture-elements/nearest-hit";
 import { pickNearestTarget } from "./picture-elements/nearest-hit";
-import {
-  PREVIEW_CLICK_CALLBACK,
-  type PictureElementsCardConfig,
-} from "./types";
+import type { PictureElementsCardConfig } from "./types";
 import type { PersonEntity } from "../../../data/person";
 
 // Point/text elements whose pointer gestures are routed to the nearest target
@@ -56,6 +56,15 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   @state() private _elements?: LovelaceElement[];
 
   @query("#root") private _root?: HTMLElement;
+
+  private _editorPreview = new PictureElementsEditorPreviewController(
+    this,
+    () => ({
+      root: this._root,
+      elements: this._elements,
+      configs: this._config?.elements,
+    })
+  );
 
   public static getStubConfig(
     hass: HomeAssistant,
@@ -111,6 +120,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+    this._editorPreview.bridge = config[PICTURE_ELEMENTS_EDITOR_BRIDGE];
 
     this._elements = config.elements.map((element) => {
       const cardElement = this._createElement(element);
@@ -277,7 +287,24 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       <ha-card .header=${this._config.title}>
         <div
           id="root"
+          class=${classMap({
+            editing: this._editorPreview.editing,
+            dragging: this._editorPreview.dragging,
+          })}
           .actionHandler=${actionHandler({ resolve: this._resolveGesture })}
+          @pointerdown=${this._editorPreview.pointerDown}
+          @pointermove=${this._editorPreview.pointerMove}
+          @pointerup=${this._editorPreview.pointerUp}
+          @pointercancel=${this._editorPreview.pointerCancel}
+          @lostpointercapture=${this._editorPreview.pointerCancel}
+          @keydown=${this._editorPreview.keyDown}
+          @mousedown=${this._editorPreview.blockAction}
+          @click=${this._editorPreview.blockAction}
+          @dblclick=${this._editorPreview.blockAction}
+          @contextmenu=${this._editorPreview.blockAction}
+          @dragstart=${this._editorPreview.blockAction}
+          @touchstart=${this._editorPreview.blockTouch}
+          @touchend=${this._editorPreview.blockTouch}
         >
           <hui-image
             .hass=${this.hass}
@@ -290,7 +317,6 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
             .aspectRatio=${this._config.aspect_ratio}
             .darkModeFilter=${this._config.dark_mode_filter}
             .darkModeImage=${darkModeImage}
-            @click=${this._handleImageClick}
           ></hui-image>
           ${this._elements}
         </div>
@@ -306,6 +332,32 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     .element {
       position: absolute;
       transform: translate(-50%, -50%);
+    }
+
+    .editing .element {
+      cursor: pointer;
+    }
+
+    .editing .element.movable {
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .editing.dragging,
+    .editing.dragging .element {
+      cursor: grabbing;
+    }
+
+    @media (hover: hover) {
+      .editing .element:hover {
+        outline: 1px dashed var(--primary-color);
+      }
+    }
+
+    .editing .element.selected,
+    .editing .selected .element {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
     }
 
     ha-card {
@@ -345,19 +397,6 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     this._elements = this._elements!.map((curCardEl) =>
       curCardEl === elToReplace ? newCardEl : curCardEl
     );
-  }
-
-  private _handleImageClick(ev: MouseEvent): void {
-    if (!this.preview || !this._config?.[PREVIEW_CLICK_CALLBACK]) {
-      return;
-    }
-
-    const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = ((ev.clientX - rect.left) / rect.width) * 100;
-    const y = ((ev.clientY - rect.top) / rect.height) * 100;
-
-    // only the edited card has this callback
-    this._config[PREVIEW_CLICK_CALLBACK](x, y);
   }
 }
 

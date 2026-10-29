@@ -1,6 +1,5 @@
-import type { HassEntity } from "home-assistant-js-websocket";
+import type { HassEntities, HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
-import type { HomeAssistant } from "../../types";
 import { stringCompare } from "../string/compare";
 import { computeDomain } from "./compute_domain";
 import { computeStateDomain } from "./compute_state_domain";
@@ -248,7 +247,8 @@ const FIXED_DOMAIN_ATTRIBUTE_STATES = {
 };
 
 export const getStatesDomain = (
-  hass: HomeAssistant,
+  states: HassEntities,
+  language: string,
   domain: string,
   attribute?: string | undefined
 ): string[] => {
@@ -274,15 +274,13 @@ export const getStatesDomain = (
     case "person":
       if (!attribute) {
         result.push(
-          ...Object.entries(hass.states)
+          ...Object.entries(states)
             .filter(
               ([entityId]) =>
                 computeDomain(entityId) === "zone" && entityId !== "zone.home"
             )
             .map(([_entityId, stateObj]) => computeZoneTrackerState(stateObj))
-            .sort((zone1, zone2) =>
-              stringCompare(zone1, zone2, hass.locale.language)
-            )
+            .sort((zone1, zone2) => stringCompare(zone1, zone2, language))
         );
       }
       break;
@@ -370,23 +368,24 @@ export const getValueAttribute = (
 ): string | undefined => DOMAIN_VALUE_ATTRIBUTES[domain]?.[optionsAttribute];
 
 export const getStates = (
-  hass: HomeAssistant,
-  state: HassEntity,
+  states: HassEntities,
+  language: string,
+  stateObj: HassEntity,
   attribute: string | undefined = undefined
 ): string[] => {
-  const domain = computeStateDomain(state);
+  const domain = computeStateDomain(stateObj);
   const result: string[] = [];
 
   // Fixed values based on a domain
-  result.push(...getStatesDomain(hass, domain, attribute));
+  result.push(...getStatesDomain(states, language, domain, attribute));
 
   // Dynamic values based on the entities
   const optionsAttribute = getOptionsAttribute(domain, attribute);
   if (optionsAttribute) {
-    const options = state.attributes[optionsAttribute];
+    const options = stateObj.attributes[optionsAttribute];
     // Sensors only expose their options when their device class is `enum`.
     const enumSensor =
-      domain !== "sensor" || state.attributes.device_class === "enum";
+      domain !== "sensor" || stateObj.attributes.device_class === "enum";
     if (enumSensor && Array.isArray(options)) {
       result.push(...options);
     }

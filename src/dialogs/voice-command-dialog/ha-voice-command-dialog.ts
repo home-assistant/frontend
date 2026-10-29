@@ -221,7 +221,7 @@ export class HaVoiceCommandDialog extends LitElement {
       return;
     }
     const { pipelines, preferred_pipeline } = await listAssistPipelines(
-      this.hass
+      this.hass.callWS
     );
     this._pipelines = pipelines;
     this._preferredPipeline = preferred_pipeline || undefined;

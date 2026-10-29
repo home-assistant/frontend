@@ -30,6 +30,7 @@ import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import type { HassConfig } from "home-assistant-js-websocket";
+import { LegendFitController } from "../../common/controllers/legend-fit-controller";
 import { consume } from "../../common/decorators/consume";
 import { ensureArray } from "../../common/array/ensure-array";
 import { getAllGraphColors } from "../../common/color/colors";
@@ -71,8 +72,6 @@ import { downSampleLineData } from "./down-sample";
 import { wrapLitTooltipFormatter } from "./lit-tooltip-formatter";
 
 export const MIN_TIME_BETWEEN_UPDATES = 60 * 5 * 1000;
-const LEGEND_OVERFLOW_LIMIT = 10;
-const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 const DOUBLE_TAP_TIME = 300;
 // echarts' own default, restored when switching back from touch input
 const DEFAULT_TOOLTIP_TRIGGER_ON = "mousemove|click|mousewheel";
@@ -291,6 +290,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _pendingUpdate?: Set<PropertyKey>;
 
   private _legendItemCount?: number;
+
+  private _legendFit = new LegendFitController(this);
+
+  private _renderedLegendFit?: number;
+
+  private _legendItemsKey?: string;
 
   // Zoom window in percent
   @state() private _zoomRange: [number, number] = [0, 100];
@@ -522,7 +527,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
   }
 
-  protected updated() {
+  protected updated(changedProps: PropertyValues) {
     const room = this._showZoomSlider();
     if (this.chart && room !== this._zoomSliderRoom) {
       this._zoomSliderRoom = room;
@@ -536,6 +541,24 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         this.chart.resize();
       } else {
         this.chart.setOption({ grid: this._getGridOption() });
+      }
+    }
+    if (this.chart && this._legendFit.fit !== this._renderedLegendFit) {
+      // Within a fixed height the host does not resize when the legend does.
+      this._shouldResizeChart = true;
+      this._resizeChartIfNeeded();
+    }
+    this._renderedLegendFit = this._legendFit.fit;
+    if (changedProps.has("options") || changedProps.has("data")) {
+      // New values keep the widest widths, but other items are fitted afresh
+      const legendItemsKey = JSON.stringify(
+        this._getLegendItems()?.map((item) =>
+          typeof item === "string" ? item : [item.id, item.name]
+        )
+      );
+      if (legendItemsKey !== this._legendItemsKey) {
+        this._legendItemsKey = legendItemsKey;
+        this._legendFit.refit();
       }
     }
   }
@@ -651,20 +674,15 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       }
     }
 
-    const overflowLimit = this._isMobileSize
-      ? LEGEND_OVERFLOW_LIMIT_MOBILE
-      : LEGEND_OVERFLOW_LIMIT;
+    const fit = this._legendFit.fit ?? items.length;
     return html`<div
       class=${classMap({
         "chart-legend": true,
         "multiple-items": items.length > 1,
       })}
     >
-      <ul>
+      <ul ${this._legendFit.target()}>
         ${items.map((item, index) => {
-          if (!this.expandLegend && index >= overflowLimit) {
-            return nothing;
-          }
           let itemStyle: Record<string, any> = {};
           let value = "";
           let noLabelClick = false;
@@ -693,7 +711,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             @pointerleave=${this._legendPointerCancel}
             @pointercancel=${this._legendPointerCancel}
             @contextmenu=${this._legendContextMenu}
-            class=${classMap({ hidden: this._hiddenDatasets.has(id) })}
+            class=${classMap({
+              hidden: this._hiddenDatasets.has(id),
+              overflow: !this.expandLegend && index >= fit,
+            })}
           >
             <button
               type="button"
@@ -729,8 +750,13 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
           </li>`;
         })}
         ${
-          items.length > overflowLimit
-            ? html`<li>
+          items.length
+            ? html`<li
+                class=${classMap({
+                  "legend-more": true,
+                  overflow: fit >= items.length,
+                })}
+              >
                 <ha-assist-chip
                   @click=${this._toggleExpandedLegend}
                   filled
@@ -741,7 +767,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
                         )
                       : `${this._i18n.localize(
                           "ui.components.history_charts.expand_legend"
-                        )} (${items.length - overflowLimit})`
+                        )} (${items.length - fit})`
                   }
                 >
                   <ha-svg-icon
@@ -943,6 +969,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (zoomStart !== 0 || zoomEnd !== 100) {
         this.zoom(zoomStart, zoomEnd, true);
       }
+      fireEvent(this, "chart-setup");
     } finally {
       this._loading = false;
       this._applyDeferredWork();
@@ -1270,6 +1297,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       },
       bar: { itemStyle: { barBorderWidth: 1.5 } },
       graph: {
+        itemStyle: {
+          borderColor: style.getPropertyValue("--primary-text-color"),
+          borderWidth: 0,
+        },
         label: {
           color: style.getPropertyValue("--primary-text-color"),
           textBorderColor,
@@ -2166,6 +2197,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       color: var(--primary-text-color);
     }
     .chart-legend ul {
+      position: relative;
       margin: 0;
       padding: 0;
       display: flex;
@@ -2187,6 +2219,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     .chart-legend.multiple-items li:has(.value) {
       max-width: 300px;
+    }
+    .chart-legend li.overflow {
+      position: absolute;
+      visibility: hidden;
     }
     .chart-legend .hidden {
       color: var(--secondary-text-color);
@@ -2287,5 +2323,6 @@ declare global {
       end: number;
     };
     "chart-sankeyroam": { zoom: number };
+    "chart-setup": undefined;
   }
 }

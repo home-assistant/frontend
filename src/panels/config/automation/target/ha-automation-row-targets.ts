@@ -170,10 +170,10 @@ export class HaAutomationRowTargets extends LitElement {
     }
     this._loadingCompositeSplits = true;
     try {
-      this._compositeSplits = await fetchDeviceCompositeSplits({
-        connection: this._connection.connection,
-        callWS: this._api.callWS,
-      });
+      this._compositeSplits = await fetchDeviceCompositeSplits(
+        this._connection.connection,
+        this._api.callWS
+      );
     } catch (_err) {
       this._compositeSplits = {};
     } finally {
@@ -195,18 +195,14 @@ export class HaAutomationRowTargets extends LitElement {
       return referencedEntities.length;
     }
 
+    const entityRegistry = hasDeviceFilter
+      ? Object.values(this._registries.entities)
+      : [];
+
     return referencedEntities.filter((entityId) => {
       if (hasEntityFilter) {
         const stateObj = this._states[entityId];
-        if (
-          !entityMeetsTargetSelector(
-            stateObj,
-            targetSelector!,
-            undefined,
-            this._registries.entities,
-            this._registries.devices
-          )
-        ) {
+        if (!entityMeetsTargetSelector(stateObj, targetSelector!)) {
           return false;
         }
       }
@@ -218,7 +214,7 @@ export class HaAutomationRowTargets extends LitElement {
             device &&
             !deviceMeetsTargetSelector(
               this._states,
-              this._registries.entities,
+              entityRegistry,
               device,
               targetSelector!
             )

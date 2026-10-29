@@ -1,3 +1,4 @@
+import deepClone from "deep-clone-simple";
 import type {
   HassEntity,
   HassServiceTarget,
@@ -18,7 +19,12 @@ import {
   devicesInEffectiveArea,
   getDeviceIntegrationLookup,
 } from "./device/device_registry";
+import type {
+  EntityRegistryDisplayEntry,
+  EntityRegistryEntry,
+} from "./entity/entity_registry";
 import type { EntitySources } from "./entity/entity_sources";
+import { getServiceCallEntityIds } from "./service";
 import type { HassServiceTargetWithExclude } from "./target";
 
 export type ThresholdMode = "crossed" | "changed" | "is";
@@ -290,13 +296,12 @@ export const getDurationSelectorUnits = (
   enableMillisecond: !!config?.enable_millisecond,
 });
 
-interface EntitySelectorFilter {
+export interface EntitySelectorFilter {
   integration?: string;
   domain?: string | readonly string[];
   device_class?: string | readonly string[];
   supported_features?: number | [number];
   unit_of_measurement?: string | readonly string[];
-  translation_key?: string | readonly string[];
 }
 
 interface EntitySelectorEntityFilter extends EntitySelectorFilter {
@@ -691,6 +696,7 @@ export interface EntityNameSelector {
   entity_name: {
     entity_id?: string;
     default_name?: EntityNameItem | EntityNameItem[] | string;
+    allow_custom?: boolean;
   } | null;
 }
 
@@ -714,8 +720,15 @@ export const resolveSelectorContext = (
   return context;
 };
 
+export type TargetHass = Pick<HomeAssistant, "states" | "entities" | "devices">;
+
+export type TargetRegistries = Pick<
+  HomeAssistant,
+  "states" | "entities" | "devices" | "areas"
+>;
+
 export const expandLabelTarget = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   labelId: string,
   areas: HomeAssistant["areas"],
   devices: HomeAssistant["devices"],
@@ -744,7 +757,12 @@ export const expandLabelTarget = (
   Object.values(devices).forEach((device) => {
     if (
       device.labels.includes(labelId) &&
-      deviceMeetsTargetSelector(hass.states, entities, device, targetSelector)
+      deviceMeetsTargetSelector(
+        hass.states,
+        Object.values(entities),
+        device,
+        targetSelector
+      )
     ) {
       newDevices.push(device.id);
     }
@@ -769,7 +787,7 @@ export const expandLabelTarget = (
 };
 
 export const expandFloorTarget = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   floorId: string,
   areas: HomeAssistant["areas"],
   targetSelector: TargetSelector
@@ -793,7 +811,7 @@ export const expandFloorTarget = (
 };
 
 export const expandAreaTarget = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   areaId: string,
   devices: HomeAssistant["devices"],
   entities: HomeAssistant["entities"],
@@ -805,7 +823,12 @@ export const expandAreaTarget = (
   // this area counts, a child with a different explicit area does not.
   devicesInEffectiveArea(devices, areaId).forEach((device) => {
     if (
-      deviceMeetsTargetSelector(hass.states, entities, device, targetSelector)
+      deviceMeetsTargetSelector(
+        hass.states,
+        Object.values(entities),
+        device,
+        targetSelector
+      )
     ) {
       newDevices.push(device.id);
     }
@@ -828,7 +851,7 @@ export const expandAreaTarget = (
 };
 
 export const expandDeviceTarget = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   deviceId: string,
   entities: HomeAssistant["entities"],
   targetSelector: TargetSelector
@@ -852,7 +875,7 @@ export const expandDeviceTarget = (
 };
 
 export const areaMeetsTargetSelector = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
   areaId: string,
@@ -860,7 +883,12 @@ export const areaMeetsTargetSelector = (
 ): boolean => {
   const hasMatchingdevice = devicesInEffectiveArea(devices, areaId).some(
     (device) =>
-      deviceMeetsTargetSelector(hass.states, entities, device, targetSelector)
+      deviceMeetsTargetSelector(
+        hass.states,
+        Object.values(entities),
+        device,
+        targetSelector
+      )
   );
   if (hasMatchingdevice) {
     return true;
@@ -884,7 +912,7 @@ export const areaMeetsTargetSelector = (
 
 export const deviceMeetsTargetSelector = (
   states: HomeAssistant["states"],
-  entityRegistry: HomeAssistant["entities"],
+  entityRegistry: EntityRegistryDisplayEntry[] | EntityRegistryEntry[],
   device: DeviceRegistryEntry,
   targetSelector: TargetSelector
 ): boolean => {
@@ -893,7 +921,7 @@ export const deviceMeetsTargetSelector = (
     const deviceIntegrationLookup = filterDevices.some(
       (filterDevice) => filterDevice.integration
     )
-      ? getDeviceIntegrationLookup(Object.values(entityRegistry))
+      ? getDeviceIntegrationLookup(entityRegistry)
       : undefined;
     if (
       !filterDevices.some((filterDevice) =>
@@ -906,17 +934,12 @@ export const deviceMeetsTargetSelector = (
   if (targetSelector.target?.entity) {
     // Only the device's own entities: a child device is reached through the
     // device target itself, so a parent must not match on a child's behalf.
-    const entities = Object.values(entityRegistry).filter(
+    const entities = entityRegistry.filter(
       (reg) => reg.device_id === device.id
     );
     return entities.some((entity) => {
       const entityState = states[entity.entity_id];
-      return entityMeetsTargetSelector(
-        entityState,
-        targetSelector,
-        undefined,
-        entityRegistry
-      );
+      return entityMeetsTargetSelector(entityState, targetSelector);
     });
   }
   return true;
@@ -944,6 +967,105 @@ export const entityMeetsTargetSelector = (
     );
   }
   return true;
+};
+
+export const filterTargetForSelector = (
+  target: HassServiceTargetWithExclude,
+  targetSelector: TargetSelector,
+  registries: TargetRegistries
+): HassServiceTargetWithExclude => {
+  const { states, entities, devices, areas } = registries;
+  const entityIds = getServiceCallEntityIds(undefined, target).filter((id) =>
+    entityMeetsTargetSelector(
+      states[id],
+      targetSelector,
+      undefined,
+      entities,
+      devices
+    )
+  );
+  const deviceIds = ensureArray(target.device_id)?.filter(
+    (id) =>
+      id in devices &&
+      deviceMeetsTargetSelector(
+        states,
+        Object.values(entities),
+        devices[id],
+        targetSelector
+      )
+  );
+  const areaIds = ensureArray(target.area_id)?.filter((id) =>
+    areaMeetsTargetSelector(registries, entities, devices, id, targetSelector)
+  );
+  const floorIds = ensureArray(target.floor_id)?.filter(
+    (id) =>
+      expandFloorTarget(registries, id, areas, targetSelector).areas.length > 0
+  );
+  const labelIds = ensureArray(target.label_id)?.filter((id) => {
+    const expanded = expandLabelTarget(
+      registries,
+      id,
+      areas,
+      devices,
+      entities,
+      targetSelector
+    );
+    return (
+      expanded.areas.length > 0 ||
+      expanded.devices.length > 0 ||
+      expanded.entities.length > 0
+    );
+  });
+  const result: HassServiceTargetWithExclude = {
+    ...(entityIds.length ? { entity_id: entityIds } : {}),
+    ...(deviceIds?.length ? { device_id: deviceIds } : {}),
+    ...(areaIds?.length ? { area_id: areaIds } : {}),
+    ...(floorIds?.length ? { floor_id: floorIds } : {}),
+    ...(labelIds?.length ? { label_id: labelIds } : {}),
+  };
+  // An exclude on its own is not a target, so it only stays while
+  // something is still included.
+  if (target.exclude && Object.keys(result).length) {
+    result.exclude = deepClone(target.exclude);
+  }
+  return result;
+};
+
+interface FieldWithDefault {
+  selector?: object;
+  required?: boolean;
+  default?: unknown;
+}
+
+export const fillFieldDefaults = (
+  values: Record<string, unknown>,
+  fields: [string, FieldWithDefault][],
+  loadDefaults: boolean,
+  skipDefault?: (field: FieldWithDefault) => boolean
+): { values: Record<string, unknown>; changed: boolean } => {
+  const result = { ...values };
+  let changed = false;
+  fields.forEach(([key, field]) => {
+    if (!field.selector || result[key] !== undefined) {
+      return;
+    }
+    if (
+      field.required &&
+      field.default === undefined &&
+      "boolean" in field.selector
+    ) {
+      result[key] = false;
+      changed = true;
+    } else if (
+      loadDefaults &&
+      field.default !== undefined &&
+      !skipDefault?.(field)
+    ) {
+      result[key] = deepClone(field.default);
+      changed = true;
+    }
+  });
+  return { values: result, changed };
 };
 
 export const filterSelectorDevices = (
@@ -991,7 +1113,6 @@ export const filterSelectorEntities = (
     device_class: filterDeviceClass,
     supported_features: filterSupportedFeature,
     unit_of_measurement: filterUnitOfMeasurement,
-    translation_key: filterTranslationKey,
     integration: filterIntegration,
     device: filterDevice,
   } = filterEntity;
@@ -1036,14 +1157,6 @@ export const filterSelectorEntities = (
         ? !filterUnitOfMeasurement.includes(entityUnitOfMeasurement)
         : entityUnitOfMeasurement !== filterUnitOfMeasurement)
     ) {
-      return false;
-    }
-  }
-
-  const filterTranslationKeys = ensureArray(filterTranslationKey) ?? [];
-  if (filterTranslationKeys.length) {
-    const translationKey = entityRegistry?.[entity.entity_id]?.translation_key;
-    if (!translationKey || !filterTranslationKeys.includes(translationKey)) {
       return false;
     }
   }
@@ -1155,7 +1268,6 @@ export const computeCreateDomains = (
     !entityFilter.device_class &&
     !entityFilter.supported_features &&
     !entityFilter.device &&
-    !ensureArray(entityFilter.translation_key)?.length &&
     entityFilter.domain
       ? ensureArray(entityFilter.domain).filter((domain) =>
           isHelperDomain(domain)
@@ -1167,7 +1279,7 @@ export const computeCreateDomains = (
 };
 
 export const resolveEntityIDs = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   targetPickerValue: HassServiceTargetWithExclude,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],
@@ -1208,7 +1320,7 @@ export const resolveEntityIDs = (
 };
 
 const resolveIncludedEntityIDs = (
-  hass: HomeAssistant,
+  hass: TargetHass,
   targetPickerValue: HassServiceTarget,
   entities: HomeAssistant["entities"],
   devices: HomeAssistant["devices"],

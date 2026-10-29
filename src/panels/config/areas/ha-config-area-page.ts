@@ -890,7 +890,7 @@ class HaConfigAreaPage extends LitElement {
     showAreaRegistryDetailDialog(this, {
       entry,
       updateEntry: async (values) =>
-        updateAreaRegistryEntry(this.hass!, entry!.area_id, values),
+        updateAreaRegistryEntry(this.hass!.callWS, entry!.area_id, values),
     });
   }
 
@@ -942,6 +942,7 @@ class HaConfigAreaPage extends LitElement {
 
         :host {
           display: block;
+          height: 100%;
         }
         .container {
           display: flex;

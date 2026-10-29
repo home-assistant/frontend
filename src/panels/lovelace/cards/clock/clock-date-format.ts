@@ -1,5 +1,5 @@
 import { resolveTimeZone } from "../../../../common/datetime/resolve-time-zone";
-import type { HomeAssistant } from "../../../../types";
+import type { FrontendLocaleData } from "../../../../data/translation";
 import type { ClockCardConfig, ClockCardDatePart } from "../types";
 
 type ClockCardSeparatorPart = Extract<
@@ -17,21 +17,22 @@ interface ClockCardDateConfig {
 }
 
 /**
- * Resolves the locale and time zone for a clock card from `hass` and the
- * card's configuration. Applies the optional `time_format` override to the
- * locale and falls back to the user's preferred time zone.
+ * Resolves the locale and time zone for a clock card from the user's locale,
+ * the server time zone and the card's configuration. Applies the optional
+ * `time_format` override to the locale and falls back to the user's preferred
+ * time zone.
  */
 export const resolveClockCardLocale = (
-  hass: HomeAssistant,
+  userLocale: FrontendLocaleData,
+  serverTimeZone: string,
   config: Pick<ClockCardConfig, "time_format" | "time_zone">
-): { locale: HomeAssistant["locale"]; timeZone: string } => {
+): { locale: FrontendLocaleData; timeZone: string } => {
   const locale = config.time_format
-    ? { ...hass.locale, time_format: config.time_format }
-    : hass.locale;
+    ? { ...userLocale, time_format: config.time_format }
+    : userLocale;
 
   const timeZone =
-    config.time_zone ||
-    resolveTimeZone(locale.time_zone, hass.config?.time_zone);
+    config.time_zone || resolveTimeZone(locale.time_zone, serverTimeZone);
 
   return { locale, timeZone };
 };

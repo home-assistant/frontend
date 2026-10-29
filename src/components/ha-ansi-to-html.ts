@@ -50,6 +50,8 @@ export class HaAnsiToHtml extends LitElement {
 
   @litState() private _filter = "";
 
+  private _highlight?: Highlight;
+
   // Hidden lines the user chose to show while a filter is set.
   private _expandedLines = new WeakSet<HTMLDivElement>();
 
@@ -58,6 +60,11 @@ export class HaAnsiToHtml extends LitElement {
 
   protected render(): TemplateResult {
     return html`<pre class=${classMap({ wrap: !this.wrapDisabled })}></pre>`;
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._clearHighlight();
   }
 
   protected firstUpdated(_changedProperties: PropertyValues<this>): void {
@@ -362,9 +369,7 @@ export class HaAnsiToHtml extends LitElement {
         line.classList.remove("context");
       });
       numberOfFoundLines = lines.length;
-      if (CSS.highlights) {
-        CSS.highlights.delete("search-results");
-      }
+      this._clearHighlight();
     } else {
       const highlightRanges: Range[] = [];
 
@@ -461,7 +466,8 @@ export class HaAnsiToHtml extends LitElement {
         }
       });
       if (CSS.highlights) {
-        CSS.highlights.set("search-results", new Highlight(...highlightRanges));
+        this._highlight = new Highlight(...highlightRanges);
+        CSS.highlights.set("search-results", this._highlight);
       }
 
       if (this.contextLines && numberOfFoundLines) {
@@ -474,6 +480,16 @@ export class HaAnsiToHtml extends LitElement {
     this._updateExpandButtons([], []);
 
     return !!numberOfFoundLines;
+  }
+
+  private _clearHighlight() {
+    if (
+      this._highlight &&
+      CSS.highlights?.get("search-results") === this._highlight
+    ) {
+      CSS.highlights.delete("search-results");
+    }
+    this._highlight = undefined;
   }
 
   // Filtering runs again for every new log line, so rows for unchanged gaps

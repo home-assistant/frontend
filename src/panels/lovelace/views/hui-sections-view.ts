@@ -30,6 +30,7 @@ import "../components/hui-section-edit-mode";
 import { addSection } from "../editor/config-util";
 import type { LovelacePath } from "../editor/lovelace-path";
 import { getAtPath, moveAtPath } from "../editor/lovelace-path";
+import { showCreateSectionDialog } from "../editor/section-editor/show-create-section-dialog";
 import type { HuiSection } from "../sections/hui-section";
 import {
   renderSectionContainer,
@@ -462,12 +463,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _createSection(): void {
-    const newConfig = addSection(
-      this.lovelace!.config,
-      this.path!,
-      generateDefaultSection(this.hass.localize, true)
-    );
-    this.lovelace!.saveConfig(newConfig);
+    showCreateSectionDialog(this, {
+      lovelace: this.lovelace!,
+      containerPath: this.path!,
+    });
   }
 
   private _sectionMoved(ev: CustomEvent) {

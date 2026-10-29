@@ -16,6 +16,7 @@ export interface AddAutomationElementDialogParams {
   add: (key: string, target?: HassServiceTarget) => void;
   clipboardItem: string | undefined;
   clipboardPasteToastBottomOffset?: number;
+  replacingItemKey?: string;
 }
 
 /** Get the target from the query parameters. */

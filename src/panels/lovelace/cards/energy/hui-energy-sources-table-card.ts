@@ -6,7 +6,10 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
-import { formatNumber } from "../../../../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../../../../common/number/format_number";
 import { shallowEqual } from "../../../../common/util/shallow-equal";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
@@ -49,6 +52,7 @@ const colorPropertyMap = {
   solar: "--energy-solar-color",
   gas: "--energy-gas-color",
   water: "--energy-water-color",
+  home: "--primary-color",
 };
 
 @customElement("hui-energy-sources-table-card")
@@ -71,7 +75,7 @@ export class HuiEnergySourcesTableCard
     return {
       type: "energy-sources-table",
       show_only_totals: false,
-      types: ["grid", "solar", "battery"],
+      types: ["grid", "solar", "battery", "home"],
     };
   }
 
@@ -193,6 +197,19 @@ export class HuiEnergySourcesTableCard
           }
         : undefined;
 
+    const formattedEnergy = formatNumberWithUnit(
+      energy,
+      energyUnit,
+      this._i18n.locale,
+      formatOptions
+    );
+    const formattedCompareEnergy = formatNumberWithUnit(
+      compareEnergy,
+      energyUnit,
+      this._i18n.locale,
+      formatOptions
+    );
+
     const label =
       name ||
       getStatisticLabel(
@@ -238,8 +255,7 @@ export class HuiEnergySourcesTableCard
       ${
         compare
           ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-                ${formatNumber(compareEnergy, this._i18n.locale, formatOptions)}
-                ${energyUnit}
+                ${formattedCompareEnergy}
               </td>
               ${
                 showCosts
@@ -260,7 +276,7 @@ export class HuiEnergySourcesTableCard
           : ""
       }
       <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-        ${formatNumber(energy, this._i18n.locale, formatOptions)} ${energyUnit}
+        ${formattedEnergy}
       </td>
       ${
         showCosts
@@ -294,6 +310,25 @@ export class HuiEnergySourcesTableCard
     isFinalTotal?: boolean,
     formatOptions?: Intl.NumberFormatOptions
   ) {
+    const formattedEnergy =
+      energy === null
+        ? ""
+        : formatNumberWithUnit(
+            energy,
+            energyUnit,
+            this._i18n.locale,
+            formatOptions
+          );
+    const formattedCompareEnergy =
+      compareEnergy === null
+        ? ""
+        : formatNumberWithUnit(
+            compareEnergy,
+            energyUnit,
+            this._i18n.locale,
+            formatOptions
+          );
+
     return html` <tr
       class="mdc-data-table__row ${bulletColor && !isFinalTotal ? "" : "total"}"
     >
@@ -316,15 +351,7 @@ export class HuiEnergySourcesTableCard
       ${
         compare
           ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-                ${
-                  compareEnergy === null
-                    ? ""
-                    : `${formatNumber(
-                        compareEnergy,
-                        this._i18n.locale,
-                        formatOptions
-                      )} ${energyUnit}`
-                }
+                ${formattedCompareEnergy}
               </td>
               ${
                 showCosts
@@ -345,15 +372,7 @@ export class HuiEnergySourcesTableCard
           : ""
       }
       <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-        ${
-          energy === null
-            ? ""
-            : `${formatNumber(
-                energy,
-                this._i18n.locale,
-                formatOptions
-              )} ${energyUnit}`
-        }
+        ${formattedEnergy}
       </td>
       ${
         showCosts
@@ -678,6 +697,28 @@ export class HuiEnergySourcesTableCard
               </tr>
             </thead>
             <tbody class="mdc-data-table__content">
+              ${types.home?.map((source, idx) => {
+                const { hasData, energy, energyCompare } = _extractStatData(
+                  source.stat_energy_to,
+                  null
+                );
+                return hasData
+                  ? this._renderRow(
+                      computedStyles,
+                      "home",
+                      source.stat_energy_to,
+                      idx,
+                      energy,
+                      energyCompare,
+                      "kWh",
+                      null,
+                      null,
+                      showCosts,
+                      compare,
+                      source.name || this._hassConfig.location_name
+                    )
+                  : nothing;
+              })}
               ${_renderSimpleCategory("solar")}
               ${types.battery?.map((source, idx) => {
                 const {

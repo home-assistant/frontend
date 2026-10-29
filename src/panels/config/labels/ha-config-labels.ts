@@ -358,7 +358,7 @@ export class HaConfigLabels extends LitElement {
   private async _createLabel(
     values: LabelRegistryEntryMutableParams
   ): Promise<LabelRegistryEntry> {
-    const newTag = await createLabelRegistryEntry(this.hass, values);
+    const newTag = await createLabelRegistryEntry(this.hass.callWS, values);
     this._labels = [...this._labels, newTag];
     return newTag;
   }
@@ -368,7 +368,7 @@ export class HaConfigLabels extends LitElement {
     values: Partial<LabelRegistryEntryMutableParams>
   ): Promise<LabelRegistryEntry> {
     const updated = await updateLabelRegistryEntry(
-      this.hass,
+      this.hass.callWS,
       selectedLabel.label_id,
       values
     );
@@ -399,7 +399,7 @@ export class HaConfigLabels extends LitElement {
       return false;
     }
     try {
-      await deleteLabelRegistryEntry(this.hass, selectedLabel.label_id);
+      await deleteLabelRegistryEntry(this.hass.callWS, selectedLabel.label_id);
       this._labels = this._labels.filter(
         (label) => label.label_id !== selectedLabel.label_id
       );
@@ -431,7 +431,7 @@ export class HaConfigLabels extends LitElement {
       action: async () => {
         const results = await Promise.allSettled(
           this._selected.map((labelId) =>
-            deleteLabelRegistryEntry(this.hass, labelId)
+            deleteLabelRegistryEntry(this.hass.callWS, labelId)
           )
         );
         const deletedIds = new Set(

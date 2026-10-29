@@ -39,8 +39,7 @@ const playDummyMedia = (viewTitle?: string) => {
   loadRequestData.media.contentId =
     "https://cast.home-assistant.io/images/google-nest-hub.png";
   loadRequestData.media.contentType = "image/jpeg";
-  loadRequestData.media.streamType =
-    "NONE" as framework.messages.StreamType.NONE;
+  loadRequestData.media.streamType = "NONE";
   const metadata = new framework.messages.GenericMediaMetadata();
   metadata.title = viewTitle;
   loadRequestData.media.metadata = metadata;
@@ -91,15 +90,12 @@ options.disableIdleTimeout = true;
 options.customNamespaces = {
   // type definition is wrong, should be "JSON" instead of "json"
   // https://developers.google.com/cast/docs/reference/web_receiver/cast.framework.system#.MessageType
-  [CAST_NS]: "JSON" as framework.system.MessageType.JSON,
+  [CAST_NS]: "JSON",
 };
 
 castContext.addCustomMessageListener(CAST_NS, (ev) => {
   // We received a show Lovelace command, stop media from playing, hide media player and show Lovelace controller
-  if (
-    playerManager.getPlayerState() !==
-    ("IDLE" as framework.messages.PlayerState.IDLE)
-  ) {
+  if (playerManager.getPlayerState() !== "IDLE") {
     playerManager.stop();
   } else {
     showLovelaceController();
@@ -111,46 +107,37 @@ castContext.addCustomMessageListener(CAST_NS, (ev) => {
 
 const playerManager = castContext.getPlayerManager();
 
-playerManager.setMessageInterceptor(
-  "LOAD" as framework.messages.MessageType.LOAD,
-  (loadRequestData) => {
-    if (
-      loadRequestData.media.contentId ===
-      "https://cast.home-assistant.io/images/google-nest-hub.png"
-    ) {
-      return loadRequestData;
-    }
-    // We received a play media command, hide Lovelace and show media player
-    showMediaPlayer();
-    const media = loadRequestData.media;
-    // Special handling if it came from Google Assistant
-    if (media.entity) {
-      media.contentId = media.entity;
-      media.streamType = "LIVE" as framework.messages.StreamType.LIVE;
-      media.contentType = "application/vnd.apple.mpegurl";
-      // type definition is wrong, should be "FMP4" instead of "fmp4"
-      // https://developers.google.com/cast/docs/reference/web_receiver/cast.framework.messages#.HlsVideoSegmentFormat
-      media.hlsVideoSegmentFormat =
-        "FMP4" as framework.messages.HlsVideoSegmentFormat.FMP4;
-    }
+playerManager.setMessageInterceptor("LOAD", (loadRequestData) => {
+  if (
+    loadRequestData.media.contentId ===
+    "https://cast.home-assistant.io/images/google-nest-hub.png"
+  ) {
     return loadRequestData;
   }
-);
-
-playerManager.addEventListener(
-  "MEDIA_STATUS" as framework.events.EventType.MEDIA_STATUS,
-  (event) => {
-    if (
-      event.mediaStatus?.playerState ===
-        ("IDLE" as framework.messages.PlayerState.IDLE) &&
-      event.mediaStatus?.idleReason &&
-      event.mediaStatus?.idleReason !==
-        ("INTERRUPTED" as framework.messages.IdleReason.INTERRUPTED)
-    ) {
-      // media finished or stopped, return to default Lovelace
-      showLovelaceController();
-    }
+  // We received a play media command, hide Lovelace and show media player
+  showMediaPlayer();
+  const media = loadRequestData.media;
+  // Special handling if it came from Google Assistant
+  if (media.entity) {
+    media.contentId = media.entity;
+    media.streamType = "LIVE";
+    media.contentType = "application/vnd.apple.mpegurl";
+    // @ts-expect-error type definition is wrong, should be "FMP4" instead of "fmp4"
+    // https://developers.google.com/cast/docs/reference/web_receiver/cast.framework.messages#.HlsVideoSegmentFormat
+    media.hlsVideoSegmentFormat = "FMP4";
   }
-);
+  return loadRequestData;
+});
+
+playerManager.addEventListener("MEDIA_STATUS", (event) => {
+  if (
+    event.mediaStatus?.playerState === "IDLE" &&
+    event.mediaStatus?.idleReason &&
+    event.mediaStatus?.idleReason !== "INTERRUPTED"
+  ) {
+    // media finished or stopped, return to default Lovelace
+    showLovelaceController();
+  }
+});
 
 castContext.start(options);

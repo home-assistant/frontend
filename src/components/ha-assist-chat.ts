@@ -101,10 +101,10 @@ export class HaAssistChat extends LitElement {
 
   @query("#message-input") private _messageInput!: HaInput;
 
-  @query(".message:last-child")
-  private _lastChatMessage!: LitElement;
+  @query(".message-container:last-child .message")
+  private _lastChatMessage?: LitElement;
 
-  @query(".message:last-child img:last-of-type")
+  @query(".message-container:last-child img:last-of-type")
   private _lastChatMessageImage: HTMLImageElement | undefined;
 
   @state() private _conversation: AssistMessage[] = [];
@@ -446,6 +446,9 @@ ${JSON.stringify(toolCall.result, null, 2)}</pre>
 
   private async _scrollMessagesBottom() {
     const lastChatMessage = this._lastChatMessage;
+    if (!lastChatMessage) {
+      return;
+    }
     if (!lastChatMessage.hasUpdated) {
       await lastChatMessage.updateComplete;
     }

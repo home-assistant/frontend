@@ -1,8 +1,16 @@
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import type { HomeAssistant } from "../../types";
+import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
+import { apiContext, configContext, uiContext } from "../../data/context";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantUI,
+} from "../../types";
 import {
   brandsUrl,
   extractDomainFromBrandUrl,
@@ -15,8 +23,10 @@ const isSvgUrl = (url: string): boolean =>
   /\.svg(\?|#|$)/i.test(url) || url.startsWith("data:image/svg+xml");
 
 const resolveThumbnailURL = (
-  hass: HomeAssistant,
-  thumbnailUrl: string
+  thumbnailUrl: string,
+  darkMode: boolean | undefined,
+  hassUrl: string | undefined,
+  fetchWithAuth: HomeAssistantApi["fetchWithAuth"]
 ): Promise<string> => {
   if (isBrandUrl(thumbnailUrl)) {
     return Promise.resolve(
@@ -24,16 +34,15 @@ const resolveThumbnailURL = (
         {
           domain: extractDomainFromBrandUrl(thumbnailUrl),
           type: "icon",
-          darkOptimized: hass.themes?.darkMode,
+          darkOptimized: darkMode,
         },
-        hass.auth.data.hassUrl
+        hassUrl
       )
     );
   }
   if (thumbnailUrl.startsWith("/")) {
     // Local thumbnails require authentication; fetch and inline as base64.
-    return hass
-      .fetchWithAuth(thumbnailUrl)
+    return fetchWithAuth(thumbnailUrl)
       .then((response) => response.blob())
       .then(
         (blob) =>
@@ -51,9 +60,24 @@ const resolveThumbnailURL = (
 
 @customElement("ha-media-browser-thumbnail")
 export class HaMediaBrowserThumbnail extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public url?: string;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: (ui) => ui?.themes?.darkMode,
+  })
+  private _darkMode?: boolean;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, string | undefined>({
+    transformer: (config) => config?.auth?.data.hassUrl,
+  })
+  private _hassUrl?: string;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @state() private _resolvedUrl?: string;
 
@@ -63,7 +87,11 @@ export class HaMediaBrowserThumbnail extends LitElement {
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
-    if (changedProps.has("url")) {
+    if (
+      changedProps.has("url") ||
+      (this._brand &&
+        (changedProps.has("_darkMode") || changedProps.has("_hassUrl")))
+    ) {
       this._resolve();
     }
   }
@@ -77,7 +105,12 @@ export class HaMediaBrowserThumbnail extends LitElement {
     }
     const requested = this.url;
     try {
-      const resolved = await resolveThumbnailURL(this.hass, requested);
+      const resolved = await resolveThumbnailURL(
+        requested,
+        this._darkMode,
+        this._hassUrl,
+        this._api.fetchWithAuth
+      );
       if (requested !== this.url) return;
       this._resolvedUrl = resolved;
       this._probeSize(resolved);

@@ -31,6 +31,7 @@ const ACTIONS: UiAction[] = [
 const buttonConfigStruct = object({
   type: optional(string()),
   text: optional(string()),
+  label: optional(string()),
   icon: optional(string()),
   color: optional(string()),
   tap_action: optional(supportedActions(actionConfigStruct, ACTIONS)),

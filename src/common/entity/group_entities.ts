@@ -43,7 +43,7 @@ export const computeGroupEntitiesState = (states: HassEntity[]): string => {
 };
 
 export const toggleGroupEntities = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "callService">,
   states: HassEntity[]
 ) => {
   if (!states.length) {

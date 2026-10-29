@@ -4,7 +4,12 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../common/decorators/consume";
 import { AsyncValueTask } from "../common/controllers/async-value-task";
-import { configContext, connectionContext, uiContext } from "../data/context";
+import {
+  brandsAccessTokenContext,
+  configContext,
+  connectionContext,
+  uiContext,
+} from "../data/context";
 import {
   DEFAULT_DOMAIN_ICON,
   domainIcon,
@@ -37,6 +42,11 @@ export class HaDomainIcon extends LitElement {
   @state()
   @consume({ context: uiContext, subscribe: true })
   private _hassUi?: ContextType<typeof uiContext>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
 
   private _iconTask = new AsyncValueTask(this, {
     task: ([icon, connection, config, domain, deviceClass, domainState]) => {

@@ -4,6 +4,7 @@ import {
   formatDateTime,
   formatDateTimeWithSeconds,
   formatDateTimeNumeric,
+  formatShortDateTimeWithSeconds,
   formatDateTimeWithBrowserDefaults,
 } from "../../../src/common/datetime/format_date_time";
 import {
@@ -99,6 +100,43 @@ describe("formatDateTimeWithSeconds", () => {
         demoConfig
       ),
       "November 18, 2017 at 23:12:13"
+    );
+  });
+});
+
+describe("formatShortDateTimeWithSeconds", () => {
+  const dateObj = new Date(2017, 10, 18, 23, 12, 13, 400);
+
+  it("Formats English short date times with seconds", () => {
+    assert.strictEqual(
+      formatShortDateTimeWithSeconds(
+        dateObj,
+        {
+          language: "en",
+          number_format: NumberFormat.language,
+          time_format: TimeFormat.am_pm,
+          date_format: DateFormat.language,
+          time_zone: TimeZone.local,
+          first_weekday: FirstWeekday.language,
+        },
+        demoConfig
+      ),
+      "Nov 18, 11:12:13 PM"
+    );
+    assert.strictEqual(
+      formatShortDateTimeWithSeconds(
+        dateObj,
+        {
+          language: "en",
+          number_format: NumberFormat.language,
+          time_format: TimeFormat.twenty_four,
+          date_format: DateFormat.language,
+          time_zone: TimeZone.local,
+          first_weekday: FirstWeekday.language,
+        },
+        demoConfig
+      ),
+      "Nov 18, 23:12:13"
     );
   });
 });

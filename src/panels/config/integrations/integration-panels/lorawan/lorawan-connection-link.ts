@@ -4,7 +4,11 @@ import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import { isNavigationClick } from "../../../../../common/dom/is-navigation-click";
 import { consume } from "../../../../../common/decorators/consume";
-import { uiContext, connectionContext } from "../../../../../data/context";
+import {
+  brandsAccessTokenContext,
+  connectionContext,
+  uiContext,
+} from "../../../../../data/context";
 import type { LoRaWANDevice } from "../../../../../data/lorawan";
 import { brandsUrl } from "../../../../../util/brands-url";
 
@@ -20,6 +24,11 @@ export class LoRaWANConnectionLink extends LitElement {
   @state()
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
 
   protected render() {
     return html` <a

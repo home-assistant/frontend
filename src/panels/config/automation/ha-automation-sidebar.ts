@@ -23,11 +23,17 @@ import type { DomainManifestLookup } from "../../../data/integration";
 import { isTriggerList } from "../../../data/trigger";
 import type { HomeAssistant } from "../../../types";
 import "./sidebar/ha-automation-sidebar-action";
+import type HaAutomationSidebarAction from "./sidebar/ha-automation-sidebar-action";
 import "./sidebar/ha-automation-sidebar-condition";
+import type HaAutomationSidebarCondition from "./sidebar/ha-automation-sidebar-condition";
 import "./sidebar/ha-automation-sidebar-option";
+import type HaAutomationSidebarOption from "./sidebar/ha-automation-sidebar-option";
 import "./sidebar/ha-automation-sidebar-script-field";
+import type HaAutomationSidebarScriptField from "./sidebar/ha-automation-sidebar-script-field";
 import "./sidebar/ha-automation-sidebar-script-field-selector";
+import type HaAutomationSidebarScriptFieldSelector from "./sidebar/ha-automation-sidebar-script-field-selector";
 import "./sidebar/ha-automation-sidebar-trigger";
+import type HaAutomationSidebarTrigger from "./sidebar/ha-automation-sidebar-trigger";
 
 // The sidebar card header: the dialog header's 48px minimum plus its padding
 const COLLAPSED_SHEET_HEIGHT = 68;
@@ -61,7 +67,19 @@ export default class HaAutomationSidebar extends LitElement {
   @query(".handle")
   private _handleElement?: HTMLDivElement;
 
+  @query(".sidebar-content")
+  private _contentElement?:
+    | HaAutomationSidebarAction
+    | HaAutomationSidebarCondition
+    | HaAutomationSidebarOption
+    | HaAutomationSidebarScriptField
+    | HaAutomationSidebarScriptFieldSelector
+    | HaAutomationSidebarTrigger;
+
   private _resizeStartX = 0;
+
+  // Set when the user switches to YAML, consumed once the sidebar reopens
+  private _focusYamlEditor = false;
 
   private _tinykeysUnsub?: () => void;
 
@@ -72,6 +90,10 @@ export default class HaAutomationSidebar extends LitElement {
       this._bottomSheetElement?.position === "collapsed"
     ) {
       this._bottomSheetElement.snapTo("half");
+    }
+    if (changedProperties.has("sidebarKey") && this._focusYamlEditor) {
+      this._focusYamlEditor = false;
+      this._contentElement?.focusYamlEditor();
     }
     if (changedProperties.has("config") || changedProperties.has("narrow")) {
       if (!this.config || this.narrow) {
@@ -271,6 +293,14 @@ export default class HaAutomationSidebar extends LitElement {
     this._closeSidebar();
   }
 
+  public get canToggleYamlMode(): boolean {
+    return !!this._contentElement?.canToggleYamlMode;
+  }
+
+  public toggleYamlMode() {
+    this._contentElement?.toggleYamlMode();
+  }
+
   private _closeSidebar() {
     this.config?.close(true);
   }
@@ -278,6 +308,9 @@ export default class HaAutomationSidebar extends LitElement {
   private _toggleYamlMode = (
     ev: HASSDomEvent<HASSDomEvents["toggle-yaml-mode"]>
   ) => {
+    // Script field sidebars don't pass the target mode, focusing is a no-op
+    // when the result is the visual editor
+    this._focusYamlEditor = ev.detail?.yamlMode !== false;
     (this.config as ActionSidebarConfig)?.toggleYamlMode(ev.detail?.yamlMode);
   };
 
