@@ -60,11 +60,19 @@
       "extractVersionTemplate": "^v(?<version>.+)$"
     },
     {
+      "description": "Keep gh-actions-lock used in CI up to date",
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.github/workflows/actions-lock\\.yaml$/"],
+      "matchStrings": ["GH_ACTIONS_LOCK_VERSION: (?<currentValue>\\S+)"],
+      "depNameTemplate": "github/gh-actions-lock",
+      "datasourceTemplate": "github-releases"
+    },
+    {
       "description": "Keep Playwright CI container image up to date",
       "customType": "regex",
       "managerFilePatterns": ["/^\\.github/workflows/e2e\\.yaml$/"],
       "matchStrings": [
-        "mcr\\.microsoft\\.com/playwright:(?<currentValue>v\\d+\\.\\d+\\.\\d+-noble)"
+        "mcr\\.microsoft\\.com/playwright:(?<currentValue>v\\d+\\.\\d+\\.\\d+-noble)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"
       ],
       "depNameTemplate": "mcr.microsoft.com/playwright",
       "datasourceTemplate": "docker",

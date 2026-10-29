@@ -1,0 +1,6 @@
+paths:
+  .github/workflows/**/*.{yml,yaml}:
+    ignore:
+      # actionlint doesn't support `$/` self-repository actions yet, remove once it does:
+      # https://github.com/rhysd/actionlint/issues/711
+      - 'specifying action "\$/[^"]+" in invalid format because ref is missing'
