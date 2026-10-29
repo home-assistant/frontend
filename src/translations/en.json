@@ -844,6 +844,12 @@
           "create_helper": "Create a new {domain, select, \n undefined {} \n other {{domain} }\n }helper",
           "unknown": "Unknown entity selected"
         },
+        "entity-action-bar": {
+          "view": "View",
+          "view_entity": "View {name}",
+          "copy_id": "Copy ID",
+          "copy_entity_id": "Copy ID of {name}"
+        },
         "entity-name-picker": {
           "types": {
             "floor": "Floor",

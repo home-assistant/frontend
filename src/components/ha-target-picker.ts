@@ -60,6 +60,7 @@ import {
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { brandsUrl } from "../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
+import "./entity/ha-entity-action-bar";
 import "./ha-button";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
@@ -549,6 +550,15 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           )}
           .getAdditionalItems=${this._getAdditionalItems}
         >
+          ${
+            this._replaceTarget?.type === "entity" &&
+            this.hass.states[this._replaceTarget.id]
+              ? html`<ha-entity-action-bar
+                  slot="footer"
+                  .entityId=${this._replaceTarget.id}
+                ></ha-entity-action-bar>`
+              : nothing
+          }
         </ha-generic-picker>
         ${
           showExclude

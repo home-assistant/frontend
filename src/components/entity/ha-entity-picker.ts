@@ -40,6 +40,7 @@ import type { HaGenericPicker } from "../ha-generic-picker";
 import type { PickerComboBoxSearchFn } from "../ha-picker-combo-box";
 import type { PickerValueRenderer } from "../ha-picker-field";
 import "../ha-svg-icon";
+import "./ha-entity-action-bar";
 import "./state-badge";
 
 const CREATE_ID = "___create-new-entity___";
@@ -481,6 +482,14 @@ export class HaEntityPicker extends LitElement {
         )}
         @value-changed=${this._valueChanged}
       >
+        ${
+          !this.addButton && this.value && this._states[this.value]
+            ? html`<ha-entity-action-bar
+                slot="footer"
+                .entityId=${this.value}
+              ></ha-entity-action-bar>`
+            : nothing
+        }
       </ha-generic-picker>
     `;
   }

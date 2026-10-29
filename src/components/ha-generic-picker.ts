@@ -16,7 +16,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { tinykeys } from "tinykeys";
 import { consume } from "../common/decorators/consume";
-import { fireEvent } from "../common/dom/fire_event";
+import { fireEvent, type HASSDomEvent } from "../common/dom/fire_event";
 import { configContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
@@ -33,6 +33,11 @@ import type {
 } from "./ha-picker-combo-box";
 import "./ha-picker-field";
 import "./ha-svg-icon";
+
+export interface ClosePickerParams {
+  // Runs after the picker is closed
+  afterClose?: () => void;
+}
 
 @customElement("ha-generic-picker")
 export class HaGenericPicker extends PickerMixin(LitElement) {
@@ -133,6 +138,9 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @state() private _popoverMinHeight = 0;
 
   @state() private _openedNarrow = false;
+
+  // Runs once the picker is closed and the browser has restored the focus
+  private _afterClose?: () => void;
 
   @state() private _unknownValue = false;
 
@@ -236,7 +244,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     aria-modal="true"
                     aria-label=${this.ariaLabel || this.label || "Select option"}
                   >
-                    ${this._renderComboBox(true)}
+                    ${this._renderComboBox(true)} ${this._renderFooter()}
                   </ha-bottom-sheet>
                 `
               : html`
@@ -260,7 +268,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     aria-modal="true"
                     aria-label=${this.ariaLabel || this.label || "Select option"}
                   >
-                    ${this._renderComboBox()}
+                    ${this._renderComboBox()} ${this._renderFooter()}
                   </wa-popover>
                 `
             : nothing
@@ -296,6 +304,13 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .noSort=${this.noSort}
       ></ha-picker-combo-box>
     `;
+  }
+
+  // The wrapper keeps the bottom sheet's footer styles off the slotted content.
+  private _renderFooter() {
+    return html`<div>
+      <slot name="footer" @close-picker=${this._handleClosePicker}></slot>
+    </div>`;
   }
 
   private _setUnknownValue = () => {
@@ -384,6 +399,9 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     this._selectedValue = undefined;
     this._unsubscribeTinyKeys?.();
     fireEvent(this, "picker-closed");
+    const afterClose = this._afterClose;
+    this._afterClose = undefined;
+    afterClose?.();
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -423,6 +441,16 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     this._unsubscribeTinyKeys = tinykeys(this, {
       Escape: this._handleEscClose,
     });
+  }
+
+  public close() {
+    this._pickerWrapperOpen = false;
+  }
+
+  private _handleClosePicker(ev: HASSDomEvent<ClosePickerParams | undefined>) {
+    ev.stopPropagation();
+    this._afterClose = ev.detail?.afterClose;
+    this.close();
   }
 
   connectedCallback() {
@@ -540,5 +568,6 @@ declare global {
   interface HASSDomEvents {
     "picker-closed": undefined;
     "picker-opened": undefined;
+    "close-picker": ClosePickerParams | undefined;
   }
 }
