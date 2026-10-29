@@ -454,7 +454,8 @@ class HaConfigAreaPage extends LitElement {
                         </h3>
                         <ha-list-nav
                           .ariaLabel=${this.hass.localize(
-                            "ui.panel.config.areas.assigned_to_area"
+                            "ui.panel.config.areas.related_lists.automations_assigned",
+                            { area: area.name }
                           )}
                         >
                           ${groupedAutomations.map((automation) =>
@@ -475,7 +476,8 @@ class HaConfigAreaPage extends LitElement {
                         </h3>
                         <ha-list-nav
                           .ariaLabel=${this.hass.localize(
-                            "ui.panel.config.areas.targeting_area"
+                            "ui.panel.config.areas.related_lists.automations_targeting",
+                            { area: area.name }
                           )}
                         >
                           ${relatedAutomations.map((automation) =>
@@ -520,7 +522,8 @@ class HaConfigAreaPage extends LitElement {
                         </h3>
                         <ha-list-nav
                           .ariaLabel=${this.hass.localize(
-                            "ui.panel.config.areas.assigned_to_area"
+                            "ui.panel.config.areas.related_lists.scenes_assigned",
+                            { area: area.name }
                           )}
                         >
                           ${groupedScenes.map((scene) =>
@@ -538,7 +541,8 @@ class HaConfigAreaPage extends LitElement {
                         </h3>
                         <ha-list-nav
                           .ariaLabel=${this.hass.localize(
-                            "ui.panel.config.areas.targeting_area"
+                            "ui.panel.config.areas.related_lists.scenes_targeting",
+                            { area: area.name }
                           )}
                         >
                           ${relatedScenes.map((scene) =>
@@ -580,7 +584,8 @@ class HaConfigAreaPage extends LitElement {
                         </h3>
                         <ha-list-nav
                           .ariaLabel=${this.hass.localize(
-                            "ui.panel.config.areas.assigned_to_area"
+                            "ui.panel.config.areas.related_lists.scripts_assigned",
+                            { area: area.name }
                           )}
                         >
                           ${groupedScripts.map((script) =>
@@ -598,7 +603,8 @@ class HaConfigAreaPage extends LitElement {
                         </h3>
                         <ha-list-nav
                           .ariaLabel=${this.hass.localize(
-                            "ui.panel.config.areas.targeting_area"
+                            "ui.panel.config.areas.related_lists.scripts_targeting",
+                            { area: area.name }
                           )}
                         >
                           ${relatedScripts.map((script) =>

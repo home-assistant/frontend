@@ -8,6 +8,7 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/item/ha-list-item-button";
 import "../../../../components/list/ha-list-base";
+import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import { computeEntityEntryName } from "../../../../common/entity/compute_entity_name_display";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import { entryIcon } from "../../../../data/icons";
@@ -150,7 +151,7 @@ export class HaDeviceEntitiesCard extends LitElement {
         "ui.panel.config.devices.entities.hidden"
       )})`;
     }
-    return html`<div role="listitem">
+    return html`<div role="listitem" @keydown=${stopPropagation}>
       ${entityRowElement(entry.entity_id, name, this.hass)}
     </div>`;
   }
