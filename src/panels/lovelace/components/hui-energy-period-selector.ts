@@ -28,7 +28,7 @@ import type { ContextType } from "@lit/context";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import {
@@ -151,6 +151,8 @@ export class HuiEnergyPeriodSelector extends LitElement {
   @state() private _loading = false;
 
   @state() private _loadingLeaving = false;
+
+  @query(".loading-indicator") private _loadingIndicator?: HTMLElement;
 
   private _loadingTimer?: ReturnType<typeof setTimeout>;
 
@@ -387,7 +389,8 @@ export class HuiEnergyPeriodSelector extends LitElement {
                       leaving: this._loadingLeaving,
                     })}
                     size="small"
-                    @transitionend=${this._loadingTransitionEnd}
+                    @transitionend=${this._loadingTransitionDone}
+                    @transitioncancel=${this._loadingTransitionDone}
                   ></ha-spinner>`
                 : nothing
             }
@@ -734,6 +737,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
     clearTimeout(this._loadingTimer);
     if (this._loading) {
       this._loadingLeaving = true;
+      this._removeLoadingIndicatorWithoutTransition();
     }
     this._loading = false;
     this._compare = energyData.startCompare !== undefined;
@@ -772,8 +776,21 @@ export class HuiEnergyPeriodSelector extends LitElement {
     }, 200);
   }
 
-  private _loadingTransitionEnd(ev: TransitionEvent) {
+  private async _removeLoadingIndicatorWithoutTransition() {
+    await this.updateComplete;
+    // No transition starts when the spinner was still at opacity 0
+    this._removeIdleLoadingIndicator();
+  }
+
+  private _loadingTransitionDone(ev: TransitionEvent) {
     if (ev.propertyName === "opacity") {
+      this._removeIdleLoadingIndicator();
+    }
+  }
+
+  private _removeIdleLoadingIndicator() {
+    // Reversing the fade-in cancels a transition while the fade-out runs
+    if (!this._loadingIndicator?.getAnimations().length) {
       this._loadingLeaving = false;
     }
   }
