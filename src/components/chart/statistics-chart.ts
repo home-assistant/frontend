@@ -5,7 +5,7 @@ import type {
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -49,7 +49,7 @@ import type {
   HomeAssistantUI,
 } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
-import type { CustomLegendOption } from "./ha-chart-base";
+import type { CustomLegendOption, HaChartBase } from "./ha-chart-base";
 import "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
@@ -139,6 +139,8 @@ export class StatisticsChart extends LitElement {
     start: number;
     end: number;
   } | null;
+
+  @query("ha-chart-base") private _chartBase?: HaChartBase;
 
   @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
@@ -275,6 +277,10 @@ export class StatisticsChart extends LitElement {
         @legend-label-click=${this._handleLegendLabelClick}
       ></ha-chart-base>
     `;
+  }
+
+  public resetZoom() {
+    this._chartBase?.zoom(0, 100);
   }
 
   private _highlightedChartData = memoizeOne(

@@ -4,13 +4,14 @@ import {
   mdiArrowExpandHorizontal,
   mdiCheck,
   mdiClockOutline,
+  mdiClose,
   mdiContentCopy,
   mdiArrowLeft,
   mdiArrowRight,
   mdiInformationOutline,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDate } from "../../../../common/datetime/format_date";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
@@ -27,6 +28,7 @@ import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/chart/statistics-chart";
+import type { StatisticsChart } from "../../../../components/chart/statistics-chart";
 import "../../../../components/date-picker/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../../../components/date-picker/ha-date-range-picker";
 import "../../../../components/ha-alert";
@@ -91,7 +93,9 @@ const periodStart = (date: Date, period: PreviewPeriod) => {
   return new Date(Math.floor(date.getTime() / periodMs) * periodMs);
 };
 
-const DEFAULT_RANGE_MS = 7 * 24 * 60 * 60 * 1000;
+const HOUR_MS = 60 * 60 * 1000;
+
+const DEFAULT_RANGE_MS = 7 * 24 * HOUR_MS;
 
 const OUTLIER_COUNT = 10;
 
@@ -134,6 +138,8 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
   @state()
   @consume({ context: narrowViewportContext, subscribe: true })
   private _narrow = false;
+
+  @query("statistics-chart") private _chart?: StatisticsChart;
 
   @state() private _start = new Date();
 
@@ -354,6 +360,13 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
         }
         .preventScrimClose=${this._busy || this._correcting}
       >
+        <ha-icon-button
+          slot="headerNavigationIcon"
+          .label=${localize("ui.common.close")}
+          .path=${mdiClose}
+          .disabled=${this._busy}
+          @click=${this.closeDialog}
+        ></ha-icon-button>
         <span slot="headerTitle" class="title">
           ${
             breadcrumb.length
@@ -593,16 +606,27 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
     this._outlierIndex = index;
     // As wide as the graph can go while it still shows 5 minute periods
     const middle = (hour.start + hour.end) / 2;
-    this._start = new Date(middle - MAX_5MINUTE_PREVIEW_MS / 2);
-    this._end = new Date(middle + MAX_5MINUTE_PREVIEW_MS / 2);
-    const fetchId = await this._fetchStatistics();
+    let fetchId = await this._setRange(
+      new Date(middle - MAX_5MINUTE_PREVIEW_MS / 2),
+      new Date(middle + MAX_5MINUTE_PREVIEW_MS / 2)
+    );
+    const hourRows = () =>
+      this._rows.filter(
+        (row) => row.start >= hour.start && row.end <= hour.end
+      );
+    // Five minute periods of that hour can be purged while newer ones remain,
+    // a slightly wider range shows hours instead
+    if (fetchId === this._fetchId && !hourRows().length) {
+      fetchId = await this._setRange(
+        new Date(middle - MAX_5MINUTE_PREVIEW_MS / 2 - HOUR_MS),
+        new Date(middle + MAX_5MINUTE_PREVIEW_MS / 2 + HOUR_MS)
+      );
+    }
     if (fetchId !== this._fetchId) {
       return;
     }
     // The graph can show 5 minute periods, select the largest one in that hour
-    const rows = this._rows.filter(
-      (row) => row.start >= hour.start && row.end <= hour.end
-    );
+    const rows = hourRows();
     if (!rows.length) {
       return;
     }
@@ -950,17 +974,21 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
   }
 
   private _showAllData() {
-    this._start = this._bounds!.first;
-    this._end = this._bounds!.last;
-    this._fetchStatistics();
+    this._setRange(this._bounds!.first, this._bounds!.last);
   }
 
   private _rangeChanged(
     ev: ValueChangedEvent<{ startDate: Date; endDate: Date }>
   ) {
-    this._start = ev.detail.value.startDate;
-    this._end = ev.detail.value.endDate;
-    this._fetchStatistics();
+    this._setRange(ev.detail.value.startDate, ev.detail.value.endDate);
+  }
+
+  // A zoom kept from the previous range could hide the new one
+  private _setRange(start: Date, end: Date) {
+    this._start = start;
+    this._end = end;
+    this._chart?.resetZoom();
+    return this._fetchStatistics();
   }
 
   // Quick loads show no loader, so it does not flash
@@ -1072,9 +1100,10 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
     }
     // Statistics of removed entities can stop long before the default range
     if (moveToLastData && this._bounds.last < this._start) {
-      this._end = this._bounds.last;
-      this._start = new Date(this._end.getTime() - DEFAULT_RANGE_MS);
-      this._fetchStatistics();
+      this._setRange(
+        new Date(this._bounds.last.getTime() - DEFAULT_RANGE_MS),
+        this._bounds.last
+      );
     }
   }
 
@@ -1121,6 +1150,13 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
         "ui.panel.config.tools.tabs.statistics.statistic.adjusted"
       ),
     });
+    // A cached period that overlaps this one at another resolution is stale now
+    for (const key of [...this._adjustedChanges.keys()]) {
+      const [start, end] = key.split("-").map(Number);
+      if (start < row.end && end > row.start) {
+        this._adjustedChanges.delete(key);
+      }
+    }
     this._adjustedChanges.set(periodKey(row), amount);
     if (this._statistics) {
       this._statistics = this._applyAdjustedChanges(this._statistics);
