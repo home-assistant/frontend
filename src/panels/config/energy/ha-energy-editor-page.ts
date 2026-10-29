@@ -46,6 +46,8 @@ export class HaEnergyEditorPage extends PreventUnsavedMixin(LitElement) {
 
   @state() private _status?: EnergyEditorStatus;
 
+  @state() private _deleting = false;
+
   @query(".energy-editor") private _editor?: EnergyEditorElement;
 
   public isDirtyState = false;
@@ -83,7 +85,11 @@ export class HaEnergyEditorPage extends PreventUnsavedMixin(LitElement) {
                     .label=${this.hass.localize("ui.common.menu")}
                     .path=${mdiDotsVertical}
                   ></ha-icon-button>
-                  <ha-dropdown-item value="delete" variant="danger">
+                  <ha-dropdown-item
+                    value="delete"
+                    variant="danger"
+                    .disabled=${!!this._status?.saving || this._deleting}
+                  >
                     <ha-svg-icon slot="icon" .path=${mdiDelete}></ha-svg-icon>
                     ${this.config.delete.label}
                   </ha-dropdown-item>
@@ -106,7 +112,8 @@ export class HaEnergyEditorPage extends PreventUnsavedMixin(LitElement) {
                 .disabled=${
                   !this._status?.dirty ||
                   !this._status.valid ||
-                  this._status.saving
+                  this._status.saving ||
+                  this._deleting
                 }
                 .loading=${!!this._status?.saving}
                 @click=${this._save}
@@ -134,15 +141,25 @@ export class HaEnergyEditorPage extends PreventUnsavedMixin(LitElement) {
   }
 
   private async _handleMenuAction(ev: HaDropdownSelectEvent) {
-    if (
-      ev.detail?.item?.value === "delete" &&
-      (await this.config?.delete?.action())
-    ) {
-      this._leave();
+    if (ev.detail?.item?.value !== "delete" || !this.config?.delete) {
+      return;
+    }
+    // Saving and deleting both write all preferences, so they never overlap
+    this._deleting = true;
+    try {
+      if (await this.config.delete.action()) {
+        this._leave();
+      }
+    } finally {
+      this._deleting = false;
     }
   }
 
   private _leave() {
+    // The user can leave while a save or delete runs
+    if (!this.isConnected) {
+      return;
+    }
     this.isDirtyState = false;
     goBack(this.backPath);
   }
