@@ -467,7 +467,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
                         .endTime=${this._previewEnd}
                         .period=${this._previewPeriod}
                         .selectRange=${this._correcting && !this._isSum}
-                        .highlight=${this._selection ?? null}
+                        .highlight=${this._selection}
                         hide-legend
                         zoom-slider="always"
                         .clickForMoreInfo=${false}
