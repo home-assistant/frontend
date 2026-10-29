@@ -280,6 +280,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .shown=${this._opened}
         .allowCustomValue=${this.allowCustomValue}
         .label=${this.searchLabel}
+        .ariaLabel=${this.ariaLabel || this.label}
         .value=${this._selectedValue ?? this.value}
         @value-changed=${this._valueChanged}
         .rowRenderer=${this.rowRenderer}
