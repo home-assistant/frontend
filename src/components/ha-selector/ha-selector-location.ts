@@ -9,7 +9,10 @@ import type {
   LocationSelectorValue,
 } from "../../data/selector";
 import type { OpenStreetMapPlace } from "../../data/openstreetmap";
-import { searchPlaces } from "../../data/openstreetmap";
+import {
+  formatOpenStreetMapPlace,
+  searchPlaces,
+} from "../../data/openstreetmap";
 import type { HomeAssistant } from "../../types";
 import type { SchemaUnion } from "../ha-form/types";
 import type {
@@ -20,8 +23,8 @@ import "../map/ha-locations-editor";
 import "../ha-form/ha-form";
 import "../ha-alert";
 import "../ha-icon-button";
-import "../ha-list";
-import "../ha-list-item";
+import "../item/ha-list-item-button";
+import "../list/ha-list-base";
 import "../ha-spinner";
 import "../ha-svg-icon";
 import "../input/ha-input";
@@ -110,27 +113,22 @@ export class HaLocationSelector extends LitElement {
       <div class="location-search">
         <ha-input
           label=${this.hass.localize(
-            "ui.panel.page-onboarding.core-config.address_label"
+            "ui.components.selectors.location.address_label"
           )}
-          .disabled=${this.disabled || this._working}
+          .disabled=${this.disabled}
           @input=${this._inputChanged}
-          @keyup=${this._addressSearch}
+          @keydown=${this._addressSearch}
         >
           <ha-svg-icon slot="start" .path=${mdiMagnify}></ha-svg-icon>
 
-          ${
-            this._working
-              ? html`<ha-spinner slot="end" size="small"></ha-spinner>`
-              : html`
-                  <ha-icon-button
-                    slot="end"
-                    .path=${mdiMapSearchOutline}
-                    .label=${this.hass.localize("ui.common.search")}
-                    .disabled=${this.disabled}
-                    @click=${this._searchButtonClicked}
-                  ></ha-icon-button>
-                `
-          }
+          <ha-icon-button
+            slot="end"
+            .path=${mdiMapSearchOutline}
+            .label=${this.hass.localize("ui.common.search")}
+            .disabled=${this.disabled}
+            @click=${this._searchButtonClicked}
+          ></ha-icon-button>
+          ${this._working ? html`<ha-spinner slot="end" size="small"></ha-spinner>` : nothing}
         </ha-input>
 
         ${
@@ -142,24 +140,45 @@ export class HaLocationSelector extends LitElement {
               </ha-alert>`
             : nothing
         }
+        <div
+          class="visually-hidden"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          ${
+            this._working
+              ? this.hass.localize("ui.components.selectors.location.searching")
+              : Array.isArray(this._places)
+                ? this._places.length
+                  ? this.hass.localize(
+                      "ui.components.selectors.location.search_results",
+                      { count: this._places.length }
+                    )
+                  : this.hass.localize(
+                      "ui.components.selectors.location.search_no_results"
+                    )
+                : ""
+          }
+        </div>
         ${
-          Array.isArray(this._places)
+          Array.isArray(this._places) && this._places.length
             ? html`
-                <ha-list activatable>
-                  ${
-                    this._places?.length
-                      ? this._places.map(this._renderPlace)
-                      : html`
-                          <ha-list-item noninteractive>
-                            ${this.hass.localize(
-                              "ui.components.media-browser.search.no_results"
-                            )}
-                          </ha-list-item>
-                        `
-                  }
-                </ha-list>
+                <ha-list-base
+                  aria-label=${this.hass.localize(
+                    "ui.components.selectors.location.search_results_label"
+                  )}
+                >
+                  ${this._places.map(this._renderPlace)}
+                </ha-list-base>
               `
-            : nothing
+            : this._places?.length === 0
+              ? html`<p class="search-no-results">
+                  ${this.hass.localize(
+                    "ui.components.selectors.location.search_no_results"
+                  )}
+                </p>`
+              : nothing
         }
 
         <p class="attribution">
@@ -287,10 +306,11 @@ export class HaLocationSelector extends LitElement {
   };
 
   private _addressSearch(ev: KeyboardEvent) {
-    if (ev.key !== "Enter") {
+    if (ev.key !== "Enter" || ev.isComposing) {
       return;
     }
 
+    ev.preventDefault();
     ev.stopPropagation();
 
     this._searchPlaces(this._input?.value ?? "");
@@ -315,12 +335,7 @@ export class HaLocationSelector extends LitElement {
     this._searchError = false;
 
     try {
-      const places = await searchPlaces(
-        encodeURIComponent(address.trim()),
-        this.hass,
-        true,
-        3
-      );
+      const places = await searchPlaces(address.trim(), this.hass, true, 3);
       if (this._input?.value?.trim() === address.trim()) {
         this._places = places;
       }
@@ -335,45 +350,36 @@ export class HaLocationSelector extends LitElement {
   }
 
   private _renderPlace = (place: OpenStreetMapPlace) => {
-    const primary = [
-      place.name || place.address[place.category],
-      place.address.house_number,
-      place.address.road || place.address.waterway,
-      place.address.village || place.address.town,
-      place.address.suburb || place.address.subdivision,
-      place.address.city || place.address.municipality,
-    ]
-      .filter(Boolean)
-      .join(", ");
-
-    const secondary = [
-      place.address.county ||
-        place.address.state_district ||
-        place.address.region,
-      place.address.state,
-      place.address.country,
-    ]
-      .filter(Boolean)
-      .join(", ");
+    const { primary, secondary } = formatOpenStreetMapPlace(place);
+    const placeType = this.hass.localize(
+      "ui.components.selectors.location.place_type",
+      { type: place.type.replaceAll("_", " ") }
+    );
+    const details = [placeType, secondary].filter(Boolean).join(", ");
+    const title = primary || secondary;
 
     return html`
-      <ha-list-item
+      <ha-list-item-button
         @click=${this._placeSelected}
         .disabled=${this.disabled}
         .placeId=${place.place_id}
-        .twoline=${Boolean(primary && secondary)}
+        .twoline=${Boolean(title && details)}
       >
-        ${primary || secondary}
+        ${title}
         ${
-          primary && secondary
-            ? html`<span slot="secondary">${secondary}</span>`
+          title && details
+            ? html`<span slot="secondary">${details}</span>`
             : nothing
         }
-      </ha-list-item>
+      </ha-list-item-button>
     `;
   };
 
   private async _placeSelected(ev: Event) {
+    if (this.disabled) {
+      return;
+    }
+
     const placeId = (ev.currentTarget as HTMLElement & { placeId: number })
       .placeId;
 
@@ -398,7 +404,7 @@ export class HaLocationSelector extends LitElement {
 
   static styles = css`
     .location-search {
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
     }
 
     .attribution {
@@ -407,24 +413,40 @@ export class HaLocationSelector extends LitElement {
       font-size: var(--ha-font-size-xs);
     }
 
-    ha-list {
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .search-no-results {
+      margin: 0;
+      padding: var(--ha-space-2) var(--ha-space-4);
+      color: var(--secondary-text-color);
+    }
+
+    ha-list-base {
       width: 100%;
       border: 1px solid var(--divider-color);
       box-sizing: border-box;
-      border-top-width: 0;
-      border-bottom-left-radius: var(--mdc-shape-small, 4px);
-      border-bottom-right-radius: var(--mdc-shape-small, 4px);
-      --mdc-list-vertical-padding: 0;
+      border-radius: var(--ha-border-radius-sm, 4px);
+      --ha-list-padding: 0;
     }
 
-    ha-list-item {
+    ha-list-item-button {
       min-height: 56px;
     }
 
     ha-locations-editor {
       display: block;
       --ha-locations-editor-map-height: 400px;
-      margin-bottom: 16px;
+      margin-bottom: var(--ha-space-4);
     }
     p {
       margin-top: 0;

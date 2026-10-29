@@ -31,7 +31,11 @@ import type {
 import type { ConfigUpdateValues } from "../data/core";
 import { detectCoreConfig } from "../data/core";
 import type { OpenStreetMapPlace } from "../data/openstreetmap";
-import { reverseGeocode, searchPlaces } from "../data/openstreetmap";
+import {
+  formatOpenStreetMapPlace,
+  reverseGeocode,
+  searchPlaces,
+} from "../data/openstreetmap";
 import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../types";
 import { onBoardingStyles } from "./styles";
@@ -145,25 +149,8 @@ class OnboardingLocation extends LitElement {
                   ${
                     this._places?.length
                       ? this._places.map((place) => {
-                          const primary = [
-                            place.name || place.address[place.category],
-                            place.address.house_number,
-                            place.address.road || place.address.waterway,
-                            place.address.village || place.address.town,
-                            place.address.suburb || place.address.subdivision,
-                            place.address.city || place.address.municipality,
-                          ]
-                            .filter(Boolean)
-                            .join(", ");
-                          const secondary = [
-                            place.address.county ||
-                              place.address.state_district ||
-                              place.address.region,
-                            place.address.state,
-                            place.address.country,
-                          ]
-                            .filter(Boolean)
-                            .join(", ");
+                          const { primary, secondary } =
+                            formatOpenStreetMapPlace(place);
                           return html`<ha-list-item
                             @click=${this._itemClicked}
                             .placeId=${place.place_id}
