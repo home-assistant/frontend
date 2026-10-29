@@ -1,13 +1,19 @@
-import { mdiDelete, mdiDeleteOff, mdiPlus } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import { mdiDelete, mdiDeleteOff, mdiMenuDown, mdiPlus } from "@mdi/js";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import "../../../components/data-table/ha-data-table";
-import type { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import "../../../components/chips/ha-assist-chip";
+import type {
+  DataTableColumnContainer,
+  SelectionChangedEvent,
+} from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
@@ -30,7 +36,9 @@ import {
 } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-loading-screen";
-import "../../../layouts/hass-subpage";
+import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
+import "../../../layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import type { HomeAssistant, Route } from "../../../types";
 
 interface RepositoryRowData {
@@ -38,7 +46,15 @@ interface RepositoryRowData {
   name: string;
   maintainer: string;
   url: string;
+  selectable: boolean;
 }
+
+const pageTabs: PageNavigation[] = [
+  {
+    translationKey: "ui.panel.config.apps.store.repositories",
+    path: "/config/apps/repositories",
+  },
+];
 
 @customElement("ha-config-apps-repositories")
 export class HaConfigAppsRepositories extends LitElement {
@@ -54,8 +70,27 @@ export class HaConfigAppsRepositories extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _selected: string[] = [];
+
+  @state() private _removing = false;
+
+  @query("hass-tabs-subpage-data-table")
+  private _dataTable?: HaTabsSubpageDataTable;
+
   protected firstUpdated() {
     this._loadData();
+  }
+
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (
+      changedProperties.has("_addon") &&
+      this._addon &&
+      this._addon.addons.some((addon) =>
+        this._selected.includes(addon.repository)
+      )
+    ) {
+      this._dataTable?.clearSelection();
+    }
   }
 
   private _columns = memoizeOne(
@@ -138,12 +173,16 @@ export class HaConfigAppsRepositories extends LitElement {
   );
 
   private _data = memoizeOne(
-    (repos: HassioAddonRepository[]): RepositoryRowData[] =>
+    (
+      repos: HassioAddonRepository[],
+      usedRepositories: string[]
+    ): RepositoryRowData[] =>
       repos.map((repo) => ({
         slug: repo.slug,
         name: repo.name,
         maintainer: repo.maintainer,
         url: repo.url,
+        selectable: !usedRepositories.includes(repo.slug),
       }))
   );
 
@@ -172,30 +211,136 @@ export class HaConfigAppsRepositories extends LitElement {
       this._addon.addons
     );
 
+    const removeLabel = this.hass.localize(
+      "ui.panel.config.apps.repositories.remove_selected"
+    );
+
     return html`
-      <hass-subpage
+      <hass-tabs-subpage-data-table
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
+        .tabs=${pageTabs}
         back-path="/config/apps/available"
-        .header=${this.hass.localize("ui.panel.config.apps.store.repositories")}
+        .columns=${this._columns(this.hass.localize, usedRepositories)}
+        .data=${this._data(repositories, usedRepositories)}
+        .noDataText=${this.hass.localize(
+          "ui.panel.config.apps.repositories.no_repositories"
+        )}
+        id="slug"
+        selectable
+        .selected=${this._selected.length}
+        @selection-changed=${this._handleSelectionChanged}
+        has-fab
       >
-        <ha-data-table
-          .columns=${this._columns(this.hass.localize, usedRepositories)}
-          .data=${this._data(repositories)}
-          .noDataText=${this.hass.localize(
-            "ui.panel.config.apps.repositories.no_repositories"
-          )}
-          id="slug"
-          has-fab
-        ></ha-data-table>
-        <ha-button size="l" @click=${this._showAddRepositoryDialog}>
+        ${
+          this.narrow
+            ? html`<ha-dropdown
+                slot="selection-bar"
+                @wa-select=${this._removeSelected}
+              >
+                <ha-assist-chip
+                  slot="trigger"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_action"
+                  )}
+                >
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${mdiMenuDown}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+                <ha-dropdown-item
+                  value="remove"
+                  .disabled=${!this._selected.length || this._removing}
+                >
+                  ${removeLabel}
+                </ha-dropdown-item>
+              </ha-dropdown>`
+            : html`<ha-assist-chip
+                slot="selection-bar"
+                .label=${removeLabel}
+                .disabled=${!this._selected.length || this._removing}
+                @click=${this._removeSelected}
+              ></ha-assist-chip>`
+        }
+        <ha-button slot="fab" size="l" @click=${this._showAddRepositoryDialog}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.apps.repositories.add")}
         </ha-button>
-      </hass-subpage>
+      </hass-tabs-subpage-data-table>
     `;
   }
+
+  private _handleSelectionChanged = (
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void => {
+    this._selected = ev.detail.value;
+  };
+
+  private _removeSelected = async () => {
+    if (this._removing || !this._repositories) {
+      return;
+    }
+    const selectedRepositories = this._repositories.filter((repo) =>
+      this._selected.includes(repo.slug)
+    );
+    if (!selectedRepositories.length) {
+      return;
+    }
+
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.apps.repositories.remove_selected_title"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.apps.repositories.remove_selected_text",
+        { count: selectedRepositories.length }
+      ),
+      confirmText: this.hass.localize(
+        "ui.panel.config.apps.repositories.remove"
+      ),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      destructive: true,
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    this._removing = true;
+    const failures: string[] = [];
+    try {
+      for (const repo of selectedRepositories) {
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          await removeStoreRepository(this.hass, repo.slug);
+        } catch (err: any) {
+          failures.push(`${repo.name}: ${extractApiErrorMessage(err)}`);
+        }
+      }
+      this._dataTable?.clearSelection();
+      await this._loadData();
+      fireEvent(this, "apps-collection-refresh", { collection: "store" });
+    } finally {
+      this._removing = false;
+    }
+
+    if (failures.length) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.apps.repositories.remove_failed_title"
+        ),
+        text: html`
+          <p>
+            ${this.hass.localize(
+              "ui.panel.config.apps.repositories.remove_failed"
+            )}
+          </p>
+          <pre>${failures.join("\n")}</pre>
+        `,
+      });
+    }
+  };
 
   private async _showAddRepositoryDialog() {
     showPromptDialog(this, {
@@ -261,26 +406,8 @@ export class HaConfigAppsRepositories extends LitElement {
   }
 
   static styles: CSSResultGroup = css`
-    :host {
-      display: block;
-      height: 100%;
-    }
-    ha-data-table {
-      width: 100%;
-      height: 100%;
-      --data-table-border-width: 0;
-    }
     ha-icon-button.delete {
       color: var(--error-color);
-    }
-    ha-button[size="l"] {
-      position: fixed;
-      right: calc(var(--ha-space-4) + var(--safe-area-inset-right));
-      bottom: calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
-      inset-inline-end: calc(var(--ha-space-4) + var(--safe-area-inset-right));
-      inset-inline-start: initial;
-      z-index: 1;
-      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
   `;
 }
