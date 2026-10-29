@@ -1,3 +1,4 @@
+import { navigate } from "../../../common/navigate";
 import type { LovelacePanelConfig } from "../../../data/lovelace";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
@@ -13,8 +14,10 @@ import {
 } from "../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../data/lovelace/config/view";
 import { fetchDashboards } from "../../../data/lovelace/dashboard";
+import { getPanelTitleFromUrlPath, LOVELACE_PANEL } from "../../../data/panel";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../types";
+import { showToast } from "../../../util/toast";
 import { SECTIONS_VIEW_LAYOUT } from "../views/const";
 import { getViewType } from "../views/get-view-type";
 import type { SuggestCardDialogParams } from "./card-editor/show-suggest-card-dialog";
@@ -144,7 +147,22 @@ export const addEntitiesToLovelaceView = async (
         await saveConfig(hass!, viewUrlPath, newConfig);
       } catch (_err: any) {
         alert(hass.localize("ui.panel.lovelace.add_entities.saving_failed"));
+        return;
       }
+      const dashboardPath = viewUrlPath ?? LOVELACE_PANEL;
+      const viewPath = newConfig.views[viewIndex].path ?? viewIndex;
+      showToast(element, {
+        message: {
+          translationKey: "ui.panel.lovelace.add_entities.added",
+          args: {
+            dashboard: getPanelTitleFromUrlPath(hass, dashboardPath) ?? "",
+          },
+        },
+        action: {
+          text: { translationKey: "ui.panel.lovelace.add_entities.open" },
+          action: () => navigate(`/${dashboardPath}/${viewPath}`),
+        },
+      });
     };
 
     const view = config.views[viewIndex];
