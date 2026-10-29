@@ -753,6 +753,8 @@ class ErrorLogCard extends LitElement {
     // The backlog is sent again on every subscription
     this._integrationLines = [];
     this._ansiToHtmlElement?.clear();
+    // Show the skeleton again now the retained lines are gone
+    this.requestUpdate();
 
     // Each subscription starts with the integration's backlog, which are
     // merged in time order with the lines sent meanwhile once all arrived.
