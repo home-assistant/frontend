@@ -59,6 +59,7 @@ export type Selector =
   | LegacyEntitySelector
   | FileSelector
   | IconSelector
+  | ImageRegionSelector
   | LabelSelector
   | LanguageSelector
   | LocationSelector
@@ -363,6 +364,14 @@ export interface IconSelector {
   icon: {
     placeholder?: string;
     fallbackPath?: string;
+  } | null;
+}
+
+export interface ImageRegionSelector {
+  image_region: {
+    entity_id?: string;
+    min_points?: number;
+    max_points?: number;
   } | null;
 }
 

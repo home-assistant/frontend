@@ -618,6 +618,29 @@
             "signed_positive": "+{duration}"
           }
         },
+        "image_region": {
+          "add_corner": "Add corner",
+          "add_corner_between": "Add corner between corner {first} and corner {second}",
+          "add_region": "Add region",
+          "clear": "Clear region",
+          "corner": "Corner {number}",
+          "corner_help": "Use the arrow keys to move the corner, and hold Shift for larger steps. Press Delete to remove it.",
+          "corner_position": "X {x}%, Y {y}%",
+          "draw_hint": "Drag on the image to draw a region.",
+          "edit_hint": "Drag the corners or the region to move them. Select the dot on an edge to add a corner.",
+          "image_failed": "The image could not be loaded.",
+          "invalid_value": "This region can't be shown here. Use YAML mode to change it, or clear it.",
+          "no_image": "No image to show. You can still draw the region.",
+          "refresh_image": "Refresh image",
+          "remove_corner": "Remove corner {number}",
+          "validation": {
+            "max_points": "The region can have at most {max} corners.",
+            "min_points": "The region needs at least {min} corners.",
+            "required": "Draw a region on the image."
+          },
+          "x": "X",
+          "y": "Y"
+        },
         "location": {
           "latitude": "[%key:ui::panel::config::zone::detail::latitude%]",
           "longitude": "[%key:ui::panel::config::zone::detail::longitude%]",
