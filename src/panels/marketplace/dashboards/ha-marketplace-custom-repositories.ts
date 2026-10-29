@@ -145,16 +145,15 @@ export class HaMarketplaceCustomRepositories extends LitElement {
   );
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
-    if (changedProperties.has("marketplace") && this._selected.length) {
-      const selectable = new Set(
-        this.marketplace.repositories.flatMap((repository) =>
-          repository.installed ? [] : [repository.id]
-        )
-      );
-      const selected = this._selected.filter((id) => selectable.has(id));
-      if (selected.length !== this._selected.length) {
-        this._selected = selected;
-      }
+    if (
+      changedProperties.has("marketplace") &&
+      this._selected.length &&
+      this.marketplace.repositories.some(
+        (repository) =>
+          repository.installed && this._selected.includes(repository.id)
+      )
+    ) {
+      this._dataTable.clearSelection();
     }
   }
 

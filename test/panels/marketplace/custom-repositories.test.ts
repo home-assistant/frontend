@@ -142,6 +142,36 @@ describe("ha-marketplace-custom-repositories", () => {
   });
 
   it.each([
+    { name: "clears it when one becomes installed", installed: true, calls: 1 },
+    { name: "keeps it otherwise", installed: false, calls: 0 },
+  ])(
+    "watches the selection on refresh, $name",
+    async ({ installed, calls }) => {
+      const page = await openPage([
+        repository({ id: "1" }),
+        repository({ id: "2" }),
+      ]);
+      const clearSelection = vi.fn();
+      table(page).clearSelection = clearSelection;
+      table(page).dispatchEvent(
+        new CustomEvent("selection-changed", { detail: { value: ["1"] } })
+      );
+      await page.updateComplete;
+
+      page.marketplace = {
+        ...page.marketplace,
+        repositories: [
+          repository({ id: "1", installed }),
+          repository({ id: "2" }),
+        ],
+      };
+      await page.updateComplete;
+
+      expect(clearSelection).toHaveBeenCalledTimes(calls);
+    }
+  );
+
+  it.each([
     { name: "a chip on wide screens", narrow: false, tag: "ha-assist-chip" },
     {
       name: "an action menu on narrow screens",
