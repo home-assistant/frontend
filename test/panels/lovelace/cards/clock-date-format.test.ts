@@ -341,33 +341,31 @@ describe("clock-date-format", () => {
     });
   });
 
-  it("matches date fields that a language formats with a suffix", () => {
+  it("drops a separator that a language already adds to the field", () => {
     assert.deepEqual(getClockCardDatePresetParts("short", "ja"), [
       "year-numeric",
-      "separator-slash",
       "month-2-digit",
-      "separator-slash",
       "day-2-digit",
     ]);
-    assert.deepEqual(
-      getClockCardDatePresetParts("short", "ko").filter(
-        (part) => !part.startsWith("separator-")
-      ),
-      ["year-2-digit", "month-numeric", "day-numeric"]
-    );
-  });
-
-  it("matches separators that a right-to-left language marks", () => {
-    assert.deepEqual(getClockCardDatePresetParts("short", "ar-EG"), [
-      "day-numeric",
-      "separator-slash",
+    assert.deepEqual(getClockCardDatePresetParts("short", "ko"), [
+      "year-2-digit",
       "month-numeric",
-      "separator-slash",
+      "day-numeric",
+    ]);
+    assert.deepEqual(getClockCardDatePresetParts("short", "cs"), [
+      "day-2-digit",
+      "month-2-digit",
+      "separator-dot",
+      "year-2-digit",
+    ]);
+    assert.deepEqual(getClockCardDatePresetParts("short", "nb"), [
+      "day-2-digit",
+      "month-2-digit",
       "year-numeric",
     ]);
   });
 
-  it("prefers the standalone month width over the one next to a day", () => {
+  it("keeps numeric months numeric and separators around direction marks", () => {
     assert.deepEqual(getClockCardDatePresetParts("short", "es"), [
       "day-numeric",
       "separator-slash",
@@ -376,12 +374,19 @@ describe("clock-date-format", () => {
       "year-2-digit",
     ]);
     assert.include(getClockCardDatePresetParts("short", "ga"), "month-numeric");
+    assert.deepEqual(getClockCardDatePresetParts("short", "ar"), [
+      "day-numeric",
+      "separator-slash",
+      "month-numeric",
+      "separator-slash",
+      "year-numeric",
+    ]);
   });
 
-  it("skips separators a part already renders", () => {
-    assert.deepEqual(getClockCardDatePresetParts("short", "nb"), [
-      "day-2-digit",
-      "month-2-digit",
+  it("only matches separators exactly", () => {
+    assert.deepEqual(getClockCardDatePresetParts("long", "de"), [
+      "day-numeric",
+      "month-long",
       "year-numeric",
     ]);
   });

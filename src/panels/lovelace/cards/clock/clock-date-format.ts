@@ -367,7 +367,8 @@ export const getClockCardDatePresetParts = (
 
   // Some languages, such as Polish and Russian, inflect the month next to a
   // day ("5 stycznia"), so it differs from the standalone form ("styczeń").
-  const formatMonthWithDay = (part: ClockCardValuePart) =>
+  // Only textual months inflect.
+  const formatMonthWithDay = (part: "month-long" | "month-short") =>
     formatUtcField(
       new Intl.DateTimeFormat(language, {
         ...DATE_PART_OPTIONS[part],
@@ -376,6 +377,22 @@ export const getClockCardDatePresetParts = (
       }),
       "month"
     );
+
+  // A field that a language formats with its own punctuation, such as "5."
+  // for a Czech day or "2026年" for a Japanese year, already carries the
+  // separator next to it.
+  const hasAffix = (part: ClockCardValuePart, side: "start" | "end") => {
+    const fieldParts = getDatePartFormatter(
+      part,
+      language,
+      "UTC"
+    ).formatToParts(PRESET_REFERENCE_DATE);
+
+    return (
+      fieldParts[side === "start" ? 0 : fieldParts.length - 1]?.type ===
+      "literal"
+    );
+  };
 
   const parts: ClockCardDatePart[] = [];
 
@@ -397,21 +414,22 @@ export const getClockCardDatePresetParts = (
               : "day-numeric"
           );
           break;
-        case "month": {
-          const monthParts = [
-            "month-2-digit",
-            "month-numeric",
-            "month-long",
-            "month-short",
-          ] as const;
-
+        case "month":
           parts.push(
-            monthParts.find((part) => value === formatUtc(part, type)) ??
-              monthParts.find((part) => value === formatMonthWithDay(part)) ??
+            (
+              [
+                "month-2-digit",
+                "month-numeric",
+                "month-long",
+                "month-short",
+              ] as const
+            ).find((part) => value === formatUtc(part, type)) ??
+              (["month-long", "month-short"] as const).find(
+                (part) => value === formatMonthWithDay(part)
+              ) ??
               (/^\p{Nd}+$/u.test(value) ? "month-numeric" : "month-short")
           );
           break;
-        }
         case "year":
           parts.push(
             value === formatUtc("year-2-digit", type)
@@ -420,27 +438,12 @@ export const getClockCardDatePresetParts = (
           );
           break;
         case "literal": {
-          const literal = value.replace(BIDI_CONTROL_CHARACTERS, "").trim();
+          const literal = value.replace(BIDI_CONTROL_CHARACTERS, "");
           const separator = INLINE_SEPARATOR_PARTS.find(
-            (part) => literal === DATE_SEPARATORS[part].trim()
+            (part) => literal === DATE_SEPARATORS[part]
           );
 
-          // Some languages render a part with the separator already after it,
-          // such as "5." for a Norwegian day, so adding it again would double
-          // it.
-          const previousPart = parts[parts.length - 1];
-
-          const previousPartEndsWithSeparator =
-            previousPart !== undefined &&
-            !isDateSeparatorPart(previousPart) &&
-            formatDatePart(
-              previousPart,
-              PRESET_REFERENCE_DATE,
-              language,
-              "UTC"
-            ).endsWith(literal);
-
-          if (separator && !previousPartEndsWithSeparator) {
+          if (separator) {
             parts.push(separator);
           }
 
@@ -449,7 +452,21 @@ export const getClockCardDatePresetParts = (
       }
     });
 
-  return parts;
+  return parts.filter((part, index) => {
+    if (!isDateSeparatorPart(part)) {
+      return true;
+    }
+
+    const previous = parts[index - 1];
+    const next = parts[index + 1];
+
+    return !(
+      (previous &&
+        !isDateSeparatorPart(previous) &&
+        hasAffix(previous, "end")) ||
+      (next && !isDateSeparatorPart(next) && hasAffix(next, "start"))
+    );
+  });
 };
 
 /**
