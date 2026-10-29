@@ -1064,6 +1064,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       align-items: center;
       color: var(--secondary-text-color);
     }
+    .search-toolbar ha-input-search {
+      min-width: 0;
+    }
     .filters {
       --mdc-text-field-fill-color: var(--input-fill-color);
       --mdc-text-field-idle-line-color: var(--input-idle-line-color);
