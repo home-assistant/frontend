@@ -168,6 +168,12 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false })
   public rowRenderer?: RenderItemFunction<PickerComboBoxItem>;
 
+  /** Additional text shown in custom option rows, for accessible announcements. */
+  @property({ attribute: false })
+  public getOptionAnnouncementDetail?: (
+    item: PickerComboBoxItem
+  ) => string | undefined;
+
   @property({ attribute: false })
   public notFoundLabel?: string | ((search: string) => string);
 
@@ -800,7 +806,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       this._list?.getActiveItemIndex() ?? -1,
       this.value,
       this._isOption,
-      this.i18n?.localize
+      this.i18n?.localize,
+      this.getOptionAnnouncementDetail
     );
   }
 
@@ -924,6 +931,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   private _resetSelectedItem() {
     this._list?.clearActiveItem();
+    // Clearing the live region permits the same option to be announced again
+    // when focus returns and keyboard navigation restarts.
+    this._activeOptionAnnouncement = undefined;
   }
 
   private _keyFunction = (item: PickerComboBoxItem | string) =>
