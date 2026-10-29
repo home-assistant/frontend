@@ -3547,6 +3547,14 @@
           "add_picture": "Add a picture",
           "assigned_to_area": "Assigned to this area",
           "targeting_area": "Targeting this area",
+          "related_lists": {
+            "automations_assigned": "Automations assigned to {area}",
+            "automations_targeting": "Automations targeting {area}",
+            "scenes_assigned": "Scenes assigned to {area}",
+            "scenes_targeting": "Scenes targeting {area}",
+            "scripts_assigned": "Scripts assigned to {area}",
+            "scripts_targeting": "Scripts targeting {area}"
+          },
           "area_not_found": "[%key:ui::card::area::area_not_found%]",
           "data_table": {
             "area": "Area",
@@ -7478,6 +7486,7 @@
             "none": "This device has no entities",
             "show_less": "Show less",
             "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "disabled_entities_list": "Disabled entities",
             "hidden": "Hidden"
           },
           "confirm_disable_config_entry_title": "Disable config entry?",

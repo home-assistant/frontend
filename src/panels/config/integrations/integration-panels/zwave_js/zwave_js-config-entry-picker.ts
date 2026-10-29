@@ -3,8 +3,8 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-list";
-import "../../../../../components/ha-list-item";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-nav";
 import "../../../../../layouts/hass-loading-screen";
 import "../../../../../layouts/hass-subpage";
 import type { ConfigEntry } from "../../../../../data/config_entries";
@@ -68,20 +68,22 @@ class ZWaveJSConfigEntryPicker extends LitElement {
               "ui.panel.config.zwave_js.picker.title"
             )}
           >
-            <ha-list>
+            <ha-list-nav
+              .ariaLabel=${this.hass.localize(
+                "ui.panel.config.zwave_js.picker.title"
+              )}
+            >
               ${this._configEntries.map(
                 (entry) => html`
-                  <a
-                    href="/config/zwave_js/dashboard?config_entry=${entry.entry_id}"
+                  <ha-list-item-button
+                    .href=${`/config/zwave_js/dashboard?config_entry=${entry.entry_id}`}
+                    .headline=${entry.title}
                   >
-                    <ha-list-item hasMeta>
-                      <span>${entry.title}</span>
-                      <ha-icon-next slot="meta"></ha-icon-next>
-                    </ha-list-item>
-                  </a>
+                    <ha-icon-next slot="end"></ha-icon-next>
+                  </ha-list-item-button>
                 `
               )}
-            </ha-list>
+            </ha-list-nav>
           </ha-card>
         </div>
       </hass-subpage>
@@ -127,9 +129,12 @@ class ZWaveJSConfigEntryPicker extends LitElement {
           padding-bottom: 0;
         }
 
-        a {
-          text-decoration: none;
-          color: inherit;
+        ha-list-nav {
+          --ha-list-padding: var(--ha-space-2) 0;
+        }
+
+        ha-list-item-button ha-icon-next {
+          color: var(--secondary-text-color);
         }
       `,
     ];

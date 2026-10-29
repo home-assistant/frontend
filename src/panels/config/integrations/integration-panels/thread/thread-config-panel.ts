@@ -8,7 +8,6 @@ import {
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { stringCompare } from "../../../../../common/string/compare";
@@ -20,9 +19,10 @@ import type { HaDropdownSelectEvent } from "../../../../../components/ha-dropdow
 import "../../../../../components/ha-dropdown-item";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
-import "../../../../../components/ha-list-item";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-base";
 import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-base";
 import "../../../../../components/list/ha-list-nav";
 import { getSignedPath } from "../../../../../data/auth";
 import { getConfigEntryDiagnosticsDownloadUrl } from "../../../../../data/diagnostics";
@@ -222,62 +222,67 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                   )}
                 </h4>
               </div>
-              ${network.routers.map((router) => {
-                const otbr =
-                  this._otbrInfo && this._otbrInfo[router.extended_address];
-                const showDefaultRouter = !!network.dataset;
-                const isDefaultRouter =
-                  showDefaultRouter &&
-                  router.extended_address ===
-                    network.dataset!.preferred_extended_address;
-                const showOverflow = showDefaultRouter || otbr;
-                return html`<ha-list-item
-                  class="router"
-                  twoline
-                  graphic=${ifDefined(router.brand ? "avatar" : undefined)}
-                  .hasMeta=${showOverflow}
-                >
-                  ${
-                    router.brand
-                      ? html`<img
-                          slot="graphic"
-                          .src=${brandsUrl(
-                            {
-                              domain: router.brand,
-                              type: "icon",
-                              darkOptimized: this.hass.themes?.darkMode,
-                            },
-                            this.hass.auth.data.hassUrl
-                          )}
-                          alt=${router.brand}
-                          crossorigin="anonymous"
-                          referrerpolicy="no-referrer"
-                          @error=${this._onImageError}
-                          @load=${this._onImageLoad}
-                        />`
-                      : nothing
-                  }
-                  ${
-                    router.instance_name ||
-                    router.model_name ||
-                    router.server?.replace(".local.", "") ||
-                    ""
-                  }
-                  <span slot="secondary">${router.server}</span>
-                  ${
-                    showOverflow
-                      ? html`${
-                            isDefaultRouter
-                              ? html`<ha-svg-icon
-                                  .path=${mdiCellphoneKey}
-                                  .title=${this.hass.localize(
-                                    "ui.panel.config.thread.default_router"
-                                  )}
-                                ></ha-svg-icon>`
-                              : ""
-                          }
-                          <ha-dropdown
-                            slot="meta"
+              <ha-list-base
+                aria-label=${this.hass.localize(
+                  "ui.panel.config.thread.border_routers",
+                  { count: network.routers.length }
+                )}
+              >
+                ${network.routers.map((router) => {
+                  const otbr =
+                    this._otbrInfo && this._otbrInfo[router.extended_address];
+                  const showDefaultRouter = !!network.dataset;
+                  const isDefaultRouter =
+                    showDefaultRouter &&
+                    router.extended_address ===
+                      network.dataset!.preferred_extended_address;
+                  const showOverflow = showDefaultRouter || otbr;
+                  return html`<ha-list-item-base
+                    class="router"
+                    .supportingText=${router.server ?? undefined}
+                  >
+                    <span slot="headline">
+                      ${
+                        router.instance_name ||
+                        router.model_name ||
+                        router.server?.replace(".local.", "") ||
+                        ""
+                      }
+                      ${
+                        isDefaultRouter
+                          ? html`<ha-svg-icon
+                              .path=${mdiCellphoneKey}
+                              .title=${this.hass.localize(
+                                "ui.panel.config.thread.default_router"
+                              )}
+                            ></ha-svg-icon>`
+                          : nothing
+                      }
+                    </span>
+                    ${
+                      router.brand
+                        ? html`<img
+                            slot="start"
+                            .src=${brandsUrl(
+                              {
+                                domain: router.brand,
+                                type: "icon",
+                                darkOptimized: this.hass.themes?.darkMode,
+                              },
+                              this.hass.auth.data.hassUrl
+                            )}
+                            alt=${router.brand}
+                            crossorigin="anonymous"
+                            referrerpolicy="no-referrer"
+                            @error=${this._onImageError}
+                            @load=${this._onImageLoad}
+                          />`
+                        : nothing
+                    }
+                    ${
+                      showOverflow
+                        ? html`<ha-dropdown
+                            slot="end"
                             .network=${network}
                             .router=${router}
                             .otbr=${otbr}
@@ -334,10 +339,11 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
                                 : ""
                             }
                           </ha-dropdown>`
-                      : ""
-                  }
-                </ha-list-item>`;
-              })}`
+                        : ""
+                    }
+                  </ha-list-item-base>`;
+                })}
+              </ha-list-base>`
           : html`<div class="card-content no-routers">
               <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
               ${
@@ -789,18 +795,10 @@ export class ThreadConfigPanel extends SubscribeMixin(LitElement) {
         margin: 0 auto;
         direction: ltr;
       }
-      ha-list-item.router {
-        --mdc-list-item-meta-size: auto;
-        --mdc-list-item-meta-display: flex;
-        --mdc-list-side-padding: 16px;
-        cursor: default;
-        overflow: visible;
-      }
-      ha-list-item img {
+      .router img {
+        width: 40px;
+        height: 40px;
         border-radius: var(--ha-border-radius-square);
-      }
-      ha-svg-icon[slot="meta"] {
-        width: 24px;
       }
       ha-dropdown a {
         text-decoration: none;
