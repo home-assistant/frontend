@@ -77,6 +77,26 @@ describe("ha-picker-combo-box keyboard navigation", () => {
     expect(list.getActiveItemIndex()).toBe(0);
   });
 
+  it("clears and re-announces the same option after focus leaves and returns", async () => {
+    const { picker, list } = await mountPicker();
+    const search = picker.shadowRoot!.querySelector("ha-input-search")!;
+    const status = picker.shadowRoot!.querySelector('[role="status"]')!;
+
+    pressKey(picker, "ArrowDown");
+    await picker.updateComplete;
+    expect(status.textContent).toContain("Hall lamp");
+
+    search.dispatchEvent(new Event("blur"));
+    await picker.updateComplete;
+    expect(list.getActiveItemIndex()).toBe(-1);
+    expect(status.textContent?.trim()).toBe("");
+
+    pressKey(picker, "ArrowDown");
+    await picker.updateComplete;
+    expect(list.getActiveItemIndex()).toBe(0);
+    expect(status.textContent).toContain("Hall lamp");
+  });
+
   it("starts from the selected first option when ArrowUp is pressed first", async () => {
     const { picker, list } = await mountPicker("lamp");
 
