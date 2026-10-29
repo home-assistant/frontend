@@ -351,8 +351,9 @@ class ErrorLogCard extends LitElement {
                     )}
                   </ha-alert>`
                 : this._loadingState === "loading"
-                  ? // Lines kept while reconnecting stay visible
-                    this._ansiToHtmlElement?.hasLines
+                  ? // Lines kept while reconnecting stay visible, unless the search hides them all
+                    this._ansiToHtmlElement?.hasLines &&
+                    !(this.filter && this._noSearchResults)
                     ? nothing
                     : html`<ha-skeleton-log
                         .label=${localize("ui.panel.config.logs.loading_log")}
