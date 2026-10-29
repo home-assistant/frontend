@@ -351,9 +351,12 @@ class ErrorLogCard extends LitElement {
                     )}
                   </ha-alert>`
                 : this._loadingState === "loading"
-                  ? html`<ha-skeleton-log
-                      .label=${localize("ui.panel.config.logs.loading_log")}
-                    ></ha-skeleton-log>`
+                  ? // Lines kept while reconnecting stay visible
+                    this._ansiToHtmlElement?.hasLines
+                    ? nothing
+                    : html`<ha-skeleton-log
+                        .label=${localize("ui.panel.config.logs.loading_log")}
+                      ></ha-skeleton-log>`
                   : this._loadingState === "empty"
                     ? html`<div>
                         ${
