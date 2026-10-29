@@ -78,7 +78,6 @@ import type {
   HomeAssistantConfig,
   HomeAssistantInternationalization,
 } from "../../../types";
-import { animationStyles } from "../../../resources/theme/animations.globals";
 
 const RANGE_KEYS: DateRange[] = [
   "today",
@@ -388,7 +387,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
                       leaving: this._loadingLeaving,
                     })}
                     size="small"
-                    @animationend=${this._loadingAnimationEnd}
+                    @transitionend=${this._loadingTransitionEnd}
                   ></ha-spinner>`
                 : nothing
             }
@@ -773,8 +772,8 @@ export class HuiEnergyPeriodSelector extends LitElement {
     }, 200);
   }
 
-  private _loadingAnimationEnd(ev: AnimationEvent) {
-    if (ev.animationName === "fade-out") {
+  private _loadingTransitionEnd(ev: TransitionEvent) {
+    if (ev.propertyName === "opacity") {
       this._loadingLeaving = false;
     }
   }
@@ -794,7 +793,6 @@ export class HuiEnergyPeriodSelector extends LitElement {
   );
 
   static styles = css`
-    ${animationStyles}
     :host {
       display: block;
     }
@@ -859,11 +857,15 @@ export class HuiEnergyPeriodSelector extends LitElement {
       position: absolute;
       right: var(--ha-space-2);
       align-items: center;
-      animation: fade-in var(--ha-animation-duration-normal) ease-in-out;
+      transition: opacity var(--ha-animation-duration-normal) ease-in-out;
+    }
+    @starting-style {
+      .loading-indicator {
+        opacity: 0;
+      }
     }
     .loading-indicator.leaving {
-      animation: fade-out var(--ha-animation-duration-normal) ease-in-out
-        forwards;
+      opacity: 0;
     }
     .date-actions .overflow {
       display: flex;
