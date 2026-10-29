@@ -119,6 +119,7 @@ import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { scrollRowIntoView } from "../scroll-row-into-view";
+import { AutomationPathController } from "../automation-path";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -168,11 +169,18 @@ export default class HaAutomationTriggerRow extends LitElement {
   @property({ type: Boolean, attribute: "sort-selected" })
   public sortSelected = false;
 
+  protected readonly pathController = new AutomationPathController(this, {
+    segment: () => (this.index === undefined ? [] : [this.index]),
+    row: () => (this.optionsInSidebar ? this : undefined),
+  });
+
   @state() private _yamlMode = false;
 
   @state() private _triggered = false;
 
   @state() private _selected = false;
+
+  private _sidebarTrigger?: Trigger;
 
   @state() private _isNew = false;
 
@@ -723,6 +731,16 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (changedProps.has("trigger")) {
       this._subscribeTrigger();
     }
+    // Undo and redo bypass the sidebar's save callback. Refresh its snapshot
+    // unless it already has this trigger, so sidebar edits keep their focus.
+    if (
+      changedProps.has("trigger") &&
+      this._selected &&
+      this.optionsInSidebar &&
+      this.trigger !== this._sidebarTrigger
+    ) {
+      this.openSidebar();
+    }
   }
 
   public connectedCallback(): void {
@@ -824,8 +842,10 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   public openSidebar(trigger?: Trigger): void {
     trigger = trigger || this.trigger;
+    this._sidebarTrigger = trigger;
     fireEvent(this, "open-sidebar", {
       save: (value) => {
+        this._sidebarTrigger = value;
         fireEvent(this, "value-changed", { value });
       },
       close: (focus?: boolean) => {

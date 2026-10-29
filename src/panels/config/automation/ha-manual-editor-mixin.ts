@@ -1,3 +1,4 @@
+import { provide } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import {
   html,
@@ -19,6 +20,16 @@ import {
   extractSearchParam,
   removeSearchParam,
 } from "../../../common/url/search-params";
+import {
+  mapConfigPath,
+  type ConfigChange,
+} from "../../../common/util/config-change";
+import {
+  pathEquals,
+  pathStartsWith,
+  type ConfigPath,
+} from "../../../common/util/config-path";
+import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-markdown";
@@ -33,8 +44,15 @@ import type {
   ValueChangedEvent,
 } from "../../../types";
 import { showToast } from "../../../util/toast";
+import {
+  AutomationRowRegistry,
+  automationRowRegistryContext,
+  type AutomationPathRow,
+  type UndoStepMeta,
+} from "./automation-path";
 import "./ha-automation-sidebar";
 import type HaAutomationSidebar from "./ha-automation-sidebar";
+import { scrollRowIntoView } from "./scroll-row-into-view";
 
 export const SIDEBAR_DEFAULT_WIDTH = 500;
 
@@ -81,6 +99,18 @@ export const ManualEditorMixin = <TConfig>(
 
     @query("ha-automation-sidebar")
     protected sidebarElement?: HaAutomationSidebar;
+
+    @provide({ context: automationRowRegistryContext })
+    protected rowRegistry = new AutomationRowRegistry();
+
+    // Undo and redo can remove the row the sidebar edits
+    private _sidebarRow?: Element;
+
+    private _revealCount = 0;
+
+    // Lists show a drag before they report it, so during a drag the path the
+    // sidebar row had before it counts
+    private _dragSidebarPath?: ConfigPath;
 
     declare protected collapsableElements?: NodeListOf<
       Element & {
@@ -192,6 +222,7 @@ export const ManualEditorMixin = <TConfig>(
       // deselect previous selected row
       this.sidebarConfig?.close?.();
       this.sidebarConfig = ev.detail;
+      this._sidebarRow = ev.composedPath()[0] as Element;
       // The sheet opens items at half height, so make room before rows scroll
       this._bottomSheetHeight = undefined;
       this.dispatchEvent(
@@ -243,6 +274,118 @@ export const ManualEditorMixin = <TConfig>(
       }
     }
 
+    /**
+     * The paths of the row the sidebar shows before and after the changes,
+     * when they are about it, e.g. it was edited or moved. Call it before the
+     * changes rendered, while the row is registered at its path from before.
+     */
+    public dragStarted() {
+      this._dragSidebarPath =
+        this._sidebarRow &&
+        this.rowRegistry.pathOf(this._sidebarRow as AutomationPathRow);
+    }
+
+    public dragEnded() {
+      this._dragSidebarPath = undefined;
+    }
+
+    public findSidebarRow(changes: ConfigChange[]): UndoStepMeta["sidebarRow"] {
+      const row = this._sidebarRow as AutomationPathRow | undefined;
+      const path =
+        row && (this._dragSidebarPath ?? this.rowRegistry.pathOf(row));
+      if (!path) {
+        return undefined;
+      }
+      const isAbout = changes.some((change) => {
+        if (change.op === "move") {
+          // Swapped neighbours are found as the other one moving
+          const swapped =
+            pathEquals(change.path, path) &&
+            pathEquals(change.from.slice(0, -1), path.slice(0, -1)) &&
+            Math.abs(
+              (change.from[change.from.length - 1] as number) -
+                (path[path.length - 1] as number)
+            ) === 1;
+          return swapped || pathStartsWith(change.from, path);
+        }
+        // An item added at its path is a new row before it
+        if (change.op === "add") {
+          return (
+            change.path.length > path.length &&
+            pathStartsWith(change.path, path)
+          );
+        }
+        // A replaced value around the row may still hold it unchanged
+        return (
+          pathStartsWith(change.path, path) ||
+          (change.op === "remove" && pathStartsWith(path, change.path))
+        );
+      });
+      return isAbout
+        ? { undo: path, redo: mapConfigPath(path, changes) }
+        : undefined;
+    }
+
+    /**
+     * Shows the row a change from undo or redo is about, so the user sees
+     * what changed. Takes the most likely path first and keeps an already
+     * selected row, and its sidebar, open. Opens the sidebar only with
+     * `openSidebar`, so a change made with a closed sidebar doesn't open it.
+     */
+    public async revealPaths(paths: ConfigPath[], openSidebar: boolean) {
+      const reveal = ++this._revealCount;
+      // Rows register their paths once they rendered the changed config
+      await nextRender();
+      // A later undo or redo has its own rows to show
+      if (reveal !== this._revealCount) {
+        return;
+      }
+      const candidates = paths
+        .map((path) => this.rowRegistry.rowsAlong(path))
+        .filter((rows) => rows.length);
+      const rows =
+        candidates.find((along) => along[along.length - 1].selected) ??
+        candidates[0];
+      const row = rows?.pop();
+      if (row && rows?.length) {
+        rows.forEach((ancestor) => ancestor.expand());
+        await nextRender();
+        if (reveal !== this._revealCount) {
+          return;
+        }
+      }
+      // Only the row itself, a parent block's sidebar would be about another
+      if (
+        row &&
+        openSidebar &&
+        !row.selected &&
+        pathEquals(this.rowRegistry.pathOf(row) ?? [], paths[0])
+      ) {
+        row.openSidebar();
+        // On narrow screens openSidebar scrolls once the bottom sheet opened
+        if (!this.narrow) {
+          scrollRowIntoView(row);
+        }
+        return;
+      }
+      // Rows unregister when removed, and only registered rows refresh
+      // their sidebar when their config changes
+      if (
+        this.sidebarConfig &&
+        !this.rowRegistry.pathOf(this._sidebarRow as AutomationPathRow)
+      ) {
+        // A removed row's close event can't reach the editor anymore
+        if (this._sidebarRow?.isConnected) {
+          this.triggerCloseSidebar();
+        } else {
+          this.handleCloseSidebar();
+        }
+      }
+      if (row) {
+        scrollRowIntoView(row);
+      }
+    }
+
     public get canToggleSidebarYamlMode(): boolean {
       return !!this.sidebarElement?.canToggleYamlMode;
     }
@@ -259,6 +402,7 @@ export const ManualEditorMixin = <TConfig>(
 
     protected handleCloseSidebar() {
       this.sidebarConfig = undefined;
+      this._sidebarRow = undefined;
       this._bottomSheetHeight = undefined;
       this.dispatchEvent(
         new CustomEvent("sidebar-config-changed", {
