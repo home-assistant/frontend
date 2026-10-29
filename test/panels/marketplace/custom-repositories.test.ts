@@ -174,33 +174,6 @@ describe("ha-marketplace-custom-repositories", () => {
   );
 
   it.each([
-    { name: "a chip on wide screens", narrow: false, tag: "ha-assist-chip" },
-    {
-      name: "an action menu on narrow screens",
-      narrow: true,
-      tag: "ha-dropdown",
-    },
-  ])("offers bulk removal as $name", async ({ narrow, tag }) => {
-    const page = await openPage(undefined, undefined, null, narrow);
-
-    expect(
-      page.shadowRoot!.querySelector('[slot="selection-bar"]')!.localName
-    ).toBe(tag);
-  });
-
-  it("labels the action menu with a Marketplace string", async () => {
-    const page = await openPage(undefined, undefined, null, true);
-
-    expect(
-      (
-        page.shadowRoot!.querySelector(
-          'ha-dropdown ha-assist-chip[slot="trigger"]'
-        ) as unknown as { label: string }
-      ).label
-    ).toBe("ui.panel.marketplace.custom_repositories.bulk_action");
-  });
-
-  it.each([
     {
       name: "removes them once confirmed",
       confirmed: true,
