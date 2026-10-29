@@ -95,6 +95,8 @@ const table = (page: HTMLElement) =>
     clearSelection: () => void;
   };
 
+// Rendered outside the page, like the data table does, so the button is not
+// in the page's own template
 const clickRemove = (page: HTMLElement) => {
   const container = document.createElement("div");
   render(table(page).columns.actions.template!(repository({})), container);
@@ -334,6 +336,7 @@ describe("ha-marketplace-custom-repositories", () => {
       )
     );
 
+    // Asked without an action, the error is not lost behind a closed question
     const [, params] = vi.mocked(showConfirmationDialog).mock.lastCall!;
     expect(params.action).toBeUndefined();
   });

@@ -73,6 +73,7 @@ export class HaMarketplaceCustomRepositories extends LitElement {
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
 
+  // Only what was added from a link, of the types the Marketplace has on
   private _customRepositories = memoizeOne(
     (
       repositories: RepositoryBase[],
@@ -125,6 +126,7 @@ export class HaMarketplaceCustomRepositories extends LitElement {
         template: (repository) => html`
           <ha-tooltip .for=${`remove-${repository.id}`}>
             ${localize(
+              // Forgetting an installed repository would leave its files running
               repository.installed
                 ? "ui.panel.marketplace.custom_repositories.remove_installed"
                 : "ui.common.remove"
@@ -314,6 +316,7 @@ export class HaMarketplaceCustomRepositories extends LitElement {
     }
   }
 
+  // An arrow function, the data table renders the button and would be `this`
   private _handleRemoveClick = async (
     ev: HASSDomCurrentTargetEvent<HaIconButton>
   ) => {
@@ -323,6 +326,8 @@ export class HaMarketplaceCustomRepositories extends LitElement {
       (item) => item.id === repositoryId
     );
 
+    // Like removing an app repository, and it can be added again later. Asked
+    // first, a failure then shows on its own instead of behind the question.
     const confirmed = await showConfirmationDialog(this, {
       title: this._i18n.localize(
         "ui.panel.marketplace.custom_repositories.remove_title",
@@ -339,6 +344,7 @@ export class HaMarketplaceCustomRepositories extends LitElement {
       return;
     }
 
+    // The panel hears the change from the backend and passes on the new list
     try {
       await removeMarketplaceRepository(this._api, repositoryId);
     } catch (err: unknown) {
