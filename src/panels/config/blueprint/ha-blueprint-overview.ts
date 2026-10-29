@@ -9,7 +9,7 @@ import {
   mdiShareVariant,
 } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
-import { LitElement, html, nothing } from "lit";
+import { LitElement, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
@@ -27,6 +27,7 @@ import { extractSearchParam } from "../../../common/url/search-params";
 import { hasRejectedItems } from "../../../common/util/promise-all-settled-results";
 import type {
   DataTableColumnContainer,
+  DataTableColumnData,
   RowClickedEvent,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
@@ -193,136 +194,138 @@ class HaBlueprintOverview extends LitElement {
     (
       localize: LocalizeFunc,
       narrow: boolean
-    ): DataTableColumnContainer<BlueprintMetaDataPath> => ({
-      name: {
-        title: localize("ui.panel.config.blueprint.overview.headers.name"),
-        main: true,
-        sortable: true,
-        filterable: true,
-        direction: "asc",
-        flex: 2,
-      },
-      translated_type: {
-        title: localize("ui.panel.config.blueprint.overview.headers.type"),
-        sortable: true,
-        filterable: true,
-        groupable: true,
-        urlName: "type",
-      },
-      path: {
+    ): DataTableColumnContainer<BlueprintMetaDataPath> => {
+      const path: DataTableColumnData<BlueprintMetaDataPath> = {
         title: localize("ui.panel.config.blueprint.overview.headers.file_name"),
         sortable: true,
         filterable: true,
         flex: 2,
-      },
-      usage_count: {
-        title: localize(
-          "ui.panel.config.blueprint.overview.headers.usage_count"
-        ),
-        sortable: true,
-        valueColumn: "usageCount",
-        type: "numeric",
-        minWidth: "90px",
-        maxWidth: "90px",
-        template: (blueprint) => {
-          const count = blueprint.usageCount ?? 0;
-          if (narrow) {
-            return count
-              ? localize("ui.panel.config.blueprint.overview.used_count", {
-                  count,
-                })
-              : nothing;
-          }
-          return html`
-            <ha-assist-chip
-              filled
-              .active=${count > 0}
-              label=${String(count)}
-              title=${
-                blueprint.error
-                  ? String(count)
-                  : this.hass.localize(
-                      `ui.panel.config.blueprint.overview.view_${blueprint.type}`
-                    )
-              }
-              ?disabled=${blueprint.error}
-              data-fullpath=${blueprint.fullpath}
-              @click=${this._handleUsageClick}
-            ></ha-assist-chip>
-          `;
+      };
+      return {
+        name: {
+          title: localize("ui.panel.config.blueprint.overview.headers.name"),
+          main: true,
+          sortable: true,
+          filterable: true,
+          direction: "asc",
+          flex: 2,
         },
-      },
-      fullpath: {
-        title: "fullpath",
-        hidden: true,
-      },
-      actions: {
-        lastFixed: true,
-        title: "",
-        label: this.hass.localize("ui.panel.config.generic.headers.actions"),
-        type: "overflow-menu",
-        showNarrow: true,
-        template: (blueprint) =>
-          blueprint.error
-            ? html`<ha-svg-icon
-                style="color: var(--error-color); display: block; margin-inline-end: 12px; margin-inline-start: auto;"
-                .path=${mdiAlertCircle}
-              ></ha-svg-icon>`
-            : html`
-                <ha-icon-overflow-menu
-                  narrow
-                  .items=${[
-                    {
-                      path: mdiPlus,
-                      label: this.hass.localize(
-                        `ui.panel.config.blueprint.overview.create_${blueprint.type}`
-                      ),
-                      action: () => this._createNew(blueprint),
-                    },
-                    {
-                      path: mdiEye,
-                      label: this.hass.localize(
-                        `ui.panel.config.blueprint.overview.view_${blueprint.domain}`
-                      ),
-                      action: () => this._showUsed(blueprint),
-                    },
-                    {
-                      path: mdiShareVariant,
-                      disabled: !blueprint.source_url,
-                      label: this.hass.localize(
-                        blueprint.source_url
-                          ? "ui.panel.config.blueprint.overview.share_blueprint"
-                          : "ui.panel.config.blueprint.overview.share_blueprint_no_url"
-                      ),
-                      action: () => this._share(blueprint),
-                    },
-                    {
-                      path: mdiDownload,
-                      disabled: !blueprint.source_url,
-                      label: this.hass.localize(
-                        blueprint.source_url
-                          ? "ui.panel.config.blueprint.overview.re_import_blueprint"
-                          : "ui.panel.config.blueprint.overview.re_import_blueprint_no_url"
-                      ),
-                      action: () => this._reImport(blueprint),
-                    },
-                    {
-                      divider: true,
-                    },
-                    {
-                      label: this.hass.localize(
-                        "ui.panel.config.blueprint.overview.delete_blueprint"
-                      ),
-                      path: mdiDelete,
-                      action: () => this._delete(blueprint),
-                      warning: true,
-                    },
-                  ]}
-                >
-                </ha-icon-overflow-menu>
-              `,
-      },
-    })
+        translated_type: {
+          title: localize("ui.panel.config.blueprint.overview.headers.type"),
+          sortable: true,
+          filterable: true,
+          groupable: true,
+          urlName: "type",
+        },
+        ...(narrow ? {} : { path }),
+        usage_count: {
+          title: localize(
+            "ui.panel.config.blueprint.overview.headers.usage_count"
+          ),
+          sortable: true,
+          valueColumn: "usageCount",
+          type: "numeric",
+          minWidth: "90px",
+          maxWidth: "90px",
+          template: (blueprint) => {
+            const count = blueprint.usageCount ?? 0;
+            if (narrow) {
+              return localize("ui.panel.config.blueprint.overview.used_count", {
+                count,
+              });
+            }
+            return html`
+              <ha-assist-chip
+                filled
+                .active=${count > 0}
+                label=${String(count)}
+                title=${
+                  blueprint.error
+                    ? String(count)
+                    : this.hass.localize(
+                        `ui.panel.config.blueprint.overview.view_${blueprint.type}`
+                      )
+                }
+                ?disabled=${blueprint.error}
+                data-fullpath=${blueprint.fullpath}
+                @click=${this._handleUsageClick}
+              ></ha-assist-chip>
+            `;
+          },
+        },
+        ...(narrow ? { path } : {}),
+        fullpath: {
+          title: "fullpath",
+          hidden: true,
+        },
+        actions: {
+          lastFixed: true,
+          title: "",
+          label: this.hass.localize("ui.panel.config.generic.headers.actions"),
+          type: "overflow-menu",
+          showNarrow: true,
+          template: (blueprint) =>
+            blueprint.error
+              ? html`<ha-svg-icon
+                  style="color: var(--error-color); display: block; margin-inline-end: 12px; margin-inline-start: auto;"
+                  .path=${mdiAlertCircle}
+                ></ha-svg-icon>`
+              : html`
+                  <ha-icon-overflow-menu
+                    narrow
+                    .items=${[
+                      {
+                        path: mdiPlus,
+                        label: this.hass.localize(
+                          `ui.panel.config.blueprint.overview.create_${blueprint.type}`
+                        ),
+                        action: () => this._createNew(blueprint),
+                      },
+                      {
+                        path: mdiEye,
+                        label: this.hass.localize(
+                          `ui.panel.config.blueprint.overview.view_${blueprint.domain}`
+                        ),
+                        action: () => this._showUsed(blueprint),
+                      },
+                      {
+                        path: mdiShareVariant,
+                        disabled: !blueprint.source_url,
+                        label: this.hass.localize(
+                          blueprint.source_url
+                            ? "ui.panel.config.blueprint.overview.share_blueprint"
+                            : "ui.panel.config.blueprint.overview.share_blueprint_no_url"
+                        ),
+                        action: () => this._share(blueprint),
+                      },
+                      {
+                        path: mdiDownload,
+                        disabled: !blueprint.source_url,
+                        label: this.hass.localize(
+                          blueprint.source_url
+                            ? "ui.panel.config.blueprint.overview.re_import_blueprint"
+                            : "ui.panel.config.blueprint.overview.re_import_blueprint_no_url"
+                        ),
+                        action: () => this._reImport(blueprint),
+                      },
+                      {
+                        divider: true,
+                      },
+                      {
+                        label: this.hass.localize(
+                          "ui.panel.config.blueprint.overview.delete_blueprint"
+                        ),
+                        path: mdiDelete,
+                        action: () => this._delete(blueprint),
+                        warning: true,
+                      },
+                    ]}
+                  >
+                  </ha-icon-overflow-menu>
+                `,
+        },
+      };
+    }
   );
 
   public connectedCallback() {
