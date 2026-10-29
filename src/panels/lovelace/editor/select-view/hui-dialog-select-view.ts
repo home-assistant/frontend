@@ -1,14 +1,17 @@
+import { mdiViewDashboard } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-icon";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
+import "../../../../components/ha-icon";
+import "../../../../components/ha-section-title";
 import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/item/ha-list-item-option";
 import "../../../../components/list/ha-list-selectable";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
@@ -156,17 +159,27 @@ export class HuiDialogSelectView extends LitElement {
     }
 
     const views = this._selectableConfig.views;
-    if (views.length < 2) {
-      return nothing;
-    }
 
-    const hasIcon = views.some(({ icon }) => icon);
+    const dashboardTitle = this._params?.allowDashboardChange
+      ? this._dashboards.find(
+          (dashboard) =>
+            dashboard.url_path === (this._urlPath ?? LOVELACE_PANEL)
+        )?.title
+      : undefined;
+    const viewsHeading = dashboardTitle
+      ? this.hass.localize(
+          "ui.panel.lovelace.editor.select_view.views_heading",
+          { dashboard: dashboardTitle }
+        )
+      : undefined;
 
     return html`
+      ${viewsHeading ? html`<h3>${viewsHeading}</h3>` : nothing}
       <ha-list-selectable
-        aria-label=${this.hass.localize(
-          "ui.panel.lovelace.editor.select_view.views_label"
-        )}
+        aria-label=${
+          viewsHeading ??
+          this.hass.localize("ui.panel.lovelace.editor.select_view.views_label")
+        }
         @ha-list-item-selected=${this._viewChanged}
       >
         ${views.map((view, idx) => {
@@ -179,12 +192,18 @@ export class HuiDialogSelectView extends LitElement {
               ?autofocus=${idx === 0 && !this._params!.allowDashboardChange}
             >
               ${
-                hasIcon
+                view.icon
                   ? html`<ha-icon slot="start" .icon=${view.icon}></ha-icon>`
-                  : nothing
+                  : html`<ha-svg-icon
+                      slot="start"
+                      .path=${mdiViewDashboard}
+                    ></ha-svg-icon>`
               }
               <span slot="headline">
-                ${view.title}${
+                ${
+                  view.title ||
+                  this.hass.localize("ui.panel.lovelace.views.unnamed_view")
+                }${
                   isStrategy
                     ? ` (${this.hass.localize("ui.panel.lovelace.editor.select_view.strategy_type")})`
                     : nothing
@@ -252,13 +271,16 @@ export class HuiDialogSelectView extends LitElement {
       css`
         ha-select {
           width: 100%;
+          margin-bottom: var(--ha-space-4);
+        }
+        h3,
+        ha-alert {
+          display: block;
+          margin: var(--ha-space-4) 0;
         }
         .loading {
           display: flex;
           justify-content: center;
-        }
-        ha-icon[slot="start"] {
-          width: var(--mdc-icon-size, 24px);
         }
       `,
     ];

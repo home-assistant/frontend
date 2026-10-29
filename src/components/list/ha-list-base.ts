@@ -71,6 +71,8 @@ export class HaListBase extends LitElement {
 
   private _unbindKeys?: () => void;
 
+  private _listItemsUpdatePending = false;
+
   public connectedCallback() {
     super.connectedCallback();
     if (!this.hasAttribute("ha-list")) {
@@ -168,6 +170,21 @@ export class HaListBase extends LitElement {
     }
     this._activeItem = this.items[this.activeItemIndex];
     this.applyActive(focusItem);
+  }
+
+  /**
+   * Run `updateListItems()` once after the current task, so rows that change
+   * their focusability together cause a single update.
+   */
+  public requestListItemsUpdate() {
+    if (this._listItemsUpdatePending) {
+      return;
+    }
+    this._listItemsUpdatePending = true;
+    queueMicrotask(() => {
+      this._listItemsUpdatePending = false;
+      this.updateListItems();
+    });
   }
 
   /**

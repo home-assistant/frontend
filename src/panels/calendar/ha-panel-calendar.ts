@@ -16,10 +16,8 @@ import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
-import "../../components/item/ha-list-item-button";
 import "../../components/item/ha-list-item-option";
 import type { HaListItemOption } from "../../components/item/ha-list-item-option";
-import "../../components/list/ha-list-base";
 import "../../components/list/ha-list-selectable";
 import type { HaListSelectable } from "../../components/list/ha-list-selectable";
 import type { Calendar } from "../../data/calendar";
@@ -211,19 +209,19 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
                 </ha-list-selectable>
                 ${
                   this.hass.user?.is_admin
-                    ? html`<ha-list-base slot="pane-footer">
-                        <ha-list-item-button @click=${this._addCalendar}>
-                          <ha-svg-icon
-                            slot="start"
-                            .path=${mdiPlus}
-                          ></ha-svg-icon>
-                          <span slot="headline"
-                            >${this.hass.localize(
-                              "ui.components.calendar.create_calendar"
-                            )}</span
-                          >
-                        </ha-list-item-button>
-                      </ha-list-base>`
+                    ? html`<ha-button
+                        slot="pane-footer"
+                        appearance="filled"
+                        @click=${this._addCalendar}
+                      >
+                        <ha-svg-icon
+                          slot="start"
+                          .path=${mdiPlus}
+                        ></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.components.calendar.create_calendar"
+                        )}
+                      </ha-button>`
                     : nothing
                 }`
             : nothing
@@ -356,12 +354,23 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         ha-dropdown ha-button {
           --ha-font-size-m: var(--ha-font-size-l);
         }
+        ha-button[slot="pane-footer"] {
+          display: block;
+          width: fit-content;
+          margin: var(--ha-space-2) auto var(--ha-space-2);
+        }
 
-        ha-dropdown-item {
+        ha-dropdown-item[type="checkbox"] {
           padding-left: 32px;
           padding-inline-start: 32px;
           padding-inline-end: initial;
           --icon-primary-color: var(--ha-color-fill-neutral-loud-resting);
+        }
+
+        /* The dropdown indents every item when some are checkboxes, but the
+           create item sits below a divider */
+        ha-dropdown-item:not([type="checkbox"]) {
+          padding-inline-start: 1em;
         }
 
         ha-dropdown-item[aria-checked="true"] {
