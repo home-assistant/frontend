@@ -1,8 +1,13 @@
 import { assert, describe, it } from "vitest";
-import type { ClockCardDatePart } from "../../../../src/panels/lovelace/cards/types";
+import type {
+  ClockCardDatePart,
+  ClockCardDatePreset,
+} from "../../../../src/panels/lovelace/cards/types";
 import {
   formatClockCardDate,
+  formatClockCardDatePreset,
   getClockCardDateConfig,
+  getClockCardDatePresetParts,
   getClockCardDateTimeFormatOptions,
   hasClockCardDate,
 } from "../../../../src/panels/lovelace/cards/clock/clock-date-format";
@@ -257,5 +262,86 @@ describe("clock-date-format", () => {
     const result = formatClockCardDate(date, config, "en", "UTC");
 
     assert.equal(result, "11 2024");
+  });
+
+  it("reads a preset date format", () => {
+    assert.deepEqual(getClockCardDateConfig({ date_format: "long" }), {
+      parts: [],
+      preset: "long",
+    });
+    assert.equal(hasClockCardDate({ date_format: "short" }), true);
+    assert.deepEqual(
+      getClockCardDateTimeFormatOptions({ parts: [], preset: "full" }),
+      { dateStyle: "full" }
+    );
+  });
+
+  it("formats presets with the locale's date styles", () => {
+    const format = (preset: ClockCardDatePreset, language = "en-GB") =>
+      formatClockCardDate(date, { parts: [], preset }, language, "UTC");
+
+    assert.equal(format("short"), "08/11/2024");
+    assert.equal(format("medium"), "8 Nov 2024");
+    assert.equal(format("long"), "8 November 2024");
+    assert.equal(format("short", "en-US"), "11/8/24");
+  });
+
+  it("formats the ISO preset the same in every language", () => {
+    const format = (language: string, timeZone: string) =>
+      formatClockCardDatePreset(date, "iso", language, timeZone);
+
+    assert.equal(format("en-US", "UTC"), "2024-11-08");
+    assert.equal(format("ar-EG", "UTC"), "2024-11-08");
+    assert.equal(format("en", "Pacific/Kiritimati"), "2024-11-09");
+  });
+
+  it("converts presets into matching custom parts", () => {
+    assert.deepEqual(getClockCardDatePresetParts("short", "en-GB"), [
+      "day-2-digit",
+      "separator-slash",
+      "month-2-digit",
+      "separator-slash",
+      "year-numeric",
+    ]);
+    assert.deepEqual(getClockCardDatePresetParts("full", "en-US"), [
+      "weekday-long",
+      "separator-comma",
+      "month-long",
+      "day-numeric",
+      "separator-comma",
+      "year-numeric",
+    ]);
+    assert.deepEqual(getClockCardDatePresetParts("short", "de"), [
+      "day-2-digit",
+      "separator-dot",
+      "month-2-digit",
+      "separator-dot",
+      "year-2-digit",
+    ]);
+
+    (["en-GB", "en-US"] as const).forEach((language) => {
+      (["short", "medium", "long", "full", "iso"] as const).forEach(
+        (preset) => {
+          const parts = getClockCardDatePresetParts(preset, language);
+          assert.equal(
+            formatClockCardDate(date, { parts }, language, "UTC"),
+            formatClockCardDate(date, { parts: [], preset }, language, "UTC")
+          );
+        }
+      );
+    });
+  });
+
+  it("renders a comma separator with a following space", () => {
+    const result = formatClockCardDate(
+      date,
+      {
+        parts: ["weekday-long", "separator-comma", "month-long", "day-numeric"],
+      },
+      "en",
+      "UTC"
+    );
+
+    assert.equal(result, "Friday, November 8");
   });
 });

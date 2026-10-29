@@ -11387,6 +11387,14 @@
               "date": {
                 "label": "Date",
                 "description": "Select and order the date parts. Add a separator to control punctuation.",
+                "presets": {
+                  "short": "Short",
+                  "medium": "Medium",
+                  "long": "Long",
+                  "full": "Full",
+                  "iso": "ISO 8601",
+                  "custom": "Custom"
+                },
                 "sections": {
                   "weekday": "Weekday",
                   "day": "Day",
@@ -11408,6 +11416,7 @@
                   "separator-dash": "Dash",
                   "separator-slash": "Slash",
                   "separator-dot": "Dot",
+                  "separator-comma": "Comma",
                   "separator-new-line": "New line"
                 }
               },

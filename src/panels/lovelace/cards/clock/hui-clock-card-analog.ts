@@ -230,6 +230,8 @@ export class HuiClockCardAnalog extends LitElement {
     const dateConfig = getClockCardDateConfig(config);
     const showDate = hasClockCardDate(config);
     const isLongDate =
+      dateConfig.preset === "long" ||
+      dateConfig.preset === "full" ||
       dateConfig.parts.includes("month-long") ||
       dateConfig.parts.includes("weekday-long");
 
