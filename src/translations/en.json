@@ -10537,6 +10537,7 @@
             "header": "Choose a view",
             "dashboard_label": "Dashboard",
             "views_label": "View",
+            "views_heading": "Views of {dashboard}",
             "no_config": "No config found.",
             "no_views": "No views in this dashboard.",
             "strategy_type": "strategy"

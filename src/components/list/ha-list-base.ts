@@ -71,6 +71,8 @@ export class HaListBase extends LitElement {
 
   private _unbindKeys?: () => void;
 
+  private _listItemsUpdatePending = false;
+
   public connectedCallback() {
     super.connectedCallback();
     if (!this.hasAttribute("ha-list")) {
@@ -171,6 +173,21 @@ export class HaListBase extends LitElement {
   }
 
   /**
+   * Run `updateListItems()` once after the current task, so rows that change
+   * their focusability together cause a single update.
+   */
+  public requestListItemsUpdate() {
+    if (this._listItemsUpdatePending) {
+      return;
+    }
+    this._listItemsUpdatePending = true;
+    queueMicrotask(() => {
+      this._listItemsUpdatePending = false;
+      this.updateListItems();
+    });
+  }
+
+  /**
    * Hook called whenever the items array has changed. Subclasses can override
    * to layer in extra bookkeeping (e.g. selection state sync).
    */
@@ -191,12 +208,12 @@ export class HaListBase extends LitElement {
       ) {
         this.activeItemIndex = -1;
       }
-    } else if (
-      this.activeItemIndex >= this.itemCount ||
-      !this.hasFocusableItem ||
-      this.activeItemIndex < 0
-    ) {
+    } else if (!this.isFocusable(this.activeItemIndex)) {
+      // Also leave an active row that got disabled, so the list keeps a Tab stop
       this.activeItemIndex = this.firstFocusableIndex;
+      if (activeIndex !== -1) {
+        this._activeItem = this.items[this.activeItemIndex];
+      }
     }
     if (!this._activeItem) {
       this._activeItem = this.items[this.activeItemIndex];
