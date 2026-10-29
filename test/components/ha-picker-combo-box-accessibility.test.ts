@@ -79,19 +79,31 @@ describe("picker keyboard accessibility", () => {
 
   it("distinguishes devices sharing a name and area by displayed integration", () => {
     const devices = [
-      { id: "device-zigbee", primary: "Kitchen switch", secondary: "Kitchen", domain_name: "Zigbee" },
-      { id: "device-matter", primary: "Kitchen switch", secondary: "Kitchen", domain_name: "Matter" },
+      {
+        id: "device-zigbee",
+        primary: "Kitchen switch",
+        secondary: "Kitchen",
+        domain_name: "Zigbee",
+      },
+      {
+        id: "device-matter",
+        primary: "Kitchen switch",
+        secondary: "Kitchen",
+        domain_name: "Matter",
+      },
     ];
+    type Device = (typeof devices)[number];
+    const isDeviceOption = (item: Device | string): item is Device =>
+      typeof item !== "string";
     const localize: LocalizeFunc = (_key, values) => String(values?.option);
-    const getDeviceIntegration = (item: (typeof devices)[number]) =>
-      item.domain_name;
+    const getDeviceIntegration = (item: Device) => item.domain_name;
 
     expect(
       getPickerOptionAnnouncement(
         devices,
         0,
         undefined,
-        isOption,
+        isDeviceOption,
         localize,
         getDeviceIntegration
       )
@@ -101,7 +113,7 @@ describe("picker keyboard accessibility", () => {
         devices,
         1,
         undefined,
-        isOption,
+        isDeviceOption,
         localize,
         getDeviceIntegration
       )
