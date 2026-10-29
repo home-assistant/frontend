@@ -3,6 +3,10 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { array, assert, literal, object, string } from "superstruct";
+import {
+  arrayWith,
+  arrayWithout,
+} from "../../../../../common/array/array-with";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { stringCompare } from "../../../../../common/string/compare";
 import "../../../../../components/item/ha-list-item-option";
@@ -91,10 +95,10 @@ export class HaCardConditionUser extends LitElement {
       return;
     }
 
-    const users = (this.condition.users ?? []).filter((id) => id !== userId);
-    if (ev.type === "ha-list-item-selected") {
-      users.push(userId);
-    }
+    const users =
+      ev.type === "ha-list-item-selected"
+        ? arrayWith(this.condition.users, userId)
+        : arrayWithout(this.condition.users, userId);
 
     const condition: UserCondition = {
       ...this.condition,

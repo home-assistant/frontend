@@ -5,6 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { arrayWith, arrayWithout } from "../../../common/array/array-with";
 import { consume } from "../../../common/decorators/consume";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import {
@@ -152,11 +153,10 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
       return;
     }
 
-    const selected = this._selected.filter((id) => id !== entityId);
-    if (ev.type === "ha-list-item-selected") {
-      selected.push(entityId);
-    }
-    this._selected = selected;
+    this._selected =
+      ev.type === "ha-list-item-selected"
+        ? arrayWith(this._selected, entityId)
+        : arrayWithout(this._selected, entityId);
     this._updateDirtyState(this._selected);
   }
 

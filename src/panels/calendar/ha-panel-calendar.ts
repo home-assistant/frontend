@@ -5,6 +5,7 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { arrayWith, arrayWithout } from "../../common/array/array-with";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
@@ -274,8 +275,9 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
 
   private _setCalendarSelected(entityId: string, selected: boolean) {
     if (selected) {
-      this._deSelectedCalendars = this._deSelectedCalendars.filter(
-        (cal) => cal !== entityId
+      this._deSelectedCalendars = arrayWithout(
+        this._deSelectedCalendars,
+        entityId
       );
       const calendar = this._calendars.find(
         (cal) => cal.entity_id === entityId
@@ -285,7 +287,10 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
       }
       this._subscribeCalendarEvents([calendar]);
     } else {
-      this._deSelectedCalendars = [...this._deSelectedCalendars, entityId];
+      this._deSelectedCalendars = arrayWith(
+        this._deSelectedCalendars,
+        entityId
+      );
       this._events.unsubscribe(entityId);
     }
   }
