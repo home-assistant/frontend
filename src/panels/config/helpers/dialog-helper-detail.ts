@@ -5,20 +5,26 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/item/ha-list-item-option";
+import type { HaListItemOption } from "../../../components/item/ha-list-item-option";
+import "../../../components/list/ha-list-selectable";
+import type { HaListSelectable } from "../../../components/list/ha-list-selectable";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
@@ -244,14 +250,12 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
             "ui.panel.config.integrations.search_helper"
           )}
         ></ha-input-search>
-        <ha-list
+        <ha-list-selectable
           class="ha-scrollbar"
-          innerRole="listbox"
-          itemRoles="option"
-          innerAriaLabel=${this.hass.localize(
+          aria-label=${this.hass.localize(
             "ui.panel.config.helpers.dialog.create_helper"
           )}
-          rootTabbable
+          @ha-list-item-selected=${this._domainPicked}
         >
           ${items.map(([domain, label]) => {
             // Only OG helpers need to be loaded prior adding one
@@ -259,14 +263,9 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
               !(domain in HELPERS) ||
               isComponentLoaded(this.hass.config, domain);
             return html`
-              <ha-list-item
-                hasmeta
-                .domain=${domain}
-                @request-selected=${this._domainPicked}
-                graphic="icon"
-              >
+              <ha-list-item-option appearance="line" .value=${domain}>
                 <img
-                  slot="graphic"
+                  slot="start"
                   loading="lazy"
                   alt=""
                   src=${brandsUrl(
@@ -280,12 +279,12 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
-                <span class="item-text"> ${label} </span>
+                <span slot="headline" class="item-text">${label}</span>
                 ${
                   isLoaded
-                    ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                    ? html`<ha-icon-next slot="end"></ha-icon-next>`
                     : html`<ha-svg-icon
-                          slot="meta"
+                          slot="end"
                           .id="icon-${domain}"
                           path=${mdiAlertOutline}
                           @click=${stopPropagation}
@@ -297,10 +296,10 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
                           )}
                         </ha-tooltip>`
                 }
-              </ha-list-item>
+              </ha-list-item-option>
             `;
           })}
-        </ha-list>
+        </ha-list-selectable>
       `;
     }
 
@@ -409,8 +408,15 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     }
   }
 
-  private async _domainPicked(ev): Promise<void> {
-    const domain = ev.target.closest("ha-list-item").domain;
+  private async _domainPicked(
+    ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
+  ): Promise<void> {
+    const domain = (
+      ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
+    )?.value;
+    if (!domain) {
+      return;
+    }
     const isLoaded =
       !(domain in HELPERS) || isComponentLoaded(this.hass.config, domain);
     if (!isLoaded) {
@@ -472,6 +478,11 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         ha-icon-next {
           width: var(--ha-space-6);
         }
+        ha-list-item-option img {
+          width: 24px;
+          height: 24px;
+          object-fit: contain;
+        }
         ha-tooltip {
           pointer-events: auto;
         }
@@ -481,11 +492,11 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         ha-input-search {
           margin: 0 var(--ha-space-4) var(--ha-space-3);
         }
-        ha-list {
+        ha-list-selectable::part(base) {
           height: calc(60vh - 184px);
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-list {
+          ha-list-selectable::part(base) {
             height: calc(
               100vh -
                 184px - var(--safe-area-inset-top, 0px) - var(
