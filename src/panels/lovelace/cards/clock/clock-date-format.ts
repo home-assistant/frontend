@@ -347,6 +347,17 @@ export const getClockCardDatePresetParts = (
   const formatUtc = (part: ClockCardValuePart) =>
     formatDatePart(part, PRESET_REFERENCE_DATE, language, "UTC");
 
+  // Some languages, such as Polish and Russian, inflect the month next to a
+  // day ("5 stycznia"), so it differs from the standalone form ("styczeń").
+  const formatMonthWithDay = (part: ClockCardValuePart) =>
+    new Intl.DateTimeFormat(language, {
+      ...DATE_PART_OPTIONS[part],
+      day: "numeric",
+      timeZone: "UTC",
+    })
+      .formatToParts(PRESET_REFERENCE_DATE)
+      .find(({ type }) => type === "month")?.value;
+
   const parts: ClockCardDatePart[] = [];
 
   getDatePresetFormatter(preset, language, "UTC")
@@ -374,7 +385,10 @@ export const getClockCardDatePresetParts = (
                 "month-long",
                 "month-short",
               ] as const
-            ).find((part) => value === formatUtc(part)) ?? "month-short"
+            ).find(
+              (part) =>
+                value === formatUtc(part) || value === formatMonthWithDay(part)
+            ) ?? "month-short"
           );
           break;
         case "year":

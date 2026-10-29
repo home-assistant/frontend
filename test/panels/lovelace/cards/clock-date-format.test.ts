@@ -332,6 +332,15 @@ describe("clock-date-format", () => {
     });
   });
 
+  it("keeps the long month when a language inflects it next to the day", () => {
+    (["pl", "ru"] as const).forEach((language) => {
+      assert.deepEqual(
+        getClockCardDatePresetParts("long", language).slice(0, 2),
+        ["day-numeric", "month-long"]
+      );
+    });
+  });
+
   it("renders a comma separator with a following space", () => {
     const result = formatClockCardDate(
       date,
