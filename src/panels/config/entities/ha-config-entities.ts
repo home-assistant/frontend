@@ -126,14 +126,12 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
-<<<<<<< HEAD
 import type {
   HomeAssistant,
   HomeAssistantInternationalization,
   Route,
 } from "../../../types";
 import { showToast } from "../../../util/toast";
->>>>>>> e68ab8fbc0 (Localize device classes and preserve redirect filters)
 import {
   getAreaTableColumn,
   getCreatedAtTableColumn,
