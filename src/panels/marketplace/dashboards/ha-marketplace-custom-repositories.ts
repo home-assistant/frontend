@@ -1,6 +1,6 @@
 import type { ContextType } from "@lit/context";
 import { mdiDelete, mdiDeleteOff, mdiLinkPlus, mdiMenuDown } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -40,6 +40,7 @@ import {
 import type { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
+import { haStyle } from "../../../resources/styles";
 import type { Route } from "../../../types";
 import { showMarketplaceAddFromLink } from "../tools/add-from-link";
 
@@ -66,6 +67,8 @@ export class HaMarketplaceCustomRepositories extends LitElement {
   private _api!: ContextType<typeof apiContext>;
 
   @state() private _selected: string[] = [];
+
+  @state() private _removing = false;
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -141,6 +144,20 @@ export class HaMarketplaceCustomRepositories extends LitElement {
     })
   );
 
+  protected willUpdate(changedProperties: PropertyValues<this>) {
+    if (changedProperties.has("marketplace") && this._selected.length) {
+      const selectable = new Set(
+        this.marketplace.repositories.flatMap((repository) =>
+          repository.installed ? [] : [repository.id]
+        )
+      );
+      const selected = this._selected.filter((id) => selectable.has(id));
+      if (selected.length !== this._selected.length) {
+        this._selected = selected;
+      }
+    }
+  }
+
   protected render() {
     const repositories = this._customRepositories(
       this.marketplace.repositories,
@@ -192,7 +209,7 @@ export class HaMarketplaceCustomRepositories extends LitElement {
                 </ha-assist-chip>
                 <ha-dropdown-item
                   value="remove"
-                  .disabled=${!this._selected.length}
+                  .disabled=${!this._selected.length || this._removing}
                 >
                   ${removeLabel}
                 </ha-dropdown-item>
@@ -200,7 +217,7 @@ export class HaMarketplaceCustomRepositories extends LitElement {
             : html`<ha-assist-chip
                 slot="selection-bar"
                 .label=${removeLabel}
-                .disabled=${!this._selected.length}
+                .disabled=${!this._selected.length || this._removing}
                 @click=${this._removeSelected}
               ></ha-assist-chip>`
         }
@@ -227,6 +244,9 @@ export class HaMarketplaceCustomRepositories extends LitElement {
   };
 
   private _removeSelected = async () => {
+    if (this._removing) {
+      return;
+    }
     const selectedRepositories = this.marketplace.repositories.filter(
       (repository) =>
         this._selected.includes(repository.id) && !repository.installed
@@ -235,6 +255,15 @@ export class HaMarketplaceCustomRepositories extends LitElement {
       return;
     }
 
+    this._removing = true;
+    try {
+      await this._removeRepositories(selectedRepositories);
+    } finally {
+      this._removing = false;
+    }
+  };
+
+  private async _removeRepositories(selectedRepositories: RepositoryBase[]) {
     const confirmed = await showConfirmationDialog(this, {
       title: this._i18n.localize(
         "ui.panel.marketplace.custom_repositories.remove_selected_title"
@@ -284,7 +313,7 @@ export class HaMarketplaceCustomRepositories extends LitElement {
         `,
       });
     }
-  };
+  }
 
   private _handleRemoveClick = async (
     ev: HASSDomCurrentTargetEvent<HaIconButton>
@@ -321,11 +350,14 @@ export class HaMarketplaceCustomRepositories extends LitElement {
     }
   };
 
-  static styles: CSSResultGroup = css`
-    ha-icon-button.delete {
-      color: var(--error-color);
-    }
-  `;
+  static styles: CSSResultGroup = [
+    haStyle,
+    css`
+      ha-icon-button.delete {
+        color: var(--error-color);
+      }
+    `,
+  ];
 }
 
 declare global {

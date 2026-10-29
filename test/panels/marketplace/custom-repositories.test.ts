@@ -87,7 +87,9 @@ const openPage = async (
 };
 
 const table = (page: HTMLElement) =>
-  page.shadowRoot!.querySelector("hass-tabs-subpage-data-table") as unknown as {
+  page.shadowRoot!.querySelector(
+    "hass-tabs-subpage-data-table"
+  ) as unknown as HTMLElement & {
     data: (RepositoryBase & { selectable: boolean })[];
     columns: DataTableColumnContainer<RepositoryBase>;
     clearSelection: () => void;
@@ -100,16 +102,15 @@ const clickRemove = (page: HTMLElement) => {
 };
 
 const selectAndRemove = async (page: HTMLElement, ids: string[]) => {
-  (page as unknown as { _selected: string[] })._selected = ids;
+  table(page).dispatchEvent(
+    new CustomEvent("selection-changed", { detail: { value: ids } })
+  );
   await (page as unknown as { updateComplete: Promise<boolean> })
     .updateComplete;
   page
     .shadowRoot!.querySelector('ha-assist-chip[slot="selection-bar"]')!
     .dispatchEvent(new Event("click"));
   await vi.waitFor(() => expect(showConfirmationDialog).toHaveBeenCalled());
-  await new Promise((resolve) => {
-    setTimeout(resolve, 0);
-  });
 };
 
 describe("ha-marketplace-custom-repositories", () => {
@@ -179,6 +180,10 @@ describe("ha-marketplace-custom-repositories", () => {
       table(page).clearSelection = clearSelection;
 
       await selectAndRemove(page, ["1", "2"]);
+      await vi.mocked(showConfirmationDialog).mock.results[0].value;
+      await vi.waitFor(() =>
+        expect(clearSelection).toHaveBeenCalledTimes(confirmed ? 1 : 0)
+      );
 
       const [, params] = vi.mocked(showConfirmationDialog).mock.lastCall!;
       expect(params.destructive).toBe(true);
@@ -189,7 +194,6 @@ describe("ha-marketplace-custom-repositories", () => {
           )
           .map(([message]) => message.repository)
       ).toEqual(removed);
-      expect(clearSelection).toHaveBeenCalledTimes(confirmed ? 1 : 0);
     }
   );
 
