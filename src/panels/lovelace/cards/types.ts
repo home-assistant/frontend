@@ -472,7 +472,7 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
-  date_format?: ClockCardDatePart[];
+  date_format?: ClockCardDateFormat;
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";
@@ -493,13 +493,21 @@ export type ClockCardDatePart =
   | "separator-dash"
   | "separator-slash"
   | "separator-dot"
+  | "separator-comma"
   | "separator-new-line";
+
+export type ClockCardDatePreset = "short" | "medium" | "long" | "full" | "iso";
+
+/**
+ * A preset name, or a custom list of date parts in display order.
+ */
+export type ClockCardDateFormat = ClockCardDatePreset | ClockCardDatePart[];
 
 export interface DateCardConfig extends LovelaceCardConfig {
   type: "date";
   title?: string;
   date_size?: "small" | "medium" | "large";
-  date_format?: ClockCardDatePart[];
+  date_format?: ClockCardDateFormat;
   time_zone?: string;
   no_background?: boolean;
 }
