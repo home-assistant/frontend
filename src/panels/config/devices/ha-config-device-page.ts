@@ -32,7 +32,10 @@ import { computeEntityEntryName } from "../../../common/entity/compute_entity_na
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { getDeviceArea } from "../../../common/entity/context/get_device_context";
 import { navigate } from "../../../common/navigate";
-import { stringCompare } from "../../../common/string/compare";
+import {
+  caseInsensitiveStringCompare,
+  stringCompare,
+} from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { groupBy } from "../../../common/util/group-by";
@@ -169,6 +172,19 @@ export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
 }
 
+export interface ChildDeviceEntities {
+  id: string;
+  name: string;
+  entities: EntityRegistryStateEntry[];
+}
+
+// The entity categories of child devices that are also shown on the parent
+// device page
+const CHILD_DEVICE_ENTITY_CATEGORIES: DeviceEntityCategory[] = [
+  "control",
+  "sensor",
+];
+
 export interface DeviceAction {
   href?: string;
   target?: string;
@@ -248,25 +264,78 @@ export class HaConfigDevicePage extends LitElement {
     }
   );
 
+  private _sortEntities = (entities: EntityRegistryStateEntry[]) =>
+    entities.sort((ent1, ent2) =>
+      stringCompare(
+        ent1.stateName || `zzz${ent1.entity_id}`,
+        ent2.stateName || `zzz${ent2.entity_id}`,
+        this.hass.locale.language
+      )
+    );
+
   private _entities = memoizeOne(
     (
       deviceId: string,
       entities: EntityRegistryEntry[],
       devices: HomeAssistant["devices"]
     ): EntityRegistryStateEntry[] =>
-      entities
-        .filter((entity) => entity.device_id === deviceId)
-        .map((entity) => ({
-          ...entity,
-          stateName: this._computeEntityName(entity, devices),
+      this._sortEntities(
+        entities
+          .filter((entity) => entity.device_id === deviceId)
+          .map((entity) => ({
+            ...entity,
+            stateName: this._computeEntityName(entity, devices),
+          }))
+      )
+  );
+
+  private _childDeviceEntities = memoizeOne(
+    (
+      deviceId: string,
+      entities: EntityRegistryEntry[],
+      devices: HomeAssistant["devices"]
+    ): Partial<Record<DeviceEntityCategory, ChildDeviceEntities[]>> => {
+      const result: Partial<
+        Record<DeviceEntityCategory, ChildDeviceEntities[]>
+      > = {};
+      const childDevices = Object.values(devices)
+        .filter((device) => device.parent_device_id === deviceId)
+        .map((device) => ({
+          id: device.id,
+          name: computeDeviceNameDisplay(device, this.hass.localize),
         }))
-        .sort((ent1, ent2) =>
-          stringCompare(
-            ent1.stateName || `zzz${ent1.entity_id}`,
-            ent2.stateName || `zzz${ent2.entity_id}`,
+        .sort((d1, d2) =>
+          caseInsensitiveStringCompare(
+            d1.name,
+            d2.name,
             this.hass.locale.language
           )
-        )
+        );
+      for (const childDevice of childDevices) {
+        const childEntities = this._sortEntities(
+          entities
+            .filter(
+              (entity) =>
+                entity.device_id === childDevice.id && !entity.disabled_by
+            )
+            .map((entity) => ({
+              ...entity,
+              stateName: computeEntityEntryName(entity) || childDevice.name,
+            }))
+        );
+        const byCategory = groupBy(childEntities, computeDeviceEntityCategory);
+        for (const category of CHILD_DEVICE_ENTITY_CATEGORIES) {
+          if (byCategory[category]?.length) {
+            (result[category] ??= []).push({
+              id: childDevice.id,
+              name: childDevice.name,
+              entities: byCategory[category],
+            });
+          }
+        }
+      }
+      return result;
+    }
   );
 
   private _getEntitiesSorted = (entities: HassEntity[]) =>
@@ -407,6 +476,12 @@ export class HaConfigDevicePage extends LitElement {
       this.hass.states
     );
     const entitiesByCategory = this._entitiesByCategory(entities);
+    const childDeviceEntities = this._childDeviceEntities(
+      this.deviceId,
+      this._entityReg,
+      this.hass.devices
+    );
+    const hasChildDeviceEntities = Object.keys(childDeviceEntities).length > 0;
     const quickLinkCounts = this._getQuickLinkCounts(entities, this._related);
     const batteryEntity = this._batteryEntity(entities);
     const batteryChargingEntity = this._batteryChargingEntity(entities);
@@ -842,7 +917,10 @@ export class HaConfigDevicePage extends LitElement {
       ${DEVICE_ENTITY_CATEGORIES.map((category) =>
         // Make sure we render controls if no other cards will be rendered
         entitiesByCategory[category].length > 0 ||
-        (entities.length === 0 && category === "control")
+        childDeviceEntities[category]?.length ||
+        (entities.length === 0 &&
+          !hasChildDeviceEntities &&
+          category === "control")
           ? html`
               <ha-device-entities-card
                 .hass=${this.hass}
@@ -851,6 +929,7 @@ export class HaConfigDevicePage extends LitElement {
                 )}
                 .deviceName=${deviceName}
                 .entities=${entitiesByCategory[category]}
+                .childDeviceEntities=${childDeviceEntities[category]}
                 .showHidden=${device.disabled_by !== null}
               >
               </ha-device-entities-card>
