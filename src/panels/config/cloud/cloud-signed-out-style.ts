@@ -3,6 +3,9 @@ import { css } from "lit";
 export const cloudSignedOutStyle = css`
   .content {
     box-sizing: border-box;
+    max-width: calc(
+      var(--ha-content-width-narrow) + 2 * var(--ha-content-gutter)
+    );
     display: flex;
     flex-direction: column;
     padding-bottom: calc(var(--safe-area-inset-bottom) + var(--ha-space-6));
