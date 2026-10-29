@@ -30,10 +30,12 @@ import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
-import "../../components/ha-list";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
+import "../../components/item/ha-list-item-button";
+import type { HaListItemButton } from "../../components/item/ha-list-item-button";
+import "../../components/list/ha-list-base";
 import { deleteConfigEntry } from "../../data/config_entries";
 import { getExtendedEntityRegistryEntry } from "../../data/entity/entity_registry";
 import { fetchIntegrationManifest } from "../../data/integration";
@@ -177,13 +179,14 @@ class PanelTodo extends LitElement {
       ? this.hass.states[this._entityId]
       : undefined;
     const showPane = this._showPaneController.value ?? !this.narrow;
-    const listItems = getTodoLists(
+    const todoLists = getTodoLists(
       this.hass.states,
       this.hass.entities,
       this.hass.formatEntityName,
       this.hass.locale.language,
       false
-    ).map(
+    );
+    const listItems = todoLists.map(
       (list) =>
         html`<ha-dropdown-item
           @click=${this._setEntityId}
@@ -236,7 +239,20 @@ class PanelTodo extends LitElement {
               : this.hass.localize("panel.todo")
           }
         </div>
-        <ha-list slot="pane" activatable>${listItems}</ha-list>
+        <ha-list-base slot="pane">
+          ${todoLists.map(
+            (list) => html`
+              <ha-list-item-button
+                .entityId=${list.entity_id}
+                class=${list.entity_id === this._entityId ? "selected" : ""}
+                @click=${this._setEntityIdFromRow}
+              >
+                <ha-state-icon slot="start" .stateObj=${list}></ha-state-icon>
+                <span slot="headline">${list.name}</span>
+              </ha-list-item-button>
+            `
+          )}
+        </ha-list-base>
         ${
           showPane && this.hass.user?.is_admin
             ? html`<ha-button
@@ -419,6 +435,12 @@ class PanelTodo extends LitElement {
     this._entityId = item.value;
   }
 
+  private _setEntityIdFromRow(
+    ev: HASSDomCurrentTargetEvent<HaListItemButton & { entityId: string }>
+  ) {
+    this._entityId = ev.currentTarget.entityId;
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -469,6 +491,10 @@ class PanelTodo extends LitElement {
 
         ha-dropdown.lists ha-dropdown-item {
           max-width: 80vw;
+        }
+
+        ha-list-item-button.selected::part(base) {
+          background-color: var(--ha-color-fill-neutral-quiet-hover);
         }
       `,
     ];
