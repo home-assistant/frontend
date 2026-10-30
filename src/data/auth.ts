@@ -86,18 +86,24 @@ export const deleteLoginFlow = (flow_id) =>
     credentials: "same-origin",
   });
 
+// OAuth 2: 3.1.2 we need to retain query component of a redirect URI
+const prepareRedirectQuery = (url: string) => {
+  if (!url.includes("?")) {
+    return `${url}?`;
+  }
+  if (!url.endsWith("?") && !url.endsWith("&")) {
+    return `${url}&`;
+  }
+  return url;
+};
+
 export const redirectWithAuthCode = (
   url: string,
   authCode: string,
   oauth2State: string | undefined,
   storeToken: boolean
 ) => {
-  // OAuth 2: 3.1.2 we need to retain query component of a redirect URI
-  if (!url.includes("?")) {
-    url += "?";
-  } else if (!url.endsWith("?") && !url.endsWith("&")) {
-    url += "&";
-  }
+  url = prepareRedirectQuery(url);
 
   url += `code=${encodeURIComponent(authCode)}`;
 
@@ -106,6 +112,22 @@ export const redirectWithAuthCode = (
   }
   if (storeToken) {
     url += `&storeToken=true`;
+  }
+
+  document.location.assign(url);
+};
+
+// OAuth 2: 4.1.2.1 the user denied the authorization request
+export const redirectWithAccessDenied = (
+  url: string,
+  oauth2State: string | undefined
+) => {
+  url = prepareRedirectQuery(url);
+
+  url += "error=access_denied";
+
+  if (oauth2State !== undefined) {
+    url += `&state=${encodeURIComponent(oauth2State)}`;
   }
 
   document.location.assign(url);

@@ -12528,7 +12528,6 @@
         "initializing": "Initializing",
         "authorizing": "Log in to your Home Assistant instance",
         "authorizing_app": "You're about to give the Home Assistant Companion app for {app} access to your Home Assistant instance.",
-        "authorizing_client": "You're about to give {clientId} access to your Home Assistant instance.",
         "pick_auth_provider": "Or log in with",
         "abort_intro": "Login aborted",
         "store_token": "Keep me logged in",
@@ -12538,6 +12537,13 @@
         "who_is_logging_in": "Who is logging in?",
         "other_options": "Other login options",
         "forgot_password": "Forgot password?",
+        "consent": {
+          "title": "Allow access?",
+          "description": "{clientId} wants full access to your Home Assistant instance.",
+          "warning": "It can do everything you can do, like control your devices, view your history, and change your settings. Only allow access if you trust this application.",
+          "allow": "Allow",
+          "deny": "Deny"
+        },
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",

@@ -88,6 +88,10 @@ export class HaAuthorize extends provideLiteI18nMixin(
 
     const app = this.clientId && this.clientId in appNames;
 
+    const clientName = this.clientId
+      ? html`<b>${punycode.toASCII(this.clientId)}</b>`
+      : this.clientId;
+
     return html`
       <style>
         ha-pick-auth-provider {
@@ -158,26 +162,11 @@ export class HaAuthorize extends provideLiteI18nMixin(
       </style>
 
       ${
-        !this._ownInstance
-          ? html`<ha-alert .alertType=${app ? "info" : "warning"}>
-              ${
-                app
-                  ? this.localize("ui.panel.page-authorize.authorizing_app", {
-                      app: appNames[this.clientId!],
-                    })
-                  : this.localize(
-                      "ui.panel.page-authorize.authorizing_client",
-                      {
-                        clientId: html`<b
-                          >${
-                            this.clientId
-                              ? punycode.toASCII(this.clientId)
-                              : this.clientId
-                          }</b
-                        >`,
-                      }
-                    )
-              }
+        app
+          ? html`<ha-alert alert-type="info">
+              ${this.localize("ui.panel.page-authorize.authorizing_app", {
+                app: appNames[this.clientId!],
+              })}
             </ha-alert>`
           : nothing
       }
@@ -197,6 +186,14 @@ export class HaAuthorize extends provideLiteI18nMixin(
                   .responseType=${this.responseType}
                   .authProvider=${this._authProvider}
                   .initStoreToken=${this._preselectStoreToken}
+                  .consentMessage=${
+                    this._ownInstance || app
+                      ? undefined
+                      : this.localize(
+                          "ui.panel.page-authorize.consent.description",
+                          { clientId: clientName }
+                        )
+                  }
                 ></ha-auth-flow>
                 ${
                   inactiveProviders!.length > 0

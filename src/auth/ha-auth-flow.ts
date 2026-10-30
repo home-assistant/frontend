@@ -1,6 +1,6 @@
 /* eslint-disable lit/prefer-static-styles */
 import { genClientId } from "home-assistant-js-websocket";
-import type { PropertyValues } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
@@ -14,6 +14,7 @@ import {
   autocompleteLoginFields,
   createLoginFlow,
   deleteLoginFlow,
+  redirectWithAccessDenied,
   redirectWithAuthCode,
   submitLoginFlow,
 } from "../data/auth";
@@ -25,7 +26,7 @@ import "./ha-auth-form";
 import type { HaAuthForm } from "./ha-auth-form";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 
-type State = "loading" | "error" | "step";
+type State = "loading" | "error" | "step" | "consent";
 
 @customElement("ha-auth-flow")
 export class HaAuthFlow extends LitElement {
@@ -47,6 +48,10 @@ export class HaAuthFlow extends LitElement {
 
   @property({ attribute: false }) public initStoreToken = false;
 
+  // When set, the user must allow access before the client gets the auth code
+  @property({ attribute: false }) public consentMessage?:
+    string | TemplateResult;
+
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -60,6 +65,10 @@ export class HaAuthFlow extends LitElement {
   @state() private _errorMessage?: string;
 
   @state() private _submitting = false;
+
+  @state() private _consentReady = false;
+
+  private _authCode?: string;
 
   @query("ha-auth-form") private _form?: HaAuthForm;
 
@@ -131,6 +140,16 @@ export class HaAuthFlow extends LitElement {
         }
         .action ha-button {
           width: 100%;
+        }
+        .consent {
+          text-align: start;
+        }
+        .consent-actions {
+          display: flex;
+          gap: var(--ha-space-2);
+        }
+        .consent-actions ha-button {
+          flex: 1;
         }
       </style>
       <form @submit=${this._handleSubmit}>${this._renderForm()}</form>
@@ -209,6 +228,29 @@ export class HaAuthFlow extends LitElement {
           <div class="action">
             <ha-button @click=${this._startOver}>
               ${this._localize("ui.panel.page-authorize.form.start_over")}
+            </ha-button>
+          </div>
+        `;
+      case "consent":
+        return html`
+          <div class="consent">
+            <h1>${this._localize("ui.panel.page-authorize.consent.title")}</h1>
+            <p>${this.consentMessage}</p>
+            <p>${this._localize("ui.panel.page-authorize.consent.warning")}</p>
+          </div>
+          <div class="action consent-actions">
+            <ha-button
+              appearance="plain"
+              variant="neutral"
+              @click=${this._denyAccess}
+            >
+              ${this._localize("ui.panel.page-authorize.consent.deny")}
+            </ha-button>
+            <ha-button
+              .disabled=${!this._consentReady}
+              @click=${this._allowAccess}
+            >
+              ${this._localize("ui.panel.page-authorize.consent.allow")}
             </ha-button>
           </div>
         `;
@@ -318,12 +360,7 @@ export class HaAuthFlow extends LitElement {
       if (response.ok) {
         // allow auth provider bypass the login form
         if (data.type === "create_entry") {
-          redirectWithAuthCode(
-            this.redirectUri!,
-            data.result,
-            this.oauth2State,
-            this._storeToken
-          );
+          this._handleAuthCode(data.result);
           return;
         }
 
@@ -375,9 +412,40 @@ export class HaAuthFlow extends LitElement {
     this._providerChanged(this.authProvider);
   }
 
+  private _handleAuthCode(authCode: string) {
+    if (!this.consentMessage) {
+      redirectWithAuthCode(
+        this.redirectUri!,
+        authCode,
+        this.oauth2State,
+        this._storeToken
+      );
+      return;
+    }
+    this._authCode = authCode;
+    this._state = "consent";
+    // Delay Allow so a click meant for the login button does not grant access
+    setTimeout(() => {
+      this._consentReady = true;
+    }, 1000);
+  }
+
+  private _allowAccess() {
+    redirectWithAuthCode(
+      this.redirectUri!,
+      this._authCode!,
+      this.oauth2State,
+      this._storeToken
+    );
+  }
+
+  private _denyAccess() {
+    redirectWithAccessDenied(this.redirectUri!, this.oauth2State);
+  }
+
   private async _handleSubmit(ev: Event) {
     ev.preventDefault();
-    if (this.step == null) {
+    if (this._state === "consent" || this.step == null) {
       return;
     }
     if (this.step.type !== "form") {
@@ -405,12 +473,7 @@ export class HaAuthFlow extends LitElement {
       }
 
       if (newStep.type === "create_entry") {
-        redirectWithAuthCode(
-          this.redirectUri!,
-          newStep.result,
-          this.oauth2State,
-          this._storeToken
-        );
+        this._handleAuthCode(newStep.result);
         return;
       }
       this.step = newStep;
