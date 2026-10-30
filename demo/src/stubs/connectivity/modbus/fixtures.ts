@@ -13,16 +13,23 @@ export const modbusFixtures: ConnectivityFixtures = {
   components: ["modbus"],
   commands: ["modbus/"],
   manifests: [
+    manifest("modbus", "Modbus", {
+      config_flow: false,
+      iot_class: "local_polling",
+    }),
     manifest("flexit", "Flexit", {
       integration_type: "device",
+      dependencies: ["modbus"],
       iot_class: "local_polling",
     }),
     manifest("solaredge_modbus", "SolarEdge Modbus", {
       integration_type: "device",
+      dependencies: ["modbus"],
       iot_class: "local_polling",
     }),
     manifest("fronius", "Fronius", {
       integration_type: "device",
+      dependencies: ["modbus"],
       iot_class: "local_polling",
     }),
   ],
