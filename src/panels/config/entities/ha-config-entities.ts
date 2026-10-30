@@ -1,3 +1,4 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiAlertCircle,
@@ -13,6 +14,7 @@ import {
   mdiPlus,
   mdiRestore,
   mdiRestoreAlert,
+  mdiTextureBox,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
 } from "@mdi/js";
@@ -79,6 +81,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
+import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { CloudStatus } from "../../../data/cloud";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
@@ -130,6 +133,7 @@ import {
   getLabelsTableColumn,
   getModifiedAtTableColumn,
 } from "../common/data-table-columns";
+import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { configSections } from "../config-sections";
 import type { Helper } from "../helpers/const";
 import { isHelperDomain } from "../helpers/const";
@@ -270,6 +274,10 @@ export class HaConfigEntities extends LitElement {
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
+
+  private _sizeController = new ResizeController(this, {
+    callback: (entries) => entries[0]?.contentRect.width,
+  });
 
   // The filters are kept in the URL by the page, the search, sorting and
   // grouping by the table
@@ -800,6 +808,33 @@ export class HaConfigEntities extends LitElement {
         ${this.hass.localize("ui.panel.config.labels.add_label")}
       </ha-dropdown-item>`;
 
+  private _renderAreaItems = (slot = "") =>
+    html`${Object.values(this.hass.areas).map(
+        (area) =>
+          html`<ha-dropdown-item .slot=${slot} .value=${`area_${area.area_id}`}>
+            ${
+              area.icon
+                ? html`<ha-icon slot="icon" .icon=${area.icon}></ha-icon>`
+                : html`<ha-svg-icon
+                    slot="icon"
+                    .path=${mdiTextureBox}
+                  ></ha-svg-icon>`
+            }
+            ${area.name}
+          </ha-dropdown-item>`
+      )}
+      <ha-dropdown-item .slot=${slot} value="area_none">
+        ${this.hass.localize(
+          "ui.panel.config.devices.picker.bulk_actions.no_area"
+        )}
+      </ha-dropdown-item>
+      <wa-divider .slot=${slot}></wa-divider>
+      <ha-dropdown-item .slot=${slot} value="area_create">
+        ${this.hass.localize(
+          "ui.panel.config.devices.picker.bulk_actions.add_area"
+        )}
+      </ha-dropdown-item>`;
+
   protected render() {
     if (!this.hass || this._entities === undefined) {
       return html` <hass-loading-screen></hass-loading-screen> `;
@@ -823,6 +858,10 @@ export class HaConfigEntities extends LitElement {
       this.cloudStatus,
       this.hass
     );
+
+    const areasInOverflow =
+      (this._sizeController.value && this._sizeController.value < 700) ||
+      (!this._sizeController.value && this.hass.dockedSidebar === "docked");
 
     const includeAddDeviceFab =
       filteredDomains.size === 1 &&
@@ -884,22 +923,43 @@ export class HaConfigEntities extends LitElement {
         ${
           !this.narrow
             ? html`<ha-dropdown
-                slot="selection-bar"
-                @wa-select=${this._handleBulkLabel}
-              >
-                <ha-assist-chip
-                  slot="trigger"
-                  .label=${this.hass.localize(
-                    "ui.panel.config.automation.picker.bulk_actions.add_label"
-                  )}
+                  slot="selection-bar"
+                  @wa-select=${this._handleBulkLabel}
                 >
-                  <ha-svg-icon
-                    slot="trailing-icon"
-                    .path=${mdiMenuDown}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-                ${this._renderLabelItems()}
-              </ha-dropdown>`
+                  <ha-assist-chip
+                    slot="trigger"
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.bulk_actions.add_label"
+                    )}
+                  >
+                    <ha-svg-icon
+                      slot="trailing-icon"
+                      .path=${mdiMenuDown}
+                    ></ha-svg-icon>
+                  </ha-assist-chip>
+                  ${this._renderLabelItems()}
+                </ha-dropdown>
+                ${
+                  areasInOverflow
+                    ? nothing
+                    : html`<ha-dropdown
+                        slot="selection-bar"
+                        @wa-select=${this._handleBulkArea}
+                      >
+                        <ha-assist-chip
+                          slot="trigger"
+                          .label=${this.hass.localize(
+                            "ui.panel.config.devices.picker.bulk_actions.move_area"
+                          )}
+                        >
+                          <ha-svg-icon
+                            slot="trailing-icon"
+                            .path=${mdiMenuDown}
+                          ></ha-svg-icon>
+                        </ha-assist-chip>
+                        ${this._renderAreaItems()}
+                      </ha-dropdown>`
+                }`
             : nothing
         }
         <ha-dropdown slot="selection-bar" @wa-select=${this._handleBulkAction}>
@@ -932,6 +992,17 @@ export class HaConfigEntities extends LitElement {
                     )}
                     <ha-icon-next slot="end"></ha-icon-next>
                     ${this._renderLabelItems("submenu")}
+                  </ha-dropdown-item>
+                  <wa-divider></wa-divider>`
+              : nothing
+          }
+          ${
+            this.narrow || areasInOverflow
+              ? html`<ha-dropdown-item>
+                    ${this.hass.localize(
+                      "ui.panel.config.devices.picker.bulk_actions.move_area"
+                    )}
+                    ${this._renderAreaItems("submenu")}
                   </ha-dropdown-item>
                   <wa-divider></wa-divider>`
               : nothing
@@ -1504,6 +1575,56 @@ ${rejected
     });
   };
 
+  private _handleBulkArea(ev: HaDropdownSelectEvent) {
+    const area = ev.detail.item.value;
+
+    if (area === "area_create") {
+      this._bulkCreateArea();
+      return;
+    }
+    if (area === "area_none") {
+      this._bulkAddArea(null);
+      return;
+    }
+    if (area?.startsWith("area_")) {
+      this._bulkAddArea(area.substring(5));
+    }
+  }
+
+  private async _bulkAddArea(area: string | null) {
+    const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(
+        updateEntityRegistryEntry(this.hass, entityId, {
+          area_id: area,
+        })
+      );
+    });
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
+      });
+    }
+  }
+
+  private _bulkCreateArea = () => {
+    showAreaRegistryDetailDialog(this, {
+      createEntry: async (values) => {
+        const area = await createAreaRegistryEntry(this.hass, values);
+        this._bulkAddArea(area.area_id);
+        return area;
+      },
+    });
+  };
+
   private _restoreEntityIdSelected = () => {
     regenerateEntityIds(this, this.hass, this._selected);
 
@@ -1680,6 +1801,11 @@ ${rejected
       return;
     }
 
+    if (action.startsWith("area_")) {
+      this._handleBulkArea(ev);
+      return;
+    }
+
     if (action.startsWith("expose_") || action.startsWith("unexpose_")) {
       const assistant = action.substring(action.indexOf("_") + 1);
       this._exposeSelected(
@@ -1817,6 +1943,9 @@ ${rejected
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+        }
         hass-tabs-subpage-data-table {
           --data-table-row-height: 60px;
         }
