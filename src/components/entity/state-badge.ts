@@ -7,6 +7,7 @@ import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
 import { computeCssColor } from "../../common/color/compute-color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -60,7 +61,10 @@ export class StateBadge extends LitElement {
 
   @state()
   @consume({ context: uiContext, subscribe: true })
-  private _hassUi?: ContextType<typeof uiContext>;
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: (ui) => ui?.themes?.darkMode,
+  })
+  private _darkMode?: boolean;
 
   @state() private _iconStyle: Record<string, string | undefined> = {};
 
@@ -140,11 +144,6 @@ export class StateBadge extends LitElement {
 
   public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    // Brand images have a dark variant, so the picture changes with the theme
-    const darkModeChanged =
-      changedProps.has("_hassUi") &&
-      (changedProps.get("_hassUi") as HomeAssistantUI | undefined)?.themes
-        ?.darkMode !== this._hassUi?.themes?.darkMode;
     if (
       !changedProps.has("stateObj") &&
       !changedProps.has("overrideImage") &&
@@ -153,7 +152,8 @@ export class StateBadge extends LitElement {
       !changedProps.has("color") &&
       !changedProps.has("_connection") &&
       !changedProps.has("_brandsAccessToken") &&
-      !darkModeChanged
+      // Brand images have a dark variant, so the picture changes with the theme
+      !changedProps.has("_darkMode")
     ) {
       return;
     }
@@ -235,7 +235,7 @@ export class StateBadge extends LitElement {
     if (!url) {
       return "";
     }
-    const themedUrl = this._hassUi?.themes?.darkMode ? darkBrandUrl(url) : url;
+    const themedUrl = this._darkMode ? darkBrandUrl(url) : url;
     if (this._connection) {
       return this._connection.hassUrl(themedUrl);
     }
