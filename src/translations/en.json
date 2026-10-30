@@ -1663,7 +1663,9 @@
         "no_items": "No items available",
         "unknown_item": "Unknown item",
         "search_or_custom": "Search | Add custom item",
-        "add_custom_item": "Add custom item"
+        "add_custom_item": "Add custom item",
+        "result_count": "{count} {count, plural,\n one {result}\n other {results}\n} for {term}",
+        "no_results": "No results for {term}"
       },
       "suggest_with_ai": {
         "label": "Suggest",

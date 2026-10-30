@@ -15,6 +15,7 @@ import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { tinykeys } from "tinykeys";
 import { findSectionTitle } from "./list/find-section-title";
+import { searchResultsStatus } from "./list/search-results-status";
 import { consume } from "../common/decorators/consume";
 import {
   fireEvent,
@@ -23,6 +24,7 @@ import {
 } from "../common/dom/fire_event";
 import { ignoreRepeatedActivation } from "../common/keyboard/ignore-repeated-activation";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import { debounce } from "../common/util/debounce";
 import { internationalizationContext } from "../data/context";
 import { ScrollableFadeMixin } from "../mixins/scrollable-fade-mixin";
 import {
@@ -164,6 +166,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   @property({ attribute: false })
   public notFoundLabel?: string | ((search: string) => string);
 
+  /** Whether a row from `getItems` counts as a search result for screen readers, so a row offered for any search, like the quick bar's "Ask Assist", can be left out */
+  @property({ attribute: false })
+  public isSearchResult?: (item: PickerComboBoxItem) => boolean;
+
   @property({ attribute: "empty-label" })
   public emptyLabel?: string;
 
@@ -224,11 +230,17 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @state() private _sectionTitle?: string;
 
+  @state() private _status?: string;
+
   private _allItems: PickerComboBoxItem[] = [];
 
   // Rows from this index on are added by the combo box itself, like "Add custom
   // item", and belong to no section.
   private _sectionedItemsCount = 0;
+
+  // Rows the combo box offers for any search, like "Add custom item" and the
+  // additional items, are not search results.
+  private _actionItems = new WeakSet<PickerComboBoxItem>();
 
   // The virtualized list renders its scroller a moment after it connects, so
   // the scroll fades attach once it reports its first visible rows.
@@ -251,12 +263,17 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     }
   }
 
-  public willUpdate() {
+  public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this._selectedSection = this.selectedSection;
       this._allItems = this._getItems();
       this._items = this._allItems;
       this._updateListMode();
+    }
+    // New rows make the last message out of date, so clear it at once. The new
+    // one is then read out even when its text is the same as before.
+    if (changedProps.has("_items")) {
+      this._status = undefined;
     }
   }
 
@@ -266,6 +283,13 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     // rows change: typing, a section chip, or refreshed items.
     if (changedProps.has("_items") && this._search) {
       this._highlightTopMatch();
+    }
+    if (changedProps.has("_items")) {
+      if (this._search) {
+        this._updateStatus();
+      } else {
+        this._updateStatus.cancel();
+      }
     }
   }
 
@@ -303,6 +327,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   disconnectedCallback() {
     super.disconnectedCallback();
     this._removeKeyboardShortcuts?.();
+    this._updateStatus.cancel();
+    this._status = undefined;
   }
 
   public refreshItems() {
@@ -362,8 +388,27 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       >
         ${this._plainList ? this._renderPlainList() : this._renderVirtualList()}
         ${this.renderScrollableFades()}
+      </div>
+      <div class="visually-hidden" role="status">
+        ${this._status ?? nothing}
       </div>`;
   }
+
+  // DOM focus stays in the search field, so screen readers hear nothing when
+  // the list changes. Announce how many items match instead, once typing
+  // pauses, so the count doesn't compete with each typed character.
+  private _updateStatus = debounce(() => {
+    this._status = searchResultsStatus(
+      this._search,
+      this._items,
+      (item) =>
+        this._isOption(item) &&
+        !this._actionItems.has(item) &&
+        (this.isSearchResult?.(item) ?? true),
+      this.i18n?.localize,
+      this.notFoundLabel
+    );
+  }, 500);
 
   private _renderPlainList() {
     return html`
@@ -454,8 +499,25 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     }
   }
 
-  private _getAdditionalItems = (searchString?: string) =>
-    this.getAdditionalItems?.(searchString) || [];
+  private _getAdditionalItems = (searchString?: string) => {
+    const items = this.getAdditionalItems?.(searchString) || [];
+    items.forEach((item) => this._actionItems.add(item));
+    return items;
+  };
+
+  private _getCustomValueItem(search: string): PickerComboBoxItem {
+    const item = {
+      id: search,
+      primary:
+        this.customValueLabel ??
+        this.i18n?.localize?.("ui.components.combo-box.add_custom_item") ??
+        "Add custom item",
+      secondary: `"${search}"`,
+      icon_path: mdiPlus,
+    };
+    this._actionItems.add(item);
+    return item;
+  }
 
   private _getItems = () => {
     let items = [...(this.getItems(this._search, this._selectedSection) || [])];
@@ -497,15 +559,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     items.push(...additionalItems);
 
     if (this.allowCustomValue && this._search) {
-      items.push({
-        id: this._search,
-        primary:
-          this.customValueLabel ??
-          this.i18n?.localize?.("ui.components.combo-box.add_custom_item") ??
-          "Add custom item",
-        secondary: `"${this._search}"`,
-        icon_path: mdiPlus,
-      });
+      items.push(this._getCustomValueItem(this._search));
     }
 
     if (this.mode === "dialog") {
@@ -666,15 +720,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
       }
 
       if (this.allowCustomValue && searchString) {
-        filteredItems.push({
-          id: searchString,
-          primary:
-            this.customValueLabel ??
-            this.i18n?.localize?.("ui.components.combo-box.add_custom_item") ??
-            "Add custom item",
-          secondary: `"${searchString}"`,
-          icon_path: mdiPlus,
-        });
+        filteredItems.push(this._getCustomValueItem(searchString));
       }
 
       this._items = filteredItems;
@@ -1017,6 +1063,17 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           flex-direction: column;
           align-items: center;
           padding: var(--ha-space-3);
+        }
+
+        .visually-hidden {
+          position: absolute;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          height: 1px;
+          width: 1px;
+          margin: -1px;
+          padding: 0;
+          border: 0;
         }
       `,
     ];
