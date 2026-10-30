@@ -561,7 +561,8 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
             controlled
             aria-label=${
               this._config.title ||
-              computeEntityEntryName(this._entities[this._entityId]) ||
+              (this._entities?.[this._entityId] &&
+                computeEntityEntryName(this._entities[this._entityId])) ||
               computeStateName(stateObj)
             }
           >
