@@ -22,6 +22,7 @@ describe("entities query params", () => {
         "ha-filter-states": [],
         "ha-filter-floor-areas": undefined,
         "ha-filter-devices": ["abc"],
+        "ha-filter-device-classes": [],
         "ha-filter-integrations": [],
         "ha-filter-domains": [],
         "ha-filter-labels": ["a", "b"],
@@ -63,6 +64,7 @@ describe("entities query params", () => {
       "ha-filter-states": ["enabled", "hidden"],
       "ha-filter-floor-areas": { floors: ["ground"], areas: ["kitchen"] },
       "ha-filter-devices": ["abc"],
+      "ha-filter-device-classes": ["problem", "temperature"],
       "ha-filter-integrations": ["hue"],
       "ha-filter-domains": ["light"],
       "ha-filter-labels": ["a"],
@@ -79,5 +81,13 @@ describe("entities query params", () => {
         )
       )
     ).toEqual({ search: "", filters });
+  });
+
+  it("reads device class filters from URL", () => {
+    expect(
+      entitiesLinkFromUrl("?device_class=problem,temperature")?.filters[
+        "ha-filter-device-classes"
+      ]
+    ).toEqual(["problem", "temperature"]);
   });
 });

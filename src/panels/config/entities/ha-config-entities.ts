@@ -67,6 +67,7 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-entity-id-icon";
+import "../../../components/ha-filter-device-classes";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -82,11 +83,16 @@ import "../../../components/ha-tooltip";
 import type { CloudStatus } from "../../../data/cloud";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
-import { fullEntitiesContext, labelsContext } from "../../../data/context";
+import {
+  fullEntitiesContext,
+  internationalizationContext,
+  labelsContext,
+} from "../../../data/context";
 import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
+import { computeDeviceClassName } from "../../../data/entity/device_class";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
@@ -120,7 +126,11 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantInternationalization,
+  Route,
+} from "../../../types";
 import { showToast } from "../../../util/toast";
 import {
   getAreaTableColumn,
@@ -160,6 +170,7 @@ export interface EntityRow extends StateEntity {
   status: string | undefined;
   area?: string;
   device?: string;
+  device_class: string | null;
   device_full?: string;
   localized_platform: string;
   domain: string;
@@ -183,6 +194,12 @@ const getVoiceAssistantIds = (
 
 @customElement("ha-config-entities")
 export class HaConfigEntities extends LitElement {
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: HomeAssistantInternationalization;
+
+  private _loadedDeviceClassDomains = new Set<string>();
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -298,6 +315,37 @@ export class HaConfigEntities extends LitElement {
     );
   }
 
+  private _getDeviceClass(entry: StateEntity): string | null {
+    return this.hass.states[entry.entity_id]?.attributes.device_class ?? null;
+  }
+
+  private _getDeviceClassName(entityId: string, deviceClass: string): string {
+    return computeDeviceClassName(
+      this._i18n?.localize ?? this.hass.localize,
+      computeDomain(entityId),
+      deviceClass
+    );
+  }
+
+  private get _deviceClasses() {
+    const classes = new Map<string, string>();
+
+    for (const entry of [...this._entities, ...this._entitiesWithoutUniqueId]) {
+      const deviceClass = this._getDeviceClass(entry);
+
+      if (deviceClass && !classes.has(deviceClass)) {
+        classes.set(
+          deviceClass,
+          this._getDeviceClassName(entry.entity_id, deviceClass)
+        );
+      }
+    }
+
+    return [...classes]
+      .map(([value, label]) => ({ value, label }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }
+
   private _states = memoize((localize: LocalizeFunc) => [
     {
       value: "available",
@@ -392,6 +440,13 @@ export class HaConfigEntities extends LitElement {
         filterable: true,
       },
       domain: getDomainTableColumn(localize),
+      device_class: {
+        title: localize("ui.components.device-class-picker.device_class"),
+        sortable: true,
+        filterable: true,
+        defaultHidden: true,
+        template: (entry) => entry.device_class || "—",
+      },
       disabled_by: {
         title: localize("ui.panel.config.entities.picker.headers.disabled_by"),
         hidden: true,
@@ -630,6 +685,15 @@ export class HaConfigEntities extends LitElement {
           );
           filter!.forEach((domain) => filteredDomains.add(domain));
         } else if (
+          key === "ha-filter-device-classes" &&
+          Array.isArray(filter) &&
+          filter.length
+        ) {
+          filteredEntities = filteredEntities.filter((entry) => {
+            const deviceClass = this._getDeviceClass(entry);
+            return deviceClass != null && filter.includes(deviceClass);
+          });
+        } else if (
           key === "ha-filter-domains" &&
           Array.isArray(filter) &&
           filter.length
@@ -713,9 +777,13 @@ export class HaConfigEntities extends LitElement {
           exposedEntities,
           entry.entity_id
         );
+        const deviceClass = this._getDeviceClass(entry);
 
         result.push({
           ...entry,
+          device_class: deviceClass
+            ? this._getDeviceClassName(entry.entity_id, deviceClass)
+            : null,
           name:
             entityName ||
             deviceName ||
@@ -1064,6 +1132,18 @@ export class HaConfigEntities extends LitElement {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
+        <ha-filter-device-classes
+          .label=${this.hass.localize(
+            "ui.components.device-class-picker.device_class"
+          )}
+          .value=${this._filters["ha-filter-device-classes"]}
+          .states=${this._deviceClasses}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-device-classes"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-device-classes>
         <ha-filter-domains
           .value=${this._filters["ha-filter-domains"]}
           @data-table-filter-changed=${this._filterChanged}
@@ -1249,6 +1329,29 @@ export class HaConfigEntities extends LitElement {
     let changed = false;
     if (!this.hass || !this._entities) {
       return;
+    }
+
+    if (
+      this._i18n &&
+      (changedProps.has("_i18n") ||
+        changedProps.has("_entities") ||
+        changedProps.has("_entitiesWithoutUniqueId"))
+    ) {
+      for (const entry of [
+        ...this._entities,
+        ...this._entitiesWithoutUniqueId,
+      ]) {
+        if (!this._getDeviceClass(entry)) {
+          continue;
+        }
+
+        const domain = computeDomain(entry.entity_id);
+
+        if (!this._loadedDeviceClassDomains.has(domain)) {
+          this._loadedDeviceClassDomains.add(domain);
+          this._i18n.loadBackendTranslation("entity_component", domain);
+        }
+      }
     }
 
     // Only the *set* of entity ids matters for the list below. A plain state
