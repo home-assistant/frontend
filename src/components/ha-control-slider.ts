@@ -5,10 +5,12 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import { mainWindow } from "../common/dom/get_main_window";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { FrontendLocaleData } from "../data/translation";
 
 declare global {
@@ -42,6 +44,8 @@ export class HaControlSlider extends LitElement {
   };
 
   @property({ attribute: false }) public locale?: FrontendLocaleData;
+
+  @state() @consumeLocalize() private _localize?: LocalizeFunc;
 
   @property({ type: Boolean, reflect: true })
   public disabled = false;
@@ -139,17 +143,27 @@ export class HaControlSlider extends LitElement {
     this.setupListeners();
   }
 
-  protected updated(changedProps: PropertyValues<this>) {
+  protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (changedProps.has("value") || changedProps.has("roundValue")) {
+    if (
+      changedProps.has("value") ||
+      changedProps.has("roundValue") ||
+      changedProps.has("_localize")
+    ) {
       // An unknown value must not be announced as the minimum.
       if (this.value == null) {
         this.removeAttribute("aria-valuenow");
-        this.removeAttribute("aria-valuetext");
       } else {
-        const valuenow = this._displayedValue(this.value);
-        this.setAttribute("aria-valuenow", valuenow.toString());
-        this.setAttribute("aria-valuetext", this._formatValue(valuenow));
+        this.setAttribute(
+          "aria-valuenow",
+          this._displayedValue(this.value).toString()
+        );
+      }
+      const valuetext = this._ariaValueText();
+      if (valuetext) {
+        this.setAttribute("aria-valuetext", valuetext);
+      } else {
+        this.removeAttribute("aria-valuetext");
       }
     }
     if (changedProps.has("min")) {
@@ -318,6 +332,13 @@ export class HaControlSlider extends LitElement {
     return Math.max(Math.min(1, (x - offset) / total), 0);
   };
 
+  private _ariaValueText() {
+    if (this.value == null) {
+      return this._localize?.("state.default.unknown");
+    }
+    return this._formatValue(this._displayedValue(this.value));
+  }
+
   private _formatValue(value: number) {
     const formattedValue = formatNumber(value, this.locale);
 
@@ -373,9 +394,7 @@ export class HaControlSlider extends LitElement {
           tabindex="0"
           aria-label=${ifDefined(this.label)}
           aria-valuenow=${ifDefined(valuenow?.toString())}
-          aria-valuetext=${ifDefined(
-            valuenow != null ? this._formatValue(valuenow) : undefined
-          )}
+          aria-valuetext=${ifDefined(this._ariaValueText() || undefined)}
           aria-valuemin=${ifDefined(
             this.min != null ? this.min.toString() : undefined
           )}
