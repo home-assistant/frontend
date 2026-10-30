@@ -713,6 +713,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               }
               ${
                 this._manifest?.integration_type !== "hardware" &&
+                !showDependents &&
                 (!this._manifest?.single_config_entry ||
                   (normalData.length === 0 && attentionData.length === 0))
                   ? html`<ha-button
@@ -891,57 +892,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 `
               : nothing
           }
-
-          <div class="section">
-            <h3 class="section-header">
-              ${
-                this._manifest?.integration_type
-                  ? this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.entries_${this._manifest.integration_type}`
-                    )
-                  : this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.entries`
-                    )
-              }
-            </h3>
-            ${
-              filteredNormalData.length === 0
-                ? html`<div class="card-content no-entries">
-                    ${
-                      this._filter
-                        ? this.hass.localize(
-                            "ui.panel.config.integrations.none_found"
-                          )
-                        : !showDependents &&
-                            this._manifest &&
-                            !this._manifest.config_flow &&
-                            this.hass.config.components.find(
-                              (comp) => comp.split(".")[0] === this.domain
-                            )
-                          ? this.hass.localize(
-                              "ui.panel.config.integrations.integration_page.yaml_entry"
-                            )
-                          : this.hass.localize(
-                              "ui.panel.config.integrations.integration_page.no_entries"
-                            )
-                    }
-                  </div>`
-                : html`
-                    ${filteredNormalData.map(
-                      (data) =>
-                        html`<ha-config-entry-row
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .manifest=${this._manifest}
-                          .diagnosticHandler=${this._diagnosticHandler}
-                          .entities=${this._entities}
-                          .data=${data}
-                          data-entry-id=${data.entry.entry_id}
-                        ></ha-config-entry-row>`
-                    )}
-                  `
-            }
-          </div>
           ${
             showDependents
               ? html`<div class="section">
@@ -952,7 +902,55 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   </h3>
                   ${this._renderDependents(this._dependents!)}
                 </div>`
-              : nothing
+              : html`<div class="section">
+                  <h3 class="section-header">
+                    ${
+                      this._manifest?.integration_type
+                        ? this.hass.localize(
+                            `ui.panel.config.integrations.integration_page.entries_${this._manifest.integration_type}`
+                          )
+                        : this.hass.localize(
+                            `ui.panel.config.integrations.integration_page.entries`
+                          )
+                    }
+                  </h3>
+                  ${
+                    filteredNormalData.length === 0
+                      ? html`<div class="card-content no-entries">
+                          ${
+                            this._filter
+                              ? this.hass.localize(
+                                  "ui.panel.config.integrations.none_found"
+                                )
+                              : this._manifest &&
+                                  !this._manifest.config_flow &&
+                                  this.hass.config.components.find(
+                                    (comp) => comp.split(".")[0] === this.domain
+                                  )
+                                ? this.hass.localize(
+                                    "ui.panel.config.integrations.integration_page.yaml_entry"
+                                  )
+                                : this.hass.localize(
+                                    "ui.panel.config.integrations.integration_page.no_entries"
+                                  )
+                          }
+                        </div>`
+                      : html`
+                          ${filteredNormalData.map(
+                            (data) =>
+                              html`<ha-config-entry-row
+                                .hass=${this.hass}
+                                .narrow=${this.narrow}
+                                .manifest=${this._manifest}
+                                .diagnosticHandler=${this._diagnosticHandler}
+                                .entities=${this._entities}
+                                .data=${data}
+                                data-entry-id=${data.entry.entry_id}
+                              ></ha-config-entry-row>`
+                          )}
+                        `
+                  }
+                </div>`
           }
         </div>
       </hass-subpage>
