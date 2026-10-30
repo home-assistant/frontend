@@ -32,14 +32,12 @@ class HaConfigSectionAI extends LitElement {
 
   static styles = css`
     .content {
-      padding: var(--ha-space-7) var(--ha-space-5) var(--ha-space-6);
-      max-width: 1040px;
+      padding: var(--ha-space-7) var(--ha-content-gutter) var(--ha-space-6);
+      max-width: var(--ha-content-width-narrow);
       margin: 0 auto;
     }
     ai-task-pref,
     mcp-pref {
-      max-width: 600px;
-      margin: 0 auto;
       display: block;
     }
     mcp-pref {

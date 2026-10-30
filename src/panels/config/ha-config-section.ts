@@ -40,8 +40,8 @@ export class HaConfigSection extends LitElement {
     }
 
     .content {
-      padding: 28px 20px 0;
-      max-width: 1040px;
+      padding: 28px var(--ha-content-gutter) 0;
+      max-width: var(--ha-content-width-wide);
       margin: 0 auto;
     }
 
@@ -104,7 +104,7 @@ export class HaConfigSection extends LitElement {
     }
 
     .narrow.content {
-      max-width: 640px;
+      max-width: var(--ha-content-width-narrow);
     }
     .narrow .together {
       margin-top: var(

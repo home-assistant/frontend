@@ -111,8 +111,8 @@ class HaBackupOverviewBackups extends LitElement {
       haStyle,
       css`
         .content {
-          padding: 28px 20px 0;
-          max-width: 690px;
+          padding: 28px var(--ha-content-gutter) 0;
+          max-width: var(--ha-content-width-narrow);
           margin: 0 auto;
           gap: var(--ha-space-6);
           display: flex;

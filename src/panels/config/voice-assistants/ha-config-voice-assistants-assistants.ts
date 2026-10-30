@@ -85,14 +85,12 @@ export class HaConfigVoiceAssistantsAssistants extends LitElement {
 
   static styles = css`
     .content {
-      padding: 28px 20px 0;
-      max-width: 1040px;
+      padding: 28px var(--ha-content-gutter) 0;
+      max-width: var(--ha-content-width-narrow);
       margin: 0 auto;
     }
     .content > * {
       display: block;
-      margin: auto;
-      max-width: 800px;
       margin-bottom: 24px;
     }
     a {

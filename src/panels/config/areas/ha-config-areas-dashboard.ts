@@ -676,7 +676,6 @@ export class HaConfigAreasDashboard extends LitElement {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       grid-gap: 16px 16px;
-      max-width: 2000px;
       margin-bottom: 16px;
     }
     .areas > * {

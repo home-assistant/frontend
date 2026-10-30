@@ -96,8 +96,6 @@ export class CloudLoginPanel extends LitElement {
         cloud-login {
           display: block;
           width: 100%;
-          max-width: 600px;
-          margin-inline: auto;
         }
       `,
     ];

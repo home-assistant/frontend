@@ -44,6 +44,11 @@ export const coreStyles = css`
     --ha-space-19: 76px;
     --ha-space-20: 80px;
 
+    /* Content layout */
+    --ha-content-width-narrow: 720px;
+    --ha-content-width-wide: 1280px;
+    --ha-content-gutter: var(--ha-space-4);
+
     --ha-animation-duration-none: 1ms;
     --ha-animation-duration-instant: 75ms;
     --ha-animation-duration-fast: 150ms;

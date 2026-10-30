@@ -155,11 +155,10 @@ class HaPanelDevEvent extends LitElement {
       css`
         .content {
           gap: var(--ha-space-4);
-          padding: var(--ha-space-4);
-          max-width: 1200px;
+          padding: var(--ha-space-4) var(--ha-content-gutter);
+          max-width: var(--ha-content-width-wide);
           margin: auto;
-          height: 100%;
-          box-sizing: border-box;
+          height: calc(100% - 2 * var(--ha-space-4));
         }
 
         :host {

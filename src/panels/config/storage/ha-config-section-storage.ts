@@ -445,8 +445,8 @@ class HaConfigSectionStorage extends LitElement {
 
   static styles = css`
     .content {
-      padding: 28px 20px 0;
-      max-width: 1040px;
+      padding: 28px var(--ha-content-gutter) 0;
+      max-width: var(--ha-content-width-narrow);
       margin: 0 auto;
     }
     .card-actions {
@@ -454,8 +454,7 @@ class HaConfigSectionStorage extends LitElement {
       justify-content: flex-end;
     }
     ha-card {
-      max-width: 600px;
-      margin: 0 auto 12px;
+      margin-bottom: 12px;
       justify-content: space-between;
       flex-direction: column;
       display: flex;
