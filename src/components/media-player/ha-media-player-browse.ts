@@ -73,14 +73,15 @@ import "../ha-dropdown";
 import type { HaDropdownSelectEvent } from "../ha-dropdown";
 import "../ha-dropdown-item";
 import "../ha-icon-button";
-import "../ha-list";
-import "../ha-list-item";
 import "../input/ha-input-search";
 import type { HaInputSearch } from "../input/ha-input-search";
 import "./ha-media-browser-thumbnail";
 import "../ha-spinner";
 import "../ha-svg-icon";
 import "../ha-tooltip";
+import "../item/ha-list-item-base";
+import "../item/ha-list-item-button";
+import "../list/ha-list-base";
 import "./ha-browse-media-manual";
 import type { ManualMediaPickedEvent } from "./ha-browse-media-manual";
 import "./ha-browse-media-tts";
@@ -508,7 +509,6 @@ export class HaMediaPlayerBrowse extends LitElement {
           )
         : [];
 
-    const mediaClass = MediaClassBrowserSettings[currentItem.media_class];
     const childrenMediaClass = currentItem.children_media_class
       ? MediaClassBrowserSettings[currentItem.children_media_class]
       : MediaClassBrowserSettings.directory;
@@ -736,7 +736,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                             }
                           `
                         : html`
-                            <ha-list>
+                            <ha-list-base>
                               <lit-virtualizer
                                 scroller
                                 .items=${children}
@@ -749,26 +749,18 @@ export class HaMediaPlayerBrowse extends LitElement {
                               ${
                                 notShown
                                   ? html`
-                                      <ha-list-item
-                                        noninteractive
-                                        class="not-shown"
-                                        .graphic=${
-                                          mediaClass.show_list_images
-                                            ? "medium"
-                                            : "avatar"
-                                        }
-                                      >
-                                        <span class="title">
+                                      <ha-list-item-base class="not-shown">
+                                        <span slot="headline" class="title">
                                           ${this._i18n.localize(
                                             "ui.components.media-browser.not_shown",
                                             { count: notShown }
                                           )}
                                         </span>
-                                      </ha-list-item>
+                                      </ha-list-item-base>
                                     `
                                   : ""
                               }
-                            </ha-list>
+                            </ha-list-base>
                           `
             }
           </div>
@@ -1073,10 +1065,10 @@ export class HaMediaPlayerBrowse extends LitElement {
     const showImage = mediaClass.show_list_images && !!child.thumbnail;
 
     return html`
-      <ha-list-item
+      <ha-list-item-button
         @click=${this._childClicked}
         .item=${child}
-        .graphic=${mediaClass.show_list_images ? "medium" : "avatar"}
+        class=${classMap({ "with-image": mediaClass.show_list_images })}
       >
         ${
           !showImage && !child.can_play
@@ -1088,14 +1080,14 @@ export class HaMediaPlayerBrowse extends LitElement {
                       : child.media_class
                   ].icon
                 }
-                slot="graphic"
+                slot="start"
               ></ha-svg-icon>`
             : html`<div
                 class=${classMap({
                   graphic: true,
                   thumbnail: mediaClass.show_list_images === true,
                 })}
-                slot="graphic"
+                slot="start"
               >
                 ${
                   showImage
@@ -1122,8 +1114,8 @@ export class HaMediaPlayerBrowse extends LitElement {
                 }
               </div>`
         }
-        <span class="title">${child.title}</span>
-      </ha-list-item>
+        <span slot="headline" class="title">${child.title}</span>
+      </ha-list-item-button>
     `;
   };
 
@@ -1529,23 +1521,22 @@ export class HaMediaPlayerBrowse extends LitElement {
 
         /* ============= CHILDREN ============= */
 
-        ha-list {
-          --mdc-list-vertical-padding: 0;
-          --mdc-list-item-graphic-margin: 0;
-          --mdc-theme-text-icon-on-background: var(--secondary-text-color);
+        ha-list-base {
           margin-top: 10px;
         }
 
-        ha-list li:last-child {
-          display: none;
+        ha-list-base::part(base) {
+          gap: 0;
+          padding: 0;
         }
 
-        ha-list li[divider] {
-          border-bottom-color: var(--divider-color);
-        }
-
-        ha-list-item {
+        ha-list-item-button {
           width: 100%;
+          --ha-row-item-gap: 0;
+        }
+
+        ha-list-item-button.with-image {
+          --ha-row-item-gap: var(--ha-space-4);
         }
 
         div.children {
@@ -1680,19 +1671,21 @@ export class HaMediaPlayerBrowse extends LitElement {
           padding-left: 16px;
         }
 
-        ha-list-item .graphic {
+        ha-list-item-button .graphic {
           position: relative;
           border-radius: var(--ha-border-radius-sm);
           overflow: hidden;
           line-height: initial;
+          width: 56px;
+          height: 56px;
         }
 
-        ha-list-item .graphic ha-media-browser-thumbnail {
+        ha-list-item-button .graphic ha-media-browser-thumbnail {
           position: absolute;
           inset: 0;
         }
 
-        ha-list-item .graphic .play {
+        ha-list-item-button .graphic .play {
           position: absolute;
           inset: 0;
           margin: auto;
@@ -1703,20 +1696,18 @@ export class HaMediaPlayerBrowse extends LitElement {
           --ha-icon-button-size: 40px;
         }
 
-        ha-list-item:hover .graphic .play {
+        ha-list-item-button:hover .graphic .play {
           opacity: 1;
           color: var(--primary-text-color);
         }
 
-        ha-list-item .graphic .play.show {
+        ha-list-item-button .graphic .play.show {
           opacity: 1;
           background-color: transparent;
         }
 
-        ha-list-item .title {
-          margin-left: 16px;
-          margin-inline-start: 16px;
-          margin-inline-end: initial;
+        ha-list-item-button .title {
+          white-space: normal;
         }
 
         /* ============= Narrow ============= */
