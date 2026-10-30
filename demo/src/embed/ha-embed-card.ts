@@ -78,7 +78,10 @@ export class HaEmbedCard extends LitElement {
     // Cards fire their tap, hold and double tap actions for the app to handle
     this.addEventListener("hass-action", (ev) => {
       if (this._hass) {
-        handleAction(this, this._hass, ev.detail.config, ev.detail.action);
+        // The element that fired the action, so that fire-dom-event reaches
+        // listeners inside custom cards, as in action-mixin
+        const node = (ev.composedPath()[0] as HTMLElement | undefined) ?? this;
+        handleAction(node, this._hass, ev.detail.config, ev.detail.action);
       }
     });
   }
