@@ -419,6 +419,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     const configPanel = isComponentLoaded(this.hass.config, this.domain)
       ? getConfigPanelPath(this.domain, this.hass.panels)
       : undefined;
+    // Without a config flow, the panel is where the integration is set up.
+    const setUpInPanel = Boolean(
+      configPanel && this._manifest && !this._manifest.config_flow
+    );
 
     const documentationLink = this._manifest?.is_built_in
       ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
@@ -606,6 +610,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   ${
                     normalEntries.length === 0 &&
                     !showDependents &&
+                    !setUpInPanel &&
                     this._manifest &&
                     !this._manifest.config_flow &&
                     this.hass.config.components.find(
@@ -743,8 +748,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               ${
                 this._manifest?.integration_type !== "hardware" &&
                 !showDependents &&
-                // Without a config flow, the panel is where to set it up.
-                !(configPanel && !this._manifest?.config_flow) &&
+                !setUpInPanel &&
                 (!this._manifest?.single_config_entry ||
                   (normalData.length === 0 && attentionData.length === 0))
                   ? html`<ha-button
@@ -933,6 +937,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   </h3>
                   ${this._renderDependents(dependents)}
                 </div>`
+              : nothing
+          }
+          ${
+            showDependents || (setUpInPanel && normalEntries.length === 0)
+              ? nothing
               : html`<div class="section">
                   <h3 class="section-header">
                     ${
