@@ -1763,9 +1763,12 @@ ${rejected
       )}
       <ha-dropdown-item .slot=${slot} value="area_none">
         ${
-          // Clearing the area of a device entity falls back to the device area
+          // Clearing the area of a device entity falls back to the device area.
+          // Use the full registry: hass.entities omits disabled entities.
           this._selected.some(
-            (entityId) => this.hass.entities[entityId]?.device_id
+            (entityId) =>
+              entityRegistryByEntityId(this._entityReg || [])[entityId]
+                ?.device_id
           )
             ? this.hass.localize(
                 "ui.dialogs.entity_registry.editor.use_device_area"
