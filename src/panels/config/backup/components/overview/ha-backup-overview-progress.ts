@@ -354,15 +354,15 @@ export class HaBackupOverviewProgress extends LitElement {
           `
         )}
       </div>
-      <span class="stage-label">
-        ${
-          this.manager.stage
-            ? this.hass.localize(
+      ${
+        this.manager.stage
+          ? html`<span class="stage-label"
+              >${this.hass.localize(
                 `ui.panel.config.backup.overview.progress.description.create_backup.${this.manager.stage}`
-              )
-            : nothing
-        }
-      </span>
+              )}</span
+            >`
+          : nothing
+      }
     `;
   }
 
