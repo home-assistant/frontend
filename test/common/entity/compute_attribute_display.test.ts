@@ -166,7 +166,7 @@ describe("computeAttributeValueDisplay", () => {
       entitiesMock,
       "temperature"
     );
-    expect(result).toBe("42 °C");
+    expect(result).toBe("42\u00A0°C");
   });
 
   it("should set temperature unit for temperature attribute", () => {
@@ -184,7 +184,7 @@ describe("computeAttributeValueDisplay", () => {
       entitiesMock,
       "temperature"
     );
-    expect(result).toBe("42 °C");
+    expect(result).toBe("42\u00A0°C");
   });
 
   it("should return translation from translation key", () => {

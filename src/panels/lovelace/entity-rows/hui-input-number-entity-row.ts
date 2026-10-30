@@ -184,7 +184,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
 
     if ((ev.target as HTMLInputElement).value !== stateObj.state) {
       setValue(
-        this.hass!,
+        this.hass!.callService,
         stateObj.entity_id,
         (ev.target as HTMLInputElement).value
       );

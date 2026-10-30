@@ -379,7 +379,7 @@ export const buildSankeyDeviceNodes = (
     }
   });
 
-  // Add untracked consumption nodes for parent devices whose sub-devices
+  // Add untracked consumption nodes for parent devices whose child devices
   // don't account for the parent's full consumption
   const parentDeviceIds = new Set(Object.values(parentLinks));
   parentDeviceIds.forEach((parentId) => {

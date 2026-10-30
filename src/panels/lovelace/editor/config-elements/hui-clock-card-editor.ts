@@ -11,6 +11,7 @@ import {
   object,
   optional,
   string,
+  union,
 } from "superstruct";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -28,6 +29,7 @@ import { TimeFormat } from "../../../../data/translation";
 import { getTimezoneOptions } from "../../../../components/ha-timezone-picker";
 import {
   CLOCK_CARD_DATE_PARTS,
+  CLOCK_CARD_DATE_PRESETS,
   getClockCardDateConfig,
 } from "../../cards/clock/clock-date-format";
 
@@ -41,7 +43,12 @@ const cardConfigStruct = assign(
     time_zone: optional(enums(getTimezoneOptions().map((option) => option.id))),
     show_seconds: optional(boolean()),
     no_background: optional(boolean()),
-    date_format: optional(defaulted(array(enums(CLOCK_CARD_DATE_PARTS)), [])),
+    date_format: optional(
+      union([
+        enums(CLOCK_CARD_DATE_PRESETS),
+        array(enums(CLOCK_CARD_DATE_PARTS)),
+      ])
+    ),
     // Analog clock options
     border: optional(defaulted(boolean(), false)),
     ticks: optional(

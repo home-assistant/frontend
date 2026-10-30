@@ -3,11 +3,18 @@ import {
   mdiPlayBoxMultiple,
   mdiSpeakerMultiple,
 } from "@mdi/js";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../common/decorators/consume";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stateActive } from "../../../common/entity/state_active";
@@ -22,6 +29,13 @@ import type { HaSlider } from "../../../components/ha-slider";
 import "../../../components/ha-state-icon";
 import { showJoinMediaPlayersDialog } from "../../../components/media-player/show-join-media-players-dialog";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
+import {
+  apiContext,
+  configContext,
+  connectionContext,
+  formattersContext,
+  uiContext,
+} from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type {
   MediaPickedEvent,
@@ -34,10 +48,19 @@ import {
   handleMediaControlClick,
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
+  removeSecondaryStopControl,
 } from "../../../data/media-player";
-import type { HomeAssistant } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
+import type { Themes } from "../../../data/ws-themes";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+  HomeAssistantFormatters,
+  HomeAssistantUI,
+} from "../../../types";
 import { findEntities } from "../common/find-entities";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-marquee";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -68,9 +91,41 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     return { type: "media-control", entity: foundEntities[0] || "" };
   }
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @state() private _config?: MediaControlCardConfig;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["_config", "entity"] })
+  private _stateObj?: MediaPlayerEntity;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, HomeAssistantConnection["hassUrl"]>({
+    transformer: ({ hassUrl }) => hassUrl,
+  })
+  private _hassUrl!: HomeAssistantConnection["hassUrl"];
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes!: Themes;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @state() private _foregroundColor?: string;
 
@@ -120,7 +175,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this.hass || !this._config) {
+    if (!this._config) {
       return nothing;
     }
     const stateObj = this._stateObj;
@@ -128,14 +183,14 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     if (!stateObj) {
       return html`
         <hui-warning>
-          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
+          ${createEntityNotFoundWarning(this._localize, this._hassConfig)}
         </hui-warning>
       `;
     }
 
     const imageStyle = {
       "background-image": this._image
-        ? `url(${this.hass.hassUrl(this._image)})`
+        ? `url(${this._hassUrl(this._image)})`
         : "none",
       width: `${this._cardHeight}px`,
       "background-color": this._backgroundColor || "",
@@ -159,7 +214,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       (isOffState &&
         !supportsFeature(stateObj, MediaPlayerEntityFeature.TURN_ON));
     const hasNoImage = !this._image;
-    const controls = computeMediaControls(stateObj, false);
+    const controls = removeSecondaryStopControl(
+      stateObj,
+      computeMediaControls(stateObj, false)
+    );
     const showControls =
       !isUnavailable &&
       controls &&
@@ -220,16 +278,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             <div class="icon-name">
               <ha-state-icon class="icon" .stateObj=${stateObj}></ha-state-icon>
               <div>
-                ${this.hass.formatEntityName(
-                  this.hass!.states[this._config!.entity],
-                  this._config.name
-                )}
+                ${this._formatters.formatEntityName(stateObj, this._config.name)}
               </div>
             </div>
             <div>
               <ha-icon-button
                 .path=${mdiDotsVertical}
-                .label=${this.hass.localize(
+                .label=${this._localize(
                   "ui.panel.lovelace.cards.show_more_info"
                 )}
                 class="more-info"
@@ -267,7 +322,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                                   ${controls!.map(
                                     (control) => html`
                                       <ha-icon-button
-                                        .label=${this.hass.localize(
+                                        .label=${this._localize(
                                           `ui.card.media_player.${control.action}`
                                         )}
                                         .path=${control.icon}
@@ -287,7 +342,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                                       ? html`
                                           <ha-icon-button
                                             class="browse-media"
-                                            .label=${this.hass.localize(
+                                            .label=${this._localize(
                                               "ui.card.media_player.browse_media"
                                             )}
                                             .path=${mdiPlayBoxMultiple}
@@ -304,7 +359,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                                       ? html`
                                           <ha-icon-button
                                             class="join-media"
-                                            .label=${this.hass.localize(
+                                            .label=${this._localize(
                                               "ui.card.media_player.join"
                                             )}
                                             @click=${this._handleJoinMediaPlayers}
@@ -364,30 +419,24 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return (
-      hasConfigOrEntityChanged(this, changedProps) ||
-      changedProps.size > 1 ||
-      !changedProps.has("hass")
-    );
-  }
-
   protected firstUpdated(): void {
     this._attachObserver();
     this._measureCard();
   }
 
-  public willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-
+  // Runs after @transform has refreshed _stateObj for a new config, which
+  // happens after willUpdate.
+  protected update(changedProps: PropertyValues): void {
     if (
-      !this._config ||
-      !this.hass ||
-      (!changedProps.has("_config") && !changedProps.has("hass"))
+      this._config &&
+      (changedProps.has("_config") || changedProps.has("_stateObj"))
     ) {
-      return;
+      this._updateColors(changedProps);
     }
+    super.update(changedProps);
+  }
 
+  private _updateColors(changedProps: PropertyValues): void {
     const stateObj = this._stateObj;
 
     if (!stateObj) {
@@ -396,11 +445,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldStateObj = changedProps.get("_stateObj") as
+      MediaPlayerEntity | undefined;
 
     const oldImage =
-      oldHass?.states[this._config.entity]?.attributes.entity_picture_local ||
-      oldHass?.states[this._config.entity]?.attributes.entity_picture;
+      oldStateObj?.attributes.entity_picture_local ||
+      oldStateObj?.attributes.entity_picture;
 
     if (!this._image) {
       this._foregroundColor = undefined;
@@ -416,32 +466,27 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   protected updated(changedProps: PropertyValues) {
     if (
       !this._config ||
-      !this.hass ||
-      !this._stateObj ||
-      (!changedProps.has("_config") && !changedProps.has("hass"))
+      !this._themes ||
+      (!changedProps.has("_config") && !changedProps.has("_themes"))
     ) {
       return;
     }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldThemes = changedProps.get("_themes") as Themes | undefined;
     const oldConfig = changedProps.get("_config") as
       MediaControlCardConfig | undefined;
 
     if (
-      !oldHass ||
+      !oldThemes ||
       !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
+      oldThemes !== this._themes ||
       oldConfig.theme !== this._config.theme
     ) {
-      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+      applyThemesOnElement(this, this._themes, this._config.theme);
     }
   }
 
   private get _image() {
-    if (!this.hass || !this._config) {
-      return undefined;
-    }
-
     const stateObj = this._stateObj;
 
     if (!stateObj) {
@@ -455,7 +500,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private get _showProgressBar() {
-    if (!this.hass || !this._config || this._narrow) {
+    if (this._narrow) {
       return false;
     }
 
@@ -509,7 +554,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       entityId: this._config!.entity,
       mediaPickedCallback: (pickedMedia: MediaPickedEvent) =>
         mediaPlayerPlayMedia(
-          this.hass,
+          this._api,
           this._config!.entity,
           pickedMedia.item.media_content_id,
           pickedMedia.item.media_content_type
@@ -525,18 +570,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   private _handleClick(e: MouseEvent): void {
     handleMediaControlClick(
-      this.hass!,
+      this._api,
       this._stateObj!,
       (e.currentTarget as HTMLElement).getAttribute("action")!
     );
-  }
-
-  private get _stateObj(): MediaPlayerEntity | undefined {
-    // The card can update with hass before setConfig is called
-    if (!this._config) {
-      return undefined;
-    }
-    return this.hass!.states[this._config.entity] as MediaPlayerEntity;
   }
 
   private _handleSeek(): void {
@@ -549,7 +586,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     const position = this._progressBar?.value ?? 0;
     this._progressController.seek(position);
 
-    this.hass!.callService("media_player", "media_seek", {
+    this._api.callService("media_player", "media_seek", {
       entity_id: this._config!.entity,
       seek_position: position,
     });
@@ -562,7 +599,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     try {
       const { foreground, background } = await extractColors(
-        this.hass.hassUrl(this._image)
+        this._hassUrl(this._image)
       );
       this._backgroundColor = background.hex;
       this._foregroundColor = foreground.hex;

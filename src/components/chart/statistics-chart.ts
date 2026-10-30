@@ -19,9 +19,9 @@ import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_tim
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import {
   formatNumber,
+  formatNumberWithUnit,
   getNumberFormatOptions,
 } from "../../common/number/format_number";
-import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
 import { bidiIsolate } from "../../common/bidi";
 import {
   apiContext,
@@ -297,9 +297,6 @@ export class StatisticsChart extends LitElement {
     const rendered: Record<string, boolean> = {};
     const chartIsBar = this.chartType.startsWith("bar");
     const period = this.period;
-    const unit = this.unit
-      ? `${blankBeforeUnit(this.unit, this._i18n.locale)}${this.unit}`
-      : "";
     const rows: {
       time?: string;
       color: string;
@@ -375,7 +372,12 @@ export class StatisticsChart extends LitElement {
         maximumFractionDigits: 2,
       };
 
-      const value = `${formatNumber(rawValue, this._i18n.locale, options)}${unit}`;
+      const value = formatNumberWithUnit(
+        rawValue,
+        this.unit,
+        this._i18n.locale,
+        options
+      );
 
       rows.push({
         time: rows.length === 0 ? rawTime : undefined,

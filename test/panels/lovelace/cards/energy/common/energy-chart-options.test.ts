@@ -1085,6 +1085,6 @@ describe("formatSeriesTotal", () => {
       data: [[1000, 10], { value: [2000, 20] }, [3000, 30]],
     };
 
-    assert.equal(formatSeriesTotal(series, locale, "kWh"), "60 kWh");
+    assert.equal(formatSeriesTotal(series, locale, "kWh"), "60\u00A0kWh");
   });
 });

@@ -49,12 +49,17 @@ import type {
 } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyDistributionCardConfig } from "../types";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import { round } from "../../../../common/number/round";
 import {
   ENERGY_DISTRIBUTION_HOME_CIRCLE_CIRCUMFERENCE as CIRCLE_CIRCUMFERENCE,
   computeEnergyDistributionHomeCircleArcs,
 } from "./energy-distribution-home-circle";
+import {
+  EnergyFlowDotsController,
+  energyFlowDotsStyles,
+  renderEnergyFlowDots,
+} from "./energy-flow-dots";
 
 // Flows are differences of sums; anything that rounds to 0 Wh is noise
 const hasFlow = (value: number | null): value is number =>
@@ -172,6 +177,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
         this._data = data;
       },
     });
+    new EnergyFlowDotsController(this);
   }
 
   public setConfig(config: EnergyDistributionCardConfig): void {
@@ -310,6 +316,13 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       }
     }
 
+    const formattedBatterySoc =
+      averageBatterySoc !== null
+        ? formatNumberWithUnit(averageBatterySoc, "%", this._i18n.locale, {
+            maximumFractionDigits: 0,
+          })
+        : undefined;
+
     let returnedToGrid: number | null = null;
 
     if (hasReturnToGrid) {
@@ -427,7 +440,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       maxEnergy,
       "kWh"
     )
-      .split(" ")
+      .split(/\s/)
       .pop();
 
     return html`
@@ -507,26 +520,19 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                               gasDisplayPrecision
                             )}
                           </div>
-                          <svg width="80" height="30">
-                            <path d="M40 0 v30" id="gas" />
-                            ${
-                              gasUsage && !this._reducedMotion
-                                ? svg`<circle
-                    r="1"
-                    class="gas"
-                    vector-effect="non-scaling-stroke"
-                  >
-                    <animateMotion
-                      dur="2s"
-                      repeatCount="indefinite"
-                      calcMode="linear"
-                    >
-                      <mpath xlink:href="#gas" />
-                    </animateMotion>
-                  </circle>`
-                                : ""
-                            }
-                          </svg>
+                          <div class="flow">
+                            <svg width="80" height="30">
+                              <path d="M40 0 v30" id="gas" />
+                            </svg>
+                            ${renderEnergyFlowDots([
+                              !this._reducedMotion &&
+                                gasUsage && {
+                                  path: "gas",
+                                  className: "gas",
+                                  duration: 2,
+                                },
+                            ])}
+                          </div>
                         </div>`
                       : hasWater
                         ? html`<div class="circle-container water">
@@ -543,26 +549,19 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                                 this._data.waterUnit
                               )}
                             </div>
-                            <svg width="80" height="30">
-                              <path d="M40 0 v30" id="water" />
-                              ${
-                                waterUsage && !this._reducedMotion
-                                  ? svg`<circle
-                r="1"
-                class="water"
-                vector-effect="non-scaling-stroke"
-              >
-                <animateMotion
-                  dur="2s"
-                  repeatCount="indefinite"
-                  calcMode="linear"
-                >
-                  <mpath xlink:href="#water" />
-                </animateMotion>
-              </circle>`
-                                  : ""
-                              }
-                            </svg>
+                            <div class="flow">
+                              <svg width="80" height="30">
+                                <path d="M40 0 v30" id="water" />
+                              </svg>
+                              ${renderEnergyFlowDots([
+                                !this._reducedMotion &&
+                                  waterUsage && {
+                                    path: "water",
+                                    className: "water",
+                                    duration: 2,
+                                  },
+                              ])}
+                            </div>
                           </div>`
                         : html`<div class="spacer"></div>`
                   }
@@ -729,17 +728,8 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                                 .path=${batteryIconPath}
                               ></ha-svg-icon>
                               ${
-                                averageBatterySoc !== null
-                                  ? html`<span
-                                      >${formatNumber(
-                                        averageBatterySoc,
-                                        this._i18n.locale,
-                                        {
-                                          maximumFractionDigits: 0,
-                                        }
-                                      )}
-                                      %</span
-                                    >`
+                                formattedBatterySoc
+                                  ? html`<span>${formattedBatterySoc}</span>`
                                   : nothing
                               }
                             </div>
@@ -779,26 +769,19 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                   ${
                     hasGas && hasWater
                       ? html`<div class="circle-container water bottom">
-                          <svg width="80" height="30">
-                            <path d="M40 30 v-30" id="water" />
-                            ${
-                              waterUsage && !this._reducedMotion
-                                ? svg`<circle
-                    r="1"
-                    class="water"
-                    vector-effect="non-scaling-stroke"
-                  >
-                    <animateMotion
-                      dur="2s"
-                      repeatCount="indefinite"
-                      calcMode="linear"
-                    >
-                      <mpath xlink:href="#water" />
-                    </animateMotion>
-                  </circle>`
-                                : ""
-                            }
-                          </svg>
+                          <div class="flow">
+                            <svg width="80" height="30">
+                              <path d="M40 30 v-30" id="water" />
+                            </svg>
+                            ${renderEnergyFlowDots([
+                              !this._reducedMotion &&
+                                waterUsage && {
+                                  path: "water",
+                                  className: "water",
+                                  duration: 2,
+                                },
+                            ])}
+                          </div>
                           <div class="circle">
                             <ha-svg-icon .path=${mdiWater}></ha-svg-icon>
                             ${formatConsumptionShort(
@@ -823,14 +806,15 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
               high: hasBattery || (hasGas && hasWater),
             })}"
           >
-            <svg
-              viewBox="0 0 100 100"
-              xmlns="http://www.w3.org/2000/svg"
-              preserveAspectRatio="xMidYMid slice"
-            >
-              ${
-                hasReturnToGrid && hasSolarProduction
-                  ? svg`<path
+            <div class="flow">
+              <svg
+                viewBox="0 0 100 100"
+                xmlns="http://www.w3.org/2000/svg"
+                preserveAspectRatio="xMidYMid slice"
+              >
+                ${
+                  hasReturnToGrid && hasSolarProduction
+                    ? svg`<path
                     id="return"
                     class="return"
                     d="M${hasBattery ? 45 : 47},0 v15 c0,${
@@ -838,11 +822,11 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                     } h-20"
                     vector-effect="non-scaling-stroke"
                   ></path> `
-                  : ""
-              }
-              ${
-                hasSolarProduction
-                  ? svg`<path
+                    : ""
+                }
+                ${
+                  hasSolarProduction
+                    ? svg`<path
                     id="solar"
                     class="solar"
                     d="M${hasBattery ? 55 : 53},0 v15 c0,${
@@ -850,11 +834,11 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                     } h20"
                     vector-effect="non-scaling-stroke"
                   ></path>`
-                  : ""
-              }
-              ${
-                hasBattery
-                  ? svg`<path
+                    : ""
+                }
+                ${
+                  hasBattery
+                    ? svg`<path
                     id="battery-house"
                     class="battery-house"
                     d="M55,100 v-15 c0,-35 10,-30 30,-30 h20"
@@ -874,167 +858,78 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                       : nothing
                   }
                   `
-                  : ""
-              }
-              ${
-                hasBattery && hasSolarProduction
-                  ? svg`<path
+                    : ""
+                }
+                ${
+                  hasBattery && hasSolarProduction
+                    ? svg`<path
                     id="battery-solar"
                     class="battery-solar"
                     d="M50,0 V100"
                     vector-effect="non-scaling-stroke"
                   ></path>`
-                  : ""
-              }
-              ${
-                hasGrid
-                  ? svg`<path
+                    : ""
+                }
+                ${
+                  hasGrid
+                    ? svg`<path
                     class="grid"
                     id="grid"
                     d="M0,${hasBattery ? 50 : hasSolarProduction ? 56 : 53} H100"
                     vector-effect="non-scaling-stroke"
               ></path>`
-                  : nothing
-              }
-              ${
-                hasFlow(solarToGrid) && !this._reducedMotion
-                  ? svg`<circle
-                    r="1"
-                    class="return"
-                    vector-effect="non-scaling-stroke"
-                  >
-                    <animateMotion
-                      dur="${6 - (solarToGrid / totalLines) * 5}s"
-                      repeatCount="indefinite"
-                      calcMode="linear"
-                    >
-                      <mpath xlink:href="#return" />
-                    </animateMotion>
-                  </circle>`
-                  : ""
-              }
-              ${
-                hasFlow(solarConsumption) && !this._reducedMotion
-                  ? svg`<circle
-                    r="1"
-                    class="solar"
-                    vector-effect="non-scaling-stroke"
-                  >
-                    <animateMotion
-                      dur="${6 - (solarConsumption / totalLines) * 5}s"
-                      repeatCount="indefinite"
-                      calcMode="linear"
-                    >
-                      <mpath xlink:href="#solar" />
-                    </animateMotion>
-                  </circle>`
-                  : ""
-              }
-              ${
-                hasFlow(gridConsumption) && !this._reducedMotion
-                  ? svg`<circle
-                    r="1"
-                    class="grid"
-                    vector-effect="non-scaling-stroke"
-                  >
-                    <animateMotion
-                      dur="${6 - (gridConsumption / totalLines) * 5}s"
-                      repeatCount="indefinite"
-                      calcMode="linear"
-                    >
-                      <mpath xlink:href="#grid" />
-                    </animateMotion>
-                  </circle>`
-                  : ""
-              }
-              ${
-                hasFlow(homeToGrid) && !this._reducedMotion
-                  ? svg`<circle
-                    r="1"
-                    class="return"
-                    vector-effect="non-scaling-stroke"
-                  >
-                    <animateMotion
-                      dur="${6 - (homeToGrid / totalLines) * 5}s"
-                      repeatCount="indefinite"
-                      keyPoints="1;0" keyTimes="0;1"
-                      calcMode="linear"
-                    >
-                      <mpath xlink:href="#grid" />
-                    </animateMotion>
-                  </circle>`
-                  : ""
-              }
-              ${
-                hasFlow(solarToBattery) && !this._reducedMotion
-                  ? svg`<circle
-                    r="1"
-                    class="battery-solar"
-                    vector-effect="non-scaling-stroke"
-                  >
-                    <animateMotion
-                      dur="${6 - (solarToBattery / totalLines) * 5}s"
-                      repeatCount="indefinite"
-                      calcMode="linear"
-                    >
-                      <mpath xlink:href="#battery-solar" />
-                    </animateMotion>
-                  </circle>`
-                  : ""
-              }
-              ${
-                hasFlow(batteryConsumption) && !this._reducedMotion
-                  ? svg`<circle
-                    r="1"
-                    class="battery-house"
-                    vector-effect="non-scaling-stroke"
-                  >
-                    <animateMotion
-                      dur="${6 - (batteryConsumption / totalLines) * 5}s"
-                      repeatCount="indefinite"
-                      calcMode="linear"
-                    >
-                      <mpath xlink:href="#battery-house" />
-                    </animateMotion>
-                  </circle>`
-                  : ""
-              }
-              ${
-                hasFlow(batteryFromGrid) && !this._reducedMotion
-                  ? svg`<circle
-                    r="1"
-                    class="battery-from-grid"
-                    vector-effect="non-scaling-stroke"
-                  >
-                    <animateMotion
-                      dur="${6 - (batteryFromGrid / totalLines) * 5}s"
-                      repeatCount="indefinite"
-                      keyPoints="1;0" keyTimes="0;1"
-                      calcMode="linear"
-                    >
-                      <mpath xlink:href="#battery-grid" />
-                    </animateMotion>
-                  </circle>`
-                  : ""
-              }
-              ${
-                hasFlow(batteryToGrid) && !this._reducedMotion
-                  ? svg`<circle
-                    r="1"
-                    class="battery-to-grid"
-                    vector-effect="non-scaling-stroke"
-                  >
-                    <animateMotion
-                      dur="${6 - (batteryToGrid / totalLines) * 5}s"
-                      repeatCount="indefinite"
-                      calcMode="linear"
-                    >
-                      <mpath xlink:href="#battery-grid" />
-                    </animateMotion>
-                  </circle>`
-                  : ""
-              }
-            </svg>
+                    : nothing
+                }
+              </svg>
+              ${renderEnergyFlowDots(
+                this._reducedMotion
+                  ? []
+                  : [
+                      hasFlow(solarToGrid) && {
+                        path: "return",
+                        className: "return",
+                        duration: 6 - (solarToGrid / totalLines) * 5,
+                      },
+                      hasFlow(solarConsumption) && {
+                        path: "solar",
+                        className: "solar",
+                        duration: 6 - (solarConsumption / totalLines) * 5,
+                      },
+                      hasFlow(gridConsumption) && {
+                        path: "grid",
+                        className: "grid",
+                        duration: 6 - (gridConsumption / totalLines) * 5,
+                      },
+                      hasFlow(homeToGrid) && {
+                        path: "grid",
+                        className: "return",
+                        duration: 6 - (homeToGrid / totalLines) * 5,
+                        reverse: true,
+                      },
+                      hasFlow(solarToBattery) && {
+                        path: "battery-solar",
+                        className: "battery-solar",
+                        duration: 6 - (solarToBattery / totalLines) * 5,
+                      },
+                      hasFlow(batteryConsumption) && {
+                        path: "battery-house",
+                        className: "battery-house",
+                        duration: 6 - (batteryConsumption / totalLines) * 5,
+                      },
+                      hasFlow(batteryFromGrid) && {
+                        path: "battery-grid",
+                        className: "battery-from-grid",
+                        duration: 6 - (batteryFromGrid / totalLines) * 5,
+                        reverse: true,
+                      },
+                      hasFlow(batteryToGrid) && {
+                        path: "battery-grid",
+                        className: "battery-to-grid",
+                        duration: 6 - (batteryToGrid / totalLines) * 5,
+                      },
+                    ]
+              )}
+            </div>
           </div>
         </div>
         ${
@@ -1059,6 +954,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
   }
 
   static styles = css`
+    ${energyFlowDotsStyles}
     :host {
       --mdc-icon-size: 24px;
     }
@@ -1080,11 +976,15 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       padding: 0 16px 16px;
       box-sizing: border-box;
     }
+    .lines .flow > svg {
+      width: 100%;
+      height: 100%;
+    }
     .lines.high {
       bottom: 100px;
       height: 156px;
     }
-    .lines svg {
+    .lines .flow {
       width: calc(100% - 160px);
       height: 100%;
       max-width: 340px;
@@ -1186,24 +1086,20 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       top: 0;
       left: 0;
     }
-    .gas path,
-    .gas circle {
+    .gas path {
       stroke: var(--energy-gas-color);
     }
-    circle.gas {
-      stroke-width: 4;
-      fill: var(--energy-gas-color);
+    .flow-dot.gas {
+      background-color: var(--energy-gas-color);
     }
     .gas .circle {
       border-color: var(--energy-gas-color);
     }
-    .water path,
-    .water circle {
+    .water path {
       stroke: var(--energy-water-color);
     }
-    circle.water {
-      stroke-width: 4;
-      fill: var(--energy-water-color);
+    .flow-dot.water {
+      background-color: var(--energy-water-color);
     }
     .water .circle {
       border-color: var(--energy-water-color);
@@ -1228,9 +1124,8 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     path.solar {
       stroke: var(--energy-solar-color);
     }
-    circle.solar {
-      stroke-width: 4;
-      fill: var(--energy-solar-color);
+    .flow-dot.solar {
+      background-color: var(--energy-solar-color);
     }
     .battery .circle {
       border-color: var(--energy-battery-out-color);
@@ -1239,21 +1134,17 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     path.battery {
       stroke: var(--energy-battery-out-color);
     }
-    path.battery-house,
-    circle.battery-house {
+    path.battery-house {
       stroke: var(--energy-battery-out-color);
     }
-    circle.battery-house {
-      stroke-width: 4;
-      fill: var(--energy-battery-out-color);
+    .flow-dot.battery-house {
+      background-color: var(--energy-battery-out-color);
     }
-    path.battery-solar,
-    circle.battery-solar {
+    path.battery-solar {
       stroke: var(--energy-battery-in-color);
     }
-    circle.battery-solar {
-      stroke-width: 4;
-      fill: var(--energy-battery-in-color);
+    .flow-dot.battery-solar {
+      background-color: var(--energy-battery-in-color);
     }
     .battery-in {
       color: var(--energy-battery-in-color);
@@ -1267,15 +1158,12 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     path.battery-to-grid {
       stroke: var(--energy-grid-return-color);
     }
-    path.return,
-    circle.return,
-    circle.battery-to-grid {
+    path.return {
       stroke: var(--energy-grid-return-color);
     }
-    circle.return,
-    circle.battery-to-grid {
-      stroke-width: 4;
-      fill: var(--energy-grid-return-color);
+    .flow-dot.return,
+    .flow-dot.battery-to-grid {
+      background-color: var(--energy-grid-return-color);
     }
     .return {
       color: var(--energy-grid-return-color);
@@ -1287,14 +1175,12 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       color: var(--energy-grid-consumption-color);
     }
     circle.grid,
-    circle.battery-from-grid,
     path.grid {
       stroke: var(--energy-grid-consumption-color);
     }
-    circle.grid,
-    circle.battery-from-grid {
-      stroke-width: 4;
-      fill: var(--energy-grid-consumption-color);
+    .flow-dot.grid,
+    .flow-dot.battery-from-grid {
+      background-color: var(--energy-grid-consumption-color);
     }
     .home .circle {
       border-width: 0;

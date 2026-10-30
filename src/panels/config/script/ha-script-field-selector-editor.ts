@@ -12,6 +12,7 @@ import type { HaSelector } from "../../../components/ha-selector/ha-selector";
 import type { HaActionSelector } from "../../../components/ha-selector/ha-selector-action";
 import type { HaConditionSelector } from "../../../components/ha-selector/ha-selector-condition";
 import "../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type { Field } from "../../../data/script";
 import { SELECTOR_SELECTOR_BUILDING_BLOCKS } from "../../../data/selector/selector_selector";
 import { haStyle } from "../../../resources/styles";
@@ -35,6 +36,8 @@ export default class HaScriptFieldSelectorEditor extends LitElement {
   @property({ type: Boolean, attribute: "yaml-mode" }) public yamlMode = false;
 
   @state() private _uiError?: Record<string, string>;
+
+  @query("ha-yaml-editor") public yamlEditor?: HaYamlEditor;
 
   @state() private _yamlError?: undefined | "yaml_error" | "key_not_unique";
 

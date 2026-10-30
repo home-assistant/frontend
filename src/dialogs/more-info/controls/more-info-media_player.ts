@@ -57,6 +57,7 @@ import {
   handleMediaControlClick,
   MediaPlayerEntityFeature,
   mediaPlayerPlayMedia,
+  removeSecondaryStopControl,
 } from "../../../data/media-player";
 import type {
   HomeAssistantApi,
@@ -159,6 +160,9 @@ class MoreInfoMediaPlayer extends LitElement {
     const secondaryTitle = computeMediaDescription(stateObj);
     const turnOn = controls?.find((c) => c.action === "turn_on");
     const turnOff = controls?.find((c) => c.action === "turn_off");
+    const mainControls = removeSecondaryStopControl(stateObj, controls);
+    const stop = controls?.find((c) => c.action === "media_stop");
+    const secondaryStop = stop && !mainControls?.includes(stop);
 
     return html`
       ${
@@ -259,7 +263,9 @@ class MoreInfoMediaPlayer extends LitElement {
                   "media_play",
                   "media_stop",
                 ].map((action) => {
-                  const control = controls.find((c) => c.action === action);
+                  const control = mainControls?.find(
+                    (c) => c.action === action
+                  );
                   return control
                     ? html`<ha-button
                         variant="brand"
@@ -297,6 +303,17 @@ class MoreInfoMediaPlayer extends LitElement {
         }
         ${this._renderVolumeControl()}
         <div class="controls-row">
+          ${
+            secondaryStop
+              ? this._renderControlButton(
+                  "media_stop",
+                  this._localize("ui.card.media_player.media_stop"),
+                  stop.icon,
+                  this._handleClick,
+                  stop.action
+                )
+              : nothing
+          }
           ${
             supportsFeature(stateObj, MediaPlayerEntityFeature.BROWSE_MEDIA)
               ? this._renderControlButton(

@@ -5,7 +5,7 @@ import { customElement, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
 import { preserveUnchangedEntityStatesRecord } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import "../../../../components/ha-badge";
 import "../../../../components/ha-svg-icon";
 import {
@@ -114,13 +114,18 @@ export class HuiPowerTotalBadge extends LitElement implements LovelaceBadge {
 
     let displayValue: string;
     if (power >= 1000) {
-      displayValue = `${formatNumber(power / 1000, this._i18n.locale, {
-        maximumFractionDigits: 2,
-      })} kW`;
+      displayValue = formatNumberWithUnit(
+        power / 1000,
+        "kW",
+        this._i18n.locale,
+        {
+          maximumFractionDigits: 2,
+        }
+      );
     } else {
-      displayValue = `${formatNumber(power, this._i18n.locale, {
+      displayValue = formatNumberWithUnit(power, "W", this._i18n.locale, {
         maximumFractionDigits: 0,
-      })} W`;
+      });
     }
 
     const name =

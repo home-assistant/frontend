@@ -17,10 +17,9 @@ import { BINARY_STATE_ON, STRINGS_SEPARATOR_DOT } from "../../../common/const";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { generateEntityFilter } from "../../../common/entity/entity_filter";
 import {
-  formatNumber,
+  formatNumberWithUnit,
   isNumericState,
 } from "../../../common/number/format_number";
-import { blankBeforeUnit } from "../../../common/translations/blank_before_unit";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-aspect-ratio";
 import "../../../components/ha-card";
@@ -539,14 +538,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           ? values.reduce((acc, v) => acc + v, 0)
           : this._computeMedianValue(values);
 
-        const formattedValue = formatNumber(value, this.hass.locale, {
+        return formatNumberWithUnit(value, uom, this.hass.locale, {
           maximumFractionDigits: 1,
         });
-        const formattedUnit = uom
-          ? `${blankBeforeUnit(uom, this.hass.locale)}${uom}`
-          : "";
-
-        return `${formattedValue}${formattedUnit}`;
       })
       .filter(Boolean)
       .join(STRINGS_SEPARATOR_DOT);

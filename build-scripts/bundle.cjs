@@ -117,6 +117,16 @@ module.exports.swcOptions = () => ({
   },
 });
 
+const corejsPolyfills = (exclude = []) => [
+  "babel-plugin-polyfill-corejs3",
+  {
+    method: "usage-global",
+    version: dependencies["core-js"],
+    shippedProposals: true,
+    exclude,
+  },
+];
+
 module.exports.babelOptions = ({ latestBuild, isTestBuild, sw, worker }) => ({
   babelrc: false,
   compact: false,
@@ -138,14 +148,7 @@ module.exports.babelOptions = ({ latestBuild, isTestBuild, sw, worker }) => ({
     // Inject Core-JS polyfills on demand. Babel 8 removed preset-env's
     // `useBuiltIns`/`corejs` options, so the equivalent polyfill provider is
     // configured directly here (`usage-global` matches the old `useBuiltIns: "usage"`).
-    [
-      "babel-plugin-polyfill-corejs3",
-      {
-        method: "usage-global",
-        version: dependencies["core-js"],
-        shippedProposals: true,
-      },
-    ],
+    corejsPolyfills(),
     [
       path.join(BABEL_PLUGINS, "inline-constants-plugin.cjs"),
       {
@@ -189,6 +192,16 @@ module.exports.babelOptions = ({ latestBuild, isTestBuild, sw, worker }) => ({
           "@webcomponents/scoped-custom-element-registry",
           "element-internals-polyfill",
         ].map((p) => new RegExp(`/node_modules/${p}/`)),
+      ],
+    },
+    {
+      // It only constructs `Uint8Array`s, but any reference to one pulls in
+      // every typed array polyfill, and this lands in the `core` entrypoint.
+      test: /[\\/]node_modules[\\/]home-assistant-js-websocket[\\/]/,
+      plugins: [
+        corejsPolyfills([
+          /^(es|esnext)\.(array-buffer|typed-array|uint8-array)\./,
+        ]),
       ],
     },
     {

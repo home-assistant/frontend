@@ -8,11 +8,18 @@ import "../components/entity/state-info";
 import "../components/input/ha-input";
 import type { HaInput } from "../components/input/ha-input";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { apiContext } from "../data/context";
+import type { HomeAssistantApi } from "../types";
 
 @customElement("state-card-input_text")
 class StateCardInputText extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
@@ -36,7 +43,7 @@ class StateCardInputText extends LitElement {
           @input=${this._onInput}
           @change=${this._selectedValueChanged}
           @click=${stopPropagation}
-          .placeholder=${this.hass.localize("ui.card.text.empty_value")}
+          .placeholder=${this._localize("ui.card.text.empty_value")}
         >
         </ha-input>
       </div>
@@ -58,7 +65,7 @@ class StateCardInputText extends LitElement {
     if (this.value === this.stateObj.state) {
       return;
     }
-    await this.hass.callService("input_text", "set_value", {
+    await this._api.callService("input_text", "set_value", {
       value: this.value,
       entity_id: this.stateObj.entity_id,
     });

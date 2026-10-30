@@ -1,7 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { debounce } from "../common/util/debounce";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import "../components/entity/state-info";
@@ -12,11 +12,25 @@ import "../components/input/ha-input";
 import { UNAVAILABLE } from "../data/entity/entity";
 import { showNumberSlider } from "../data/number";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
+import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
+import { apiContext, formattersContext } from "../data/context";
+import type { HomeAssistantApi, HomeAssistantFormatters } from "../types";
 
 @customElement("state-card-number")
 class StateCardNumber extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityState"] | undefined
+  >({
+    transformer: (formatters) => formatters?.formatEntityState,
+  })
+  private _formatEntityState?: HomeAssistantFormatters["formatEntityState"];
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
@@ -70,7 +84,7 @@ class StateCardNumber extends LitElement {
                 >
                 </ha-slider>
                 <span class="state">
-                  ${this.hass.formatEntityState(this.stateObj)}
+                  ${this._formatEntityState?.(this.stateObj)}
                 </span>
               </div>
             `
@@ -133,7 +147,7 @@ class StateCardNumber extends LitElement {
     if (value === this.stateObj.state) {
       return;
     }
-    await this.hass.callService("number", "set_value", {
+    await this._api.callService("number", "set_value", {
       value: value,
       entity_id: this.stateObj.entity_id,
     });

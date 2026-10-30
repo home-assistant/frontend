@@ -342,7 +342,7 @@ class ConfigUrlForm extends SubscribeMixin(LitElement) {
     super.firstUpdated(changedProps);
 
     if (isComponentLoaded(this.hass.config, "cloud")) {
-      fetchCloudStatus(this.hass).then((cloudStatus) => {
+      fetchCloudStatus(this.hass.callWS).then((cloudStatus) => {
         this._cloudStatus = cloudStatus;
         this._showCustomExternalUrl = !(
           this._cloudStatus.logged_in && !this.hass.config.external_url

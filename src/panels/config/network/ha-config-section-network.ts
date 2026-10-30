@@ -106,6 +106,10 @@ class HaConfigSectionNetwork extends LitElement {
       margin-bottom: 24px;
       max-width: 600px;
     }
+    .discovery-card ha-list-item-button::part(headline),
+    .discovery-card ha-list-item-button::part(supporting-text) {
+      white-space: normal;
+    }
   `;
 }
 

@@ -218,7 +218,7 @@ export class AITaskPref extends LitElement {
     let configFlow: EntityConfigFlow | undefined;
     try {
       configFlow = entityId
-        ? await fetchEntityConfigFlow(this.hass, entityId)
+        ? await fetchEntityConfigFlow(this.hass, this.hass.entities, entityId)
         : undefined;
     } catch (_err) {
       configFlow = undefined;

@@ -169,14 +169,11 @@ export const subscribeHistory = (
   }));
 
 export class HistoryStream {
-  hass: HomeAssistant;
-
   hoursToShow?: number;
 
   combinedHistory: HistoryStates;
 
-  constructor(hass: HomeAssistant, hoursToShow?: number) {
-    this.hass = hass;
+  constructor(hoursToShow?: number) {
     this.hoursToShow = hoursToShow;
     this.combinedHistory = {};
   }
@@ -267,7 +264,7 @@ export class HistoryStream {
 }
 
 export const subscribeHistoryStatesTimeWindow = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection" | "states">,
   callbackFunction: (data: HistoryStates) => void,
   hoursToShow: number,
   entityIds: string[],
@@ -309,7 +306,7 @@ export const subscribeHistoryStatesTimeWindow = (
  * a fresh `HistoryStream`, so consumers don't need to listen for reconnects.
  */
 const subscribeHistoryStream = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   callbackFunction: (data: HistoryStates) => void,
   buildParams: () => MessageBase,
   hoursToShow?: number
@@ -318,7 +315,7 @@ const subscribeHistoryStream = async (
   let disposed = false;
 
   const doSubscribe = async () => {
-    const stream = new HistoryStream(hass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const unsub = await hass.connection.subscribeMessage<HistoryStreamMessage>(
       (message) => callbackFunction(stream.processMessage(message)),
       buildParams(),

@@ -1,4 +1,3 @@
-import "@lit-labs/virtualizer";
 import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
@@ -6,6 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import { arrayWith, arrayWithout } from "../../../common/array/array-with";
 import { consume } from "../../../common/decorators/consume";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import {
@@ -13,13 +13,14 @@ import {
   computeEntitySearchLabels,
 } from "../../../common/entity/compute_entity_name_display";
 import "../../../components/ha-button";
-import "../../../components/ha-check-list-item";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-list";
 import "../../../components/ha-state-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/item/ha-list-item-option";
+import "../../../components/list/ha-list-selectable-virtualized";
+import type { HaListVirtualizedItem } from "../../../components/list/ha-list-virtualized";
 import {
   configContext,
   internationalizationContext,
@@ -30,9 +31,12 @@ import type { ExposeEntitySettings } from "../../../data/expose";
 import { voiceAssistants } from "../../../data/expose";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
-import { haStyle, haStyleScrollbar } from "../../../resources/styles";
-import { loadVirtualizer } from "../../../resources/virtualizer";
+import { haStyle } from "../../../resources/styles";
 import type { ExposeEntityDialogParams } from "./show-dialog-expose-entity";
+
+interface ExposeEntityRow extends HaListVirtualizedItem {
+  stateObj: HassEntity;
+}
 
 @customElement("dialog-expose-entity")
 class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
@@ -93,29 +97,25 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
         header-title=${header}
         header-subtitle=${subtitle}
         .preventScrimClose=${this.isDirtyState}
-        @after-show=${this._loadVirtualizer}
+        @after-show=${this._dialogShown}
       >
         <ha-input-search
           appearance="outlined"
           .value=${this._filter}
           @input=${this._filterChanged}
         ></ha-input-search>
-        <ha-list multi>
-          ${
-            this._dialogReady
-              ? html` <lit-virtualizer
-                  scroller
-                  class="ha-scrollbar"
-                  @click=${this._itemClicked}
-                  @keydown=${this._handleItemKeydown}
-                  .items=${entities}
-                  .renderItem=${this._renderItem}
-                  .keyFunction=${this._keyFunction}
-                >
-                </lit-virtualizer>`
-              : nothing
-          }
-        </ha-list>
+        ${
+          this._dialogReady
+            ? html`<ha-list-selectable-virtualized
+                multi
+                aria-label=${header}
+                .rows=${entities}
+                .rowRenderer=${this._renderItem}
+                @ha-list-item-selected=${this._handleItemToggled}
+                @ha-list-item-deselected=${this._handleItemToggled}
+              ></ha-list-selectable-virtualized>`
+            : nothing
+        }
         <ha-dialog-footer slot="footer">
           <ha-button
             slot="secondaryAction"
@@ -139,36 +139,25 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
     `;
   }
 
-  private async _loadVirtualizer() {
-    await loadVirtualizer();
+  private _dialogShown() {
     this._dialogReady = true;
   }
 
-  private _keyFunction = (entity: HassEntity) => entity.entity_id;
-
-  private _handleSelected = (ev) => {
-    const entityId = ev.target.value;
-    if (ev.detail.selected) {
-      if (this._selected.includes(entityId)) {
-        return;
-      }
-      this._selected = [...this._selected, entityId];
-    } else {
-      this._selected = this._selected.filter((item) => item !== entityId);
+  private _handleItemToggled(ev: CustomEvent<number>) {
+    const entityId = this._filterEntities(
+      this.params!.exposedEntities,
+      this._registries,
+      this._filter
+    )[ev.detail]?.id;
+    if (!entityId) {
+      return;
     }
+
+    this._selected =
+      ev.type === "ha-list-item-selected"
+        ? arrayWith(this._selected, entityId)
+        : arrayWithout(this._selected, entityId);
     this._updateDirtyState(this._selected);
-  };
-
-  private _handleItemKeydown(ev: KeyboardEvent) {
-    if (ev.key === "Enter" || ev.key === " ") {
-      ev.preventDefault();
-      this._itemClicked(ev);
-    }
-  }
-
-  private _itemClicked(ev) {
-    const listItem = ev.target.closest("ha-check-list-item");
-    listItem.selected = !listItem.selected;
   }
 
   private _filterChanged(e: HASSDomTargetEvent<HaInputSearch>) {
@@ -180,9 +169,9 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
       exposedEntities: Record<string, ExposeEntitySettings>,
       registries: ContextType<typeof registriesContext>,
       filter?: string
-    ): HassEntity[] => {
+    ): ExposeEntityRow[] => {
       const lowerFilter = filter?.toLowerCase();
-      const result: HassEntity[] = [];
+      const result: ExposeEntityRow[] = [];
 
       for (const entity of Object.values(this._states)) {
         if (
@@ -197,7 +186,11 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
           !lowerFilter ||
           entity.entity_id.toLowerCase().includes(lowerFilter)
         ) {
-          result.push(entity);
+          result.push({
+            id: entity.entity_id,
+            interactive: true,
+            stateObj: entity,
+          });
           continue;
         }
 
@@ -209,7 +202,11 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
             name?.toLowerCase().includes(lowerFilter)
           )
         ) {
-          result.push(entity);
+          result.push({
+            id: entity.entity_id,
+            interactive: true,
+            stateObj: entity,
+          });
         }
       }
 
@@ -217,10 +214,14 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
     }
   );
 
-  private _renderItem = (entityState: HassEntity) => {
+  private _renderItem = (row: ExposeEntityRow) => {
+    const entityState = row.stateObj;
     const { primary, secondary: context } = computeEntityPickerDisplay(
       {
-        ...this._registries,
+        entities: this._registries.entities,
+        devices: this._registries.devices,
+        areas: this._registries.areas,
+        floors: this._registries.floors,
         language: this._i18n.language,
         translationMetadata: this._i18n.translationMetadata,
       },
@@ -229,36 +230,31 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
     const showEntityId = this._config?.userData?.showEntityIdPicker;
 
     return html`
-      <ha-check-list-item
-        tabindex="0"
-        graphic="icon"
-        ?twoLine=${context}
-        ?threeLine=${showEntityId}
-        .value=${entityState.entity_id}
-        .selected=${this._selected.includes(entityState.entity_id)}
-        @request-selected=${this._handleSelected}
+      <ha-list-item-option
+        appearance="checkbox"
+        selection-position="end"
+        .value=${row.id}
+        .selected=${this._selected.includes(row.id)}
       >
         <ha-state-icon
-          title=${ifDefined(entityState?.state)}
-          slot="graphic"
+          title=${ifDefined(entityState.state)}
+          slot="start"
           .stateObj=${entityState}
         ></ha-state-icon>
-        ${primary}
+        <span slot="headline">${primary}</span>
         ${
           context || showEntityId
-            ? html`<span slot="secondary">
+            ? html`<span slot="supporting-text">
                 ${context}
                 ${
                   showEntityId
-                    ? html`<br /><span class="entity-id"
-                          >${entityState.entity_id}</span
-                        >`
+                    ? html`${context ? html`<br />` : nothing}${row.id}`
                     : nothing
                 }
               </span>`
             : nothing
         }
-      </ha-check-list-item>
+      </ha-list-item-option>
     `;
   };
 
@@ -271,53 +267,28 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
   static get styles(): CSSResultGroup {
     return [
       haStyle,
-      haStyleScrollbar,
       css`
         ha-dialog {
           --dialog-content-padding: 0;
         }
-        ha-list {
-          position: relative;
-        }
-        lit-virtualizer {
-          height: 500px;
-        }
         ha-input-search {
           padding: 0 var(--ha-space-3);
         }
-        lit-virtualizer {
-          width: 100%;
-          contain: size layout !important;
-        }
-        ha-check-list-item {
-          width: 100%;
-          height: 72px;
-        }
-        ha-check-list-item[threeLine] {
-          height: 88px;
-        }
-        ha-check-list-item .entity-id {
-          line-height: var(--ha-line-height-normal);
-          padding-left: var(--ha-space-1);
-          font-size: var(--ha-font-size-xs);
-        }
-        ha-check-list-item ha-state-icon {
-          margin-left: var(--ha-space-6);
-          margin-inline-start: var(--ha-space-6);
-          margin-inline-end: initial;
+        ha-list-selectable-virtualized {
+          height: 500px;
         }
         @media all and (max-height: 800px) {
-          lit-virtualizer {
+          ha-list-selectable-virtualized {
             height: 334px;
           }
         }
         @media all and (max-height: 600px) {
-          lit-virtualizer {
+          ha-list-selectable-virtualized {
             height: 238px;
           }
         }
         @media all and (max-width: 500px), all and (max-height: 500px) {
-          lit-virtualizer {
+          ha-list-selectable-virtualized {
             height: calc(
               100vh -
                 210px - var(--safe-area-inset-top, 0px) - var(
@@ -325,11 +296,6 @@ class DialogExposeEntity extends DirtyStateProviderMixin<string[]>()(
                   0px
                 )
             );
-          }
-          ha-check-list-item ha-state-icon {
-            margin-left: var(--ha-space-2);
-            margin-inline-start: var(--ha-space-2);
-            margin-inline-end: initial;
           }
         }
       `,

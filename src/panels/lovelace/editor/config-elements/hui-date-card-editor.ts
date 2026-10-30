@@ -6,11 +6,11 @@ import {
   assert,
   assign,
   boolean,
-  defaulted,
   enums,
   object,
   optional,
   string,
+  union,
 } from "superstruct";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -22,7 +22,10 @@ import type {
 import type { ValueChangedEvent } from "../../../../types";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { DateCardConfig } from "../../cards/types";
-import { CLOCK_CARD_DATE_PARTS } from "../../cards/clock/clock-date-format";
+import {
+  CLOCK_CARD_DATE_PARTS,
+  CLOCK_CARD_DATE_PRESETS,
+} from "../../cards/clock/clock-date-format";
 import type { LovelaceCardEditor } from "../../types";
 import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { getTimezoneOptions } from "../../../../components/ha-timezone-picker";
@@ -32,7 +35,12 @@ const cardConfigStruct = assign(
   object({
     title: optional(string()),
     date_size: optional(enums(["small", "medium", "large"] as const)),
-    date_format: optional(defaulted(array(enums(CLOCK_CARD_DATE_PARTS)), [])),
+    date_format: optional(
+      union([
+        enums(CLOCK_CARD_DATE_PRESETS),
+        array(enums(CLOCK_CARD_DATE_PARTS)),
+      ])
+    ),
     time_zone: optional(enums(getTimezoneOptions().map((option) => option.id))),
     no_background: optional(boolean()),
   })

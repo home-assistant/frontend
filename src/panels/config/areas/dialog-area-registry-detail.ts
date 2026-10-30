@@ -196,7 +196,6 @@ class DialogAreaDetail
       ></ha-icon-picker>
 
       <ha-floor-picker
-        .hass=${this.hass}
         .value=${this._floor}
         @value-changed=${this._floorChanged}
         .label=${this.hass.localize("ui.panel.config.areas.editor.floor")}
@@ -204,7 +203,6 @@ class DialogAreaDetail
 
       <ha-labels-picker
         .label=${this.hass.localize("ui.components.label-picker.labels")}
-        .hass=${this.hass}
         .value=${this._labels}
         @value-changed=${this._labelsChanged}
         .placeholder=${this.hass.localize(

@@ -1,7 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { computeDomain } from "../common/entity/compute_domain";
 import "../components/entity/state-info";
 import "../components/ha-action-result";
@@ -9,11 +9,18 @@ import type { HaActionResult } from "../components/ha-action-result";
 import "../components/ha-control-button";
 import { UNAVAILABLE } from "../data/entity/entity";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { apiContext } from "../data/context";
+import type { HomeAssistantApi } from "../types";
 
 @customElement("state-card-button")
 export class StateCardButton extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
@@ -34,7 +41,7 @@ export class StateCardButton extends LitElement {
           @click=${this._pressButton}
         >
           <ha-action-result>
-            ${this.hass.localize("ui.card.button.press")}
+            ${this._localize("ui.card.button.press")}
           </ha-action-result>
         </ha-control-button>
       </div>
@@ -46,7 +53,7 @@ export class StateCardButton extends LitElement {
     if (this._result.busy) return;
 
     this._result.run(
-      this.hass.callService(computeDomain(this.stateObj.entity_id), "press", {
+      this._api.callService(computeDomain(this.stateObj.entity_id), "press", {
         entity_id: this.stateObj.entity_id,
       })
     );

@@ -13,3 +13,27 @@ index 95366713472f3ec5f3649547bb1fe202b806a2e6..e91f99229d554e79077486e1caf3602c
        originX: e.pinchX,
        originY: e.pinchY,
        isAvailableBehavior: null
+diff --git a/lib/label/LabelManager.js b/lib/label/LabelManager.js
+index 3d233be98b14223168726ebb3d9cd9b768fa2554..d6abfe5484ea8c2f0cb3a9d7c7c2fe31e7516fc7 100644
+--- a/lib/label/LabelManager.js
++++ b/lib/label/LabelManager.js
+@@ -43,6 +43,7 @@
+ */
+ // TODO: move labels out of viewport.
+ import { BoundingRect, updateProps, initProps, isElementRemoved } from '../util/graphic.js';
++import { getAnimationConfig } from '../animation/basicTransition.js';
+ import { getECData } from '../util/innerStore.js';
+ import { parsePercent } from '../util/number.js';
+ import Transformable from 'zrender/lib/core/Transformable.js';
+@@ -395,6 +396,11 @@ var LabelManager = /** @class */function () {
+             textEl.attr(layoutStore.oldLayoutEmphasis);
+           }
+         }
++        // An instant update, e.g. on roam, stops all animations and would leave the fade in half done
++        var updateConfig = getAnimationConfig('update', seriesModel, dataIndex);
++        if (!(updateConfig && updateConfig.duration > 0)) {
++          textEl.stopAnimation('enter', true);
++        }
+         updateProps(textEl, newProps, seriesModel, dataIndex);
+       }
+       layoutStore.oldLayout = newProps;
