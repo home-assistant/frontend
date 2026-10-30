@@ -720,7 +720,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             </div>
             <div class="actions">
               ${
-                configPanel
+                // With entries, each entry row already links to the panel.
+                configPanel && normalEntries.length === 0
                   ? html`<ha-button
                       .appearance=${setUpInPanel ? "accent" : "outlined"}
                       href=${`/${configPanel}`}
