@@ -39,6 +39,8 @@ import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
@@ -553,7 +555,16 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
           .disabled=${!this._reordering}
           @item-moved=${this._itemMoved}
         >
-          <ha-list-selectable wrap-focus multi controlled>
+          <ha-list-selectable
+            wrap-focus
+            multi
+            controlled
+            aria-label=${
+              this._config.title ||
+              computeEntityEntryName(this._entities[this._entityId]) ||
+              computeStateName(stateObj)
+            }
+          >
             ${
               !this._items
                 ? nothing
@@ -793,7 +804,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         )}
                         class="reorderButton handle"
                         .path=${mdiDragHorizontalVariant}
-                        slot="meta"
+                        slot="end"
                       >
                       </ha-svg-icon>
                     `
@@ -805,7 +816,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                         class="deleteItemButton"
                         .path=${mdiDelete}
                         .itemId=${item.uid}
-                        slot="meta"
+                        slot="end"
                         @click=${this._deleteItem}
                       >
                       </ha-icon-button>`
@@ -874,6 +885,9 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       return;
     }
     if (ev.key === "Enter") {
+      if (ev.target !== ev.currentTarget) {
+        return;
+      }
       ev.preventDefault();
       ev.stopPropagation();
       this._itemTap(ev);
@@ -920,6 +934,12 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     itemId: string,
     restoreFocus = false
   ): Promise<void> {
+    if (
+      !this._todoListSupportsFeature(TodoListEntityFeature.UPDATE_TODO_ITEM)
+    ) {
+      return;
+    }
+
     let focusedIndex: number | undefined;
     const list = this._list;
     if (restoreFocus && list) {
