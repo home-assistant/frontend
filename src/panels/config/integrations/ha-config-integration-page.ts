@@ -19,6 +19,7 @@ import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
+import { ContextSubscriptionController } from "../../../common/decorators/consume";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import {
@@ -59,7 +60,9 @@ import {
   getCoreLogFileDownloadUnavailableReason,
   getErrorLogDownloadUrl,
 } from "../../../data/error_log";
+import { manifestsContext } from "../../../data/context";
 import type {
+  DomainManifestLookup,
   IntegrationLogInfo,
   IntegrationManifest,
 } from "../../../data/integration";
@@ -67,7 +70,6 @@ import {
   LogSeverity,
   domainToName,
   fetchIntegrationManifest,
-  fetchIntegrationManifests,
   integrationIssuesUrl,
   setIntegrationLogLevel,
   subscribeLogInfo,
@@ -163,8 +165,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _manifest?: IntegrationManifest;
 
-  /** Loaded integrations that list this integration as a dependency. */
-  @state() private _dependents?: IntegrationManifest[];
+  /** The manifests of all loaded integrations, to find the dependents. */
+  @state() private _loadedManifests?: DomainManifestLookup;
+
+  private _manifestsConsumer?: ContextSubscriptionController<DomainManifestLookup>;
 
   @state() private _extraConfigEntries?: ConfigEntry[];
 
@@ -251,7 +255,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.hass.loadBackendTranslation("config", [this.domain]);
       this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
-      this._dependents = undefined;
       this._filter = "";
       this._subEntries = {};
       this._fetchManifest();
@@ -403,8 +406,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.domain
     );
 
-    const showDependents =
-      normalEntries.length === 0 && Boolean(this._dependents?.length);
+    // Without the dependents, a dependency looks like a YAML integration.
+    const dependents =
+      this._manifest && !this._manifest.config_flow
+        ? this._getDependents(this.domain, this._loadedManifests)
+        : [];
+    const showDependents = normalEntries.length === 0 && dependents.length > 0;
 
     const documentationLink = this._manifest?.is_built_in
       ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
@@ -900,7 +907,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       "ui.panel.config.integrations.integration_page.used_by"
                     )}
                   </h3>
-                  ${this._renderDependents(this._dependents!)}
+                  ${this._renderDependents(dependents)}
                 </div>`
               : html`<div class="section">
                   <h3 class="section-header">
@@ -956,6 +963,31 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       </hass-subpage>
     `;
   }
+
+  // Only an integration without a config flow needs the loaded manifests, so
+  // other integration pages do not make the context fetch them.
+  private _watchLoadedManifests(): void {
+    if (this._manifestsConsumer) {
+      return;
+    }
+    this._manifestsConsumer = new ContextSubscriptionController(
+      this,
+      manifestsContext,
+      (manifests) => {
+        this._loadedManifests = manifests;
+      }
+    );
+  }
+
+  private _getDependents = memoizeOne(
+    (domain: string, manifests?: DomainManifestLookup) =>
+      Object.values(manifests ?? {}).filter(
+        // System integrations, like Default Configuration, are not useful to list.
+        (manifest) =>
+          manifest.integration_type !== "system" &&
+          manifest.dependencies?.includes(domain)
+      )
+  );
 
   private _renderDependents(dependents: IntegrationManifest[]) {
     return html`<ha-list-base>
@@ -1029,14 +1061,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     }
     this._manifest = await fetchIntegrationManifest(this.hass, this.domain);
     if (!this._manifest.config_flow) {
-      // Without the dependents, a dependency looks like a YAML integration.
-      const loadedManifests = await fetchIntegrationManifests(this.hass);
-      // System integrations, like Default Configuration, are not useful to list.
-      this._dependents = loadedManifests.filter(
-        (manifest) =>
-          manifest.integration_type !== "system" &&
-          manifest.dependencies?.includes(this.domain)
-      );
+      this._watchLoadedManifests();
     }
     if (
       this._manifest.integration_type &&
