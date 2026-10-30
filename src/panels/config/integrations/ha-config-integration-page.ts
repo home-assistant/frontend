@@ -8,6 +8,7 @@ import {
   mdiOpenInNew,
   mdiPackageVariant,
   mdiPlus,
+  mdiPuzzleOutline,
   mdiTextBoxOutline,
   mdiWeb,
 } from "@mdi/js";
@@ -26,6 +27,7 @@ import {
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import { formatListWithAnds } from "../../../common/string/format-list";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   integrationQueryParamConfig,
@@ -65,6 +67,7 @@ import {
   LogSeverity,
   domainToName,
   fetchIntegrationManifest,
+  fetchIntegrationManifests,
   integrationIssuesUrl,
   setIntegrationLogLevel,
   subscribeLogInfo,
@@ -160,6 +163,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _manifest?: IntegrationManifest;
 
+  /** Loaded integrations that list this integration as a dependency. */
+  @state() private _dependents?: IntegrationManifest[];
+
   @state() private _extraConfigEntries?: ConfigEntry[];
 
   @state() private _diagnosticHandler?: DiagnosticInfo;
@@ -245,6 +251,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.hass.loadBackendTranslation("config", [this.domain]);
       this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
+      this._dependents = undefined;
       this._filter = "";
       this._subEntries = {};
       this._fetchManifest();
@@ -395,6 +402,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     const canAddDevice = (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
       this.domain
     );
+
+    const usedBy = this._dependents?.length
+      ? formatListWithAnds(
+          this.hass.locale,
+          this._dependents.map((manifest) =>
+            domainToName(this.hass.localize, manifest.domain, manifest)
+          )
+        )
+      : undefined;
 
     const documentationLink = this._manifest?.is_built_in
       ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
@@ -587,10 +603,19 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                       (comp) => comp.split(".")[0] === this.domain
                     )
                       ? html`<div class="integration-info info">
-                          <ha-svg-icon path=${mdiFileCodeOutline}></ha-svg-icon
-                          >${this.hass.localize(
-                            "ui.panel.config.integrations.config_entry.no_config_flow"
-                          )}
+                          <ha-svg-icon
+                            path=${usedBy ? mdiPuzzleOutline : mdiFileCodeOutline}
+                          ></ha-svg-icon
+                          >${
+                            usedBy
+                              ? this.hass.localize(
+                                  "ui.panel.config.integrations.config_entry.used_by",
+                                  { integrations: usedBy }
+                                )
+                              : this.hass.localize(
+                                  "ui.panel.config.integrations.config_entry.no_config_flow"
+                                )
+                          }
                         </div>`
                       : nothing
                   }
@@ -906,9 +931,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                             this.hass.config.components.find(
                               (comp) => comp.split(".")[0] === this.domain
                             )
-                          ? this.hass.localize(
-                              "ui.panel.config.integrations.integration_page.yaml_entry"
-                            )
+                          ? usedBy
+                            ? this.hass.localize(
+                                "ui.panel.config.integrations.integration_page.dependency_entry",
+                                { integrations: usedBy }
+                              )
+                            : this.hass.localize(
+                                "ui.panel.config.integrations.integration_page.yaml_entry"
+                              )
                           : this.hass.localize(
                               "ui.panel.config.integrations.integration_page.no_entries"
                             )
@@ -975,6 +1005,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       return;
     }
     this._manifest = await fetchIntegrationManifest(this.hass, this.domain);
+    if (!this._manifest.config_flow) {
+      // Without the dependents, a dependency looks like a YAML integration.
+      const loadedManifests = await fetchIntegrationManifests(this.hass);
+      this._dependents = loadedManifests.filter((manifest) =>
+        manifest.dependencies?.includes(this.domain)
+      );
+    }
     if (
       this._manifest.integration_type &&
       !["device", "hub", "service"].includes(this._manifest.integration_type)
