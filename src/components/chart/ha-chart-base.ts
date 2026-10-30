@@ -2312,6 +2312,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       --ha-assist-chip-trailing-space: var(--ha-space-2);
       --ha-assist-chip-icon-label-space: var(--ha-space-1);
     }
+    .zoom-reset {
+      margin-right: 12px;
+    }
   `;
 }
 
