@@ -50,9 +50,12 @@ import { documentationUrl } from "../../../../util/documentation-url";
 import { resolveMediaSource } from "../../../../data/media_source";
 import { MatchMinHeightMixin } from "../../../../mixins/match-min-height-mixin";
 import { withViewTransition } from "../../../../common/util/view-transition";
+import { KeyboardShortcutMixin } from "../../../../mixins/keyboard-shortcut-mixin";
 
 @customElement("tools-action")
-class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
+class HaPanelDevAction extends MatchMinHeightMixin(
+  KeyboardShortcutMixin(LitElement)
+) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -189,7 +192,6 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
                   style=${styleMap(this._matchMinHeightStyle)}
                 >
                   <ha-service-picker
-                    .hass=${this.hass}
                     .value=${this._serviceData?.action}
                     @value-changed=${this._serviceChanged}
                     show-service-id
@@ -616,15 +618,28 @@ class HaPanelDevAction extends MatchMinHeightMixin(LitElement) {
 
   private _modeChanged(ev: HASSDomEvent<{ value: string }>) {
     ev.stopPropagation();
-    const yamlMode = ev.detail.value === "yaml";
+    this._setYamlMode(ev.detail.value === "yaml");
+  }
+
+  private async _setYamlMode(yamlMode: boolean) {
     if (yamlMode === this._yamlMode) {
       return;
     }
-    withViewTransition(() => {
+    await withViewTransition(() => {
       this._yamlMode = yamlMode;
       this._yamlValid = true;
       this._error = undefined;
     });
+    if (yamlMode) {
+      await this.updateComplete;
+      this._yamlEditor?.focus();
+    }
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return this._uiAvailable
+      ? { Y: () => this._setYamlMode(!this._yamlMode) }
+      : {};
   }
 
   private _yamlChanged(ev: HASSDomEvent<{ value: any; isValid: boolean }>) {

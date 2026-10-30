@@ -102,6 +102,8 @@ export class HaCodeEditor extends ReactiveElement {
 
   @property({ attribute: "read-only", type: Boolean }) public readOnly = false;
 
+  private _focusPending = false;
+
   @property({ type: Boolean }) public linewrap = false;
 
   @property({ type: Boolean, attribute: "autocomplete-entities" })
@@ -260,7 +262,23 @@ export class HaCodeEditor extends ReactiveElement {
     }
   }
 
+  /**
+   * Focuses the editor. If CodeMirror is still loading, it is focused once
+   * it has been created.
+   */
+  public focus(): void {
+    if (!this.isConnected) {
+      return;
+    }
+    if (this.codemirror) {
+      this.codemirror.focus();
+      return;
+    }
+    this._focusPending = true;
+  }
+
   public disconnectedCallback() {
+    this._focusPending = false;
     fireEvent(this, "dialog-set-fullscreen", false);
     this._clearCompletionInfo();
     if (this._completionInfoFrame !== undefined) {
@@ -329,6 +347,13 @@ export class HaCodeEditor extends ReactiveElement {
         ),
       });
     }
+    if (changedProps.has("_i18n")) {
+      transactions.push({
+        effects: this._loadedCodeMirror!.phrasesCompartment.reconfigure(
+          this._phrases
+        ),
+      });
+    }
     if (changedProps.has("linewrap")) {
       transactions.push({
         effects: this._loadedCodeMirror!.linewrapCompartment!.reconfigure(
@@ -379,6 +404,12 @@ export class HaCodeEditor extends ReactiveElement {
     return this._loadedCodeMirror!.langs[this.mode];
   }
 
+  private get _phrases(): Extension {
+    return this._i18n
+      ? this._loadedCodeMirror!.localizedPhrases(this._i18n.localize)
+      : [];
+  }
+
   private _createCodeMirror() {
     if (!this._loadedCodeMirror) {
       throw new Error("Cannot create editor before CodeMirror is loaded");
@@ -415,6 +446,7 @@ export class HaCodeEditor extends ReactiveElement {
         saveKeyBinding,
       ]),
       this._loadedCodeMirror.search({ top: true }),
+      this._loadedCodeMirror.phrasesCompartment.of(this._phrases),
       this._loadedCodeMirror.langCompartment.of(this._mode),
       this._loadedCodeMirror.haTheme,
       this._loadedCodeMirror.haSyntaxHighlighting,
@@ -484,6 +516,11 @@ export class HaCodeEditor extends ReactiveElement {
 
     // Update the toolbar. Creating it if required
     this._updateToolbar();
+
+    if (this._focusPending) {
+      this._focusPending = false;
+      this.codemirror.focus();
+    }
   }
 
   private _fullscreenLabel(): string {

@@ -261,13 +261,19 @@ export const updateStatisticsMetadata = (
     unit_class,
   });
 
+// Without a range, the statistics are removed completely.
 export const clearStatistics = (
   hass: Pick<HomeAssistant, "callWS">,
-  statistic_ids: string[]
+  statistic_ids: string[],
+  range?: { start: Date; end: Date }
 ) =>
   hass.callWS<undefined>({
     type: "recorder/clear_statistics",
     statistic_ids,
+    ...(range && {
+      start_time: range.start.toISOString(),
+      end_time: range.end.toISOString(),
+    }),
   });
 
 export const calculateStatisticSumGrowth = (

@@ -10,7 +10,7 @@ class MockResizeObserver {
   disconnect = vi.fn();
 }
 
-describe("ha-control-number-buttons step bounds", () => {
+describe("ha-control-number-buttons", () => {
   // An input_number with min 1, max 99 and step 10: the step grid does not
   // divide the range, so snapping used to round past both bounds.
   const RANGE = { min: 1, max: 99, step: 10 };
@@ -30,8 +30,13 @@ describe("ha-control-number-buttons step bounds", () => {
     return el;
   };
 
-  const stepButton = (el: HaControlNumberButton, label: string) =>
-    el.shadowRoot!.querySelector<HTMLButtonElement>(`[aria-label="${label}"]`)!;
+  const stepButton = (
+    el: HaControlNumberButton,
+    direction: "increment" | "decrement"
+  ) =>
+    el.shadowRoot!.querySelector<HTMLButtonElement>(
+      direction === "increment" ? "button.plus" : "button.minus"
+    )!;
 
   const changedValues = (el: HaControlNumberButton) => {
     const values: (number | undefined)[] = [];
@@ -39,6 +44,14 @@ describe("ha-control-number-buttons step bounds", () => {
       values.push((ev as CustomEvent).detail.value);
     });
     return values;
+  };
+
+  const firedHaptics = (el: HaControlNumberButton) => {
+    const haptics: string[] = [];
+    el.addEventListener("haptic", (ev) => {
+      haptics.push((ev as CustomEvent).detail);
+    });
+    return haptics;
   };
 
   const pressKey = async (el: HaControlNumberButton, code: string) => {
@@ -119,5 +132,23 @@ describe("ha-control-number-buttons step bounds", () => {
     const narrowValues = changedValues(narrow);
     await pressKey(narrow, "PageUp");
     expect(narrowValues).toEqual([2]);
+  });
+
+  it("fires one light haptic per button press", async () => {
+    const el = await mountButtons({ ...RANGE, value: 50 });
+    const haptics = firedHaptics(el);
+    stepButton(el, "increment").click();
+    stepButton(el, "decrement").click();
+    await el.updateComplete;
+    expect(haptics).toEqual(["light", "light"]);
+  });
+
+  it("does not fire a haptic for keyboard steps", async () => {
+    const el = await mountButtons({ ...RANGE, value: 50 });
+    const values = changedValues(el);
+    const haptics = firedHaptics(el);
+    await pressKey(el, "ArrowUp");
+    expect(values).toEqual([60]);
+    expect(haptics).toEqual([]);
   });
 });

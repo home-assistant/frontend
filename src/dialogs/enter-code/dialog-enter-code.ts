@@ -133,8 +133,7 @@ export class DialogEnterCode
             id="code"
             .label=${this.hass.localize("ui.dialogs.enter_code.input_label")}
             type="password"
-            autoValidate
-            validateOnInitialRender
+            auto-validate
             pattern=${ifDefined(this._dialogParams.codePattern)}
             @keydown=${this._handleKeyDown}
             inputmode="text"

@@ -17,6 +17,9 @@ import "../../config/energy/components/ha-energy-water-settings";
 import "../../../components/ha-button";
 import type { Lovelace, LovelaceCard } from "../../lovelace/types";
 
+// Grid, solar, battery, gas, water, and individual devices
+const STEPS = 6;
+
 @customElement("energy-setup-wizard-card")
 export class EnergySetupWizard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -53,7 +56,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
       <p>
         ${this.hass.localize("ui.panel.energy.setup.step", {
           step: this._step + 1,
-          steps: 6,
+          steps: STEPS,
         })}
       </p>
       ${
@@ -103,7 +106,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
             : html`<div></div>`
         }
         ${
-          this._step < 4
+          this._step < STEPS - 1
             ? html`<ha-button @click=${this._next}
                 >${this.hass.localize("ui.panel.energy.setup.next")}</ha-button
               >`
@@ -131,7 +134,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
   }
 
   private _next() {
-    if (this._step === 5) {
+    if (this._step === STEPS - 1) {
       return;
     }
     this._step++;

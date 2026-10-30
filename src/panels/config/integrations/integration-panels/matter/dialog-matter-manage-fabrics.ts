@@ -3,10 +3,11 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-list";
-import "../../../../../components/ha-list-item";
-import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-dialog";
+import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-spinner";
+import "../../../../../components/item/ha-list-item-base";
+import "../../../../../components/list/ha-list-base";
 import type {
   MatterFabricData,
   MatterNodeDiagnostics,
@@ -59,30 +60,36 @@ class DialogMatterManageFabrics extends LitElement {
         </p>
         ${
           this._nodeDiagnostics
-            ? html`<ha-list>
+            ? html`<ha-list-base
+                aria-label=${this.hass.localize(
+                  "ui.panel.config.matter.manage_fabrics.title"
+                )}
+              >
                 ${this._nodeDiagnostics.active_fabrics.map(
                   (fabric) =>
-                    html`<ha-list-item
-                      noninteractive
-                      .hasMeta=${
+                    html`<ha-list-item-base
+                      .headline=${String(
+                        fabric.vendor_name ||
+                          fabric.fabric_label ||
+                          fabric.vendor_id
+                      )}
+                    >
+                      ${
                         this._nodeDiagnostics!.available &&
                         fabric.fabric_index !==
                           this._nodeDiagnostics!.active_fabric_index
+                          ? html`<ha-icon-button
+                              slot="end"
+                              .label=${this.hass.localize("ui.common.remove")}
+                              .path=${mdiDelete}
+                              .fabric=${fabric}
+                              @click=${this._removeFabric}
+                            ></ha-icon-button>`
+                          : nothing
                       }
-                      >${
-                        fabric.vendor_name ||
-                        fabric.fabric_label ||
-                        fabric.vendor_id
-                      }
-                      <ha-icon-button
-                        @click=${this._removeFabric}
-                        slot="meta"
-                        .fabric=${fabric}
-                        .path=${mdiDelete}
-                      ></ha-icon-button>
-                    </ha-list-item>`
+                    </ha-list-item-base>`
                 )}
-              </ha-list>`
+              </ha-list-base>`
             : html`<div class="center">
                 <ha-spinner></ha-spinner>
               </div>`
@@ -161,9 +168,10 @@ class DialogMatterManageFabrics extends LitElement {
       css`
         ha-dialog {
           --dialog-content-padding: 0;
-          --mdc-list-side-padding: 24px;
-          --mdc-list-side-padding-right: 16px;
-          --mdc-list-item-meta-size: 48px;
+        }
+        ha-list-item-base {
+          --ha-row-item-padding-inline: var(--ha-space-6) var(--ha-space-4);
+          --ha-row-item-padding-block: 0;
         }
         p {
           margin: 8px 24px;

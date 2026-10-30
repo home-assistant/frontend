@@ -21,10 +21,13 @@ import {
   getObserverLogs,
   downloadUrl as observerLogsDownloadUrl,
 } from "../data/observer";
-import { getSupervisorLogs, getSupervisorLogsFollow } from "../data/supervisor";
+import {
+  getSupervisorLogs,
+  getSupervisorLogsFollow,
+  isSupervisorLogError,
+} from "../data/supervisor";
 import { ASSUME_CORE_START_SECONDS } from "../ha-landing-page";
 
-const ERROR_CHECK = /^[\d\s-:]+(ERROR|CRITICAL)(.*)/gm;
 declare global {
   interface HASSDomEvents {
     "landing-page-error": undefined;
@@ -60,6 +63,8 @@ class LandingPageLogs extends LitElement {
   @state() private _newLogsIndicator?: boolean;
 
   @state() private _logLinesCount = 0;
+
+  private _errorFound = false;
 
   protected render() {
     return html`
@@ -160,26 +165,28 @@ class LandingPageLogs extends LitElement {
       this._logLinesCount = 0;
     }
 
-    const showError = ERROR_CHECK.test(logs);
-
     const scrolledToBottom = this._scrolledToBottomController.value;
     const lines = `${tempLogLine}${logs}`
       .split("\n")
       .filter((line) => line.trim() !== "");
 
     // handle edge case where the last line is not complete
-    if (logs.endsWith("\n")) {
+    if (clear || logs.endsWith("\n")) {
       tempLogLine = "";
     } else {
       tempLogLine = lines.splice(-1, 1)[0];
     }
+
+    const showError = lines.some(isSupervisorLogError);
 
     if (lines.length) {
       this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
       this._logLinesCount += lines.length;
     }
 
-    if (showError) {
+    // only open the logs once, so they can be closed again
+    if (showError && !this._errorFound) {
+      this._errorFound = true;
       fireEvent(this, "landing-page-error");
       this._show = true;
     }

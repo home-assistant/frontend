@@ -72,6 +72,8 @@ export class HaFilterDevices extends LitElement {
 
   private _panel = new FilterPanelController(this, this._content);
 
+  private _relatedRequestId = 0;
+
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
 
@@ -80,6 +82,15 @@ export class HaFilterDevices extends LitElement {
       !deepEqual(this.value, properties.get("value"))
     ) {
       this._findRelated();
+    }
+  }
+
+  protected updated(properties: PropertyValues<this>) {
+    super.updated(properties);
+
+    // The rows don't change with the value, so render the selection again
+    if (properties.has("value")) {
+      this._listElement?.requestRowsUpdate();
     }
   }
 
@@ -206,6 +217,7 @@ export class HaFilterDevices extends LitElement {
   );
 
   private async _findRelated() {
+    const requestId = ++this._relatedRequestId;
     const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (!this.value?.length) {
@@ -233,6 +245,12 @@ export class HaFilterDevices extends LitElement {
       }
     }
     const results = await Promise.all(relatedPromises);
+
+    // The value changed while this lookup ran
+    if (requestId !== this._relatedRequestId) {
+      return;
+    }
+
     const items = new Set<string>();
     for (const result of results) {
       if (result[this.type!]) {
@@ -260,7 +278,6 @@ export class HaFilterDevices extends LitElement {
       value: undefined,
       items: undefined,
     });
-    this._listElement?.clearSelection();
   }
 
   static styles = [

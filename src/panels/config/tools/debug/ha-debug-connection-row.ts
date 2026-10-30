@@ -1,5 +1,5 @@
 import type { TemplateResult } from "lit";
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/item/ha-list-item-base";
 import "../../../../components/ha-switch";
@@ -43,6 +43,13 @@ class HaDebugConnectionRow extends LitElement {
     setDebugConnection(debugConnection);
     storeState(this.hass);
   }
+
+  static styles = css`
+    ha-list-item-base::part(headline),
+    ha-list-item-base::part(supporting-text) {
+      white-space: normal;
+    }
+  `;
 }
 
 declare global {

@@ -76,6 +76,8 @@ const STRATEGIES: Record<LovelaceStrategyConfigType, Record<string, any>> = {
   section: {
     "common-controls": () =>
       import("./usage_prediction/common-controls-section-strategy"),
+    device: () => import("./device/device-section-strategy"),
+    entities: () => import("./entities/entities-section-strategy"),
   },
 };
 
@@ -251,19 +253,25 @@ export const generateLovelaceViewStrategy = async (
 
 export const generateLovelaceSectionStrategy = async (
   config: LovelaceStrategySectionConfig,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  throwOnError = false
 ): Promise<LovelaceSectionConfig> => {
   const { strategy, ...base } = config;
   const generated = await generateStrategy(
     "section",
-    (err) => ({
-      cards: [
-        {
-          type: "markdown",
-          content: `Error loading the section strategy:\n> ${err}`,
-        },
-      ],
-    }),
+    (err) => {
+      if (throwOnError) {
+        throw err instanceof Error ? err : new Error(err);
+      }
+      return {
+        cards: [
+          {
+            type: "markdown",
+            content: `Error loading the section strategy:\n> ${err}`,
+          },
+        ],
+      };
+    },
     strategy,
     hass
   );
@@ -308,18 +316,24 @@ export const checkStrategyShouldRegenerate = (
   return dependencies.some((key) => oldHass[key] !== newHass[key]);
 };
 
-const expandLovelaceSectionStrategies = async (
+export const expandLovelaceSectionStrategies = async (
   section: LovelaceSectionRawConfig,
-  hass: HomeAssistant
+  hass: HomeAssistant,
+  throwOnError = false
 ): Promise<LovelaceSectionConfig> => {
-  const newSection = isStrategySection(section)
-    ? await generateLovelaceSectionStrategy(section, hass)
-    : { ...section };
+  let newSection: LovelaceSectionConfig;
+  if (isStrategySection(section)) {
+    const { disabled: _disabled, ...generated } =
+      await generateLovelaceSectionStrategy(section, hass, throwOnError);
+    newSection = generated;
+  } else {
+    newSection = { ...section };
+  }
 
   if (newSection.sections) {
     newSection.sections = await Promise.all(
       newSection.sections.map((childSection) =>
-        expandLovelaceSectionStrategies(childSection, hass)
+        expandLovelaceSectionStrategies(childSection, hass, throwOnError)
       )
     );
   }

@@ -1,25 +1,48 @@
-import type { HassEntity } from "home-assistant-js-websocket/dist/types";
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../common/decorators/consume";
+import {
+  consumeEntityRegistryEntry,
+  consumeEntityState,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { valueFromParts } from "../../../common/entity/value_parts";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import "../../../components/ha-card";
 import "../../../components/ha-gauge";
+import {
+  configContext,
+  formattersContext,
+  internationalizationContext,
+  uiContext,
+} from "../../../data/context";
 import { UNAVAILABLE } from "../../../data/entity/entity";
+import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
-import type { HomeAssistant } from "../../../types";
+import type { Themes } from "../../../data/ws-themes";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantInternationalization,
+  HomeAssistantUI,
+} from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
-import { handleAction } from "../common/handle-action";
 import { hasAction, hasAnyAction } from "../common/has-action";
-import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard, LovelaceCardEditor } from "../types";
+import type {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceGridOptions,
+} from "../types";
 import type { GaugeCardConfig } from "./types";
 
 export const DEFAULT_MIN = 0;
@@ -61,9 +84,39 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return { type: "gauge", entity: foundEntities[0] || "" };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public layout?: string;
 
   @state() private _config?: GaugeCardConfig;
+
+  @state()
+  @consumeEntityState({ entityIdPath: ["_config", "entity"] })
+  private _stateObj?: HassEntity;
+
+  @state()
+  @consumeEntityRegistryEntry({ entityIdPath: ["_config", "entity"] })
+  _entity?: EntityRegistryDisplayEntry;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes!: Themes;
 
   public getCardSize(): number {
     return 4;
@@ -81,16 +134,16 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   protected render() {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return nothing;
     }
 
-    const stateObj = this.hass.states[this._config.entity];
+    const stateObj = this._stateObj;
 
     if (!stateObj) {
       return html`
         <hui-warning>
-          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
+          ${createEntityNotFoundWarning(this._i18n.localize, this._hassConfig)}
         </hui-warning>
       `;
     }
@@ -98,7 +151,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (stateObj.state === UNAVAILABLE) {
       return html`
         <hui-warning
-          >${this.hass.localize(
+          >${this._i18n.localize(
             "ui.panel.lovelace.warning.entity_unavailable",
             { entity: this._config.entity }
           )}</hui-warning
@@ -108,12 +161,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
     let parts;
     if (this._config.attribute) {
-      parts = this.hass.formatEntityAttributeValueToParts(
+      parts = this._formatters.formatEntityAttributeValueToParts(
         stateObj,
         this._config.attribute
       );
     } else {
-      parts = this.hass.formatEntityStateToParts(stateObj);
+      parts = this._formatters.formatEntityStateToParts(stateObj);
     }
     const customUnit = this._config.unit;
     // Custom unit can't keep a locale position, so append it at the end;
@@ -128,7 +181,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (isNaN(value)) {
       return html`
         <hui-warning
-          >${this.hass.localize(
+          >${this._i18n.localize(
             this._config.attribute
               ? "ui.panel.lovelace.warning.attribute_not_numeric"
               : "ui.panel.lovelace.warning.entity_non_numeric",
@@ -138,12 +191,19 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const name = this.hass.formatEntityName(stateObj, this._config.name);
+    const name = this._formatters.formatEntityName(stateObj, this._config.name);
+
+    // In a sections view with a set number of rows the card height is fixed,
+    // so the gauge also has to fit in the height, not only in the width.
+    const fixedHeight =
+      this.layout === "grid" &&
+      typeof this._config.grid_options?.rows === "number";
 
     return html`
       <ha-card
         class=${classMap({
           action: hasAnyAction(this._config),
+          "fixed-height": fixedHeight,
         })}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
@@ -156,45 +216,51 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             : undefined
         )}
       >
-        <ha-gauge
-          .min=${this._config.min!}
-          .max=${this._config.max!}
-          .value=${value}
-          .valueText=${valueToDisplay}
-          .locale=${this.hass!.locale}
-          .label=${customUnit ?? ""}
-          style=${styleMap({
-            "--gauge-color": this._computeSeverity(Number(value)),
-          })}
-          .needle=${this._config!.needle}
-          .levels=${this._config!.needle ? this._severityLevels() : undefined}
-        ></ha-gauge>
+        <div class="gauge-container">
+          <ha-gauge
+            .min=${this._config.min!}
+            .max=${this._config.max!}
+            .value=${value}
+            .valueText=${valueToDisplay}
+            .locale=${this._i18n.locale}
+            .label=${customUnit ?? ""}
+            style=${styleMap({
+              "--gauge-color": this._computeSeverity(Number(value)),
+            })}
+            .needle=${this._config!.needle}
+            .levels=${this._config!.needle ? this._severityLevels() : undefined}
+          ></ha-gauge>
+        </div>
         <p class="title" .title=${name}>${name}</p>
       </ha-card>
     `;
   }
 
-  protected shouldUpdate(changedProps: PropertyValues<this>): boolean {
-    return hasConfigOrEntityChanged(this, changedProps);
+  public getGridOptions(): LovelaceGridOptions {
+    // With one row there is almost no room left for the gauge after the
+    // padding and the name, so the card needs at least 2 rows.
+    return {
+      min_rows: 2,
+    };
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (!this._config || !this.hass) {
+    if (!this._config || !this._themes) {
       return;
     }
 
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldThemes = changedProps.get("_themes") as Themes | undefined;
     const oldConfig = changedProps.get("_config") as
       GaugeCardConfig | undefined;
 
     if (
-      !oldHass ||
+      !oldThemes ||
       !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
+      oldThemes !== this._themes ||
       oldConfig.theme !== this._config.theme
     ) {
-      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+      applyThemesOnElement(this, this._themes, this._config.theme);
     }
   }
 
@@ -279,7 +345,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
-    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+    fireEvent(this, "hass-action", {
+      config: this._config!,
+      action: ev.detail.action,
+    });
   }
 
   static styles = css`
@@ -319,6 +388,25 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     ha-gauge {
       width: 100%;
       max-width: 250px;
+    }
+
+    .gauge-container {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* With a fixed card height the container takes the space left after
+       the name, and the gauge is sized to fit inside it. */
+    ha-card.fixed-height .gauge-container {
+      flex: 1;
+      min-height: 0;
+      container-type: size;
+    }
+
+    ha-card.fixed-height ha-gauge {
+      width: min(250px, 100cqw, 100cqh * 100 / 55);
     }
   `;
 }

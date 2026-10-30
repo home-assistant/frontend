@@ -32,6 +32,9 @@ declare global {
 const VALID_PATH_REGEX = /^[a-zA-Z0-9_-]+$/;
 const INTEGER_REGEX = /^[0-9]+$/;
 
+const MAX_COLUMNS_PRESETS = [1, 2, 3, 4] as const;
+const MAX_COLUMNS_CUSTOM = "custom";
+
 @customElement("hui-view-editor")
 export class HuiViewEditor extends LitElement {
   @consumeLocalize()
@@ -42,6 +45,13 @@ export class HuiViewEditor extends LitElement {
   @state() private _config!: LovelaceViewConfig;
 
   @state() private _error: Record<string, string> | undefined;
+
+  // Once the custom field is used, it keeps its own value apart from the
+  // config: a first digit matching a preset does not switch the list, and a
+  // cleared or invalid number stays as typed.
+  @state() private _customMaxColumns?: boolean;
+
+  @state() private _customMaxColumnsDraft?: number;
 
   private _suggestedPath = false;
 
@@ -101,13 +111,37 @@ export class HuiViewEditor extends LitElement {
           schema: [
             {
               name: "max_columns",
-              default: DEFAULT_MAX_COLUMNS,
+              required: true,
+              selector: {
+                select: {
+                  mode: "dropdown",
+                  options: [
+                    ...MAX_COLUMNS_PRESETS.map((count) => ({
+                      value: String(count),
+                      label: localize(
+                        count === DEFAULT_MAX_COLUMNS
+                          ? "ui.panel.lovelace.editor.edit_view.max_columns_option_default"
+                          : "ui.panel.lovelace.editor.edit_view.max_columns_option",
+                        { count }
+                      ),
+                    })),
+                    {
+                      value: MAX_COLUMNS_CUSTOM,
+                      label: localize(
+                        "ui.panel.lovelace.editor.edit_view.max_columns_custom_option"
+                      ),
+                    },
+                  ],
+                },
+              },
+            },
+            {
+              name: "max_columns_custom",
+              visible: { field: "max_columns", value: MAX_COLUMNS_CUSTOM },
               selector: {
                 number: {
                   min: 1,
-                  max: 10,
-                  mode: "slider",
-                  slider_ticks: true,
+                  mode: "box",
                 },
               },
             },
@@ -132,6 +166,16 @@ export class HuiViewEditor extends LitElement {
     this._config = config;
   }
 
+  private get _maxColumns(): number {
+    return this._config.max_columns ?? DEFAULT_MAX_COLUMNS;
+  }
+
+  private get _isCustomMaxColumns(): boolean {
+    return (
+      this._customMaxColumns ?? this._maxColumns > MAX_COLUMNS_PRESETS.length
+    );
+  }
+
   get _type(): string {
     return getViewType(this._config);
   }
@@ -139,6 +183,12 @@ export class HuiViewEditor extends LitElement {
   protected render() {
     const data = {
       ...this._config,
+      max_columns: this._isCustomMaxColumns
+        ? MAX_COLUMNS_CUSTOM
+        : String(this._maxColumns),
+      max_columns_custom: this._customMaxColumns
+        ? this._customMaxColumnsDraft
+        : this._maxColumns,
       type: this._type,
       theme:
         this._config.theme?.toLowerCase() === "backend-selected"
@@ -160,7 +210,26 @@ export class HuiViewEditor extends LitElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value as LovelaceViewConfig;
+    const {
+      max_columns: maxColumnsChoice,
+      max_columns_custom: maxColumnsCustom,
+      ...rest
+    } = ev.detail.value as Omit<LovelaceViewConfig, "max_columns"> & {
+      max_columns: string;
+      max_columns_custom?: number;
+    };
+    const config: LovelaceViewConfig = rest;
+
+    this._customMaxColumns = maxColumnsChoice === MAX_COLUMNS_CUSTOM;
+    this._customMaxColumnsDraft = maxColumnsCustom;
+    const maxColumns = this._customMaxColumns
+      ? maxColumnsCustom
+      : Number(maxColumnsChoice);
+    if (maxColumns && maxColumns >= 1 && maxColumns !== this._maxColumns) {
+      config.max_columns = maxColumns;
+    } else if (this._config.max_columns !== undefined) {
+      config.max_columns = this._config.max_columns;
+    }
 
     if (config.type !== SECTIONS_VIEW_LAYOUT) {
       delete config.max_columns;
@@ -211,6 +280,7 @@ export class HuiViewEditor extends LitElement {
       case "show_icon_and_title":
       case "subview":
       case "max_columns":
+      case "max_columns_custom":
       case "dense_section_placement":
       case "top_margin":
       case "section_specifics":
@@ -231,6 +301,7 @@ export class HuiViewEditor extends LitElement {
       case "path":
       case "show_icon_and_title":
       case "subview":
+      case "max_columns":
       case "dense_section_placement":
       case "top_margin":
         return this._localize(

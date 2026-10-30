@@ -1,8 +1,14 @@
 import { render } from "lit";
-import { afterEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import type { MarketplaceData } from "../../../src/data/marketplace/marketplace";
+import type { ConfigEntry } from "../../../src/data/config_entries";
+import {
+  deleteConfigEntry,
+  getConfigEntries,
+} from "../../../src/data/config_entries";
+import { uninstallMarketplaceRepository } from "../../../src/data/marketplace/repository";
 import "../../../src/panels/marketplace/dashboards/ha-marketplace-dashboard";
 
 const stubElement = vi.hoisted(() => (tag: string) => {
@@ -24,6 +30,9 @@ vi.mock("../../../src/layouts/hass-tabs-subpage", () =>
 vi.mock(
   "../../../src/panels/marketplace/components/ha-marketplace-discover",
   () => stubElement("ha-marketplace-discover")
+);
+vi.mock("../../../src/components/chips/ha-assist-chip", () =>
+  stubElement("ha-assist-chip")
 );
 vi.mock("../../../src/components/ha-button", () => stubElement("ha-button"));
 vi.mock("../../../src/components/ha-dropdown", () =>
@@ -48,10 +57,27 @@ vi.mock(
   "../../../src/panels/marketplace/components/ha-marketplace-repository-overflow-menu",
   () => ({ repositoryMenuItems: () => [], renderRepositoryMenuEntry: vi.fn() })
 );
+vi.mock("../../../src/data/config_entries", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  getConfigEntries: vi.fn(),
+  deleteConfigEntry: vi.fn(),
+}));
+vi.mock("../../../src/data/marketplace/repository", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  uninstallMarketplaceRepository: vi.fn(),
+}));
 
 let host: HTMLDivElement;
 
 let hass: MockHomeAssistant;
+
+const resetBulkUninstallMocks = () => {
+  vi.mocked(getConfigEntries).mockReset();
+  vi.mocked(deleteConfigEntry).mockReset();
+  vi.mocked(uninstallMarketplaceRepository).mockReset();
+};
+
+beforeEach(resetBulkUninstallMocks);
 
 const openDashboard = async (
   repositories: unknown[] = [],
@@ -271,6 +297,7 @@ it("browses the way the link says", async () => {
 
 it("browses the way the link says, also when the tab was open before", async () => {
   // The router keeps the page of a tab, and hangs it back in when it is opened
+  window.history.replaceState(null, "", "/marketplace/browse");
   const dashboard = await openDashboard();
   dashboard.remove();
   window.history.replaceState(null, "", "/marketplace/browse?type=theme");
@@ -505,4 +532,144 @@ it("opens the row menu of a repository", async () => {
     (dashboard as unknown as { _overflowMenuRepository?: unknown })
       ._overflowMenuRepository
   ).toBe(repository);
+});
+
+interface BulkUninstallDialog {
+  title?: string;
+  text?: string;
+  action?: () => Promise<void>;
+}
+
+const selectForBulkUninstall = (
+  dashboard: Awaited<ReturnType<typeof openDashboard>>,
+  ids: string[]
+) => {
+  (dashboard as unknown as { _selected: string[] })._selected = ids;
+  (
+    dashboard.shadowRoot!.querySelector(
+      "hass-tabs-subpage-data-table"
+    ) as unknown as { clearSelection: () => void }
+  ).clearSelection = vi.fn();
+};
+
+const startBulkUninstall = (
+  dashboard: Awaited<ReturnType<typeof openDashboard>>
+) =>
+  new Promise<BulkUninstallDialog>((resolve) => {
+    dashboard.addEventListener("show-dialog", (ev) =>
+      resolve(
+        (
+          (ev as CustomEvent).detail as {
+            dialogParams: BulkUninstallDialog;
+          }
+        ).dialogParams
+      )
+    );
+    dashboard
+      .shadowRoot!.querySelector("ha-assist-chip")!
+      .dispatchEvent(new Event("click"));
+  });
+
+it("uninstalls the selection, deleting setups that are in use first", async () => {
+  vi.mocked(getConfigEntries).mockImplementation((_hass, filters) =>
+    Promise.resolve(
+      filters?.domain === "in_use"
+        ? ([{ entry_id: "entry-1" }] as unknown as ConfigEntry[])
+        : []
+    )
+  );
+  vi.mocked(deleteConfigEntry).mockResolvedValue({ require_restart: false });
+  vi.mocked(uninstallMarketplaceRepository).mockResolvedValue(null);
+
+  const inUse = {
+    id: "1",
+    name: "In use",
+    category: "integration",
+    domain: "in_use",
+  };
+  const plugin = { id: "2", name: "Plugin", category: "plugin" };
+  const dashboard = await openDashboard([inUse, plugin], "installed");
+  selectForBulkUninstall(dashboard, ["1", "2"]);
+
+  const dialog = await startBulkUninstall(dashboard);
+
+  expect(dialog.title).toBe(
+    "ui.panel.marketplace.dialog.uninstall.selected_title"
+  );
+  expect(dialog.text).toBe(
+    "ui.panel.marketplace.dialog.uninstall.selected_in_use"
+  );
+
+  await dialog.action!();
+
+  expect(vi.mocked(deleteConfigEntry)).toHaveBeenCalledWith(
+    expect.anything(),
+    "entry-1"
+  );
+  expect(vi.mocked(uninstallMarketplaceRepository)).toHaveBeenCalledWith(
+    expect.anything(),
+    "1"
+  );
+  expect(vi.mocked(uninstallMarketplaceRepository)).toHaveBeenCalledWith(
+    expect.anything(),
+    "2"
+  );
+  expect(vi.mocked(deleteConfigEntry).mock.invocationCallOrder[0]).toBeLessThan(
+    vi.mocked(uninstallMarketplaceRepository).mock.invocationCallOrder[0]
+  );
+});
+
+it("keeps what is still set up when its setup could not be deleted", async () => {
+  vi.mocked(getConfigEntries).mockImplementation((_hass, filters) =>
+    Promise.resolve(
+      filters?.domain === "in_use"
+        ? ([{ entry_id: "entry-1" }] as unknown as ConfigEntry[])
+        : []
+    )
+  );
+  vi.mocked(deleteConfigEntry).mockRejectedValue(new Error("Refused"));
+  vi.mocked(uninstallMarketplaceRepository).mockResolvedValue(null);
+
+  const inUse = {
+    id: "1",
+    name: "In use",
+    category: "integration",
+    domain: "in_use",
+  };
+  const plugin = { id: "2", name: "Plugin", category: "plugin" };
+  const dashboard = await openDashboard([inUse, plugin], "installed");
+  selectForBulkUninstall(dashboard, ["1", "2"]);
+
+  const dialog = await startBulkUninstall(dashboard);
+
+  await dialog.action!();
+
+  expect(vi.mocked(uninstallMarketplaceRepository)).toHaveBeenCalledTimes(1);
+  expect(vi.mocked(uninstallMarketplaceRepository)).toHaveBeenCalledWith(
+    expect.anything(),
+    "2"
+  );
+});
+
+it("uninstalls nothing when the setups could not be checked", async () => {
+  vi.mocked(getConfigEntries).mockRejectedValue(new Error("Backend down"));
+  vi.mocked(deleteConfigEntry).mockResolvedValue({ require_restart: false });
+  vi.mocked(uninstallMarketplaceRepository).mockResolvedValue(null);
+
+  const inUse = {
+    id: "1",
+    name: "In use",
+    category: "integration",
+    domain: "in_use",
+  };
+  const dashboard = await openDashboard([inUse], "installed");
+  selectForBulkUninstall(dashboard, ["1"]);
+
+  const dialog = await startBulkUninstall(dashboard);
+
+  expect(dialog.title).toBe(
+    "ui.panel.marketplace.dialog.uninstall.check_failed_title"
+  );
+  expect(vi.mocked(deleteConfigEntry)).not.toHaveBeenCalled();
+  expect(vi.mocked(uninstallMarketplaceRepository)).not.toHaveBeenCalled();
 });

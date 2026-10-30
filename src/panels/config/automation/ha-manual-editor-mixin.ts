@@ -228,6 +228,10 @@ export const ManualEditorMixin = <TConfig>(
       );
     }
 
+    public get sidebarOpen(): boolean {
+      return !!this.sidebarConfig;
+    }
+
     public triggerCloseSidebar() {
       if (this.sidebarConfig) {
         if (this.sidebarElement) {
@@ -237,6 +241,14 @@ export const ManualEditorMixin = <TConfig>(
         this.sidebarConfig?.close();
         this.sidebarKey = 0;
       }
+    }
+
+    public get canToggleSidebarYamlMode(): boolean {
+      return !!this.sidebarElement?.canToggleYamlMode;
+    }
+
+    public toggleSidebarYamlMode() {
+      this.sidebarElement?.toggleYamlMode();
     }
 
     private _handleBottomSheetResized(

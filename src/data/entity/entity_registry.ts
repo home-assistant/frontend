@@ -10,7 +10,7 @@ import type { LightColor } from "../light";
 import type { NextNamePart, RegistryEntry } from "../registry";
 import type { Segment } from "../vacuum";
 
-type EntityCategory = "config" | "diagnostic";
+export type EntityCategory = "config" | "diagnostic";
 
 export interface EntityRegistryDisplayEntry {
   entity_id: string;

@@ -85,7 +85,7 @@ export class HaBlueprintAutomationEditor extends HaBlueprintGenericEditor {
   }
 
   protected async _getBlueprints() {
-    this._blueprints = await fetchBlueprints(this.hass, "automation");
+    this._blueprints = await fetchBlueprints(this.hass.callWS, "automation");
   }
 
   private async _enable(): Promise<void> {

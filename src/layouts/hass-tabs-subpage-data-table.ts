@@ -21,14 +21,13 @@ import { canShowPage } from "../common/config/can_show_page";
 import { QueryParamsController } from "../common/controllers/query-params-controller";
 import { consume } from "../common/decorators/consume";
 import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
-import type { LocalizeFunc } from "../common/translations/localize";
 import {
   dataTableQueryParamConfig,
   dataTableQueryParamsFromState,
   dataTableQueryStateFromUrl,
 } from "../common/url/data-table-query-params";
 import "../components/chips/ha-assist-chip";
-import "../components/data-table/ha-data-table";
+import { GROUP_ACTIONS_SLOT_PREFIX } from "../components/data-table/ha-data-table";
 import type {
   DataTableColumnContainer,
   DataTableRowData,
@@ -61,8 +60,6 @@ import type { PageNavigation } from "./hass-tabs-subpage";
 export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   // Unread, kept for callers that still pass it until they move to contexts
   @property({ attribute: false }) public hass?: HomeAssistant;
-
-  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
   @state()
   @consume({ context: configContext, subscribe: true })
@@ -260,6 +257,8 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
   private _typedSearch?: string;
 
+  private _restoreInitial = false;
+
   private _queryParams = new QueryParamsController(
     this,
     dataTableQueryParamConfig,
@@ -267,6 +266,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       enabled: () => this.syncUrl,
       navigated: () => {
         if (this._urlRead) {
+          // Opened again without params, like from the sidebar
+          this._restoreInitial =
+            this._queryParams.searchParams()?.toString() === "";
           this._applyUrl();
         }
       },
@@ -300,6 +302,13 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       }
     }
 
+    // Done here, after the page has set the initial sorting and grouping it
+    // stored
+    if (this._restoreInitial) {
+      this._restoreInitial = false;
+      this._restoreInitialState();
+    }
+
     if (this.syncUrl && !this._urlRead && Object.keys(this.columns).length) {
       this._urlRead = true;
       this._applyUrl();
@@ -328,7 +337,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
   }
 
   protected render(): TemplateResult {
-    const localize = this.localizeFunc || this._i18n.localize;
+    const localize = this._i18n.localize;
     const showPane = this._showPaneController.value ?? !this.narrow;
     const filterButton = this.hasFilters
       ? html`<ha-filter-pane-chip
@@ -483,7 +492,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
 
     return html`
       <hass-tabs-subpage
-        .localizeFunc=${this.localizeFunc}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
         .backCallback=${this.backCallback}
@@ -623,6 +631,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
                   .columnOrder=${this.columnOrder}
                   .hiddenColumns=${this.hiddenColumns}
                 >
+                  ${this._groupActionsSlots.map(
+                    (slot) => html`<slot name=${slot} slot=${slot}></slot>`
+                  )}
                   ${
                     !this.narrow
                       ? html`
@@ -708,8 +719,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     fireEvent(this, "clear-filter");
   }
 
-  // A link with table params wins over what was picked before, the page is
-  // told so it keeps the same
+  // A link with table params wins over what was picked before. The page is
+  // told with `link` set, so it shows it without storing it as the user's
+  // choice.
   private _applyUrl() {
     const searchParams = this._queryParams.searchParams();
     const linked = searchParams
@@ -719,7 +731,7 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     if (linked) {
       if (linked.search !== this.filter) {
         this.filter = linked.search;
-        fireEvent(this, "search-changed", { value: this.filter });
+        fireEvent(this, "search-changed", { value: this.filter, link: true });
       }
       if (
         linked.sorting &&
@@ -728,15 +740,45 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       ) {
         this._sortColumn = linked.sorting.column;
         this._sortDirection = linked.sorting.direction;
-        fireEvent(this, "sorting-changed", linked.sorting);
+        fireEvent(this, "sorting-changed", { ...linked.sorting, link: true });
       }
       if (linked.groupColumn && linked.groupColumn !== this._groupColumn) {
-        this._setGroupColumn(linked.groupColumn);
+        this._setGroupColumn(linked.groupColumn, true);
       }
     }
 
     this._urlWritePending = true;
     this.requestUpdate();
+  }
+
+  private _restoreInitialState() {
+    // Without a stored sort, use the column's default like a fresh load does
+    const defaultColumn = Object.keys(this.columns).find(
+      (columnId) => this.columns[columnId].direction
+    );
+
+    const defaultDirection = defaultColumn
+      ? this.columns[defaultColumn].direction
+      : undefined;
+
+    const sorting =
+      this.initialSorting && this.columns[this.initialSorting.column]
+        ? this.initialSorting
+        : defaultColumn && defaultDirection
+          ? { column: defaultColumn, direction: defaultDirection }
+          : undefined;
+
+    this._sortColumn = sorting?.column;
+    this._sortDirection = sorting?.direction ?? null;
+
+    const groupColumn =
+      this.initialGroupColumn && this.columns[this.initialGroupColumn]
+        ? this.initialGroupColumn
+        : "";
+
+    if (groupColumn !== (this._groupColumn ?? "")) {
+      this._setGroupColumn(groupColumn, true);
+    }
   }
 
   private _flushUrl() {
@@ -807,9 +849,49 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
     this._setGroupColumn(group);
   }
 
-  private _setGroupColumn(columnId: string) {
+  // Slots of the group actions the page supplies, passed through to the table
+  @state() private _groupActionsSlots: string[] = [];
+
+  private _groupActionsObserver = new MutationObserver(() =>
+    this._updateGroupActionsSlots()
+  );
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._updateGroupActionsSlots();
+    // Subtree, so slot changes on the page's children are seen too
+    this._groupActionsObserver.observe(this, {
+      childList: true,
+      subtree: true,
+      attributeFilter: ["slot"],
+    });
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._groupActionsObserver.disconnect();
+  }
+
+  private _updateGroupActionsSlots() {
+    const slots = [
+      ...new Set(
+        Array.from(this.children, (child) => child.slot).filter((slot) =>
+          slot.startsWith(GROUP_ACTIONS_SLOT_PREFIX)
+        )
+      ),
+    ];
+
+    if (
+      slots.length !== this._groupActionsSlots.length ||
+      slots.some((slot, index) => slot !== this._groupActionsSlots[index])
+    ) {
+      this._groupActionsSlots = slots;
+    }
+  }
+
+  private _setGroupColumn(columnId: string, link = false) {
     this._groupColumn = columnId;
-    fireEvent(this, "grouping-changed", { value: columnId });
+    fireEvent(this, "grouping-changed", { value: columnId, link });
   }
 
   private _openSettings() {
@@ -825,7 +907,6 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
         this.hiddenColumns = hiddenColumns;
         fireEvent(this, "columns-changed", { columnOrder, hiddenColumns });
       },
-      localizeFunc: this.localizeFunc,
     });
   }
 
@@ -961,7 +1042,10 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       padding-right: calc(16px + var(--data-table-inset-right, 0px));
       gap: var(--ha-space-4);
       box-sizing: border-box;
-      background: var(--primary-background-color);
+      background: var(
+        --ha-panel-toolbar-background,
+        var(--primary-background-color)
+      );
       border-bottom: 1px solid var(--divider-color);
       overflow-x: auto;
       scrollbar-width: none;
@@ -979,6 +1063,9 @@ export class HaTabsSubpageDataTable extends KeyboardShortcutMixin(LitElement) {
       display: flex;
       align-items: center;
       color: var(--secondary-text-color);
+    }
+    .search-toolbar ha-input-search {
+      min-width: 0;
     }
     .filters {
       --mdc-text-field-fill-color: var(--input-fill-color);
@@ -1123,8 +1210,9 @@ declare global {
 
   // for fire event
   interface HASSDomEvents {
-    "search-changed": { value: string };
-    "grouping-changed": { value: string };
+    // `link` is set when a link changed it, not the user
+    "search-changed": { value: string; link?: boolean };
+    "grouping-changed": { value: string; link?: boolean };
     "columns-changed": {
       columnOrder: string[] | undefined;
       hiddenColumns: string[] | undefined;

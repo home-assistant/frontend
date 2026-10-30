@@ -4,6 +4,7 @@ import memoizeOne from "memoize-one";
 import type {
   AutomationConfig,
   SidebarConfig,
+  Trigger,
   TriggerCondition,
 } from "../../../../data/automation";
 import { ContextSubscriptionController } from "../../../../common/decorators/consume";
@@ -19,6 +20,7 @@ import {
   getExplicitTriggerIds,
   isGeneratedTriggerId,
   makeDuplicateTriggerIdsUnique,
+  replaceLeafTrigger,
   updateTriggerCondition,
 } from "./automation-trigger-id";
 import { preserveAutomationRowKeys } from "../ha-automation-sortable-list-mixin";
@@ -70,6 +72,7 @@ export class AutomationTriggerController implements ReactiveController {
         showIndices: false,
         select: this._selectTriggerIds,
         fixDuplicateIds: this._fixDuplicateTriggerIds,
+        updateTriggerId: this._updateTriggerId,
       },
     });
     _host.addController(this);
@@ -177,6 +180,23 @@ export class AutomationTriggerController implements ReactiveController {
     if (confirmed && config && this._options.canEdit()) {
       this._commit(makeDuplicateTriggerIdsUnique(config));
     }
+  };
+
+  /**
+   * Commit an explicit ID edit directly. Ordinary edits pass through cleanupRemovedIds,
+   * which would treat a changed generated ID as a deleted trigger and strip its references.
+   */
+  private _updateTriggerId = (original: Trigger, updated: Trigger): boolean => {
+    const config = this._options.getConfig();
+    if (!config || !this._options.canEdit()) {
+      return false;
+    }
+    const triggers = replaceLeafTrigger(config.triggers, original, updated);
+    if (triggers === config.triggers) {
+      return false;
+    }
+    this._commit({ ...config, triggers });
+    return true;
   };
 
   private _commit(config: AutomationConfig) {

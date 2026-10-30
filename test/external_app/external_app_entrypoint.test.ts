@@ -19,6 +19,7 @@ import type {
   EMIncomingMessageImprovDeviceSetupDone,
   EMIncomingMessageBarCodeScanResult,
   EMIncomingMessageBarCodeScanAborted,
+  EMIncomingMessageWebRtcStreamStopped,
 } from "../../src/external_app/external_messaging";
 
 vi.mock("../../src/common/dom/fire_event", () => ({
@@ -279,6 +280,32 @@ describe("handleExternalMessage", () => {
     expect(listener).toHaveBeenCalledWith(msg);
     expect(fireMessage).toHaveBeenCalledWith({
       id: 12,
+      type: "result",
+      success: true,
+      result: null,
+    });
+    expect(result).toBe(true);
+  });
+
+  it("handles webrtc/stream/stopped command", () => {
+    const msg: EMIncomingMessageWebRtcStreamStopped = {
+      type: "command",
+      command: "webrtc/stream/stopped",
+      id: 13,
+      payload: {
+        session_id: "abc",
+        code: "connection_failed",
+        message: "Connection lost",
+      },
+    };
+    const result = handleExternalMessage(hassMainEl, msg);
+    expect(fireEvent).toHaveBeenCalledWith(window, "webrtc-stream-stopped", {
+      session_id: "abc",
+      code: "connection_failed",
+      message: "Connection lost",
+    });
+    expect(fireMessage).toHaveBeenCalledWith({
+      id: 13,
       type: "result",
       success: true,
       result: null,

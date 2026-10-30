@@ -14,6 +14,7 @@ import {
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
+  mdiSwapHorizontal,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import { dump } from "js-yaml";
@@ -54,6 +55,7 @@ import type {
 } from "../../../../data/automation";
 import { isCondition, testCondition } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
+import { portCondition } from "../../../../data/automation_replace";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import {
@@ -69,9 +71,15 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import { showEditorToast } from "../editor-toast";
+import {
+  createCondition,
+  getConditionPickerKey,
+  isConditionReplaceable,
+} from "../automation-element-config";
+import { showEditorToast, showReplacedToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import { overflowStyles, rowStyles } from "../styles";
+import { showAddAutomationElementDialog } from "../show-add-automation-element-dialog";
 import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import "./ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "./ha-automation-condition-editor";
@@ -185,7 +193,6 @@ export default class HaAutomationConditionRow extends LitElement {
           ? html`<ha-automation-condition-live-test
               id="condition-icon"
               slot="leading-icon"
-              .hass=${this.hass}
               .condition=${this.condition}
             >
               <ha-condition-icon
@@ -271,6 +278,21 @@ export default class HaAutomationConditionRow extends LitElement {
             )
           )}
         </ha-dropdown-item>
+        ${
+          isConditionReplaceable(this.condition)
+            ? html`<ha-dropdown-item value="replace" .disabled=${this.disabled}>
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiSwapHorizontal}
+                ></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.conditions.replace"
+                  )
+                )}
+              </ha-dropdown-item>`
+            : nothing
+        }
         <ha-dropdown-item value="rename" .disabled=${this.disabled}>
           <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
           ${this._renderOverflowLabel(
@@ -606,6 +628,37 @@ export default class HaAutomationConditionRow extends LitElement {
     }
   };
 
+  private _replaceCondition = () => {
+    // The sidebar keeps its callback when YAML turns the condition into a group.
+    if (!isConditionReplaceable(this.condition)) {
+      return;
+    }
+    if (this.narrow) {
+      fireEvent(this, "request-close-sidebar");
+    }
+    const condition = this.condition;
+    const key = getConditionPickerKey(condition, this.conditionDescriptions);
+    showAddAutomationElementDialog(this, {
+      type: "condition",
+      clipboardItem: undefined,
+      replacingItemKey: key,
+      add: (value, target) => {
+        if (value === key && !target) {
+          return;
+        }
+        fireEvent(this, "replace-item", {
+          value: portCondition(
+            condition,
+            createCondition(value, target),
+            this.hass,
+            this.conditionDescriptions
+          ),
+        });
+        showReplacedToast(this, this.hass.localize);
+      },
+    });
+  };
+
   private _onDelete = () => {
     fireEvent(this, "value-changed", { value: null });
     if (this._selected) {
@@ -922,6 +975,9 @@ export default class HaAutomationConditionRow extends LitElement {
           this.focus();
         }
       },
+      replace: isConditionReplaceable(sidebarCondition)
+        ? this._replaceCondition
+        : undefined,
       rename: () => {
         this._renameCondition();
       },
@@ -992,6 +1048,9 @@ export default class HaAutomationConditionRow extends LitElement {
     switch (action) {
       case "test":
         this._testCondition();
+        break;
+      case "replace":
+        this._replaceCondition();
         break;
       case "rename":
         this._renameCondition();

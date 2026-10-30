@@ -5,6 +5,8 @@ import { consume } from "../../../common/decorators/consume";
 import { parseAnimationDuration } from "../../../common/util/parse-animation-duration";
 import { reducedMotionContext } from "../../../data/context";
 import { strokeWidth } from "../../../data/graph";
+import type { GraphSize } from "../common/graph/coordinates";
+import { scaleCoordinates } from "../common/graph/coordinates";
 import { getPath } from "../common/graph/get-path";
 
 export interface HuiGraphGradient {
@@ -37,9 +39,13 @@ export class HuiGraphBase extends LitElement {
 
   private _animationFrame?: number;
 
+  // The size the current coordinates were computed for. The viewBox keeps it
+  // until new coordinates arrive, so a resize during the animation scales the
+  // graph instead of drawing it in a viewBox of another size.
+  private _size?: GraphSize;
+
   protected render(): TemplateResult {
-    const width = this.clientWidth || 500;
-    const height = this.clientHeight || width / 5;
+    const { width, height } = this._size ?? this._measureSize();
     const yAxisOrigin = this.yAxisOrigin ?? height;
     const path =
       (this._displayCoordinates && getPath(this._displayCoordinates)) ??
@@ -135,8 +141,24 @@ export class HuiGraphBase extends LitElement {
     this._cancelAnimation();
   }
 
+  private _measureSize(): GraphSize {
+    const width = this.clientWidth || 500;
+    return { width, height: this.clientHeight || width / 5 };
+  }
+
   private _setCoordinates(coordinates: number[][]) {
     this._cancelAnimation();
+
+    const previousSize = this._size;
+    this._size = this._measureSize();
+
+    if (this._displayCoordinates && previousSize) {
+      this._displayCoordinates = scaleCoordinates(
+        this._displayCoordinates,
+        previousSize,
+        this._size
+      );
+    }
 
     const displayCoordinates = this._displayCoordinates;
 

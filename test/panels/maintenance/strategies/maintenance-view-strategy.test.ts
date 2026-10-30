@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { filterLowBatteryEntities } from "../../../../src/panels/maintenance/strategies/maintenance-view-strategy";
-import { mockEntity } from "../../../common/entity/context/context-mock";
+import {
+  filterLowBatteryEntities,
+  filterProblemEntities,
+  MaintenanceViewStrategy,
+} from "../../../../src/panels/maintenance/strategies/maintenance-view-strategy";
+import {
+  mockDevice,
+  mockEntity,
+} from "../../../common/entity/context/context-mock";
+import type { LovelaceSectionConfig } from "../../../../src/data/lovelace/config/section";
 import { createMockEntityState, createMockHass } from "../../../fixtures/hass";
 
 describe("filterLowBatteryEntities", () => {
@@ -98,6 +106,28 @@ describe("filterLowBatteryEntities", () => {
     ).toEqual(["binary_sensor.low_battery"]);
   });
 
+  it("binary sensor problems filtered", () => {
+    const hass = createMockHass({
+      "binary_sensor.has_problem": createMockEntityState(
+        "binary_sensor.has_problem",
+        "on",
+        { device_class: "problem" }
+      ),
+      "binary_sensor.no_problem": createMockEntityState(
+        "binary_sensor.no_problem",
+        "off",
+        { device_class: "problem" }
+      ),
+    });
+
+    expect(
+      filterLowBatteryEntities(hass.states, hass.entities, [
+        "binary_sensor.has_problem",
+        "binary_sensor.no_problem",
+      ])
+    ).toEqual([]);
+  });
+
   it("updates the device lookup when the entity registry changes", () => {
     const states = {
       "sensor.battery": createMockEntityState("sensor.battery", "10", {
@@ -147,5 +177,107 @@ describe("filterLowBatteryEntities", () => {
         "sensor.battery",
       ])
     ).toEqual(["sensor.battery"]);
+  });
+});
+
+describe("filterProblemEntities", () => {
+  it("filters only problems", () => {
+    const hass = createMockHass({
+      "binary_sensor.has_problem": createMockEntityState(
+        "binary_sensor.has_problem",
+        "on",
+        { device_class: "problem" }
+      ),
+      "binary_sensor.no_problem": createMockEntityState(
+        "binary_sensor.no_problem",
+        "off",
+        { device_class: "problem" }
+      ),
+      "binary_sensor.other_on": createMockEntityState(
+        "binary_sensor.other_on",
+        "on",
+        { device_class: "other" }
+      ),
+      "binary_sensor.other_off": createMockEntityState(
+        "binary_sensor.other_off",
+        "off",
+        { device_class: "other" }
+      ),
+    });
+    expect(
+      filterProblemEntities(hass.states, [
+        "binary_sensor.has_problem",
+        "binary_sensor.no_problem",
+        "binary_sensor.other_on",
+        "binary_sensor.other_off",
+      ])
+    ).toEqual(["binary_sensor.has_problem"]);
+  });
+});
+
+describe("MaintenanceViewStrategy.generate", () => {
+  it("names problem tiles after the device and the entity", async () => {
+    const hass = createMockHass(
+      {
+        "sensor.microwave_battery": createMockEntityState(
+          "sensor.microwave_battery",
+          "80",
+          { device_class: "battery" }
+        ),
+        "binary_sensor.microwave_overheating": createMockEntityState(
+          "binary_sensor.microwave_overheating",
+          "off",
+          { device_class: "problem" }
+        ),
+        "binary_sensor.standalone_problem": createMockEntityState(
+          "binary_sensor.standalone_problem",
+          "off",
+          { device_class: "problem" }
+        ),
+      },
+      {
+        devices: {
+          microwave: mockDevice({ id: "microwave", name: "Microwave" }),
+        },
+        entities: {
+          "sensor.microwave_battery": mockEntity({
+            entity_id: "sensor.microwave_battery",
+            device_id: "microwave",
+          }),
+          "binary_sensor.microwave_overheating": mockEntity({
+            entity_id: "binary_sensor.microwave_overheating",
+            device_id: "microwave",
+          }),
+          "binary_sensor.standalone_problem": mockEntity({
+            entity_id: "binary_sensor.standalone_problem",
+          }),
+        },
+      }
+    );
+
+    const view = await MaintenanceViewStrategy.generate(
+      { type: "maintenance" },
+      hass
+    );
+
+    const section = view.sections?.[0] as LovelaceSectionConfig;
+
+    expect(section.cards?.slice(1)).toEqual([
+      {
+        type: "tile",
+        entity: "sensor.microwave_battery",
+        name: { type: "device" },
+      },
+      {
+        type: "tile",
+        entity: "binary_sensor.microwave_overheating",
+        name: [{ type: "device" }, { type: "entity" }],
+      },
+      {
+        type: "tile",
+        entity: "binary_sensor.standalone_problem",
+        name: { type: "entity" },
+      },
+    ]);
   });
 });

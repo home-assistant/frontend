@@ -15,6 +15,10 @@ export class HaTimeInput extends LitElement {
 
   @property() public label?: string;
 
+  /** Accessible name for the input when it has no visible label. */
+  @property({ attribute: "accessible-label" })
+  public accessibleLabel?: string;
+
   @property() public helper?: string;
 
   @property({ type: Boolean }) public disabled = false;
@@ -61,6 +65,7 @@ export class HaTimeInput extends LitElement {
     return html`
       <ha-base-time-input
         .label=${this.label}
+        .accessibleLabel=${this.accessibleLabel}
         .hours=${hours}
         .minutes=${minutes}
         .seconds=${seconds}

@@ -3,12 +3,16 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeEntityNameParts } from "../../common/entity/compute_entity_name_display";
 import { stateColorCss } from "../../common/entity/state_color";
-import type { LocalizeKeys } from "../../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../../common/translations/localize";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { domainToName } from "../../data/integration";
 import type { LogbookEntry } from "../../data/logbook";
 import {
   createHistoricState,
+  logbookUserCauseKey,
   localizeStateMessage,
   parseTriggerSource,
 } from "../../data/logbook";
@@ -302,8 +306,82 @@ export const computeLogbookCause = (
   computeUserCause(item, userIdToName, systemUserIds) ??
   computeContextCause(hass, item);
 
+export const computeCausePhrase = (
+  localize: LocalizeFunc,
+  cause: LogbookCause
+): string => {
+  switch (cause.type) {
+    case "user":
+      return localize("ui.components.logbook.cause.by", {
+        name: cause.name,
+      });
+    case "automation":
+      return localize("ui.components.logbook.cause.by_automation", {
+        name: cause.name,
+      });
+    case "script":
+      return localize("ui.components.logbook.cause.by_script", {
+        name: cause.name,
+      });
+    case "state":
+      return localize("ui.components.logbook.cause.by_state_change", {
+        name: cause.name,
+      });
+    case "scheduled":
+      return localize("ui.components.logbook.cause.scheduled");
+    case "homeassistant":
+      return cause.name;
+    case "integration":
+      return localize("ui.components.logbook.cause.via", {
+        name: cause.name,
+      });
+    default:
+      return cause.name;
+  }
+};
+
 export const isRunCause = (cause?: LogbookCause): boolean =>
   cause?.type === "automation" || cause?.type === "script";
+
+// A row shows the run over the user who started it; the dialog shows both.
+export const computeRowCause = (
+  hass: HomeAssistant,
+  item: LogbookEntry,
+  userIdToName: Record<string, string>,
+  systemUserIds?: Set<string>
+): LogbookCause | undefined => {
+  const contextCause = computeContextCause(hass, item);
+  if (isRunCause(contextCause)) {
+    return contextCause;
+  }
+  return computeUserCause(item, userIdToName, systemUserIds) ?? contextCause;
+};
+
+// Only the users linked to a person can be picked. The other users are
+// accounts for tools like Node-RED, so they count as integrations. A service
+// call without a user carries the domain of the service, not the integration
+// that acted, so it is left in other.
+export const computeLogbookCauseKey = (
+  item: LogbookEntry,
+  cause: LogbookCause | undefined,
+  personUserIds: Set<string>
+): string => {
+  if (cause?.type === "user") {
+    return personUserIds.has(cause.userId!)
+      ? logbookUserCauseKey(cause.userId!)
+      : "integration";
+  }
+  if (cause?.type === "automation" || cause?.type === "script") {
+    return cause.type;
+  }
+  if (
+    cause?.type === "integration" &&
+    item.context_event_type !== "call_service"
+  ) {
+    return "integration";
+  }
+  return "other";
+};
 
 export type LogbookGlyph =
   | { type: "state"; stateObj: HassEntity; icon?: string }
@@ -412,13 +490,6 @@ export const computeLogbookItem = (
     ? entityDisplay(hass, entry.entity_id, opts.nameDetail)
     : undefined;
 
-  const userCause = computeUserCause(
-    entry,
-    opts.userIdToName ?? {},
-    opts.systemUserIds
-  );
-  const contextCause = computeContextCause(hass, entry);
-
   return {
     category,
     glyph: computeLogbookGlyph(entry, category, historicStateObj, domain),
@@ -426,10 +497,12 @@ export const computeLogbookItem = (
     name: display?.primary ?? entry.name,
     context: display?.secondary,
     value: computeLogbookValue(hass, entry, domain, historicStateObj),
-    // A row shows the run over the user who started it; the dialog shows both.
-    cause: isRunCause(contextCause)
-      ? contextCause
-      : (userCause ?? contextCause),
+    cause: computeRowCause(
+      hass,
+      entry,
+      opts.userIdToName ?? {},
+      opts.systemUserIds
+    ),
     when: entry.when * 1000,
   };
 };

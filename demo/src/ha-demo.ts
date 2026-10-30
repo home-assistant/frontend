@@ -142,7 +142,45 @@ export class HaDemo extends HomeAssistantAppEl {
         (localize?: LocalizeFunc) => localize ?? this.hass!.localize
       );
 
-    mockLovelace(hass, localizePromise);
+    mockLovelace(hass, localizePromise, [
+      {
+        id: "music",
+        url_path: "music",
+        require_admin: false,
+        show_in_sidebar: true,
+        icon: "mdi:music",
+        title: "Music",
+        mode: "storage",
+      },
+      {
+        id: "cameras",
+        url_path: "cameras",
+        require_admin: false,
+        show_in_sidebar: true,
+        icon: "mdi:cctv",
+        title: "Cameras",
+        mode: "storage",
+      },
+      {
+        id: "garden",
+        url_path: "garden",
+        require_admin: false,
+        show_in_sidebar: true,
+        icon: "mdi:flower",
+        title: "Garden",
+        mode: "storage",
+      },
+      {
+        id: "lovelace-advanced",
+        url_path: "lovelace-advanced",
+        require_admin: false,
+        show_in_sidebar: false,
+        icon: "mdi:cog",
+        title: "Advanced",
+        mode: "yaml",
+        filename: "lovelace-advanced.yaml",
+      },
+    ]);
     mockAuth(hass);
     mockTranslations(hass, localizePromise);
     mockHistory(hass);
@@ -172,7 +210,35 @@ export class HaDemo extends HomeAssistantAppEl {
     mockAreaRegistry(hass);
     mockDeviceRegistry(hass, demoDevices);
     mockFloorRegistry(hass);
-    mockLabelRegistry(hass);
+    mockLabelRegistry(hass, [
+      {
+        label_id: "kitchen",
+        name: "Kitchen",
+        icon: null,
+        color: "red",
+        description: "Everything in the kitchen",
+        created_at: 1735689600,
+        modified_at: 1735689600,
+      },
+      {
+        label_id: "garden",
+        name: "Garden",
+        icon: "mdi:flower",
+        color: "green",
+        description: null,
+        created_at: 1735689600,
+        modified_at: 1735689600,
+      },
+      {
+        label_id: "battery-powered",
+        name: "Battery powered",
+        icon: null,
+        color: "orange",
+        description: "Runs on batteries",
+        created_at: 1735689600,
+        modified_at: 1735689600,
+      },
+    ]);
     mockUsagePrediction(hass);
     mockEntityRegistryDisplay(hass);
     mockEntityRegistry(hass, [

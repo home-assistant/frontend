@@ -72,7 +72,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       this._fetchEntities();
     }
     if (!this.hasUpdated) {
-      fetchCloudStatus(this.hass).then((status) => {
+      fetchCloudStatus(this.hass.callWS).then((status) => {
         this._cloudStatus = status;
       });
     }

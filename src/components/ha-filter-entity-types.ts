@@ -23,13 +23,12 @@ import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { internationalizationContext, statesContext } from "../data/context";
-import {
-  computeDeviceClassName,
-  NO_DEVICE_CLASS,
-} from "../data/entity/device_class";
+import { NO_DEVICE_CLASS } from "../data/entity/device_class";
 import {
   entityTypeKey,
+  FIXED_ENTITY_TYPE_ICONS,
   parseEntityType,
+  sortDeviceClasses,
   usedEntityTypes,
 } from "../data/entity/entity_type";
 import { domainToName } from "../data/integration";
@@ -44,11 +43,6 @@ import "./item/ha-list-item-option";
 import type { HaListItemOption } from "./item/ha-list-item-option";
 import "./list/ha-list-selectable";
 import type { HaListSelectable } from "./list/ha-list-selectable";
-
-// Core picks this one from the battery level, so it has no usable default.
-const FIXED_TYPE_ICONS: Record<string, string> = {
-  "sensor/battery": "mdi:battery",
-};
 
 interface TypeRow {
   key: string;
@@ -180,7 +174,7 @@ export class HaFilterEntityTypes extends LitElement {
             ? html`<ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>`
             : html`<ha-domain-icon
                 slot="start"
-                .icon=${FIXED_TYPE_ICONS[row.key]}
+                .icon=${FIXED_ENTITY_TYPE_ICONS[row.key]}
                 .domain=${row.domain}
                 .deviceClass=${row.deviceClass}
                 .state=${row.domain === "binary_sensor" ? "on" : undefined}
@@ -240,21 +234,12 @@ export class HaFilterEntityTypes extends LitElement {
       const rows: TypeRow[] = [];
 
       for (const { domain, name } of domains) {
-        const deviceClasses = types
-          .get(domain)!
-          .map((deviceClass) => ({
-            deviceClass,
-            name: this._deviceClassName(localize, domain, deviceClass),
-          }))
-          .sort((a, b) => {
-            if (a.deviceClass === NO_DEVICE_CLASS) {
-              return 1;
-            }
-            if (b.deviceClass === NO_DEVICE_CLASS) {
-              return -1;
-            }
-            return stringCompare(a.name, b.name, language);
-          });
+        const deviceClasses = sortDeviceClasses(
+          localize,
+          domain,
+          types.get(domain)!,
+          language
+        );
 
         const matchingClasses = deviceClasses.filter((entry) =>
           this._matches(filter, entry.deviceClass, entry.name)
@@ -297,16 +282,6 @@ export class HaFilterEntityTypes extends LitElement {
       return rows;
     }
   );
-
-  private _deviceClassName(
-    localize: LocalizeFunc,
-    domain: string,
-    deviceClass: string
-  ): string {
-    return deviceClass === NO_DEVICE_CLASS
-      ? localize("ui.components.filter-entity-types.no_device_class")
-      : computeDeviceClassName(localize, domain, deviceClass);
-  }
 
   private _matches(
     filter: string | undefined,

@@ -1,7 +1,9 @@
 import { ContextProvider } from "@lit/context";
+import { IntlMessageFormat } from "intl-messageformat";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
+import type { LocalizeFunc } from "../../../../src/common/translations/localize";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-picker-combo-box";
 import type { PickerComboBoxItem } from "../../../../src/components/ha-picker-combo-box";
@@ -19,13 +21,26 @@ import type {
 } from "../../../../src/types";
 import { THEME_COMPARISON_PANELS } from "../../components/demo-theme-comparison";
 
+// The English strings, plurals included, so searching a demo announces the
+// same count and search as the real picker.
 const LOCALIZE_KEYS: Record<string, string> = {
   "ui.common.search": "Search",
   "ui.components.combo-box.no_match": "No matching items found",
   "ui.components.combo-box.no_items": "No items available",
+  "ui.components.combo-box.result_count":
+    "{count} {count, plural,\n one {result}\n other {results}\n} for {term}",
+  "ui.components.combo-box.no_results": "No results for {term}",
 };
 
-const localize = (key: string) => LOCALIZE_KEYS[key] ?? key;
+const localize: LocalizeFunc = (key, values) => {
+  const message = LOCALIZE_KEYS[key];
+  if (message === undefined) {
+    return key;
+  }
+  return new IntlMessageFormat(message, "en").format<string>(
+    values as Record<string, string | number>
+  ) as string;
+};
 
 const DEMO_I18N: HomeAssistantInternationalization = {
   localize,

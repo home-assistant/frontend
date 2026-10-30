@@ -29,7 +29,7 @@ export const maintenanceEntityFilters: EntityFilter[] = [
   },
   {
     domain: "binary_sensor",
-    device_class: ["battery"],
+    device_class: ["battery", "problem"],
   },
 ];
 
@@ -48,7 +48,8 @@ export const filterLowBatteryEntities = (
     const state = states[entityId]?.state ?? "";
 
     if (computeDomain(entityId) === "binary_sensor") {
-      return state === BINARY_STATE_ON;
+      const device_class = states[entityId]?.attributes?.device_class ?? "";
+      return state === BINARY_STATE_ON && device_class === "battery";
     }
 
     const stateValue = parseFloat(state);
@@ -73,6 +74,16 @@ export const filterLowBatteryEntities = (
   });
 };
 
+export const filterProblemEntities = (
+  states: HomeAssistant["states"],
+  entityIds: string[]
+): string[] =>
+  entityIds.filter((entityId) => {
+    const state = states[entityId]?.state ?? "";
+    const device_class = states[entityId]?.attributes?.device_class ?? "";
+    return device_class === "problem" && state === BINARY_STATE_ON;
+  });
+
 export const filterUnavailableBatteryEntities = (
   states: HomeAssistant["states"],
   entityIds: string[]
@@ -81,16 +92,22 @@ export const filterUnavailableBatteryEntities = (
     return states[entityId]?.state === "unavailable";
   });
 
-const computeBatteryTileCard = (
+const computeMaintenanceTileCard = (
+  states: HomeAssistant["states"],
   entities: HomeAssistant["entities"],
   entityId: string
 ): TileCardConfig => {
-  const entity = entities[entityId];
-  const deviceId = entity?.device_id;
+  const deviceId = entities[entityId]?.device_id;
+  if (!deviceId) {
+    return { type: "tile", entity: entityId, name: { type: "entity" } };
+  }
+  const isProblem = states[entityId]?.attributes?.device_class === "problem";
   return {
     type: "tile",
     entity: entityId,
-    name: { type: deviceId ? "device" : "entity" },
+    name: isProblem
+      ? [{ type: "device" }, { type: "entity" }]
+      : { type: "device" },
   };
 };
 
@@ -119,7 +136,9 @@ const processAreasForBattery = (
     const areaCards: LovelaceCardConfig[] = [];
 
     for (const entityId of areaBatteryEntities) {
-      areaCards.push(computeBatteryTileCard(hass.entities, entityId));
+      areaCards.push(
+        computeMaintenanceTileCard(hass.states, hass.entities, entityId)
+      );
     }
 
     if (areaCards.length > 0) {
@@ -159,7 +178,9 @@ const processUnassignedEntities = (
   const cards: LovelaceCardConfig[] = [];
 
   for (const entityId of unassignedEntities) {
-    cards.push(computeBatteryTileCard(hass.entities, entityId));
+    cards.push(
+      computeMaintenanceTileCard(hass.states, hass.entities, entityId)
+    );
   }
 
   return cards;

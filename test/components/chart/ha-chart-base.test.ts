@@ -30,7 +30,7 @@ describe("ha-chart-base updates", () => {
   it("does not rebuild the series when only the options change", () => {
     const { internals, getSeries } = createChart();
 
-    internals._applyChartUpdate(new Set(["options"]), undefined);
+    internals._applyChartUpdate(new Set(["options"]));
 
     expect(getSeries).not.toHaveBeenCalled();
     expect(internals.chart.setOption).toHaveBeenCalledWith(
@@ -42,7 +42,7 @@ describe("ha-chart-base updates", () => {
   it("drops the screen reader connection when the options change", () => {
     const { internals, dispose } = createChart();
 
-    internals._applyChartUpdate(new Set(["options"]), undefined);
+    internals._applyChartUpdate(new Set(["options"]));
 
     expect(dispose).toHaveBeenCalledOnce();
     expect(internals._sonification).toBeUndefined();
@@ -51,7 +51,7 @@ describe("ha-chart-base updates", () => {
   it("rebuilds the series and drops the connection when a dataset is hidden", () => {
     const { internals, dispose, getSeries } = createChart();
 
-    internals._applyChartUpdate(new Set(["_hiddenDatasets"]), undefined);
+    internals._applyChartUpdate(new Set(["_hiddenDatasets"]));
 
     expect(getSeries).toHaveBeenCalledOnce();
     expect(dispose).toHaveBeenCalledOnce();
@@ -60,7 +60,7 @@ describe("ha-chart-base updates", () => {
   it("keeps the connection when only the data changes", () => {
     const { internals, dispose, getSeries } = createChart();
 
-    internals._applyChartUpdate(new Set(["data"]), undefined);
+    internals._applyChartUpdate(new Set(["data"]));
 
     expect(getSeries).toHaveBeenCalledOnce();
     expect(dispose).not.toHaveBeenCalled();

@@ -1,13 +1,16 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { repeat } from "lit/directives/repeat";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import type { DeviceCompositeSplits } from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { TargetType, TargetTypeFloorless } from "../../data/target";
-import type { HomeAssistant } from "../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import "../ha-expansion-panel";
 import "../list/ha-list-base";
 import "./ha-target-picker-item-row";
+import { targetItemKey, type TargetExclusion } from "./target-exclusions";
 
 const TYPE_PLURAL = {
   entity: "entities",
@@ -18,7 +21,7 @@ const TYPE_PLURAL = {
 
 @customElement("ha-target-picker-item-group")
 export class HaTargetPickerItemGroup extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
 
   @property() public type!: TargetTypeFloorless;
 
@@ -59,6 +62,9 @@ export class HaTargetPickerItemGroup extends LitElement {
   @property({ attribute: false })
   public compositeSplits?: DeviceCompositeSplits;
 
+  @property({ attribute: false })
+  public exclusions?: Record<string, TargetExclusion[]>;
+
   protected render() {
     let count = 0;
     Object.values(this.items).forEach((items) => {
@@ -73,7 +79,7 @@ export class HaTargetPickerItemGroup extends LitElement {
       @expanded-changed=${this._expandedChanged}
     >
       <div slot="header" class="heading">
-        ${this.hass.localize(
+        ${this._localize(
           `ui.components.target-picker.type.${TYPE_PLURAL[this.type]}`
         )}
         ${
@@ -83,20 +89,37 @@ export class HaTargetPickerItemGroup extends LitElement {
       <ha-list-base>
         ${Object.entries(this.items).map(([type, items]) =>
           items
-            ? items.map(
-                (item) =>
-                  html`<ha-target-picker-item-row
-                    .hass=${this.hass}
-                    .type=${type as TargetTypeFloorless}
-                    .itemId=${item}
-                    .deviceFilter=${this.deviceFilter}
-                    .entityFilter=${this.entityFilter}
-                    .activeFilter=${this.activeFilter}
-                    .includeDomains=${this.includeDomains}
-                    .includeDeviceClasses=${this.includeDeviceClasses}
-                    .primaryEntitiesOnly=${this.primaryEntitiesOnly}
-                    .compositeSplits=${this.compositeSplits}
-                  ></ha-target-picker-item-row>`
+            ? repeat(
+                items,
+                (item) => targetItemKey({ type: type as TargetType, id: item }),
+                (item) => {
+                  const exclusions = this.exclusions
+                    ? (this.exclusions[
+                        targetItemKey({ type: type as TargetType, id: item })
+                      ] ?? [])
+                    : undefined;
+                  return html`<ha-target-picker-item-row
+                      .type=${type as TargetTypeFloorless}
+                      .itemId=${item}
+                      .deviceFilter=${this.deviceFilter}
+                      .entityFilter=${this.entityFilter}
+                      .activeFilter=${this.activeFilter}
+                      .includeDomains=${this.includeDomains}
+                      .includeDeviceClasses=${this.includeDeviceClasses}
+                      .primaryEntitiesOnly=${this.primaryEntitiesOnly}
+                      .compositeSplits=${this.compositeSplits}
+                      .exclusions=${exclusions}
+                    ></ha-target-picker-item-row>
+                    ${(exclusions ?? []).map(
+                      (exclusion) =>
+                        html`<ha-target-picker-item-row
+                          exclusion
+                          .type=${exclusion.type}
+                          .itemId=${exclusion.id}
+                          .removedCount=${exclusion.removed.length}
+                        ></ha-target-picker-item-row>`
+                    )}`;
+                }
               )
             : nothing
         )}

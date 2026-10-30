@@ -45,6 +45,26 @@ export interface LogbookEntry {
   context_message?: string;
 }
 
+// A recorded action call, with the context fields of the call that made it.
+export interface LogbookActionCall extends Pick<
+  LogbookEntry,
+  | "context_user_id"
+  | "context_event_type"
+  | "context_domain"
+  | "context_service"
+  | "context_entity_id"
+  | "context_name"
+  | "context_state"
+  | "context_source"
+  | "context_message"
+> {
+  when: number; // Python timestamp. Do *1000 to get JS timestamp.
+  domain: string;
+  service: string;
+  service_data: Record<string, unknown>;
+  context_id: string;
+}
+
 //
 // Localization mapping for all the triggers in core
 // in homeassistant.components.homeassistant.triggers
@@ -114,6 +134,17 @@ export const getLogbookDataFromServer = (
   }
   return hass.callWS<LogbookEntry[]>(params);
 };
+
+export const getLogbookActionCalls = (
+  hass: Pick<HomeAssistant, "callWS">,
+  startDate: string,
+  endDate: string
+): Promise<LogbookActionCall[]> =>
+  hass.callWS({
+    type: "logbook/get_action_calls",
+    start_time: startDate,
+    end_time: endDate,
+  });
 
 export const subscribeLogbook = (
   hass: HomeAssistant,
@@ -329,3 +360,15 @@ export const filterLogbookCompatibleEntities = (entity) => {
     (domain === "sensor" && isNumericEntity(domain, entity, undefined));
   return !continuous;
 };
+
+export type LogbookCauseGroup =
+  "automation" | "script" | "integration" | "other";
+
+export const LOGBOOK_CAUSE_GROUPS: LogbookCauseGroup[] = [
+  "automation",
+  "script",
+  "integration",
+  "other",
+];
+
+export const logbookUserCauseKey = (userId: string) => `user/${userId}`;

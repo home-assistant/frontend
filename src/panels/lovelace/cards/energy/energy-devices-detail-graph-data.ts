@@ -432,7 +432,8 @@ export function generateEnergyDevicesDetailGraphData(
   const showUntracked =
     "from_grid" in summedData ||
     "solar" in summedData ||
-    "from_battery" in summedData;
+    "from_battery" in summedData ||
+    "home" in summedData;
 
   const {
     consumption: consumptionData,

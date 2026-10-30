@@ -9,6 +9,7 @@ import { LitElement, css, html } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoize from "memoize-one";
+import { DataTableSettingsController } from "../../../common/controllers/data-table-settings-controller";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -26,7 +27,6 @@ import type {
   DataTableRowData,
   RowClickedEvent,
   SelectionChangedEvent,
-  SortingChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
 import "../../../components/ha-tooltip";
@@ -84,14 +84,11 @@ export class VoiceAssistantsExpose extends LitElement {
 
   @state() private _extEntities?: Record<string, ExtEntityRegistryEntry>;
 
-  @state()
-  @storage({
-    storage: "sessionStorage",
-    key: "voice-expose-table-search",
-    state: true,
-    subscribe: false,
-  })
-  private _filter = "";
+  private _tableSettings = new DataTableSettingsController(this, {
+    search: "voice-expose-table-search",
+    sorting: "voice-expose-table-sort",
+    grouping: "voice-expose-table-grouping",
+  });
 
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
@@ -101,20 +98,6 @@ export class VoiceAssistantsExpose extends LitElement {
     "cloud.google_assistant" | "cloud.alexa" | "conversation",
     string[] | undefined
   >;
-
-  @storage({
-    key: "voice-expose-table-sort",
-    state: false,
-    subscribe: false,
-  })
-  private _activeSorting?: SortingChangedEvent;
-
-  @storage({
-    key: "voice-expose-table-grouping",
-    state: false,
-    subscribe: false,
-  })
-  private _activeGrouping?: string;
 
   @storage({
     key: "voice-expose-table-collapsed",
@@ -517,22 +500,23 @@ export class VoiceAssistantsExpose extends LitElement {
             number: filteredEntities.length,
           }
         )}
-        .filter=${this._filter}
+        .filter=${this._tableSettings.search}
         selectable
         .selected=${this._selectedEntities.length}
         clickable
-        .initialSorting=${this._activeSorting}
-        .initialGroupColumn=${this._activeGrouping}
+        .initialSorting=${this._tableSettings.sorting}
+        .initialGroupColumn=${this._tableSettings.grouping}
         .initialCollapsedGroups=${this._activeCollapsed}
         .columnOrder=${this._activeColumnOrder}
         .hiddenColumns=${this._activeHiddenColumns}
         @columns-changed=${this._handleColumnsChanged}
-        @sorting-changed=${this._handleSortingChanged}
+        @sorting-changed=${this._tableSettings.sortingChanged}
         @selection-changed=${this._handleSelectionChanged}
-        @grouping-changed=${this._handleGroupingChanged}
+        @grouping-changed=${this._tableSettings.groupingChanged}
         @collapsed-changed=${this._handleCollapseChanged}
         @clear-filter=${this._clearFilter}
-        @search-changed=${this._handleSearchChange}
+        @search-changed=${this._tableSettings.searchChanged}
+        sync-url
         @row-click=${this._openEditEntry}
         id="entity_id"
         has-fab
@@ -615,10 +599,6 @@ export class VoiceAssistantsExpose extends LitElement {
         );
       },
     });
-  }
-
-  private _handleSearchChange(ev: CustomEvent) {
-    this._filter = ev.detail.value;
   }
 
   private _handleSelectionChanged(
@@ -725,14 +705,6 @@ export class VoiceAssistantsExpose extends LitElement {
 
   private _clearFilter() {
     navigate(window.location.pathname, { replace: true });
-  }
-
-  private _handleSortingChanged(ev: CustomEvent) {
-    this._activeSorting = ev.detail;
-  }
-
-  private _handleGroupingChanged(ev: CustomEvent) {
-    this._activeGrouping = ev.detail.value;
   }
 
   private _handleCollapseChanged(ev: CustomEvent) {

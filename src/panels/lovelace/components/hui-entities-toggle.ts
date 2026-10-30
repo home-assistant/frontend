@@ -34,7 +34,7 @@ class HuiEntitiesToggle extends LitElement {
 
     return html`
       <ha-switch
-        aria-label=${this.hass!.localize(
+        .accessibleLabel=${this.hass!.localize(
           "ui.panel.lovelace.card.entities.toggle"
         )}
         .checked=${this._toggleEntities!.some((entityId) => {

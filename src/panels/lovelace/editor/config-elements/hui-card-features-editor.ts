@@ -177,6 +177,7 @@ const EDITABLES_FEATURE_TYPES = new Set<UiFeatureTypes>([
   "numeric-input",
   "select-options",
   "target-humidity",
+  "target-temperature",
   "timer-actions",
   "timer-presets",
   "trend-graph",

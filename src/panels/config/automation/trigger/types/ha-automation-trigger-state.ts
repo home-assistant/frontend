@@ -29,6 +29,17 @@ import type { HomeAssistant } from "../../../../../types";
 import { baseTriggerStruct, forDictStruct } from "../../structs";
 import type { TriggerElement } from "../ha-automation-trigger-row";
 
+type MatchChoice = "is" | "is_not";
+
+interface MatchValue {
+  active_choice: MatchChoice;
+  is?: string[];
+  is_not?: string[];
+}
+
+// Stable reference, so the memoized schema is not rebuilt on every render.
+const NO_STATES: string[] = [];
+
 const stateTriggerStruct = assign(
   baseTriggerStruct,
   object({
@@ -38,6 +49,8 @@ const stateTriggerStruct = assign(
     attribute: optional(string()),
     from: optional(union([nullable(string()), array(string())])),
     to: optional(union([nullable(string()), array(string())])),
+    not_from: optional(union([string(), array(string())])),
+    not_to: optional(union([string(), array(string())])),
     for: optional(union([number(), string(), forDictStruct])),
   })
 );
@@ -78,6 +91,14 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
       }
     } catch (err: any) {
       return err;
+    }
+    // "from" and "not_from" (and "to" and "not_to") are mutually exclusive,
+    // the editor can only show one of them and would drop the other.
+    if (
+      (trigger.from !== undefined && trigger.not_from !== undefined) ||
+      (trigger.to !== undefined && trigger.not_to !== undefined)
+    ) {
+      return Error(localize("ui.errors.config.editor_not_supported"));
     }
     return undefined;
   }
@@ -159,46 +180,14 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
           context: {
             filter_entity: "entity_id",
           },
-          selector: {
-            state: {
-              multiple: true,
-              extra_options: (attribute
-                ? []
-                : [
-                    {
-                      label: localize(
-                        "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
-                      ),
-                      value: ANY_STATE_VALUE,
-                    },
-                  ]) as any,
-              attribute: attribute,
-              hide_states: hideInFrom,
-            },
-          },
+          selector: this._matchSelector(localize, attribute, hideInFrom),
         },
         {
           name: "to",
           context: {
             filter_entity: "entity_id",
           },
-          selector: {
-            state: {
-              multiple: true,
-              extra_options: (attribute
-                ? []
-                : [
-                    {
-                      label: localize(
-                        "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
-                      ),
-                      value: ANY_STATE_VALUE,
-                    },
-                  ]) as any,
-              attribute: attribute,
-              hide_states: hideInTo,
-            },
-          },
+          selector: this._matchSelector(localize, attribute, hideInTo),
         },
         {
           name: "for",
@@ -215,6 +204,48 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         },
       ] as const satisfies HaFormSchema[]
   );
+
+  private _matchSelector(
+    localize: LocalizeFunc,
+    attribute: string | undefined,
+    hideStates: string[]
+  ) {
+    return {
+      choose: {
+        translation_key:
+          "ui.panel.config.automation.editor.triggers.type.state.match_type",
+        choices: {
+          is: {
+            selector: {
+              state: {
+                multiple: true,
+                extra_options: (attribute
+                  ? []
+                  : [
+                      {
+                        label: localize(
+                          "ui.panel.config.automation.editor.triggers.type.state.any_state_ignore_attributes"
+                        ),
+                        value: ANY_STATE_VALUE,
+                      },
+                    ]) as any,
+                attribute: attribute,
+                hide_states: hideStates,
+              },
+            },
+          },
+          is_not: {
+            selector: {
+              state: {
+                multiple: true,
+                attribute: attribute,
+              },
+            },
+          },
+        },
+      },
+    } as const;
+  }
 
   public shouldUpdate(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("trigger")) {
@@ -248,18 +279,34 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
   }
 
   protected render() {
+    const { not_from: _notFrom, not_to: _notTo, ...trigger } = this.trigger;
+    const from = this._toMatchValue(
+      this.trigger.from,
+      this.trigger.not_from,
+      this.trigger.attribute
+    );
+    const to = this._toMatchValue(
+      this.trigger.to,
+      this.trigger.not_to,
+      this.trigger.attribute
+    );
+
     const data = {
-      ...this.trigger,
+      ...trigger,
       entity_id: ensureArray(this.trigger.entity_id),
+      from,
+      to,
     };
 
-    data.to = this._normalizeStates(this.trigger.to, data.attribute);
-    data.from = this._normalizeStates(this.trigger.from, data.attribute);
+    // Only hide states from the other field when both match positively,
+    // "not from A to A" is a valid combination.
+    const bothPositive =
+      from?.active_choice !== "is_not" && to?.active_choice !== "is_not";
     const schema = this._schema(
       this.hass.localize,
       this.trigger.attribute,
-      data.to,
-      data.from
+      bothPositive ? (to?.is ?? NO_STATES) : NO_STATES,
+      bothPositive ? (from?.is ?? NO_STATES) : NO_STATES
     );
 
     return html`
@@ -277,24 +324,15 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
 
   private _valueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
-    const newTrigger = ev.detail.value;
+    // Copy, this is ha-form's own data, it can fire again before new data
+    // is passed down and must still hold the match values then.
+    const newTrigger = { ...ev.detail.value };
 
     newTrigger.for = this._unwrapForValue(newTrigger.for);
 
-    newTrigger.to = this._applyAnyStateExclusive(
-      newTrigger.to,
-      newTrigger.attribute
-    );
-    if (Array.isArray(newTrigger.to) && newTrigger.to.length === 0) {
-      delete newTrigger.to;
-    }
-    newTrigger.from = this._applyAnyStateExclusive(
-      newTrigger.from,
-      newTrigger.attribute
-    );
-    if (Array.isArray(newTrigger.from) && newTrigger.from.length === 0) {
-      delete newTrigger.from;
-    }
+    const { from, to } = newTrigger;
+    this._applyMatchValue(newTrigger, "from", "not_from", to);
+    this._applyMatchValue(newTrigger, "to", "not_to", from);
 
     Object.keys(newTrigger).forEach((key) => {
       const val = newTrigger[key];
@@ -304,6 +342,62 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     });
 
     fireEvent(this, "value-changed", { value: newTrigger });
+  }
+
+  private _toMatchValue(
+    value: string | string[] | null | undefined,
+    notValue: string | string[] | undefined,
+    attribute?: string
+  ): MatchValue | undefined {
+    // Leave the value empty when nothing is set, so the choose selector keeps
+    // the choice the user made until a state is picked.
+    if (notValue !== undefined) {
+      return { active_choice: "is_not", is_not: ensureArray(notValue) };
+    }
+    if (value !== undefined) {
+      return {
+        active_choice: "is",
+        is: this._normalizeStates(value, attribute),
+      };
+    }
+    return undefined;
+  }
+
+  private _applyMatchValue(
+    trigger: Record<string, any>,
+    key: "from" | "to",
+    notKey: "not_from" | "not_to",
+    other: Partial<MatchValue> | undefined
+  ): void {
+    const match: Partial<MatchValue> | undefined = trigger[key];
+    delete trigger[notKey];
+
+    if (match?.active_choice === "is_not") {
+      delete trigger[key];
+      // Keep the selected states when switching from "is" to "is not".
+      const states = (match.is_not ?? match.is ?? []).filter(
+        (state) => state !== ANY_STATE_VALUE
+      );
+      if (states.length) {
+        trigger[notKey] = states;
+      }
+      return;
+    }
+
+    // When switching back from "is not", drop the states the other field
+    // matches, "from A to A" never triggers.
+    const otherStates = other?.active_choice === "is" ? (other.is ?? []) : [];
+    const states = this._applyAnyStateExclusive(
+      match?.is ??
+        match?.is_not?.filter((state) => !otherStates.includes(state)),
+      trigger.attribute
+    );
+    if (match?.active_choice && (!Array.isArray(states) || states.length)) {
+      // Assign in place, so editing doesn't move the key in the saved config.
+      trigger[key] = states;
+    } else {
+      delete trigger[key];
+    }
   }
 
   private _applyAnyStateExclusive(

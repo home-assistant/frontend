@@ -60,7 +60,7 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
   }
 
   protected async _getBlueprints() {
-    this._blueprints = await fetchBlueprints(this.hass, "script");
+    this._blueprints = await fetchBlueprints(this.hass.callWS, "script");
   }
 
   static get styles(): CSSResultGroup {

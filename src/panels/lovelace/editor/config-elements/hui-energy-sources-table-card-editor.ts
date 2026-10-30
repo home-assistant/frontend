@@ -33,6 +33,7 @@ const cardConfigStruct = assign(
           literal("grid"),
           literal("solar"),
           literal("battery"),
+          literal("home"),
           literal("gas"),
           literal("water"),
         ])
@@ -42,7 +43,14 @@ const cardConfigStruct = assign(
   })
 );
 
-const sourceTypeOpts = ["grid", "solar", "battery", "gas", "water"] as const;
+const sourceTypeOpts = [
+  "grid",
+  "solar",
+  "battery",
+  "home",
+  "gas",
+  "water",
+] as const;
 
 @customElement("hui-energy-sources-table-card-editor")
 export class HuiEnergySourcesTableCardEditor

@@ -1,12 +1,14 @@
 import "@formatjs/intl-durationformat/polyfill-force";
-import { describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
+  DURATION_UNITS,
   formatDuration,
   formatDurationDigital,
   formatDurationLong,
   formatDurationNarrow,
   formatNumericDuration,
 } from "../../../src/common/datetime/format_duration";
+import type { HaDurationData } from "../../../src/components/ha-duration-input";
 import type { FrontendLocaleData } from "../../../src/data/translation";
 import {
   DateFormat,
@@ -126,4 +128,69 @@ describe("formatNumericDuration", () => {
     };
     expect(formatNumericDuration(LOCALE, duration)).toBe(null);
   });
+});
+
+describe("without Intl.DurationFormat", () => {
+  // Legacy browsers without BigInt cannot load the polyfill
+  const DURATIONS: HaDurationData[] = [
+    { hours: 0, minutes: 0, seconds: 0 },
+    { seconds: 45 },
+    { hours: 1, minutes: 30 },
+    { days: 1, hours: 2, minutes: 3, seconds: 4 },
+    { hours: 0, minutes: 2, seconds: 3 },
+    { hours: 25, minutes: 0, seconds: 0 },
+    { hours: -1, minutes: -30, seconds: 0 },
+    { seconds: 1, milliseconds: 500 },
+    { milliseconds: 250 },
+    { days: 2, hours: 0, minutes: 0, seconds: 7 },
+    // Rejected by Intl.DurationFormat
+    { hours: 1, minutes: -30 },
+    { seconds: 1.5 },
+    { hours: NaN, minutes: 5 },
+  ];
+
+  const attempt = (format: () => string) => {
+    try {
+      return format();
+    } catch (err) {
+      return (err as Error).name;
+    }
+  };
+
+  const formatAll = (locale: FrontendLocaleData) => [
+    ...DURATIONS.flatMap((duration) => [
+      attempt(() => formatDurationLong(locale, duration)),
+      attempt(() => formatDurationNarrow(locale, duration)),
+      attempt(() => formatDurationDigital(locale, duration)),
+    ]),
+    ...["0", "0.25", "1", "95.5", "-1", "-0.5", "-1.25"].flatMap((value) =>
+      DURATION_UNITS.map((unit) =>
+        attempt(() => formatDuration(locale, value, unit))
+      )
+    ),
+  ];
+
+  const descriptor = Object.getOwnPropertyDescriptor(Intl, "DurationFormat")!;
+  const expected = Object.fromEntries(
+    ["en", "de", "nl"].map((language) => [
+      language,
+      formatAll({ ...LOCALE, language }),
+    ])
+  );
+
+  beforeAll(() => {
+    Reflect.deleteProperty(Intl, "DurationFormat");
+  });
+
+  afterAll(() => {
+    Object.defineProperty(Intl, "DurationFormat", descriptor);
+  });
+
+  it.each(["en", "de", "nl"])(
+    "matches Intl.DurationFormat in %s",
+    (language) => {
+      expect("DurationFormat" in Intl).toBe(false);
+      expect(formatAll({ ...LOCALE, language })).toEqual(expected[language]);
+    }
+  );
 });

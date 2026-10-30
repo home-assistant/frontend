@@ -156,7 +156,7 @@ export class HaConfigEntryRow extends LitElement {
     } else if (!allDevices.length && !allServices.length && entities.length) {
       statusLine.push(
         html`<a
-          href=${`/config/entities/?historyBack=1&config_entry=${item.entry_id}`}
+          href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
           >${this.hass.localize(
             "ui.panel.config.integrations.config_entry.entities",
             { count: entities.length }
@@ -253,7 +253,7 @@ export class HaConfigEntryRow extends LitElement {
                     href=${
                       allDevices.length === 1
                         ? `/config/devices/device/${allDevices[0].id}`
-                        : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`
+                        : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}&status=disabled`
                     }
                   >
                     <ha-dropdown-item value="devices">
@@ -278,7 +278,7 @@ export class HaConfigEntryRow extends LitElement {
                     href=${
                       allServices.length === 1
                         ? `/config/devices/device/${allServices[0].id}`
-                        : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`
+                        : `/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}&status=disabled`
                     }
                   >
                     <ha-dropdown-item value="services">
@@ -321,7 +321,7 @@ export class HaConfigEntryRow extends LitElement {
             ERROR_STATES.includes(item.state)
               ? html`
                   <a
-                    href=${`/config/logs?filter=${encodeURIComponent(item.domain)}`}
+                    href=${`/config/logs?search=${encodeURIComponent(item.domain)}`}
                   >
                     <ha-dropdown-item value="logs">
                       <ha-svg-icon
@@ -664,8 +664,13 @@ export class HaConfigEntryRow extends LitElement {
     const locale_key = result.require_restart
       ? "reload_restart_confirm"
       : "reload_confirm";
-    showAlertDialog(this, {
-      text: this.hass.localize(
+    // The row can move between sections when the entry state changes on reload
+    const host =
+      (this.isConnected
+        ? this
+        : document.querySelector<HTMLElement>("home-assistant")) ?? this;
+    showToast(host, {
+      message: this.hass.localize(
         `ui.panel.config.integrations.config_entry.${locale_key}`
       ),
     });

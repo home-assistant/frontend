@@ -1,7 +1,4 @@
-import type {
-  HassEntity,
-  HassServiceTarget,
-} from "home-assistant-js-websocket";
+import type { HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../../../common/array/ensure-array";
 import {
   checkTimeInRange,
@@ -25,6 +22,7 @@ import type { DeviceCondition } from "../../../data/device/device_automation";
 import { UNKNOWN } from "../../../data/entity/entity";
 import { getUserPerson } from "../../../data/person";
 import { resolveEntityIDs } from "../../../data/selector";
+import type { HassServiceTargetWithExclude } from "../../../data/target";
 import type { HomeAssistant } from "../../../types";
 
 export type Condition =
@@ -70,7 +68,7 @@ export interface LocationCondition extends BaseCondition {
   /** Legacy: matches the person state (active zone name). */
   locations?: string[];
   /** Zones selected directly or through a label, area or floor. */
-  target?: HassServiceTarget;
+  target?: HassServiceTargetWithExclude;
   /**
    * `any_zone` (default) matches the zones in the person `in_zones`.
    * `active_zone` matches only the zone shown as the person state, like
@@ -170,8 +168,14 @@ export interface VisibilityLogicalCondition extends BaseCondition {
   conditions?: VisibilityCondition | VisibilityCondition[];
 }
 
+/** The parts of `hass` the condition checks read. */
+export type ConditionHass = Pick<
+  HomeAssistant,
+  "states" | "user" | "locale" | "config" | "entities" | "devices" | "areas"
+>;
+
 function getValueFromEntityId(
-  hass: HomeAssistant,
+  hass: ConditionHass,
   value: string
 ): string | undefined {
   if (isValidEntityId(value) && hass.states[value]) {
@@ -182,7 +186,7 @@ function getValueFromEntityId(
 
 function checkStateCondition(
   condition: StateCondition | LegacyCondition,
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ) {
   // Prefer core `entity_id` over lovelace `entity` / the host entity.
@@ -231,7 +235,7 @@ function checkStateCondition(
 
 function checkStateNumericCondition(
   condition: NumericStateCondition,
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ) {
   // Prefer core `entity_id` over lovelace `entity` / the host entity.
@@ -285,7 +289,7 @@ function checkViewColumnsCondition(
   );
 }
 
-function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
+function checkScreenCondition(condition: ScreenCondition, _: ConditionHass) {
   return condition.media_query
     ? matchMedia(condition.media_query).matches
     : false;
@@ -293,14 +297,14 @@ function checkScreenCondition(condition: ScreenCondition, _: HomeAssistant) {
 
 function checkTimeCondition(
   condition: Omit<TimeCondition, "condition">,
-  hass: HomeAssistant
+  hass: ConditionHass
 ) {
   return checkTimeInRange(hass, condition);
 }
 
 function checkLocationCondition(
   condition: LocationCondition,
-  hass: HomeAssistant
+  hass: ConditionHass
 ) {
   const stateObj = getUserPerson(hass.user?.id, hass.states);
   if (!stateObj) {
@@ -345,7 +349,7 @@ function checkLocationCondition(
  * otherwise the zone name. Passive zones never become the state.
  */
 function activeZoneState(
-  hass: HomeAssistant,
+  hass: ConditionHass,
   zoneId: string
 ): string | undefined {
   const stateObj = hass.states[zoneId];
@@ -367,18 +371,27 @@ const isIdList = (value: unknown): boolean =>
   typeof value === "string" ||
   (Array.isArray(value) && value.every((id) => typeof id === "string"));
 
-/**
- * YAML can hold anything here. Like `targetStruct`, only a mapping of target
- * keys to IDs is usable; anything else would throw while resolving zones.
- */
-const isValidTarget = (target: unknown): target is HassServiceTarget =>
+const isTargetMapping = (
+  target: unknown,
+  allowExclude: boolean
+): target is HassServiceTargetWithExclude =>
   typeof target === "object" &&
   target !== null &&
   !Array.isArray(target) &&
-  Object.entries(target).every(
-    ([key, value]) =>
-      (TARGET_KEYS as readonly string[]).includes(key) && isIdList(value)
+  Object.entries(target).every(([key, value]) =>
+    key === "exclude"
+      ? allowExclude && isTargetMapping(value, false)
+      : (TARGET_KEYS as readonly string[]).includes(key) && isIdList(value)
   );
+
+/**
+ * YAML can hold anything here. Like `targetStruct`, only a mapping of target
+ * keys to IDs, with an optional `exclude` of the same shape, is usable;
+ * anything else would throw while resolving zones.
+ */
+const isValidTarget = (
+  target: unknown
+): target is HassServiceTargetWithExclude => isTargetMapping(target, true);
 
 const ZONE_TARGET_SELECTOR = { target: { entity: { domain: "zone" } } };
 
@@ -391,15 +404,18 @@ interface ResolvedZones {
 
 // Keyed by target so each card keeps its own entry. Resolving scans the
 // registries, so only redo it when one of them changes.
-const resolvedZonesCache = new WeakMap<HassServiceTarget, ResolvedZones>();
+const resolvedZonesCache = new WeakMap<
+  HassServiceTargetWithExclude,
+  ResolvedZones
+>();
 
 /**
  * Zone entity IDs selected directly or through a label, area or floor, that
  * currently have a state.
  */
 export function resolveLocationZones(
-  hass: HomeAssistant,
-  target: HassServiceTarget
+  hass: ConditionHass,
+  target: HassServiceTargetWithExclude
 ): string[] {
   // Checked on every call rather than cached, so a zone that loses its state
   // is dropped and a directly selected zone that appears later is picked up.
@@ -409,8 +425,8 @@ export function resolveLocationZones(
 }
 
 function resolveTargetZones(
-  hass: HomeAssistant,
-  target: HassServiceTarget
+  hass: ConditionHass,
+  target: HassServiceTargetWithExclude
 ): string[] {
   const cached = resolvedZonesCache.get(target);
   if (
@@ -450,7 +466,7 @@ function resolveTargetZones(
   return zones;
 }
 
-function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
+function checkUserCondition(condition: UserCondition, hass: ConditionHass) {
   return condition.users && hass.user?.id
     ? condition.users.includes(hass.user.id)
     : false;
@@ -458,7 +474,7 @@ function checkUserCondition(condition: UserCondition, hass: HomeAssistant) {
 
 function checkAndCondition(
   condition: AndCondition,
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ) {
   if (!condition.conditions) return true;
@@ -467,7 +483,7 @@ function checkAndCondition(
 
 function checkNotCondition(
   condition: NotCondition,
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ) {
   if (!condition.conditions) return true;
@@ -476,7 +492,7 @@ function checkNotCondition(
 
 function checkOrCondition(
   condition: OrCondition,
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ) {
   if (!condition.conditions) return true;
@@ -494,7 +510,7 @@ function checkOrCondition(
  */
 export function checkConditionsMet(
   conditions: (Condition | LegacyCondition)[],
-  hass: HomeAssistant,
+  hass: ConditionHass,
   context: ConditionContext
 ): boolean {
   return conditions.every((c) => {
@@ -526,15 +542,28 @@ export function checkConditionsMet(
   });
 }
 
+/**
+ * Collects every entity ID the conditions read, so a card can track only
+ * those states. Accepts a single condition because logical groups may hold
+ * one child instead of a list.
+ */
 export function extractConditionEntityIds(
-  conditions: Condition[]
+  conditions:
+    (Condition | LegacyCondition)[] | Condition | LegacyCondition | undefined
 ): Set<string> {
   const entityIds = new Set<string>();
-  for (const condition of conditions) {
-    if (condition.condition === "numeric_state") {
-      if (condition.entity) {
-        entityIds.add(condition.entity);
-      }
+  // Core format `entity_id` is checked before lovelace `entity`
+  const addEntity = (condition: { entity?: string; entity_id?: string }) => {
+    if (typeof condition.entity_id === "string") {
+      entityIds.add(condition.entity_id);
+    }
+    if (condition.entity) {
+      entityIds.add(condition.entity);
+    }
+  };
+  for (const condition of ensureArray(conditions) ?? []) {
+    if ("condition" in condition && condition.condition === "numeric_state") {
+      addEntity(condition);
       if (
         typeof condition.above === "string" &&
         isValidEntityId(condition.above)
@@ -547,10 +576,8 @@ export function extractConditionEntityIds(
       ) {
         entityIds.add(condition.below);
       }
-    } else if (condition.condition === "state") {
-      if (condition.entity) {
-        entityIds.add(condition.entity);
-      }
+    } else if (!("condition" in condition) || condition.condition === "state") {
+      addEntity(condition);
       [
         ...(ensureArray(condition.state) ?? []),
         ...(ensureArray(condition.state_not) ?? []),
@@ -560,10 +587,9 @@ export function extractConditionEntityIds(
         }
       });
     } else if ("conditions" in condition && condition.conditions) {
-      return new Set([
-        ...entityIds,
-        ...extractConditionEntityIds(condition.conditions),
-      ]);
+      extractConditionEntityIds(condition.conditions).forEach((entityId) =>
+        entityIds.add(entityId)
+      );
     }
   }
   return entityIds;

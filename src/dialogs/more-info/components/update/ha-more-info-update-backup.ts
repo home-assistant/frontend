@@ -42,6 +42,8 @@ import type {
 export class HaMoreInfoUpdateBackup extends LitElement {
   @property({ attribute: false }) public stateObj?: UpdateEntity;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
@@ -126,7 +128,7 @@ export class HaMoreInfoUpdateBackup extends LitElement {
                 slot="end"
                 .checked=${this._createBackup}
                 @change=${this._createBackupChanged}
-                .disabled=${updateIsInstalling(this.stateObj)}
+                .disabled=${this.disabled || updateIsInstalling(this.stateObj)}
               ></ha-switch>`
         }
       </ha-row-item>
@@ -143,10 +145,10 @@ export class HaMoreInfoUpdateBackup extends LitElement {
     let type: UpdateType | undefined = undefined;
 
     try {
-      this._entitySources = await fetchEntitySourcesWithCache({
-        callWS: this._api.callWS,
-        states: this._states,
-      });
+      this._entitySources = await fetchEntitySourcesWithCache(
+        this._api.callWS,
+        this._states
+      );
       type = getUpdateType(this.stateObj!, this._entitySources!);
     } catch (err) {
       // ignore error, because the generic backup option remains available

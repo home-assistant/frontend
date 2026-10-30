@@ -35,6 +35,7 @@ export class HuiBarGaugeCardFeatureEditor
           selector: {
             number: {
               mode: "box",
+              step: "any",
             },
           },
         },
@@ -44,6 +45,7 @@ export class HuiBarGaugeCardFeatureEditor
           selector: {
             number: {
               mode: "box",
+              step: "any",
             },
           },
         },

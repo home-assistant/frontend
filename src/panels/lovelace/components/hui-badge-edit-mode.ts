@@ -7,14 +7,12 @@ import {
   mdiPencil,
   mdiPlusCircleMultipleOutline,
 } from "@mdi/js";
-import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { storage } from "../../../common/decorators/storage";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -53,14 +51,6 @@ export class HuiBadgeEditMode extends LitElement {
 
   @state()
   public _focused = false;
-
-  @storage({
-    key: "dashboardBadgeClipboard",
-    state: false,
-    subscribe: false,
-    storage: "sessionStorage",
-  })
-  protected _clipboard?: LovelaceBadgeConfig;
 
   private get _badgeConfig() {
     return getAtPath<LovelaceBadgeConfig>(this.lovelace.config, this.path)!;
@@ -206,12 +196,11 @@ export class HuiBadgeEditMode extends LitElement {
   }
 
   private _cutBadge(): void {
-    this._copyBadge();
-    fireEvent(this, "ll-delete-badge", { path: this.path, silent: true });
+    fireEvent(this, "ll-cut-badge", { path: this.path });
   }
 
   private _copyBadge(): void {
-    this._clipboard = deepClone(this._badgeConfig);
+    fireEvent(this, "ll-copy-badge", { path: this.path });
   }
 
   private _duplicateBadge(): void {

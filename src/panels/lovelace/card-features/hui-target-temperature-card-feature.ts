@@ -2,6 +2,7 @@ import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { live } from "lit/directives/live";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../common/decorators/consume";
 import { UNIT_F } from "../../../common/const";
@@ -16,6 +17,7 @@ import { debounce } from "../../../common/util/debounce";
 import { PendingValueSync } from "../../../common/util/pending-value-sync";
 import "../../../components/ha-control-button-group";
 import "../../../components/ha-control-number-buttons";
+import "../../../components/ha-control-slider";
 import type { ClimateEntity } from "../../../data/climate";
 import { ClimateEntityFeature } from "../../../data/climate";
 import {
@@ -35,7 +37,7 @@ import type {
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   LovelaceCardFeatureContext,
@@ -113,7 +115,14 @@ class HuiTargetTemperatureCardFeature
   static getStubConfig(): TargetTemperatureCardFeatureConfig {
     return {
       type: "target-temperature",
+      style: "buttons",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-target-temperature-card-feature-editor");
+
+    return document.createElement("hui-target-temperature-card-feature-editor");
   }
 
   public setConfig(config: TargetTemperatureCardFeatureConfig): void {
@@ -178,9 +187,17 @@ class HuiTargetTemperatureCardFeature
     const target =
       (ev.currentTarget as HTMLElement & { target?: Target }).target ?? "value";
 
+    // Sliders span the full range, so keep low and high from crossing
+    let newValue = value;
+
+    if (target === "low") {
+      newValue = Math.min(value, this._targetTemperature.high ?? value);
+    } else if (target === "high") {
+      newValue = Math.max(value, this._targetTemperature.low ?? value);
+    }
     this._targetTemperature = {
       ...this._targetTemperature,
-      [target]: value,
+      [target]: newValue,
     };
     this._pendingSync.schedule();
     this._debouncedCallService(target);
@@ -260,6 +277,28 @@ class HuiTargetTemperatureCardFeature
       this._targetTemperature.value != null &&
       this._stateObj.state !== UNAVAILABLE
     ) {
+      if (this._config.style === "slider") {
+        return html`
+          <ha-control-slider
+            .target=${"value"}
+            .value=${this._targetTemperature.value}
+            .unit=${this._hassConfig?.unit_system.temperature}
+            .min=${this._min}
+            .max=${this._max}
+            .step=${this._step}
+            @value-changed=${this._valueChanged}
+            .label=${this._formatters.formatEntityAttributeName(
+              this._stateObj,
+              "temperature"
+            )}
+            style=${styleMap({
+              "--control-slider-color": stateColor,
+            })}
+            .locale=${this._locale}
+          ></ha-control-slider>
+        `;
+      }
+
       return html`
         <ha-control-button-group>
           <ha-control-number-buttons
@@ -292,6 +331,47 @@ class HuiTargetTemperatureCardFeature
       this._targetTemperature.high != null &&
       this._stateObj.state !== UNAVAILABLE
     ) {
+      if (this._config.style === "slider") {
+        return html`
+          <ha-control-button-group>
+            <ha-control-slider
+              .target=${"low"}
+              .value=${live(this._targetTemperature.low)}
+              .unit=${this._hassConfig?.unit_system.temperature}
+              .min=${this._min}
+              .max=${this._max}
+              .step=${this._step}
+              @value-changed=${this._valueChanged}
+              .label=${this._formatters.formatEntityAttributeName(
+                this._stateObj,
+                "target_temp_low"
+              )}
+              style=${styleMap({
+                "--control-slider-color": stateColor,
+              })}
+              .locale=${this._locale}
+            ></ha-control-slider>
+            <ha-control-slider
+              .target=${"high"}
+              .value=${live(this._targetTemperature.high)}
+              .unit=${this._hassConfig?.unit_system.temperature}
+              .min=${this._min}
+              .max=${this._max}
+              .step=${this._step}
+              @value-changed=${this._valueChanged}
+              .label=${this._formatters.formatEntityAttributeName(
+                this._stateObj,
+                "target_temp_high"
+              )}
+              style=${styleMap({
+                "--control-slider-color": stateColor,
+              })}
+              .locale=${this._locale}
+            ></ha-control-slider>
+          </ha-control-button-group>
+        `;
+      }
+
       return html`
         <ha-control-button-group>
           <ha-control-number-buttons
@@ -341,6 +421,23 @@ class HuiTargetTemperatureCardFeature
           >
           </ha-control-number-buttons>
         </ha-control-button-group>
+      `;
+    }
+
+    if (this._config.style === "slider") {
+      return html`
+        <ha-control-slider
+          disabled
+          .unit=${this._hassConfig?.unit_system.temperature}
+          .label=${this._formatters.formatEntityAttributeName(
+            this._stateObj,
+            "temperature"
+          )}
+          style=${styleMap({
+            "--control-slider-color": stateColor,
+          })}
+          .locale=${this._locale}
+        ></ha-control-slider>
       `;
     }
 

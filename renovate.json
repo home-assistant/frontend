@@ -99,6 +99,11 @@
       "matchPackageNames": ["date-fns", "date-fns-tz"]
     },
     {
+      "description": "Group ECharts with zrender, which we import directly and must match the version echarts depends on",
+      "groupName": "echarts",
+      "matchPackageNames": ["echarts", "zrender"]
+    },
+    {
       "description": "Group formatjs monorepo package",
       "groupName": "formatjs",
       "matchPackageNames": ["@formatjs/**"]

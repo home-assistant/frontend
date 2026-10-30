@@ -9,6 +9,7 @@ import {
   mdiDragHorizontalVariant,
   mdiPencil,
   mdiPlusCircleMultipleOutline,
+  mdiViewGridOutline,
 } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, TemplateResult } from "lit";
@@ -34,9 +35,12 @@ import {
   getAtPath,
   getParentPath,
   insertAtPath,
+  setAtPath,
 } from "../editor/lovelace-path";
 import { showEditSectionDialog } from "../editor/section-editor/show-edit-section-dialog";
+import { expandLovelaceSectionStrategies } from "../strategies/get-strategy";
 import type { Lovelace } from "../types";
+import { LOVELACE_EDIT_TOAST_ID } from "../types";
 
 @customElement("hui-section-edit-mode")
 export class HuiSectionEditMode extends LitElement {
@@ -101,6 +105,21 @@ export class HuiSectionEditMode extends LitElement {
               <ha-svg-icon slot="icon" .path=${mdiPencil}></ha-svg-icon>
               ${this.hass.localize("ui.common.edit")}
             </ha-dropdown-item>
+            ${
+              this.isStrategy
+                ? html`
+                    <ha-dropdown-item value="convert_to_manual">
+                      <ha-svg-icon
+                        slot="icon"
+                        .path=${mdiViewGridOutline}
+                      ></ha-svg-icon>
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.editor.section.convert_to_manual"
+                      )}
+                    </ha-dropdown-item>
+                  `
+                : nothing
+            }
             <ha-dropdown-item value="duplicate">
               <ha-svg-icon
                 slot="icon"
@@ -119,22 +138,13 @@ export class HuiSectionEditMode extends LitElement {
             ${
               this._clipboard
                 ? html`
-                    <ha-dropdown-item value="paste-above">
+                    <ha-dropdown-item value="paste">
                       <ha-svg-icon
                         slot="icon"
                         .path=${mdiContentPaste}
                       ></ha-svg-icon>
                       ${this.hass.localize(
-                        "ui.panel.lovelace.editor.section.paste_above"
-                      )}
-                    </ha-dropdown-item>
-                    <ha-dropdown-item value="paste-below">
-                      <ha-svg-icon
-                        slot="icon"
-                        .path=${mdiContentPaste}
-                      ></ha-svg-icon>
-                      ${this.hass.localize(
-                        "ui.panel.lovelace.editor.section.paste_below"
+                        "ui.panel.lovelace.editor.section.paste"
                       )}
                     </ha-dropdown-item>
                   `
@@ -179,6 +189,9 @@ export class HuiSectionEditMode extends LitElement {
       case "edit":
         this._editSection();
         break;
+      case "convert_to_manual":
+        this._convertToManual();
+        break;
       case "duplicate":
         this._duplicateSection();
         break;
@@ -188,11 +201,8 @@ export class HuiSectionEditMode extends LitElement {
       case "cut":
         this._cutSection();
         break;
-      case "paste-above":
-        this._pasteSection(0);
-        break;
-      case "paste-below":
-        this._pasteSection(1);
+      case "paste":
+        this._pasteSection();
         break;
       case "delete":
         this._deleteSection();
@@ -209,6 +219,43 @@ export class HuiSectionEditMode extends LitElement {
       },
       path: this.path,
     });
+  }
+
+  private async _convertToManual(): Promise<void> {
+    const section = this._getSection();
+    if (!section || !isStrategySection(section)) return;
+
+    const confirm = await showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.lovelace.editor.section.convert_to_manual"
+      ),
+      text: this.hass.localize(
+        "ui.panel.lovelace.editor.section.convert_to_manual_text"
+      ),
+      confirmText: this.hass.localize(
+        "ui.panel.lovelace.editor.section.convert_to_manual_confirm"
+      ),
+    });
+    if (!confirm) return;
+
+    try {
+      const manualSection = await expandLovelaceSectionStrategies(
+        section,
+        this.hass,
+        true
+      );
+      if (!this.isConnected || this._getSection() !== section) return;
+      await this.lovelace!.saveConfig(
+        setAtPath(this.lovelace!.config, this.path, manualSection)
+      );
+    } catch (_err: unknown) {
+      this.lovelace!.showToast({
+        id: LOVELACE_EDIT_TOAST_ID,
+        message: this.hass.localize(
+          "ui.panel.lovelace.editor.section.convert_to_manual_error"
+        ),
+      });
+    }
   }
 
   private _duplicateSection(): void {
@@ -228,6 +275,7 @@ export class HuiSectionEditMode extends LitElement {
     if (!section) return;
     this._clipboard = deepClone(section);
     this.lovelace!.showToast({
+      id: LOVELACE_EDIT_TOAST_ID,
       message: this.hass.localize(
         "ui.panel.lovelace.editor.section.copied_to_clipboard"
       ),
@@ -245,6 +293,7 @@ export class HuiSectionEditMode extends LitElement {
       // The clipboard is only replaced once the section is gone, so a failed
       // cut does not turn into a copy.
       this.lovelace!.showToast({
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass.localize(
           "ui.panel.lovelace.editor.section.cut_error"
         ),
@@ -253,6 +302,7 @@ export class HuiSectionEditMode extends LitElement {
     }
     this._clipboard = deepClone(section);
     this.lovelace!.showToast({
+      id: LOVELACE_EDIT_TOAST_ID,
       message: this.hass.localize(
         "ui.panel.lovelace.editor.section.cut_to_clipboard"
       ),
@@ -264,19 +314,20 @@ export class HuiSectionEditMode extends LitElement {
     });
   }
 
-  private async _pasteSection(offset: 0 | 1): Promise<void> {
+  private async _pasteSection(): Promise<void> {
     if (!this._clipboard) return;
     const index = this.path[this.path.length - 1] as number;
     try {
       await this.lovelace!.saveConfig(
         insertAtPath(
           this.lovelace!.config,
-          [...getParentPath(this.path), index + offset],
+          [...getParentPath(this.path), index + 1],
           deepClone(this._clipboard)
         )
       );
     } catch (_err: unknown) {
       this.lovelace!.showToast({
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass.localize(
           "ui.panel.lovelace.editor.section.paste_error"
         ),

@@ -1,4 +1,6 @@
 import { closestWithProperty } from "../../../common/dom/ancestors-with-property";
+import { fireEvent } from "../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { ShowToastParams } from "../../../managers/notification-manager";
 import { showToast } from "../../../util/toast";
 
@@ -38,3 +40,15 @@ export function showEditorToast(
     dismissable: true,
   });
 }
+
+export const showReplacedToast = (el: HTMLElement, localize: LocalizeFunc) =>
+  showEditorToast(el, {
+    message: localize("ui.common.successfully_replaced"),
+    duration: 4000,
+    action: {
+      text: localize("ui.common.undo"),
+      action: () => {
+        fireEvent(window, "undo-change");
+      },
+    },
+  });

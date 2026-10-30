@@ -17,8 +17,8 @@
    * show a message instead of reloading forever.
    *
    * Never transpiled, so it stays within the [legacy] browserslist floor
-   * (Chrome 59 / Safari 12): no object spread, Promise.finally, optional
-   * chaining or AbortController.
+   * (Chrome 67 / Safari 15): no optional chaining, nullish coalescing or
+   * class fields.
    */
   (function () {
     const BUST_PARAM = "ha_cache_bust";
@@ -193,14 +193,23 @@
      * from its own cache.
      */
     function probeGone(url) {
-      // Status 0 stands for "no usable answer": unreachable, or too slow.
+      // Status 0 stands for "no usable answer": unreachable, or too slow. A
+      // request that is too slow is aborted so it does not hold a connection.
+      const controller = new AbortController();
       return Promise.race([
-        fetch(url, { method: "HEAD", cache: "no-store" }).then(
+        fetch(url, {
+          method: "HEAD",
+          cache: "no-store",
+          signal: controller.signal,
+        }).then(
           (response) => response.status,
           () => 0
         ),
         new Promise((resolve) => {
-          setTimeout(() => resolve(0), PROBE_TIMEOUT);
+          setTimeout(() => {
+            controller.abort();
+            resolve(0);
+          }, PROBE_TIMEOUT);
         }),
       ]).then((status) => status === 404 || status === 410);
     }

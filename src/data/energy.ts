@@ -16,7 +16,7 @@ import type {
   Connection,
   HassEntity,
 } from "home-assistant-js-websocket";
-import { getCollection } from "home-assistant-js-websocket";
+import { createStore, getCollection } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import {
   calcDate,
@@ -28,7 +28,8 @@ import type { DateRange } from "../common/datetime/calc_date_range";
 import { calcDateRange } from "../common/datetime/calc_date_range";
 import { computeAreaName } from "../common/entity/compute_area_name";
 import { getEntityAreaId } from "../common/entity/context/get_entity_context";
-import { formatNumber } from "../common/number/format_number";
+import type { EntityNameItem } from "../common/entity/entity_name_config";
+import { formatNumberWithUnit } from "../common/number/format_number";
 import { normalizeValueBySIPrefix } from "../common/number/normalize-by-si-prefix";
 import { groupBy } from "../common/util/group-by";
 import type { HomeAssistant, HomeAssistantRegistries } from "../types";
@@ -88,6 +89,12 @@ export const emptySolarEnergyPreference =
     type: "solar",
     stat_energy_from: "",
     config_entry_solar_forecast: null,
+  });
+
+export const emptyHomeEnergyPreference =
+  (): HomeSourceTypeEnergyPreference => ({
+    type: "home",
+    stat_energy_to: "",
   });
 
 export const emptyBatteryEnergyPreference =
@@ -175,6 +182,14 @@ export interface SolarSourceTypeEnergyPreference {
   name?: string;
 }
 
+export interface HomeSourceTypeEnergyPreference {
+  type: "home";
+
+  stat_energy_to: string;
+  stat_rate?: string;
+  name?: string;
+}
+
 export interface BatterySourceTypeEnergyPreference {
   type: "battery";
   stat_energy_from: string;
@@ -227,6 +242,7 @@ export interface WaterSourceTypeEnergyPreference {
 
 export type EnergySource =
   | SolarSourceTypeEnergyPreference
+  | HomeSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
   | BatterySourceTypeEnergyPreference
   | GasSourceTypeEnergyPreference
@@ -312,6 +328,7 @@ export const getFossilEnergyConsumption = async (
 export interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
+  home?: HomeSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];
   gas?: GasSourceTypeEnergyPreference[];
   water?: WaterSourceTypeEnergyPreference[];
@@ -320,11 +337,16 @@ export interface EnergySourceByType {
 export const energySourcesByType = (prefs: EnergyPreferences) =>
   groupBy(prefs.energy_sources, (item) => item.type) as EnergySourceByType;
 
+const ENERGY_DEVICE_NAME = [
+  { type: "parent_device" },
+  { type: "device" },
+] satisfies EntityNameItem[];
+
 /**
- * Display name of a configured statistic. A name set by the user always wins;
- * otherwise the entity is named the same way the rest of the UI names
- * entities, so devices sharing an entity name stay distinguishable.
- * Statistics without an entity (external or removed) keep the statistic label.
+ * Display name of an individual device. A name set by the user always wins;
+ * otherwise the device is named like an entity without the entity part, so
+ * the energy and power sensors of one device share a name. Entities without a
+ * device and statistics without an entity keep the statistic label.
  */
 export const computeEnergyLabel = (
   states: HomeAssistant["states"],
@@ -335,6 +357,12 @@ export const computeEnergyLabel = (
 ): string => {
   if (customName) {
     return customName;
+  }
+
+  const entity = states[statisticId];
+  const deviceName = entity && formatEntityName(entity, ENERGY_DEVICE_NAME);
+  if (deviceName) {
+    return deviceName;
   }
 
   return getStatisticLabel(
@@ -423,6 +451,11 @@ export const getReferencedStatisticIds = (
       continue;
     }
 
+    if (source.type === "home") {
+      statIDs.push(source.stat_energy_to);
+      continue;
+    }
+
     if (source.type === "gas" || source.type === "water") {
       statIDs.push(source.stat_energy_from);
 
@@ -490,7 +523,7 @@ export const getReferencedStatisticIdsPower = (
       continue;
     }
 
-    if (source.type === "solar") {
+    if (source.type === "solar" || source.type === "home") {
       statIDs.push(source.stat_rate);
       continue;
     }
@@ -570,6 +603,7 @@ const getEnergyData = async (
   const energyStatIds = getReferencedStatisticIds(prefs, info, [
     "grid",
     "solar",
+    "home",
     "battery",
     "gas",
     "device",
@@ -903,7 +937,11 @@ const getEnergyData = async (
   return data;
 };
 
-export interface EnergyCollection extends Collection<EnergyData> {
+export interface EnergyCollection extends Omit<
+  Collection<EnergyData>,
+  "state"
+> {
+  readonly state: EnergyData | undefined;
   start: Date;
   end?: Date;
   compare?: CompareMode;
@@ -1111,50 +1149,119 @@ export const getEnergyDataCollection = (
     panelUrl,
     options.key
   );
-  if ((connection as any)[key]) {
-    return (connection as any)[key];
+  const existingCollection: EnergyCollection | undefined = (connection as any)[
+    key
+  ];
+  if (existingCollection) {
+    return existingCollection;
   }
 
   const midnightRollover = options.midnightRollover ?? false;
 
   energyCollectionKeys.add(collectionKey);
 
-  const collection = getCollection<EnergyData>(connection, key, async () => {
-    if (!collection.prefs) {
-      // This will raise if not found.
-      // Detect by checking `e.code === "not_found"
-      try {
-        collection.prefs = await getEnergyPreferences(callWS);
-      } catch (err: any) {
-        if (err.code === "not_found") {
-          return {
-            prefs: EMPTY_PREFERENCES,
-            start: collection.start,
-            end: collection.end,
-          } as EnergyData;
+  // Set start to start of today if we have data for today, otherwise yesterday.
+  // The real-time "Now" view always tracks today; it shows live data even
+  // before today's first statistic exists, so it never falls back to yesterday.
+  const initialNow = new Date();
+  const preferredPeriod =
+    (localStorage.getItem(
+      getEnergyDefaultPeriodStorageKey(panelUrl, options.key)
+    ) as DateRange) || "today";
+  const period =
+    preferredPeriod === "today" &&
+    shouldFallbackEnergyPeriodToYesterday(
+      midnightRollover,
+      initialNow,
+      locale,
+      config
+    )
+      ? "yesterday"
+      : preferredPeriod;
+
+  const [initialStart, initialEnd] = calcDateRange(locale, config, period);
+  // True while tracking today (or hour-0 yesterday), rather than a custom range.
+  let followLiveDay = preferredPeriod === "today";
+
+  let revision = 0;
+  let pendingRevision: number | undefined;
+  let selectionRevision = 0;
+  let publishedSelectionRevision: number | undefined;
+  let subscriptionId = 0;
+  let store = createStore<EnergyData>();
+
+  const refresh = async (): Promise<void> => {
+    const requestRevision = ++revision;
+    pendingRevision = requestRevision;
+    const requestSelectionRevision = selectionRevision;
+    const { start, end, compare } = collection;
+    let prefs = collection.prefs;
+    let data: EnergyData;
+    let prefsNotFound = false;
+    try {
+      if (!prefs) {
+        try {
+          prefs = await getEnergyPreferences(callWS);
+          // Preferences are independent of the selected period and comparison.
+          collection.prefs = prefs;
+        } catch (err: any) {
+          if (err.code !== "not_found") {
+            throw err;
+          }
+          prefs = EMPTY_PREFERENCES;
+          prefsNotFound = true;
         }
+      }
+
+      if (!prefsNotFound && requestRevision === revision) {
+        scheduleHourlyRefresh(collection);
+      }
+      data = prefsNotFound
+        ? ({ prefs, start, end } as EnergyData)
+        : await getEnergyData(options, prefs, start, end, compare);
+    } catch (err) {
+      if (requestRevision === revision) {
         throw err;
+      }
+      return;
+    } finally {
+      if (pendingRevision === requestRevision) {
+        pendingRevision = undefined;
       }
     }
 
-    scheduleHourlyRefresh(collection);
+    if (requestRevision !== revision) {
+      return;
+    }
+    publishedSelectionRevision = requestSelectionRevision;
+    store.setState(data, true);
+  };
 
-    return getEnergyData(
-      options,
-      collection.prefs,
-      collection.start,
-      collection.end,
-      collection.compare
-    );
-  }) as EnergyCollection;
-
-  collection._active = 0;
-  collection.prefs = options.prefs;
-
-  // True while the collection is tracking the rolling "today" (or hour-0
-  // yesterday) day. Cleared when the user picks a custom range.
-  let followLiveDay = false;
-
+  // Use the collection's subscription lifecycle, but publish explicitly so an
+  // obsolete fetch cannot overwrite its store or notify its subscribers.
+  const baseCollection = getCollection<EnergyData>(
+    connection,
+    key,
+    undefined,
+    async (_connection, subscribedStore) => {
+      const currentSubscriptionId = ++subscriptionId;
+      if (store.state !== undefined) {
+        subscribedStore.setState(store.state, true);
+      }
+      store = subscribedStore;
+      // Lifecycle callers do not await refreshes. Keep errors available to
+      // explicit refresh() callers without creating unhandled rejections here.
+      const refreshOnReady = () => refresh().catch(() => undefined);
+      connection.addEventListener("ready", refreshOnReady);
+      refreshOnReady();
+      return () => {
+        connection.removeEventListener("ready", refreshOnReady);
+        if (currentSubscriptionId === subscriptionId) {
+          revision++;
+        }
+      };
+    }
+  );
   const applyLiveDayPeriod = (now: Date): boolean => {
     const live = getEnergyLiveDayPeriod(
       midnightRollover,
@@ -1166,6 +1273,10 @@ export const getEnergyDataCollection = (
     const changed =
       collection.start.getTime() !== live.start.getTime() ||
       collection.end?.getTime() !== live.end.getTime();
+    if (changed) {
+      revision++;
+      selectionRevision++;
+    }
     collection.start = live.start;
     collection.end = live.end;
     return changed;
@@ -1201,25 +1312,29 @@ export const getEnergyDataCollection = (
     );
   };
 
-  const origSubscribe = collection.subscribe;
-
-  collection.subscribe = (subscriber: (data: EnergyData) => void) => {
-    // Catch up before origSubscribe so the first fetch uses the live day.
-    // Refresh only when state already exists: cold subscribe fetches via
-    // origSubscribe; a re-subscribe inside the 5s unsub grace does not.
-    const needsRefresh =
-      followLiveDay &&
-      applyLiveDayPeriod(new Date()) &&
-      collection.state !== undefined;
+  const subscribe = (subscriber: (data: EnergyData) => void) => {
+    // Catch up before subscribing so the first fetch uses the live day.
     if (followLiveDay) {
+      applyLiveDayPeriod(new Date());
       scheduleUpdatePeriod();
     }
 
-    const unsub = origSubscribe(subscriber);
+    const unsub = baseCollection.subscribe((data) => {
+      // A newly attached card can receive cached state while a new period loads.
+      if (publishedSelectionRevision === selectionRevision) {
+        subscriber(data);
+      }
+    });
     collection._active++;
 
-    if (needsRefresh) {
-      collection.refresh();
+    // Cold subscriptions already start a refresh. During the unsubscribe
+    // grace period, fetch only if neither data nor a request is current.
+    if (
+      (store.state === undefined ||
+        publishedSelectionRevision !== selectionRevision) &&
+      pendingRevision !== revision
+    ) {
+      collection.refresh().catch(() => undefined);
     }
 
     if (collection._refreshTimeout === undefined) {
@@ -1239,46 +1354,53 @@ export const getEnergyDataCollection = (
     };
   };
 
-  // Set start to start of today if we have data for today, otherwise yesterday.
-  // The real-time "Now" view always tracks today; it shows live data even
-  // before today's first statistic exists, so it never falls back to yesterday.
-  const now = new Date();
-  const preferredPeriod =
-    (localStorage.getItem(
-      getEnergyDefaultPeriodStorageKey(panelUrl, options.key)
-    ) as DateRange) || "today";
-  const period =
-    preferredPeriod === "today" &&
-    shouldFallbackEnergyPeriodToYesterday(midnightRollover, now, locale, config)
-      ? "yesterday"
-      : preferredPeriod;
-
-  const [start, end] = calcDateRange(locale, config, period);
-  collection.start = calcDate(start, startOfDay, locale, config);
-  collection.end = calcDate(end, endOfDay, locale, config);
-  followLiveDay = preferredPeriod === "today";
-
-  collection.isActive = () => !!collection._active;
-  collection.clearPrefs = () => {
-    collection.prefs = undefined;
+  const collection: EnergyCollection = {
+    get state() {
+      return store.state;
+    },
+    refresh,
+    subscribe,
+    start: calcDate(initialStart, startOfDay, locale, config),
+    end: calcDate(initialEnd, endOfDay, locale, config),
+    prefs: options.prefs,
+    _active: 0,
+    isActive: () => !!collection._active,
+    clearPrefs() {
+      revision++;
+      selectionRevision++;
+      collection.prefs = undefined;
+    },
+    setPeriod(newStart: Date, newEnd?: Date) {
+      if (
+        collection.start.getTime() !== newStart.getTime() ||
+        collection.end?.getTime() !== newEnd?.getTime()
+      ) {
+        revision++;
+        selectionRevision++;
+      }
+      clearUpdatePeriodTimeout();
+      collection.start = newStart;
+      collection.end = newEnd;
+      const periodNow = new Date();
+      followLiveDay =
+        collection.start.getTime() ===
+          calcDate(periodNow, startOfDay, locale, config).getTime() &&
+        collection.end?.getTime() ===
+          calcDate(periodNow, endOfDay, locale, config).getTime();
+      if (followLiveDay) {
+        scheduleUpdatePeriod();
+      }
+    },
+    setCompare(compare: CompareMode) {
+      if (collection.compare !== compare) {
+        revision++;
+        selectionRevision++;
+        collection.compare = compare;
+      }
+    },
   };
-  collection.setPeriod = (newStart: Date, newEnd?: Date) => {
-    clearUpdatePeriodTimeout();
-    collection.start = newStart;
-    collection.end = newEnd;
-    const periodNow = new Date();
-    followLiveDay =
-      collection.start.getTime() ===
-        calcDate(periodNow, startOfDay, locale, config).getTime() &&
-      collection.end?.getTime() ===
-        calcDate(periodNow, endOfDay, locale, config).getTime();
-    if (followLiveDay) {
-      scheduleUpdatePeriod();
-    }
-  };
-  collection.setCompare = (compare: CompareMode) => {
-    collection.compare = compare;
-  };
+  // Custom cards also access the Energy collection directly on the connection.
+  (connection as any)[key] = collection;
   return collection;
 };
 
@@ -1339,6 +1461,9 @@ const getEnergyGasUnit = (
       ...prefs.energy_sources.flatMap((source) => {
         if (source.type === "solar") {
           return [source.stat_energy_from];
+        }
+        if (source.type === "home") {
+          return [source.stat_energy_to];
         }
         if (source.type === "battery") {
           return [source.stat_energy_from, source.stat_energy_to];
@@ -1416,12 +1541,14 @@ export interface EnergySumData {
   to_battery?: Record<number, number>;
   from_battery?: Record<number, number>;
   solar?: Record<number, number>;
+  home?: Record<number, number>;
   total: {
     to_grid?: number;
     from_grid?: number;
     to_battery?: number;
     from_battery?: number;
     solar?: number;
+    home?: number;
   };
   timestamps: number[];
 }
@@ -1469,6 +1596,7 @@ const getSummedDataPartial = (
     solar?: string[];
     to_battery?: string[];
     from_battery?: string[];
+    home?: string[];
   } = {};
 
   for (const source of data.prefs.energy_sources) {
@@ -1478,6 +1606,11 @@ const getSummedDataPartial = (
       } else {
         statIds.solar = [source.stat_energy_from];
       }
+      continue;
+    }
+
+    if (source.type === "home") {
+      statIds.home = [source.stat_energy_to];
       continue;
     }
 
@@ -1591,6 +1724,8 @@ const computeConsumptionDataPartial = (
   const total = outData.total;
 
   data.timestamps.forEach((t) => {
+    const homeUsed = data.home?.[t];
+    const hasHome = homeUsed !== undefined && homeUsed !== null;
     const {
       grid_to_battery,
       battery_to_grid,
@@ -1608,18 +1743,19 @@ const computeConsumptionDataPartial = (
       from_battery: fromBattery && (fromBattery[t] ?? 0),
     });
 
-    outData.used_total[t] = used_total;
-    total.used_total += used_total;
-    outData.grid_to_battery[t] = grid_to_battery;
-    total.grid_to_battery += grid_to_battery;
-    outData.battery_to_grid![t] = battery_to_grid;
-    total.battery_to_grid += battery_to_grid;
-    outData.used_battery![t] = used_battery;
-    total.used_battery += used_battery;
+    const usedTotal = hasHome ? Math.max(homeUsed, 0) : used_total;
+    outData.used_total[t] = usedTotal;
+    total.used_total += usedTotal;
     outData.used_grid![t] = used_grid;
     total.used_grid += used_grid;
     outData.used_solar![t] = used_solar;
     total.used_solar += used_solar;
+    outData.used_battery![t] = used_battery;
+    total.used_battery += used_battery;
+    outData.grid_to_battery[t] = grid_to_battery;
+    total.grid_to_battery += grid_to_battery;
+    outData.battery_to_grid![t] = battery_to_grid;
+    total.battery_to_grid += battery_to_grid;
     outData.solar_to_battery[t] = solar_to_battery;
     total.solar_to_battery += solar_to_battery;
     outData.solar_to_grid[t] = solar_to_grid;
@@ -1758,23 +1894,25 @@ export const formatConsumptionShort = (
     }
     pickedUnit = units[unitIndex];
   }
-  return (
-    formatNumber(
-      val,
-      locale,
-      displayPrecision !== undefined && pickedUnit === unit
-        ? {
-            minimumFractionDigits: displayPrecision,
-            maximumFractionDigits: displayPrecision,
-          }
-        : {
-            maximumFractionDigits:
-              Math.abs(val) < 10 ? 2 : Math.abs(val) < 100 ? 1 : 0,
-          }
-    ) +
-    " " +
-    pickedUnit
-  );
+  const formatOptions: Intl.NumberFormatOptions =
+    displayPrecision !== undefined && pickedUnit === unit
+      ? {
+          minimumFractionDigits: displayPrecision,
+          maximumFractionDigits: displayPrecision,
+        }
+      : { maximumFractionDigits: shortFractionDigits(val) };
+  return formatNumberWithUnit(val, pickedUnit, locale, formatOptions);
+};
+
+const shortFractionDigits = (value: number): number => {
+  const absValue = Math.abs(value);
+  if (absValue < 10) {
+    return 2;
+  }
+  if (absValue < 100) {
+    return 1;
+  }
+  return 0;
 };
 
 export const calculateSolarConsumedGauge = (
@@ -1993,10 +2131,14 @@ export const formatFlowRateShort = (
 ): string => {
   const isMetric = lengthUnitSystem === "km";
   if (isMetric) {
-    return `${formatNumber(litersPerMin, hassLocale, { maximumFractionDigits: 1 })} L/min`;
+    return formatNumberWithUnit(litersPerMin, "L/min", hassLocale, {
+      maximumFractionDigits: 1,
+    });
   }
   const galPerMin = litersPerMin / LITERS_PER_GALLON;
-  return `${formatNumber(galPerMin, hassLocale, { maximumFractionDigits: 1 })} gal/min`;
+  return formatNumberWithUnit(galPerMin, "gal/min", hassLocale, {
+    maximumFractionDigits: 1,
+  });
 };
 
 /**
@@ -2039,14 +2181,10 @@ export const formatPowerShort = (
     unitIndex++;
   }
 
-  return (
-    formatNumber(value, locale, {
-      // For watts, show no decimals. For kW and above, always show 3 decimals.
-      maximumFractionDigits: units[unitIndex] === "W" ? 0 : 3,
-    }) +
-    " " +
-    units[unitIndex]
-  );
+  return formatNumberWithUnit(value, units[unitIndex], locale, {
+    // For watts, show no decimals. For kW and above, always show 3 decimals.
+    maximumFractionDigits: units[unitIndex] === "W" ? 0 : 3,
+  });
 };
 
 export function getSuggestedPeriod(
@@ -2072,17 +2210,18 @@ export const downloadEnergyData = (
   energyData: EnergyCollection,
   currency: string
 ) => {
-  if (!energyData.prefs || !energyData.state.stats) {
+  const { state } = energyData;
+  if (!energyData.prefs || !state?.stats) {
     return;
   }
 
-  const gasUnit = energyData.state.gasUnit;
+  const gasUnit = state.gasUnit;
   const electricUnit = "kWh";
 
   const energy_sources = energyData.prefs.energy_sources;
   const device_consumption = energyData.prefs.device_consumption;
   const device_consumption_water = energyData.prefs.device_consumption_water;
-  const stats = energyData.state.stats;
+  const stats = state.stats;
 
   interface CsvRow {
     id: string;
@@ -2136,7 +2275,7 @@ export const downloadEnergyData = (
         grid_consumptions.push(gridSource.stat_energy_from);
         const importCostId =
           gridSource.stat_cost ||
-          energyData.state.info.cost_sensors[gridSource.stat_energy_from];
+          state.info.cost_sensors[gridSource.stat_energy_from];
         if (importCostId) {
           grid_consumptions_cost.push(importCostId);
         }
@@ -2145,7 +2284,7 @@ export const downloadEnergyData = (
         grid_productions.push(gridSource.stat_energy_to);
         const exportCostId =
           gridSource.stat_compensation ||
-          energyData.state.info.cost_sensors[gridSource.stat_energy_to];
+          state.info.cost_sensors[gridSource.stat_energy_to];
         if (exportCostId) {
           grid_productions_cost.push(exportCostId);
         }
@@ -2190,6 +2329,16 @@ export const downloadEnergyData = (
 
   printCategory("solar_production", solar_productions, electricUnit);
 
+  const home_consumptions: string[] = [];
+  energy_sources
+    .filter((s) => s.type === "home")
+    .forEach((source) => {
+      source = source as HomeSourceTypeEnergyPreference;
+      home_consumptions.push(source.stat_energy_to);
+    });
+
+  printCategory("home_consumption", home_consumptions, electricUnit);
+
   const gas_consumptions: string[] = [];
   const gas_consumptions_cost: string[] = [];
   energy_sources
@@ -2198,8 +2347,7 @@ export const downloadEnergyData = (
       source = source as GasSourceTypeEnergyPreference;
       const statId = source.stat_energy_from;
       gas_consumptions.push(statId);
-      const costId =
-        source.stat_cost || energyData.state.info.cost_sensors[statId];
+      const costId = source.stat_cost || state.info.cost_sensors[statId];
       if (costId) {
         gas_consumptions_cost.push(costId);
       }
@@ -2221,8 +2369,7 @@ export const downloadEnergyData = (
       source = source as WaterSourceTypeEnergyPreference;
       const statId = source.stat_energy_from;
       water_consumptions.push(statId);
-      const costId =
-        source.stat_cost || energyData.state.info.cost_sensors[statId];
+      const costId = source.stat_cost || state.info.cost_sensors[statId];
       if (costId) {
         water_consumptions_cost.push(costId);
       }
@@ -2231,7 +2378,7 @@ export const downloadEnergyData = (
   printCategory(
     "water_consumption",
     water_consumptions,
-    energyData.state.waterUnit,
+    state.waterUnit,
     "water_consumption_cost",
     water_consumptions_cost
   );
@@ -2251,14 +2398,10 @@ export const downloadEnergyData = (
       waterDevices.push(source.stat_consumption);
     });
 
-    printCategory(
-      "device_consumption_water",
-      waterDevices,
-      energyData.state.waterUnit
-    );
+    printCategory("device_consumption_water", waterDevices, state.waterUnit);
   }
 
-  const { summedData } = getSummedData(energyData.state);
+  const { summedData } = getSummedData(state);
   const { consumption } = computeConsumptionData(summedData, undefined);
 
   const processConsumptionData = function (
@@ -2280,6 +2423,7 @@ export const downloadEnergyData = (
   };
 
   const hasSolar = !!solar_productions.length;
+  const hasHome = !!home_consumptions.length;
   const hasBattery = !!battery_ins.length;
   const hasGridReturn = !!grid_productions.length;
   const hasGridSource = !!grid_consumptions.length;
@@ -2335,7 +2479,10 @@ export const downloadEnergyData = (
     }
   }
 
-  if ((hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) > 1) {
+  if (
+    hasHome ||
+    (hasGridSource ? 1 : 0) + (hasSolar ? 1 : 0) + (hasBattery ? 1 : 0) > 1
+  ) {
     processConsumptionData(
       "calculated_total_consumption",
       electricUnit,

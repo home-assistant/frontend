@@ -9,16 +9,19 @@ import {
   state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
-import { consume } from "../common/decorators/consume";
 import { canShowPage } from "../common/config/can_show_page";
+import { consume } from "../common/decorators/consume";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { getHistoryState, navigate } from "../common/navigate";
-import type { LocalizeFunc } from "../common/translations/localize";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../common/translations/localize";
 import { sanitizeNavigationPath } from "../common/url/sanitize-navigation-path";
-import { handleBackClick } from "./back-navigation";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
@@ -29,8 +32,10 @@ import {
   internationalizationContext,
   narrowViewportContext,
 } from "../data/context";
+import type { CoreFrontendUserData } from "../data/frontend";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, Route } from "../types";
+import { handleBackClick } from "./back-navigation";
 
 const normalizePathname = (pathname: string): string =>
   pathname.endsWith("/") && pathname.length > 1
@@ -60,8 +65,6 @@ export interface PageNavigation {
 export class HassTabsSubpage extends LitElement {
   // Unread, kept for callers that still pass it until they move to contexts
   @property({ attribute: false }) public hass?: HomeAssistant;
-
-  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
@@ -110,6 +113,10 @@ export class HassTabsSubpage extends LitElement {
 
   @state() private _activeTab?: PageNavigation;
 
+  @state() private _hasCustomHeader = false;
+
+  @state() private _hasCustomToolbar = false;
+
   @query(".content") private _content?: HTMLDivElement;
 
   // @ts-ignore
@@ -119,11 +126,11 @@ export class HassTabsSubpage extends LitElement {
     (
       tabs: PageNavigation[],
       activeTab: PageNavigation | undefined,
-      _components,
-      _language,
-      _userData,
-      _narrow,
-      localizeFunc,
+      _components: string[],
+      _language: string,
+      _userData: CoreFrontendUserData | undefined,
+      _narrow: boolean,
+      localize: LocalizeFunc,
       entities: ContextType<typeof entitiesContext>
     ) => {
       const shownTabs = tabs.filter((page) =>
@@ -134,9 +141,7 @@ export class HassTabsSubpage extends LitElement {
         this.showTabs = false;
         if (shownTabs.length === 1) {
           const page = shownTabs[0];
-          return [
-            page.translationKey ? localizeFunc(page.translationKey) : page.name,
-          ];
+          return [this._tabName(page, localize)];
         }
         return [""];
       }
@@ -144,16 +149,18 @@ export class HassTabsSubpage extends LitElement {
       this.showTabs = true;
       return shownTabs.map(
         (page) => html`
-          <a href=${page.path} @click=${this._tabClicked}>
+          <a
+            href=${page.path}
+            aria-current=${ifDefined(
+              page.path === activeTab?.path ? "page" : undefined
+            )}
+            @click=${this._tabClicked}
+          >
             <ha-tab
               .active=${page.path === activeTab?.path}
               .narrow=${this._narrow}
               .badge=${page.badge}
-              .name=${
-                page.translationKey
-                  ? localizeFunc(page.translationKey)
-                  : page.name
-              }
+              .name=${this._tabName(page, localize)}
             >
               ${
                 page.iconPath
@@ -183,6 +190,7 @@ export class HassTabsSubpage extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const localize = this._i18n.localize;
     const tabs = this._getTabs(
       this.tabs,
       this._activeTab,
@@ -190,14 +198,19 @@ export class HassTabsSubpage extends LitElement {
       this._i18n.language,
       this._hassConfig.userData,
       this._narrow,
-      this.localizeFunc || this._i18n.localize,
+      localize,
       this._entities
     );
     const backPath = sanitizeNavigationPath(this.backPath);
+    const hiddenHeading = this.showTabs
+      ? this._activeTab && this._tabName(this._activeTab, localize)
+      : this._hasCustomHeader || this._hasCustomToolbar
+        ? (tabs[0] as string)
+        : undefined;
 
     return html`
       <div class="toolbar ${classMap({ narrow: this._narrow })}">
-        <slot name="toolbar">
+        <slot name="toolbar" @slotchange=${this._toolbarSlotChanged}>
           <div class="toolbar-content">
             ${
               this.mainPage || (!backPath && getHistoryState()?.root)
@@ -212,7 +225,9 @@ export class HassTabsSubpage extends LitElement {
             ${
               this._narrow || !this.showTabs
                 ? html`<div class="main-title">
-                    <slot name="header">${!this.showTabs ? tabs[0] : ""}</slot>
+                    <slot name="header" @slotchange=${this._headerSlotChanged}
+                      >${!this.showTabs ? html`<h1>${tabs[0]}</h1>` : ""}</slot
+                    >
                   </div>`
                 : ""
             }
@@ -244,6 +259,11 @@ export class HassTabsSubpage extends LitElement {
             : nothing
         }
         <div class="content ha-scrollbar" @scroll=${this._saveScrollPos}>
+          ${
+            hiddenHeading
+              ? html`<h1 class="visually-hidden">${hiddenHeading}</h1>`
+              : nothing
+          }
           <slot></slot>
           ${this.hasFab ? html`<div class="fab-bottom-space"></div>` : nothing}
         </div>
@@ -266,6 +286,33 @@ export class HassTabsSubpage extends LitElement {
 
     this._content.style.outline = "none";
     this._content.focus({ preventScroll: true });
+  }
+
+  private _headerSlotChanged(ev: Event): void {
+    if (ev.target !== ev.currentTarget) {
+      return;
+    }
+    this._hasCustomHeader =
+      (ev.target as HTMLSlotElement).assignedNodes().length > 0;
+  }
+
+  // slotchange bubbles, so nested slots also land here
+  private _toolbarSlotChanged(ev: Event): void {
+    if (ev.target !== ev.currentTarget) {
+      return;
+    }
+    this._hasCustomToolbar =
+      (ev.target as HTMLSlotElement).assignedNodes().length > 0;
+  }
+
+  private _tabName(
+    page: PageNavigation,
+    localize: LocalizeFunc
+  ): string | undefined {
+    return (
+      (page.translationKey && localize(page.translationKey as LocalizeKeys)) ||
+      page.name
+    );
   }
 
   private _backTapped(ev: MouseEvent): void {
@@ -309,7 +356,6 @@ export class HassTabsSubpage extends LitElement {
         :host {
           display: block;
           height: 100%;
-          background-color: var(--primary-background-color);
         }
 
         :host([narrow]) {
@@ -374,6 +420,32 @@ export class HassTabsSubpage extends LitElement {
           max-width: 45%;
         }
 
+        #tabbar > a:focus-visible {
+          outline: var(--wa-focus-ring);
+          outline-offset: calc(-1 * var(--wa-focus-ring-width));
+          background-color: rgba(var(--rgb-secondary-text-color), 0.08);
+        }
+
+        @supports (color: color-mix(in srgb, black, transparent)) {
+          #tabbar > a:focus-visible {
+            background-color: color-mix(
+              in srgb,
+              var(--secondary-text-color) 8%,
+              transparent
+            );
+          }
+        }
+
+        .visually-hidden {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          margin: -1px;
+          overflow: hidden;
+          clip-path: inset(50%);
+          white-space: nowrap;
+        }
+
         #tabbar.bottom-bar {
           position: absolute;
           bottom: 0;
@@ -396,7 +468,7 @@ export class HassTabsSubpage extends LitElement {
         }
 
         :host(:not([narrow])) #toolbar-icon {
-          min-width: 40px;
+          min-width: 48px;
         }
 
         ha-menu-button,
@@ -419,6 +491,10 @@ export class HassTabsSubpage extends LitElement {
         .narrow .main-title {
           margin-inline-start: var(--main-title-margin, var(--ha-space-2));
         }
+        .main-title h1 {
+          margin: 0;
+          font: inherit;
+        }
 
         .content {
           position: relative;
@@ -426,7 +502,6 @@ export class HassTabsSubpage extends LitElement {
           box-sizing: border-box;
           padding-right: var(--safe-area-inset-right);
           overflow: auto;
-          -webkit-overflow-scrolling: touch;
         }
         :host([narrow]) .content {
           padding-left: var(--safe-area-inset-left);

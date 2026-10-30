@@ -9,6 +9,7 @@ import {
   type Mock,
 } from "vitest";
 import { QueryParamsController } from "../../../src/common/controllers/query-params-controller";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 
 const config = { string: ["search", "sort"] } as const;
 
@@ -98,6 +99,15 @@ describe("QueryParamsController", () => {
     expect(currentUrl()).toBe("/page?other=1");
   });
 
+  it("does nothing once disconnected, also on the same page", () => {
+    // A page left while a lookup runs, with a new page on the same path
+    controller.hostDisconnected();
+    setUrl("/page?search=new");
+    controller.write({ search: "old" });
+    expect(currentUrl()).toBe("/page?search=new");
+    expect(controller.searchParams()).toBeUndefined();
+  });
+
   it("does nothing once the URL is another page", () => {
     setUrl("/other-page?other=1");
     window.dispatchEvent(new Event("location-changed"));
@@ -123,5 +133,31 @@ describe("QueryParamsController", () => {
     controller.hostDisconnected();
     controller.hostConnected();
     expect(navigated).toHaveBeenCalledOnce();
+  });
+
+  it("stays on its page when reconnected on the way to another page", () => {
+    controller.hostUpdated();
+    controller.hostDisconnected();
+    setUrl("/other-page");
+    controller.hostConnected();
+    controller.write({ search: "abc" });
+    expect(currentUrl()).toBe("/other-page");
+    expect(navigated).not.toHaveBeenCalled();
+  });
+
+  it("follows a router sending its path on to the default page", () => {
+    setUrl("/page/dashboard?other=1");
+    fireEvent(window, "location-changed", { replace: true });
+    expect(navigated).toHaveBeenCalledOnce();
+
+    controller.write({ search: "abc" });
+    expect(currentUrl()).toBe("/page/dashboard?other=1&search=abc");
+  });
+
+  it("does not follow a new entry for a page below its own", () => {
+    setUrl("/page/detail");
+    fireEvent(window, "location-changed", { replace: false });
+    controller.write({ search: "abc" });
+    expect(currentUrl()).toBe("/page/detail");
   });
 });

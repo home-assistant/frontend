@@ -145,6 +145,9 @@ export class HaSnapBottomSheet extends LitElement {
             : undefined,
         })}
         @touchstart=${this._handleTouchStart}
+        @touchmove=${this._handleTouchMove}
+        @touchend=${this._handleTouchEnd}
+        @touchcancel=${this._handleTouchEnd}
       >
         <div class="handle-wrapper">
           <div @mousedown=${this._handleMouseDown} class="handle"></div>
@@ -183,13 +186,6 @@ export class HaSnapBottomSheet extends LitElement {
       this._reported = undefined;
       this._reportWhenSettled();
     }
-    document.addEventListener("mousemove", this._handleMouseMove);
-    document.addEventListener("mouseup", this._handleMouseUp);
-    document.addEventListener("touchmove", this._handleTouchMove, {
-      passive: false,
-    });
-    document.addEventListener("touchend", this._handleTouchEnd);
-    document.addEventListener("touchcancel", this._handleTouchEnd);
     window.addEventListener("resize", this._handleViewportResize);
   }
 
@@ -202,11 +198,7 @@ export class HaSnapBottomSheet extends LitElement {
     this._pendingTouch = undefined;
     this._dragHeight = undefined;
     this._dismissOffset = undefined;
-    document.removeEventListener("mousemove", this._handleMouseMove);
-    document.removeEventListener("mouseup", this._handleMouseUp);
-    document.removeEventListener("touchmove", this._handleTouchMove);
-    document.removeEventListener("touchend", this._handleTouchEnd);
-    document.removeEventListener("touchcancel", this._handleTouchEnd);
+    this._removeMouseListeners();
     window.removeEventListener("resize", this._handleViewportResize);
   }
 
@@ -258,6 +250,8 @@ export class HaSnapBottomSheet extends LitElement {
 
   private _handleMouseDown = (ev: MouseEvent) => {
     document.body.style.setProperty("cursor", "grabbing");
+    document.addEventListener("mousemove", this._handleMouseMove);
+    document.addEventListener("mouseup", this._handleMouseUp);
     this._startDrag(ev.clientY);
   };
 
@@ -268,13 +262,22 @@ export class HaSnapBottomSheet extends LitElement {
   };
 
   private _handleMouseUp = () => {
+    this._removeMouseListeners();
     this._endDrag();
   };
+
+  private _removeMouseListeners() {
+    document.removeEventListener("mousemove", this._handleMouseMove);
+    document.removeEventListener("mouseup", this._handleMouseUp);
+  }
 
   private _handleTouchStart = (ev: TouchEvent) => {
     if (ev.touches.length !== 1) {
       return;
     }
+    // The previous touch never ended here if its target was removed
+    this._pendingTouch = undefined;
+    this._endDrag();
     const touch = ev.touches[0];
     const path = ev.composedPath();
     if (path.includes(this._handle)) {

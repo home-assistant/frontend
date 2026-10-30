@@ -83,7 +83,8 @@ class HaLabel extends LitElement {
           line-height: var(--ha-line-height-condensed);
           letter-spacing: 0.1px;
           height: 32px;
-          border-radius: var(--ha-border-radius-xl);
+          --ha-label-border-radius: var(--ha-border-radius-xl);
+          border-radius: var(--ha-label-border-radius);
           color: var(--ha-label-text-color);
           --mdc-icon-size: 12px;
           text-wrap: nowrap;
@@ -98,7 +99,10 @@ class HaLabel extends LitElement {
           position: absolute;
           content: "";
           inset: 0;
-          border-radius: inherit;
+          /* The pseudo-element sits inside the 1px border, so match the
+             padding box's radius; inheriting the outer radius leaves
+             see-through gaps at the corners. */
+          border-radius: calc(var(--ha-label-border-radius) - 1px);
           background-color: var(--ha-label-background-color);
           opacity: var(--ha-label-background-opacity);
         }
@@ -128,7 +132,7 @@ class HaLabel extends LitElement {
 
         :host([dense]) {
           height: 20px;
-          border-radius: var(--ha-border-radius-md);
+          --ha-label-border-radius: var(--ha-border-radius-md);
         }
         :host([dense]) .container {
           padding: 0 12px;

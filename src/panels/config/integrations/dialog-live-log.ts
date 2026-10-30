@@ -4,25 +4,18 @@ import {
   type UnsubscribeFunc,
 } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
-import {
-  mdiArrowCollapseDown,
-  mdiCircle,
-  mdiWrap,
-  mdiWrapDisabled,
-} from "@mdi/js";
+import { mdiCircle, mdiWrap, mdiWrapDisabled } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { consume } from "../../../common/decorators/consume";
-import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-alert";
-import "../../../components/ha-ansi-to-html";
-import type { HaAnsiToHtml } from "../../../components/ha-ansi-to-html";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-log-viewer";
+import type { HaLogViewer } from "../../../components/ha-log-viewer";
 import "../../../components/ha-svg-icon";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
@@ -39,12 +32,6 @@ import type { LiveLogDialogParams } from "./show-dialog-live-log";
 
 // eslint-disable-next-line no-control-regex
 const ANSI_ESCAPE = /\x1b\[[0-9;]*m/g;
-
-// Stay close to the bottom to keep following new lines
-const SCROLL_FOLLOW_MARGIN = 40;
-
-// Keep only the newest lines so memory stays bounded
-const DEFAULT_LOG_LINE_LIMIT = 5000;
 
 @customElement("dialog-live-log")
 class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
@@ -64,28 +51,15 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
 
   @state() private _live = false;
 
-  @state() private _newLogsIndicator = false;
-
   @state() private _search = "";
 
   @state() private _wrapLines = true;
 
-  @state() private _noMatches = false;
-
-  @query(".log") private _logElement?: HTMLElement;
-
-  @query("ha-ansi-to-html") private _ansiToHtml?: HaAnsiToHtml;
-
-  private _lines: string[] = [];
-
-  // Number of stored lines already rendered in the view
-  private _shownCount = 0;
+  @query("ha-log-viewer") private _logViewer?: HaLogViewer;
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
   private _resubscribeOnReady = false;
-
-  private _followFrame?: number;
 
   connectedCallback() {
     super.connectedCallback();
@@ -147,153 +121,39 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
     }
     this._unsub = undefined;
     this._resubscribeOnReady = false;
-    this._cancelFollowBottom();
-    this._lines = [];
-    this._shownCount = 0;
     this._lineCount = 0;
-    this._newLogsIndicator = false;
-    this._noMatches = false;
-    this._ansiToHtml?.clear();
+    this._logViewer?.clear();
     this._subscribe();
   };
 
   private _unsubscribe() {
-    this._cancelFollowBottom();
-    this._debounceSearch.cancel();
     // _subscribe reports subscription errors, so only ignore them here
     this._unsub?.then((unsub) => unsub()).catch(() => undefined);
     this._unsub = undefined;
     this._live = false;
   }
 
-  private _isScrolledToBottom(): boolean {
-    const log = this._logElement;
-    return (
-      !log ||
-      log.scrollHeight - log.scrollTop - log.clientHeight < SCROLL_FOLLOW_MARGIN
-    );
-  }
-
-  private _handleScroll() {
-    if (this._newLogsIndicator && this._isScrolledToBottom()) {
-      this._newLogsIndicator = false;
-    }
-  }
-
-  private _scrollToBottom() {
-    this._newLogsIndicator = false;
-    this._logElement?.scrollTo(0, this._logElement.scrollHeight);
-  }
-
-  private _followBottom() {
-    this._cancelFollowBottom();
-    const logElement = this._logElement;
-    const scrollTopBeforeFrame = logElement ? logElement.scrollTop : 0;
-    this._followFrame = requestAnimationFrame(() => {
-      this._followFrame = undefined;
-      if (logElement && logElement.scrollTop === scrollTopBeforeFrame) {
-        logElement.scrollTop = logElement.scrollHeight;
-      }
-    });
-  }
-
-  private _cancelFollowBottom() {
-    if (this._followFrame !== undefined) {
-      cancelAnimationFrame(this._followFrame);
-      this._followFrame = undefined;
-    }
-  }
-
   private _addLines(lines: string[]) {
-    const newLines = lines
-      .flatMap((line) => line.split("\n"))
-      .slice(-DEFAULT_LOG_LINE_LIMIT);
-    if (!newLines.length) {
+    const logViewer = this._logViewer;
+    if (!logViewer) {
       return;
     }
-    const follow = this._isScrolledToBottom();
-    this._lines = this._lines.concat(newLines);
-    this._trimLines();
-    this._lineCount = this._lines.length;
-    this._showNewLines(follow);
-  }
-
-  private _trimLines() {
-    const excessLineCount = this._lines.length - DEFAULT_LOG_LINE_LIMIT;
-    if (excessLineCount <= 0) {
-      return;
-    }
-    const logElement = this._logElement;
-    const scrollTopBeforeTrimming = logElement ? logElement.scrollTop : 0;
-    const scrollHeightBeforeTrimming = logElement ? logElement.scrollHeight : 0;
-
-    this._lines.splice(0, excessLineCount);
-    this._shownCount = Math.max(0, this._shownCount - excessLineCount);
-    if (this._ansiToHtml) {
-      this._ansiToHtml.trimLines(this._shownCount);
-    }
-    if (logElement) {
-      const removedHeight =
-        scrollHeightBeforeTrimming - logElement.scrollHeight;
-      logElement.scrollTop = Math.max(
-        0,
-        scrollTopBeforeTrimming - removedHeight
-      );
-    }
-  }
-
-  private _showNewLines(follow: boolean) {
-    const newLines = this._lines.slice(this._shownCount);
-    if (!newLines.length) {
-      return;
-    }
-    this._shownCount = this._lines.length;
-    this._renderLines(newLines);
-    if (follow) {
-      this._followBottom();
-    } else {
-      this._newLogsIndicator = true;
-    }
-  }
-
-  private _renderLines(lines: string[]) {
-    const ansiToHtml = this._ansiToHtml;
-    if (!ansiToHtml) {
-      return;
-    }
-    if (!this._search) {
-      ansiToHtml.parseLinesToColoredPre(lines);
-      return;
-    }
-    // ha-ansi-to-html re-filters all lines after every added line while a
-    // search is set, so search once after adding them
-    ansiToHtml.filterLines("");
-    ansiToHtml.parseLinesToColoredPre(lines);
-    this._noMatches =
-      this._shownCount > 0 && !ansiToHtml.filterLines(this._search);
+    logViewer.addLines(lines);
+    this._lineCount = logViewer.lines.length;
   }
 
   private _searchChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
     this._search = ev.target.value ?? "";
-    this._debounceSearch();
   }
-
-  private _debounceSearch = debounce(() => {
-    if (this._ansiToHtml) {
-      this._noMatches =
-        this._shownCount > 0 && !this._ansiToHtml.filterLines(this._search);
-    }
-    if (!this._search) {
-      this._scrollToBottom();
-    }
-  }, 150);
 
   private _toggleLineWrap() {
     this._wrapLines = !this._wrapLines;
   }
 
   private _download() {
-    const text = this._lines.join("\n").replace(ANSI_ESCAPE, "");
+    const text = (this._logViewer?.lines ?? [])
+      .join("\n")
+      .replace(ANSI_ESCAPE, "");
     const timeString = new Date().toISOString().replace(/:/g, "-");
     const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
     fileDownload(
@@ -342,7 +202,10 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
                   ></ha-icon-button>
                 </div>
                 <div class="log-container">
-                  <div class="log" @scroll=${this._handleScroll}>
+                  <ha-log-viewer
+                    .filter=${this._search}
+                    ?wrap-disabled=${!this._wrapLines}
+                  >
                     ${
                       this._lineCount
                         ? nothing
@@ -353,38 +216,7 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
                             )}
                           </div>`
                     }
-                    ${
-                      this._noMatches
-                        ? html`<div class="waiting">
-                            ${this._i18n.localize(
-                              "ui.panel.config.integrations.config_entry.live_log.no_matches"
-                            )}
-                          </div>`
-                        : nothing
-                    }
-                    <ha-ansi-to-html
-                      ?wrap-disabled=${!this._wrapLines}
-                    ></ha-ansi-to-html>
-                  </div>
-                  <ha-button
-                    class="new-logs-indicator ${classMap({
-                      visible: this._newLogsIndicator,
-                    })}"
-                    size="s"
-                    appearance="filled"
-                    .disabled=${!this._newLogsIndicator}
-                    @click=${this._scrollToBottom}
-                  >
-                    <ha-svg-icon
-                      .path=${mdiArrowCollapseDown}
-                      slot="start"
-                    ></ha-svg-icon>
-                    ${this._i18n.localize("ui.panel.config.logs.scroll_down_button")}
-                    <ha-svg-icon
-                      .path=${mdiArrowCollapseDown}
-                      slot="end"
-                    ></ha-svg-icon>
-                  </ha-button>
+                  </ha-log-viewer>
                   ${
                     this._live
                       ? html`<div class="live-indicator">
@@ -431,34 +263,9 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
           position: relative;
           display: flex;
           flex-direction: column;
-          flex: 1;
-          min-height: 0;
-          border: 1px solid var(--divider-color);
-          border-radius: var(--ha-border-radius-md);
-          overflow: hidden;
-        }
-        .log {
           /* Fills the dialog when it is full screen on narrow screens */
           flex: 1 1 60vh;
           min-height: 0;
-          padding: var(--ha-space-2) var(--ha-space-2) var(--ha-space-8);
-          box-sizing: border-box;
-          overflow: auto;
-          overflow-anchor: none;
-          direction: ltr;
-          font-family: var(--ha-font-family-code);
-          font-size: var(--ha-font-size-s);
-        }
-        .new-logs-indicator {
-          overflow: hidden;
-          position: absolute;
-          bottom: 4px;
-          inset-inline-start: 4px;
-          height: 0;
-          transition: height 0.4s ease-out;
-        }
-        .new-logs-indicator.visible {
-          height: 32px;
         }
         @keyframes breathe {
           from {
@@ -485,9 +292,6 @@ class DialogLiveLog extends DialogMixin<LiveLogDialogParams>(LitElement) {
           width: 14px;
         }
         @media (prefers-reduced-motion: reduce) {
-          .new-logs-indicator {
-            transition: none;
-          }
           .live-indicator ha-svg-icon {
             animation: none;
           }

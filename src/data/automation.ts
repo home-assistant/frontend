@@ -2,10 +2,12 @@ import type {
   Connection,
   HassEntityAttributeBase,
   HassEntityBase,
-  HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import { createDurationData } from "../common/datetime/create_duration_data";
+import { applyDurationSign } from "../common/datetime/normalize_duration";
 import type { WeekdayShort } from "../common/datetime/weekday";
+import { computeDomain } from "../common/entity/compute_domain";
 import { navigate } from "../common/navigate";
 import type { LocalizeKeys } from "../common/translations/localize";
 import { createSearchParam } from "../common/url/search-params";
@@ -18,6 +20,7 @@ import type {
   DeviceTrigger,
 } from "./device/device_automation";
 import type { Action, Field, MODES, Option } from "./script";
+import type { HassServiceTargetWithExclude } from "./target";
 import { migrateAutomationAction } from "./script";
 import type { TriggerDescription } from "./trigger";
 
@@ -106,7 +109,7 @@ export interface BaseTrigger {
 
 export interface PlatformTrigger extends BaseTrigger {
   trigger: Exclude<string, LegacyTrigger["trigger"]>;
-  target?: HassServiceTarget;
+  target?: HassServiceTargetWithExclude;
 }
 
 export interface StateTrigger extends BaseTrigger {
@@ -251,7 +254,7 @@ interface BaseCondition {
 
 export interface PlatformCondition extends BaseCondition {
   condition: Exclude<string, LegacyCondition["condition"]>;
-  target?: HassServiceTarget;
+  target?: HassServiceTargetWithExclude;
 }
 
 export interface LogicalCondition extends BaseCondition {
@@ -524,6 +527,26 @@ export const pickRowConfig = <T extends object>(
   return config as Partial<T>;
 };
 
+// Older sun and calendar triggers set a positive offset with an offset type,
+// which the backend folds into the sign of the offset.
+const OFFSET_TYPE_TRIGGER_DOMAINS = ["sun", "calendar"];
+
+const foldOffsetType = (
+  options: Record<string, unknown>
+): Record<string, unknown> => {
+  const { offset_type: offsetType, ...folded } = options;
+  const offset = createDurationData(
+    folded.offset as string | number | ForDict | undefined
+  );
+  if (offset && !Object.values(offset).every(Number.isFinite)) {
+    return options;
+  }
+  if (offsetType === "before" && offset) {
+    folded.offset = applyDurationSign(offset, true);
+  }
+  return folded;
+};
+
 export const getRowNote = (note: unknown): string | undefined =>
   typeof note === "string" ? note.trim() || undefined : undefined;
 
@@ -551,12 +574,12 @@ export const migrateAutomationTrigger = (
     delete trigger.platform;
   }
 
-  if ("options" in trigger) {
-    if (
-      typeof trigger.options === "object" &&
-      trigger.options !== null &&
-      "behavior" in trigger.options
-    ) {
+  if (
+    "options" in trigger &&
+    typeof trigger.options === "object" &&
+    trigger.options !== null
+  ) {
+    if ("behavior" in trigger.options) {
       // Deprecated behavior values renamed in 2026; the backend raises a repair
       // when they are still used, so flag the migration to offer saving.
       if (trigger.options.behavior === "any") {
@@ -570,6 +593,12 @@ export const migrateAutomationTrigger = (
           report.deprecated = true;
         }
       }
+    }
+    if (
+      "offset_type" in trigger.options &&
+      OFFSET_TYPE_TRIGGER_DOMAINS.includes(computeDomain(trigger.trigger))
+    ) {
+      trigger.options = foldOffsetType(trigger.options);
     }
   }
 
@@ -708,7 +737,9 @@ export interface BaseSidebarConfig {
 
 export interface TriggerSidebarConfig extends BaseSidebarConfig {
   save: (value: Trigger) => void;
+  replace?: () => void;
   rename: () => void;
+  editId: () => void;
   disable: () => void;
   duplicate: () => void;
   cut: () => void;
@@ -725,6 +756,7 @@ export interface TriggerSidebarConfig extends BaseSidebarConfig {
 
 export interface ConditionSidebarConfig extends BaseSidebarConfig {
   save: (value: Condition) => void;
+  replace?: () => void;
   rename: () => void;
   disable: () => void;
   test: () => void;
@@ -743,6 +775,7 @@ export interface ConditionSidebarConfig extends BaseSidebarConfig {
 
 export interface ActionSidebarConfig extends BaseSidebarConfig {
   save: (value: Action) => void;
+  replace?: () => void;
   rename: () => void;
   disable: () => void;
   continueOnError: () => void;

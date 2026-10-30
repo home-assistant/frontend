@@ -43,7 +43,7 @@ export const exposeEntities = (
   entity_ids: string[],
   should_expose: boolean
 ) =>
-  hass.callWS({
+  hass.callWS<{ changed_entity_ids: string[] }>({
     type: "homeassistant/expose_entity",
     assistants,
     entity_ids,

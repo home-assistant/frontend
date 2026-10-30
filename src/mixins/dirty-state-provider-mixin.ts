@@ -14,7 +14,11 @@ import {
 import type { Constructor } from "../types";
 
 export type CompareStrategy<State> =
-  | { type: "deep" }
+  | {
+      type: "deep";
+      /** Treat objects with the same keys in a different order as changed */
+      compareKeyOrder?: boolean;
+    }
   | { type: "shallow" }
   | { type: "custom"; compare: (a: State, b: State) => boolean };
 
@@ -134,15 +138,24 @@ export const DirtyStateProviderMixin =
         this._dirtyStateContext = this._buildContextValue();
       }
 
+      /**
+       * Whether this provider holds off automatic frontend reloads, published
+       * as the global dirty state. Override to block reloads for more than
+       * unsaved edits.
+       */
+      protected get _blocksReload(): boolean {
+        return this.isDirtyState;
+      }
+
       public connectedCallback(): void {
         super.connectedCallback();
-        connectedDirtyStateProviders.set(this, this.isDirtyState);
+        connectedDirtyStateProviders.set(this, this._blocksReload);
         publishGlobalDirtyState();
       }
 
       protected updated(changedProperties: PropertyValues<this>): void {
         super.updated(changedProperties);
-        connectedDirtyStateProviders.set(this, this.isDirtyState);
+        connectedDirtyStateProviders.set(this, this._blocksReload);
         publishGlobalDirtyState();
       }
 
@@ -194,10 +207,12 @@ export const DirtyStateProviderMixin =
       ): void {
         this._effectiveNormalize = effectiveNormalize;
         switch (strategy.type) {
-          case "deep":
-            this._dirtyCompareFn = (a, b) => deepEqual(a, b);
+          case "deep": {
+            const options = { compareKeyOrder: strategy.compareKeyOrder };
+            this._dirtyCompareFn = (a, b) => deepEqual(a, b, options);
             this._dirtyCloneFn = (value) => deepClone(value);
             break;
+          }
           case "shallow":
             this._dirtyCompareFn = (a, b) => shallowEqual(a, b);
             this._dirtyCloneFn = (value) => value;

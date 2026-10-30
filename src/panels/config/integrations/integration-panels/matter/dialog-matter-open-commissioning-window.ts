@@ -1,21 +1,35 @@
 import { mdiCloseCircle } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeDeviceName } from "../../../../../common/entity/compute_device_name";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
+import "../../../../../components/ha-alert";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-dialog-footer";
 import "../../../../../components/ha-dialog";
 import "../../../../../components/ha-qr-code";
 import "../../../../../components/ha-spinner";
+import "../../../../../components/ha-svg-icon";
 import { domainToName } from "../../../../../data/integration";
-import type { MatterCommissioningParameters } from "../../../../../data/matter";
-import { openMatterCommissioningWindow } from "../../../../../data/matter";
+import type {
+  MatterCommissioningParameters,
+  MatterShareTarget,
+} from "../../../../../data/matter";
+import {
+  matterShareRemainingSeconds,
+  matterShareTargetExternal,
+  openMatterCommissioningWindow,
+  shareMatterDeviceExternal,
+} from "../../../../../data/matter";
 import { haStyleDialog } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import type { MatterOpenCommissioningWindowDialogParams } from "./show-dialog-matter-open-commissioning-window";
+
+// No countdown is shown, so leave the app time to start pairing.
+const EXPIRY_MARGIN_SECONDS = 30;
 
 @customElement("dialog-matter-open-commissioning-window")
 class DialogMatterOpenCommissioningWindow extends LitElement {
@@ -29,10 +43,32 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
 
   @state() private _open = false;
 
+  @state() private _sharing = false;
+
+  @state() private _shareFailed = false;
+
+  // Kept apart from a failure because trying again cannot bring the window back.
+  @state() private _shareExpired = false;
+
+  @query(".share-alert") private _shareAlert?: HTMLElement | null;
+
+  private _windowOpenedAt?: number;
+
+  private _expiryTimer?: number;
+
+  // Not reset on close: the request outlives it.
+  private _opening = new Set<string>();
+
   public async showDialog(
     params: MatterOpenCommissioningWindowDialogParams
   ): Promise<void> {
+    // The element is reused and `closed` is not guaranteed, so the last device's window could show.
+    this._resetWindow();
     this.device_id = params.device_id;
+    // The Matter server revokes an open window before opening another, so a second Start would kill it.
+    if (this._opening.has(params.device_id)) {
+      this._status = "started";
+    }
     this._open = true;
   }
 
@@ -40,6 +76,14 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     if (!this.device_id) {
       return nothing;
     }
+    const shareTarget = matterShareTargetExternal(
+      this.hass,
+      this._commissionParams
+    );
+    // Apple Home only helps Apple Home users, so there the code, which works with any app, stays primary.
+    const copyIsPrimary = shareTarget === "apple_home";
+    // While the app pairs, its window is still live, and a new code would revoke it.
+    const expired = this._shareExpired && !this._sharing;
 
     return html`
       <ha-dialog
@@ -50,113 +94,152 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         @closed=${this._dialogClosed}
       >
         ${
-          this._commissionParams
-            ? html`
-                <p>
+          this._commissionParams && expired
+            ? html`<ha-alert class="share-alert" alert-type="error">
+                ${this.hass.localize(
+                  "ui.panel.config.matter.open_commissioning_window.share_expired"
+                )}
+                <ha-button slot="action" size="s" @click=${this._start}>
                   ${this.hass.localize(
-                    "ui.panel.config.matter.open_commissioning_window.success"
+                    "ui.panel.config.matter.open_commissioning_window.new_code"
                   )}
-                  <br />
-                  ${this.hass.localize(
-                    "ui.panel.config.matter.open_commissioning_window.scan_code"
-                  )}
-                </p>
-                <div class="sharing-code-container">
-                  <div class="sharing-code">
-                    <img
-                      crossorigin="anonymous"
-                      referrerpolicy="no-referrer"
-                      alt=${domainToName(this.hass.localize, "matter")}
-                      src=${brandsUrl(
-                        {
-                          domain: "matter",
-                          type: "logo",
-                          darkOptimized: this.hass.themes?.darkMode,
-                        },
-                        this.hass.auth.data.hassUrl
-                      )}
-                    />
-                    <ha-qr-code
-                      .data=${this._commissionParams.setup_qr_code}
-                      errorCorrectionLevel="quartile"
-                      scale="6"
-                      margin="1"
-                    ></ha-qr-code>
-                    <span class="code"
-                      >${this._commissionParams.setup_manual_code.substring(
-                        0,
-                        4
-                      )}-${this._commissionParams.setup_manual_code.substring(
-                        4,
-                        7
-                      )}-${this._commissionParams.setup_manual_code.substring(
-                        7
-                      )}</span
-                    >
-                  </div>
-                </div>
-              `
-            : this._status === "started"
+                </ha-button>
+              </ha-alert>`
+            : this._commissionParams
               ? html`
-                  <div class="flex-container">
-                    <ha-spinner></ha-spinner>
-                    <div class="status">
-                      <p>
-                        <b>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.matter.open_commissioning_window.success"
+                    )}
+                    <br />
+                    ${this._scanPrompt(shareTarget)}
+                  </p>
+                  ${
+                    this._shareFailed
+                      ? html`<ha-alert class="share-alert" alert-type="error">
                           ${this.hass.localize(
-                            "ui.panel.config.matter.open_commissioning_window.in_progress"
+                            "ui.panel.config.matter.open_commissioning_window.share_failed"
                           )}
-                        </b>
-                      </p>
+                        </ha-alert>`
+                      : nothing
+                  }
+                  <div class="sharing-code-container">
+                    <div class="sharing-code">
+                      <img
+                        crossorigin="anonymous"
+                        referrerpolicy="no-referrer"
+                        alt=${domainToName(this.hass.localize, "matter")}
+                        src=${brandsUrl(
+                          {
+                            domain: "matter",
+                            type: "logo",
+                            darkOptimized: this.hass.themes?.darkMode,
+                          },
+                          this.hass.auth.data.hassUrl
+                        )}
+                      />
+                      <ha-qr-code
+                        .data=${this._commissionParams.setup_qr_code}
+                        errorCorrectionLevel="quartile"
+                        scale="6"
+                        margin="1"
+                      ></ha-qr-code>
+                      <span class="code"
+                        >${this._commissionParams.setup_manual_code.substring(
+                          0,
+                          4
+                        )}-${this._commissionParams.setup_manual_code.substring(
+                          4,
+                          7
+                        )}-${this._commissionParams.setup_manual_code.substring(
+                          7
+                        )}</span
+                      >
                     </div>
                   </div>
                 `
-              : this._status === "failed"
+              : this._status === "started"
                 ? html`
                     <div class="flex-container">
-                      <ha-svg-icon
-                        .path=${mdiCloseCircle}
-                        class="failed"
-                      ></ha-svg-icon>
+                      <ha-spinner></ha-spinner>
                       <div class="status">
                         <p>
-                          ${this.hass.localize(
-                            "ui.panel.config.matter.open_commissioning_window.failed"
-                          )}
+                          <b>
+                            ${this.hass.localize(
+                              "ui.panel.config.matter.open_commissioning_window.in_progress"
+                            )}
+                          </b>
                         </p>
                       </div>
                     </div>
                   `
-                : html`
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.matter.open_commissioning_window.description",
-                        {
-                          startCommissioning: html`<b
-                            >${this.hass.localize(
-                              "ui.panel.config.matter.open_commissioning_window.start_commissioning"
-                            )}</b
-                          >`,
-                        }
-                      )}
-                    </p>
-                    <p class="note">
-                      ${this.hass.localize(
-                        "ui.panel.config.matter.open_commissioning_window.prevent_misuse_description"
-                      )}
-                    </p>
-                  `
+                : this._status === "failed"
+                  ? html`
+                      <div class="flex-container">
+                        <ha-svg-icon
+                          .path=${mdiCloseCircle}
+                          class="failed"
+                        ></ha-svg-icon>
+                        <div class="status">
+                          <p>
+                            ${this.hass.localize(
+                              "ui.panel.config.matter.open_commissioning_window.failed"
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    `
+                  : html`
+                      <p>
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.open_commissioning_window.description",
+                          {
+                            startCommissioning: html`<b
+                              >${this.hass.localize(
+                                "ui.panel.config.matter.open_commissioning_window.start_commissioning"
+                              )}</b
+                            >`,
+                          }
+                        )}
+                      </p>
+                      <p class="note">
+                        ${this.hass.localize(
+                          "ui.panel.config.matter.open_commissioning_window.prevent_misuse_description"
+                        )}
+                      </p>
+                    `
         }
         <ha-dialog-footer slot="footer">
           ${
-            this._commissionParams
-              ? html`
-                  <ha-button slot="primaryAction" @click=${this._copyCode}>
-                    ${this.hass.localize(
-                      "ui.panel.config.matter.open_commissioning_window.copy_code"
-                    )}
-                  </ha-button>
-                `
+            // An expired code leaves `_status` at "started", so it falls through to Close.
+            this._commissionParams && !expired
+              ? shareTarget
+                ? html`
+                    <ha-button
+                      slot=${copyIsPrimary ? "primaryAction" : "secondaryAction"}
+                      appearance=${copyIsPrimary ? "accent" : "plain"}
+                      @click=${this._copyCode}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.open_commissioning_window.copy_code"
+                      )}
+                    </ha-button>
+                    <ha-button
+                      slot=${copyIsPrimary ? "secondaryAction" : "primaryAction"}
+                      appearance=${copyIsPrimary ? "plain" : "accent"}
+                      .loading=${this._sharing}
+                      @click=${this._shareDevice}
+                    >
+                      ${this._shareLabel(shareTarget)}
+                    </ha-button>
+                  `
+                : html`
+                    <ha-button slot="primaryAction" @click=${this._copyCode}>
+                      ${this.hass.localize(
+                        "ui.panel.config.matter.open_commissioning_window.copy_code"
+                      )}
+                    </ha-button>
+                  `
               : this._status === "started" || this._status === "failed"
                 ? html`
                     <ha-button slot="primaryAction" @click=${this.closeDialog}>
@@ -176,19 +259,132 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
     `;
   }
 
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    // The footer button is pinned while the body scrolls, so on a phone the alert can land off-screen.
+    if (
+      (changedProperties.has("_shareFailed") ||
+        changedProperties.has("_shareExpired") ||
+        changedProperties.has("_sharing")) &&
+      (this._shareFailed || this._shareExpired) &&
+      !this._sharing
+    ) {
+      this._shareAlert?.scrollIntoView({ block: "nearest" });
+    }
+  }
+
   private async _start(): Promise<void> {
     if (!this.hass) {
       return;
     }
     this._status = "started";
     this._commissionParams = undefined;
+    clearTimeout(this._expiryTimer);
+    this._shareFailed = false;
+    this._shareExpired = false;
+    const deviceId = this.device_id!;
+    this._opening.add(deviceId);
     try {
-      this._commissionParams = await openMatterCommissioningWindow(
-        this.hass,
-        this.device_id!
-      );
+      // Before the request, so the remaining time is never overstated. Not `performance.now()`: it
+      // stops while the device sleeps, and a locked screen is how a window usually runs out.
+      const requestedAt = Date.now();
+      const params = await openMatterCommissioningWindow(this.hass, deviceId);
+      // Closed or switched device meanwhile. Same device keeps it, or the open window is orphaned.
+      if (this.device_id !== deviceId) {
+        return;
+      }
+      this._commissionParams = params;
+      this._windowOpenedAt = requestedAt;
+      if (params.commissioning_timeout != null) {
+        const delay =
+          requestedAt +
+          (params.commissioning_timeout - EXPIRY_MARGIN_SECONDS) * 1000 -
+          Date.now();
+        // Otherwise a dead code only shows as dead on a Share tap.
+        this._expiryTimer = window.setTimeout(() => {
+          this._shareExpired = true;
+        }, delay);
+      }
     } catch (_e) {
-      this._status = "failed";
+      if (this.device_id === deviceId) {
+        this._status = "failed";
+      }
+    } finally {
+      this._opening.delete(deviceId);
+    }
+  }
+
+  // The QR code dominates the dialog, so say the button skips the scan.
+  private _scanPrompt(target: MatterShareTarget | undefined) {
+    if (!target) {
+      return this.hass.localize(
+        "ui.panel.config.matter.open_commissioning_window.scan_code"
+      );
+    }
+    const button = this._shareLabel(target);
+    return target === "apple_home"
+      ? this.hass.localize(
+          "ui.panel.config.matter.open_commissioning_window.scan_code_add_to_apple_home",
+          { button }
+        )
+      : this.hass.localize(
+          "ui.panel.config.matter.open_commissioning_window.scan_code_share_with_app",
+          { button }
+        );
+  }
+
+  private _shareLabel(target: MatterShareTarget) {
+    return target === "apple_home"
+      ? this.hass.localize(
+          "ui.panel.config.matter.open_commissioning_window.add_to_apple_home"
+        )
+      : this.hass.localize(
+          "ui.panel.config.matter.open_commissioning_window.share_with_app"
+        );
+  }
+
+  private async _shareDevice() {
+    const params = this._commissionParams;
+    if (!params || this._sharing) {
+      return;
+    }
+    this._shareFailed = false;
+    this._shareExpired = false;
+    const remaining = matterShareRemainingSeconds(
+      params.commissioning_timeout,
+      this._windowOpenedAt,
+      Date.now()
+    );
+    // `<=`: the timer fires with exactly the margin left.
+    if (remaining !== undefined && remaining <= EXPIRY_MARGIN_SECONDS) {
+      this._shareExpired = true;
+      return;
+    }
+    this._sharing = true;
+    const device = this.hass.devices[this.device_id!];
+    try {
+      await shareMatterDeviceExternal(this.hass, {
+        setup_qr_code: params.setup_qr_code,
+        setup_pin_code: params.setup_pin_code,
+        discriminator: params.discriminator ?? undefined,
+        vendor_id: params.vendor_id ?? undefined,
+        product_id: params.product_id ?? undefined,
+        device_name: device ? computeDeviceName(device) : undefined,
+        remaining_seconds: remaining,
+      });
+      // Closed or reopened meanwhile.
+      if (this._commissionParams === params) {
+        this.closeDialog();
+      }
+    } catch (err: unknown) {
+      if (this._commissionParams === params) {
+        // Backing out of the platform sheet is not an error.
+        this._shareFailed = (err as { code?: string })?.code !== "canceled";
+      }
+    } finally {
+      if (this._commissionParams === params) {
+        this._sharing = false;
+      }
     }
   }
 
@@ -197,7 +393,10 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
       return;
     }
     await copyToClipboard(this._commissionParams.setup_manual_code);
-    this.closeDialog();
+    // Closing under the open share sheet would discard its result.
+    if (!this._sharing) {
+      this.closeDialog();
+    }
   }
 
   public closeDialog(): void {
@@ -205,10 +404,21 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
   }
 
   private _dialogClosed(): void {
+    this._resetWindow();
+    // Every dismissal that is not `closeDialog` leaves this true, and `ha-dialog` reads it.
+    this._open = false;
     this.device_id = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  private _resetWindow(): void {
     this._status = undefined;
     this._commissionParams = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this._sharing = false;
+    this._shareFailed = false;
+    this._shareExpired = false;
+    this._windowOpenedAt = undefined;
+    clearTimeout(this._expiryTimer);
   }
 
   static get styles(): CSSResultGroup {
@@ -240,7 +450,7 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
           padding: 8px;
         }
 
-        ha-svg-icon {
+        .flex-container ha-svg-icon {
           width: 68px;
           height: 48px;
         }
@@ -281,6 +491,11 @@ class DialogMatterOpenCommissioningWindow extends LitElement {
         .note {
           color: var(--secondary-text-color);
           font-size: 0.9em;
+        }
+
+        ha-alert ha-button[slot="action"] {
+          width: max-content;
+          white-space: nowrap;
         }
       `,
     ];

@@ -4,7 +4,16 @@ import type {
   DockerNetwork,
   NetworkInterface,
 } from "../../../src/data/hassio/network";
+import type { HassioResolution } from "../../../src/data/hassio/resolution";
 import { handleFetchPromise } from "../../../src/util/hass-call-api";
+
+// Supervisor log lines start with a color code and a timestamp, for example
+// "\x1b[31m2026-10-21 22:27:32.135+02:00 ERROR (MainThread) ..."
+// eslint-disable-next-line no-control-regex
+const LOG_ERROR_LINE = /^(?:\x1b\[[0-9;]*m)*[\d\s.:+-]+(?:ERROR|CRITICAL)\b/;
+
+export const isSupervisorLogError = (line: string): boolean =>
+  LOG_ERROR_LINE.test(line);
 
 export interface NetworkInfo {
   interfaces: NetworkInterface[];
@@ -76,6 +85,13 @@ export async function getSupervisorNetworkInfo(): Promise<NetworkInfo> {
   const responseData = await handleFetchPromise<HassioResponse<NetworkInfo>>(
     fetch("/supervisor-api/network/info")
   );
+  return responseData?.data;
+}
+
+export async function getSupervisorResolutionInfo(): Promise<HassioResolution> {
+  const responseData = await handleFetchPromise<
+    HassioResponse<HassioResolution>
+  >(fetch("/supervisor-api/resolution/info"));
   return responseData?.data;
 }
 

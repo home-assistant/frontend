@@ -1,12 +1,28 @@
+import type { ContextType } from "@lit/context";
+import type { HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import {
+  consumeLocalize,
+  preserveUnchangedEntityStatesRecord,
+} from "../common/decorators/consume-context-entry";
+import { transform } from "../common/decorators/transform";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { debounce } from "../common/util/debounce";
+import {
+  apiContext,
+  configContext,
+  entitiesContext,
+  formattersContext,
+  statesContext,
+} from "../data/context";
 import type { STTEngine } from "../data/stt";
 import { listSTTEngines } from "../data/stt";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantFormatters } from "../types";
 import type { HaSelectOption, HaSelectSelectEvent } from "./ha-select";
 import "./ha-select";
 
@@ -20,13 +36,59 @@ export class HaSTTPicker extends LitElement {
 
   @property() public language?: string;
 
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
 
   @state() _engines?: STTEngine[];
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: entitiesContext, subscribe: true })
+  @transform<HomeAssistant["entities"], string | undefined>({
+    transformer: (entities) =>
+      Object.values(entities ?? {}).find(
+        (entity) =>
+          entity.platform === "cloud" &&
+          computeDomain(entity.entity_id) === "stt"
+      )?.entity_id,
+  })
+  private _cloudEngineId?: string;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, HassEntities>({
+    transformer: function (this: HaSTTPicker, states) {
+      const engineStates: HassEntities = {};
+      this._engines?.forEach(({ engine_id }) => {
+        if (states?.[engine_id]) {
+          engineStates[engine_id] = states[engine_id];
+        }
+      });
+      return preserveUnchangedEntityStatesRecord(this._states, engineStates);
+    },
+    watch: ["_engines"],
+  })
+  private _states: HassEntities = {};
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityName"]
+  >({
+    transformer: ({ formatEntityName }) => formatEntityName,
+  })
+  private _formatEntityName!: HomeAssistantFormatters["formatEntityName"];
+
+  @consume({ context: configContext, subscribe: true })
+  private _config!: ContextType<typeof configContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   protected render() {
     if (!this._engines) {
@@ -35,15 +97,7 @@ export class HaSTTPicker extends LitElement {
 
     let value = this.value;
     if (!value && this.required) {
-      for (const entity of Object.values(this.hass.entities)) {
-        if (
-          entity.platform === "cloud" &&
-          computeDomain(entity.entity_id) === "stt"
-        ) {
-          value = entity.entity_id;
-          break;
-        }
-      }
+      value = this._cloudEngineId;
 
       if (!value) {
         for (const sttEngine of this._engines) {
@@ -61,10 +115,8 @@ export class HaSTTPicker extends LitElement {
     const options: HaSelectOption[] = this._engines.map((engine) => {
       let label: string;
       if (engine.engine_id.includes(".")) {
-        const stateObj = this.hass.states[engine.engine_id];
-        label = stateObj
-          ? this.hass.formatEntityName(stateObj)
-          : engine.engine_id;
+        const stateObj = this._states[engine.engine_id];
+        label = stateObj ? this._formatEntityName(stateObj) : engine.engine_id;
       } else {
         label = engine.name || engine.engine_id;
       }
@@ -78,15 +130,13 @@ export class HaSTTPicker extends LitElement {
     if (this.required || value === NONE) {
       options.unshift({
         value: NONE,
-        label: this.hass.localize("ui.components.stt-picker.none") || "None",
+        label: this._localize("ui.components.stt-picker.none") || "None",
       });
     }
 
     return html`
       <ha-select
-        .label=${
-          this.label || this.hass!.localize("ui.components.stt-picker.stt")
-        }
+        .label=${this.label || this._localize("ui.components.stt-picker.stt")}
         .value=${value}
         .required=${this.required}
         .disabled=${this.disabled}
@@ -111,9 +161,9 @@ export class HaSTTPicker extends LitElement {
   private async _updateEngines() {
     this._engines = (
       await listSTTEngines(
-        this.hass,
+        this._api.callWS,
         this.language,
-        this.hass.config.country || undefined
+        this._config.config.country || undefined
       )
     ).providers;
 
@@ -144,7 +194,6 @@ export class HaSTTPicker extends LitElement {
   private _changed(ev: HaSelectSelectEvent): void {
     const value = ev.detail.value;
     if (
-      !this.hass ||
       value === "" ||
       value === this.value ||
       (this.value === undefined && value === NONE)

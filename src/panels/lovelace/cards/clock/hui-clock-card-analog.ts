@@ -1,11 +1,21 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, queryAll, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import "../../../../components/ha-marquee-text";
-import type { HomeAssistant } from "../../../../types";
+import { consume } from "../../../../common/decorators/consume";
+import { transform } from "../../../../common/decorators/transform";
+import {
+  configContext,
+  internationalizationContext,
+} from "../../../../data/context";
+import type { FrontendLocaleData } from "../../../../data/translation";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+} from "../../../../types";
 import type { ClockCardConfig } from "../types";
 import {
   formatClockCardDate,
@@ -41,9 +51,21 @@ const MINUTE_TICKS = Array.from({ length: 60 }, (_, i) => i);
 
 @customElement("hui-clock-card-analog")
 export class HuiClockCardAnalog extends LitElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ attribute: false }) public config?: ClockCardConfig;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale?: FrontendLocaleData;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, string>({
+    transformer: ({ config }) => config.time_zone,
+  })
+  private _serverTimeZone?: string;
 
   @state() private _dateTimeFormat?: Intl.DateTimeFormat;
 
@@ -54,6 +76,8 @@ export class HuiClockCardAnalog extends LitElement {
   @state() private _secondOffsetSec?: number;
 
   @state() private _date?: string;
+
+  @queryAll(".hand") private _hands!: NodeListOf<HTMLElement>;
 
   private _dateInterval?: number;
 
@@ -77,16 +101,34 @@ export class HuiClockCardAnalog extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("config") || changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (
-        changedProps.has("config") ||
-        !oldHass ||
-        oldHass.locale !== this.hass?.locale
-      ) {
-        this._initDate();
-      }
+    if (
+      changedProps.has("config") ||
+      changedProps.has("_locale") ||
+      changedProps.has("_serverTimeZone")
+    ) {
+      this._initDate();
     }
+
+    if (
+      changedProps.has("_hourOffsetSec") ||
+      changedProps.has("_minuteOffsetSec") ||
+      changedProps.has("_secondOffsetSec")
+    ) {
+      this._restartHandAnimations();
+    }
+  }
+
+  // The hands are positioned by a negative animation-delay computed from the
+  // current time. Changing the delay of a running animation keeps its original
+  // start time, so the time elapsed since then would be counted twice and the
+  // clock would run ahead. Restart the animations so the new delay applies
+  // from now.
+  private _restartHandAnimations() {
+    this._hands.forEach((hand) => {
+      hand.getAnimations().forEach((animation) => {
+        animation.currentTime = 0;
+      });
+    });
   }
 
   private _handleVisibilityChange = () => {
@@ -97,18 +139,22 @@ export class HuiClockCardAnalog extends LitElement {
   };
 
   private _initDate() {
-    if (!this.config || !this.hass) {
+    if (!this.config || !this._locale || this._serverTimeZone === undefined) {
       this._stopDateTick();
       this._date = undefined;
       return;
     }
 
-    const { timeZone } = resolveClockCardLocale(this.hass, this.config);
+    const { locale, timeZone } = resolveClockCardLocale(
+      this._locale,
+      this._serverTimeZone,
+      this.config
+    );
 
-    this._language = this.hass.locale.language;
+    this._language = locale.language;
     this._timeZone = timeZone;
 
-    this._dateTimeFormat = new Intl.DateTimeFormat(this.hass.locale.language, {
+    this._dateTimeFormat = new Intl.DateTimeFormat(locale.language, {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
@@ -184,6 +230,8 @@ export class HuiClockCardAnalog extends LitElement {
     const dateConfig = getClockCardDateConfig(config);
     const showDate = hasClockCardDate(config);
     const isLongDate =
+      dateConfig.preset === "long" ||
+      dateConfig.preset === "full" ||
       dateConfig.parts.includes("month-long") ||
       dateConfig.parts.includes("weekday-long");
 

@@ -12,6 +12,7 @@ import {
   GENERATED_TRIGGER_ID_PREFIX,
   getExplicitTriggerIds,
   getTriggerIdOptions,
+  hasCustomTriggerId,
   isGeneratedTriggerId,
   makeDuplicateTriggerIdsUnique,
   stripGeneratedTriggerIds,
@@ -82,6 +83,26 @@ describe("automation trigger IDs", () => {
       { draft: false, index: 2 },
     ]);
     expect(options[2].id).toBe(`${GENERATED_TRIGGER_ID_PREFIX}aB3x`);
+  });
+
+  it("treats only stored, non-generated IDs as custom", () => {
+    const triggers: Trigger[] = [
+      { trigger: "state", entity_id: "binary_sensor.door", id: "door_open" },
+      { trigger: "state", entity_id: "binary_sensor.door" },
+      {
+        trigger: "event",
+        event_type: "homeassistant_start",
+        id: `${GENERATED_TRIGGER_ID_PREFIX}aB3x`,
+      },
+      { trigger: "time", at: "12:00:00", id: "" },
+    ];
+
+    expect(getTriggerIdOptions(triggers).map(hasCustomTriggerId)).toEqual([
+      true,
+      false,
+      false,
+      false,
+    ]);
   });
 
   it("stores a generated ID on the selected trigger", () => {

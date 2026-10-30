@@ -1,6 +1,8 @@
 import { TZDate } from "@date-fns/tz";
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import { createDurationData } from "../common/datetime/create_duration_data";
+import { durationDataToSeconds } from "../common/datetime/duration_to_seconds";
 import {
   formatDurationDigital,
   formatDurationLong,
@@ -10,6 +12,7 @@ import {
   formatTime,
   formatTimeWithSeconds,
 } from "../common/datetime/format_time";
+import { normalizeDuration } from "../common/datetime/normalize_duration";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { sortWeekdays } from "../common/datetime/sort_weekdays";
 import { computeAttributeNameDisplay } from "../common/entity/compute_attribute_display";
@@ -172,11 +175,10 @@ export const describeTrigger = (
     // eslint-disable-next-line no-console
     console.error(error);
 
-    let msg = "Error in describing trigger";
-    if (error.message) {
-      msg += ": " + error.message;
-    }
-    return msg;
+    return hass.localize(
+      "ui.panel.config.automation.editor.triggers.describe_error",
+      { error: error?.message || String(error) }
+    );
   }
 };
 
@@ -317,13 +319,15 @@ const describeLegacyTrigger = (
 
     let fromChoice = "other";
     let fromString = "";
-    if (trigger.from !== undefined) {
-      if (trigger.from === null) {
+    const fromNegated = trigger.not_from !== undefined;
+    const fromValue = fromNegated ? trigger.not_from : trigger.from;
+    if (fromValue !== undefined) {
+      if (fromValue === null) {
         if (!trigger.attribute) {
           fromChoice = "null";
         }
       } else {
-        const fromArray = ensureArray(trigger.from);
+        const fromArray = ensureArray(fromValue);
 
         const from: string[] = [];
         for (const state of fromArray) {
@@ -342,21 +346,25 @@ const describeLegacyTrigger = (
           );
         }
         if (from.length !== 0) {
-          fromString = formatListWithOrs(hass.locale, from);
-          fromChoice = "fromUsed";
+          fromString = fromNegated
+            ? formatListWithAnds(hass.locale, from)
+            : formatListWithOrs(hass.locale, from);
+          fromChoice = fromNegated ? "fromNotUsed" : "fromUsed";
         }
       }
     }
 
     let toChoice = "other";
     let toString = "";
-    if (trigger.to !== undefined) {
-      if (trigger.to === null) {
+    const toNegated = trigger.not_to !== undefined;
+    const toValue = toNegated ? trigger.not_to : trigger.to;
+    if (toValue !== undefined) {
+      if (toValue === null) {
         if (!trigger.attribute) {
           toChoice = "null";
         }
       } else {
-        const toArray = ensureArray(trigger.to);
+        const toArray = ensureArray(toValue);
 
         const to: string[] = [];
         for (const state of toArray) {
@@ -375,8 +383,10 @@ const describeLegacyTrigger = (
           );
         }
         if (to.length !== 0) {
-          toString = formatListWithOrs(hass.locale, to);
-          toChoice = "toUsed";
+          toString = toNegated
+            ? formatListWithAnds(hass.locale, to)
+            : formatListWithOrs(hass.locale, to);
+          toChoice = toNegated ? "toNotUsed" : "toUsed";
         }
       }
     }
@@ -384,7 +394,9 @@ const describeLegacyTrigger = (
     if (
       !trigger.attribute &&
       trigger.from === undefined &&
-      trigger.to === undefined
+      trigger.not_from === undefined &&
+      trigger.to === undefined &&
+      trigger.not_to === undefined
     ) {
       toChoice = "special";
     }
@@ -412,16 +424,7 @@ const describeLegacyTrigger = (
 
   // Sun Trigger
   if (trigger.trigger === "sun" && trigger.event) {
-    let duration = "";
-    if (trigger.offset) {
-      if (typeof trigger.offset === "number") {
-        duration = secondsToDuration(trigger.offset)!;
-      } else if (typeof trigger.offset === "string") {
-        duration = trigger.offset;
-      } else {
-        duration = JSON.stringify(trigger.offset);
-      }
-    }
+    const duration = formatSunOffset(hass, trigger.offset);
 
     return hass.localize(
       trigger.event === "sunset"
@@ -831,19 +834,16 @@ const describeLegacyTrigger = (
 
     let offsetChoice = "other";
     let offset = "";
-    if (typeof trigger.offset === "string" && trigger.offset) {
-      offsetChoice = trigger.offset.startsWith("-") ? "before" : "after";
-      const parts = trigger.offset.startsWith("-")
-        ? trigger.offset.substring(1).split(":")
-        : trigger.offset.split(":");
-      const duration = {
-        hours: parts.length > 0 ? +parts[0] : 0,
-        minutes: parts.length > 1 ? +parts[1] : 0,
-        seconds: parts.length > 2 ? +parts[2] : 0,
-      };
-      offset = formatDurationLong(hass.locale, duration);
-      if (offset === "") {
-        offsetChoice = "other";
+    const duration = createDurationData(trigger.offset);
+    if (duration) {
+      const normalized = normalizeDuration(duration, {
+        enableDay: true,
+        enableSecond: true,
+        enableMillisecond: true,
+      });
+      offset = formatDurationLong(hass.locale, normalized.duration);
+      if (offset) {
+        offsetChoice = normalized.negative ? "before" : "after";
       }
     }
 
@@ -874,9 +874,17 @@ const formatSunOffset = (
   if (typeof offset === "string") {
     return offset;
   }
+  if (!durationDataToSeconds(offset)) {
+    return "";
+  }
   try {
-    const formatted = formatDurationDigital(hass.locale, offset);
-    return formatted.startsWith("-") ? formatted : `+${formatted}`;
+    const normalized = normalizeDuration(offset, {
+      enableDay: false,
+      enableSecond: true,
+      enableMillisecond: true,
+    });
+    const formatted = formatDurationDigital(hass.locale, normalized.duration);
+    return `${normalized.negative ? "-" : "+"}${formatted}`;
   } catch (_e) {
     return JSON.stringify(offset);
   }
@@ -903,11 +911,10 @@ export const describeCondition = (
     // eslint-disable-next-line no-console
     console.error(error);
 
-    let msg = "Error in describing condition";
-    if (error.message) {
-      msg += ": " + error.message;
-    }
-    return msg;
+    return hass.localize(
+      "ui.panel.config.automation.editor.conditions.describe_error",
+      { error: error?.message || String(error) }
+    );
   }
 };
 

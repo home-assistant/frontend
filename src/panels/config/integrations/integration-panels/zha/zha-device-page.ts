@@ -15,7 +15,7 @@ import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-spinner";
 import { narrowViewportContext } from "../../../../../data/context";
 import type { ZHADevice } from "../../../../../data/zha";
-import { fetchZHADevice } from "../../../../../data/zha";
+import { fetchZHADevice, ZHADeviceType } from "../../../../../data/zha";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-subpage";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -60,6 +60,13 @@ class ZHADevicePage extends LitElement {
   @state() private _error?: string;
 
   private _deviceRefreshInterval?: number;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._device) {
+      this._startDeviceRefreshInterval();
+    }
+  }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -191,7 +198,9 @@ class ZHADevicePage extends LitElement {
       if (!tabs.includes(this._currTab)) {
         this._currTab = tabs[0];
       }
-      this._startDeviceRefreshInterval();
+      if (this.isConnected) {
+        this._startDeviceRefreshInterval();
+      }
     } catch (_err: any) {
       if (this.ieee === ieee) {
         this._error = this.hass.localize(
@@ -261,11 +270,16 @@ class ZHADevicePage extends LitElement {
   }
 
   private _getTabs = memoizeOne((device: ZHADevice | undefined) => {
+    if (device?.device_type === ZHADeviceType.GreenPower) {
+      return ["signature"] as ZHADevicePageTab[];
+    }
+
     const tabs: ZHADevicePageTab[] = ["clusters", "bindings", "signature"];
 
     if (
       device &&
-      (device.device_type === "Router" || device.device_type === "Coordinator")
+      (device.device_type === ZHADeviceType.Router ||
+        device.device_type === ZHADeviceType.Coordinator)
     ) {
       tabs.push("neighbors");
     }

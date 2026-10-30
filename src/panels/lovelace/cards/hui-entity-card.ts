@@ -5,10 +5,12 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { computeEntityUnitDisplay } from "../../../common/entity/compute_entity_unit_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { stateActive } from "../../../common/entity/state_active";
 import {
   unitPosition,
   valueFromParts,
@@ -76,9 +78,12 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
-  private _getStateColor(stateObj: HassEntity, config: EntityCardConfig) {
+  protected _getStateColor(stateObj: HassEntity, config: EntityCardConfig) {
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
-    return config && (config.state_color ?? domain === "light");
+    return (
+      config &&
+      (Boolean(config.color) || (config.state_color ?? domain === "light"))
+    );
   }
 
   public setConfig(config: EntityCardConfig): void {
@@ -145,7 +150,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     const name = this.hass.formatEntityName(stateObj, this._config.name);
 
     const colored = stateObj && this._getStateColor(stateObj, this._config);
-    const color = colored ? this._computeColor(stateObj) : undefined;
+    const color = colored
+      ? this._computeColor(stateObj, this._config.color)
+      : undefined;
 
     const fixedFooter =
       this.layout === "grid" && this._footerElement !== undefined;
@@ -209,6 +216,10 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         </div>
         <div
           class="footer"
+          style=${styleMap({
+            "--accent-color":
+              this._config.color && color ? "var(--state-color)" : undefined,
+          })}
           @touchcancel=${stopPropagation}
           @touchend=${stopPropagation}
           @keydown=${stopPropagation}
@@ -239,7 +250,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       }`;
   }
 
-  private _computeColor(stateObj: HassEntity): string | undefined {
+  protected _computeColor(
+    stateObj: HassEntity,
+    color?: string
+  ): string | undefined {
+    if (color && color !== "state") {
+      return stateActive(stateObj) ? computeCssColor(color) : undefined;
+    }
     if (stateObj.attributes.hvac_action) {
       const hvacAction = stateObj.attributes.hvac_action;
       if (hvacAction in CLIMATE_HVAC_ACTION_TO_MODE) {

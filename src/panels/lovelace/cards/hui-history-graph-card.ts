@@ -368,13 +368,13 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
                 `
               : html`
                   <state-history-charts
-                    .hass=${this.hass}
                     .isLoadingData=${!this._history}
                     .historyData=${this._history}
                     .names=${this._names}
                     up-to-now
                     .hoursToShow=${this._hoursToShow}
                     .showNames=${showNames}
+                    ?inside-labels=${this._config.label_position === "below"}
                     .logarithmicScale=${this._config.logarithmic_scale || false}
                     .minYAxis=${this._config.min_y_axis}
                     .maxYAxis=${this._config.max_y_axis}

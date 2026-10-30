@@ -91,7 +91,7 @@ describe("computeStateDisplay", () => {
     };
     assert.strictEqual(
       computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
-      "123 m"
+      "123\u00A0m"
     );
   });
 
@@ -111,7 +111,7 @@ describe("computeStateDisplay", () => {
     };
     assert.strictEqual(
       computeStateDisplay(localize, stateObj, localeData, demoConfig, entities),
-      "1,234 component.custom_integration.entity.sensor.custom_translation.unit_of_measurement"
+      "1,234\u00A0component.custom_integration.entity.sensor.custom_translation.unit_of_measurement"
     );
   });
 
@@ -125,7 +125,7 @@ describe("computeStateDisplay", () => {
     };
     assert.strictEqual(
       computeStateDisplay(localize, stateObj, localeData, demoConfig, {}),
-      "1,234.5 m"
+      "1,234.5\u00A0m"
     );
   });
 
@@ -225,7 +225,7 @@ describe("computeStateDisplay", () => {
           demoConfig,
           entities
         ),
-        `1,234 component.custom_integration.entity.${domain}.custom_translation.unit_of_measurement`
+        `1,234\u00A0component.custom_integration.entity.${domain}.custom_translation.unit_of_measurement`
       );
     };
     it("Localizes counter domain", () => {
@@ -527,7 +527,7 @@ describe("computeStateDisplayFromEntityAttributes with numeric device classes", 
       },
       "12"
     );
-    expect(result).toBe("12 s");
+    expect(result).toBe("12\u00A0s");
   });
 
   it("Should format monetary device_class", () => {

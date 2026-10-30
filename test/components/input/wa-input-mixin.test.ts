@@ -106,6 +106,29 @@ describe("WaInputMixin validity", () => {
       el.handleInvalid();
       expect(el.isInvalid).toBe(true);
     });
+
+    it("rechecks a shown error when the value changes from outside", async () => {
+      const el = createInput({ controlValid: false });
+      document.body.append(el);
+      el.isInvalid = true;
+      await el.updateComplete;
+      el.controlValid = true;
+      el.value = "33";
+      await el.updateComplete;
+      await el.updateComplete;
+      expect(el.isInvalid).toBe(false);
+      el.remove();
+    });
+
+    it("does not flag a field when the value changes from outside", async () => {
+      const el = createInput({ controlValid: false });
+      document.body.append(el);
+      await el.updateComplete;
+      el.value = "500";
+      await el.updateComplete;
+      expect(el.isInvalid).toBe(false);
+      el.remove();
+    });
   });
 
   // Polyfilled internals report validity the app cannot trust, so every path

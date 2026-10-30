@@ -9,22 +9,29 @@ import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
 import { registerRoute, setCatchHandler } from "workbox-routing";
 import {
   CacheFirst,
+  NetworkFirst,
   NetworkOnly,
   StaleWhileRevalidate,
 } from "workbox-strategies";
+import {
+  createNavigationFallbackPlugin,
+  noFallBackRegEx,
+} from "../util/service-worker-navigation";
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 declare const __WB_MANIFEST__: Parameters<typeof precacheAndRoute>[0];
 
-const noFallBackRegEx =
-  /\/(api|static|auth|frontend_latest|frontend_es5|local)\/.*/;
+const NAVIGATION_CACHE = "navigation-cache";
+const NAVIGATION_TIMEOUT_SECONDS = 3;
+const NAVIGATION_MAX_ENTRIES = 50;
 
 // Camera / image proxy endpoints that carry credentials in the URL.
 // We pre-validate the credential in the service worker so obviously invalid
 // requests (signature expired, token missing) never reach the server and
 // don't trigger spurious "Login attempt" warnings from http.ban after BFCache
 // restore, tab resume, network change, or any other browser-initiated replay
-// of a stale `<img>` URL.
+// of a stale `<img>` URL. This only covers subresources: navigation preload
+// sends a navigation to core before the worker runs.
 const proxyPathRegEx =
   /^\/api\/(camera_proxy_stream|camera_proxy|image_proxy)\//;
 
@@ -57,7 +64,7 @@ const isJwtExpired = (jwt: string): boolean => {
   }
 };
 
-const handleProxyRequest: RouteHandler = async ({ request }) => {
+const handleProxyRequest: RouteHandler = async ({ request, event }) => {
   const req = request as Request;
   const url = new URL(req.url);
 
@@ -74,6 +81,12 @@ const handleProxyRequest: RouteHandler = async ({ request }) => {
     });
   }
 
+  if (req.mode === "navigate" && event instanceof FetchEvent) {
+    const preloaded = await event.preloadResponse;
+    if (preloaded) {
+      return preloaded;
+    }
+  }
   return fetch(req);
 };
 
@@ -190,13 +203,36 @@ const initRouting = () => {
   // Get api from network.
   registerRoute(/\/(api|auth)\/.*/, new NetworkOnly());
 
+  // Signed URLs (such as media files under /media/ with an authSig) differ on
+  // every request, so caching them never produces a hit. With the catch-all
+  // route below, a photo slideshow would store one full-size image per slide
+  // until the browser's storage quota runs out.
+  registerRoute(
+    ({ url }) =>
+      url.origin === location.origin && url.searchParams.has("authSig"),
+    new NetworkOnly()
+  );
+
   // Get manifest and onboarding from network.
   registerRoute(/\/(?:manifest\.json|onboarding\.html)/, new NetworkOnly());
 
-  // For the root "/" we ignore search
+  // A stale index imports deleted bundles, so the cache is only a fallback;
+  // keyed by path so query params don't add entries. Only a 200 may replace
+  // the cached shell: a proxy redirect is status 0 and would be replayed.
   registerRoute(
-    /\/(\?.*)?$/,
-    new StaleWhileRevalidate({ matchOptions: { ignoreSearch: true } })
+    ({ request }) => request.mode === "navigate",
+    new NetworkFirst({
+      cacheName: NAVIGATION_CACHE,
+      networkTimeoutSeconds: NAVIGATION_TIMEOUT_SECONDS,
+      plugins: [
+        createNavigationFallbackPlugin(NAVIGATION_CACHE),
+        new CacheableResponsePlugin({ statuses: [200] }),
+        new ExpirationPlugin({
+          maxEntries: NAVIGATION_MAX_ENTRIES,
+          purgeOnQuotaError: true,
+        }),
+      ],
+    })
   );
 
   // For rest of the files (on Home Assistant domain only) try both cache and network.
@@ -335,29 +371,37 @@ const catchHandler: RouteHandler = async (options) => {
   // eslint-disable-next-line no-console
   console.log("Using fallback for:", url);
 
-  return (await caches.match("/", { ignoreSearch: true })) || Response.error();
+  return (
+    (await caches.match("/", { cacheName: NAVIGATION_CACHE })) ||
+    Response.error()
+  );
 };
 
 self.addEventListener("install", (event) => {
-  // Delete all runtime caching, so that index.html has to be refetched.
-  // And add the new index.html back to the runtime cache
-  const cacheName = cacheNames.runtime;
+  // Cached indexes import the previous build's bundles.
   event.waitUntil(
-    caches.delete(cacheName).then(() =>
-      caches.open(cacheName).then((cache) => {
-        cache.add("/");
-      })
-    )
+    (async () => {
+      await Promise.all([
+        caches.delete(cacheNames.runtime),
+        caches.delete(NAVIGATION_CACHE),
+      ]);
+      try {
+        const cache = await caches.open(NAVIGATION_CACHE);
+        await cache.add("/");
+      } catch (_err) {
+        // Offline or restarting; the first navigation fills it.
+      }
+    })()
   );
 });
 
-self.addEventListener("activate", () => {
-  // Attach the service worker to any page of the app
-  // that didn't have a service worker loaded.
-  // Happens the first time they open the app without any
-  // service worker registered.
-  // This will serve code split bundles from SW.
-  clients.claim();
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    Promise.all([
+      self.registration.navigationPreload?.enable(),
+      clients.claim(),
+    ])
+  );
 });
 
 self.addEventListener("message", (message) => {

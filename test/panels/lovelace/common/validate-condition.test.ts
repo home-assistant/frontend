@@ -4,6 +4,7 @@ import type { VisibilityCondition } from "../../../../src/panels/lovelace/common
 import {
   addEntityToCondition,
   checkConditionsMet,
+  extractConditionEntityIds,
   validateConditionalConfig,
 } from "../../../../src/panels/lovelace/common/validate-condition";
 import type { HomeAssistant } from "../../../../src/types";
@@ -43,6 +44,13 @@ describe("validateConditionalConfig", () => {
       ["locations", { condition: "location", locations: ["home"] }],
       ["target", { condition: "location", target: { label_id: "store" } }],
       ["empty target", { condition: "location", target: {} }],
+      [
+        "a target with an exclude",
+        {
+          condition: "location",
+          target: { label_id: "store", exclude: { entity_id: "zone.store_1" } },
+        },
+      ],
       ["away", { condition: "location", away: true }],
       [
         "a match mode",
@@ -66,6 +74,17 @@ describe("validateConditionalConfig", () => {
       [
         "a target with an unknown key",
         { condition: "location", target: { zone_id: "zone.home" } },
+      ],
+      [
+        "an exclude with a non-string ID",
+        { condition: "location", target: { exclude: { entity_id: 5 } } },
+      ],
+      [
+        "a nested exclude",
+        {
+          condition: "location",
+          target: { exclude: { exclude: { entity_id: "zone.home" } } },
+        },
       ],
       ["a non-boolean away", { condition: "location", away: "yes" }],
       [
@@ -270,6 +289,25 @@ describe("checkConditionsMet", () => {
       expect(
         checkConditionsMet(
           [{ condition: "location", target: { label_id: "store" } }],
+          hass,
+          {}
+        )
+      ).toBe(false);
+    });
+
+    it("does not match an excluded zone", () => {
+      const hass = createLocationHass("Store", ["zone.store_1"]);
+      expect(
+        checkConditionsMet(
+          [
+            {
+              condition: "location",
+              target: {
+                label_id: "store",
+                exclude: { entity_id: "zone.store_1" },
+              },
+            },
+          ],
           hass,
           {}
         )
@@ -637,5 +675,58 @@ describe("addEntityToCondition", () => {
         { condition: "user", users: ["u"] },
       ],
     });
+  });
+});
+
+describe("extractConditionEntityIds", () => {
+  it("collects lovelace entity and core entity_id references", () => {
+    const conditions = [
+      { condition: "state", entity: "light.a", state: "on" },
+      { condition: "state", entity_id: "binary_sensor.alert", state: "on" },
+      {
+        condition: "numeric_state",
+        entity_id: "sensor.temp",
+        above: "input_number.limit",
+      },
+    ] as any;
+    expect([...extractConditionEntityIds(conditions)]).toEqual([
+      "light.a",
+      "binary_sensor.alert",
+      "sensor.temp",
+      "input_number.limit",
+    ]);
+  });
+
+  it("collects legacy conditions without a condition key", () => {
+    const conditions = [{ entity: "switch.a", state_not: "off" }] as any;
+    expect([...extractConditionEntityIds(conditions)]).toEqual(["switch.a"]);
+  });
+
+  it("walks logical groups that hold a single child", () => {
+    const conditions = [
+      {
+        condition: "and",
+        conditions: { condition: "state", entity: "light.a", state: "on" },
+      },
+      {
+        condition: "or",
+        conditions: [
+          { condition: "not", conditions: { entity: "light.b", state: "on" } },
+        ],
+      },
+    ] as any;
+    expect([...extractConditionEntityIds(conditions)]).toEqual([
+      "light.a",
+      "light.b",
+    ]);
+  });
+
+  it("ignores conditions that read no entity", () => {
+    const conditions = [
+      { condition: "user", users: ["user1"] },
+      { condition: "screen", media_query: "(min-width: 600px)" },
+      { condition: "location", state: "home" },
+    ] as any;
+    expect(extractConditionEntityIds(conditions).size).toBe(0);
   });
 });

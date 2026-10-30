@@ -38,8 +38,11 @@ export interface SubEntry {
   unique_id: string | null;
 }
 
-export const getSubEntries = (hass: HomeAssistant, entry_id: string) =>
-  hass.callWS<SubEntry[]>({
+export const getSubEntries = (
+  callWS: HomeAssistant["callWS"],
+  entry_id: string
+) =>
+  callWS<SubEntry[]>({
     type: "config_entries/subentries/list",
     entry_id,
   });
@@ -138,8 +141,11 @@ export const getConfigEntries = (
   });
 };
 
-export const getConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
-  hass.callWS<{ config_entry: ConfigEntry }>({
+export const getConfigEntry = (
+  callWS: HomeAssistant["callWS"],
+  configEntryId: string
+) =>
+  callWS<{ config_entry: ConfigEntry }>({
     type: "config_entries/get_single",
     entry_id: configEntryId,
   });

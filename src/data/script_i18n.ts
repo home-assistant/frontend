@@ -65,11 +65,10 @@ export const describeAction = <T extends ActionType>(
   } catch (error: any) {
     // eslint-disable-next-line no-console
     console.error(error);
-    let msg = "Error in describing action";
-    if (error.message) {
-      msg += ": " + error.message;
-    }
-    return msg;
+    return hass.localize(
+      "ui.panel.config.automation.editor.actions.describe_error",
+      { error: error?.message || String(error) }
+    );
   }
 };
 
@@ -126,23 +125,10 @@ const tryDescribeAction = <T extends ActionType>(
           descriptionPlaceholders
         ) || hass.services[domain]?.[serviceName]?.name;
 
-      if (config.metadata) {
-        if (service && shouldShowDomainPrefix(domain, manifests)) {
-          return `${domainToName(hass.localize, domain)}: ${service}`;
-        }
-        return service || config.action;
+      if (service && shouldShowDomainPrefix(domain, manifests)) {
+        return `${domainToName(hass.localize, domain)}: ${service}`;
       }
-
-      return hass.localize(
-        `${actionTranslationBaseKey}.service.description.service_based_on_name_no_targets`,
-        {
-          name: service
-            ? shouldShowDomainPrefix(domain, manifests)
-              ? `${domainToName(hass.localize, domain)}: ${service}`
-              : service
-            : config.action,
-        }
-      );
+      return service || config.action;
     }
     return hass.localize(
       `${actionTranslationBaseKey}.service.description.service`
@@ -357,10 +343,7 @@ const tryDescribeAction = <T extends ActionType>(
       }`;
     }
     return hass.localize(
-      `${actionTranslationBaseKey}.device_id.description.perform_device_action`,
-      {
-        device: stateObj ? hass.formatEntityName(stateObj) : config.entity_id,
-      }
+      `${actionTranslationBaseKey}.device_id.description.no_device`
     );
   }
 

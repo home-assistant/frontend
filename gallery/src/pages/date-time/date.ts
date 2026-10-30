@@ -2,7 +2,6 @@ import { css, html, LitElement } from "lit";
 import { customElement } from "lit/decorators";
 import { formatDateNumeric } from "../../../../src/common/datetime/format_date";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-list";
 import type { FrontendLocaleData } from "../../../../src/data/translation";
 import {
   DateFormat,
@@ -27,7 +26,7 @@ export class DemoDateTimeDate extends LitElement {
     };
     const date = new Date();
     return html`
-      <ha-list>
+      <div>
         <div class="container header">
           <div>Language</div>
           <div class="center">Default (lang)</div>
@@ -86,7 +85,7 @@ export class DemoDateTimeDate extends LitElement {
             </div>
           `
         )}
-      </ha-list>
+      </div>
     `;
   }
 

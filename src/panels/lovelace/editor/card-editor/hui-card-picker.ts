@@ -54,11 +54,27 @@ const cardKey = (card: Card): string =>
 
 const SPINNER = html`<div class="spinner"><ha-spinner></ha-spinner></div>`;
 
+/**
+ * @element hui-card-picker
+ *
+ * @summary Searchable grid of cards to pick from.
+ *
+ * @slot - Footer below the scrolling cards, e.g. an action bar.
+ *
+ * @cssprop --ha-card-picker-content-padding-bottom - Space at the end of the scrolling cards.
+ *
+ * @attr hide-clipboard - Hides the clipboard card, e.g. when the host offers its own paste action.
+ *
+ * @fires config-changed - Fired with the config of the picked card.
+ */
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public suggestedCards?: string[];
+
+  @property({ type: Boolean, attribute: "hide-clipboard" })
+  public hideClipboard = false;
 
   @state()
   @storage({
@@ -205,6 +221,7 @@ export class HuiCardPicker extends LitElement {
     const energyCardsItems = this._energyCards(this._cards);
     const customCardsItems = this._customCards(this._cards);
     const manualCard = this._manualCard(this._cards);
+    const clipboard = this.hideClipboard ? undefined : this._clipboard;
 
     return html`
       <ha-input-search
@@ -248,7 +265,10 @@ export class HuiCardPicker extends LitElement {
                             }
                           </div>
                           <div class="cards-container">
-                            ${this._renderClipboardCard(this._clipboard, this.hass!.locale)}
+                            ${this._renderClipboardCard(
+                              clipboard,
+                              this.hass!.locale
+                            )}
                             ${repeat(
                               favoriteCards,
                               (cardElement: CardElement) =>
@@ -274,7 +294,7 @@ export class HuiCardPicker extends LitElement {
                             ${
                               favoriteCards.length === 0
                                 ? this._renderClipboardCard(
-                                    this._clipboard,
+                                    clipboard,
                                     this.hass!.locale
                                   )
                                 : nothing
@@ -299,7 +319,7 @@ export class HuiCardPicker extends LitElement {
                     ${
                       favoriteCards.length === 0 && suggestedCards.length === 0
                         ? this._renderClipboardCard(
-                            this._clipboard,
+                            clipboard,
                             this.hass!.locale
                           )
                         : nothing
@@ -347,6 +367,7 @@ export class HuiCardPicker extends LitElement {
         }
         <div class="cards-container">${this._renderCard(manualCard, true)}</div>
       </div>
+      <slot></slot>
     `;
   }
 
@@ -685,6 +706,7 @@ export class HuiCardPicker extends LitElement {
           flex: 1;
           min-height: 0;
           overflow: auto;
+          padding-bottom: var(--ha-card-picker-content-padding-bottom, 0px);
         }
 
         ha-input-search {

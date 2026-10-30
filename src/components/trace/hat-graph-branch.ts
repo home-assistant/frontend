@@ -232,6 +232,11 @@ export class HatGraphBranch extends LitElement {
       position: relative;
       z-index: 2;
     }
+    /* Branch positions are measured from the inline start. Mirror their
+       connectors together with the RTL branch row, including nested rows. */
+    :host(:dir(rtl)) svg {
+      transform: scaleX(-1);
+    }
     path {
       stroke: var(--connector-clr, var(--stroke-clr));
       stroke-width: 1;

@@ -5,13 +5,10 @@ import { customElement, property } from "lit/decorators";
 
 import "../components/entity/state-info";
 import "../components/ha-humidifier-state";
-import type { HomeAssistant } from "../types";
 import { haStyle } from "../resources/styles";
 
 @customElement("state-card-humidifier")
 class StateCardHumidifier extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
@@ -19,11 +16,7 @@ class StateCardHumidifier extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="horizontal justified layout">
-        <state-info
-          .hass=${this.hass}
-          .stateObj=${this.stateObj}
-          .inDialog=${this.inDialog}
-        >
+        <state-info .stateObj=${this.stateObj} .inDialog=${this.inDialog}>
         </state-info>
         <ha-humidifier-state .stateObj=${this.stateObj}></ha-humidifier-state>
       </div>

@@ -9,6 +9,7 @@ import {
   apiContext,
   areasContext,
   authContext,
+  brandsAccessTokenContext,
   conditionDescriptionsContext,
   configContext,
   configEntriesContext,
@@ -49,6 +50,7 @@ import type {
   HomeAssistant,
   HomeAssistantInternationalization,
 } from "../types";
+import { subscribeBrandsAccessToken } from "../util/brands-url";
 import type { HassBaseEl } from "./hass-base-mixin";
 import { LazyContextProvider } from "./lazy-context-provider";
 import { RelatedContextProvider } from "./related-context-provider";
@@ -247,11 +249,20 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
 
     private __unsubReducedMotion?: () => void;
 
+    private __brandsAccessTokenProvider = new ContextProvider(this, {
+      context: brandsAccessTokenContext,
+    });
+
+    private __unsubBrandsAccessToken?: () => void;
+
     public connectedCallback() {
       super.connectedCallback();
       this.__unsubReducedMotion = listenMediaQuery(
         "(prefers-reduced-motion: reduce)",
         (matches) => this.__reducedMotionProvider.setValue(matches)
+      );
+      this.__unsubBrandsAccessToken = subscribeBrandsAccessToken((token) =>
+        this.__brandsAccessTokenProvider.setValue(token)
       );
     }
 
@@ -309,6 +320,8 @@ export const contextMixin = <T extends Constructor<HassBaseEl>>(
       super.disconnectedCallback();
       this.__unsubReducedMotion?.();
       this.__unsubReducedMotion = undefined;
+      this.__unsubBrandsAccessToken?.();
+      this.__unsubBrandsAccessToken = undefined;
       for (const provider of Object.values(this.__lazyContextProviders)) {
         provider.unsubscribe();
       }
