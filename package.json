@@ -173,7 +173,7 @@
     "@vitest/coverage-v8": "5.0.5",
     "babel-loader": "10.1.1",
     "babel-plugin-polyfill-corejs3": "1.0.0",
-    "browserslist": "4.29.4",
+    "browserslist": "4.29.5",
     "browserslist-useragent-regexp": "4.1.4",
     "core-js-compat": "3.51.0",
     "del": "9.0.1",
