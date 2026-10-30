@@ -168,7 +168,7 @@ export class DialogDataTableSettings extends LitElement {
                           .path=${mdiDragHorizontalVariant}
                           slot="start"
                         ></ha-svg-icon>`
-                      : nothing
+                      : html`<span class="handle-spacer" slot="start"></span>`
                   }
                   <ha-icon-button
                     tabindex="0"
@@ -344,6 +344,11 @@ export class DialogDataTableSettings extends LitElement {
         ha-icon-button {
           display: block;
           margin: -12px;
+        }
+        .handle-spacer {
+          display: block;
+          width: 24px;
+          height: 24px;
         }
       `,
     ];
