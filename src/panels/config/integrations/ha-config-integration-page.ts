@@ -8,7 +8,6 @@ import {
   mdiOpenInNew,
   mdiPackageVariant,
   mdiPlus,
-  mdiPuzzleOutline,
   mdiTextBoxOutline,
   mdiWeb,
 } from "@mdi/js";
@@ -27,7 +26,6 @@ import {
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
-import { formatListWithAnds } from "../../../common/string/format-list";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   integrationQueryParamConfig,
@@ -39,7 +37,9 @@ import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/ha-icon-next";
 import "../../../components/item/ha-list-item-base";
+import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
 import { getSignedPath } from "../../../data/auth";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
@@ -403,14 +403,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.domain
     );
 
-    const usedBy = this._dependents?.length
-      ? formatListWithAnds(
-          this.hass.locale,
-          this._dependents.map((manifest) =>
-            domainToName(this.hass.localize, manifest.domain, manifest)
-          )
-        )
-      : undefined;
+    const showDependents =
+      normalEntries.length === 0 && Boolean(this._dependents?.length);
 
     const documentationLink = this._manifest?.is_built_in
       ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
@@ -597,25 +591,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   }
                   ${
                     normalEntries.length === 0 &&
+                    !showDependents &&
                     this._manifest &&
                     !this._manifest.config_flow &&
                     this.hass.config.components.find(
                       (comp) => comp.split(".")[0] === this.domain
                     )
                       ? html`<div class="integration-info info">
-                          <ha-svg-icon
-                            path=${usedBy ? mdiPuzzleOutline : mdiFileCodeOutline}
-                          ></ha-svg-icon
-                          >${
-                            usedBy
-                              ? this.hass.localize(
-                                  "ui.panel.config.integrations.config_entry.used_by",
-                                  { integrations: usedBy }
-                                )
-                              : this.hass.localize(
-                                  "ui.panel.config.integrations.config_entry.no_config_flow"
-                                )
-                          }
+                          <ha-svg-icon path=${mdiFileCodeOutline}></ha-svg-icon
+                          >${this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.no_config_flow"
+                          )}
                         </div>`
                       : nothing
                   }
@@ -926,19 +912,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ? this.hass.localize(
                             "ui.panel.config.integrations.none_found"
                           )
-                        : this._manifest &&
+                        : !showDependents &&
+                            this._manifest &&
                             !this._manifest.config_flow &&
                             this.hass.config.components.find(
                               (comp) => comp.split(".")[0] === this.domain
                             )
-                          ? usedBy
-                            ? this.hass.localize(
-                                "ui.panel.config.integrations.integration_page.dependency_entry",
-                                { integrations: usedBy }
-                              )
-                            : this.hass.localize(
-                                "ui.panel.config.integrations.integration_page.yaml_entry"
-                              )
+                          ? this.hass.localize(
+                              "ui.panel.config.integrations.integration_page.yaml_entry"
+                            )
                           : this.hass.localize(
                               "ui.panel.config.integrations.integration_page.no_entries"
                             )
@@ -960,9 +942,52 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   `
             }
           </div>
+          ${
+            showDependents
+              ? html`<div class="section">
+                  <h3 class="section-header">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.integration_page.used_by"
+                    )}
+                  </h3>
+                  ${this._renderDependents(this._dependents!)}
+                </div>`
+              : nothing
+          }
         </div>
       </hass-subpage>
     `;
+  }
+
+  private _renderDependents(dependents: IntegrationManifest[]) {
+    return html`<ha-list-base>
+      ${dependents.map(
+        (manifest) =>
+          html`<ha-list-item-button
+            class="dependent"
+            href=${`/config/integrations/integration/${manifest.domain}`}
+          >
+            <img
+              slot="start"
+              alt=""
+              src=${brandsUrl(
+                {
+                  domain: manifest.domain,
+                  type: "icon@2x",
+                  darkOptimized: this.hass.themes?.darkMode,
+                },
+                this.hass.auth.data.hassUrl
+              )}
+              crossorigin="anonymous"
+              referrerpolicy="no-referrer"
+            />
+            <div slot="headline">
+              ${domainToName(this.hass.localize, manifest.domain, manifest)}
+            </div>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-list-item-button>`
+      )}
+    </ha-list-base>`;
   }
 
   private _onImageLoad(ev) {
@@ -1660,6 +1685,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         }
         ha-list-item-base.discovered {
           --ha-row-item-min-height: 72px;
+        }
+        ha-list-item-button.dependent {
+          --ha-row-item-min-height: 72px;
+        }
+        ha-list-item-button.dependent + ha-list-item-button.dependent {
+          border-top: var(--ha-border-width-sm) solid var(--divider-color);
+        }
+        ha-list-item-button.dependent img {
+          width: 40px;
+          height: 40px;
+          object-fit: contain;
         }
         ha-list-item-base.config_entry {
           position: relative;
