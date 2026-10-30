@@ -7819,7 +7819,8 @@
             "add_hardware": "Add hardware",
             "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
             "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
-            "add_virtual": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
+            "add_virtual": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
+            "open_config_panel": "{name} settings"
           },
           "config_entry": {
             "application_credentials": {
