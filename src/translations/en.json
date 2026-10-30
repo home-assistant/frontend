@@ -9522,7 +9522,7 @@
           "description": "Manage the format of newly created entity IDs",
           "card": {
             "header": "Entity ID format for new entities",
-            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
+            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new ID is created. Using it is optional, and you can still rename each entity ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
             "learn_more": "Learn more",
             "preview": "Examples",
             "preview_error": "Failed to generate preview",
