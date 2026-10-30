@@ -11,6 +11,22 @@ export interface ButtonCardFeatureConfig {
   data?: ButtonCardData;
 }
 
+export const CALENDAR_FORECAST_FOCUS = ["past", "present", "future"] as const;
+
+export type CalendarForecastFocus = (typeof CALENDAR_FORECAST_FOCUS)[number];
+
+export const DEFAULT_CALENDAR_FORECAST_FOCUS: CalendarForecastFocus = "future";
+
+export const DEFAULT_CALENDAR_FORECAST_HOURS_TO_SHOW = 12;
+
+export interface CalendarForecastCardFeatureConfig {
+  type: "calendar-forecast";
+  hours_to_show?: number;
+  focus?: CalendarForecastFocus;
+  show_all_day_events?: boolean;
+  show_labels?: boolean;
+}
+
 export interface CoverOpenCloseCardFeatureConfig {
   type: "cover-open-close";
 }
@@ -360,6 +376,7 @@ export type LovelaceCardFeaturePosition = "bottom" | "inline";
 export type LovelaceCardFeatureConfig =
   | AlarmModesCardFeatureConfig
   | ButtonCardFeatureConfig
+  | CalendarForecastCardFeatureConfig
   | ClimateFanModesCardFeatureConfig
   | ClimateSwingModesCardFeatureConfig
   | ClimateSwingHorizontalModesCardFeatureConfig

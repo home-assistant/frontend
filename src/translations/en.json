@@ -11708,6 +11708,22 @@
               "button": {
                 "label": "Button"
               },
+              "calendar-forecast": {
+                "label": "Calendar forecast",
+                "focus": "Focus",
+                "focus_options": {
+                  "past": "Past",
+                  "present": "Present",
+                  "future": "Future"
+                },
+                "show_all_day_events": "Show all-day events",
+                "show_labels": "Show labels",
+                "events": "Events: {events}",
+                "no_events": "No events",
+                "failed_to_load": "Failed to load events",
+                "loading": "Loading events",
+                "all_day": "All day"
+              },
               "cover-open-close": {
                 "label": "Cover open/close"
               },
