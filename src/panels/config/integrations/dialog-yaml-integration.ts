@@ -101,6 +101,8 @@ export class DialogYamlIntegration extends LitElement {
     ha-dialog {
       /* Place above other dialogs */
       --dialog-z-index: 104;
+      --ha-dialog-header-white-space: normal;
+      --ha-dialog-header-title-height: auto;
     }
   `;
 }
