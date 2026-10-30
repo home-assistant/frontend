@@ -17,6 +17,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
@@ -65,6 +66,7 @@ import {
   LogSeverity,
   domainToName,
   fetchIntegrationManifest,
+  getConfigPanelPath,
   integrationIssuesUrl,
   setIntegrationLogLevel,
   subscribeLogInfo,
@@ -82,6 +84,7 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
+import { configSections } from "../config-sections";
 import "./ha-config-entry-row";
 import type { HaConfigEntryRow } from "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
@@ -396,6 +399,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.domain
     );
 
+    const configPanel = isComponentLoaded(this.hass.config, this.domain)
+      ? getConfigPanelPath(this.domain, this.hass.panels)
+      : undefined;
+
     const documentationLink = this._manifest?.is_built_in
       ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
       : this._manifest?.documentation;
@@ -689,6 +696,21 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               </div>
             </div>
             <div class="actions">
+              ${
+                configPanel
+                  ? html`<ha-button
+                      appearance="outlined"
+                      href=${`/${configPanel}`}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.integration_page.open_config_panel",
+                        {
+                          name: this._configPanelName(this.domain, configPanel),
+                        }
+                      )}
+                    </ha-button>`
+                  : nothing
+              }
               ${
                 canAddDevice
                   ? html`
@@ -1387,6 +1409,20 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       );
     }
   );
+
+  private _configPanelName(domain: string, configPanel: string): string {
+    // Use the name the Connectivity page shows, like "Zigbee" for ZHA.
+    const page = configSections.connectivity.find(
+      (section) =>
+        ensureArray(section.component)?.includes(domain) ||
+        section.path === `/${configPanel}`
+    );
+    return page
+      ? this.hass.localize(
+          `ui.panel.config.dashboard.${page.translationKey}.main`
+        )
+      : domainToName(this.hass.localize, domain, this._manifest);
+  }
 
   private _addDevice() {
     protocolIntegrationPicked(this, this.hass, this.domain);
