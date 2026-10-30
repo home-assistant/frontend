@@ -96,7 +96,10 @@ import type {
   EntityRegistryOptions,
   UpdateEntityRegistryEntryResult,
 } from "../../../data/entity/entity_registry";
-import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry";
+import {
+  entityRegistryByEntityId,
+  updateEntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
 import type { EntitySources } from "../../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import type { ExposeEntitySettings } from "../../../data/expose";
@@ -825,9 +828,11 @@ export class HaConfigEntities extends LitElement {
       )}
       <ha-dropdown-item .slot=${slot} value="area_none">
         ${
-          // Clearing the area of a device entity falls back to the device area
+          // Clearing the area of a device entity falls back to the device area.
+          // Use the full registry: hass.entities omits disabled entities.
           this._selected.some(
-            (entityId) => this.hass.entities[entityId]?.device_id
+            (entityId) =>
+              entityRegistryByEntityId(this._entities)[entityId]?.device_id
           )
             ? this.hass.localize(
                 "ui.dialogs.entity_registry.editor.use_device_area"
