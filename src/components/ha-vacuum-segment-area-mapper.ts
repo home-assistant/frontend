@@ -1,14 +1,18 @@
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { mdiArrowRightThin, mdiDelete } from "@mdi/js";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
 import { computeAreaName } from "../common/entity/compute_area_name";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { apiContext, areasContext } from "../data/context";
 import type { Segment } from "../data/vacuum";
 import { getVacuumSegments } from "../data/vacuum";
 import { haStyle } from "../resources/styles";
-import type { HomeAssistant } from "../types";
 import "./ha-alert";
 import "./ha-area-picker";
 import "./ha-icon-button";
@@ -18,8 +22,6 @@ type AreaSegmentMapping = Record<string, string[]>; // area ID -> segment IDs
 
 @customElement("ha-vacuum-segment-area-mapper")
 export class HaVacuumSegmentAreaMapper extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: "entity-id" }) public entityId!: string;
 
   @property({ attribute: false }) public value?: AreaSegmentMapping;
@@ -29,6 +31,17 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
   @state() private _loading = false;
 
   @state() private _error?: string;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: areasContext, subscribe: true })
+  private _areas?: ContextType<typeof areasContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   public get lastSeenSegments() {
     return this._segments;
@@ -47,7 +60,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     this._error = undefined;
 
     try {
-      const result = await getVacuumSegments(this.hass, this.entityId);
+      const result = await getVacuumSegments(this._api.callWS, this.entityId);
       this._segments = result.segments;
     } catch (err: any) {
       this._error = err.message || "Failed to load segments";
@@ -60,7 +73,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
   protected render() {
     if (this._loading) {
       return html`
-        <div class="loading">${this.hass.localize("ui.common.loading")}...</div>
+        <div class="loading">${this._localize("ui.common.loading")}...</div>
       `;
     }
 
@@ -71,7 +84,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
     if (!this._segments || this._segments.length === 0) {
       return html`
         <ha-alert alert-type="info">
-          ${this.hass.localize("ui.dialogs.vacuum_segment_mapping.no_segments")}
+          ${this._localize("ui.dialogs.vacuum_segment_mapping.no_segments")}
         </ha-alert>
       `;
     }
@@ -105,24 +118,22 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
   private _renderOrphanedAreas(areaIds: string[]) {
     return html`
       <h2>
-        ${this.hass.localize(
-          "ui.dialogs.vacuum_segment_mapping.orphaned_header"
-        )}
+        ${this._localize("ui.dialogs.vacuum_segment_mapping.orphaned_header")}
       </h2>
       <p class="orphaned-description">
-        ${this.hass.localize(
+        ${this._localize(
           "ui.dialogs.vacuum_segment_mapping.orphaned_description"
         )}
       </p>
       ${areaIds.map((areaId) => {
-        const area = this.hass.areas[areaId];
+        const area = this._areas?.[areaId];
         const name = (area ? computeAreaName(area) : undefined) || areaId;
         return html`
           <div class="orphaned-row">
             <span class="orphaned-name">${name}</span>
             <ha-icon-button
               .path=${mdiDelete}
-              .label=${this.hass.localize(
+              .label=${this._localize(
                 "ui.dialogs.vacuum_segment_mapping.orphaned_remove",
                 { name }
               )}
@@ -176,7 +187,7 @@ export class HaVacuumSegmentAreaMapper extends LitElement {
         <ha-svg-icon class="arrow" .path=${mdiArrowRightThin}></ha-svg-icon>
         <ha-area-picker
           .value=${mappedAreas}
-          .label=${this.hass.localize(
+          .label=${this._localize(
             "ui.dialogs.vacuum_segment_mapping.area_label"
           )}
           @value-changed=${this._handleAreaChanged}

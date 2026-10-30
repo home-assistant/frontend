@@ -3,7 +3,9 @@ import { computeDomain } from "../../src/common/entity/compute_domain";
 import {
   HistoryStream,
   computeHistory,
+  convertStatisticsToHistory,
   isTimelineEntity,
+  mergeHistoryResults,
 } from "../../src/data/history";
 import type { HomeAssistant } from "../../src/types";
 import { mockDevice, mockEntity } from "../common/entity/context/context-mock";
@@ -13,13 +15,11 @@ import {
   mockLocalize,
 } from "../fixtures/hass";
 
-const mockHass = {} as HomeAssistant;
-
 describe("HistoryStream.processMessage", () => {
   it("should delete lc from boundary state when pruning expired history", () => {
     const now = Date.now();
     const hoursToShow = 1;
-    const stream = new HistoryStream(mockHass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const purgeBeforePythonTime = (now - 60 * 60 * hoursToShow * 1000) / 1000;
 
     // Seed combinedHistory with states where lc differs from lu
@@ -56,7 +56,7 @@ describe("HistoryStream.processMessage", () => {
   it("should handle boundary state without lc correctly", () => {
     const now = Date.now();
     const hoursToShow = 1;
-    const stream = new HistoryStream(mockHass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const purgeBeforePythonTime = (now - 60 * 60 * hoursToShow * 1000) / 1000;
 
     // State without lc (lc equals lu, so lc is omitted)
@@ -87,7 +87,7 @@ describe("HistoryStream.processMessage", () => {
   it("should not modify states when none are expired", () => {
     const now = Date.now();
     const hoursToShow = 1;
-    const stream = new HistoryStream(mockHass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const purgeBeforePythonTime = (now - 60 * 60 * hoursToShow * 1000) / 1000;
 
     // All states are within the time window
@@ -303,5 +303,63 @@ describe("isTimelineEntity", () => {
       ).toBe(timelineIds.includes(entityId));
     }
     expect(timelineIds).toEqual(["binary_sensor.door", "light.hallway"]);
+  });
+});
+
+describe("mergeHistoryResults", () => {
+  it("merges unit-less statistics into the history line of each entity", () => {
+    const battery = { unit_of_measurement: "%", device_class: "battery" };
+    const states = {
+      "sensor.soc_a": createMockEntityState("sensor.soc_a", "50", battery),
+      "sensor.soc_b": createMockEntityState("sensor.soc_b", "60", battery),
+      "sensor.soc_template": createMockEntityState(
+        "sensor.soc_template",
+        "55",
+        battery
+      ),
+      "sensor.temperature": createMockEntityState("sensor.temperature", "21", {
+        unit_of_measurement: "°C",
+        device_class: "temperature",
+      }),
+    };
+    const statisticIds = ["sensor.soc_a", "sensor.soc_b", "sensor.temperature"];
+    // Statistics fetched before the entities were loaded have no unit
+    const ltsResult = convertStatisticsToHistory(
+      createMockHass(),
+      Object.fromEntries(
+        statisticIds.map((id) => [
+          id,
+          [{ start: 1_700_000_000_000, end: 1_700_003_600_000, mean: 50 }],
+        ])
+      ),
+      statisticIds,
+      true
+    );
+    const historyResult = computeHistory(
+      createMockHass(states),
+      Object.fromEntries(
+        Object.values(states).map((stateObj) => [
+          stateObj.entity_id,
+          [{ s: stateObj.state, a: stateObj.attributes, lu: 1_700_010_000 }],
+        ])
+      ),
+      [],
+      mockLocalize,
+      true
+    );
+
+    expect(
+      mergeHistoryResults(historyResult, ltsResult).line.map(
+        ({ unit, data }) => ({
+          unit,
+          withStatistics: data
+            .filter((entity) => entity.statistics?.length)
+            .map((entity) => entity.entity_id),
+        })
+      )
+    ).toEqual([
+      { unit: "%", withStatistics: ["sensor.soc_a", "sensor.soc_b"] },
+      { unit: "°C", withStatistics: ["sensor.temperature"] },
+    ]);
   });
 });

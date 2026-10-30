@@ -647,7 +647,17 @@ export class QuickBar extends LitElement {
 
   private _getDevicesMemoized = memoizeOne(
     (hass: HomeAssistant, configEntryLookup: Record<string, ConfigEntry>) =>
-      getDevices(hass, configEntryLookup, { idPrefix: `device${SEPARATOR}` })
+      getDevices({
+        states: hass.states,
+        areas: hass.areas,
+        devices: hass.devices,
+        entities: hass.entities,
+        localize: hass.localize,
+        language: hass.locale.language,
+        translationMetadata: hass.translationMetadata,
+        configEntryLookup,
+        idPrefix: `device${SEPARATOR}`,
+      })
   );
 
   private _getAreasMemoized = memoizeOne((hass: HomeAssistant) =>

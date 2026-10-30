@@ -13,13 +13,7 @@ export interface SelectEntity extends HassEntityBase {
 }
 
 export const setSelectOption = (
-  hass: HomeAssistant,
+  callService: HomeAssistant["callService"],
   entity: string,
   option: string
-) =>
-  hass.callService(
-    "select",
-    "select_option",
-    { option },
-    { entity_id: entity }
-  );
+) => callService("select", "select_option", { option }, { entity_id: entity });

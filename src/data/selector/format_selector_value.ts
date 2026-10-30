@@ -1,3 +1,4 @@
+import type { HassEntities } from "home-assistant-js-websocket";
 import { ensureArray } from "../../common/array/ensure-array";
 import { createDurationData } from "../../common/datetime/create_duration_data";
 import { formatDurationLong } from "../../common/datetime/format_duration";
@@ -5,12 +6,27 @@ import { normalizeDuration } from "../../common/datetime/normalize_duration";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { DEFAULT_ENTITY_NAME } from "../../common/entity/compute_entity_name_display";
 import { blankBeforeUnit } from "../../common/translations/blank_before_unit";
-import type { HomeAssistant } from "../../types";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import type { HomeAssistantFormatters } from "../../types";
+import type { AreaRegistryEntry } from "../area/area_registry";
+import type { DeviceRegistryEntry } from "../device/device_registry";
+import type { FloorRegistryEntry } from "../floor_registry";
 import type { Selector } from "../selector";
 import { getDurationSelectorMode, getDurationSelectorUnits } from "../selector";
+import type { FrontendLocaleData } from "../translation";
+
+export interface FormatSelectorValueOptions {
+  locale: FrontendLocaleData;
+  localize: LocalizeFunc;
+  states: HassEntities;
+  devices: Record<string, DeviceRegistryEntry>;
+  areas: Record<string, AreaRegistryEntry>;
+  floors: Record<string, FloorRegistryEntry>;
+  formatEntityName: HomeAssistantFormatters["formatEntityName"];
+}
 
 export const formatSelectorValue = (
-  hass: HomeAssistant,
+  options: FormatSelectorValueOptions,
   value: any,
   selector?: Selector
 ) => {
@@ -47,7 +63,7 @@ export const formatSelectorValue = (
           return number;
         }
         return unit_of_measurement
-          ? `${num}${blankBeforeUnit(unit_of_measurement, hass.locale)}${unit_of_measurement}`
+          ? `${num}${blankBeforeUnit(unit_of_measurement, options.locale)}${unit_of_measurement}`
           : num.toString();
       })
       .join(", ");
@@ -57,7 +73,7 @@ export const formatSelectorValue = (
     const floors = ensureArray(value);
     return floors
       .map((floorId) => {
-        const floor = hass.floors[floorId];
+        const floor = options.floors[floorId];
         if (!floor) {
           return floorId;
         }
@@ -70,7 +86,7 @@ export const formatSelectorValue = (
     const areas = ensureArray(value);
     return areas
       .map((areaId) => {
-        const area = hass.areas[areaId];
+        const area = options.areas[areaId];
         if (!area) {
           return areaId;
         }
@@ -83,11 +99,11 @@ export const formatSelectorValue = (
     const entities = ensureArray(value);
     return entities
       .map((entityId) => {
-        const stateObj = hass.states[entityId];
+        const stateObj = options.states[entityId];
         if (!stateObj) {
           return entityId;
         }
-        const name = hass.formatEntityName(stateObj, DEFAULT_ENTITY_NAME);
+        const name = options.formatEntityName(stateObj, DEFAULT_ENTITY_NAME);
         return name || entityId;
       })
       .join(", ");
@@ -97,7 +113,7 @@ export const formatSelectorValue = (
     const devices = ensureArray(value);
     return devices
       .map((deviceId) => {
-        const device = hass.devices[deviceId];
+        const device = options.devices[deviceId];
         if (!device) {
           return deviceId;
         }
@@ -125,7 +141,7 @@ export const formatSelectorValue = (
           return Object.entries(fields)
             .filter(([key]) => key in item && item[key] != null)
             .map(([key, field]) =>
-              formatSelectorValue(hass, item[key], field.selector)
+              formatSelectorValue(options, item[key], field.selector)
             )
             .join(" = ");
         }
@@ -143,13 +159,13 @@ export const formatSelectorValue = (
       data,
       getDurationSelectorUnits(selector.duration)
     );
-    const formatted = formatDurationLong(hass.locale, duration);
+    const formatted = formatDurationLong(options.locale, duration);
     const mode = getDurationSelectorMode(selector.duration);
     if (!formatted || mode === "positive") {
       return formatted;
     }
     const sign = negative ? "negative" : "positive";
-    return hass.localize(
+    return options.localize(
       `ui.components.selectors.duration.summary.${mode}_${sign}`,
       { duration: formatted }
     );

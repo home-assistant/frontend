@@ -32,8 +32,8 @@ export interface UpdateUserParams {
   local_only?: boolean;
 }
 
-export const fetchUsers = async (hass: HomeAssistant) =>
-  hass.callWS<User[]>({
+export const fetchUsers = async (callWS: HomeAssistant["callWS"]) =>
+  callWS<User[]>({
     type: "config/auth/list",
   });
 

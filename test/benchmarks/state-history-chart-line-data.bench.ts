@@ -25,7 +25,8 @@ const climate = toLineChartEntities({
 });
 
 const base = {
-  hass,
+  localize: hass.localize,
+  states: hass.states,
   computedStyles,
   showNames: true,
   endTime: new Date(FIXED_EPOCH_MS + 30 * dayMs),

@@ -184,7 +184,6 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
             this._ttsSettings
               ? html`<div class="row">
                   <ha-tts-voice-picker
-                    .hass=${this.hass}
                     .engineId=${this._ttsSettings.engine}
                     .language=${this._ttsSettings.language}
                     .value=${this._ttsSettings.voice}
@@ -225,7 +224,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     const pipelineName =
       this.hass.states[this.assistConfiguration?.pipeline_entity_id].state;
 
-    const pipelines = await listAssistPipelines(this.hass);
+    const pipelines = await listAssistPipelines(this.hass.callWS);
 
     let pipeline: AssistPipeline | undefined;
 
@@ -262,7 +261,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     ) {
       return;
     }
-    setSelectOption(this.hass!, stateObj.entity_id, option);
+    setSelectOption(this.hass!.callService, stateObj.entity_id, option);
   }
 
   private async _setTtsSettings() {
@@ -336,7 +335,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       return;
     }
 
-    const cloudStatus = await fetchCloudStatus(this.hass);
+    const cloudStatus = await fetchCloudStatus(this.hass.callWS);
 
     showVoiceAssistantPipelineDetailDialog(this, {
       cloudActiveSubscription:

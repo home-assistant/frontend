@@ -7,6 +7,8 @@ import {
   mdiEye,
   mdiEyeOff,
   mdiMenuDown,
+  mdiMicrophoneMessage,
+  mdiMicrophoneMessageOff,
   mdiPencilOff,
   mdiPlus,
   mdiRestore,
@@ -24,6 +26,7 @@ import { QueryParamsController } from "../../../common/controllers/query-params-
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeAreaName } from "../../../common/entity/compute_area_name";
 import {
   computeDeviceName,
@@ -31,6 +34,7 @@ import {
 } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
+import { isEmptyEntityDomainFilter } from "../../../common/entity/entity_domain_filter";
 import {
   deleteEntity,
   isDeletableEntity,
@@ -93,7 +97,11 @@ import { updateEntityRegistryEntry } from "../../../data/entity/entity_registry"
 import type { EntitySources } from "../../../data/entity/entity_sources";
 import { fetchEntitySourcesWithCache } from "../../../data/entity/entity_sources";
 import type { ExposeEntitySettings } from "../../../data/expose";
-import { listExposedEntities, voiceAssistants } from "../../../data/expose";
+import {
+  exposeEntities,
+  listExposedEntities,
+  voiceAssistants,
+} from "../../../data/expose";
 import { HELPERS_CRUD } from "../../../data/helpers_crud";
 import type { IntegrationManifest } from "../../../data/integration";
 import {
@@ -113,6 +121,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import { showToast } from "../../../util/toast";
 import {
   getAreaTableColumn,
   getCreatedAtTableColumn,
@@ -132,6 +141,8 @@ import {
   getAssistantsTableColumn,
 } from "../voice-assistants/expose/assistants-table-column";
 import { getAvailableAssistants } from "../voice-assistants/expose/available-assistants";
+
+const EXPOSE_TOAST_ID = "entities-expose";
 
 export interface StateEntity extends Omit<
   EntityRegistryEntry,
@@ -808,6 +819,11 @@ export class HaConfigEntities extends LitElement {
         this._labels
       );
 
+    const exposableAssistants = this._exposableAssistants(
+      this.cloudStatus,
+      this.hass
+    );
+
     const includeAddDeviceFab =
       filteredDomains.size === 1 &&
       (PROTOCOL_INTEGRATIONS as readonly string[]).includes(
@@ -952,6 +968,39 @@ export class HaConfigEntities extends LitElement {
           </ha-dropdown-item>
 
           <wa-divider></wa-divider>
+
+          ${
+            exposableAssistants.length
+              ? html`<ha-dropdown-item>
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiMicrophoneMessage}
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.entities.picker.expose_selected.button"
+                    )}
+                    ${this._renderVoiceAssistantItems(
+                      "expose",
+                      exposableAssistants
+                    )}
+                  </ha-dropdown-item>
+                  <ha-dropdown-item>
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiMicrophoneMessageOff}
+                    ></ha-svg-icon>
+                    ${this.hass.localize(
+                      "ui.panel.config.entities.picker.unexpose_selected.button"
+                    )}
+                    ${this._renderVoiceAssistantItems(
+                      "unexpose",
+                      exposableAssistants
+                    )}
+                  </ha-dropdown-item>
+
+                  <wa-divider></wa-divider>`
+              : nothing
+          }
 
           <ha-dropdown-item value="restore_entity_id_selected">
             <ha-svg-icon slot="icon" .path=${mdiRestore}></ha-svg-icon>
@@ -1115,9 +1164,11 @@ export class HaConfigEntities extends LitElement {
 
   protected firstUpdated() {
     this._fetchExposedEntities();
-    fetchEntitySourcesWithCache(this.hass).then((sources) => {
-      this._entitySources = sources;
-    });
+    fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states).then(
+      (sources) => {
+        this._entitySources = sources;
+      }
+    );
   }
 
   // Links, like the ones on a device or integration page, say in the URL what
@@ -1447,7 +1498,7 @@ ${rejected
   private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
-        const label = await createLabelRegistryEntry(this.hass, values);
+        const label = await createLabelRegistryEntry(this.hass.callWS, values);
         this._bulkLabel(label.label_id, "add");
       },
     });
@@ -1548,7 +1599,7 @@ ${rejected
   }
 
   private async _loadSubEntries(entryId: string) {
-    this._subEntries = await getSubEntries(this.hass, entryId);
+    this._subEntries = await getSubEntries(this.hass.callWS, entryId);
   }
 
   private _addDevice() {
@@ -1626,7 +1677,140 @@ ${rejected
 
     if (action.startsWith("label_")) {
       this._handleBulkLabel(ev);
+      return;
     }
+
+    if (action.startsWith("expose_") || action.startsWith("unexpose_")) {
+      const assistant = action.substring(action.indexOf("_") + 1);
+      this._exposeSelected(
+        assistant === "all"
+          ? this._exposableAssistants(this.cloudStatus, this.hass)
+          : [assistant],
+        action.startsWith("expose_")
+      );
+    }
+  }
+
+  // Alexa and Google Assistant can't be exposed to from the UI when they
+  // are configured manually in YAML, same as on the voice assistants expose page
+  private _exposableAssistants = memoize(
+    (cloudStatus: CloudStatus | undefined, hass: HomeAssistant) =>
+      getAvailableAssistants(cloudStatus, hass).filter(
+        (assistant) =>
+          !(
+            cloudStatus?.logged_in &&
+            ((assistant === "cloud.alexa" &&
+              !isEmptyEntityDomainFilter(cloudStatus.alexa_entities)) ||
+              (assistant === "cloud.google_assistant" &&
+                !isEmptyEntityDomainFilter(cloudStatus.google_entities)))
+          )
+      )
+  );
+
+  private _renderVoiceAssistantItems(
+    action: "expose" | "unexpose",
+    assistants: string[]
+  ) {
+    return html`${assistants.map(
+      (assistant) =>
+        html`<ha-dropdown-item
+          slot="submenu"
+          .value=${`${action}_${assistant}`}
+        >
+          ${voiceAssistants[assistant].name}
+        </ha-dropdown-item>`
+    )}
+    ${
+      assistants.length > 1
+        ? html`<ha-dropdown-item slot="submenu" .value=${`${action}_all`}>
+            ${this.hass.localize(
+              "ui.panel.config.entities.picker.expose_selected.all_assistants"
+            )}
+          </ha-dropdown-item>`
+        : nothing
+    }`;
+  }
+
+  private async _exposeSelected(assistants: string[], shouldExpose: boolean) {
+    // Only entities with a state can be exposed, same as the expose page
+    const entityIds = this._selected.filter(
+      (entityId) => entityId in this.hass.states
+    );
+
+    if (!entityIds.length) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.entities.picker.expose_selected.no_entities"
+        ),
+      });
+      return;
+    }
+
+    let changedEntities: { assistant: string; entityIds: string[] }[];
+    try {
+      changedEntities = await Promise.all(
+        assistants.map(async (assistant) => ({
+          assistant,
+          entityIds: (
+            await exposeEntities(
+              this.hass,
+              [assistant],
+              entityIds,
+              shouldExpose
+            )
+          ).changed_entity_ids,
+        }))
+      );
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text: err.message || err.code || String(err),
+      });
+      return;
+    }
+    fireEvent(this, "exposed-entities-changed");
+    this._clearSelection();
+
+    showToast(this, {
+      id: EXPOSE_TOAST_ID,
+      message: this.hass.localize(
+        shouldExpose
+          ? "ui.panel.config.entities.picker.expose_selected.toast"
+          : "ui.panel.config.entities.picker.unexpose_selected.toast",
+        {
+          count: new Set(
+            changedEntities.flatMap((changed) => changed.entityIds)
+          ).size,
+          assistants: assistants
+            .map((assistant) => voiceAssistants[assistant].name)
+            .join(", "),
+        }
+      ),
+      duration: 8000,
+      action: {
+        text: this.hass.localize("ui.common.undo"),
+        action: () => this._undoExpose(changedEntities, shouldExpose),
+      },
+    });
+  }
+
+  private async _undoExpose(
+    changedEntities: { assistant: string; entityIds: string[] }[],
+    shouldExpose: boolean
+  ) {
+    try {
+      await Promise.all(
+        changedEntities
+          .filter(({ entityIds }) => entityIds.length)
+          .map(({ assistant, entityIds }) =>
+            exposeEntities(this.hass, [assistant], entityIds, !shouldExpose)
+          )
+      );
+    } catch (err: any) {
+      showAlertDialog(this, {
+        text: err.message || err.code || String(err),
+      });
+    }
+    fireEvent(this, "exposed-entities-changed");
   }
 
   static get styles(): CSSResultGroup {

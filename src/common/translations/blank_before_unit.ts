@@ -11,5 +11,5 @@ export const blankBeforeUnit = (
   if (localeOptions && unit === "%") {
     return blankBeforePercent(localeOptions);
   }
-  return " ";
+  return "\u00A0";
 };

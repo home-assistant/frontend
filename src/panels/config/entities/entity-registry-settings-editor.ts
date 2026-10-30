@@ -199,7 +199,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _name!: string;
 
-  @state() private _useDeviceName = false;
+  @state() private _isMainEntity = false;
 
   @state() private _icon!: string;
 
@@ -256,7 +256,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
 
   @state() private _noDeviceArea?: boolean;
 
-  @state() private _ownAreaWithoutName = false;
+  @state() private _mainEntityWithOwnArea = false;
 
   private _origEntityId!: string;
 
@@ -275,13 +275,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
 
     this._name = this.entry.name || this._originalName;
-    this._useDeviceName = !!this._device && !this._entryName;
+    this._isMainEntity = !!this._device && !this._entryName;
     this._icon = this.entry.icon || "";
     this._deviceClass =
       this.entry.device_class || this.entry.original_device_class;
     this._origEntityId = this.entry.entity_id;
     this._areaId = this.entry.area_id;
-    this._ownAreaWithoutName = this._useDeviceName && !!this.entry.area_id;
+    this._mainEntityWithOwnArea = this._isMainEntity && !!this.entry.area_id;
     this._labels = this.entry.labels;
     this._entityId = this.entry.entity_id;
     this._disabledBy = this.entry.disabled_by;
@@ -481,39 +481,51 @@ export class EntityRegistrySettingsEditor extends LitElement {
     return html`
       ${
         !this.hideName && this._device
-          ? html`<ha-row-item>
+          ? html`<ha-row-item class="main-entity">
               <span slot="headline"
                 >${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.use_device_name"
-                )}
-                (${computeDeviceNameDisplay(this._device, this.hass.localize)})</span
-              >
-              <span slot="supporting-text"
-                >${this.hass.localize(
-                  "ui.dialogs.entity_registry.editor.change_device_settings",
+                  "ui.dialogs.entity_registry.editor.main_entity",
                   {
-                    link: html`<button
-                      class="link"
-                      @click=${this._openDeviceSettings}
-                    >
-                      ${this.hass.localize(
-                        "ui.dialogs.entity_registry.editor.change_device_name_link"
-                      )}
-                    </button>`,
+                    device: computeDeviceNameDisplay(
+                      this._device,
+                      this.hass.localize
+                    ),
                   }
                 )}</span
               >
+              <span slot="supporting-text"
+                >${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.main_entity_description"
+                )}
+                ${
+                  this._isMainEntity
+                    ? this.hass.localize(
+                        "ui.dialogs.entity_registry.editor.change_device_settings",
+                        {
+                          link: html`<button
+                            class="link"
+                            @click=${this._openDeviceSettings}
+                          >
+                            ${this.hass.localize(
+                              "ui.dialogs.entity_registry.editor.change_device_name_link"
+                            )}
+                          </button>`,
+                        }
+                      )
+                    : nothing
+                }</span
+              >
               <ha-switch
                 slot="end"
-                .checked=${this._useDeviceName}
+                .checked=${this._isMainEntity}
                 .disabled=${this.disabled}
-                @change=${this._useDeviceNameChanged}
+                @change=${this._mainEntityChanged}
               ></ha-switch>
             </ha-row-item>`
           : nothing
       }
       ${
-        this.hideName || (this._device && this._useDeviceName)
+        this.hideName || (this._device && this._isMainEntity)
           ? nothing
           : html`<ha-input
               inset-label
@@ -990,7 +1002,6 @@ export class EntityRegistrySettingsEditor extends LitElement {
           : nothing
       }
       <ha-labels-picker
-        .hass=${this.hass}
         .value=${this._labels}
         .disabled=${!!this.disabled}
         @value-changed=${this._labelsChanged}
@@ -1746,13 +1757,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
     }
   }
 
-  private _useDeviceNameChanged(ev: HASSDomCurrentTargetEvent<HaSwitch>): void {
-    this._useDeviceName = ev.currentTarget.checked;
-    this._ownAreaWithoutName = false;
+  private _mainEntityChanged(ev: HASSDomCurrentTargetEvent<HaSwitch>): void {
+    this._isMainEntity = ev.currentTarget.checked;
+    this._mainEntityWithOwnArea = false;
   }
 
   private get _hasOwnName(): boolean {
-    if (this._device && this._useDeviceName) {
+    if (this._device && this._isMainEntity) {
       return false;
     }
     return !!(this._computeName() ?? this._originalName);
@@ -1763,7 +1774,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
   }
 
   private get _useDeviceArea(): boolean {
-    return !!this._device && !this._hasOwnName && !this._ownAreaWithoutName;
+    return !!this._device && !this._hasOwnName && !this._mainEntityWithOwnArea;
   }
 
   private get _originalName(): string {
@@ -1773,7 +1784,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private _restoreName(): void {
     this._name = this._originalName;
     if (this._device && !this._originalName) {
-      this._useDeviceName = true;
+      this._isMainEntity = true;
     }
   }
 
@@ -1788,7 +1799,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
     if (this.hideName) {
       return this.entry.name;
     }
-    if (this._device && this._useDeviceName) {
+    if (this._device && this._isMainEntity) {
       if (!this._entryName) {
         return this.entry.name;
       }
@@ -1912,6 +1923,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           margin-inline-start: 0;
         }
 
+        ha-row-item.main-entity::part(supporting-text),
         ha-row-item.device-area::part(supporting-text) {
           white-space: normal;
         }

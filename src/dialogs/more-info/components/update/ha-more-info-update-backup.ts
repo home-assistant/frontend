@@ -145,10 +145,10 @@ export class HaMoreInfoUpdateBackup extends LitElement {
     let type: UpdateType | undefined = undefined;
 
     try {
-      this._entitySources = await fetchEntitySourcesWithCache({
-        callWS: this._api.callWS,
-        states: this._states,
-      });
+      this._entitySources = await fetchEntitySourcesWithCache(
+        this._api.callWS,
+        this._states
+      );
       type = getUpdateType(this.stateObj!, this._entitySources!);
     } catch (err) {
       // ignore error, because the generic backup option remains available

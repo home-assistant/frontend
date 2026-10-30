@@ -6,6 +6,7 @@ import type {
 } from "../../../../../components/chart/ha-network-graph";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
+import { ZHADeviceType } from "../../../../../data/zha";
 import type { HomeAssistant } from "../../../../../types";
 
 function getLQIWidth(lqi: number): number {
@@ -31,6 +32,7 @@ export function createZHANetworkChartData(
   const primaryColor = style.getPropertyValue("--primary-color");
   const routerColor = style.getPropertyValue("--cyan-color");
   const endDeviceColor = style.getPropertyValue("--teal-color");
+  const greenPowerColor = style.getPropertyValue("--green-color");
   const offlineColor = style.getPropertyValue("--error-color");
   const nodes: NetworkNode[] = [];
   const links: NetworkLink[] = [];
@@ -51,6 +53,11 @@ export function createZHANetworkChartData(
       itemStyle: { color: endDeviceColor },
     },
     {
+      name: hass.localize("ui.panel.config.zha.visualization.green_power"),
+      symbol: "triangle",
+      itemStyle: { color: greenPowerColor },
+    },
+    {
       name: hass.localize("ui.panel.config.zha.visualization.offline"),
       symbol: "circle",
       itemStyle: { color: offlineColor },
@@ -59,14 +66,17 @@ export function createZHANetworkChartData(
 
   // Create all the nodes and links
   devices.forEach((device) => {
-    const isCoordinator = device.device_type === "Coordinator";
+    const isCoordinator = device.device_type === ZHADeviceType.Coordinator;
+    const isGreenPower = device.device_type === ZHADeviceType.GreenPower;
     let category: number;
     if (!device.available) {
-      category = 3; // Offline
+      category = 4; // Offline
     } else if (isCoordinator) {
       category = 0;
-    } else if (device.device_type === "Router") {
+    } else if (device.device_type === ZHADeviceType.Router) {
       category = 1;
+    } else if (isGreenPower) {
+      category = 3;
     } else {
       category = 2; // End Device
     }
@@ -82,20 +92,30 @@ export function createZHANetworkChartData(
       name: device.user_given_name || device.name || device.ieee,
       context: area?.name,
       category,
-      value: isCoordinator ? 3 : device.device_type === "Router" ? 2 : 1,
+      value: isCoordinator
+        ? 3
+        : device.device_type === ZHADeviceType.Router
+          ? 2
+          : 1,
       symbolSize: isCoordinator
         ? 40
-        : device.device_type === "Router"
+        : device.device_type === ZHADeviceType.Router
           ? 30
           : 20,
-      symbol: isCoordinator ? "roundRect" : "circle",
+      symbol: isCoordinator
+        ? "roundRect"
+        : isGreenPower
+          ? "triangle"
+          : "circle",
       itemStyle: {
         color: device.available
           ? isCoordinator
             ? primaryColor
-            : device.device_type === "Router"
+            : device.device_type === ZHADeviceType.Router
               ? routerColor
-              : endDeviceColor
+              : isGreenPower
+                ? greenPowerColor
+                : endDeviceColor
           : offlineColor,
       },
       polarDistance: category === 0 ? 0 : category === 1 ? 0.5 : 0.9,
@@ -245,7 +265,7 @@ export function createZHANetworkChartData(
   // Now set ignoreForceLayout to false for the best connection of each device
   // Except for the coordinator which can have multiple strong connections
   devices.forEach((device) => {
-    if (device.device_type === "Coordinator") {
+    if (device.device_type === ZHADeviceType.Coordinator) {
       links.forEach((link) => {
         if (link.source === device.ieee || link.target === device.ieee) {
           link.ignoreForceLayout = false;

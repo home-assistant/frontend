@@ -28,11 +28,11 @@ export interface InputSelectMutableParams {
 }
 
 export const setInputSelectOption = (
-  hass: HomeAssistant,
+  callService: HomeAssistant["callService"],
   entity: string,
   option: string
 ) =>
-  hass.callService("input_select", "select_option", {
+  callService("input_select", "select_option", {
     option,
     entity_id: entity,
   });

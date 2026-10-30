@@ -1,4 +1,5 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import {
@@ -9,19 +10,24 @@ import {
   state,
 } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
   HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { configContext } from "../../data/context";
 import type {
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
 } from "../../data/history";
 import { loadVirtualizer } from "../../resources/virtualizer";
-import type { HomeAssistant } from "../../types";
+import type { HomeAssistantConfig } from "../../types";
 import "./state-history-chart-line";
 import type { StateHistoryChartLine } from "./state-history-chart-line";
 import "./state-history-chart-timeline";
@@ -53,8 +59,6 @@ declare global {
 
 @customElement("state-history-charts")
 export class StateHistoryCharts extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public historyData?: HistoryResult;
 
   @property({ type: Boolean }) public narrow = false;
@@ -116,6 +120,15 @@ export class StateHistoryCharts extends LitElement {
 
   @state() private _chartCount = 0;
 
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
   @queryAll("state-history-chart-line, state-history-chart-timeline")
   private _chartComponents!: NodeListOf<
     StateHistoryChartLine | StateHistoryChartTimeline
@@ -127,21 +140,21 @@ export class StateHistoryCharts extends LitElement {
   @restoreScroll(".container") private _savedScrollPos?: number;
 
   protected render() {
-    if (!isComponentLoaded(this.hass.config, "history")) {
+    if (!isComponentLoaded(this._hassConfig, "history")) {
       return html`<div class="info">
-        ${this.hass.localize("ui.components.history_charts.history_disabled")}
+        ${this._localize("ui.components.history_charts.history_disabled")}
       </div>`;
     }
 
     if (this.isLoadingData && !this.historyData) {
       return html`<div class="info">
-        ${this.hass.localize("ui.components.history_charts.loading_history")}
+        ${this._localize("ui.components.history_charts.loading_history")}
       </div>`;
     }
 
     if (this._isHistoryEmpty()) {
       return html`<div class="info">
-        ${this.hass.localize("ui.components.history_charts.no_history_found")}
+        ${this._localize("ui.components.history_charts.no_history_found")}
       </div>`;
     }
     const combinedItems = this.historyData!.timeline.length
@@ -186,7 +199,6 @@ export class StateHistoryCharts extends LitElement {
     if (!Array.isArray(item)) {
       return html`<div class="entry-container line">
         <state-history-chart-line
-          .hass=${this.hass}
           .unit=${item.unit}
           .data=${item.data}
           .identifier=${item.identifier}
@@ -206,13 +218,12 @@ export class StateHistoryCharts extends LitElement {
           @chart-zoom-with-index=${this._handleTimelineSync}
           .height=${this.virtualize ? undefined : this.height}
           .expandLegend=${this.expandLegend}
-          ?hide-zoom-controls=${this.syncCharts}
+          .zoomSlider=${this.syncCharts ? "never" : "auto"}
         ></state-history-chart-line>
       </div> `;
     }
     return html`<div class="entry-container timeline">
       <state-history-chart-timeline
-        .hass=${this.hass}
         .data=${item}
         .startTime=${this._computedStartTime}
         .endTime=${this._computedEndTime}
@@ -226,15 +237,12 @@ export class StateHistoryCharts extends LitElement {
         .clickForMoreInfo=${this.clickForMoreInfo}
         @y-width-changed=${this._yWidthChanged}
         @chart-zoom-with-index=${this._handleTimelineSync}
-        ?hide-zoom-controls=${this.syncCharts}
+        .zoomSlider=${this.syncCharts ? "never" : "auto"}
       ></state-history-chart-timeline>
     </div> `;
   };
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.size === 1 && changedProps.has("hass")) {
-      return false;
-    }
     if (
       changedProps.size === 1 &&
       changedProps.has("_maxYWidth") &&

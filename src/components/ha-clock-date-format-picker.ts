@@ -26,10 +26,7 @@ import "./ha-sortable";
 
 type ClockDatePartSection = "weekday" | "day" | "month" | "year" | "separator";
 
-type ClockDateSeparatorPart = Extract<
-  ClockCardDatePart,
-  "separator-dash" | "separator-slash" | "separator-dot" | "separator-new-line"
->;
+type ClockDateSeparatorPart = Extract<ClockCardDatePart, `separator-${string}`>;
 
 const CLOCK_DATE_PART_SECTION_ORDER: readonly ClockDatePartSection[] = [
   "day",
@@ -43,6 +40,7 @@ const CLOCK_DATE_SEPARATOR_VALUES: Record<ClockDateSeparatorPart, string> = {
   "separator-dash": "-",
   "separator-slash": "/",
   "separator-dot": ".",
+  "separator-comma": ",",
   "separator-new-line": "",
 };
 

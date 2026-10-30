@@ -14,8 +14,6 @@ import {
   polyfillTimeZoneData,
 } from "./locale-data-polyfill";
 
-let polyfilled = false;
-
 const _polyfillTimeZoneData = polyfillTimeZoneData;
 
 // The DateTimeFormat and DurationFormat polyfills call BigInt() when formatting
@@ -47,10 +45,6 @@ const setDefaultTimeZone = () => {
 };
 
 const polyfillIntl = async () => {
-  if (polyfilled) {
-    return;
-  }
-  polyfilled = true;
   const locale = getLocalLanguage();
   const polyfills: Promise<unknown>[] = [];
   if (shouldPolyfillGetCanonicalLocales()) {
@@ -79,14 +73,10 @@ const polyfillIntl = async () => {
     polyfills.push(import("@formatjs/intl-numberformat/polyfill-force"));
   }
   if (shouldPolyfillPluralRules(locale)) {
-    polyfills.push(
-      import("@formatjs/intl-pluralrules/polyfill-force").then(
-        // Locale data for plural rules breaks current JSON conversions as it includes functions,
-        // so only import English to avoid huge bundles
-        // TODO: Setup JS imports instead of JSON fetches
-        () => import("@formatjs/intl-pluralrules/locale-data/en")
-      )
-    );
+    // The polyfill and its English data are one chunk, so Intl.PluralRules
+    // is never installed without data. Its should-polyfill probe calls
+    // select(), which throws on a data-less polyfill.
+    polyfills.push(import("./intl-pluralrules"));
   }
   if (shouldPolyfillRelativeTimeFormat(locale)) {
     polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill-force"));
@@ -100,4 +90,9 @@ const polyfillIntl = async () => {
   );
 };
 
-await polyfillIntl();
+// Each legacy entry bundle (core, app, authorize, onboarding) carries its own
+// copy of this module, and the bundles load in parallel. A module-level flag
+// only stops re-runs within one bundle, so a second bundle could probe
+// Intl.* while the first was still loading locale data. Share one promise
+// per page instead, so every bundle waits for the same run.
+await (globalThis.__haIntlPolyfill ??= polyfillIntl());

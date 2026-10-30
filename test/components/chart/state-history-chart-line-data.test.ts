@@ -36,7 +36,8 @@ const toLineChartEntities = (history) =>
 
 describe("generateStateHistoryChartLineData", () => {
   const baseParams = {
-    hass,
+    localize: hass.localize,
+    states: hass.states,
     computedStyles,
     showNames: true,
     endTime: new Date(FIXED_EPOCH_MS + dayMs),
@@ -76,13 +77,13 @@ describe("generateStateHistoryChartLineData", () => {
     expect(
       generateStateHistoryChartLineData({
         ...baseParams,
-        hass: createMockHass({
+        states: {
           "sensor.power_meter": createMockEntityState(
             "sensor.power_meter",
             "123.4",
             { unit_of_measurement: "W" }
           ),
-        }),
+        },
         data,
         endTime,
         now: new Date(endTime.getTime() + 500),
@@ -97,13 +98,13 @@ describe("generateStateHistoryChartLineData", () => {
     const endTime = new Date(FIXED_EPOCH_MS + dayMs);
     const points = generateStateHistoryChartLineData({
       ...baseParams,
-      hass: createMockHass({
+      states: {
         "sensor.power_meter": createMockEntityState(
           "sensor.power_meter",
           "123.4",
           { unit_of_measurement: "W" }
         ),
-      }),
+      },
       data,
       endTime,
       now: new Date(endTime.getTime() - 1500),

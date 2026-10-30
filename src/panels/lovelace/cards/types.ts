@@ -41,6 +41,10 @@ import type {
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
+import type {
+  PICTURE_ELEMENTS_EDITOR_BRIDGE,
+  PictureElementsEditorBridge,
+} from "./picture-elements/editor-bridge";
 
 export type AlarmPanelCardConfigState =
   "arm_away" | "arm_home" | "arm_night" | "arm_vacation" | "arm_custom_bypass";
@@ -88,6 +92,7 @@ export interface EntityCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
+  color?: string;
   attribute?: string;
   unit?: string;
   theme?: string;
@@ -467,7 +472,7 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
-  date_format?: ClockCardDatePart[];
+  date_format?: ClockCardDateFormat;
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";
@@ -488,7 +493,24 @@ export type ClockCardDatePart =
   | "separator-dash"
   | "separator-slash"
   | "separator-dot"
+  | "separator-comma"
   | "separator-new-line";
+
+export type ClockCardDatePreset = "short" | "medium" | "long" | "full" | "iso";
+
+/**
+ * A preset name, or a custom list of date parts in display order.
+ */
+export type ClockCardDateFormat = ClockCardDatePreset | ClockCardDatePart[];
+
+export interface DateCardConfig extends LovelaceCardConfig {
+  type: "date";
+  title?: string;
+  date_size?: "small" | "medium" | "large";
+  date_format?: ClockCardDateFormat;
+  time_zone?: string;
+  no_background?: boolean;
+}
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -557,10 +579,6 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   alt_text?: string;
 }
 
-// Symbol for preview click callback - preserved through spreads, not serialized
-// This allows the editor to attach a callback that only exists on the edited card's config
-export const PREVIEW_CLICK_CALLBACK = Symbol("previewClickCallback");
-
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string | MediaSelectorValue;
@@ -575,7 +593,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   theme?: string;
   dark_mode_image?: string | MediaSelectorValue;
   dark_mode_filter?: string;
-  [PREVIEW_CLICK_CALLBACK]?: (x: number, y: number) => void;
+  [PICTURE_ELEMENTS_EDITOR_BRIDGE]?: PictureElementsEditorBridge;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
@@ -630,6 +648,7 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
+  color?: string;
   graph?: string;
   unit?: string;
   detail?: number;

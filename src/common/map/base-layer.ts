@@ -28,7 +28,7 @@ const RASTER_TILE_URL = `${MAP_TILES_PATH}/raster/{z}/{x}/{y}.png?token={token}`
 // policy strips again unless the tiles ask for it back.
 const DEMO_RASTER_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const OSM_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
 // Browsers keep about 16 live WebGL contexts and drop the oldest, which a
 // dashboard full of map cards hits. A transient loss is restored, hence a grace.

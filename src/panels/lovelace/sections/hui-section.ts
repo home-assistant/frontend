@@ -279,7 +279,8 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
   }
 
   private async _initializeConfig() {
-    let sectionConfig = { ...this.config };
+    const config = this.config;
+    let sectionConfig = { ...config };
     let isStrategy = false;
 
     if (isStrategySection(sectionConfig)) {
@@ -288,6 +289,9 @@ export class HuiSection extends ConditionalListenerMixin<LovelaceSectionConfig>(
         sectionConfig,
         this.hass!
       );
+      if (config !== this.config) {
+        return;
+      }
     }
 
     sectionConfig = {

@@ -158,6 +158,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     };
   }
 
+  private _computeIconLabel(name: string, domain: string) {
+    if (this._config?.icon_tap_action?.action !== "toggle") {
+      return name;
+    }
+    const key = ["button", "input_button"].includes(domain)
+      ? "icon_press"
+      : domain === "scene"
+        ? "icon_activate"
+        : "icon_toggle";
+    return this.hass!.localize(`ui.card.tile.${key}`, { name });
+  }
+
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
@@ -281,12 +293,18 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
     const features = this._featureLayout(this._config);
 
     const hasImage = Boolean(imageUrl);
+    const hasFeatures = features.inline.length > 0 || features.below.length > 0;
 
     const fixedInfoHeight =
       this.layout === "grid" && this._config.grid_options?.rows !== "auto";
 
     return html`
-      <ha-card style=${styleMap(style)} class=${classMap({ active })}>
+      <ha-card
+        style=${styleMap(style)}
+        class=${classMap({ active })}
+        role=${ifDefined(hasFeatures ? "group" : undefined)}
+        aria-labelledby=${ifDefined(hasFeatures ? "name" : undefined)}
+      >
         <ha-tile-container
           .featurePosition=${featurePosition}
           .vertical=${Boolean(this._config.vertical)}
@@ -306,7 +324,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
               hasDoubleClick: hasAction(this._config!.icon_double_tap_action),
             }}
             .interactive=${hasTileIconAction(this._config)}
-            .accessibleLabel=${name}
+            .accessibleLabel=${this._computeIconLabel(name, domain)}
             .imageUrl=${imageUrl}
             data-domain=${ifDefined(domain)}
             data-state=${ifDefined(stateObj?.state)}
@@ -330,7 +348,7 @@ export class HuiTileCard extends LitElement implements LovelaceCard {
             ${renderTileBadge(stateObj, this.hass)}
           </ha-tile-icon>
           <ha-tile-info slot="info">
-            <span slot="primary" class="primary">${name}</span>
+            <span slot="primary" class="primary" id="name">${name}</span>
             ${
               stateDisplay
                 ? html`<span slot="secondary">${stateDisplay}</span>`

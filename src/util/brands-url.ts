@@ -16,6 +16,9 @@ export interface HardwareBrandsOptions {
 
 let _brandsAccessToken: string | undefined;
 let _brandsRefreshInterval: ReturnType<typeof setInterval> | undefined;
+const _brandsAccessTokenListeners = new Set<
+  (token: string | undefined) => void
+>();
 
 // Token refreshes every 30 minutes and is valid for 1 hour.
 // Re-fetch every 30 minutes to always have a valid token.
@@ -57,7 +60,23 @@ export const fetchBrandsAccessToken = async (
   const result = await hass.callWS<{ token: string }>({
     type: "brands/access_token",
   });
+  if (result.token === _brandsAccessToken) {
+    return;
+  }
   _brandsAccessToken = result.token;
+  _brandsAccessTokenListeners.forEach((listener) => listener(result.token));
+};
+
+// Calls the listener with the current token and again whenever it changes, so
+// brand images can re-render with a loadable URL (see brandsAccessTokenContext).
+export const subscribeBrandsAccessToken = (
+  listener: (token: string | undefined) => void
+): (() => void) => {
+  _brandsAccessTokenListeners.add(listener);
+  listener(_brandsAccessToken);
+  return () => {
+    _brandsAccessTokenListeners.delete(listener);
+  };
 };
 
 export const scheduleBrandsTokenRefresh = (hass: HomeAssistant): void => {
@@ -93,7 +112,8 @@ const integrationBrandsUrl = (
 
   // The brands API requires a token; without one the request 401s. Return an
   // empty src so no request fires until the token is available. Components
-  // re-render once the token arrives (see connection-mixin) and recompute this.
+  // re-render once the token arrives (see connection-mixin and
+  // brandsAccessTokenContext) and recompute this.
   if (!_brandsAccessToken) {
     return "";
   }

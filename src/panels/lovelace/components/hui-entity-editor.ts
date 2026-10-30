@@ -43,7 +43,17 @@ export class HuiEntityEditor extends LitElement {
     const stateObj = this.hass.states[item.entity];
 
     const { primary, secondary } = stateObj
-      ? computeEntityPickerDisplay(this.hass, stateObj)
+      ? computeEntityPickerDisplay(
+          {
+            entities: this.hass.entities,
+            devices: this.hass.devices,
+            areas: this.hass.areas,
+            floors: this.hass.floors,
+            language: this.hass.language,
+            translationMetadata: this.hass.translationMetadata,
+          },
+          stateObj
+        )
       : { primary: item.entity, secondary: undefined };
 
     return html`

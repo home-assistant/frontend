@@ -18,6 +18,7 @@ import { customElement, property, queryAll, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import {
@@ -26,6 +27,10 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import {
+  integrationQueryParamConfig,
+  integrationSearchFromUrl,
+} from "../../../common/url/integrations-query-params";
 import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
@@ -176,6 +181,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @queryAll("ha-config-entry-row")
   private _configEntryRows!: NodeListOf<HaConfigEntryRow>;
 
+  private _queryParams = new QueryParamsController(
+    this,
+    integrationQueryParamConfig,
+    {
+      enabled: () => true,
+      navigated: () => this._applyUrl(),
+    }
+  );
+
   private _handleHashChange = () => {
     this._searchParms = new URLSearchParams(
       __DEMO__ ? window.location.search : window.location.hash.substring(1)
@@ -237,6 +251,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this._fetchDiagnostics();
       this._fetchEntitySources();
     }
+
+    if (!this.hasUpdated) {
+      this._applyUrl();
+    }
     if (
       changedProperties.has("configEntries") ||
       changedProperties.has("_extraConfigEntries")
@@ -250,7 +268,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchEntitySources() {
-    const entitySources = await fetchEntitySourcesWithCache(this.hass);
+    const entitySources = await fetchEntitySourcesWithCache(
+      this.hass.callWS,
+      this.hass.states
+    );
 
     const entitiesByDomain = {};
 
@@ -720,11 +741,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           </div>
 
           ${
-            normalData.length + attentionData.length > 0
+            normalData.length + attentionData.length > 0 || this._filter
               ? html`<ha-input-search
                   appearance="outlined"
                   .value=${this._filter}
                   @input=${this._handleSearchChange}
+                  @blur=${this._flushUrl}
                 ></ha-input-search>`
               : nothing
           }
@@ -989,7 +1011,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       entriesWithSubs.map(async (entry) => {
         try {
           results[entry.entry_id] = (
-            await getSubEntries(this.hass, entry.entry_id)
+            await getSubEntries(this.hass.callWS, entry.entry_id)
           ).sort((a, b) =>
             caseInsensitiveStringCompare(
               a.title,
@@ -1256,6 +1278,32 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   private _handleSearchChange(ev: HASSDomTargetEvent<HaInputSearch>) {
     this._filter = ev.target.value ?? "";
+
+    this._writeUrl(true);
+  }
+
+  private _flushUrl() {
+    this._queryParams.flush();
+  }
+
+  private _writeUrl(debounced = false) {
+    this._queryParams.write({ search: this._filter }, debounced);
+  }
+
+  private _applyUrl() {
+    const searchParams = this._queryParams.searchParams();
+
+    if (!searchParams) {
+      return;
+    }
+
+    const search = integrationSearchFromUrl(searchParams);
+
+    if (search !== undefined) {
+      this._filter = search;
+    }
+
+    this._writeUrl();
   }
 
   private async _handleEnableDebugLogging() {

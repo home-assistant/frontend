@@ -75,6 +75,16 @@ export const moveCardToContainer = (
   return deleteAtPath(newConfig, cardPath);
 };
 
+export const adoptViewLayout = (
+  card: LovelaceCardConfig,
+  target: LovelaceCardConfig
+): LovelaceCardConfig => {
+  const { view_layout: _viewLayout, ...rest } = card;
+  return target.view_layout === undefined
+    ? rest
+    : { ...rest, view_layout: target.view_layout };
+};
+
 export const getCardSectionConfig = (
   config: LovelaceConfig,
   path: LovelacePath

@@ -65,9 +65,9 @@ describe("automations query params", () => {
     ).toBe(automationsFilterQueryString({}));
   });
 
-  it("keeps one category, as the category filter picks one", () => {
+  it("keeps every category", () => {
     expect(
       automationsLinkFromUrl("?category=a,b")?.filters["ha-filter-categories"]
-    ).toEqual(filter(["a"]));
+    ).toEqual(filter(["a", "b"]));
   });
 });

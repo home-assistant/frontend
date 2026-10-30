@@ -8,6 +8,7 @@ import {
   mdiSwapHorizontal,
   mdiTextureBox,
 } from "@mdi/js";
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -23,6 +24,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import { live } from "lit/directives/live";
 import memoizeOne from "memoize-one";
 import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
 import type { HASSDomTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import { stopPropagation } from "../../common/dom/stop_propagation";
@@ -37,7 +39,16 @@ import { getDeviceArea } from "../../common/entity/context/get_device_context";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { AreaRegistryEntry } from "../../data/area/area_registry";
 import { getConfigEntry } from "../../data/config_entries";
-import { labelsContext } from "../../data/context";
+import {
+  apiContext,
+  configContext,
+  formattersContext,
+  internationalizationContext,
+  labelsContext,
+  registriesContext,
+  statesContext,
+  uiContext,
+} from "../../data/context";
 import type {
   DeviceCompositeSplits,
   DeviceRegistryEntry,
@@ -55,9 +66,13 @@ import {
   type TargetType,
 } from "../../data/target";
 import { showMoreInfoDialog } from "../../dialogs/more-info/show-ha-more-info-dialog";
-import type { HomeAssistant } from "../../types";
+import type {
+  HomeAssistantFormatters,
+  HomeAssistantRegistries,
+} from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
+import "../entity/state-badge";
 import { floorDefaultIconPath } from "../ha-floor-icon";
 import "../ha-button";
 import "../ha-checkbox";
@@ -80,8 +95,6 @@ import {
 
 @customElement("ha-target-picker-item-row")
 export class HaTargetPickerItemRow extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ reflect: true }) public type!: TargetType;
 
   @property({ attribute: "item-id" }) public itemId!: string;
@@ -172,9 +185,40 @@ export class HaTargetPickerItemRow extends LitElement {
   @consume({ context: labelsContext, subscribe: true })
   _labelRegistry?: LabelRegistryEntry[];
 
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityState"]
+  >({
+    transformer: (formatters) => formatters?.formatEntityState,
+  })
+  private _formatEntityState!: HomeAssistantFormatters["formatEntityState"];
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: uiContext, subscribe: true })
+  private _ui?: ContextType<typeof uiContext>;
+
+  @consume({ context: configContext, subscribe: true })
+  private _config?: ContextType<typeof configContext>;
+
   private _loadedConfigEntryId?: string;
 
-  protected willUpdate(changedProps: PropertyValues<this>) {
+  protected willUpdate(changedProps: PropertyValues) {
     const resolvesEntries = !this.subEntry && !this.exclusion;
     if (
       resolvesEntries &&
@@ -194,7 +238,8 @@ export class HaTargetPickerItemRow extends LitElement {
     if (
       changedProps.has("itemId") ||
       changedProps.has("type") ||
-      changedProps.has("hass")
+      changedProps.has("_registries") ||
+      changedProps.has("_i18n")
     ) {
       this._updateDomain();
     }
@@ -209,7 +254,7 @@ export class HaTargetPickerItemRow extends LitElement {
       return;
     }
     const configEntryId =
-      this.hass.devices?.[this.itemId]?.primary_config_entry;
+      this._registries.devices?.[this.itemId]?.primary_config_entry;
     if (configEntryId && configEntryId !== this._loadedConfigEntryId) {
       this._loadedConfigEntryId = configEntryId;
       this._getDeviceDomain(configEntryId);
@@ -221,8 +266,8 @@ export class HaTargetPickerItemRow extends LitElement {
       type: TargetType,
       itemId: string,
       entries: ExtractFromTargetResultReferenced | undefined,
-      entityRegistry: HomeAssistant["entities"],
-      devices: HomeAssistant["devices"]
+      entityRegistry: HomeAssistantRegistries["entities"],
+      devices: HomeAssistantRegistries["devices"]
     ): TargetRow =>
       buildTargetRow(type, itemId, entries, entityRegistry, devices)
   );
@@ -274,8 +319,8 @@ export class HaTargetPickerItemRow extends LitElement {
               this.type,
               this.itemId,
               entries,
-              this.hass.entities,
-              this.hass.devices
+              this._registries.entities,
+              this._registries.devices
             ),
             !this.subEntry,
             this.exclusions ?? []
@@ -306,7 +351,7 @@ export class HaTargetPickerItemRow extends LitElement {
       <span slot="headline" class=${classMap({ out })}
         >${
           canMigrate
-            ? this.hass.localize(
+            ? this._i18n.localize(
                 "ui.components.target-picker.device_replaced_headline"
               )
             : name
@@ -319,15 +364,15 @@ export class HaTargetPickerItemRow extends LitElement {
                 notFound
                   ? canMigrate
                     ? replacement!.candidates.length === 1 && replacement!.name
-                      ? this.hass.localize(
+                      ? this._i18n.localize(
                           "ui.components.target-picker.device_replaced_by_one",
                           { device: replacement!.name }
                         )
-                      : this.hass.localize(
+                      : this._i18n.localize(
                           "ui.components.target-picker.device_replaced",
                           { count: replacement!.candidates.length }
                         )
-                    : this.hass.localize(
+                    : this._i18n.localize(
                         `ui.components.target-picker.${this.type}_not_found`
                       )
                   : context
@@ -338,12 +383,12 @@ export class HaTargetPickerItemRow extends LitElement {
       ${
         excludedBy.length
           ? html`<span slot="supporting-text" class="excluded-by">
-              ${this.hass.localize("ui.components.target-picker.excluded_by")}
+              ${this._i18n.localize("ui.components.target-picker.excluded_by")}
               ${excludedBy.map((item) => this._renderExcludedBy(item))}
             </span>`
           : stateObject && this.subEntry
             ? html`<span slot="supporting-text" class="state"
-                >${this.hass.formatEntityState(stateObject)}</span
+                >${this._formatEntityState(stateObject)}</span
               >`
             : nothing
       }
@@ -359,7 +404,7 @@ export class HaTargetPickerItemRow extends LitElement {
                         ${
                           this.expand && excludedCount
                             ? html`<span class="secondary">
-                                ${this.hass.localize(
+                                ${this._i18n.localize(
                                   "ui.components.target-picker.excluded_count",
                                   { count: excludedCount }
                                 )}
@@ -390,7 +435,7 @@ export class HaTargetPickerItemRow extends LitElement {
                 size="s"
                 @click=${this._migrate}
               >
-                ${this.hass.localize(
+                ${this._i18n.localize(
                   "ui.components.target-picker.replace_update"
                 )}
               </ha-button>
@@ -504,11 +549,11 @@ export class HaTargetPickerItemRow extends LitElement {
       ? remaining.filter(this.activeFilter).length
       : total;
     return this.activeFilter
-      ? this.hass.localize(
+      ? this._i18n.localize(
           "ui.components.target-picker.entities_count_filtered",
           { count, total }
         )
-      : this.hass.localize("ui.components.target-picker.entities_count", {
+      : this._i18n.localize("ui.components.target-picker.entities_count", {
           count,
         });
   }
@@ -549,6 +594,15 @@ export class HaTargetPickerItemRow extends LitElement {
       ></ha-svg-icon>`;
     }
     if (item.type === "entity") {
+      if (
+        stateObject?.attributes.entity_picture ||
+        stateObject?.attributes.entity_picture_local
+      ) {
+        return html`<state-badge
+          slot=${ifDefined(slot)}
+          .stateObj=${stateObject}
+        ></state-badge>`;
+      }
       return html`<ha-state-icon
         slot=${ifDefined(slot)}
         .stateObj=${
@@ -574,7 +628,7 @@ export class HaTargetPickerItemRow extends LitElement {
         </div>
         <span slot="headline"
           ><span class="visually-hidden"
-            >${this.hass.localize("ui.components.target-picker.excluded")}
+            >${this._i18n.localize("ui.components.target-picker.excluded")}
           </span>
           ${name}</span
         >
@@ -583,7 +637,7 @@ export class HaTargetPickerItemRow extends LitElement {
             ? html`<span slot="supporting-text"
                 >${
                   notFound
-                    ? this.hass.localize(
+                    ? this._i18n.localize(
                         `ui.components.target-picker.${this.type}_not_found`
                       )
                     : context
@@ -594,7 +648,7 @@ export class HaTargetPickerItemRow extends LitElement {
         ${
           this.removedCount
             ? html`<span slot="end" class="removed">
-                ${this.hass.localize(
+                ${this._i18n.localize(
                   "ui.components.target-picker.excluded_count",
                   { count: this.removedCount }
                 )}
@@ -604,7 +658,7 @@ export class HaTargetPickerItemRow extends LitElement {
         <ha-icon-button
           slot="end"
           .path=${mdiClose}
-          .label=${this.hass.localize(
+          .label=${this._i18n.localize(
             "ui.components.target-picker.remove_exclusion"
           )}
           @click=${this._removeExclusion}
@@ -631,8 +685,8 @@ export class HaTargetPickerItemRow extends LitElement {
       this.type,
       this.itemId,
       entries,
-      this.hass.entities,
-      this.hass.devices
+      this._registries.entities,
+      this._registries.devices
     );
 
     const nextSubLevel = this.subLevel + 1;
@@ -644,7 +698,6 @@ export class HaTargetPickerItemRow extends LitElement {
             sub-entry
             .subLevel=${nextSubLevel}
             style=${`--sub-entry-indent: calc(${nextSubLevel} * var(--ha-space-10));`}
-            .hass=${this.hass}
             .type=${nextType}
             .itemId=${itemId}
             .parentEntries=${rowEntries?.[index]}
@@ -661,7 +714,6 @@ export class HaTargetPickerItemRow extends LitElement {
             sub-entry
             .subLevel=${nextSubLevel}
             style=${`--sub-entry-indent: calc(${nextSubLevel} * var(--ha-space-10));`}
-            .hass=${this.hass}
             type="device"
             .itemId=${itemId}
             .parentEntries=${deviceRowEntries?.[index]}
@@ -678,7 +730,6 @@ export class HaTargetPickerItemRow extends LitElement {
             sub-entry
             .subLevel=${nextSubLevel}
             style=${`--sub-entry-indent: calc(${nextSubLevel} * var(--ha-space-10));`}
-            .hass=${this.hass}
             type="entity"
             .itemId=${itemId}
             .hideContext=${this.hideContext || this.type !== "label"}
@@ -694,14 +745,17 @@ export class HaTargetPickerItemRow extends LitElement {
     return html`<ha-list-item-base>
       <ha-svg-icon .path=${mdiMinusBox} slot="start" class="icon"></ha-svg-icon>
       <span slot="headline"
-        >${this.hass.localize("ui.components.target-picker.no_targets")}</span
+        >${this._i18n.localize("ui.components.target-picker.no_targets")}</span
       >
     </ha-list-item-base>`;
   }
 
   private _filterEntries(entries: ExtractFromTargetResult) {
     return filterTargetEntries(
-      this.hass,
+      this._states,
+      this._registries.entities,
+      this._registries.devices,
+      this._registries.areas,
       { type: this.type, id: this.itemId },
       entries,
       {
@@ -723,7 +777,7 @@ export class HaTargetPickerItemRow extends LitElement {
     }
     try {
       const entries = await extractFromTarget(
-        this.hass.callWS,
+        this._api.callWS,
         {
           [`${this.type}_id`]: [this.itemId],
         },
@@ -744,7 +798,8 @@ export class HaTargetPickerItemRow extends LitElement {
 
   private _itemData(type: TargetType, item: string) {
     if (type === "floor") {
-      const floor: FloorRegistryEntry | undefined = this.hass.floors?.[item];
+      const floor: FloorRegistryEntry | undefined =
+        this._registries.floors?.[item];
       return {
         name: floor?.name || item,
         iconPath: floor?.icon,
@@ -753,24 +808,31 @@ export class HaTargetPickerItemRow extends LitElement {
       };
     }
     if (type === "area") {
-      const area: AreaRegistryEntry | undefined = this.hass.areas?.[item];
+      const area: AreaRegistryEntry | undefined =
+        this._registries.areas?.[item];
       return {
         name: area?.name || item,
-        context: area?.floor_id && this.hass.floors?.[area.floor_id]?.name,
+        context:
+          area?.floor_id && this._registries.floors?.[area.floor_id]?.name,
         iconPath: area?.icon,
         fallbackIconPath: mdiTextureBox,
         notFound: !area,
       };
     }
     if (type === "device") {
-      const device: DeviceRegistryEntry | undefined = this.hass.devices?.[item];
+      const device: DeviceRegistryEntry | undefined =
+        this._registries.devices?.[item];
 
       const area = device
-        ? getDeviceArea(device, this.hass.areas, this.hass.devices)
+        ? getDeviceArea(
+            device,
+            this._registries.areas,
+            this._registries.devices
+          )
         : undefined;
       const parentDevice =
         device?.parent_device_id && device.next_name_part === "parent_device"
-          ? this.hass.devices[device.parent_device_id]
+          ? this._registries.devices[device.parent_device_id]
           : undefined;
       const context = [
         area ? computeAreaName(area) : undefined,
@@ -779,8 +841,8 @@ export class HaTargetPickerItemRow extends LitElement {
         .filter(Boolean)
         .join(
           computeRTL(
-            this.hass.language,
-            this.hass.translationMetadata.translations
+            this._i18n.language,
+            this._i18n.translationMetadata.translations
           )
             ? " ◂ "
             : " ▸ "
@@ -788,7 +850,7 @@ export class HaTargetPickerItemRow extends LitElement {
 
       return {
         name: device
-          ? computeDeviceNameDisplay(device, this.hass.localize)
+          ? computeDeviceNameDisplay(device, this._i18n.localize)
           : item,
         context,
         fallbackIconPath: mdiDevices,
@@ -796,9 +858,19 @@ export class HaTargetPickerItemRow extends LitElement {
       };
     }
     if (type === "entity") {
-      const stateObject: HassEntity | undefined = this.hass.states[item];
+      const stateObject: HassEntity | undefined = this._states?.[item];
       const { primary, secondary } = stateObject
-        ? computeEntityPickerDisplay(this.hass, stateObject)
+        ? computeEntityPickerDisplay(
+            {
+              entities: this._registries.entities,
+              devices: this._registries.devices,
+              areas: this._registries.areas,
+              floors: this._registries.floors,
+              language: this._i18n.language,
+              translationMetadata: this._i18n.translationMetadata,
+            },
+            stateObject
+          )
         : { primary: item, secondary: undefined };
       return {
         name: primary,
@@ -821,7 +893,7 @@ export class HaTargetPickerItemRow extends LitElement {
   }
 
   private _setDomainName(domain: string) {
-    this._domainName = domainToName(this.hass.localize, domain);
+    this._domainName = domainToName(this._i18n.localize, domain);
   }
 
   private _removeItem(ev: MouseEvent) {
@@ -847,8 +919,8 @@ export class HaTargetPickerItemRow extends LitElement {
         this.type,
         this.itemId,
         this.parentEntries || this._entries,
-        this.hass.entities,
-        this.hass.devices
+        this._registries.entities,
+        this._registries.devices
       ),
       isTarget: !this.subEntry,
       selected: ev.target.checked,
@@ -857,15 +929,15 @@ export class HaTargetPickerItemRow extends LitElement {
 
   private async _getDeviceDomain(configEntryId: string) {
     try {
-      const data = await getConfigEntry(this.hass, configEntryId);
+      const data = await getConfigEntry(this._api.callWS, configEntryId);
       const domain = data.config_entry.domain;
       this._iconImg = brandsUrl(
         {
           domain: domain,
           type: "icon",
-          darkOptimized: this.hass.themes?.darkMode,
+          darkOptimized: this._ui?.themes?.darkMode,
         },
-        this.hass.auth.data.hassUrl
+        this._config?.auth?.data.hassUrl
       );
 
       this._setDomainName(domain);
@@ -886,20 +958,20 @@ export class HaTargetPickerItemRow extends LitElement {
   // pass this row's filters, or undefined if the item is not a replaced device.
   private _getReplacement(item: string) {
     const split = this.compositeSplits?.[item];
-    if (!split || this.hass.devices[item]) {
+    if (!split || this._registries.devices[item]) {
       return undefined;
     }
     const candidates = split.split_ids.filter((id) => {
-      const device = this.hass.devices[id];
+      const device = this._registries.devices[id];
       return (
         device &&
         deviceMeetsFilter(
           device,
-          this.hass.entities,
+          this._registries.entities,
           this.deviceFilter,
           this.includeDomains,
           this.includeDeviceClasses,
-          this.hass.states,
+          this._states,
           this.entityFilter,
           !this.primaryEntitiesOnly
         )
@@ -909,8 +981,8 @@ export class HaTargetPickerItemRow extends LitElement {
     // name instead of the removed composite device id. Fall back to the first
     // available candidate if the primary device itself was deleted.
     const nameDevice =
-      (split.primary_id && this.hass.devices[split.primary_id]) ||
-      (candidates.length ? this.hass.devices[candidates[0]] : undefined);
+      (split.primary_id && this._registries.devices[split.primary_id]) ||
+      (candidates.length ? this._registries.devices[candidates[0]] : undefined);
     const name = nameDevice ? computeDeviceName(nameDevice) : undefined;
     return { candidates, name };
   }
@@ -1014,6 +1086,13 @@ export class HaTargetPickerItemRow extends LitElement {
 
       state-badge {
         color: var(--ha-color-on-neutral-quiet);
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+      }
+      ha-label state-badge {
+        width: 16px;
+        height: 16px;
       }
 
       .icon {

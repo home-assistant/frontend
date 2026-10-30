@@ -4,6 +4,7 @@ import {
   mdiAlertCircle,
   mdiCancel,
   mdiCog,
+  mdiContentDuplicate,
   mdiDelete,
   mdiDotsVertical,
   mdiDownload,
@@ -81,6 +82,7 @@ import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type {
   DataTableFiltersItems,
+  DataTableFiltersValue,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
 import {
@@ -121,6 +123,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { renderCategoryGroupActions } from "../category/render-category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -473,6 +476,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                     {
                       divider: true,
                     },
+                    ...(isHelperDomain(helper.type)
+                      ? [
+                          {
+                            path: mdiContentDuplicate,
+                            label: this.hass.localize("ui.common.duplicate"),
+                            action: () => this._duplicateHelper(helper),
+                          },
+                        ]
+                      : []),
                     {
                       path: mdiDelete,
                       label: this.hass.localize("ui.common.delete"),
@@ -754,7 +766,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-categories
-          .hass=${this.hass}
           scope="helpers"
           .value=${this._filters["ha-filter-categories"]}
           @data-table-filter-changed=${this._filterChanged}
@@ -869,6 +880,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
+        ${renderCategoryGroupActions(
+          "helpers",
+          this._categories,
+          this._tableSettings.grouping,
+          this._categoryDeleted
+        )}
         <ha-button slot="fab" size="l" @click=${this._createHelper}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.helpers.picker.create_helper")}
@@ -886,8 +903,15 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
   }
 
   private _filterChanged(ev) {
-    const type = ev.target.localName;
-    const filters = { ...this._filters, [type]: ev.detail.value };
+    this._setFilter(ev.target.localName, ev.detail.value, ev.detail.items);
+  }
+
+  private _setFilter(
+    type: string,
+    value: DataTableFiltersValue,
+    items: Set<string> | undefined
+  ) {
+    const filters = { ...this._filters, [type]: value };
 
     // A filter also sends the value it was given, once it has found its items.
     // Only a change to what the URL holds is the user's, so a link isn't stored.
@@ -897,15 +921,31 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     ) {
       this._storageFilters = {
         ...this._storageFilters,
-        [type]: ev.detail.value,
+        [type]: value,
       };
     }
 
     this._filters = filters;
-    this._filteredItems = { ...this._filteredItems, [type]: ev.detail.items };
+    this._filteredItems = { ...this._filteredItems, [type]: items };
     this._writeFilters();
     this._applyFilters();
   }
+
+  private _categoryDeleted = (categoryId: string) => {
+    const value = this._filters["ha-filter-categories"];
+
+    if (!Array.isArray(value) || !value.includes(categoryId)) {
+      return;
+    }
+
+    const remaining = value.filter((id) => id !== categoryId);
+
+    this._setFilter(
+      "ha-filter-categories",
+      remaining.length ? remaining : undefined,
+      undefined
+    );
+  };
 
   private _applyFilters() {
     if (!this._helperEntities) {
@@ -1212,7 +1252,7 @@ ${rejected
 
   private async _fetchEntitySources() {
     const [entitySources, fetchedManifests] = await Promise.all([
-      fetchEntitySourcesWithCache(this.hass),
+      fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states),
       fetchIntegrationManifests(this.hass),
     ]);
 
@@ -1489,6 +1529,48 @@ ${rejected
     }
   }
 
+  private async _duplicateHelper(helper: HelperItem) {
+    if (!isHelperDomain(helper.type)) {
+      return;
+    }
+
+    const entityReg = this._entityReg?.find(
+      (entry) => entry.entity_id === helper.entity_id
+    );
+    if (!entityReg?.unique_id) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.helpers.picker.duplicate_failed"
+        ),
+      });
+      return;
+    }
+
+    const config = (
+      await HELPERS_CRUD[helper.type].fetch(this.hass).catch(() => [])
+    ).find((item) => item.id === entityReg.unique_id);
+    if (!config) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.helpers.picker.duplicate_failed"
+        ),
+      });
+      return;
+    }
+
+    const { id: _id, ...item } = config;
+    showHelperDetailDialog(this, {
+      domain: helper.type,
+      item: {
+        ...item,
+        name: this.hass.localize(
+          "ui.panel.config.helpers.picker.duplicate_name",
+          { name: config.name }
+        ),
+      },
+    });
+  }
+
   private _createHelper() {
     showHelperDetailDialog(this, {});
   }
@@ -1498,7 +1580,7 @@ ${rejected
       scope: "helpers",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
-          this.hass,
+          this.hass.callWS,
           "helpers",
           values
         );
@@ -1511,7 +1593,7 @@ ${rejected
   private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
-        const label = await createLabelRegistryEntry(this.hass, values);
+        const label = await createLabelRegistryEntry(this.hass.callWS, values);
         this._bulkLabel(label.label_id, "add");
       },
     });

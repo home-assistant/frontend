@@ -11,7 +11,9 @@ import { conditionalClamp } from "../common/number/clamp";
 import { formatNumber } from "../common/number/format_number";
 import { blankBeforeUnit } from "../common/translations/blank_before_unit";
 import { internationalizationContext } from "../data/context";
+import { forwardHaptic } from "../data/haptics";
 import type { FrontendLocaleData } from "../data/translation";
+import "./ha-ripple";
 import "./ha-svg-icon";
 
 const A11Y_KEY_CODES = new Set([
@@ -81,12 +83,14 @@ export class HaControlNumberButton extends LitElement {
 
   private _handlePlusButton() {
     this._increment();
+    forwardHaptic(this, "light");
     fireEvent(this, "value-changed", { value: this.value });
     this._input.focus();
   }
 
   private _handleMinusButton() {
     this._decrement();
+    forwardHaptic(this, "light");
     fireEvent(this, "value-changed", { value: this.value });
     this._input.focus();
   }
@@ -140,6 +144,10 @@ export class HaControlNumberButton extends LitElement {
     const unit = this.unit
       ? `${blankBeforeUnit(this.unit, this.locale)}${this.unit}`
       : "";
+    const minusDisabled =
+      this.disabled || (this.min != null && this._value <= this.min);
+    const plusDisabled =
+      this.disabled || (this.max != null && this._value >= this.max);
 
     return html`
       <div class="container">
@@ -171,11 +179,10 @@ export class HaControlNumberButton extends LitElement {
             this._i18n?.localize("ui.components.number-buttons.decrement")
           )}
           @click=${this._handleMinusButton}
-          .disabled=${
-            this.disabled || (this.min != null && this._value <= this.min)
-          }
+          .disabled=${minusDisabled}
         >
           <ha-svg-icon .path=${mdiMinus}></ha-svg-icon>
+          <ha-ripple .disabled=${minusDisabled}></ha-ripple>
         </button>
         <button
           class="button plus"
@@ -185,11 +192,10 @@ export class HaControlNumberButton extends LitElement {
             this._i18n?.localize("ui.components.number-buttons.increment")
           )}
           @click=${this._handlePlusButton}
-          .disabled=${
-            this.disabled || (this.max != null && this._value >= this.max)
-          }
+          .disabled=${plusDisabled}
         >
           <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
+          <ha-ripple .disabled=${plusDisabled}></ha-ripple>
         </button>
       </div>
     `;
@@ -202,6 +208,7 @@ export class HaControlNumberButton extends LitElement {
       --control-number-buttons-background-color: var(--disabled-color);
       --control-number-buttons-background-opacity: 0.2;
       --control-number-buttons-border-radius: var(--ha-border-radius-md);
+      --ha-ripple-color: var(--secondary-text-color);
       --mdc-icon-size: 16px;
       height: var(--feature-height);
       width: 100%;
@@ -270,6 +277,8 @@ export class HaControlNumberButton extends LitElement {
       width: 35px;
       height: 100%;
       border: none;
+      border-radius: var(--control-number-buttons-border-radius);
+      overflow: hidden;
       background: none;
       cursor: pointer;
       outline: none;

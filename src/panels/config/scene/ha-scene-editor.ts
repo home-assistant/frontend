@@ -17,7 +17,7 @@ import {
 import type { HassEntity, HassEvent } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
@@ -40,6 +40,7 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-svg-icon";
+import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   fireRelatedContext,
   fullEntitiesContext,
@@ -146,6 +147,8 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   @state() private _scene?: SceneEntity;
 
   @state() private _mode: "review" | "live" | "yaml" = "review";
+
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   private _storedStates: SceneEntities = {};
 
@@ -446,7 +449,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                           }
                           const { primary, secondary } =
                             computeEntityPickerDisplay(
-                              this.hass,
+                              {
+                                entities: this.hass.entities,
+                                devices: this.hass.devices,
+                                areas: this.hass.areas,
+                                floors: this.hass.floors,
+                                language: this.hass.language,
+                                translationMetadata:
+                                  this.hass.translationMetadata,
+                              },
                               entityStateObj
                             );
                           const platform =
@@ -515,7 +526,6 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                           <div class="card-content">
                             <ha-device-picker
                               @value-changed=${this._devicePicked}
-                              .hass=${this.hass}
                               .label=${this.hass.localize(
                                 "ui.panel.config.scene.editor.devices.add"
                               )}
@@ -554,7 +564,15 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
                               }
                               const { primary, secondary } =
                                 computeEntityPickerDisplay(
-                                  this.hass,
+                                  {
+                                    entities: this.hass.entities,
+                                    devices: this.hass.devices,
+                                    areas: this.hass.areas,
+                                    floors: this.hass.floors,
+                                    language: this.hass.language,
+                                    translationMetadata:
+                                      this.hass.translationMetadata,
+                                  },
                                   entityStateObj
                                 );
                               const domainName = domainToName(
@@ -790,7 +808,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
 
     switch (action) {
       case "apply":
-        activateScene(this.hass, this._scene!.entity_id);
+        activateScene(this.hass.callService, this._scene!.entity_id);
         break;
       case "show-info":
         fireEvent(this, "hass-more-info", { entityId: this._scene!.entity_id });
@@ -808,12 +826,7 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
         this._promptSceneRename();
         break;
       case "toggle-yaml":
-        if (this._mode === "yaml") {
-          this._initEntities(this._config!);
-          this._exitYamlMode();
-        } else {
-          this._enterYamlMode();
-        }
+        this._toggleYamlMode();
         break;
       case "duplicate":
         this._duplicate();
@@ -821,6 +834,17 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
       case "delete":
         this._deleteTapped();
         break;
+    }
+  }
+
+  private async _toggleYamlMode() {
+    if (this._mode === "yaml") {
+      this._initEntities(this._config!);
+      this._exitYamlMode();
+    } else {
+      this._enterYamlMode();
+      await this.updateComplete;
+      this._yamlEditor?.focus();
     }
   }
 
@@ -912,7 +936,10 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
     if (!this._scene) {
       return;
     }
-    const { context } = await activateScene(this.hass, this._scene.entity_id);
+    const { context } = await activateScene(
+      this.hass.callService,
+      this._scene.entity_id
+    );
     this._activateContextId = context.id;
   }
 
@@ -1348,6 +1375,12 @@ export class HaSceneEditor extends DirtyStateProviderMixin<number>()(
   protected supportedShortcuts(): SupportedShortcuts {
     return {
       s: () => this._saveScene(),
+    };
+  }
+
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return {
+      Y: () => this._toggleYamlMode(),
     };
   }
 

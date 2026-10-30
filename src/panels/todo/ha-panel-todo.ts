@@ -31,7 +31,6 @@ import "../../components/ha-dropdown-item";
 import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
 import "../../components/ha-list";
-import "../../components/ha-list-item";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
@@ -113,7 +112,13 @@ class PanelTodo extends LitElement {
           this._entityId = undefined;
         }
         if (!this._entityId) {
-          this._entityId = getTodoLists(this.hass, false)[0]?.entity_id;
+          this._entityId = getTodoLists(
+            this.hass.states,
+            this.hass.entities,
+            this.hass.formatEntityName,
+            this.hass.locale.language,
+            false
+          )[0]?.entity_id;
         }
       }
     }
@@ -172,7 +177,13 @@ class PanelTodo extends LitElement {
       ? this.hass.states[this._entityId]
       : undefined;
     const showPane = this._showPaneController.value ?? !this.narrow;
-    const listItems = getTodoLists(this.hass, false).map(
+    const listItems = getTodoLists(
+      this.hass.states,
+      this.hass.entities,
+      this.hass.formatEntityName,
+      this.hass.locale.language,
+      false
+    ).map(
       (list) =>
         html`<ha-dropdown-item
           @click=${this._setEntityId}
@@ -228,14 +239,14 @@ class PanelTodo extends LitElement {
         <ha-list slot="pane" activatable>${listItems}</ha-list>
         ${
           showPane && this.hass.user?.is_admin
-            ? html`<ha-list-item
-                graphic="icon"
+            ? html`<ha-button
                 slot="pane-footer"
+                appearance="filled"
                 @click=${this._addList}
               >
-                <ha-svg-icon .path=${mdiPlus} slot="graphic"></ha-svg-icon>
+                <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                 ${this.hass.localize("ui.panel.todo.create_list")}
-              </ha-list-item>`
+              </ha-button>`
             : nothing
         }
         <ha-dropdown
@@ -359,7 +370,13 @@ class PanelTodo extends LitElement {
     }
     const result = await deleteConfigEntry(this.hass, entryId);
 
-    this._entityId = getTodoLists(this.hass, false)[0]?.entity_id;
+    this._entityId = getTodoLists(
+      this.hass.states,
+      this.hass.entities,
+      this.hass.formatEntityName,
+      this.hass.locale.language,
+      false
+    )[0]?.entity_id;
 
     if (result.require_restart) {
       showAlertDialog(this, {
@@ -442,6 +459,12 @@ class PanelTodo extends LitElement {
           inset-inline-end: calc(16px + var(--safe-area-inset-right, 0px));
           inset-inline-start: initial;
           --ha-button-box-shadow: var(--ha-box-shadow-l);
+        }
+
+        ha-button[slot="pane-footer"] {
+          display: block;
+          width: fit-content;
+          margin: var(--ha-space-2) auto var(--ha-space-2);
         }
 
         ha-dropdown.lists ha-dropdown-item {

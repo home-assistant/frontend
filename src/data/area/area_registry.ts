@@ -48,11 +48,11 @@ export const createAreaRegistryEntry = (
   });
 
 export const updateAreaRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   areaId: string,
   updates: Partial<AreaRegistryEntryMutableParams>
 ) =>
-  hass.callWS<AreaRegistryEntry>({
+  callWS<AreaRegistryEntry>({
     type: "config/area_registry/update",
     area_id: areaId,
     ...updates,

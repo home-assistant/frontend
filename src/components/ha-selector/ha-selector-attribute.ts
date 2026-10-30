@@ -6,13 +6,10 @@ import { ensureArray } from "../../common/array/ensure-array";
 import { consumeEntityStates } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { AttributeSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../entity/ha-entity-attribute-picker";
 
 @customElement("ha-selector-attribute")
 export class HaSelectorAttribute extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: AttributeSelector;
 
   @property() public value?: any;
@@ -36,7 +33,6 @@ export class HaSelectorAttribute extends LitElement {
   protected render() {
     return html`
       <ha-entity-attribute-picker
-        .hass=${this.hass}
         .entityId=${
           this.selector.attribute?.entity_id || this.context?.filter_entity
         }

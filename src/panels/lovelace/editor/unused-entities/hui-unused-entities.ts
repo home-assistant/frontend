@@ -7,6 +7,7 @@ import "../../../../components/ha-button";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import type { HomeAssistant } from "../../../../types";
+import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 import { computeUnusedEntities } from "../../common/compute-unused-entities";
 import {
   computeCards,
@@ -111,6 +112,11 @@ export class HuiUnusedEntities extends LitElement {
     this._selectedEntities = ev.detail.selectedEntities;
   }
 
+  private _saveConfig = async (config: LovelaceConfig): Promise<void> => {
+    await this.lovelace.saveConfig(config);
+    showSaveSuccessToast(this, this.hass);
+  };
+
   private _addToLovelaceView(): void {
     const cardConfig = computeCards(this.hass, this._selectedEntities, {});
     const sectionConfig = computeSection(this._selectedEntities, {});
@@ -118,7 +124,7 @@ export class HuiUnusedEntities extends LitElement {
     if (this.lovelace.config.views.length === 1) {
       showSuggestCardDialog(this, {
         lovelaceConfig: this.lovelace.config!,
-        saveConfig: this.lovelace.saveConfig,
+        saveConfig: this._saveConfig,
         path: ["views", 0],
         entities: this._selectedEntities,
         cardConfig,
@@ -132,7 +138,7 @@ export class HuiUnusedEntities extends LitElement {
       viewSelectedCallback: (_urlPath, _selectedDashConfig, viewIndex) => {
         showSuggestCardDialog(this, {
           lovelaceConfig: this.lovelace.config!,
-          saveConfig: this.lovelace.saveConfig,
+          saveConfig: this._saveConfig,
           path: ["views", viewIndex],
           entities: this._selectedEntities,
           cardConfig,

@@ -36,7 +36,9 @@ export const timeCachePromiseFunc = async <T, H = HomeAssistant>(
       return result.result;
     }
 
-    anyHass[cacheKey] = undefined;
+    if (anyHass[cacheKey] === result) {
+      anyHass[cacheKey] = undefined;
+    }
     return timeCachePromiseFunc(
       cacheKey,
       cacheTime,
@@ -73,7 +75,9 @@ export const timeCachePromiseFunc = async <T, H = HomeAssistant>(
     },
     // On failure, clear cache right away
     () => {
-      anyHass[cacheKey] = undefined;
+      if (anyHass[cacheKey] === cachePromise) {
+        anyHass[cacheKey] = undefined;
+      }
     }
   );
 

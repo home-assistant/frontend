@@ -164,7 +164,6 @@ export class DialogVacuumSegmentMapping
         )}
       >
         <ha-vacuum-segment-area-mapper
-          .hass=${this.hass}
           entity-id=${this._params.entityId}
           .value=${this._areaMapping}
           @value-changed=${this._valueChanged}

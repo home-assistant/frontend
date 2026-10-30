@@ -137,6 +137,8 @@ class AddIntegrationDialog extends LitElement {
       ]);
 
       if (!flowsInProgress.length) {
+        // This dialog never opens, the config flow dialog is shown instead
+        fireEvent(this, "dialog-closed", { dialog: this.localName });
         await this._createFlow(params.domain);
         return;
       }

@@ -49,6 +49,36 @@ export const createMediaPlayerEntities = () => [
     },
   },
   {
+    entity_id: "media_player.music_all_features",
+    state: "playing",
+    attributes: {
+      friendly_name: "Playing The Music (all features)",
+      media_content_type: "music",
+      media_title: "I Wanna Be A Hippy (Flamman & Abraxas Radio Mix)",
+      media_artist: "Technohead",
+      // Pause + Seek + Volume Set + Volume Mute + Previous Track + Next Track + On + Off +
+      // Play Media + Volume Step + Select Source + Stop + Clear + Play + Shuffle Set +
+      // Sound Mode + Browse Media + Repeat Set + Grouping
+      supported_features: 1048511,
+      entity_picture: "/images/album_cover.jpg",
+      media_duration: 300,
+      media_position: 0,
+      media_position_updated_at: new Date(
+        // 23 seconds in
+        new Date().getTime() - 23000
+      ).toISOString(),
+      volume_level: 0.5,
+      is_volume_muted: false,
+      shuffle: false,
+      repeat: "off",
+      source_list: ["AirPlay", "Blu-Ray", "TV", "USB", "iPod (USB)"],
+      source: "AirPlay",
+      sound_mode_list: ["Movie", "Music", "Game", "Pure Audio"],
+      sound_mode: "Music",
+      group_members: ["media_player.playing", "media_player.stream_playing"],
+    },
+  },
+  {
     entity_id: "media_player.stream_playing",
     state: "playing",
     attributes: {
