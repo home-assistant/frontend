@@ -1031,8 +1031,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     if (!this._manifest.config_flow) {
       // Without the dependents, a dependency looks like a YAML integration.
       const loadedManifests = await fetchIntegrationManifests(this.hass);
-      this._dependents = loadedManifests.filter((manifest) =>
-        manifest.dependencies?.includes(this.domain)
+      // System integrations, like Default Configuration, are not useful to list.
+      this._dependents = loadedManifests.filter(
+        (manifest) =>
+          manifest.integration_type !== "system" &&
+          manifest.dependencies?.includes(this.domain)
       );
     }
     if (
