@@ -824,9 +824,18 @@ export class HaConfigEntities extends LitElement {
           </ha-dropdown-item>`
       )}
       <ha-dropdown-item .slot=${slot} value="area_none">
-        ${this.hass.localize(
-          "ui.panel.config.devices.picker.bulk_actions.no_area"
-        )}
+        ${
+          // Clearing the area of a device entity falls back to the device area
+          this._selected.some(
+            (entityId) => this.hass.entities[entityId]?.device_id
+          )
+            ? this.hass.localize(
+                "ui.dialogs.entity_registry.editor.use_device_area"
+              )
+            : this.hass.localize(
+                "ui.panel.config.devices.picker.bulk_actions.no_area"
+              )
+        }
       </ha-dropdown-item>
       <wa-divider .slot=${slot}></wa-divider>
       <ha-dropdown-item .slot=${slot} value="area_create">
