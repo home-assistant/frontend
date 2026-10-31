@@ -3,8 +3,17 @@ import type { CSSResultGroup } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  boolean,
+  object,
+  optional,
+  string,
+  union,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -29,6 +38,7 @@ const cardConfigStruct = assign(
     icon: optional(string()),
     show_icon: optional(boolean()),
     icon_height: optional(string()),
+    image: optional(union([string(), object()])),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),
     double_tap_action: optional(actionConfigStruct),
@@ -67,7 +77,7 @@ export class HuiButtonCardEditor
   }
 
   private _schema = memoizeOne(
-    (entityId: string | undefined) =>
+    (localize: LocalizeFunc, entityId: string | undefined) =>
       [
         { name: "entity", selector: { entity: {} } },
         {
@@ -103,6 +113,19 @@ export class HuiButtonCardEditor
             },
             { name: "theme", selector: { theme: {} } },
           ],
+        },
+        {
+          name: "image",
+          selector: {
+            media: {
+              accept: ["image/*"] as string[],
+              image_upload: true,
+              hide_content_type: true,
+              content_id_helper: localize(
+                "ui.panel.lovelace.editor.card.picture.content_id_helper"
+              ),
+            },
+          },
         },
         {
           name: "",
@@ -164,22 +187,12 @@ export class HuiButtonCardEditor
       return nothing;
     }
 
-    const data = {
-      show_name: true,
-      show_icon: true,
-      ...this._config,
-    };
-
-    if (data.icon_height?.includes("px")) {
-      data.icon_height = String(parseFloat(data.icon_height));
-    }
-
-    const schema = this._schema(this._config.entity);
+    const schema = this._schema(this.hass.localize, this._config.entity);
 
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${data}
+        .data=${this._processData(this._config)}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         .computeHelper=${this._computeHelperCallback}
@@ -188,11 +201,36 @@ export class HuiButtonCardEditor
     `;
   }
 
+  private _processData = memoizeOne((config: ButtonCardConfig) => {
+    const data: any = {
+      show_name: true,
+      show_icon: true,
+      ...config,
+      ...(typeof config.image === "string"
+        ? { image: { media_content_id: config.image } }
+        : {}),
+    };
+
+    if (data.icon_height?.includes("px")) {
+      data.icon_height = String(parseFloat(data.icon_height));
+    }
+
+    return data;
+  });
+
   private _valueChanged(ev: CustomEvent): void {
-    const config = ev.detail.value;
+    const config = { ...ev.detail.value };
 
     if (config.icon_height && !config.icon_height.endsWith("px")) {
       config.icon_height += "px";
+    }
+
+    if (
+      config.image &&
+      typeof config.image === "object" &&
+      !config.image.media_content_id
+    ) {
+      delete config.image;
     }
 
     fireEvent(this, "config-changed", { config });

@@ -164,6 +164,7 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
   show_name?: boolean;
   icon?: string;
   icon_height?: string;
+  image?: string | MediaSelectorValue;
   show_icon?: boolean;
   theme?: string;
   tap_action?: ActionConfig;
