@@ -46,7 +46,13 @@ const FAN_SPEEDS_NAMED: Partial<Record<number, FanSpeed[]>> = {
   4: ["off", "low", "medium", "high"],
 };
 
+// Fans with up to this many speeds (off included) show buttons by default.
 export const FAN_SPEED_COUNT_MAX_FOR_BUTTONS = 6;
+
+// Fans with more speeds than this (off included) can only show a slider.
+export const FAN_SPEED_COUNT_MAX_FOR_DISCRETE_SPEEDS = 11;
+
+export type FanSpeedStyle = "buttons" | "slider";
 
 export function computeFanSpeedCount(stateObj: FanEntity): number {
   const step = stateObj.attributes.percentage_step ?? 1;
@@ -56,7 +62,7 @@ export function computeFanSpeedCount(stateObj: FanEntity): number {
 
 export function computeFanSpeeds(stateObj: FanEntity): FanSpeed[] | undefined {
   const speedCount = computeFanSpeedCount(stateObj);
-  if (speedCount > FAN_SPEED_COUNT_MAX_FOR_BUTTONS) {
+  if (speedCount > FAN_SPEED_COUNT_MAX_FOR_DISCRETE_SPEEDS) {
     return undefined;
   }
   return (
@@ -70,8 +76,42 @@ export function computeFanSpeeds(stateObj: FanEntity): FanSpeed[] | undefined {
   );
 }
 
+export const computeDefaultFanSpeedStyle = (
+  stateObj: FanEntity
+): FanSpeedStyle =>
+  computeFanSpeedCount(stateObj) <= FAN_SPEED_COUNT_MAX_FOR_BUTTONS
+    ? "buttons"
+    : "slider";
+
+// A slider brings nothing to an off/on fan, so it always shows buttons.
+export const supportsFanSpeedStyleChoice = (stateObj: FanEntity): boolean => {
+  const speedCount = computeFanSpeedCount(stateObj);
+  return (
+    speedCount >= 3 && speedCount <= FAN_SPEED_COUNT_MAX_FOR_DISCRETE_SPEEDS
+  );
+};
+
+// Fans without a choice always use their default style, whatever is requested.
+export const resolveFanSpeedStyle = (
+  stateObj: FanEntity,
+  style?: FanSpeedStyle
+): FanSpeedStyle =>
+  supportsFanSpeedStyleChoice(stateObj)
+    ? (style ?? computeDefaultFanSpeedStyle(stateObj))
+    : computeDefaultFanSpeedStyle(stateObj);
+
 export const isNumberedFanSpeed = (speed: FanSpeed): speed is `${number}` =>
   !isNaN(Number(speed));
+
+// Minimum target size for WCAG 2.2 AA (2.5.8). Feature buttons have no gap
+// between them, so each one must be at least this wide. It also fits the off
+// icon and two-digit speeds. Off and 6 speeds (168px) fit as buttons in a
+// half-width tile, which is 172px wide on desktop and on phones from 393px.
+const FAN_SPEED_BUTTON_MIN_WIDTH = 24;
+
+// Width needed to show every speed as a button.
+export const computeFanSpeedButtonsMinWidth = (speeds: FanSpeed[]): number =>
+  speeds.length * FAN_SPEED_BUTTON_MIN_WIDTH;
 
 export function fanPercentageToSpeed(
   stateObj: FanEntity,

@@ -1,3 +1,4 @@
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -27,12 +28,14 @@ import { UNAVAILABLE } from "../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import type { FanEntity, FanSpeed } from "../../../data/fan";
 import {
+  computeFanSpeedButtonsMinWidth,
   computeFanSpeedIcon,
   computeFanSpeeds,
   FanEntityFeature,
   fanPercentageToSpeed,
   fanSpeedToPercentage,
   isNumberedFanSpeed,
+  resolveFanSpeedStyle,
 } from "../../../data/fan";
 import type { FrontendLocaleData } from "../../../data/translation";
 import type {
@@ -41,7 +44,7 @@ import type {
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   FanSpeedCardFeatureConfig,
@@ -99,10 +102,21 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
 
   @state() private _config?: FanSpeedCardFeatureConfig;
 
+  private _resizeController = new ResizeController<number | undefined>(this, {
+    callback: (entries: { contentRect?: { width: number } }[]) =>
+      entries[0]?.contentRect?.width || undefined,
+  });
+
   static getStubConfig(): FanSpeedCardFeatureConfig {
     return {
       type: "fan-speed",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-fan-speed-card-feature-editor");
+
+    return document.createElement("hui-fan-speed-card-feature-editor");
   }
 
   public setConfig(config: FanSpeedCardFeatureConfig): void {
@@ -134,13 +148,21 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
       return nothing;
     }
 
-    const speeds = computeFanSpeeds(this._stateObj);
+    const speeds =
+      resolveFanSpeedStyle(this._stateObj, this._config.style) === "buttons"
+        ? computeFanSpeeds(this._stateObj)
+        : undefined;
+
+    // Fall back to the slider when the buttons do not fit the card width.
+    const width = this._resizeController.value;
+    const buttonsFit =
+      !speeds || !width || width >= computeFanSpeedButtonsMinWidth(speeds);
 
     const percentage = stateActive(this._stateObj)
       ? (this._stateObj.attributes.percentage ?? 0)
       : 0;
 
-    if (speeds) {
+    if (speeds && buttonsFit) {
       const options = speeds.map<ControlSelectOption>((speed) =>
         isNumberedFanSpeed(speed)
           ? {
@@ -222,6 +244,9 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
     return [
       cardFeatureStyles,
       css`
+        :host {
+          display: block;
+        }
         ha-control-select {
           /* Color the background to match the slider style */
           --control-select-background: var(--feature-color);
