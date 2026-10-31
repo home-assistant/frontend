@@ -17,8 +17,10 @@ import {
   internationalizationContext,
 } from "../../data/context";
 
+import type { MediaPlayerEntity } from "../../data/media-player";
 import "../ha-switch";
 import "../ha-svg-icon";
+import "./ha-media-player-volume";
 
 @customElement("ha-media-player-toggle")
 class HaMediaPlayerToggle extends LitElement {
@@ -27,6 +29,9 @@ class HaMediaPlayerToggle extends LitElement {
   @property({ type: Boolean }) public checked = false;
 
   @property({ type: Boolean }) public disabled = false;
+
+  @property({ type: Boolean, attribute: "show-volume" })
+  public showVolume = false;
 
   @state()
   @consumeEntityState({ entityIdPath: ["entityId"] })
@@ -108,6 +113,16 @@ class HaMediaPlayerToggle extends LitElement {
         .checked=${this.checked}
         @change=${this._handleChange}
       ></ha-switch>
+      ${
+        this.showVolume
+          ? html`<div class="volume">
+              <ha-media-player-volume
+                .stateObj=${stateObj as MediaPlayerEntity}
+                .label=${primary}
+              ></ha-media-player-volume>
+            </div>`
+          : nothing
+      }
     </div>`;
   }
 
@@ -118,8 +133,13 @@ class HaMediaPlayerToggle extends LitElement {
           display: grid;
           grid-template-columns: auto 1fr auto;
           column-gap: var(--ha-space-4);
+          row-gap: var(--ha-space-2);
           align-items: center;
           width: 100%;
+        }
+
+        .volume {
+          grid-column: 2 / -1;
         }
 
         .info {

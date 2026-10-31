@@ -24,6 +24,7 @@ import {
   mediaPlayerUnjoin,
 } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
+import { showToast } from "../../util/toast";
 import "../ha-alert";
 import "../ha-button";
 import "../ha-dialog-footer";
@@ -124,6 +125,7 @@ class DialogJoinMediaPlayers extends LitElement {
           <ha-button
             appearance="plain"
             slot="actionItems"
+            .disabled=${!!this._submitting}
             @click=${this._selectAll}
           >
             ${this._localize("ui.card.media_player.select_all")}
@@ -139,6 +141,7 @@ class DialogJoinMediaPlayers extends LitElement {
             .entityId=${entityId}
             checked
             disabled
+            show-volume
           ></ha-media-player-toggle>
           ${this._mediaPlayerEntities(
             entityId,
@@ -149,24 +152,15 @@ class DialogJoinMediaPlayers extends LitElement {
               html`<ha-media-player-toggle
                 .entityId=${id}
                 .checked=${this._selectedEntities.includes(id)}
+                .disabled=${!!this._submitting}
+                .showVolume=${this._groupMembers.includes(id)}
                 @change=${this._handleSelectedChange}
               ></ha-media-player-toggle>`
           )}
         </div>
         <ha-dialog-footer slot="footer">
-          <ha-button
-            appearance="plain"
-            slot="secondaryAction"
-            @click=${this.closeDialog}
-          >
-            ${this._localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button
-            .disabled=${!!this._submitting}
-            slot="primaryAction"
-            @click=${this._submit}
-          >
-            ${this._localize("ui.common.apply")}
+          <ha-button slot="primaryAction" @click=${this.closeDialog}>
+            ${this._localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
@@ -210,10 +204,8 @@ class DialogJoinMediaPlayers extends LitElement {
     if (!this._entityId) {
       return;
     }
-    this._selectedEntities = this._mediaPlayerEntities(
-      this._entityId,
-      this._entities,
-      this._states
+    this._applySelection(
+      this._mediaPlayerEntities(this._entityId, this._entities, this._states)
     );
   }
 
@@ -224,31 +216,37 @@ class DialogJoinMediaPlayers extends LitElement {
     if (ev.target.checked) {
       selectedEntities.push(ev.target.entityId);
     }
-    this._selectedEntities = selectedEntities;
+    this._applySelection(selectedEntities);
   }
 
-  private async _submit(): Promise<void> {
-    if (!this._entityId) {
+  private async _applySelection(selectedEntities: string[]): Promise<void> {
+    if (!this._entityId || this._submitting) {
       return;
     }
 
+    const previous = this._selectedEntities;
+    const added = selectedEntities.filter((id) => !previous.includes(id));
+    const removed = previous.filter((id) => !selectedEntities.includes(id));
+
+    this._selectedEntities = selectedEntities;
     this._error = undefined;
     this._submitting = true;
     try {
-      // If media is already playing
-      await mediaPlayerJoin(
-        this._api.callService,
-        this._entityId,
-        this._selectedEntities
-      );
+      if (added.length) {
+        await mediaPlayerJoin(this._api.callService, this._entityId, added);
+      }
       await Promise.all(
-        this._groupMembers
-          .filter((entityId) => !this._selectedEntities.includes(entityId))
-          .map((entityId) => mediaPlayerUnjoin(this._api.callService, entityId))
+        removed.map((id) => mediaPlayerUnjoin(this._api.callService, id))
       );
-      this.closeDialog();
+      this._groupMembers = selectedEntities;
     } catch (err) {
-      this._error = extractApiErrorMessage(err);
+      this._selectedEntities = previous;
+      const message = extractApiErrorMessage(err);
+      if (this._open) {
+        this._error = message;
+      } else {
+        showToast(this, { message });
+      }
     }
     this._submitting = false;
   }

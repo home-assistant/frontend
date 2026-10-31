@@ -10,13 +10,9 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { keyed } from "lit/directives/keyed";
-import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../common/decorators/consume";
-import {
-  consumeEntityStates,
-  consumeLocalize,
-} from "../../../common/decorators/consume-context-entry";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -95,12 +91,6 @@ class MoreInfoMediaPlayer extends LitElement {
   @state()
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: HomeAssistantConnection;
-
-  @state()
-  @consumeEntityStates({
-    entityIdPath: ["stateObj", "attributes", "group_members"],
-  })
-  private _groupMemberStates?: Record<string, MediaPlayerEntity>;
 
   @query("#position-slider")
   private _positionSlider?: HaSlider;
@@ -290,7 +280,6 @@ class MoreInfoMediaPlayer extends LitElement {
             : nothing
         }
         <ha-media-player-volume .stateObj=${stateObj}></ha-media-player-volume>
-        ${this._renderGroupMembers()}
         <div class="controls-row">
           ${
             secondaryStop
@@ -381,40 +370,6 @@ class MoreInfoMediaPlayer extends LitElement {
       <ha-tooltip for="grouping-button">
         ${this._localize("ui.card.media_player.join")}
       </ha-tooltip>`;
-  }
-
-  private _renderGroupMembers() {
-    // The opened player is controlled by the main volume slider
-    const otherMembers = (this.stateObj?.attributes.group_members ?? []).filter(
-      (entityId) =>
-        entityId !== this.stateObj!.entity_id &&
-        this._groupMemberStates?.[entityId]
-    );
-
-    if (!otherMembers.length) {
-      return nothing;
-    }
-
-    return html`<div class="group-members">
-      <div class="group-members-title">
-        ${this._localize("ui.card.media_player.group_members")}
-      </div>
-      ${repeat(
-        otherMembers,
-        (entityId) => entityId,
-        (entityId) => {
-          const memberState = this._groupMemberStates![entityId];
-          const name = this._formatters.formatEntityName(memberState);
-          return html`<div class="group-member">
-            <div class="group-member-name">${name}</div>
-            <ha-media-player-volume
-              .stateObj=${memberState}
-              .label=${name}
-            ></ha-media-player-volume>
-          </div>`;
-        }
-      )}
-    </div>`;
   }
 
   private _renderSourceControl() {
@@ -813,26 +768,6 @@ class MoreInfoMediaPlayer extends LitElement {
 
     .grouping {
       position: relative;
-    }
-
-    .group-members {
-      display: flex;
-      flex-direction: column;
-      gap: var(--ha-space-4);
-    }
-
-    .group-members-title {
-      font-weight: var(--ha-font-weight-medium);
-      padding-inline: var(--ha-space-2);
-    }
-
-    .group-member-name {
-      color: var(--secondary-text-color);
-      font-size: var(--ha-font-size-s);
-      padding-inline: var(--ha-space-2);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     .bottom-controls {
