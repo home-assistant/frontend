@@ -715,6 +715,27 @@ export interface TileActionsConfig {
   icon_double_tap_action?: ActionConfig;
 }
 
+// Weather page cards. `entities` lists weather entities in order of
+// preference: each value comes from the first entity that provides it.
+export interface WeatherPageCardConfig extends LovelaceCardConfig {
+  entities: string[];
+}
+
+export type WeatherHourlyMode = "temperature" | "precipitation" | "wind";
+
+export interface WeatherHourlyCardConfig extends WeatherPageCardConfig {
+  hours?: number;
+}
+
+export interface WeatherDailyCardConfig extends WeatherPageCardConfig {
+  days?: number;
+}
+
+export interface WeatherMoonCardConfig extends LovelaceCardConfig {
+  // The moon sensor, when the moon integration is set up
+  entity?: string;
+}
+
 export interface TileCardConfig extends LovelaceCardConfig, TileActionsConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
