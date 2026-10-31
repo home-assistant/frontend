@@ -75,6 +75,8 @@ export interface MockHomeAssistant extends HomeAssistant {
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
   addEntities(entities: EntityInput | EntityInput[], replace?: boolean);
+  // Recomputes the format functions, such as after the areas change.
+  updateFormatFunctions(): Promise<void>;
   updateTranslations(fragment: null | string, language?: string);
   addTranslations(translations: Record<string, string>, language?: string);
   mockWS<T extends (...args) => any = any>(
@@ -301,14 +303,26 @@ export const provideHass = (
     newEntities: EntityInput | EntityInput[],
     replace = false
   ) {
+    if (replace) {
+      // Drop the old mock entities too, so that services cannot bring them back.
+      for (const entityId of Object.keys(entities)) {
+        delete entities[entityId];
+      }
+    }
+
     const states = {};
+
+    // A new object, so that registry consumers see the change
+    const registry: HomeAssistant["entities"] = replace
+      ? {}
+      : { ...hass().entities };
     ensureArray(newEntities).forEach((input) => {
       const ent = getEntity(input);
       ent.hass = hass();
       entities[ent.entityId] = ent;
       states[ent.entityId] = ent.toState();
 
-      hass().entities[ent.entityId] = {
+      registry[ent.entityId] = {
         entity_id: ent.entityId,
         name: ent.attributes.friendly_name || undefined,
         icon: undefined,
@@ -318,13 +332,10 @@ export const provideHass = (
         device_id: ent.deviceId,
       } satisfies EntityRegistryDisplayEntry;
     });
-    if (replace) {
-      hass().updateHass({
-        states,
-      });
-    } else {
-      updateStates(states);
-    }
+    hass().updateHass({
+      entities: registry,
+      states: replace ? states : { ...hass().states, ...states },
+    });
 
     updateFormatFunctions();
   }
@@ -540,6 +551,7 @@ export const provideHass = (
       return hass().localize;
     },
     addEntities,
+    updateFormatFunctions,
     mockWS(type, callback) {
       wsCommands[type] = callback;
     },

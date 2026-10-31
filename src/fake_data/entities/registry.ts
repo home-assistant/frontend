@@ -1,10 +1,11 @@
-import { MockBaseEntity } from "./base-entity";
+import type { MockBaseEntity } from "./base-entity";
 import type { EntityInput } from "./types";
 import { MockAlarmControlPanelEntity } from "./alarm-control-panel-entity";
 import { MockAutomationEntity } from "./automation-entity";
 import { MockClimateEntity } from "./climate-entity";
 import { MockCoverEntity } from "./cover-entity";
 import { MockFanEntity } from "./fan-entity";
+import { MockGenericEntity } from "./generic-entity";
 import { MockGroupEntity } from "./group-entity";
 import { MockHumidifierEntity } from "./humidifier-entity";
 import { MockInputNumberEntity } from "./input-number-entity";
@@ -49,5 +50,6 @@ const TYPES: Record<string, EntityConstructor> = {
 
 export const getEntity = (input: EntityInput): MockBaseEntity => {
   const [domain] = input.entity_id.split(".", 2);
-  return new (TYPES[domain] || MockBaseEntity)(input);
+
+  return new (TYPES[domain] || MockGenericEntity)(input);
 };

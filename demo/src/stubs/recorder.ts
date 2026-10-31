@@ -372,7 +372,10 @@ export const mockRecorder = (mockHass: MockHomeAssistant) => {
           const entityState = hass.states[id];
           const state = entityState ? Number(entityState.state) : 1;
           statistics[id] =
-            entityState && "last_reset" in entityState.attributes
+            entityState &&
+            ("last_reset" in entityState.attributes ||
+              entityState.attributes.state_class === "total" ||
+              entityState.attributes.state_class === "total_increasing")
               ? generateSumStatistics(
                   start,
                   end,
