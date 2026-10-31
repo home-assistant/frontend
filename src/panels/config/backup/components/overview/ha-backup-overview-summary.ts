@@ -367,6 +367,9 @@ class HaBackupOverviewBackups extends LitElement {
         ha-list-item-base::part(start) {
           color: var(--ha-color-text-secondary);
         }
+        ha-list-item-base::part(headline) {
+          white-space: wrap;
+        }
         span.skeleton {
           position: relative;
           display: block;
