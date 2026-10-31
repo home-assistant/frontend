@@ -524,7 +524,7 @@ test.describe("Lovelace dashboard", () => {
 });
 
 test.describe("Energy dashboard", () => {
-  test("returns to Energy after repeatedly opening the device dialog", async ({
+  test("returns to Energy after repeatedly opening the device editor", async ({
     page,
   }) => {
     const errors = trackPageErrors(page);
@@ -567,17 +567,17 @@ test.describe("Energy dashboard", () => {
       .locator("ha-energy-device-settings")
       .locator("ha-button")
       .first();
-    const openAndCancelDeviceDialog = async () => {
+    const editorPage = page.locator("ha-energy-editor-page");
+    const openAndCloseDeviceEditor = async () => {
       await addDevice.click();
-      const dialog = page.locator("dialog-energy-device-settings");
-      const cancel = dialog.locator("ha-dialog-footer ha-button").first();
-      await expect(cancel).toBeVisible({ timeout: QUICK_TIMEOUT });
-      await cancel.click();
-      await expect(cancel).toBeHidden({ timeout: QUICK_TIMEOUT });
+      const back = editorPage.getByRole("link", { name: "Back" });
+      await expect(back).toBeVisible({ timeout: QUICK_TIMEOUT });
+      await back.click();
+      await expect(editorPage).toHaveCount(0, { timeout: QUICK_TIMEOUT });
     };
-    await openAndCancelDeviceDialog();
-    await openAndCancelDeviceDialog();
-    await openAndCancelDeviceDialog();
+    await openAndCloseDeviceEditor();
+    await openAndCloseDeviceEditor();
+    await openAndCloseDeviceEditor();
 
     await backLink.click();
 

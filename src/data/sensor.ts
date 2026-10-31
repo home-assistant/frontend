@@ -20,10 +20,10 @@ export interface SensorDeviceClassUnits {
 }
 
 export const getSensorDeviceClassConvertibleUnits = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   deviceClass: string
 ): Promise<SensorDeviceClassUnits> =>
-  hass.callWS({
+  callWS({
     type: "sensor/device_class_convertible_units",
     device_class: deviceClass,
   });

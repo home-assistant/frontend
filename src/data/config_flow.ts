@@ -30,11 +30,11 @@ const HEADERS = {
 };
 
 export const createConfigFlow = (
-  hass: HomeAssistant,
+  callApi: HomeAssistant["callApi"],
   handler: string,
   entry_id?: string
 ) =>
-  hass.callApi<DataEntryFlowStep>(
+  callApi<DataEntryFlowStep>(
     "POST",
     "config/config_entries/flow",
     {
@@ -53,11 +53,11 @@ export const fetchConfigFlow = (hass: HomeAssistant, flowId: string) =>
   );
 
 export const handleConfigFlowStep = (
-  hass: HomeAssistant,
+  callApi: HomeAssistant["callApi"],
   flowId: string,
   data: Record<string, any>
 ) =>
-  hass.callApi<DataEntryFlowStep>(
+  callApi<DataEntryFlowStep>(
     "POST",
     `config/config_entries/flow/${flowId}`,
     data,

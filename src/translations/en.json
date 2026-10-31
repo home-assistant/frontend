@@ -4624,6 +4624,8 @@
           },
           "delete_source": "Are you sure you want to remove this source?",
           "save_config_failed": "Failed to save config: {error}",
+          "unsaved_confirm_title": "[%key:ui::panel::config::automation::editor::unsaved_confirm_title%]",
+          "unsaved_confirm_text": "[%key:ui::panel::config::automation::editor::unsaved_confirm_text%]",
           "delete_integration": "Are you sure you want to remove this integration? It will remove the entities it provides",
           "grid": {
             "title": "Electricity grid",
@@ -4631,7 +4633,6 @@
             "learn_more": "More information on how to get started",
             "grid_connections": "Grid connections",
             "add_connection": "Add grid connection",
-            "edit_connection": "Edit grid connection",
             "delete_connection": "Delete grid connection",
             "grid_carbon_footprint": "Grid carbon footprint",
             "remove_co2_signal": "Remove Electricity Maps integration",
@@ -4697,7 +4698,6 @@
             "sub": "Let Home Assistant monitor your solar panels and give you insight on their performance.",
             "learn_more": "More information on how to get started",
             "solar_production": "Solar production",
-            "edit_solar_production": "Edit solar production",
             "delete_solar_production": "Remove solar production",
             "add_solar_production": "Add solar production",
             "stat_production": "Your solar energy production",
@@ -4711,8 +4711,6 @@
               "solar_production_power": "Solar production power",
               "solar_production_forecast": "Solar production forecast",
               "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
-              "dont_forecast_production": "Don't forecast production",
-              "forecast_production": "Forecast production",
               "add_forecast": "Add forecast",
               "energy_sensor_needed": "To track your solar production, you need an energy sensor."
             }
@@ -4722,7 +4720,6 @@
             "sub": "If you have a meter that measures your whole house consumption, you can configure it here.",
             "add_home_meter": "Add home meter",
             "remove_home_meter": "Remove home meter",
-            "edit_home_meter": "Edit home meter",
             "dialog": {
               "header": "Configure home consumption",
               "entity_para": "Pick a sensor which measures home consumption in either of {unit}.",
@@ -4737,7 +4734,6 @@
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
             "learn_more": "More information on how to get started",
             "battery_systems": "Battery systems",
-            "edit_battery_system": "Edit battery system",
             "delete_battery_system": "Remove battery system",
             "add_battery_system": "Add battery system",
             "dialog": {
@@ -4774,7 +4770,6 @@
             "sub": "Let Home Assistant monitor your gas usage.",
             "learn_more": "More information on how to get started",
             "gas_consumption": "Gas consumption",
-            "edit_gas_source": "Edit gas source",
             "delete_gas_source": "Remove gas source",
             "add_gas_source": "Add gas source",
             "dialog": {
@@ -4783,6 +4778,7 @@
               "entity_para": "Pick a sensor which measures gas consumption in either of {unit}.",
               "note_para": "Note: It is not possible to add both sensors measuring a volume of gas and sensors measuring the amount of energy contained in the gas.",
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
+              "cost_tracking": "[%key:ui::panel::config::energy::grid::dialog::import_cost%]",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed gas.",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
               "cost_stat": "[%key:ui::panel::config::energy::grid::flow_dialog::from::cost_stat%]",
@@ -4807,13 +4803,13 @@
             "sub": "Let Home Assistant monitor your water usage.",
             "learn_more": "More information on how to get started",
             "water_consumption": "Water consumption",
-            "edit_water_source": "Edit water source",
             "delete_water_source": "Remove water source",
             "add_water_source": "Add water source",
             "dialog": {
               "header": "Configure water consumption",
               "paragraph": "Water consumption is the volume of water that flows to your home.",
               "entity_para": "Pick a sensor which measures water consumption in either of {unit}.",
+              "cost_tracking": "[%key:ui::panel::config::energy::grid::dialog::import_cost%]",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed water.",
               "display_name": "[%key:ui::panel::config::energy::device_consumption::dialog::display_name%]",
               "no_cost": "[%key:ui::panel::config::energy::grid::flow_dialog::from::no_cost%]",
