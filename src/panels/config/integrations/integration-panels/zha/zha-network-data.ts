@@ -1,3 +1,4 @@
+import { mdiHelpNetworkOutline, mdiLeaf, mdiZigbee } from "@mdi/js";
 import { getDeviceArea } from "../../../../../common/entity/context/get_device_context";
 import type {
   NetworkData,
@@ -22,6 +23,38 @@ const RELATIONSHIP_PRIORITY: Record<string, number> = {
 };
 const UNKNOWN_RELATIONSHIP_PRIORITY = 4;
 
+// virtual parents are not Zigbee devices, so their ids cannot collide with an IEEE
+export const VIRTUAL_PARENT_PREFIX = "virtual_";
+
+// ECharts maps link value linearly onto the edge length range [350, 200],
+// across all link values. With a virtual parent present, the values span
+// [0, 255]: the spacer chain uses 0 and the highest LQI is 255.
+const TIGHT_PULL_VALUE = 255;
+// 1.5x the edge length of TIGHT_PULL_VALUE: 300 instead of 200
+const OFFLINE_PULL_VALUE = 85;
+
+// Hidden nodes between the coordinator and each virtual parent. Every hop adds
+// up to one edge length, which pushes the groups out past the mesh.
+export const SPACER_PREFIX = "spacer_";
+const SPACER_COUNT = 2;
+
+// The coordinator and the virtual parents are the roots of the graph
+const ROOT_SYMBOL_SIZE = 60;
+const ROOT_LABEL = {
+  position: "bottom",
+  fontWeight: "bold",
+  fontSize: 14.4,
+} as const;
+
+const rootSymbol = (
+  color: string,
+  iconColor: string,
+  iconPath: string
+): string => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="${color.trim()}"/><path transform="translate(6 6) scale(0.8333)" fill="${iconColor}" d="${iconPath}"/></svg>`;
+  return `image://data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+};
+
 export function createZHANetworkChartData(
   devices: ZHADevice[],
   hass: HomeAssistant,
@@ -30,10 +63,11 @@ export function createZHANetworkChartData(
   const style = getComputedStyle(element);
 
   const primaryColor = style.getPropertyValue("--primary-color");
-  const routerColor = style.getPropertyValue("--cyan-color");
+  const routerColor = style.getPropertyValue("--color-5");
   const endDeviceColor = style.getPropertyValue("--teal-color");
   const greenPowerColor = style.getPropertyValue("--green-color");
   const offlineColor = style.getPropertyValue("--error-color");
+  const iconColor = style.getPropertyValue("--text-primary-color").trim();
   const nodes: NetworkNode[] = [];
   const links: NetworkLink[] = [];
   const categories = [
@@ -98,12 +132,12 @@ export function createZHANetworkChartData(
           ? 2
           : 1,
       symbolSize: isCoordinator
-        ? 40
+        ? ROOT_SYMBOL_SIZE
         : device.device_type === ZHADeviceType.Router
           ? 30
           : 20,
       symbol: isCoordinator
-        ? "roundRect"
+        ? rootSymbol(primaryColor, iconColor, mdiZigbee)
         : isGreenPower
           ? "triangle"
           : "circle",
@@ -120,13 +154,16 @@ export function createZHANetworkChartData(
       },
       polarDistance: category === 0 ? 0 : category === 1 ? 0.5 : 0.9,
       fixed: isCoordinator,
+      label: isCoordinator ? ROOT_LABEL : undefined,
     });
 
     // Create links (edges)
     const existingLinks = links.filter(
       (link) => link.source === device.ieee || link.target === device.ieee
     );
-    if (device.routes && device.routes.length > 0) {
+    // An offline device's tables are stale, so only links that online devices
+    // report towards it count
+    if (device.available && device.routes && device.routes.length > 0) {
       device.routes.forEach((route) => {
         const neighbor = device.neighbors.find((n) => n.nwk === route.next_hop);
         if (!neighbor) {
@@ -200,6 +237,10 @@ export function createZHANetworkChartData(
   // splitting the graph into islands depending on backend device order.
   const fallbackTargets = new Map<string, { ieee: string; lqi: string }>();
   devices.forEach((device) => {
+    // Green Power devices have no parent, they go under a virtual parent below
+    if (device.device_type === ZHADeviceType.GreenPower) {
+      return;
+    }
     const hasLink = links.some(
       (link) => link.source === device.ieee || link.target === device.ieee
     );
@@ -207,11 +248,11 @@ export function createZHANetworkChartData(
       return;
     }
     const neighbors: { ieee: string; lqi: string; relationship?: string }[] =
-      device.neighbors ?? [];
+      device.available ? [...(device.neighbors ?? [])] : [];
     if (neighbors.length === 0) {
       // If there are no neighbors, look for links from other devices
       devices.forEach((d) => {
-        if (d.neighbors && d.neighbors.length > 0) {
+        if (d.available && d.neighbors && d.neighbors.length > 0) {
           const neighbor = d.neighbors.find((n) => n.ieee === device.ieee);
           if (neighbor) {
             neighbors.push({ ieee: d.ieee, lqi: neighbor.lqi });
@@ -261,6 +302,96 @@ export function createZHANetworkChartData(
       ignoreForceLayout: true,
     });
   });
+
+  // Group devices that are still unlinked under a virtual parent, so they
+  // gather in one place instead of floating around the graph
+  const virtualParents = {
+    green_power: {
+      color: greenPowerColor,
+      icon: mdiLeaf,
+      category: 3,
+    },
+    unknown_parent: {
+      color: style.getPropertyValue("--disabled-color"),
+      icon: mdiHelpNetworkOutline,
+      category: undefined,
+    },
+  };
+  const virtualChildren: Record<keyof typeof virtualParents, ZHADevice[]> = {
+    green_power: [],
+    unknown_parent: [],
+  };
+  devices.forEach((device) => {
+    if (device.device_type === ZHADeviceType.Coordinator) {
+      return;
+    }
+    if (device.device_type === ZHADeviceType.GreenPower) {
+      virtualChildren.green_power.push(device);
+      return;
+    }
+    const hasLink = links.some(
+      (link) => link.source === device.ieee || link.target === device.ieee
+    );
+    if (!hasLink) {
+      virtualChildren.unknown_parent.push(device);
+    }
+  });
+  const coordinator = devices.find(
+    (device) => device.device_type === ZHADeviceType.Coordinator
+  )!;
+  (Object.keys(virtualParents) as (keyof typeof virtualParents)[]).forEach(
+    (key) => {
+      if (!virtualChildren[key].length) {
+        return;
+      }
+      const { color, icon, category } = virtualParents[key];
+      const id = `${VIRTUAL_PARENT_PREFIX}${key}`;
+      nodes.push({
+        id,
+        name: hass.localize(`ui.panel.config.zha.visualization.${key}`),
+        category,
+        value: 2,
+        symbolSize: ROOT_SYMBOL_SIZE,
+        symbol: rootSymbol(color, iconColor, icon),
+        label: ROOT_LABEL,
+        itemStyle: { color },
+      });
+      // An invisible chain makes each group a far branch of the coordinator,
+      // so the groups spread apart instead of drifting off or overlapping the mesh
+      const chain = [coordinator.ieee];
+      for (let i = 0; i < SPACER_COUNT; i++) {
+        const spacerId = `${SPACER_PREFIX}${key}_${i}`;
+        nodes.push({
+          id: spacerId,
+          value: 1,
+          symbolSize: 1,
+          itemStyle: { opacity: 0 },
+          label: { show: false },
+        });
+        chain.push(spacerId);
+      }
+      chain.push(id);
+      for (let i = 1; i < chain.length; i++) {
+        links.push({
+          source: chain[i - 1],
+          target: chain[i],
+          value: 0,
+          symbol: "none",
+          lineStyle: { opacity: 0 },
+        });
+      }
+      virtualChildren[key].forEach((device) => {
+        // not a radio link, so no LQI and no arrow
+        links.push({
+          source: id,
+          target: device.ieee,
+          value: device.available ? TIGHT_PULL_VALUE : OFFLINE_PULL_VALUE,
+          symbol: "none",
+          lineStyle: { width: 1, color, type: "dashed" },
+        });
+      });
+    }
+  );
 
   // Now set ignoreForceLayout to false for the best connection of each device
   // Except for the coordinator which can have multiple strong connections

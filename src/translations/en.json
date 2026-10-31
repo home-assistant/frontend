@@ -8523,7 +8523,8 @@
             "router": "Router",
             "end_device": "End device",
             "green_power": "Green Power",
-            "offline": "Offline"
+            "offline": "Offline",
+            "unknown_parent": "Unknown parent"
           },
           "device_binding": {
             "header": "Device binding",
