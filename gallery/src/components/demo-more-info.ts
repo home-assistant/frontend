@@ -1,6 +1,10 @@
+import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import type { HASSDomEvent } from "../../../src/common/dom/fire_event";
+import "../../../src/components/ha-button";
 import "../../../src/components/ha-card";
+import type { ExtEntityRegistryEntry } from "../../../src/data/entity/entity_registry";
 import "../../../src/dialogs/more-info/more-info-content";
 import "../../../src/state-summary/state-card-content";
 import type { HomeAssistant } from "../../../src/types";
@@ -15,16 +19,47 @@ class DemoMoreInfo extends LitElement {
   @property({ attribute: "show-config", type: Boolean })
   public showConfig = false;
 
+  // Registry entry for controls that read entity options, like favorites.
+  @property({ attribute: false }) public entry?: ExtEntityRegistryEntry;
+
+  // Local copy that follows saved changes. The parent passes the initial
+  // entry again on each render, so `entry` itself cannot hold them.
+  @state() private _entry?: ExtEntityRegistryEntry;
+
+  @state() private _editMode = false;
+
+  protected willUpdate(changedProps: PropertyValues<this>) {
+    if (changedProps.has("entry")) {
+      this._entry = this.entry;
+    }
+  }
+
+  private _toggleEditMode(ev: HASSDomEvent<HASSDomEvents["toggle-edit-mode"]>) {
+    ev.stopPropagation();
+    this._editMode = ev.detail;
+  }
+
+  private _entryUpdated(
+    ev: HASSDomEvent<HASSDomEvents["entity-entry-updated"]>
+  ) {
+    ev.stopPropagation();
+    this._entry = ev.detail;
+  }
+
+  private _editModeClicked() {
+    this._editMode = !this._editMode;
+  }
+
   render() {
-    const state = this._getState(this.entityId, this.hass.states);
+    const stateObj = this._getState(this.entityId, this.hass.states);
     return html`
       <div class="root">
         <div id="card">
           <ha-card>
             ${
-              !computeShowNewMoreInfo(state)
+              !computeShowNewMoreInfo(stateObj)
                 ? html`<state-card-content
-                    .stateObj=${state}
+                    .stateObj=${stateObj}
                     .hass=${this.hass}
                     in-dialog
                   ></state-card-content>`
@@ -33,11 +68,27 @@ class DemoMoreInfo extends LitElement {
 
             <more-info-content
               .hass=${this.hass}
-              .stateObj=${state}
+              .stateObj=${stateObj}
+              .entry=${this._entry}
+              .editMode=${this._editMode}
+              @toggle-edit-mode=${this._toggleEditMode}
+              @entity-entry-updated=${this._entryUpdated}
             ></more-info-content>
           </ha-card>
+          ${
+            this._entry
+              ? html`<ha-button
+                  class="edit-mode"
+                  appearance="plain"
+                  size="s"
+                  @click=${this._editModeClicked}
+                >
+                  ${this._editMode ? "Exit edit mode" : "Edit favorites"}
+                </ha-button>`
+              : nothing
+          }
         </div>
-        ${this.showConfig ? html`<pre>${this._jsonEntity(state)}</pre>` : ""}
+        ${this.showConfig ? html`<pre>${this._jsonEntity(stateObj)}</pre>` : ""}
       </div>
     `;
   }
@@ -69,6 +120,11 @@ class DemoMoreInfo extends LitElement {
     ha-card {
       width: 352px;
       padding: 20px 24px;
+    }
+    .edit-mode {
+      display: block;
+      margin-top: var(--ha-space-2);
+      text-align: center;
     }
     state-card-content {
       display: block;

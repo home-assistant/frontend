@@ -184,7 +184,9 @@
           "medium": "Medium",
           "high": "High",
           "numbered": "Speed {speed}"
-        }
+        },
+        "oscillation_on": "Oscillation on",
+        "oscillation_off": "Oscillation off"
       },
       "humidifier": {
         "currently": "[%key:ui::card::climate::currently%]",
@@ -2062,7 +2064,29 @@
           "set_forward_direction": "Set forward direction",
           "set_reverse_direction": "Set reverse direction",
           "turn_on_oscillating": "Turn on oscillating",
-          "turn_off_oscillating": "Turn off oscillating"
+          "turn_off_oscillating": "Turn off oscillating",
+          "edit_mode": "Edit favorites",
+          "copy_favorites": "Copy favorites to...",
+          "copy_favorites_helper": "Select one or more fans to receive the copied favorites from this fan. Fans must have the same speeds and support the same settings.",
+          "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
+          "favorites": {
+            "add": "Add favorite",
+            "save": "Save current state as a favorite",
+            "update": "Update favorite with current state",
+            "apply": "Apply favorite: {value}",
+            "select": "Select favorite: {value}",
+            "deselect": "Deselect favorite: {value}",
+            "delete": "Delete favorite {number}",
+            "delete_confirm_title": "Delete favorite?",
+            "delete_confirm_text": "This favorite will be permanently deleted.",
+            "delete_confirm_action": "[%key:ui::common::delete%]",
+            "edit_info_create": "Adjust the fan, then save its current state as a favorite. It returns to its previous state when you finish editing.",
+            "edit_info_update": "Adjust the fan, then update the selected favorite. It returns to its previous state when you finish editing.",
+            "edit_info_preset": "The preset mode isn't saved.",
+            "save_blocked_no_speed": "Turn on the fan and set a speed to save it as a favorite.",
+            "save_blocked_duplicate": "A favorite with these settings already exists.",
+            "save_failed": "Failed to save favorites: {error}"
+          }
         },
         "climate": {
           "temperature": "Temperature",

@@ -17,6 +17,12 @@ import type {
   FavoriteOption,
   FavoritesDomain,
 } from "../../data/entity/entity_registry";
+import type { FanEntity } from "../../data/fan";
+import {
+  fanAcceptsFavorites,
+  fanSupportsFavorites,
+  normalizeFanFavorites,
+} from "../../data/fan";
 import {
   hasCustomFavoriteOptionValues,
   isFavoritesDomain,
@@ -51,8 +57,8 @@ export interface FavoritesDialogContext {
 
 interface FavoritesDialogLabels {
   editMode: string;
-  reset: string;
-  resetText: string;
+  reset?: string;
+  resetText?: string;
   copy: string;
 }
 
@@ -62,7 +68,8 @@ export interface FavoritesDialogHandler {
   hasCustomFavorites: (entry: ExtEntityRegistryEntry) => boolean;
   // Omitted means there is always something to copy (domains with defaults).
   canCopy?: (entry: ExtEntityRegistryEntry) => boolean;
-  getResetOptions: (
+  // Omitted when the domain has no reset, so the menu hides it.
+  getResetOptions?: (
     stateObj: HassEntity
   ) => Partial<Record<FavoriteOption, undefined>>;
   getLabels: (hass: HomeAssistant) => FavoritesDialogLabels;
@@ -76,18 +83,28 @@ interface NumericFavoritesSpec<TEntity extends HassEntity> {
   getFavorites: (entry: ExtEntityRegistryEntry, stateObj: TEntity) => number[];
 }
 
+// Domains whose favorites can be reset to their defaults.
+type ResettableFavoritesDomain = Exclude<FavoritesDomain, "fan">;
+
 const getFavoritesDialogLabels = (
   hass: HomeAssistant,
   domain: FavoritesDomain
 ): FavoritesDialogLabels => ({
   editMode: hass.localize(`ui.dialogs.more_info_control.${domain}.edit_mode`),
+  copy: hass.localize(`ui.dialogs.more_info_control.${domain}.copy_favorites`),
+});
+
+const getResettableFavoritesDialogLabels = (
+  hass: HomeAssistant,
+  domain: ResettableFavoritesDomain
+): FavoritesDialogLabels => ({
+  ...getFavoritesDialogLabels(hass, domain),
   reset: hass.localize(
     `ui.dialogs.more_info_control.${domain}.reset_favorites`
   ),
   resetText: hass.localize(
     `ui.dialogs.more_info_control.${domain}.reset_favorites_text`
   ),
-  copy: hass.localize(`ui.dialogs.more_info_control.${domain}.copy_favorites`),
 });
 
 const copyFavoriteOptionsToEntities = async (
@@ -162,7 +179,7 @@ const createNumericFavoritesDialogHandler = <TEntity extends HassEntity>({
   supports,
   specs,
 }: {
-  domain: FavoritesDomain;
+  domain: ResettableFavoritesDomain;
   supports: (stateObj: TEntity) => boolean;
   specs: NumericFavoritesSpec<TEntity>[];
 }): FavoritesDialogHandler => ({
@@ -183,7 +200,7 @@ const createNumericFavoritesDialogHandler = <TEntity extends HassEntity>({
       },
       {}
     ),
-  getLabels: (hass) => getFavoritesDialogLabels(hass, domain),
+  getLabels: (hass) => getResettableFavoritesDialogLabels(hass, domain),
   copy: async ({ entry, hass, host, stateObj }) => {
     const sourceStateObj = stateObj as TEntity;
 
@@ -255,7 +272,7 @@ const lightFavoritesHandler: FavoritesDialogHandler = {
   getResetOptions: () => ({
     favorite_colors: undefined,
   }),
-  getLabels: (hass) => getFavoritesDialogLabels(hass, "light"),
+  getLabels: (hass) => getResettableFavoritesDialogLabels(hass, "light"),
   copy: async ({ entry, hass, host, stateObj }) => {
     const lightStateObj = stateObj as LightEntity;
     const favorites: LightColor[] =
@@ -340,6 +357,37 @@ const timerFavoritesHandler: FavoritesDialogHandler = {
     normalizeTimerPresets(entry.options?.timer?.presets).length > 0,
 };
 
+// Fans have no default favorites, so a reset would delete them all. It is
+// left out rather than worded as a deletion.
+const fanFavoritesHandler: FavoritesDialogHandler = {
+  domain: "fan",
+  supports: (stateObj) => fanSupportsFavorites(stateObj as FanEntity),
+  hasCustomFavorites: (entry) =>
+    normalizeFanFavorites(entry.options?.fan?.favorites).length > 0,
+  canCopy: (entry) =>
+    normalizeFanFavorites(entry.options?.fan?.favorites).length > 0,
+  getLabels: (hass) => getFavoritesDialogLabels(hass, "fan"),
+  copy: async ({ entry, hass, host, stateObj }) => {
+    const fanStateObj = stateObj as FanEntity;
+    const favorites = normalizeFanFavorites(entry.options?.fan?.favorites);
+
+    const compatibleFans = Object.values(hass.states).filter(
+      (candidate) =>
+        candidate.entity_id !== fanStateObj.entity_id &&
+        computeStateDomain(candidate) === "fan" &&
+        fanAcceptsFavorites(fanStateObj, candidate as FanEntity)
+    );
+
+    await copyFavoriteOptionsToEntities(
+      host,
+      hass,
+      "fan",
+      compatibleFans.map((fan) => fan.entity_id),
+      { favorites }
+    );
+  },
+};
+
 const FAVORITES_DIALOG_HANDLERS: Record<
   FavoritesDomain,
   FavoritesDialogHandler
@@ -348,6 +396,7 @@ const FAVORITES_DIALOG_HANDLERS: Record<
   light: lightFavoritesHandler,
   valve: valveFavoritesHandler,
   timer: timerFavoritesHandler,
+  fan: fanFavoritesHandler,
 };
 
 export const getFavoritesDialogHandler = (
