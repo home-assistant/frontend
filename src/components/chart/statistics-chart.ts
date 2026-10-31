@@ -5,7 +5,7 @@ import type {
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -49,7 +49,11 @@ import type {
   HomeAssistantUI,
 } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
-import type { CustomLegendOption } from "./ha-chart-base";
+import type {
+  CustomLegendOption,
+  HaChartBase,
+  ZoomSliderMode,
+} from "./ha-chart-base";
 import "./ha-chart-base";
 import { sideTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
@@ -127,6 +131,19 @@ export class StatisticsChart extends LitElement {
 
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
+
+  @property({ attribute: "select-range", type: Boolean })
+  public selectRange = false;
+
+  @property({ attribute: "zoom-slider" })
+  public zoomSlider: ZoomSliderMode = "auto";
+
+  @property({ attribute: false }) public highlight?: {
+    start: number;
+    end: number;
+  };
+
+  @query("ha-chart-base") private _chartBase?: HaChartBase;
 
   @state() private _chartData: (LineSeriesOption | BarSeriesOption)[] = [];
 
@@ -243,9 +260,15 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        .data=${this._chartData}
+        .data=${this._highlightedChartData(
+          this._chartData,
+          this.highlight,
+          getComputedStyle(this).getPropertyValue("--primary-color").trim()
+        )}
         .options=${this._chartOptions}
         .height=${this.height}
+        .selectRange=${this.selectRange}
+        .zoomSlider=${this.zoomSlider}
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
         @dataset-unhidden=${this._datasetUnhidden}
@@ -258,6 +281,59 @@ export class StatisticsChart extends LitElement {
       ></ha-chart-base>
     `;
   }
+
+  public resetZoom() {
+    this._chartBase?.zoom(0, 100);
+  }
+
+  private _highlightedChartData = memoizeOne(
+    (
+      data: (LineSeriesOption | BarSeriesOption)[],
+      highlight: { start: number; end: number } | undefined,
+      color: string
+    ): (LineSeriesOption | BarSeriesOption)[] => {
+      if (!data.length) {
+        return data;
+      }
+      if (data[0].type === "bar") {
+        if (!highlight) {
+          return data;
+        }
+        // Bars outside the highlight fade, so the highlighted ones stand out.
+        // Some points are already objects, like negative bars with round caps.
+        return data.map((series) => ({
+          ...series,
+          data: (series.data as any[]).map((item) => {
+            const point =
+              item && typeof item === "object" && "value" in item
+                ? item
+                : { value: item };
+            // Current state bars only carry their time
+            const start = new Date(point.value[2] ?? point.value[0]).getTime();
+            return start >= highlight.start && start < highlight.end
+              ? item
+              : {
+                  ...point,
+                  itemStyle: { ...point.itemStyle, opacity: 0.3 },
+                };
+          }),
+        })) as BarSeriesOption[];
+      }
+      // Every series gets an area, empty when not highlighted, as the chart
+      // merges series and would keep an old one
+      return data.map((series, index) => ({
+        ...series,
+        markArea: {
+          silent: true,
+          itemStyle: { color, opacity: 0.15 },
+          data:
+            highlight && index === 0
+              ? [[{ xAxis: highlight.start }, { xAxis: highlight.end }]]
+              : [],
+        },
+      }));
+    }
+  );
 
   private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);
