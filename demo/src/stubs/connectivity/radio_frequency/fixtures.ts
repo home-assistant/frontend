@@ -42,13 +42,7 @@ const REGISTRY_ENTRIES = [
 export const radioFrequencyFixtures: ConnectivityFixtures = {
   components: ["radio_frequency"],
   commands: ["radio_frequency/"],
-  manifests: [
-    manifest("radio_frequency", "Radio frequency", {
-      config_flow: false,
-      integration_type: "entity",
-    }),
-    manifest("esphome", "ESPHome", { integration_type: "device" }),
-  ],
+  manifests: [manifest("esphome", "ESPHome", { integration_type: "device" })],
   configEntries: [
     { type: "device", entry: configEntry(ENTRY_ID, "esphome", "RF Bridge") },
   ],
