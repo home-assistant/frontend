@@ -27,6 +27,7 @@ import {
 import type { PersistentNotification } from "../data/persistent_notification";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { subscribeRepairsIssueRegistry } from "../data/repairs";
+import { subscribeSystemState } from "../data/system_state";
 import type { UpdateEntity } from "../data/update";
 import { updateCanInstall } from "../data/update";
 import { showEditSidebarDialog } from "../dialogs/sidebar/show-dialog-edit-sidebar";
@@ -178,6 +179,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
 
   @state() private _issuesCount = 0;
 
+  // A pending restart or reboot counts as one thing to take care of.
+  @state() private _restartRequiredCount = 0;
+
   @state() private _panelOrder?: string[];
 
   @state() private _hiddenPanels?: string[];
@@ -217,6 +221,13 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
                 (issue) => !issue.ignored
               ).length;
             }),
+            subscribeSystemState(this.hass.connection!, (systemState) => {
+              this._restartRequiredCount =
+                systemState.home_assistant_restart_required ||
+                systemState.host_reboot_required
+                  ? 1
+                  : 0;
+            }),
           ]
         : []),
     ];
@@ -246,6 +257,7 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       changedProps.has("alwaysExpand") ||
       changedProps.has("_updatesCount") ||
       changedProps.has("_issuesCount") ||
+      changedProps.has("_restartRequiredCount") ||
       changedProps.has("_notifications") ||
       changedProps.has("_hiddenPanels") ||
       changedProps.has("_panelOrder") ||
@@ -472,6 +484,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
     return html`<div class="spacer" disabled></div>`;
   }
 
+  private get _configBadgeCount(): number {
+    return this._updatesCount + this._issuesCount + this._restartRequiredCount;
+  }
+
   private _renderConfiguration(selectedPanel: string) {
     if (!this.hass.user?.is_admin) {
       return nothing;
@@ -485,10 +501,10 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
       >
         <ha-svg-icon slot="start" .path=${mdiCog}></ha-svg-icon>
         ${
-          this._updatesCount > 0 || this._issuesCount > 0
+          this._configBadgeCount > 0
             ? html`
                 <span class="badge" slot="start">
-                  ${this._updatesCount + this._issuesCount}
+                  ${this._configBadgeCount}
                 </span>
               `
             : nothing
@@ -497,11 +513,9 @@ class HaSidebar extends SubscribeMixin(ScrollableFadeMixin(LitElement)) {
           >${this.hass.localize("panel.config")}</span
         >
         ${
-          this._updatesCount > 0 || this._issuesCount > 0
+          this._configBadgeCount > 0
             ? html`
-                <span class="badge" slot="end"
-                  >${this._updatesCount + this._issuesCount}</span
-                >
+                <span class="badge" slot="end">${this._configBadgeCount}</span>
               `
             : nothing
         }
