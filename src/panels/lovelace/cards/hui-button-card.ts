@@ -1,7 +1,7 @@
 import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { live } from "lit/directives/live";
 import { styleMap } from "lit/directives/style-map";
@@ -38,6 +38,7 @@ import {
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
 import {
   isMediaSourceContentId,
+  isStreamingMedia,
   resolveMediaSource,
 } from "../../../data/media_source";
 import type { LocalizeFunc } from "../../../common/translations/localize";
@@ -158,6 +159,25 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   private _imageRequestId = 0;
 
+  private _reconnectImg = false;
+
+  @query("img.image") private _img?: HTMLImageElement;
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (isStreamingMedia(this._img?.getAttribute("src") || "")) {
+      this._reconnectImg = true;
+      this._img?.removeAttribute("src");
+    }
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._reconnectImg) {
+      this.requestUpdate();
+    }
+  }
+
   public getCardSize(): number {
     return (
       (this._config?.show_icon ? 4 : 0) + (this._config?.show_name ? 1 : 0)
@@ -205,6 +225,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   protected willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
+
+    if (this.isConnected) {
+      this._reconnectImg = false;
+    }
 
     const image =
       (typeof this._config?.image === "object" &&
@@ -294,11 +318,15 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                     <img
                       class="image"
                       alt=""
-                      src=${live(
-                        this._hassUrl
-                          ? this._hassUrl(this._resolvedImage)
-                          : this._resolvedImage
-                      )}
+                      src=${
+                        this._reconnectImg
+                          ? nothing
+                          : live(
+                              this._hassUrl
+                                ? this._hassUrl(this._resolvedImage)
+                                : this._resolvedImage
+                            )
+                      }
                       style=${styleMap({
                         height: this._config.icon_height || undefined,
                         width: this._config.icon_height ? "auto" : undefined,

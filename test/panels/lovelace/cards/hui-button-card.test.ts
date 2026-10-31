@@ -202,4 +202,38 @@ describe("hui-button-card image support", () => {
 
     card.remove();
   });
+
+  it("cleans up streaming image on disconnect and restores it on reconnect", async () => {
+    const card = makeCard({
+      image: "/api/camera_proxy_stream/camera.front_door",
+    });
+    (card as any)._hassUrl = {
+      hassUrl: (url: string) => `http://hass.local${url}`,
+    };
+
+    document.body.appendChild(card);
+    await card.updateComplete;
+
+    const img = card.shadowRoot?.querySelector("img.image") as HTMLImageElement;
+    expect(img).toBeTruthy();
+    expect(img.getAttribute("src")).toBe(
+      "http://hass.local/api/camera_proxy_stream/camera.front_door"
+    );
+
+    // Disconnect the card from the DOM
+    card.remove();
+
+    // The stream src should be removed immediately on disconnect to avoid leaking bandwidth
+    expect(img.hasAttribute("src")).toBe(false);
+
+    // Reconnect the card
+    document.body.appendChild(card);
+    await card.updateComplete;
+
+    expect(img.getAttribute("src")).toBe(
+      "http://hass.local/api/camera_proxy_stream/camera.front_door"
+    );
+
+    card.remove();
+  });
 });
