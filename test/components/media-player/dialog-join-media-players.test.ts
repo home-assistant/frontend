@@ -24,18 +24,32 @@ const ENTITY_ID = "media_player.living";
 const KITCHEN = "media_player.kitchen";
 const BEDROOM = "media_player.bedroom";
 const OFFICE = "media_player.office";
+// In the group, but not a player the dialog lists
+const UNLISTED = "media_player.unlisted";
+
+const stateFor = (entity_id: string, group_members?: string[]) => ({
+  entity_id,
+  state: "playing",
+  attributes: {
+    supported_features: MediaPlayerEntityFeature.GROUPING,
+    group_members,
+  },
+});
+
+const statesWithMembers = (members: string[]) =>
+  ({
+    [ENTITY_ID]: stateFor(ENTITY_ID, members),
+    [KITCHEN]: stateFor(KITCHEN, members),
+    [BEDROOM]: stateFor(BEDROOM),
+    [OFFICE]: stateFor(OFFICE),
+  }) as never;
 
 let hosts: HTMLElement[] = [];
 
-const mount = async (callService = vi.fn().mockResolvedValue({})) => {
-  const stateFor = (entity_id: string, group_members?: string[]) => ({
-    entity_id,
-    state: "playing",
-    attributes: {
-      supported_features: MediaPlayerEntityFeature.GROUPING,
-      group_members,
-    },
-  });
+const mount = async (
+  callService = vi.fn().mockResolvedValue({}),
+  members = [ENTITY_ID, KITCHEN]
+) => {
   const ids = [ENTITY_ID, KITCHEN, BEDROOM, OFFICE];
 
   const host = document.createElement("div");
@@ -53,14 +67,9 @@ const mount = async (callService = vi.fn().mockResolvedValue({})) => {
       ids.map((entity_id) => [entity_id, { entity_id, platform: "demo" }])
     ) as never,
   });
-  new ContextProvider(host, {
+  const states = new ContextProvider(host, {
     context: statesContext,
-    initialValue: {
-      [ENTITY_ID]: stateFor(ENTITY_ID, [ENTITY_ID, KITCHEN]),
-      [KITCHEN]: stateFor(KITCHEN, [ENTITY_ID, KITCHEN]),
-      [BEDROOM]: stateFor(BEDROOM),
-      [OFFICE]: stateFor(OFFICE),
-    } as never,
+    initialValue: statesWithMembers(members),
   });
 
   const dialog = document.createElement("dialog-join-media-players");
@@ -86,10 +95,14 @@ const mount = async (callService = vi.fn().mockResolvedValue({})) => {
     toggle.checked = checked;
     toggle.dispatchEvent(new Event("change"));
     await dialog.updateComplete;
-    await settle();
   };
 
-  return { dialog, row, flip, settle, callService };
+  const setMembers = async (newMembers: string[]) => {
+    states.setValue(statesWithMembers(newMembers));
+    await dialog.updateComplete;
+  };
+
+  return { dialog, row, flip, settle, setMembers, callService };
 };
 
 describe("dialog-join-media-players", () => {
@@ -98,24 +111,27 @@ describe("dialog-join-media-players", () => {
     hosts = [];
   });
 
-  it("joins only the speaker that was switched on", async () => {
-    const { flip, row, callService } = await mount();
+  // Sonos, HEOS, and MusicCast drop members that aren't sent when the target
+  // isn't the group leader.
+  it("sends every member when joining a speaker", async () => {
+    const { flip, settle, callService } = await mount();
 
     await flip(BEDROOM, true);
+    await settle();
 
     expect(callService).toHaveBeenCalledExactlyOnceWith(
       "media_player",
       "join",
-      { group_members: [BEDROOM] },
+      { group_members: [KITCHEN, BEDROOM] },
       { entity_id: ENTITY_ID }
     );
-    expect(row(BEDROOM).showVolume).toBe(true);
   });
 
   it("unjoins the speaker that was switched off", async () => {
-    const { flip, row, callService } = await mount();
+    const { flip, settle, callService } = await mount();
 
     await flip(KITCHEN, false);
+    await settle();
 
     expect(callService).toHaveBeenCalledExactlyOnceWith(
       "media_player",
@@ -123,11 +139,14 @@ describe("dialog-join-media-players", () => {
       {},
       { entity_id: KITCHEN }
     );
-    expect(row(KITCHEN).showVolume).toBe(false);
   });
 
-  it("selects all without rejoining current members", async () => {
-    const { dialog, settle, callService } = await mount();
+  it("keeps members the dialog doesn't list when selecting all", async () => {
+    const { dialog, settle, callService } = await mount(undefined, [
+      ENTITY_ID,
+      KITCHEN,
+      UNLISTED,
+    ]);
 
     dialog
       .shadowRoot!.querySelector<HTMLElement>('[slot="actionItems"]')!
@@ -138,21 +157,57 @@ describe("dialog-join-media-players", () => {
     expect(callService).toHaveBeenCalledExactlyOnceWith(
       "media_player",
       "join",
-      { group_members: [BEDROOM, OFFICE] },
+      { group_members: [KITCHEN, UNLISTED, BEDROOM, OFFICE] },
       { entity_id: ENTITY_ID }
     );
   });
 
-  it("reverts the switch and shows the error when a call fails", async () => {
+  it("follows group changes made while it is open", async () => {
+    const { row, setMembers } = await mount();
+
+    await setMembers([ENTITY_ID, BEDROOM]);
+
+    expect(row(KITCHEN).checked).toBe(false);
+    expect(row(KITCHEN).showVolume).toBe(false);
+    expect(row(BEDROOM).checked).toBe(true);
+    expect(row(BEDROOM).showVolume).toBe(true);
+  });
+
+  it("restores the real members and shows the error on failure", async () => {
     const callService = vi.fn().mockRejectedValue(new Error("Offline"));
-    const { dialog, flip, row } = await mount(callService);
+    const { dialog, flip, settle, row } = await mount(callService);
 
     await flip(BEDROOM, true);
+    await settle();
 
     expect(row(BEDROOM).checked).toBe(false);
-    expect(row(BEDROOM).showVolume).toBe(false);
+    expect(row(KITCHEN).checked).toBe(true);
     expect(dialog.shadowRoot!.querySelector("ha-alert")?.textContent).toContain(
       "Offline"
     );
+  });
+
+  it("blocks changes until a call from a closed dialog finishes", async () => {
+    let finish!: () => void;
+    const callService = vi.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        })
+    );
+    const { dialog, flip, settle, row } = await mount(callService as never);
+
+    await flip(BEDROOM, true);
+    dialog
+      .shadowRoot!.querySelector("ha-dialog")!
+      .dispatchEvent(new Event("closed"));
+    await dialog.updateComplete;
+    dialog.showDialog({ entityId: ENTITY_ID });
+    await dialog.updateComplete;
+
+    expect(row(BEDROOM).disabled).toBe(true);
+    finish();
+    await settle();
+    expect(row(KITCHEN).checked).toBe(true);
   });
 });

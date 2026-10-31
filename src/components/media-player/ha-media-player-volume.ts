@@ -6,6 +6,7 @@ import {
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { consume } from "../../common/decorators/consume";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -32,8 +33,11 @@ const VOLUME_STEP = 2;
 export class HaMediaPlayerVolume extends LitElement {
   @property({ attribute: false }) public stateObj?: MediaPlayerEntity;
 
-  /** Accessible name for the slider, for when several are shown together. */
+  /** Accessible name for the controls, for when several are shown together. */
   @property({ attribute: false }) public label?: string;
+
+  /** Leave the wheel to a scrollable parent. */
+  @property({ type: Boolean, attribute: "no-wheel" }) public noWheel = false;
 
   @state()
   @consumeLocalize()
@@ -75,9 +79,12 @@ export class HaMediaPlayerVolume extends LitElement {
       MediaPlayerEntityFeature.VOLUME_STEP
     );
     const assumedState = stateObj.attributes.assumed_state === true;
+    const volumeLevel = stateObj.attributes.volume_level;
+    const showSlider = supportsSliding && volumeLevel != null;
 
     if (
       !(supportsSliding || supportsStep) ||
+      !(showSlider || supportsStep || supportsMute) ||
       !(stateActive(stateObj) || assumedState)
     ) {
       return nothing;
@@ -86,7 +93,12 @@ export class HaMediaPlayerVolume extends LitElement {
     const isMuted = stateObj.attributes.is_volume_muted;
 
     return html`
-      <div class="volume">
+      <div
+        class="volume"
+        part="volume"
+        role="group"
+        aria-label=${ifDefined(this.label)}
+      >
         ${
           supportsMute
             ? html`
@@ -103,7 +115,7 @@ export class HaMediaPlayerVolume extends LitElement {
             : nothing
         }
         ${
-          supportsStep && !supportsSliding
+          supportsStep && !showSlider
             ? html`
                 <ha-icon-button
                   action="volume_down"
@@ -125,7 +137,7 @@ export class HaMediaPlayerVolume extends LitElement {
             : nothing
         }
         ${
-          supportsSliding
+          showSlider
             ? html`
                 ${
                   !supportsMute
@@ -140,14 +152,14 @@ export class HaMediaPlayerVolume extends LitElement {
                   @touchcancel=${this._handlePointerUp}
                   @pointerdown=${this._handlePointerDown}
                   @pointerup=${this._handlePointerUp}
-                  @wheel=${this._volumeController.handleWheel}
+                  @wheel=${this._handleWheel}
                 >
                   <ha-slider
                     class="volume-slider"
                     labeled
                     id="input"
                     .accessibleLabel=${this.label ?? ""}
-                    .value=${Number(stateObj.attributes.volume_level) * 100}
+                    .value=${volumeLevel * 100}
                     .step=${VOLUME_STEP}
                     @input=${this._volumeController.handleInput}
                     @change=${this._volumeController.handleChange}
@@ -182,6 +194,12 @@ export class HaMediaPlayerVolume extends LitElement {
     });
   }
 
+  private _handleWheel = (ev: WheelEvent) => {
+    if (!this.noWheel) {
+      this._volumeController.handleWheel(ev);
+    }
+  };
+
   private _handlePointerDown = (ev: TouchEvent | PointerEvent | MouseEvent) => {
     if (ev.type === "touchstart") {
       this._volumeController.handleTouchStart(ev as TouchEvent);
@@ -192,8 +210,10 @@ export class HaMediaPlayerVolume extends LitElement {
   };
 
   private _handlePointerUp = (ev: TouchEvent | PointerEvent | MouseEvent) => {
-    if (ev.type === "touchend" || ev.type === "touchcancel") {
+    if (ev.type === "touchend") {
       this._volumeController.handleTouchEnd(ev as TouchEvent);
+    } else if (ev.type === "touchcancel") {
+      this._volumeController.handleTouchCancel();
     }
     setTimeout(() => {
       fireEvent(this, "slider-interaction-stop");

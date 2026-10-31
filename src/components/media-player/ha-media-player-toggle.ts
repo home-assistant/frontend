@@ -115,12 +115,11 @@ class HaMediaPlayerToggle extends LitElement {
       ></ha-switch>
       ${
         this.showVolume
-          ? html`<div class="volume">
-              <ha-media-player-volume
-                .stateObj=${stateObj as MediaPlayerEntity}
-                .label=${primary}
-              ></ha-media-player-volume>
-            </div>`
+          ? html`<ha-media-player-volume
+              no-wheel
+              .stateObj=${stateObj as MediaPlayerEntity}
+              .label=${primary}
+            ></ha-media-player-volume>`
           : nothing
       }
     </div>`;
@@ -138,7 +137,7 @@ class HaMediaPlayerToggle extends LitElement {
           width: 100%;
         }
 
-        .volume {
+        ha-media-player-volume::part(volume) {
           grid-column: 2 / -1;
         }
 

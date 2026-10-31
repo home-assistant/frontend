@@ -35,8 +35,47 @@ class DemoMoreInfoMediaPlayerJoin extends LitElement {
     const hass = provideHass(this);
     await hass.updateTranslations(null, "en");
     hass.addEntities(ENTITIES);
+    hass.mockService("media_player", "join", (data, target) =>
+      this._setGroup(target!.entity_id as string, data!.group_members)
+    );
+    hass.mockService("media_player", "unjoin", (_data, target) =>
+      this._leaveGroup(target!.entity_id as string)
+    );
     await this.updateComplete;
     this._openDialog();
+  }
+
+  private _withMembers(entityId: string, groupMembers: string[]) {
+    const stateObj = this.hass!.states[entityId];
+    return {
+      [entityId]: {
+        ...stateObj,
+        attributes: { ...stateObj.attributes, group_members: groupMembers },
+      },
+    };
+  }
+
+  private _setGroup(leader: string, members: string[]) {
+    const group = [leader, ...members];
+    this.hass!.updateStates(
+      Object.assign(
+        {},
+        ...group.map((entityId) => this._withMembers(entityId, group))
+      )
+    );
+  }
+
+  private _leaveGroup(entityId: string) {
+    const stateObj = this.hass!.states[entityId];
+    const remaining: string[] = stateObj.attributes.group_members.filter(
+      (id: string) => id !== entityId
+    );
+    this.hass!.updateStates(
+      Object.assign(
+        this._withMembers(entityId, [entityId]),
+        ...remaining.map((id) => this._withMembers(id, remaining))
+      )
+    );
   }
 
   private _openDialog() {

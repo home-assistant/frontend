@@ -5,6 +5,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { deepEqual } from "../../common/util/deep-equal";
 import { consume } from "../../common/decorators/consume";
 import {
   consumeLocalize,
@@ -24,7 +25,6 @@ import {
   mediaPlayerUnjoin,
 } from "../../data/media-player";
 import { haStyleDialog } from "../../resources/styles";
-import { showToast } from "../../util/toast";
 import "../ha-alert";
 import "../ha-button";
 import "../ha-dialog-footer";
@@ -73,21 +73,31 @@ class DialogJoinMediaPlayers extends LitElement {
 
   public showDialog(params: JoinMediaPlayersDialogParams): void {
     this._entityId = params.entityId;
+    this._error = undefined;
     this._open = true;
   }
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (!changedProps.has("_entityId") || !this._entityId) {
+    if (
+      !this._entityId ||
+      (!changedProps.has("_entityId") && !changedProps.has("_states"))
+    ) {
       return;
     }
     const entityId = this._entityId;
     const stateObj = this._states[entityId] as MediaPlayerEntity | undefined;
-
-    this._groupMembers =
+    const groupMembers =
       stateObj?.attributes.group_members?.filter((id) => id !== entityId) || [];
+    const opened = changedProps.has("_entityId");
 
-    this._selectedEntities = this._groupMembers;
+    if (!opened && deepEqual(groupMembers, this._groupMembers)) {
+      return;
+    }
+    this._groupMembers = groupMembers;
+    if (opened || !this._submitting) {
+      this._selectedEntities = groupMembers;
+    }
   }
 
   public closeDialog() {
@@ -99,8 +109,6 @@ class DialogJoinMediaPlayers extends LitElement {
     this._entityId = undefined;
     this._selectedEntities = [];
     this._groupMembers = [];
-    this._submitting = false;
-    this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -204,9 +212,16 @@ class DialogJoinMediaPlayers extends LitElement {
     if (!this._entityId) {
       return;
     }
-    this._applySelection(
-      this._mediaPlayerEntities(this._entityId, this._entities, this._states)
-    );
+    this._applySelection([
+      ...new Set([
+        ...this._selectedEntities,
+        ...this._mediaPlayerEntities(
+          this._entityId,
+          this._entities,
+          this._states
+        ),
+      ]),
+    ]);
   }
 
   private _handleSelectedChange(ev) {
@@ -225,28 +240,30 @@ class DialogJoinMediaPlayers extends LitElement {
     }
 
     const previous = this._selectedEntities;
-    const added = selectedEntities.filter((id) => !previous.includes(id));
+    const hasAdded = selectedEntities.some((id) => !previous.includes(id));
     const removed = previous.filter((id) => !selectedEntities.includes(id));
 
     this._selectedEntities = selectedEntities;
     this._error = undefined;
+    // Stays set if the dialog closes, so a reopened dialog can't send changes
+    // while this call is still running.
     this._submitting = true;
     try {
-      if (added.length) {
-        await mediaPlayerJoin(this._api.callService, this._entityId, added);
+      if (hasAdded) {
+        // Send every member: some integrations form a new group with only the
+        // players they receive when the target isn't the group leader.
+        await mediaPlayerJoin(
+          this._api.callService,
+          this._entityId,
+          selectedEntities
+        );
       }
       await Promise.all(
         removed.map((id) => mediaPlayerUnjoin(this._api.callService, id))
       );
-      this._groupMembers = selectedEntities;
     } catch (err) {
-      this._selectedEntities = previous;
-      const message = extractApiErrorMessage(err);
-      if (this._open) {
-        this._error = message;
-      } else {
-        showToast(this, { message });
-      }
+      this._selectedEntities = this._groupMembers;
+      this._error = extractApiErrorMessage(err);
     }
     this._submitting = false;
   }
