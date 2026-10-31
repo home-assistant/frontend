@@ -12,6 +12,7 @@ import {
   mdiPlus,
   mdiProgressHelper,
   mdiTag,
+  mdiTextureBox,
   mdiTrashCan,
 } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
@@ -65,6 +66,7 @@ import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-entity-id-icon";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
+import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import { getSignedPath } from "../../../data/auth";
 import type { CategoryRegistryEntry } from "../../../data/category_registry";
 import {
@@ -122,6 +124,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
+import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
 import { renderCategoryGroupActions } from "../category/render-category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
@@ -676,9 +679,13 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
 
-    const labelsInOverflow =
-      (this._sizeController.value && this._sizeController.value < 700) ||
+    const areasInOverflow =
+      (this._sizeController.value && this._sizeController.value < 900) ||
       (!this._sizeController.value && this.hass.dockedSidebar === "docked");
+
+    const labelsInOverflow =
+      areasInOverflow &&
+      (!this._sizeController.value || this._sizeController.value < 700);
     const helpers = this._getItems(
       this.hass.localize,
       this._helperEntities,
@@ -822,11 +829,32 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                         </ha-assist-chip>
                         ${this._renderLabelItems()}
                       </ha-dropdown>`
+                }
+                ${
+                  areasInOverflow
+                    ? nothing
+                    : html`<ha-dropdown
+                        slot="selection-bar"
+                        @wa-select=${this._handleBulkArea}
+                      >
+                        <ha-assist-chip
+                          slot="trigger"
+                          .label=${this.hass.localize(
+                            "ui.panel.config.devices.picker.bulk_actions.move_area"
+                          )}
+                        >
+                          <ha-svg-icon
+                            slot="trailing-icon"
+                            .path=${mdiMenuDown}
+                          ></ha-svg-icon>
+                        </ha-assist-chip>
+                        ${this._renderAreaItems()}
+                      </ha-dropdown>`
                 }`
             : nothing
         }
         ${
-          this.narrow || labelsInOverflow
+          this.narrow || areasInOverflow
             ? html` <ha-dropdown
                 slot="selection-bar"
                 @wa-select=${this._handleBulkAction}
@@ -863,12 +891,22 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
                     : nothing
                 }
                 ${
-                  this.narrow || this.hass.dockedSidebar === "docked"
+                  this.narrow || labelsInOverflow
                     ? html`<ha-dropdown-item>
                         ${this.hass.localize(
                           "ui.panel.config.automation.picker.bulk_actions.add_label"
                         )}
                         ${this._renderLabelItems("submenu")}
+                      </ha-dropdown-item>`
+                    : nothing
+                }
+                ${
+                  this.narrow || areasInOverflow
+                    ? html`<ha-dropdown-item>
+                        ${this.hass.localize(
+                          "ui.panel.config.devices.picker.bulk_actions.move_area"
+                        )}
+                        ${this._renderAreaItems("submenu")}
                       </ha-dropdown-item>`
                     : nothing
                 }
@@ -1203,6 +1241,45 @@ ${rejected
             action === "add"
               ? labels.concat(label)
               : labels.filter((lbl) => lbl !== label),
+        })
+      );
+    });
+    const result = await Promise.allSettled(promises);
+    if (hasRejectedItems(result)) {
+      const rejected = rejectedItems(result);
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.panel.config.common.multiselect.failed", {
+          number: rejected.length,
+        }),
+        text: html`<pre>
+${rejected
+            .map((r) => r.reason.message || r.reason.code || r.reason)
+            .join("\r\n")}</pre>`,
+      });
+    }
+  }
+
+  private _handleBulkArea = (ev: HaDropdownSelectEvent) => {
+    const value = ev.detail.item.value;
+    if (value === "area_create") {
+      this._bulkCreateArea();
+      return;
+    }
+    if (value === "area_none") {
+      this._bulkAddArea(null);
+      return;
+    }
+    if (value?.startsWith("area_")) {
+      this._bulkAddArea(value.substring(5));
+    }
+  };
+
+  private async _bulkAddArea(area: string | null) {
+    const promises: Promise<UpdateEntityRegistryEntryResult>[] = [];
+    this._selected.forEach((entityId) => {
+      promises.push(
+        updateEntityRegistryEntry(this.hass, entityId, {
+          area_id: area,
         })
       );
     });
@@ -1599,6 +1676,16 @@ ${rejected
     });
   };
 
+  private _bulkCreateArea = () => {
+    showAreaRegistryDetailDialog(this, {
+      createEntry: async (values) => {
+        const area = await createAreaRegistryEntry(this.hass, values);
+        this._bulkAddArea(area.area_id);
+        return area;
+      },
+    });
+  };
+
   private _renderCategoryItems = (slot = "") =>
     html`${this._categories?.map(
         (category) =>
@@ -1659,6 +1746,45 @@ ${rejected
         ${this.hass.localize("ui.panel.config.labels.add_label")}
       </ha-dropdown-item>`;
 
+  private _renderAreaItems = (slot = "") =>
+    html`${Object.values(this.hass.areas).map(
+        (area) =>
+          html`<ha-dropdown-item .slot=${slot} .value=${`area_${area.area_id}`}>
+            ${
+              area.icon
+                ? html`<ha-icon slot="icon" .icon=${area.icon}></ha-icon>`
+                : html`<ha-svg-icon
+                    slot="icon"
+                    .path=${mdiTextureBox}
+                  ></ha-svg-icon>`
+            }
+            ${area.name}
+          </ha-dropdown-item>`
+      )}
+      <ha-dropdown-item .slot=${slot} value="area_none">
+        ${
+          // Clearing the area of a device entity falls back to the device area.
+          // Use the full registry: hass.entities omits disabled entities.
+          this._selected.some(
+            (entityId) =>
+              entityRegistryByEntityId(this._entityReg || [])[entityId]
+                ?.device_id
+          )
+            ? this.hass.localize(
+                "ui.dialogs.entity_registry.editor.use_device_area"
+              )
+            : this.hass.localize(
+                "ui.panel.config.devices.picker.bulk_actions.no_area"
+              )
+        }
+      </ha-dropdown-item>
+      <wa-divider .slot=${slot}></wa-divider>
+      <ha-dropdown-item .slot=${slot} value="area_create">
+        ${this.hass.localize(
+          "ui.panel.config.devices.picker.bulk_actions.add_area"
+        )}
+      </ha-dropdown-item>`;
+
   private _handleBulkAction = (ev) => {
     const item = ev.detail.item;
     const value = item.value;
@@ -1684,6 +1810,17 @@ ${rejected
       } else {
         const action = item.action;
         this._bulkLabel(value.substring(6), action);
+      }
+      return;
+    }
+
+    if (value.startsWith("area_")) {
+      if (value === "area_create") {
+        this._bulkCreateArea();
+      } else if (value === "area_none") {
+        this._bulkAddArea(null);
+      } else {
+        this._bulkAddArea(value.substring(5));
       }
     }
   };
