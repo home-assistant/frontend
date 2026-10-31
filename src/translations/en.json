@@ -7808,6 +7808,7 @@
             "entries_virtual": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "entries_entity": "[%key:ui::panel::config::integrations::integration_page::entries%]",
             "no_entries": "No entries",
+            "used_by": "Used by",
             "yaml_entry": "This integration was not set up via the UI, you have either set it up in YAML or it is a dependency set up by another integration. If you want to configure it, you will need to do so in your configuration.yaml file.",
             "attention_entries": "Needs attention",
             "add_entry": "Add entry",
@@ -7818,7 +7819,8 @@
             "add_hardware": "Add hardware",
             "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
             "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
-            "add_virtual": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
+            "add_virtual": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
+            "open_config_panel": "{name} settings"
           },
           "config_entry": {
             "application_credentials": {

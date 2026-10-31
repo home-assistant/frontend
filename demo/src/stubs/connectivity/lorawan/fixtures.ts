@@ -44,14 +44,21 @@ export const lorawanFixtures: ConnectivityFixtures = {
   ],
   commands: ["lorawan/"],
   manifests: [
-    manifest("lorawan", "LoRaWAN", { integration_type: "helper" }),
+    manifest("lorawan", "LoRaWAN", {
+      config_flow: false,
+      integration_type: "helper",
+    }),
     manifest("sensecap_lorawan", "SenseCAP", {
       integration_type: "device",
       dependencies: ["lorawan"],
     }),
-    manifest("chirpstack", "ChirpStack", { integration_type: "hub" }),
+    manifest("chirpstack", "ChirpStack", {
+      integration_type: "hub",
+      dependencies: ["lorawan"],
+    }),
     manifest("thethingsnetwork_lorawan", "The Things Network", {
       integration_type: "hub",
+      dependencies: ["lorawan"],
     }),
   ],
   configEntries: [
