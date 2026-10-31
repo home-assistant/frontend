@@ -4,6 +4,7 @@ import {
   mdiMemoryArrowDown,
   mdiPlus,
   mdiRobot,
+  mdiMenuDown,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { html, LitElement } from "lit";
@@ -20,9 +21,12 @@ import type {
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
+import "../../../components/ha-dropdown";
+import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-overflow-menu";
 import "../../../components/ha-relative-time";
+import "../../../components/ha-svg-icon";
 import type { TagTrigger } from "../../../data/automation";
 import { showAutomationEditor } from "../../../data/automation";
 import type { Tag, TagScannedEvent, UpdateTagParams } from "../../../data/tag";
@@ -232,12 +236,39 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
-        <ha-assist-chip
-          slot="selection-bar"
-          .label=${this.hass.localize("ui.panel.config.tag.delete_selected")}
-          .disabled=${!this._selected.length}
-          @click=${this._removeSelected}
-        ></ha-assist-chip>
+        ${
+          this.narrow
+            ? html`<ha-dropdown
+                slot="selection-bar"
+                @wa-select=${this._removeSelected}
+              >
+                <ha-assist-chip
+                  slot="trigger"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_action"
+                  )}
+                >
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${mdiMenuDown}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+                <ha-dropdown-item
+                  value="delete"
+                  .disabled=${!this._selected.length}
+                >
+                  ${this.hass.localize("ui.panel.config.tag.delete_selected")}
+                </ha-dropdown-item>
+              </ha-dropdown>`
+            : html`<ha-assist-chip
+                slot="selection-bar"
+                .label=${this.hass.localize(
+                  "ui.panel.config.tag.delete_selected"
+                )}
+                .disabled=${!this._selected.length}
+                @click=${this._removeSelected}
+              ></ha-assist-chip>`
+        }
         <ha-button slot="fab" size="l" @click=${this._addTag}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.tag.add_tag")}

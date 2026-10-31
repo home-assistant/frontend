@@ -13026,7 +13026,8 @@
           "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
           "repository_not_found": "Repository not found",
-          "uninstall_selected": "Uninstall selected"
+          "uninstall_selected": "Uninstall selected",
+          "bulk_action": "[%key:ui::panel::config::automation::picker::bulk_action%]"
         },
         "entry": {
           "disabled": "The Marketplace is disabled. Enable it on the integration page to use it.",

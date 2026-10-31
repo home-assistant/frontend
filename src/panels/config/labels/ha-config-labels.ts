@@ -10,6 +10,7 @@ import {
   mdiRobot,
   mdiScriptText,
   mdiShape,
+  mdiMenuDown,
 } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
@@ -283,12 +284,41 @@ export class HaConfigLabels extends LitElement {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
-        <ha-assist-chip
-          slot="selection-bar"
-          .label=${this.hass.localize("ui.panel.config.labels.delete_selected")}
-          .disabled=${!this._selected.length}
-          @click=${this._deleteSelected}
-        ></ha-assist-chip>
+        ${
+          this.narrow
+            ? html`<ha-dropdown
+                slot="selection-bar"
+                @wa-select=${this._deleteSelected}
+              >
+                <ha-assist-chip
+                  slot="trigger"
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.picker.bulk_action"
+                  )}
+                >
+                  <ha-svg-icon
+                    slot="trailing-icon"
+                    .path=${mdiMenuDown}
+                  ></ha-svg-icon>
+                </ha-assist-chip>
+                <ha-dropdown-item
+                  value="delete"
+                  .disabled=${!this._selected.length}
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.labels.delete_selected"
+                  )}
+                </ha-dropdown-item>
+              </ha-dropdown>`
+            : html`<ha-assist-chip
+                slot="selection-bar"
+                .label=${this.hass.localize(
+                  "ui.panel.config.labels.delete_selected"
+                )}
+                .disabled=${!this._selected.length}
+                @click=${this._deleteSelected}
+              ></ha-assist-chip>`
+        }
         <ha-button slot="fab" size="l" @click=${this._addLabel}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.labels.add_label")}
