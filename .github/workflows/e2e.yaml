@@ -32,13 +32,13 @@ jobs:
           persist-credentials: false
 
       - name: Prepare dependencies
-        uses: ./.github/actions/prepare-dependencies
+        uses: $/.github/actions/prepare-dependencies
 
   prepare-container-dependencies:
     name: Prepare container dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.64.1-noble@sha256:47b510dd9230bf0b9bfc9b20102241e577ea7a99334ab4c3ca19f19770e9b8ea
       options: --user 1001
     defaults:
       run:
@@ -50,7 +50,7 @@ jobs:
           persist-credentials: false
 
       - name: Prepare dependencies
-        uses: ./.github/actions/prepare-dependencies
+        uses: $/.github/actions/prepare-dependencies
         with:
           node-modules-cache-key: node-modules-container-v1
 
@@ -66,12 +66,12 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
 
       - name: Build demo
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-demo-e2e
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -97,12 +97,12 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
 
       - name: Build e2e test app
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-e2e-test-app-e2e
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -128,12 +128,12 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
 
       - name: Build gallery
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-gallery
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -155,7 +155,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.64.1-noble@sha256:47b510dd9230bf0b9bfc9b20102241e577ea7a99334ab4c3ca19f19770e9b8ea
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -176,7 +176,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
           node-modules-cache-key: node-modules-container-v1
@@ -207,7 +207,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.64.1-noble@sha256:47b510dd9230bf0b9bfc9b20102241e577ea7a99334ab4c3ca19f19770e9b8ea
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -230,7 +230,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
           node-modules-cache-key: node-modules-container-v1
@@ -261,7 +261,7 @@ jobs:
       - prepare-container-dependencies
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.64.1-noble@sha256:47b510dd9230bf0b9bfc9b20102241e577ea7a99334ab4c3ca19f19770e9b8ea
       options: --user 1001 --ipc=host
     defaults:
       run:
@@ -284,7 +284,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
           node-modules-cache-key: node-modules-container-v1
@@ -326,7 +326,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node with shared dependencies
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           node-modules-cache: true
 
