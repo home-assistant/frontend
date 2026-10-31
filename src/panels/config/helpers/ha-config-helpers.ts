@@ -131,6 +131,7 @@ import {
   getEditableTableColumn,
   getEntityIdTableColumn,
   getLabelsTableColumn,
+  getStateTableColumn,
 } from "../common/data-table-columns";
 import { configSections } from "../config-sections";
 import { renderConfigEntryError } from "../integrations/ha-config-integration-page";
@@ -392,6 +393,7 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
               `
             : nothing,
       },
+      state: getStateTableColumn(localize),
       entity_id: getEntityIdTableColumn(localize),
       category: getCategoryTableColumn(localize),
       area: getAreaTableColumn(localize),
