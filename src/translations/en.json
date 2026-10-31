@@ -5961,6 +5961,8 @@
                   "lower_limit": "Lower limit",
                   "upper_limit": "Upper limit",
                   "value_template": "Value template",
+                  "ignore_invalid_states": "Ignore unknown and unavailable states",
+                  "ignore_invalid_states_description": "Skip unknown and unavailable states and compare the next number with the last valid one. When an entity becomes available again, it only triggers if the value actually crossed the threshold.",
                   "type_value": "Fixed number",
                   "type_input": "Value of an entity",
                   "description": {
