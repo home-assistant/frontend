@@ -291,3 +291,32 @@ export const createMediaPlayerEntities = () => [
     },
   },
 ];
+
+// Volume Set + Volume Mute + Grouping
+const GROUPED_PLAYER_FEATURES = 524300;
+
+const groupedPlayer = (
+  name: string,
+  state: string,
+  volumeLevel: number,
+  groupMembers: string[]
+) => ({
+  entity_id: `media_player.${name.toLowerCase().replaceAll(" ", "_")}`,
+  state,
+  attributes: {
+    friendly_name: name,
+    supported_features: GROUPED_PLAYER_FEATURES,
+    volume_level: volumeLevel,
+    group_members: groupMembers,
+  },
+});
+
+export const createGroupedMediaPlayerEntities = () => {
+  const group = ["media_player.living_room", "media_player.kitchen"];
+  return [
+    groupedPlayer("Living room", "playing", 0.6, group),
+    groupedPlayer("Kitchen", "playing", 0.3, group),
+    groupedPlayer("Bedroom", "paused", 0.2, ["media_player.bedroom"]),
+    groupedPlayer("Office", "idle", 0.4, ["media_player.office"]),
+  ];
+};

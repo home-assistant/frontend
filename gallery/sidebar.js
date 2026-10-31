@@ -163,7 +163,7 @@ export default [
       },
       {
         header: "Media",
-        pages: ["media-player"],
+        pages: ["media-player", "media-player-join"],
       },
       {
         header: "Inputs and values",
