@@ -244,7 +244,17 @@ type ConditionIcons = Record<
 >;
 
 export type IconCategory =
-  "entity" | "entity_component" | "services" | "triggers" | "conditions";
+  | "entity"
+  | "entity_component"
+  | "services"
+  | "triggers"
+  | "conditions"
+  | "integration_category";
+
+export type IntegrationCategoryIcons = Record<
+  string,
+  { default: string; subcategory?: Record<string, { default: string }> }
+>;
 
 interface CategoryType {
   entity: PlatformIcons;
@@ -252,6 +262,7 @@ interface CategoryType {
   services: ServiceIcons;
   triggers: TriggerIcons;
   conditions: ConditionIcons;
+  integration_category: IntegrationCategoryIcons;
 }
 
 export const getHassIcons = async <T extends IconCategory>(
@@ -320,7 +331,10 @@ export const getComponentIcons = async (
 };
 
 export const getCategoryIcons = async <
-  T extends Exclude<IconCategory, "entity" | "entity_component">,
+  T extends Exclude<
+    IconCategory,
+    "entity" | "entity_component" | "integration_category"
+  >,
 >(
   connection: Connection,
   hassConfig: HomeAssistant["config"],
@@ -706,4 +720,24 @@ export const domainIcon = async (
   }
 
   return undefined;
+};
+
+let integrationCategoryIcons:
+  Promise<IntegrationCategoryIcons | undefined> | undefined;
+
+// They don't change while Home Assistant runs, so they load once. A Home
+// Assistant that can't give them yet gets no icons, not an error.
+export const getIntegrationCategoryIcons = (
+  connection: Connection
+): Promise<IntegrationCategoryIcons | undefined> => {
+  if (!integrationCategoryIcons) {
+    integrationCategoryIcons = getHassIcons(
+      connection,
+      "integration_category",
+      "homeassistant"
+    )
+      .then((res) => res?.resources.homeassistant)
+      .catch(() => undefined);
+  }
+  return integrationCategoryIcons;
 };

@@ -74,6 +74,8 @@ export interface IntegrationManifest {
   )[];
   homekit?: { models?: string[] };
   integration_type?: IntegrationType;
+  // Like `energy` or `energy.ev_charging`, the primary category first
+  categories?: string[];
   loggers?: string[];
   quality_scale?:
     | "bronze"
