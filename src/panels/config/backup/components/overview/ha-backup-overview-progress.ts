@@ -347,11 +347,22 @@ export class HaBackupOverviewProgress extends LitElement {
                     : nothing
                 }
               </div>
-              <span class="segment-label">${segment.label}</span>
+              <span class="segment-label" title=${segment.label}
+                >${segment.label}</span
+              >
             </div>
           `
         )}
       </div>
+      ${
+        this.manager.stage
+          ? html`<span class="stage-label"
+              >${this.hass.localize(
+                `ui.panel.config.backup.overview.progress.description.create_backup.${this.manager.stage}`
+              )}</span
+            >`
+          : nothing
+      }
     `;
   }
 
@@ -472,6 +483,7 @@ export class HaBackupOverviewProgress extends LitElement {
       css`
         .progress-content {
           padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          container-type: inline-size;
         }
         .segmented-progress {
           display: flex;
@@ -516,6 +528,21 @@ export class HaBackupOverviewProgress extends LitElement {
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+        }
+        .stage-label {
+          display: none;
+          margin-top: var(--ha-space-1);
+          font-size: var(--ha-font-size-xs);
+          color: var(--secondary-text-color);
+        }
+        /* Segment labels don't fit a narrow bar, name the current stage instead */
+        @container (max-width: 479px) {
+          .segment-label {
+            display: none;
+          }
+          .stage-label {
+            display: block;
+          }
         }
         @keyframes pulse {
           0%,
