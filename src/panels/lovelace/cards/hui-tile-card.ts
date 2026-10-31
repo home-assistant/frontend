@@ -50,8 +50,13 @@ import type { TileCardConfig } from "./types";
 @customElement("hui-tile-card")
 export class HuiTileCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import("../editor/config-elements/hui-tile-card-editor");
-    return document.createElement("hui-tile-card-editor");
+    // FOR TESTING ONLY — open the tile editor concept switcher (Control +
+    // Concept A/B/C) instead of the stock editor, so the designs can be
+    // compared. Not for merge.
+    await import("../editor/config-elements/tile-card-lab-editor");
+    return document.createElement(
+      "tile-card-lab-editor"
+    ) as unknown as LovelaceCardEditor;
   }
 
   public static getStubConfig(
