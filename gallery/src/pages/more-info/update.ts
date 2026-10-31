@@ -250,7 +250,16 @@ class DemoMoreInfoUpdate extends LitElement {
       "update/release_notes",
       (msg: { type: string; entity_id: string }) => {
         if (msg.entity_id === "update.update16") {
-          return LONG_TEXT;
+          return {
+            release_notes: LONG_TEXT,
+            messages: [
+              {
+                severity: "warning",
+                message:
+                  "Do not restart, remove power from, or otherwise interrupt the device while the update is in progress.",
+              },
+            ],
+          };
         }
         if (msg.entity_id === "update.update17") {
           return Promise.reject({
@@ -261,7 +270,7 @@ class DemoMoreInfoUpdate extends LitElement {
         if (msg.entity_id === "update.update18") {
           return undefined;
         }
-        return null;
+        return { release_notes: null, messages: [] };
       }
     );
   }

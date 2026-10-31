@@ -2,6 +2,7 @@ import type { ContextType } from "@lit/context";
 import type { HassConfig, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { consume } from "../../../common/decorators/consume";
 import { BINARY_STATE_OFF } from "../../../common/const";
@@ -13,6 +14,7 @@ import { transform } from "../../../common/decorators/transform";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { sanitizeHttpUrl } from "../../../common/url/sanitize-http-url";
+import { estimateDirection } from "../../../common/util/estimate-direction";
 import { closestWithProperty } from "../../../common/dom/ancestors-with-property";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
@@ -31,7 +33,7 @@ import {
 } from "../../../data/context";
 import { UNAVAILABLE, UNKNOWN } from "../../../data/entity/entity";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
-import type { UpdateEntity } from "../../../data/update";
+import type { UpdateEntity, UpdateReleaseNotes } from "../../../data/update";
 import {
   latestVersionIsSkipped,
   updateButtonIsDisabled,
@@ -97,7 +99,7 @@ class MoreInfoUpdate extends LitElement {
   })
   private _user?: CurrentUser;
 
-  @state() private _releaseNotes?: string | null;
+  @state() private _releaseNotes?: UpdateReleaseNotes;
 
   @state() private _error?: string;
 
@@ -261,15 +263,41 @@ class MoreInfoUpdate extends LitElement {
                   <hr />
                   ${this._markdownLoading ? this._renderLoader() : nothing}
                 `
-              : this._releaseNotes
+              : this._releaseNotes.messages.length ||
+                  this._releaseNotes.release_notes
                 ? html`
                     <hr />
-                    <ha-markdown
-                      @content-resize=${this._markdownLoaded}
-                      .content=${this._releaseNotes}
-                      class=${this._markdownLoading ? "hidden" : ""}
-                    ></ha-markdown>
-                    ${this._markdownLoading ? this._renderLoader() : nothing}
+                    ${this._releaseNotes.messages.map(
+                      (message) => html`
+                        <ha-alert
+                          class="release-notes-message"
+                          alert-type=${message.severity}
+                        >
+                          <ha-markdown
+                            class=${classMap({
+                              rtl: estimateDirection(message.message) === "rtl",
+                            })}
+                            .content=${message.message}
+                          ></ha-markdown>
+                        </ha-alert>
+                      `
+                    )}
+                    ${
+                      this._releaseNotes.release_notes
+                        ? html`
+                            <ha-markdown
+                              @content-resize=${this._markdownLoaded}
+                              .content=${this._releaseNotes.release_notes}
+                              class=${this._markdownLoading ? "hidden" : ""}
+                            ></ha-markdown>
+                            ${
+                              this._markdownLoading
+                                ? this._renderLoader()
+                                : nothing
+                            }
+                          `
+                        : nothing
+                    }
                   `
                 : nothing
             : this.stateObj.attributes.release_summary
@@ -583,6 +611,11 @@ class MoreInfoUpdate extends LitElement {
       margin-bottom: var(--ha-space-4);
     }
 
+    .release-notes-message {
+      display: block;
+      margin-bottom: var(--ha-space-4);
+    }
+
     .row {
       margin: 0;
       display: flex;
@@ -641,6 +674,9 @@ class MoreInfoUpdate extends LitElement {
       direction: ltr;
       padding-bottom: var(--ha-space-4);
       box-sizing: border-box;
+    }
+    ha-markdown.rtl {
+      direction: rtl;
     }
     ha-markdown.hidden {
       display: none;
