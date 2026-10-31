@@ -1,13 +1,16 @@
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { mdiRestore } from "@mdi/js";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-icon-button";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/input/ha-input";
+import "../../../../components/ha-input-helper-text";
 import "./ha-energy-upstream-device-picker";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { DeviceConsumptionEnergyPreference } from "../../../../data/energy";
@@ -27,6 +30,8 @@ import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { IntegralUnits } from "./energy-integral";
 import { confirmIntegrals, integralUnits } from "./energy-integral";
 import type { EnergySettingsDeviceDialogParams } from "./show-dialogs-energy";
+import { getGraphColorByIndex } from "../../../../common/color/colors";
+import { rgb2hex } from "../../../../common/color/convert-color";
 
 const energyUnitClasses = ["energy"];
 const powerUnitClasses = ["power"];
@@ -199,6 +204,42 @@ export class DialogEnergyDeviceSettings
         >
         </ha-input>
 
+        <div class="color-field">
+          <div class="color-row">
+            <ha-input
+              type="color"
+              .disabled=${!this._device}
+              .label=${this.hass.localize(
+                "ui.panel.config.energy.device_consumption.dialog.color"
+              )}
+              .value=${
+                this._device?.color
+                  ? rgb2hex(this._device.color)
+                  : this._defaultColor
+              }
+              @change=${this._colorInputChanged}
+            ></ha-input>
+            ${
+              this._device?.color
+                ? html`<ha-icon-button
+                    .path=${mdiRestore}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.energy.device_consumption.dialog.color_reset"
+                    )}
+                    @click=${this._resetColor}
+                  ></ha-icon-button>`
+                : nothing
+            }
+          </div>
+          <ha-input-helper-text>
+            <span class="helper">
+              ${this.hass.localize(
+                "ui.panel.config.energy.device_consumption.dialog.color_helper"
+              )}
+            </span>
+          </ha-input-helper-text>
+        </div>
+
         <ha-energy-upstream-device-picker
           .hass=${this.hass}
           .label=${this.hass.localize(
@@ -240,6 +281,22 @@ export class DialogEnergyDeviceSettings
         </ha-dialog-footer>
       </ha-dialog>
     `;
+  }
+
+  private get _defaultColor(): string {
+    if (!this._device) {
+      return "#9e9e9e";
+    }
+    const devices = this._params?.device_consumptions ?? [];
+    const statConsumption =
+      this._params?.device?.stat_consumption ?? this._device.stat_consumption;
+    const idx = devices.findIndex(
+      (d) => d.stat_consumption === statConsumption
+    );
+    return getGraphColorByIndex(
+      idx === -1 ? devices.length : idx,
+      getComputedStyle(this)
+    );
   }
 
   private async _statisticChanged(ev: ValueChangedEvent<string>) {
@@ -302,6 +359,28 @@ export class DialogEnergyDeviceSettings
       delete newDevice.name;
     }
     this._device = newDevice;
+    this._updateDirtyState(this._device);
+  }
+
+  private _colorInputChanged(ev: Event) {
+    if (!this._device) {
+      return;
+    }
+
+    const value = (ev.target as HaInput).value;
+
+    if (!value) {
+      return;
+    }
+
+    const hex = value.replace("#", "");
+    const color: [number, number, number] = [
+      parseInt(hex.slice(0, 2), 16),
+      parseInt(hex.slice(2, 4), 16),
+      parseInt(hex.slice(4, 6), 16),
+    ];
+
+    this._device = { ...this._device, color };
     this._updateDirtyState(this._device);
   }
 
@@ -402,6 +481,13 @@ export class DialogEnergyDeviceSettings
     return sensors?.[0];
   }
 
+  private _resetColor() {
+    const device = { ...this._device! };
+    delete device.color;
+    this._device = device;
+    this._updateDirtyState(device);
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
@@ -422,6 +508,27 @@ export class DialogEnergyDeviceSettings
           margin-top: var(--ha-space-4);
           --ha-input-padding-bottom: 0;
           width: 100%;
+        }
+        .color-field {
+          margin-top: var(--ha-space-4);
+          width: 100%;
+        }
+        .color-row {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+        }
+        .color-row ha-input {
+          flex: 1;
+          margin-top: 0;
+        }
+        ha-input-helper-text {
+          display: block;
+          margin: var(--ha-space-2) 0 0;
+        }
+        ha-input-helper-text .helper {
+          display: block;
+          color: var(--secondary-text-color);
         }
       `,
     ];

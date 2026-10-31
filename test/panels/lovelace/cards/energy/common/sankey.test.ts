@@ -19,6 +19,7 @@ import {
   createMockEntityState,
   mockLocalize,
 } from "../../../../../fixtures/hass";
+import { getGraphColorByIndex } from "../../../../../../src/common/color/colors";
 
 const computedStyle = createMockComputedStyle();
 
@@ -902,6 +903,60 @@ describe("buildSankeyDeviceNodes", () => {
         .filter((n) => n.index === 4)
         .reduce((sum, n) => sum + n.value, 0);
       expect(deviceTotal).toBeCloseTo(1200, 10);
+    });
+  });
+
+  describe("device color", () => {
+    it("uses the custom color and falls back to the graph color", () => {
+      const result = buildSankeyDeviceNodes(
+        cumulativeOpts({
+          devices: devices(
+            { stat_consumption: "a", color: [255, 0, 128] },
+            { stat_consumption: "b" }
+          ),
+          values: { a: 10, b: 5 },
+          initialUntracked: 15,
+        })
+      );
+      const a = result.deviceNodes.find((n) => n.id === "a");
+      const b = result.deviceNodes.find((n) => n.id === "b");
+      expect(a?.color).toBe("rgb(255, 0, 128)");
+      expect(b?.color).toBe(getGraphColorByIndex(1, computedStyle));
+    });
+
+    it("keeps the custom color of a device demoted by the cap, in Other", () => {
+      const result = buildSankeyDeviceNodes(
+        cumulativeOpts({
+          devices: devices(
+            { stat_consumption: "a" },
+            { stat_consumption: "b" },
+            { stat_consumption: "c", color: [1, 2, 3] },
+            { stat_consumption: "d", color: [4, 5, 6] }
+          ),
+          values: { a: 40, b: 30, c: 0.003, d: 0.004 },
+          initialUntracked: 70.007,
+        })
+      );
+      expect(result.deviceNodes.map((n) => n.id)).toContain("other_home");
+      expect(result.deviceNodes.some((n) => n.color === "rgb(1, 2, 3)")).toBe(
+        false
+      );
+    });
+
+    it("uses the custom color for a lone sub-threshold device shown directly", () => {
+      const result = buildSankeyDeviceNodes(
+        cumulativeOpts({
+          devices: devices(
+            { stat_consumption: "a" },
+            { stat_consumption: "small", color: [9, 9, 9] }
+          ),
+          values: { a: 10, small: 0.005 },
+          initialUntracked: 10.005,
+        })
+      );
+      expect(result.deviceNodes.find((n) => n.id === "small")?.color).toBe(
+        "rgb(9, 9, 9)"
+      );
     });
   });
 });

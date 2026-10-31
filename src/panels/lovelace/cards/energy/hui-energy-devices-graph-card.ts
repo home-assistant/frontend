@@ -54,6 +54,7 @@ import "../../../../components/ha-icon-button";
 import { storage } from "../../../../common/decorators/storage";
 import { getEnergyColor } from "./common/color";
 import type { CustomLegendOption } from "../../../../components/chart/ha-chart-base";
+import { rgb2hex } from "../../../../common/color/convert-color";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -456,7 +457,9 @@ export class HuiEnergyDevicesGraphCard
       } else if (this._compoundStats.includes(device.stat_consumption)) {
         return;
       }
-      const color = getGraphColorByIndex(idx, computedStyle);
+      const color = device.color
+        ? rgb2hex(device.color)
+        : getGraphColorByIndex(idx, computedStyle);
 
       chartData.push({
         id: device.stat_consumption,

@@ -132,6 +132,7 @@ export interface DeviceConsumptionEnergyPreference {
   stat_rate?: string;
   name?: string;
   included_in_stat?: string;
+  color?: [number, number, number];
 }
 
 export interface PowerConfig {
