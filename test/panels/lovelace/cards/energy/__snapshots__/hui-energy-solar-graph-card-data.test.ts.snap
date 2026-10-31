@@ -2100,7 +2100,7 @@ exports[`generateEnergySolarGraphData > matches snapshot for two solar sources w
     },
     {
       "barMaxWidth": 50,
-      "color": "#c6690032",
+      "color": "#d1970032",
       "cursor": "default",
       "data": [
         {
@@ -3258,7 +3258,7 @@ exports[`generateEnergySolarGraphData > matches snapshot for two solar sources w
       ],
       "id": "compare-sensor.solar_production_1",
       "itemStyle": {
-        "borderColor": "#c669007F",
+        "borderColor": "#d197007F",
       },
       "name": "ui.panel.lovelace.cards.energy.energy_solar_graph.production: {"name":"Roof 1"}",
       "stack": "compare",
@@ -3960,7 +3960,7 @@ exports[`generateEnergySolarGraphData > matches snapshot for two solar sources w
     },
     {
       "barMaxWidth": 50,
-      "color": "#c669007F",
+      "color": "#d197007F",
       "cursor": "default",
       "data": [
         {
@@ -5118,7 +5118,7 @@ exports[`generateEnergySolarGraphData > matches snapshot for two solar sources w
       ],
       "id": "sensor.solar_production_1",
       "itemStyle": {
-        "borderColor": "#c66900",
+        "borderColor": "#d19700",
       },
       "name": "ui.panel.lovelace.cards.energy.energy_solar_graph.production: {"name":"Roof 1"}",
       "stack": "solar",
@@ -5152,12 +5152,12 @@ exports[`generateEnergySolarGraphData > matches snapshot with daily-period forec
     },
     {
       "barMaxWidth": 50,
-      "color": "#c6690032",
+      "color": "#d1970032",
       "cursor": "default",
       "data": [],
       "id": "compare-sensor.solar_production_1",
       "itemStyle": {
-        "borderColor": "#c669007F",
+        "borderColor": "#d197007F",
       },
       "name": "ui.panel.lovelace.cards.energy.energy_solar_graph.production: {"name":"Roof 1"}",
       "stack": "compare",
@@ -5387,7 +5387,7 @@ exports[`generateEnergySolarGraphData > matches snapshot with daily-period forec
     },
     {
       "barMaxWidth": 50,
-      "color": "#c669007F",
+      "color": "#d197007F",
       "cursor": "default",
       "data": [
         {
@@ -5993,7 +5993,7 @@ exports[`generateEnergySolarGraphData > matches snapshot with daily-period forec
       ],
       "id": "sensor.solar_production_1",
       "itemStyle": {
-        "borderColor": "#c66900",
+        "borderColor": "#d19700",
       },
       "name": "ui.panel.lovelace.cards.energy.energy_solar_graph.production: {"name":"Roof 1"}",
       "stack": "solar",
