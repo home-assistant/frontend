@@ -15,6 +15,7 @@
     "light": "Lights",
     "security": "Security",
     "climate": "Climate",
+    "weather": "Weather",
     "home": "Overview",
     "maintenance": "Maintenance",
     "marketplace": "Marketplace",
@@ -414,7 +415,81 @@
         "hourly": "Hourly",
         "twice_daily": "Twice daily",
         "high": "High",
-        "low": "Low"
+        "low": "Low",
+        "now": "Now",
+        "today": "Today",
+        "feels_like": "Feels like {temperature}",
+        "high_low": "High {high} · Low {low}",
+        "next_hours": "Next hours",
+        "hourly_modes": {
+          "temperature": "Temperature",
+          "precipitation": "Rain",
+          "wind": "Wind"
+        },
+        "sunrise": "Sunrise",
+        "sunset": "Sunset",
+        "daily_forecast": "{count} day forecast",
+        "sun": "Sun",
+        "daylight": "{hours}h {minutes}m of daylight",
+        "moon": "Moon",
+        "moon_phase": {
+          "new_moon": "New moon",
+          "waxing_crescent": "Waxing crescent",
+          "first_quarter": "First quarter",
+          "waxing_gibbous": "Waxing gibbous",
+          "full_moon": "Full moon",
+          "waning_gibbous": "Waning gibbous",
+          "last_quarter": "Last quarter",
+          "waning_crescent": "Waning crescent"
+        },
+        "illumination": "Illumination",
+        "moonrise": "Moonrise",
+        "moonset": "Moonset",
+        "next_full_moon": "Next full moon",
+        "in_days": "{count, plural,\n  one {In # day}\n  other {In # days}\n}",
+        "wind": "Wind",
+        "speed": "Speed",
+        "gusts": "Gusts",
+        "from": "From",
+        "beaufort": "Bft",
+        "air_quality": "Air quality",
+        "fine_particles": "fine particles",
+        "air_quality_level": {
+          "good": "Good",
+          "fair": "Fair",
+          "moderate": "Moderate",
+          "poor": "Poor",
+          "very_poor": "Very poor",
+          "extremely_poor": "Extremely poor"
+        },
+        "uv_level": {
+          "low": "Low",
+          "moderate": "Moderate",
+          "high": "High",
+          "very_high": "Very high",
+          "extreme": "Extreme"
+        },
+        "metrics": {
+          "humidity": "Humidity",
+          "pressure": "Pressure",
+          "visibility": "Visibility",
+          "uv_index": "UV index",
+          "precipitation": "Precipitation",
+          "compared_to_average": "Compared to average"
+        },
+        "notes": {
+          "dew_point": "The dew point is {dew_point} right now.",
+          "pressure_rising": "Rising over the last 3 hours.",
+          "pressure_falling": "Falling over the last 3 hours.",
+          "pressure_steady": "Steady over the last 3 hours.",
+          "uv_peak": "Up to {uv_index} at {time}.",
+          "rain_last_24h": "{unit} in the last 24 hours",
+          "rain_expected": "{amount} expected in the next 24 hours.",
+          "average_above": "above the average high",
+          "average_below": "below the average high",
+          "average_same": "same as the average high",
+          "average_detail": "Today {today}. The average high of the last {days} days was {average}."
+        }
       }
     },
     "card_features": {
@@ -13246,6 +13321,17 @@
         "download_data": "[%key:ui::panel::history::download_data%]",
         "download_data_error": "[%key:ui::panel::history::download_data_error%]",
         "error_no_data": "No activity for the selected target in the selected time range."
+      },
+      "weather": {
+        "refresh": "Update weather now",
+        "updated": "Updated {time}",
+        "empty": {
+          "title": "No weather yet",
+          "description": "An administrator can add a weather service to show the weather here."
+        },
+        "editor": {
+          "load_failed": "Failed to load weather page configuration"
+        }
       }
     },
     "tips": {
