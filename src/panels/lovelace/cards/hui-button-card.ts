@@ -156,6 +156,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   private _resolvingImage?: string;
 
+  private _imageRequestId = 0;
+
   public getCardSize(): number {
     return (
       (this._config?.show_icon ? 4 : 0) + (this._config?.show_name ? 1 : 0)
@@ -218,20 +220,22 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       ) {
         this._resolvingImage = image;
         this._resolvedImage = undefined;
+        const requestId = ++this._imageRequestId;
         resolveMediaSource(this._api, image).then(
           (result) => {
-            if (this._resolvingImage === image) {
+            if (this._imageRequestId === requestId) {
               this._resolvedImage = result.url;
             }
           },
           () => {
-            if (this._resolvingImage === image) {
+            if (this._imageRequestId === requestId) {
               this._resolvingImage = undefined;
             }
           }
         );
       }
     } else {
+      this._imageRequestId++;
       this._resolvingImage = undefined;
       this._resolvedImage = image;
     }

@@ -143,4 +143,63 @@ describe("hui-button-card image support", () => {
 
     card.remove();
   });
+
+  it("guards media resolution callbacks with a request identity so stale responses or rejections are ignored", async () => {
+    let rejectFirst!: (err: any) => void;
+    let resolveSecond!: (val: any) => void;
+    const firstPromise = new Promise((_, reject) => {
+      rejectFirst = reject;
+    });
+    const secondPromise = new Promise((resolve) => {
+      resolveSecond = resolve;
+    });
+
+    const mockCallWS = vi
+      .fn()
+      .mockReturnValueOnce(firstPromise)
+      .mockReturnValueOnce(secondPromise);
+
+    const card = makeCard({
+      image: { media_content_id: "media-source://image_upload/imageA" },
+    });
+    (card as any)._api = { callWS: mockCallWS } as unknown as HomeAssistantApi;
+    (card as any)._hassUrl = {
+      hassUrl: (url: string) => `http://hass.local${url}`,
+    };
+
+    document.body.appendChild(card);
+    await card.updateComplete;
+
+    // Change to imageB then back to imageA
+    card.setConfig({
+      type: "button",
+      image: "https://example.com/other.png",
+    });
+    await card.updateComplete;
+
+    card.setConfig({
+      type: "button",
+      image: { media_content_id: "media-source://image_upload/imageA" },
+    });
+    await card.updateComplete;
+
+    // First request rejects
+    rejectFirst(new Error("Failed"));
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    // Second request resolves
+    resolveSecond({ url: "/api/image/second" });
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
+    await card.updateComplete;
+
+    const img = card.shadowRoot?.querySelector("img.image") as HTMLImageElement;
+    expect(img).toBeTruthy();
+    expect(img.getAttribute("src")).toBe("http://hass.local/api/image/second");
+
+    card.remove();
+  });
 });
