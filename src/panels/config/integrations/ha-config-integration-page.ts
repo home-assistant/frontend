@@ -749,7 +749,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 AI_SETTINGS_DOMAINS.includes(this.domain)
                   ? html`<ha-button
                       .appearance=${showAddEntry ? "outlined" : "accent"}
-                      href="/config/ai"
+                      href="/config/ai#mcp"
                     >
                       ${this.hass.localize(
                         "ui.panel.config.integrations.integration_page.open_config_panel",
