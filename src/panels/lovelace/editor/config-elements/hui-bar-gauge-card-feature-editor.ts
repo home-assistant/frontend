@@ -1,15 +1,41 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
-import type { SchemaUnion } from "../../../../components/ha-form/types";
+import type {
+  HaFormSchema,
+  SchemaUnion,
+} from "../../../../components/ha-form/types";
 import type { HomeAssistant } from "../../../../types";
 import type {
   BarGaugeCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "../../card-features/types";
 import type { LovelaceCardFeatureEditor } from "../../types";
+
+const _schema = [
+  {
+    name: "min",
+    default: 0,
+    selector: { number: { mode: "box", step: "any" } },
+  },
+  {
+    name: "max",
+    default: 100,
+    selector: { number: { mode: "box", step: "any" } },
+  },
+  { name: "show_severity", selector: { boolean: {} } },
+  {
+    name: "severity",
+    type: "grid",
+    visible: { field: "show_severity", value: true },
+    schema: [
+      { name: "green", selector: { number: { mode: "box", step: "any" } } },
+      { name: "yellow", selector: { number: { mode: "box", step: "any" } } },
+      { name: "red", selector: { number: { mode: "box", step: "any" } } },
+    ],
+  },
+] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-bar-gauge-card-feature-editor")
 export class HuiBarGaugeCardFeatureEditor
@@ -26,83 +52,18 @@ export class HuiBarGaugeCardFeatureEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne(
-    (showSeverity: boolean) =>
-      [
-        {
-          name: "min",
-          default: 0,
-          selector: {
-            number: {
-              mode: "box",
-              step: "any",
-            },
-          },
-        },
-        {
-          name: "max",
-          default: 100,
-          selector: {
-            number: {
-              mode: "box",
-              step: "any",
-            },
-          },
-        },
-        { name: "show_severity", selector: { boolean: {} } },
-        ...(showSeverity
-          ? ([
-              {
-                name: "severity",
-                type: "grid",
-                schema: [
-                  {
-                    name: "green",
-                    selector: {
-                      number: {
-                        mode: "box",
-                        step: "any",
-                      },
-                    },
-                  },
-                  {
-                    name: "yellow",
-                    selector: {
-                      number: {
-                        mode: "box",
-                        step: "any",
-                      },
-                    },
-                  },
-                  {
-                    name: "red",
-                    selector: {
-                      number: {
-                        mode: "box",
-                        step: "any",
-                      },
-                    },
-                  },
-                ],
-              },
-            ] as const)
-          : []),
-      ] as const
-  );
-
   protected render() {
     if (!this.hass || !this._config) {
       return nothing;
     }
 
-    const schema = this._schema(!!this._config.severity);
     const data = { ...this._config, show_severity: !!this._config.severity };
 
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${data}
-        .schema=${schema}
+        .schema=${_schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
@@ -119,9 +80,7 @@ export class HuiBarGaugeCardFeatureEditor
     fireEvent(this, "config-changed", { config });
   }
 
-  private _computeLabelCallback = (
-    schema: SchemaUnion<ReturnType<typeof this._schema>>
-  ) =>
+  private _computeLabelCallback = (schema: SchemaUnion<typeof _schema>) =>
     this.hass!.localize(
       `ui.panel.lovelace.editor.features.types.bar-gauge.${schema.name}`
     );
