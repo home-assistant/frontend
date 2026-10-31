@@ -3695,8 +3695,8 @@
                   "custom": "Custom"
                 },
                 "ha_cloud_alert": {
-                  "title": "Home Assistant Cloud cannot synchronize",
-                  "description": "Add Home Assistant settings data to synchronize this backup to Home Assistant Cloud."
+                  "title": "Home Assistant Link cannot synchronize",
+                  "description": "Add Home Assistant settings data to synchronize this backup to Home Assistant Link."
                 }
               },
               "data": {
@@ -3820,7 +3820,7 @@
           },
           "agents": {
             "cloud_agent_description": "Note: It stores only the most recent backup, regardless of your retention settings, with a maximum size of 5 GB.",
-            "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Cloud subscription.",
+            "cloud_agent_no_subcription": "You currently do not have an active Home Assistant Link subscription.",
             "network_mount_agent_description": "Additional storage",
             "unavailable_agents": "Unavailable locations",
             "no_agents": "No locations configured",
@@ -4108,7 +4108,7 @@
               "more_locations": "Explore more locations",
               "manage_network_storage": "Manage storage",
               "ha_cloud_backup": "{home_assistant_cloud} backup",
-              "ha_cloud_description": "Stores an encrypted backup offsite. This is ideal in case your local backup becomes inaccessible. The cloud stores one backup with a maximum size of 5 GB, and older backups are automatically deleted."
+              "ha_cloud_description": "Stores an encrypted backup offsite. This is ideal in case your local backup becomes inaccessible. Home Assistant Link stores one backup with a maximum size of 5 GB, and older backups are automatically deleted."
             },
             "encryption_key": {
               "title": "Encryption key",
@@ -4165,7 +4165,7 @@
             "error": "Could not fetch location details",
             "configuration": {
               "title": "Configuration",
-              "cloud_description": "Home Assistant Cloud backup stores only one backup. The oldest backups are deleted."
+              "cloud_description": "Home Assistant Link backup stores only one backup. The oldest backups are deleted."
             },
             "encryption": {
               "title": "Encryption",
@@ -4173,7 +4173,7 @@
               "location_encrypted": "Backups made to this location will be encrypted",
               "location_unencrypted": "Backups made to this location will be unencrypted",
               "location_encrypted_description": "Your data is private and secure by encrypting backups with your encryption key.",
-              "location_encrypted_cloud_description": "Home Assistant Cloud is the privacy-focused cloud. This is why it will only accept encrypted backups and why we don’t store your encryption key.",
+              "location_encrypted_cloud_description": "Home Assistant Link is privacy-focused. This is why it will only accept encrypted backups and why we don’t store your encryption key.",
               "location_encrypted_cloud_learn_more": "Learn more",
               "location_unencrypted_description": "Please keep your backups private and secure.",
               "encryption_turn_on": "Turn on",
@@ -4987,10 +4987,10 @@
           "description": "Configure what website addresses Home Assistant should share with other devices when they need to fetch data from Home Assistant (for example, to play text-to-speech or other hosted media).",
           "internal_url_label": "Local network",
           "external_url_label": "Internet",
-          "external_use_ha_cloud": "Use Home Assistant Cloud",
-          "manage_ha_cloud": "Manage Home Assistant Cloud",
-          "external_get_ha_cloud": "If you're looking for a fast and secure way to connect to Home Assistant no matter where you are, start a trial for Home Assistant Cloud today. Every purchase supports the development of Home Assistant.",
-          "ha_cloud_remote_not_enabled": "Your Home Assistant Cloud remote connection is currently not enabled.",
+          "external_use_ha_cloud": "Use Home Assistant Link",
+          "manage_ha_cloud": "Manage Home Assistant Link",
+          "external_get_ha_cloud": "If you're looking for a fast and secure way to connect to Home Assistant no matter where you are, start a trial for Home Assistant Link today. Every purchase supports the development of Home Assistant.",
+          "ha_cloud_remote_not_enabled": "Your Home Assistant Link remote connection is currently not enabled.",
           "enable_remote": "[%key:ui::common::enable%]",
           "internal_url_automatic": "Automatic",
           "internal_url_https_error_title": "Invalid local network URL",
@@ -5363,7 +5363,7 @@
                     "note": "Most recent devices support on-device wake word engines and are configured on their device page."
                   }
                 },
-                "no_cloud_message": "You should have an active cloud subscription to use cloud speech services.",
+                "no_cloud_message": "You should have an active Home Assistant Link subscription to use its speech services.",
                 "no_cloud_action": "Subscribe"
               },
               "duplicate": {
@@ -5524,8 +5524,8 @@
               },
               "options": {
                 "cloud": {
-                  "label": "Home Assistant Cloud",
-                  "description": "Offloads speech processing to a fast, private cloud. Offering the highest accuracy and widest language support. Home Assistant Cloud is a subscription service that includes voice processing."
+                  "label": "Home Assistant Link",
+                  "description": "Offloads speech processing to fast, private servers. Offering the highest accuracy and widest language support. Home Assistant Link is a subscription service that includes voice processing."
                 },
                 "focused_local": {
                   "label": "Focused local processing",
@@ -5545,7 +5545,7 @@
               }
             },
             "cloud": {
-              "title": "The power of Home Assistant Cloud"
+              "title": "The power of Home Assistant Link"
             },
             "local": {
               "title": "Installing apps",
@@ -6991,7 +6991,7 @@
           "description_not_login": "Not logged in",
           "description_features": "Control home when away and integrate with Alexa and Google Assistant",
           "login": {
-            "title": "Cloud login",
+            "title": "Home Assistant Link login",
             "landing_title": "[%key:ui::panel::config::cloud::account::onboarding::ha_cloud_title%]",
             "hero_title": "Tools for your home, support for the Open Home",
             "hero_lead": "The easy, secure, and private way to get more out of Home Assistant, and the simplest way to fund its development.",
@@ -7037,7 +7037,7 @@
           },
           "register": {
             "headline": "Start free trial",
-            "information": "Create an account to start your free one-month trial with Home Assistant Cloud. No payment information necessary.",
+            "information": "Create an account to start your free one-month trial with Home Assistant Link. No payment information necessary.",
             "terms_notice": "By creating an account, you agree to our {terms} and {privacy_policy}.",
             "link_terms_conditions": "Terms and conditions",
             "link_privacy_policy": "Privacy policy",
@@ -7061,7 +7061,7 @@
           "account": {
             "thank_you_title": "Thank you!",
             "getting_renewal_date": "Getting renewal date…",
-            "funding_note": "Every Cloud subscription funds the Open Home Foundation, paying full-time developers to work on and keep the Home Assistant project independent. No private equity, no ads, no data harvesting.",
+            "funding_note": "Every Home Assistant Link subscription funds the Open Home Foundation, paying full-time developers to work on and keep the Home Assistant project independent. No private equity, no ads, no data harvesting.",
             "email": "Email",
             "show_email": "Show email",
             "hide_email": "Hide email",
@@ -7073,18 +7073,18 @@
             "status_unknown": "Unknown",
             "overview": {
               "trial_title": "Free trial",
-              "trial_text": "Add a payment method before your trial ends to keep your cloud features.",
+              "trial_text": "Add a payment method before your trial ends to keep your Home Assistant Link features.",
               "add_payment": "Add payment method",
               "expired_title": "Subscription expired",
               "expired_text": "Renew your subscription to restore remote access, backups, and voice.",
               "renew": "Renew subscription",
               "canceled_title": "Subscription canceled",
-              "canceled_text": "Your subscription is canceled. You'll keep your cloud features until {date}.",
+              "canceled_text": "Your subscription is canceled. You'll keep your Home Assistant Link features until {date}.",
               "resubscribe": "Resubscribe",
-              "features_title": "Cloud features",
+              "features_title": "Home Assistant Link features",
               "features_intro": "The best of Home Assistant, while funding its development. Securely reach your home from anywhere, add voice assistants, keep an off-site backup, and more. Built by the team behind Home Assistant.",
               "feature_remote": "Remote access",
-              "feature_backups": "Cloud backups",
+              "feature_backups": "Off-site backups",
               "feature_voice": "Voice",
               "feature_voice_sub": "Text-to-speech and speech-to-text",
               "feature_companion": "Companion app",
@@ -7102,39 +7102,39 @@
               "inactive": "Inactive",
               "preparing": "Preparing",
               "error": "Error",
-              "no_cloud_backup": "No cloud backup",
+              "no_cloud_backup": "No off-site backup",
               "backup_failed": "Backup failed",
               "last_backup": "Last backup {relative}"
             },
             "onboarding": {
-              "ready_title": "Home Assistant Cloud is ready",
+              "ready_title": "Home Assistant Link is ready",
               "ready_text": "Your subscription unlocks features that make Home Assistant more powerful, private, and connected. Set them up now, or come back any time.",
               "start_setup": "Start setup",
               "review_later": "Review later",
               "chip_remote": "Remote access",
-              "chip_backups": "Cloud backups",
+              "chip_backups": "Off-site backups",
               "chip_voice": "Voice assistants",
               "chip_streaming": "Smoother streaming",
-              "dialog_title": "Make the most of Home Assistant Cloud",
-              "dialog_intro": "Home Assistant Cloud can do several things. Set them up whenever you like, at your own pace, and come back here any time.",
+              "dialog_title": "Make the most of Home Assistant Link",
+              "dialog_intro": "Home Assistant Link can do several things. Set them up whenever you like, at your own pace, and come back here any time.",
               "done": "Done",
               "turn_on": "Turn on",
               "turn_off": "Turn off",
               "remote_title": "Remote access",
               "remote_helper": "Reach your home from anywhere",
               "remote_body": "Securely reach your Home Assistant from any device, with no port forwarding or VPN.",
-              "backup_title": "Cloud backups",
+              "backup_title": "Off-site backups",
               "backup_helper": "Off-site copy of your backups",
-              "backup_none_body": "You don't have backups set up yet. Create a backup first, then come back to store an encrypted copy in the cloud.",
+              "backup_none_body": "You don't have backups set up yet. Create a backup first, then come back to store an encrypted copy with Home Assistant Link.",
               "backup_set_up": "Set up backups",
               "backup_body": "Keep an encrypted off-site copy of your latest backup, ready to restore on first boot.",
               "voice_title": "Voice assistants",
               "voice_helper": "Alexa, Google, and Home Assistant voice",
-              "voice_body": "Talk to your home your way. Home Assistant Cloud powers fast, private voice for Assist out of the box, and you can add Amazon Alexa or Google Assistant.",
+              "voice_body": "Talk to your home your way. Home Assistant Link powers fast, private voice for Assist out of the box, and you can add Amazon Alexa or Google Assistant.",
               "streaming_title": "Smoother streaming",
               "streaming_helper": "Faster, more reliable camera feeds",
               "streaming_body": "Make camera feeds and Music Assistant playback faster and more reliable, over a secure connection.",
-              "ha_cloud_title": "Home Assistant Cloud",
+              "ha_cloud_title": "Home Assistant Link",
               "ha_cloud_sub": "Fast, natural text-to-speech and speech-to-text for Assist",
               "included": "Included",
               "learn_more": "Learn more",
@@ -7151,12 +7151,12 @@
               "google_bullet2": "Cast your cameras to a Nest Hub display"
             },
             "backup": {
-              "title": "Cloud backup",
-              "card_title": "About cloud backup",
-              "cloud_info": "You have the option to store an encrypted Home Assistant backup on Home Assistant Cloud. This is included in your subscription at no extra cost.",
-              "cloud_info_one_backup": "One encrypted backup is stored in the cloud. When a new backup is created, the older version is automatically deleted.",
+              "title": "Off-site backup",
+              "card_title": "About off-site backup",
+              "cloud_info": "You have the option to store an encrypted Home Assistant backup on Home Assistant Link. This is included in your subscription at no extra cost.",
+              "cloud_info_one_backup": "One encrypted backup is stored off-site. When a new backup is created, the older version is automatically deleted.",
               "cloud_info_size_limit": "The maximum backup size is 5 GB. If the backup exceeds this limit, you will receive a notification.",
-              "cloud_info_encrypted": "Backups stored in the cloud are always encrypted. The encryption key is included in the emergency kit.",
+              "cloud_info_encrypted": "Backups stored off-site are always encrypted. The encryption key is included in the emergency kit.",
               "cloud_info_no_access": "Nabu Casa has no access to your data or encryption key.",
               "link_learn_more": "Learn more",
               "configure": "Configure",
@@ -7168,13 +7168,13 @@
               "backup_not_encrypted": "Not encrypted",
               "next_backup": "Next backup {relative_time}",
               "no_next_backup": "No automatic backup scheduled",
-              "setup_card_title": "Set up cloud backup",
-              "setup_info": "You haven't set up automatic backups to the cloud yet. Configure automatic backups to keep your Home Assistant safe."
+              "setup_card_title": "Set up off-site backup",
+              "setup_info": "You haven't set up automatic off-site backups yet. Configure automatic backups to keep your Home Assistant safe."
             },
             "companion": {
               "title": "Companion app",
               "connected_title": "Stay connected away from home",
-              "connected_intro": "With Home Assistant Cloud, the Home Assistant app keeps talking to your home even when you're away, so the data your automations rely on stays current wherever you are.",
+              "connected_intro": "With Home Assistant Link, the Home Assistant app keeps talking to your home even when you're away, so the data your automations rely on stays current wherever you are.",
               "bullet_sensors": "Up-to-date sensors and location, even when you're away from home.",
               "bullet_presence": "Presence automations like \"I just left home\" keep running while you're out.",
               "bullet_alerts": "Alerts that depend on your phone, like \"battery low\", keep firing on time.",
@@ -7182,25 +7182,25 @@
               "bullet_push": "Push notifications are separate. They're delivered by Apple and Google and reach your phone even without this connection.",
               "learn_more": "Learn more",
               "webhook_title": "Automatic webhook",
-              "webhook_info_one": "When you set up the Home Assistant app, it registers a webhook automatically. With your cloud subscription that becomes a cloudhook, a unique secret URL hosted on Home Assistant Cloud.",
+              "webhook_info_one": "When you set up the Home Assistant app, it registers a webhook automatically. With your Home Assistant Link subscription that becomes a cloudhook, a unique secret URL hosted on Home Assistant Link.",
               "webhook_info_two": "Your phone uses it to send location and sensor updates back home from anywhere, without opening ports or exposing your instance. You'll see it listed under Webhooks; there's no need to manage it yourself."
             },
             "download_support_package": "Download support package",
             "support_package_generating_preview": "Generating preview",
             "support_package_privacy_warning": "This file may contain personal data about your home. Avoid sharing them with unverified or untrusted parties.",
-            "reset_cloud_data": "Reset cloud data",
-            "reset_data_confirm_title": "Reset cloud data?",
-            "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant, and Amazon Alexa integrations. This action cannot be undone.",
+            "reset_cloud_data": "Reset Home Assistant Link data",
+            "reset_data_confirm_title": "Reset Home Assistant Link data?",
+            "reset_data_confirm_text": "This will reset all your Home Assistant Link settings. This includes your remote connection, Google Assistant, and Amazon Alexa integrations. This action cannot be undone.",
             "reset": "Reset",
-            "reset_data_failed": "Failed to reset cloud data",
+            "reset_data_failed": "Failed to reset Home Assistant Link data",
             "thank_you_note": "It's because of people like you that we are able to make a great home automation experience for everyone.",
             "nabu_casa_account": "Nabu Casa account",
-            "connection_status": "Cloud connection status",
+            "connection_status": "Home Assistant Link connection status",
             "manage_account": "Manage account",
             "sign_out": "Sign out",
             "sign_out_confirm": "Are you sure you want to sign out?",
             "integrations": "Integrations",
-            "integrations_introduction": "Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.",
+            "integrations_introduction": "Integrations for Home Assistant Link allow you to connect with online services without having to expose your Home Assistant instance publicly on the internet.",
             "integrations_introduction2": "Check the website for ",
             "integrations_link_all_features": " all available features",
             "tip_moved_voice_assistants": "Looking for Google Assistant and Amazon Alexa settings? They are moved to the new voice assistants page.",
@@ -7252,7 +7252,7 @@
               "cerificate_loading": "Your certificate is loading.",
               "cerificate_loaded": "Your certificate is loaded, waiting for validation.",
               "cerificate_error": "There was an error generating the certificate, check your logs.",
-              "info": "Home Assistant Cloud provides secure remote access to your instance while away from home. For more information on remote access and these settings, visit our security documentation.",
+              "info": "Home Assistant Link provides secure remote access to your instance while away from home. For more information on remote access and these settings, visit our security documentation.",
               "info_instance_will_be_available": "Your instance will be available at your Nabu Casa URL.",
               "link_learn_how_it_works": "Learn how it works",
               "security_options": "Security options",
@@ -7272,7 +7272,7 @@
             },
             "alexa": {
               "title": "Alexa",
-              "info": "With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
+              "info": "With the Alexa integration for Home Assistant Link you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
               "enable_ha_skill": "Enable the Home Assistant skill for Alexa",
               "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable state reporting",
@@ -7291,7 +7291,7 @@
             },
             "google": {
               "title": "Google Assistant",
-              "info": "With the Google Assistant integration for Home Assistant Cloud, you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
+              "info": "With the Google Assistant integration for Home Assistant Link, you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
               "http_use_ssl_warning_title": "Local communication unavailable",
               "http_use_ssl_warning_text": "Google devices will not be able to talk locally with Home Assistant, because you have configured an SSL certificate for your HTTP integration.",
               "config_documentation": "Configuration documentation",
@@ -7306,7 +7306,7 @@
               "manual_config": "Editing which entities are exposed via the UI is disabled because you have configured entity filters in configuration.yaml.",
               "enter_pin_error": "Unable to store PIN:",
               "not_configured_title": "Continue setting up Google Assistant",
-              "not_configured_text": "To start using Google Assistant, add the 'Home Assistant Cloud by Nabu Casa' service in the Google Home app on your smartphone.",
+              "not_configured_text": "To start using Google Assistant, add the 'Home Assistant Link by Nabu Casa' service in the Google Home app on your smartphone.",
               "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "expose_new_entities": "Expose new entities",
               "expose_new_entities_info": "Should new entities be exposed to Google Assistant automatically? Exposes supported devices that are not classified as security devices."
@@ -7323,7 +7323,7 @@
               "manage": "Manage",
               "disable_hook_error_msg": "Failed to disable webhook:",
               "companion_title": "Companion app webhooks",
-              "companion_info": "The Home Assistant app creates one of these automatically for each device you connect. With your cloud subscription they become cloudhooks, so your phone can send location and sensor updates home from anywhere.",
+              "companion_info": "The Home Assistant app creates one of these automatically for each device you connect. With your Home Assistant Link subscription they become cloudhooks, so your phone can send location and sensor updates home from anywhere.",
               "about_title": "What you can do with webhooks",
               "about_info": "Let an outside service send data into Home Assistant to trigger an automation. Each gets its own secret URL, with no open ports.",
               "example_camera": "A Netatmo camera spots motion and Home Assistant reacts instantly. The integration sets up its own webhook automatically.",
@@ -7344,7 +7344,7 @@
           },
           "dialog_already_connected": {
             "heading": "Account linked to other Home Assistant",
-            "description": "We noticed that another instance is currently connected to your Home Assistant Cloud account. Your Home Assistant Cloud account can only be signed in to one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Cloud services and you will need to be physically present to reconnect it.  Nabu Casa support is unable to remotely reconnect a disconnected Home Assistant instance.",
+            "description": "We noticed that another instance is currently connected to your Home Assistant Link account. Your Home Assistant Link account can only be signed in to one Home Assistant instance at a time. If you log in here, the other instance will be disconnected along with its Home Assistant Link services and you will need to be physically present to reconnect it.  Nabu Casa support is unable to remotely reconnect a disconnected Home Assistant instance.",
             "other_home_assistant": "Other Home Assistant",
             "instance_name": "Instance name",
             "instance_version": "Instance version",
@@ -7355,8 +7355,8 @@
               "hide": "Hide IP address"
             },
             "info_backups": {
-              "title": "Home Assistant Cloud backups",
-              "description": "Your Cloud backup may be overwritten if you proceed. We strongly recommend downloading your current backup from your Nabu Casa account page before continuing."
+              "title": "Home Assistant Link backups",
+              "description": "Your Home Assistant Link backup may be overwritten if you proceed. We strongly recommend downloading your current backup from your Nabu Casa account page before continuing."
             },
             "close": "Close",
             "login_here": "Log in here"
@@ -12816,7 +12816,7 @@
               "encryption": {
                 "label": "Encryption",
                 "description": "[%key:ui::panel::config::backup::dialogs::restore::encryption::different_key%]",
-                "description_cloud": "Home Assistant Cloud is the privacy-focused cloud. We don’t store your encryption key. Enter the encryption key you saved or use the emergency kit you have downloaded.",
+                "description_cloud": "Home Assistant Link is privacy-focused. We don’t store your encryption key. Enter the encryption key you saved or use the emergency kit you have downloaded.",
                 "incorrect_key": "[%key:ui::panel::config::backup::dialogs::restore::encryption::incorrect_key%]",
                 "input_label": "[%key:ui::panel::config::backup::dialogs::restore::encryption::input_label%]"
               }
@@ -12870,15 +12870,15 @@
             "no": "[%key:ui::common::no%]"
           },
           "ha-cloud": {
-            "description": "Restore from your Home Assistant Cloud backup.",
+            "description": "Restore from your Home Assistant Link backup.",
             "no_cloud_backup": "No backup available",
-            "no_cloud_backup_description": "This Home Assistant Cloud account doesn’t have a backup stored. You can learn more how Cloud backups work at the Nabu Casa website.",
+            "no_cloud_backup_description": "This Home Assistant Link account doesn’t have a backup stored. You can learn more how Home Assistant Link backups work at the Nabu Casa website.",
             "sign_out": "[%key:ui::panel::config::cloud::account::sign_out%]",
-            "sign_out_progress": "Home Assistant cloud signing out...",
-            "sign_out_success": "Home Assistant cloud signed out",
-            "sign_out_error": "Failed to sign out from Home Assistant cloud",
+            "sign_out_progress": "Signing out of Home Assistant Link...",
+            "sign_out_success": "Signed out of Home Assistant Link",
+            "sign_out_error": "Failed to sign out of Home Assistant Link",
             "learn_more": "Learn more",
-            "sign_in_description": "Sign in to your Nabu Casa account and restore your Home Assistant Cloud backup.",
+            "sign_in_description": "Sign in to your Nabu Casa account and restore your Home Assistant Link backup.",
             "login": {
               "title": "[%key:ui::panel::config::cloud::login::title%]",
               "sign_in": "[%key:ui::panel::config::cloud::login::sign_in%]",

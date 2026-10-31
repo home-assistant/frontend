@@ -1,7 +1,6 @@
 import {
   mdiCast,
   mdiClockOutline,
-  mdiCloud,
   mdiPuzzle,
   mdiRobot,
   mdiScriptText,
@@ -16,6 +15,7 @@ import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/user/ha-user-badge";
 import { mdiHomeAssistant } from "../../resources/home-assistant-logo-svg";
+import { mdiNabuCasaLogo } from "../../resources/nabu-casa-logo-svg";
 import type { LogbookEntry } from "../../data/logbook";
 import type { User } from "../../data/user";
 import type { HomeAssistant } from "../../types";
@@ -23,8 +23,10 @@ import { brandsUrl } from "../../util/brands-url";
 import type { LogbookCause, LogbookGlyph } from "./logbook-entry-model";
 
 // Names are the fixed system user names set by core (cloud/cast integrations).
+// Cloud users created before the rename to Home Assistant Link keep the old name.
 const SYSTEM_USER_ICONS: Record<string, string> = {
-  "Home Assistant Cloud": mdiCloud,
+  "Home Assistant Link": mdiNabuCasaLogo,
+  "Home Assistant Cloud": mdiNabuCasaLogo,
   "Home Assistant Cast": mdiCast,
 };
 
