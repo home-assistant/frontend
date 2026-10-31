@@ -3,6 +3,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
+import { live } from "lit/directives/live";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../common/decorators/consume";
 import { computeCssColor } from "../../../common/color/compute-color";
@@ -28,17 +29,25 @@ import "../../../components/ha-card";
 import "../../../components/ha-ripple";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../../data/climate";
 import {
+  apiContext,
   configContext,
+  connectionContext,
   formattersContext,
   uiContext,
 } from "../../../data/context";
 import type { EntityRegistryDisplayEntry } from "../../../data/entity/entity_registry";
+import {
+  isMediaSourceContentId,
+  resolveMediaSource,
+} from "../../../data/media_source";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { ActionHandlerEvent } from "../../../data/lovelace/action_handler";
 import type { Themes } from "../../../data/ws-themes";
 import type {
   HomeAssistant,
+  HomeAssistantApi,
   HomeAssistantConfig,
+  HomeAssistantConnection,
   HomeAssistantFormatters,
   HomeAssistantUI,
 } from "../../../types";
@@ -132,6 +141,21 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   @consumeEntityRegistryEntry({ entityIdPath: ["_config", "entity"] })
   _entity?: EntityRegistryDisplayEntry;
 
+  @state()
+  @consume({ context: connectionContext, subscribe: true })
+  @transform<HomeAssistantConnection, HomeAssistantConnection["hassUrl"]>({
+    transformer: ({ hassUrl }) => hassUrl,
+  })
+  private _hassUrl?: HomeAssistantConnection["hassUrl"];
+
+  @state()
+  @consume({ context: apiContext, subscribe: true })
+  private _api?: HomeAssistantApi;
+
+  @state() private _resolvedImage?: string;
+
+  private _resolvingImage?: string;
+
   public getCardSize(): number {
     return (
       (this._config?.show_icon ? 4 : 0) + (this._config?.show_name ? 1 : 0)
@@ -177,6 +201,42 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     };
   }
 
+  protected willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    const image =
+      (typeof this._config?.image === "object" &&
+        this._config.image?.media_content_id) ||
+      (typeof this._config?.image === "string"
+        ? this._config.image
+        : undefined);
+
+    if (image && isMediaSourceContentId(image)) {
+      if (
+        this._api &&
+        (this._resolvingImage !== image || changedProps.has("_api"))
+      ) {
+        this._resolvingImage = image;
+        this._resolvedImage = undefined;
+        resolveMediaSource(this._api, image).then(
+          (result) => {
+            if (this._resolvingImage === image) {
+              this._resolvedImage = result.url;
+            }
+          },
+          () => {
+            if (this._resolvingImage === image) {
+              this._resolvingImage = undefined;
+            }
+          }
+        );
+      }
+    } else {
+      this._resolvingImage = undefined;
+      this._resolvedImage = image;
+    }
+  }
+
   protected render() {
     if (!this._config) {
       return nothing;
@@ -194,6 +254,12 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     const name = this._formatters.formatEntityName(
       stateObj || EMPTY_STATE_OBJ,
       this._config.name
+    );
+
+    const hasImage = Boolean(
+      (typeof this._config.image === "object" &&
+        this._config.image?.media_content_id) ||
+      (typeof this._config.image === "string" && this._config.image)
     );
 
     return html`
@@ -218,25 +284,43 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         <ha-ripple></ha-ripple>
         ${
           this._config.show_icon
-            ? html`
-                <ha-state-icon
-                  tabindex="-1"
-                  data-domain=${ifDefined(
-                    stateObj ? computeStateDomain(stateObj) : undefined
-                  )}
-                  data-state=${ifDefined(stateObj?.state)}
-                  .icon=${this._config.icon}
-                  .stateObj=${stateObj}
-                  style=${styleMap({
-                    filter: stateObj
-                      ? stateColorBrightness(stateObj)
-                      : undefined,
-                    height: this._config.icon_height
-                      ? this._config.icon_height
-                      : undefined,
-                  })}
-                ></ha-state-icon>
-              `
+            ? hasImage
+              ? this._resolvedImage
+                ? html`
+                    <img
+                      class="image"
+                      alt=""
+                      src=${live(
+                        this._hassUrl
+                          ? this._hassUrl(this._resolvedImage)
+                          : this._resolvedImage
+                      )}
+                      style=${styleMap({
+                        height: this._config.icon_height || undefined,
+                        width: this._config.icon_height ? "auto" : undefined,
+                      })}
+                    />
+                  `
+                : nothing
+              : html`
+                  <ha-state-icon
+                    tabindex="-1"
+                    data-domain=${ifDefined(
+                      stateObj ? computeStateDomain(stateObj) : undefined
+                    )}
+                    data-state=${ifDefined(stateObj?.state)}
+                    .icon=${this._config.icon}
+                    .stateObj=${stateObj}
+                    style=${styleMap({
+                      filter: stateObj
+                        ? stateColorBrightness(stateObj)
+                        : undefined,
+                      height: this._config.icon_height
+                        ? this._config.icon_height
+                        : undefined,
+                    })}
+                  ></ha-state-icon>
+                `
             : nothing
         }
         ${
@@ -306,21 +390,32 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           outline: none;
         }
 
-        ha-state-icon {
+        ha-state-icon,
+        .image {
           width: 40%;
           height: auto;
           max-height: 80%;
-          color: var(--state-color);
-          --mdc-icon-size: 100%;
           transition: transform 180ms ease-in-out;
           pointer-events: none;
         }
 
-        ha-state-icon + span {
+        ha-state-icon {
+          color: var(--state-color);
+          --mdc-icon-size: 100%;
+        }
+
+        .image {
+          max-width: 100%;
+          object-fit: contain;
+        }
+
+        ha-state-icon + span,
+        .image + span {
           margin-top: 8px;
         }
 
         ha-state-icon,
+        .image,
         span {
           outline: none;
         }
@@ -333,7 +428,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         }
 
         ha-card:focus-visible ha-state-icon,
-        :host(:active) ha-state-icon {
+        ha-card:focus-visible .image,
+        :host(:active) ha-state-icon,
+        :host(:active) .image {
           transform: scale(1.2);
         }
 
