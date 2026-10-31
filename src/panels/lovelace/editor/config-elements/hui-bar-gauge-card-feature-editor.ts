@@ -32,12 +32,22 @@ export class HuiBarGaugeCardFeatureEditor
         {
           name: "min",
           default: 0,
-          selector: { number: { mode: "box", step: "any" } },
+          selector: {
+            number: {
+              mode: "box",
+              step: "any",
+            },
+          },
         },
         {
           name: "max",
           default: 100,
-          selector: { number: { mode: "box", step: "any" } },
+          selector: {
+            number: {
+              mode: "box",
+              step: "any",
+            },
+          },
         },
         { name: "show_severity", selector: { boolean: {} } },
         ...(showSeverity
@@ -48,15 +58,30 @@ export class HuiBarGaugeCardFeatureEditor
                 schema: [
                   {
                     name: "green",
-                    selector: { number: { mode: "box", step: "any" } },
+                    selector: {
+                      number: {
+                        mode: "box",
+                        step: "any",
+                      },
+                    },
                   },
                   {
                     name: "yellow",
-                    selector: { number: { mode: "box", step: "any" } },
+                    selector: {
+                      number: {
+                        mode: "box",
+                        step: "any",
+                      },
+                    },
                   },
                   {
                     name: "red",
-                    selector: { number: { mode: "box", step: "any" } },
+                    selector: {
+                      number: {
+                        mode: "box",
+                        step: "any",
+                      },
+                    },
                   },
                 ],
               },
