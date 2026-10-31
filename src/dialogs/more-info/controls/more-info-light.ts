@@ -40,6 +40,7 @@ import { apiContext, formattersContext } from "../../../data/context";
 import "../components/ha-more-info-control-select-container";
 import "../components/ha-more-info-state-header";
 import "../components/lights/ha-more-info-light-favorite-colors";
+import "../components/lights/ha-more-info-light-favorite-brightness";
 import "../components/lights/light-color-rgb-picker";
 import "../components/lights/light-color-temp-picker";
 import { moreInfoControlStyle } from "../components/more-info-control-style";
@@ -144,12 +145,22 @@ class MoreInfoLight extends LitElement {
 
     const showFavoriteColors = Boolean(
       this.entry &&
+      lightSupportsFavoriteColors(this.stateObj) &&
       (this.editMode ||
-        (lightSupportsFavoriteColors(this.stateObj) &&
-          shouldShowFavoriteOptions(
-            this.entry.options?.light?.favorite_colors
-          )))
+        shouldShowFavoriteOptions(this.entry.options?.light?.favorite_colors))
     );
+
+    const showFavoriteBrightness = Boolean(
+      this.entry &&
+      supportsBrightness &&
+      (this.editMode ||
+        shouldShowFavoriteOptions(
+          this.entry.options?.light?.favorite_brightness
+        ))
+    );
+
+    const showBothFavoriteSections =
+      showFavoriteColors && showFavoriteBrightness;
 
     return html`
       <ha-more-info-state-header
@@ -286,15 +297,48 @@ class MoreInfoLight extends LitElement {
                   }
                 </ha-icon-button-group>
                 ${
-                  showFavoriteColors
+                  showFavoriteColors || showFavoriteBrightness
                     ? html`
-                        <ha-more-info-light-favorite-colors
-                          .stateObj=${this.stateObj}
-                          .entry=${this.entry}
-                          .editMode=${this.editMode}
-                          @favorite-color-edit-started=${this._resetMainControl}
-                        >
-                        </ha-more-info-light-favorite-colors>
+                        <div class="favorites">
+                          ${
+                            showFavoriteColors
+                              ? html`
+                                  <ha-more-info-light-favorite-colors
+                                    .stateObj=${this.stateObj}
+                                    .entry=${this.entry}
+                                    .editMode=${this.editMode}
+                                    .label=${
+                                      showBothFavoriteSections
+                                        ? this._localize("ui.card.light.color")
+                                        : undefined
+                                    }
+                                    .showDone=${!showBothFavoriteSections}
+                                    @favorite-color-edit-started=${this._resetMainControl}
+                                  >
+                                  </ha-more-info-light-favorite-colors>
+                                `
+                              : nothing
+                          }
+                          ${
+                            showFavoriteBrightness
+                              ? html`
+                                  <ha-more-info-light-favorite-brightness
+                                    .stateObj=${this.stateObj}
+                                    .entry=${this.entry}
+                                    .editMode=${this.editMode}
+                                    .label=${
+                                      showBothFavoriteSections
+                                        ? this._localize(
+                                            "ui.card.light.brightness"
+                                          )
+                                        : undefined
+                                    }
+                                  >
+                                  </ha-more-info-light-favorite-brightness>
+                                `
+                              : nothing
+                          }
+                        </div>
                       `
                     : nothing
                 }
@@ -404,6 +448,13 @@ class MoreInfoLight extends LitElement {
         .buttons {
           flex-wrap: wrap;
           max-width: 250px;
+        }
+        .favorites {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: var(--ha-space-3);
+          width: 100%;
         }
       `,
     ];
