@@ -354,6 +354,7 @@ export interface BarGaugeCardFeatureConfig {
   min?: number;
   max?: number;
   severity?: Partial<Record<"green" | "yellow" | "red", number>>;
+  segments?: { from: number; color: string }[];
 }
 
 export type LovelaceCardFeaturePosition = "bottom" | "inline";

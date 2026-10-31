@@ -52,6 +52,15 @@ const computeSeverityColor = (
   return best?.color;
 };
 
+const computeSegmentColor = (
+  segments: BarGaugeCardFeatureConfig["segments"],
+  value: number
+): string | undefined =>
+  segments
+    ?.filter((segment) => value >= segment.from)
+    .sort((a, b) => a.from - b.from)
+    .pop()?.color;
+
 @customElement("hui-bar-gauge-card-feature")
 class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
   @property({ attribute: false }) public context!: LovelaceCardFeatureContext;
@@ -102,7 +111,9 @@ class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
       0,
       Math.min(100, ((value - min) / (max - min)) * 100)
     );
-    const color = computeSeverityColor(this._config.severity, value);
+    const color = this._config.segments
+      ? computeSegmentColor(this._config.segments, value)
+      : computeSeverityColor(this._config.severity, value);
     const style = color ? `--feature-color: ${color}` : undefined;
 
     return html`<div style="width: ${percentage}%; ${style ?? ""}"></div>
