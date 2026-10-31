@@ -39,9 +39,9 @@ const computeSeverityColor = (
   value: number
 ): string | undefined => {
   let best: { level: number; color: string } | undefined;
-  for (const key of Object.keys(severityMap) as (keyof typeof severityMap)[]) {
-    const level = severity?.[key];
+  for (const [key, level] of Object.entries(severity ?? {})) {
     if (
+      key in severityMap &&
       typeof level === "number" &&
       value >= level &&
       (!best || level >= best.level)
