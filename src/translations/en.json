@@ -12040,7 +12040,11 @@
               "bar-gauge": {
                 "label": "Bar gauge",
                 "min": "Minimum value",
-                "max": "Maximum value"
+                "max": "Maximum value",
+                "show_severity": "[%key:ui::panel::lovelace::editor::card::gauge::severity::define_severity%]",
+                "green": "[%key:ui::panel::lovelace::editor::card::gauge::severity::green%]",
+                "yellow": "[%key:ui::panel::lovelace::editor::card::gauge::severity::yellow%]",
+                "red": "[%key:ui::panel::lovelace::editor::card::gauge::severity::red%]"
               },
               "trend-graph": {
                 "label": "Trend graph",

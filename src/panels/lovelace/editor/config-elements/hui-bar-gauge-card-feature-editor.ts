@@ -27,28 +27,41 @@ export class HuiBarGaugeCardFeatureEditor
   }
 
   private _schema = memoizeOne(
-    () =>
+    (showSeverity: boolean) =>
       [
         {
           name: "min",
           default: 0,
-          selector: {
-            number: {
-              mode: "box",
-              step: "any",
-            },
-          },
+          selector: { number: { mode: "box", step: "any" } },
         },
         {
           name: "max",
           default: 100,
-          selector: {
-            number: {
-              mode: "box",
-              step: "any",
-            },
-          },
+          selector: { number: { mode: "box", step: "any" } },
         },
+        { name: "show_severity", selector: { boolean: {} } },
+        ...(showSeverity
+          ? ([
+              {
+                name: "severity",
+                type: "grid",
+                schema: [
+                  {
+                    name: "green",
+                    selector: { number: { mode: "box", step: "any" } },
+                  },
+                  {
+                    name: "yellow",
+                    selector: { number: { mode: "box", step: "any" } },
+                  },
+                  {
+                    name: "red",
+                    selector: { number: { mode: "box", step: "any" } },
+                  },
+                ],
+              },
+            ] as const)
+          : []),
       ] as const
   );
 
@@ -57,12 +70,13 @@ export class HuiBarGaugeCardFeatureEditor
       return nothing;
     }
 
-    const schema = this._schema();
+    const schema = this._schema(!!this._config.severity);
+    const data = { ...this._config, show_severity: !!this._config.severity };
 
     return html`
       <ha-form
         .hass=${this.hass}
-        .data=${this._config}
+        .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
         @value-changed=${this._valueChanged}
@@ -71,7 +85,13 @@ export class HuiBarGaugeCardFeatureEditor
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    fireEvent(this, "config-changed", { config: ev.detail.value });
+    const { show_severity, ...config } = ev.detail.value;
+    if (show_severity) {
+      config.severity ??= {};
+    } else {
+      delete config.severity;
+    }
+    fireEvent(this, "config-changed", { config });
   }
 
   private _computeLabelCallback = (
