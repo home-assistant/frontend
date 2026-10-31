@@ -24,7 +24,12 @@ class HaConfigSectionAI extends LitElement {
       return;
     }
     await nextRender();
-    this.shadowRoot!.getElementById(hash)?.scrollIntoView();
+    // In the demo, the hash is the route of the page, not a section.
+    const section = this.shadowRoot!.getElementById(hash);
+    if (!section) {
+      return;
+    }
+    section.scrollIntoView();
     replaceCurrentUrl(window.location.pathname);
   }
 
