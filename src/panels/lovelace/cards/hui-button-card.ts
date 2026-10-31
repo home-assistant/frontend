@@ -165,8 +165,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+    this._reconnectImg = true;
     if (isStreamingMedia(this._img?.getAttribute("src") || "")) {
-      this._reconnectImg = true;
       this._img?.removeAttribute("src");
     }
   }
