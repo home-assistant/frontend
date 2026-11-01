@@ -4,9 +4,11 @@ import {
   HistoryStream,
   computeHistory,
   convertStatisticsToHistory,
+  historyStreamEntityIds,
   isTimelineEntity,
   mergeHistoryResults,
 } from "../../src/data/history";
+import { StatisticMeanType } from "../../src/data/recorder";
 import type { HomeAssistant } from "../../src/types";
 import { mockDevice, mockEntity } from "../common/entity/context/context-mock";
 import {
@@ -361,5 +363,66 @@ describe("mergeHistoryResults", () => {
       { unit: "%", withStatistics: ["sensor.soc_a", "sensor.soc_b"] },
       { unit: "°C", withStatistics: ["sensor.temperature"] },
     ]);
+  });
+});
+
+describe("convertStatisticsToHistory without an entity", () => {
+  const statisticId = "example:outdoor_temperature";
+  const statistics = {
+    [statisticId]: [
+      { start: 1_700_000_000_000, end: 1_700_003_600_000, mean: 12.5 },
+      { start: 1_700_003_600_000, end: 1_700_007_200_000, mean: 13.5 },
+    ],
+  };
+
+  it("takes name and unit of an external statistic from its metadata", () => {
+    const result = convertStatisticsToHistory(
+      createMockHass(),
+      statistics,
+      [statisticId],
+      true,
+      {
+        [statisticId]: {
+          statistic_id: statisticId,
+          source: "example",
+          name: "Outdoor temperature",
+          statistics_unit_of_measurement: "°C",
+          has_sum: false,
+          mean_type: StatisticMeanType.ARITHMETIC,
+          unit_class: "temperature",
+        },
+      }
+    );
+
+    expect(result.line).toHaveLength(1);
+    expect(result.line[0].unit).toBe("°C");
+    expect(result.line[0].data.map(({ name }) => name)).toEqual([
+      "Outdoor temperature",
+    ]);
+  });
+
+  it("keeps the ID and no unit without metadata", () => {
+    const result = convertStatisticsToHistory(
+      createMockHass(),
+      statistics,
+      [statisticId],
+      true
+    );
+
+    expect(result.line).toHaveLength(1);
+    expect(result.line[0].unit).toBe(" ");
+    expect(result.line[0].data[0].name).not.toBe("Outdoor temperature");
+  });
+});
+
+describe("historyStreamEntityIds", () => {
+  it("leaves out external statistics, which the history stream rejects", () => {
+    expect(
+      historyStreamEntityIds([
+        "binary_sensor.door",
+        "example:outdoor_temperature",
+        "sensor.indoor_temperature",
+      ])
+    ).toEqual(["binary_sensor.door", "sensor.indoor_temperature"]);
   });
 });

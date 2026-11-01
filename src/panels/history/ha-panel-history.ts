@@ -75,10 +75,15 @@ import {
   computeHistoryUpdateDelay,
   convertStatisticsToHistory,
   countHistoryStates,
+  historyStreamEntityIds,
   mergeHistoryResults,
   subscribeHistory,
 } from "../../data/history";
-import { fetchStatistics } from "../../data/recorder";
+import {
+  fetchStatistics,
+  getStatisticMetadata,
+  type StatisticsMetaData,
+} from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
@@ -564,16 +569,21 @@ class HaPanelHistory extends LitElement {
     statsStartDate.setHours(statsStartDate.getHours() - 1);
 
     let statistics;
+    let metadata: StatisticsMetaData[];
     try {
-      statistics = await fetchStatistics(
-        this.hass!.callWS,
-        statsStartDate,
-        this._endDate,
-        statisticIds,
-        "hour",
-        undefined,
-        ["mean", "state"]
-      );
+      [statistics, metadata] = await Promise.all([
+        fetchStatistics(
+          this.hass!.callWS,
+          statsStartDate,
+          this._endDate,
+          statisticIds,
+          "hour",
+          undefined,
+          ["mean", "state"]
+        ),
+        // Statistics without an entity take name and unit from the metadata
+        getStatisticMetadata(this.hass!.callWS, statisticIds),
+      ]);
     } catch (_err) {
       return;
     }
@@ -586,13 +596,15 @@ class HaPanelHistory extends LitElement {
       this.hass!,
       statistics,
       statisticIds,
-      true
+      true,
+      Object.fromEntries(metadata.map((meta) => [meta.statistic_id, meta]))
     );
   }
 
   private async _getHistory() {
-    const entityIds = this._getEntityIds();
-    this._fetchedEntityIds = entityIds;
+    const sourceIds = this._getEntityIds();
+    this._fetchedEntityIds = sourceIds;
+    const entityIds = historyStreamEntityIds(sourceIds);
 
     if (entityIds.length === 0) {
       // The running subscription would keep pushing the previous entities.
