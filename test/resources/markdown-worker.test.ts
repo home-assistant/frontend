@@ -196,6 +196,29 @@ describe("renderMarkdown", () => {
       );
     });
 
+    it("keeps the query string of a relative path", async () => {
+      expect(await renderImageSrc("images/logo.png?v=1&amp;size=2", true)).toBe(
+        "./images/logo.png?v=1&size=2"
+      );
+    });
+
+    it("drops a relative path with entities left after decoding", async () => {
+      expect(await renderImageSrc("&#38;#105;mages/logo.png", true)).toBeNull();
+    });
+
+    it("keeps an allowed data link as it is", async () => {
+      const html = (
+        await renderMarkdown(
+          '<a href="data:text/plain,hello" download="hello.txt">Hello</a>',
+          {},
+          { allowDataUrl: true, allowRelativeUrls: true }
+        )
+      ).join("");
+      expect(parse(html).querySelector("a")?.getAttribute("href")).toBe(
+        "data:text/plain,hello"
+      );
+    });
+
     it("empties a plain relative path otherwise", async () => {
       expect(await renderImageSrc("images/logo.png", false)).toBe("");
     });
