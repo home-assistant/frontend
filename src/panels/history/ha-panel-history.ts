@@ -591,6 +591,10 @@ class HaPanelHistory extends LitElement {
           : Promise.resolve([]),
       ]);
     } catch (_err) {
+      // External statistics have no state history that would end the loading
+      if (fetchId === this._statsFetchId) {
+        this._statisticsHistory = { line: [], timeline: [] };
+      }
       return;
     }
 
