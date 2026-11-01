@@ -149,7 +149,14 @@ const renderMarkdown = async (
           RELATIVE_URL_ATTRIBUTES[tag] === name &&
           safeAttrValue(tag, name, value, cssFilter) === ""
         ) {
-          const relative = safeAttrValue(tag, name, `./${value}`, cssFilter);
+          // The browser trims it, a space would end up inside the path.
+          // Decoded first, xss only trims the spaces written as such.
+          const relative = safeAttrValue(
+            tag,
+            name,
+            `./${friendlyAttrValue(value).trim()}`,
+            cssFilter
+          );
           return relative ? `${name}="${escapeAttrValue(relative)}"` : "";
         }
         if (

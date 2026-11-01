@@ -190,6 +190,12 @@ describe("renderMarkdown", () => {
       );
     });
 
+    it("keeps a padded relative path without the spaces", async () => {
+      expect(await renderImageSrc("&#32;images/logo.png&#32;", true)).toBe(
+        "./images/logo.png"
+      );
+    });
+
     it("empties a plain relative path otherwise", async () => {
       expect(await renderImageSrc("images/logo.png", false)).toBe("");
     });
