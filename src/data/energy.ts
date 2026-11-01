@@ -252,12 +252,14 @@ export interface EnergyPreferences {
   energy_sources: EnergySource[];
   device_consumption: DeviceConsumptionEnergyPreference[];
   device_consumption_water: DeviceConsumptionEnergyPreference[];
+  device_consumption_gas: DeviceConsumptionEnergyPreference[];
 }
 
 export const EMPTY_PREFERENCES: EnergyPreferences = {
   energy_sources: [],
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
 };
 
 export interface EnergyInfo {
@@ -275,6 +277,7 @@ export interface EnergyPreferencesValidation {
   energy_sources: EnergyValidationIssue[][];
   device_consumption: EnergyValidationIssue[][];
   device_consumption_water: EnergyValidationIssue[][];
+  device_consumption_gas: EnergyValidationIssue[][];
 }
 
 export const getEnergyInfo = (callWS: HomeAssistant["callWS"]) =>
@@ -506,6 +509,11 @@ export const getReferencedStatisticIds = (
       ...prefs.device_consumption_water.map((d) => d.stat_consumption)
     );
   }
+  if (!(includeTypes && !includeTypes.includes("gas"))) {
+    statIDs.push(
+      ...prefs.device_consumption_gas.map((d) => d.stat_consumption)
+    );
+  }
 
   return statIDs;
 };
@@ -542,6 +550,7 @@ export const getReferencedStatisticIdsPower = (
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
   statIDs.push(...prefs.device_consumption_water.map((d) => d.stat_rate));
+  statIDs.push(...prefs.device_consumption_gas.map((d) => d.stat_rate));
 
   return statIDs.filter(Boolean) as string[];
 };
@@ -2221,6 +2230,7 @@ export const downloadEnergyData = (
   const energy_sources = energyData.prefs.energy_sources;
   const device_consumption = energyData.prefs.device_consumption;
   const device_consumption_water = energyData.prefs.device_consumption_water;
+  const device_consumption_gas = energyData.prefs.device_consumption_gas;
   const stats = state.stats;
 
   interface CsvRow {
@@ -2399,6 +2409,16 @@ export const downloadEnergyData = (
     });
 
     printCategory("device_consumption_water", waterDevices, state.waterUnit);
+  }
+
+  if (device_consumption_gas) {
+    const gasDevices: string[] = [];
+    device_consumption_gas.forEach((source) => {
+      source = source as DeviceConsumptionEnergyPreference;
+      gasDevices.push(source.stat_consumption);
+    });
+
+    printCategory("device_consumption_gas", gasDevices, state.gasUnit);
   }
 
   const { summedData } = getSummedData(state);

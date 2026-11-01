@@ -27,8 +27,10 @@ const cardConfigStruct = assign(
     type: union([
       literal("power-sankey"),
       literal("water-sankey"),
+      literal("gas-sankey"),
       literal("energy-sankey"),
       literal("water-flow-sankey"),
+      literal("gas-flow-sankey"),
     ]),
     title: optional(string()),
     collection_key: optional(string()),

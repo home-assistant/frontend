@@ -97,6 +97,14 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
         stat_consumption: "sensor.water_garden",
       },
     ],
+    device_consumption_gas: [
+      {
+        stat_consumption: "sensor.gas_kitchen",
+      },
+      {
+        stat_consumption: "sensor.gas_heat_pump",
+      },
+    ],
   }));
   hass.mockWS("energy/info", (): EnergyInfo => ({
     cost_sensors: {},

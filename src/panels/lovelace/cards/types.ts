@@ -215,6 +215,14 @@ export interface EnergyGasGraphCardConfig extends EnergyCardConfig {
   type: "energy-gas-graph";
 }
 
+export interface GasSankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "gas-sankey";
+}
+
+export interface GasFlowSankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "gas-flow-sankey";
+}
+
 export interface EnergyWaterGraphCardConfig extends EnergyCardConfig {
   type: "energy-water-graph";
 }

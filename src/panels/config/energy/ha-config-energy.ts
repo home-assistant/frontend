@@ -31,6 +31,7 @@ import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-alert";
 import "./components/ha-energy-device-settings";
 import "./components/ha-energy-device-settings-water";
+import "./components/ha-energy-device-settings-gas";
 import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
 import "./components/ha-energy-home-settings";
@@ -46,6 +47,7 @@ const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
 };
 
 const TABS: PageNavigation[] = [
@@ -202,6 +204,13 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-gas-settings>
+          <ha-energy-device-settings-gas
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-device-settings-gas>
         `;
       case "water":
         return html`

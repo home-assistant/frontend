@@ -70,6 +70,13 @@ export interface EnergySettingsDeviceWaterDialogParams {
   saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
 }
 
+export interface EnergySettingsDeviceGasDialogParams {
+  device?: DeviceConsumptionEnergyPreference;
+  device_consumptions: DeviceConsumptionEnergyPreference[];
+  statsMetadata?: Record<string, StatisticsMetaData>;
+  saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
+}
+
 export const showEnergySettingsDeviceDialog = (
   element: HTMLElement,
   dialogParams: EnergySettingsDeviceDialogParams
@@ -143,6 +150,17 @@ export const showEnergySettingsDeviceWaterDialog = (
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-energy-device-settings-water",
     dialogImport: () => import("./dialog-energy-device-settings-water"),
+    dialogParams: dialogParams,
+  });
+};
+
+export const showEnergySettingsDeviceGasDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsDeviceGasDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-device-settings-gas",
+    dialogImport: () => import("./dialog-energy-device-settings-gas"),
     dialogParams: dialogParams,
   });
 };

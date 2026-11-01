@@ -51,6 +51,8 @@ const LAZY_LOAD_TYPES = {
   "energy-distribution": () =>
     import("../cards/energy/hui-energy-distribution-card"),
   "energy-gas-graph": () => import("../cards/energy/hui-energy-gas-graph-card"),
+  "gas-sankey": () => import("../cards/gas/hui-gas-sankey-card"),
+  "gas-flow-sankey": () => import("../cards/gas/hui-gas-flow-sankey-card"),
   "energy-water-graph": () =>
     import("../cards/energy/hui-energy-water-graph-card"),
   "energy-grid-neutrality-gauge": () =>
