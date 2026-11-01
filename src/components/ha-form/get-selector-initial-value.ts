@@ -35,6 +35,7 @@ const SELECTOR_INITIAL_VALUES = {
       : { active_choice: firstChoice, [firstChoice]: childValue };
   },
   color_rgb: () => [0, 0, 0],
+  color_rgbw: () => [0, 0, 0, 0],
   condition: () => [],
   config_entry: undefined,
   conversation_agent: undefined,
