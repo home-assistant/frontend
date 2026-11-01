@@ -12004,7 +12004,7 @@
               },
               "map": {
                 "label": "Map",
-                "rows": "[%key:ui::dialogs::sub_element_editor::grid-size-picker::rows%]",
+                "rows": "[%key:ui::components::grid-size-picker::rows%]",
                 "auto_fit": "[%key:ui::panel::lovelace::editor::card::map::auto_fit%]",
                 "default_zoom": "[%key:ui::panel::lovelace::editor::card::map::default_zoom%]",
                 "hours_to_show": "[%key:ui::panel::lovelace::editor::card::generic::hours_to_show%]",
