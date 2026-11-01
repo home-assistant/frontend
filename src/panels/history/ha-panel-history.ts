@@ -610,6 +610,9 @@ class HaPanelHistory extends LitElement {
     const sourceIds = this._getEntityIds();
     this._fetchedEntityIds = sourceIds;
     const entityIds = historyStreamEntityIds(sourceIds);
+    // The charts are rebuilt, so they start unzoomed. This also applies when
+    // only external statistics remain, which have no state history.
+    this._zoomRange = [0, 100];
 
     if (entityIds.length === 0) {
       // The running subscription would keep pushing the previous entities.
@@ -620,8 +623,6 @@ class HaPanelHistory extends LitElement {
     }
 
     this._isLoading = true;
-    // The charts are rebuilt once loaded, so they start unzoomed.
-    this._zoomRange = [0, 100];
 
     if (this._subscribed) {
       this._unsubscribeHistory();
