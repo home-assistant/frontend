@@ -584,9 +584,10 @@ class HaPanelHistory extends LitElement {
           undefined,
           ["mean", "state"]
         ),
-        // External statistics take name and unit from the metadata
+        // External statistics take name and unit from the metadata. Without
+        // it they are still shown, under their ID.
         externalIds.length
-          ? getStatisticMetadata(this.hass!.callWS, externalIds)
+          ? getStatisticMetadata(this.hass!.callWS, externalIds).catch(() => [])
           : Promise.resolve([]),
       ]);
     } catch (_err) {
