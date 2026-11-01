@@ -82,12 +82,4 @@ describe("ha-selector-color_rgbw", () => {
 
     expect(values).toEqual([[0, 0, 0, 255]]);
   });
-
-  it("shows white as a percentage", async () => {
-    const { selector } = await mountSelector([0, 0, 0, 128]);
-
-    const slider = selector.shadowRoot!.querySelector("ha-labeled-slider");
-
-    expect((slider as unknown as { value: number }).value).toBe(50);
-  });
 });

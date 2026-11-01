@@ -2,11 +2,14 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { hex2rgb, rgb2hex } from "../../common/color/convert-color";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { HASSDomCurrentTargetEvent } from "../../common/dom/fire_event";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { ColorRGBWSelector } from "../../data/selector";
+import type { ValueChangedEvent } from "../../types";
 import "../ha-labeled-slider";
 import "../input/ha-input";
+import type { HaInput } from "../input/ha-input";
 
 @customElement("ha-selector-color_rgbw")
 export class HaColorRGBWSelector extends LitElement {
@@ -58,14 +61,18 @@ export class HaColorRGBWSelector extends LitElement {
     `;
   }
 
-  private _colorChanged(ev: CustomEvent) {
-    const [red, green, blue] = hex2rgb((ev.target as any).value);
+  private _colorChanged(ev: HASSDomCurrentTargetEvent<HaInput>) {
+    const hex = ev.currentTarget.value;
+    if (hex === undefined) {
+      return;
+    }
+    const [red, green, blue] = hex2rgb(hex);
     fireEvent(this, "value-changed", {
       value: [red, green, blue, this.value?.[3] ?? 0],
     });
   }
 
-  private _whiteChanged(ev: CustomEvent) {
+  private _whiteChanged(ev: ValueChangedEvent<number>) {
     // The slider fires a plain percentage, which must not reach the form.
     ev.stopPropagation();
     const [red, green, blue] = this.value ?? [0, 0, 0];
