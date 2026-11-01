@@ -155,6 +155,28 @@ test("preserves empty client state through onboarding", async ({
   expectNoPageErrors(errors);
 });
 
+for (const unitSystem of ["metric", "us_customary"] as const) {
+  test(`keeps the detected ${unitSystem} unit system`, async ({
+    page,
+    baseURL,
+  }) => {
+    const errors = trackPageErrors(page);
+    const calls = await setupOnboardingMocks(page);
+
+    await openOnboarding(page, baseURL!);
+    await createOwner(page);
+    await completeCoreConfig(page, unitSystem);
+    await expect.poll(() => calls.coreConfigCompleted).toBe(true);
+
+    expect(calls.coreConfig).toMatchObject({
+      type: "config/core/update",
+      unit_system: unitSystem,
+      country: onboardingData.location.country,
+    });
+    expectNoPageErrors(errors);
+  });
+}
+
 for (const { name, resume } of [
   {
     name: "saved tokens",
