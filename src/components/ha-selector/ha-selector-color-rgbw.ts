@@ -42,6 +42,10 @@ export class HaColorRGBWSelector extends LitElement {
         type="color"
         .value=${this.value ? rgb2hex([red, green, blue]) : ""}
         .label=${this.label || ""}
+        .accessibleLabel=${
+          this.label ||
+          this._localize("ui.components.selectors.selector.types.color_rgb")
+        }
         .required=${this.required}
         .hint=${this.helper}
         .disabled=${this.disabled}
