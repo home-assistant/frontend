@@ -288,7 +288,6 @@ export interface MapCardFeatureConfig {
   entity_id?: string;
   color?: string;
   rows?: number;
-  aspect_ratio?: string;
   auto_fit?: boolean;
   default_zoom?: number;
   hours_to_show?: number;

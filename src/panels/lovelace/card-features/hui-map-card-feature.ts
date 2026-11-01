@@ -20,7 +20,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { getEntityLocation } from "../../../common/entity/get_entity_location";
 import { entityMapColor } from "../../../common/map/entity-map-colors";
 import type { MapLatLng } from "../../../common/map/map-engine";
-import "../../../components/ha-aspect-ratio";
 import type {
   HaMapEntity,
   HaMapPaths,
@@ -185,6 +184,7 @@ export class HuiMapCardFeature
   @consume({ context: fullEntitiesContext, subscribe: true })
   private _entityReg: EntityRegistryEntry[] = [];
 
+  @state()
   @consume({ context: formattersContext, subscribe: true })
   private _formatters!: HomeAssistantFormatters;
 
@@ -471,6 +471,7 @@ export class HuiMapCardFeature
         )}
         .autoFit=${this._config.auto_fit ?? true}
         .zoom=${this._config.default_zoom ?? 14}
+        render-passive
         interactive-zones
       ></ha-map>
       ${
@@ -511,20 +512,6 @@ export class HuiMapCardFeature
       `;
     }
 
-    if (this._config.aspect_ratio && this._config.rows === undefined) {
-      return html`
-        <ha-aspect-ratio
-          class=${classMap({
-            container: true,
-            interactive: isInteractive,
-          })}
-          .aspectRatio=${this._config.aspect_ratio}
-        >
-          ${content}
-        </ha-aspect-ratio>
-      `;
-    }
-
     const rows = Math.max(2, this._config.rows ?? 3);
     return html`
       <div
@@ -533,7 +520,7 @@ export class HuiMapCardFeature
           interactive: isInteractive,
         })}
         style=${styleMap({
-          height: `calc(${rows} * var(--row-height, var(--ha-section-grid-row-height, 56px)) + ${rows - 1} * var(--row-gap, var(--ha-section-grid-row-gap, 8px)))`,
+          height: `calc(${rows} * var(--row-height, var(--ha-section-grid-row-height, 56px)) + ${rows} * var(--row-gap, var(--ha-section-grid-row-gap, 8px)) - var(--ha-space-3, 12px))`,
         })}
       >
         ${content}

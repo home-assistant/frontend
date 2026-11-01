@@ -139,7 +139,6 @@ export class HuiMapCardFeatureEditor
       auto_fit: true,
       default_zoom: 14,
       interactive: false,
-      rows: 3,
       ...this._config,
     };
 
