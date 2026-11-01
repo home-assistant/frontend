@@ -42,6 +42,13 @@ const sanitizeSrcset = (value: string): string => {
     : "";
 };
 
+// The attributes whose relative address a caller can rewrite afterwards
+const RELATIVE_URL_ATTRIBUTES: Record<string, string> = {
+  a: "href",
+  img: "src",
+  source: "src",
+};
+
 const renderMarkdown = async (
   content: string,
   markedOptions: MarkedOptions,
@@ -49,6 +56,9 @@ const renderMarkdown = async (
     // Do not allow SVG on untrusted content, it allows XSS.
     allowSvg?: boolean;
     allowDataUrl?: boolean;
+    // For a caller that rewrites relative addresses, like the README of a
+    // repository. xss empties a path like `images/logo.png`.
+    allowRelativeUrls?: boolean;
   } = {}
 ): Promise<string[]> => {
   if (!whiteListNormal) {
@@ -131,6 +141,16 @@ const renderMarkdown = async (
         }
         if (tag === "source" && name === "srcset") {
           return sanitizeSrcset(value);
+        }
+        // Kept as a path below the current one, so it can never carry a
+        // scheme, and checked by xss like any other address
+        if (
+          hassOptions.allowRelativeUrls &&
+          RELATIVE_URL_ATTRIBUTES[tag] === name &&
+          safeAttrValue(tag, name, value, cssFilter) === ""
+        ) {
+          const relative = safeAttrValue(tag, name, `./${value}`, cssFilter);
+          return relative ? `${name}="${escapeAttrValue(relative)}"` : "";
         }
         if (
           hassOptions.allowDataUrl &&

@@ -174,6 +174,56 @@ describe("renderMarkdown", () => {
     });
   });
 
+  describe("relative addresses", () => {
+    const renderImageSrc = async (src: string, allowRelativeUrls: boolean) =>
+      parse(
+        (
+          await renderMarkdown(`<img src="${src}">`, {}, { allowRelativeUrls })
+        ).join("")
+      )
+        .querySelector("img")
+        ?.getAttribute("src");
+
+    it("keeps a plain relative path for a caller that rewrites it", async () => {
+      expect(await renderImageSrc("images/logo.png", true)).toBe(
+        "./images/logo.png"
+      );
+    });
+
+    it("empties a plain relative path otherwise", async () => {
+      expect(await renderImageSrc("images/logo.png", false)).toBe("");
+    });
+
+    it("keeps an address xss allows as it is", async () => {
+      expect(await renderImageSrc("https://example.com/a.png", true)).toBe(
+        "https://example.com/a.png"
+      );
+    });
+
+    it.each([
+      // eslint-disable-next-line no-script-url
+      "javascript:alert(1)",
+      "&#106;avascript:alert(1)",
+      "data:text/html,x",
+    ])("turns an address with a scheme into a path: %s", async (src) => {
+      expect(await renderImageSrc(src, true)).toMatch(/^\.\//);
+    });
+
+    it("keeps relative addresses only for links and images", async () => {
+      const html = (
+        await renderMarkdown(
+          '<a href="docs/setup.md">Setup</a><video src="clip.mp4"></video>',
+          {},
+          { allowRelativeUrls: true }
+        )
+      ).join("");
+      expect(parse(html).querySelector("a")?.getAttribute("href")).toBe(
+        "./docs/setup.md"
+      );
+      expect(parse(html).querySelector("video")?.getAttribute("src")).toBe("");
+    });
+  });
+
   describe.each(["audio", "video"])("source src in %s", (tag) => {
     const renderSrc = async (src: string) =>
       parse(await render(`<${tag} controls><source src="${src}"></${tag}>`))
