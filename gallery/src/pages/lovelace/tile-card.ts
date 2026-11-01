@@ -78,6 +78,8 @@ const ENTITIES = [
     state: "home",
     attributes: {
       friendly_name: "Paulus",
+      latitude: 32.877105,
+      longitude: 117.232185,
     },
   },
   {
@@ -514,6 +516,23 @@ const CONFIGS = [
         { type: "climate-swing-modes", style: "dropdown" },
         { type: "climate-swing-horizontal-modes", style: "dropdown" },
       ],
+    },
+  },
+  {
+    heading: "Map feature",
+    config: {
+      type: "tile",
+      entity: "person.paulus",
+      features: [{ type: "map" }],
+    },
+  },
+  {
+    heading: "Map feature (inline)",
+    config: {
+      type: "tile",
+      entity: "person.paulus",
+      features_position: "inline",
+      features: [{ type: "map" }],
     },
   },
 ] satisfies DemoCardConfig<TileCardConfig | GridCardConfig>[];

@@ -283,6 +283,18 @@ export interface ValvePositionFavoriteCardFeatureConfig {
   type: "valve-position-favorite";
 }
 
+export interface MapCardFeatureConfig {
+  type: "map";
+  entity_id?: string;
+  color?: string;
+  rows?: number;
+  aspect_ratio?: string;
+  auto_fit?: boolean;
+  default_zoom?: number;
+  hours_to_show?: number;
+  interactive?: boolean;
+}
+
 export const LAWN_MOWER_COMMANDS = ["start_pause", "stop", "dock"] as const;
 
 export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
@@ -383,6 +395,7 @@ export type LovelaceCardFeatureConfig =
   | HumidifierToggleCardFeatureConfig
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
+  | MapCardFeatureConfig
   | LightBrightnessCardFeatureConfig
   | LightColorCardFeatureConfig
   | LightColorTempCardFeatureConfig

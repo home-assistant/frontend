@@ -75,7 +75,14 @@ const DOMAIN_VARIANTS: Record<string, TileVariant[]> = {
     ["target-humidity"],
   ],
   vacuum: [TILE_VARIANT, ["vacuum-commands"], ["vacuum-fan-speed"]],
-  lawn_mower: [TILE_VARIANT, ["lawn-mower-commands"]],
+  lawn_mower: [
+    TILE_VARIANT,
+    ["lawn-mower-commands"],
+    ["map"],
+    ["lawn-mower-commands", "map"],
+  ],
+  device_tracker: [TILE_VARIANT, ["map"]],
+  person: [TILE_VARIANT, ["map"]],
   valve: [
     TILE_VARIANT,
     ["valve-open-close"],

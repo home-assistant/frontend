@@ -169,4 +169,46 @@ describe("hui-tile-card getGridOptions", () => {
       min_rows: 4,
     });
   });
+
+  it("allocates extra rows for map card feature in bottom mode", () => {
+    expect(
+      gridOptions({
+        features_position: "bottom",
+        features: [{ type: "map" }],
+      })
+    ).toEqual({
+      columns: 6,
+      rows: 4,
+      min_columns: 6,
+      min_rows: 4,
+    });
+  });
+
+  it("places map card feature inline when position is inline and forces at least 2 rows", () => {
+    expect(
+      gridOptions({
+        features_position: "inline",
+        features: [{ type: "map" }],
+      })
+    ).toEqual({
+      columns: 6,
+      rows: 2,
+      min_columns: 12,
+      min_rows: 2,
+    });
+  });
+
+  it("allocates correct rows when map is inline and another feature is below", () => {
+    expect(
+      gridOptions({
+        features_position: "inline",
+        features: [{ type: "map" }, { type: "target-temperature" }],
+      })
+    ).toEqual({
+      columns: 6,
+      rows: 3,
+      min_columns: 12,
+      min_rows: 3,
+    });
+  });
 });
