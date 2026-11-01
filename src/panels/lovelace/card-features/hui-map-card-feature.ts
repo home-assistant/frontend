@@ -149,6 +149,22 @@ export class HuiMapCardFeature
   private _targetStateObj?: HassEntity;
 
   @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, string | undefined>({
+    transformer: function (this: HuiMapCardFeature, states) {
+      const entityId = this._resolveTargetEntityId(states);
+      const stateObj = entityId && states ? states[entityId] : undefined;
+      if (!stateObj || !states) {
+        return undefined;
+      }
+      const loc = getEntityLocation(stateObj, states);
+      return loc ? `${loc.latitude},${loc.longitude}` : undefined;
+    },
+    watch: ["_config", "context", "_entities"],
+  })
+  private _targetLocationKey?: string;
+
+  @state()
   @consume({ context: configContext, subscribe: true })
   @transform<HomeAssistantConfig, HassConfig>({
     transformer: ({ config }) => config,
@@ -292,7 +308,7 @@ export class HuiMapCardFeature
     this._subscribedHoursToShow = hoursToShow;
     const currentStates = () => this._states ?? {};
 
-    this._subscribed = subscribeHistoryStatesTimeWindow(
+    const subPromise = subscribeHistoryStatesTimeWindow(
       {
         connection: this._connection,
         get states() {
@@ -300,7 +316,7 @@ export class HuiMapCardFeature
         },
       },
       (combinedHistory) => {
-        if (!this._subscribed) {
+        if (this._subscribed !== subPromise) {
           return;
         }
         this._stateHistory = combinedHistory;
@@ -311,11 +327,15 @@ export class HuiMapCardFeature
       false,
       false
     ).catch(() => {
-      this._subscribed = undefined;
-      this._subscribedEntityId = undefined;
-      this._subscribedHoursToShow = undefined;
+      if (this._subscribed === subPromise) {
+        this._subscribed = undefined;
+        this._subscribedEntityId = undefined;
+        this._subscribedHoursToShow = undefined;
+      }
       return undefined;
     });
+
+    this._subscribed = subPromise;
   }
 
   private _getColor(entityId: string, customColor?: string): string {
@@ -354,7 +374,7 @@ export class HuiMapCardFeature
         for (const entityState of entityStates) {
           const latitude = entityState.a?.latitude;
           const longitude = entityState.a?.longitude;
-          if (!latitude || !longitude) {
+          if (typeof latitude !== "number" || typeof longitude !== "number") {
             continue;
           }
           points.push({
@@ -422,8 +442,7 @@ export class HuiMapCardFeature
       !this._config ||
       !targetEntityId ||
       !targetStateObj ||
-      !this._states ||
-      !supportsMapCardFeatureFromState(targetStateObj, this._states)
+      !this._targetLocationKey
     ) {
       return nothing;
     }
@@ -433,6 +452,7 @@ export class HuiMapCardFeature
 
     const content = html`
       <ha-map
+        ?inert=${!isInteractive}
         .entities=${this._mapEntities(
           targetEntityId,
           this._entityReg,

@@ -33,15 +33,19 @@ export const computeCardFeatureRows = (
     features,
     position
   );
-  const extraRows = below.reduce((acc, f) => {
-    if (f.type === "map") {
-      const mapConfig = f as MapCardFeatureConfig;
-      const rows = Math.max(2, mapConfig.rows ?? 3);
-      return acc + Math.max(0, rows - 1);
-    }
-    return acc;
-  }, 0);
-  const belowRows = Math.ceil(below.length / Math.max(columns, 1)) + extraRows;
+  const cols = Math.max(columns, 1);
+  let belowRows = 0;
+  for (let i = 0; i < below.length; i += cols) {
+    const rowFeatures = below.slice(i, i + cols);
+    const rowHeight = Math.max(
+      ...rowFeatures.map((f) =>
+        f.type === "map"
+          ? Math.max(2, (f as MapCardFeatureConfig).rows ?? 3)
+          : 1
+      )
+    );
+    belowRows += rowHeight;
+  }
 
   const inlineMap = inline.find((f) => f.type === "map") as
     MapCardFeatureConfig | undefined;

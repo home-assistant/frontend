@@ -302,6 +302,26 @@ describe("computeCardFeatureRows with map rows", () => {
         "inline"
       )
     ).toBe(3);
+    expect(
+      computeCardFeatureRows(
+        [
+          { type: "target-temperature" },
+          { type: "map", rows: 3 },
+          { type: "map", rows: 3 },
+        ],
+        "inline"
+      )
+    ).toBe(3);
+    expect(
+      computeCardFeatureRows(
+        [
+          { type: "target-temperature" },
+          { type: "map", rows: 2 },
+          { type: "map", rows: 4 },
+        ],
+        "inline"
+      )
+    ).toBe(4);
   });
 
   it("handles undefined and empty features in inline mode", () => {
