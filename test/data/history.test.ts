@@ -401,6 +401,51 @@ describe("convertStatisticsToHistory without an entity", () => {
     ]);
   });
 
+  it("keeps a removed entity in one chart with its state history", () => {
+    // The entity is gone from hass.states, but its recent states are recorded
+    const entityId = "sensor.removed_temperature";
+    const temperature = {
+      unit_of_measurement: "°C",
+      device_class: "temperature",
+    };
+    const historyResult = computeHistory(
+      createMockHass(),
+      { [entityId]: [{ s: "21", a: temperature, lu: 1_700_010_000 }] },
+      [],
+      mockLocalize,
+      true
+    );
+    const ltsResult = convertStatisticsToHistory(
+      createMockHass(),
+      {
+        [entityId]: [
+          { start: 1_700_000_000_000, end: 1_700_003_600_000, mean: 20 },
+        ],
+      },
+      [entityId],
+      true,
+      {
+        [entityId]: {
+          statistic_id: entityId,
+          source: "recorder",
+          name: null,
+          statistics_unit_of_measurement: "°C",
+          has_sum: false,
+          mean_type: StatisticMeanType.ARITHMETIC,
+          unit_class: "temperature",
+        },
+      }
+    );
+
+    const merged = mergeHistoryResults(historyResult, ltsResult, true);
+
+    expect(merged.line).toHaveLength(1);
+    expect(merged.line[0].unit).toBe("°C");
+    expect(merged.line[0].data.map(({ entity_id }) => entity_id)).toEqual([
+      entityId,
+    ]);
+  });
+
   it("keeps the ID and no unit without metadata", () => {
     const result = convertStatisticsToHistory(
       createMockHass(),

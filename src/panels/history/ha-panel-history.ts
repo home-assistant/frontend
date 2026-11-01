@@ -82,6 +82,7 @@ import {
 import {
   fetchStatistics,
   getStatisticMetadata,
+  isExternalStatistic,
   type StatisticsMetaData,
 } from "../../data/recorder";
 import { resolveEntityIDs } from "../../data/selector";
@@ -568,6 +569,8 @@ class HaPanelHistory extends LitElement {
     // graph to start at 7AM, need to fetch the statistic from 6AM.
     statsStartDate.setHours(statsStartDate.getHours() - 1);
 
+    const externalIds = statisticIds.filter(isExternalStatistic);
+
     let statistics;
     let metadata: StatisticsMetaData[];
     try {
@@ -581,8 +584,10 @@ class HaPanelHistory extends LitElement {
           undefined,
           ["mean", "state"]
         ),
-        // Statistics without an entity take name and unit from the metadata
-        getStatisticMetadata(this.hass!.callWS, statisticIds),
+        // External statistics take name and unit from the metadata
+        externalIds.length
+          ? getStatisticMetadata(this.hass!.callWS, externalIds)
+          : Promise.resolve([]),
       ]);
     } catch (_err) {
       return;

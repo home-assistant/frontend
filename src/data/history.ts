@@ -530,9 +530,10 @@ const isNumericFromAttributes = (attributes: Record<string, any>) =>
 const BLANK_UNIT = " ";
 
 /**
- * Attributes for a statistic without an entity, such as an external statistic
- * or the statistic of a removed entity. Without them the history names the
- * series after its ID and shows it without a unit.
+ * Attributes for an external statistic, which has no entity. Without them the
+ * history names the series after its ID and shows it without a unit. Other
+ * statistics keep a blank unit, so that they merge into the history line of
+ * their entity even after the entity was removed.
  */
 const statisticAttributes = (
   metadata: StatisticsMetaData | undefined
@@ -565,7 +566,9 @@ export const convertStatisticsToHistory = (
   // Convert statistics to HistoryResult format
   const statsHistoryStates: HistoryStates = {};
   Object.entries(orderedStatistics).forEach(([key, value]) => {
-    const attributes = statisticAttributes(statisticsMetadata?.[key]);
+    const attributes = isExternalStatistic(key)
+      ? statisticAttributes(statisticsMetadata?.[key])
+      : {};
     const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
       s: e.mean != null ? e.mean.toString() : e.state!.toString(),
       lc: e.end / 1000,
