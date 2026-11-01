@@ -42,25 +42,19 @@ const sanitizeSrcset = (value: string): string => {
     : "";
 };
 
-// Keep a relative address that xss would empty as a path below the current
-// one, so it can never carry a scheme. Decoded and written back like srcset,
-// so the browser reads the path that was checked. Returns the attribute to
-// render, or "" to drop it.
+// Keep a relative address xss would empty as a path below the current one, so
+// it can never carry a scheme. Returns the attribute to render, or "" to drop it.
 const sanitizeRelativeUrl = (tag: string, name: string, value: string) => {
-  // The browser trims it, a space would end up inside the path
   const decoded = friendlyAttrValue(value).replace(/&amp;/g, "&").trim();
-  // Entities left over (`&#38;#58;` leaves `&#58;`) would be decoded again
-  // by `safeAttrValue`, so the path checked would not be the one shown
   if (friendlyAttrValue(decoded) !== decoded) {
     return "";
   }
-  const relative = safeAttrValue(tag, name, `./${decoded}`, cssFilter);
-  return relative
-    ? `${name}="${escapeAttrValue(relative.replace(/&/g, "&amp;"))}"`
+  const path = `./${decoded}`;
+  return safeAttrValue(tag, name, path, cssFilter)
+    ? `${name}="${escapeAttrValue(path.replace(/&/g, "&amp;"))}"`
     : "";
 };
 
-// The attributes whose relative address a caller can rewrite afterwards
 const RELATIVE_URL_ATTRIBUTES: Record<string, string> = {
   a: "href",
   img: "src",
@@ -74,8 +68,6 @@ const renderMarkdown = async (
     // Do not allow SVG on untrusted content, it allows XSS.
     allowSvg?: boolean;
     allowDataUrl?: boolean;
-    // For a caller that rewrites relative addresses, like the README of a
-    // repository. xss empties a path like `images/logo.png`.
     allowRelativeUrls?: boolean;
   } = {}
 ): Promise<string[]> => {

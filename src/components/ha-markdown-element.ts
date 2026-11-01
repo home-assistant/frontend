@@ -100,7 +100,6 @@ class HaMarkdownElement extends ReactiveElement {
       {
         allowSvg: this.allowSvg,
         allowDataUrl: this.allowDataUrl,
-        // Relative addresses are rewritten below
         allowRelativeUrls: Boolean(this.rewriteUrl),
       }
     );

@@ -202,6 +202,12 @@ describe("renderMarkdown", () => {
       );
     });
 
+    it("keeps a quote in a relative path", async () => {
+      expect(await renderImageSrc("images/a&quot;b.png", true)).toBe(
+        './images/a"b.png'
+      );
+    });
+
     it("drops a relative path with entities left after decoding", async () => {
       expect(await renderImageSrc("&#38;#105;mages/logo.png", true)).toBeNull();
     });
