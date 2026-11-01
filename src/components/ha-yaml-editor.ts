@@ -38,6 +38,8 @@ export class HaYamlEditor extends LitElement {
 
   @property() public label?: string;
 
+  @property({ attribute: false }) public downloadName?: string;
+
   @property({ attribute: "auto-update", type: Boolean }) public autoUpdate =
     false;
 
@@ -137,6 +139,7 @@ export class HaYamlEditor extends LitElement {
       }
       <ha-code-editor
         .value=${this._yaml}
+        .downloadName=${this.downloadName}
         .readOnly=${this.readOnly}
         .disableFullscreen=${this.disableFullscreen}
         .inDialog=${this.inDialog}

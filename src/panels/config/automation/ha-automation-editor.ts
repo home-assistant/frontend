@@ -651,6 +651,10 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                     }
                     <ha-yaml-editor
                       .defaultValue=${this._preprocessYaml()}
+                      .downloadName=${
+                        this.automationId ||
+                        (this.entityId ? this.config?.id : undefined)
+                      }
                       .readOnly=${this.readOnly}
                       @value-changed=${this._yamlChanged}
                       @editor-save=${this._handleSaveAutomation}

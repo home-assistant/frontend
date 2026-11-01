@@ -16,6 +16,7 @@ import {
   mdiArrowCollapse,
   mdiArrowExpand,
   mdiContentCopy,
+  mdiDownload,
   mdiBug,
   mdiBugOutline,
   mdiFindReplace,
@@ -51,6 +52,7 @@ import type {
   HomeAssistantRegistries,
 } from "../types";
 import { showToast } from "../util/toast";
+import { fileDownload } from "../util/file_download";
 import { documentationUrl } from "../util/documentation-url";
 import {
   internationalizationContext,
@@ -96,6 +98,8 @@ export class HaCodeEditor extends ReactiveElement {
   public codemirror?: EditorView;
 
   @property() public mode = "yaml";
+
+  @property({ attribute: false }) public downloadName?: string;
 
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
@@ -391,6 +395,8 @@ export class HaCodeEditor extends ReactiveElement {
       changedProps.has("_canUndo") ||
       changedProps.has("_canRedo") ||
       changedProps.has("testing") ||
+      changedProps.has("mode") ||
+      changedProps.has("_i18n") ||
       changedProps.has("toolbarItems")
     ) {
       this._updateToolbarButtons();
@@ -618,6 +624,19 @@ export class HaCodeEditor extends ReactiveElement {
         path: mdiContentCopy,
         action: (e: Event) => this._handleClipboardClick(e),
       },
+      ...(this.mode === "yaml"
+        ? [
+            {
+              id: "download",
+              disabled: !this._canCopy,
+              label:
+                this._i18n?.localize("ui.components.yaml-editor.download") ||
+                "Download YAML",
+              path: mdiDownload,
+              action: (e: Event) => this._handleDownloadClick(e),
+            },
+          ]
+        : []),
       {
         id: "find-replace",
         label:
@@ -667,6 +686,20 @@ export class HaCodeEditor extends ReactiveElement {
           "Copied to clipboard",
       });
     }
+  };
+
+  private _handleDownloadClick = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!this.value) {
+      return;
+    }
+    const blob = new Blob([this.value], { type: "application/yaml" });
+    const timestamp = Math.floor(Date.now() / 1000);
+    fileDownload(
+      URL.createObjectURL(blob),
+      `${this.downloadName || "HAbackup"}_${timestamp}.yaml`
+    );
   };
 
   private _handleTestClick = (e: Event) => {
