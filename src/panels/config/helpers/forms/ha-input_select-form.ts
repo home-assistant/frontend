@@ -4,14 +4,15 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { afterNextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-picker";
-import "../../../../components/ha-list";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/input/ha-input";
+import "../../../../components/item/ha-list-item-base";
+import "../../../../components/list/ha-list-base";
 import type { HaInput } from "../../../../components/input/ha-input";
 import type { InputSelect } from "../../../../data/input_select";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -41,6 +42,30 @@ class HaInputSelectForm extends LitElement {
   private _optionMoved(ev: CustomEvent): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
+    this._moveOption(oldIndex, newIndex);
+  }
+
+  private _optionKeydown(ev: KeyboardEvent): void {
+    if (
+      this.disabled ||
+      !ev.altKey ||
+      (ev.key !== "ArrowUp" && ev.key !== "ArrowDown")
+    ) {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
+    const row = ev.currentTarget as HTMLElement & { index: number };
+    const newIndex = row.index + (ev.key === "ArrowUp" ? -1 : 1);
+    if (newIndex < 0 || newIndex >= this._options.length) {
+      return;
+    }
+    this._moveOption(row.index, newIndex);
+    // Moving the row in the DOM drops its focus
+    afterNextRender(() => row.focus());
+  }
+
+  private _moveOption(oldIndex: number, newIndex: number): void {
     const options = this._options.concat();
     const option = options.splice(oldIndex, 1)[0];
     options.splice(newIndex, 0, option);
@@ -108,24 +133,32 @@ class HaInputSelectForm extends LitElement {
           handle-selector=".handle"
           .disabled=${this.disabled}
         >
-          <ha-list class="options">
+          <ha-list-base
+            class="options"
+            aria-label=${this.hass!.localize(
+              "ui.dialogs.helper_settings.input_select.options"
+            )}
+          >
             ${
               this._options.length
                 ? repeat(
                     this._options,
                     (option) => option,
                     (option, index) => html`
-                      <ha-list-item class="option" hasMeta>
-                        <div class="optioncontent">
-                          <div class="handle">
-                            <ha-svg-icon
-                              .path=${mdiDragHorizontalVariant}
-                            ></ha-svg-icon>
-                          </div>
-                          ${option}
-                        </div>
+                      <ha-list-item-base
+                        class="option"
+                        interactive
+                        .headline=${option}
+                        .index=${index}
+                        @keydown=${this._optionKeydown}
+                      >
+                        <ha-svg-icon
+                          slot="start"
+                          class="handle"
+                          .path=${mdiDragHorizontalVariant}
+                        ></ha-svg-icon>
                         <ha-icon-button
-                          slot="meta"
+                          slot="end"
                           .index=${index}
                           .label=${this.hass.localize(
                             "ui.dialogs.helper_settings.input_select.remove_option"
@@ -134,12 +167,12 @@ class HaInputSelectForm extends LitElement {
                           .disabled=${this.disabled}
                           .path=${mdiDelete}
                         ></ha-icon-button>
-                      </ha-list-item>
+                      </ha-list-item-base>
                     `
                   )
                 : nothing
             }
-          </ha-list>
+          </ha-list-base>
         </ha-sortable>
         <div class="layout horizontal center">
           <ha-input
@@ -236,13 +269,18 @@ class HaInputSelectForm extends LitElement {
         .form {
           color: var(--primary-text-color);
         }
+        .options {
+          --ha-list-padding: var(--ha-space-2) 0;
+        }
+        .option ha-icon-button {
+          color: var(--secondary-text-color);
+        }
         .option {
           border: 1px solid var(--divider-color);
           border-radius: var(--ha-border-radius-sm);
           margin-top: var(--ha-space-1);
           --ha-icon-button-size: 24px;
-          --mdc-ripple-color: transparent;
-          --mdc-list-side-padding: var(--ha-space-4);
+          --ha-row-item-gap: var(--ha-space-3);
           cursor: default;
           background-color: var(--card-background-color);
         }
@@ -258,17 +296,6 @@ class HaInputSelectForm extends LitElement {
         .handle {
           cursor: move; /* fallback if grab cursor is unsupported */
           cursor: grab;
-          padding-right: var(--ha-space-3);
-          padding-inline-end: var(--ha-space-3);
-          padding-inline-start: initial;
-        }
-        .handle ha-svg-icon {
-          pointer-events: none;
-          height: 24px;
-        }
-        .optioncontent {
-          display: flex;
-          align-items: center;
         }
         ha-icon-picker {
           display: block;
