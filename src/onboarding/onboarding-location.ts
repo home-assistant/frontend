@@ -306,7 +306,7 @@ class OnboardingLocation extends LitElement {
       (plc) => plc.place_id === Number(ev.detail.id)
     )!;
     this._location = [Number(place.lat), Number(place.lon)];
-    this._country = place.address.country_code.toUpperCase();
+    this._setCountry(place.address.country_code);
   }
 
   private _itemClicked(ev) {
@@ -315,7 +315,7 @@ class OnboardingLocation extends LitElement {
       (plc) => plc.place_id === ev.currentTarget.placeId
     )!;
     this._location = [Number(place.lat), Number(place.lon)];
-    this._country = place.address.country_code.toUpperCase();
+    this._setCountry(place.address.country_code);
   }
 
   private async _addressSearch(ev: KeyboardEvent) {
@@ -353,7 +353,8 @@ class OnboardingLocation extends LitElement {
           Number(this._places[0].lat),
           Number(this._places[0].lon),
         ];
-        this._country = this._places[0].address.country_code.toUpperCase();
+        this._setCountry(this._places[0].address.country_code);
+        this._elevation = undefined;
       }
     } catch (e: any) {
       this._places = undefined;
@@ -369,9 +370,17 @@ class OnboardingLocation extends LitElement {
     }
     this._places = null;
     const reverse = await reverseGeocode(this._location, this.hass);
-    this._country = reverse.address.country_code.toUpperCase();
+    this._setCountry(reverse.address.country_code);
     this._places = [reverse];
     this._highlightedMarker = reverse.place_id;
+  }
+
+  private _setCountry(countryCode: string) {
+    this._country = countryCode.toUpperCase();
+    // Detected values belong to the detected location
+    this._unitSystem = undefined;
+    this._currency = undefined;
+    this._timeZone = undefined;
   }
 
   private async _handleButtonClick(ev) {

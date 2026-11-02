@@ -213,3 +213,13 @@ export const isBrandUrl = (thumbnail: string | ""): boolean => {
     return false;
   }
 };
+
+// Point a brand image URL at its dark-optimized variant, e.g.
+// /api/brands/integration/{domain}/icon.png -> .../dark_icon.png. Everything
+// else in the URL (host, category, query such as the token) is kept. Both the
+// brands API and the CDN fall back to the light image when a brand has no dark
+// variant. Non-brand URLs and URLs that are already dark are returned unchanged.
+export const darkBrandUrl = (url: string): string =>
+  isBrandUrl(url)
+    ? url.replace(/\/(icon|logo)(@2x)?\.png(?=$|[?#])/, "/dark_$1$2.png")
+    : url;

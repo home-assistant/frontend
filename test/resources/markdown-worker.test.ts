@@ -196,4 +196,52 @@ describe("renderMarkdown", () => {
       expect(await renderSrc(src)).toBe("");
     });
   });
+
+  describe("data URLs", () => {
+    const renderLink = async (
+      content: string,
+      hassOptions: { allowDataUrl?: boolean; allowSvg?: boolean }
+    ) => {
+      const link = parse(
+        (await renderMarkdown(content, {}, hassOptions)).join("")
+      ).querySelector("a");
+      expect(link).not.toBeNull();
+      return link!;
+    };
+
+    it("keeps a data URL and download on a link when allowed", async () => {
+      const link = await renderLink(
+        '<a href="data:application/octet-stream;base64,aGVsbG8=" download="backup.bin">Download</a>',
+        { allowDataUrl: true }
+      );
+      expect(link.getAttribute("href")).toBe(
+        "data:application/octet-stream;base64,aGVsbG8="
+      );
+      expect(link.getAttribute("download")).toBe("backup.bin");
+    });
+
+    it("does not let a quote in a data URL add an attribute", async () => {
+      const link = await renderLink(
+        `<a href='data:text/plain,x" onmouseover="alert(1)'>Download</a>`,
+        { allowDataUrl: true }
+      );
+      expect(link.getAttributeNames()).toEqual(["href"]);
+      expect(link.getAttribute("href")).toBe(
+        'data:text/plain,x" onmouseover="alert(1)'
+      );
+    });
+
+    it.each([false, true])(
+      "does not allow data URLs or download in other content (allowSvg: %s)",
+      async (allowSvg) => {
+        const content =
+          '<a href="data:text/plain,x" download="x.txt">Download</a>';
+        // Render with data URLs first, so the cached whitelist is in use
+        await renderLink(content, { allowDataUrl: true, allowSvg });
+        const link = await renderLink(content, { allowSvg });
+        expect(link.getAttribute("href")).toBe("");
+        expect(link.hasAttribute("download")).toBe(false);
+      }
+    );
+  });
 });

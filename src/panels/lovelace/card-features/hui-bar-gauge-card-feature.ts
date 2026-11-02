@@ -1,5 +1,6 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, LitElement, nothing, html } from "lit";
+import { ifDefined } from "lit/directives/if-defined";
 import { customElement, property, state } from "lit/decorators";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -26,6 +27,39 @@ export const supportsBarGaugeCardFeature = (
   if (!stateObj) return false;
   return supportsBarGaugeCardFeatureFromState(stateObj);
 };
+
+const severityMap = {
+  red: "var(--error-color)",
+  green: "var(--success-color)",
+  yellow: "var(--warning-color)",
+};
+
+const computeSeverityColor = (
+  severity: BarGaugeCardFeatureConfig["severity"],
+  value: number
+): string | undefined => {
+  let best: { level: number; color: string } | undefined;
+  for (const [key, level] of Object.entries(severity ?? {})) {
+    if (
+      key in severityMap &&
+      typeof level === "number" &&
+      value >= level &&
+      (!best || level >= best.level)
+    ) {
+      best = { level, color: severityMap[key] };
+    }
+  }
+  return best?.color;
+};
+
+const computeSegmentColor = (
+  segments: BarGaugeCardFeatureConfig["segments"],
+  value: number
+): string | undefined =>
+  segments
+    ?.filter((segment) => value >= segment.from)
+    .sort((a, b) => a.from - b.from)
+    .pop()?.color;
 
 @customElement("hui-bar-gauge-card-feature")
 class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
@@ -77,9 +111,13 @@ class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {
       0,
       Math.min(100, ((value - min) / (max - min)) * 100)
     );
+    const color = this._config.segments
+      ? computeSegmentColor(this._config.segments, value)
+      : computeSeverityColor(this._config.severity, value);
+    const style = color ? `--feature-color: ${color}` : undefined;
 
-    return html`<div style="width: ${percentage}%"></div>
-      <div class="bar-gauge-background"></div>`;
+    return html`<div style="width: ${percentage}%; ${style ?? ""}"></div>
+      <div class="bar-gauge-background" style=${ifDefined(style)}></div>`;
   }
 
   static styles = css`

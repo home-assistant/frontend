@@ -167,10 +167,9 @@ export class ZHAAddGroupPage extends LitElement {
     return [
       css`
         .container {
-          box-sizing: border-box;
-          max-width: 720px;
+          max-width: var(--ha-content-width-narrow);
           margin: 0 auto;
-          padding: var(--ha-space-4) var(--ha-space-4)
+          padding: var(--ha-space-4) var(--ha-content-gutter)
             calc(var(--ha-space-20) + var(--safe-area-inset-bottom, 0px));
         }
 
@@ -208,12 +207,6 @@ export class ZHAAddGroupPage extends LitElement {
           display: flex;
           justify-content: flex-end;
           padding: var(--ha-space-4) 0 0;
-        }
-
-        @media (max-width: 600px) {
-          .container {
-            padding-inline: var(--ha-space-2);
-          }
         }
       `,
     ];
