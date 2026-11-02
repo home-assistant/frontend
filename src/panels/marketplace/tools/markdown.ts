@@ -264,14 +264,44 @@ const maskInlineCode = (text: string, mask: (code: string) => string) =>
     .map((paragraph) => maskInlineCodeSpans(paragraph, mask))
     .join("");
 
-// Links issue references, like #12, to the repository. The addresses of links
-// and images are rewritten by repositoryUrl, once the README is rendered.
+// A section of a README that is not for the Marketplace is between these
+const EXCLUSION_MARKER = /<!--\s*marketplace_exclude:(start|end)\s*-->/g;
+
+/**
+ * Leave out the sections a README marks for the Marketplace to skip, like
+ * installation instructions that the header of the page already covers.
+ *
+ * A section starts at `<!-- marketplace_exclude:start -->` and runs to the
+ * next `<!-- marketplace_exclude:end -->`, or to the end of the README
+ * without one, like an unclosed fence. Markers in code are text.
+ */
+const withoutExcludedSections = (input: string) => {
+  let output = "";
+  let position = 0;
+  let excluded = false;
+
+  for (const marker of input.matchAll(EXCLUSION_MARKER)) {
+    if (marker[1] === "start" && !excluded) {
+      output += input.slice(position, marker.index);
+      excluded = true;
+    } else if (marker[1] === "end" && excluded) {
+      position = marker.index + marker[0].length;
+      excluded = false;
+    }
+  }
+
+  return excluded ? output : output + input.slice(position);
+};
+
+// Leaves out the sections marked for the Marketplace to skip and links issue
+// references, like #12, to the repository. The addresses of links and images
+// are rewritten by repositoryUrl, once the README is rendered.
 export const markdownWithRepositoryContext = (
   input: string,
   repository?: RepositoryInfo
 ) => {
   // The placeholders would be mistaken for content, a README never has them
-  if (!repository || input.includes("\0") || input.includes("\uE000")) {
+  if (input.includes("\0") || input.includes("\uE000")) {
     return input;
   }
 
@@ -289,7 +319,10 @@ export const markdownWithRepositoryContext = (
     })
     .join("\n");
 
-  return linkIssueReferences(masked, repository).replace(
+  const shown = withoutExcludedSections(masked);
+  const linked = repository ? linkIssueReferences(shown, repository) : shown;
+
+  return linked.replace(
     CODE_PLACEHOLDER,
     (_placeholder, index) => code[Number(index)]
   );
