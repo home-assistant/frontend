@@ -12965,6 +12965,7 @@
           "intro": "Marketplace items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
           "risks_title": "Anything you install can",
           "risks": {
+            "access": "Access and control everything in Home\u00a0Assistant",
             "internet": "Connect to the internet",
             "data": "Share your data with others",
             "stability": "Slow down or crash Home\u00a0Assistant"
