@@ -55,7 +55,12 @@ export class HaFilterDeviceClasses extends HaFilterStates {
   }
 
   protected willUpdate() {
-    if (this._entityStates && this._localize && this._i18n) {
+    if (
+      this._entityStates &&
+      this._localize &&
+      this._i18n &&
+      (this.expanded || !this.states)
+    ) {
       this.states = this._deviceClasses(
         this._entityStates,
         this._localize,
