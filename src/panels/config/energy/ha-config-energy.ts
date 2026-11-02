@@ -356,9 +356,8 @@ class HaConfigEnergy extends LitElement {
         ha-energy-device-settings-water,
         ha-energy-device-settings-gas {
           display: block;
-          max-width: 600px;
-          margin: 0 auto 12px;
-        },
+          margin-bottom: 12px;
+        }
       `,
     ];
   }
