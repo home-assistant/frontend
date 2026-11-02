@@ -3529,7 +3529,6 @@
           "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
           "confirm_delete_title": "Delete label?",
           "confirm_delete": "Are you sure you want to delete label {label}? It will be removed from all areas, devices, and entities.",
-          "delete_selected": "Delete selected",
           "confirm_delete_selected_title": "Delete selected labels?",
           "confirm_delete_selected": "{count, plural,\n  one {The selected label will be removed from all areas, devices, and entities.}\n  other {The {count} selected labels will be removed from all areas, devices, and entities.}\n}",
           "delete_failed_title": "Delete failed",
@@ -4197,7 +4196,6 @@
           "create_automation": "Create automation",
           "confirm_delete_title": "Delete tag?",
           "confirm_delete": "The tag ''{tag}'' will be permanently deleted.",
-          "delete_selected": "Delete selected",
           "confirm_delete_selected_title": "Delete selected tags?",
           "confirm_delete_selected": "{count, plural,\n  one {The selected tag will be permanently deleted.}\n  other {The {count} selected tags will be permanently deleted.}\n}",
           "delete_failed_title": "Delete failed",
@@ -5217,7 +5215,6 @@
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
-            "delete_selected": "Delete selected",
             "confirm_delete_selected_title": "Delete selected dashboards?",
             "confirm_delete_selected": "{count, plural,\n  one {The selected dashboard will be permanently deleted.}\n  other {The {count} selected dashboards will be permanently deleted.}\n}",
             "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} dashboards. The others are built-in or configured in YAML.",
@@ -6736,7 +6733,6 @@
             "blueprint_in_use_view_script": "View scripts",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
-            "delete_selected": "Delete selected",
             "confirm_delete_selected_title": "Delete selected blueprints?",
             "confirm_delete_selected": "{count, plural,\n  one {The selected blueprint will be permanently deleted.}\n  other {The {count} selected blueprints will be permanently deleted.}\n}",
             "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} blueprints. The others are in use by automations or scripts.",
@@ -13031,8 +13027,7 @@
           "empty_header": "Nothing in the Marketplace yet",
           "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
-          "repository_not_found": "Repository not found",
-          "uninstall_selected": "Uninstall selected"
+          "repository_not_found": "Repository not found"
         },
         "entry": {
           "disabled": "The Marketplace is disabled. Enable it on the integration page to use it.",
