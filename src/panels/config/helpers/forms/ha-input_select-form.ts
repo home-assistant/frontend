@@ -4,6 +4,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { afterNextRender } from "../../../../common/util/render-status";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-picker";
@@ -41,6 +42,30 @@ class HaInputSelectForm extends LitElement {
   private _optionMoved(ev: CustomEvent): void {
     ev.stopPropagation();
     const { oldIndex, newIndex } = ev.detail;
+    this._moveOption(oldIndex, newIndex);
+  }
+
+  private _optionKeydown(ev: KeyboardEvent): void {
+    if (
+      this.disabled ||
+      !ev.altKey ||
+      (ev.key !== "ArrowUp" && ev.key !== "ArrowDown")
+    ) {
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
+    const row = ev.currentTarget as HTMLElement & { index: number };
+    const newIndex = row.index + (ev.key === "ArrowUp" ? -1 : 1);
+    if (newIndex < 0 || newIndex >= this._options.length) {
+      return;
+    }
+    this._moveOption(row.index, newIndex);
+    // Moving the row in the DOM drops its focus
+    afterNextRender(() => row.focus());
+  }
+
+  private _moveOption(oldIndex: number, newIndex: number): void {
     const options = this._options.concat();
     const option = options.splice(oldIndex, 1)[0];
     options.splice(newIndex, 0, option);
@@ -120,7 +145,13 @@ class HaInputSelectForm extends LitElement {
                     this._options,
                     (option) => option,
                     (option, index) => html`
-                      <ha-list-item-base class="option" .headline=${option}>
+                      <ha-list-item-base
+                        class="option"
+                        interactive
+                        .headline=${option}
+                        .index=${index}
+                        @keydown=${this._optionKeydown}
+                      >
                         <ha-svg-icon
                           slot="start"
                           class="handle"

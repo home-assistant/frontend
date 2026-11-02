@@ -561,6 +561,9 @@ class HaConfigSectionStorage extends LitElement {
       border-radius: var(--ha-border-radius-circle);
       margin-bottom: 8px;
     }
+    ha-list-base {
+      --ha-list-padding: var(--ha-space-2) 0;
+    }
     ha-svg-icon,
     ha-icon-next {
       width: 24px;

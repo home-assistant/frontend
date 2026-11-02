@@ -851,6 +851,9 @@ export class HassioNetwork extends LitElement {
         .add-nameserver {
           margin-top: 16px;
         }
+        ha-list-selectable {
+          --ha-list-padding: var(--ha-space-2) 0;
+        }
         ha-list-item-option {
           --ha-row-item-padding-inline: 10px;
         }

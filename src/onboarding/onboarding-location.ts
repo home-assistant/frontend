@@ -18,10 +18,8 @@ import {
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-button";
-import "../components/item/ha-list-item-base";
-import "../components/item/ha-list-item-option";
-import "../components/list/ha-list-base";
-import "../components/list/ha-list-selectable";
+import "../components/ha-list";
+import "../components/ha-list-item";
 import "../components/ha-spinner";
 import "../components/input/ha-input";
 import type { HaInput } from "../components/input/ha-input";
@@ -143,15 +141,10 @@ class OnboardingLocation extends LitElement {
         ${
           this._places !== undefined
             ? html`
-                ${
-                  this._places?.length
-                    ? html`<ha-list-selectable
-                        aria-label=${this._localize(
-                          "ui.panel.page-onboarding.core-config.address_results"
-                        )}
-                        @ha-list-item-selected=${this._placeSelected}
-                      >
-                        ${this._places.map((place) => {
+                <ha-list activatable>
+                  ${
+                    this._places?.length
+                      ? this._places.map((place) => {
                           const primary = [
                             place.name || place.address[place.category],
                             place.address.house_number,
@@ -171,19 +164,26 @@ class OnboardingLocation extends LitElement {
                           ]
                             .filter(Boolean)
                             .join(", ");
-                          return html`<ha-list-item-option
+                          return html`<ha-list-item
+                            @click=${this._itemClicked}
+                            .placeId=${place.place_id}
                             .selected=${this._highlightedMarker === place.place_id}
-                            .headline=${primary || secondary}
-                            .supportingText=${primary ? secondary : undefined}
-                          ></ha-list-item-option>`;
-                        })}
-                      </ha-list-selectable>`
-                    : html`<ha-list-base>
-                        <ha-list-item-base
-                          .headline=${this._places === null ? "" : "No results"}
-                        ></ha-list-item-base>
-                      </ha-list-base>`
-                }
+                            .activated=${this._highlightedMarker === place.place_id}
+                            .twoline=${primary && secondary}
+                          >
+                            ${primary || secondary}
+                            <span slot="secondary"
+                              >${primary ? secondary : ""}</span
+                            >
+                          </ha-list-item>`;
+                        })
+                      : html`<ha-list-item noninteractive
+                          >${
+                            this._places === null ? "" : "No results"
+                          }</ha-list-item
+                        >`
+                  }
+                </ha-list>
               `
             : nothing
         }
@@ -309,9 +309,11 @@ class OnboardingLocation extends LitElement {
     this._country = place.address.country_code.toUpperCase();
   }
 
-  private _placeSelected(ev: CustomEvent<number>) {
-    const place = this._places![ev.detail];
-    this._highlightedMarker = place.place_id;
+  private _itemClicked(ev) {
+    this._highlightedMarker = ev.currentTarget.placeId;
+    const place = this._places!.find(
+      (plc) => plc.place_id === ev.currentTarget.placeId
+    )!;
     this._location = [Number(place.lat), Number(place.lon)];
     this._country = place.address.country_code.toUpperCase();
   }
@@ -503,18 +505,17 @@ class OnboardingLocation extends LitElement {
           border-radius: var(--mdc-shape-large, 16px);
           overflow: hidden;
         }
-        ha-list-selectable,
-        ha-list-base {
+        ha-list {
           width: 100%;
           border: 1px solid var(--divider-color);
           box-sizing: border-box;
           border-top-width: 0;
           border-bottom-left-radius: var(--mdc-shape-small, 4px);
           border-bottom-right-radius: var(--mdc-shape-small, 4px);
+          --mdc-list-vertical-padding: 0;
         }
-        ha-list-item-option,
-        ha-list-item-base {
-          --ha-row-item-min-height: 72px;
+        ha-list-item {
+          height: 72px;
         }
         .attribution {
           /* input helper style */
