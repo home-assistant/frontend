@@ -494,8 +494,14 @@ class PanelTodo extends LitElement {
           max-width: 80vw;
         }
 
+        ha-list-item-button.selected {
+          --icon-primary-color: var(--primary-color);
+        }
         ha-list-item-button.selected::part(base) {
-          background-color: var(--ha-color-fill-neutral-quiet-hover);
+          background-color: var(--ha-color-fill-primary-quiet-resting);
+        }
+        ha-list-item-button.selected::part(headline) {
+          color: var(--primary-color);
         }
       `,
     ];
