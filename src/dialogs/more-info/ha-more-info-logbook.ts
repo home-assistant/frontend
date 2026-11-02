@@ -43,6 +43,7 @@ export class MoreInfoLogbook extends LitElement {
         .time=${this._time}
         .entityIds=${this._entityIdAsList(this.entityId)}
         name-detail="none"
+        max-entries="50"
         narrow
         no-icon
         graph-color
