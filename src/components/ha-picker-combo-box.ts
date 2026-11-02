@@ -376,6 +376,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         virtual-focus
         controlled
         tabindex="0"
+        @mousedown=${this._preventBlur}
         @focus=${this._focusList}
         @blur=${this._resetSelectedItem}
       >
@@ -406,6 +407,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           this.value
         )}
         .pinIndex=${this.value ? this._getInitialSelectedIndex() : undefined}
+        @mousedown=${this._preventBlur}
         @focus=${this._focusList}
         @blur=${this._resetSelectedItem}
         @ha-list-visibility-changed=${this._visibilityChanged}
@@ -684,6 +686,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._resetListScroll();
   };
 
+  // Keep focus in the search field, so a focus change doesn't scroll the
+  // list to the active row and make the click miss.
   private _preventBlur(ev: Event) {
     ev.preventDefault();
   }
