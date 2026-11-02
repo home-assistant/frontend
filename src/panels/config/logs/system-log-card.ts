@@ -402,6 +402,7 @@ export class SystemLogCard extends LitElement {
     }
 
     .skeleton {
+      direction: ltr;
       padding: var(--ha-space-2) 0;
     }
 
