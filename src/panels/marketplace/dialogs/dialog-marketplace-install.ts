@@ -726,9 +726,6 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
         .content {
           padding: var(--ha-space-6);
         }
-        .versions ha-generic-picker {
-          display: block;
-        }
         pre {
           white-space: pre-line;
           user-select: all;
