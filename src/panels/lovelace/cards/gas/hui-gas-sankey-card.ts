@@ -159,19 +159,19 @@ class HuiGasSankeyCard
     // Sum only top-level devices. Devices with `included_in_stat` are already
     // counted inside their parent stat; adding them again would double-count
     // and push the home total above the source meter.
-    const totalDownstreamConsumption = prefs.device_consumption_gas.reduce(
-      (total, device) => {
-        if (device.included_in_stat) {
-          return total;
-        }
-        const value =
-          device.stat_consumption in this._data!.stats
-            ? calculateStatisticSumGrowth(
-                this._data!.stats[device.stat_consumption]
-              ) || 0
-            : 0;
-        return total + value;
-      },
+    const usable = new Set(
+      prefs.device_consumption_gas
+        .filter((d) => deviceValue(d.stat_consumption) > 0)
+        .map((d) => d.stat_consumption)
+    );
+    const devices = prefs.device_consumption_gas.map((d) =>
+      d.included_in_stat && !usable.has(d.included_in_stat)
+        ? { ...d, included_in_stat: undefined }
+        : d
+    );
+    const totalDownstreamConsumption = devices.reduce(
+      (total, d) =>
+        d.included_in_stat ? total : total + deviceValue(d.stat_consumption),
       0
     );
     const totalSourceSupply = gasSources.reduce((total, source) => {
@@ -268,7 +268,7 @@ class HuiGasSankeyCard
       links: deviceLinks,
       untrackedConsumption,
     } = buildSankeyDeviceNodes({
-      devices: prefs.device_consumption_gas,
+      devices,
       computedStyle,
       localize: this._i18n.localize,
       rootNodeId: "home",

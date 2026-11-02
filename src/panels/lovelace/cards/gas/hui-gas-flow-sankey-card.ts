@@ -13,10 +13,7 @@ import {
   registriesContext,
   statesContext,
 } from "../../../../data/context";
-import type {
-  DeviceConsumptionEnergyPreference,
-  EnergyData,
-} from "../../../../data/energy";
+import type { EnergyData } from "../../../../data/energy";
 import {
   computeEnergyDeviceLabels,
   formatFlowRateShort,
@@ -173,6 +170,17 @@ class HuiGasFlowSankeyCard
       (source) => source.type === "gas" && source.stat_rate
     );
 
+    const usable = new Set(
+      prefs.device_consumption_gas
+        .filter((d) => d.stat_rate && this._getCurrentFlowRate(d.stat_rate) > 0)
+        .map((d) => d.stat_consumption)
+    );
+    const devices = prefs.device_consumption_gas.map((d) =>
+      d.included_in_stat && !usable.has(d.included_in_stat)
+        ? { ...d, included_in_stat: undefined }
+        : d
+    );
+
     let totalInflow = 0;
     gasSources.forEach((source) => {
       if (source.type === "gas" && source.stat_rate) {
@@ -188,41 +196,10 @@ class HuiGasFlowSankeyCard
     // total only reflects top-level devices and we don't double-count.
     let totalDeviceFlow = 0;
     if (gasSources.length === 0) {
-      const byStat = new Map<string, DeviceConsumptionEnergyPreference>(
-        prefs.device_consumption_gas.map(
-          (d) => [d.stat_consumption, d] as const
-        )
-      );
-      // Un figlio è già contato solo se un antenato ha una portata live > 0
-      const parentHasLiveRate = (
-        device: DeviceConsumptionEnergyPreference
-      ): boolean => {
-        const seen = new Set<string>();
-        let parentId = device.included_in_stat;
-        while (parentId && !seen.has(parentId)) {
-          seen.add(parentId);
-          const parent = byStat.get(parentId);
-          if (!parent) {
-            return false;
-          }
-          if (
-            parent.stat_rate &&
-            this._getCurrentFlowRate(parent.stat_rate) > 0
-          ) {
-            return true;
-          }
-          parentId = parent.included_in_stat;
+      devices.forEach((d) => {
+        if (!d.included_in_stat && d.stat_rate) {
+          totalDeviceFlow += Math.max(0, this._getCurrentFlowRate(d.stat_rate));
         }
-        return false;
-      };
-      prefs.device_consumption_gas.forEach((device) => {
-        if (!device.stat_rate || parentHasLiveRate(device)) {
-          return;
-        }
-        totalDeviceFlow += Math.max(
-          0,
-          this._getCurrentFlowRate(device.stat_rate)
-        );
       });
     }
     const effectiveTotalInflow =
