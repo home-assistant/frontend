@@ -27,8 +27,8 @@ import {
 } from "../../../data/marketplace/websocket";
 
 const RISKS = [
-  { risk: "internet", icon: mdiWeb },
   { risk: "access", icon: mdiShieldKeyOutline },
+  { risk: "internet", icon: mdiWeb },
   { risk: "data", icon: mdiDatabaseExportOutline },
   { risk: "stability", icon: mdiAlertOctagonOutline },
 ] as const;
