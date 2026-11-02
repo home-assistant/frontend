@@ -21,6 +21,7 @@ import {
   ZHADeviceType,
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
+import { MobileAwareMixin } from "../../../../../mixins/mobile-aware-mixin";
 import type { HomeAssistant, Route } from "../../../../../types";
 import {
   computeZHADeviceType,
@@ -34,7 +35,7 @@ import {
 } from "./zha-network-data";
 
 @customElement("zha-network-visualization-page")
-export class ZHANetworkVisualizationPage extends LitElement {
+export class ZHANetworkVisualizationPage extends MobileAwareMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public route!: Route;
@@ -121,7 +122,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._networkData = createZHANetworkChartData(
       this._devices,
       this.hass,
-      this
+      this,
+      this._isMobileSize
     );
   }
 

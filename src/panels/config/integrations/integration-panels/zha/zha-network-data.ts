@@ -40,6 +40,7 @@ const SPACER_COUNT = 2;
 
 // The coordinator and the virtual parents are the roots of the graph
 const ROOT_SYMBOL_SIZE = 60;
+const ROOT_SYMBOL_SIZE_MOBILE = 40;
 const ROOT_LABEL = {
   position: "bottom",
   fontWeight: "bold",
@@ -58,9 +59,13 @@ const rootSymbol = (
 export function createZHANetworkChartData(
   devices: ZHADevice[],
   hass: HomeAssistant,
-  element: Element
+  element: Element,
+  isMobileSize: boolean
 ): NetworkData {
   const style = getComputedStyle(element);
+  const rootSymbolSize = isMobileSize
+    ? ROOT_SYMBOL_SIZE_MOBILE
+    : ROOT_SYMBOL_SIZE;
 
   const primaryColor = style.getPropertyValue("--primary-color");
   const routerColor = style.getPropertyValue("--color-5");
@@ -132,7 +137,7 @@ export function createZHANetworkChartData(
           ? 2
           : 1,
       symbolSize: isCoordinator
-        ? ROOT_SYMBOL_SIZE
+        ? rootSymbolSize
         : device.device_type === ZHADeviceType.Router
           ? 30
           : 20,
@@ -351,11 +356,12 @@ export function createZHANetworkChartData(
         name: hass.localize(`ui.panel.config.zha.visualization.${key}`),
         category,
         value: 2,
-        symbolSize: ROOT_SYMBOL_SIZE,
+        symbolSize: rootSymbolSize,
         symbol: rootSymbol(color, iconColor, icon),
         label: ROOT_LABEL,
         itemStyle: { color },
       });
+
       // An invisible chain makes each group a far branch of the coordinator,
       // so the groups spread apart instead of drifting off or overlapping the mesh
       const chain = [coordinator.ieee];
@@ -371,6 +377,7 @@ export function createZHANetworkChartData(
         chain.push(spacerId);
       }
       chain.push(id);
+
       for (let i = 1; i < chain.length; i++) {
         links.push({
           source: chain[i - 1],
@@ -380,6 +387,7 @@ export function createZHANetworkChartData(
           lineStyle: { opacity: 0 },
         });
       }
+
       virtualChildren[key].forEach((device) => {
         // not a radio link, so no LQI and no arrow
         links.push({
