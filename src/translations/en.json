@@ -13097,6 +13097,8 @@
           "already_installing": "This is already being installed, hold on.",
           "install_failed": "Installation failed. Check the Home Assistant logs for details.",
           "pre_release": "Pre-release",
+          "release_installed": "Installed",
+          "release_latest": "Latest",
           "install_intro": "This installs {name} version {version} in Home Assistant.",
           "update_intro": "This updates {name} from version {installed} to {version}.",
           "reinstall_intro": "This installs version {version} of {name} again.",
