@@ -251,7 +251,6 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
           )}
         ></ha-input-search>
         <ha-list-selectable
-          class="ha-scrollbar"
           controlled
           aria-label=${this.hass.localize(
             "ui.panel.config.helpers.dialog.create_helper"
@@ -263,6 +262,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
             const isLoaded =
               !(domain in HELPERS) ||
               isComponentLoaded(this.hass.config, domain);
+
             return html`
               <ha-list-item-option appearance="line" .value=${domain}>
                 <img
@@ -280,7 +280,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
-                <span slot="headline" class="item-text">${label}</span>
+                <span slot="headline">${label}</span>
                 ${
                   isLoaded
                     ? html`<ha-icon-next slot="end"></ha-icon-next>`
@@ -290,7 +290,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
                           path=${mdiAlertOutline}
                           @click=${stopPropagation}
                         ></ha-svg-icon>
-                        <ha-tooltip .for="icon-${domain}">
+                        <ha-tooltip slot="end" .for="icon-${domain}">
                           ${this.hass.localize(
                             "ui.dialogs.helper_settings.platform_not_loaded",
                             { platform: domain }
