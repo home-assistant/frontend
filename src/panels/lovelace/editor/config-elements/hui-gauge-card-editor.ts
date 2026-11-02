@@ -197,6 +197,12 @@ export class HuiGaugeCardEditor
                   required: true,
                   selector: { ui_color: {} },
                 },
+                label: {
+                  label: localize(
+                    "ui.panel.lovelace.editor.card.gauge.segment.label"
+                  ),
+                  selector: { text: {} },
+                },
               },
             },
           },

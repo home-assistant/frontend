@@ -10960,7 +10960,8 @@
               },
               "segments": "Segments",
               "segment": {
-                "from": "From"
+                "from": "From",
+                "label": "Label"
               },
               "severity": {
                 "define": "Define severity",
