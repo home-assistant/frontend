@@ -425,19 +425,18 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
           "ui.panel.marketplace.dialog_install.release_warning"
         )}
       </p>
-      ${
-        this._releasesFailed
-          ? html`${this._i18n.localize(
-                "ui.panel.marketplace.dialog_install.releases_failed"
-              )}
-              <ha-button appearance="plain" @click=${this._loadReleases}>
-                ${this._i18n.localize("ui.panel.marketplace.common.retry")}
-              </ha-button>`
-          : this._releases === undefined
-            ? this._i18n.localize(
-                "ui.panel.marketplace.dialog_install.fetching_releases"
-              )
-            : this._releases.length === 0
+      <div class="version-field">
+        ${
+          this._releasesFailed
+            ? html`<span>
+                  ${this._i18n.localize(
+                    "ui.panel.marketplace.dialog_install.releases_failed"
+                  )}
+                </span>
+                <ha-button appearance="plain" @click=${this._loadReleases}>
+                  ${this._i18n.localize("ui.panel.marketplace.common.retry")}
+                </ha-button>`
+            : this._releases?.length === 0
               ? this._i18n.localize(
                   "ui.panel.marketplace.dialog_install.no_releases"
                 )
@@ -448,11 +447,13 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
                   .value=${this._selectedVersion}
                   .getItems=${this._getReleaseItems}
                   .rowRenderer=${this._releaseRowRenderer}
+                  .loading=${this._releases === undefined}
                   hide-clear-icon
                   no-sort
                   @value-changed=${this._versionChanged}
                 ></ha-generic-picker>`
-      }
+        }
+      </div>
     </div>`;
   }
 
@@ -725,6 +726,17 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
         }
         .content {
           padding: var(--ha-space-6);
+        }
+        /* Holds the field's height while the versions load, so nothing below
+           it moves when the picker replaces the skeleton */
+        .version-field {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-2);
+          min-height: 56px;
+        }
+        .version-field ha-generic-picker {
+          flex: 1;
         }
         pre {
           white-space: pre-line;
