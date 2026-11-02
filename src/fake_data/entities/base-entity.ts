@@ -122,7 +122,13 @@ export class MockBaseEntity {
       this.attributes = { ...this.attributes, ...changes.attributes };
     }
 
-    this.hass!.updateStates({
+    // A removed or replaced entity can finish its transitions, so that their
+    // timers stop, but must not bring its state back
+    if (this.hass?.mockEntities[this.entityId] !== this) {
+      return;
+    }
+
+    this.hass.updateStates({
       [this.entityId]: this.toState(),
     });
   }
