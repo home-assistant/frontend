@@ -197,9 +197,10 @@ class OnboardingCoreConfig extends LitElement {
         longitude: this._location[1],
         elevation: Number(this._elevation),
         unit_system:
-          this._unitSystem || ["US", "MM", "LR"].includes(this._country)
+          this._unitSystem ||
+          (["US", "MM", "LR"].includes(this._country)
             ? "us_customary"
-            : "metric",
+            : "metric"),
         time_zone: this._timeZone,
         currency: this._currency || countryCurrency[this._country] || "EUR",
         country: this._country,
