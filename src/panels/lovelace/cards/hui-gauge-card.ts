@@ -339,7 +339,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (!sections) {
       return [
         {
-          level: 0,
+          level: this._config!.min ?? DEFAULT_MIN,
           stroke: this._config!.color
             ? computeCssColor(this._config!.color)
             : severityMap.normal,
