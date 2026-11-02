@@ -26,7 +26,9 @@ vi.mock("../../../src/components/ha-button", async () => {
 
   class HaButton extends lit.LitElement {}
 
-  customElements.define("ha-button", HaButton);
+  // An anonymous subclass, as lit-analyzer wants a tag name map entry for a
+  // named element class when it only checks the staged files
+  customElements.define("ha-button", class extends HaButton {});
 
   return { HaButton };
 });
