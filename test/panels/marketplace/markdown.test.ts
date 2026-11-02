@@ -358,6 +358,34 @@ describe("markdownWithRepositoryContext", () => {
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
   });
 
+  it.each([
+    {
+      name: "a tab past the text of the item does not close the fence",
+      input: [
+        "- ~~~md",
+        "\t  ~~~",
+        "  <!-- ha-marketplace:exclude-start -->",
+        "  ~~~",
+        "",
+        "Shown",
+      ].join("\n"),
+    },
+    {
+      name: "too many spaces after the marker do not open a fence",
+      input: [
+        "-      ```",
+        "<!-- ha-marketplace:exclude-start -->",
+        "hidden",
+        "<!-- ha-marketplace:exclude-end -->",
+      ].join("\n"),
+      output: "-      ```\n",
+    },
+  ])("keeps up with list indentation, $name", ({ input, output }) => {
+    expect(markdownWithRepositoryContext(input, repository)).toBe(
+      output ?? input
+    );
+  });
+
   it("keeps text that looks like a placeholder", () => {
     const input = "Private \uE0000\uE000 and \u00001\u0000 characters";
 

@@ -136,7 +136,7 @@ const listItemContent = (item: RegExpExecArray) => {
 };
 
 // The line past up to `columns` of indentation, a tab moving on to the next
-// multiple of four, like CommonMark.
+// multiple of four, like CommonMark. The columns of a tab past that are kept.
 const withoutIndentation = (line: string, columns: number) => {
   let width = 0;
   let index = 0;
@@ -151,7 +151,7 @@ const withoutIndentation = (line: string, columns: number) => {
     }
     index++;
   }
-  return line.slice(index);
+  return " ".repeat(Math.max(0, width - columns)) + line.slice(index);
 };
 
 const isClosingFence = (line: string, fence: string) => {
@@ -220,10 +220,14 @@ const splitCodeBlocks = (input: string) => {
     }
     previousBlank = blank;
 
-    // A fence can open on the line of a list marker, after the marker
+    // A fence can open on the line of a list marker, after the marker and its
+    // spacing. More spaces than that are indentation of the text of the item.
     const opening = FENCE_OPENING.exec(
       item
-        ? content.slice(item[0].length)
+        ? withoutIndentation(
+            content.slice(item[1].length + item[2].length),
+            listContent - item[1].length - item[2].length
+          )
         : withoutIndentation(content, listContent)
     );
     if (opening) {
