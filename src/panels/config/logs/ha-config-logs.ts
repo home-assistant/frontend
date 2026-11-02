@@ -9,6 +9,7 @@ import {
   mdiRadar,
   mdiVolumeHigh,
 } from "@mdi/js";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -56,6 +57,7 @@ import {
   type HassioAddonInfo,
 } from "../../../data/hassio/addon";
 import type { LoggedError, SystemLogLevel } from "../../../data/system_log";
+import type { FrontendLocaleData } from "../../../data/translation";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
@@ -65,7 +67,7 @@ import "./error-log-card";
 import "./ha-filter-log-levels";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
-import { LOG_LEVELS } from "./util";
+import { filterSystemLogItems, LOG_LEVELS } from "./util";
 
 const NO_INTEGRATIONS: string[] = [];
 
@@ -129,11 +131,11 @@ export class HaConfigLogs extends LitElement {
 
   @state() private _showFilters = false;
 
-  @state() private _integrationsExpanded = true;
-
   @state() private _levels: SystemLogLevel[] = [];
 
-  @state() private _levelsExpanded = true;
+  // Only one filter is expanded at a time, so that it can use the height
+  // that is left in the pane.
+  @state() private _expandedFilter?: string = "ha-filter-integrations";
 
   @state() private _logItems?: LoggedError[];
 
@@ -275,28 +277,53 @@ export class HaConfigLogs extends LitElement {
                   <ha-filter-integrations
                     .narrow=${this.narrow}
                     .value=${this._integrations}
-                    .expanded=${this._integrationsExpanded}
+                    .expanded=${
+                      this._expandedFilter === "ha-filter-integrations"
+                    }
                     .counts=${
                       this._detail
                         ? undefined
                         : this._getIntegrationCounts(
-                            this._logItems,
+                            this._getIntegrationCountItems(
+                              this._logItems,
+                              this._filter,
+                              undefined,
+                              levels,
+                              this.hass.localize,
+                              this.hass.locale,
+                              this.hass.config
+                            ),
                             this._manifests,
                             this.hass.localize
                           )
                     }
                     @data-table-filter-changed=${this._integrationsChanged}
-                    @expanded-changed=${this._integrationsExpandedChanged}
+                    @expanded-changed=${this._filterExpanded}
                   ></ha-filter-integrations>
                   ${
                     this._detail
                       ? nothing
                       : html`<ha-filter-log-levels
                           .value=${this._levels}
-                          .expanded=${this._levelsExpanded}
-                          .counts=${this._getLevelCounts(this._logItems)}
+                          .expanded=${
+                            this._expandedFilter === "ha-filter-log-levels"
+                          }
+                          .counts=${this._getLevelCounts(
+                            this._getLevelCountItems(
+                              this._logItems,
+                              this._filter,
+                              this._getIntegrationLoggers(
+                                integrations,
+                                this._manifests
+                              ),
+                              undefined,
+                              this.hass.localize,
+                              this.hass.locale,
+                              this.hass.config
+                            )
+                          )}
                           @data-table-filter-changed=${this._levelsChanged}
-                          @expanded-changed=${this._levelsExpandedChanged}
+                          @expanded-changed=${this._filterExpanded}
                         ></ha-filter-log-levels>`
                   }
                 </ha-filter-pane>`
@@ -458,10 +485,15 @@ export class HaConfigLogs extends LitElement {
     this._writeUrl();
   }
 
-  private _integrationsExpandedChanged(
-    ev: HASSDomEvent<{ expanded: boolean }>
+  private _filterExpanded(
+    ev: HASSDomEvent<HASSDomEvents["expanded-changed"]> &
+      HASSDomTargetEvent<HTMLElement>
   ) {
-    this._integrationsExpanded = ev.detail.expanded;
+    if (ev.detail.expanded) {
+      this._expandedFilter = ev.target.localName;
+    } else if (this._expandedFilter === ev.target.localName) {
+      this._expandedFilter = undefined;
+    }
   }
 
   private _levelsChanged(ev: HASSDomEvent<{ value: DataTableFiltersValue }>) {
@@ -482,10 +514,6 @@ export class HaConfigLogs extends LitElement {
     }
 
     this._writeUrl();
-  }
-
-  private _levelsExpandedChanged(ev: HASSDomEvent<{ expanded: boolean }>) {
-    this._levelsExpanded = ev.detail.expanded;
   }
 
   // Until the apps are loaded, the provider is the one the URL asks for
@@ -653,6 +681,29 @@ export class HaConfigLogs extends LitElement {
           ])
         : undefined
   );
+
+  // Each filter counts the entries the other filters and the search leave
+  private _filterLogItems = (
+    items: LoggedError[] | undefined,
+    search: string,
+    loggers: string[] | undefined,
+    levels: SystemLogLevel[] | undefined,
+    localize: LocalizeFunc,
+    locale: FrontendLocaleData,
+    config: HassConfig
+  ) =>
+    items &&
+    filterSystemLogItems(
+      items,
+      { search, loggers, levels },
+      localize,
+      locale,
+      config
+    );
+
+  private _getLevelCountItems = memoizeOne(this._filterLogItems);
+
+  private _getIntegrationCountItems = memoizeOne(this._filterLogItems);
 
   private _getLevelCounts = memoizeOne(
     (
