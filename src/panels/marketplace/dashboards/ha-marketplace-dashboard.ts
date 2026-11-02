@@ -426,7 +426,7 @@ export class HaMarketplaceDashboard extends LitElement {
             ? html`<ha-assist-chip
                 slot="selection-bar"
                 .label=${this._i18n.localize(
-                  "ui.panel.marketplace.dashboard.uninstall"
+                  "ui.panel.marketplace.common.uninstall"
                 )}
                 .disabled=${!this._selected.length || this._checkingSelection}
                 @click=${this._uninstallSelected}
