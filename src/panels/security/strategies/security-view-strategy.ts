@@ -3,6 +3,8 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { ALERT_DOMAINS } from "../../../common/entity/alert_active";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import {
   findEntities,
   generateEntityFilter,
@@ -313,12 +315,16 @@ export class SecurityViewStrategy extends ReactiveElement {
 
     const sidebarSections: LovelaceSectionConfig[] = [];
 
-    const alertCards = config.alert_entities?.map((alertEntity) =>
-      computeSecurityAlertCardConfig(
-        hass.states[alertEntity.entity],
-        alertEntity
+    const alertCards = config.alert_entities
+      ?.filter((alertEntity) =>
+        ALERT_DOMAINS.includes(computeDomain(alertEntity.entity))
       )
-    );
+      .map((alertEntity) =>
+        computeSecurityAlertCardConfig(
+          hass.states[alertEntity.entity],
+          alertEntity
+        )
+      );
 
     if (alertCards?.length) {
       sidebarSections.push({

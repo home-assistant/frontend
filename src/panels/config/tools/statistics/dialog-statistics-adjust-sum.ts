@@ -5,16 +5,16 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import "../../../../components/ha-spinner";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-button";
-import "../../../../components/ha-form/ha-form";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-selector/ha-selector-datetime";
 import "../../../../components/ha-selector/ha-selector-number";
-import "../../../../components/ha-svg-icon";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-base";
 import type { StatisticValue } from "../../../../data/recorder";
 import {
   adjustStatisticsSum,
@@ -65,8 +65,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
   @state() private _statsHour?: StatisticValue[];
 
   @state() private _chosenStat?: StatisticValue;
-
-  private _origAmount?: number;
 
   @state() private _amount?: number;
 
@@ -125,7 +123,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     this._moment = undefined;
     this._stats5min = undefined;
     this._statsHour = undefined;
-    this._origAmount = undefined;
     this._amount = undefined;
     this._chosenStat = undefined;
     this._initDirtyTracking({ type: "deep" }, { amount: undefined });
@@ -202,9 +199,13 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     if (changedProps.size !== 1 || !changedProps.has("hass")) {
       return true;
     }
-    // We only respond to hass changes if the translations changed
+    // We only respond to hass changes if the translations or locale changed
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    return !oldHass || oldHass.localize !== this.hass.localize;
+    return (
+      !oldHass ||
+      oldHass.localize !== this.hass.localize ||
+      oldHass.locale !== this.hass.locale
+    );
   }
 
   private _renderPickStatistic() {
@@ -228,28 +229,37 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
       );
       const rows: TemplateResult[] = [];
       for (const stat of data) {
-        const multiple = 10 ** this._precision;
-        const growth = Math.round(stat.change! * multiple) / multiple;
+        const digits = this._fractionDigits(stat.change);
+        const change = formatNumberWithUnit(
+          stat.change!,
+          unit,
+          this.hass.locale,
+          {
+            minimumFractionDigits: digits,
+            maximumFractionDigits: digits,
+          }
+        );
         rows.push(html`
-          <ha-list-item
-            twoline
-            hasMeta
+          <ha-list-item-button
+            .headline=${change}
+            .supportingText=${formatDateTime(
+              new Date(stat.start),
+              this.hass.locale,
+              this.hass.config
+            )}
             .stat=${stat}
             @click=${this._setChosenStatistic}
           >
-            <span>${growth} ${unit}</span>
-            <span slot="secondary">
-              ${formatDateTime(
-                new Date(stat.start),
-                this.hass.locale,
-                this.hass.config
-              )}
-            </span>
-            <ha-icon-next slot="meta"></ha-icon-next>
-          </ha-list-item>
+            <ha-icon-next slot="end"></ha-icon-next>
+          </ha-list-item-button>
         `);
       }
-      stats = html`${rows}`;
+      stats = html`<ha-list-base
+        aria-label=${this.hass.localize(
+          "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.statistic_values"
+        )}
+        >${rows}</ha-list-base
+      >`;
     }
 
     return html`
@@ -270,7 +280,6 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         .label=${this.hass.localize(
           "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.pick_a_time"
         )}
-        .hass=${this.hass}
         .selector=${this._dateTimeSelector}
         .value=${this._moment}
         @value-changed=${this._dateTimeSelectorChanged}
@@ -284,15 +293,22 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
     this._initDirtyTracking({ type: "deep" }, { amount: undefined });
   }
 
+  // Small changes get more digits, so they do not round to zero.
+  private _fractionDigits(value: number | null | undefined): number {
+    if (!value || Math.abs(value) >= 10 ** -this._precision) {
+      return this._precision;
+    }
+    return Math.min(Math.ceil(-Math.log10(Math.abs(value))) + 1, 20);
+  }
+
   private _setChosenStatistic(ev) {
     const stat = ev.currentTarget.stat;
-    const multiple = 10 ** this._precision;
+    const multiple = 10 ** this._fractionDigits(stat.change);
     const growth = Math.round(stat.change! * multiple) / multiple;
 
     this._chosenStat = stat;
-    this._origAmount = growth;
     this._amount = growth;
-    this._initDirtyTracking({ type: "deep" }, { amount: this._origAmount });
+    this._initDirtyTracking({ type: "deep" }, { amount: growth });
   }
 
   private _dateTimeSelectorChanged(ev) {
@@ -394,8 +410,10 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         .label=${this.hass.localize(
           "ui.panel.config.tools.tabs.statistics.fix_issue.adjust_sum.new_value"
         )}
-        .hass=${this.hass}
-        .selector=${this._amountSelector(unit || undefined, this._precision)}
+        .selector=${this._amountSelector(
+          unit || undefined,
+          this._fractionDigits(this._chosenStat!.change)
+        )}
         .value=${this._amount}
         .disabled=${this._busy}
         @value-changed=${this._amountChanged}
@@ -574,7 +592,8 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         this.hass,
         params.statistic.statistic_id,
         chosenStat.start,
-        amount - this._origAmount!,
+        // The shown value is rounded, so compare with the stored value.
+        amount - chosenStat.change!,
         unit || null
       );
     } catch (err: any) {
@@ -616,9 +635,14 @@ export class DialogStatisticsFixUnsupportedUnitMetadata extends DirtyStateProvid
         ha-selector-number {
           margin-bottom: var(--ha-space-5);
         }
-        ha-list-item {
+        ha-list-base {
           margin: 0 -24px;
-          --mdc-list-side-padding: 24px;
+        }
+        ha-list-item-button {
+          --ha-row-item-padding-inline: var(--ha-space-6);
+        }
+        ha-list-item-button ha-icon-next {
+          color: var(--secondary-text-color);
         }
         .table-row {
           display: flex;

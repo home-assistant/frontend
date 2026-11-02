@@ -1,3 +1,4 @@
+import { lorawanFixtures } from "./lorawan/fixtures";
 import { bluetoothFixtures } from "./bluetooth/fixtures";
 import { infraredFixtures } from "./infrared/fixtures";
 import { matterFixtures } from "./matter/fixtures";
@@ -15,6 +16,7 @@ import { zwaveJsFixtures } from "./zwave_js/fixtures";
 // data to mock. Each owns its own fixtures, so they can be added and removed
 // one at a time.
 const INTEGRATIONS: ConnectivityFixtures[] = [
+  lorawanFixtures,
   bluetoothFixtures,
   serialFixtures,
   modbusFixtures,

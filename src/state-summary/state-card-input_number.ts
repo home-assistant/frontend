@@ -1,7 +1,10 @@
+import type { ContextType } from "@lit/context";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
 import { debounce } from "../common/util/debounce";
 import type { HASSDomTargetEvent } from "../common/dom/fire_event";
 import "../components/entity/state-info";
@@ -9,17 +12,29 @@ import type { HaSlider } from "../components/ha-slider";
 import "../components/ha-slider";
 import type { HaInput } from "../components/input/ha-input";
 import "../components/input/ha-input";
+import { apiContext, formattersContext } from "../data/context";
 import { UNAVAILABLE } from "../data/entity/entity";
 import { setValue } from "../data/input_text";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistantFormatters } from "../types";
 
 @customElement("state-card-input_number")
 class StateCardInputNumber extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public stateObj!: HassEntity;
 
   @property({ attribute: "in-dialog", type: Boolean }) public inDialog = false;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  @transform<
+    HomeAssistantFormatters,
+    HomeAssistantFormatters["formatEntityState"] | undefined
+  >({
+    transformer: (formatters) => formatters?.formatEntityState,
+  })
+  private _formatEntityState?: HomeAssistantFormatters["formatEntityState"];
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   private _loaded?: boolean;
 
@@ -51,7 +66,6 @@ class StateCardInputNumber extends LitElement {
   protected render(): TemplateResult {
     return html`
       <state-info
-        .hass=${this.hass}
         .stateObj=${this.stateObj}
         .inDialog=${this.inDialog}
       ></state-info>
@@ -69,7 +83,7 @@ class StateCardInputNumber extends LitElement {
                   @change=${this._selectedValueChanged}
                 ></ha-slider>
                 <span class="state">
-                  ${this.hass.formatEntityState(this.stateObj)}
+                  ${this._formatEntityState?.(this.stateObj)}
                 </span>
               </div>
             `
@@ -160,7 +174,7 @@ class StateCardInputNumber extends LitElement {
   ): void {
     const value = String(ev.target.value);
     if (value !== this.stateObj.state) {
-      setValue(this.hass!, this.stateObj.entity_id, value);
+      setValue(this._api.callService, this.stateObj.entity_id, value);
     }
   }
 }

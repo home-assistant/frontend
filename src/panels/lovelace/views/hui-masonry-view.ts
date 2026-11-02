@@ -72,7 +72,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   public disconnectedCallback() {
     super.disconnectedCallback();
     this._mqls?.forEach((mql) => {
-      mql.removeListener(this._mqlListenerRef!);
+      mql.removeEventListener("change", this._mqlListenerRef!);
     });
     this._mqlListenerRef = undefined;
     this._mqls = undefined;
@@ -112,7 +112,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       if (!this._mqlListenerRef) {
         this._mqlListenerRef = this._updateColumns.bind(this);
       }
-      mql.addListener(this._mqlListenerRef);
+      mql.addEventListener("change", this._mqlListenerRef);
       return mql;
     });
   }

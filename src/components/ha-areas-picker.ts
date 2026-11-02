@@ -3,16 +3,12 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { SubscribeMixin } from "../mixins/subscribe-mixin";
-import type { HomeAssistant } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-area-picker";
 import "./ha-sortable";
 
 @customElement("ha-areas-picker")
-export class HaAreasPicker extends SubscribeMixin(LitElement) {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
+export class HaAreasPicker extends LitElement {
   @property() public label?: string;
 
   @property({ type: Array }) public value?: string[];
@@ -67,10 +63,6 @@ export class HaAreasPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public reorder = false;
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
-
     const currentAreas = this._currentAreas;
     return html`
       <ha-sortable

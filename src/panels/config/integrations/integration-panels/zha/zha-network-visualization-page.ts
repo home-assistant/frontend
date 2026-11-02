@@ -15,10 +15,18 @@ import "../../../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../../../components/input/ha-input-search";
 import type { DeviceRegistryEntry } from "../../../../../data/device/device_registry";
 import type { ZHADevice } from "../../../../../data/zha";
-import { fetchDevices, refreshTopology } from "../../../../../data/zha";
+import {
+  fetchDevices,
+  refreshTopology,
+  ZHADeviceType,
+} from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { formatAsPaddedHex } from "./functions";
+import {
+  computeZHADeviceType,
+  formatAsPaddedHex,
+  formatGreenPowerSrcId,
+} from "./functions";
 import { createZHANetworkChartData } from "./zha-network-data";
 
 @customElement("zha-network-visualization-page")
@@ -30,6 +38,8 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
+
+  @property({ attribute: false }) public deviceId?: string;
 
   @state()
   private _networkData: NetworkData = {
@@ -70,6 +80,11 @@ export class ZHANetworkVisualizationPage extends LitElement {
           .searchFilter=${this._searchFilter}
           .data=${this._networkData}
           .searchableAttributes=${this._getSearchableAttributes}
+          .selectedNode=${
+            this._devices.find(
+              (device) => device.device_reg_id === this.deviceId
+            )?.ieee
+          }
           .tooltipFormatter=${this._tooltipFormatter}
           @chart-click=${this._handleChartClick}
         >
@@ -122,9 +137,14 @@ export class ZHANetworkVisualizationPage extends LitElement {
       attributes.push(device.model);
     }
     if (device.device_type) {
-      attributes.push(device.device_type);
+      attributes.push(computeZHADeviceType(device, this.hass.localize));
     }
-    if (device.nwk != null) {
+    if (device.device_type === ZHADeviceType.GreenPower) {
+      const srcId = formatGreenPowerSrcId(device);
+      if (srcId) {
+        attributes.push(srcId);
+      }
+    } else if (device.nwk != null) {
       attributes.push(formatAsPaddedHex(device.nwk));
     }
     return attributes;
@@ -166,10 +186,18 @@ export class ZHANetworkVisualizationPage extends LitElement {
       : undefined;
     return html`<b>IEEE: </b>${device.ieee}<br /><b
         >${this.hass.localize("ui.panel.config.zha.visualization.device_type")}: </b
-      >${device.device_type.replace("_", " ")}${
-        device.nwk != null
-          ? html`<br /><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`
-          : nothing
+      >${computeZHADeviceType(device, this.hass.localize)}${
+        device.device_type === ZHADeviceType.GreenPower
+          ? formatGreenPowerSrcId(device)
+            ? html`<br /><b
+                  >${this.hass.localize(
+                    "ui.panel.config.zha.device_page.src_id"
+                  )}: </b
+                >${formatGreenPowerSrcId(device)}`
+            : nothing
+          : device.nwk != null
+            ? html`<br /><b>NWK: </b>${formatAsPaddedHex(device.nwk)}`
+            : nothing
       }${
         device.manufacturer != null && device.model != null
           ? html`<br /><b

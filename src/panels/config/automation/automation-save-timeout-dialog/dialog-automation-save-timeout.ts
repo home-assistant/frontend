@@ -38,9 +38,7 @@ class DialogAutomationSaveTimeout extends LitElement {
   private _dialogClosed() {
     this._params.onClose?.();
 
-    if (this._opened) {
-      fireEvent(this, "dialog-closed");
-    }
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
     this._opened = false;
     return true;
   }

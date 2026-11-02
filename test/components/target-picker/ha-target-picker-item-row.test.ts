@@ -8,7 +8,6 @@ import type {
   ExtractFromTargetResult,
   TargetType,
 } from "../../../src/data/target";
-import type { HomeAssistant } from "../../../src/types";
 
 const extractResult = (
   referenced: Partial<ExtractFromTargetResult>
@@ -55,17 +54,19 @@ const extractedBy = async (
   ) as HaTargetPickerItemRow;
   el.type = type;
   el.itemId = itemId;
-  el.hass = {
+  const row = el as any;
+  row._registries = {
     areas: {},
     devices: {},
     entities: {},
-    states: {},
-    callWS: async () => result,
+    floors: {},
     ...registries,
-  } as unknown as HomeAssistant;
+  };
+  row._states = {};
+  row._api = { callWS: async () => result };
 
-  await (el as any)._updateItemData();
-  return (el as any)._entries as ExtractFromTargetResult | undefined;
+  await row._updateItemData();
+  return row._entries as ExtractFromTargetResult | undefined;
 };
 
 describe("ha-target-picker-item-row target extraction", () => {

@@ -29,6 +29,7 @@ import type {
 } from "../../../../data/energy";
 import {
   computeConsumptionData,
+  energySourcesByType,
   getSuggestedPeriod,
   getSummedData,
   validateEnergyCollectionKey,
@@ -66,6 +67,7 @@ const colorPropertyMap = {
   used_solar: "--energy-solar-color",
   from_battery: "--energy-battery-out-color",
   used_battery: "--energy-battery-out-color",
+  used_home: "--primary-color",
 };
 
 const stackOrder = {
@@ -76,6 +78,7 @@ const stackOrder = {
   used_battery: 4,
   from_grid: 5,
   used_grid: 5,
+  used_home: 6,
 };
 
 @customElement("hui-energy-usage-graph-card")
@@ -426,6 +429,9 @@ export class HuiEnergyUsageGraphCard
       used_battery: this._i18n.localize(
         "ui.panel.lovelace.cards.energy.energy_usage_graph.consumed_battery"
       ),
+      used_home:
+        energySourcesByType(energyData.prefs).home?.[0]?.name ||
+        this._hassConfig.location_name,
     };
 
     this._start = energyData.start;
@@ -554,6 +560,7 @@ export class HuiEnergyUsageGraphCard
       used_grid: string;
       used_solar: string;
       used_battery: string;
+      used_home: string;
     },
     statLabels: {
       to_grid: Record<string, string>;
@@ -574,6 +581,7 @@ export class HuiEnergyUsageGraphCard
       used_grid?: Record<string, Record<number, number>>;
       used_solar?: Record<string, Record<number, number>>;
       used_battery?: Record<string, Record<number, number>>;
+      used_home?: Record<string, Record<number, number>>;
     } = {};
 
     Object.entries(statIdsByCat).forEach(([key, statIds]) => {
@@ -639,6 +647,20 @@ export class HuiEnergyUsageGraphCard
       if (used_grid) {
         combinedData.used_grid = { used_grid };
       }
+    }
+
+    if (summedData.home) {
+      const used_home: Record<number, number> = {};
+      for (const start of summedData.timestamps) {
+        used_home[start] = Math.max(
+          0,
+          consumptionData.used_total[start] -
+            consumptionData.used_grid[start] -
+            consumptionData.used_solar[start] -
+            consumptionData.used_battery[start]
+        );
+      }
+      combinedData.used_home = { used_home };
     }
 
     const uniqueKeys = summedData.timestamps;

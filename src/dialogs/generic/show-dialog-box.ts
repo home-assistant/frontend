@@ -5,6 +5,8 @@ interface BaseDialogBoxParams {
   /** Whether back closes the dialog. Off while a navigation is in flight. */
   addHistory?: boolean;
   confirmText?: string;
+  /** Show the close button for confirmations and prompts, which hide it by default. */
+  showCloseButton?: boolean;
   text?: string | TemplateResult;
   title?: string;
   subtitle?: string;
@@ -26,6 +28,7 @@ export interface ConfirmationDialogParams extends BaseDialogBoxParams {
 export interface PromptDialogParams extends BaseDialogBoxParams {
   inputLabel?: string;
   inputSuffix?: string;
+  textBelowInput?: string | TemplateResult;
   dismissText?: string;
   inputType?: string;
   defaultValue?: string;

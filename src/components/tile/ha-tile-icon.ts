@@ -21,6 +21,7 @@ import "../ha-svg-icon";
  * @cssprop --ha-tile-icon-border-radius - The border radius of the tile icon. defaults to `var(--ha-border-radius-pill)`.
  *
  * @attr {string} image-url - The URL of the image to display instead of an icon.
+ * @attr {string} accessible-label - The accessible name of the icon button when it is interactive.
  */
 @customElement("ha-tile-icon")
 export class HaTileIcon extends LitElement {
@@ -35,6 +36,9 @@ export class HaTileIcon extends LitElement {
 
   @property({ type: String, attribute: "icon-path" })
   public iconPath?: string;
+
+  @property({ attribute: "accessible-label" })
+  public accessibleLabel?: string;
 
   @property({ attribute: false })
   public actionHandlerOptions?: ActionHandlerOptions;
@@ -60,6 +64,9 @@ export class HaTileIcon extends LitElement {
         class="container ${this.interactive && !hasImage ? "background" : ""}"
         role=${ifDefined(this.interactive ? "button" : undefined)}
         tabindex=${ifDefined(this.interactive ? "0" : undefined)}
+        aria-label=${ifDefined(
+          this.interactive ? this.accessibleLabel : undefined
+        )}
         .actionHandler=${actionHandler(this.actionHandlerOptions)}
       >
         <slot name="icon">${this._renderIcon()}</slot>

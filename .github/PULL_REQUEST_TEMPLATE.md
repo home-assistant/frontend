@@ -51,8 +51,8 @@
 
 - This PR fixes or closes issue: fixes #
 - This PR is related to issue or discussion:
-- Link to documentation pull request:
-- Link to developer documentation pull request:
+- Link to [documentation][docs-repository] pull request:
+- Link to [contributors documentation][contributors-repository] pull request:
 - Link to backend pull request:
 
 ## Checklist
@@ -63,7 +63,8 @@
   for before merging your code.
 
   AI tools are welcome, but contributors are responsible for *fully*
-  understanding the code before submitting a PR.
+  understanding the code before submitting a PR. Please follow our AI policy:
+  https://contributors.home-assistant.io/start/ai-policy/
 -->
 
 - [ ] I understand the code I am submitting and can explain how it works.
@@ -105,4 +106,5 @@ To help with the load of incoming pull requests:
   Below, some useful links you could explore:
 -->
 [docs-repository]: https://github.com/home-assistant/home-assistant.io
-[perfect-pr]: https://developers.home-assistant.io/docs/review-process/#creating-the-perfect-pr
+[contributors-repository]: https://github.com/home-assistant/contributors.home-assistant.io
+[perfect-pr]: https://contributors.home-assistant.io/start/pull-requests/#before-you-open-it

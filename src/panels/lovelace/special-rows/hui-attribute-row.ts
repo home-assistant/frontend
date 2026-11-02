@@ -60,7 +60,6 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
         ${
           this._config.time_format && checkValidDate(date)
             ? html` <hui-timestamp-display
-                .hass=${this.hass}
                 .ts=${date}
                 .format=${this._config.time_format}
                 capitalize

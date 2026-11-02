@@ -394,7 +394,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       <ha-selector-select
         .label=${this.hass.localize("ui.panel.lovelace.editor.card.map.source")}
         .required=${false}
-        .hass=${this.hass}
         .value=${this._geo_location_sources}
         @value-changed=${this._geoSourcesChanged}
         .selector=${this._selectSchema(

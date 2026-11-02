@@ -14,6 +14,7 @@ import "../../components/ha-badge";
 import type { ExtEntityRegistryEntry } from "../../data/entity/entity_registry";
 import { supportsCoverPositionCardFeature } from "../../panels/lovelace/card-features/hui-cover-position-card-feature";
 import { supportsLightBrightnessCardFeature } from "../../panels/lovelace/card-features/hui-light-brightness-card-feature";
+import { supportsLightColorCardFeature } from "../../panels/lovelace/card-features/hui-light-color-card-feature";
 import { supportsLightColorTempCardFeature } from "../../panels/lovelace/card-features/hui-light-color-temp-card-feature";
 import type { LovelaceCardFeatureConfig } from "../../panels/lovelace/card-features/types";
 import type { TileCardConfig } from "../../panels/lovelace/cards/types";
@@ -190,10 +191,13 @@ class MoreInfoContent extends LitElement {
           features.push({
             type: "cover-position",
           });
-        } else if (lightMainControl === "color") {
-          // There is no RGB tile feature yet, so when the group is set to
-          // color the members show no control rather than a mismatched
-          // brightness slider.
+        } else if (
+          lightMainControl === "color" &&
+          supportsLightColorCardFeature(hass, context)
+        ) {
+          features.push({
+            type: "light-color",
+          });
         } else if (
           lightMainControl === "color_temp" &&
           supportsLightColorTempCardFeature(hass, context)

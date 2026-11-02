@@ -2,12 +2,12 @@ import { mdiLink, mdiMicrophone, mdiOpenInNew } from "@mdi/js";
 import type { NavigationPathInfo } from "../../../data/compute-navigation-path-info";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { ServiceInfo } from "../../../data/compute-service-info";
-import type { HomeAssistant } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 
 const DEFAULT: NavigationPathInfo = { label: "", iconPath: mdiLink };
 
 export const getShortcutCardDefaults = (
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
   action: ActionConfig | undefined,
   navInfo: NavigationPathInfo,
   serviceInfo: ServiceInfo
@@ -17,7 +17,7 @@ export const getShortcutCardDefaults = (
       return navInfo;
     case "assist":
       return {
-        label: hass.localize(
+        label: localize(
           "ui.panel.lovelace.editor.action-editor.actions.assist"
         ),
         iconPath: mdiMicrophone,

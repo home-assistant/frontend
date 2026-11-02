@@ -1,9 +1,14 @@
-import { describe, expect, it } from "vitest";
+import { expose } from "comlink";
+import { describe, expect, it, vi } from "vitest";
+import { rewriteHtmlUrls } from "../../../src/common/dom/rewrite-html-urls";
 import type { RepositoryInfo } from "../../../src/data/marketplace/repository";
 import {
   markdownWithRepositoryContext,
   repositoryUrl,
 } from "../../../src/panels/marketplace/tools/markdown";
+import type { Api } from "../../../src/resources/markdown-worker";
+
+vi.mock("comlink", () => ({ expose: vi.fn() }));
 
 const repository = {
   id: "42",
@@ -315,5 +320,84 @@ describe("markdownWithRepositoryContext", () => {
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
     // Scanning all of them again for every one takes seconds
     expect(performance.now() - start).toBeLessThan(1000);
+  });
+});
+
+describe("rewriteHtmlUrls with the README of a repository", () => {
+  const toReadme = repositoryUrl(repository);
+  const raw = "https://raw.githubusercontent.com/owner/repo/v1.0.0";
+
+  const srcsetOf = (input: string) =>
+    rewriteHtmlUrls(`<source srcset="${input}">`, toReadme).match(
+      /srcset="([^"]*)"/
+    )?.[1];
+
+  it.each([
+    {
+      name: "relative addresses into the repository",
+      input: "./images/logo.png 1x, images/logo@2x.png 2x",
+      output: `${raw}/images/logo.png 1x, ${raw}/images/logo@2x.png 2x`,
+    },
+    {
+      name: "a file shown on GitHub to raw",
+      input:
+        "https://github.com/owner/repo/blob/main/logo.png, https://github.com/other/repo/blob/v2/logo@2x.png 2x",
+      output:
+        "https://raw.githubusercontent.com/owner/repo/main/logo.png, https://raw.githubusercontent.com/other/repo/v2/logo@2x.png 2x",
+    },
+    {
+      // Never requested from Home Assistant, same as the src of an image
+      name: "an address at the root of the host into the repository",
+      input: "/api/states 1x, /local/x.png 2x",
+      output: `${raw}/api/states 1x, ${raw}/local/x.png 2x`,
+    },
+    {
+      name: "relative and absolute addresses together",
+      input: "a.png 100w, https://example.com/b.png 200w, /c.png 300w",
+      output: `${raw}/a.png 100w, https://example.com/b.png 200w, ${raw}/c.png 300w`,
+    },
+  ])("points $name", ({ input, output }) => {
+    expect(srcsetOf(input)).toBe(output);
+    expect(
+      rewriteHtmlUrls(`<img src="${input.split(" ")[0]}">`, toReadme)
+    ).toBe(`<img src="${output.split(" ")[0]}">`);
+  });
+
+  it("points the src of the source of a video", () => {
+    expect(
+      rewriteHtmlUrls(
+        '<video><source src="/api/camera_proxy/camera.x"></video>',
+        toReadme
+      )
+    ).toBe(`<video><source src="${raw}/api/camera_proxy/camera.x"></video>`);
+  });
+
+  it("shows the dark logo of a README from the repository", async () => {
+    await import("../../../src/resources/markdown-worker");
+    const { renderMarkdown } = vi.mocked(expose).mock.calls[0][0] as Api;
+    const html = (
+      await renderMarkdown(
+        [
+          "<picture>",
+          '  <source media="(prefers-color-scheme: dark)" srcset="./images/logo-dark.png">',
+          '  <img src="./images/logo-light.png" alt="Logo">',
+          "</picture>",
+        ].join("\n"),
+        {}
+      )
+    ).join("");
+
+    const template = document.createElement("template");
+    template.innerHTML = rewriteHtmlUrls(html, toReadme);
+    const picture = template.content.querySelector("picture")!;
+    expect(picture.querySelector("source")?.getAttribute("media")).toBe(
+      "(prefers-color-scheme: dark)"
+    );
+    expect(picture.querySelector("source")?.getAttribute("srcset")).toBe(
+      `${raw}/images/logo-dark.png`
+    );
+    expect(picture.querySelector("img")?.getAttribute("src")).toBe(
+      `${raw}/images/logo-light.png`
+    );
   });
 });

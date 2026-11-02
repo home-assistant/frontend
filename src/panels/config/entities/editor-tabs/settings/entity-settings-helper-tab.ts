@@ -25,7 +25,6 @@ import "../../../helpers/forms/ha-input_datetime-form";
 import "../../../helpers/forms/ha-input_number-form";
 import "../../../helpers/forms/ha-input_select-form";
 import "../../../helpers/forms/ha-input_text-form";
-import "../../../helpers/forms/ha-schedule-form";
 import "../../../helpers/forms/ha-timer-form";
 import "../../entity-registry-settings-editor";
 import type { EntityRegistrySettingsEditor } from "../../entity-registry-settings-editor";
@@ -152,7 +151,14 @@ export class EntitySettingsHelperTab extends LitElement {
   }
 
   private async _getItem() {
-    const items = await HELPERS_CRUD[this.entry.platform].fetch(this.hass!);
+    const [items] = await Promise.all([
+      HELPERS_CRUD[this.entry.platform].fetch(this.hass!),
+      // Only schedules need FullCalendar, which some older browsers cannot
+      // load. The form renders with the item, so it must be defined by then.
+      this.entry.platform === "schedule"
+        ? import("../../../helpers/forms/ha-schedule-form")
+        : undefined,
+    ]);
     const item =
       items.find((helper) => helper.id === this.entry.unique_id) || null;
     this._item = item;

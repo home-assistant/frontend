@@ -1,5 +1,4 @@
 import { css, html } from "lit";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import type { TraceId } from "../../data/trace";
 import { getTraceUrl } from "../../data/trace";
@@ -18,7 +17,7 @@ export const computeChildTraceName = (
       entry.platform === childId.domain && entry.unique_id === childId.item_id
   )?.entity_id;
   const stateObj = entityId ? hass.states[entityId] : undefined;
-  return stateObj ? computeStateName(stateObj) : entityId;
+  return stateObj ? hass.formatEntityName(stateObj) : entityId;
 };
 
 // A link from a step to the run of the script or automation it started.

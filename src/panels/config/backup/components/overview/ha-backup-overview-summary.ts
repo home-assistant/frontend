@@ -357,12 +357,18 @@ class HaBackupOverviewBackups extends LitElement {
           justify-content: flex-end;
           border-top: none;
         }
+        ha-list-base {
+          --ha-list-padding: 0 0 var(--ha-space-2);
+        }
         ha-list-item-base {
           --ha-row-item-padding-block: var(--ha-space-2);
-          --ha-row-item-min-height: 40x;
+          --ha-row-item-min-height: 40px;
         }
         ha-list-item-base::part(start) {
           color: var(--ha-color-text-secondary);
+        }
+        ha-list-item-base::part(headline) {
+          white-space: wrap;
         }
         span.skeleton {
           position: relative;

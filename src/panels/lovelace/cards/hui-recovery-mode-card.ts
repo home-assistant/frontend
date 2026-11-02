@@ -30,7 +30,7 @@ export class HuiRecoveryModeCard extends LitElement implements LovelaceCard {
             "ui.panel.lovelace.cards.recovery-mode.description"
           )}
         </div>
-        <error-log-card .hass=${this.hass} provider="core"></error-log-card>
+        <error-log-card provider="core"></error-log-card>
       </ha-card>
     `;
   }

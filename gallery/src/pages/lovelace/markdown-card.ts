@@ -271,7 +271,7 @@ const CONFIGS = [
 
     ### ha-alert
 
-    You can use our [\`ha-alert\`](https://design.home-assistant.io/#components/ha-alert) component in markdown content rendered in the Home Assistant Frontend.
+    You can use our [\`ha-alert\`](https://contributors.home-assistant.io/design/components/alert/) component in markdown content rendered in the Home Assistant Frontend.
 
     <ha-alert alert-type="error">This is an error alert — check it out!</ha-alert>
     <ha-alert alert-type="warning">This is a warning alert — check it out!</ha-alert>

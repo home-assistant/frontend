@@ -43,9 +43,14 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
 
   private _closeResolve?: () => void;
 
+  // Set while a new opening waits for the previous one to finish closing
+  private _reopening = false;
+
   public async showDialog(params: DialogBoxParams): Promise<void> {
     if (this._closePromise) {
+      this._reopening = true;
       await this._closePromise;
+      this._reopening = false;
     }
     this._params = params;
     this._validInput = true;
@@ -95,7 +100,7 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
       >
         <ha-dialog-header slot="header">
           ${
-            !confirmPrompt
+            !confirmPrompt || this._params.showCloseButton
               ? html`<slot name="headerNavigationIcon" slot="navigationIcon">
                   <ha-icon-button
                     data-dialog="close"
@@ -168,6 +173,13 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
                     ></ha-textarea>
                   `
                 : nothing
+          }
+          ${
+            this._params.prompt && this._params.textBelowInput
+              ? html`<div class="after-input">
+                  ${this._params.textBelowInput}
+                </div>`
+              : nothing
           }
         </div>
         <ha-dialog-footer slot="footer">
@@ -274,7 +286,11 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
   }
 
   private _dialogClosed() {
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    // The dialog manager already tracks the new opening, which this close
+    // must not end
+    if (!this._reopening) {
+      fireEvent(this, "dialog-closed", { dialog: this.localName });
+    }
     if (!this._closeState) {
       this._cancel();
     }
@@ -306,6 +322,9 @@ class DialogBox extends DirtyStateProviderMixin<DialogBoxDirtyState>()(
     }
     ha-input {
       width: 100%;
+    }
+    .after-input {
+      margin-top: var(--ha-space-4);
     }
     .title {
       font-weight: inherit;

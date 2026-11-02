@@ -105,7 +105,7 @@ export class HuiImage extends LitElement {
       this._loadState = LoadState.Loading;
     }
     if (this.cameraImage && this.cameraView !== "live") {
-      this._startIntersectionObserverOrUpdates();
+      this._startIntersectionObserver();
     }
   }
 
@@ -134,7 +134,7 @@ export class HuiImage extends LitElement {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
       if (this._shouldStartCameraUpdates(oldHass)) {
-        this._startIntersectionObserverOrUpdates();
+        this._startIntersectionObserver();
       } else if (!this.hass!.connected) {
         this._stopUpdateCameraInterval();
         this._stopIntersectionObserver();
@@ -356,20 +356,13 @@ export class HuiImage extends LitElement {
     );
   }
 
-  private _startIntersectionObserverOrUpdates(): void {
-    if ("IntersectionObserver" in window) {
-      if (!this._intersectionObserver) {
-        this._intersectionObserver = new IntersectionObserver(
-          this.handleIntersectionCallback.bind(this)
-        );
-      }
-      this._intersectionObserver.observe(this);
-    } else {
-      // No support for IntersectionObserver
-      // assume all images are visible
-      this._imageVisible = true;
-      this._startUpdateCameraInterval();
+  private _startIntersectionObserver(): void {
+    if (!this._intersectionObserver) {
+      this._intersectionObserver = new IntersectionObserver(
+        this.handleIntersectionCallback.bind(this)
+      );
     }
+    this._intersectionObserver.observe(this);
   }
 
   private _stopIntersectionObserver(): void {

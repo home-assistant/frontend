@@ -86,7 +86,7 @@ export class HuiButtonHeadingBadge
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         style=${styleMap(style)}
-        .label=${config.text}
+        .label=${config.label ?? config.text}
         class=${classMap({ colored: !!color, "with-text": !!config.text })}
       >
         <span class="content">

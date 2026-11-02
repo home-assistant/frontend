@@ -48,7 +48,7 @@ export class HaWaitForTriggerAction
   }
 
   private _schema = memoizeOne(
-    (timeoutType: TimeoutType) =>
+    (timeoutType: TimeoutType, timeoutSet: boolean) =>
       [
         {
           name: "timeout",
@@ -63,7 +63,8 @@ export class HaWaitForTriggerAction
         {
           name: "continue_on_timeout",
           selector: { boolean: {} },
-          default: true,
+          default: timeoutSet,
+          disabled: !timeoutSet,
         },
       ] as const satisfies readonly HaFormSchema[]
   );
@@ -94,9 +95,10 @@ export class HaWaitForTriggerAction
               <ha-form
                 .hass=${this.hass}
                 .data=${this.action}
-                .schema=${this._schema(timeoutType)}
+                .schema=${this._schema(timeoutType, timeout !== undefined)}
                 .disabled=${this.disabled}
                 .computeLabel=${this._computeLabelCallback}
+                @value-changed=${this._formValueChanged}
               ></ha-form>
             `
           : nothing
@@ -174,6 +176,14 @@ export class HaWaitForTriggerAction
       action.timeout !== null &&
       action.timeout !== ""
     );
+
+  private _formValueChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    const value = { ...ev.detail.value };
+    if (value.timeout === undefined) {
+      delete value.continue_on_timeout;
+    }
+    fireEvent(this, "value-changed", { value });
   }
 
   private _valueChanged(ev: CustomEvent): void {

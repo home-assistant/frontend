@@ -71,6 +71,8 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
+
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${
@@ -79,6 +81,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                 <div class="flex">
                   <ha-slider
                     labeled
+                    .accessibleLabel=${name}
                     .disabled=${stateObj.state === UNAVAILABLE}
                     .step=${Number(stateObj.attributes.step)}
                     .min=${Number(stateObj.attributes.min)}
@@ -94,6 +97,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
             : html`
                 <div class="flex box">
                   <ha-input
+                    .accessibleLabel=${name}
                     .disabled=${stateObj.state === UNAVAILABLE}
                     pattern="[0-9]+([\\.][0-9]+)?"
                     .step=${Number(stateObj.attributes.step)}
@@ -180,7 +184,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
 
     if ((ev.target as HTMLInputElement).value !== stateObj.state) {
       setValue(
-        this.hass!,
+        this.hass!.callService,
         stateObj.entity_id,
         (ev.target as HTMLInputElement).value
       );

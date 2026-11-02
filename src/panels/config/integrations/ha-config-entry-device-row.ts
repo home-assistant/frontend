@@ -75,8 +75,16 @@ class HaConfigEntryDeviceRow extends LitElement {
     );
 
     const supportingText = [
+      area ? html`<span class="area">${area.name}</span>` : undefined,
       device.model || device.sw_version || device.manufacturer,
-      area ? area.name : undefined,
+      entities.length
+        ? bidiIsolate(
+            this.hass.localize(
+              "ui.panel.config.integrations.config_entry.entities",
+              { count: entities.length }
+            )
+          )
+        : undefined,
     ].filter(Boolean);
 
     return html`<ha-list-item-button
@@ -111,25 +119,12 @@ class HaConfigEntryDeviceRow extends LitElement {
         slot="start"
       ></ha-svg-icon>
       <div slot="headline">
-        ${computeDeviceNameDisplay(
-          device,
-          this.hass.localize,
-          this.hass.states
-        )}
+        ${computeDeviceNameDisplay(device, this.hass.localize)}
       </div>
       <span slot="supporting-text"
-        >${supportingText.join(" • ")}
-        ${supportingText.length && entities.length ? " • " : nothing}
-        ${
-          entities.length
-            ? bidiIsolate(
-                this.hass.localize(
-                  "ui.panel.config.integrations.config_entry.entities",
-                  { count: entities.length }
-                )
-              )
-            : nothing
-        }</span
+        >${supportingText.map(
+          (part, index) => html`${index ? " • " : nothing}${part}`
+        )}</span
       >
       ${!this.narrow ? html`<ha-icon-next slot="end"></ha-icon-next>` : nothing}
       <div class="vertical-divider" slot="end" @click=${stopPropagation}></div>
@@ -266,7 +261,7 @@ class HaConfigEntryDeviceRow extends LitElement {
   };
 
   private _handleNavigateToEntities = () => {
-    navigate(`/config/entities/?historyBack=1&device=${this.device.id}`);
+    navigate(`/config/entities?historyBack=1&device=${this.device.id}`);
   };
 
   private _doDisableDevice = async () => {
@@ -331,11 +326,7 @@ class HaConfigEntryDeviceRow extends LitElement {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_entry.device.confirm_disable_message",
           {
-            name: computeDeviceNameDisplay(
-              this.device,
-              this.hass.localize,
-              this.hass.states
-            ),
+            name: computeDeviceNameDisplay(this.device, this.hass.localize),
           }
         ),
         destructive: true,
@@ -396,6 +387,9 @@ class HaConfigEntryDeviceRow extends LitElement {
       }
       .disabled {
         opacity: 0.5;
+      }
+      .area {
+        color: var(--primary-text-color);
       }
       :host([narrow]) ha-list-item-button {
         --ha-row-item-padding-inline: 16px;

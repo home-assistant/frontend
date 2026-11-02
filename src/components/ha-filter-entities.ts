@@ -3,7 +3,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
@@ -12,6 +12,7 @@ import {
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import { arrayWith, arrayWithout } from "../common/array/array-with";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { stringCompare } from "../common/string/compare";
@@ -25,16 +26,16 @@ import {
 } from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
-import { haStyleScrollbar } from "../resources/styles";
-import { loadVirtualizer } from "../resources/virtualizer";
-import "./ha-check-list-item";
 import "./ha-expansion-panel";
-import "./ha-list";
 import "./ha-state-icon";
 import "./input/ha-input-search";
 import type { HaInputSearch } from "./input/ha-input-search";
+import "./item/ha-list-item-option";
+import "./list/ha-list-selectable-virtualized";
+import type { HaListSelectableVirtualized } from "./list/ha-list-selectable-virtualized";
+import type { HaListVirtualizedItem } from "./list/ha-list-virtualized";
 
-interface EntityItem {
+interface EntityItem extends HaListVirtualizedItem {
   stateObj: HassEntity;
   name: string;
 }
@@ -74,18 +75,28 @@ export class HaFilterEntities extends LitElement {
 
   private _panel = new FilterPanelController(this, this._content);
 
+  @query("ha-list-selectable-virtualized")
+  private _list?: HaListSelectableVirtualized;
+
+  private _relatedRequestId = 0;
+
   public willUpdate(properties: PropertyValues<this>) {
     super.willUpdate(properties);
-
-    if (!this.hasUpdated) {
-      loadVirtualizer();
-    }
 
     if (
       properties.has("value") &&
       !deepEqual(this.value, properties.get("value"))
     ) {
       this._findRelated();
+    }
+  }
+
+  protected updated(properties: PropertyValues<this>) {
+    super.updated(properties);
+
+    // The rows don't change with the value, so render the selection again
+    if (properties.has("value")) {
+      this._list?.requestRowsUpdate();
     }
   }
 
@@ -119,23 +130,14 @@ export class HaFilterEntities extends LitElement {
                   @input=${this._handleSearchChange}
                 >
                 </ha-input-search>
-                <ha-list class="ha-scrollbar" multi>
-                  <lit-virtualizer
-                    .items=${this._entities(
-                      this._states,
-                      this._formatters,
-                      this.type,
-                      this._filter || "",
-                      this._i18n.locale.language,
-                      this.value
-                    )}
-                    .keyFunction=${this._keyFunction}
-                    .renderItem=${this._renderItem}
-                    @click=${this._handleItemClick}
-                    @keydown=${this._handleItemKeydown}
-                  >
-                  </lit-virtualizer>
-                </ha-list>
+                <ha-list-selectable-virtualized
+                  multi
+                  aria-label=${this._localize("ui.panel.config.entities.caption")}
+                  .rows=${this._currentEntities()}
+                  .rowRenderer=${this._renderItem}
+                  @ha-list-item-selected=${this._handleItemToggled}
+                  @ha-list-item-deselected=${this._handleItemToggled}
+                ></ha-list-selectable-virtualized>
               </div>
             `
           : nothing
@@ -143,43 +145,43 @@ export class HaFilterEntities extends LitElement {
     `;
   }
 
-  private _keyFunction = (item?: EntityItem) => item?.stateObj.entity_id;
-
   private _renderItem = (item?: EntityItem) =>
     !item
       ? nothing
-      : html`<ha-check-list-item
-          tabindex="0"
-          .value=${item.stateObj.entity_id}
-          .selected=${this.value?.includes(item.stateObj.entity_id) ?? false}
-          graphic="icon"
+      : html`<ha-list-item-option
+          style="width: 100%;"
+          appearance="checkbox"
+          selection-position="end"
+          .value=${item.id}
+          .selected=${this.value?.includes(item.id) ?? false}
         >
           <ha-state-icon
-            slot="graphic"
+            slot="start"
             .stateObj=${item.stateObj}
           ></ha-state-icon>
-          ${item.name}
-        </ha-check-list-item>`;
+          <span slot="headline">${item.name}</span>
+        </ha-list-item-option>`;
 
-  private _handleItemKeydown(ev: KeyboardEvent) {
-    if (ev.key === "Enter" || ev.key === " ") {
-      ev.preventDefault();
-      this._handleItemClick(ev);
-    }
-  }
-
-  private _handleItemClick(ev) {
-    const listItem = ev.target.closest("ha-check-list-item");
-    const value = listItem?.value;
-    if (!value) {
+  private _handleItemToggled(ev: CustomEvent<number>) {
+    const entityId = this._currentEntities()[ev.detail]?.id;
+    if (!entityId) {
       return;
     }
-    if (this.value?.includes(value)) {
-      this.value = this.value?.filter((val) => val !== value);
-    } else {
-      this.value = [...(this.value || []), value];
-    }
-    listItem.selected = this.value?.includes(value);
+
+    this.value =
+      ev.type === "ha-list-item-selected"
+        ? arrayWith(this.value, entityId)
+        : arrayWithout(this.value, entityId);
+  }
+
+  private _currentEntities() {
+    return this._entities(
+      this._states,
+      this._formatters,
+      this.type,
+      this._filter || "",
+      this._i18n.locale.language
+    );
   }
 
   private _expandedChanged(ev) {
@@ -197,12 +199,13 @@ export class HaFilterEntities extends LitElement {
       formatters: ContextType<typeof formattersContext>,
       type: this["type"],
       filter: string,
-      language: string | undefined,
-      _value
+      language: string | undefined
     ): EntityItem[] =>
       Object.values(states)
         .filter((stateObj) => !type || computeStateDomain(stateObj) !== type)
         .map((stateObj) => ({
+          id: stateObj.entity_id,
+          interactive: true,
           stateObj,
           name: formatters.formatEntityName(stateObj),
         }))
@@ -216,6 +219,7 @@ export class HaFilterEntities extends LitElement {
   );
 
   private async _findRelated() {
+    const requestId = ++this._relatedRequestId;
     const relatedPromises: Promise<RelatedResult>[] = [];
 
     if (!this.value?.length) {
@@ -234,6 +238,12 @@ export class HaFilterEntities extends LitElement {
     }
 
     const results = await Promise.all(relatedPromises);
+
+    // The value changed while this lookup ran
+    if (requestId !== this._relatedRequestId) {
+      return;
+    }
+
     const items = new Set<string>();
     for (const result of results) {
       if (result[this.type!]) {
@@ -258,10 +268,9 @@ export class HaFilterEntities extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyleScrollbar,
       filterPanelStyles,
       css`
-        ha-list {
+        ha-list-selectable-virtualized {
           flex: 1;
           min-height: 0;
         }
@@ -288,10 +297,6 @@ export class HaFilterEntities extends LitElement {
           text-align: center;
           padding: 0px 2px;
           color: var(--text-primary-color);
-        }
-        ha-check-list-item {
-          --mdc-list-item-graphic-margin: 16px;
-          width: 100%;
         }
         ha-input-search {
           display: block;

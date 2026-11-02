@@ -3,6 +3,7 @@ import {
   mdiAlertOctagonOutline,
   mdiAlertOutline,
   mdiDatabaseExportOutline,
+  mdiShieldKeyOutline,
   mdiWeb,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
@@ -26,6 +27,7 @@ import {
 } from "../../../data/marketplace/websocket";
 
 const RISKS = [
+  { risk: "access", icon: mdiShieldKeyOutline },
   { risk: "internet", icon: mdiWeb },
   { risk: "data", icon: mdiDatabaseExportOutline },
   { risk: "stability", icon: mdiAlertOctagonOutline },
@@ -116,6 +118,7 @@ export class HaMarketplaceWarning extends LitElement {
         <div class="box agree">
           <ha-checkbox
             autofocus
+            variant="warning"
             .checked=${this._understood}
             .disabled=${this._accepting}
             @change=${this._understoodChanged}
@@ -133,6 +136,7 @@ export class HaMarketplaceWarning extends LitElement {
           </ha-button>
           <ha-button
             slot="primaryAction"
+            variant="warning"
             .disabled=${!this._understood}
             .loading=${this._accepting}
             @click=${this._accept}

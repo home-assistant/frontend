@@ -1,6 +1,6 @@
 import WaCheckbox from "@home-assistant/webawesome/dist/components/checkbox/checkbox";
 import { css, type CSSResultGroup } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 
 /**
  * Home Assistant checkbox component
@@ -40,9 +40,13 @@ import { customElement } from "lit/decorators";
  * @attr {boolean} disabled - Disables the checkbox.
  * @attr {boolean} indeterminate - Draws the checkbox in an indeterminate state.
  * @attr {boolean} required - Makes the checkbox a required field.
+ * @attr {("brand"|"neutral"|"danger"|"warning"|"success")} variant - Sets the checked color variant. "brand" is default.
  */
 @customElement("ha-checkbox")
 export class HaCheckbox extends WaCheckbox {
+  @property({ reflect: true })
+  variant: "brand" | "neutral" | "success" | "warning" | "danger" = "brand";
+
   /**
    * Returns the configured checkbox value, independent of checked state.
    *
@@ -78,14 +82,18 @@ export class HaCheckbox extends WaCheckbox {
           );
           --checked-icon-color: var(
             --ha-checkbox-checked-icon-color,
-            var(--wa-color-brand-on-loud)
+            var(--checkbox-on-fill-color)
           );
 
           --wa-form-control-activated-color: var(
             --ha-checkbox-checked-background-color,
-            var(--ha-color-fill-primary-loud-resting)
+            var(--checkbox-fill-color)
           );
           -webkit-tap-highlight-color: transparent;
+
+          --checkbox-fill-color: var(--ha-color-fill-primary-loud-resting);
+          --checkbox-fill-color-hover: var(--ha-color-fill-primary-loud-hover);
+          --checkbox-on-fill-color: var(--wa-color-brand-on-loud);
 
           --checked-icon-scale: var(--ha-checkbox-checked-icon-scale, 0.9);
           --wa-form-control-required-content: var(
@@ -96,6 +104,30 @@ export class HaCheckbox extends WaCheckbox {
             --ha-checkbox-required-marker-offset,
             0.1rem
           );
+        }
+
+        :host([variant="neutral"]) {
+          --checkbox-fill-color: var(--ha-color-fill-neutral-loud-resting);
+          --checkbox-fill-color-hover: var(--ha-color-fill-neutral-loud-hover);
+          --checkbox-on-fill-color: var(--ha-color-on-neutral-loud);
+        }
+
+        :host([variant="success"]) {
+          --checkbox-fill-color: var(--ha-color-fill-success-loud-resting);
+          --checkbox-fill-color-hover: var(--ha-color-fill-success-loud-hover);
+          --checkbox-on-fill-color: var(--ha-color-on-success-loud);
+        }
+
+        :host([variant="warning"]) {
+          --checkbox-fill-color: var(--ha-color-fill-warning-loud-resting);
+          --checkbox-fill-color-hover: var(--ha-color-fill-warning-loud-hover);
+          --checkbox-on-fill-color: var(--ha-color-on-warning-loud);
+        }
+
+        :host([variant="danger"]) {
+          --checkbox-fill-color: var(--ha-color-fill-danger-loud-resting);
+          --checkbox-fill-color-hover: var(--ha-color-fill-danger-loud-hover);
+          --checkbox-on-fill-color: var(--ha-color-on-danger-loud);
         }
 
         [part~="base"] {
@@ -158,11 +190,11 @@ export class HaCheckbox extends WaCheckbox {
         label:has(input:indeterminate:not(:disabled)):hover [part~="control"] {
           background-color: var(
             --ha-checkbox-checked-background-color-hover,
-            var(--ha-color-fill-primary-loud-hover)
+            var(--checkbox-fill-color-hover)
           );
           border-color: var(
             --ha-checkbox-checked-background-color-hover,
-            var(--ha-color-fill-primary-loud-hover)
+            var(--checkbox-fill-color-hover)
           );
         }
       `,

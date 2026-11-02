@@ -1,14 +1,17 @@
+import type { ContextType } from "@lit/context";
 import { mdiMenuDown } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { formatLanguageCode } from "../common/language/format_language";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
+import { internationalizationContext } from "../data/context";
 import type { FrontendLocaleData } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./ha-button";
 import "./ha-generic-picker";
 import type { HaGenericPicker } from "./ha-generic-picker";
@@ -91,8 +94,6 @@ export class HaLanguagePicker extends LitElement {
 
   @property({ type: Array }) public languages?: string[];
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @property({ type: Boolean, reflect: true }) public disabled = false;
 
   @property({ type: Boolean }) public required = false;
@@ -106,6 +107,10 @@ export class HaLanguagePicker extends LitElement {
   public buttonStyle = false;
 
   @property({ attribute: "no-sort", type: Boolean }) public noSort = false;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n?: ContextType<typeof internationalizationContext>;
 
   @state() _defaultLanguages: string[] = [];
 
@@ -127,7 +132,7 @@ export class HaLanguagePicker extends LitElement {
       this.languages ?? this._defaultLanguages,
       this.nativeName,
       this.noSort,
-      this.hass?.locale
+      this._i18n?.locale
     );
 
   private _getLanguageName = (lang?: string) =>
@@ -141,7 +146,7 @@ export class HaLanguagePicker extends LitElement {
   protected render() {
     const label =
       this.label ??
-      (this.hass?.localize("ui.components.language-picker.language") ||
+      (this._i18n?.localize("ui.components.language-picker.language") ||
         "Language");
 
     const value =
@@ -150,11 +155,10 @@ export class HaLanguagePicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .autofocus=${this.autofocus}
         .notFoundLabel=${this._notFoundLabel}
         .emptyLabel=${
-          this.hass?.localize("ui.components.language-picker.no_languages") ||
+          this._i18n?.localize("ui.components.language-picker.no_languages") ||
           "No languages available"
         }
         .label=${label}
@@ -205,11 +209,11 @@ export class HaLanguagePicker extends LitElement {
 
   private _notFoundLabel = (search: string) => {
     const term = html`<b>‘${search}’</b>`;
-    return this.hass
-      ? this.hass.localize("ui.components.language-picker.no_match", {
-          term,
-        })
-      : html`No languages found for ${term}`;
+    return (
+      this._i18n?.localize("ui.components.language-picker.no_match", {
+        term,
+      }) || html`No languages found for ${term}`
+    );
   };
 }
 

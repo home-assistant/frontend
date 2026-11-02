@@ -1,5 +1,4 @@
 import type { HassEntities } from "home-assistant-js-websocket";
-import { computeStateName } from "../../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../../common/translations/localize";
 import type { HaFormSchema } from "../../components/ha-form/types";
 import type { CallWS, HomeAssistant } from "../../types";
@@ -273,6 +272,7 @@ const compareEntityIdWithEntityRegId = (
 const getEntityName = (
   localize: LocalizeFunc,
   states: HassEntities,
+  formatEntityName: HomeAssistant["formatEntityName"],
   entityRegistry: EntityRegistryEntry[],
   entityId: string | undefined
 ): string => {
@@ -282,20 +282,17 @@ const getEntityName = (
   if (entityId.includes(".")) {
     const state = states[entityId];
     if (state) {
-      return computeStateName(state);
+      return formatEntityName(state);
     }
     return entityId;
   }
   const entityReg = entityRegistryById(entityRegistry)[entityId];
   if (entityReg) {
-    if (entityReg.name) {
-      return entityReg.name;
-    }
     const state = states[entityReg.entity_id];
     if (state) {
-      return computeStateName(state);
+      return formatEntityName(state);
     }
-    return entityReg.original_name ?? entityId;
+    return entityReg.name || entityReg.original_name || entityId;
   }
   return `<${localize("ui.panel.config.automation.editor.unknown_entity")}>`;
 };
@@ -303,6 +300,7 @@ const getEntityName = (
 export const localizeDeviceAutomationAction = (
   localize: LocalizeFunc,
   states: HassEntities,
+  formatEntityName: HomeAssistant["formatEntityName"],
   entityRegistry: EntityRegistryEntry[],
   action: DeviceAction
 ): string =>
@@ -312,6 +310,7 @@ export const localizeDeviceAutomationAction = (
       entity_name: getEntityName(
         localize,
         states,
+        formatEntityName,
         entityRegistry,
         action.entity_id
       ),
@@ -326,6 +325,7 @@ export const localizeDeviceAutomationAction = (
 export const localizeDeviceAutomationCondition = (
   localize: LocalizeFunc,
   states: HassEntities,
+  formatEntityName: HomeAssistant["formatEntityName"],
   entityRegistry: EntityRegistryEntry[],
   condition: DeviceCondition
 ): string =>
@@ -335,6 +335,7 @@ export const localizeDeviceAutomationCondition = (
       entity_name: getEntityName(
         localize,
         states,
+        formatEntityName,
         entityRegistry,
         condition.entity_id
       ),
@@ -352,6 +353,7 @@ export const localizeDeviceAutomationCondition = (
 export const localizeDeviceAutomationTrigger = (
   localize: LocalizeFunc,
   states: HassEntities,
+  formatEntityName: HomeAssistant["formatEntityName"],
   entityRegistry: EntityRegistryEntry[],
   trigger: DeviceTrigger
 ): string =>
@@ -361,6 +363,7 @@ export const localizeDeviceAutomationTrigger = (
       entity_name: getEntityName(
         localize,
         states,
+        formatEntityName,
         entityRegistry,
         trigger.entity_id
       ),

@@ -208,6 +208,7 @@ export interface TargetHumidityCardFeatureConfig {
 
 export interface TargetTemperatureCardFeatureConfig {
   type: "target-temperature";
+  style?: "buttons" | "slider";
 }
 
 export interface ToggleCardFeatureConfig {
@@ -352,6 +353,8 @@ export interface BarGaugeCardFeatureConfig {
   type: "bar-gauge";
   min?: number;
   max?: number;
+  severity?: Partial<Record<"green" | "yellow" | "red", number>>;
+  segments?: { from: number; color: string }[];
 }
 
 export type LovelaceCardFeaturePosition = "bottom" | "inline";

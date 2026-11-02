@@ -15,7 +15,7 @@ import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-spinner";
 import { narrowViewportContext } from "../../../../../data/context";
 import type { ZHADevice } from "../../../../../data/zha";
-import { fetchZHADevice } from "../../../../../data/zha";
+import { fetchZHADevice, ZHADeviceType } from "../../../../../data/zha";
 import "../../../../../layouts/hass-error-screen";
 import "../../../../../layouts/hass-subpage";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -60,6 +60,13 @@ class ZHADevicePage extends LitElement {
   @state() private _error?: string;
 
   private _deviceRefreshInterval?: number;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._device) {
+      this._startDeviceRefreshInterval();
+    }
+  }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -191,7 +198,9 @@ class ZHADevicePage extends LitElement {
       if (!tabs.includes(this._currTab)) {
         this._currTab = tabs[0];
       }
-      this._startDeviceRefreshInterval();
+      if (this.isConnected) {
+        this._startDeviceRefreshInterval();
+      }
     } catch (_err: any) {
       if (this.ieee === ieee) {
         this._error = this.hass.localize(
@@ -261,11 +270,16 @@ class ZHADevicePage extends LitElement {
   }
 
   private _getTabs = memoizeOne((device: ZHADevice | undefined) => {
+    if (device?.device_type === ZHADeviceType.GreenPower) {
+      return ["signature"] as ZHADevicePageTab[];
+    }
+
     const tabs: ZHADevicePageTab[] = ["clusters", "bindings", "signature"];
 
     if (
       device &&
-      (device.device_type === "Router" || device.device_type === "Coordinator")
+      (device.device_type === ZHADeviceType.Router ||
+        device.device_type === ZHADeviceType.Coordinator)
     ) {
       tabs.push("neighbors");
     }
@@ -291,15 +305,13 @@ class ZHADevicePage extends LitElement {
         }
 
         .container {
-          box-sizing: border-box;
           display: grid;
           grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
           gap: var(--ha-space-4);
           align-items: start;
-          max-width: 1400px;
-          width: 100%;
+          max-width: var(--ha-content-width-wide);
           margin: 0 auto;
-          padding: var(--ha-space-4) var(--ha-space-4)
+          padding: var(--ha-space-4) var(--ha-content-gutter)
             calc(var(--ha-space-20) + var(--safe-area-inset-bottom, 0px));
         }
 

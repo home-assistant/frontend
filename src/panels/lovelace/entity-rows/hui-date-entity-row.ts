@@ -44,11 +44,14 @@ class HuiDateEntityRow extends LitElement implements LovelaceRow {
 
     const unavailable = stateObj.state === UNAVAILABLE;
 
+    const name = this.hass.formatEntityName(stateObj, this._config.name);
+
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <ha-date-input
           .locale=${this.hass.locale}
           .disabled=${unavailable}
+          .accessibleLabel=${name}
           .value=${
             stateObj.state === UNAVAILABLE || stateObj.state === UNKNOWN
               ? undefined

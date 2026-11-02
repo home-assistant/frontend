@@ -7,7 +7,7 @@ export interface EntityLocation {
   gpsAccuracy?: number;
 }
 
-const findFirstActiveZone = (
+export const findFirstActiveZone = (
   inZones: readonly string[],
   states: HassEntities
 ): HassEntity | undefined => {

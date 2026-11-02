@@ -1,6 +1,24 @@
 import { downSampleLineData } from "../../../../components/chart/down-sample";
 import type { EntityHistoryState } from "../../../../data/history";
 
+export interface GraphSize {
+  width: number;
+  height: number;
+}
+
+export const scaleCoordinates = (
+  coordinates: number[][],
+  from: GraphSize,
+  to: GraphSize
+): number[][] => {
+  if (from.width === to.width && from.height === to.height) {
+    return coordinates;
+  }
+  const scaleX = to.width / from.width;
+  const scaleY = to.height / from.height;
+  return coordinates.map(([x, y]) => [x * scaleX, y * scaleY]);
+};
+
 const calcPoints = (
   history: [number, number][],
   width: number,

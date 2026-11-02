@@ -6,6 +6,7 @@ import {
 } from "../../data/entity/entity_attributes";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
+import { TimeZone } from "../../data/translation";
 import type { WeatherEntity } from "../../data/weather";
 import { getWeatherUnit } from "../../data/weather";
 import type { HomeAssistant, ValuePart } from "../../types";
@@ -112,6 +113,24 @@ export const computeAttributeValueToParts = (
         if (checkValidDate(date)) {
           const formattedDate = formatDateTimeWithSeconds(date, locale, config);
           return [{ type: "value", value: formattedDate }];
+        }
+      }
+
+      // Date only, which is timezone agnostic, so parse and format it as
+      // local time to keep the same calendar day
+      if (isDate(attributeValue)) {
+        const date = new Date(`${attributeValue}T00:00`);
+        if (checkValidDate(date)) {
+          return [
+            {
+              type: "value",
+              value: formatDate(
+                date,
+                { ...locale, time_zone: TimeZone.local },
+                config
+              ),
+            },
+          ];
         }
       }
 

@@ -9,13 +9,13 @@ import { HaDeviceAutomationPicker } from "./ha-device-automation-picker";
 @customElement("ha-device-action-picker")
 class HaDeviceActionPicker extends HaDeviceAutomationPicker<DeviceAction> {
   protected get NO_AUTOMATION_TEXT() {
-    return this.hass.localize(
+    return this._i18n.localize(
       "ui.panel.config.devices.automation.actions.no_actions"
     );
   }
 
   protected get UNKNOWN_AUTOMATION_TEXT() {
-    return this.hass.localize(
+    return this._i18n.localize(
       "ui.panel.config.devices.automation.actions.unknown_action"
     );
   }

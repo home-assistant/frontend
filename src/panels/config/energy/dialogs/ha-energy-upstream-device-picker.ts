@@ -149,11 +149,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     ${
       item.stateObj
         ? html`
-            <state-badge
-              slot="start"
-              .stateObj=${item.stateObj}
-              .hass=${this.hass}
-            ></state-badge>
+            <state-badge slot="start" .stateObj=${item.stateObj}></state-badge>
           `
         : item.icon_path
           ? html`
@@ -191,7 +187,6 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
   protected render() {
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         use-top-label
         .label=${this.label}
         .helper=${this.helper}

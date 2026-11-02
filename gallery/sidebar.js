@@ -37,6 +37,7 @@ export default [
         pages: [
           "ha-form",
           "ha-selector",
+          "ha-target-picker-exclusions",
           "ha-select-box",
           "ha-input",
           "ha-textarea",
@@ -126,6 +127,7 @@ export default [
           "gauge-card",
           "plant-card",
           "map-card",
+          "calendar-card",
           "media-control-card",
           "media-player-row",
         ],
@@ -166,6 +168,10 @@ export default [
       {
         header: "Inputs and values",
         pages: ["input-number", "input-text", "number", "timer"],
+      },
+      {
+        header: "Time and schedules",
+        pages: ["calendar"],
       },
       {
         header: "System",

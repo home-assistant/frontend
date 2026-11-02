@@ -17,6 +17,7 @@ import {
 import type { EnergyData, EnergyPreferences } from "../../../../data/energy";
 import {
   computeEnergyDeviceLabels,
+  energySourcesByType,
   formatPowerShort,
   getPowerFromState,
   validateEnergyCollectionKey,
@@ -184,6 +185,7 @@ class HuiPowerSankeyCard
     const prefs = this._data.prefs;
     const powerData = this._computePowerData(prefs);
     const computedStyle = getComputedStyle(this);
+    const types = energySourcesByType(prefs);
 
     // Calculate dynamic threshold based on total consumption
     const minPowerThreshold =
@@ -195,7 +197,7 @@ class HuiPowerSankeyCard
     // Create home node
     const homeNode: Node = {
       id: "home",
-      label: this._hassConfig.location_name,
+      label: types.home?.[0]?.name || this._hassConfig.location_name,
       value: Math.max(0, powerData.used_total),
       color: computedStyle.getPropertyValue("--primary-color").trim(),
       index: 1,
@@ -422,18 +424,18 @@ class HuiPowerSankeyCard
       });
 
     // Collect grid power (positive = import, negative = export)
-    prefs.energy_sources
-      .filter((source) => source.type === "grid")
-      .forEach((source) => {
-        if (source.type === "grid" && source.stat_rate) {
-          const value = this._getCurrentPower(source.stat_rate);
-          if (value > 0) {
-            from_grid += value;
-          } else if (value < 0) {
-            to_grid += Math.abs(value);
-          }
-        }
-      });
+    const gridValues = prefs.energy_sources.flatMap((source) =>
+      source.type === "grid" && source.stat_rate
+        ? [this._getCurrentPower(source.stat_rate)]
+        : []
+    );
+    gridValues.forEach((value) => {
+      if (value > 0) {
+        from_grid += value;
+      } else if (value < 0) {
+        to_grid += Math.abs(value);
+      }
+    });
 
     // Collect battery power (positive = discharge, negative = charge)
     // Sum all battery values first, then determine net direction.
@@ -452,8 +454,14 @@ class HuiPowerSankeyCard
       to_battery = Math.abs(net_battery);
     }
 
-    // Calculate total consumption
-    const used_total = from_grid + solar + from_battery - to_grid - to_battery;
+    const homeStatRate = energySourcesByType(prefs).home?.find(
+      (source) => source.stat_rate
+    )?.stat_rate;
+    const homePower = homeStatRate
+      ? getPowerFromState(this._states[homeStatRate])
+      : undefined;
+    const used_total =
+      homePower ?? from_grid + solar + from_battery - to_grid - to_battery;
 
     // Determine power routing using priority logic
     // Priority: Solar -> Battery_In, Solar -> Grid_Out, Battery_Out -> Grid_Out,

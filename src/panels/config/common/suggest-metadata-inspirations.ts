@@ -12,6 +12,7 @@ import {
 export const buildEntityMetadataInspirations = async (
   connection: HomeAssistant["connection"],
   states: HomeAssistant["states"],
+  formatEntityName: HomeAssistant["formatEntityName"],
   domain: MetadataSuggestionDomain
 ): Promise<string[]> => {
   const [categories, entities, labels] = await Promise.all([
@@ -26,15 +27,12 @@ export const buildEntityMetadataInspirations = async (
     }
 
     const entity = states[entry.entity_id];
-    if (
-      !entity ||
-      entity.attributes.restored ||
-      !entity.attributes.friendly_name
-    ) {
+    const name = entity ? formatEntityName(entity) : undefined;
+    if (!entity || entity.attributes.restored || !name) {
       return inspirations;
     }
 
-    let inspiration = `- ${entity.attributes.friendly_name}`;
+    let inspiration = `- ${name}`;
 
     const category = entry.categories[domain];
     if (category && categories[category]) {

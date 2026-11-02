@@ -13,6 +13,7 @@ const hass = {
       attributes: { friendly_name: "Child A" },
     }),
   },
+  formatEntityName: (stateObj) => stateObj.attributes.friendly_name,
 } as unknown as HomeAssistant;
 
 const entityReg = [

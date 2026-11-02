@@ -4,6 +4,7 @@ import type { LovelaceConfig } from "../../../../src/data/lovelace/config/types"
 import type { LovelaceSectionConfig } from "../../../../src/data/lovelace/config/section";
 import type { LovelaceViewConfig } from "../../../../src/data/lovelace/config/view";
 import {
+  adoptViewLayout,
   duplicateSection,
   moveCardToContainer,
   swapView,
@@ -231,5 +232,25 @@ describe("duplicateSection", () => {
       (resultSections[0] as LovelaceSectionConfig).cards![0].type,
       "button"
     );
+  });
+});
+
+describe("adoptViewLayout", () => {
+  it("takes the target card's view layout", () => {
+    const card = { type: "card1", view_layout: { position: "sidebar" } };
+    const target = { type: "card2", view_layout: { position: "main" } };
+
+    assert.deepEqual(adoptViewLayout(card, target), {
+      type: "card1",
+      view_layout: { position: "main" },
+    });
+  });
+
+  it("drops the card's own view layout when the target has none", () => {
+    const card = { type: "card1", view_layout: { position: "sidebar" } };
+
+    assert.deepEqual(adoptViewLayout(card, { type: "card2" }), {
+      type: "card1",
+    });
   });
 });

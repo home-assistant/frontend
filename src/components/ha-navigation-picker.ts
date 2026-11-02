@@ -3,6 +3,8 @@ import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
 import { fireEvent } from "../common/dom/fire_event";
 import { subscribeOneCollection } from "../common/util/subscribe-one";
 import { caseInsensitiveStringCompare } from "../common/string/compare";
@@ -13,12 +15,30 @@ import { SYSTEM_PANELS } from "../data/panel";
 import {
   CONFIG_SUB_ROUTES,
   computeNavigationPathInfo,
+  type NavigationPathInfoOptions,
 } from "../data/compute-navigation-path-info";
+import {
+  apiContext,
+  configContext,
+  connectionContext,
+  internationalizationContext,
+  registriesContext,
+  uiContext,
+} from "../data/context";
 import { findRelated, type RelatedResult } from "../data/search";
 import { PANEL_DASHBOARDS } from "../panels/config/lovelace/dashboards/ha-config-lovelace-dashboards";
 import { computeAreaPath } from "../panels/lovelace/strategies/areas/helpers/areas-strategy-helper";
 import { multiTermSortedSearch } from "../resources/fuseMultiTerm";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type {
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantConnection,
+  HomeAssistantInternationalization,
+  HomeAssistantRegistries,
+  HomeAssistantUI,
+  Panels,
+  ValueChangedEvent,
+} from "../types";
 import type { ActionRelatedContext } from "../panels/lovelace/components/hui-action-editor";
 import "./ha-generic-picker";
 import "./ha-domain-icon";
@@ -50,8 +70,6 @@ interface NavigationItem extends PickerComboBoxItem {
 
 @customElement("ha-navigation-picker")
 export class HaNavigationPicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property() public label?: string;
 
   @property() public value?: string;
@@ -69,6 +87,28 @@ export class HaNavigationPicker extends LitElement {
   @state() private _loading = true;
 
   @property({ attribute: false }) public context?: ActionRelatedContext;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Panels | undefined>({
+    transformer: (ui) => ui?.panels ?? undefined,
+  })
+  private _panels?: Panels;
+
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries?: HomeAssistantRegistries;
+
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig?: HomeAssistantConfig;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection?: HomeAssistantConnection;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api?: HomeAssistantApi;
 
   protected firstUpdated() {
     this._loadNavigationItems();
@@ -98,7 +138,7 @@ export class HaNavigationPicker extends LitElement {
         ? [
             {
               id: "related",
-              label: this.hass.localize(
+              label: this._i18n.localize(
                 "ui.components.navigation-picker.related"
               ),
             },
@@ -106,23 +146,27 @@ export class HaNavigationPicker extends LitElement {
         : []),
       {
         id: "dashboards",
-        label: this.hass.localize("ui.components.navigation-picker.dashboards"),
+        label: this._i18n.localize(
+          "ui.components.navigation-picker.dashboards"
+        ),
       },
       {
         id: "views",
-        label: this.hass.localize("ui.components.navigation-picker.views"),
+        label: this._i18n.localize("ui.components.navigation-picker.views"),
       },
       ...(this._navigationGroups.apps.length
         ? [
             {
               id: "apps",
-              label: this.hass.localize("ui.components.navigation-picker.apps"),
+              label: this._i18n.localize(
+                "ui.components.navigation-picker.apps"
+              ),
             },
           ]
         : []),
       {
         id: "other_routes",
-        label: this.hass.localize(
+        label: this._i18n.localize(
           "ui.components.navigation-picker.other_routes"
         ),
       },
@@ -130,7 +174,6 @@ export class HaNavigationPicker extends LitElement {
 
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         .value=${this._loading ? undefined : this.value}
         allow-custom-value
         .placeholder=${this.label}
@@ -141,7 +184,7 @@ export class HaNavigationPicker extends LitElement {
         .valueRenderer=${this._valueRenderer}
         .rowRenderer=${this._rowRenderer}
         .sections=${sections}
-        .customValueLabel=${this.hass.localize(
+        .customValueLabel=${this._i18n.localize(
           "ui.components.navigation-picker.add_custom_path"
         )}
         .addButtonLabel=${this.addButtonLabel}
@@ -269,7 +312,7 @@ export class HaNavigationPicker extends LitElement {
       }
       if (!section && groupItems.length) {
         items.push(
-          this.hass.localize(`ui.components.navigation-picker.${group}`)
+          this._i18n.localize(`ui.components.navigation-picker.${group}`)
         );
       }
       items.push(...groupItems);
@@ -291,22 +334,25 @@ export class HaNavigationPicker extends LitElement {
     caseInsensitiveStringCompare(
       itemA.sorting_label!,
       itemB.sorting_label!,
-      this.hass.locale.language
+      this._i18n.locale.language
     );
 
   private async _loadNavigationItems() {
     await this._loadConfigEntries();
-    const panels = Object.entries(this.hass!.panels).map(([id, panel]) => ({
-      id,
-      ...panel,
-    }));
+    const pathInfoOptions = this._pathInfoOptions();
+    const panels = Object.entries(pathInfoOptions.panels).map(
+      ([id, panel]) => ({
+        id,
+        ...panel,
+      })
+    );
     const lovelacePanels = panels.filter(
       (panel) => panel.component_name === "lovelace"
     );
 
     const viewConfigs = await Promise.all(
       lovelacePanels.map((panel) =>
-        fetchConfig(this.hass!.connection, panel.url_path, true)
+        fetchConfig(this._connection!.connection, panel.url_path, true)
           .then((config) => [panel.id, config] as [string, typeof config])
           .catch((_) => [panel.id, undefined] as [string, undefined])
       )
@@ -325,7 +371,7 @@ export class HaNavigationPicker extends LitElement {
       // Skip app panels — they are handled by the ingress panels fetch below
       if (panel.component_name === "app") continue;
       const path = `/${panel.url_path}`;
-      const resolved = computeNavigationPathInfo(this.hass!, path);
+      const resolved = computeNavigationPathInfo(pathInfoOptions, path);
       const isDashboardPanel =
         panel.component_name === "lovelace" ||
         PANEL_DASHBOARDS.includes(panel.id);
@@ -351,7 +397,7 @@ export class HaNavigationPicker extends LitElement {
       config.views.forEach((view, index) => {
         const viewPath = `/${panel.url_path}/${view.path ?? index}`;
         const viewInfo = computeNavigationPathInfo(
-          this.hass!,
+          pathInfoOptions,
           viewPath,
           config
         );
@@ -367,15 +413,18 @@ export class HaNavigationPicker extends LitElement {
     }
 
     // Fetch all ingress add-on panels
-    if (isComponentLoaded(this.hass!.config, "hassio")) {
+    if (
+      this._hassConfig?.config &&
+      isComponentLoaded(this._hassConfig.config, "hassio")
+    ) {
       try {
         const ingressPanels = await subscribeOneCollection(
-          getIngressPanelInfoCollection(this.hass!.connection)
+          getIngressPanelInfoCollection(this._connection!.connection)
         );
         for (const slug of Object.keys(ingressPanels)) {
           const path = `/app/${slug}`;
           const resolved = computeNavigationPathInfo(
-            this.hass!,
+            pathInfoOptions,
             path,
             undefined,
             ingressPanels
@@ -397,7 +446,7 @@ export class HaNavigationPicker extends LitElement {
 
     for (const [subPath, route] of Object.entries(CONFIG_SUB_ROUTES)) {
       const path = `/config/${subPath}`;
-      const label = this.hass!.localize(route.translationKey) || subPath;
+      const label = this._i18n.localize(route.translationKey) || subPath;
       otherRoutes.push({
         id: path,
         primary: label,
@@ -446,9 +495,10 @@ export class HaNavigationPicker extends LitElement {
         ...this._navigationGroups.apps,
         ...this._navigationGroups.other_routes,
       ];
+      this.requestUpdate();
     };
 
-    if (!this.hass || (!this.context?.entity_id && !this.context?.area_id)) {
+    if (!this.context?.entity_id && !this.context?.area_id) {
       updateRelatedItems([]);
       return;
     }
@@ -473,8 +523,8 @@ export class HaNavigationPicker extends LitElement {
     let relatedResult: RelatedResult | undefined;
     try {
       relatedResult = context.entity_id
-        ? await findRelated(this.hass, "entity", context.entity_id)
-        : await findRelated(this.hass, "area", context.area_id!);
+        ? await findRelated(this._api!, "entity", context.entity_id)
+        : await findRelated(this._api!, "area", context.area_id!);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error("Error fetching related items for navigation picker", err);
@@ -487,11 +537,12 @@ export class HaNavigationPicker extends LitElement {
       relatedAreaIds.add(context.area_id);
     }
 
+    const pathInfoOptions = this._pathInfoOptions();
     const relatedItems: NavigationItem[] = [];
     for (const deviceId of relatedDeviceIds) {
-      const device = this.hass.devices[deviceId];
+      const device = pathInfoOptions.devices[deviceId];
       const path = `/config/devices/device/${deviceId}`;
-      const resolved = computeNavigationPathInfo(this.hass, path);
+      const resolved = computeNavigationPathInfo(pathInfoOptions, path);
       relatedItems.push({
         id: path,
         primary: resolved.label,
@@ -513,7 +564,7 @@ export class HaNavigationPicker extends LitElement {
     for (const areaId of relatedAreaIds) {
       // Area dashboard view
       const viewPath = `/home/${computeAreaPath(areaId)}`;
-      const resolvedArea = computeNavigationPathInfo(this.hass, viewPath);
+      const resolvedArea = computeNavigationPathInfo(pathInfoOptions, viewPath);
       relatedItems.push({
         id: viewPath,
         primary: resolvedArea.label,
@@ -532,7 +583,7 @@ export class HaNavigationPicker extends LitElement {
       const path = `/config/areas/area/${areaId}`;
       relatedItems.push({
         id: path,
-        primary: this.hass.localize(
+        primary: this._i18n.localize(
           "ui.components.navigation-picker.area_settings",
           { area: resolvedArea.label }
         ),
@@ -551,13 +602,22 @@ export class HaNavigationPicker extends LitElement {
     return relatedItems;
   }
 
+  private _pathInfoOptions(): NavigationPathInfoOptions {
+    return {
+      localize: this._i18n.localize,
+      panels: this._panels ?? {},
+      areas: this._registries?.areas ?? {},
+      devices: this._registries?.devices ?? {},
+    };
+  }
+
   private async _loadConfigEntries() {
     if (Object.keys(this._configEntryLookup).length) {
       return;
     }
 
     try {
-      const configEntries = await getConfigEntries(this.hass);
+      const configEntries = await getConfigEntries(this._api!);
       this._configEntryLookup = Object.fromEntries(
         configEntries.map((entry) => [entry.entry_id, entry])
       );

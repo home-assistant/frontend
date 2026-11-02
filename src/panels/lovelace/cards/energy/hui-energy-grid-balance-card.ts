@@ -2,7 +2,10 @@ import { mdiTransmissionTower } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consume } from "../../../../common/decorators/consume";
-import { formatNumber } from "../../../../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../../../../common/number/format_number";
 import { round } from "../../../../common/number/round";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
@@ -84,13 +87,18 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
     const exported = round(summedData.total.to_grid ?? 0, 3);
     const net = imported - exported;
 
+    const formatOptions = (value: number) =>
+      Math.abs(value) < 0.01
+        ? { maximumSignificantDigits: 2 }
+        : { maximumFractionDigits: 2 };
     const fmt = (value: number) =>
-      formatNumber(
+      formatNumber(value, this._i18n.locale, formatOptions(value));
+    const fmtEnergy = (value: number) =>
+      formatNumberWithUnit(
         value,
+        "kWh",
         this._i18n.locale,
-        Math.abs(value) < 0.01
-          ? { maximumSignificantDigits: 2 }
-          : { maximumFractionDigits: 2 }
+        formatOptions(value)
       );
 
     const isConsumption = net >= 0;
@@ -119,7 +127,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
             </span>
             <span slot="secondary" class="equation">
               <span class="imported" id="eq-imported">
-                ${fmt(imported)} kWh
+                ${fmtEnergy(imported)}
               </span>
               <ha-tooltip for="eq-imported" placement="top">
                 ${this._i18n.localize(
@@ -129,7 +137,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
               </ha-tooltip>
               <span class="operator"> - </span>
               <span class="exported" id="eq-exported">
-                ${fmt(exported)} kWh
+                ${fmtEnergy(exported)}
               </span>
               <ha-tooltip for="eq-exported" placement="top">
                 ${this._i18n.localize(
@@ -142,7 +150,7 @@ class HuiEnergyGridBalanceCard extends LitElement implements LovelaceCard {
                 class="net ${isConsumption ? "consumption" : "return"}"
                 id="eq-net"
               >
-                ${fmt(net)} kWh
+                ${fmtEnergy(net)}
               </span>
               <ha-tooltip for="eq-net" placement="top">
                 ${this._i18n.localize(

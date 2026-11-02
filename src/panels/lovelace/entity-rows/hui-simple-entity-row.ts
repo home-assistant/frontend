@@ -52,7 +52,6 @@ class HuiSimpleEntityRow extends LitElement implements LovelaceRow {
           stateObj.state !== UNKNOWN
             ? html`
                 <hui-timestamp-display
-                  .hass=${this.hass}
                   .ts=${new Date(stateObj.state)}
                   .format=${this._config.time_format}
                   capitalize

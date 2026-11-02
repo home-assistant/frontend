@@ -1,19 +1,19 @@
+import type { ContextType } from "@lit/context";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { stringCompare } from "../common/string/compare";
 import type { Blueprint, BlueprintDomain, Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
-import type { HomeAssistant } from "../types";
+import { apiContext, internationalizationContext } from "../data/context";
 import type { HaSelectSelectEvent } from "./ha-select";
 import "./ha-select";
 
 @customElement("ha-blueprint-picker")
 class HaBluePrintPicker extends LitElement {
-  public hass?: HomeAssistant;
-
   @property() public label?: string;
 
   @property() public value = "";
@@ -26,6 +26,13 @@ class HaBluePrintPicker extends LitElement {
 
   @query("ha-select") private _select?: HTMLElement;
 
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
   public open() {
     if (this._select) {
       // @ts-expect-error
@@ -33,40 +40,38 @@ class HaBluePrintPicker extends LitElement {
     }
   }
 
-  private _processedBlueprints = memoizeOne((blueprints?: Blueprints) => {
-    if (!blueprints) {
-      return [];
+  private _processedBlueprints = memoizeOne(
+    (blueprints: Blueprints | undefined, language: string) => {
+      if (!blueprints) {
+        return [];
+      }
+      const result = Object.entries(blueprints)
+        .filter((entry): entry is [string, Blueprint] => !("error" in entry[1]))
+        .map(([path, blueprint]) => ({
+          ...blueprint.metadata,
+          path,
+        }));
+      return result.sort((a, b) => stringCompare(a.name, b.name, language));
     }
-    const result = Object.entries(blueprints)
-      .filter((entry): entry is [string, Blueprint] => !("error" in entry[1]))
-      .map(([path, blueprint]) => ({
-        ...blueprint.metadata,
-        path,
-      }));
-    return result.sort((a, b) =>
-      stringCompare(a.name, b.name, this.hass!.locale.language)
-    );
-  });
+  );
 
   protected render() {
-    if (!this.hass) {
-      return nothing;
-    }
     return html`
       <ha-select
         .label=${
           this.label ||
-          this.hass.localize("ui.components.blueprint-picker.select_blueprint")
+          this._i18n.localize("ui.components.blueprint-picker.select_blueprint")
         }
         .value=${this.value}
         .disabled=${this.disabled}
         @selected=${this._blueprintChanged}
-        .options=${this._processedBlueprints(this.blueprints).map(
-          (blueprint) => ({
-            value: blueprint.path,
-            label: blueprint.name,
-          })
-        )}
+        .options=${this._processedBlueprints(
+          this.blueprints,
+          this._i18n.locale.language
+        ).map((blueprint) => ({
+          value: blueprint.path,
+          label: blueprint.name,
+        }))}
       >
       </ha-select>
     `;
@@ -75,7 +80,7 @@ class HaBluePrintPicker extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (this.blueprints === undefined) {
-      fetchBlueprints(this.hass!, this.domain).then((blueprints) => {
+      fetchBlueprints(this._api.callWS, this.domain).then((blueprints) => {
         this.blueprints = blueprints;
       });
     }

@@ -60,7 +60,7 @@ describe("computeSecurityAlertCardConfig", () => {
     ).toEqual({
       type: "alert",
       entity: "binary_sensor.smoke",
-      color: "red",
+      alert_color: "red",
       visibility: [
         {
           condition: "state",
@@ -85,7 +85,7 @@ describe("computeSecurityAlertCardConfig", () => {
       expect(
         computeSecurityAlertCardConfig(stateObj, {
           entity: stateObj.entity_id,
-        }).color
+        }).alert_color
       ).toBe("red");
     }
   );
