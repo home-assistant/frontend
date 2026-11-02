@@ -572,12 +572,18 @@ export class HuiEnergyUsageGraphCard
         .map((dataset) => dataset.id as string)
         .filter((id) => id?.startsWith("compare-"))
     );
+    const idsWithData = new Set(
+      datasets
+        .filter((dataset) => (dataset.data as unknown[]).length)
+        .map((dataset) => dataset.id as string)
+    );
     return datasets
       .filter(
         (dataset) =>
           dataset.id &&
           !(dataset.id as string).startsWith("compare-") &&
-          (dataset.data as unknown[]).length
+          (idsWithData.has(dataset.id as string) ||
+            idsWithData.has(`compare-${dataset.id}`))
       )
       .map((dataset) => {
         const id = dataset.id as string;
