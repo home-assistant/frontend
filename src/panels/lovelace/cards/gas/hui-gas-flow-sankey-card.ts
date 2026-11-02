@@ -175,11 +175,26 @@ class HuiGasFlowSankeyCard
         .filter((d) => d.stat_rate && this._getCurrentFlowRate(d.stat_rate) > 0)
         .map((d) => d.stat_consumption)
     );
-    const devices = prefs.device_consumption_gas.map((d) =>
-      d.included_in_stat && !usable.has(d.included_in_stat)
-        ? { ...d, included_in_stat: undefined }
-        : d
+    const parentByStat = new Map(
+      prefs.device_consumption_gas.map((d) => [
+        d.stat_consumption,
+        d.included_in_stat,
+      ])
     );
+    const devices = prefs.device_consumption_gas.map((d) => {
+      const seen = new Set([d.stat_consumption]);
+      let parent = d.included_in_stat;
+      while (parent && !usable.has(parent) && !seen.has(parent)) {
+        seen.add(parent);
+        parent = parentByStat.get(parent);
+      }
+      if (parent && !usable.has(parent)) {
+        parent = undefined;
+      }
+      return parent === d.included_in_stat
+        ? d
+        : { ...d, included_in_stat: parent };
+    });
 
     let totalInflow = 0;
     gasSources.forEach((source) => {

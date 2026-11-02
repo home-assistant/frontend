@@ -156,6 +156,11 @@ class HuiGasSankeyCard
     const nodes: Node[] = [];
     const links: Link[] = [];
 
+    const deviceValue = (statConsumption: string) =>
+      statConsumption in this._data!.stats
+        ? calculateStatisticSumGrowth(this._data!.stats[statConsumption]) || 0
+        : 0;
+
     // Sum only top-level devices. Devices with `included_in_stat` are already
     // counted inside their parent stat; adding them again would double-count
     // and push the home total above the source meter.
@@ -164,11 +169,26 @@ class HuiGasSankeyCard
         .filter((d) => deviceValue(d.stat_consumption) > 0)
         .map((d) => d.stat_consumption)
     );
-    const devices = prefs.device_consumption_gas.map((d) =>
-      d.included_in_stat && !usable.has(d.included_in_stat)
-        ? { ...d, included_in_stat: undefined }
-        : d
+    const parentByStat = new Map(
+      prefs.device_consumption_gas.map((d) => [
+        d.stat_consumption,
+        d.included_in_stat,
+      ])
     );
+    const devices = prefs.device_consumption_gas.map((d) => {
+      const seen = new Set([d.stat_consumption]);
+      let parent = d.included_in_stat;
+      while (parent && !usable.has(parent) && !seen.has(parent)) {
+        seen.add(parent);
+        parent = parentByStat.get(parent);
+      }
+      if (parent && !usable.has(parent)) {
+        parent = undefined;
+      }
+      return parent === d.included_in_stat
+        ? d
+        : { ...d, included_in_stat: parent };
+    });
     const totalDownstreamConsumption = devices.reduce(
       (total, d) =>
         d.included_in_stat ? total : total + deviceValue(d.stat_consumption),
@@ -240,11 +260,6 @@ class HuiGasSankeyCard
         value,
       });
     });
-
-    const deviceValue = (statConsumption: string) =>
-      statConsumption in this._data!.stats
-        ? calculateStatisticSumGrowth(this._data!.stats[statConsumption]) || 0
-        : 0;
 
     const deviceLabels = computeEnergyDeviceLabels(
       this._states,
