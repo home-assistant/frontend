@@ -125,6 +125,9 @@ export class HaTabGroup extends TabGroup {
     // Put the tab back after dropping, the owner renders the new order.
     this._sortPlaceholder = document.createComment("sort-placeholder");
     evt.item.after(this._sortPlaceholder);
+    // Touch drags add a copy of the tab to this element, which the tab group
+    // would show and select as an extra tab. The dimmed tab shows the position.
+    this.querySelector(":scope > .sortable-fallback")?.remove();
     if (getComputedStyle(this.nav).direction !== "rtl") {
       return;
     }
