@@ -129,6 +129,36 @@ const processSeriesTooltipFormatter = (s: HaECSeriesItem): RawSeriesOption => {
   return s as RawSeriesOption;
 };
 
+// replaceMerge keeps a series whose id survives at its old index and puts new
+// series in the freed slots, which can reorder stacked series.
+const replaceMergeKeepsOrder = (
+  prevIds: unknown[] | undefined,
+  nextIds: unknown[]
+): boolean => {
+  if (!prevIds) {
+    return true;
+  }
+  const kept = new Set(nextIds);
+  const slots = prevIds.map((id) => (kept.has(id) ? id : undefined));
+  const existing = new Set(prevIds);
+  for (const id of nextIds) {
+    if (existing.has(id)) {
+      continue;
+    }
+    const hole = slots.indexOf(undefined);
+    if (hole === -1) {
+      slots.push(id);
+    } else {
+      slots[hole] = id;
+    }
+  }
+  const order = slots.filter((id) => id !== undefined);
+  return (
+    order.length === nextIds.length &&
+    order.every((id, index) => id === nextIds[index])
+  );
+};
+
 export type CustomLegendOption = ECOption["legend"] & {
   type: "custom";
   data?: {
@@ -287,6 +317,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _listeners: (() => void)[] = [];
 
   private _originalZrFlush?: () => void;
+
+  private _seriesIds?: unknown[];
 
   private _pendingSetup = false;
 
@@ -962,9 +994,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
 
       this._updateHiddenStatsFromOptions(this.options);
 
+      const series = this._getSeries();
+      this._seriesIds = ensureArray(series).map((item) => item.id);
       this.chart.setOption({
         ...this._createOptions(),
-        series: this._getSeries(),
+        series,
       });
       this._legendItemCount = this._getLegendItems()?.length;
       this._updateSankeyRoam();
@@ -1534,6 +1568,16 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
 
     const replaceMerge = options.series ? ["series"] : [];
+    if (options.series) {
+      const ids = ensureArray(options.series).map((series) => series.id);
+      if (
+        ids.every((id) => id !== undefined) &&
+        !replaceMergeKeepsOrder(this._seriesIds, ids)
+      ) {
+        this.chart.setOption({ series: [] }, { replaceMerge });
+      }
+      this._seriesIds = ids;
+    }
     this.chart.setOption(options, { replaceMerge });
   }
 

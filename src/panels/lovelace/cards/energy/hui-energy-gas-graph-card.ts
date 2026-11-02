@@ -26,7 +26,6 @@ import {
 import type { EnergyData } from "../../../../data/energy";
 import {
   energySourcesByType,
-  shouldCombineEnergySources,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -310,7 +309,7 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
       energyData,
       computedStyles: getComputedStyle(this),
       now: endOfToday(),
-      combinedName: shouldCombineEnergySources(this._config!, energyData)
+      combinedName: this._config!.combine_sources
         ? this._i18n.localize(
             "ui.panel.lovelace.cards.energy.energy_distribution.gas"
           )

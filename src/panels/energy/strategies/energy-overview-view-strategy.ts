@@ -33,7 +33,6 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
           collection_key: collectionKey,
           opening_direction: "right",
           vertical_opening_direction: "up",
-          hide_combine_sources: true,
         },
       },
     };
@@ -116,6 +115,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
             ),
             type: "power-sources-graph",
             collection_key: collectionKey,
+            combine_sources: true,
             show_legend: false,
           },
         ],

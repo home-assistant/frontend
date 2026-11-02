@@ -12,8 +12,13 @@ import {
   internationalizationContext,
   registriesContext,
   statesContext,
+  uiContext,
 } from "../../../../data/context";
-import type { EnergyData } from "../../../../data/energy";
+import type {
+  EnergyConsumptionData,
+  EnergyData,
+  EnergySourceByType,
+} from "../../../../data/energy";
 import {
   computeConsumptionData,
   computeEnergyDeviceLabels,
@@ -33,6 +38,7 @@ import type {
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
   HomeAssistantRegistries,
+  HomeAssistantUI,
 } from "../../../../types";
 import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { EnergySankeyCardConfig } from "../types";
@@ -40,7 +46,10 @@ import "../../../../components/chart/ha-sankey-chart";
 import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
 import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
+import { getEnergyColor } from "./common/color";
+import type { SankeyFlowShare } from "./common/sankey";
 import {
+  addSplitSankeyLinks,
   buildSankeyDeviceNodes,
   buildSankeyLayout,
   DEFAULT_MAX_SANKEY_DEVICES,
@@ -105,6 +114,13 @@ class HuiEnergySankeyCard
   @state()
   @consume({ context: registriesContext, subscribe: true })
   private _registries!: HomeAssistantRegistries;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean>({
+    transformer: ({ themes }) => themes.darkMode,
+  })
+  private _darkMode!: boolean;
 
   // Not @state: labels and area grouping refresh with _data, not per state.
   @consume({ context: statesContext, subscribe: true })
@@ -173,7 +189,19 @@ class HuiEnergySankeyCard
 
     const minEnergyThreshold = homeNode.value * MIN_SANKEY_THRESHOLD_FACTOR;
 
-    if (types.battery) {
+    const combine = this._config.combine_sources ?? true;
+    if (!combine) {
+      const separate = this._computeSeparateSources(
+        types,
+        consumption,
+        summedData.timestamps,
+        computedStyle
+      );
+      nodes.push(...separate.nodes);
+      links.push(...separate.links);
+    }
+
+    if (combine && types.battery) {
       const totalBatteryOut = summedData.total.from_battery ?? 0;
       const totalBatteryIn = summedData.total.to_battery ?? 0;
 
@@ -223,7 +251,7 @@ class HuiEnergySankeyCard
       }
     }
 
-    if (types.grid) {
+    if (combine && types.grid) {
       const totalFromGrid = summedData.total.from_grid ?? 0;
 
       nodes.push({
@@ -246,7 +274,7 @@ class HuiEnergySankeyCard
     }
 
     // Add solar if available
-    if (types.solar) {
+    if (combine && types.solar) {
       const totalSolarProduction = summedData.total.solar ?? 0;
 
       nodes.push({
@@ -267,7 +295,7 @@ class HuiEnergySankeyCard
     }
 
     // Add grid return if available
-    if (types.grid && types.grid.some((g) => g.stat_energy_to)) {
+    if (combine && types.grid && types.grid.some((g) => g.stat_energy_to)) {
       const totalToGrid = summedData.total.to_grid ?? 0;
 
       nodes.push({
@@ -389,6 +417,162 @@ class HuiEnergySankeyCard
         </div>
       </ha-card>
     `;
+  }
+
+  private _computeSeparateSources(
+    types: EnergySourceByType,
+    consumption: EnergyConsumptionData,
+    timestamps: number[],
+    computedStyle: CSSStyleDeclaration
+  ): { nodes: Node[]; links: Link[] } {
+    interface SourceNode {
+      id: string;
+      values?: Record<number, number>;
+    }
+    const nodes: Node[] = [];
+
+    const addNode = (
+      type: string,
+      statId: string,
+      colorVariable: string,
+      idx: number,
+      index: number,
+      name: string | undefined
+    ): SourceNode => {
+      const id = `${type}:${statId}`;
+      const values: Record<number, number> = {};
+      let total = 0;
+      this._data!.stats[statId]?.forEach(({ start, change }) => {
+        if (change === null || change === undefined) {
+          return;
+        }
+        values[start] = (values[start] ?? 0) + change;
+        total += change;
+      });
+      nodes.push({
+        id,
+        label:
+          name ||
+          getStatisticLabel(
+            this._states,
+            this._formatEntityName,
+            statId,
+            this._data!.statsMetadata[statId]
+          ),
+        value: total,
+        color: getEnergyColor(
+          computedStyle,
+          this._darkMode,
+          false,
+          false,
+          colorVariable,
+          idx
+        ),
+        index,
+        entityId: statId in this._states ? statId : undefined,
+        group: type,
+      });
+      return { id, values };
+    };
+
+    const batteryOut = (types.battery ?? []).map((source, idx) =>
+      addNode(
+        "battery",
+        source.stat_energy_from,
+        "--energy-battery-out-color",
+        idx,
+        0,
+        source.name &&
+          this._i18n.localize(
+            "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
+            { name: source.name }
+          )
+      )
+    );
+    const batteryIn = (types.battery ?? []).map((source, idx) =>
+      addNode(
+        "battery_in",
+        source.stat_energy_to,
+        "--energy-battery-in-color",
+        idx,
+        1,
+        source.name &&
+          this._i18n.localize(
+            "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
+            { name: source.name }
+          )
+      )
+    );
+    const gridIn = (types.grid ?? [])
+      .filter((source) => source.stat_energy_from)
+      .map((source, idx) =>
+        addNode(
+          "grid",
+          source.stat_energy_from!,
+          "--energy-grid-consumption-color",
+          idx,
+          0,
+          source.name && source.stat_energy_to
+            ? this._i18n.localize(
+                "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_imported",
+                { name: source.name }
+              )
+            : source.name
+        )
+      );
+    const solar = (types.solar ?? []).map((source, idx) =>
+      addNode(
+        "solar",
+        source.stat_energy_from,
+        "--energy-solar-color",
+        idx,
+        0,
+        source.name
+      )
+    );
+    const gridOut = (types.grid ?? [])
+      .filter((source) => source.stat_energy_to)
+      .map((source, idx) =>
+        addNode(
+          "grid_return",
+          source.stat_energy_to!,
+          "--energy-grid-return-color",
+          idx,
+          1,
+          source.name && source.stat_energy_from
+            ? this._i18n.localize(
+                "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_exported",
+                { name: source.name }
+              )
+            : source.name
+        )
+      );
+    const home: SourceNode[] = [{ id: "home" }];
+
+    const flows: [Record<number, number>, SourceNode[], SourceNode[]][] = [
+      [consumption.used_battery, batteryOut, home],
+      [consumption.grid_to_battery, gridIn, batteryIn],
+      [consumption.solar_to_battery, solar, batteryIn],
+      [consumption.used_grid, gridIn, home],
+      [consumption.used_solar, solar, home],
+      [consumption.battery_to_grid, batteryOut, gridOut],
+      [consumption.solar_to_grid, solar, gridOut],
+    ];
+    const shares = (group: SourceNode[], t: number): SankeyFlowShare[] =>
+      group.map(({ id, values }) => [id, values ? (values[t] ?? 0) : 1]);
+    const links = new Map<string, Link & { value: number }>();
+    for (const [flow, from, to] of flows) {
+      for (const t of timestamps) {
+        addSplitSankeyLinks(
+          links,
+          flow[t] ?? 0,
+          shares(from, t),
+          shares(to, t)
+        );
+      }
+    }
+
+    return { nodes, links: [...links.values()] };
   }
 
   private _valueFormatter = (value: number) => {

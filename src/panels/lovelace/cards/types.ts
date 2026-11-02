@@ -189,13 +189,14 @@ export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   group_by_area?: boolean;
   max_devices?: number;
   show_values?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
   vertical_opening_direction?: "auto" | "up" | "down";
   opening_direction?: "auto" | "right" | "left" | "center" | "inline";
   disable_compare?: boolean;
-  hide_combine_sources?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergyDistributionCardConfig extends EnergyCardConfig {
@@ -269,6 +270,7 @@ export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
   type: "power-sources-graph";
   show_legend?: boolean;
   expand_legend?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
@@ -281,12 +283,10 @@ export interface PowerSankeyCardConfig extends EnergyCardSankeyConfig {
 
 export interface WaterSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "water-sankey";
-  combine_sources?: boolean;
 }
 
 export interface WaterFlowSankeyCardConfig extends EnergyCardSankeyConfig {
   type: "water-flow-sankey";
-  combine_sources?: boolean;
 }
 
 export type SankeyCardConfig =

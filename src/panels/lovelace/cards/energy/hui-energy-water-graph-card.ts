@@ -7,6 +7,7 @@ import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import { getEnergyColor } from "./common/color";
+import { sumEnergyStatistics } from "./common/sum-statistics";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import "../../../../components/chart/ha-chart-base";
@@ -25,8 +26,6 @@ import type {
 } from "../../../../data/energy";
 import {
   getSuggestedPeriod,
-  shouldCombineEnergySources,
-  sumEnergyStatistics,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -262,9 +261,7 @@ export class HuiEnergyWaterGraphCard
         (source) => source.type === "water"
       ) as WaterSourceTypeEnergyPreference[];
 
-    const combine =
-      shouldCombineEnergySources(this._config!, energyData) &&
-      waterSources.length > 0;
+    const combine = !!this._config!.combine_sources && waterSources.length > 0;
     const statIds = waterSources.map((source) => source.stat_energy_from);
     const chartSources: WaterChartSource[] = combine
       ? [

@@ -59,7 +59,7 @@ export class HuiEnergySankeyCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne((localize: LocalizeFunc) => {
+  private _schema = memoizeOne((localize: LocalizeFunc, type: string) => {
     const schema: HaFormSchema[] = [
       { name: "title", selector: { text: {} } },
       {
@@ -101,12 +101,8 @@ export class HuiEnergySankeyCardEditor
               },
               {
                 name: "combine_sources",
-                visible: {
-                  field: "type",
-                  operator: "in",
-                  value: ["water-sankey", "water-flow-sankey"],
-                },
                 required: false,
+                default: type === "energy-sankey" || type === "power-sankey",
                 selector: { boolean: {} },
               },
             ],
@@ -132,7 +128,7 @@ export class HuiEnergySankeyCardEditor
       return nothing;
     }
 
-    const schema = this._schema(this.hass.localize);
+    const schema = this._schema(this.hass.localize, this._config.type);
 
     const data = {
       ...this._config,
@@ -155,9 +151,8 @@ export class HuiEnergySankeyCardEditor
   private _computeHelperCallback = (schema) => {
     switch (schema.name) {
       case "collection_key":
-      case "combine_sources":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}_description`
+          `ui.panel.lovelace.editor.card.generic.collection_key_description`
         );
       case "max_devices":
         return this.hass!.localize(

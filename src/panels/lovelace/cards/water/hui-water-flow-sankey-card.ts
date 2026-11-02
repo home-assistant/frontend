@@ -18,7 +18,6 @@ import {
   computeEnergyDeviceLabels,
   formatFlowRateShort,
   getFlowRateFromState,
-  shouldCombineEnergySources,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -216,8 +215,7 @@ class HuiWaterFlowSankeyCard
     // - >1 sources: home node aggregates all sources
     // - combined sources: one summed source node is the root (no home node)
     const combineSources =
-      waterSources.length > 0 &&
-      shouldCombineEnergySources(this._config, this._data);
+      waterSources.length > 0 && !!this._config.combine_sources;
     const showHomeNode = !combineSources && waterSources.length !== 1;
     let rootNodeId: string;
 

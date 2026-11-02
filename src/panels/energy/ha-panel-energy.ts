@@ -1,6 +1,7 @@
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
 import { sanitizeNavigationPath } from "../../common/url/sanitize-navigation-path";
 import "../../components/ha-alert";
@@ -16,6 +17,8 @@ import "../lovelace/hui-root";
 import type { Lovelace } from "../lovelace/types";
 import { DEFAULT_POWER_COLLECTION_KEY } from "../../data/energy";
 
+const COMBINE_SOURCES_STORAGE_KEY = "energy-combine-sources";
+
 @customElement("ha-panel-energy")
 class PanelEnergy extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -27,6 +30,9 @@ class PanelEnergy extends LitElement {
   @state() private _lovelace?: Lovelace;
 
   @state() private _config: EnergyFrontendSystemData = {};
+
+  private _combineSources =
+    localStorage.getItem(COMBINE_SOURCES_STORAGE_KEY) === "true";
 
   @property({ attribute: false }) public route?: {
     path: string;
@@ -110,6 +116,7 @@ class PanelEnergy extends LitElement {
               ? DEFAULT_POWER_COLLECTION_KEY
               : undefined,
           hidden_cards: this._config.hidden_cards,
+          combine_sources: this._combineSources,
         },
       },
       this.hass
@@ -163,6 +170,7 @@ class PanelEnergy extends LitElement {
           sanitizeNavigationPath(this._searchParms.get("backPath")) || "/"
         }
         @reload-energy-panel=${this._reloadConfig}
+        @energy-combine-sources-changed=${this._combineSourcesChanged}
       >
       </hui-root>
     `;
@@ -180,6 +188,18 @@ class PanelEnergy extends LitElement {
     };
     const tab = tabMap[viewPath] || "electricity";
     navigate(`/config/energy/${tab}?historyBack=1`);
+  }
+
+  private _combineSourcesChanged(
+    ev: HASSDomEvent<HASSDomEvents["energy-combine-sources-changed"]>
+  ) {
+    this._combineSources = ev.detail.combine;
+    if (this._combineSources) {
+      localStorage.setItem(COMBINE_SOURCES_STORAGE_KEY, "true");
+    } else {
+      localStorage.removeItem(COMBINE_SOURCES_STORAGE_KEY);
+    }
+    this._setLovelace();
   }
 
   private async _reloadConfig() {

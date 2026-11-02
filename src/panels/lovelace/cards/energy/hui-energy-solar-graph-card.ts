@@ -29,7 +29,6 @@ import type {
 } from "../../../../data/energy";
 import {
   getEnergySolarForecasts,
-  shouldCombineEnergySources,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -269,7 +268,7 @@ export class HuiEnergySolarGraphCard
       forecasts,
       computedStyles: getComputedStyle(this),
       now: endOfToday(),
-      combineSources: shouldCombineEnergySources(this._config, energyData),
+      combineSources: this._config.combine_sources,
     });
 
     this._start = result.start;

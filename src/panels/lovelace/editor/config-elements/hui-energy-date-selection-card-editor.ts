@@ -24,7 +24,6 @@ const cardConfigStruct = assign(
   baseLovelaceCardConfig,
   object({
     disable_compare: optional(boolean()),
-    hide_combine_sources: optional(boolean()),
     collection_key: optional(string()),
     vertical_opening_direction: optional(
       union([literal("auto"), literal("up"), literal("down")])
@@ -97,11 +96,6 @@ export class HuiEnergyDateSelectionCardEditor
             selector: { boolean: {} },
           },
           {
-            name: "hide_combine_sources",
-            required: false,
-            selector: { boolean: {} },
-          },
-          {
             type: "string",
             name: "collection_key",
             required: false,
@@ -153,7 +147,6 @@ export class HuiEnergyDateSelectionCardEditor
       case "vertical_opening_direction":
       case "opening_direction":
       case "disable_compare":
-      case "hide_combine_sources":
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.energy-date-selection.${schema.name}`
         );

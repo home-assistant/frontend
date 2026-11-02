@@ -7,7 +7,11 @@ import {
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { hasGasSource, isEnergyCardVisible } from "./energy-cards";
+import {
+  getCombineSources,
+  hasGasSource,
+  isEnergyCardVisible,
+} from "./energy-cards";
 import type { LovelaceSectionConfig } from "../../../data/lovelace/config/section";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 
@@ -56,6 +60,11 @@ export class GasViewStrategy extends ReactiveElement {
       return view;
     }
 
+    const combineSources = getCombineSources(_config, prefs);
+    if (combineSources !== undefined) {
+      view.footer!.card!.combine_sources = combineSources;
+    }
+
     const section = view.sections![0] as LovelaceSectionConfig;
 
     section.cards!.push({
@@ -71,6 +80,7 @@ export class GasViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.energy_gas_graph_title"),
         type: "energy-gas-graph",
         collection_key: collectionKey,
+        combine_sources: combineSources,
         grid_options: {
           columns: 24,
         },
@@ -85,6 +95,7 @@ export class GasViewStrategy extends ReactiveElement {
         type: "energy-sources-table",
         collection_key: collectionKey,
         types: ["gas"],
+        combine_sources: combineSources,
         grid_options: {
           columns: 12,
         },

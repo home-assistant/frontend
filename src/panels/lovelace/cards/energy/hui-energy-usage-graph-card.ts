@@ -8,6 +8,7 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { getEnergyColor } from "./common/color";
+import { sumEnergyStatistics } from "./common/sum-statistics";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -33,8 +34,6 @@ import {
   energySourcesByType,
   getSuggestedPeriod,
   getSummedData,
-  shouldCombineEnergySources,
-  sumEnergyStatistics,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -314,7 +313,7 @@ export class HuiEnergyUsageGraphCard
       return;
     }
 
-    const combine = shouldCombineEnergySources(this._config!, energyData);
+    const combine = !!this._config!.combine_sources;
     const datasets: BarSeriesOption[] = [];
 
     let yMin = Infinity;

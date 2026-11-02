@@ -6,14 +6,12 @@ import type {
   EnergyData,
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import {
-  getSuggestedPeriod,
-  sumEnergyStatistics,
-} from "../../../../data/energy";
+import { getSuggestedPeriod } from "../../../../data/energy";
 import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
 import { getEnergyColor } from "./common/color";
+import { sumEnergyStatistics } from "./common/sum-statistics";
 import {
   type EnergyDataPoint,
   generateFillBuckets,

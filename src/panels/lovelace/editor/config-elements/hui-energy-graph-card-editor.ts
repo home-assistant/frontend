@@ -1,5 +1,6 @@
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import {
   assert,
   assign,
@@ -69,6 +70,7 @@ const SCHEMA: HaFormSchema[] = [
         "energy-solar-graph",
         "energy-gas-graph",
         "energy-water-graph",
+        "power-sources-graph",
       ],
     },
     required: false,
@@ -143,12 +145,23 @@ export class HuiEnergyGraphCardEditor
     return html` <ha-form
       .hass=${this.hass}
       .data=${data}
-      .schema=${SCHEMA}
+      .schema=${this._schema(this._config.type)}
       .computeLabel=${this._computeLabelCallback}
       .computeHelper=${this._computeHelperCallback}
       @value-changed=${this._valueChanged}
     ></ha-form>`;
   }
+
+  private _schema = memoizeOne((type: string): HaFormSchema[] =>
+    SCHEMA.map((field) =>
+      field.name === "combine_sources"
+        ? ({
+            ...field,
+            default: type === "power-sources-graph",
+          } as HaFormSchema)
+        : field
+    )
+  );
 
   private _valueChanged(ev: CustomEvent): void {
     fireEvent(this, "config-changed", { config: ev.detail.value });
@@ -157,9 +170,8 @@ export class HuiEnergyGraphCardEditor
   private _computeHelperCallback = (schema) => {
     switch (schema.name) {
       case "collection_key":
-      case "combine_sources":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}_description`
+          `ui.panel.lovelace.editor.card.generic.collection_key_description`
         );
       default:
         return undefined;

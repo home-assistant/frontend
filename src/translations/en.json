@@ -11007,7 +11007,6 @@
               "name": "Energy date picker",
               "description": "This card allows you to pick what data to show on linked statistics graphs and other energy cards.",
               "disable_compare": "Disable data comparison",
-              "hide_combine_sources": "Hide the combine sources option",
               "vertical_opening_direction": "Vertical opening direction",
               "vertical_opening_directions": {
                 "auto": "Automatic",
@@ -11231,7 +11230,6 @@
               "collection_key": "Energy card collection key",
               "collection_key_description": "Optional key to connect a collection of energy cards to any matching date picker. Energy cards on this dashboard with no key will automatically be linked together.",
               "combine_sources": "Combine sources",
-              "combine_sources_description": "Show sources of the same type as one. If not set, this follows the combine sources option of the energy date picker.",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",

@@ -24,7 +24,6 @@ import {
 import type { EnergyData, EnergySourceByType } from "../../../../data/energy";
 import {
   energySourcesByType,
-  shouldCombineEnergySources,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -564,8 +563,7 @@ export class HuiEnergySourcesTableCard
     };
 
     const showOnlyTotals = this._config.show_only_totals;
-    const combine =
-      !showOnlyTotals && shouldCombineEnergySources(this._config, this._data);
+    const combine = !showOnlyTotals && !!this._config.combine_sources;
 
     const combinedRows: Partial<
       Record<

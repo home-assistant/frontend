@@ -16,7 +16,6 @@ import {
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeEnergyDeviceLabels,
-  shouldCombineEnergySources,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -205,7 +204,7 @@ class HuiWaterSankeyCard
     const waterColor = computedStyle
       .getPropertyValue("--energy-water-color")
       .trim();
-    const combineSources = shouldCombineEnergySources(this._config, this._data);
+    const combineSources = this._config.combine_sources;
     if (combineSources && totalSourceSupply > 0) {
       nodes.push({
         id: "source-water",

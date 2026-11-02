@@ -395,6 +395,68 @@ describe("generatePowerSourcesGraphData with a home meter", () => {
   });
 });
 
+describe("generatePowerSourcesGraphData with separate sources", () => {
+  it("draws one series per source that sums to the combined series", () => {
+    const solar2 = "sensor.solar_power_2";
+    const energyData = buildHomeEnergyData(
+      [
+        solarSource,
+        {
+          type: "battery",
+          stat_energy_from: "sensor.battery_out",
+          stat_energy_to: "sensor.battery_in",
+          stat_rate: RATE_IDS.battery,
+          name: "Garage",
+        } as EnergySource,
+        { ...solarSource, stat_rate: solar2 } as EnergySource,
+      ],
+      {
+        [RATE_IDS.solar]: hourlyStats([1, 2]),
+        [solar2]: hourlyStats([0.5, 0.25]),
+        [RATE_IDS.battery]: hourlyStats([-1, 1]),
+      }
+    );
+    const params = {
+      localize: mockLocalize,
+      formatPower: (w: number) => `${w} W`,
+      states: {} as HassEntities,
+      computedStyles,
+      energyData,
+      start: new Date(FIXED_EPOCH_MS),
+      end: new Date(FIXED_EPOCH_MS + dayMs),
+      now: FIXED_EPOCH_MS + dayMs + 60 * 60 * 1000,
+    };
+    const combined = generatePowerSourcesGraphData(params);
+    const separate = generatePowerSourcesGraphData({
+      ...params,
+      combineSources: false,
+    });
+
+    expect(separate.chartData.map((series) => series.id)).toEqual([
+      `solar-${RATE_IDS.solar}`,
+      `solar-${solar2}`,
+      `battery-${RATE_IDS.battery}`,
+      `battery-${RATE_IDS.battery}-negative`,
+      "usage",
+    ]);
+    expect(separate.legendData!.map((item) => item.id)).toEqual([
+      `solar-${RATE_IDS.solar}`,
+      `solar-${solar2}`,
+      `battery-${RATE_IDS.battery}`,
+      "usage",
+    ]);
+    const ys = (series: (typeof separate.chartData)[number]) =>
+      (series.data as ({ value: number[] } | number[])[]).map(
+        (p) => ("value" in p ? p.value : p)[1]
+      );
+    const solarSum = ys(separate.chartData[0]).map(
+      (y, i) => y + ys(separate.chartData[1])[i]
+    );
+    expect(solarSum).toEqual(ys(combined.chartData[0]));
+    expect(separate.chartData[4].data).toEqual(combined.chartData[3].data);
+  });
+});
+
 describe("getPowerLegendValues with a home meter", () => {
   const format = (w: number) => `${w} W`;
   const power = (id: string, value: string) =>

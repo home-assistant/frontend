@@ -9,6 +9,7 @@ import type { LovelaceStrategyConfig } from "../../../data/lovelace/config/strat
 export interface EnergyViewStrategyConfig extends LovelaceStrategyConfig {
   collection_key?: string;
   hidden_cards?: string[];
+  combine_sources?: boolean;
 }
 
 export type EnergyViewPath =
@@ -48,6 +49,22 @@ export const hasEnergySource = (prefs: EnergyPreferences): boolean =>
   hasSolar(prefs) ||
   hasBattery(prefs) ||
   hasHomeSource(prefs);
+
+const hasCombinableSources = (prefs: EnergyPreferences): boolean =>
+  new Set(prefs.energy_sources.map((source) => source.type)).size <
+  prefs.energy_sources.length;
+
+/**
+ * The dashboard's combine sources setting, or undefined while no source type
+ * is configured twice, so every card keeps its own default.
+ */
+export const getCombineSources = (
+  config: EnergyViewStrategyConfig,
+  prefs: EnergyPreferences
+): boolean | undefined =>
+  config.combine_sources || hasCombinableSources(prefs)
+    ? !!config.combine_sources
+    : undefined;
 
 export const hasGasSource = (prefs: EnergyPreferences): boolean =>
   prefs.energy_sources.some((source) => source.type === "gas");

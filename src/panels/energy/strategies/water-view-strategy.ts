@@ -10,6 +10,7 @@ import type { HomeAssistant } from "../../../types";
 import type { LovelaceStrategyDependency } from "../../lovelace/strategies/types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
+  getCombineSources,
   hasWaterDevices,
   hasWaterSource,
   isEnergyCardVisible,
@@ -61,6 +62,11 @@ export class WaterViewStrategy extends ReactiveElement {
       return view;
     }
 
+    const combineSources = getCombineSources(_config, prefs);
+    if (combineSources !== undefined) {
+      view.footer!.card!.combine_sources = combineSources;
+    }
+
     const section = view.sections![0] as LovelaceSectionConfig;
 
     section.cards!.push({
@@ -76,6 +82,7 @@ export class WaterViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.energy_water_graph_title"),
         type: "energy-water-graph",
         collection_key: collectionKey,
+        combine_sources: combineSources,
         grid_options: {
           columns: 24,
         },
@@ -90,6 +97,7 @@ export class WaterViewStrategy extends ReactiveElement {
         type: "energy-sources-table",
         collection_key: collectionKey,
         types: ["water"],
+        combine_sources: combineSources,
         grid_options: {
           columns: 12,
         },
@@ -107,6 +115,7 @@ export class WaterViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.water_sankey_title"),
         type: "water-sankey",
         collection_key: collectionKey,
+        combine_sources: combineSources,
         group_by_floor: showFloorsAndAreas,
         group_by_area: showFloorsAndAreas,
         grid_options: {

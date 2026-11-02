@@ -139,9 +139,8 @@ export class HuiEnergySourcesTableCardEditor
   private _computeHelperCallback = (schema) => {
     switch (schema.name) {
       case "collection_key":
-      case "combine_sources":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.${schema.name}_description`
+          `ui.panel.lovelace.editor.card.generic.collection_key_description`
         );
       default:
         return undefined;

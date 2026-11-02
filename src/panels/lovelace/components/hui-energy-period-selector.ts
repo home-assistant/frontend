@@ -48,6 +48,7 @@ import {
 } from "../../../common/datetime/format_date";
 import { consume } from "../../../common/decorators/consume";
 import { transform } from "../../../common/decorators/transform";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { debounce } from "../../../common/util/debounce";
@@ -72,7 +73,6 @@ import {
   CompareMode,
   downloadEnergyData,
   getEnergyDefaultPeriodStorageKey,
-  hasCombinableEnergySources,
 } from "../../../data/energy";
 import { EnergyCollectionController } from "../../../data/energy-collection-controller";
 import type {
@@ -117,8 +117,7 @@ export class HuiEnergyPeriodSelector extends LitElement {
   @property({ type: Boolean, attribute: "allow-compare" }) public allowCompare =
     true;
 
-  @property({ type: Boolean, attribute: "allow-combine-sources" })
-  public allowCombineSources = true;
+  @property({ attribute: false }) public combineSources?: boolean;
 
   @property({ attribute: "vertical-opening-direction" })
   public verticalOpeningDirection?: VerticalOpeningDirection;
@@ -149,10 +148,6 @@ export class HuiEnergyPeriodSelector extends LitElement {
   @state() private _ranges: DateRangePickerRanges = {};
 
   @state() private _compare = false;
-
-  @state() private _combineSources = false;
-
-  @state() private _hasCombinableSources = false;
 
   @state() private _collapseButtons = false;
 
@@ -287,13 +282,11 @@ export class HuiEnergyPeriodSelector extends LitElement {
         action: () => this._toggleCompare(),
       },
       {
-        path: this._combineSources
+        path: this.combineSources
           ? mdiCheckboxOutline
           : mdiCheckboxBlankOutline,
         alwaysCollapse: true,
-        hidden:
-          !this.allowCombineSources ||
-          (!this._hasCombinableSources && !this._combineSources),
+        hidden: this.combineSources === undefined,
         label: this._i18n.localize(
           "ui.panel.lovelace.components.energy_period_selector.combine_sources"
         ),
@@ -762,8 +755,6 @@ export class HuiEnergyPeriodSelector extends LitElement {
     }
     this._loading = false;
     this._compare = energyData.startCompare !== undefined;
-    this._combineSources = !!energyData.combineSources;
-    this._hasCombinableSources = hasCombinableEnergySources(energyData.prefs);
     this._startDate = energyData.start;
     this._endDate = energyData.end || endOfToday();
   }
@@ -784,7 +775,9 @@ export class HuiEnergyPeriodSelector extends LitElement {
   }
 
   private _toggleCombineSources() {
-    this._energyCollection.collection?.setCombineSources(!this._combineSources);
+    fireEvent(this, "energy-combine-sources-changed", {
+      combine: !this.combineSources,
+    });
   }
 
   private _downloadData() {
@@ -954,5 +947,8 @@ export class HuiEnergyPeriodSelector extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "hui-energy-period-selector": HuiEnergyPeriodSelector;
+  }
+  interface HASSDomEvents {
+    "energy-combine-sources-changed": { combine: boolean };
   }
 }

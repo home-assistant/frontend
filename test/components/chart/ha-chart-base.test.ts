@@ -85,4 +85,17 @@ describe("ha-chart-base updates", () => {
     internals._updateHiddenStatsFromOptions(internals.options);
     expect(hiddenUpdates()).toBe(1);
   });
+
+  it("keeps the series order when replaceMerge would move a kept series", () => {
+    const { internals } = createChart();
+    const series = (...ids: string[]) => ids.map((id) => ({ id }));
+    internals._seriesIds = ["grid_1", "grid_2", "solar", "battery_1"];
+
+    internals._setChartOptions({ series: series("grid", "solar", "battery") });
+    expect(internals.chart.setOption.mock.calls[0][0]).toEqual({ series: [] });
+
+    internals.chart.setOption.mockClear();
+    internals._setChartOptions({ series: series("grid", "solar", "home") });
+    expect(internals.chart.setOption).toHaveBeenCalledOnce();
+  });
 });
