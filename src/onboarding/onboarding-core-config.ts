@@ -154,8 +154,8 @@ class OnboardingCoreConfig extends LitElement {
     if (ev.detail.value.language) {
       this._language = ev.detail.value.language;
     }
-    if (ev.detail.value.timezone) {
-      this._timeZone = ev.detail.value.timezone;
+    if (ev.detail.value.time_zone) {
+      this._timeZone = ev.detail.value.time_zone;
       this._timeZoneDetected = true;
     }
     if (ev.detail.value.unit_system) {
