@@ -13213,7 +13213,7 @@
           },
           "include_pre_releases": {
             "title": "Include pre-releases of {name}?",
-            "text": "Updates will include versions marked as pre-release on GitHub, such as betas and release candidates. They are for testers and can contain unstable changes.",
+            "text": "Updates will include versions marked as pre-release on GitHub, such as betas and release candidates. They are for testers and can contain unstable changes. If you exclude them again later, an installed pre-release stays until a newer stable version is out.",
             "confirm": "Include"
           },
           "uninstall": {
