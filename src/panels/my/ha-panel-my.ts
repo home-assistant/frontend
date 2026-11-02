@@ -509,6 +509,7 @@ export const getMyRedirects = (): Redirects => ({
       provider: "string?",
       search: "string?",
       integration: "string?",
+      level: "string?",
       raw: "string?",
     },
   },
