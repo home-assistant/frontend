@@ -2,10 +2,12 @@ import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../common/translations/localize";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-alert";
 import "../../../components/ha-card";
@@ -14,7 +16,7 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-list";
 import "../../../components/ha-list-item";
-import "../../../components/ha-spinner";
+import "../../../components/skeleton/ha-skeleton-text";
 import { getSignedPath } from "../../../data/auth";
 import {
   getCoreLogFileDownloadUnavailableReason,
@@ -33,6 +35,14 @@ import { fileDownload } from "../../../util/file_download";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
+
+// Primary and secondary line widths, in percent, for the loading rows
+const SKELETON_ROW_WIDTHS = [
+  [72, 40],
+  [56, 48],
+  [84, 36],
+  [64, 44],
+];
 
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {
@@ -128,157 +138,168 @@ export class SystemLogCard extends LitElement {
     return html`
       <div class="system-log-intro">
         <ha-card outlined>
+          <div class="header">
+            <h1 class="card-header">
+              ${
+                this.header ||
+                this.hass.localize("ui.panel.config.logs.caption")
+              }
+            </h1>
+            <div class="header-buttons">
+              ${
+                logFileDownloadUnavailableReason
+                  ? nothing
+                  : html`<ha-icon-button
+                      .path=${mdiDownload}
+                      @click=${this._downloadLogs}
+                      .label=${this.hass.localize(
+                        "ui.panel.config.logs.download_logs"
+                      )}
+                    ></ha-icon-button>`
+              }
+              <ha-icon-button
+                .path=${mdiRefresh}
+                @click=${this.fetchData}
+                .label=${this.hass.localize("ui.common.refresh")}
+              ></ha-icon-button>
+
+              ${
+                logFileDownloadUnavailableReason && !this.integrations?.length
+                  ? nothing
+                  : html`<ha-dropdown @wa-select=${this._handleOverflowAction}>
+                      <ha-icon-button
+                        slot="trigger"
+                        .path=${mdiDotsVertical}
+                        .label=${this.hass.localize("ui.common.menu")}
+                      ></ha-icon-button>
+                      <ha-dropdown-item value="show-full-logs">
+                        <ha-svg-icon slot="icon" .path=${mdiText}></ha-svg-icon>
+                        ${this.hass.localize(
+                          "ui.panel.config.logs.show_full_logs"
+                        )}
+                      </ha-dropdown-item>
+                    </ha-dropdown>`
+              }
+            </div>
+          </div>
+          ${
+            logFileDownloadUnavailableReason
+              ? html`<ha-alert alert-type="warning">
+                  ${this.hass.localize(
+                    `ui.panel.config.logs.log_file_disabled.${logFileDownloadUnavailableReason}`
+                  )}
+                </ha-alert>`
+              : nothing
+          }
           ${
             this._items === undefined
-              ? html`
-                  <div class="loading-container">
-                    <ha-spinner></ha-spinner>
+              ? html`<ha-fade-in .duration=${300} easing="ease-in">
+                  <div
+                    class="skeleton"
+                    role="progressbar"
+                    aria-label=${this.hass.localize(
+                      "ui.panel.config.logs.loading_log"
+                    )}
+                  >
+                    ${SKELETON_ROW_WIDTHS.map(
+                      ([primary, secondary]) => html`
+                        <div class="skeleton-row">
+                          <ha-skeleton-text
+                            class="primary"
+                            style=${styleMap({
+                              "--ha-skeleton-text-width": `${primary}%`,
+                            })}
+                          ></ha-skeleton-text>
+                          <ha-skeleton-text
+                            class="secondary"
+                            style=${styleMap({
+                              "--ha-skeleton-text-width": `${secondary}%`,
+                            })}
+                          ></ha-skeleton-text>
+                        </div>
+                      `
+                    )}
                   </div>
-                `
-              : html`
-                  <div class="header">
-                    <h1 class="card-header">
-                      ${
-                        this.header ||
-                        this.hass.localize("ui.panel.config.logs.caption")
-                      }
-                    </h1>
-                    <div class="header-buttons">
-                      ${
-                        logFileDownloadUnavailableReason
-                          ? nothing
-                          : html`<ha-icon-button
-                              .path=${mdiDownload}
-                              @click=${this._downloadLogs}
-                              .label=${this.hass.localize(
-                                "ui.panel.config.logs.download_logs"
-                              )}
-                            ></ha-icon-button>`
-                      }
-                      <ha-icon-button
-                        .path=${mdiRefresh}
-                        @click=${this.fetchData}
-                        .label=${this.hass.localize("ui.common.refresh")}
-                      ></ha-icon-button>
-
-                      ${
-                        logFileDownloadUnavailableReason &&
-                        !this.integrations?.length
-                          ? nothing
-                          : html`<ha-dropdown
-                              @wa-select=${this._handleOverflowAction}
-                            >
-                              <ha-icon-button
-                                slot="trigger"
-                                .path=${mdiDotsVertical}
-                                .label=${this.hass.localize("ui.common.menu")}
-                              ></ha-icon-button>
-                              <ha-dropdown-item value="show-full-logs">
-                                <ha-svg-icon
-                                  slot="icon"
-                                  .path=${mdiText}
-                                ></ha-svg-icon>
-                                ${this.hass.localize(
-                                  "ui.panel.config.logs.show_full_logs"
-                                )}
-                              </ha-dropdown-item>
-                            </ha-dropdown>`
-                      }
+                </ha-fade-in>`
+              : this._items.length === 0
+                ? html`
+                    <div class="card-content empty-content">
+                      ${this.hass.localize("ui.panel.config.logs.no_issues")}
                     </div>
-                  </div>
-                  ${
-                    logFileDownloadUnavailableReason
-                      ? html`<ha-alert alert-type="warning">
-                          ${this.hass.localize(
-                            `ui.panel.config.logs.log_file_disabled.${logFileDownloadUnavailableReason}`
-                          )}
-                        </ha-alert>`
-                      : nothing
-                  }
-                  ${
-                    this._items.length === 0
-                      ? html`
-                          <div class="card-content empty-content">
-                            ${this.hass.localize("ui.panel.config.logs.no_issues")}
-                          </div>
+                  `
+                : filteredItems.length === 0 &&
+                    (this.filter || this.integrations?.length)
+                  ? html`<div class="card-content">
+                      ${
+                        this.filter
+                          ? this.hass.localize(
+                              "ui.panel.config.logs.no_issues_search",
+                              { term: this.filter }
+                            )
+                          : this.hass.localize(
+                              "ui.panel.config.logs.no_issues_integration",
+                              {
+                                integration: formatListWithAnds(
+                                  this.hass.locale,
+                                  this.integrations!.map((domain) =>
+                                    domainToName(this.hass.localize, domain)
+                                  )
+                                ),
+                              }
+                            )
+                      }
+                    </div>`
+                  : html`<ha-list
+                      >${filteredItems.map(
+                        (item, idx) => html`
+                          <ha-list-item
+                            @click=${this._openLog}
+                            .logItem=${item}
+                            twoline
+                          >
+                            ${item.message[0]}
+                            <span slot="secondary" class="secondary">
+                              ${this._timestamp(item)} –
+                              ${html`(<span class=${item.level}
+                                  >${this.hass.localize(
+                                    `ui.panel.config.logs.level.${item.level}`
+                                  )}</span
+                                >) `}
+                              ${
+                                integrations[idx]
+                                  ? `${domainToName(
+                                      this.hass!.localize,
+                                      integrations[idx]!
+                                    )}${
+                                      isCustomIntegrationError(item)
+                                        ? ` (${this.hass.localize(
+                                            "ui.panel.config.logs.custom_integration"
+                                          )})`
+                                        : ""
+                                    }`
+                                  : item.source[0]
+                              }
+                              ${
+                                item.count > 1
+                                  ? html` - ${this._multipleMessages(item)} `
+                                  : nothing
+                              }
+                            </span>
+                          </ha-list-item>
                         `
-                      : filteredItems.length === 0 &&
-                          (this.filter || this.integrations?.length)
-                        ? html`<div class="card-content">
-                            ${
-                              this.filter
-                                ? this.hass.localize(
-                                    "ui.panel.config.logs.no_issues_search",
-                                    { term: this.filter }
-                                  )
-                                : this.hass.localize(
-                                    "ui.panel.config.logs.no_issues_integration",
-                                    {
-                                      integration: formatListWithAnds(
-                                        this.hass.locale,
-                                        this.integrations!.map((domain) =>
-                                          domainToName(
-                                            this.hass.localize,
-                                            domain
-                                          )
-                                        )
-                                      ),
-                                    }
-                                  )
-                            }
-                          </div>`
-                        : html`<ha-list
-                            >${filteredItems.map(
-                              (item, idx) => html`
-                                <ha-list-item
-                                  @click=${this._openLog}
-                                  .logItem=${item}
-                                  twoline
-                                >
-                                  ${item.message[0]}
-                                  <span slot="secondary" class="secondary">
-                                    ${this._timestamp(item)} –
-                                    ${html`(<span class=${item.level}
-                                        >${this.hass.localize(
-                                          `ui.panel.config.logs.level.${item.level}`
-                                        )}</span
-                                      >) `}
-                                    ${
-                                      integrations[idx]
-                                        ? `${domainToName(
-                                            this.hass!.localize,
-                                            integrations[idx]!
-                                          )}${
-                                            isCustomIntegrationError(item)
-                                              ? ` (${this.hass.localize(
-                                                  "ui.panel.config.logs.custom_integration"
-                                                )})`
-                                              : ""
-                                          }`
-                                        : item.source[0]
-                                    }
-                                    ${
-                                      item.count > 1
-                                        ? html`
-                                            - ${this._multipleMessages(item)}
-                                          `
-                                        : nothing
-                                    }
-                                  </span>
-                                </ha-list-item>
-                              `
-                            )}</ha-list
-                          >`
-                  }
-
-                  <div class="card-actions">
-                    <ha-call-service-button domain="system_log" service="clear"
-                      >${this.hass.localize(
-                        "ui.panel.config.logs.clear"
-                      )}</ha-call-service-button
-                    >
-                  </div>
-                `
+                      )}</ha-list
+                    >`
+          }
+          ${
+            this._items === undefined
+              ? nothing
+              : html`<div class="card-actions">
+                  <ha-call-service-button domain="system_log" service="clear"
+                    >${this.hass.localize(
+                      "ui.panel.config.logs.clear"
+                    )}</ha-call-service-button
+                  >
+                </div>`
           }
         </ha-card>
       </div>
@@ -368,11 +389,25 @@ export class SystemLogCard extends LitElement {
       margin: 16px;
     }
 
-    .loading-container {
-      height: 100px;
+    .skeleton {
+      padding: var(--ha-space-2) 0;
+    }
+
+    .skeleton-row {
       display: flex;
-      align-items: center;
+      flex-direction: column;
       justify-content: center;
+      gap: var(--ha-space-2);
+      height: 72px;
+      padding: 0 var(--ha-space-5);
+    }
+
+    .skeleton-row .primary {
+      font-size: var(--ha-font-size-l);
+    }
+
+    .skeleton-row .secondary {
+      font-size: var(--ha-font-size-m);
     }
 
     .secondary {
