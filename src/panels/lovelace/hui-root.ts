@@ -27,6 +27,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
@@ -44,7 +45,6 @@ import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
-import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
@@ -86,7 +86,7 @@ import { showNewAutomationDialog } from "../config/automation/show-dialog-new-au
 import { showAddIntegrationDialog } from "../config/integrations/show-add-integration-dialog";
 import { showDashboardDetailDialog } from "../config/lovelace/dashboards/show-dialog-lovelace-dashboard-detail";
 import { showPersonDetailDialog } from "../config/person/show-dialog-person-detail";
-import { swapView } from "./editor/config-util";
+import { indexAfterMove, moveView } from "./editor/config-util";
 import { showDashboardStrategyEditorDialog } from "./editor/dashboard-strategy-editor/dialogs/show-dialog-dashboard-strategy-editor";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
@@ -469,7 +469,9 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 
     const tabs = html`<ha-tab-group
       .active=${typeof this._curView === "number" ? String(this._curView) : ""}
+      .sortable=${this._editMode}
       @wa-tab-show=${this._handleViewSelected}
+      @item-moved=${this._viewMoved}
     >
       ${views.map((view, index) => {
         const icon_and_title =
@@ -520,14 +522,6 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
             ${
               this._editMode
                 ? html`
-                    <ha-icon-button-arrow-prev
-                      .label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_view.move_left"
-                      )}
-                      class="edit-icon view"
-                      @click=${this._moveViewLeft}
-                      .disabled=${this._curView === 0}
-                    ></ha-icon-button-arrow-prev>
                     ${tabContent}
                     <ha-icon-button
                       .title=${this.hass!.localize(
@@ -537,14 +531,6 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
                       .path=${mdiPencil}
                       @click=${this._editView}
                     ></ha-icon-button>
-                    <ha-icon-button-arrow-next
-                      .label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_view.move_right"
-                      )}
-                      class="edit-icon view"
-                      @click=${this._moveViewRight}
-                      .disabled=${(this._curView! as number) + 1 === views.length}
-                    ></ha-icon-button-arrow-next>
                   `
                 : tabContent
             }
@@ -1166,34 +1152,24 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
     });
   }
 
-  private _moveViewLeft(ev) {
+  private _viewMoved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>) {
     ev.stopPropagation();
-    if (this._curView === 0) {
+    const { oldIndex, newIndex } = ev.detail;
+    if (oldIndex === newIndex) {
       return;
     }
     const lovelace = this.lovelace!;
-    const oldIndex = this._curView as number;
-    const newIndex = (this._curView as number) - 1;
-    if (!this.config.views[oldIndex].path) {
-      this._navigateToView(newIndex, true);
+    const curView = this._curView;
+    let newCurView = curView;
+    if (typeof curView === "number") {
+      newCurView = indexAfterMove(curView, oldIndex, newIndex);
+      // Views without a path are addressed by their index in the URL
+      if (newCurView !== curView && !this.config.views[curView].path) {
+        this._navigateToView(newCurView, true);
+      }
     }
-    lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
-    this._selectView(newIndex);
-  }
-
-  private _moveViewRight(ev) {
-    ev.stopPropagation();
-    if ((this._curView! as number) + 1 === this.lovelace!.config.views.length) {
-      return;
-    }
-    const lovelace = this.lovelace!;
-    const oldIndex = this._curView as number;
-    const newIndex = (this._curView as number) + 1;
-    if (!this.config.views[oldIndex].path) {
-      this._navigateToView(newIndex, true);
-    }
-    lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
-    this._selectView(newIndex);
+    lovelace.saveConfig(moveView(lovelace.config, oldIndex, newIndex));
+    this._selectView(newCurView);
   }
 
   private _addView() {
@@ -1509,7 +1485,8 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
           margin-inline-end: var(--ha-space-2);
         }
         .edit-mode ha-tab-group-tab[aria-selected="true"]::part(base) {
-          padding: 0;
+          padding-block: 0;
+          padding-inline-end: 0;
           margin-top: calc((var(--tab-bar-height, 56px) - 48px) / 2);
         }
         .edit-icon {
