@@ -401,7 +401,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                                   ? "pointer"
                                   : "initial",
                               })}
-                              @click=${this._handleSeek}
+                              @change=${this._handleSeek}
                             >
                             </ha-slider>
                           `
