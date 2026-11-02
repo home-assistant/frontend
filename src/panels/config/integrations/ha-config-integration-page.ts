@@ -26,7 +26,10 @@ import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
 } from "../../../common/integrations/protocolIntegrationPicked";
-import { caseInsensitiveStringCompare } from "../../../common/string/compare";
+import {
+  caseInsensitiveStringCompare,
+  stringCompare,
+} from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import {
   integrationQueryParamConfig,
@@ -412,13 +415,23 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     // Without the dependents, a dependency looks like a YAML integration.
     const dependents =
       this._manifest && !this._manifest.config_flow
-        ? this._getDependents(this.domain, this._loadedManifests)
+        ? this._getDependents(
+            this.domain,
+            this._loadedManifests,
+            this.hass.localize,
+            this.hass.locale.language
+          )
         : [];
     const showDependents = normalEntries.length === 0 && dependents.length > 0;
+    // Hold back the YAML texts until the dependents are known.
+    const dependentsLoading = Boolean(
+      this._manifest && !this._manifest.config_flow && !this._loadedManifests
+    );
 
     const showAddEntry =
       this._manifest?.integration_type !== "hardware" &&
       !showDependents &&
+      !dependentsLoading &&
       (!this._manifest?.single_config_entry ||
         (normalData.length === 0 && attentionData.length === 0));
 
@@ -608,6 +621,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   ${
                     normalEntries.length === 0 &&
                     !showDependents &&
+                    !dependentsLoading &&
                     this._manifest &&
                     !this._manifest.config_flow &&
                     this.hass.config.components.find(
@@ -935,6 +949,11 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   </h3>
                   ${this._renderDependents(dependents)}
                 </div>`
+              : nothing
+          }
+          ${
+            showDependents || dependentsLoading
+              ? nothing
               : html`<div class="section">
                   <h3 class="section-header">
                     ${
@@ -1006,13 +1025,27 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private _getDependents = memoizeOne(
-    (domain: string, manifests?: DomainManifestLookup) =>
-      Object.values(manifests ?? {}).filter(
-        // System integrations, like Default Configuration, are not useful to list.
-        (manifest) =>
-          manifest.integration_type !== "system" &&
-          manifest.dependencies?.includes(domain)
-      )
+    (
+      domain: string,
+      manifests: DomainManifestLookup | undefined,
+      localize: LocalizeFunc,
+      language: string
+    ) =>
+      Object.values(manifests ?? {})
+        .filter(
+          // System integrations, like Default Configuration, are not useful to list.
+          (manifest) =>
+            manifest.integration_type !== "system" &&
+            manifest.dependencies?.includes(domain)
+        )
+        // The manifests come in no fixed order.
+        .sort((a, b) =>
+          stringCompare(
+            domainToName(localize, a.domain, a),
+            domainToName(localize, b.domain, b),
+            language
+          )
+        )
   );
 
   private _renderDependents(dependents: IntegrationManifest[]) {
