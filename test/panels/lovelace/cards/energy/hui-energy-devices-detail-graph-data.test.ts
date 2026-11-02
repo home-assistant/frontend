@@ -426,6 +426,19 @@ describe("limitTooltipParams", () => {
     });
   });
 
+  it("does not fold devices the formatter hides as 0", () => {
+    const params = [
+      ...Array.from({ length: 10 }, (_, i) =>
+        param(`sensor.a_${i}-${i}`, 0.00049)
+      ),
+      param("sensor.b_0-0", 0.0004),
+      param("sensor.b_1-1", 0.0004),
+      ...devices(2),
+    ];
+    const result = limitTooltipParams(params, 2, otherName);
+    expect(result.map((p) => p.seriesId)).not.toContain("other-devices");
+  });
+
   it("limits the compare period on its own", () => {
     const result = limitTooltipParams(
       [...devices(2), ...devices(5, "compare-")],

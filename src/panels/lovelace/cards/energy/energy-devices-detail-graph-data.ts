@@ -567,7 +567,11 @@ const limitPeriodTooltipParams = (
   const rest: CallbackDataParams[] = [];
   for (const param of params) {
     const y = (param.value as number[] | undefined)?.[1];
-    if ((y ?? 0) > 0 && !/^(compare-)?untracked-/.test(param.seriesId ?? "")) {
+    // The tooltip formatter hides values that round to 0 at 3 decimals
+    if (
+      (y ?? 0) >= 0.0005 &&
+      !/^(compare-)?untracked-/.test(param.seriesId ?? "")
+    ) {
       devices.push(param);
     } else {
       rest.push(param);

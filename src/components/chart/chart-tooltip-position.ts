@@ -87,7 +87,8 @@ const fitInto = (
  * ECharts' default placement (or the chart-confined one), moved into the
  * window when it would leave it. The other side of the cursor is tried before
  * clamping, below first vertically. A tooltip taller than the window starts at
- * its top. A confined tooltip never leaves the chart.
+ * its top. A confined tooltip stays in the chart, leaving it only as far as the
+ * window needs.
  */
 export const windowTooltipPosition =
   (
@@ -128,7 +129,7 @@ export const windowTooltipPosition =
       const min = Math.max(0, windowMin);
       const max = Math.min(viewSize, windowMax);
       return tipSize > max - min
-        ? pos
+        ? fitInto(pos, tipSize, [], windowMin, windowMax)
         : fitInto(pos, tipSize, alternatives, min, max);
     };
     const { clientWidth, clientHeight } = document.documentElement;

@@ -126,13 +126,13 @@ describe("windowTooltipPosition", () => {
     expect(y).toBe(WINDOW_MARGIN_PX - 400);
   });
 
-  it("keeps a confined tooltip inside the chart", () => {
+  it("moves a confined tooltip out of the chart only as far as the window needs", () => {
     const chart = new DOMRect(0, 700, 400, 400);
     const [x, y] = callWindowPosition([380, 20], [200, 250], {
       chart,
       confine: true,
     });
-    expect(y).toBe(20 + 20);
+    expect(y).toBe(900 - WINDOW_MARGIN_PX - 700 - 250);
     expect(x).toBe(380 - 20 - 200);
   });
 
