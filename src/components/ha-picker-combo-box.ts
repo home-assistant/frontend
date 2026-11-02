@@ -421,6 +421,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         virtual-focus
         controlled
         tabindex="0"
+        @mousedown=${this._preventBlur}
         @focus=${this._focusList}
         @blur=${this._resetSelectedItem}
       >
@@ -451,6 +452,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           this.value
         )}
         .pinIndex=${this.value ? this._getInitialSelectedIndex() : undefined}
+        @mousedown=${this._preventBlur}
         @focus=${this._focusList}
         @blur=${this._resetSelectedItem}
         @ha-list-visibility-changed=${this._visibilityChanged}
@@ -730,6 +732,10 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._resetListScroll();
   };
 
+  // Keep DOM focus in the search field on a click. In the list, a moved focus
+  // would clear the active row on blur, then start it again on focus and
+  // scroll to it, away from the row under the pointer, so the click missed.
+  // Dragging the scrollbar still works.
   private _preventBlur(ev: Event) {
     ev.preventDefault();
   }
