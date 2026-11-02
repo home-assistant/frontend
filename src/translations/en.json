@@ -13148,6 +13148,7 @@
           },
           "details": {
             "requires": "Requires Home Assistant {version} or newer",
+            "pre_releases_included": "Pre-releases included",
             "source_code": "View source code",
             "issue_tracker": "Issue tracker"
           },
@@ -13173,6 +13174,8 @@
         },
         "repository_menu": {
           "dismiss_new": "Dismiss new",
+          "exclude_pre_releases": "Exclude pre-releases",
+          "include_pre_releases": "Include pre-releases",
           "issue_tracker": "Issue tracker",
           "install_other_version": "Install another version",
           "reinstall": "Reinstall",
@@ -13207,6 +13210,11 @@
           "reload": {
             "description": "You need to reload your browser for the updated resources to be used.",
             "confirm": "Do you want to do that now?"
+          },
+          "include_pre_releases": {
+            "title": "Include pre-releases of {name}?",
+            "text": "Updates will include versions marked as pre-release on GitHub, such as betas and release candidates. They are for testers and can contain unstable changes.",
+            "confirm": "Include"
           },
           "uninstall": {
             "title": "Uninstall {name}?",

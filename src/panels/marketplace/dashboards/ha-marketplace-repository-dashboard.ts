@@ -11,6 +11,7 @@ import {
   mdiGithub,
   mdiRestart,
   mdiStar,
+  mdiTestTube,
   mdiUpdate,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -72,6 +73,7 @@ import {
   addMarketplaceRepository,
   fetchMarketplaceRepositories,
   fetchMarketplaceRepository,
+  setMarketplaceRepositoryBeta,
 } from "../../../data/marketplace/repository";
 import {
   ERROR_GITHUB_RATE_LIMITED,
@@ -342,6 +344,25 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   // The list does not carry the fields only this page shows, those need a fetch
   public reloadRepository(): void {
     this._fetchRepository();
+  }
+
+  // Core fetches the repository from GitHub again before answering
+  public async includePreReleases(include: boolean): Promise<void> {
+    const repositoryId = this._repository!.id;
+    this._repository = { ...this._repository!, beta: include };
+
+    try {
+      await setMarketplaceRepositoryBeta(this._api, repositoryId, include);
+    } catch (err: unknown) {
+      if (this._repository?.id === repositoryId) {
+        this._repository = { ...this._repository, beta: !include };
+      }
+      throw err;
+    }
+
+    if (this._repository?.id === repositoryId) {
+      this._fetchRepository();
+    }
   }
 
   private _loadRepositoryFromRoute(): void {
@@ -894,6 +915,14 @@ type: module</pre>`,
         text: localize("ui.panel.marketplace.repository.details.requires", {
           version: html`<strong>${repository.homeassistant}</strong>`,
         }),
+      });
+    }
+    if (repository.beta) {
+      signals.push({
+        icon: mdiTestTube,
+        text: localize(
+          "ui.panel.marketplace.repository.details.pre_releases_included"
+        ),
       });
     }
     const lastChange = this._relativeTime(repository.last_updated);
