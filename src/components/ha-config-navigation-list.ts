@@ -86,6 +86,13 @@ class HaConfigNavigationList extends LitElement {
     .icon-background ha-svg-icon {
       color: #fff;
     }
+    ha-list-item-button::part(supporting-text) {
+      white-space: normal;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+    }
   `;
 }
 
