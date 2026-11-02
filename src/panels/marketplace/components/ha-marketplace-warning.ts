@@ -3,6 +3,7 @@ import {
   mdiAlertOctagonOutline,
   mdiAlertOutline,
   mdiDatabaseExportOutline,
+  mdiShieldKeyOutline,
   mdiWeb,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
@@ -27,6 +28,7 @@ import {
 
 const RISKS = [
   { risk: "internet", icon: mdiWeb },
+  { risk: "access", icon: mdiShieldKeyOutline },
   { risk: "data", icon: mdiDatabaseExportOutline },
   { risk: "stability", icon: mdiAlertOctagonOutline },
 ] as const;

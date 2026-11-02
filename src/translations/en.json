@@ -12996,6 +12996,7 @@
           "risks_title": "Anything you install can",
           "risks": {
             "internet": "Connect to the internet",
+            "access": "Access and control everything in Home\u00a0Assistant",
             "data": "Share your data with others",
             "stability": "Slow down or crash Home\u00a0Assistant"
           },
