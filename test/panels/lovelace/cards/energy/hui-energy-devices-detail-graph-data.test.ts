@@ -99,6 +99,28 @@ describe("generateEnergyDevicesDetailGraphData", () => {
     ).toMatchSnapshot();
   });
 
+  it("names a parent's untracked part with its untracked_name", () => {
+    const prefs = buildPrefs(true);
+    prefs.device_consumption[0] = {
+      ...prefs.device_consumption[0],
+      untracked_name: "Overhead",
+    };
+    const energyData = generateEnergyData(3, {
+      days: 1,
+      period: "hour",
+      prefs,
+    });
+    const result = generateEnergyDevicesDetailGraphData({
+      ...baseParams,
+      energyData,
+    });
+    const parent = result.chartData.find(
+      (d) =>
+        typeof d.id === "string" && d.id.startsWith("sensor.grid_consumption-")
+    );
+    assert.equal(parent?.name, "Grid device (Overhead)");
+  });
+
   it("matches snapshot for 5minute period (period offset path)", () => {
     const energyData = generateEnergyData(4, {
       days: 1,

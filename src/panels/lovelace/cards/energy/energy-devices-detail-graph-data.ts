@@ -177,7 +177,7 @@ function processDataSet(
     const name =
       ctx.deviceLabels[source.stat_consumption] +
       (source.stat_consumption in childMap
-        ? ` (${ctx.localize("ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked")})`
+        ? ` (${source.untracked_name || ctx.localize("ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked")})`
         : "");
 
     data.push({

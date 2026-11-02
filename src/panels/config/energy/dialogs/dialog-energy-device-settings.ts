@@ -217,6 +217,22 @@ export class DialogEnergyDeviceSettings
           @value-changed=${this._parentChanged}
         ></ha-energy-upstream-device-picker>
 
+        ${
+          this._hasDownstreamDevices()
+            ? html`<ha-input
+                .label=${this.hass.localize(
+                  "ui.panel.config.energy.device_consumption.dialog.untracked_name"
+                )}
+                .hint=${this.hass.localize(
+                  "ui.panel.config.energy.device_consumption.dialog.untracked_name_helper"
+                )}
+                .disabled=${!this._device || this._saving}
+                .value=${this._device?.untracked_name || ""}
+                @input=${this._untrackedNameChanged}
+              ></ha-input>`
+            : nothing
+        }
+
         <ha-dialog-footer slot="footer">
           <ha-button
             appearance="plain"
@@ -312,6 +328,27 @@ export class DialogEnergyDeviceSettings
     };
     if (!newDevice.included_in_stat) {
       delete newDevice.included_in_stat;
+    }
+    this._device = newDevice;
+    this._updateDirtyState(this._device);
+  }
+
+  // Only a saved device can be the upstream device of others
+  private _hasDownstreamDevices(): boolean {
+    const stat = this._params?.device?.stat_consumption;
+    return (
+      !!stat &&
+      this._params!.device_consumptions.some((d) => d.included_in_stat === stat)
+    );
+  }
+
+  private _untrackedNameChanged(ev: InputEvent) {
+    const newDevice: DeviceConsumptionDraft = {
+      ...this._device!,
+      untracked_name: (ev.target as HaInput).value,
+    };
+    if (!newDevice.untracked_name) {
+      delete newDevice.untracked_name;
     }
     this._device = newDevice;
     this._updateDirtyState(this._device);

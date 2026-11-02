@@ -212,6 +212,7 @@ export const buildSankeyDeviceNodes = (
   // names a stat_consumption, so the hierarchy is keyed by that, while the
   // rendered set holds node ids (stat_consumption or stat_rate, per `getId`).
   const deviceByStat = new Map<string, DeviceConsumptionEnergyPreference>();
+  const deviceById = new Map<string, DeviceConsumptionEnergyPreference>();
   const deviceValues = new Map<string, number>();
   const renderedIds = new Set<string>();
   devices.forEach((device) => {
@@ -221,6 +222,7 @@ export const buildSankeyDeviceNodes = (
     if (!id) {
       return;
     }
+    deviceById.set(id, device);
     const value = getValue(id);
     deviceValues.set(id, value);
     if (value >= minThreshold) {
@@ -397,7 +399,9 @@ export const buildSankeyDeviceNodes = (
       const untrackedNodeId = `untracked_${parentId}`;
       deviceNodes.push({
         id: untrackedNodeId,
-        label: localize(UNTRACKED_LABEL_KEY),
+        label:
+          deviceById.get(parentId)?.untracked_name ||
+          localize(UNTRACKED_LABEL_KEY),
         value: untracked,
         color: unavailableColor,
         index: 4,

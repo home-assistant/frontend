@@ -101,6 +101,8 @@ export class HuiEnergyDevicesGraphCard
 
   private _compoundStats: string[] = [];
 
+  private _untrackedNames: Record<string, string> = {};
+
   private _deviceLabels: Record<string, string> = {};
 
   @state()
@@ -332,7 +334,7 @@ export class HuiEnergyDevicesGraphCard
 
   private _getDeviceName(statisticId: string): string {
     const suffix = this._compoundStats.includes(statisticId)
-      ? ` (${this._i18n.localize("ui.panel.lovelace.cards.energy.energy_devices_graph.untracked")})`
+      ? ` (${this._untrackedNames[statisticId] || this._i18n.localize("ui.panel.lovelace.cards.energy.energy_devices_graph.untracked")})`
       : "";
     return (
       // The untracked slice is not a statistic, so it has no label.
@@ -416,6 +418,13 @@ export class HuiEnergyDevicesGraphCard
     this._compoundStats = energyData.prefs.device_consumption
       .map((d) => d.included_in_stat)
       .filter(Boolean) as string[];
+
+    this._untrackedNames = {};
+    energyData.prefs.device_consumption.forEach((d) => {
+      if (d.untracked_name) {
+        this._untrackedNames[d.stat_consumption] = d.untracked_name;
+      }
+    });
 
     this._deviceLabels = computeEnergyDeviceLabels(
       this._states,

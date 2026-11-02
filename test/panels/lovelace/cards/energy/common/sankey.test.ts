@@ -338,6 +338,54 @@ describe("buildSankeyDeviceNodes", () => {
     expect(result.untrackedConsumption).toBe(0); // parent (top-level) subtracted
   });
 
+  it("labels a per-parent residual with the parent's untracked_name", () => {
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devices(
+          { stat_consumption: "ups", untracked_name: "Overhead" },
+          { stat_consumption: "server", included_in_stat: "ups" },
+          { stat_consumption: "panel" },
+          { stat_consumption: "light", included_in_stat: "panel" }
+        ),
+        values: { ups: 10, server: 4, panel: 5, light: 2 },
+        initialUntracked: 15,
+      })
+    );
+    const label = (id: string) =>
+      result.deviceNodes.find((n) => n.id === id)?.label;
+    expect(label("untracked_ups")).toBe("Overhead");
+    expect(label("untracked_panel")).toBe(
+      "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.untracked_consumption"
+    );
+  });
+
+  it("finds the untracked_name of a parent keyed by its stat_rate", () => {
+    // Instantaneous cards render the parent under its stat_rate node id.
+    const result = buildSankeyDeviceNodes(
+      cumulativeOpts({
+        devices: devices(
+          {
+            stat_consumption: "p",
+            stat_rate: "sensor.p",
+            untracked_name: "Overhead",
+          },
+          {
+            stat_consumption: "c",
+            stat_rate: "sensor.c",
+            included_in_stat: "p",
+          }
+        ),
+        values: { "sensor.p": 100, "sensor.c": 40 },
+        minThreshold: 1,
+        initialUntracked: 100,
+        getId: (device) => device.stat_rate,
+      })
+    );
+    expect(
+      result.deviceNodes.find((n) => n.id === "untracked_sensor.p")?.label
+    ).toBe("Overhead");
+  });
+
   it("suppresses a per-parent residual at or below the floor", () => {
     const result = buildSankeyDeviceNodes(
       cumulativeOpts({

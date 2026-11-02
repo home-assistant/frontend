@@ -4847,6 +4847,8 @@
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a smart switch measured by a smart breaker), selecting the upstream device prevents duplicate energy tracking.",
               "no_upstream_devices": "No eligible upstream devices",
+              "untracked_name": "Untracked consumption name",
+              "untracked_name_helper": "Name for the part of this device's consumption that its downstream devices don't measure, like conversion losses. Leave empty to show it as untracked.",
               "energy_sensor_needed": "To track this device, you need an energy sensor."
             }
           },
@@ -4865,6 +4867,8 @@
               "included_in_device": "Upstream device",
               "included_in_device_helper": "If this device is already counted by another device (such as a water meter measured by the main water supply), selecting the upstream device prevents duplicate water tracking.",
               "no_upstream_devices": "No eligible upstream devices",
+              "untracked_name": "[%key:ui::panel::config::energy::device_consumption::dialog::untracked_name%]",
+              "untracked_name_helper": "Name for the part of this device's consumption that its downstream devices don't measure, like leaks. Leave empty to show it as untracked.",
               "water_sensor_needed": "To track this device, you need a water sensor.",
               "flow_rate_no_volume": "[%key:ui::panel::config::energy::water::dialog::flow_rate_no_volume%]"
             }
