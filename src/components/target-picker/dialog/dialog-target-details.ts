@@ -28,12 +28,7 @@ import "../../ha-svg-icon";
 import "../../list/ha-list-base";
 import "../ha-target-picker-item-row";
 import type { TargetExclusion } from "../target-exclusions";
-import {
-  isShared,
-  resolveItemExclusions,
-  resolveTargetItemEntities,
-  toggleTargetRow,
-} from "../target-exclusions";
+import { resolveItemExclusions, toggleTargetRow } from "../target-exclusions";
 import type { TargetDetailsDialogParams } from "./show-dialog-target-details";
 
 @customElement("ha-dialog-target-details")
@@ -53,10 +48,6 @@ class DialogTargetDetails extends LitElement implements HassDialog {
   @state() private _exclusions: TargetExclusion[] = [];
 
   private _exclusionsRequest = 0;
-
-  private _otherTargetEntities = memoizeOne(
-    (entities?: string[]) => new Set(entities)
-  );
 
   private _deviceIntegrationLookup = memoizeOne(
     (entities: HomeAssistant["entities"]) =>
@@ -292,37 +283,32 @@ class DialogTargetDetails extends LitElement implements HassDialog {
       ...ev.detail,
       exclusions: before,
       initial: this._initialExclusions,
-      otherTargetEntities: this._otherTargetEntities(
-        this._params?.otherTargetEntities
-      ),
     });
     this._exclusions
       .filter(
         (exclusion) =>
-          exclusion.type !== "entity" &&
           !before.includes(exclusion) &&
           !this._initialExclusions.includes(exclusion)
       )
-      .forEach((exclusion) => this._resolveRemoved(exclusion));
+      .forEach((exclusion) => this._explainExclusion(exclusion));
   }
 
-  private async _resolveRemoved(exclusion: TargetExclusion) {
-    let removed: string[];
+  private async _explainExclusion(exclusion: TargetExclusion) {
+    const explain = this._params?.explainExclusion;
+    if (!explain) {
+      return;
+    }
+    let explained: TargetExclusion | undefined;
     try {
-      removed = await resolveTargetItemEntities(this.hass, exclusion, false);
+      explained = await explain({ type: exclusion.type, id: exclusion.id });
     } catch (_err) {
       return;
     }
-    if (!this._exclusions.includes(exclusion)) {
+    if (!explained || !this._exclusions.includes(exclusion)) {
       return;
     }
-
-    const shared = isShared(
-      removed,
-      this._otherTargetEntities(this._params?.otherTargetEntities)
-    );
     this._exclusions = this._exclusions.map((current) =>
-      current === exclusion ? { ...exclusion, removed, shared } : current
+      current === exclusion ? explained : current
     );
   }
 

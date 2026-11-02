@@ -76,6 +76,37 @@ export const extractFromTarget = async (
   );
 };
 
+export interface TargetItemEntities extends TargetItem {
+  entities: string[];
+}
+
+export interface ExplainedTargetExclude extends TargetItem {
+  removed: TargetItemEntities[];
+}
+
+export interface ExplainTargetExcludeResult {
+  includes: TargetItemEntities[];
+  excludes: ExplainedTargetExclude[];
+}
+
+export const explainTargetExclude = (
+  callWS: CallWS,
+  target: HassServiceTargetWithExclude,
+  expandGroup = true,
+  primaryEntitiesOnly = true
+) => {
+  const request = {
+    type: "explain_target_exclude" as const,
+    target,
+    expand_group: expandGroup,
+    primary_entities_only: primaryEntitiesOnly,
+  };
+
+  return shareInFlightRequest(callWS, JSON.stringify(request), () =>
+    callWS<ExplainTargetExcludeResult>(request)
+  );
+};
+
 export const getTargetEntityCount = (target?: HassServiceTarget): number => {
   const tempTarget = {
     entity_id: target?.entity_id ? ensureArray(target?.entity_id) : [],

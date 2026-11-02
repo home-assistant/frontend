@@ -1,7 +1,8 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { ensureArray } from "../../common/array/ensure-array";
 import {
-  extractFromTarget,
+  explainTargetExclude,
+  type ExplainTargetExcludeResult,
   type ExtractFromTargetResultReferenced,
   type HassServiceTargetWithExclude,
   type TargetItem,
@@ -34,30 +35,6 @@ export const targetItems = (target?: HassServiceTarget): TargetItem[] =>
 export const hasIncludedTargets = (target?: HassServiceTarget): boolean =>
   targetItems(target).length > 0;
 
-/** A target item with the entities it resolves to. */
-export interface ResolvedTargetItem extends TargetItem {
-  entities: string[];
-}
-
-/** The entities a single target item resolves to. */
-export const resolveTargetItemEntities = async (
-  hass: HomeAssistant,
-  item: TargetItem,
-  primaryEntitiesOnly?: boolean
-): Promise<string[]> => {
-  if (item.type === "entity") {
-    return item.id === "all" ? Object.keys(hass.states) : [item.id];
-  }
-  return (
-    await extractFromTarget(
-      hass.callWS,
-      { [`${item.type}_id`]: [item.id] },
-      false,
-      primaryEntitiesOnly
-    )
-  ).referenced_entities;
-};
-
 /** An exclusion as seen from one included target. */
 export interface TargetExclusion extends TargetItem {
   /** Entities it takes out of that target. */
@@ -76,26 +53,36 @@ export interface TargetExclusions {
 }
 
 /**
- * Which exclusions take what out of each included target. Excludes are
- * global, so one exclusion is listed under every target it affects; one that
- * affects none, including one whose item no longer exists, has no effect.
+ * Which exclusions take what out of each included target, from what core
+ * explained. Excludes are global, so one exclusion is listed under every
+ * target it affects; one that affects none, including one whose item no
+ * longer exists, has no effect. `narrowed` gives, by `type:id`, what is left
+ * of a target once the picker's filters are applied; what an exclusion takes
+ * out of it is narrowed the same way.
  */
 export const computeExclusionsPerTarget = (
-  includes: ResolvedTargetItem[],
-  excludes: ResolvedTargetItem[]
+  explained: ExplainTargetExcludeResult,
+  narrowed: Record<string, string[]> = {}
 ): TargetExclusions => {
+  const included = Object.fromEntries(
+    explained.includes.map((include) => {
+      const key = targetItemKey(include);
+      return [key, narrowed[key] ?? include.entities];
+    })
+  );
   const perTarget: Record<string, TargetExclusion[]> = {};
   const noEffect: TargetItem[] = [];
 
-  excludes.forEach((exclude) => {
-    const excluded = new Set(exclude.entities);
-    const hits = includes
-      .map((include) => ({
-        include,
-        removed: [...new Set(include.entities)].filter((entityId) =>
-          excluded.has(entityId)
-        ),
-      }))
+  explained.excludes.forEach((exclude) => {
+    const hits = exclude.removed
+      .map((target) => {
+        const key = targetItemKey(target);
+        const entities = new Set(included[key] ?? []);
+        return {
+          key,
+          removed: target.entities.filter((entityId) => entities.has(entityId)),
+        };
+      })
       .filter(({ removed }) => removed.length > 0);
 
     if (!hits.length) {
@@ -103,8 +90,7 @@ export const computeExclusionsPerTarget = (
       return;
     }
 
-    hits.forEach(({ include, removed }) => {
-      const key = targetItemKey(include);
+    hits.forEach(({ key, removed }) => {
       if (!perTarget[key]) {
         perTarget[key] = [];
       }
@@ -117,9 +103,6 @@ export const computeExclusionsPerTarget = (
     });
   });
 
-  const included = Object.fromEntries(
-    includes.map((include) => [targetItemKey(include), include.entities])
-  );
   return { perTarget, noEffect, included };
 };
 
@@ -130,28 +113,17 @@ export const resolveItemExclusions = async (
   exclude: HassServiceTarget | undefined,
   primaryEntitiesOnly?: boolean
 ): Promise<TargetExclusion[]> => {
-  const excludes = targetItems(exclude);
-  if (!excludes.length) {
+  if (!hasIncludedTargets(exclude)) {
     return [];
   }
-  // Like core, an exclude takes out every entity of an item, not only the
-  // primary ones.
-  const [entities, excludeEntities] = await Promise.all([
-    resolveTargetItemEntities(hass, item, primaryEntitiesOnly),
-    Promise.all(
-      excludes.map((exclusion) =>
-        resolveTargetItemEntities(hass, exclusion, false)
-      )
-    ),
-  ]);
+  const explained = await explainTargetExclude(
+    hass.callWS,
+    { [`${item.type}_id`]: [item.id], exclude },
+    true,
+    primaryEntitiesOnly
+  );
   return (
-    computeExclusionsPerTarget(
-      [{ ...item, entities }],
-      excludes.map((exclusion, index) => ({
-        ...exclusion,
-        entities: excludeEntities[index],
-      }))
-    ).perTarget[targetItemKey(item)] ?? []
+    computeExclusionsPerTarget(explained).perTarget[targetItemKey(item)] ?? []
   );
 };
 
@@ -369,7 +341,8 @@ export const targetRowState = (
  * excluded as such, including what is added to it later. The target can't
  * be excluded from itself, so unchecking it unchecks its rows instead.
  * `initial` gives back an exclusion that was there before as it was. A new
- * one is shared when it takes out any of `otherTargetEntities`.
+ * one takes out the row's entities and isn't shared until core tells what
+ * it takes out of every target.
  */
 export const toggleTargetRow = ({
   row,
@@ -377,14 +350,12 @@ export const toggleTargetRow = ({
   selected,
   exclusions,
   initial,
-  otherTargetEntities,
 }: {
   row: TargetRow;
   isTarget: boolean;
   selected: boolean;
   exclusions: TargetExclusion[];
   initial: TargetExclusion[];
-  otherTargetEntities?: ReadonlySet<string>;
 }): TargetExclusion[] => {
   if (!selected && isTarget) {
     return row.children
@@ -397,7 +368,6 @@ export const toggleTargetRow = ({
             selected: false,
             exclusions: result,
             initial,
-            otherTargetEntities,
           }),
         exclusions
       );
@@ -417,18 +387,10 @@ export const toggleTargetRow = ({
       type: row.type,
       id: row.id,
       removed: row.entities,
-      shared: isShared(row.entities, otherTargetEntities),
+      shared: false,
     },
   ];
 };
-
-/** Whether an exclusion taking out `removed` also affects another target. */
-export const isShared = (
-  removed: string[],
-  otherTargetEntities?: ReadonlySet<string>
-): boolean =>
-  !!otherTargetEntities &&
-  removed.some((entityId) => otherTargetEntities.has(entityId));
 
 /**
  * The new `exclude` once the details are applied: what was taken away is

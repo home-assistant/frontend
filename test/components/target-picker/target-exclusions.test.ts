@@ -61,17 +61,24 @@ describe("computeExclusionsPerTarget", () => {
   };
 
   it("lists an exclusion under each target it takes something out of", () => {
-    const { perTarget, noEffect } = computeExclusionsPerTarget(
-      [kitchen, hallway],
-      [
+    const { perTarget, noEffect, included } = computeExclusionsPerTarget({
+      includes: [kitchen, hallway],
+      excludes: [
         {
           type: "label",
           id: "nightlights",
-          entities: ["light.night", "light.night_hall", "light.bedroom"],
+          removed: [
+            { ...kitchen, entities: ["light.night"] },
+            { ...hallway, entities: ["light.night_hall"] },
+          ],
         },
-        { type: "entity", id: "light.main", entities: ["light.main"] },
-      ]
-    );
+        {
+          type: "entity",
+          id: "light.main",
+          removed: [{ ...kitchen, entities: ["light.main"] }],
+        },
+      ],
+    });
 
     // The label cuts from both areas, so it shows under both and can't be
     // rewritten from either one alone.
@@ -98,22 +105,79 @@ describe("computeExclusionsPerTarget", () => {
       },
     ]);
     expect(noEffect).toEqual([]);
+    expect(included).toEqual({
+      "area:kitchen": kitchen.entities,
+      "area:hallway": hallway.entities,
+    });
   });
 
   it("puts exclusions that take nothing out apart, like deleted ones", () => {
-    const { perTarget, noEffect } = computeExclusionsPerTarget(
-      [kitchen],
-      [
-        { type: "area", id: "office", entities: ["light.desk"] },
-        { type: "device", id: "deleted_device", entities: [] },
-      ]
-    );
+    const { perTarget, noEffect } = computeExclusionsPerTarget({
+      includes: [kitchen],
+      excludes: [
+        {
+          type: "area",
+          id: "office",
+          removed: [],
+        },
+        {
+          type: "device",
+          id: "deleted_device",
+          removed: [],
+        },
+      ],
+    });
 
     expect(perTarget).toEqual({});
     expect(noEffect).toEqual([
       { type: "area", id: "office" },
       { type: "device", id: "deleted_device" },
     ]);
+  });
+
+  it("only counts what is left of a target after the filters", () => {
+    // The picker only shows lights, so taking the kitchen's switch out
+    // changes nothing it shows, and the label is no longer shared.
+    const { perTarget, noEffect, included } = computeExclusionsPerTarget(
+      {
+        includes: [
+          { ...kitchen, entities: [...kitchen.entities, "switch.fan"] },
+          { ...hallway, entities: [...hallway.entities, "switch.door"] },
+        ],
+        excludes: [
+          {
+            type: "entity",
+            id: "switch.fan",
+            removed: [{ ...kitchen, entities: ["switch.fan"] }],
+          },
+          {
+            type: "label",
+            id: "nightlights",
+            removed: [
+              { ...kitchen, entities: ["light.night"] },
+              { ...hallway, entities: ["switch.door"] },
+            ],
+          },
+        ],
+      },
+      {
+        "area:kitchen": kitchen.entities,
+        "area:hallway": hallway.entities,
+      }
+    );
+
+    expect(noEffect).toEqual([{ type: "entity", id: "switch.fan" }]);
+    expect(perTarget).toEqual({
+      "area:kitchen": [
+        {
+          type: "label",
+          id: "nightlights",
+          removed: ["light.night"],
+          shared: false,
+        },
+      ],
+    });
+    expect(included["area:kitchen"]).toEqual(kitchen.entities);
   });
 });
 
@@ -155,24 +219,33 @@ describe("exclude editing", () => {
 });
 
 describe("resolveItemExclusions", () => {
-  it("resolves excludes with every entity, like core", async () => {
-    // The device has a primary light and a config switch; only resolving
-    // without primary_entities_only finds the switch.
-    const callWS = async ({
-      target,
-      primary_entities_only,
-    }: {
-      target: { device_id?: string[]; area_id?: string[] };
-      primary_entities_only: boolean;
-    }) => ({
-      referenced_entities: target.device_id
-        ? primary_entities_only
-          ? ["light.lamp"]
-          : ["light.lamp", "switch.lamp_config"]
-        : ["switch.lamp_config"],
-      referenced_devices: [],
-      referenced_areas: [],
-    });
+  it("asks core what the exclude takes out of the item", async () => {
+    const requests: unknown[] = [];
+    const callWS = async (request: unknown) => {
+      requests.push(request);
+      return {
+        includes: [
+          {
+            type: "entity",
+            id: "switch.lamp_config",
+            entities: ["switch.lamp_config"],
+          },
+        ],
+        excludes: [
+          {
+            type: "device",
+            id: "lamp",
+            removed: [
+              {
+                type: "entity",
+                id: "switch.lamp_config",
+                entities: ["switch.lamp_config"],
+              },
+            ],
+          },
+        ],
+      };
+    };
     const hass = { callWS, states: {} } as unknown as HomeAssistant;
 
     expect(
@@ -180,7 +253,7 @@ describe("resolveItemExclusions", () => {
         hass,
         { type: "entity", id: "switch.lamp_config" },
         { device_id: ["lamp"] },
-        true
+        false
       )
     ).toEqual([
       {
@@ -190,6 +263,28 @@ describe("resolveItemExclusions", () => {
         shared: false,
       },
     ]);
+    expect(requests).toEqual([
+      {
+        type: "explain_target_exclude",
+        target: {
+          entity_id: ["switch.lamp_config"],
+          exclude: { device_id: ["lamp"] },
+        },
+        expand_group: true,
+        primary_entities_only: false,
+      },
+    ]);
+  });
+
+  it("doesn't ask core without an exclude", async () => {
+    const hass = {
+      callWS: async () => {
+        throw new Error("not expected");
+      },
+    } as unknown as HomeAssistant;
+    expect(
+      await resolveItemExclusions(hass, { type: "area", id: "kitchen" }, {})
+    ).toEqual([]);
   });
 });
 
@@ -242,8 +337,7 @@ const toggle = (
   key: string,
   selected: boolean,
   exclusions: TargetExclusion[],
-  initial: TargetExclusion[] = exclusions,
-  otherTargetEntities?: ReadonlySet<string>
+  initial: TargetExclusion[] = exclusions
 ) =>
   toggleTargetRow({
     row: row(key),
@@ -251,7 +345,6 @@ const toggle = (
     selected,
     exclusions,
     initial,
-    otherTargetEntities,
   });
 
 describe("buildTargetRow", () => {
@@ -440,16 +533,20 @@ describe("toggleTargetRow", () => {
     ).toEqual(["area:kitchen", "area:hallway"]);
   });
 
-  it("marks a new exclusion shared when another target holds its entities", () => {
-    // The kitchen is also selected on its own next to the floor.
-    const kitchen = new Set(row("area:kitchen").entities);
-    const [lampOut] = toggle("entity:light.lamp", false, [], [], kitchen);
-    expect(lampOut.shared).toBe(true);
-    // So ticking a parent doesn't take it out of the other target too.
+  it("leaves a shared exclusion alone when a parent is ticked", () => {
+    // The lamp is also excluded from another target, so ticking a parent
+    // doesn't take it out of that one too.
+    const lampOut: TargetExclusion = {
+      type: "entity",
+      id: "light.lamp",
+      removed: ["light.lamp"],
+      shared: true,
+    };
     expect(toggle("floor:ground", true, [lampOut], [])).toEqual([lampOut]);
-    expect(toggle("entity:light.hall", false, [], [], kitchen)[0].shared).toBe(
-      false
-    );
+  });
+
+  it("starts a new exclusion as not shared until core tells", () => {
+    expect(toggle("entity:light.hall", false, [])[0].shared).toBe(false);
   });
 
   it("gives an exclusion back as it was when it is unticked again", () => {
