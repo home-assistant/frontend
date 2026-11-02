@@ -732,10 +732,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._resetListScroll();
   };
 
-  // Keep DOM focus in the search field on a click. In the list, a moved focus
-  // would clear the active row on blur, then start it again on focus and
-  // scroll to it, away from the row under the pointer, so the click missed.
-  // Dragging the scrollbar still works.
+  // Keep focus in the search field, so a focus change doesn't scroll the
+  // list to the active row and make the click miss.
   private _preventBlur(ev: Event) {
     ev.preventDefault();
   }
