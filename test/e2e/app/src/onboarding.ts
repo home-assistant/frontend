@@ -11,6 +11,7 @@ interface WebSocketMessage {
 
 export interface OnboardingCalls {
   user?: Record<string, unknown>;
+  coreConfigDetected?: boolean;
   coreConfig?: Record<string, unknown>;
   coreConfigCompleted?: boolean;
   analyticsPreferences?: Record<string, unknown>;
@@ -73,6 +74,14 @@ const commandResults: Record<string, unknown> = {
   "auth/current_user": currentUser,
   "brands/access_token": { token: "brands-token" },
   "config/area_registry/list": [],
+  "config/core/detect": {
+    unit_system: onboardingData.location.unitSystem,
+    latitude: onboardingData.location.latitude,
+    longitude: onboardingData.location.longitude,
+    time_zone: onboardingData.location.timeZone,
+    currency: onboardingData.location.currency,
+    country: onboardingData.location.country,
+  },
   "config/core/update": demoConfig,
   "config/device_registry/list": [],
   "config/entity_registry/list_for_display": {
@@ -135,7 +144,9 @@ const handleWebSocketMessage = (
     throw new Error(`WebSocket command ${message.type} has no id`);
   }
 
-  if (message.type === "config/core/update") {
+  if (message.type === "config/core/detect") {
+    calls.coreConfigDetected = true;
+  } else if (message.type === "config/core/update") {
     calls.coreConfig = message;
   } else if (message.type === "analytics/preferences") {
     calls.analyticsPreferences = message;
@@ -300,26 +311,52 @@ export async function createOwner(page: Page) {
     .click();
 }
 
-export async function completeCoreConfig(page: Page) {
+export async function completeCoreConfig(
+  page: Page,
+  detectedUnitSystem?: "metric" | "us_customary"
+) {
   const location = page.locator("onboarding-location");
   await expect(location).toBeAttached({ timeout: PANEL_TIMEOUT });
-  await location.evaluate((element, locationData) => {
-    element.dispatchEvent(
-      new CustomEvent("value-changed", {
-        bubbles: true,
-        composed: true,
-        detail: {
-          value: {
-            location: [locationData.latitude, locationData.longitude],
-            country: locationData.country,
-            elevation: String(locationData.elevation),
-            timezone: locationData.timeZone,
-            currency: locationData.currency,
+  await location.evaluate(
+    (element, { locationData, unitSystem }) => {
+      element.dispatchEvent(
+        new CustomEvent("value-changed", {
+          bubbles: true,
+          composed: true,
+          detail: {
+            value: {
+              location: [locationData.latitude, locationData.longitude],
+              country: locationData.country,
+              elevation: String(locationData.elevation),
+              time_zone: locationData.timeZone,
+              currency: locationData.currency,
+              unit_system: unitSystem,
+            },
           },
-        },
-      })
-    );
-  }, onboardingData.location);
+        })
+      );
+    },
+    { locationData: onboardingData.location, unitSystem: detectedUnitSystem }
+  );
+}
+
+export async function detectLocation(page: Page, calls: OnboardingCalls) {
+  const location = page.locator("onboarding-location");
+  await expect(location).toBeAttached({ timeout: PANEL_TIMEOUT });
+  await location.getByRole("button", { name: "Detect", exact: true }).click();
+  const confirm = page
+    .locator("dialog-box")
+    .getByRole("button", { name: "OK", exact: true });
+  await confirm.click();
+  await expect(confirm).toBeHidden();
+  await expect.poll(() => calls.coreConfigDetected).toBe(true);
+}
+
+export async function confirmLocation(page: Page) {
+  await page
+    .locator("onboarding-location")
+    .getByRole("button", { name: "Next", exact: true })
+    .click();
 }
 
 export async function completeAnalytics(page: Page) {
