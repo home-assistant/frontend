@@ -169,6 +169,7 @@ class OnboardingLocation extends LitElement {
                           return html`<ha-list-item-button
                             @click=${this._itemClicked}
                             .placeId=${place.place_id}
+                            aria-current=${this._highlightedMarker === place.place_id ? "true" : nothing}
                             class=${classMap({
                               selected:
                                 this._highlightedMarker === place.place_id,
@@ -519,7 +520,10 @@ class OnboardingLocation extends LitElement {
           --ha-row-item-min-height: 72px;
         }
         ha-list-item-button.selected::part(base) {
-          background-color: var(--ha-color-fill-neutral-quiet-hover);
+          background-color: var(--ha-color-fill-primary-quiet-resting);
+        }
+        ha-list-item-button.selected::part(headline) {
+          color: var(--primary-color);
         }
         .attribution {
           /* input helper style */
