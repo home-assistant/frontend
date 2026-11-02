@@ -176,6 +176,7 @@ export class HaWaitForTriggerAction
       action.timeout !== null &&
       action.timeout !== ""
     );
+  }
 
   private _formValueChanged(ev: CustomEvent): void {
     ev.stopPropagation();
