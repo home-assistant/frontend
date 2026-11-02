@@ -124,6 +124,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @query("wa-popover") private _popover?: WaPopover;
 
+  @query(".loading-skeleton") private _skeleton?: HTMLElement;
+
   @state()
   @consume({ context: configContext, subscribe: true })
   private _hassConfig?: ContextType<typeof configContext>;
@@ -166,8 +168,17 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   private _unsubscribeTinyKeys?: () => void;
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
-    if (changedProperties.has("loading") && this.loading) {
-      this._skeletonShown = true;
+    if (changedProperties.has("loading")) {
+      if (this.loading) {
+        this._skeletonShown = true;
+      } else if (
+        // Loading that ends before the skeleton faded in leaves nothing to
+        // fade out, so no transition would ever remove it
+        this._skeletonShown &&
+        (!this._skeleton || getComputedStyle(this._skeleton).opacity === "0")
+      ) {
+        this._skeletonShown = false;
+      }
     }
     if (
       changedProperties.has("value") ||
@@ -248,6 +259,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     this._i18n?.localize("ui.common.loading")
                   )}
                   @transitionend=${this._skeletonTransitionEnd}
+                  @transitioncancel=${this._skeletonTransitionEnd}
                 ></ha-skeleton>`
               : nothing
           }
