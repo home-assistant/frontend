@@ -286,7 +286,8 @@ export class HuiEnergyPeriodSelector extends LitElement {
           ? mdiCheckboxOutline
           : mdiCheckboxBlankOutline,
         alwaysCollapse: true,
-        hidden: this.combineSources === undefined,
+        hidden:
+          this.combineSources === undefined || this._ui.panelUrl !== "energy",
         label: this._i18n.localize(
           "ui.panel.lovelace.components.energy_period_selector.combine_sources"
         ),
