@@ -12,11 +12,8 @@ import "../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../components/ha-checkbox";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-select";
-import type {
-  HaSelectOption,
-  HaSelectSelectEvent,
-} from "../../../components/ha-select";
+import "../../../components/ha-generic-picker";
+import type { PickerComboBoxItem } from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-spinner";
 import "../../../components/progress/ha-progress-bar";
 
@@ -48,6 +45,7 @@ import { repositoryAuthors } from "../tools/authors";
 import { handleGitHubRateLimited } from "../tools/connect-github";
 import { installBlockedReason } from "../tools/install-blocked-reason";
 import { generateFrontendResourceURL } from "../tools/frontend-resource";
+import type { ValueChangedEvent } from "../../../types";
 import type { MarketplaceInstallDialogParams } from "./show-dialog-marketplace-install";
 
 @customElement("dialog-marketplace-install")
@@ -432,14 +430,16 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
               ? this._i18n.localize(
                   "ui.panel.marketplace.dialog_install.no_releases"
                 )
-              : html`<ha-select
+              : html`<ha-generic-picker
                   .label=${this._i18n.localize(
                     "ui.panel.marketplace.dialog_install.release"
                   )}
                   .value=${this._selectedVersion}
-                  .options=${this._releaseOptions(this._releases)}
-                  @selected=${this._versionChanged}
-                ></ha-select>`
+                  .getItems=${this._getReleaseItems}
+                  hide-clear-icon
+                  no-sort
+                  @value-changed=${this._versionChanged}
+                ></ha-generic-picker>`
       }
     </div>`;
   }
@@ -633,26 +633,41 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
     }
   }
 
-  private _releaseOptions(releases: MarketplaceRelease[]): HaSelectOption[] {
-    return releases.map((release) => ({
-      value: release.tag,
-      label: release.tag,
-      secondary: [
-        release.prerelease
-          ? this._i18n.localize(
-              "ui.panel.marketplace.dialog_install.pre_release"
-            )
-          : undefined,
-        relativeTime(new Date(release.published_at), this._i18n.locale),
-        release.name && release.name !== release.tag ? release.name : undefined,
-      ]
-        .filter(Boolean)
-        .join(" · "),
-    }));
-  }
+  // GitHub lists the newest first, which is the order to keep
+  private _releaseItems = memoizeOne(
+    (
+      releases: MarketplaceRelease[],
+      localize: ContextType<typeof internationalizationContext>["localize"],
+      locale: ContextType<typeof internationalizationContext>["locale"]
+    ): PickerComboBoxItem[] =>
+      releases.map((release) => ({
+        id: release.tag,
+        primary: release.tag,
+        secondary: [
+          release.prerelease
+            ? localize("ui.panel.marketplace.dialog_install.pre_release")
+            : undefined,
+          relativeTime(new Date(release.published_at), locale),
+          release.name && release.name !== release.tag
+            ? release.name
+            : undefined,
+        ]
+          .filter(Boolean)
+          .join(" · "),
+      }))
+  );
 
-  private _versionChanged(ev: HaSelectSelectEvent<string, true>) {
-    this._selectedVersion = ev.detail.value;
+  private _getReleaseItems = () =>
+    this._releaseItems(
+      this._releases ?? [],
+      this._i18n.localize,
+      this._i18n.locale
+    );
+
+  private _versionChanged(ev: ValueChangedEvent<string | undefined>) {
+    if (ev.detail.value) {
+      this._selectedVersion = ev.detail.value;
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -667,7 +682,7 @@ export class DialogMarketplaceInstall extends DialogMixin<MarketplaceInstallDial
         .content {
           padding: var(--ha-space-6);
         }
-        .versions ha-select {
+        .versions ha-generic-picker {
           display: block;
         }
         pre {
