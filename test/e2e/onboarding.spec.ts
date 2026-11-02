@@ -13,7 +13,7 @@ import {
   searchAddress,
   setupOnboardingMocks,
 } from "./app/src/onboarding";
-import { expectNoPageErrors, trackPageErrors } from "./helpers";
+import { expectNoPageErrors, PANEL_TIMEOUT, trackPageErrors } from "./helpers";
 
 test.use({ serviceWorkers: "block" });
 
@@ -227,6 +227,43 @@ test.describe("detected location", () => {
       elevation: 0,
       unit_system: "us_customary",
       time_zone: "America/New_York",
+      currency: "USD",
+      country: "US",
+    });
+    expectNoPageErrors(errors);
+  });
+});
+
+test.describe("unresolved browser time zone", () => {
+  test.use({ locale: "en-GB" });
+
+  test("keeps the searched country in the core config form", async ({
+    page,
+    baseURL,
+  }) => {
+    await page.addInitScript(() => {
+      const resolvedOptions = Intl.DateTimeFormat.prototype.resolvedOptions;
+      Intl.DateTimeFormat.prototype.resolvedOptions = function () {
+        return { ...resolvedOptions.call(this), timeZone: "+00:00" };
+      };
+    });
+    const errors = trackPageErrors(page);
+    const calls = await setupOnboardingMocks(page);
+
+    await openOnboarding(page, baseURL!);
+    await createOwner(page);
+    await detectLocation(page, calls);
+    await searchAddress(page);
+    await confirmLocation(page);
+    await page
+      .locator("onboarding-core-config")
+      .getByRole("button", { name: "Next", exact: true })
+      .click({ timeout: PANEL_TIMEOUT });
+    await expect.poll(() => calls.coreConfigCompleted).toBe(true);
+
+    expect(calls.coreConfig).toMatchObject({
+      type: "config/core/update",
+      unit_system: "us_customary",
       currency: "USD",
       country: "US",
     });
