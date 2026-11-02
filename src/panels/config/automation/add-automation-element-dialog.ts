@@ -157,14 +157,18 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
   @consume({ context: statesContext, subscribe: true })
   @transform<HomeAssistant["states"], Set<string>>({
     transformer: function (this: DialogAddAutomationElement, states) {
-      const domains = new Set(Object.keys(states).map(computeDomain));
+      const entityIds = new Set(Object.keys(states));
       // keep the previous set, so a state change doesn't rerender the dialog
-      return deepEqual(domains, this._usedDomains)
-        ? this._usedDomains
-        : domains;
+      return deepEqual(entityIds, this._entityIds)
+        ? this._entityIds
+        : entityIds;
     },
   })
-  private _usedDomains?: Set<string>;
+  private _entityIds?: Set<string>;
+
+  private get _usedDomains(): Set<string> | undefined {
+    return this._computeUsedDomains(this._entityIds);
+  }
 
   private get _systemDomains(): SystemDomains | undefined {
     return this._calculateSystemDomains(
@@ -173,7 +177,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       this._conditionDescriptions,
       this._manifests,
       this._registries,
-      this._usedDomains
+      this._entityIds
     );
   }
 
@@ -879,6 +883,11 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     })
   );
 
+  private _computeUsedDomains = memoizeOne(
+    (entityIds: Set<string> | undefined) =>
+      entityIds && new Set(Array.from(entityIds, computeDomain))
+  );
+
   private _calculateSystemDomains = memoizeOne(
     (
       type: AddAutomationElementDialogParams["type"] | undefined,
@@ -886,7 +895,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       conditionDescriptions: ConditionDescriptions,
       manifests: DomainManifestLookup | undefined,
       registries: ContextType<typeof registriesContext> | undefined,
-      _usedDomains: Set<string> | undefined
+      _entityIds: Set<string> | undefined
     ): SystemDomains | undefined => {
       if (!type || type === "action" || !manifests || !registries) {
         return undefined;
