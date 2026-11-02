@@ -227,6 +227,9 @@ class HaConfigSectionStorage extends LitElement {
                                     class="reload-btn"
                                     slot="end"
                                     .mount=${mount}
+                                    .label=${this.hass.localize(
+                                      "ui.panel.config.storage.network_mounts.reload"
+                                    )}
                                     @click=${this._reloadMount}
                                     .path=${mdiReload}
                                   ></ha-icon-button>`
@@ -533,12 +536,7 @@ class HaConfigSectionStorage extends LitElement {
     }
 
     .reload-btn {
-      float: right;
-      position: relative;
-      top: -10px;
-      right: 10px;
-      inset-inline-end: 10px;
-      inset-inline-start: initial;
+      margin-inline-end: calc(var(--ha-space-3) * -1);
     }
 
     .help-button {

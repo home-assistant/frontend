@@ -9761,6 +9761,7 @@
             "title": "Additional storage",
             "add_title": "Add storage",
             "update_title": "Update storage",
+            "reload": "Reload storage",
             "no_mounts": "No additional storage configured",
             "no_disks": "No suitable disks were found. Connect a disk with a supported file system, then reopen this dialog.",
             "documentation": "Documentation",
