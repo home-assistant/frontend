@@ -10951,6 +10951,17 @@
             "gauge": {
               "name": "Gauge",
               "needle_gauge": "Display as needle gauge",
+              "color_mode": "Color mode",
+              "color_default": "Info color",
+              "color_mode_options": {
+                "color": "Single color",
+                "severity": "Severity",
+                "segments": "Segments"
+              },
+              "segments": "Segments",
+              "segment": {
+                "from": "From"
+              },
               "severity": {
                 "define": "Define severity",
                 "green": "Green",

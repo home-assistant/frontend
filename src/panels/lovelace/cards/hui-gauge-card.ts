@@ -5,6 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityRegistryEntry,
@@ -281,7 +282,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           numberValue >= segment.from &&
           (i + 1 === segments.length || numberValue < segments[i + 1]?.from)
         ) {
-          return segment.color;
+          return computeCssColor(segment.color);
         }
       }
       return severityMap.normal;
@@ -291,7 +292,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     const sections = this._config!.severity;
 
     if (!sections) {
-      return severityMap.normal;
+      return this._config!.color
+        ? computeCssColor(this._config!.color)
+        : severityMap.normal;
     }
 
     const sectionsArray = Object.keys(sections);
@@ -325,7 +328,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     if (segments) {
       return segments.map((segment) => ({
         level: segment?.from,
-        stroke: segment?.color,
+        stroke: segment?.color && computeCssColor(segment.color),
         label: segment?.label,
       }));
     }
@@ -334,7 +337,14 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     const sections = this._config!.severity;
 
     if (!sections) {
-      return [{ level: 0, stroke: severityMap.normal }];
+      return [
+        {
+          level: 0,
+          stroke: this._config!.color
+            ? computeCssColor(this._config!.color)
+            : severityMap.normal,
+        },
+      ];
     }
 
     const sectionsArray = Object.keys(sections);

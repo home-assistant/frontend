@@ -16,9 +16,15 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-form/ha-form";
 import type { SchemaUnion } from "../../../../components/ha-form/types";
 import { NON_NUMERIC_ATTRIBUTES } from "../../../../data/entity/entity_attributes";
+import type { UiColorExtraOption } from "../../../../data/selector";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HomeAssistant } from "../../../../types";
-import { DEFAULT_MAX, DEFAULT_MIN } from "../../cards/hui-gauge-card";
-import type { GaugeCardConfig } from "../../cards/types";
+import {
+  DEFAULT_MAX,
+  DEFAULT_MIN,
+  severityMap,
+} from "../../cards/hui-gauge-card";
+import type { GaugeCardConfig, GaugeSegment } from "../../cards/types";
 import {
   ACTION_RELATED_CONTEXT,
   type UiAction,
@@ -38,6 +44,8 @@ const TAP_ACTIONS: UiAction[] = [
   "none",
 ];
 
+type GaugeColorMode = "color" | "severity" | "segments";
+
 const gaugeSegmentStruct = object({
   from: number(),
   color: string(),
@@ -54,6 +62,7 @@ const cardConfigStruct = assign(
     min: optional(number()),
     max: optional(number()),
     severity: optional(object()),
+    color: optional(string()),
     theme: optional(string()),
     needle: optional(boolean()),
     segments: optional(array(gaugeSegmentStruct)),
@@ -80,7 +89,7 @@ export class HuiGaugeCardEditor
   }
 
   private _schema = memoizeOne(
-    (entityId?: string) =>
+    (localize: LocalizeFunc, entityId?: string) =>
       [
         {
           name: "entity",
@@ -129,13 +138,73 @@ export class HuiGaugeCardEditor
           type: "grid",
           schema: [
             { name: "needle", selector: { boolean: {} } },
-            { name: "show_severity", selector: { boolean: {} } },
+            {
+              name: "color_mode",
+              required: true,
+              selector: {
+                select: {
+                  mode: "dropdown",
+                  options: (["color", "severity", "segments"] as const).map(
+                    (mode) => ({
+                      value: mode,
+                      label: localize(
+                        `ui.panel.lovelace.editor.card.gauge.color_mode_options.${mode}`
+                      ),
+                    })
+                  ),
+                },
+              },
+            },
           ],
+        },
+        {
+          name: "color",
+          visible: { field: "color_mode", value: "color" },
+          selector: {
+            ui_color: {
+              default_color: "default",
+              extra_options: [
+                {
+                  value: "default",
+                  label: localize(
+                    "ui.panel.lovelace.editor.card.gauge.color_default"
+                  ),
+                  display_color: severityMap.normal,
+                },
+              ] as UiColorExtraOption[],
+            },
+          },
+        },
+        {
+          name: "segments",
+          visible: { field: "color_mode", value: "segments" },
+          selector: {
+            object: {
+              multiple: true,
+              reorder: false,
+              fields: {
+                from: {
+                  label: localize(
+                    "ui.panel.lovelace.editor.card.gauge.segment.from"
+                  ),
+                  required: true,
+                  selector: { number: { mode: "box", step: "any" } },
+                },
+                color: {
+                  label: localize(
+                    "ui.panel.lovelace.editor.card.generic.color"
+                  ),
+                  required: true,
+                  selector: { ui_color: {} },
+                },
+              },
+            },
+          },
         },
         {
           name: "severity",
           type: "grid",
-          visible: { field: "show_severity", value: true },
+          visible: { field: "color_mode", value: "severity" },
           schema: [
             {
               name: "green",
@@ -194,10 +263,11 @@ export class HuiGaugeCardEditor
       return nothing;
     }
 
-    const schema = this._schema(this._config!.entity);
+    const schema = this._schema(this.hass.localize, this._config!.entity);
     const data = {
-      show_severity: this._config!.severity !== undefined,
+      color_mode: this._colorMode(this._config!),
       ...this._config,
+      segments: this._sortSegments(this._config!.segments),
     };
 
     return html`
@@ -211,10 +281,26 @@ export class HuiGaugeCardEditor
     `;
   }
 
+  private _sortSegments = memoizeOne(
+    (segments?: GaugeSegment[]) =>
+      segments && [...segments].sort((a, b) => a.from - b.from)
+  );
+
+  private _colorMode(config: GaugeCardConfig): GaugeColorMode {
+    if (config.segments) {
+      return "segments";
+    }
+    if (config.severity) {
+      return "severity";
+    }
+    return "color";
+  }
+
   private _valueChanged(ev: CustomEvent): void {
     let config = ev.detail.value;
+    const colorMode: GaugeColorMode = config.color_mode;
 
-    if (config.show_severity) {
+    if (colorMode === "severity") {
       config = {
         ...config,
         severity: {
@@ -223,11 +309,21 @@ export class HuiGaugeCardEditor
           red: config.red || config.severity?.red || 0,
         },
       };
-    } else if (!config.show_severity && config.severity) {
+    } else {
       delete config.severity;
     }
 
-    delete config.show_severity;
+    if (colorMode === "segments") {
+      config.segments = this._sortSegments(config.segments ?? []);
+    } else {
+      delete config.segments;
+    }
+
+    if (colorMode !== "color") {
+      delete config.color;
+    }
+
+    delete config.color_mode;
     delete config.green;
     delete config.yellow;
     delete config.red;
@@ -257,9 +353,17 @@ export class HuiGaugeCardEditor
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.generic.minimum"
         );
-      case "show_severity":
+      case "color_mode":
         return this.hass!.localize(
-          "ui.panel.lovelace.editor.card.gauge.severity.define"
+          "ui.panel.lovelace.editor.card.gauge.color_mode"
+        );
+      case "color":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.color"
+        );
+      case "segments":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.gauge.segments"
         );
       case "needle":
         return this.hass!.localize(
