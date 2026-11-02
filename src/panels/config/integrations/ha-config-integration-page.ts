@@ -746,7 +746,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
               ${
                 configPanel
                   ? html`<ha-button
-                      .appearance=${setUpInPanel ? "accent" : "outlined"}
+                      .appearance=${
+                        showAddEntry || canAddDevice ? "outlined" : "accent"
+                      }
                       href=${`/${configPanel}`}
                     >
                       ${this.hass.localize(

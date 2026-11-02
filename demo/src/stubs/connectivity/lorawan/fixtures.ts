@@ -46,7 +46,7 @@ export const lorawanFixtures: ConnectivityFixtures = {
   manifests: [
     manifest("lorawan", "LoRaWAN", {
       config_flow: false,
-      integration_type: "helper",
+      integration_type: "service",
     }),
     manifest("sensecap_lorawan", "SenseCAP", {
       integration_type: "device",
