@@ -37,6 +37,14 @@ export const onboardingData = {
     timeZone: "Europe/Amsterdam",
     unitSystem: "metric",
   },
+  searchedPlace: {
+    place_id: 1,
+    lat: "40.7128",
+    lon: "-74.006",
+    name: "New York",
+    address: { city: "New York", country: "United States", country_code: "us" },
+    boundingbox: [40.4774, 40.9176, -74.2591, -73.7004],
+  },
 } as const;
 
 const onboardingSteps = [
@@ -350,6 +358,19 @@ export async function detectLocation(page: Page, calls: OnboardingCalls) {
   await confirm.click();
   await expect(confirm).toBeHidden();
   await expect.poll(() => calls.coreConfigDetected).toBe(true);
+}
+
+export async function searchAddress(page: Page) {
+  const place = onboardingData.searchedPlace;
+  await page.route(
+    "https://nominatim.openstreetmap.org/search.php**",
+    (route) => route.fulfill({ json: [place] })
+  );
+  const location = page.locator("onboarding-location");
+  const input = location.locator("ha-input input");
+  await input.fill(place.name);
+  await input.press("Enter");
+  await expect(location.locator("ha-list")).toContainText(place.name);
 }
 
 export async function confirmLocation(page: Page) {

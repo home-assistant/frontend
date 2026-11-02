@@ -10,6 +10,7 @@ import {
   finishIntegrations,
   onboardingData,
   openOnboarding,
+  searchAddress,
   setupOnboardingMocks,
 } from "./app/src/onboarding";
 import { expectNoPageErrors, trackPageErrors } from "./helpers";
@@ -200,6 +201,32 @@ test.describe("detected location", () => {
       time_zone: onboardingData.location.timeZone,
       currency: onboardingData.location.currency,
       country: onboardingData.location.country,
+    });
+    expectNoPageErrors(errors);
+  });
+
+  test("drops detected details after searching another address", async ({
+    page,
+    baseURL,
+  }) => {
+    const errors = trackPageErrors(page);
+    const calls = await setupOnboardingMocks(page);
+
+    await openOnboarding(page, baseURL!);
+    await createOwner(page);
+    await detectLocation(page, calls);
+    await searchAddress(page);
+    await confirmLocation(page);
+    await expect.poll(() => calls.coreConfigCompleted).toBe(true);
+
+    expect(calls.coreConfig).toMatchObject({
+      type: "config/core/update",
+      latitude: Number(onboardingData.searchedPlace.lat),
+      longitude: Number(onboardingData.searchedPlace.lon),
+      unit_system: "us_customary",
+      time_zone: "America/New_York",
+      currency: "USD",
+      country: "US",
     });
     expectNoPageErrors(errors);
   });
