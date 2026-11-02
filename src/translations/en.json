@@ -2969,7 +2969,7 @@
           },
           "marketplace": {
             "main": "Marketplace",
-            "secondary": "Install integrations, dashboard cards, themes, and templates shared by the community"
+            "secondary": "Install community integrations, dashboard content, themes, and templates"
           },
           "dashboards": {
             "main": "Dashboards",
