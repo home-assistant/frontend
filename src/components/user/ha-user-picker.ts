@@ -142,6 +142,7 @@ class HaUserPicker extends LitElement {
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}
         .rowRenderer=${this._rowRenderer}
+        .loading=${this.users === undefined}
         .searchKeys=${SEARCH_KEYS}
         .unknownItemText=${this._localize("ui.components.user-picker.unknown")}
         @value-changed=${this._valueChanged}

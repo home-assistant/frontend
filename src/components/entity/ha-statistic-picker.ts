@@ -589,6 +589,7 @@ export class HaStatisticPicker extends LitElement {
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
+        .loading=${this.statisticIds === undefined}
         .hideClearIcon=${this.hideClearIcon}
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}

@@ -275,6 +275,7 @@ export class HaCategoryPicker extends LitElement {
         )}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
+        .loading=${Boolean(this.scope) && this._categories === undefined}
         .valueRenderer=${valueRenderer}
         .unknownItemText=${this._i18n.localize(
           "ui.components.category-picker.unknown"
