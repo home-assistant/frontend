@@ -75,7 +75,6 @@ import {
   computeHistoryUpdateDelay,
   convertStatisticsToHistory,
   countHistoryStates,
-  historyStreamEntityIds,
   mergeHistoryResults,
   subscribeHistory,
 } from "../../data/history";
@@ -614,7 +613,7 @@ class HaPanelHistory extends LitElement {
   private async _getHistory() {
     const sourceIds = this._getEntityIds();
     this._fetchedEntityIds = sourceIds;
-    const entityIds = historyStreamEntityIds(sourceIds);
+    const entityIds = sourceIds.filter((id) => !isExternalStatistic(id));
 
     if (entityIds.length === 0) {
       // The running subscription would keep pushing the previous entities.

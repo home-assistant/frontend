@@ -4,7 +4,6 @@ import {
   HistoryStream,
   computeHistory,
   convertStatisticsToHistory,
-  historyStreamEntityIds,
   isTimelineEntity,
   mergeHistoryResults,
 } from "../../src/data/history";
@@ -457,17 +456,5 @@ describe("convertStatisticsToHistory without an entity", () => {
     expect(result.line).toHaveLength(1);
     expect(result.line[0].unit).toBe(" ");
     expect(result.line[0].data[0].name).not.toBe("Outdoor temperature");
-  });
-});
-
-describe("historyStreamEntityIds", () => {
-  it("leaves out external statistics, which the history stream rejects", () => {
-    expect(
-      historyStreamEntityIds([
-        "binary_sensor.door",
-        "example:outdoor_temperature",
-        "sensor.indoor_temperature",
-      ])
-    ).toEqual(["binary_sensor.door", "sensor.indoor_temperature"]);
   });
 });

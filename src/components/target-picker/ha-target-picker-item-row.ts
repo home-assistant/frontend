@@ -1,4 +1,5 @@
 import {
+  mdiChartLine,
   mdiClose,
   mdiDevices,
   mdiHome,
@@ -882,7 +883,12 @@ export class HaTargetPickerItemRow extends LitElement {
       const stateObject: HassEntity | undefined = this._states?.[item];
       // External statistics have no state, only the metadata the recorder keeps.
       if (!stateObject && this._statistic?.statistic_id === item) {
-        return { name: this._statistic.name || item, notFound: false };
+        return {
+          name: this._statistic.name || item,
+          context: domainToName(this._i18n.localize, this._statistic.source),
+          fallbackIconPath: mdiChartLine,
+          notFound: false,
+        };
       }
       const { primary, secondary } = stateObject
         ? computeEntityPickerDisplay(

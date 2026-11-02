@@ -154,14 +154,6 @@ export const computeHistoryUpdateDelay = (
         maxDelay
       );
 
-/**
- * IDs of a source list that have a state history. External statistics have no
- * states, and the history stream rejects the whole subscription for an ID that
- * is not an entity ID.
- */
-export const historyStreamEntityIds = (sourceIds: string[]): string[] =>
-  sourceIds.filter((id) => !isExternalStatistic(id));
-
 export const subscribeHistory = (
   hass: HomeAssistant,
   callbackFunction: (data: HistoryStates) => void,
@@ -531,9 +523,7 @@ const BLANK_UNIT = " ";
 
 /**
  * Attributes for an external statistic, which has no entity. Without them the
- * history names the series after its ID and shows it without a unit. Other
- * statistics keep a blank unit, so that they merge into the history line of
- * their entity even after the entity was removed.
+ * history names the series after its ID and shows it without a unit.
  */
 const statisticAttributes = (
   metadata: StatisticsMetaData | undefined
@@ -566,6 +556,8 @@ export const convertStatisticsToHistory = (
   // Convert statistics to HistoryResult format
   const statsHistoryStates: HistoryStates = {};
   Object.entries(orderedStatistics).forEach(([key, value]) => {
+    // Other statistics keep a blank unit, so that they merge into the history
+    // line of their entity even after the entity was removed.
     const attributes = isExternalStatistic(key)
       ? statisticAttributes(statisticsMetadata?.[key])
       : {};

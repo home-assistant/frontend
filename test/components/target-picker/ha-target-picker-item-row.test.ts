@@ -1,3 +1,4 @@
+import { mdiChartLine } from "@mdi/js";
 import { describe, expect, it } from "vitest";
 import "../../../src/components/target-picker/ha-target-picker-item-row";
 import type { HaTargetPickerItemRow } from "../../../src/components/target-picker/ha-target-picker-item-row";
@@ -246,6 +247,10 @@ describe("ha-target-picker-item-row external statistics", () => {
       floors: {},
     };
     row._states = {};
+    row._i18n = {
+      localize: (key: string) =>
+        key === "component.example.title" ? "Example" : "",
+    };
     const messages: Record<string, unknown>[] = [];
     row._api = {
       callWS: async (message: Record<string, unknown>) => {
@@ -278,6 +283,8 @@ describe("ha-target-picker-item-row external statistics", () => {
       },
     ]);
     expect(data.name).toBe("Outdoor temperature");
+    expect(data.context).toBe("Example");
+    expect(data.fallbackIconPath).toBe(mdiChartLine);
     expect(data.notFound).toBe(false);
   });
 
