@@ -6,7 +6,7 @@ import { DragScrollController } from "../common/controllers/drag-scroll-controll
 import { fireEvent } from "../common/dom/fire_event";
 import type { SortableInstance } from "../resources/sortable";
 
-const TOUCH_DRAG_DELAY = 300;
+const TOUCH_DRAG_DELAY_MS = 300;
 
 const AUTO_SCROLL_SENSITIVITY = 30;
 
@@ -38,11 +38,6 @@ export class HaTabGroup extends TabGroup {
     // Prevent the tab group from consuming Alt+Arrow and Cmd+Arrow keys,
     // which browsers use for back/forward navigation.
     this.addEventListener("keydown", this._handleKeyDown, true);
-    // Capture, so the delay is set before SortableJS reads it.
-    this.addEventListener("touchstart", this._handleTouchStart, {
-      capture: true,
-      passive: true,
-    });
     if (this.hasUpdated && this.sortable) {
       this._createSortable();
     }
@@ -51,7 +46,6 @@ export class HaTabGroup extends TabGroup {
   disconnectedCallback(): void {
     super.disconnectedCallback();
     this.removeEventListener("keydown", this._handleKeyDown, true);
-    this.removeEventListener("touchstart", this._handleTouchStart, true);
     this._destroySortable();
   }
 
@@ -81,6 +75,11 @@ export class HaTabGroup extends TabGroup {
     // supportPointer is missing from the SortableJS typings.
     const options: SortableInstance.Options & { supportPointer?: boolean } = {
       draggable: this.tabTag,
+      // SortableJS guesses vertical from the tabs being display: block.
+      direction:
+        this.placement === "start" || this.placement === "end"
+          ? "vertical"
+          : "horizontal",
       // The tab bar scrolls inside the shadow root, where SortableJS can't find it.
       scroll: this.nav,
       // Force the autoscroll fallback because it works better than the native one
@@ -89,7 +88,7 @@ export class HaTabGroup extends TabGroup {
       scrollSpeed: 20,
       animation: 150,
       // Keep swiping on touch screens for scrolling the tab bar.
-      delay: TOUCH_DRAG_DELAY,
+      delay: TOUCH_DRAG_DELAY_MS,
       delayOnTouchOnly: true,
       // A scrolling swipe ends in pointercancel, after which SortableJS
       // ignores the next drag. Touch events end with touchend instead.
@@ -99,18 +98,21 @@ export class HaTabGroup extends TabGroup {
       onUpdate: this._handleSortableUpdate,
     };
     this._sortable = new Sortable(this, options);
+    // Capture, so the delay is set before SortableJS reads it.
+    this.addEventListener("touchstart", this._handleTouchStart, {
+      capture: true,
+      passive: true,
+    });
   }
 
   private _destroySortable() {
     this._sortable?.destroy();
     this._sortable = undefined;
+    this.removeEventListener("touchstart", this._handleTouchStart, true);
     this._removeRtlAutoScrollListeners();
   }
 
   private _handleTouchStart = (ev: TouchEvent) => {
-    if (!this._sortable) {
-      return;
-    }
     const onHandle =
       !!this.handleSelector &&
       ev
@@ -118,7 +120,7 @@ export class HaTabGroup extends TabGroup {
         .some(
           (el) => el instanceof Element && el.matches(this.handleSelector!)
         );
-    this._sortable.option("delay", onHandle ? 0 : TOUCH_DRAG_DELAY);
+    this._sortable!.option("delay", onHandle ? 0 : TOUCH_DRAG_DELAY_MS);
   };
 
   private _handleSortableStart = (evt: SortableEvent) => {
