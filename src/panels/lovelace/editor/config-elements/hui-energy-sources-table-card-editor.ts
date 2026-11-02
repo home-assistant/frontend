@@ -40,6 +40,7 @@ const cardConfigStruct = assign(
       )
     ),
     show_only_totals: optional(boolean()),
+    combine_sources: optional(boolean()),
   })
 );
 
@@ -95,6 +96,11 @@ export class HuiEnergySourcesTableCardEditor
             selector: { boolean: {} },
           },
           {
+            name: "combine_sources",
+            required: false,
+            selector: { boolean: {} },
+          },
+          {
             type: "string",
             name: "collection_key",
             required: false,
@@ -133,8 +139,9 @@ export class HuiEnergySourcesTableCardEditor
   private _computeHelperCallback = (schema) => {
     switch (schema.name) {
       case "collection_key":
+      case "combine_sources":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.collection_key_description`
+          `ui.panel.lovelace.editor.card.generic.${schema.name}_description`
         );
       default:
         return undefined;

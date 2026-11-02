@@ -39,6 +39,7 @@ const cardConfigStruct = assign(
     group_by_area: optional(boolean()),
     max_devices: optional(number()),
     show_values: optional(boolean()),
+    combine_sources: optional(boolean()),
   })
 );
 
@@ -98,6 +99,16 @@ export class HuiEnergySankeyCardEditor
                 required: false,
                 selector: { boolean: {} },
               },
+              {
+                name: "combine_sources",
+                visible: {
+                  field: "type",
+                  operator: "in",
+                  value: ["water-sankey", "water-flow-sankey"],
+                },
+                required: false,
+                selector: { boolean: {} },
+              },
             ],
           },
           {
@@ -144,8 +155,9 @@ export class HuiEnergySankeyCardEditor
   private _computeHelperCallback = (schema) => {
     switch (schema.name) {
       case "collection_key":
+      case "combine_sources":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.collection_key_description`
+          `ui.panel.lovelace.editor.card.generic.${schema.name}_description`
         );
       case "max_devices":
         return this.hass!.localize(

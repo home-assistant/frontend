@@ -422,6 +422,7 @@ export interface EnergyData {
   startCompare?: Date;
   endCompare?: Date;
   compareMode?: CompareMode;
+  combineSources?: boolean;
   prefs: EnergyPreferences;
   info: EnergyInfo;
   stats: Statistics;
@@ -945,10 +946,13 @@ export interface EnergyCollection extends Omit<
   start: Date;
   end?: Date;
   compare?: CompareMode;
+  combineSources: boolean;
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
   setCompare(compare: CompareMode): void;
+  setCombineSources(combine: boolean): void;
+  applyCombineSources(combine: boolean): void;
   isActive(): boolean;
   _refreshTimeout?: number;
   _updatePeriodTimeout?: number;
@@ -1034,6 +1038,56 @@ export const getEnergyDefaultPeriodStorageKey = (
 ): string => {
   const [key] = convertCollectionKeyToConnection(panelUrl, collectionKey);
   return `energy-default-period-${key}`;
+};
+
+// One setting for every energy collection, so views without a period
+// selector follow it too.
+export const ENERGY_COMBINE_SOURCES_STORAGE_KEY = "energy-combine-sources";
+
+export const hasCombinableEnergySources = (
+  prefs: EnergyPreferences
+): boolean => {
+  const types = new Set<string>();
+  return prefs.energy_sources.some((source) => {
+    if (types.has(source.type)) {
+      return true;
+    }
+    types.add(source.type);
+    return false;
+  });
+};
+
+export const shouldCombineEnergySources = (
+  config: { combine_sources?: boolean },
+  data: EnergyData
+): boolean => config.combine_sources ?? data.combineSources ?? false;
+
+// Sums several sources into one series, as if they were a single source.
+export const sumEnergyStatistics = (
+  stats: Statistics,
+  statIds: string[]
+): StatisticValue[] => {
+  const summed = new Map<number, StatisticValue>();
+  for (const statId of statIds) {
+    let prevStart: number | undefined;
+    for (const point of stats[statId] ?? []) {
+      if (point.change == null || point.start === prevStart) {
+        continue;
+      }
+      prevStart = point.start;
+      const existing = summed.get(point.start);
+      if (existing) {
+        existing.change! += point.change;
+      } else {
+        summed.set(point.start, {
+          start: point.start,
+          end: point.end,
+          change: point.change,
+        });
+      }
+    }
+  }
+  return [...summed.values()].sort((a, b) => a.start - b.start);
 };
 
 // When today's first hourly statistic becomes available (01:00 in the
@@ -1234,7 +1288,10 @@ export const getEnergyDataCollection = (
       return;
     }
     publishedSelectionRevision = requestSelectionRevision;
-    store.setState(data, true);
+    store.setState(
+      { ...data, combineSources: collection.combineSources },
+      true
+    );
   };
 
   // Use the collection's subscription lifecycle, but publish explicitly so an
@@ -1362,6 +1419,8 @@ export const getEnergyDataCollection = (
     subscribe,
     start: calcDate(initialStart, startOfDay, locale, config),
     end: calcDate(initialEnd, endOfDay, locale, config),
+    combineSources:
+      localStorage.getItem(ENERGY_COMBINE_SOURCES_STORAGE_KEY) === "true",
     prefs: options.prefs,
     _active: 0,
     isActive: () => !!collection._active,
@@ -1396,6 +1455,30 @@ export const getEnergyDataCollection = (
         revision++;
         selectionRevision++;
         collection.compare = compare;
+      }
+    },
+    setCombineSources(combine: boolean) {
+      if (combine) {
+        localStorage.setItem(ENERGY_COMBINE_SOURCES_STORAGE_KEY, "true");
+      } else {
+        localStorage.removeItem(ENERGY_COMBINE_SOURCES_STORAGE_KEY);
+      }
+      energyCollectionKeys.forEach((otherKey) => {
+        findEnergyDataCollection(
+          connection,
+          panelUrl,
+          otherKey
+        )?.applyCombineSources(combine);
+      });
+    },
+    applyCombineSources(combine: boolean) {
+      if (collection.combineSources === combine) {
+        return;
+      }
+      collection.combineSources = combine;
+      // Display-only: re-publish the current data instead of fetching it again.
+      if (store.state) {
+        store.setState({ ...store.state, combineSources: combine }, true);
       }
     },
   };

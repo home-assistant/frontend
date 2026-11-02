@@ -72,6 +72,7 @@ import {
   CompareMode,
   downloadEnergyData,
   getEnergyDefaultPeriodStorageKey,
+  hasCombinableEnergySources,
 } from "../../../data/energy";
 import { EnergyCollectionController } from "../../../data/energy-collection-controller";
 import type {
@@ -116,6 +117,9 @@ export class HuiEnergyPeriodSelector extends LitElement {
   @property({ type: Boolean, attribute: "allow-compare" }) public allowCompare =
     true;
 
+  @property({ type: Boolean, attribute: "allow-combine-sources" })
+  public allowCombineSources = true;
+
   @property({ attribute: "vertical-opening-direction" })
   public verticalOpeningDirection?: VerticalOpeningDirection;
 
@@ -145,6 +149,10 @@ export class HuiEnergyPeriodSelector extends LitElement {
   @state() private _ranges: DateRangePickerRanges = {};
 
   @state() private _compare = false;
+
+  @state() private _combineSources = false;
+
+  @state() private _hasCombinableSources = false;
 
   @state() private _collapseButtons = false;
 
@@ -277,6 +285,19 @@ export class HuiEnergyPeriodSelector extends LitElement {
           "ui.panel.lovelace.components.energy_period_selector.compare"
         ),
         action: () => this._toggleCompare(),
+      },
+      {
+        path: this._combineSources
+          ? mdiCheckboxOutline
+          : mdiCheckboxBlankOutline,
+        alwaysCollapse: true,
+        hidden:
+          !this.allowCombineSources ||
+          (!this._hasCombinableSources && !this._combineSources),
+        label: this._i18n.localize(
+          "ui.panel.lovelace.components.energy_period_selector.combine_sources"
+        ),
+        action: () => this._toggleCombineSources(),
       },
       {
         path: mdiDownload,
@@ -741,6 +762,8 @@ export class HuiEnergyPeriodSelector extends LitElement {
     }
     this._loading = false;
     this._compare = energyData.startCompare !== undefined;
+    this._combineSources = !!energyData.combineSources;
+    this._hasCombinableSources = hasCombinableEnergySources(energyData.prefs);
     this._startDate = energyData.start;
     this._endDate = energyData.end || endOfToday();
   }
@@ -758,6 +781,10 @@ export class HuiEnergyPeriodSelector extends LitElement {
     );
     energyCollection.refresh();
     this._scheduleLoadingIndicator();
+  }
+
+  private _toggleCombineSources() {
+    this._energyCollection.collection?.setCombineSources(!this._combineSources);
   }
 
   private _downloadData() {

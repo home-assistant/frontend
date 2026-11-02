@@ -1256,7 +1256,7 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
       new Date("2026-01-01T00:00:00Z"),
       new Date("2026-01-31T23:59:59Z")
     );
-    return { collection, pending, connection: hass.connection, callWS };
+    return { collection, pending, connection: hass.connection, callWS, hass };
   };
 
   const complete = async (
@@ -1343,6 +1343,29 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
     await complete(pending[0]);
     assert.equal(received.mock.calls.length, 1);
     assert.equal(collection.state?.compareMode, CompareMode.PREVIOUS);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("combines sources in every collection without refetching", async () => {
+    vi.useFakeTimers();
+    const { collection, pending, hass } = createCollection();
+    const other = getEnergyDataCollection(hass.connection, {
+      ...hass,
+      key: "energy_overlapping_other",
+    });
+    const received: EnergyData[] = [];
+    const unsub = collection.subscribe((data) => received.push(data));
+    await complete(pending[0]);
+    collection.setCombineSources(true);
+    assert.equal(pending.length, 1);
+    assert.deepEqual(
+      received.map((data) => data.combineSources),
+      [false, true]
+    );
+    assert.strictEqual(received[1].info, received[0].info);
+    assert.isTrue(other.combineSources);
+    assert.isTrue(createCollection().collection.combineSources);
     unsub();
     await vi.advanceTimersByTimeAsync(5000);
   });

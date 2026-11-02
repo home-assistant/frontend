@@ -60,6 +60,21 @@ const SCHEMA: HaFormSchema[] = [
     selector: { boolean: {} },
   },
   {
+    name: "combine_sources",
+    visible: {
+      field: "type",
+      operator: "in",
+      value: [
+        "energy-usage-graph",
+        "energy-solar-graph",
+        "energy-gas-graph",
+        "energy-water-graph",
+      ],
+    },
+    required: false,
+    selector: { boolean: {} },
+  },
+  {
     type: "string",
     name: "collection_key",
     required: false,
@@ -88,6 +103,7 @@ const cardConfigStruct = assign(
     show_legend: optional(boolean()),
     expand_legend: optional(boolean()),
     link_dashboard: optional(boolean()),
+    combine_sources: optional(boolean()),
   })
 );
 
@@ -141,8 +157,9 @@ export class HuiEnergyGraphCardEditor
   private _computeHelperCallback = (schema) => {
     switch (schema.name) {
       case "collection_key":
+      case "combine_sources":
         return this.hass!.localize(
-          `ui.panel.lovelace.editor.card.generic.collection_key_description`
+          `ui.panel.lovelace.editor.card.generic.${schema.name}_description`
         );
       default:
         return undefined;

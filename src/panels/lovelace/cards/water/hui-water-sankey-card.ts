@@ -16,6 +16,7 @@ import {
 import type { EnergyData } from "../../../../data/energy";
 import {
   computeEnergyDeviceLabels,
+  shouldCombineEnergySources,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
 import { EnergyCollectionController } from "../../../../data/energy-collection-controller";
@@ -204,8 +205,25 @@ class HuiWaterSankeyCard
     const waterColor = computedStyle
       .getPropertyValue("--energy-water-color")
       .trim();
+    const combineSources = shouldCombineEnergySources(this._config, this._data);
+    if (combineSources && totalSourceSupply > 0) {
+      nodes.push({
+        id: "source-water",
+        label: this._i18n.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.water"
+        ),
+        value: totalSourceSupply,
+        color: waterColor,
+        index: 0,
+      });
+      links.push({
+        source: "source-water",
+        target: "home",
+        value: totalSourceSupply,
+      });
+    }
     waterSources.forEach((source) => {
-      if (source.type !== "water") {
+      if (combineSources || source.type !== "water") {
         return;
       }
       const value =
