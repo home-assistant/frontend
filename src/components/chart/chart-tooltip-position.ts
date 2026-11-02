@@ -85,8 +85,9 @@ const fitInto = (
 
 /**
  * ECharts' default placement (or the chart-confined one), moved into the
- * window when it would leave it. Below the cursor is tried first, then above.
- * A tooltip taller than the window starts at its top.
+ * window when it would leave it. The other side of the cursor is tried before
+ * clamping, below first vertically. A tooltip taller than the window starts at
+ * its top. A confined tooltip never leaves the chart.
  */
 export const windowTooltipPosition =
   (
@@ -98,12 +99,11 @@ export const windowTooltipPosition =
     const [viewW, viewH] = size.viewSize;
     const [tipW, tipH] = size.contentSize;
 
+    const right = cursorX + ECHARTS_TOOLTIP_GAP_PX;
+    const left = cursorX - ECHARTS_TOOLTIP_GAP_PX - tipW;
     const below = cursorY + ECHARTS_TOOLTIP_GAP_PX;
     const above = cursorY - ECHARTS_TOOLTIP_GAP_PX - tipH;
-    let x =
-      cursorX + ECHARTS_TOOLTIP_GAP_PX + tipW + 2 > viewW
-        ? cursorX - ECHARTS_TOOLTIP_GAP_PX - tipW
-        : cursorX + ECHARTS_TOOLTIP_GAP_PX;
+    let x = right + tipW + 2 > viewW ? left : right;
     let y = below + tipH > viewH ? above : below;
     if (confine) {
       x = Math.max(0, Math.min(x, viewW - tipW));
@@ -114,21 +114,40 @@ export const windowTooltipPosition =
     if (!rect?.height) {
       return [x, y];
     }
+    const fit = (
+      pos: number,
+      tipSize: number,
+      alternatives: number[],
+      windowMin: number,
+      windowMax: number,
+      viewSize: number
+    ) => {
+      if (!confine) {
+        return fitInto(pos, tipSize, alternatives, windowMin, windowMax);
+      }
+      const min = Math.max(0, windowMin);
+      const max = Math.min(viewSize, windowMax);
+      return tipSize > max - min
+        ? pos
+        : fitInto(pos, tipSize, alternatives, min, max);
+    };
     const { clientWidth, clientHeight } = document.documentElement;
     return [
-      fitInto(
+      fit(
         x,
         tipW,
-        [],
+        [right, left],
         WINDOW_MARGIN_PX - rect.left,
-        clientWidth - WINDOW_MARGIN_PX - rect.left
+        clientWidth - WINDOW_MARGIN_PX - rect.left,
+        viewW
       ),
-      fitInto(
+      fit(
         y,
         tipH,
         [below, above],
         WINDOW_MARGIN_PX - rect.top,
-        clientHeight - WINDOW_MARGIN_PX - rect.top
+        clientHeight - WINDOW_MARGIN_PX - rect.top,
+        viewH
       ),
     ];
   };

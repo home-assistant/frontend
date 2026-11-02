@@ -86,32 +86,71 @@ describe("windowTooltipPosition", () => {
 
   const callWindowPosition = (
     cursor: [number, number],
-    chartTop: number,
     contentSize: [number, number],
-    confine = false
+    {
+      chart = new DOMRect(100, 400, 1000, 350),
+      confine = false,
+    }: { chart?: DOMRect; confine?: boolean } = {}
   ) => {
     setWindowSize(1440, 900);
-    const chartRect = new DOMRect(100, chartTop, 1000, 350);
-    return windowTooltipPosition(() => chartRect, confine)(
+    return windowTooltipPosition(() => chart, confine)(
       cursor,
       [],
       document.createElement("div"),
       null,
-      { viewSize: [1000, 350], contentSize }
+      { viewSize: [chart.width, chart.height], contentSize }
     ) as [number, number];
   };
 
   it("keeps the ECharts position when it fits the window", () => {
-    expect(callWindowPosition([100, 300], 400, [200, 260])).toEqual([120, 20]);
+    expect(callWindowPosition([100, 300], [200, 260])).toEqual([120, 20]);
   });
 
   it("opens below the cursor when above leaves the window", () => {
-    expect(callWindowPosition([100, 300], 50, [200, 400])).toEqual([120, 320]);
+    expect(
+      callWindowPosition([100, 300], [200, 400], {
+        chart: new DOMRect(100, 50, 1000, 350),
+      })
+    ).toEqual([120, 320]);
+  });
+
+  it("opens right of the cursor when left leaves the window", () => {
+    const [x] = callWindowPosition([100, 100], [260, 100], {
+      chart: new DOMRect(16, 400, 300, 350),
+    });
+    expect(x).toBe(100 + 20);
   });
 
   it("pins a tooltip taller than the window to the window top", () => {
-    const [x, y] = callWindowPosition([980, 300], 400, [300, 1200], true);
+    const [, y] = callWindowPosition([300, 300], [300, 1200]);
     expect(y).toBe(WINDOW_MARGIN_PX - 400);
-    expect(x).toBe(980 - 20 - 300);
+  });
+
+  it("keeps a confined tooltip inside the chart", () => {
+    const chart = new DOMRect(0, 700, 400, 400);
+    const [x, y] = callWindowPosition([380, 20], [200, 250], {
+      chart,
+      confine: true,
+    });
+    expect(y).toBe(20 + 20);
+    expect(x).toBe(380 - 20 - 200);
+  });
+
+  it("keeps a confined tooltip above the chart bottom", () => {
+    const chart = new DOMRect(0, -100, 400, 400);
+    const [, y] = callWindowPosition([100, 260], [200, 150], {
+      chart,
+      confine: true,
+    });
+    expect(y).toBe(WINDOW_MARGIN_PX + 100);
+  });
+
+  it("moves a confined tooltip into the visible part of the chart", () => {
+    const chart = new DOMRect(0, 600, 400, 400);
+    const [, y] = callWindowPosition([100, 200], [200, 150], {
+      chart,
+      confine: true,
+    });
+    expect(y).toBe(200 - 20 - 150);
   });
 });
