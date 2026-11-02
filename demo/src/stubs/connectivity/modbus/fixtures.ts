@@ -10,7 +10,7 @@ export const FRONIUS_ENTRY_ID = "mock-fronius";
 export const RS485_PORT = "/dev/ttyUSB1";
 
 export const modbusFixtures: ConnectivityFixtures = {
-  components: ["modbus"],
+  components: ["modbus", "flexit", "solaredge_modbus", "fronius"],
   commands: ["modbus/"],
   manifests: [
     manifest("modbus", "Modbus", {
