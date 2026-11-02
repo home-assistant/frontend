@@ -461,9 +461,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         </ha-dropdown>
         <ha-assist-chip
           slot="selection-bar"
-          .label=${this.hass.localize(
-            "ui.panel.config.lovelace.dashboards.delete_selected"
-          )}
+          .label=${this.hass.localize("ui.common.delete")}
           .disabled=${!this._deletableSelected().length}
           @click=${this._removeSelected}
         ></ha-assist-chip>

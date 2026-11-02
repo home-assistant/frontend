@@ -148,7 +148,7 @@ export class CloudForgotPasswordCard extends LitElement {
       haStyle,
       css`
         ha-card {
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
           margin: 0 auto;
           margin-top: 24px;
         }

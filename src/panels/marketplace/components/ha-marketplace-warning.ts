@@ -3,6 +3,7 @@ import {
   mdiAlertOctagonOutline,
   mdiAlertOutline,
   mdiDatabaseExportOutline,
+  mdiShieldKeyOutline,
   mdiWeb,
 } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
@@ -26,6 +27,7 @@ import {
 } from "../../../data/marketplace/websocket";
 
 const RISKS = [
+  { risk: "access", icon: mdiShieldKeyOutline },
   { risk: "internet", icon: mdiWeb },
   { risk: "data", icon: mdiDatabaseExportOutline },
   { risk: "stability", icon: mdiAlertOctagonOutline },

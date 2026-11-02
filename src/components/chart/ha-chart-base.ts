@@ -68,6 +68,7 @@ import { ZOOM_SLIDER_HEIGHT } from "./ha-chart-zoom-slider";
 import { formatTimeLabel } from "./axis-label";
 import type { ChartSonification } from "./chart-sonification";
 import { canSonifyChart, sonifyChart } from "./chart-sonification";
+import { windowTooltipPosition } from "./chart-tooltip-position";
 import { downSampleLineData } from "./down-sample";
 import { wrapLitTooltipFormatter } from "./lit-tooltip-formatter";
 
@@ -1252,9 +1253,19 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       const processTooltip = (tooltip: HaTooltipOption): TooltipOption => {
         const next = convertHaTooltipFormatter(tooltip);
         if (isMobile) {
+          next.appendTo = undefined;
+        }
+        if (next.position === undefined) {
+          // ECharts confines after the position callback, which would undo the
+          // window fit, so the callback confines itself
+          next.position = windowTooltipPosition(
+            () => this._chartContainer?.getBoundingClientRect(),
+            isMobile || next.confine === true
+          );
+          next.confine = false;
+        } else if (isMobile) {
           // mobile charts are full width so we need to confine the tooltip to the chart
           next.confine = true;
-          next.appendTo = undefined;
         }
         if (isMobile || this._touchInput) {
           next.triggerOn = "click";

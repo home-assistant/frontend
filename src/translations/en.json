@@ -3529,7 +3529,6 @@
           "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
           "confirm_delete_title": "Delete label?",
           "confirm_delete": "Are you sure you want to delete label {label}? It will be removed from all areas, devices, and entities.",
-          "delete_selected": "Delete selected",
           "confirm_delete_selected_title": "Delete selected labels?",
           "confirm_delete_selected": "{count, plural,\n  one {The selected label will be removed from all areas, devices, and entities.}\n  other {The {count} selected labels will be removed from all areas, devices, and entities.}\n}",
           "delete_failed_title": "Delete failed",
@@ -4197,7 +4196,6 @@
           "create_automation": "Create automation",
           "confirm_delete_title": "Delete tag?",
           "confirm_delete": "The tag ''{tag}'' will be permanently deleted.",
-          "delete_selected": "Delete selected",
           "confirm_delete_selected_title": "Delete selected tags?",
           "confirm_delete_selected": "{count, plural,\n  one {The selected tag will be permanently deleted.}\n  other {The {count} selected tags will be permanently deleted.}\n}",
           "delete_failed_title": "Delete failed",
@@ -4511,6 +4509,7 @@
                   "no_statistics_found": "No statistics found for this period.",
                   "info_text_1": "Sometimes the statistics end up being incorrect for a specific point in time. This can mess up your beautiful graphs! Select a time below to find the bad moment and adjust the data.",
                   "pick_a_time": "Pick a time",
+                  "statistic_values": "Statistic values",
                   "statistic": "Statistic:",
                   "start": "Start",
                   "end": "End",
@@ -5072,6 +5071,7 @@
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
           "no_issues_integration": "No issues found for {integration}",
+          "no_issues_filters": "No issues match the selected filters",
           "integration_log_waiting": "[%key:ui::panel::config::integrations::config_entry::live_log::waiting%]",
           "integration_log_unsupported": "[%key:ui::panel::config::integrations::config_entry::live_log::unsupported%]",
           "no_matches_showing_all": "Nothing in the recent logs mentions ''{term}'', so all lines are shown.",
@@ -5092,6 +5092,17 @@
             "warning": "WARNING",
             "info": "INFO",
             "debug": "DEBUG"
+          },
+          "level_filter": {
+            "caption": "Level",
+            "critical": "Critical",
+            "error": "Error",
+            "warning": "Warning"
+          },
+          "level_count": {
+            "critical": "{count} critical {count, plural,\n one {entry}\n other {entries}\n}",
+            "error": "{count} {count, plural,\n one {error}\n other {errors}\n}",
+            "warning": "{count} {count, plural,\n one {warning}\n other {warnings}\n}"
           },
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This log entry is from a custom integration.",
@@ -5217,7 +5228,6 @@
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
-            "delete_selected": "Delete selected",
             "confirm_delete_selected_title": "Delete selected dashboards?",
             "confirm_delete_selected": "{count, plural,\n  one {The selected dashboard will be permanently deleted.}\n  other {The {count} selected dashboards will be permanently deleted.}\n}",
             "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} dashboards. The others are built-in or configured in YAML.",
@@ -6736,7 +6746,6 @@
             "blueprint_in_use_view_script": "View scripts",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
-            "delete_selected": "Delete selected",
             "confirm_delete_selected_title": "Delete selected blueprints?",
             "confirm_delete_selected": "{count, plural,\n  one {The selected blueprint will be permanently deleted.}\n  other {The {count} selected blueprints will be permanently deleted.}\n}",
             "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} blueprints. The others are in use by automations or scripts.",
@@ -9526,7 +9535,7 @@
           "description": "Manage the format of newly created entity IDs",
           "card": {
             "header": "Entity ID format for new entities",
-            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
+            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new ID is created. Using it is optional, and you can still rename each entity's ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
             "learn_more": "Learn more",
             "preview": "Examples",
             "preview_error": "Failed to generate preview",
@@ -9604,6 +9613,7 @@
             "title": "Configure network interfaces",
             "connected_to": "Connected to {ssid}",
             "scan_ap": "Search networks",
+            "access_points": "Wi-Fi networks",
             "reset": "Reset configuration",
             "signal_strength": "Signal strength",
             "open": "Open",
@@ -9764,6 +9774,7 @@
             "title": "Additional storage",
             "add_title": "Add storage",
             "update_title": "Update storage",
+            "reload": "Reload storage",
             "no_mounts": "No additional storage configured",
             "no_disks": "No suitable disks were found. Connect a disk with a supported file system, then reopen this dialog.",
             "documentation": "Documentation",
@@ -10189,7 +10200,8 @@
               "untracked_consumption": "Untracked consumption",
               "over_reported_consumption": "Over-reported consumption",
               "untracked": "untracked",
-              "other": "Other"
+              "other": "Other",
+              "other_devices": "{count, plural, one {# other device} other {# other devices}}"
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
@@ -12042,7 +12054,11 @@
               "bar-gauge": {
                 "label": "Bar gauge",
                 "min": "Minimum value",
-                "max": "Maximum value"
+                "max": "Maximum value",
+                "show_severity": "[%key:ui::panel::lovelace::editor::card::gauge::severity::define%]",
+                "green": "[%key:ui::panel::lovelace::editor::card::gauge::severity::green%]",
+                "yellow": "[%key:ui::panel::lovelace::editor::card::gauge::severity::yellow%]",
+                "red": "[%key:ui::panel::lovelace::editor::card::gauge::severity::red%]"
               },
               "trend-graph": {
                 "label": "Trend graph",
@@ -12992,6 +13008,7 @@
           "intro": "Marketplace items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
           "risks_title": "Anything you install can",
           "risks": {
+            "access": "Access and control everything in Home\u00a0Assistant",
             "internet": "Connect to the internet",
             "data": "Share your data with others",
             "stability": "Slow down or crash Home\u00a0Assistant"
@@ -13027,8 +13044,7 @@
           "empty_header": "Nothing in the Marketplace yet",
           "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
-          "repository_not_found": "Repository not found",
-          "uninstall_selected": "Uninstall selected"
+          "repository_not_found": "Repository not found"
         },
         "entry": {
           "disabled": "The Marketplace is disabled. Enable it on the integration page to use it.",
@@ -13094,6 +13110,8 @@
           "already_installing": "This is already being installed, hold on.",
           "install_failed": "Installation failed. Check the Home Assistant logs for details.",
           "pre_release": "Pre-release",
+          "release_installed": "Installed",
+          "release_latest": "Latest",
           "install_intro": "This installs {name} version {version} in Home Assistant.",
           "update_intro": "This updates {name} from version {installed} to {version}.",
           "reinstall_intro": "This installs version {version} of {name} again.",
