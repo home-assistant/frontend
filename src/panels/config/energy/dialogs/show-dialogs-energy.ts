@@ -74,6 +74,7 @@ export interface EnergySettingsDeviceGasDialogParams {
   device?: DeviceConsumptionEnergyPreference;
   device_consumptions: DeviceConsumptionEnergyPreference[];
   statsMetadata?: Record<string, StatisticsMetaData>;
+  allowedUnitClass?: EnergyGasUnitClass;
   saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
 }
 

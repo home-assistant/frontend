@@ -92,6 +92,23 @@ export class DialogEnergyDeviceSettingsGas
     this._initDirtyTracking({ type: "deep" }, this._device ?? null);
   }
 
+  private get _unitClasses(): string[] {
+    return this._params?.allowedUnitClass
+      ? [this._params.allowedUnitClass]
+      : gasUnitClasses;
+  }
+
+  private get _deviceClasses(): string[] {
+    switch (this._params?.allowedUnitClass) {
+      case "volume":
+        return ["gas"];
+      case "energy":
+        return ["energy"];
+      default:
+        return gasDeviceClasses;
+    }
+  }
+
   private _computePossibleParents() {
     if (!this._device || !this._params) {
       this._possibleParents = [];
@@ -161,8 +178,8 @@ export class DialogEnergyDeviceSettingsGas
 
         <ha-statistic-picker
           .helpMissingEntityUrl=${energyStatisticHelpUrl}
-          .includeUnitClass=${gasUnitClasses}
-          .includeDeviceClass=${gasDeviceClasses}
+          .includeUnitClass=${this._unitClasses}
+          .includeDeviceClass=${this._deviceClasses}
           .value=${this._device?.stat_consumption}
           .label=${this.hass.localize(
             "ui.panel.config.energy.device_consumption_gas.dialog.device_consumption_gas"
@@ -350,7 +367,11 @@ export class DialogEnergyDeviceSettingsGas
   // A flow rate integrates to a volume, never to energy
   private _integralUnits(): IntegralUnits | undefined {
     const statRate = this._device?.stat_rate;
-    if (!statRate || !this._gas_units) {
+    if (
+      !statRate ||
+      !this._gas_units ||
+      this._params?.allowedUnitClass === "energy"
+    ) {
       return undefined;
     }
     return integralUnits(

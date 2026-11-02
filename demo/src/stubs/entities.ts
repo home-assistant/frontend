@@ -160,6 +160,26 @@ export const energyEntities = () =>
         unit_of_measurement: "L",
       },
     },
+    "sensor.gas_kitchen": {
+      entity_id: "sensor.gas_kitchen",
+      state: "100",
+      attributes: {
+        friendly_name: "Gas kitchen",
+        unit_of_measurement: "m³",
+        device_class: "gas",
+        state_class: "total_increasing",
+      },
+    },
+    "sensor.gas_heat_pump": {
+      entity_id: "sensor.gas_heat_pump",
+      state: "500",
+      attributes: {
+        friendly_name: "Gas heat pump",
+        unit_of_measurement: "m³",
+        device_class: "gas",
+        state_class: "total_increasing",
+      },
+    },
     "sensor.energy_car": {
       entity_id: "sensor.energy_car",
       state: "4",

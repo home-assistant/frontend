@@ -27,6 +27,7 @@ import type {
 } from "../../../../data/energy";
 import {
   computeEnergyLabel,
+  getEnergyGasUnitClass,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
@@ -221,6 +222,11 @@ export class EnergyDeviceSettingsGas extends LitElement {
     showEnergySettingsDeviceGasDialog(this, {
       statsMetadata: this.statsMetadata,
       device: { ...origDevice },
+      allowedUnitClass: getEnergyGasUnitClass(
+        this.preferences,
+        origDevice.stat_consumption,
+        this.statsMetadata
+      ),
       device_consumptions: this.preferences
         .device_consumption_gas as DeviceConsumptionEnergyPreference[],
       saveCallback: async (newDevice) => {
@@ -239,6 +245,11 @@ export class EnergyDeviceSettingsGas extends LitElement {
   private _addDevice() {
     showEnergySettingsDeviceGasDialog(this, {
       statsMetadata: this.statsMetadata,
+      allowedUnitClass: getEnergyGasUnitClass(
+        this.preferences,
+        undefined,
+        this.statsMetadata
+      ),
       device_consumptions: this.preferences
         .device_consumption_gas as DeviceConsumptionEnergyPreference[],
       saveCallback: async (device) => {

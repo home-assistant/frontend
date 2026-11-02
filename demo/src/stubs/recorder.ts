@@ -158,6 +158,24 @@ const statisticsFunctions: Record<
       (bucketStart, bucketEnd) =>
         (20 * (bucketEnd.getTime() - bucketStart.getTime())) / 3600000
     ),
+  "sensor.gas_kitchen": (_id, start, end, period = "hour") =>
+    generateSumStatistics(
+      start,
+      end,
+      period,
+      100,
+      (bucketStart, bucketEnd) =>
+        (0.1 * (bucketEnd.getTime() - bucketStart.getTime())) / 3600000
+    ),
+  "sensor.gas_heat_pump": (_id, start, end, period = "hour") =>
+    generateSumStatistics(
+      start,
+      end,
+      period,
+      500,
+      (bucketStart, bucketEnd) =>
+        (0.6 * (bucketEnd.getTime() - bucketStart.getTime())) / 3600000
+    ),
   "sensor.energy_consumption_tarif_1": (
     _id: string,
     start: Date,

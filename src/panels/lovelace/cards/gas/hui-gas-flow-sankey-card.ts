@@ -13,7 +13,10 @@ import {
   registriesContext,
   statesContext,
 } from "../../../../data/context";
-import type { EnergyData } from "../../../../data/energy";
+import type {
+  DeviceConsumptionEnergyPreference,
+  EnergyData,
+} from "../../../../data/energy";
 import {
   computeEnergyDeviceLabels,
   formatFlowRateShort,
@@ -185,13 +188,41 @@ class HuiGasFlowSankeyCard
     // total only reflects top-level devices and we don't double-count.
     let totalDeviceFlow = 0;
     if (gasSources.length === 0) {
+      const byStat = new Map<string, DeviceConsumptionEnergyPreference>(
+        prefs.device_consumption_gas.map(
+          (d) => [d.stat_consumption, d] as const
+        )
+      );
+      // Un figlio è già contato solo se un antenato ha una portata live > 0
+      const parentHasLiveRate = (
+        device: DeviceConsumptionEnergyPreference
+      ): boolean => {
+        const seen = new Set<string>();
+        let parentId = device.included_in_stat;
+        while (parentId && !seen.has(parentId)) {
+          seen.add(parentId);
+          const parent = byStat.get(parentId);
+          if (!parent) {
+            return false;
+          }
+          if (
+            parent.stat_rate &&
+            this._getCurrentFlowRate(parent.stat_rate) > 0
+          ) {
+            return true;
+          }
+          parentId = parent.included_in_stat;
+        }
+        return false;
+      };
       prefs.device_consumption_gas.forEach((device) => {
-        if (device.included_in_stat) {
+        if (!device.stat_rate || parentHasLiveRate(device)) {
           return;
         }
-        if (device.stat_rate) {
-          totalDeviceFlow += this._getCurrentFlowRate(device.stat_rate);
-        }
+        totalDeviceFlow += Math.max(
+          0,
+          this._getCurrentFlowRate(device.stat_rate)
+        );
       });
     }
     const effectiveTotalInflow =
@@ -292,7 +323,7 @@ class HuiGasFlowSankeyCard
       minThreshold: minFlowThreshold,
       maxDevices: this._config.max_devices ?? DEFAULT_MAX_SANKEY_DEVICES,
       untrackedFloor: 1,
-      ceilOtherValue: true,
+      ceilOtherValue: false,
       initialUntracked: effectiveTotalInflow,
       getId: (device) => device.stat_rate,
       getValue: (id) => this._getCurrentFlowRate(id),

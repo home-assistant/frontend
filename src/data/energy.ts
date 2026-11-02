@@ -511,7 +511,7 @@ export const getReferencedStatisticIds = (
   }
   if (!(includeTypes && !includeTypes.includes("gas"))) {
     statIDs.push(
-      ...prefs.device_consumption_gas.map((d) => d.stat_consumption)
+      ...(prefs.device_consumption_gas ?? []).map((d) => d.stat_consumption)
     );
   }
 
@@ -550,7 +550,7 @@ export const getReferencedStatisticIdsPower = (
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
   statIDs.push(...prefs.device_consumption_water.map((d) => d.stat_rate));
-  statIDs.push(...prefs.device_consumption_gas.map((d) => d.stat_rate));
+  statIDs.push(...(prefs.device_consumption_gas ?? []).map((d) => d.stat_rate));
 
   return statIDs.filter(Boolean) as string[];
 };
@@ -659,9 +659,16 @@ const getEnergyData = async (
   const gasIsOtherEnergy =
     ENERGY_UNITS.includes(gasUnit as any) && gasUnit !== "kWh";
   const gasEnergyStatIds = gasIsOtherEnergy
-    ? (energySourcesByType(prefs).gas ?? []).map(
-        (source) => source.stat_energy_from
-      )
+    ? [
+        ...new Set([
+          ...(energySourcesByType(prefs).gas ?? []).map(
+            (source) => source.stat_energy_from
+          ),
+          ...(prefs.device_consumption_gas ?? []).map(
+            (device) => device.stat_consumption
+          ),
+        ]),
+      ]
     : [];
   const gasEnergyUnits: StatisticsUnitConfiguration = {
     energy: gasIsOtherEnergy
@@ -1442,6 +1449,15 @@ export const getEnergyGasUnitClass = (
       return statisticIdWithMeta.unit_class as EnergyGasUnitClass;
     }
   }
+  for (const device of prefs.device_consumption_gas ?? []) {
+    if (excludeSource && excludeSource === device.stat_consumption) {
+      continue;
+    }
+    const unitClass = statisticsMetaData[device.stat_consumption]?.unit_class;
+    if (energyGasUnitClass.includes(unitClass as EnergyGasUnitClass)) {
+      return unitClass as EnergyGasUnitClass;
+    }
+  }
   return undefined;
 };
 
@@ -1451,15 +1467,15 @@ const getEnergyGasUnit = (
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string => {
-  const units = prefs.energy_sources
-    .filter((s) => s.type === "gas")
-    .map((s) =>
-      getDisplayUnit(
-        states,
-        s.stat_energy_from,
-        statisticsMetaData[s.stat_energy_from]
-      )
-    );
+  const gasStatIds = [
+    ...prefs.energy_sources.flatMap((s) =>
+      s.type === "gas" ? [s.stat_energy_from] : []
+    ),
+    ...(prefs.device_consumption_gas ?? []).map((d) => d.stat_consumption),
+  ];
+  const units = gasStatIds.map((id) =>
+    getDisplayUnit(states, id, statisticsMetaData[id])
+  );
 
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === "energy") {
@@ -1485,10 +1501,7 @@ const getEnergyGasUnit = (
         return [];
       }),
     ]);
-    const isSharedWithKWh = prefs.energy_sources.some(
-      (source) =>
-        source.type === "gas" && kWhStatIds.has(source.stat_energy_from)
-    );
+    const isSharedWithKWh = gasStatIds.some((id) => kWhStatIds.has(id));
     const first = units[0];
     if (
       !isSharedWithKWh &&
