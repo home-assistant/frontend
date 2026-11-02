@@ -1,8 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   TOOLTIP_GAP_PX,
   TOOLTIP_TOP_OFFSET_PX,
+  WINDOW_MARGIN_PX,
   sideTooltipPosition,
+  windowTooltipPosition,
 } from "../../../src/components/chart/chart-tooltip-position";
 
 const callPosition = (
@@ -62,5 +64,54 @@ describe("sideTooltipPosition", () => {
   it("prefers the left of the cursor in RTL mode", () => {
     const [x] = callPosition(400, { rtl: true });
     expect(x).toBe(400 - TOOLTIP_GAP_PX - 200);
+  });
+});
+
+describe("windowTooltipPosition", () => {
+  const setWindowSize = (width: number, height: number) => {
+    Object.defineProperty(document.documentElement, "clientWidth", {
+      configurable: true,
+      value: width,
+    });
+    Object.defineProperty(document.documentElement, "clientHeight", {
+      configurable: true,
+      value: height,
+    });
+  };
+
+  afterEach(() => {
+    Reflect.deleteProperty(document.documentElement, "clientWidth");
+    Reflect.deleteProperty(document.documentElement, "clientHeight");
+  });
+
+  const callWindowPosition = (
+    cursor: [number, number],
+    chartTop: number,
+    contentSize: [number, number],
+    confine = false
+  ) => {
+    setWindowSize(1440, 900);
+    const chartRect = new DOMRect(100, chartTop, 1000, 350);
+    return windowTooltipPosition(() => chartRect, confine)(
+      cursor,
+      [],
+      document.createElement("div"),
+      null,
+      { viewSize: [1000, 350], contentSize }
+    ) as [number, number];
+  };
+
+  it("keeps the ECharts position when it fits the window", () => {
+    expect(callWindowPosition([100, 300], 400, [200, 260])).toEqual([120, 20]);
+  });
+
+  it("opens below the cursor when above leaves the window", () => {
+    expect(callWindowPosition([100, 300], 50, [200, 400])).toEqual([120, 320]);
+  });
+
+  it("pins a tooltip taller than the window to the window top", () => {
+    const [x, y] = callWindowPosition([980, 300], 400, [300, 1200], true);
+    expect(y).toBe(WINDOW_MARGIN_PX - 400);
+    expect(x).toBe(980 - 20 - 300);
   });
 });

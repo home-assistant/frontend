@@ -10184,7 +10184,8 @@
               "untracked_consumption": "Untracked consumption",
               "over_reported_consumption": "Over-reported consumption",
               "untracked": "untracked",
-              "other": "Other"
+              "other": "Other",
+              "other_devices": "{count, plural, one {# other device} other {# other devices}}"
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",

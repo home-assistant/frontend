@@ -67,3 +67,68 @@ export const itemTooltipPosition: TooltipPositionCallback = (
 
   return [x, y];
 };
+
+const ECHARTS_TOOLTIP_GAP_PX = 20;
+export const WINDOW_MARGIN_PX = 8;
+
+const fitInto = (
+  pos: number,
+  size: number,
+  alternatives: number[],
+  min: number,
+  max: number
+) =>
+  size > max - min
+    ? min
+    : ([pos, ...alternatives].find((p) => p >= min && p + size <= max) ??
+      Math.max(min, Math.min(pos, max - size)));
+
+/**
+ * ECharts' default placement (or the chart-confined one), moved into the
+ * window when it would leave it. Below the cursor is tried first, then above.
+ * A tooltip taller than the window starts at its top.
+ */
+export const windowTooltipPosition =
+  (
+    getChartRect: () => DOMRect | undefined,
+    confine: boolean
+  ): TooltipPositionCallback =>
+  (point, _params, _dom, _rect, size) => {
+    const [cursorX, cursorY] = point;
+    const [viewW, viewH] = size.viewSize;
+    const [tipW, tipH] = size.contentSize;
+
+    const below = cursorY + ECHARTS_TOOLTIP_GAP_PX;
+    const above = cursorY - ECHARTS_TOOLTIP_GAP_PX - tipH;
+    let x =
+      cursorX + ECHARTS_TOOLTIP_GAP_PX + tipW + 2 > viewW
+        ? cursorX - ECHARTS_TOOLTIP_GAP_PX - tipW
+        : cursorX + ECHARTS_TOOLTIP_GAP_PX;
+    let y = below + tipH > viewH ? above : below;
+    if (confine) {
+      x = Math.max(0, Math.min(x, viewW - tipW));
+      y = Math.max(0, Math.min(y, viewH - tipH));
+    }
+
+    const rect = getChartRect();
+    if (!rect?.height) {
+      return [x, y];
+    }
+    const { clientWidth, clientHeight } = document.documentElement;
+    return [
+      fitInto(
+        x,
+        tipW,
+        [],
+        WINDOW_MARGIN_PX - rect.left,
+        clientWidth - WINDOW_MARGIN_PX - rect.left
+      ),
+      fitInto(
+        y,
+        tipH,
+        [below, above],
+        WINDOW_MARGIN_PX - rect.top,
+        clientHeight - WINDOW_MARGIN_PX - rect.top
+      ),
+    ];
+  };
