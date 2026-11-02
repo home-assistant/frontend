@@ -230,7 +230,7 @@ describe("dialog-data-entry-flow dismissal", () => {
     const step = dialog.shadowRoot!.querySelector("step-flow-menu")!;
     await step.updateComplete;
 
-    step.shadowRoot!.querySelector<HTMLElement>("ha-list-item")!.click();
+    step.shadowRoot!.querySelector<HTMLElement>("ha-list-item-button")!.click();
     await dialog.updateComplete;
 
     expect(innerDialog(dialog).preventScrimClose).toBe(true);

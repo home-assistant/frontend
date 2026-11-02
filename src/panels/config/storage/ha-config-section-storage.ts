@@ -3,6 +3,7 @@ import {
   mdiFolder,
   mdiInformationOutline,
   mdiNas,
+  mdiPencil,
   mdiPlayBox,
   mdiReload,
 } from "@mdi/js";
@@ -22,6 +23,7 @@ import "../../../components/ha-segmented-bar";
 import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
+import "../../../components/item/ha-list-item-base";
 import "../../../components/item/ha-list-item-button";
 import "../../../components/list/ha-list-base";
 import { extractApiErrorMessage } from "../../../data/hassio/common";
@@ -192,51 +194,34 @@ class HaConfigSectionStorage extends LitElement {
                         "ui.panel.config.storage.network_mounts.title"
                       )}
                     >
-                      ${validMounts.map(
-                        (mount) => html`
-                          <ha-list-item-button
-                            .mount=${mount}
-                            @click=${this._changeMount}
-                          >
-                            <div slot="start" class="mount-icon">
-                              <ha-svg-icon
-                                .path=${
-                                  mount.usage === SupervisorMountUsage.MEDIA
-                                    ? mdiPlayBox
-                                    : mount.usage === SupervisorMountUsage.SHARE
-                                      ? mdiFolder
-                                      : mdiBackupRestore
-                                }
-                              ></ha-svg-icon>
-                            </div>
-                            <span
-                              slot="headline"
-                              class="mount-state-${mount.state || "unknown"}"
+                      ${validMounts.map((mount) =>
+                        mount.state === SupervisorMountState.ACTIVE
+                          ? html`<ha-list-item-button
+                              .mount=${mount}
+                              @click=${this._changeMount}
                             >
-                              ${mount.name}
-                            </span>
-                            <span slot="supporting-text" class="mount-details">
-                              <span class="mount-address">
-                                ${supervisorMountDescription(mount)}
-                              </span>
-                              ${this._renderMountUsage(mount)}
-                            </span>
-                            ${
-                              mount.state !== SupervisorMountState.ACTIVE
-                                ? html`<ha-icon-button
-                                    class="reload-btn"
-                                    slot="end"
-                                    .mount=${mount}
-                                    .label=${this.hass.localize(
-                                      "ui.panel.config.storage.network_mounts.reload"
-                                    )}
-                                    @click=${this._reloadMount}
-                                    .path=${mdiReload}
-                                  ></ha-icon-button>`
-                                : html`<ha-icon-next slot="end"></ha-icon-next>`
-                            }
-                          </ha-list-item-button>
-                        `
+                              ${this._renderMountContent(mount)}
+                              <ha-icon-next slot="end"></ha-icon-next>
+                            </ha-list-item-button>`
+                          : html`<ha-list-item-base>
+                              ${this._renderMountContent(mount)}
+                              <div slot="end" class="mount-actions">
+                                <ha-icon-button
+                                  .mount=${mount}
+                                  .label=${this.hass.localize(
+                                    "ui.panel.config.storage.network_mounts.reload"
+                                  )}
+                                  @click=${this._reloadMount}
+                                  .path=${mdiReload}
+                                ></ha-icon-button>
+                                <ha-icon-button
+                                  .mount=${mount}
+                                  .label=${this.hass.localize("ui.common.edit")}
+                                  @click=${this._changeMount}
+                                  .path=${mdiPencil}
+                                ></ha-icon-button>
+                              </div>
+                            </ha-list-item-base>`
                       )}
                     </ha-list-base>`
                   : html`<div class="no-mounts">
@@ -307,6 +292,31 @@ class HaConfigSectionStorage extends LitElement {
           </p>
         </ha-tooltip>
       </ha-segmented-bar>
+    `;
+  }
+
+  private _renderMountContent(mount: SupervisorMount) {
+    return html`
+      <div slot="start" class="mount-icon">
+        <ha-svg-icon
+          .path=${
+            mount.usage === SupervisorMountUsage.MEDIA
+              ? mdiPlayBox
+              : mount.usage === SupervisorMountUsage.SHARE
+                ? mdiFolder
+                : mdiBackupRestore
+          }
+        ></ha-svg-icon>
+      </div>
+      <span slot="headline" class="mount-state-${mount.state || "unknown"}">
+        ${mount.name}
+      </span>
+      <span slot="supporting-text" class="mount-details">
+        <span class="mount-address">
+          ${supervisorMountDescription(mount)}
+        </span>
+        ${this._renderMountUsage(mount)}
+      </span>
     `;
   }
 
@@ -535,7 +545,8 @@ class HaConfigSectionStorage extends LitElement {
       padding: 0 16px 16px;
     }
 
-    .reload-btn {
+    .mount-actions {
+      display: flex;
       margin-inline-end: calc(var(--ha-space-3) * -1);
     }
 
@@ -572,7 +583,7 @@ class HaConfigSectionStorage extends LitElement {
       width: 40px;
     }
     .mount-icon,
-    .reload-btn,
+    .mount-actions,
     ha-list-item-button ha-icon-next {
       color: var(--secondary-text-color);
     }
