@@ -1,6 +1,6 @@
 import type { ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
@@ -159,14 +159,14 @@ export class HaFilterIntegrations extends LitElement {
     `;
   }
 
-  private _renderCounts(domain: string) {
+  private _renderCounts(domain: string): TemplateResult | typeof nothing {
     const counts = this.counts?.[domain];
 
     if (!counts?.length) {
       return nothing;
     }
 
-    return html`<span slot="end" class="counts">
+    return html`<span slot="supporting-text" class="counts">
       ${counts.map(
         (item) =>
           html`<ha-badge
@@ -295,10 +295,10 @@ export class HaFilterIntegrations extends LitElement {
           padding: var(--ha-space-1) var(--ha-space-2) 0;
         }
         .counts {
-          display: inline-flex;
+          display: flex;
+          flex-wrap: wrap;
           gap: var(--ha-space-1);
-          margin-inline-start: var(--ha-space-2);
-          vertical-align: middle;
+          margin-top: var(--ha-space-1);
           --ha-badge-size: 22px;
           --ha-badge-icon-size: 14px;
           --ha-badge-font-size: var(--ha-font-size-xs);
