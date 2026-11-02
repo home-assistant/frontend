@@ -300,26 +300,33 @@ export async function createOwner(page: Page) {
     .click();
 }
 
-export async function completeCoreConfig(page: Page) {
+export async function completeCoreConfig(
+  page: Page,
+  detectedUnitSystem?: "metric" | "us_customary"
+) {
   const location = page.locator("onboarding-location");
   await expect(location).toBeAttached({ timeout: PANEL_TIMEOUT });
-  await location.evaluate((element, locationData) => {
-    element.dispatchEvent(
-      new CustomEvent("value-changed", {
-        bubbles: true,
-        composed: true,
-        detail: {
-          value: {
-            location: [locationData.latitude, locationData.longitude],
-            country: locationData.country,
-            elevation: String(locationData.elevation),
-            timezone: locationData.timeZone,
-            currency: locationData.currency,
+  await location.evaluate(
+    (element, { locationData, unitSystem }) => {
+      element.dispatchEvent(
+        new CustomEvent("value-changed", {
+          bubbles: true,
+          composed: true,
+          detail: {
+            value: {
+              location: [locationData.latitude, locationData.longitude],
+              country: locationData.country,
+              elevation: String(locationData.elevation),
+              timezone: locationData.timeZone,
+              currency: locationData.currency,
+              unit_system: unitSystem,
+            },
           },
-        },
-      })
-    );
-  }, onboardingData.location);
+        })
+      );
+    },
+    { locationData: onboardingData.location, unitSystem: detectedUnitSystem }
+  );
 }
 
 export async function completeAnalytics(page: Page) {
