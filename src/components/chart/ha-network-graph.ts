@@ -648,7 +648,7 @@ export class HaNetworkGraph extends LitElement {
 
     ha-icon-button,
     ::slotted(ha-icon-button) {
-      margin-right: 12px;
+      margin-inline-end: var(--ha-space-3);
     }
   `;
 }

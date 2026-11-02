@@ -17,6 +17,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, queryAll, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
+import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
@@ -65,6 +66,7 @@ import {
   LogSeverity,
   domainToName,
   fetchIntegrationManifest,
+  getConfigPanelPath,
   integrationIssuesUrl,
   setIntegrationLogLevel,
   subscribeLogInfo,
@@ -82,6 +84,7 @@ import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { documentationUrl } from "../../../util/documentation-url";
 import { fileDownload } from "../../../util/file_download";
+import { configSections } from "../config-sections";
 import "./ha-config-entry-row";
 import type { HaConfigEntryRow } from "./ha-config-entry-row";
 import type { DataEntryFlowProgressExtended } from "./ha-config-integrations";
@@ -100,6 +103,9 @@ export interface ConfigEntryData {
   services: DeviceRegistryEntry[];
   subEntries: SubEntryData[];
 }
+
+// The AI settings show how to connect to the MCP server and its APIs.
+const AI_SETTINGS_DOMAINS = ["mcp", "mcp_server"];
 
 export const renderConfigEntryError = (
   hass: HomeAssistant,
@@ -396,6 +402,20 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.domain
     );
 
+    const configPanel = isComponentLoaded(this.hass.config, this.domain)
+      ? getConfigPanelPath(this.domain, this.hass.panels)
+      : undefined;
+    // Without a config flow, the panel is where the integration is set up.
+    const setUpInPanel = Boolean(
+      configPanel && this._manifest && !this._manifest.config_flow
+    );
+
+    const showAddEntry =
+      this._manifest?.integration_type !== "hardware" &&
+      !setUpInPanel &&
+      (!this._manifest?.single_config_entry ||
+        (normalData.length === 0 && attentionData.length === 0));
+
     const documentationLink = this._manifest?.is_built_in
       ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
       : this._manifest?.documentation;
@@ -581,6 +601,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   }
                   ${
                     normalEntries.length === 0 &&
+                    !setUpInPanel &&
                     this._manifest &&
                     !this._manifest.config_flow &&
                     this.hass.config.components.find(
@@ -690,6 +711,41 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
             </div>
             <div class="actions">
               ${
+                configPanel
+                  ? html`<ha-button
+                      .appearance=${setUpInPanel ? "accent" : "outlined"}
+                      href=${`/${configPanel}`}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.integration_page.open_config_panel",
+                        {
+                          name: this._configPanelName(this.domain, configPanel),
+                        }
+                      )}
+                    </ha-button>`
+                  : nothing
+              }
+              ${
+                AI_SETTINGS_DOMAINS.includes(this.domain)
+                  ? html`<ha-button
+                      .appearance=${showAddEntry ? "outlined" : "accent"}
+                      href=${
+                        // The demo routes with the hash, so it cannot link to a section.
+                        __DEMO__ ? "/config/ai" : "/config/ai#mcp"
+                      }
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.integration_page.open_config_panel",
+                        {
+                          name: this.hass.localize(
+                            "ui.panel.config.ai.caption"
+                          ),
+                        }
+                      )}
+                    </ha-button>`
+                  : nothing
+              }
+              ${
                 canAddDevice
                   ? html`
                       <ha-button @click=${this._addDevice}>
@@ -701,9 +757,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   : nothing
               }
               ${
-                this._manifest?.integration_type !== "hardware" &&
-                (!this._manifest?.single_config_entry ||
-                  (normalData.length === 0 && attentionData.length === 0))
+                showAddEntry
                   ? html`<ha-button
                       .appearance=${canAddDevice ? "filled" : "accent"}
                       @click=${this._addIntegration}
@@ -880,56 +934,59 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 `
               : nothing
           }
-
-          <div class="section">
-            <h3 class="section-header">
-              ${
-                this._manifest?.integration_type
-                  ? this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.entries_${this._manifest.integration_type}`
-                    )
-                  : this.hass.localize(
-                      `ui.panel.config.integrations.integration_page.entries`
-                    )
-              }
-            </h3>
-            ${
-              filteredNormalData.length === 0
-                ? html`<div class="card-content no-entries">
+          ${
+            setUpInPanel && normalEntries.length === 0
+              ? nothing
+              : html`<div class="section">
+                  <h3 class="section-header">
                     ${
-                      this._filter
+                      this._manifest?.integration_type
                         ? this.hass.localize(
-                            "ui.panel.config.integrations.none_found"
+                            `ui.panel.config.integrations.integration_page.entries_${this._manifest.integration_type}`
                           )
-                        : this._manifest &&
-                            !this._manifest.config_flow &&
-                            this.hass.config.components.find(
-                              (comp) => comp.split(".")[0] === this.domain
-                            )
-                          ? this.hass.localize(
-                              "ui.panel.config.integrations.integration_page.yaml_entry"
-                            )
-                          : this.hass.localize(
-                              "ui.panel.config.integrations.integration_page.no_entries"
-                            )
+                        : this.hass.localize(
+                            `ui.panel.config.integrations.integration_page.entries`
+                          )
                     }
-                  </div>`
-                : html`
-                    ${filteredNormalData.map(
-                      (data) =>
-                        html`<ha-config-entry-row
-                          .hass=${this.hass}
-                          .narrow=${this.narrow}
-                          .manifest=${this._manifest}
-                          .diagnosticHandler=${this._diagnosticHandler}
-                          .entities=${this._entities}
-                          .data=${data}
-                          data-entry-id=${data.entry.entry_id}
-                        ></ha-config-entry-row>`
-                    )}
-                  `
-            }
-          </div>
+                  </h3>
+                  ${
+                    filteredNormalData.length === 0
+                      ? html`<div class="card-content no-entries">
+                          ${
+                            this._filter
+                              ? this.hass.localize(
+                                  "ui.panel.config.integrations.none_found"
+                                )
+                              : this._manifest &&
+                                  !this._manifest.config_flow &&
+                                  this.hass.config.components.find(
+                                    (comp) => comp.split(".")[0] === this.domain
+                                  )
+                                ? this.hass.localize(
+                                    "ui.panel.config.integrations.integration_page.yaml_entry"
+                                  )
+                                : this.hass.localize(
+                                    "ui.panel.config.integrations.integration_page.no_entries"
+                                  )
+                          }
+                        </div>`
+                      : html`
+                          ${filteredNormalData.map(
+                            (data) =>
+                              html`<ha-config-entry-row
+                                .hass=${this.hass}
+                                .narrow=${this.narrow}
+                                .manifest=${this._manifest}
+                                .diagnosticHandler=${this._diagnosticHandler}
+                                .entities=${this._entities}
+                                .data=${data}
+                                data-entry-id=${data.entry.entry_id}
+                              ></ha-config-entry-row>`
+                          )}
+                        `
+                  }
+                </div>`
+          }
         </div>
       </hass-subpage>
     `;
@@ -1387,6 +1444,20 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       );
     }
   );
+
+  private _configPanelName(domain: string, configPanel: string): string {
+    // Use the name the Connectivity page shows, like "Zigbee" for ZHA.
+    const page = configSections.connectivity.find(
+      (section) =>
+        ensureArray(section.component)?.includes(domain) ||
+        section.path === `/${configPanel}`
+    );
+    return page
+      ? this.hass.localize(
+          `ui.panel.config.dashboard.${page.translationKey}.main`
+        )
+      : domainToName(this.hass.localize, domain, this._manifest);
+  }
 
   private _addDevice() {
     protocolIntegrationPicked(this, this.hass, this.domain);

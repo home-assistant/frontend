@@ -27,19 +27,19 @@ export class HaPickAuthProvider extends LitElement {
 
   protected render() {
     return html`
-      <h3 id="title">
+      <h3>
         <span
           >${this._localize("ui.panel.page-authorize.pick_auth_provider")}</span
         >
       </h3>
-      <ha-list-base aria-labelledby="title">
+      <ha-list-base>
         ${this.authProviders.map(
           (provider) => html`
             <ha-list-item-button
-              .headline=${provider.name}
               .auth_provider=${provider}
               @click=${this._handlePick}
             >
+              <span slot="headline">${provider.name}</span>
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
           `
@@ -80,13 +80,7 @@ export class HaPickAuthProvider extends LitElement {
     }
     ha-list-base {
       margin: 16px -16px 0;
-      --ha-list-padding: var(--ha-space-2) 0;
-    }
-    ha-list-item-button {
-      --ha-row-item-padding-inline: var(--ha-space-6);
-    }
-    ha-icon-next {
-      color: var(--secondary-text-color);
+      --ha-row-item-padding-inline: 24px;
     }
   `;
 }

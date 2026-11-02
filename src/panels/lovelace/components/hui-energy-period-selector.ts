@@ -28,7 +28,7 @@ import type { ContextType } from "@lit/context";
 import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import {
@@ -78,7 +78,6 @@ import type {
   HomeAssistantConfig,
   HomeAssistantInternationalization,
 } from "../../../types";
-import { animationStyles } from "../../../resources/theme/animations.globals";
 
 const RANGE_KEYS: DateRange[] = [
   "today",
@@ -150,6 +149,10 @@ export class HuiEnergyPeriodSelector extends LitElement {
   @state() private _collapseButtons = false;
 
   @state() private _loading = false;
+
+  @state() private _loadingLeaving = false;
+
+  @query(".loading-indicator") private _loadingIndicator?: HTMLElement;
 
   private _loadingTimer?: ReturnType<typeof setTimeout>;
 
@@ -379,10 +382,15 @@ export class HuiEnergyPeriodSelector extends LitElement {
                 : nothing
             }
             ${
-              this._loading
+              this._loading || this._loadingLeaving
                 ? html`<ha-spinner
-                    class="loading-indicator"
+                    class=${classMap({
+                      "loading-indicator": true,
+                      leaving: this._loadingLeaving,
+                    })}
                     size="small"
+                    @transitionend=${this._loadingTransitionDone}
+                    @transitioncancel=${this._loadingTransitionDone}
                   ></ha-spinner>`
                 : nothing
             }
@@ -727,6 +735,10 @@ export class HuiEnergyPeriodSelector extends LitElement {
 
   private _updateDates(energyData: EnergyData): void {
     clearTimeout(this._loadingTimer);
+    if (this._loading) {
+      this._loadingLeaving = true;
+      this._removeLoadingIndicatorWithoutTransition();
+    }
     this._loading = false;
     this._compare = energyData.startCompare !== undefined;
     this._startDate = energyData.start;
@@ -759,8 +771,28 @@ export class HuiEnergyPeriodSelector extends LitElement {
     // Basically to ensure there's no "flash loading" when data is loaded quickly
     clearTimeout(this._loadingTimer);
     this._loadingTimer = setTimeout(() => {
+      this._loadingLeaving = false;
       this._loading = true;
     }, 200);
+  }
+
+  private async _removeLoadingIndicatorWithoutTransition() {
+    await this.updateComplete;
+    // No transition starts when the spinner was still at opacity 0
+    this._removeIdleLoadingIndicator();
+  }
+
+  private _loadingTransitionDone(ev: TransitionEvent) {
+    if (ev.propertyName === "opacity") {
+      this._removeIdleLoadingIndicator();
+    }
+  }
+
+  private _removeIdleLoadingIndicator() {
+    // Reversing the fade-in cancels a transition while the fade-out runs
+    if (!this._loadingIndicator?.getAnimations().length) {
+      this._loadingLeaving = false;
+    }
   }
 
   private _getDatePickerPlacement = memoizeOne(
@@ -778,7 +810,6 @@ export class HuiEnergyPeriodSelector extends LitElement {
   );
 
   static styles = css`
-    ${animationStyles}
     :host {
       display: block;
     }
@@ -843,7 +874,15 @@ export class HuiEnergyPeriodSelector extends LitElement {
       position: absolute;
       right: var(--ha-space-2);
       align-items: center;
-      animation: fade-in var(--ha-animation-duration-normal) ease-in-out;
+      transition: opacity var(--ha-animation-duration-normal) ease-in-out;
+    }
+    @starting-style {
+      .loading-indicator {
+        opacity: 0;
+      }
+    }
+    .loading-indicator.leaving {
+      opacity: 0;
     }
     .date-actions .overflow {
       display: flex;

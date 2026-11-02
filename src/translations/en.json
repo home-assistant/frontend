@@ -17,6 +17,7 @@
     "climate": "Climate",
     "home": "Overview",
     "maintenance": "Maintenance",
+    "marketplace": "Marketplace",
     "notfound": "Page not found"
   },
   "state": {
@@ -1662,7 +1663,9 @@
         "no_items": "No items available",
         "unknown_item": "Unknown item",
         "search_or_custom": "Search | Add custom item",
-        "add_custom_item": "Add custom item"
+        "add_custom_item": "Add custom item",
+        "result_count": "{count} {count, plural,\n one {result}\n other {results}\n} for {term}",
+        "no_results": "No results for {term}"
       },
       "suggest_with_ai": {
         "label": "Suggest",
@@ -2968,7 +2971,7 @@
           },
           "marketplace": {
             "main": "Marketplace",
-            "secondary": "Install integrations, dashboard cards, themes, and templates shared by the community"
+            "secondary": "Install community integrations, dashboard content, themes, and templates"
           },
           "dashboards": {
             "main": "Dashboards",
@@ -3949,15 +3952,15 @@
                   "addon_repositories": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::app_repositories%]",
                   "addons": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::apps%]",
                   "await_addon_restarts": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::await_app_restarts%]",
-                  "app_repositories": "Backing up app repositories",
-                  "apps": "Backing up apps",
-                  "await_app_restarts": "Waiting for apps to restart",
-                  "docker_config": "Backing up Docker configuration",
-                  "finishing_file": "Finishing backup file",
-                  "folders": "Backing up folders",
-                  "home_assistant": "Backing up Home Assistant",
-                  "upload_to_agents": "Uploading to locations",
-                  "cleaning_up": "Cleaning up"
+                  "app_repositories": "Backing up app repositories...",
+                  "apps": "Backing up apps...",
+                  "await_app_restarts": "Waiting for apps to restart...",
+                  "docker_config": "Backing up Docker configuration...",
+                  "finishing_file": "Finishing backup file...",
+                  "folders": "Backing up folders...",
+                  "home_assistant": "Backing up Home Assistant...",
+                  "upload_to_agents": "Uploading backup...",
+                  "cleaning_up": "Cleaning up..."
                 },
                 "restore_backup": {
                   "addon_repositories": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::app_repositories%]",
@@ -3985,7 +3988,7 @@
                 "apps": "Apps",
                 "media": "Media",
                 "upload": "Uploading backup",
-                "cleaning_up": "Cleaning up"
+                "cleaning_up": "Cleanup"
               },
               "agent_status": {
                 "uploading": "Uploading...",
@@ -7816,7 +7819,8 @@
             "add_hardware": "Add hardware",
             "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
             "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
-            "add_virtual": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
+            "add_virtual": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
+            "open_config_panel": "{name} settings"
           },
           "config_entry": {
             "application_credentials": {
@@ -9522,7 +9526,7 @@
           "description": "Manage the format of newly created entity IDs",
           "card": {
             "header": "Entity ID format for new entities",
-            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
+            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new ID is created. Using it is optional, and you can still rename each entity's ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
             "learn_more": "Learn more",
             "preview": "Examples",
             "preview_error": "Failed to generate preview",
@@ -10236,7 +10240,10 @@
         "add_entities": {
           "yaml_unsupported": "You cannot use this function when using your dashboard in YAML mode.",
           "generated_unsupported": "You can only use this function when you have taken control of your dashboard.",
-          "saving_failed": "Saving dashboard configuration failed."
+          "saving_failed": "Saving dashboard configuration failed.",
+          "added": "Added to {dashboard}",
+          "added_unnamed": "Added to the dashboard",
+          "open": "Open"
         },
         "views": {
           "unnamed_view": "Unnamed view",
@@ -12037,7 +12044,11 @@
               "bar-gauge": {
                 "label": "Bar gauge",
                 "min": "Minimum value",
-                "max": "Maximum value"
+                "max": "Maximum value",
+                "show_severity": "[%key:ui::panel::lovelace::editor::card::gauge::severity::define%]",
+                "green": "[%key:ui::panel::lovelace::editor::card::gauge::severity::green%]",
+                "yellow": "[%key:ui::panel::lovelace::editor::card::gauge::severity::yellow%]",
+                "red": "[%key:ui::panel::lovelace::editor::card::gauge::severity::red%]"
               },
               "trend-graph": {
                 "label": "Trend graph",

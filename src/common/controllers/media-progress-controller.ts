@@ -144,7 +144,8 @@ export class MediaProgressController implements ReactiveController {
       return;
     }
     slider.valueFormatter = formatMediaTime;
-    if (slider.matches(":state(dragging)")) {
+    // matches(":state(dragging)") throws before Chromium 125.
+    if (slider.customStates.has("dragging")) {
       return;
     }
     slider.value = this.progress ?? 0;

@@ -1,6 +1,5 @@
 import { TZDate } from "@date-fns/tz";
 import type { ContextType } from "@lit/context";
-import type { ActionDetail } from "@material/mwc-list";
 import { mdiCalendarToday } from "@mdi/js";
 import "cally";
 import type { HassConfig } from "home-assistant-js-websocket/dist/types";
@@ -17,6 +16,7 @@ import {
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
+  HASSDomCurrentTargetEvent,
   HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../common/dom/fire_event";
@@ -32,8 +32,8 @@ import type { HaBaseTimeInput } from "../ha-base-time-input";
 import "../ha-icon-button";
 import "../ha-icon-button-next";
 import "../ha-icon-button-prev";
-import "../ha-list";
-import "../ha-list-item";
+import "../item/ha-list-item-button";
+import "../list/ha-list-base";
 import "../ha-time-input";
 import type { HaTimeInput } from "../ha-time-input";
 import type { DateRangePickerRanges } from "./ha-date-range-picker";
@@ -166,11 +166,19 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     }
 
     return html`
-      <ha-list @action=${this._setDateRange} activatable>
-        ${Object.keys(this.ranges!).map(
-          (name) => html`<ha-list-item>${name}</ha-list-item>`
+      <ha-list-base>
+        ${Object.entries(this.ranges!).map(
+          ([name, range], index) => html`
+            <ha-list-item-button
+              .range=${range}
+              .index=${index}
+              @click=${this._setDateRange}
+            >
+              <span slot="headline">${name}</span>
+            </ha-list-item-button>
+          `
         )}
-      </ha-list>
+      </ha-list-base>
     `;
   }
 
@@ -343,11 +351,12 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
     this._saveDateRangePreset(chip.range, chip.index);
   }
 
-  private _setDateRange(ev: HASSDomEvent<ActionDetail>) {
-    const dateRange: [Date, Date] = Object.values(this.ranges!)[
-      ev.detail.index
-    ];
-    this._saveDateRangePreset(dateRange, ev.detail.index);
+  private _setDateRange(
+    ev: HASSDomCurrentTargetEvent<
+      HTMLElement & { range: [Date, Date]; index: number }
+    >
+  ) {
+    this._saveDateRangePreset(ev.currentTarget.range, ev.currentTarget.index);
   }
 
   private _saveDateRangePreset(range: [Date, Date], index: number) {

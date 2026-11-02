@@ -1,4 +1,3 @@
-import type { ActionDetail } from "@material/mwc-list/mwc-list";
 import { mdiCast, mdiCastConnected, mdiViewDashboard } from "@mdi/js";
 import type { Auth, Connection } from "home-assistant-js-websocket";
 import type { TemplateResult, PropertyValues } from "lit";
@@ -215,7 +214,7 @@ class HcCast extends LitElement {
     this.castManager.requestSession();
   }
 
-  private async _handlePickView(ev: CustomEvent<ActionDetail>) {
+  private async _handlePickView(ev: CustomEvent<{ index: number }>) {
     const path = this.lovelaceViews?.[ev.detail.index]?.path ?? ev.detail.index;
     await ensureConnectedCastSession(this.castManager!, this.auth!);
     castSendShowLovelaceView(this.castManager, this.auth.data.hassUrl, path);
