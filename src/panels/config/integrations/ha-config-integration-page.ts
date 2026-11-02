@@ -426,9 +426,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           )
         : [];
     const showDependents = normalEntries.length === 0 && dependents.length > 0;
-    // Hold back the YAML texts until the dependents are known.
+    // Hold back the YAML texts until the dependents are known. Entries do
+    // not wait, so a failed manifest list cannot hide them.
     const dependentsLoading = Boolean(
-      this._manifest && !this._manifest.config_flow && !this._loadedManifests
+      normalEntries.length === 0 &&
+      this._manifest &&
+      !this._manifest.config_flow &&
+      !this._loadedManifests
     );
 
     const configPanel = isComponentLoaded(this.hass.config, this.domain)
