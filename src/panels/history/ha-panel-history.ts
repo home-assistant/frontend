@@ -558,8 +558,11 @@ class HaPanelHistory extends LitElement {
     this._fetchedEntityIds = statisticIds;
     const fetchId = ++this._statsFetchId;
 
+    // The previous statistics would otherwise show under the new selection
+    // until the request is done, and with only external statistics nothing
+    // else shows the loading.
+    this._statisticsHistory = undefined;
     if (statisticIds.length === 0) {
-      this._statisticsHistory = undefined;
       return;
     }
 
