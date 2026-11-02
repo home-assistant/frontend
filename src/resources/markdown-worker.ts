@@ -9,6 +9,7 @@ import {
   getDefaultWhiteList,
   safeAttrValue,
 } from "xss";
+import { URL_ATTRIBUTES } from "../common/dom/rewrite-html-urls";
 
 let whiteListNormal: IWhiteList | undefined;
 let whiteListSvg: IWhiteList | undefined;
@@ -42,23 +43,21 @@ const sanitizeSrcset = (value: string): string => {
     : "";
 };
 
-// Keep a relative address xss would empty as a path below the current one, so
-// it can never carry a scheme. Returns the attribute to render, or "" to drop it.
+// Keep a relative address xss would empty as a path below the current one.
+// Returns the attribute to render, or "" to drop it.
 const sanitizeRelativeUrl = (tag: string, name: string, value: string) => {
   const decoded = friendlyAttrValue(value).replace(/&amp;/g, "&").trim();
-  if (friendlyAttrValue(decoded) !== decoded) {
+  if (
+    !decoded ||
+    /^[a-z][a-z\d+.-]*:/i.test(decoded) ||
+    friendlyAttrValue(decoded) !== decoded
+  ) {
     return "";
   }
   const path = `./${decoded}`;
   return safeAttrValue(tag, name, path, cssFilter)
     ? `${name}="${escapeAttrValue(path.replace(/&/g, "&amp;"))}"`
     : "";
-};
-
-const RELATIVE_URL_ATTRIBUTES: Record<string, string> = {
-  a: "href",
-  img: "src",
-  source: "src",
 };
 
 const renderMarkdown = async (
@@ -162,7 +161,7 @@ const renderMarkdown = async (
         }
         if (
           hassOptions.allowRelativeUrls &&
-          RELATIVE_URL_ATTRIBUTES[tag] === name &&
+          URL_ATTRIBUTES.some(([t, a]) => t === tag && a === name) &&
           safeAttrValue(tag, name, value, cssFilter) === ""
         ) {
           return sanitizeRelativeUrl(tag, name, value);

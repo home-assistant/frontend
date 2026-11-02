@@ -240,8 +240,14 @@ describe("renderMarkdown", () => {
       "javascript:alert(1)",
       "&#106;avascript:alert(1)",
       "data:text/html,x",
-    ])("turns an address with a scheme into a path: %s", async (src) => {
-      expect(await renderImageSrc(src, true)).toMatch(/^\.\//);
+      "HTTPS://example.com/a.png",
+      "&#0000106avascript:alert(1)",
+    ])("drops an address with a scheme: %s", async (src) => {
+      expect(await renderImageSrc(src, true)).toBeNull();
+    });
+
+    it("drops an empty address", async () => {
+      expect(await renderImageSrc("", true)).toBeNull();
     });
 
     it("keeps relative addresses only for links and images", async () => {
