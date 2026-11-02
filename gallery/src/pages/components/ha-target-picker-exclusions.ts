@@ -5,6 +5,7 @@ import { customElement, state } from "lit/decorators";
 import { mockConfigEntries } from "../../../../demo/src/stubs/config_entries";
 import { mockDeviceRegistry } from "../../../../demo/src/stubs/device_registry";
 import { mockEntityRegistry } from "../../../../demo/src/stubs/entity_registry";
+import { explainTargetExclude } from "../../../../demo/src/stubs/explain_target_exclude";
 import { mockHassioSupervisor } from "../../../../demo/src/stubs/hassio_supervisor";
 import { ensureArray } from "../../../../src/common/array/ensure-array";
 import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
@@ -225,6 +226,14 @@ class DemoHaTargetPickerExclusions
     hass.updateHass({ areas, entities: ENTITY_REGISTRY });
     hass.mockWS("config/device_registry/list_composite_splits", () => ({}));
     hass.mockWS("extract_from_target", extractFromTarget);
+    hass.mockWS(
+      "explain_target_exclude",
+      ({ target }: { target: HassServiceTarget }) =>
+        explainTargetExclude(
+          target,
+          (single) => extractFromTarget({ target: single }).referenced_entities
+        )
+    );
     hass.mockWS("auth/sign_path", (params) => params);
   }
 

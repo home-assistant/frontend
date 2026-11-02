@@ -5,6 +5,7 @@ import type { ConditionDescriptions } from "../../../src/data/condition";
 import type { ExtractFromTargetResult } from "../../../src/data/target";
 import type { TriggerDescriptions } from "../../../src/data/trigger";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
+import { explainTargetExclude } from "./explain_target_exclude";
 import { getLabelIds } from "./label_registry";
 import {
   conditionDescriptions,
@@ -249,6 +250,19 @@ export const mockAutomationPlatforms = (hass: MockHomeAssistant) => {
         referenced_entities: entities,
       };
     }
+  );
+  hass.mockWS(
+    "explain_target_exclude",
+    (
+      msg: { target: HassServiceTarget; primary_entities_only?: boolean },
+      currentHass: MockHomeAssistant
+    ) =>
+      explainTargetExclude(
+        msg.target,
+        (target, primaryEntitiesOnly) =>
+          expandTarget(currentHass, target, primaryEntitiesOnly).entities,
+        msg.primary_entities_only ?? true
+      )
   );
   hass.mockWS(
     "get_services_for_target",

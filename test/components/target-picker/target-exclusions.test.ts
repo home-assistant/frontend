@@ -330,6 +330,12 @@ const kitchenOut: TargetExclusion = {
   shared: false,
 };
 
+// A new exclusion, before core tells whether it is shared.
+const pending = (exclusion: TargetExclusion): TargetExclusion => ({
+  ...exclusion,
+  shared: true,
+});
+
 const stateOf = (key: string, exclusions: TargetExclusion[]) =>
   targetRowState(row(key), key === "floor:ground", exclusions);
 
@@ -420,7 +426,10 @@ describe("targetRowState", () => {
       indeterminate: true,
       disabled: false,
     });
-    expect(toggle("area:kitchen", false, [xmas])).toEqual([xmas, kitchenOut]);
+    expect(toggle("area:kitchen", false, [xmas])).toEqual([
+      xmas,
+      pending(kitchenOut),
+    ]);
   });
 
   it("shows a row as partly out when only what is below it is excluded", () => {
@@ -516,14 +525,14 @@ describe("toggleTargetRow", () => {
   });
 
   it("excludes an unticked area as the area", () => {
-    expect(toggle("area:kitchen", false, [])).toEqual([kitchenOut]);
+    expect(toggle("area:kitchen", false, [])).toEqual([pending(kitchenOut)]);
     expect(toggle("entity:light.hall", false, [])).toEqual([
-      {
+      pending({
         type: "entity",
         id: "light.hall",
         removed: ["light.hall"],
         shared: false,
-      },
+      }),
     ]);
   });
 
@@ -545,8 +554,12 @@ describe("toggleTargetRow", () => {
     expect(toggle("floor:ground", true, [lampOut], [])).toEqual([lampOut]);
   });
 
-  it("starts a new exclusion as not shared until core tells", () => {
-    expect(toggle("entity:light.hall", false, [])[0].shared).toBe(false);
+  it("keeps a new exclusion from parents until core tells it isn't shared", () => {
+    const [hallOut] = toggle("entity:light.hall", false, []);
+    expect(hallOut.shared).toBe(true);
+    expect(toggle("floor:ground", true, [hallOut], [])).toEqual([hallOut]);
+    // Its own row can still take it away again.
+    expect(toggle("entity:light.hall", true, [hallOut], [])).toEqual([]);
   });
 
   it("gives an exclusion back as it was when it is unticked again", () => {

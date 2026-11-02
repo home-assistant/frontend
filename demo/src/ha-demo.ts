@@ -77,6 +77,7 @@ const CONFIG_PANEL_COMMANDS = [
   "get_conditions_for_target",
   "get_services_for_target",
   "extract_from_target",
+  "explain_target_exclude",
   "script/config",
   "config/automation/config",
   "config/script/config",

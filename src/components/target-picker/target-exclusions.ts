@@ -341,8 +341,9 @@ export const targetRowState = (
  * excluded as such, including what is added to it later. The target can't
  * be excluded from itself, so unchecking it unchecks its rows instead.
  * `initial` gives back an exclusion that was there before as it was. A new
- * one takes out the row's entities and isn't shared until core tells what
- * it takes out of every target.
+ * one takes out the row's entities and counts as shared until core tells
+ * what it takes out of every target, so a parent row can't take it away
+ * before it is known whether it also affects another target.
  */
 export const toggleTargetRow = ({
   row,
@@ -387,7 +388,7 @@ export const toggleTargetRow = ({
       type: row.type,
       id: row.id,
       removed: row.entities,
-      shared: false,
+      shared: true,
     },
   ];
 };
