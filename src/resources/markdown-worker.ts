@@ -107,8 +107,9 @@ const renderMarkdown = async (
   } else {
     whiteList = whiteListNormal;
   }
-  if (hassOptions.allowDataUrl && whiteList.a) {
-    whiteList.a.push("download");
+  if (hassOptions.allowDataUrl) {
+    // Copy it, the cached list is also used without data URLs
+    whiteList = { ...whiteList, a: [...(whiteList.a ?? []), "download"] };
   }
 
   marked.setOptions(markedOptions);
@@ -157,7 +158,7 @@ const renderMarkdown = async (
           name === "href" &&
           value.startsWith("data:")
         ) {
-          return `href="${value}"`;
+          return `href="${escapeAttrValue(value)}"`;
         }
         if (
           hassOptions.allowRelativeUrls &&

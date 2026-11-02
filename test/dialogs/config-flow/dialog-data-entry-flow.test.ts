@@ -26,7 +26,9 @@ vi.mock("../../../src/components/ha-button", async () => {
 
   class HaButton extends lit.LitElement {}
 
-  customElements.define("ha-button", HaButton);
+  // An anonymous subclass, as lit-analyzer wants a tag name map entry for a
+  // named element class when it only checks the staged files
+  customElements.define("ha-button", class extends HaButton {});
 
   return { HaButton };
 });
@@ -228,7 +230,7 @@ describe("dialog-data-entry-flow dismissal", () => {
     const step = dialog.shadowRoot!.querySelector("step-flow-menu")!;
     await step.updateComplete;
 
-    step.shadowRoot!.querySelector<HTMLElement>("ha-list-item")!.click();
+    step.shadowRoot!.querySelector<HTMLElement>("ha-list-item-button")!.click();
     await dialog.updateComplete;
 
     expect(innerDialog(dialog).preventScrimClose).toBe(true);
