@@ -8,6 +8,8 @@ import type { SortableInstance } from "../resources/sortable";
 
 const TOUCH_DRAG_DELAY = 300;
 
+const AUTO_SCROLL_SENSITIVITY = 30;
+
 @customElement("ha-tab-group")
 export class HaTabGroup extends TabGroup {
   private _dragScrollController = new DragScrollController(this, {
@@ -19,28 +21,24 @@ export class HaTabGroup extends TabGroup {
   @property({ attribute: "tab-only", type: Boolean }) tabOnly = true;
 
   /**
-   * Allow tabs to be reordered by dragging. Fires `item-moved` with the old
-   * and new index of the tab; the tabs are put back in place, so the owner
-   * has to update its data to apply the new order.
+   * Allow reordering tabs by dragging or with Alt+ArrowUp/ArrowDown. Fires
+   * `item-moved`; the owner applies the new order.
    */
   @property({ type: Boolean }) public sortable = false;
 
-  /**
-   * Drag handle inside a tab. On touch screens a tab otherwise needs a long
-   * press before it can be dragged; from the handle the drag starts right away.
-   */
+  /** Drag handle that starts a touch drag without the long press. */
   @property({ attribute: "handle-selector" }) public handleSelector?: string;
 
   private _sortable?: SortableInstance;
 
-  private _sortPlaceholders = new WeakMap<HTMLElement, Comment>();
+  private _sortPlaceholder?: Comment;
 
   connectedCallback(): void {
     super.connectedCallback();
     // Prevent the tab group from consuming Alt+Arrow and Cmd+Arrow keys,
     // which browsers use for back/forward navigation.
     this.addEventListener("keydown", this._handleKeyDown, true);
-    // Runs before SortableJS reads the delay in its own touchstart listener.
+    // Capture, so the delay is set before SortableJS reads it.
     this.addEventListener("touchstart", this._handleTouchStart, {
       capture: true,
       passive: true,
@@ -80,26 +78,23 @@ export class HaTabGroup extends TabGroup {
       return;
     }
 
-    // The tabs are slotted children of this element, so the host is the
-    // sortable container.
     // supportPointer is missing from the SortableJS typings.
     const options: SortableInstance.Options & { supportPointer?: boolean } = {
       draggable: this.tabTag,
-      // The tabs scroll inside the shadow root, which SortableJS can't find
-      // by walking up from the host, so point auto scroll at it directly.
+      // The tab bar scrolls inside the shadow root, where SortableJS can't find it.
       scroll: this.nav,
       // Force the autoscroll fallback because it works better than the native one
       forceAutoScrollFallback: true,
+      scrollSensitivity: AUTO_SCROLL_SENSITIVITY,
       scrollSpeed: 20,
       animation: 150,
-      // Keep swiping the tab bar on touch screens for scrolling.
+      // Keep swiping on touch screens for scrolling the tab bar.
       delay: TOUCH_DRAG_DELAY,
       delayOnTouchOnly: true,
-      // With pointer events, a swipe that scrolls the tab bar ends in
-      // pointercancel, which SortableJS doesn't reset on and then ignores the
-      // next drag. Touch events always end with touchend.
+      // A scrolling swipe ends in pointercancel, after which SortableJS
+      // ignores the next drag. Touch events end with touchend instead.
       supportPointer: false,
-      onChoose: this._handleSortableChoose,
+      onStart: this._handleSortableStart,
       onEnd: this._handleSortableEnd,
       onUpdate: this._handleSortableUpdate,
     };
@@ -109,6 +104,7 @@ export class HaTabGroup extends TabGroup {
   private _destroySortable() {
     this._sortable?.destroy();
     this._sortable = undefined;
+    this._removeRtlAutoScrollListeners();
   }
 
   private _handleTouchStart = (ev: TouchEvent) => {
@@ -125,20 +121,41 @@ export class HaTabGroup extends TabGroup {
     this._sortable.option("delay", onHandle ? 0 : TOUCH_DRAG_DELAY);
   };
 
-  // Remember where the tab was, so it can be put back after dropping and the
-  // owner stays in control of the rendered order.
-  private _handleSortableChoose = (evt: SortableEvent) => {
-    const placeholder = document.createComment("sort-placeholder");
-    this._sortPlaceholders.set(evt.item, placeholder);
-    evt.item.after(placeholder);
+  private _handleSortableStart = (evt: SortableEvent) => {
+    // Put the tab back after dropping, the owner renders the new order.
+    this._sortPlaceholder = document.createComment("sort-placeholder");
+    evt.item.after(this._sortPlaceholder);
+    if (getComputedStyle(this.nav).direction !== "rtl") {
+      return;
+    }
+    // Capture, so this runs before SortableJS checks for auto scroll.
+    const options = { capture: true, passive: true };
+    window.addEventListener("dragover", this._unblockRtlAutoScroll, options);
+    window.addEventListener("touchmove", this._unblockRtlAutoScroll, options);
+  };
+
+  private _removeRtlAutoScrollListeners() {
+    window.removeEventListener("dragover", this._unblockRtlAutoScroll, true);
+    window.removeEventListener("touchmove", this._unblockRtlAutoScroll, true);
+  }
+
+  // SortableJS only auto scrolls left while scrollLeft isn't 0, but in RTL the
+  // tab bar starts at 0 and scrolls left into negative values.
+  private _unblockRtlAutoScroll = (ev: DragEvent | TouchEvent) => {
+    const x = "touches" in ev ? ev.touches[0]?.clientX : ev.clientX;
+    if (x === undefined || this.nav.scrollLeft !== 0) {
+      return;
+    }
+    const left = this.nav.getBoundingClientRect().left;
+    if (Math.abs(x - left) <= AUTO_SCROLL_SENSITIVITY) {
+      this.nav.scrollLeft = -1;
+    }
   };
 
   private _handleSortableEnd = (evt: SortableEvent) => {
-    const placeholder = this._sortPlaceholders.get(evt.item);
-    if (placeholder) {
-      placeholder.replaceWith(evt.item);
-      this._sortPlaceholders.delete(evt.item);
-    }
+    this._removeRtlAutoScrollListeners();
+    this._sortPlaceholder?.replaceWith(evt.item);
+    this._sortPlaceholder = undefined;
   };
 
   private _handleSortableUpdate = (evt: SortableEvent) => {
@@ -149,10 +166,47 @@ export class HaTabGroup extends TabGroup {
   };
 
   private _handleKeyDown = (event: KeyboardEvent) => {
+    // The tab group cancels Enter and Space, so buttons inside a tab would not
+    // be pressed.
+    if (
+      (event.key === "Enter" || event.key === " ") &&
+      event.composedPath()[0] instanceof HTMLButtonElement &&
+      (event.target as HTMLElement).closest(this.tabTag)
+    ) {
+      event.stopPropagation();
+      return;
+    }
     if (event.altKey || event.metaKey) {
       event.stopPropagation();
     }
+    if (
+      this.sortable &&
+      event.altKey &&
+      !(event.ctrlKey || event.metaKey) &&
+      !event.shiftKey &&
+      (event.key === "ArrowUp" || event.key === "ArrowDown")
+    ) {
+      this._moveTabWithKeyboard(event);
+    }
   };
+
+  // Up and down follow the tab order, so they work the same in RTL.
+  private _moveTabWithKeyboard(event: KeyboardEvent) {
+    const tab = (event.target as HTMLElement).closest(this.tabTag);
+    if (!tab) {
+      return;
+    }
+    const tabs = [...this.children].filter(
+      (el) => el.localName === this.tabTag
+    );
+    const oldIndex = tabs.indexOf(tab);
+    const newIndex = oldIndex + (event.key === "ArrowUp" ? -1 : 1);
+    event.preventDefault();
+    if (oldIndex === -1 || newIndex < 0 || newIndex >= tabs.length) {
+      return;
+    }
+    fireEvent(this, "item-moved", { oldIndex, newIndex });
+  }
 
   protected override handleClick(event: MouseEvent) {
     if (this._dragScrollController.scrolled) {

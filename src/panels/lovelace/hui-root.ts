@@ -1,5 +1,7 @@
 import {
   mdiAccount,
+  mdiArrowLeft,
+  mdiArrowRight,
   mdiCodeBraces,
   mdiCommentProcessingOutline,
   mdiDevices,
@@ -39,6 +41,7 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
+import { computeRTL } from "../../common/util/compute_rtl";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
@@ -468,6 +471,12 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         !view.visible.some((e) => e.user === this.hass!.user?.id)) ||
         view.visible === false);
 
+    // The move buttons point and are labelled in the on-screen direction.
+    const rtl = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
+
     const tabs = html`<ha-tab-group
       .active=${typeof this._curView === "number" ? String(this._curView) : ""}
       .sortable=${this._editMode}
@@ -512,6 +521,9 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
             .active=${current}
             .disabled=${hidden}
             aria-label=${ifDefined(view.title)}
+            aria-keyshortcuts=${ifDefined(
+              this._editMode ? "Alt+ArrowUp Alt+ArrowDown" : undefined
+            )}
             data-path=${view.path || index}
             @auxclick=${this._handleViewTabNewTabClick}
             @click=${this._handleViewTabNewTabClick}
@@ -528,6 +540,15 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
                       class="edit-icon view handle"
                       .path=${mdiDragHorizontalVariant}
                     ></ha-svg-icon>
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        `ui.panel.lovelace.editor.edit_view.${rtl ? "move_right" : "move_left"}`
+                      )}
+                      .path=${rtl ? mdiArrowRight : mdiArrowLeft}
+                      class="edit-icon view move move-prev"
+                      @click=${this._moveViewPrev}
+                      .disabled=${index === 0}
+                    ></ha-icon-button>
                     ${tabContent}
                     <ha-icon-button
                       .title=${this.hass!.localize(
@@ -536,6 +557,15 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
                       class="edit-icon view"
                       .path=${mdiPencil}
                       @click=${this._editView}
+                    ></ha-icon-button>
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
+                        `ui.panel.lovelace.editor.edit_view.${rtl ? "move_left" : "move_right"}`
+                      )}
+                      .path=${rtl ? mdiArrowLeft : mdiArrowRight}
+                      class="edit-icon view move move-next"
+                      @click=${this._moveViewNext}
+                      .disabled=${index === views.length - 1}
                     ></ha-icon-button>
                   `
                 : tabContent
@@ -1160,10 +1190,27 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 
   private _viewMoved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>) {
     ev.stopPropagation();
-    const { oldIndex, newIndex } = ev.detail;
+    this._moveView(ev.detail.oldIndex, ev.detail.newIndex);
+  }
+
+  private _moveViewPrev(ev: Event) {
+    ev.stopPropagation();
+    const index = this._curView as number;
+    this._moveView(index, index - 1);
+  }
+
+  private _moveViewNext(ev: Event) {
+    ev.stopPropagation();
+    const index = this._curView as number;
+    this._moveView(index, index + 1);
+  }
+
+  private async _moveView(oldIndex: number, newIndex: number) {
     if (oldIndex === newIndex) {
       return;
     }
+    const focused = this.shadowRoot!.activeElement;
+    const focusedTab = focused?.closest("ha-tab-group-tab");
     const lovelace = this.lovelace!;
     const curView = this._curView;
     let newCurView = curView;
@@ -1176,6 +1223,27 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
     }
     lovelace.saveConfig(moveView(lovelace.config, oldIndex, newIndex));
     this._selectView(newCurView);
+
+    // Tabs are rendered by position, so focus has to follow the moved view.
+    if (!focusedTab) {
+      return;
+    }
+    const focusedIndex = indexAfterMove(
+      Number(focusedTab.getAttribute("panel")),
+      oldIndex,
+      newIndex
+    );
+    await this.updateComplete;
+    const tab = this.shadowRoot!.querySelector<HTMLElement>(
+      `ha-tab-group-tab[panel="${focusedIndex}"]`
+    );
+    const moveClass = ["move-prev", "move-next"].find((cls) =>
+      focused!.classList.contains(cls)
+    );
+    const button = moveClass
+      ? tab?.querySelector<HTMLElement & { disabled: boolean }>(`.${moveClass}`)
+      : undefined;
+    (button && !button.disabled ? button : tab)?.focus();
   }
 
   private _addView() {
@@ -1507,11 +1575,22 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         .edit-icon.view {
           display: none;
         }
+        /* Only shown while focused, for keyboard and screen reader users */
+        .edit-icon.move:not(:focus-within) {
+          position: absolute;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          height: 1px;
+          width: 1px;
+          margin: -1px;
+          padding: 0;
+          border: 0;
+        }
         .edit-icon.handle {
-          padding: 12px;
+          padding: var(--ha-space-3);
           cursor: move; /* fallback if grab cursor is unsupported */
           cursor: grab;
-          /* Dragging the handle moves the tab instead of scrolling the tab bar */
+          /* Drag the tab instead of scrolling the tab bar */
           touch-action: none;
         }
         #add-view {
