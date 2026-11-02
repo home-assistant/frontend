@@ -4,6 +4,7 @@ import {
   mdiCommentProcessingOutline,
   mdiDevices,
   mdiDotsVertical,
+  mdiDragHorizontalVariant,
   mdiFileMultiple,
   mdiFormatListBulletedTriangle,
   mdiHelpCircleOutline,
@@ -470,6 +471,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
     const tabs = html`<ha-tab-group
       .active=${typeof this._curView === "number" ? String(this._curView) : ""}
       .sortable=${this._editMode}
+      handle-selector=".handle"
       @wa-tab-show=${this._handleViewSelected}
       @item-moved=${this._viewMoved}
     >
@@ -522,6 +524,10 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
             ${
               this._editMode
                 ? html`
+                    <ha-svg-icon
+                      class="edit-icon view handle"
+                      .path=${mdiDragHorizontalVariant}
+                    ></ha-svg-icon>
                     ${tabContent}
                     <ha-icon-button
                       .title=${this.hass!.localize(
@@ -1485,8 +1491,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
           margin-inline-end: var(--ha-space-2);
         }
         .edit-mode ha-tab-group-tab[aria-selected="true"]::part(base) {
-          padding-block: 0;
-          padding-inline-end: 0;
+          padding: 0;
           margin-top: calc((var(--tab-bar-height, 56px) - 48px) / 2);
         }
         .edit-icon {
@@ -1501,6 +1506,13 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         }
         .edit-icon.view {
           display: none;
+        }
+        .edit-icon.handle {
+          padding: 12px;
+          cursor: move; /* fallback if grab cursor is unsupported */
+          cursor: grab;
+          /* Dragging the handle moves the tab instead of scrolling the tab bar */
+          touch-action: none;
         }
         #add-view {
           white-space: nowrap;
