@@ -39,8 +39,6 @@ import { transform } from "../../../common/decorators/transform";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { computeEntityEntryName } from "../../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
