@@ -83,11 +83,7 @@ import "../../../components/ha-tooltip";
 import type { CloudStatus } from "../../../data/cloud";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getConfigEntries, getSubEntries } from "../../../data/config_entries";
-import {
-  fullEntitiesContext,
-  internationalizationContext,
-  labelsContext,
-} from "../../../data/context";
+import { fullEntitiesContext, labelsContext } from "../../../data/context";
 import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
@@ -126,11 +122,7 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
-import type {
-  HomeAssistant,
-  HomeAssistantInternationalization,
-  Route,
-} from "../../../types";
+import type { HomeAssistant, Route } from "../../../types";
 import { showToast } from "../../../util/toast";
 import {
   getAreaTableColumn,
@@ -194,12 +186,6 @@ const getVoiceAssistantIds = (
 
 @customElement("ha-config-entities")
 export class HaConfigEntities extends LitElement {
-  @state()
-  @consume({ context: internationalizationContext, subscribe: true })
-  private _i18n?: HomeAssistantInternationalization;
-
-  private _loadedDeviceClassDomains = new Set<string>();
-
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: "is-wide", type: Boolean }) public isWide = false;
@@ -321,29 +307,10 @@ export class HaConfigEntities extends LitElement {
 
   private _getDeviceClassName(entityId: string, deviceClass: string): string {
     return computeDeviceClassName(
-      this._i18n?.localize ?? this.hass.localize,
+      this.hass.localize,
       computeDomain(entityId),
       deviceClass
     );
-  }
-
-  private get _deviceClasses() {
-    const classes = new Map<string, string>();
-
-    for (const entry of [...this._entities, ...this._entitiesWithoutUniqueId]) {
-      const deviceClass = this._getDeviceClass(entry);
-
-      if (deviceClass && !classes.has(deviceClass)) {
-        classes.set(
-          deviceClass,
-          this._getDeviceClassName(entry.entity_id, deviceClass)
-        );
-      }
-    }
-
-    return [...classes]
-      .map(([value, label]) => ({ value, label }))
-      .sort((a, b) => a.label.localeCompare(b.label));
   }
 
   private _states = memoize((localize: LocalizeFunc) => [
@@ -1137,7 +1104,6 @@ export class HaConfigEntities extends LitElement {
             "ui.components.device-class-picker.device_class"
           )}
           .value=${this._filters["ha-filter-device-classes"]}
-          .states=${this._deviceClasses}
           @data-table-filter-changed=${this._filterChanged}
           slot="filter-pane"
           .expanded=${this._expandedFilter === "ha-filter-device-classes"}
@@ -1329,29 +1295,6 @@ export class HaConfigEntities extends LitElement {
     let changed = false;
     if (!this.hass || !this._entities) {
       return;
-    }
-
-    if (
-      this._i18n &&
-      (changedProps.has("_i18n") ||
-        changedProps.has("_entities") ||
-        changedProps.has("_entitiesWithoutUniqueId"))
-    ) {
-      for (const entry of [
-        ...this._entities,
-        ...this._entitiesWithoutUniqueId,
-      ]) {
-        if (!this._getDeviceClass(entry)) {
-          continue;
-        }
-
-        const domain = computeDomain(entry.entity_id);
-
-        if (!this._loadedDeviceClassDomains.has(domain)) {
-          this._loadedDeviceClassDomains.add(domain);
-          this._i18n.loadBackendTranslation("entity_component", domain);
-        }
-      }
     }
 
     // Only the *set* of entity ids matters for the list below. A plain state

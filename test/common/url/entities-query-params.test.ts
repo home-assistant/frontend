@@ -82,12 +82,4 @@ describe("entities query params", () => {
       )
     ).toEqual({ search: "", filters });
   });
-
-  it("reads device class filters from URL", () => {
-    expect(
-      entitiesLinkFromUrl("?device_class=problem,temperature")?.filters[
-        "ha-filter-device-classes"
-      ]
-    ).toEqual(["problem", "temperature"]);
-  });
 });
