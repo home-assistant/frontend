@@ -265,14 +265,14 @@ const maskInlineCode = (text: string, mask: (code: string) => string) =>
     .join("");
 
 // A section of a README that is not for the Marketplace is between these
-const EXCLUSION_MARKER = /<!--\s*marketplace_exclude:(start|end)\s*-->/g;
+const EXCLUSION_MARKER = /<!--\s*ha-marketplace:exclude-(start|end)\s*-->/g;
 
 /**
  * Leave out the sections a README marks for the Marketplace to skip, like
  * installation instructions that the header of the page already covers.
  *
- * A section starts at `<!-- marketplace_exclude:start -->` and runs to the
- * next `<!-- marketplace_exclude:end -->`, or to the end of the README
+ * A section starts at `<!-- ha-marketplace:exclude-start -->` and runs to the
+ * next `<!-- ha-marketplace:exclude-end -->`, or to the end of the README
  * without one, like an unclosed fence. Markers in code are text.
  */
 const withoutExcludedSections = (input: string) => {

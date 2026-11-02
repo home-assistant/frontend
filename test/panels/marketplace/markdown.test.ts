@@ -297,11 +297,11 @@ describe("markdownWithRepositoryContext", () => {
     const input = [
       "# Card",
       "",
-      "<!-- marketplace_exclude:start -->",
+      "<!-- ha-marketplace:exclude-start -->",
       "## Installation",
       "",
       "Add it through HACS, see #12.",
-      "<!-- marketplace_exclude:end -->",
+      "<!-- ha-marketplace:exclude-end -->",
       "",
       "## Configuration",
     ].join("\n");
@@ -313,19 +313,19 @@ describe("markdownWithRepositoryContext", () => {
 
   it("leaves out an unclosed section to the end", () => {
     const input =
-      "Shown\n<!-- marketplace_exclude:start -->\nhidden\n\nstill hidden";
+      "Shown\n<!-- ha-marketplace:exclude-start -->\nhidden\n\nstill hidden";
 
     expect(markdownWithRepositoryContext(input, repository)).toBe("Shown\n");
   });
 
   it("keeps exclusion markers in code as written", () => {
     const input = [
-      "Wrap it in `<!-- marketplace_exclude:start -->` to hide it:",
+      "Wrap it in `<!-- ha-marketplace:exclude-start -->` to hide it:",
       "",
       "```md",
-      "<!-- marketplace_exclude:start -->",
+      "<!-- ha-marketplace:exclude-start -->",
       "Installation",
-      "<!-- marketplace_exclude:end -->",
+      "<!-- ha-marketplace:exclude-end -->",
       "```",
     ].join("\n");
 
@@ -346,7 +346,7 @@ describe("markdownWithRepositoryContext", () => {
     { name: "a long scheme", input: `${"a".repeat(100_000)}:` },
     {
       name: "many end markers",
-      input: "<!-- marketplace_exclude:end -->".repeat(30_000),
+      input: "<!-- ha-marketplace:exclude-end -->".repeat(30_000),
     },
   ])("keeps up with a README of $name", ({ input }) => {
     const start = performance.now();
