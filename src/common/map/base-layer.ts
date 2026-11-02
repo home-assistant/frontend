@@ -125,7 +125,7 @@ export const loadStyle = async (
       ).buildMapStyle(
         mapStyle.palette,
         mapStyle.options ?? {},
-        mapStyle.baseColors
+        mapStyle.styleOptions
       );
 
   if (typeof style.sprite === "string") {
