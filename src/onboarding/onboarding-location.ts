@@ -354,6 +354,7 @@ class OnboardingLocation extends LitElement {
           Number(this._places[0].lon),
         ];
         this._setCountry(this._places[0].address.country_code);
+        this._elevation = undefined;
       }
     } catch (e: any) {
       this._places = undefined;

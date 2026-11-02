@@ -86,6 +86,7 @@ const commandResults: Record<string, unknown> = {
     unit_system: onboardingData.location.unitSystem,
     latitude: onboardingData.location.latitude,
     longitude: onboardingData.location.longitude,
+    elevation: onboardingData.location.elevation,
     time_zone: onboardingData.location.timeZone,
     currency: onboardingData.location.currency,
     country: onboardingData.location.country,
