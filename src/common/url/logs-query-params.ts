@@ -1,4 +1,4 @@
-import type { SystemLogLevel } from "../../data/system_log";
+import { SYSTEM_LOG_LEVELS, type SystemLogLevel } from "../../data/system_log";
 import {
   decodeQueryParams,
   hasQueryParams,
@@ -34,14 +34,8 @@ export interface LogsState {
   raw: boolean;
 }
 
-const LEVELS: readonly string[] = [
-  "critical",
-  "error",
-  "warning",
-] satisfies SystemLogLevel[];
-
 const isLevel = (level: string): level is SystemLogLevel =>
-  LEVELS.includes(level);
+  (SYSTEM_LOG_LEVELS as readonly string[]).includes(level);
 
 export const DEFAULT_LOGS_STATE: LogsState = {
   provider: DEFAULT_LOG_PROVIDER,

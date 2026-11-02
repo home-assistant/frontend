@@ -1,4 +1,5 @@
 import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -30,10 +31,15 @@ import {
   getLoggedErrorIntegration,
   isCustomIntegrationError,
 } from "../../../data/system_log";
+import type { FrontendLocaleData } from "../../../data/translation";
 import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
-import { formatSystemLogTime } from "./util";
+import {
+  filterSystemLogItems,
+  formatSystemLogMultipleMessages,
+  formatSystemLogTime,
+} from "./util";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 // Primary and secondary line widths, in percent, for the loading rows
@@ -76,55 +82,31 @@ export class SystemLogCard extends LitElement {
   }
 
   private _multipleMessages(item: LoggedError): string {
-    return this.hass.localize("ui.panel.config.logs.multiple_messages", {
-      time: formatSystemLogTime(
-        item.first_occurred,
-        this.hass.locale,
-        this.hass.config
-      ),
-      counter: item.count,
-    });
+    return formatSystemLogMultipleMessages(
+      item,
+      this.hass.localize,
+      this.hass.locale,
+      this.hass.config
+    );
   }
 
   private _getFilteredItems = memoizeOne(
     (
       localize: LocalizeFunc,
+      locale: FrontendLocaleData,
+      config: HassConfig,
       items: LoggedError[],
-      filter: string,
+      search: string,
       loggers: string[] | undefined,
       levels: SystemLogLevel[] | undefined
     ) =>
-      items.filter((item: LoggedError) => {
-        if (levels?.length && !levels.includes(item.level)) {
-          return false;
-        }
-        if (
-          loggers &&
-          !loggers.some(
-            (logger) =>
-              item.name === logger || item.name.startsWith(`${logger}.`)
-          )
-        ) {
-          return false;
-        }
-        if (filter) {
-          const integration = getLoggedErrorIntegration(item);
-          return (
-            item.message.some((message: string) =>
-              message.toLowerCase().includes(filter)
-            ) ||
-            item.source[0].toLowerCase().includes(filter) ||
-            item.name.toLowerCase().includes(filter) ||
-            (integration &&
-              domainToName(localize, integration)
-                .toLowerCase()
-                .includes(filter)) ||
-            this._timestamp(item).toLowerCase().includes(filter) ||
-            this._multipleMessages(item).toLowerCase().includes(filter)
-          );
-        }
-        return item;
-      })
+      filterSystemLogItems(
+        items,
+        { search, loggers, levels },
+        localize,
+        locale,
+        config
+      )
   );
 
   protected render() {
@@ -133,8 +115,10 @@ export class SystemLogCard extends LitElement {
     const filteredItems = this._items
       ? this._getFilteredItems(
           this.hass.localize,
+          this.hass.locale,
+          this.hass.config,
           this._items,
-          this.filter.toLowerCase(),
+          this.filter,
           this.integrations?.length ? this.integrationLoggers : undefined,
           this.levels
         )
