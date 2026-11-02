@@ -239,7 +239,10 @@ class PanelTodo extends LitElement {
               : this.hass.localize("panel.todo")
           }
         </div>
-        <ha-list-base slot="pane">
+        <ha-list-base
+          slot="pane"
+          aria-label=${this.hass.localize("panel.todo")}
+        >
           ${todoLists.map(
             (list) => html`
               <ha-list-item-button
