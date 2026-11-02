@@ -236,8 +236,7 @@ export class EnergyDeviceSettingsGas extends LitElement {
             (d) => (d === origDevice ? newDevice : d)
           ),
         };
-        this._sanitizeParents(newPrefs);
-        await this._savePreferences(newPrefs);
+        await this._savePreferences(this._sanitizeParents(newPrefs));
       },
     });
   }
@@ -262,13 +261,16 @@ export class EnergyDeviceSettingsGas extends LitElement {
     });
   }
 
-  private _sanitizeParents(prefs: EnergyPreferences) {
+  private _sanitizeParents(prefs: EnergyPreferences): EnergyPreferences {
     const statIds = prefs.device_consumption_gas.map((d) => d.stat_consumption);
-    prefs.device_consumption_gas.forEach((d) => {
-      if (d.included_in_stat && !statIds.includes(d.included_in_stat)) {
-        delete d.included_in_stat;
-      }
-    });
+    return {
+      ...prefs,
+      device_consumption_gas: prefs.device_consumption_gas.map((d) =>
+        d.included_in_stat && !statIds.includes(d.included_in_stat)
+          ? { ...d, included_in_stat: undefined }
+          : d
+      ),
+    };
   }
 
   private async _deleteDevice(ev) {
@@ -284,13 +286,12 @@ export class EnergyDeviceSettingsGas extends LitElement {
     }
 
     try {
-      const newPrefs = {
+      const newPrefs = this._sanitizeParents({
         ...this.preferences,
         device_consumption_gas: this.preferences.device_consumption_gas.filter(
           (device) => device !== deviceToDelete
         ),
-      };
-      this._sanitizeParents(newPrefs);
+      });
       await this._savePreferences(newPrefs);
     } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });

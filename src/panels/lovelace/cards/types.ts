@@ -293,7 +293,9 @@ export type SankeyCardConfig =
   | EnergySankeyCardConfig
   | PowerSankeyCardConfig
   | WaterSankeyCardConfig
-  | WaterFlowSankeyCardConfig;
+  | WaterFlowSankeyCardConfig
+  | GasSankeyCardConfig
+  | GasFlowSankeyCardConfig;
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";

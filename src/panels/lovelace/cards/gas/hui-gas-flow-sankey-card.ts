@@ -167,7 +167,10 @@ class HuiGasFlowSankeyCard
 
     // Collect gas sources with stat_rate
     const gasSources = prefs.energy_sources.filter(
-      (source) => source.type === "gas" && source.stat_rate
+      (source) =>
+        source.type === "gas" &&
+        source.stat_rate &&
+        getFlowRateFromState(this._states[source.stat_rate]) !== undefined
     );
 
     const usable = new Set(
