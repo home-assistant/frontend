@@ -37,6 +37,7 @@ import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
+import "../../../components/skeleton/ha-skeleton-log";
 
 import { getSignedPath } from "../../../data/auth";
 
@@ -350,9 +351,13 @@ class ErrorLogCard extends LitElement {
                     )}
                   </ha-alert>`
                 : this._loadingState === "loading"
-                  ? html`<div>
-                      ${localize("ui.panel.config.logs.loading_log")}
-                    </div>`
+                  ? // Lines kept while reconnecting stay visible, unless the search hides them all
+                    this._ansiToHtmlElement?.hasLines &&
+                    !(this.filter && this._noSearchResults)
+                    ? nothing
+                    : html`<ha-skeleton-log
+                        .label=${localize("ui.panel.config.logs.loading_log")}
+                      ></ha-skeleton-log>`
                   : this._loadingState === "empty"
                     ? html`<div>
                         ${
@@ -749,6 +754,8 @@ class ErrorLogCard extends LitElement {
     // The backlog is sent again on every subscription
     this._integrationLines = [];
     this._ansiToHtmlElement?.clear();
+    // Show the skeleton again now the retained lines are gone
+    this.requestUpdate();
 
     // Each subscription starts with the integration's backlog, which are
     // merged in time order with the lines sent meanwhile once all arrived.
@@ -1104,6 +1111,10 @@ class ErrorLogCard extends LitElement {
     .error-log > div {
       overflow: auto;
       overflow-wrap: break-word;
+    }
+
+    ha-skeleton-log {
+      --ha-skeleton-log-padding: var(--ha-space-4);
     }
 
     .error-log > div:hover {

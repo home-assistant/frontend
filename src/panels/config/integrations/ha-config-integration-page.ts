@@ -104,6 +104,9 @@ export interface ConfigEntryData {
   subEntries: SubEntryData[];
 }
 
+// The AI settings show how to connect to the MCP server and its APIs.
+const AI_SETTINGS_DOMAINS = ["mcp", "mcp_server"];
+
 export const renderConfigEntryError = (
   hass: HomeAssistant,
   entry: ConfigEntry
@@ -406,6 +409,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     const setUpInPanel = Boolean(
       configPanel && this._manifest && !this._manifest.config_flow
     );
+
+    const showAddEntry =
+      this._manifest?.integration_type !== "hardware" &&
+      !setUpInPanel &&
+      (!this._manifest?.single_config_entry ||
+        (normalData.length === 0 && attentionData.length === 0));
 
     const documentationLink = this._manifest?.is_built_in
       ? documentationUrl(this.hass, `/integrations/${this._manifest.domain}`)
@@ -717,6 +726,26 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   : nothing
               }
               ${
+                AI_SETTINGS_DOMAINS.includes(this.domain)
+                  ? html`<ha-button
+                      .appearance=${showAddEntry ? "outlined" : "accent"}
+                      href=${
+                        // The demo routes with the hash, so it cannot link to a section.
+                        __DEMO__ ? "/config/ai" : "/config/ai#mcp"
+                      }
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.integration_page.open_config_panel",
+                        {
+                          name: this.hass.localize(
+                            "ui.panel.config.ai.caption"
+                          ),
+                        }
+                      )}
+                    </ha-button>`
+                  : nothing
+              }
+              ${
                 canAddDevice
                   ? html`
                       <ha-button @click=${this._addDevice}>
@@ -728,10 +757,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                   : nothing
               }
               ${
-                this._manifest?.integration_type !== "hardware" &&
-                !setUpInPanel &&
-                (!this._manifest?.single_config_entry ||
-                  (normalData.length === 0 && attentionData.length === 0))
+                showAddEntry
                   ? html`<ha-button
                       .appearance=${canAddDevice ? "filled" : "accent"}
                       @click=${this._addIntegration}
