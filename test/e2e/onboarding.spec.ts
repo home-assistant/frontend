@@ -3,7 +3,9 @@ import { demoConfig } from "../../src/fake_data/demo_config";
 import {
   completeAnalytics,
   completeCoreConfig,
+  confirmLocation,
   createOwner,
+  detectLocation,
   expectDefaultDashboard,
   finishIntegrations,
   onboardingData,
@@ -176,6 +178,32 @@ for (const unitSystem of ["metric", "us_customary"] as const) {
     expectNoPageErrors(errors);
   });
 }
+
+test.describe("detected location", () => {
+  test.use({ timezoneId: "America/New_York" });
+
+  test("uses the detected location details", async ({ page, baseURL }) => {
+    const errors = trackPageErrors(page);
+    const calls = await setupOnboardingMocks(page);
+
+    await openOnboarding(page, baseURL!);
+    await createOwner(page);
+    await detectLocation(page, calls);
+    await confirmLocation(page);
+    await expect.poll(() => calls.coreConfigCompleted).toBe(true);
+
+    expect(calls.coreConfig).toMatchObject({
+      type: "config/core/update",
+      latitude: onboardingData.location.latitude,
+      longitude: onboardingData.location.longitude,
+      unit_system: onboardingData.location.unitSystem,
+      time_zone: onboardingData.location.timeZone,
+      currency: onboardingData.location.currency,
+      country: onboardingData.location.country,
+    });
+    expectNoPageErrors(errors);
+  });
+});
 
 for (const { name, resume } of [
   {
