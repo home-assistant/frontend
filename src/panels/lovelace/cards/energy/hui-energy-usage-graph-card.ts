@@ -421,26 +421,33 @@ export class HuiEnergyUsageGraphCard
       const batteryName = this._i18n.localize(
         "ui.panel.lovelace.cards.energy.energy_distribution.battery"
       );
-      statLabels.from_grid.from_grid = statIds.to_grid
-        ? this._i18n.localize(
-            "ui.panel.lovelace.cards.energy.energy_usage_graph.named_grid_consumed",
-            { name: gridName }
-          )
-        : gridName;
-      statLabels.to_grid.to_grid = statIds.from_grid
-        ? this._i18n.localize(
-            "ui.panel.lovelace.cards.energy.energy_usage_graph.named_grid_exported",
-            { name: gridName }
-          )
-        : gridName;
-      statLabels.to_battery.to_battery = this._i18n.localize(
-        "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
-        { name: batteryName }
-      );
-      statLabels.from_battery.from_battery = this._i18n.localize(
-        "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
-        { name: batteryName }
-      );
+      const combinedLabels = {
+        from_grid: statIds.to_grid
+          ? this._i18n.localize(
+              "ui.panel.lovelace.cards.energy.energy_usage_graph.named_grid_consumed",
+              { name: gridName }
+            )
+          : gridName,
+        to_grid: statIds.from_grid
+          ? this._i18n.localize(
+              "ui.panel.lovelace.cards.energy.energy_usage_graph.named_grid_exported",
+              { name: gridName }
+            )
+          : gridName,
+        to_battery: this._i18n.localize(
+          "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
+          { name: batteryName }
+        ),
+        from_battery: this._i18n.localize(
+          "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
+          { name: batteryName }
+        ),
+      };
+      Object.entries(combinedLabels).forEach(([key, label]) => {
+        if (statIds[key]) {
+          statLabels[key][statIds[key][0]] = label;
+        }
+      });
     }
 
     const computedStyles = getComputedStyle(this);
@@ -455,9 +462,7 @@ export class HuiEnergyUsageGraphCard
       ) {
         return;
       }
-      if (statIds[key] && combine) {
-        colorIndices[key][key] = 0;
-      } else if (statIds[key]) {
+      if (statIds[key]) {
         Object.values(statIds[key]).forEach((id, idx) => {
           colorIndices[key][id as string] = idx;
         });
@@ -570,7 +575,9 @@ export class HuiEnergyUsageGraphCard
     return datasets
       .filter(
         (dataset) =>
-          dataset.id && !(dataset.id as string).startsWith("compare-")
+          dataset.id &&
+          !(dataset.id as string).startsWith("compare-") &&
+          (dataset.data as unknown[]).length
       )
       .map((dataset) => {
         const id = dataset.id as string;
@@ -638,21 +645,23 @@ export class HuiEnergyUsageGraphCard
       ) {
         return;
       }
+      const sets: Record<string, Record<number, number>> = {};
       if (combine) {
-        const summed = sumEnergyStatistics(statistics, statIds!);
-        combinedData[key] = summed.length
-          ? {
-              [key]: Object.fromEntries(
-                summed.map((stat) => [stat.start, stat.change!])
-              ),
-            }
-          : {};
+        // The first source carries the sum and the others stay as empty
+        // series, so switching modes keeps the stack order.
+        statIds!.forEach((id) => {
+          sets[id] = {};
+        });
+        sumEnergyStatistics(statistics, statIds!).forEach((stat) => {
+          sets[statIds![0]][stat.start] = stat.change!;
+        });
+        combinedData[key] = sets;
         return;
       }
-      const sets: Record<string, Record<number, number>> = {};
       statIds!.forEach((id) => {
         const stats = statistics[id];
         if (!stats) {
+          sets[id] = {};
           return;
         }
 
@@ -674,7 +683,8 @@ export class HuiEnergyUsageGraphCard
     // Only add the solar consumption series when solar is configured,
     // otherwise the legend shows an empty solar entry for grid-only setups.
     // Combined used_grid and used_battery are fallbacks for periods that
-    // can't be split per source; skip them when they have no points.
+    // can't be split per source; they stay as empty series when they have no
+    // points, so the stack keeps its order.
     if (statIdsByCat.solar) {
       combinedData.used_solar = { used_solar: consumptionData.used_solar };
     }
@@ -687,25 +697,25 @@ export class HuiEnergyUsageGraphCard
           (summedData.from_battery?.[start] ?? 0) -
           consumptionData.used_battery[start];
       }
-      const used_battery = buildCombinedUsed(
-        combinedData.from_battery,
-        batteryNotUsed,
-        consumptionData.used_battery
-      );
-      if (used_battery) {
-        combinedData.used_battery = { used_battery };
-      }
+      combinedData.used_battery = {
+        used_battery:
+          buildCombinedUsed(
+            combinedData.from_battery,
+            batteryNotUsed,
+            consumptionData.used_battery
+          ) ?? {},
+      };
     }
 
     if (combinedData.from_grid && summedData.to_battery) {
-      const used_grid = buildCombinedUsed(
-        combinedData.from_grid,
-        consumptionData.grid_to_battery,
-        consumptionData.used_grid
-      );
-      if (used_grid) {
-        combinedData.used_grid = { used_grid };
-      }
+      combinedData.used_grid = {
+        used_grid:
+          buildCombinedUsed(
+            combinedData.from_grid,
+            consumptionData.grid_to_battery,
+            consumptionData.used_grid
+          ) ?? {},
+      };
     }
 
     if (summedData.home) {
@@ -742,7 +752,7 @@ export class HuiEnergyUsageGraphCard
       Object.entries(sources).forEach(([statId, source]) => {
         const points: BarSeriesOption["data"] = [];
         // Process chart data.
-        for (const key of uniqueKeys) {
+        for (const key of Object.keys(source).length ? uniqueKeys : []) {
           const value = source[key] || 0;
           const y =
             value && ["to_grid", "to_battery"].includes(type)
