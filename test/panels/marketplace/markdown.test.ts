@@ -332,6 +332,32 @@ describe("markdownWithRepositoryContext", () => {
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
   });
 
+  it("keeps exclusion markers in a fence opened on a list item as written", () => {
+    const input = [
+      "- ```md",
+      "  <!-- ha-marketplace:exclude-start -->",
+      "  ```",
+      "- Shown",
+    ].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps exclusion markers in a fence inside a nested list item as written", () => {
+    const input = [
+      "- a",
+      "  - b",
+      "",
+      "    ~~~md",
+      "    <!-- ha-marketplace:exclude-start -->",
+      "    ~~~",
+      "",
+      "Shown",
+    ].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
   it("keeps text that looks like a placeholder", () => {
     const input = "Private \uE0000\uE000 and \u00001\u0000 characters";
 

@@ -135,6 +135,25 @@ const listItemContent = (item: RegExpExecArray) => {
   return before.length + marker.length + spacing;
 };
 
+// The line past up to `columns` of indentation, a tab moving on to the next
+// multiple of four, like CommonMark.
+const withoutIndentation = (line: string, columns: number) => {
+  let width = 0;
+  let index = 0;
+  while (index < line.length && width < columns) {
+    const character = line[index];
+    if (character === " ") {
+      width += 1;
+    } else if (character === "\t") {
+      width += 4 - (width % 4);
+    } else {
+      break;
+    }
+    index++;
+  }
+  return line.slice(index);
+};
+
 const isClosingFence = (line: string, fence: string) => {
   const closing = FENCE_CLOSING.exec(line);
   return (
@@ -152,6 +171,8 @@ const splitCodeBlocks = (input: string) => {
   const blocks: MarkdownBlock[] = [];
   let current: MarkdownBlock | undefined;
   let fence: string | undefined;
+  // A fence in a list item is indented like the text of the item
+  let fenceIndentation = 0;
 
   let indented = false;
   let previousBlank = true;
@@ -162,7 +183,9 @@ const splitCodeBlocks = (input: string) => {
     const content = line.replace(QUOTE_MARKERS, "");
     if (current?.code && fence) {
       current.lines.push(line);
-      if (isClosingFence(content, fence)) {
+      if (
+        isClosingFence(withoutIndentation(content, fenceIndentation), fence)
+      ) {
         fence = undefined;
       }
       continue;
@@ -197,9 +220,15 @@ const splitCodeBlocks = (input: string) => {
     }
     previousBlank = blank;
 
-    const opening = FENCE_OPENING.exec(content);
+    // A fence can open on the line of a list marker, after the marker
+    const opening = FENCE_OPENING.exec(
+      item
+        ? content.slice(item[0].length)
+        : withoutIndentation(content, listContent)
+    );
     if (opening) {
       fence = opening[1] ?? opening[2];
+      fenceIndentation = listContent;
       current = { code: true, lines: [line] };
       blocks.push(current);
       continue;
