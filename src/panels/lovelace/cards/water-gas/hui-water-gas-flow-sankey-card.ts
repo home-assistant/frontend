@@ -237,11 +237,15 @@ abstract class HuiWaterGasFlowSankeyCard
       `ui.panel.lovelace.cards.energy.energy_distribution.${resource}` as any
     );
 
+    const combineSources =
+      sources.length > 1 &&
+      (this._config.combine_sources ?? this._data.combineSources ?? false);
+
     // Determine the "root" node for device links.
     // - 0 sources: home node (value = sum of device values, computed later)
     // - 1 source: that source node is the root (no home node)
     // - >1 sources: home node aggregates all sources
-    const showHomeNode = sources.length !== 1;
+    const showHomeNode = !combineSources && sources.length !== 1;
     let rootNodeId: string;
 
     if (showHomeNode) {
@@ -271,6 +275,15 @@ abstract class HuiWaterGasFlowSankeyCard
       };
       nodes.push(homeNode);
       rootNodeId = "home";
+    } else if (combineSources) {
+      nodes.push({
+        id: `${resource}_source`,
+        label: defaultSourceLabel,
+        value: totalInflow,
+        color: resourceColor,
+        index: 0,
+      });
+      rootNodeId = `${resource}_source`;
     } else {
       const source = sources[0];
       if (source.type === resource && source.stat_rate) {

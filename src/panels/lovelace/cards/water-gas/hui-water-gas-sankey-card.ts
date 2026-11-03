@@ -200,8 +200,27 @@ abstract class HuiWaterGasSankeyCard
     const resourceColor = computedStyle
       .getPropertyValue(`--energy-${resource}-color`)
       .trim();
+    const combineSources =
+      sources.length > 1 &&
+      (this._config.combine_sources ?? data.combineSources ?? false);
+    if (combineSources && totalSourceSupply > 0) {
+      nodes.push({
+        id: `source-${resource}`,
+        label: this._i18n.localize(
+          `ui.panel.lovelace.cards.energy.energy_distribution.${resource}` as any
+        ),
+        value: totalSourceSupply,
+        color: resourceColor,
+        index: 0,
+      });
+      links.push({
+        source: `source-${resource}`,
+        target: "home",
+        value: totalSourceSupply,
+      });
+    }
     sources.forEach((source) => {
-      if (source.type !== resource) {
+      if (combineSources || source.type !== resource) {
         return;
       }
       const value = statValue(source.stat_energy_from);
