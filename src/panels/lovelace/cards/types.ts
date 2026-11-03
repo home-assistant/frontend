@@ -71,6 +71,12 @@ export interface ConditionalCardConfig extends LovelaceCardConfig {
   conditions: VisibilityCondition[];
 }
 
+export interface EntityVisibilityCardConfig extends LovelaceCardConfig {
+  entity: string;
+  hidden?: boolean;
+  card: LovelaceCardConfig;
+}
+
 export interface EmptyStateButtonConfig {
   text: string;
   icon?: string;
@@ -751,6 +757,7 @@ export interface HeadingCardConfig extends LovelaceCardConfig {
 export interface HomeSummaryCard extends LovelaceCardConfig {
   summary: HomeSummary;
   alert_entities?: SecurityAlertEntityConfig[];
+  hidden_entities?: string[];
   vertical?: boolean;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
