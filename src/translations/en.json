@@ -2936,6 +2936,13 @@
           "save_failed": "Failed to save security and safety page configuration"
         }
       },
+      "climate": {
+        "editor": {
+          "title": "Edit visible entities",
+          "load_failed": "Failed to load climate page configuration",
+          "save_failed": "Failed to save climate page configuration"
+        }
+      },
       "maintenance": {
         "editor": {
           "title": "Edit visible entities",
