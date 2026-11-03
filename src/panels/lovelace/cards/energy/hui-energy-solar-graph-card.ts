@@ -90,6 +90,8 @@ export class HuiEnergySolarGraphCard
     forecasts: EnergySolarForecasts | undefined;
   };
 
+  private _forecastsRequest = 0;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: HomeAssistantInternationalization;
@@ -234,13 +236,14 @@ export class HuiEnergySolarGraphCard
   );
 
   private async _fetchForecasts(energyData: EnergyData): Promise<void> {
+    const request = ++this._forecastsRequest;
     const solarSources: SolarSourceTypeEnergyPreference[] =
       energyData.prefs.energy_sources.filter(
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
 
     // A settings-only re-publish keeps the same statistics and forecasts
-    if (energyData.stats === this._data?.energyData.stats) {
+    if (this._data && energyData.stats === this._data.energyData.stats) {
       this._data = { energyData, forecasts: this._data.forecasts };
       return;
     }
@@ -256,7 +259,9 @@ export class HuiEnergySolarGraphCard
       }
     }
 
-    this._data = { energyData, forecasts };
+    if (request === this._forecastsRequest) {
+      this._data = { energyData, forecasts };
+    }
   }
 
   private _processStatistics() {
