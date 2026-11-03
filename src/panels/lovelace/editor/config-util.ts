@@ -154,20 +154,36 @@ export const replaceView = (
   };
 };
 
-export const swapView = (
+export const moveView = (
   config: LovelaceConfig,
-  path1: number,
-  path2: number
+  fromIndex: number,
+  toIndex: number
 ): LovelaceConfig => {
-  const view1 = config.views[path1];
-  const view2 = config.views[path2];
+  const views = [...config.views];
+  const [view] = views.splice(fromIndex, 1);
+  views.splice(toIndex, 0, view);
+  return { ...config, views };
+};
 
-  return {
-    ...config,
-    views: config.views.map((origView, index) =>
-      index === path2 ? view1 : index === path1 ? view2 : origView
-    ),
-  };
+/**
+ * Index an item ends up at after the item at `fromIndex` is moved to
+ * `toIndex` in the same list.
+ */
+export const indexAfterMove = (
+  index: number,
+  fromIndex: number,
+  toIndex: number
+): number => {
+  if (index === fromIndex) {
+    return toIndex;
+  }
+  if (fromIndex < index && index <= toIndex) {
+    return index - 1;
+  }
+  if (toIndex <= index && index < fromIndex) {
+    return index + 1;
+  }
+  return index;
 };
 
 export const deleteView = (

@@ -35,12 +35,12 @@ import { showConfirmationDialog } from "../dialogs/generic/show-dialog-box";
 import { showCategoryRegistryDetailDialog } from "../panels/config/category/show-dialog-category-registry-detail";
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistantConnection } from "../types";
+import "./ha-button";
 import "./ha-dropdown";
 import type { HaDropdownSelectEvent } from "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-expansion-panel";
 import "./ha-icon";
-import "./ha-list-item";
 import "./item/ha-list-item-option";
 import "./list/ha-list-selectable";
 
@@ -226,10 +226,14 @@ export class HaFilterCategories extends LitElement {
                       </ha-list-item-option>`
                   )}
                 </ha-list-selectable>
-                <ha-list-item graphic="icon" @click=${this._addCategory}>
-                  <ha-svg-icon slot="graphic" .path=${mdiPlus}></ha-svg-icon>
+                <ha-button
+                  appearance="filled"
+                  size="s"
+                  @click=${this._addCategory}
+                >
+                  <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
                   ${this._localize("ui.panel.config.category.editor.add")}
-                </ha-list-item>
+                </ha-button>
               </div>
             `
           : nothing
@@ -386,11 +390,11 @@ export class HaFilterCategories extends LitElement {
         ha-list-item-option {
           --ha-row-item-padding-block: var(--ha-space-2);
         }
+        ha-button {
+          margin: var(--ha-space-2) var(--ha-space-4);
+        }
         ha-list-item-option ha-icon-button {
           --ha-icon-button-size: 32px;
-        }
-        ha-list-item {
-          --mdc-list-item-graphic-margin: var(--ha-space-4);
         }
         ha-dropdown-item {
           font-size: var(--ha-font-size-m);

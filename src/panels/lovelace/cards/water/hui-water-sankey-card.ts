@@ -204,8 +204,27 @@ class HuiWaterSankeyCard
     const waterColor = computedStyle
       .getPropertyValue("--energy-water-color")
       .trim();
+    const combineSources =
+      waterSources.length > 1 &&
+      (this._config.combine_sources ?? this._data.combineSources ?? false);
+    if (combineSources && totalSourceSupply > 0) {
+      nodes.push({
+        id: "source-water",
+        label: this._i18n.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.water"
+        ),
+        value: totalSourceSupply,
+        color: waterColor,
+        index: 0,
+      });
+      links.push({
+        source: "source-water",
+        target: "home",
+        value: totalSourceSupply,
+      });
+    }
     waterSources.forEach((source) => {
-      if (source.type !== "water") {
+      if (combineSources || source.type !== "water") {
         return;
       }
       const value =

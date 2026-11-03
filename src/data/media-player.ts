@@ -357,35 +357,18 @@ export const computeMediaControls = (
 
   if (
     !assumedState &&
-    ((state === "playing" &&
-      (supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE) ||
-        supportsFeature(stateObj, MediaPlayerEntityFeature.STOP))) ||
-      ((state === "paused" || state === "idle") &&
-        supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)) ||
-      (state === "on" &&
-        (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
-          supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE))))
+    state === "on" &&
+    (supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY) ||
+      supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE))
   ) {
     buttons.push({
-      icon:
-        state === "on"
-          ? mdiPlayPause
-          : state !== "playing"
-            ? mdiPlay
-            : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-              ? mdiPause
-              : mdiStop,
-      action:
-        state !== "playing"
-          ? "media_play"
-          : supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
-            ? "media_pause"
-            : "media_stop",
+      icon: mdiPlayPause,
+      action: "media_play",
     });
   }
 
   if (
-    assumedState &&
+    (assumedState || state === "paused" || state === "idle") &&
     supportsFeature(stateObj, MediaPlayerEntityFeature.PLAY)
   ) {
     buttons.push({
@@ -395,7 +378,7 @@ export const computeMediaControls = (
   }
 
   if (
-    assumedState &&
+    (assumedState || state === "playing") &&
     supportsFeature(stateObj, MediaPlayerEntityFeature.PAUSE)
   ) {
     buttons.push({
@@ -405,7 +388,7 @@ export const computeMediaControls = (
   }
 
   if (
-    assumedState &&
+    (assumedState || state === "playing" || state === "paused") &&
     supportsFeature(stateObj, MediaPlayerEntityFeature.STOP)
   ) {
     buttons.push({
@@ -441,6 +424,27 @@ export const computeMediaControls = (
   }
 
   return buttons.length > 0 ? buttons : undefined;
+};
+
+/**
+ * Removes stop when play or pause is available, as stop is then only shown as
+ * a secondary control in the more-info dialog. Assumed state players keep
+ * play, pause and stop together as main controls.
+ */
+export const removeSecondaryStopControl = (
+  stateObj: MediaPlayerEntity,
+  controls: ControlButton[] | undefined
+): ControlButton[] | undefined => {
+  if (
+    !controls ||
+    stateObj.attributes.assumed_state === true ||
+    !controls.some(
+      (c) => c.action === "media_play" || c.action === "media_pause"
+    )
+  ) {
+    return controls;
+  }
+  return controls.filter((c) => c.action !== "media_stop");
 };
 
 export const formatMediaTime = (seconds: number | undefined): string => {

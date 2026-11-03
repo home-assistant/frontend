@@ -12,8 +12,10 @@ import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import {
   configContext,
+  formattersContext,
   internationalizationContext,
   statesContext,
+  uiContext,
 } from "../../../../data/context";
 import type { EnergyData } from "../../../../data/energy";
 import {
@@ -25,7 +27,9 @@ import type { FrontendLocaleData } from "../../../../data/translation";
 import type {
   HomeAssistant,
   HomeAssistantConfig,
+  HomeAssistantFormatters,
   HomeAssistantInternationalization,
+  HomeAssistantUI,
 } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { PowerSourcesGraphCardConfig } from "../types";
@@ -90,6 +94,12 @@ export class HuiPowerSourcesGraphCard
   })
   private _hassConfig!: HassConfig;
 
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @consume({ context: uiContext, subscribe: true })
+  private _ui!: HomeAssistantUI;
+
   constructor() {
     super();
     new EnergyCollectionController(this, {
@@ -137,6 +147,13 @@ export class HuiPowerSourcesGraphCard
 
   protected willUpdate(changedProps: PropertyValues): void {
     if (
+      changedProps.has("_config") &&
+      changedProps.get("_config") &&
+      this._energyData
+    ) {
+      this._getStatistics(this._energyData);
+    }
+    if (
       (changedProps.has("_states") || changedProps.has("_i18n")) &&
       !changedProps.has("_legendData")
     ) {
@@ -151,7 +168,8 @@ export class HuiPowerSourcesGraphCard
     const values = getPowerLegendValues(
       this._energyData,
       this._states,
-      this._formatPower
+      this._formatPower,
+      this._config?.combine_sources ?? this._energyData.combineSources ?? true
     );
     if (this._legendData.every((item) => item.value === values[item.id!])) {
       return false;
@@ -262,6 +280,10 @@ export class HuiPowerSourcesGraphCard
       start: this._start,
       end: this._end,
       now: Date.now(),
+      combineSources:
+        this._config?.combine_sources ?? energyData.combineSources ?? true,
+      formatEntityName: this._formatters.formatEntityName,
+      darkMode: this._ui.themes.darkMode,
     });
 
     this._energyData = energyData;

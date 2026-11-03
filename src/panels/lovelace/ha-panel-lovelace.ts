@@ -319,7 +319,7 @@ export class LovelacePanel extends LitElement {
       // Refreshing a YAML config can trigger an update event. We will ignore
       // all update events while fetching the config and for 2 seconds after the config is back.
       // We ignore because we already have the latest config.
-      if (this.lovelace && this.lovelace.mode === "yaml") {
+      if (confMode === "yaml") {
         this._ignoreNextUpdateEvent = true;
       }
 
@@ -367,7 +367,7 @@ export class LovelacePanel extends LitElement {
     } finally {
       this._loading = false;
       // Ignore updates for another 2 seconds.
-      if (this.lovelace && this.lovelace.mode === "yaml") {
+      if (confMode === "yaml") {
         setTimeout(() => {
           this._ignoreNextUpdateEvent = false;
         }, 2000);

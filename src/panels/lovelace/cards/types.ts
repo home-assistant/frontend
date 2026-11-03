@@ -189,12 +189,14 @@ export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   group_by_area?: boolean;
   max_devices?: number;
   show_values?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
   vertical_opening_direction?: "auto" | "up" | "down";
   opening_direction?: "auto" | "right" | "left" | "center" | "inline";
   disable_compare?: boolean;
+  show_combine_sources?: boolean;
 }
 
 export interface EnergyDistributionCardConfig extends EnergyCardConfig {
@@ -205,18 +207,22 @@ export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
   show_legend?: boolean;
   expand_legend?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
   type: "energy-solar-graph";
+  combine_sources?: boolean;
 }
 
 export interface EnergyGasGraphCardConfig extends EnergyCardConfig {
   type: "energy-gas-graph";
+  combine_sources?: boolean;
 }
 
 export interface EnergyWaterGraphCardConfig extends EnergyCardConfig {
   type: "energy-water-graph";
+  combine_sources?: boolean;
 }
 
 export interface EnergyDevicesGraphCardConfig extends EnergyCardConfig {
@@ -237,6 +243,7 @@ export interface EnergySourcesTableCardConfig extends EnergyCardConfig {
   type: "energy-sources-table";
   types?: (keyof EnergySourceByType)[];
   show_only_totals?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergySolarGaugeCardConfig extends EnergyCardConfig {
@@ -263,6 +270,7 @@ export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
   type: "power-sources-graph";
   show_legend?: boolean;
   expand_legend?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
@@ -323,6 +331,7 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   min?: number;
   max?: number;
   severity?: SeverityConfig;
+  color?: string;
   theme?: string;
   needle?: boolean;
   segments?: GaugeSegment[];
@@ -472,7 +481,7 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
-  date_format?: ClockCardDatePart[];
+  date_format?: ClockCardDateFormat;
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";
@@ -493,13 +502,21 @@ export type ClockCardDatePart =
   | "separator-dash"
   | "separator-slash"
   | "separator-dot"
+  | "separator-comma"
   | "separator-new-line";
+
+export type ClockCardDatePreset = "short" | "medium" | "long" | "full" | "iso";
+
+/**
+ * A preset name, or a custom list of date parts in display order.
+ */
+export type ClockCardDateFormat = ClockCardDatePreset | ClockCardDatePart[];
 
 export interface DateCardConfig extends LovelaceCardConfig {
   type: "date";
   title?: string;
   date_size?: "small" | "medium" | "large";
-  date_format?: ClockCardDatePart[];
+  date_format?: ClockCardDateFormat;
   time_zone?: string;
   no_background?: boolean;
 }

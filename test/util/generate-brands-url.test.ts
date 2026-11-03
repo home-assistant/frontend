@@ -4,6 +4,7 @@ import {
   addBrandsAuth,
   brandsUrl,
   clearBrandsTokenRefresh,
+  darkBrandUrl,
   fetchAndScheduleBrandsAccessToken,
   fetchBrandsAccessToken,
   hardwareBrandsUrl,
@@ -156,6 +157,49 @@ describe("addBrandsAuth", () => {
         "http://homeassistant.local:8123"
       ),
       "http://homeassistant.local:8123/api/brands/integration/demo/icon.png?token=new-token"
+    );
+  });
+});
+
+describe("darkBrandUrl", () => {
+  it("Switches a brands API icon to its dark variant", () => {
+    assert.strictEqual(
+      darkBrandUrl("/api/brands/integration/linksys_velop/icon.png"),
+      "/api/brands/integration/linksys_velop/dark_icon.png"
+    );
+  });
+
+  it("Keeps the image type, size, host and query", () => {
+    assert.strictEqual(
+      darkBrandUrl(
+        "http://homeassistant.local:8123/api/brands/marketplace/hair/logo@2x.png?token=abc"
+      ),
+      "http://homeassistant.local:8123/api/brands/marketplace/hair/dark_logo@2x.png?token=abc"
+    );
+  });
+
+  it("Switches a legacy CDN brand URL", () => {
+    assert.strictEqual(
+      darkBrandUrl("https://brands.home-assistant.io/_/sonos/icon.png"),
+      "https://brands.home-assistant.io/_/sonos/dark_icon.png"
+    );
+  });
+
+  it("Leaves dark brand URLs unchanged", () => {
+    assert.strictEqual(
+      darkBrandUrl("/api/brands/integration/hue/dark_icon.png"),
+      "/api/brands/integration/hue/dark_icon.png"
+    );
+  });
+
+  it("Leaves non-brand URLs unchanged", () => {
+    assert.strictEqual(
+      darkBrandUrl("/api/image_proxy/image.icon?token=abc"),
+      "/api/image_proxy/image.icon?token=abc"
+    );
+    assert.strictEqual(
+      darkBrandUrl("https://example.com/icon.png"),
+      "https://example.com/icon.png"
     );
   });
 });

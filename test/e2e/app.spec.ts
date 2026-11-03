@@ -338,7 +338,7 @@ test.describe("System log reporting", () => {
   }) => {
     await goToPanel(page, "/?scenario=system-log-reporting#/config/logs");
     await page
-      .locator("system-log-card ha-list-item")
+      .locator("system-log-card ha-list-item-button")
       .filter({ hasText: "Delayed manifest error" })
       .click();
     const detail = page.locator("dialog-system-log-detail");
@@ -351,7 +351,7 @@ test.describe("System log reporting", () => {
     await detail.getByRole("button", { name: "Close", exact: true }).click();
     await expect(detail.locator("ha-dialog")).not.toBeAttached();
     await page
-      .locator("system-log-card ha-list-item")
+      .locator("system-log-card ha-list-item-button")
       .filter({ hasText: "Built-in integration error" })
       .click();
     await page.evaluate(() => window.resolveReportManifest?.());

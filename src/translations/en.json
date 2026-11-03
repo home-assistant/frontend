@@ -17,6 +17,7 @@
     "climate": "Climate",
     "home": "Overview",
     "maintenance": "Maintenance",
+    "marketplace": "Marketplace",
     "notfound": "Page not found"
   },
   "state": {
@@ -857,7 +858,6 @@
           },
           "mode_composed": "Composed",
           "mode_custom": "Custom",
-          "add": "Add",
           "search": "Search name",
           "custom_name": "Custom name",
           "no_more_parts": "Nothing left to add",
@@ -944,7 +944,6 @@
         "collapse": "Collapse"
       },
       "entity-type-picker": {
-        "add": "Add type",
         "no_types": "No types available"
       },
       "subpage-data-table": {
@@ -1014,7 +1013,11 @@
         "no_match": "No users found for {term}",
         "user": "User",
         "add_user": "Add user",
-        "unknown": "Unknown user selected"
+        "unknown": "Unknown user selected",
+        "load_failed": "Failed to load users"
+      },
+      "generic-picker": {
+        "loading": "Loading {label}"
       },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
@@ -1060,6 +1063,7 @@
         "no_categories": "No categories available",
         "no_match": "No categories found for {term}",
         "unknown": "Unknown category selected",
+        "load_failed": "Failed to load categories",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -1116,7 +1120,8 @@
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
         "learn_more": "Learn more about statistics",
-        "unknown": "Unknown statistic selected"
+        "unknown": "Unknown statistic selected",
+        "load_failed": "Failed to load statistics"
       },
       "app-picker": {
         "app": "App",
@@ -1664,7 +1669,9 @@
         "no_items": "No items available",
         "unknown_item": "Unknown item",
         "search_or_custom": "Search | Add custom item",
-        "add_custom_item": "Add custom item"
+        "add_custom_item": "Add custom item",
+        "result_count": "{count} {count, plural,\n one {result}\n other {results}\n} for {term}",
+        "no_results": "No results for {term}"
       },
       "suggest_with_ai": {
         "label": "Suggest",
@@ -2970,7 +2977,7 @@
           },
           "marketplace": {
             "main": "Marketplace",
-            "secondary": "Install integrations, dashboard cards, themes, and templates shared by the community"
+            "secondary": "Install community integrations, dashboard content, themes, and templates"
           },
           "dashboards": {
             "main": "Dashboards",
@@ -3528,7 +3535,6 @@
           "introduction2": "Go to the area, device, or entity you want to add a label to, and press the edit button to assign labels to them.",
           "confirm_delete_title": "Delete label?",
           "confirm_delete": "Are you sure you want to delete label {label}? It will be removed from all areas, devices, and entities.",
-          "delete_selected": "Delete selected",
           "confirm_delete_selected_title": "Delete selected labels?",
           "confirm_delete_selected": "{count, plural,\n  one {The selected label will be removed from all areas, devices, and entities.}\n  other {The {count} selected labels will be removed from all areas, devices, and entities.}\n}",
           "delete_failed_title": "Delete failed",
@@ -3549,6 +3555,14 @@
           "add_picture": "Add a picture",
           "assigned_to_area": "Assigned to this area",
           "targeting_area": "Targeting this area",
+          "related_lists": {
+            "automations_assigned": "Automations assigned to {area}",
+            "automations_targeting": "Automations targeting {area}",
+            "scenes_assigned": "Scenes assigned to {area}",
+            "scenes_targeting": "Scenes targeting {area}",
+            "scripts_assigned": "Scripts assigned to {area}",
+            "scripts_targeting": "Scripts targeting {area}"
+          },
           "area_not_found": "[%key:ui::card::area::area_not_found%]",
           "data_table": {
             "area": "Area",
@@ -3943,15 +3957,15 @@
                   "addon_repositories": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::app_repositories%]",
                   "addons": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::apps%]",
                   "await_addon_restarts": "[%key:ui::panel::config::backup::overview::progress::description::create_backup::await_app_restarts%]",
-                  "app_repositories": "Backing up app repositories",
-                  "apps": "Backing up apps",
-                  "await_app_restarts": "Waiting for apps to restart",
-                  "docker_config": "Backing up Docker configuration",
-                  "finishing_file": "Finishing backup file",
-                  "folders": "Backing up folders",
-                  "home_assistant": "Backing up Home Assistant",
-                  "upload_to_agents": "Uploading to locations",
-                  "cleaning_up": "Cleaning up"
+                  "app_repositories": "Backing up app repositories...",
+                  "apps": "Backing up apps...",
+                  "await_app_restarts": "Waiting for apps to restart...",
+                  "docker_config": "Backing up Docker configuration...",
+                  "finishing_file": "Finishing backup file...",
+                  "folders": "Backing up folders...",
+                  "home_assistant": "Backing up Home Assistant...",
+                  "upload_to_agents": "Uploading backup...",
+                  "cleaning_up": "Cleaning up..."
                 },
                 "restore_backup": {
                   "addon_repositories": "[%key:ui::panel::config::backup::overview::progress::description::restore_backup::app_repositories%]",
@@ -3979,7 +3993,7 @@
                 "apps": "Apps",
                 "media": "Media",
                 "upload": "Uploading backup",
-                "cleaning_up": "Cleaning up"
+                "cleaning_up": "Cleanup"
               },
               "agent_status": {
                 "uploading": "Uploading...",
@@ -4188,7 +4202,6 @@
           "create_automation": "Create automation",
           "confirm_delete_title": "Delete tag?",
           "confirm_delete": "The tag ''{tag}'' will be permanently deleted.",
-          "delete_selected": "Delete selected",
           "confirm_delete_selected_title": "Delete selected tags?",
           "confirm_delete_selected": "{count, plural,\n  one {The selected tag will be permanently deleted.}\n  other {The {count} selected tags will be permanently deleted.}\n}",
           "delete_failed_title": "Delete failed",
@@ -4502,6 +4515,7 @@
                   "no_statistics_found": "No statistics found for this period.",
                   "info_text_1": "Sometimes the statistics end up being incorrect for a specific point in time. This can mess up your beautiful graphs! Select a time below to find the bad moment and adjust the data.",
                   "pick_a_time": "Pick a time",
+                  "statistic_values": "Statistic values",
                   "statistic": "Statistic:",
                   "start": "Start",
                   "end": "End",
@@ -5059,6 +5073,7 @@
           "failed_get_logs": "Failed to get {provider} logs, {error}",
           "no_issues_search": "No issues found for search term ''{term}''",
           "no_issues_integration": "No issues found for {integration}",
+          "no_issues_filters": "No issues match the selected filters",
           "integration_log_waiting": "[%key:ui::panel::config::integrations::config_entry::live_log::waiting%]",
           "integration_log_unsupported": "[%key:ui::panel::config::integrations::config_entry::live_log::unsupported%]",
           "no_matches_showing_all": "Nothing in the recent logs mentions ''{term}'', so all lines are shown.",
@@ -5079,6 +5094,17 @@
             "warning": "WARNING",
             "info": "INFO",
             "debug": "DEBUG"
+          },
+          "level_filter": {
+            "caption": "Level",
+            "critical": "Critical",
+            "error": "Error",
+            "warning": "Warning"
+          },
+          "level_count": {
+            "critical": "{count} critical {count, plural,\n one {entry}\n other {entries}\n}",
+            "error": "{count} {count, plural,\n one {error}\n other {errors}\n}",
+            "warning": "{count} {count, plural,\n one {warning}\n other {warnings}\n}"
           },
           "custom_integration": "custom integration",
           "error_from_custom_integration": "This log entry is from a custom integration.",
@@ -5204,7 +5230,6 @@
             },
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "This dashboard will be permanently deleted.",
-            "delete_selected": "Delete selected",
             "confirm_delete_selected_title": "Delete selected dashboards?",
             "confirm_delete_selected": "{count, plural,\n  one {The selected dashboard will be permanently deleted.}\n  other {The {count} selected dashboards will be permanently deleted.}\n}",
             "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} dashboards. The others are built-in or configured in YAML.",
@@ -6716,13 +6741,13 @@
               "script": "scripts"
             },
             "error": "{path} could not be loaded",
+            "used_count": "{count, plural,\n  =0 {Not in use}\n  one {Used once}\n  other {Used {count} times}\n}",
             "blueprint_in_use_title": "This blueprint is in use and cannot be deleted",
             "blueprint_in_use_text": "Please remove all below {type} that use this blueprint before deleting it. {list}",
             "blueprint_in_use_view_automation": "View automations",
             "blueprint_in_use_view_script": "View scripts",
             "confirm_delete_title": "Delete blueprint?",
             "confirm_delete_text": "{name} will be permanently deleted.",
-            "delete_selected": "Delete selected",
             "confirm_delete_selected_title": "Delete selected blueprints?",
             "confirm_delete_selected": "{count, plural,\n  one {The selected blueprint will be permanently deleted.}\n  other {The {count} selected blueprints will be permanently deleted.}\n}",
             "confirm_delete_selected_partly": "You can only delete {deletable} of the {selected} blueprints. The others are in use by automations or scripts.",
@@ -7475,6 +7500,7 @@
             "none": "This device has no entities",
             "show_less": "Show less",
             "disabled_entities": "+{count} disabled {count, plural,\n  one {entity}\n  other {entities}\n}",
+            "disabled_entities_list": "Disabled entities",
             "hidden": "Hidden"
           },
           "confirm_disable_config_entry_title": "Disable config entry?",
@@ -7803,7 +7829,8 @@
             "add_hardware": "Add hardware",
             "add_entity": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
             "add_system": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
-            "add_virtual": "[%key:ui::panel::config::integrations::integration_page::add_entry%]"
+            "add_virtual": "[%key:ui::panel::config::integrations::integration_page::add_entry%]",
+            "open_config_panel": "{name} settings"
           },
           "config_entry": {
             "application_credentials": {
@@ -8508,7 +8535,8 @@
             "router": "Router",
             "end_device": "End device",
             "green_power": "Green Power",
-            "offline": "Offline"
+            "offline": "Offline",
+            "unknown_parent": "Unknown parent"
           },
           "device_binding": {
             "header": "Device binding",
@@ -9509,7 +9537,7 @@
           "description": "Manage the format of newly created entity IDs",
           "card": {
             "header": "Entity ID format for new entities",
-            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new entity is created. Using it is optional, and you can still rename each entity ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
+            "description": "Entity IDs are used to reference entities in automations, scripts, and dashboards. This format only applies when a new ID is created. Using it is optional, and you can still rename each entity's ID afterwards in its settings. Parts without a value are omitted from the entity ID.",
             "learn_more": "Learn more",
             "preview": "Examples",
             "preview_error": "Failed to generate preview",
@@ -9587,6 +9615,7 @@
             "title": "Configure network interfaces",
             "connected_to": "Connected to {ssid}",
             "scan_ap": "Search networks",
+            "access_points": "Wi-Fi networks",
             "reset": "Reset configuration",
             "signal_strength": "Signal strength",
             "open": "Open",
@@ -9747,6 +9776,7 @@
             "title": "Additional storage",
             "add_title": "Add storage",
             "update_title": "Update storage",
+            "reload": "Reload storage",
             "no_mounts": "No additional storage configured",
             "no_disks": "No suitable disks were found. Connect a disk with a supported file system, then reopen this dialog.",
             "documentation": "Documentation",
@@ -10172,7 +10202,8 @@
               "untracked_consumption": "Untracked consumption",
               "over_reported_consumption": "Over-reported consumption",
               "untracked": "untracked",
-              "other": "Other"
+              "other": "Other",
+              "other_devices": "{count, plural, one {# other device} other {# other devices}}"
             },
             "carbon_consumed_gauge": {
               "card_indicates_energy_used": "This card indicates how much of the electricity consumed by your home was generated using non-fossil fuels like solar, wind, and nuclear. The higher, the better!",
@@ -10221,7 +10252,10 @@
         "add_entities": {
           "yaml_unsupported": "You cannot use this function when using your dashboard in YAML mode.",
           "generated_unsupported": "You can only use this function when you have taken control of your dashboard.",
-          "saving_failed": "Saving dashboard configuration failed."
+          "saving_failed": "Saving dashboard configuration failed.",
+          "added": "Added to {dashboard}",
+          "added_unnamed": "Added to the dashboard",
+          "open": "Open"
         },
         "views": {
           "unnamed_view": "Unnamed view",
@@ -10532,6 +10566,7 @@
             "header": "Choose a view",
             "dashboard_label": "Dashboard",
             "views_label": "View",
+            "views_heading": "Views of {dashboard}",
             "no_config": "No config found.",
             "no_views": "No views in this dashboard.",
             "strategy_type": "strategy"
@@ -10935,8 +10970,19 @@
             "gauge": {
               "name": "Gauge",
               "needle_gauge": "Display as needle gauge",
+              "color_mode": "Color mode",
+              "color_default": "Info color",
+              "color_mode_options": {
+                "color": "Single color",
+                "severity": "Severity",
+                "segments": "Segments"
+              },
+              "segments": "Segments",
+              "segment": {
+                "from": "From",
+                "label": "Label"
+              },
               "severity": {
-                "define": "Define severity",
                 "green": "Green",
                 "red": "Red",
                 "yellow": "Yellow"
@@ -10988,6 +11034,7 @@
               "name": "Energy date picker",
               "description": "This card allows you to pick what data to show on linked statistics graphs and other energy cards.",
               "disable_compare": "Disable data comparison",
+              "show_combine_sources": "Show the combine sources option",
               "vertical_opening_direction": "Vertical opening direction",
               "vertical_opening_directions": {
                 "auto": "Automatic",
@@ -11210,6 +11257,7 @@
               "energy_date_selection": "Link to energy card collection",
               "collection_key": "Energy card collection key",
               "collection_key_description": "Optional key to connect a collection of energy cards to any matching date picker. Energy cards on this dashboard with no key will automatically be linked together.",
+              "combine_sources": "Combine sources",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
@@ -11382,6 +11430,14 @@
               "date": {
                 "label": "Date",
                 "description": "Select and order the date parts. Add a separator to control punctuation.",
+                "presets": {
+                  "short": "Short",
+                  "medium": "Medium",
+                  "long": "Long",
+                  "full": "Full",
+                  "iso": "ISO 8601",
+                  "custom": "Custom"
+                },
                 "sections": {
                   "weekday": "Weekday",
                   "day": "Day",
@@ -11403,6 +11459,7 @@
                   "separator-dash": "Dash",
                   "separator-slash": "Slash",
                   "separator-dot": "Dot",
+                  "separator-comma": "Comma",
                   "separator-new-line": "New line"
                 }
               },
@@ -12012,7 +12069,12 @@
               "bar-gauge": {
                 "label": "Bar gauge",
                 "min": "Minimum value",
-                "max": "Maximum value"
+                "max": "Maximum value",
+                "color_mode": "[%key:ui::panel::lovelace::editor::card::gauge::color_mode%]",
+                "segments": "[%key:ui::panel::lovelace::editor::card::gauge::segments%]",
+                "green": "[%key:ui::panel::lovelace::editor::card::gauge::severity::green%]",
+                "yellow": "[%key:ui::panel::lovelace::editor::card::gauge::severity::yellow%]",
+                "red": "[%key:ui::panel::lovelace::editor::card::gauge::severity::red%]"
               },
               "trend-graph": {
                 "label": "Trend graph",
@@ -12237,6 +12299,7 @@
             "previous": "Previous",
             "next": "Next",
             "compare": "Compare data",
+            "combine_sources": "Combine sources",
             "download_data": "[%key:ui::panel::history::download_data%]"
           }
         },
@@ -12474,6 +12537,7 @@
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
           "created": "Created {date}",
+          "last_used": "[%key:ui::panel::profile::refresh_tokens::last_used%]",
           "confirm_delete_title": "Delete long-lived access token?",
           "confirm_delete_text": "Are you sure you want to delete the long-lived access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
@@ -12962,6 +13026,7 @@
           "intro": "Marketplace items are made by community contributors and are not reviewed by the Home\u00a0Assistant project. Treat them like plugins for any other software.",
           "risks_title": "Anything you install can",
           "risks": {
+            "access": "Access and control everything in Home\u00a0Assistant",
             "internet": "Connect to the internet",
             "data": "Share your data with others",
             "stability": "Slow down or crash Home\u00a0Assistant"
@@ -12997,8 +13062,7 @@
           "empty_header": "Nothing in the Marketplace yet",
           "empty_text": "The Marketplace gets its list from the community catalog, which could not be reached yet. The list shows up here once it loads.",
           "no_data": "No repositories matching search and filters",
-          "repository_not_found": "Repository not found",
-          "uninstall_selected": "Uninstall selected"
+          "repository_not_found": "Repository not found"
         },
         "entry": {
           "disabled": "The Marketplace is disabled. Enable it on the integration page to use it.",
@@ -13064,10 +13128,11 @@
           "already_installing": "This is already being installed, hold on.",
           "install_failed": "Installation failed. Check the Home Assistant logs for details.",
           "pre_release": "Pre-release",
+          "release_installed": "Installed",
+          "release_latest": "Latest",
           "install_intro": "This installs {name} version {version} in Home Assistant.",
           "update_intro": "This updates {name} from version {installed} to {version}.",
           "reinstall_intro": "This installs version {version} of {name} again.",
-          "fetching_releases": "Loading versions…",
           "no_releases": "There are no other versions to choose from.",
           "release": "Version",
           "release_warning": "To go back to an earlier version, restoring a backup is the safer way.",

@@ -218,7 +218,7 @@ export class StateHistoryCharts extends LitElement {
           @chart-zoom-with-index=${this._handleTimelineSync}
           .height=${this.virtualize ? undefined : this.height}
           .expandLegend=${this.expandLegend}
-          ?hide-zoom-controls=${this.syncCharts}
+          .zoomSlider=${this.syncCharts ? "never" : "auto"}
         ></state-history-chart-line>
       </div> `;
     }
@@ -237,7 +237,7 @@ export class StateHistoryCharts extends LitElement {
         .clickForMoreInfo=${this.clickForMoreInfo}
         @y-width-changed=${this._yWidthChanged}
         @chart-zoom-with-index=${this._handleTimelineSync}
-        ?hide-zoom-controls=${this.syncCharts}
+        .zoomSlider=${this.syncCharts ? "never" : "auto"}
       ></state-history-chart-timeline>
     </div> `;
   };

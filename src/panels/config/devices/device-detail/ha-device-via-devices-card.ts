@@ -7,7 +7,8 @@ import { getDeviceArea } from "../../../../common/entity/context/get_device_cont
 import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-next";
-import "../../../../components/ha-list-item";
+import "../../../../components/item/ha-list-item-button";
+import "../../../../components/list/ha-list-nav";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { DeviceRegistryEntry } from "../../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
@@ -71,41 +72,43 @@ export class HaDeviceViaDevicesCard extends LitElement {
             "ui.panel.config.devices.connected_devices.heading"
           )}
         </h1>
-        ${(this._showAll
-          ? viaDevices
-          : viaDevices.slice(0, MAX_VISIBLE_VIA_DEVICES)
-        ).map((viaDevice) => {
-          const area = getDeviceArea(
-            viaDevice,
-            this.hass.areas,
-            this.hass.devices
-          );
-          const entityCount = entityCounts[viaDevice.id] ?? 0;
-          const secondary = [
-            area?.name,
-            entityCount
-              ? this.hass.localize(
-                  "ui.panel.config.common.quick_links.entities",
-                  { count: entityCount }
-                )
-              : undefined,
-          ]
-            .filter(Boolean)
-            .join(" • ");
-          return html`
-            <a href=${`/config/devices/device/${viaDevice.id}`}>
-              <ha-list-item hasMeta .twoline=${!!secondary}>
-                ${computeDeviceNameDisplay(viaDevice, this.hass.localize)}
-                ${
-                  secondary
-                    ? html`<span slot="secondary">${secondary}</span>`
-                    : nothing
-                }
-                <ha-icon-next slot="meta"></ha-icon-next>
-              </ha-list-item>
-            </a>
-          `;
-        })}
+        <ha-list-nav
+          .ariaLabel=${this.hass.localize(
+            "ui.panel.config.devices.connected_devices.heading"
+          )}
+        >
+          ${(this._showAll
+            ? viaDevices
+            : viaDevices.slice(0, MAX_VISIBLE_VIA_DEVICES)
+          ).map((viaDevice) => {
+            const area = getDeviceArea(
+              viaDevice,
+              this.hass.areas,
+              this.hass.devices
+            );
+            const entityCount = entityCounts[viaDevice.id] ?? 0;
+            const secondary = [
+              area?.name,
+              entityCount
+                ? this.hass.localize(
+                    "ui.panel.config.common.quick_links.entities",
+                    { count: entityCount }
+                  )
+                : undefined,
+            ]
+              .filter(Boolean)
+              .join(" • ");
+            return html`
+              <ha-list-item-button
+                .href=${`/config/devices/device/${viaDevice.id}`}
+                .headline=${computeDeviceNameDisplay(viaDevice, this.hass.localize)}
+                .supportingText=${secondary || undefined}
+              >
+                <ha-icon-next slot="end"></ha-icon-next>
+              </ha-list-item-button>
+            `;
+          })}
+        </ha-list-nav>
         ${
           !this._showAll && viaDevices.length > MAX_VISIBLE_VIA_DEVICES
             ? html`
@@ -135,9 +138,8 @@ export class HaDeviceViaDevicesCard extends LitElement {
       padding-bottom: 0;
     }
 
-    a {
-      text-decoration: none;
-      color: var(--primary-text-color);
+    ha-list-item-button ha-icon-next {
+      color: var(--secondary-text-color);
     }
 
     button.show-more {
