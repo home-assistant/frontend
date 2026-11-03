@@ -28,7 +28,6 @@ import { UNAVAILABLE } from "../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import type { FanEntity, FanSpeed } from "../../../data/fan";
 import {
-  computeFanSpeedButtonsMinWidth,
   computeFanSpeedIcon,
   computeFanSpeeds,
   FanEntityFeature,
@@ -50,6 +49,9 @@ import type {
   FanSpeedCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+// WCAG 2.2 AA target size, feature buttons have no gap between them
+const SPEED_BUTTON_MIN_WIDTH = 24;
 
 const supportsFanSpeedCardFeatureFromState = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -156,7 +158,7 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
     // Fall back to the slider when the buttons do not fit the card width.
     const width = this._resizeController.value;
     const buttonsFit =
-      !speeds || !width || width >= computeFanSpeedButtonsMinWidth(speeds);
+      !speeds || !width || width >= speeds.length * SPEED_BUTTON_MIN_WIDTH;
 
     const percentage = stateActive(this._stateObj)
       ? (this._stateObj.attributes.percentage ?? 0)

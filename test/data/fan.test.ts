@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import type { FanEntity } from "../../src/data/fan";
 import {
   computeDefaultFanSpeedStyle,
-  computeFanSpeedButtonsMinWidth,
   computeFanSpeedIcon,
   computeFanSpeeds,
   fanPercentageToSpeed,
@@ -81,16 +80,6 @@ describe("fan speed style", () => {
     expect(supportsFanSpeedStyleChoice(fan(50))).toBe(true);
     expect(supportsFanSpeedStyleChoice(fan(10))).toBe(true);
     expect(supportsFanSpeedStyleChoice(fan(100 / 11))).toBe(false);
-  });
-});
-
-describe("computeFanSpeedButtonsMinWidth", () => {
-  const minWidth = (step: number) =>
-    computeFanSpeedButtonsMinWidth(computeFanSpeeds(fan(step))!);
-
-  it("needs 24px per button", () => {
-    expect(minWidth(100 / 6)).toBe(7 * 24);
-    expect(minWidth(10)).toBe(11 * 24);
   });
 });
 
