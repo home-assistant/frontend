@@ -106,12 +106,17 @@ export const computeExclusionsPerTarget = (
   return { perTarget, noEffect, included };
 };
 
-/** The exclusions that take entities out of one item of a target. */
+/**
+ * The exclusions that take entities out of one item of a target. Actions
+ * expand the groups a target names, triggers and conditions don't, so
+ * `expandGroup` follows what the target is used for.
+ */
 export const resolveItemExclusions = async (
   hass: HomeAssistant,
   item: TargetItem,
   exclude: HassServiceTarget | undefined,
-  primaryEntitiesOnly?: boolean
+  primaryEntitiesOnly?: boolean,
+  expandGroup = true
 ): Promise<TargetExclusion[]> => {
   if (!hasIncludedTargets(exclude)) {
     return [];
@@ -119,7 +124,7 @@ export const resolveItemExclusions = async (
   const explained = await explainTargetExclude(
     hass.callWS,
     { [`${item.type}_id`]: [item.id], exclude },
-    true,
+    expandGroup,
     primaryEntitiesOnly
   );
   return (

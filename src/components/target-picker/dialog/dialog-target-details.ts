@@ -74,7 +74,8 @@ class DialogTargetDetails extends LitElement implements HassDialog {
         params.exclude,
         params.selector
           ? params.selector.target?.primary_entities_only
-          : params.primaryEntitiesOnly
+          : params.primaryEntitiesOnly,
+        params.expandGroup
       );
     } catch (_err) {
       // The details still show the target, only without what is excluded.

@@ -34,6 +34,7 @@ import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/entity/state-badge";
 import { showTargetDetailsDialog } from "../../../../components/target-picker/dialog/show-dialog-target-details";
+import { targetExpandGroupContext } from "../../../../components/target-picker/target-expand-group-context";
 import type { ConfigEntry } from "../../../../data/config_entries";
 import {
   apiContext,
@@ -109,6 +110,9 @@ export class HaAutomationRowTargets extends LitElement {
 
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: ContextType<typeof connectionContext>;
+
+  @consume({ context: targetExpandGroupContext, subscribe: true })
+  private _expandGroup?: boolean;
 
   @state()
   @consume({ context: statesContext, subscribe: true })
@@ -724,6 +728,7 @@ export class HaAutomationRowTargets extends LitElement {
       itemId: targetId,
       selector: this.selector,
       exclude: this._getExclude(),
+      expandGroup: this._expandGroup,
     });
   }
 

@@ -1,5 +1,9 @@
-import type { ReactiveController, ReactiveControllerHost } from "lit";
+import type { ReactiveControllerHost } from "lit";
 import memoizeOne from "memoize-one";
+import {
+  consumeContext,
+  ContextController,
+} from "../../common/decorators/consume";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import {
   explainTargetExclude,
@@ -11,6 +15,7 @@ import {
 import type { HomeAssistant } from "../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import { filterTargetEntries } from "./filter-target-entries";
+import { targetExpandGroupContext } from "./target-expand-group-context";
 import {
   computeExclusionsPerTarget,
   hasIncludedTargets,
@@ -20,22 +25,23 @@ import {
   type TargetExclusions,
 } from "./target-exclusions";
 
-export type TargetExclusionsHost = ReactiveControllerHost & {
-  hass: HomeAssistant;
-  value?: HassServiceTargetWithExclude;
-  allowExclude: boolean;
-  primaryEntitiesOnly?: boolean;
-  deviceFilter?: HaDevicePickerDeviceFilterFunc;
-  entityFilter?: HaEntityPickerEntityFilterFunc;
-  includeDomains?: string[];
-  includeDeviceClasses?: string[];
-};
+export type TargetExclusionsHost = ReactiveControllerHost &
+  HTMLElement & {
+    hass: HomeAssistant;
+    value?: HassServiceTargetWithExclude;
+    allowExclude: boolean;
+    primaryEntitiesOnly?: boolean;
+    deviceFilter?: HaDevicePickerDeviceFilterFunc;
+    entityFilter?: HaEntityPickerEntityFilterFunc;
+    includeDomains?: string[];
+    includeDeviceClasses?: string[];
+  };
 
 /**
  * What the exclusions of a target picker's value take out of each of its
  * targets, as core resolves them, narrowed to what the picker's rows show.
  */
-export class TargetExclusionsController implements ReactiveController {
+export class TargetExclusionsController extends ContextController {
   /** What each exclusion takes out of each target, worked out from the value. */
   public exclusions?: TargetExclusions;
 
@@ -47,6 +53,10 @@ export class TargetExclusionsController implements ReactiveController {
 
   private _host: TargetExclusionsHost;
 
+  // Whether the target expands the groups it names, like an action does.
+  @consumeContext({ context: targetExpandGroupContext, subscribe: true })
+  private _expandGroup?: boolean;
+
   private _request = 0;
 
   // What each target item resolves to, so a change only asks core about the
@@ -54,12 +64,12 @@ export class TargetExclusionsController implements ReactiveController {
   private _itemEntries = new Map<string, Promise<ExtractFromTargetResult>>();
 
   constructor(host: TargetExclusionsHost) {
+    super(host);
     this._host = host;
-    host.addController(this);
   }
 
-  public hostConnected() {
-    // Nothing to set up; results come from `resolve`.
+  protected contextUpdated() {
+    this.resolve();
   }
 
   /**
@@ -96,7 +106,7 @@ export class TargetExclusionsController implements ReactiveController {
         explainTargetExclude(
           hass.callWS,
           value,
-          true,
+          this._expandGroup ?? true,
           this._host.primaryEntitiesOnly ?? true
         ),
         this._narrow(targetItems(value)),
@@ -153,7 +163,7 @@ export class TargetExclusionsController implements ReactiveController {
     const explained = await explainTargetExclude(
       hass.callWS,
       { ...include, exclude: { [`${item.type}_id`]: [item.id] } },
-      true,
+      this._expandGroup ?? true,
       this._host.primaryEntitiesOnly ?? true
     );
     return computeExclusionsPerTarget(explained, this.exclusions?.included)

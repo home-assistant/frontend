@@ -25,6 +25,11 @@ export interface TargetDetailsDialogParams {
    */
   exclude?: HassServiceTarget;
   /**
+   * Whether the target expands the groups it names when it is used, like an
+   * action does and a trigger or condition doesn't. Defaults to `true`.
+   */
+  expandGroup?: boolean;
+  /**
    * What excluding `item` would take out of this target, worked out by core
    * with the rest of the target value, so it is also known whether it
    * affects another target.
