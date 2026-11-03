@@ -268,7 +268,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                     this._i18n?.localize("ui.common.loading")
                   )}
                   @transitionend=${this._skeletonTransitionEnd}
-                  @transitioncancel=${this._skeletonTransitionEnd}
+                  @transitioncancel=${this._skeletonTransitionCancel}
                 ></ha-skeleton>`
               : nothing
           }
@@ -366,6 +366,14 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   private _skeletonTransitionEnd() {
     if (!this.loading) {
       this._skeletonShown = false;
+    }
+  }
+
+  private _skeletonTransitionCancel() {
+    // A fade-in cut short by loading ending turns into the fade-out, so wait
+    // for that to end unless there is nothing left to fade
+    if (!this._skeleton || getComputedStyle(this._skeleton).opacity === "0") {
+      this._skeletonTransitionEnd();
     }
   }
 
