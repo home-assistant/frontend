@@ -676,6 +676,9 @@ class MoreInfoUpdate extends LitElement {
       padding-bottom: var(--ha-space-4);
       box-sizing: border-box;
     }
+    .release-notes-message ha-markdown {
+      padding-bottom: 0;
+    }
     ha-markdown.rtl {
       direction: rtl;
     }
