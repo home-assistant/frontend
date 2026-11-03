@@ -175,7 +175,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   // Only the newest request counts, also one for the same repository
   private _request = 0;
 
-  private _settingPreReleases = false;
+  private _settingPreReleases = new Set<string>();
 
   protected async firstUpdated(
     changedProperties: PropertyValues<this>
@@ -350,12 +350,12 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
   // Core fetches the repository from GitHub again before answering
   public async includePreReleases(include: boolean): Promise<void> {
-    if (this._settingPreReleases) {
+    const repositoryId = this._repository!.id;
+    if (this._settingPreReleases.has(repositoryId)) {
       return;
     }
-    const repositoryId = this._repository!.id;
     this._repository = { ...this._repository!, beta: include };
-    this._settingPreReleases = true;
+    this._settingPreReleases.add(repositoryId);
 
     try {
       await setMarketplaceRepositoryBeta(this._api, repositoryId, include);
@@ -365,7 +365,7 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
       }
       throw err;
     } finally {
-      this._settingPreReleases = false;
+      this._settingPreReleases.delete(repositoryId);
     }
 
     if (this._repository?.id === repositoryId) {
