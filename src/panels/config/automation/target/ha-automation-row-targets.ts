@@ -251,17 +251,22 @@ export class HaAutomationRowTargets extends LitElement {
       this._excludedEntityIds = new Set();
       return;
     }
-    const request = extractFromTarget(
-      this._api.callWS,
-      { entity_id: entityIds, exclude },
-      this.expandGroups,
-      false
-    )
-      .then((result) => {
-        const remaining = new Set(result.referenced_entities);
-        return new Set(entityIds.filter((id) => !remaining.has(id)));
-      })
-      .catch(() => new Set<string>());
+    // Each entity on its own, as an expanded group is replaced by its members.
+    // It is excluded when nothing of it is left.
+    const request = Promise.all(
+      entityIds.map((entityId) =>
+        extractFromTarget(
+          this._api.callWS,
+          { entity_id: [entityId], exclude },
+          this.expandGroups,
+          false
+        )
+          .then((result) => !result.referenced_entities.length)
+          .catch(() => false)
+      )
+    ).then(
+      (excluded) => new Set(entityIds.filter((_id, index) => excluded[index]))
+    );
     this._excludedEntitiesRequest = request;
     const excluded = await request;
 

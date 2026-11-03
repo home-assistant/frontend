@@ -110,25 +110,70 @@ export const expandTarget = (
   };
 };
 
+// Replaces group entities by their members, like core's expand_entity_ids
+const expandGroupIds = (
+  hass: MockHomeAssistant,
+  entityIds: string[],
+  includeGroups: boolean,
+  found = new Set<string>()
+): string[] => {
+  for (const entityId of entityIds) {
+    const members = hass.states[entityId]?.attributes.entity_id;
+    if (!Array.isArray(members)) {
+      found.add(entityId);
+      continue;
+    }
+    if (found.has(entityId)) {
+      continue;
+    }
+    if (includeGroups) {
+      found.add(entityId);
+    }
+    expandGroupIds(
+      hass,
+      members.filter((id) => id !== entityId),
+      includeGroups,
+      found
+    );
+  }
+  return [...found];
+};
+
 export const mockExtractFromTarget = (hass: MockHomeAssistant) =>
   hass.mockWS(
     "extract_from_target",
     (
       msg: {
         target: HassServiceTargetWithExclude;
+        expand_group?: boolean;
         primary_entities_only?: boolean;
       },
       currentHass: MockHomeAssistant
     ): ExtractFromTargetResult => {
       const { exclude, ...target } = msg.target;
+      // Excluded groups are kept alongside their members, like in core
+      const withGroupsExpanded = (
+        value: HassServiceTarget,
+        includeGroups: boolean
+      ): HassServiceTarget =>
+        msg.expand_group && value.entity_id
+          ? {
+              ...value,
+              entity_id: expandGroupIds(
+                currentHass,
+                ensureArray(value.entity_id),
+                includeGroups
+              ),
+            }
+          : value;
       const { areas, devices, entities, missing } = expandTarget(
         currentHass,
-        target,
+        withGroupsExpanded(target, false),
         msg.primary_entities_only ?? true
       );
       // Like core, what the exclude resolves to is taken out again
       const excluded = exclude
-        ? expandTarget(currentHass, exclude, false)
+        ? expandTarget(currentHass, withGroupsExpanded(exclude, true), false)
         : { areas: [], devices: [], entities: [] };
       const without = (ids: string[], removed: string[]) =>
         ids.filter((id) => !removed.includes(id));

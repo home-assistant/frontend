@@ -405,7 +405,8 @@ export default class HaAutomationActionRow extends LitElement {
                 target,
                 actionHasTarget && !this._isNew,
                 serviceTargetSpec,
-                type !== "device_id"
+                type !== "device_id",
+                actionHasTarget
               )
             : nothing
         }
@@ -853,14 +854,15 @@ export default class HaAutomationActionRow extends LitElement {
       target?: HassServiceTarget,
       targetRequired = false,
       targetSpec?: TargetSelector["target"],
-      interactive = false
+      interactive = false,
+      expandGroups = false
     ) =>
       html`<ha-automation-row-targets
         .target=${target}
         .targetRequired=${targetRequired}
         .selector=${targetSpec ? { target: targetSpec } : undefined}
         .interactive=${interactive}
-        expand-groups
+        .expandGroups=${expandGroups}
       ></ha-automation-row-targets>`
   );
 
