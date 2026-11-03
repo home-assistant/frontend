@@ -179,6 +179,69 @@ describe("computeExclusionsPerTarget", () => {
     });
     expect(included["area:kitchen"]).toEqual(kitchen.entities);
   });
+
+  // An action replaces `group.downstairs` by its members.
+  const downstairs = {
+    type: "entity" as const,
+    id: "group.downstairs",
+    entities: ["light.hall", "light.stairs"],
+  };
+
+  it("counts a targeted group as out once all its members are", () => {
+    const { perTarget } = computeExclusionsPerTarget({
+      includes: [downstairs],
+      excludes: [
+        {
+          type: "entity",
+          id: "light.hall",
+          removed: [{ ...downstairs, entities: ["light.hall"] }],
+        },
+        {
+          type: "entity",
+          id: "light.stairs",
+          removed: [{ ...downstairs, entities: ["light.stairs"] }],
+        },
+      ],
+    });
+
+    // The group's row is the group itself, so that is what is out.
+    expect(perTarget["entity:group.downstairs"]).toEqual([
+      {
+        type: "entity",
+        id: "light.hall",
+        removed: ["group.downstairs"],
+        shared: false,
+      },
+      {
+        type: "entity",
+        id: "light.stairs",
+        removed: ["group.downstairs"],
+        shared: false,
+      },
+    ]);
+  });
+
+  it("leaves a targeted group in while some of its members are", () => {
+    const { perTarget } = computeExclusionsPerTarget({
+      includes: [downstairs],
+      excludes: [
+        {
+          type: "entity",
+          id: "light.hall",
+          removed: [{ ...downstairs, entities: ["light.hall"] }],
+        },
+      ],
+    });
+
+    expect(perTarget["entity:group.downstairs"]).toEqual([
+      {
+        type: "entity",
+        id: "light.hall",
+        removed: ["light.hall"],
+        shared: false,
+      },
+    ]);
+  });
 });
 
 describe("exclude editing", () => {

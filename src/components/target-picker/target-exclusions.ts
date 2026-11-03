@@ -103,6 +103,32 @@ export const computeExclusionsPerTarget = (
     });
   });
 
+  // An action replaces a group it targets directly by its members, but the
+  // group's row is the group itself. Once every member is out, so is the
+  // group, and each exclusion counts it like its row does.
+  explained.includes.forEach((include) => {
+    const key = targetItemKey(include);
+    const exclusions = perTarget[key];
+    const members = included[key];
+    if (
+      include.type !== "entity" ||
+      !exclusions ||
+      !members.length ||
+      members.includes(include.id)
+    ) {
+      return;
+    }
+    const removed = new Set(
+      exclusions.flatMap((exclusion) => exclusion.removed)
+    );
+    if (members.every((entityId) => removed.has(entityId))) {
+      perTarget[key] = exclusions.map((exclusion) => ({
+        ...exclusion,
+        removed: [include.id],
+      }));
+    }
+  });
+
   return { perTarget, noEffect, included };
 };
 
