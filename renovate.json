@@ -13,6 +13,9 @@
   "enabledManagers": ["npm", "nvm", "custom.regex", "github-actions"],
   "minimumReleaseAge": "3 days",
   "postUpdateOptions": ["pnpmDedupe"],
+  "constraints": {
+    "ghActionsLock": "v0.4.1"
+  },
   "lockFileMaintenance": {
     "description": ["Run after patch releases but before next beta"],
     "enabled": true,
@@ -60,10 +63,16 @@
       "extractVersionTemplate": "^v(?<version>.+)$"
     },
     {
-      "description": "Keep gh-actions-lock used in CI up to date",
+      "description": "Keep gh-actions-lock in CI and Renovate's lockfile generator on the same version",
       "customType": "regex",
-      "managerFilePatterns": ["/^\\.github/workflows/actions-lock\\.yaml$/"],
-      "matchStrings": ["GH_ACTIONS_LOCK_VERSION: (?<currentValue>\\S+)"],
+      "managerFilePatterns": [
+        "/^\\.github/workflows/actions-lock\\.yaml$/",
+        "/^renovate\\.json$/"
+      ],
+      "matchStrings": [
+        "GH_ACTIONS_LOCK_VERSION: (?<currentValue>v\\d+\\.\\d+\\.\\d+)",
+        "\"ghActionsLock\": \"(?<currentValue>v\\d+\\.\\d+\\.\\d+)\""
+      ],
       "depNameTemplate": "github/gh-actions-lock",
       "datasourceTemplate": "github-releases"
     },

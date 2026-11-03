@@ -25,7 +25,7 @@ jobs:
     name: Verify actions lockfile
     runs-on: ubuntu-latest
     env:
-      GH_ACTIONS_LOCK_VERSION: v0.4.0
+      GH_ACTIONS_LOCK_VERSION: v0.4.1
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
