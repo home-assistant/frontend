@@ -860,6 +860,7 @@ export default class HaAutomationActionRow extends LitElement {
         .targetRequired=${targetRequired}
         .selector=${targetSpec ? { target: targetSpec } : undefined}
         .interactive=${interactive}
+        expand-groups
       ></ha-automation-row-targets>`
   );
 

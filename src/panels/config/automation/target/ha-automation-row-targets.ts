@@ -116,6 +116,9 @@ export class HaAutomationRowTargets extends LitElement {
 
   @state() private _compositeSplits?: DeviceCompositeSplits;
 
+  @property({ type: Boolean, attribute: "expand-groups" })
+  public expandGroups = false;
+
   private _loadingCompositeSplits = false;
 
   private _countCache = new Map<
@@ -123,10 +126,10 @@ export class HaAutomationRowTargets extends LitElement {
     Promise<TargetCount | undefined> | TargetCount | undefined
   >();
 
-  // What the target's `exclude` resolves to, shared by every count.
-  private _excludedEntities?: Promise<Set<string>>;
+  // The latest lookup of which entity targets the `exclude` takes out.
+  private _excludedEntitiesRequest?: Promise<Set<string>>;
 
-  // The same, once resolved, to mark excluded entity targets.
+  // Its result, to mark excluded entity targets.
   @state() private _excludedEntityIds = new Set<string>();
 
   private _rerenderCount = true;
@@ -139,7 +142,6 @@ export class HaAutomationRowTargets extends LitElement {
       changedProps.has("_registries")
     ) {
       this._rerenderCount = true;
-      this._excludedEntities = undefined;
       this._resolveExcludedEntityIds();
     }
 
@@ -238,35 +240,34 @@ export class HaAutomationRowTargets extends LitElement {
   }
 
   private async _resolveExcludedEntityIds() {
-    if (!this._api || !this._getExclude()) {
+    const exclude = this._getExclude();
+    const entityIds = (
+      isConfigObject(this.target) && this.target.entity_id
+        ? ensureArray(this.target.entity_id)
+        : []
+    ).filter((id) => !isTemplate(id) && !["all", "none"].includes(id));
+    if (!this._api || !exclude || !entityIds.length) {
+      this._excludedEntitiesRequest = undefined;
       this._excludedEntityIds = new Set();
       return;
     }
-    const request = this._getExcludedEntities();
+    const request = extractFromTarget(
+      this._api.callWS,
+      { entity_id: entityIds, exclude },
+      this.expandGroups,
+      false
+    )
+      .then((result) => {
+        const remaining = new Set(result.referenced_entities);
+        return new Set(entityIds.filter((id) => !remaining.has(id)));
+      })
+      .catch(() => new Set<string>());
+    this._excludedEntitiesRequest = request;
     const excluded = await request;
-    // A newer target started its own lookup in the meantime.
-    if (request === this._excludedEntities) {
+
+    if (request === this._excludedEntitiesRequest) {
       this._excludedEntityIds = excluded;
     }
-  }
-
-  private _getExcludedEntities(): Promise<Set<string>> {
-    const exclude = this._getExclude();
-    if (!exclude) {
-      return Promise.resolve(new Set());
-    }
-    if (!this._excludedEntities) {
-      this._excludedEntities = extractFromTarget(
-        this._api.callWS,
-        exclude,
-        false,
-        false
-      )
-        .then((result) => new Set(result.referenced_entities))
-        // Counts then leave the exclude out rather than failing altogether.
-        .catch(() => new Set<string>());
-    }
-    return this._excludedEntities;
   }
 
   private _formatCount(count: TargetCount | undefined) {
@@ -289,25 +290,18 @@ export class HaAutomationRowTargets extends LitElement {
       }
       this._countCache.set(
         key,
-        Promise.all([
-          extractFromTarget(
-            this._api.callWS,
-            {
-              [`${targetType}_id`]: [targetId],
-            },
-            false,
-            this.selector?.target?.primary_entities_only
-          ),
-          this._getExcludedEntities(),
-        ])
-          .then(([result, excluded]): TargetCount => {
-            // Excludes are global, so anything they resolve to is taken out
-            // of this target too.
-            const remaining = result.referenced_entities.filter(
-              (entityId) => !excluded.has(entityId)
-            );
-            return { count: this._countMatchingEntities(remaining) };
-          })
+        extractFromTarget(
+          this._api.callWS,
+          {
+            [`${targetType}_id`]: [targetId],
+            exclude: this._getExclude(),
+          },
+          this.expandGroups,
+          this.selector?.target?.primary_entities_only
+        )
+          .then((result): TargetCount => ({
+            count: this._countMatchingEntities(result.referenced_entities),
+          }))
           .catch((err) => {
             // eslint-disable-next-line no-console
             console.error("Error counting target entities", err);

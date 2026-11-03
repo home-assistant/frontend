@@ -1,6 +1,9 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { ensureArray } from "../../../src/common/array/ensure-array";
-import type { ExtractFromTargetResult } from "../../../src/data/target";
+import type {
+  ExtractFromTargetResult,
+  HassServiceTargetWithExclude,
+} from "../../../src/data/target";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { getLabelIds } from "./label_registry";
 
@@ -111,22 +114,32 @@ export const mockExtractFromTarget = (hass: MockHomeAssistant) =>
   hass.mockWS(
     "extract_from_target",
     (
-      msg: { target: HassServiceTarget; primary_entities_only?: boolean },
+      msg: {
+        target: HassServiceTargetWithExclude;
+        primary_entities_only?: boolean;
+      },
       currentHass: MockHomeAssistant
     ): ExtractFromTargetResult => {
+      const { exclude, ...target } = msg.target;
       const { areas, devices, entities, missing } = expandTarget(
         currentHass,
-        msg.target,
+        target,
         msg.primary_entities_only ?? true
       );
+      // Like core, what the exclude resolves to is taken out again
+      const excluded = exclude
+        ? expandTarget(currentHass, exclude, false)
+        : { areas: [], devices: [], entities: [] };
+      const without = (ids: string[], removed: string[]) =>
+        ids.filter((id) => !removed.includes(id));
       return {
         missing_areas: missing.areas,
         missing_devices: missing.devices,
         missing_floors: missing.floors,
         missing_labels: missing.labels,
-        referenced_areas: areas,
-        referenced_devices: devices,
-        referenced_entities: entities,
+        referenced_areas: without(areas, excluded.areas),
+        referenced_devices: without(devices, excluded.devices),
+        referenced_entities: without(entities, excluded.entities),
       };
     }
   );

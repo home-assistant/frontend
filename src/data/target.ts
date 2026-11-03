@@ -60,7 +60,7 @@ export interface ExtractFromTargetResultReferenced {
 
 export const extractFromTarget = async (
   callWS: CallWS,
-  target: HassServiceTarget,
+  target: HassServiceTargetWithExclude,
   expandGroup = false,
   primaryEntitiesOnly = true
 ) => {
