@@ -202,10 +202,10 @@ const ENTITIES = [
     },
   },
   {
-    entity_id: "fan.tmp_on_off_fan",
+    entity_id: "fan.on_off_fan",
     state: "on",
     attributes: {
-      friendly_name: "TMP on/off fan",
+      friendly_name: "Bathroom fan",
       device_class: "fan",
       percentage: 100,
       percentage_step: 100,
@@ -463,11 +463,10 @@ const CONFIGS = [
     },
   },
   {
-    heading:
-      "TMP fan speed feature (off/on, slider style forced to button style)",
+    heading: "Fan speed feature (off/on, slider style falls back to buttons)",
     config: {
       type: "tile",
-      entity: "fan.tmp_on_off_fan",
+      entity: "fan.on_off_fan",
       features: [{ type: "fan-speed", style: "slider" }],
     },
   },
