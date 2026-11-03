@@ -213,7 +213,11 @@ class HuiWaterFlowSankeyCard
     // - 0 sources: home node (value = sum of device values, computed later)
     // - 1 source: that source node is the root (no home node)
     // - >1 sources: home node aggregates all sources
-    const showHomeNode = waterSources.length !== 1;
+    // - combined sources: one summed source node is the root (no home node)
+    const combineSources =
+      waterSources.length > 1 &&
+      (this._config.combine_sources ?? this._data.combineSources ?? false);
+    const showHomeNode = !combineSources && waterSources.length !== 1;
     let rootNodeId: string;
 
     if (showHomeNode) {
@@ -247,6 +251,17 @@ class HuiWaterFlowSankeyCard
       };
       nodes.push(homeNode);
       rootNodeId = "home";
+    } else if (combineSources) {
+      nodes.push({
+        id: "water_source",
+        label: this._i18n.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.water"
+        ),
+        value: totalInflow,
+        color: waterColor,
+        index: 0,
+      });
+      rootNodeId = "water_source";
     } else {
       // Single source: that source IS the root, no home node
       const source = waterSources[0];

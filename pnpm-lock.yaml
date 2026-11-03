@@ -167,12 +167,12 @@ overrides:
   lit-html: 3.3.3
   clean-css: 5.3.3
   '@lit/reactive-element': 2.1.2
-  tslib: 2.8.1
+  tslib: 2.9.1
 
 patchedDependencies:
   '@material/mwc-list@0.27.0': 9450e509a86887d8f68ca9cf3f81e6ed70e94e49de13c5f6f20f94519ad4a987
   echarts@6.1.0: 4c014bd1952b4d1f21311ed2212dc87192e70b6e782597ecc7a485270247bbb5
-  sortablejs@1.15.7: f2ec2ae6877dfc201c542b4f9ded1d03831258bf328ae7bba876d14ce4508a06
+  sortablejs@1.15.7: f25f02dcc8720341c3cfac312e0502081328108270852ad039187c2c5e2ea432
   tinykeys@4.0.1: cdc7ece96d53357d38ff3c124a2553f86e3a5dc333d641d223eb6f07e28275f0
   workbox-build@7.4.1: 75e6346ad8d8af554c167f77ac7d9b9652f010398efdc6b399925a4795133099
 
@@ -422,7 +422,7 @@ importers:
         version: 2.8.1
       sortablejs:
         specifier: 1.15.7
-        version: 1.15.7(patch_hash=f2ec2ae6877dfc201c542b4f9ded1d03831258bf328ae7bba876d14ce4508a06)
+        version: 1.15.7(patch_hash=f25f02dcc8720341c3cfac312e0502081328108270852ad039187c2c5e2ea432)
       stacktrace-js:
         specifier: 2.0.2
         version: 2.0.2
@@ -6452,8 +6452,8 @@ packages:
     resolution: {integrity: sha512-/+5VFTchJDoVj3bhoqi6UeymcD00DAwb1nJwamzPvHEszJ4FpF6SNNbUbOS8yI56qHzdV8eK0qEfOSiodkTdxg==}
     engines: {node: '>= 0.4'}
 
-  postcss-selector-parser@7.1.5:
-    resolution: {integrity: sha512-KvvtD7SrlBP7dlgkBghEE3r84CABm5SmV2aNcG4oCA+qDnJ/tvKonFVvwWAyyWUEwxuNawdfEAZKP9zM3oZ2Uw==}
+  postcss-selector-parser@7.1.7:
+    resolution: {integrity: sha512-wWBro/7hJ40ye6TPiXkUQoXKCw23xSsjriUvqd7Uls9Sso3oLiON1flc18cCdnjgCRXw4fBVqUJJeOdDTh3P3g==}
     engines: {node: '>=4'}
 
   postcss@8.5.31:
@@ -7258,8 +7258,8 @@ packages:
       typescript:
         optional: true
 
-  tslib@2.8.1:
-    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
+  tslib@2.9.1:
+    resolution: {integrity: sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA==}
 
   tuf-js@4.1.0:
     resolution: {integrity: sha512-50QV99kCKH5P/Vs4E2Gzp7BopNV+KzTXqWeaxrfu5IQJBOULRsTIS9seSsOVT8ZnGXzCyx55nYWAi4qJzpZKEQ==}
@@ -9138,7 +9138,7 @@ snapshots:
   '@bundle-stats/plugin-webpack-filter@4.22.3(core-js@3.51.0)':
     dependencies:
       core-js: 3.51.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@cacheable/memory@2.2.0':
     dependencies:
@@ -9299,33 +9299,33 @@ snapshots:
   '@emnapi/core@1.10.0':
     dependencies:
       '@emnapi/wasi-threads': 1.2.1
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@emnapi/core@1.11.3':
     dependencies:
       '@emnapi/wasi-threads': 1.2.3
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@emnapi/runtime@1.10.0':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@emnapi/runtime@1.11.3':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@emnapi/wasi-threads@1.2.1':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@emnapi/wasi-threads@1.2.3':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@eslint-community/eslint-utils@4.10.1(eslint@10.14.0(supports-color@8.1.1))':
@@ -9391,11 +9391,11 @@ snapshots:
       '@formatjs/fast-memoize': 2.2.7
       '@formatjs/intl-localematcher': 0.6.1
       decimal.js: 10.6.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@formatjs/fast-memoize@2.2.7':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@formatjs/fast-memoize@3.1.7': {}
 
@@ -9403,7 +9403,7 @@ snapshots:
     dependencies:
       '@formatjs/ecma402-abstract': 2.3.4
       '@formatjs/icu-skeleton-parser': 1.8.14
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@formatjs/icu-messageformat-parser@3.5.22':
     dependencies:
@@ -9412,7 +9412,7 @@ snapshots:
   '@formatjs/icu-skeleton-parser@1.8.14':
     dependencies:
       '@formatjs/ecma402-abstract': 2.3.4
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@formatjs/icu-skeleton-parser@2.1.12': {}
 
@@ -9447,7 +9447,7 @@ snapshots:
 
   '@formatjs/intl-localematcher@0.6.1':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@formatjs/intl-numberformat@9.5.0':
     dependencies:
@@ -9473,7 +9473,7 @@ snapshots:
       '@formatjs/fast-memoize': 2.2.7
       '@formatjs/icu-messageformat-parser': 2.11.2
       intl-messageformat: 10.7.16
-      tslib: 2.8.1
+      tslib: 2.9.1
     optionalDependencies:
       typescript: 6.0.3
 
@@ -9765,7 +9765,7 @@ snapshots:
   '@lit-labs/virtualizer@2.1.1':
     dependencies:
       lit: 3.3.3
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@lit/context@1.1.6':
     dependencies:
@@ -9830,24 +9830,24 @@ snapshots:
 
   '@material/animation@14.0.0-canary.53b3cad2f.0':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/base@14.0.0-canary.53b3cad2f.0':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/density@14.0.0-canary.53b3cad2f.0':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/dom@14.0.0-canary.53b3cad2f.0':
     dependencies:
       '@material/feature-targeting': 14.0.0-canary.53b3cad2f.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/feature-targeting@14.0.0-canary.53b3cad2f.0':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/focus-ring@14.0.0-canary.53b3cad2f.0':
     dependencies:
@@ -9866,21 +9866,21 @@ snapshots:
       '@material/shape': 14.0.0-canary.53b3cad2f.0
       '@material/theme': 14.0.0-canary.53b3cad2f.0
       '@material/typography': 14.0.0-canary.53b3cad2f.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/mwc-base@0.27.0':
     dependencies:
       '@material/base': 14.0.0-canary.53b3cad2f.0
       '@material/dom': 14.0.0-canary.53b3cad2f.0
       lit: 3.3.3
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/mwc-checkbox@0.27.0':
     dependencies:
       '@material/mwc-base': 0.27.0
       '@material/mwc-ripple': 0.27.0
       lit: 3.3.3
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/mwc-list@0.27.0(patch_hash=9450e509a86887d8f68ca9cf3f81e6ed70e94e49de13c5f6f20f94519ad4a987)':
     dependencies:
@@ -9892,7 +9892,7 @@ snapshots:
       '@material/mwc-radio': 0.27.0
       '@material/mwc-ripple': 0.27.0
       lit: 3.3.3
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/mwc-radio@0.27.0':
     dependencies:
@@ -9900,7 +9900,7 @@ snapshots:
       '@material/mwc-ripple': 0.27.0
       '@material/radio': 14.0.0-canary.53b3cad2f.0
       lit: 3.3.3
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/mwc-ripple@0.27.0':
     dependencies:
@@ -9908,7 +9908,7 @@ snapshots:
       '@material/mwc-base': 0.27.0
       '@material/ripple': 14.0.0-canary.53b3cad2f.0
       lit: 3.3.3
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/radio@14.0.0-canary.53b3cad2f.0':
     dependencies:
@@ -9921,7 +9921,7 @@ snapshots:
       '@material/ripple': 14.0.0-canary.53b3cad2f.0
       '@material/theme': 14.0.0-canary.53b3cad2f.0
       '@material/touch-target': 14.0.0-canary.53b3cad2f.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/ripple@14.0.0-canary.53b3cad2f.0':
     dependencies:
@@ -9931,37 +9931,37 @@ snapshots:
       '@material/feature-targeting': 14.0.0-canary.53b3cad2f.0
       '@material/rtl': 14.0.0-canary.53b3cad2f.0
       '@material/theme': 14.0.0-canary.53b3cad2f.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/rtl@14.0.0-canary.53b3cad2f.0':
     dependencies:
       '@material/theme': 14.0.0-canary.53b3cad2f.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/shape@14.0.0-canary.53b3cad2f.0':
     dependencies:
       '@material/feature-targeting': 14.0.0-canary.53b3cad2f.0
       '@material/rtl': 14.0.0-canary.53b3cad2f.0
       '@material/theme': 14.0.0-canary.53b3cad2f.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/theme@14.0.0-canary.53b3cad2f.0':
     dependencies:
       '@material/feature-targeting': 14.0.0-canary.53b3cad2f.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/touch-target@14.0.0-canary.53b3cad2f.0':
     dependencies:
       '@material/base': 14.0.0-canary.53b3cad2f.0
       '@material/feature-targeting': 14.0.0-canary.53b3cad2f.0
       '@material/rtl': 14.0.0-canary.53b3cad2f.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@material/typography@14.0.0-canary.53b3cad2f.0':
     dependencies:
       '@material/feature-targeting': 14.0.0-canary.53b3cad2f.0
       '@material/theme': 14.0.0-canary.53b3cad2f.0
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@mdi/js@7.4.47': {}
 
@@ -10218,7 +10218,7 @@ snapshots:
 
   '@npmcli/query@5.0.0':
     dependencies:
-      postcss-selector-parser: 7.1.5
+      postcss-selector-parser: 7.1.7
 
   '@npmcli/redact@4.0.0': {}
 
@@ -10846,7 +10846,7 @@ snapshots:
 
   '@swc/helpers@0.5.23':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   '@thepassle/axobject-query@4.0.0':
     dependencies:
@@ -10958,7 +10958,7 @@ snapshots:
 
   '@tybys/wasm-util@0.10.3':
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
     optional: true
 
   '@types/babel__plugin-transform-runtime@7.9.5': {}
@@ -11804,7 +11804,7 @@ snapshots:
   camel-case@4.1.2:
     dependencies:
       pascal-case: 3.1.2
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   camelcase@5.3.1: {}
 
@@ -12184,7 +12184,7 @@ snapshots:
   dot-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   dunder-proto@1.0.1:
     dependencies:
@@ -12216,7 +12216,7 @@ snapshots:
 
   echarts@6.1.0(patch_hash=4c014bd1952b4d1f21311ed2212dc87192e70b6e782597ecc7a485270247bbb5):
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
       zrender: 6.1.0
 
   ejs@3.1.10:
@@ -13137,7 +13137,7 @@ snapshots:
       '@formatjs/ecma402-abstract': 2.3.4
       '@formatjs/fast-memoize': 2.2.7
       '@formatjs/icu-messageformat-parser': 2.11.2
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   intl-messageformat@12.1.4:
     dependencies:
@@ -13628,7 +13628,7 @@ snapshots:
 
   lower-case@2.0.2:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   lru-cache@11.5.3: {}
 
@@ -13849,7 +13849,7 @@ snapshots:
   no-case@3.0.4:
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   node-domexception@1.0.0: {}
 
@@ -14170,7 +14170,7 @@ snapshots:
   param-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   parse-conflict-json@5.0.1:
     dependencies:
@@ -14220,7 +14220,7 @@ snapshots:
   pascal-case@3.1.2:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   path-browserify@1.0.1: {}
 
@@ -14289,7 +14289,7 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-selector-parser@7.1.5:
+  postcss-selector-parser@7.1.7:
     dependencies:
       cssesc: 3.0.0
       util-deprecate: 1.0.2
@@ -14566,7 +14566,7 @@ snapshots:
 
   rrule@2.8.1:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   rslog@2.3.0: {}
 
@@ -14809,7 +14809,7 @@ snapshots:
       ip-address: 10.7.2
       smart-buffer: 4.2.0
 
-  sortablejs@1.15.7(patch_hash=f2ec2ae6877dfc201c542b4f9ded1d03831258bf328ae7bba876d14ce4508a06): {}
+  sortablejs@1.15.7(patch_hash=f25f02dcc8720341c3cfac312e0502081328108270852ad039187c2c5e2ea432): {}
 
   source-map-js@1.2.2: {}
 
@@ -15176,7 +15176,7 @@ snapshots:
     optionalDependencies:
       typescript: 6.0.3
 
-  tslib@2.8.1: {}
+  tslib@2.9.1: {}
 
   tuf-js@4.1.0(supports-color@8.1.1):
     dependencies:
@@ -15872,7 +15872,7 @@ snapshots:
 
   zrender@6.1.0:
     dependencies:
-      tslib: 2.8.1
+      tslib: 2.9.1
 
   zxing-wasm@3.1.6:
     dependencies:

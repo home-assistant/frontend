@@ -39,7 +39,7 @@ jobs:
         uses: home-assistant/actions/helpers/verify-version@86d4564712fa02543c808e3a693dd04f9d3f8361 # master
 
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           immutable: false
           cache: false
@@ -146,7 +146,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           immutable: false
           cache: false

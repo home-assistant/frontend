@@ -165,7 +165,11 @@ export class MockBaseEntity {
     return {
       entity_id: this.entityId,
       state: this.state,
+      // Every attribute of the input, like Core keeps the attributes of an
+      // integration. What the mock works out itself wins, like a light that
+      // is off having no brightness.
       attributes: {
+        ...this.attributes,
         ...this._getBaseAttributes(),
         ...this._getCapabilityAttributes(),
         ...this._getStateAttributes(),

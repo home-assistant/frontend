@@ -31,7 +31,7 @@ jobs:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           immutable: false
 
@@ -124,7 +124,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
         with:
           immutable: false
 

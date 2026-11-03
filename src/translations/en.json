@@ -1013,7 +1013,11 @@
         "no_match": "No users found for {term}",
         "user": "User",
         "add_user": "Add user",
-        "unknown": "Unknown user selected"
+        "unknown": "Unknown user selected",
+        "load_failed": "Failed to load users"
+      },
+      "generic-picker": {
+        "loading": "Loading {label}"
       },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
@@ -1059,6 +1063,7 @@
         "no_categories": "No categories available",
         "no_match": "No categories found for {term}",
         "unknown": "Unknown category selected",
+        "load_failed": "Failed to load categories",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -1115,7 +1120,8 @@
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
         "learn_more": "Learn more about statistics",
-        "unknown": "Unknown statistic selected"
+        "unknown": "Unknown statistic selected",
+        "load_failed": "Failed to load statistics"
       },
       "app-picker": {
         "app": "App",
@@ -8533,7 +8539,8 @@
             "router": "Router",
             "end_device": "End device",
             "green_power": "Green Power",
-            "offline": "Offline"
+            "offline": "Offline",
+            "unknown_parent": "Unknown parent"
           },
           "device_binding": {
             "header": "Device binding",
@@ -10104,6 +10111,7 @@
               "show_more": "Show more",
               "no_activity": "No recent activity",
               "activity_unavailable": "Activity couldn't be loaded",
+              "directions": "Directions",
               "entered": "Entered",
               "left": "Left",
               "people_in_zone": "{count, plural, =0 {No one here} one {{count} person} other {{count} people}}"
@@ -10967,8 +10975,19 @@
             "gauge": {
               "name": "Gauge",
               "needle_gauge": "Display as needle gauge",
+              "color_mode": "Color mode",
+              "color_default": "Info color",
+              "color_mode_options": {
+                "color": "Single color",
+                "severity": "Severity",
+                "segments": "Segments"
+              },
+              "segments": "Segments",
+              "segment": {
+                "from": "From",
+                "label": "Label"
+              },
               "severity": {
-                "define": "Define severity",
                 "green": "Green",
                 "red": "Red",
                 "yellow": "Yellow"
@@ -11020,6 +11039,7 @@
               "name": "Energy date picker",
               "description": "This card allows you to pick what data to show on linked statistics graphs and other energy cards.",
               "disable_compare": "Disable data comparison",
+              "show_combine_sources": "Show the combine sources option",
               "vertical_opening_direction": "Vertical opening direction",
               "vertical_opening_directions": {
                 "auto": "Automatic",
@@ -11242,6 +11262,7 @@
               "energy_date_selection": "Link to energy card collection",
               "collection_key": "Energy card collection key",
               "collection_key_description": "Optional key to connect a collection of energy cards to any matching date picker. Energy cards on this dashboard with no key will automatically be linked together.",
+              "combine_sources": "Combine sources",
               "double_tap_action": "Double tap behavior",
               "entities": "Entities",
               "entity": "Entity",
@@ -11352,9 +11373,10 @@
                 "dark": "Dark"
               },
               "map_style": "Map style",
-              "map_style_helper": "Each style has a light and a dark version. The theme mode picks which one is shown.",
+              "map_style_helper": "Most styles have a light and a dark version. The theme mode picks which one is shown.",
               "map_styles": {
                 "default": "Default",
+                "neon": "Neon",
                 "colorful": "Colorful",
                 "natural": "Natural",
                 "muted": "Muted",
@@ -12054,7 +12076,8 @@
                 "label": "Bar gauge",
                 "min": "Minimum value",
                 "max": "Maximum value",
-                "show_severity": "[%key:ui::panel::lovelace::editor::card::gauge::severity::define%]",
+                "color_mode": "[%key:ui::panel::lovelace::editor::card::gauge::color_mode%]",
+                "segments": "[%key:ui::panel::lovelace::editor::card::gauge::segments%]",
                 "green": "[%key:ui::panel::lovelace::editor::card::gauge::severity::green%]",
                 "yellow": "[%key:ui::panel::lovelace::editor::card::gauge::severity::yellow%]",
                 "red": "[%key:ui::panel::lovelace::editor::card::gauge::severity::red%]"
@@ -12282,6 +12305,7 @@
             "previous": "Previous",
             "next": "Next",
             "compare": "Compare data",
+            "combine_sources": "Combine sources",
             "download_data": "[%key:ui::panel::history::download_data%]"
           }
         },
@@ -12519,6 +12543,7 @@
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
           "created": "Created {date}",
+          "last_used": "[%key:ui::panel::profile::refresh_tokens::last_used%]",
           "confirm_delete_title": "Delete long-lived access token?",
           "confirm_delete_text": "Are you sure you want to delete the long-lived access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
@@ -13114,7 +13139,6 @@
           "install_intro": "This installs {name} version {version} in Home Assistant.",
           "update_intro": "This updates {name} from version {installed} to {version}.",
           "reinstall_intro": "This installs version {version} of {name} again.",
-          "fetching_releases": "Loading versions…",
           "no_releases": "There are no other versions to choose from.",
           "release": "Version",
           "release_warning": "To go back to an earlier version, restoring a backup is the safer way.",

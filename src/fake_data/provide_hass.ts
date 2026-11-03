@@ -5,6 +5,7 @@ import {
   invalidateThemeCache,
 } from "../common/dom/apply_themes_on_element";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeDeviceName } from "../common/entity/compute_device_name";
 import { computeEntityNameDisplayWithoutContext } from "../common/entity/compute_entity_name_display";
 import { computeFormatFunctions } from "../common/translations/entity-state";
 import { computeLocalize } from "../common/translations/localize";
@@ -46,6 +47,7 @@ import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
 import { ENTITY_COMPONENT_ICONS } from "./entity_component_icons";
 import { getEntity } from "./entities/registry";
+import type { MockBaseEntity } from "./entities/base-entity";
 import type { EntityInput } from "./entities/types";
 
 const ensureArray = <T>(val: T | T[]): T[] =>
@@ -299,6 +301,32 @@ export const provideHass = (
     });
   }
 
+  // Like Core, an entity of a device has only its own name, which follows the
+  // name of the device in its friendly name. An entity named like its device
+  // has no name of its own.
+  const registryName = (
+    ent: MockBaseEntity
+  ): Pick<EntityRegistryDisplayEntry, "name" | "has_entity_name"> => {
+    const friendlyName: string | undefined =
+      ent.attributes.friendly_name || undefined;
+    const device = ent.deviceId ? hass().devices[ent.deviceId] : undefined;
+    const deviceName = device ? computeDeviceName(device) : undefined;
+
+    if (
+      !deviceName ||
+      !friendlyName ||
+      (friendlyName !== deviceName &&
+        !friendlyName.startsWith(`${deviceName} `))
+    ) {
+      return { name: friendlyName };
+    }
+
+    return {
+      name: friendlyName.slice(deviceName.length).trim() || undefined,
+      has_entity_name: true,
+    };
+  };
+
   function addEntities(
     newEntities: EntityInput | EntityInput[],
     replace = false
@@ -322,14 +350,22 @@ export const provideHass = (
       entities[ent.entityId] = ent;
       states[ent.entityId] = ent.toState();
 
+      const name = registryName(ent);
       registry[ent.entityId] = {
         entity_id: ent.entityId,
-        name: ent.attributes.friendly_name || undefined,
+        ...name,
         icon: undefined,
         platform: ent.platform ?? "demo",
         labels: [],
         area_id: ent.areaId,
         device_id: ent.deviceId,
+        // Only follow the device when its name was split off, so a friendly
+        // name that doesn't start with it is shown as it is
+        next_name_part: ent.areaId
+          ? "area"
+          : name.has_entity_name
+            ? "device"
+            : undefined,
       } satisfies EntityRegistryDisplayEntry;
     });
     hass().updateHass({
@@ -358,15 +394,18 @@ export const provideHass = (
 
   const localLanguage = getLocalLanguage();
   const noop = () => undefined;
+  const auth = {
+    data: {
+      hassUrl: location.origin,
+    },
+  } as any;
 
   const hassObj: MockHomeAssistant = {
     // Home Assistant properties
-    auth: {
-      data: {
-        hassUrl: location.origin,
-      },
-    } as any,
+    auth,
     connection: {
+      // The map reads the URL of Home Assistant from here
+      options: { auth },
       addEventListener: noop,
       removeEventListener: noop,
       sendMessage: (msg) => {
