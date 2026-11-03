@@ -1,14 +1,17 @@
 import { mdiPencil } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { debounce } from "../../common/util/debounce";
 import { deepEqual } from "../../common/util/deep-equal";
+import "../../components/ha-button";
+import type { HaButton } from "../../components/ha-button";
 import "../../components/ha-icon-button";
 import "../../components/ha-top-app-bar-fixed";
 import {
-  fetchFrontendSystemData,
-  saveFrontendSystemData,
+  fetchFrontendSystemDataAfterSaves,
+  queueFrontendSystemDataSave,
   type SecurityFrontendSystemData,
 } from "../../data/frontend";
 import type { LovelaceStrategyViewConfig } from "../../data/lovelace/config/view";
@@ -18,7 +21,7 @@ import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
 import { generateLovelaceViewStrategy } from "../lovelace/strategies/get-strategy";
 import type { Lovelace } from "../lovelace/types";
-import { showEditSecurityDialog } from "./dialogs/show-dialog-edit-security";
+import { clearEntityVisibilityFocus } from "../lovelace/cards/hui-entity-visibility-card";
 import "../lovelace/views/hui-view";
 import "../lovelace/views/hui-view-container";
 import "../lovelace/views/hui-view-background";
@@ -41,13 +44,19 @@ class PanelSecurity extends LitElement {
 
   @state() private _config?: SecurityFrontendSystemData;
 
+  @state() private _editVisibility = false;
+
   @state() private _searchParms = new URLSearchParams(window.location.search);
+
+  @query("ha-button") private _exitEditButton?: HaButton;
 
   private _childPanelReady?: ChildPanelReady;
 
   private _loadConfigPromise?: Promise<void>;
 
   private _loadConfigRevision = 0;
+
+  private _setLovelaceRevision = 0;
 
   public willUpdate(changedProps: PropertyValues<this>) {
     super.willUpdate(changedProps);
@@ -105,7 +114,7 @@ class PanelSecurity extends LitElement {
     const revision = ++this._loadConfigRevision;
     this._config = undefined;
     try {
-      const data = await fetchFrontendSystemData(
+      const data = await fetchFrontendSystemDataAfterSaves(
         this.hass.connection,
         "security"
       );
@@ -144,14 +153,25 @@ class PanelSecurity extends LitElement {
       >
         <div slot="title">${this.hass.localize("panel.security")}</div>
         ${
-          this.hass.user?.is_admin && this._config
-            ? html`<ha-icon-button
-                slot="actionItems"
-                .path=${mdiPencil}
-                .label=${this.hass.localize("ui.panel.security.editor.title")}
-                @click=${this._editSecurity}
-              ></ha-icon-button>`
-            : nothing
+          !this.hass.user?.is_admin
+            ? nothing
+            : this._editVisibility
+              ? html`<ha-button
+                  slot="actionItems"
+                  appearance="filled"
+                  size="s"
+                  @click=${this._stopEditVisibility}
+                >
+                  ${this.hass.localize("ui.panel.lovelace.menu.exit_edit_mode")}
+                </ha-button>`
+              : this._config
+                ? html`<ha-icon-button
+                    slot="actionItems"
+                    .path=${mdiPencil}
+                    .label=${this.hass.localize("ui.panel.security.editor.title")}
+                    @click=${this._startEditVisibility}
+                  ></ha-icon-button>`
+                : nothing
         }
         ${
           this._lovelace
@@ -164,6 +184,10 @@ class PanelSecurity extends LitElement {
                     .narrow=${this.narrow}
                     .lovelace=${this._lovelace}
                     .index=${this._viewIndex}
+                    @entity-visibility-changed=${this._visibilityChanged}
+                    @entity-favorite-changed=${this._favoriteChanged}
+                    @entity-alert-changed=${this._alertChanged}
+                    @entity-visibility-focus-lost=${this._focusLost}
                   ></hui-view
                 ></hui-view-container>
               `
@@ -173,7 +197,8 @@ class PanelSecurity extends LitElement {
     `;
   }
 
-  private async _setLovelace() {
+  private async _setLovelace(force = false) {
+    const revision = ++this._setLovelaceRevision;
     if (this._loadConfigPromise) {
       await this._loadConfigPromise;
     }
@@ -184,15 +209,21 @@ class PanelSecurity extends LitElement {
           ...SECURITY_LOVELACE_VIEW_CONFIG.strategy,
           alert_entities: this._config?.alert_entities,
           favorite_entities: this._config?.favorite_entities,
+          hidden_entities: this._config?.hidden_entities,
+          edit_visibility: this._editVisibility || undefined,
         },
       },
       this.hass
     );
 
+    if (revision !== this._setLovelaceRevision) {
+      return;
+    }
+
     const config = { views: [viewConfig] };
     const rawConfig = { views: [SECURITY_LOVELACE_VIEW_CONFIG] };
 
-    if (deepEqual(config, this._lovelace?.config)) {
+    if (!force && deepEqual(config, this._lovelace?.config)) {
       return;
     }
 
@@ -212,23 +243,94 @@ class PanelSecurity extends LitElement {
     };
   }
 
-  private _editSecurity = () => {
-    if (!this.hass.user?.is_admin || !this._config) {
+  private _startEditVisibility = () => {
+    clearEntityVisibilityFocus();
+    this._editVisibility = true;
+    this._setLovelace();
+  };
+
+  private _stopEditVisibility = () => {
+    this._editVisibility = false;
+    if (!this._config) {
+      this._loadConfigPromise = this._loadConfig();
+    }
+    this._setLovelace();
+  };
+
+  private _focusLost = () => {
+    this._exitEditButton?.focus();
+  };
+
+  private _visibilityChanged = (
+    ev: HASSDomEvent<HASSDomEvents["entity-visibility-changed"]>
+  ) => {
+    if (!this._config) {
       return;
     }
-    showEditSecurityDialog(this, {
-      config: this._config,
-      saveConfig: async (config) => {
-        await this._saveConfig(config);
-      },
+    const { entity, hidden } = ev.detail;
+    const hiddenEntities = (this._config.hidden_entities ?? []).filter(
+      (entityId) => entityId !== entity
+    );
+    if (hidden) {
+      hiddenEntities.push(entity);
+    }
+    this._saveConfig({
+      ...this._config,
+      hidden_entities: hiddenEntities.length ? hiddenEntities : undefined,
     });
   };
 
-  private async _saveConfig(config: SecurityFrontendSystemData): Promise<void> {
-    try {
-      await saveFrontendSystemData(this.hass.connection, "security", config);
-      this._config = config;
-    } catch (err) {
+  private _favoriteChanged = (
+    ev: HASSDomEvent<HASSDomEvents["entity-favorite-changed"]>
+  ) => {
+    if (!this._config) {
+      return;
+    }
+    const { entity, favorite } = ev.detail;
+    const favoriteEntities = (this._config.favorite_entities ?? []).filter(
+      (entityId) => entityId !== entity
+    );
+    if (favorite) {
+      favoriteEntities.push(entity);
+    }
+    this._saveConfig({
+      ...this._config,
+      favorite_entities: favoriteEntities.length ? favoriteEntities : undefined,
+    });
+    this._setLovelace();
+  };
+
+  private _alertChanged = (
+    ev: HASSDomEvent<HASSDomEvents["entity-alert-changed"]>
+  ) => {
+    if (!this._config) {
+      return;
+    }
+    const { entity, severity } = ev.detail;
+    const current = this._config.alert_entities ?? [];
+    const alertEntities = !severity
+      ? current.filter((alertEntity) => alertEntity.entity !== entity)
+      : current.some((alertEntity) => alertEntity.entity === entity)
+        ? current.map((alertEntity) =>
+            alertEntity.entity === entity
+              ? { ...alertEntity, severity }
+              : alertEntity
+          )
+        : [...current, { entity, severity }];
+    this._saveConfig({
+      ...this._config,
+      alert_entities: alertEntities.length ? alertEntities : undefined,
+    });
+    this._setLovelace();
+  };
+
+  private _saveConfig(config: SecurityFrontendSystemData): Promise<void> {
+    this._config = config;
+    return queueFrontendSystemDataSave(
+      this.hass.connection,
+      "security",
+      config
+    ).catch(async (err) => {
       // eslint-disable-next-line no-console
       console.error("Failed to save security configuration:", err);
       showToast(this, {
@@ -236,12 +338,12 @@ class PanelSecurity extends LitElement {
         duration: 0,
         dismissable: true,
       });
-      throw err;
-    }
-    showToast(this, {
-      message: this.hass.localize("ui.common.successfully_saved"),
+      if (config !== this._config) {
+        return;
+      }
+      await this._loadConfig();
+      await this._setLovelace(true);
     });
-    await this._setLovelace();
   }
 
   static get styles(): CSSResultGroup {
