@@ -481,7 +481,7 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
                   this.i18n?.localize?.(
                     "ui.components.combo-box.filter_by_section",
                     { section: section.label }
-                  ) ?? section.label
+                  ) || section.label
                 }
               >
               </ha-filter-chip>`
