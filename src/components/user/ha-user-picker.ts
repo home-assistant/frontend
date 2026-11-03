@@ -48,6 +48,8 @@ class HaUserPicker extends LitElement {
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
+  @state() private _loadFailed = false;
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     if (!this.users) {
@@ -56,7 +58,18 @@ class HaUserPicker extends LitElement {
   }
 
   private async _fetchUsers() {
-    this.users = await fetchUsers(this._api.callWS);
+    this._loadFailed = false;
+
+    try {
+      this.users = await fetchUsers(this._api.callWS);
+    } catch {
+      this._loadFailed = true;
+    }
+  }
+
+  private _retryFetchUsers(ev: Event) {
+    ev.stopPropagation();
+    this._fetchUsers();
   }
 
   private usersMap = memoizeOne((users?: User[]): Map<string, User> => {
@@ -142,9 +155,16 @@ class HaUserPicker extends LitElement {
         .getItems=${this._getItems}
         .valueRenderer=${this._valueRenderer}
         .rowRenderer=${this._rowRenderer}
+        .loading=${!this._loadFailed && this.users === undefined}
+        .loadError=${
+          this._loadFailed
+            ? this._localize("ui.components.user-picker.load_failed")
+            : undefined
+        }
         .searchKeys=${SEARCH_KEYS}
         .unknownItemText=${this._localize("ui.components.user-picker.unknown")}
         @value-changed=${this._valueChanged}
+        @picker-retry=${this._retryFetchUsers}
       >
       </ha-generic-picker>
     `;

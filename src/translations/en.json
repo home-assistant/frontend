@@ -1013,7 +1013,11 @@
         "no_match": "No users found for {term}",
         "user": "User",
         "add_user": "Add user",
-        "unknown": "Unknown user selected"
+        "unknown": "Unknown user selected",
+        "load_failed": "Failed to load users"
+      },
+      "generic-picker": {
+        "loading": "Loading {label}"
       },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
@@ -1059,6 +1063,7 @@
         "no_categories": "No categories available",
         "no_match": "No categories found for {term}",
         "unknown": "Unknown category selected",
+        "load_failed": "Failed to load categories",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -1115,7 +1120,8 @@
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
         "learn_more": "Learn more about statistics",
-        "unknown": "Unknown statistic selected"
+        "unknown": "Unknown statistic selected",
+        "load_failed": "Failed to load statistics"
       },
       "app-picker": {
         "app": "App",
@@ -13131,7 +13137,6 @@
           "install_intro": "This installs {name} version {version} in Home Assistant.",
           "update_intro": "This updates {name} from version {installed} to {version}.",
           "reinstall_intro": "This installs version {version} of {name} again.",
-          "fetching_releases": "Loading versions…",
           "no_releases": "There are no other versions to choose from.",
           "release": "Version",
           "release_warning": "To go back to an earlier version, restoring a backup is the safer way.",

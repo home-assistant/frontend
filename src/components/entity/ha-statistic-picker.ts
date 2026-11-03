@@ -189,6 +189,10 @@ export class HaStatisticPicker extends LitElement {
 
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
+  @state() private _loadFailed = false;
+
+  private _statisticIdsRequest = 0;
+
   @property({ attribute: "can-edit", type: Boolean }) public canEdit?: boolean;
 
   public willUpdate(changedProps: PropertyValues<this>) {
@@ -201,9 +205,34 @@ export class HaStatisticPicker extends LitElement {
   }
 
   private async _getStatisticIds() {
-    this.statisticIds = await getStatisticIds(this._api, this.statisticTypes);
+    // Changing the statistic types starts a new request, and only the latest
+    // one may update the picker
+    const request = ++this._statisticIdsRequest;
+    this._loadFailed = false;
+
+    let statisticIds: StatisticsMetaData[];
+    try {
+      statisticIds = await getStatisticIds(this._api, this.statisticTypes);
+    } catch {
+      if (request === this._statisticIdsRequest) {
+        this._loadFailed = true;
+      }
+
+      return;
+    }
+
+    if (request !== this._statisticIdsRequest) {
+      return;
+    }
+
+    this.statisticIds = statisticIds;
     this._picker?.requestUpdate();
     this._valueRenderer = this._makeValueRenderer();
+  }
+
+  private _retryGetStatisticIds(ev: Event) {
+    ev.stopPropagation();
+    this._getStatisticIds();
   }
 
   private _getItems = () =>
@@ -589,6 +618,12 @@ export class HaStatisticPicker extends LitElement {
         .rowRenderer=${this._rowRenderer}
         .getItems=${this._getItems}
         .getAdditionalItems=${this._getAdditionalItems}
+        .loading=${!this._loadFailed && this.statisticIds === undefined}
+        .loadError=${
+          this._loadFailed
+            ? this._i18n.localize("ui.components.statistic-picker.load_failed")
+            : undefined
+        }
         .hideClearIcon=${this.hideClearIcon}
         .searchFn=${this._searchFn}
         .valueRenderer=${this._valueRenderer}
@@ -598,6 +633,7 @@ export class HaStatisticPicker extends LitElement {
           "ui.components.statistic-picker.unknown"
         )}
         @value-changed=${this._valueChanged}
+        @picker-retry=${this._retryGetStatisticIds}
       >
       </ha-generic-picker>
     `;
