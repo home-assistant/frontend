@@ -91,11 +91,13 @@ export interface UpdateReleaseNotes {
 
 export const updateReleaseNotes = (
   hass: Pick<HomeAssistant, "callWS">,
-  entityId: string
+  entityId: string,
+  language: string
 ) =>
   hass.callWS<UpdateReleaseNotes>({
     type: "update/release_notes",
     entity_id: entityId,
+    language,
   });
 
 const HOME_ASSISTANT_CORE_TITLE = "Home Assistant Core";

@@ -421,7 +421,8 @@ class MoreInfoUpdate extends LitElement {
     try {
       this._releaseNotes = await updateReleaseNotes(
         this._api,
-        this.stateObj!.entity_id
+        this.stateObj!.entity_id,
+        this._i18n.language
       );
     } catch (err: any) {
       this._error = err.message;
