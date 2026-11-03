@@ -2,15 +2,15 @@ import type {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { stateActive } from "../common/entity/state_active";
 import { supportsFeature } from "../common/entity/supports-feature";
-import type { HomeAssistantFormatters } from "../types";
-import { UNAVAILABLE } from "./entity/entity";
+import { UNAVAILABLE, UNKNOWN } from "./entity/entity";
 import { CoverEntityFeature } from "./feature/cover_entity_feature";
 
 export { CoverEntityFeature };
 
 export const DEFAULT_COVER_FAVORITE_POSITIONS = [0, 25, 75, 100];
+
+export type CoverControlMode = "position" | "tilt";
 
 export const coverSupportsPosition = (stateObj: CoverEntity) =>
   supportsFeature(stateObj, CoverEntityFeature.SET_POSITION);
@@ -113,24 +113,21 @@ export interface CoverEntity extends HassEntityBase {
   attributes: CoverEntityAttributes;
 }
 
-export function computeCoverPositionStateDisplay(
+export const coverIsMoving = (stateObj: CoverEntity) =>
+  stateObj.state === "opening" || stateObj.state === "closing";
+
+export const coverModeValue = (
   stateObj: CoverEntity,
-  formatEntityAttributeValue: HomeAssistantFormatters["formatEntityAttributeValue"],
-  position?: number
-) {
-  const statePosition = stateActive(stateObj)
-    ? (stateObj.attributes.current_position ??
-      stateObj.attributes.current_tilt_position)
-    : undefined;
-
-  const currentPosition = position ?? statePosition;
-
-  return currentPosition && currentPosition !== 100
-    ? formatEntityAttributeValue(
-        stateObj,
-        // Always use position as it's the same formatting as tilt position
-        "current_position",
-        Math.round(currentPosition)
-      )
-    : "";
-}
+  mode: CoverControlMode
+): number | undefined => {
+  if (mode === "tilt") {
+    return stateObj.attributes.current_tilt_position ?? undefined;
+  }
+  if (supportsFeature(stateObj, CoverEntityFeature.SET_POSITION)) {
+    return stateObj.attributes.current_position ?? undefined;
+  }
+  if (stateObj.state === UNKNOWN || stateObj.state === UNAVAILABLE) {
+    return undefined;
+  }
+  return stateObj.state === "closed" || stateObj.state === "opening" ? 0 : 100;
+};

@@ -2005,10 +2005,16 @@
           "copy_favorites": "Copy favorites to...",
           "copy_favorites_helper": "Select one or more covers to receive the copied favorites from this cover. Covers must support the same position controls.",
           "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
-          "switch_mode": {
-            "button": "Switch to button mode",
-            "position": "Switch to position mode"
-          },
+          "open": "Open",
+          "close": "Close",
+          "stop": "Stop",
+          "requested": "Requested {value}",
+          "requested_open": "Requested open",
+          "requested_closed": "Requested closed",
+          "currently": "Currently {value}",
+          "requested_value_text": "{value}, currently {current}",
+          "release_to_open": "Release to open",
+          "release_to_close": "Release to close",
           "favorite_position": {
             "set": "Set position to {value}",
             "edit": "Set position to {value}",
@@ -2092,8 +2098,8 @@
           "copy_favorites_helper": "Select one or more valves to receive the copied favorites from this valve.",
           "copy_favorites_entities": "[%key:ui::panel::lovelace::editor::card::generic::entities%]",
           "switch_mode": {
-            "button": "[%key:ui::dialogs::more_info_control::cover::switch_mode::button%]",
-            "position": "[%key:ui::dialogs::more_info_control::cover::switch_mode::position%]"
+            "button": "Switch to button mode",
+            "position": "Switch to position mode"
           },
           "favorite_position": {
             "set": "[%key:ui::dialogs::more_info_control::cover::favorite_position::set%]",

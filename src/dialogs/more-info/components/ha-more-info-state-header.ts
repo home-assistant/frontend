@@ -19,6 +19,8 @@ export class HaMoreInfoStateHeader extends LitElement {
 
   @property({ attribute: false }) public changedOverride?: number;
 
+  @property({ attribute: false }) public secondaryOverride?: string;
+
   @state() private _absoluteTime = false;
 
   @state()
@@ -53,28 +55,37 @@ export class HaMoreInfoStateHeader extends LitElement {
     return html`
       <p class="state">${stateDisplay}</p>
       <div class="time-row">
-        <p class="last-changed" @click=${this._toggleAbsolute}>
-          ${
-            this._absoluteTime
-              ? html`
-                  <ha-absolute-time
-                    .datetime=${
-                      this.changedOverride ?? this.stateObj.last_changed
-                    }
-                  ></ha-absolute-time>
-                `
-              : html`
-                  <ha-relative-time
-                    .datetime=${
-                      this.changedOverride ?? this.stateObj.last_changed
-                    }
-                    capitalize
-                  ></ha-relative-time>
-                `
-          }
-        </p>
+        ${
+          this.secondaryOverride
+            ? html`<p class="last-changed secondary" aria-hidden="true">
+                ${this.secondaryOverride}
+              </p>`
+            : html`<p class="last-changed" @click=${this._toggleAbsolute}>
+                ${
+                  this._absoluteTime
+                    ? html`
+                        <ha-absolute-time
+                          .datetime=${
+                            this.changedOverride ?? this.stateObj.last_changed
+                          }
+                        ></ha-absolute-time>
+                      `
+                    : html`
+                        <ha-relative-time
+                          .datetime=${
+                            this.changedOverride ?? this.stateObj.last_changed
+                          }
+                          capitalize
+                        ></ha-relative-time>
+                      `
+                }
+              </p>`
+        }
         <slot name="after-time"></slot>
       </div>
+      <span class="visually-hidden" aria-live="polite"
+        >${this.secondaryOverride ?? ""}</span
+      >
     `;
   }
 
@@ -112,6 +123,20 @@ export class HaMoreInfoStateHeader extends LitElement {
       cursor: pointer;
       user-select: none;
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+    .visually-hidden {
+      position: absolute;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      width: 1px;
+      margin: -1px;
+      padding: 0;
+      border: 0;
+    }
+    .last-changed.secondary {
+      color: var(--primary-color);
+      cursor: default;
     }
   `;
 }
