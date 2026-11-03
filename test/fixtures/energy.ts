@@ -10,6 +10,7 @@ import type {
   EnergyPreferences,
   EnergySource,
 } from "../../src/data/energy";
+import { getBatteryEnergyStatIds } from "../../src/data/energy";
 import { FIXED_EPOCH_MS } from "./history-states";
 import { generateStatistics } from "./statistics";
 
@@ -17,6 +18,8 @@ export interface EnergyPreferencesOptions {
   grid?: boolean;
   solar?: boolean;
   battery?: boolean;
+  /** A battery measured per direction, after the one with totals */
+  batteryDirections?: boolean;
   gas?: boolean;
   water?: boolean;
 }
@@ -57,6 +60,15 @@ export const generateEnergyPreferences = (
       type: "battery",
       stat_energy_from: "sensor.battery_discharge",
       stat_energy_to: "sensor.battery_charge",
+    });
+  }
+  if (options.batteryDirections) {
+    sources.push({
+      type: "battery",
+      stat_energy_from_grid: "sensor.powerwall_from_grid",
+      stat_energy_from_solar: "sensor.powerwall_from_solar",
+      stat_energy_to_home: "sensor.powerwall_to_home",
+      stat_energy_to_grid: "sensor.powerwall_to_grid",
     });
   }
   if (options.gas) {
@@ -100,7 +112,8 @@ const statisticIdsForPrefs = (prefs: EnergyPreferences): string[] => {
       if (source.stat_energy_from) ids.push(source.stat_energy_from);
       if (source.stat_energy_to) ids.push(source.stat_energy_to);
     } else if (source.type === "battery") {
-      ids.push(source.stat_energy_from, source.stat_energy_to);
+      const { charge, discharge } = getBatteryEnergyStatIds(source);
+      ids.push(...discharge, ...charge);
     } else if (source.type === "home") {
       ids.push(source.stat_energy_to);
     } else {

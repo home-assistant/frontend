@@ -16,14 +16,20 @@ import {
   uiContext,
 } from "../../../../data/context";
 import type {
+  BatteryFlowStatIds,
   EnergyData,
   EnergyPreferences,
   EnergySourceByType,
+  MeasuredBatteryFlows,
 } from "../../../../data/energy";
 import {
+  BATTERY_FLOW_KEYS,
+  computeConsumptionSingle,
   computeEnergyDeviceLabels,
   energySourcesByType,
   formatPowerShort,
+  getBatteryFlowPowerIds,
+  getBatteryName,
   getPowerFromState,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -76,7 +82,17 @@ interface PowerData {
   used_grid: number;
   used_battery: number;
   used_total: number;
+  // Live flows of the batteries with direction sensors
+  measured?: MeasuredBatteryFlows;
 }
+
+// Type links that a battery with direction sensors measures
+const MEASURED_LINKS: Record<string, keyof BatteryFlowStatIds> = {
+  "battery>home": "battery_to_home",
+  "battery>grid_return": "battery_to_grid",
+  "grid>battery_in": "grid_to_battery",
+  "solar>battery_in": "solar_to_battery",
+};
 
 @customElement("hui-power-sankey-card")
 class HuiPowerSankeyCard
@@ -114,11 +130,14 @@ class HuiPowerSankeyCard
       const prefs = this._data?.prefs;
       if (states && prefs) {
         [
-          ...prefs.energy_sources.map((source) =>
-            source.type === "gas" || source.type === "water"
-              ? undefined
-              : source.stat_rate
-          ),
+          ...prefs.energy_sources.flatMap((source) => {
+            if (source.type === "gas" || source.type === "water") {
+              return [];
+            }
+            const rates =
+              source.type === "battery" && getBatteryFlowPowerIds(source);
+            return rates ? Object.values(rates) : [source.stat_rate];
+          }),
           ...prefs.device_consumption.map((device) => device.stat_rate),
         ].forEach((entityId) => {
           if (entityId && states[entityId]) {
@@ -244,6 +263,7 @@ class HuiPowerSankeyCard
       typeLinks.push({
         source: "battery",
         target: "home",
+        value: powerData.used_battery,
       });
     }
 
@@ -263,12 +283,14 @@ class HuiPowerSankeyCard
         typeLinks.push({
           source: "grid",
           target: "battery_in",
+          value: powerData.grid_to_battery,
         });
       }
       if (powerData.solar_to_battery > 0) {
         typeLinks.push({
           source: "solar",
           target: "battery_in",
+          value: powerData.solar_to_battery,
         });
       }
     }
@@ -289,6 +311,7 @@ class HuiPowerSankeyCard
       typeLinks.push({
         source: "grid",
         target: "home",
+        value: powerData.used_grid,
       });
     }
 
@@ -306,6 +329,7 @@ class HuiPowerSankeyCard
       typeLinks.push({
         source: "solar",
         target: "home",
+        value: powerData.used_solar,
       });
     }
 
@@ -326,12 +350,14 @@ class HuiPowerSankeyCard
         typeLinks.push({
           source: "battery",
           target: "grid_return",
+          value: powerData.battery_to_grid,
         });
       }
       if (powerData.solar_to_grid > 0) {
         typeLinks.push({
           source: "solar",
           target: "grid_return",
+          value: powerData.solar_to_grid,
         });
       }
     }
@@ -356,6 +382,7 @@ class HuiPowerSankeyCard
           [homeNode, ...typeNodes].filter((node) => node.value > 0),
           typeLinks
         ),
+        powerData.measured,
         computedStyle
       );
       nodes.push(...separate.nodes);
@@ -457,17 +484,25 @@ class HuiPowerSankeyCard
     split: EnergySourceByType,
     typeNodes: Node[],
     typeLinks: (Link & { value: number })[],
+    measured: MeasuredBatteryFlows | undefined,
     computedStyle: CSSStyleDeclaration
   ): { nodes: Node[]; links: Link[] } {
     const nodes: Node[] = [];
+    const flowPower = (entityId?: string) =>
+      entityId ? Math.max(this._getCurrentPower(entityId), 0) : 0;
+    const flowIds = (...ids: (string | undefined)[]) =>
+      ids.filter((id): id is string => !!id);
 
+    // Nodes of batteries with direction sensors get exact links instead of a
+    // share of the type links
     const addNodes = <T extends { stat_rate?: string; name?: string }>(
       type: string,
       sources: T[] | undefined,
       sign: 1 | -1,
       colorVariable: string,
       index: number,
-      getName: (source: T) => string | undefined
+      getName: (source: T) => string | undefined,
+      getFlowIds?: (source: T) => string[] | undefined
     ): SankeyFlowShare[] => {
       if (!sources) {
         nodes.push(...typeNodes.filter((node) => node.id === type));
@@ -475,14 +510,18 @@ class HuiPowerSankeyCard
       }
       const shares: SankeyFlowShare[] = [];
       sources.forEach((source, idx) => {
-        if (!source.stat_rate) {
+        const ids = getFlowIds?.(source);
+        const statId = ids ? ids[0] : source.stat_rate;
+        if (!statId) {
           return;
         }
-        const value = sign * this._getCurrentPower(source.stat_rate);
+        const value = ids
+          ? ids.reduce((sum, id) => sum + flowPower(id), 0)
+          : sign * this._getCurrentPower(statId);
         if (value <= 0) {
           return;
         }
-        const id = `${type}:${source.stat_rate}`;
+        const id = `${type}:${statId}`;
         nodes.push({
           id,
           label:
@@ -490,8 +529,8 @@ class HuiPowerSankeyCard
             getStatisticLabel(
               this._states,
               this._formatEntityName,
-              source.stat_rate,
-              this._data!.statsMetadata[source.stat_rate]
+              statId,
+              this._data!.statsMetadata[statId]
             ),
           value,
           color: getEnergyColor(
@@ -505,21 +544,34 @@ class HuiPowerSankeyCard
           index,
           group: type,
           entityId:
-            source.stat_rate in this._states ? source.stat_rate : undefined,
+            (!ids || ids.length === 1) && statId in this._states
+              ? statId
+              : undefined,
         });
-        shares.push([id, value]);
+        if (!ids) {
+          shares.push([id, value]);
+        }
       });
       return shares;
     };
 
     const batteryName =
       (key: "named_battery_discharged" | "named_battery_charged") =>
-      (source: { name?: string }) =>
-        source.name &&
-        this._i18n.localize(
-          `ui.panel.lovelace.cards.energy.energy_sources_table.${key}`,
-          { name: source.name }
+      (source: NonNullable<EnergySourceByType["battery"]>[number]) => {
+        const name = getBatteryName(
+          this._states,
+          this._formatEntityName,
+          source,
+          this._data!.statsMetadata
         );
+        return (
+          name &&
+          this._i18n.localize(
+            `ui.panel.lovelace.cards.energy.energy_sources_table.${key}`,
+            { name }
+          )
+        );
+      };
 
     const batteryOut = addNodes(
       "battery",
@@ -527,7 +579,11 @@ class HuiPowerSankeyCard
       1,
       "--energy-battery-out-color",
       0,
-      batteryName("named_battery_discharged")
+      batteryName("named_battery_discharged"),
+      (source) => {
+        const rates = getBatteryFlowPowerIds(source);
+        return rates && flowIds(rates.battery_to_home, rates.battery_to_grid);
+      }
     );
     const batteryIn = addNodes(
       "battery_in",
@@ -535,7 +591,11 @@ class HuiPowerSankeyCard
       -1,
       "--energy-battery-in-color",
       1,
-      batteryName("named_battery_charged")
+      batteryName("named_battery_charged"),
+      (source) => {
+        const rates = getBatteryFlowPowerIds(source);
+        return rates && flowIds(rates.grid_to_battery, rates.solar_to_battery);
+      }
     );
     const gridIn = addNodes(
       "grid",
@@ -592,15 +652,54 @@ class HuiPowerSankeyCard
         batteryOut,
         batteryIn
       );
+      split.battery.forEach((source) => {
+        const rates = getBatteryFlowPowerIds(source);
+        if (!rates) {
+          return;
+        }
+        const outId = flowIds(rates.battery_to_home, rates.battery_to_grid)[0];
+        const inId = flowIds(rates.grid_to_battery, rates.solar_to_battery)[0];
+        if (outId) {
+          const out: SankeyFlowShare[] = [[`battery:${outId}`, 1]];
+          addSplitSankeyLinks(
+            links,
+            flowPower(rates.battery_to_home),
+            out,
+            sharesByNode.home
+          );
+          addSplitSankeyLinks(
+            links,
+            flowPower(rates.battery_to_grid),
+            out,
+            sharesByNode.grid_return
+          );
+        }
+        if (inId) {
+          const into: SankeyFlowShare[] = [[`battery_in:${inId}`, 1]];
+          addSplitSankeyLinks(
+            links,
+            flowPower(rates.grid_to_battery),
+            sharesByNode.grid,
+            into
+          );
+          addSplitSankeyLinks(
+            links,
+            flowPower(rates.solar_to_battery),
+            sharesByNode.solar,
+            into
+          );
+        }
+      });
     }
-    typeLinks.forEach((link) =>
+    typeLinks.forEach((link) => {
+      const flow = MEASURED_LINKS[`${link.source}>${link.target}`];
       addSplitSankeyLinks(
         links,
-        link.value,
+        link.value - (split.battery && flow ? (measured?.[flow] ?? 0) : 0),
         sharesByNode[link.source],
         sharesByNode[link.target]
-      )
-    );
+      );
+    });
 
     return { nodes, links: [...links.values()] };
   }
@@ -645,14 +744,32 @@ class HuiPowerSankeyCard
     // Collect battery power (positive = discharge, negative = charge)
     // Sum all battery values first, then determine net direction.
     // Momentary power should only flow in one direction across all batteries.
+    // Batteries with direction sensors are measured instead.
     let net_battery = 0;
-    prefs.energy_sources
-      .filter((source) => source.type === "battery")
-      .forEach((source) => {
-        if (source.type === "battery" && source.stat_rate) {
-          net_battery += this._getCurrentPower(source.stat_rate);
-        }
-      });
+    let hasMeasured = false;
+    const measured: Record<keyof BatteryFlowStatIds, number> = {
+      grid_to_battery: 0,
+      solar_to_battery: 0,
+      battery_to_home: 0,
+      battery_to_grid: 0,
+    };
+    prefs.energy_sources.forEach((source) => {
+      if (source.type !== "battery") {
+        return;
+      }
+      const rates = getBatteryFlowPowerIds(source);
+      if (rates) {
+        hasMeasured = true;
+        BATTERY_FLOW_KEYS.forEach((key) => {
+          const entityId = rates[key];
+          if (entityId) {
+            measured[key] += Math.max(this._getCurrentPower(entityId), 0);
+          }
+        });
+      } else if (source.stat_rate) {
+        net_battery += this._getCurrentPower(source.stat_rate);
+      }
+    });
     if (net_battery > 0) {
       from_battery = net_battery;
     } else if (net_battery < 0) {
@@ -665,75 +782,23 @@ class HuiPowerSankeyCard
     const homePower = homeStatRate
       ? getPowerFromState(this._states[homeStatRate])
       : undefined;
-    const used_total =
-      homePower ?? from_grid + solar + from_battery - to_grid - to_battery;
 
-    // Determine power routing using priority logic
-    // Priority: Solar -> Battery_In, Solar -> Grid_Out, Battery_Out -> Grid_Out,
-    // Grid_In -> Battery_In, Solar -> Consumption, Battery_Out -> Consumption, Grid_In -> Consumption
-
-    let solar_remaining = solar;
-    let grid_remaining = from_grid;
-    let battery_remaining = from_battery;
-    let to_battery_remaining = to_battery;
-    let to_grid_remaining = to_grid;
-    let used_total_remaining = Math.max(used_total, 0);
-
-    let grid_to_battery = 0;
-
-    // Handle excess grid input to battery first
-    const excess_grid_in_after_consumption = Math.max(
-      0,
-      Math.min(to_battery_remaining, grid_remaining - used_total_remaining)
+    const flows = computeConsumptionSingle(
+      { from_grid, to_grid, solar, to_battery, from_battery },
+      { measured: hasMeasured ? measured : undefined, used_total: homePower }
     );
-    grid_to_battery += excess_grid_in_after_consumption;
-    to_battery_remaining -= excess_grid_in_after_consumption;
-    grid_remaining -= excess_grid_in_after_consumption;
-
-    // Solar -> Battery_In
-    const solar_to_battery = Math.min(solar_remaining, to_battery_remaining);
-    to_battery_remaining -= solar_to_battery;
-    solar_remaining -= solar_to_battery;
-
-    // Solar -> Grid_Out
-    const solar_to_grid = Math.min(solar_remaining, to_grid_remaining);
-    to_grid_remaining -= solar_to_grid;
-    solar_remaining -= solar_to_grid;
-
-    // Battery_Out -> Grid_Out
-    const battery_to_grid = Math.min(battery_remaining, to_grid_remaining);
-    battery_remaining -= battery_to_grid;
-
-    // Grid_In -> Battery_In (second pass)
-    const grid_to_battery_2 = Math.min(grid_remaining, to_battery_remaining);
-    grid_to_battery += grid_to_battery_2;
-    grid_remaining -= grid_to_battery_2;
-
-    // Solar -> Consumption
-    const used_solar = Math.min(used_total_remaining, solar_remaining);
-    used_total_remaining -= used_solar;
-
-    // Battery_Out -> Consumption
-    const used_battery = Math.min(battery_remaining, used_total_remaining);
-    used_total_remaining -= used_battery;
-
-    // Grid_In -> Consumption
-    const used_grid = Math.min(used_total_remaining, grid_remaining);
 
     return {
+      ...flows,
       solar,
       from_grid,
       to_grid,
-      from_battery,
-      to_battery,
-      grid_to_battery,
-      battery_to_grid,
-      solar_to_battery,
-      solar_to_grid,
-      used_solar,
-      used_grid,
-      used_battery,
-      used_total: Math.max(0, used_total),
+      from_battery:
+        from_battery + measured.battery_to_home + measured.battery_to_grid,
+      to_battery:
+        to_battery + measured.grid_to_battery + measured.solar_to_battery,
+      used_total: Math.max(0, flows.used_total),
+      measured: hasMeasured ? measured : undefined,
     };
   }
 

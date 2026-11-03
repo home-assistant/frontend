@@ -17,7 +17,12 @@ import type {
   EnergyPreferencesValidation,
   EnergyValidationIssue,
 } from "../../../../data/energy";
-import { saveEnergyPreferences } from "../../../../data/energy";
+import {
+  getBatteryEnergyStatIds,
+  getBatteryName,
+  getBatteryPrimaryStat,
+  saveEnergyPreferences,
+} from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import {
@@ -115,8 +120,9 @@ export class EnergyBatterySettings extends LitElement {
               ? html`
                   <div class="items">
                     ${batterySources.map((source) => {
-                      const toEntityState =
-                        this.hass.states[source.stat_energy_to];
+                      const chargeStat =
+                        getBatteryEnergyStatIds(source).charge[0];
+                      const toEntityState = this.hass.states[chargeStat];
                       return html`
                         <ha-card outlined>
                           <ha-automation-row
@@ -145,10 +151,8 @@ export class EnergyBatterySettings extends LitElement {
                                       >${getStatisticLabel(
                                         this.hass.states,
                                         this.hass.formatEntityName,
-                                        source.stat_energy_to,
-                                        this.statsMetadata?.[
-                                          source.stat_energy_to
-                                        ]
+                                        chargeStat,
+                                        this.statsMetadata?.[chargeStat]
                                       )}</span
                                     >`
                               }
@@ -183,13 +187,19 @@ export class EnergyBatterySettings extends LitElement {
   }
 
   private _sourceName(source: BatterySourceTypeEnergyPreference) {
+    const primary = getBatteryPrimaryStat(source);
     return (
-      source.name ||
+      getBatteryName(
+        this.hass.states,
+        this.hass.formatEntityName,
+        source,
+        this.statsMetadata
+      ) ||
       getStatisticLabel(
         this.hass.states,
         this.hass.formatEntityName,
-        source.stat_energy_from,
-        this.statsMetadata?.[source.stat_energy_from]
+        primary,
+        this.statsMetadata?.[primary]
       )
     );
   }
@@ -205,7 +215,7 @@ export class EnergyBatterySettings extends LitElement {
   private _openEditor(source?: BatterySourceTypeEnergyPreference) {
     if (this.listPath) {
       navigate(
-        `${this.listPath}/battery/${source ? encodeURIComponent(source.stat_energy_from) : "new"}`
+        `${this.listPath}/battery/${source ? encodeURIComponent(getBatteryPrimaryStat(source)) : "new"}`
       );
     } else {
       showEnergySettingsDialog(this, {
@@ -236,9 +246,9 @@ export class EnergyBatterySettings extends LitElement {
       return index;
     }
     // Saving replaces the preferences, after which only the statistic matches
+    const key = getBatteryPrimaryStat(source);
     return sources.findIndex(
-      (src) =>
-        isBatterySource(src) && src.stat_energy_from === source.stat_energy_from
+      (src) => isBatterySource(src) && getBatteryPrimaryStat(src) === key
     );
   }
 
@@ -250,7 +260,7 @@ export class EnergyBatterySettings extends LitElement {
       }
       const source = this.preferences.energy_sources.find(
         (src): src is BatterySourceTypeEnergyPreference =>
-          isBatterySource(src) && src.stat_energy_from === key
+          isBatterySource(src) && getBatteryPrimaryStat(src) === key
       );
       return (
         source &&

@@ -40,6 +40,18 @@ describe("getSummedData characterization", () => {
     expect(getSummedData(data)).toMatchSnapshot();
   });
 
+  it("matches snapshot for a battery measured per direction", () => {
+    const data = generateEnergyData(8, {
+      days: 1,
+      prefs: generateEnergyPreferences({
+        grid: true,
+        solar: true,
+        batteryDirections: true,
+      }),
+    });
+    expect(getSummedData(data)).toMatchSnapshot();
+  });
+
   it("digest is stable for a month of 5-minute data", () => {
     const data = generateEnergyData(4, { days: 31, period: "hour" });
     expect(digestResult(getSummedData(data).summedData)).toMatchSnapshot();
@@ -55,6 +67,36 @@ describe("computeConsumptionData characterization", () => {
 
   it("matches snapshot with compare data", () => {
     const data = generateEnergyData(6, { days: 1, compare: true });
+    const { summedData, compareSummedData } = getSummedData(data);
+    expect(
+      computeConsumptionData(summedData, compareSummedData)
+    ).toMatchSnapshot();
+  });
+
+  it("matches snapshot for a battery measured per direction", () => {
+    const data = generateEnergyData(8, {
+      days: 1,
+      prefs: generateEnergyPreferences({
+        grid: true,
+        solar: true,
+        batteryDirections: true,
+      }),
+    });
+    const { summedData } = getSummedData(data);
+    expect(computeConsumptionData(summedData, undefined)).toMatchSnapshot();
+  });
+
+  it("matches snapshot for mixed batteries with compare data", () => {
+    const data = generateEnergyData(9, {
+      days: 1,
+      compare: true,
+      prefs: generateEnergyPreferences({
+        grid: true,
+        solar: true,
+        battery: true,
+        batteryDirections: true,
+      }),
+    });
     const { summedData, compareSummedData } = getSummedData(data);
     expect(
       computeConsumptionData(summedData, compareSummedData)
@@ -104,6 +146,28 @@ describe("computeConsumptionSingle characterization", () => {
         to_battery: 3,
         from_battery: 2,
       })
+    ).toMatchSnapshot();
+  });
+
+  it("handles mixed batteries with measured flows", () => {
+    expect(
+      computeConsumptionSingle(
+        {
+          from_grid: 4.2,
+          to_grid: 1.3,
+          solar: 3.7,
+          to_battery: 0.8,
+          from_battery: 1.1,
+        },
+        {
+          measured: {
+            grid_to_battery: 1.4,
+            solar_to_battery: 0.6,
+            battery_to_home: 0.9,
+            battery_to_grid: 0.2,
+          },
+        }
+      )
     ).toMatchSnapshot();
   });
 

@@ -49,7 +49,8 @@ const checkConsumptionResult = (
     to_battery: number | undefined;
     from_battery: number | undefined;
   },
-  exact = true
+  exact = true,
+  options?: Parameters<typeof computeConsumptionSingle>[1]
 ): {
   grid_to_battery: number;
   battery_to_grid: number;
@@ -60,8 +61,9 @@ const checkConsumptionResult = (
   used_battery: number;
   used_total: number;
 } => {
-  const result = computeConsumptionSingle(input);
+  const result = computeConsumptionSingle(input, options);
   if (exact) {
+    const measured = options?.measured;
     assert.equal(
       result.used_total,
       result.used_solar + result.used_battery + result.used_grid
@@ -71,12 +73,24 @@ const checkConsumptionResult = (
       result.solar_to_grid + result.battery_to_grid
     );
     assert.equal(
-      input.to_battery || 0,
+      (input.to_battery || 0) +
+        (measured?.grid_to_battery || 0) +
+        (measured?.solar_to_battery || 0),
       result.grid_to_battery + result.solar_to_battery
     );
     assert.equal(
       input.solar || 0,
       result.solar_to_battery + result.solar_to_grid + result.used_solar
+    );
+    assert.equal(
+      input.from_grid || 0,
+      result.used_grid + result.grid_to_battery
+    );
+    assert.equal(
+      (input.from_battery || 0) +
+        (measured?.battery_to_home || 0) +
+        (measured?.battery_to_grid || 0),
+      result.used_battery + result.battery_to_grid
     );
   }
   return result;
@@ -646,6 +660,248 @@ describe("Energy Usage Calculation Tests", () => {
         used_total: 12.367099999999994,
       }
     );
+  });
+});
+
+describe("Measured battery flows", () => {
+  const noTotals = { to_battery: undefined, from_battery: undefined };
+
+  it("keeps grid charging that an estimate would call solar charging", () => {
+    assert.deepEqual(
+      checkConsumptionResult(
+        { from_grid: 6, to_grid: 3, solar: 8, ...noTotals },
+        true,
+        {
+          measured: {
+            grid_to_battery: 2,
+            solar_to_battery: 3,
+            battery_to_home: 4,
+            battery_to_grid: 1,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 2,
+        battery_to_grid: 1,
+        solar_to_battery: 3,
+        solar_to_grid: 2,
+        used_solar: 3,
+        used_grid: 4,
+        used_battery: 4,
+        used_total: 11,
+      }
+    );
+  });
+
+  it("estimates only the batteries configured with totals", () => {
+    assert.deepEqual(
+      checkConsumptionResult(
+        { from_grid: 5, to_grid: 1, solar: 4, to_battery: 1, from_battery: 2 },
+        true,
+        {
+          measured: {
+            grid_to_battery: 2,
+            solar_to_battery: 0,
+            battery_to_home: 1,
+            battery_to_grid: 0,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 2,
+        battery_to_grid: 0,
+        solar_to_battery: 1,
+        solar_to_grid: 1,
+        used_solar: 2,
+        used_grid: 3,
+        used_battery: 3,
+        used_total: 8,
+      }
+    );
+  });
+
+  it("takes the home reading as the total and leaves out battery to home", () => {
+    assert.deepEqual(
+      computeConsumptionSingle(
+        { from_grid: 6, to_grid: 3, solar: 8, ...noTotals },
+        {
+          measured: {
+            grid_to_battery: 2,
+            solar_to_battery: 3,
+            battery_to_home: 4,
+            battery_to_grid: 1,
+          },
+          used_total: 10,
+        }
+      ),
+      {
+        grid_to_battery: 2,
+        battery_to_grid: 1,
+        solar_to_battery: 3,
+        solar_to_grid: 2,
+        used_solar: 3,
+        used_grid: 3,
+        used_battery: 4,
+        used_total: 10,
+      }
+    );
+  });
+
+  it("keeps solar charging without a solar source out of the grid", () => {
+    assert.deepEqual(
+      computeConsumptionSingle(
+        { from_grid: 5, to_grid: 0, solar: undefined, ...noTotals },
+        {
+          measured: {
+            grid_to_battery: 0,
+            solar_to_battery: 2,
+            battery_to_home: 1,
+            battery_to_grid: 0,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 0,
+        battery_to_grid: 0,
+        solar_to_battery: 2,
+        solar_to_grid: 0,
+        used_solar: 0,
+        used_grid: 3,
+        used_battery: 1,
+        used_total: 4,
+      }
+    );
+  });
+
+  it("keeps one battery charging another as battery to home", () => {
+    assert.deepEqual(
+      checkConsumptionResult(
+        { from_grid: 3, to_grid: 0, solar: 0, to_battery: 2, from_battery: 0 },
+        true,
+        {
+          measured: {
+            grid_to_battery: 0,
+            solar_to_battery: 0,
+            battery_to_home: 2,
+            battery_to_grid: 0,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 2,
+        battery_to_grid: 0,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
+        used_solar: 0,
+        used_grid: 1,
+        used_battery: 2,
+        used_total: 3,
+      }
+    );
+  });
+
+  it("never lowers grid charging above the grid import", () => {
+    assert.deepEqual(
+      computeConsumptionSingle(
+        { from_grid: 2, to_grid: 0, solar: 4, ...noTotals },
+        {
+          measured: {
+            grid_to_battery: 3,
+            solar_to_battery: 0,
+            battery_to_home: 0,
+            battery_to_grid: 0,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 3,
+        battery_to_grid: 0,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
+        used_solar: 3,
+        used_grid: 0,
+        used_battery: 0,
+        used_total: 3,
+      }
+    );
+  });
+});
+
+describe("computeConsumptionSingle on live power", () => {
+  // The power Sankey card's own copy of the estimate, before it called
+  // computeConsumptionSingle
+  const legacyPowerFlows = (
+    { solar, from_grid, to_grid, from_battery, to_battery },
+    homePower: number | undefined
+  ) => {
+    const used_total =
+      homePower ?? from_grid + solar + from_battery - to_grid - to_battery;
+    let solar_remaining = solar;
+    let grid_remaining = from_grid;
+    let battery_remaining = from_battery;
+    let to_battery_remaining = to_battery;
+    let to_grid_remaining = to_grid;
+    let used_total_remaining = Math.max(used_total, 0);
+    let grid_to_battery = 0;
+    const excess = Math.max(
+      0,
+      Math.min(to_battery_remaining, grid_remaining - used_total_remaining)
+    );
+    grid_to_battery += excess;
+    to_battery_remaining -= excess;
+    grid_remaining -= excess;
+    const solar_to_battery = Math.min(solar_remaining, to_battery_remaining);
+    to_battery_remaining -= solar_to_battery;
+    solar_remaining -= solar_to_battery;
+    const solar_to_grid = Math.min(solar_remaining, to_grid_remaining);
+    to_grid_remaining -= solar_to_grid;
+    solar_remaining -= solar_to_grid;
+    const battery_to_grid = Math.min(battery_remaining, to_grid_remaining);
+    battery_remaining -= battery_to_grid;
+    const grid_to_battery_2 = Math.min(grid_remaining, to_battery_remaining);
+    grid_to_battery += grid_to_battery_2;
+    grid_remaining -= grid_to_battery_2;
+    const used_solar = Math.min(used_total_remaining, solar_remaining);
+    used_total_remaining -= used_solar;
+    const used_battery = Math.min(battery_remaining, used_total_remaining);
+    used_total_remaining -= used_battery;
+    const used_grid = Math.min(used_total_remaining, grid_remaining);
+    return {
+      grid_to_battery,
+      battery_to_grid,
+      solar_to_battery,
+      solar_to_grid,
+      used_solar,
+      used_grid,
+      used_battery,
+      used_total: Math.max(0, used_total),
+    };
+  };
+
+  it("matches the card's former estimate, with and without a home sensor", () => {
+    const watts = [0, 150, 1234.5, 4000];
+    for (const solar of watts) {
+      for (const grid of [-2500, -150, ...watts]) {
+        for (const battery of [-3000, -200, ...watts]) {
+          for (const homePower of [undefined, 0, 900, 5000]) {
+            const input = {
+              solar,
+              from_grid: Math.max(grid, 0),
+              to_grid: Math.max(-grid, 0),
+              from_battery: Math.max(battery, 0),
+              to_battery: Math.max(-battery, 0),
+            };
+            const flows = computeConsumptionSingle(input, {
+              used_total: homePower,
+            });
+            assert.deepEqual(
+              { ...flows, used_total: Math.max(0, flows.used_total) },
+              legacyPowerFlows(input, homePower)
+            );
+          }
+        }
+      }
+    }
   });
 });
 
