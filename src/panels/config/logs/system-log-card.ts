@@ -1,4 +1,5 @@
 import { mdiDotsVertical, mdiDownload, mdiRefresh, mdiText } from "@mdi/js";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -14,8 +15,8 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import "../../../components/skeleton/ha-skeleton-text";
 import { getSignedPath } from "../../../data/auth";
 import {
@@ -24,16 +25,21 @@ import {
 } from "../../../data/error_log";
 import { domainToName } from "../../../data/integration";
 import { formatListWithAnds } from "../../../common/string/format-list";
-import type { LoggedError } from "../../../data/system_log";
+import type { LoggedError, SystemLogLevel } from "../../../data/system_log";
 import {
   fetchSystemLog,
   getLoggedErrorIntegration,
   isCustomIntegrationError,
 } from "../../../data/system_log";
+import type { FrontendLocaleData } from "../../../data/translation";
 import type { HomeAssistant } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
-import { formatSystemLogTime } from "./util";
+import {
+  filterSystemLogItems,
+  formatSystemLogMultipleMessages,
+  formatSystemLogTime,
+} from "./util";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 
 // Primary and secondary line widths, in percent, for the loading rows
@@ -56,6 +62,8 @@ export class SystemLogCard extends LitElement {
 
   @property({ attribute: false }) public integrationLoggers?: string[];
 
+  @property({ attribute: false }) public levels?: SystemLogLevel[];
+
   public loaded = false;
 
   @state() private _items?: LoggedError[];
@@ -74,51 +82,31 @@ export class SystemLogCard extends LitElement {
   }
 
   private _multipleMessages(item: LoggedError): string {
-    return this.hass.localize("ui.panel.config.logs.multiple_messages", {
-      time: formatSystemLogTime(
-        item.first_occurred,
-        this.hass.locale,
-        this.hass.config
-      ),
-      counter: item.count,
-    });
+    return formatSystemLogMultipleMessages(
+      item,
+      this.hass.localize,
+      this.hass.locale,
+      this.hass.config
+    );
   }
 
   private _getFilteredItems = memoizeOne(
     (
       localize: LocalizeFunc,
+      locale: FrontendLocaleData,
+      config: HassConfig,
       items: LoggedError[],
-      filter: string,
-      loggers: string[] | undefined
+      search: string,
+      loggers: string[] | undefined,
+      levels: SystemLogLevel[] | undefined
     ) =>
-      items.filter((item: LoggedError) => {
-        if (
-          loggers &&
-          !loggers.some(
-            (logger) =>
-              item.name === logger || item.name.startsWith(`${logger}.`)
-          )
-        ) {
-          return false;
-        }
-        if (filter) {
-          const integration = getLoggedErrorIntegration(item);
-          return (
-            item.message.some((message: string) =>
-              message.toLowerCase().includes(filter)
-            ) ||
-            item.source[0].toLowerCase().includes(filter) ||
-            item.name.toLowerCase().includes(filter) ||
-            (integration &&
-              domainToName(localize, integration)
-                .toLowerCase()
-                .includes(filter)) ||
-            this._timestamp(item).toLowerCase().includes(filter) ||
-            this._multipleMessages(item).toLowerCase().includes(filter)
-          );
-        }
-        return item;
-      })
+      filterSystemLogItems(
+        items,
+        { search, loggers, levels },
+        localize,
+        locale,
+        config
+      )
   );
 
   protected render() {
@@ -127,9 +115,12 @@ export class SystemLogCard extends LitElement {
     const filteredItems = this._items
       ? this._getFilteredItems(
           this.hass.localize,
+          this.hass.locale,
+          this.hass.config,
           this._items,
-          this.filter.toLowerCase(),
-          this.integrations?.length ? this.integrationLoggers : undefined
+          this.filter,
+          this.integrations?.length ? this.integrationLoggers : undefined,
+          this.levels
         )
       : [];
     const integrations = filteredItems.length
@@ -228,7 +219,9 @@ export class SystemLogCard extends LitElement {
                     </div>
                   `
                 : filteredItems.length === 0 &&
-                    (this.filter || this.integrations?.length)
+                    (this.filter ||
+                      this.integrations?.length ||
+                      this.levels?.length)
                   ? html`<div class="card-content">
                       ${
                         this.filter
@@ -236,29 +229,36 @@ export class SystemLogCard extends LitElement {
                               "ui.panel.config.logs.no_issues_search",
                               { term: this.filter }
                             )
-                          : this.hass.localize(
-                              "ui.panel.config.logs.no_issues_integration",
-                              {
-                                integration: formatListWithAnds(
-                                  this.hass.locale,
-                                  this.integrations!.map((domain) =>
-                                    domainToName(this.hass.localize, domain)
-                                  )
-                                ),
-                              }
-                            )
+                          : this.levels?.length
+                            ? this.hass.localize(
+                                "ui.panel.config.logs.no_issues_filters"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.config.logs.no_issues_integration",
+                                {
+                                  integration: formatListWithAnds(
+                                    this.hass.locale,
+                                    this.integrations!.map((domain) =>
+                                      domainToName(this.hass.localize, domain)
+                                    )
+                                  ),
+                                }
+                              )
                       }
                     </div>`
-                  : html`<ha-list
+                  : html`<ha-list-base
+                      aria-label=${
+                        this.header ||
+                        this.hass.localize("ui.panel.config.logs.caption")
+                      }
                       >${filteredItems.map(
                         (item, idx) => html`
-                          <ha-list-item
+                          <ha-list-item-button
                             @click=${this._openLog}
                             .logItem=${item}
-                            twoline
+                            .headline=${item.message[0]}
                           >
-                            ${item.message[0]}
-                            <span slot="secondary" class="secondary">
+                            <span slot="supporting-text" class="secondary">
                               ${this._timestamp(item)} –
                               ${html`(<span class=${item.level}
                                   >${this.hass.localize(
@@ -285,9 +285,9 @@ export class SystemLogCard extends LitElement {
                                   : nothing
                               }
                             </span>
-                          </ha-list-item>
+                          </ha-list-item-button>
                         `
-                      )}</ha-list
+                      )}</ha-list-base
                     >`
           }
           ${
@@ -313,6 +313,14 @@ export class SystemLogCard extends LitElement {
     this.addEventListener("hass-service-called", (ev) =>
       this.serviceCalled(ev)
     );
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+
+    if (changedProps.has("_items")) {
+      fireEvent(this, "system-log-items-changed", { items: this._items });
+    }
   }
 
   protected serviceCalled(ev): void {
@@ -359,8 +367,9 @@ export class SystemLogCard extends LitElement {
     :host {
       direction: var(--direction);
     }
-    ha-list {
+    ha-list-base {
       direction: ltr;
+      --ha-list-padding: var(--ha-space-2) 0;
     }
 
     .header {
@@ -390,6 +399,7 @@ export class SystemLogCard extends LitElement {
     }
 
     .skeleton {
+      direction: ltr;
       padding: var(--ha-space-2) 0;
     }
 
@@ -438,5 +448,9 @@ export class SystemLogCard extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "system-log-card": SystemLogCard;
+  }
+
+  interface HASSDomEvents {
+    "system-log-items-changed": { items: LoggedError[] | undefined };
   }
 }

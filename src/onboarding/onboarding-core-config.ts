@@ -175,7 +175,7 @@ class OnboardingCoreConfig extends LitElement {
         suggested = lang;
       }
     }
-    this._country = suggested;
+    this._country ??= suggested;
 
     fireEvent(this, "onboarding-progress", { increase: 0.5 });
     await this.updateComplete;

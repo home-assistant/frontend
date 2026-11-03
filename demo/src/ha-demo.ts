@@ -36,6 +36,7 @@ import { mockHardware } from "./stubs/hardware";
 import { mockHassioSupervisor } from "./stubs/hassio_supervisor";
 import { mockIntegration } from "./stubs/integration";
 import { mockLabelRegistry } from "./stubs/label_registry";
+import { mockLogbook } from "./stubs/logbook";
 import { automationPlatformDomains } from "./stubs/automation_platform_domains";
 import { mockIcons } from "./stubs/icons";
 import { mockHistory } from "./stubs/history";
@@ -50,6 +51,7 @@ import { mockTemplate } from "./stubs/template";
 import { mockTodo } from "./stubs/todo";
 import { mockTranslations } from "./stubs/translations";
 import { mockUsagePrediction } from "./stubs/usage_prediction";
+import { mockWeather } from "./stubs/weather";
 
 // WS command / REST path prefixes whose mocks live in the lazily imported
 // config-panel chunk (see ./stubs/config-panel). Must stay in sync with it.
@@ -190,7 +192,9 @@ export class HaDemo extends HomeAssistantAppEl {
     mockSystemLog(hass);
     mockTemplate(hass);
     mockEvents(hass);
+    mockLogbook(hass);
     mockMediaPlayer(hass);
+    mockWeather(hass);
     mockFrontend(hass);
     mockHardware(hass);
     mockHassioSupervisor(hass);

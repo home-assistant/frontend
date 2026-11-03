@@ -293,6 +293,99 @@ describe("markdownWithRepositoryContext", () => {
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
   });
 
+  it("leaves out a section marked for the Marketplace to skip", () => {
+    const input = [
+      "# Card",
+      "",
+      "<!-- ha-marketplace:exclude-start -->",
+      "## Installation",
+      "",
+      "Add it through HACS, see #12.",
+      "<!-- ha-marketplace:exclude-end -->",
+      "",
+      "## Configuration",
+    ].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(
+      "# Card\n\n\n\n## Configuration"
+    );
+  });
+
+  it("leaves out an unclosed section to the end", () => {
+    const input =
+      "Shown\n<!-- ha-marketplace:exclude-start -->\nhidden\n\nstill hidden";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe("Shown\n");
+  });
+
+  it("keeps exclusion markers in code as written", () => {
+    const input = [
+      "Wrap it in `<!-- ha-marketplace:exclude-start -->` to hide it:",
+      "",
+      "```md",
+      "<!-- ha-marketplace:exclude-start -->",
+      "Installation",
+      "<!-- ha-marketplace:exclude-end -->",
+      "```",
+    ].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps exclusion markers in a fence opened on a list item as written", () => {
+    const input = [
+      "- ```md",
+      "  <!-- ha-marketplace:exclude-start -->",
+      "  ```",
+      "- Shown",
+    ].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps exclusion markers in a fence inside a nested list item as written", () => {
+    const input = [
+      "- a",
+      "  - b",
+      "",
+      "    ~~~md",
+      "    <!-- ha-marketplace:exclude-start -->",
+      "    ~~~",
+      "",
+      "Shown",
+    ].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it.each([
+    {
+      name: "a tab past the text of the item does not close the fence",
+      input: [
+        "- ~~~md",
+        "\t  ~~~",
+        "  <!-- ha-marketplace:exclude-start -->",
+        "  ~~~",
+        "",
+        "Shown",
+      ].join("\n"),
+    },
+    {
+      name: "too many spaces after the marker do not open a fence",
+      input: [
+        "-      ```",
+        "<!-- ha-marketplace:exclude-start -->",
+        "hidden",
+        "<!-- ha-marketplace:exclude-end -->",
+      ].join("\n"),
+      output: "-      ```\n",
+    },
+  ])("keeps up with list indentation, $name", ({ input, output }) => {
+    expect(markdownWithRepositoryContext(input, repository)).toBe(
+      output ?? input
+    );
+  });
+
   it("keeps text that looks like a placeholder", () => {
     const input = "Private \uE0000\uE000 and \u00001\u0000 characters";
 
@@ -305,6 +398,10 @@ describe("markdownWithRepositoryContext", () => {
     { name: "many unclosed tags", input: "<a ".repeat(30_000) },
     { name: "many unclosed links", input: "[a](".repeat(30_000) },
     { name: "a long scheme", input: `${"a".repeat(100_000)}:` },
+    {
+      name: "many end markers",
+      input: "<!-- ha-marketplace:exclude-end -->".repeat(30_000),
+    },
   ])("keeps up with a README of $name", ({ input }) => {
     const start = performance.now();
 

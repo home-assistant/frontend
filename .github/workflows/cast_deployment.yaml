@@ -30,17 +30,17 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
 
       - name: Build Cast
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-cast
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Netlify
         id: deploy
-        uses: ./.github/actions/netlify-deploy
+        uses: $/.github/actions/netlify-deploy
         with:
           dir: cast/dist
           alias: dev
@@ -62,17 +62,17 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
 
       - name: Build Cast
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-cast
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Netlify
         id: deploy
-        uses: ./.github/actions/netlify-deploy
+        uses: $/.github/actions/netlify-deploy
         with:
           dir: cast/dist
           auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
