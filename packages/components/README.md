@@ -14,8 +14,8 @@ Every element is imported on its own, in one of two ways:
 | `@home-assistant/components/<element>`        | Global registry      | The bundled copy. Used by Home Assistant itself. |
 | `@home-assistant/components/<element>/scoped` | Your scoped registry | The bundled copy, isolated from other copies.    |
 
-`<element>` is the group, like `button` for `hac-button`, or the group and a
-variant, like `button/close` for `hac-button-close`.
+`<element>` is the group, like `card` for `hac-card`, or the group and a
+variant (`<group>/<variant>`, see [Structure](#structure)).
 
 Global registration skips tag names that are already registered, so the first
 registration wins and nothing throws.
@@ -23,8 +23,7 @@ registration wins and nothing throws.
 ### Global
 
 ```ts
-import "@home-assistant/components/button";
-import "@home-assistant/components/button/close";
+import "@home-assistant/components/card";
 ```
 
 ### Scoped
@@ -115,13 +114,13 @@ element, and variants live in subdirectories, so the directories mirror the
 import paths:
 
 ```
-src/components/button/         <hac-button>        -> @home-assistant/components/button
-  hac-button.ts                class, does not register itself
+src/components/card/           <hac-card>  -> @home-assistant/components/card
+  hac-card.ts                  class, does not register itself
   info.ts                      tag name and version
   global.ts                    registers globally
   scoped.ts                    elements for a scoped registry  -> …/scoped
-  close/                       <hac-button-close>  -> @home-assistant/components/button/close
-    hac-button-close.ts
+  <variant>/                   <hac-card-variant>  -> @home-assistant/components/card/<variant>
+    hac-card-<variant>.ts
     info.ts, global.ts, scoped.ts
 ```
 
@@ -141,9 +140,12 @@ in `static dependencies`, with the tag name from its `info.ts`, and imports
 only their classes:
 
 ```ts
-export class HacHeader extends LitElement {
+import { TAG_NAME as CHILD_TAG_NAME } from "../child/info";
+import { HacChild } from "../child/hac-child";
+
+export class HacParent extends LitElement {
   static readonly dependencies = [
-    { tagName: BUTTON_CLOSE_TAG_NAME, element: HacButtonClose },
+    { tagName: CHILD_TAG_NAME, element: HacChild },
   ];
 }
 ```

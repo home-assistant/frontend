@@ -8,7 +8,8 @@ import {
 /**
  * Container that groups related content.
  *
- * @slot header - Header of the card, usually a `hac-header`.
+ * @slot header - Header of the card. Its spacing replaces the top padding of
+ * the content.
  * @slot - Content of the card. Its padding is omitted when empty.
  * @slot footer - Footer of the card, e.g. actions. Hidden when empty.
  *
