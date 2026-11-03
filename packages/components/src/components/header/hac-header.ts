@@ -110,7 +110,7 @@ export class HacHeader extends LitElement {
       flex: none;
       color: var(
         --hac-header-secondary-color,
-        var(--secondary-text-color, #727272)
+        var(--ha-color-text-secondary, #5e5e5e)
       );
     }
 
@@ -120,7 +120,7 @@ export class HacHeader extends LitElement {
     }
 
     .title {
-      color: var(--hac-header-color, var(--primary-text-color, #141414));
+      color: var(--hac-header-color, var(--ha-color-text-primary, #141414));
       font-family: var(--hac-header-font-family, inherit);
       font-size: var(--hac-header-font-size, var(--ha-font-size-2xl, 24px));
       font-weight: var(--ha-font-weight-normal, 400);
@@ -133,7 +133,7 @@ export class HacHeader extends LitElement {
       margin-block-start: var(--ha-space-1, 4px);
       color: var(
         --hac-header-secondary-color,
-        var(--secondary-text-color, #727272)
+        var(--ha-color-text-secondary, #5e5e5e)
       );
       font-size: var(--ha-font-size-m, 14px);
       line-height: var(--ha-line-height-normal, 1.6);

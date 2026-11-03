@@ -37,7 +37,10 @@ export class HacButtonClose extends HacButton {
     HacButton.styles,
     css`
       :host([appearance="plain"]) {
-        --_color: var(--hac-button-color, var(--secondary-text-color, #727272));
+        --_color: var(
+          --hac-button-color,
+          var(--ha-color-text-secondary, #5e5e5e)
+        );
       }
 
       button {

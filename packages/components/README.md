@@ -101,9 +101,12 @@ The package has no root entry point: each element and the scoped helpers
 
 ## Theming
 
-Components read the Home Assistant theme variables when they are available
-and fall back to built-in defaults otherwise. Each component also exposes its
-own `--hac-*` custom properties, documented in its source.
+Components use the semantic color tokens of Home Assistant (`--ha-color-*`,
+like `--ha-color-surface-default` for the card background) and fall back to
+their light values when the tokens are not defined, so they also render
+outside Home Assistant. The legacy theme variables (`--card-background-color`,
+`--primary-color`, …) are not used. Each component also exposes its own
+`--hac-*` custom properties, documented in its source, which take precedence.
 
 ## Structure
 

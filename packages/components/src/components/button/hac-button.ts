@@ -58,11 +58,14 @@ export class HacButton extends LitElement {
     :host {
       display: inline-block;
       vertical-align: middle;
-      --_color: var(--hac-button-color, var(--primary-color, #03a9f4));
+      --_color: var(
+        --hac-button-color,
+        var(--ha-color-on-primary-normal, #009ac7)
+      );
     }
 
     :host([appearance="filled"]) {
-      --_color: var(--hac-button-color, var(--text-primary-color, #fff));
+      --_color: var(--hac-button-color, var(--ha-color-on-primary-loud, #fff));
     }
 
     :host([disabled]) {
@@ -94,7 +97,10 @@ export class HacButton extends LitElement {
     }
 
     :host([appearance="filled"]) button {
-      background: var(--hac-button-background, var(--primary-color, #03a9f4));
+      background: var(
+        --hac-button-background,
+        var(--ha-color-fill-primary-loud-resting, #009ac7)
+      );
     }
 
     :host([appearance="outlined"]) button {
@@ -122,7 +128,7 @@ export class HacButton extends LitElement {
     }
 
     button:focus-visible {
-      outline: 2px solid var(--primary-color, #03a9f4);
+      outline: 2px solid var(--ha-color-focus, #989898);
       outline-offset: 2px;
     }
 

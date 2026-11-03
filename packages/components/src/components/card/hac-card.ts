@@ -14,7 +14,7 @@ import {
  *
  * @cssprop --hac-card-background - Background of the card.
  * @cssprop --hac-card-color - Text color of the card.
- * @cssprop --hac-card-border-color - Border color of the card.
+ * @cssprop --hac-card-border-color - Border color of the card and the footer divider.
  * @cssprop --hac-card-border-width - Border width of the card.
  * @cssprop --hac-card-border-radius - Border radius of the card.
  * @cssprop --hac-card-box-shadow - Box shadow of the card.
@@ -66,11 +66,14 @@ export class HacCard extends LitElement {
       box-sizing: border-box;
       background: var(
         --hac-card-background,
-        var(--card-background-color, #fff)
+        var(--ha-color-surface-default, #fff)
       );
-      color: var(--hac-card-color, var(--primary-text-color, #141414));
+      color: var(--hac-card-color, var(--ha-color-on-surface-default, #141414));
       border: var(--hac-card-border-width, 1px) solid
-        var(--hac-card-border-color, var(--divider-color, #e0e0e0));
+        var(
+          --hac-card-border-color,
+          var(--ha-color-border-neutral-quiet, #e6e6e6)
+        );
       border-radius: var(
         --hac-card-border-radius,
         var(--ha-border-radius-lg, 12px)
@@ -104,7 +107,11 @@ export class HacCard extends LitElement {
       align-items: center;
       gap: var(--ha-space-2, 8px);
       padding: var(--hac-card-footer-padding, var(--ha-space-2, 8px));
-      border-block-start: 1px solid var(--divider-color, #e0e0e0);
+      border-block-start: 1px solid
+        var(
+          --hac-card-border-color,
+          var(--ha-color-border-neutral-quiet, #e6e6e6)
+        );
     }
 
     .content[hidden],
