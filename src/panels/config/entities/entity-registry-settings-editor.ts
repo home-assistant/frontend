@@ -1923,8 +1923,7 @@ export class EntityRegistrySettingsEditor extends LitElement {
           margin-inline-start: 0;
         }
 
-        ha-row-item.main-entity::part(supporting-text),
-        ha-row-item.device-area::part(supporting-text) {
+        ha-row-item::part(supporting-text) {
           white-space: normal;
         }
         ha-row-item {
