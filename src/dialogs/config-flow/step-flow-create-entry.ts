@@ -2,6 +2,7 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ContextSubscriptionController } from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   computeDeviceName,
@@ -16,14 +17,20 @@ import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import { getConfigEntries } from "../../data/config_entries";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import type { ConfigEntry } from "../../data/config_entries";
+import { fullEntitiesContext, manifestsContext } from "../../data/context";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
   getAutomaticEntityIds,
   updateEntityRegistryEntry,
   type EntityRegistryDisplayEntry,
+  type EntityRegistryEntry,
 } from "../../data/entity/entity_registry";
-import { domainToName } from "../../data/integration";
+import {
+  domainToName,
+  type DomainManifestLookup,
+  type IntegrationManifest,
+} from "../../data/integration";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
@@ -34,6 +41,21 @@ import { configFlowContentStyles } from "./styles";
 interface DeviceTarget {
   device: string;
 }
+
+/**
+ * The entity of a new config entry that can get an area in the success step:
+ * the only entity of the entry without a device. Entities with a device take
+ * the area of their device, and several entities would need one picker each.
+ */
+export const getSingleEntityWithoutDevice = (
+  entities: EntityRegistryEntry[],
+  entryId: string
+): EntityRegistryEntry | undefined => {
+  const entryEntities = entities.filter(
+    (entity) => entity.config_entry_id === entryId && !entity.device_id
+  );
+  return entryEntities.length === 1 ? entryEntities[0] : undefined;
+};
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -46,6 +68,8 @@ class StepFlowCreateEntry extends LitElement {
 
   @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
 
+  @property({ attribute: false }) public manifest?: IntegrationManifest | null;
+
   private _domains: Record<string, string> = {};
 
   public navigateToResult = false;
@@ -54,6 +78,23 @@ class StepFlowCreateEntry extends LitElement {
     string,
     { name?: string; area?: string }
   > = {};
+
+  // Area picked for the entity of a new helper, undefined until picked.
+  @state() private _entityArea?: string | null;
+
+  @state() private _manifests?: DomainManifestLookup;
+
+  @state() private _entityRegistry?: EntityRegistryEntry[];
+
+  // Subscribed only when a helper entity can get an area, so other flows do
+  // not load all manifests or the full entity registry.
+  private _manifestsSubscription?: ContextSubscriptionController<DomainManifestLookup>;
+
+  private _entityRegistrySubscription?: ContextSubscriptionController<
+    EntityRegistryEntry[]
+  >;
+
+  private _singleEntityWithoutDevice = memoizeOne(getSingleEntityWithoutDevice);
 
   private _deviceEntities = memoizeOne(
     (
@@ -74,6 +115,8 @@ class StepFlowCreateEntry extends LitElement {
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
+    this._subscribeHelperEntity();
+
     if (!changedProps.has("devices") && !changedProps.has("hass")) {
       return;
     }
@@ -113,6 +156,7 @@ class StepFlowCreateEntry extends LitElement {
           [this.step.result.entry_id]: this.step.result.domain,
         }
       : this._domains;
+    const helperEntity = this._helperEntity();
     return html`
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
@@ -131,11 +175,23 @@ class StepFlowCreateEntry extends LitElement {
             ? nothing
             : this.devices.length === 0
               ? html`<p>
-                  ${localize(
-                    "ui.panel.config.integrations.config_flow.created_config",
-                    { name: this.step.title }
-                  )}
-                </p>`
+                    ${localize(
+                      "ui.panel.config.integrations.config_flow.created_config",
+                      { name: this.step.title }
+                    )}
+                  </p>
+                  ${
+                    helperEntity
+                      ? html`<ha-area-picker
+                          .value=${
+                            (this._entityArea === undefined
+                              ? helperEntity.area_id
+                              : this._entityArea) ?? undefined
+                          }
+                          @value-changed=${this._entityAreaPicked}
+                        ></ha-area-picker>`
+                      : nothing
+                  }`
               : html`
                   <div class="devices">
                     ${this.devices.map(
@@ -212,10 +268,74 @@ class StepFlowCreateEntry extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (changedProps.has("_deviceUpdate")) {
+    if (changedProps.has("_deviceUpdate") || changedProps.has("_entityArea")) {
       fireEvent(this, "flow-step-footer-state-changed", {
-        hasPendingUpdates: Object.keys(this._deviceUpdate).length > 0,
+        hasPendingUpdates:
+          Object.keys(this._deviceUpdate).length > 0 ||
+          this._entityArea !== undefined,
       });
+    }
+  }
+
+  private _mayHaveHelperEntity(): boolean {
+    return (
+      this.flowConfig.flowType === "config_flow" && this.devices.length === 0
+    );
+  }
+
+  private _isHelperEntry(domain: string): boolean {
+    const manifest =
+      this.manifest?.domain === domain
+        ? this.manifest
+        : this._manifests?.[domain];
+    return manifest?.integration_type === "helper";
+  }
+
+  private _helperEntity(): EntityRegistryEntry | undefined {
+    const entry = this.step.result;
+    if (
+      !entry ||
+      !this._entityRegistry ||
+      !this._mayHaveHelperEntity() ||
+      !this._isHelperEntry(entry.domain)
+    ) {
+      return undefined;
+    }
+    return this._singleEntityWithoutDevice(
+      this._entityRegistry,
+      entry.entry_id
+    );
+  }
+
+  private _subscribeHelperEntity(): void {
+    const entry = this.step.result;
+    if (!entry || !this._mayHaveHelperEntity()) {
+      return;
+    }
+    if (
+      this.manifest?.domain !== entry.domain &&
+      !this._manifestsSubscription
+    ) {
+      // A chained flow is opened without the manifest of its integration.
+      this._manifestsSubscription = new ContextSubscriptionController(
+        this,
+        manifestsContext,
+        (manifests) => {
+          this._manifests = manifests;
+        }
+      );
+    }
+    if (
+      this._isHelperEntry(entry.domain) &&
+      !this._entityRegistrySubscription
+    ) {
+      this._entityRegistrySubscription = new ContextSubscriptionController(
+        this,
+        fullEntitiesContext,
+        (entities) => {
+          this._entityRegistry = entities;
+        }
+      );
     }
   }
 
@@ -283,6 +403,11 @@ class StepFlowCreateEntry extends LitElement {
       await Promise.allSettled(entityUpdates);
     }
 
+    const helperEntity = this._helperEntity();
+    if (helperEntity && this._entityArea !== undefined) {
+      await this._saveEntityArea(helperEntity.entity_id, this._entityArea);
+    }
+
     fireEvent(this, "flow-update", { step: undefined });
     if (this.step.result && this.navigateToResult) {
       if (this.devices.length === 1) {
@@ -295,8 +420,46 @@ class StepFlowCreateEntry extends LitElement {
     }
   }
 
+  private async _saveEntityArea(
+    entityId: string,
+    areaId: string | null
+  ): Promise<void> {
+    try {
+      await updateEntityRegistryEntry(this.hass, entityId, {
+        area_id: areaId,
+      });
+      // Depending on the user's entity ID format, the entity ID includes the
+      // area, so regenerate it like for the entities of a device.
+      const entityIdsMapping = await getAutomaticEntityIds(this.hass, [
+        entityId,
+      ]);
+      const newEntityId = entityIdsMapping[entityId];
+      if (newEntityId) {
+        await updateEntityRegistryEntry(this.hass, entityId, {
+          new_entity_id: newEntityId,
+        });
+      }
+    } catch (err: unknown) {
+      // WebSocket errors are plain objects with a message, not Error instances.
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.error_saving_entity",
+          {
+            error:
+              (err as { message?: string } | undefined)?.message ??
+              "Unknown error",
+          }
+        ),
+      });
+    }
+  }
+
   public finish(): Promise<void> {
     return this._flowDone();
+  }
+
+  private _entityAreaPicked(ev: ValueChangedEvent<string | undefined>): void {
+    this._entityArea = ev.detail.value || null;
   }
 
   private async _areaPicked(ev: ValueChangedEvent<string>) {
