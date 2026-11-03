@@ -336,12 +336,22 @@ class HuiPowerSankeyCard
       }
     }
 
-    if (this._config.combine_sources ?? this._data.combineSources ?? true) {
-      nodes.push(...typeNodes);
-      links.push(...typeLinks);
-    } else {
+    const combine =
+      this._config.combine_sources ?? this._data.combineSources ?? true;
+    const split = <T extends { stat_rate?: string }>(sources?: T[]) =>
+      !combine &&
+      (sources?.filter((source) => source.stat_rate).length ?? 0) > 1
+        ? sources
+        : undefined;
+    const splitSources: EnergySourceByType = {
+      battery: split(types.battery),
+      grid: split(types.grid),
+      solar: split(types.solar),
+    };
+    if (splitSources.battery || splitSources.grid || splitSources.solar) {
       const separate = this._computeSeparateSources(
-        types,
+        splitSources,
+        typeNodes,
         fillSankeyLinkValues(
           [homeNode, ...typeNodes].filter((node) => node.value > 0),
           typeLinks
@@ -350,6 +360,9 @@ class HuiPowerSankeyCard
       );
       nodes.push(...separate.nodes);
       links.push(...separate.links);
+    } else {
+      nodes.push(...typeNodes);
+      links.push(...typeLinks);
     }
 
     const deviceLabels = computeEnergyDeviceLabels(
@@ -441,7 +454,8 @@ class HuiPowerSankeyCard
   }
 
   private _computeSeparateSources(
-    types: EnergySourceByType,
+    split: EnergySourceByType,
+    typeNodes: Node[],
     typeLinks: (Link & { value: number })[],
     computedStyle: CSSStyleDeclaration
   ): { nodes: Node[]; links: Link[] } {
@@ -455,8 +469,12 @@ class HuiPowerSankeyCard
       index: number,
       getName: (source: T) => string | undefined
     ): SankeyFlowShare[] => {
+      if (!sources) {
+        nodes.push(...typeNodes.filter((node) => node.id === type));
+        return [[type, 1]];
+      }
       const shares: SankeyFlowShare[] = [];
-      sources?.forEach((source, idx) => {
+      sources.forEach((source, idx) => {
         if (!source.stat_rate) {
           return;
         }
@@ -505,7 +523,7 @@ class HuiPowerSankeyCard
 
     const batteryOut = addNodes(
       "battery",
-      types.battery,
+      split.battery,
       1,
       "--energy-battery-out-color",
       0,
@@ -513,7 +531,7 @@ class HuiPowerSankeyCard
     );
     const batteryIn = addNodes(
       "battery_in",
-      types.battery,
+      split.battery,
       -1,
       "--energy-battery-in-color",
       1,
@@ -521,7 +539,7 @@ class HuiPowerSankeyCard
     );
     const gridIn = addNodes(
       "grid",
-      types.grid,
+      split.grid,
       1,
       "--energy-grid-consumption-color",
       0,
@@ -535,7 +553,7 @@ class HuiPowerSankeyCard
     );
     const solar = addNodes(
       "solar",
-      types.solar,
+      split.solar,
       1,
       "--energy-solar-color",
       0,
@@ -543,7 +561,7 @@ class HuiPowerSankeyCard
     );
     const gridOut = addNodes(
       "grid_return",
-      types.grid,
+      split.grid,
       -1,
       "--energy-grid-return-color",
       1,
@@ -567,12 +585,14 @@ class HuiPowerSankeyCard
       shares.reduce((total, [, value]) => total + value, 0);
 
     const links = new Map<string, Link & { value: number }>();
-    addSplitSankeyLinks(
-      links,
-      Math.min(sum(batteryOut), sum(batteryIn)),
-      batteryOut,
-      batteryIn
-    );
+    if (split.battery) {
+      addSplitSankeyLinks(
+        links,
+        Math.min(sum(batteryOut), sum(batteryIn)),
+        batteryOut,
+        batteryIn
+      );
+    }
     typeLinks.forEach((link) =>
       addSplitSankeyLinks(
         links,

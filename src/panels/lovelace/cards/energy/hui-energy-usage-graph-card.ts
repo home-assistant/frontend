@@ -315,6 +315,15 @@ export class HuiEnergyUsageGraphCard
 
     const combine =
       this._config!.combine_sources ?? energyData.combineSources ?? false;
+    const combineTypes = new Set<string>(
+      (["grid", "battery"] as const).filter(
+        (type) =>
+          combine &&
+          energyData.prefs.energy_sources.filter(
+            (source) => source.type === type
+          ).length > 1
+      )
+    );
     const datasets: BarSeriesOption[] = [];
 
     let yMin = Infinity;
@@ -415,7 +424,7 @@ export class HuiEnergyUsageGraphCard
       }
     }
 
-    if (combine) {
+    if (combineTypes.size) {
       const gridName = this._i18n.localize(
         "ui.panel.lovelace.cards.energy.energy_distribution.grid"
       );
@@ -445,7 +454,7 @@ export class HuiEnergyUsageGraphCard
         ),
       };
       Object.entries(combinedLabels).forEach(([key, label]) => {
-        if (statIds[key]) {
+        if (statIds[key] && combineTypes.has(key.split("_")[1])) {
           statLabels[key][statIds[key][0]] = label;
         }
       });
@@ -510,7 +519,7 @@ export class HuiEnergyUsageGraphCard
           typeLabels,
           statLabels,
           trackY,
-          combine,
+          combineTypes,
           true
         )
       );
@@ -539,7 +548,7 @@ export class HuiEnergyUsageGraphCard
         typeLabels,
         statLabels,
         trackY,
-        combine,
+        combineTypes,
         false
       )
     );
@@ -630,7 +639,7 @@ export class HuiEnergyUsageGraphCard
       from_battery: Record<string, string>;
     },
     trackY: (v: number) => void,
-    combine: boolean,
+    combineTypes: Set<string>,
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
@@ -653,7 +662,7 @@ export class HuiEnergyUsageGraphCard
         return;
       }
       const sets: Record<string, Record<number, number>> = {};
-      if (combine) {
+      if (combineTypes.has(key.split("_")[1])) {
         // The first source carries the sum and the others stay as empty
         // series, so switching modes keeps the stack order.
         statIds!.forEach((id) => {

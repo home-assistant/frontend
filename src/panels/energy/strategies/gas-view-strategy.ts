@@ -34,7 +34,6 @@ export class GasViewStrategy extends ReactiveElement {
           collection_key: collectionKey,
           opening_direction: "right",
           vertical_opening_direction: "up",
-          show_combine_sources: true,
         },
       },
     };
@@ -58,7 +57,8 @@ export class GasViewStrategy extends ReactiveElement {
       return view;
     }
 
-    if (hasCombinableEnergySources(prefs)) {
+    if (hasCombinableEnergySources(prefs, ["gas"])) {
+      view.footer!.card!.show_combine_sources = true;
       energyCollection.setDefaultCombineSources(false);
     }
 

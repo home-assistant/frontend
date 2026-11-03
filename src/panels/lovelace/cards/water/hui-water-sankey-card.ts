@@ -205,7 +205,8 @@ class HuiWaterSankeyCard
       .getPropertyValue("--energy-water-color")
       .trim();
     const combineSources =
-      this._config.combine_sources ?? this._data.combineSources ?? false;
+      waterSources.length > 1 &&
+      (this._config.combine_sources ?? this._data.combineSources ?? false);
     if (combineSources && totalSourceSupply > 0) {
       nodes.push({
         id: "source-water",

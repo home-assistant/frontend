@@ -1048,9 +1048,15 @@ export const getEnergyCombineSourcesStorageKey = (
   return `energy-combine-sources-${key}`;
 };
 
-export const hasCombinableEnergySources = (prefs: EnergyPreferences): boolean =>
-  new Set(prefs.energy_sources.map((source) => source.type)).size <
-  prefs.energy_sources.length;
+export const hasCombinableEnergySources = (
+  prefs: EnergyPreferences,
+  types?: EnergySource["type"][]
+): boolean => {
+  const sources = types
+    ? prefs.energy_sources.filter((source) => types.includes(source.type))
+    : prefs.energy_sources;
+  return new Set(sources.map((source) => source.type)).size < sources.length;
+};
 
 // When today's first hourly statistic becomes available (01:00 in the
 // configured timezone). Rolling the statistics view over at midnight would

@@ -69,7 +69,7 @@ export function generateEnergyGasGraphData(
       (source) => source.type === "gas"
     ) as GasSourceTypeEnergyPreference[];
 
-  const combine = combinedName !== undefined && gasSources.length > 0;
+  const combine = combinedName !== undefined && gasSources.length > 1;
   const statIds = gasSources.map((source) => source.stat_energy_from);
   const chartSources: GasChartSource[] = combine
     ? [{ stat_energy_from: "gas", name: combinedName }]

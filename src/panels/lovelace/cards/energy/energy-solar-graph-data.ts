@@ -72,7 +72,7 @@ export function generateEnergySolarGraphData(
     ) as SolarSourceTypeEnergyPreference[];
 
   const { solarSources, stats, statsCompare } =
-    params.combineSources && configuredSources.length
+    params.combineSources && configuredSources.length > 1
       ? combineSolarSources(params, configuredSources)
       : {
           solarSources: configuredSources,

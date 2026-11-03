@@ -566,6 +566,8 @@ export class HuiEnergySourcesTableCard
     const combine =
       !showOnlyTotals &&
       (this._config.combine_sources ?? this._data.combineSources ?? false);
+    const combineType = (type: keyof EnergySourceByType) =>
+      combine && (types[type]?.length ?? 0) > 1;
 
     const combinedRows: Partial<
       Record<
@@ -651,7 +653,7 @@ export class HuiEnergySourcesTableCard
           totalCostsCompare[type] += costCompare;
         }
 
-        if (showOnlyTotals || combine) {
+        if (showOnlyTotals || combineType(type)) {
           return nothing;
         }
 
@@ -683,7 +685,9 @@ export class HuiEnergySourcesTableCard
               hasCosts[type] ? totalCostsCompare[type] : null,
               showCosts,
               compare,
-              showOnlyTotals || combine ? typeBulletColor(type) : undefined,
+              showOnlyTotals || combineType(type)
+                ? typeBulletColor(type)
+                : undefined,
               false,
               type === "gas" ? gasFormatOptions : undefined
             )
@@ -808,7 +812,7 @@ export class HuiEnergySourcesTableCard
                   return nothing;
                 }
 
-                if (combine) {
+                if (combineType("battery")) {
                   addToCombinedRow(
                     "battery_out",
                     energyFrom,
@@ -920,7 +924,7 @@ export class HuiEnergySourcesTableCard
                     return nothing;
                   }
 
-                  if (combine) {
+                  if (combineType("grid")) {
                     addToCombinedRow(
                       "grid_consumption",
                       energy,
@@ -982,7 +986,7 @@ export class HuiEnergySourcesTableCard
                     return nothing;
                   }
 
-                  if (combine) {
+                  if (combineType("grid")) {
                     addToCombinedRow(
                       "grid_return",
                       -energy,

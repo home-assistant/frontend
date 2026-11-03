@@ -215,7 +215,7 @@ class HuiWaterFlowSankeyCard
     // - >1 sources: home node aggregates all sources
     // - combined sources: one summed source node is the root (no home node)
     const combineSources =
-      waterSources.length > 0 &&
+      waterSources.length > 1 &&
       (this._config.combine_sources ?? this._data.combineSources ?? false);
     const showHomeNode = !combineSources && waterSources.length !== 1;
     let rootNodeId: string;

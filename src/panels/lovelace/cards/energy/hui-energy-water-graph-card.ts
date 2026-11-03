@@ -263,7 +263,7 @@ export class HuiEnergyWaterGraphCard
 
     const combine =
       (this._config!.combine_sources ?? energyData.combineSources ?? false) &&
-      waterSources.length > 0;
+      waterSources.length > 1;
     const statIds = waterSources.map((source) => source.stat_energy_from);
     const chartSources: WaterChartSource[] = combine
       ? [

@@ -111,6 +111,23 @@ describe("generatePowerSourcesGraphData", () => {
     ).toMatchSnapshot();
   });
 
+  it("keeps single sources combined when sources are separated", () => {
+    const energyData = buildEnergyData(1, {
+      days: 1,
+      period: "hour",
+      grid: true,
+      solar: true,
+      battery: true,
+    });
+    expect(
+      generatePowerSourcesGraphData({
+        ...baseParams,
+        energyData,
+        combineSources: false,
+      })
+    ).toEqual(generatePowerSourcesGraphData({ ...baseParams, energyData }));
+  });
+
   it("matches snapshot for grid-only (hour)", () => {
     const energyData = buildEnergyData(2, {
       days: 1,
@@ -435,14 +452,14 @@ describe("generatePowerSourcesGraphData with separate sources", () => {
     expect(separate.chartData.map((series) => series.id)).toEqual([
       `solar-${RATE_IDS.solar}`,
       `solar-${solar2}`,
-      `battery-${RATE_IDS.battery}`,
-      `battery-${RATE_IDS.battery}-negative`,
+      "battery",
+      "battery-negative",
       "usage",
     ]);
     expect(separate.legendData!.map((item) => item.id)).toEqual([
       `solar-${RATE_IDS.solar}`,
       `solar-${solar2}`,
-      `battery-${RATE_IDS.battery}`,
+      "battery",
       "usage",
     ]);
     const ys = (series: (typeof separate.chartData)[number]) =>
@@ -453,7 +470,7 @@ describe("generatePowerSourcesGraphData with separate sources", () => {
       (y, i) => y + ys(separate.chartData[1])[i]
     );
     expect(solarSum).toEqual(ys(combined.chartData[0]));
-    expect(separate.chartData[4].data).toEqual(combined.chartData[3].data);
+    expect(separate.chartData.slice(2)).toEqual(combined.chartData.slice(1));
   });
 });
 

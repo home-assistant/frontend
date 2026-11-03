@@ -42,7 +42,6 @@ export class EnergyViewStrategy extends ReactiveElement {
           collection_key: collectionKey,
           opening_direction: "right",
           vertical_opening_direction: "up",
-          show_combine_sources: true,
         },
       },
     };
@@ -70,7 +69,8 @@ export class EnergyViewStrategy extends ReactiveElement {
       return view;
     }
 
-    if (hasCombinableEnergySources(prefs)) {
+    if (hasCombinableEnergySources(prefs, ["grid", "solar", "battery"])) {
+      view.footer!.card!.show_combine_sources = true;
       energyCollection.setDefaultCombineSources(false);
     }
 

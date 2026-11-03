@@ -189,25 +189,15 @@ class HuiEnergySankeyCard
 
     const minEnergyThreshold = homeNode.value * MIN_SANKEY_THRESHOLD_FACTOR;
 
-    const combine =
-      this._config.combine_sources ?? this._data.combineSources ?? true;
-    if (!combine) {
-      const separate = this._computeSeparateSources(
-        types,
-        consumption,
-        summedData.timestamps,
-        computedStyle
-      );
-      nodes.push(...separate.nodes);
-      links.push(...separate.links);
-    }
+    const typeNodes: Node[] = [];
+    const typeLinks: Link[] = [];
 
-    if (combine && types.battery) {
+    if (types.battery) {
       const totalBatteryOut = summedData.total.from_battery ?? 0;
       const totalBatteryIn = summedData.total.to_battery ?? 0;
 
       // Add battery source
-      nodes.push({
+      typeNodes.push({
         id: "battery",
         label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
@@ -218,14 +208,14 @@ class HuiEnergySankeyCard
           .trim(),
         index: 0,
       });
-      links.push({
+      typeLinks.push({
         source: "battery",
         target: "home",
         value: consumption.total.used_battery,
       });
 
       // Add battery sink
-      nodes.push({
+      typeNodes.push({
         id: "battery_in",
         label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.battery"
@@ -237,14 +227,14 @@ class HuiEnergySankeyCard
         index: 1,
       });
       if (consumption.total.grid_to_battery > 0) {
-        links.push({
+        typeLinks.push({
           source: "grid",
           target: "battery_in",
           value: consumption.total.grid_to_battery,
         });
       }
       if (consumption.total.solar_to_battery > 0) {
-        links.push({
+        typeLinks.push({
           source: "solar",
           target: "battery_in",
           value: consumption.total.solar_to_battery,
@@ -252,10 +242,10 @@ class HuiEnergySankeyCard
       }
     }
 
-    if (combine && types.grid) {
+    if (types.grid) {
       const totalFromGrid = summedData.total.from_grid ?? 0;
 
-      nodes.push({
+      typeNodes.push({
         id: "grid",
         label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
@@ -267,7 +257,7 @@ class HuiEnergySankeyCard
         index: 0,
       });
 
-      links.push({
+      typeLinks.push({
         source: "grid",
         target: "home",
         value: consumption.total.used_grid,
@@ -275,10 +265,10 @@ class HuiEnergySankeyCard
     }
 
     // Add solar if available
-    if (combine && types.solar) {
+    if (types.solar) {
       const totalSolarProduction = summedData.total.solar ?? 0;
 
-      nodes.push({
+      typeNodes.push({
         id: "solar",
         label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.solar"
@@ -288,7 +278,7 @@ class HuiEnergySankeyCard
         index: 0,
       });
 
-      links.push({
+      typeLinks.push({
         source: "solar",
         target: "home",
         value: consumption.total.used_solar,
@@ -296,10 +286,10 @@ class HuiEnergySankeyCard
     }
 
     // Add grid return if available
-    if (combine && types.grid && types.grid.some((g) => g.stat_energy_to)) {
+    if (types.grid && types.grid.some((g) => g.stat_energy_to)) {
       const totalToGrid = summedData.total.to_grid ?? 0;
 
-      nodes.push({
+      typeNodes.push({
         id: "grid_return",
         label: this._i18n.localize(
           "ui.panel.lovelace.cards.energy.energy_distribution.grid"
@@ -311,19 +301,44 @@ class HuiEnergySankeyCard
         index: 1,
       });
       if (consumption.total.battery_to_grid > 0) {
-        links.push({
+        typeLinks.push({
           source: "battery",
           target: "grid_return",
           value: consumption.total.battery_to_grid,
         });
       }
       if (consumption.total.solar_to_grid > 0) {
-        links.push({
+        typeLinks.push({
           source: "solar",
           target: "grid_return",
           value: consumption.total.solar_to_grid,
         });
       }
+    }
+
+    const combine =
+      this._config.combine_sources ?? this._data.combineSources ?? true;
+    const split = <T>(sources?: T[]) =>
+      !combine && (sources?.length ?? 0) > 1 ? sources : undefined;
+    const splitSources: EnergySourceByType = {
+      battery: split(types.battery),
+      grid: split(types.grid),
+      solar: split(types.solar),
+    };
+    if (splitSources.battery || splitSources.grid || splitSources.solar) {
+      const separate = this._computeSeparateSources(
+        splitSources,
+        typeNodes,
+        typeLinks,
+        consumption,
+        summedData.timestamps,
+        computedStyle
+      );
+      nodes.push(...separate.nodes);
+      links.push(...separate.links);
+    } else {
+      nodes.push(...typeNodes);
+      links.push(...typeLinks);
     }
 
     const deviceValue = (statConsumption: string) =>
@@ -421,7 +436,9 @@ class HuiEnergySankeyCard
   }
 
   private _computeSeparateSources(
-    types: EnergySourceByType,
+    split: EnergySourceByType,
+    typeNodes: Node[],
+    typeLinks: Link[],
     consumption: EnergyConsumptionData,
     timestamps: number[],
     computedStyle: CSSStyleDeclaration
@@ -476,7 +493,19 @@ class HuiEnergySankeyCard
       return { id, values };
     };
 
-    const batteryOut = (types.battery ?? []).map((source, idx) =>
+    const addGroup = <T>(
+      type: string,
+      sources: T[] | undefined,
+      toNode: (source: T, idx: number) => SourceNode
+    ): SourceNode[] => {
+      if (!sources) {
+        nodes.push(...typeNodes.filter((node) => node.id === type));
+        return [{ id: type }];
+      }
+      return sources.map(toNode);
+    };
+
+    const batteryOut = addGroup("battery", split.battery, (source, idx) =>
       addNode(
         "battery",
         source.stat_energy_from,
@@ -490,7 +519,7 @@ class HuiEnergySankeyCard
           )
       )
     );
-    const batteryIn = (types.battery ?? []).map((source, idx) =>
+    const batteryIn = addGroup("battery_in", split.battery, (source, idx) =>
       addNode(
         "battery_in",
         source.stat_energy_to,
@@ -504,9 +533,10 @@ class HuiEnergySankeyCard
           )
       )
     );
-    const gridIn = (types.grid ?? [])
-      .filter((source) => source.stat_energy_from)
-      .map((source, idx) =>
+    const gridIn = addGroup(
+      "grid",
+      split.grid?.filter((source) => source.stat_energy_from),
+      (source, idx) =>
         addNode(
           "grid",
           source.stat_energy_from!,
@@ -520,8 +550,8 @@ class HuiEnergySankeyCard
               )
             : source.name
         )
-      );
-    const solar = (types.solar ?? []).map((source, idx) =>
+    );
+    const solar = addGroup("solar", split.solar, (source, idx) =>
       addNode(
         "solar",
         source.stat_energy_from,
@@ -531,9 +561,10 @@ class HuiEnergySankeyCard
         source.name
       )
     );
-    const gridOut = (types.grid ?? [])
-      .filter((source) => source.stat_energy_to)
-      .map((source, idx) =>
+    const gridOut = addGroup(
+      "grid_return",
+      split.grid?.filter((source) => source.stat_energy_to),
+      (source, idx) =>
         addNode(
           "grid_return",
           source.stat_energy_to!,
@@ -547,33 +578,49 @@ class HuiEnergySankeyCard
               )
             : source.name
         )
-      );
-    const home: SourceNode[] = [{ id: "home" }];
+    );
 
-    const flows: [Record<number, number>, SourceNode[], SourceNode[]][] = [
-      [consumption.used_battery, batteryOut, home],
-      [consumption.grid_to_battery, gridIn, batteryIn],
-      [consumption.solar_to_battery, solar, batteryIn],
-      [consumption.used_grid, gridIn, home],
-      [consumption.used_solar, solar, home],
-      [consumption.battery_to_grid, batteryOut, gridOut],
-      [consumption.solar_to_grid, solar, gridOut],
-    ];
-    const shares = (group: SourceNode[], t: number): SankeyFlowShare[] =>
-      group.map(({ id, values }) => [id, values ? (values[t] ?? 0) : 1]);
-    const links = new Map<string, Link & { value: number }>();
-    for (const [flow, from, to] of flows) {
+    const groups: Record<string, SourceNode[]> = {
+      home: [{ id: "home" }],
+      battery: batteryOut,
+      battery_in: batteryIn,
+      grid: gridIn,
+      solar,
+      grid_return: gridOut,
+    };
+    const flows: Record<string, Record<number, number>> = {
+      "battery>home": consumption.used_battery,
+      "grid>battery_in": consumption.grid_to_battery,
+      "solar>battery_in": consumption.solar_to_battery,
+      "grid>home": consumption.used_grid,
+      "solar>home": consumption.used_solar,
+      "battery>grid_return": consumption.battery_to_grid,
+      "solar>grid_return": consumption.solar_to_grid,
+    };
+    const isSplit = (id: string) => groups[id][0]?.id !== id;
+    const shares = (id: string, t: number): SankeyFlowShare[] =>
+      groups[id].map(({ id: nodeId, values }) => [
+        nodeId,
+        values ? (values[t] ?? 0) : 1,
+      ]);
+    const links = typeLinks.flatMap((link) => {
+      if (!isSplit(link.source) && !isSplit(link.target)) {
+        return [link];
+      }
+      const flow = flows[`${link.source}>${link.target}`];
+      const splitLinks = new Map<string, Link & { value: number }>();
       for (const t of timestamps) {
         addSplitSankeyLinks(
-          links,
+          splitLinks,
           flow[t] ?? 0,
-          shares(from, t),
-          shares(to, t)
+          shares(link.source, t),
+          shares(link.target, t)
         );
       }
-    }
+      return [...splitLinks.values()];
+    });
 
-    return { nodes, links: [...links.values()] };
+    return { nodes, links };
   }
 
   private _valueFormatter = (value: number) => {

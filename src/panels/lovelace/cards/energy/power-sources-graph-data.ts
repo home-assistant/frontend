@@ -84,12 +84,38 @@ function processData(
 const sourceSeriesId = (type: PowerSourceType, statRate: string) =>
   `${type}-${statRate}`;
 
+const getSplitTypes = (
+  energyData: EnergyData,
+  combineSources: boolean
+): Set<PowerSourceType> => {
+  const split = new Set<PowerSourceType>();
+  if (combineSources) {
+    return split;
+  }
+  const seen = new Set<PowerSourceType>();
+  for (const source of energyData.prefs.energy_sources) {
+    if (
+      (source.type === "solar" ||
+        source.type === "grid" ||
+        source.type === "battery") &&
+      source.stat_rate
+    ) {
+      if (seen.has(source.type)) {
+        split.add(source.type);
+      }
+      seen.add(source.type);
+    }
+  }
+  return split;
+};
+
 export function getPowerLegendValues(
   energyData: EnergyData,
   states: HassEntities,
   formatPower: (powerWatts: number) => string,
   combineSources = true
 ): Record<string, string> {
+  const splitTypes = getSplitTypes(energyData, combineSources);
   const watts: Record<string, number> = {};
   let homeWatts: number | undefined;
   for (const source of energyData.prefs.energy_sources) {
@@ -110,9 +136,9 @@ export function getPowerLegendValues(
     ) {
       const w = getPowerFromState(states[source.stat_rate]);
       if (w !== undefined) {
-        const key = combineSources
-          ? source.type
-          : sourceSeriesId(source.type, source.stat_rate);
+        const key = splitTypes.has(source.type)
+          ? sourceSeriesId(source.type, source.stat_rate)
+          : source.type;
         watts[key] = (watts[key] ?? 0) + w;
       }
     }
@@ -143,6 +169,7 @@ export function generatePowerSourcesGraphData(
 ): PowerSourcesGraphData {
   const { localize, states, energyData, computedStyles } = params;
   const combineSources = params.combineSources ?? true;
+  const splitTypes = getSplitTypes(energyData, combineSources);
 
   const legendValues = getPowerLegendValues(
     energyData,
@@ -213,7 +240,7 @@ export function generatePowerSourcesGraphData(
     if (!source.stat_rate) {
       continue;
     }
-    if (combineSources) {
+    if (!splitTypes.has(source.type)) {
       const meta = typeMeta[source.type];
       if (!groups[source.type].length) {
         groups[source.type].push({

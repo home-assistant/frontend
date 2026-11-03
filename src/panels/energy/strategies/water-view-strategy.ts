@@ -39,7 +39,6 @@ export class WaterViewStrategy extends ReactiveElement {
           collection_key: collectionKey,
           opening_direction: "right",
           vertical_opening_direction: "up",
-          show_combine_sources: true,
         },
       },
     };
@@ -63,7 +62,8 @@ export class WaterViewStrategy extends ReactiveElement {
       return view;
     }
 
-    if (hasCombinableEnergySources(prefs)) {
+    if (hasCombinableEnergySources(prefs, ["water"])) {
+      view.footer!.card!.show_combine_sources = true;
       energyCollection.setDefaultCombineSources(false);
     }
 
