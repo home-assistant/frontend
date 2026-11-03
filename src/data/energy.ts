@@ -1490,13 +1490,18 @@ export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,
   excludeSource?: string,
-  statisticsMetaData: Record<string, StatisticsMetaData> = {}
+  statisticsMetaData: Record<string, StatisticsMetaData> = {},
+  excludeFrom?: "source" | "device"
 ): EnergyGasUnitClass | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
       continue;
     }
-    if (excludeSource && excludeSource === source.stat_energy_from) {
+    if (
+      excludeSource &&
+      excludeSource === source.stat_energy_from &&
+      excludeFrom !== "device"
+    ) {
       continue;
     }
     const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
@@ -1509,7 +1514,11 @@ export const getEnergyGasUnitClass = (
     }
   }
   for (const device of prefs.device_consumption_gas) {
-    if (excludeSource && excludeSource === device.stat_consumption) {
+    if (
+      excludeSource &&
+      excludeSource === device.stat_consumption &&
+      excludeFrom !== "source"
+    ) {
       continue;
     }
     const unitClass = statisticsMetaData[device.stat_consumption]?.unit_class;

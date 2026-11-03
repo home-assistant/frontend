@@ -242,7 +242,8 @@ export class EnergyDeviceSettingsWaterGas extends LitElement {
       ? getEnergyGasUnitClass(
           this.preferences,
           excludeSource,
-          this.statsMetadata
+          this.statsMetadata,
+          "device"
         )
       : undefined;
   }

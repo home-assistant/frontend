@@ -11159,6 +11159,14 @@
               "name": "Water flow Sankey graph",
               "description": "This card shows the real-time flow of water in your home."
             },
+            "gas-sankey": {
+              "name": "Gas Sankey graph",
+              "description": "This card shows the distribution of gas consumption in your home on a Sankey graph."
+            },
+            "gas-flow-sankey": {
+              "name": "Gas flow Sankey graph",
+              "description": "This card shows the real-time flow of gas in your home."
+            },
             "energy-solar-consumed-gauge": {
               "name": "Solar consumed gauge",
               "description": "This card shows how much of the solar energy was used by your home and was not exported to the grid."
