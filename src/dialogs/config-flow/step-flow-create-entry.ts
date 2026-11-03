@@ -55,6 +55,8 @@ class StepFlowCreateEntry extends LitElement {
     { name?: string; area?: string }
   > = {};
 
+  @state() private _loading = false;
+
   private _deviceEntities = memoizeOne(
     (
       deviceId: string,
@@ -217,6 +219,11 @@ class StepFlowCreateEntry extends LitElement {
         hasPendingUpdates: Object.keys(this._deviceUpdate).length > 0,
       });
     }
+    if (changedProps.has("_loading")) {
+      fireEvent(this, "flow-step-footer-state-changed", {
+        loading: this._loading,
+      });
+    }
   }
 
   private async _loadDomains() {
@@ -295,8 +302,19 @@ class StepFlowCreateEntry extends LitElement {
     }
   }
 
-  public finish(): Promise<void> {
-    return this._flowDone();
+  public async finish(): Promise<void> {
+    if (this._loading) {
+      return;
+    }
+    // Stay loading until the dialog closes, so a second click cannot save
+    // the updates again
+    this._loading = true;
+    try {
+      await this._flowDone();
+    } catch (err) {
+      this._loading = false;
+      throw err;
+    }
   }
 
   private async _areaPicked(ev: ValueChangedEvent<string>) {

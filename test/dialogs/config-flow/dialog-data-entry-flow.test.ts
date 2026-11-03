@@ -1,13 +1,25 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+import type { HaButton } from "../../../src/components/ha-button";
 import type { HaDialog } from "../../../src/components/ha-dialog";
+import type { ConfigEntry } from "../../../src/data/config_entries";
 import type {
   DataEntryFlowProgressedEvent,
   DataEntryFlowStep,
+  DataEntryFlowStepCreateEntry,
   DataEntryFlowStepExternal,
   DataEntryFlowStepForm,
   DataEntryFlowStepMenu,
   DataEntryFlowStepProgress,
 } from "../../../src/data/data_entry_flow";
+import type { DeviceRegistryEntry } from "../../../src/data/device/device_registry";
 import "../../../src/dialogs/config-flow/dialog-data-entry-flow";
 import type { FlowConfig } from "../../../src/dialogs/config-flow/show-dialog-data-entry-flow";
 import type { HomeAssistant } from "../../../src/types";
@@ -50,6 +62,11 @@ vi.mock("../../../src/components/ha-form/ha-form", () => {
 
 vi.mock("../../../src/components/ha-list-item", () => {
   customElements.define("ha-list-item", class extends HTMLElement {});
+  return {};
+});
+
+vi.mock("../../../src/components/ha-area-picker", () => {
+  customElements.define("ha-area-picker", class extends HTMLElement {});
   return {};
 });
 
@@ -131,6 +148,7 @@ const eventListeners: Record<string, (ev: unknown) => void> = {};
 const hass = {
   localize: (key: string) => key,
   devices: {},
+  callWS: vi.fn(),
   connection: {
     subscribeEvents: vi.fn(
       async (callback: (ev: unknown) => void, eventType: string) => {
@@ -396,5 +414,162 @@ describe("dialog-data-entry-flow progress", () => {
     await settle(dialog);
 
     expect(dialog["_step"]).toBeUndefined();
+  });
+});
+
+describe("dialog-data-entry-flow finish", () => {
+  const createEntryStep: DataEntryFlowStepCreateEntry = {
+    type: "create_entry",
+    flow_id: "test-flow",
+    handler: "test",
+    title: "Test",
+    result: {
+      entry_id: "test-entry",
+      domain: "test",
+      title: "Test",
+      state: "loaded",
+    } as ConfigEntry,
+    description: null,
+  };
+
+  const device = {
+    id: "device-1",
+    name: "Lamp",
+    name_by_user: null,
+    manufacturer: null,
+    model: null,
+    area_id: null,
+    primary_config_entry: null,
+    config_entries: ["test-entry"],
+  } as DeviceRegistryEntry;
+
+  const mockCallWS = ({
+    saveDevice = async () => ({}),
+    getAutomaticEntityIds = async () => ({}),
+  }: {
+    saveDevice?: () => Promise<unknown>;
+    getAutomaticEntityIds?: () => Promise<unknown>;
+  } = {}) => {
+    vi.mocked(hass.callWS).mockImplementation((async (msg: {
+      type: string;
+    }) => {
+      if (msg.type === "config/device_registry/update") {
+        return saveDevice();
+      }
+      if (msg.type === "config/entity_registry/get_automatic_entity_ids") {
+        return getAutomaticEntityIds();
+      }
+      return [];
+    }) as HomeAssistant["callWS"]);
+  };
+
+  const deviceUpdateCount = () =>
+    vi
+      .mocked(hass.callWS)
+      .mock.calls.filter(
+        ([msg]) => msg.type === "config/device_registry/update"
+      ).length;
+
+  const openDeviceStep = async () => {
+    const step = document.createElement("step-flow-create-entry");
+    step.hass = { ...hass, entities: {} };
+    step.flowConfig = flowConfig;
+    step.step = createEntryStep;
+    step.devices = [device];
+    document.body.append(step);
+    await step.updateComplete;
+    step
+      .shadowRoot!.querySelector("ha-area-picker")!
+      .dispatchEvent(
+        new CustomEvent("value-changed", { detail: { value: "kitchen" } })
+      );
+    await step.updateComplete;
+    const flowUpdates: unknown[] = [];
+    step.addEventListener("flow-update", (ev) => {
+      flowUpdates.push(ev.detail);
+    });
+    return { step, flowUpdates };
+  };
+
+  // jsdom lacks the validity API of the device name input
+  const internalsProto = window.ElementInternals.prototype as any;
+  const patched = ["setValidity", "setFormValue", "validity"];
+  const originals = patched.map((key) =>
+    Object.getOwnPropertyDescriptor(internalsProto, key)
+  );
+
+  beforeAll(() => {
+    internalsProto.setValidity = vi.fn();
+    internalsProto.setFormValue = vi.fn();
+    Object.defineProperty(internalsProto, "validity", {
+      get: () => ({ valid: true }),
+      configurable: true,
+    });
+  });
+
+  afterAll(() => {
+    patched.forEach((key, i) => {
+      if (originals[i]) {
+        Object.defineProperty(internalsProto, key, originals[i]);
+      } else {
+        delete internalsProto[key];
+      }
+    });
+  });
+
+  afterEach(() => {
+    document.body.replaceChildren();
+    vi.clearAllMocks();
+  });
+
+  it("keeps the Finish button loading until the dialog closes", async () => {
+    mockCallWS();
+    const dialog = await openDialog(createEntryStep);
+    const step = dialog.shadowRoot!.querySelector("step-flow-create-entry")!;
+    await step.updateComplete;
+    const finishButton = dialog.shadowRoot!.querySelector<HaButton>(
+      "ha-dialog-footer ha-button"
+    )!;
+
+    finishButton.click();
+    await step.updateComplete;
+    await dialog.updateComplete;
+
+    expect(finishButton.loading).toBe(true);
+  });
+
+  it("saves the device updates once when Finish is clicked twice", async () => {
+    const pendingSaves: (() => void)[] = [];
+    mockCallWS({
+      saveDevice: () =>
+        new Promise((resolve) => {
+          pendingSaves.push(() => resolve({}));
+        }),
+    });
+    const { step, flowUpdates } = await openDeviceStep();
+
+    const first = step.finish();
+    const second = step.finish();
+    pendingSaves.forEach((save) => save());
+    await Promise.all([first, second]);
+
+    expect(deviceUpdateCount()).toBe(1);
+    expect(flowUpdates).toHaveLength(1);
+  });
+
+  it("lets the user finish again when saving fails", async () => {
+    mockCallWS({
+      getAutomaticEntityIds: vi
+        .fn()
+        .mockRejectedValueOnce(new Error("Connection lost"))
+        .mockResolvedValue({}),
+    });
+    const { step, flowUpdates } = await openDeviceStep();
+
+    await expect(step.finish()).rejects.toThrow("Connection lost");
+    await step.finish();
+
+    expect(deviceUpdateCount()).toBe(2);
+    expect(flowUpdates).toHaveLength(1);
   });
 });
