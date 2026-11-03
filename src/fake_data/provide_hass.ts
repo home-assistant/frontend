@@ -391,15 +391,18 @@ export const provideHass = (
 
   const localLanguage = getLocalLanguage();
   const noop = () => undefined;
+  const auth = {
+    data: {
+      hassUrl: location.origin,
+    },
+  } as any;
 
   const hassObj: MockHomeAssistant = {
     // Home Assistant properties
-    auth: {
-      data: {
-        hassUrl: location.origin,
-      },
-    } as any,
+    auth,
     connection: {
+      // The map reads the URL of Home Assistant from here
+      options: { auth },
       addEventListener: noop,
       removeEventListener: noop,
       sendMessage: (msg) => {
