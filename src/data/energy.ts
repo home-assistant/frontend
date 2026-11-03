@@ -511,7 +511,7 @@ export const getReferencedStatisticIds = (
   }
   if (!(includeTypes && !includeTypes.includes("gas"))) {
     statIDs.push(
-      ...(prefs.device_consumption_gas ?? []).map((d) => d.stat_consumption)
+      ...prefs.device_consumption_gas.map((d) => d.stat_consumption)
     );
   }
 
@@ -550,7 +550,7 @@ export const getReferencedStatisticIdsPower = (
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
   statIDs.push(...prefs.device_consumption_water.map((d) => d.stat_rate));
-  statIDs.push(...(prefs.device_consumption_gas ?? []).map((d) => d.stat_rate));
+  statIDs.push(...prefs.device_consumption_gas.map((d) => d.stat_rate));
 
   return statIDs.filter(Boolean) as string[];
 };
@@ -664,7 +664,7 @@ const getEnergyData = async (
           ...(energySourcesByType(prefs).gas ?? []).map(
             (source) => source.stat_energy_from
           ),
-          ...(prefs.device_consumption_gas ?? []).map(
+          ...prefs.device_consumption_gas.map(
             (device) => device.stat_consumption
           ),
         ]),
@@ -1449,7 +1449,7 @@ export const getEnergyGasUnitClass = (
       return statisticIdWithMeta.unit_class as EnergyGasUnitClass;
     }
   }
-  for (const device of prefs.device_consumption_gas ?? []) {
+  for (const device of prefs.device_consumption_gas) {
     if (excludeSource && excludeSource === device.stat_consumption) {
       continue;
     }
@@ -1471,7 +1471,7 @@ const getEnergyGasUnit = (
     ...prefs.energy_sources.flatMap((s) =>
       s.type === "gas" ? [s.stat_energy_from] : []
     ),
-    ...(prefs.device_consumption_gas ?? []).map((d) => d.stat_consumption),
+    ...prefs.device_consumption_gas.map((d) => d.stat_consumption),
   ];
   const units = gasStatIds.map((id) =>
     getDisplayUnit(states, id, statisticsMetaData[id])
@@ -2161,6 +2161,48 @@ export const formatFlowRateShort = (
   return formatNumberWithUnit(galPerMin, "gal/min", hassLocale, {
     maximumFractionDigits: 1,
   });
+};
+
+export type WaterGasResource = "water" | "gas";
+
+export const getWaterGasDevicesKey = (resource: WaterGasResource) =>
+  `device_consumption_${resource}` as const;
+
+export const getWaterGasDevices = (
+  prefs: EnergyPreferences,
+  resource: WaterGasResource
+): DeviceConsumptionEnergyPreference[] =>
+  prefs[getWaterGasDevicesKey(resource)];
+
+export const getFlowRateUnit = (
+  resource: WaterGasResource,
+  prefs: EnergyPreferences,
+  states: HomeAssistant["states"]
+): string | undefined => {
+  const ids = [
+    ...prefs.energy_sources.flatMap((s) =>
+      s.type === resource && s.stat_rate ? [s.stat_rate] : []
+    ),
+    ...getWaterGasDevices(prefs, resource).flatMap((d) =>
+      d.stat_rate ? [d.stat_rate] : []
+    ),
+  ];
+  for (const id of ids) {
+    const unit = states[id]?.attributes.unit_of_measurement;
+    if (unit) {
+      return unit;
+    }
+  }
+  return undefined;
+};
+
+export const getFlowRateInUnit = (
+  stateObj: HassEntity | undefined,
+  unit: string
+): number | undefined => {
+  const value = getFlowRateFromState(stateObj);
+  const factor = FLOW_RATE_TO_LMIN[unit];
+  return value === undefined || factor === undefined ? value : value / factor;
 };
 
 /**

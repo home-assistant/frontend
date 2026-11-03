@@ -153,6 +153,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
                 ),
                 type: "energy-gas-graph",
                 collection_key: collectionKey,
+                combine_sources: true,
               }
             : {
                 title: hass.localize("ui.panel.energy.cards.gas_sankey_title"),

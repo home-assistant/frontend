@@ -51,8 +51,9 @@ const LAZY_LOAD_TYPES = {
   "energy-distribution": () =>
     import("../cards/energy/hui-energy-distribution-card"),
   "energy-gas-graph": () => import("../cards/energy/hui-energy-gas-graph-card"),
-  "gas-sankey": () => import("../cards/gas/hui-gas-sankey-card"),
-  "gas-flow-sankey": () => import("../cards/gas/hui-gas-flow-sankey-card"),
+  "gas-sankey": () => import("../cards/water-gas/hui-water-gas-sankey-card"),
+  "gas-flow-sankey": () =>
+    import("../cards/water-gas/hui-water-gas-flow-sankey-card"),
   "energy-water-graph": () =>
     import("../cards/energy/hui-energy-water-graph-card"),
   "energy-grid-neutrality-gauge": () =>
@@ -70,9 +71,9 @@ const LAZY_LOAD_TYPES = {
   "energy-usage-graph": () =>
     import("../cards/energy/hui-energy-usage-graph-card"),
   "energy-sankey": () => import("../cards/energy/hui-energy-sankey-card"),
-  "water-sankey": () => import("../cards/water/hui-water-sankey-card"),
+  "water-sankey": () => import("../cards/water-gas/hui-water-gas-sankey-card"),
   "water-flow-sankey": () =>
-    import("../cards/water/hui-water-flow-sankey-card"),
+    import("../cards/water-gas/hui-water-gas-flow-sankey-card"),
   "power-sources-graph": () =>
     import("../cards/energy/hui-power-sources-graph-card"),
   "power-sankey": () => import("../cards/energy/hui-power-sankey-card"),

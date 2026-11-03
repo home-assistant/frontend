@@ -82,7 +82,7 @@ export const hasWaterRateDevices = (prefs: EnergyPreferences): boolean =>
   (prefs.device_consumption_water ?? []).some((device) => device.stat_rate);
 
 export const hasGasRateDevices = (prefs: EnergyPreferences): boolean =>
-  (prefs.device_consumption_gas ?? []).some((device) => device.stat_rate);
+  prefs.device_consumption_gas.some((device) => device.stat_rate);
 
 /** A water source exposing a live flow-rate statistic. */
 export const hasWaterRateSource = (prefs: EnergyPreferences): boolean =>
