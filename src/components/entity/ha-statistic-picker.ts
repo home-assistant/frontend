@@ -191,6 +191,8 @@ export class HaStatisticPicker extends LitElement {
 
   @state() private _loadFailed = false;
 
+  private _statisticIdsRequest = 0;
+
   @property({ attribute: "can-edit", type: Boolean }) public canEdit?: boolean;
 
   public willUpdate(changedProps: PropertyValues<this>) {
@@ -203,15 +205,27 @@ export class HaStatisticPicker extends LitElement {
   }
 
   private async _getStatisticIds() {
+    // Changing the statistic types starts a new request, and only the latest
+    // one may update the picker
+    const request = ++this._statisticIdsRequest;
     this._loadFailed = false;
 
+    let statisticIds: StatisticsMetaData[];
     try {
-      this.statisticIds = await getStatisticIds(this._api, this.statisticTypes);
+      statisticIds = await getStatisticIds(this._api, this.statisticTypes);
     } catch {
-      this._loadFailed = true;
+      if (request === this._statisticIdsRequest) {
+        this._loadFailed = true;
+      }
 
       return;
     }
+
+    if (request !== this._statisticIdsRequest) {
+      return;
+    }
+
+    this.statisticIds = statisticIds;
     this._picker?.requestUpdate();
     this._valueRenderer = this._makeValueRenderer();
   }
