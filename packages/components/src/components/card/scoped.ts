@@ -1,5 +1,4 @@
 import type { ElementDefinition } from "../../utils/registration/definition";
-import { scopedVariant } from "../../utils/registration/dependencies";
 import { HacCard } from "./hac-card";
 import { TAG_NAME } from "./info";
 
@@ -12,5 +11,5 @@ export { HacCard };
  */
 export const hacCard: ElementDefinition<typeof HacCard> = {
   tagName: TAG_NAME,
-  element: scopedVariant(HacCard),
+  element: HacCard,
 };

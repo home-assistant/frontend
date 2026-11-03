@@ -133,31 +133,6 @@ reserved and cannot be variant names.
 
 Every element has its own version in `info.ts`.
 
-### Dependencies
-
-A component that renders other hac components in its shadow root lists them
-in `static dependencies`, with the tag name from its `info.ts`, and imports
-only their classes:
-
-```ts
-import { TAG_NAME as CHILD_TAG_NAME } from "../child/info";
-import { HacChild } from "../child/hac-child";
-
-export class HacParent extends LitElement {
-  static readonly dependencies = [
-    { tagName: CHILD_TAG_NAME, element: HacChild },
-  ];
-}
-```
-
-Never register a dependency yourself. The entry point decides where it goes:
-
-- `global` registers dependencies globally, like the component. Inside Home
-  Assistant everything stays in the global registry.
-- `scoped` registers a variant of the component whose shadow root has its own
-  registry with the bundled dependencies. Its internals never pick up another
-  copy from the page.
-
 Entry points are mapped with subpath patterns in `package.json`, so a new
 element directory needs no `package.json` change. Only `global.ts` files have
 side effects, which `sideEffects` relies on for tree shaking.
