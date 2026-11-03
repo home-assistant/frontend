@@ -22,10 +22,45 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup Node and install
-        uses: $/.github/actions/setup
+      # These steps mirror .github/actions/setup with node-modules-cache enabled.
+      # Copilot runs this workflow in a context that can't resolve `$/`
+      # self-repository actions, so the steps are inlined here.
+      - name: Restore complete dependency tree
+        id: dependency-cache
+        continue-on-error: true
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          node-modules-cache: true
+          path: |
+            node_modules
+            ~/.local/share/pnpm/store
+          key: >-
+            node-modules-v1-${{ runner.os }}-${{ runner.arch }}-${{
+            hashFiles('.nvmrc', 'package.json', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'patches/**') }}
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Get pnpm store directory
+        id: pnpm-store
+        if: steps.dependency-cache.outputs.cache-hit != 'true'
+        run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache pnpm store
+        if: steps.pnpm-store.outputs.path
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: pnpm-store-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: Install dependencies
+        if: steps.dependency-cache.outputs.cache-hit != 'true'
+        run: pnpm install --frozen-lockfile
 
       - name: Skip fetching nightly translations
         run: echo "SKIP_FETCH_NIGHTLY_TRANSLATIONS=1" >> "$GITHUB_ENV"
