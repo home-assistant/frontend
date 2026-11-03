@@ -140,6 +140,7 @@ export class HaCategoryPicker extends LitElement {
     this._unsubCategories = collection.subscribe((categories) => {
       if (this._categoriesScope === scope) {
         this._categories = categories;
+        this._loadFailed = false;
       }
     });
     // The subscription never reports a failed fetch, so fetch once more to
@@ -156,7 +157,8 @@ export class HaCategoryPicker extends LitElement {
     try {
       await collection.refresh();
     } catch {
-      if (this._categoriesScope === scope) {
+      // The subscription's own fetch may still have delivered the list
+      if (this._categoriesScope === scope && collection.state === undefined) {
         this._loadFailed = true;
       }
     }
