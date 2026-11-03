@@ -18,7 +18,7 @@ workflows:
         - 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
     '.github/workflows/codeql-analysis.yaml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
-        - 'github/codeql-action@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee'
+        - 'github/codeql-action@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
     '.github/workflows/copilot-setup-steps.yml':
         - 'actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
@@ -56,7 +56,7 @@ workflows:
         - 'actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         - 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1'
-        - 'actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97'
+        - 'actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0'
         - 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
     '.github/workflows/pull-request-standards.yaml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
@@ -69,10 +69,10 @@ workflows:
         - 'actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         - 'actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1'
-        - 'actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97'
-        - 'home-assistant/actions@cd6f3635a740c84d8a14f6121a90068b8ece6bf6'
+        - 'actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0'
+        - 'home-assistant/actions@86d4564712fa02543c808e3a693dd04f9d3f8361'
         - 'home-assistant/wheels@9e17ab1ed5c4c79d8b61e29fa63de25ca2710716'
-        - 'pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33'
+        - 'pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086'
     '.github/workflows/restrict-task-creation.yaml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         - 'actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3'
@@ -126,9 +126,9 @@ dependencies:
         commit: 'sha1-949feb2413d6458794dcd2491c4babbbce0c15c1'
         owner_id: 44036562
         repo_id: 189476904
-    'actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97':
-        ref: 'v7.0.0'
-        commit: 'sha1-5fda3b95a4ea91299a34e894583c3862153e4b97'
+    'actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0':
+        ref: 'v7.1.0'
+        commit: 'sha1-6d4fd22b20465ccc0f7354476588e8df7c9ca0e0'
         owner_id: 44036562
         repo_id: 192625525
     'actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405':
@@ -151,14 +151,14 @@ dependencies:
         commit: 'sha1-89ae32b08ed1a541efecbab17912962a5e38981c'
         owner_id: 7513068
         repo_id: 113918130
-    'github/codeql-action@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee':
-        ref: 'v4.39.0'
-        commit: 'sha1-6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee'
+    'github/codeql-action@9b3254085494b55a0f7c4c2b3d2d52cc712ce370':
+        ref: 'v4.39.1'
+        commit: 'sha1-9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
         owner_id: 9919
         repo_id: 259445878
-    'home-assistant/actions@cd6f3635a740c84d8a14f6121a90068b8ece6bf6':
+    'home-assistant/actions@86d4564712fa02543c808e3a693dd04f9d3f8361':
         ref: 'master'
-        commit: 'sha1-cd6f3635a740c84d8a14f6121a90068b8ece6bf6'
+        commit: 'sha1-86d4564712fa02543c808e3a693dd04f9d3f8361'
         owner_id: 13844975
         repo_id: 173703505
     'home-assistant/wheels@9e17ab1ed5c4c79d8b61e29fa63de25ca2710716':
@@ -171,9 +171,9 @@ dependencies:
         commit: 'sha1-5f6978faf089d4d20b00c7766989d076bb2fc7f1'
         owner_id: 18365890
         repo_id: 197176365
-    'pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33':
-        ref: 'v1.14.2'
-        commit: 'sha1-dc37677b2e1c63e2034f94d8a5b11f265b73ba33'
+    'pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086':
+        ref: 'v1.14.3'
+        commit: 'sha1-7245906fb61fa33a13554f9d5fb856fe61758086'
         owner_id: 647025
         repo_id: 178055147
         uses:
