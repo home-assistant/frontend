@@ -172,7 +172,7 @@ overrides:
 patchedDependencies:
   '@material/mwc-list@0.27.0': 9450e509a86887d8f68ca9cf3f81e6ed70e94e49de13c5f6f20f94519ad4a987
   echarts@6.1.0: 4c014bd1952b4d1f21311ed2212dc87192e70b6e782597ecc7a485270247bbb5
-  sortablejs@1.15.7: f2ec2ae6877dfc201c542b4f9ded1d03831258bf328ae7bba876d14ce4508a06
+  sortablejs@1.15.7: f25f02dcc8720341c3cfac312e0502081328108270852ad039187c2c5e2ea432
   tinykeys@4.0.1: cdc7ece96d53357d38ff3c124a2553f86e3a5dc333d641d223eb6f07e28275f0
   workbox-build@7.4.1: 75e6346ad8d8af554c167f77ac7d9b9652f010398efdc6b399925a4795133099
 
@@ -422,7 +422,7 @@ importers:
         version: 2.8.1
       sortablejs:
         specifier: 1.15.7
-        version: 1.15.7(patch_hash=f2ec2ae6877dfc201c542b4f9ded1d03831258bf328ae7bba876d14ce4508a06)
+        version: 1.15.7(patch_hash=f25f02dcc8720341c3cfac312e0502081328108270852ad039187c2c5e2ea432)
       stacktrace-js:
         specifier: 2.0.2
         version: 2.0.2
@@ -14809,7 +14809,7 @@ snapshots:
       ip-address: 10.7.2
       smart-buffer: 4.2.0
 
-  sortablejs@1.15.7(patch_hash=f2ec2ae6877dfc201c542b4f9ded1d03831258bf328ae7bba876d14ce4508a06): {}
+  sortablejs@1.15.7(patch_hash=f25f02dcc8720341c3cfac312e0502081328108270852ad039187c2c5e2ea432): {}
 
   source-map-js@1.2.2: {}
 
