@@ -4,6 +4,9 @@ import "./workers";
 // they are defined, and cards need a provider to request their context from.
 import "./ha-embed-provider";
 import "./ha-embed-card";
+// For custom cards, which can't load it themselves. The built-in cards only
+// load it with the map card.
+import "../../../src/components/item/ha-list-item-button";
 import { fontStyles } from "../../../src/resources/roboto";
 
 // Font faces only work in the document, not in the shadow root of the card.
