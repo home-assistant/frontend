@@ -778,7 +778,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       height: 100%;
     }
     .flex ha-list-base {
-      display: block;
       padding-bottom: 64px;
     }
     .flex ha-list-base,
