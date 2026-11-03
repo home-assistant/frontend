@@ -140,7 +140,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         .entry=${entry}
         .id=${this.narrow ? entry.id : ""}
         .headline=${entry.name}
-        .value=${entry.id}
+        data-value=${entry.id}
         @click=${this._itemClicked}
       >
         ${this._renderZoneGraphic(
@@ -176,7 +176,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       <ha-list-item-button
         .id=${this.narrow ? stateObject.entity_id : ""}
         .headline=${name}
-        .value=${stateObject.entity_id}
+        data-value=${stateObject.entity_id}
         .noEdit=${stateObject.entity_id !== "zone.home" || !this._canEditCore}
         @click=${this._stateItemClicked}
       >
@@ -604,11 +604,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       this._openEditEntry(ev);
       return;
     }
-    this._zoomZone((ev.currentTarget! as any).value);
+    this._zoomZone((ev.currentTarget as HTMLElement).dataset.value!);
   }
 
   private _stateItemClicked(ev: Event) {
-    const entryId: string = (ev.currentTarget! as any).value;
+    const entryId = (ev.currentTarget as HTMLElement).dataset.value!;
 
     if (this.narrow && entryId === HOME_ZONE_ENTITY_ID) {
       this._editHomeZone(ev);

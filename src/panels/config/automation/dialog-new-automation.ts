@@ -208,7 +208,7 @@ class DialogNewAutomation extends LitElement {
                                       `ui.panel.config.${this._mode}.dialog_new.blueprint_source.${blueprint.sourceType}`
                                     )
                               }
-                              .path=${blueprint.path}
+                              data-path=${blueprint.path}
                               @click=${this._blueprint}
                             >
                               <ha-svg-icon
@@ -293,7 +293,7 @@ class DialogNewAutomation extends LitElement {
   }
 
   private _blueprint(ev: Event) {
-    const path = (ev.currentTarget as HTMLElement & { path: string }).path;
+    const path = (ev.currentTarget as HTMLElement).dataset.path!;
     if (this._mode === "script") {
       showScriptEditor({ use_blueprint: { path } });
     } else {
