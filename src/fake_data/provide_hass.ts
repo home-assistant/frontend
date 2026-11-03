@@ -350,17 +350,20 @@ export const provideHass = (
       entities[ent.entityId] = ent;
       states[ent.entityId] = ent.toState();
 
+      const name = registryName(ent);
       registry[ent.entityId] = {
         entity_id: ent.entityId,
-        ...registryName(ent),
+        ...name,
         icon: undefined,
         platform: ent.platform ?? "demo",
         labels: [],
         area_id: ent.areaId,
         device_id: ent.deviceId,
+        // Only follow the device when its name was split off, so a friendly
+        // name that doesn't start with it is shown as it is
         next_name_part: ent.areaId
           ? "area"
-          : ent.deviceId
+          : name.has_entity_name
             ? "device"
             : undefined,
       } satisfies EntityRegistryDisplayEntry;
