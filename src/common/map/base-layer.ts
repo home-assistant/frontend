@@ -16,8 +16,8 @@ import {
 // other one is built in the browser. The attribution comes from the TileJSON,
 // deliberately: it follows whoever serves the tiles.
 const SHIPPED_STYLES = {
-  light: "/static/map/light.json",
-  dark: "/static/map/dark.json",
+  light: `${__STATIC_PATH__}map/light.json`,
+  dark: `${__STATIC_PATH__}map/dark.json`,
 } as const;
 
 // MapLibre needs WebGL2 even for raster, so the fallback stays a Leaflet layer.
@@ -92,8 +92,12 @@ const useDemoUpstream = (style: StyleSpecification): StyleSpecification => {
   return style;
 };
 
+// The origin that serves the frontend's files: the page, except for the demo
+// embed on another site
+const filesBase = () => new URL(__STATIC_PATH__, location.href);
+
 // MapLibre rejects a relative sprite URL
-const absoluteSprite = (url: string) => new URL(url, location.href).href;
+const absoluteSprite = (url: string) => new URL(url, filesBase()).href;
 
 // Shared only while in flight, or a style that failed once would never be
 // fetched again. Text rather than a parsed style: MapLibre mutates what it
@@ -141,14 +145,15 @@ export const loadStyle = async (
 
 // Global to MapLibre; set once before the first map is created. Absolute,
 // because on Cast the page is not served from the instance. The URL comes
-// from the build: the worker is an entry of its own, next to the app.
+// from the build: the worker is an entry of its own, next to the app. MapLibre
+// starts a worker from another origin itself.
 let workerUrlSet = false;
 export const ensureWorkerUrl = (setUrl: typeof setWorkerUrl) => {
   if (workerUrlSet) {
     return;
   }
   workerUrlSet = true;
-  setUrl(new URL(__MAPLIBRE_WORKER_URL__, location.href).href);
+  setUrl(new URL(__MAPLIBRE_WORKER_URL__, filesBase()).href);
 };
 
 const createVectorLayer = async (

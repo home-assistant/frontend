@@ -43,7 +43,9 @@ const displayFields = (entry: EntityRegistryEntry) => ({
   hidden: entry.hidden_by !== null,
 });
 
-const extEntry = (entry: EntityRegistryEntry): ExtEntityRegistryEntry => ({
+export const extEntry = (
+  entry: EntityRegistryEntry
+): ExtEntityRegistryEntry => ({
   ...entry,
   capabilities: {},
   aliases: [],
@@ -56,6 +58,16 @@ export const mockEntityRegistry = (
   entries = [...data];
   // A new array, so subscribers see the registry changed after an update
   hass.mockWS("config/entity_registry/list", () => [...entries]);
+  hass.mockWS(
+    "config/entity_registry/get",
+    (msg: { entity_id: string }): ExtEntityRegistryEntry => {
+      const entry = entries.find((e) => e.entity_id === msg.entity_id);
+      if (!entry) {
+        throw new Error(`Entity not found: ${msg.entity_id}`);
+      }
+      return extEntry(entry);
+    }
+  );
   hass.mockWS(
     "config/entity_registry/get_entries",
     (msg: { entity_ids: string[] }) => {

@@ -16,7 +16,7 @@ import { finalizeMapStyle } from "./map-style-transforms";
  */
 // Versioned: /static is served with a month of max-age, so a cached manifest
 // could otherwise pair a new build with the sprite sheet of an old one.
-const STYLE_URLS_PATH = `/static/map/urls.json?v=${__VERSION__}`;
+const STYLE_URLS_PATH = `${__STATIC_PATH__}map/urls.json?v=${__VERSION__}`;
 
 let urls: Promise<OsmOptions["urls"]> | undefined;
 
