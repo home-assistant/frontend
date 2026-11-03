@@ -16,6 +16,7 @@ import type { EntityRegistryEntry } from "../../../../data/entity/entity_registr
 import type {
   Schedule,
   ScheduleBlock,
+  ScheduleBlockPreview,
   ScheduleBlockRef,
   ScheduleWeek,
   ScheduleWeekday,
@@ -34,7 +35,12 @@ import "./ha-schedule-block-editor";
 import "./ha-schedule-weekday-picker";
 
 type SchedulePanel =
-  | { type: "block"; source?: ScheduleBlockRef }
+  | {
+      type: "block";
+      source?: ScheduleBlockRef;
+      /** The editor's draft, shown on the timeline until it is applied. */
+      preview?: ScheduleBlockPreview;
+    }
   | { type: "copy"; day: ScheduleWeekday; targets: ScheduleWeekday[] };
 
 const panelKind = (panel?: SchedulePanel) =>
@@ -175,6 +181,7 @@ class HaScheduleForm extends LitElement {
         <ha-schedule-timeline
           .value=${this._week}
           .selected=${panel?.type === "block" ? panel.source : undefined}
+          .preview=${panel?.type === "block" ? panel.preview : undefined}
           @value-changed=${this._weekChanged}
           @schedule-block-selected=${this._blockSelected}
           @schedule-day-copy=${this._copyDay}
@@ -213,6 +220,7 @@ class HaScheduleForm extends LitElement {
                               : NEW_BLOCK
                           }
                           .source=${panel.source}
+                          @schedule-block-preview=${this._previewChanged}
                           @schedule-block-apply=${this._applyBlock}
                           @schedule-block-delete=${this._deleteBlock}
                           @schedule-block-close=${this._closePanel}
@@ -283,6 +291,15 @@ class HaScheduleForm extends LitElement {
       }
     } else if (current) {
       this._panel = undefined;
+    }
+  }
+
+  private _previewChanged(
+    ev: HASSDomEvent<HASSDomEvents["schedule-block-preview"]>
+  ) {
+    ev.stopPropagation();
+    if (this._panel?.type === "block") {
+      this._panel = { ...this._panel, preview: ev.detail.preview };
     }
   }
 

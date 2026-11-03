@@ -14,6 +14,7 @@ import { internationalizationContext } from "../data/context";
 import type {
   MinuteRange,
   ScheduleBlock,
+  ScheduleBlockPreview,
   ScheduleBlockRef,
   ScheduleWeek,
   ScheduleWeekday,
@@ -24,6 +25,7 @@ import {
   formatScheduleHour,
   formatScheduleTime,
   formatScheduleWeekday,
+  getConflictingDays,
   getFreeRange,
   getNewBlockRange,
   isSameScheduleDay,
@@ -85,6 +87,9 @@ export class HaScheduleTimeline extends LitElement {
 
   @property({ attribute: false }) public selected?: ScheduleBlockRef;
 
+  /** A block being created or edited, shown in the accent color. */
+  @property({ attribute: false }) public preview?: ScheduleBlockPreview;
+
   @property({ type: Boolean, reflect: true }) public readonly = false;
 
   @state()
@@ -117,6 +122,15 @@ export class HaScheduleTimeline extends LitElement {
     }
     const locale = this._i18n.locale;
     const days = localeWeekdays(locale);
+    const preview = this._visiblePreview();
+    const conflicts = preview
+      ? getConflictingDays(
+          this.value,
+          preview.block,
+          preview.days,
+          preview.source
+        )
+      : [];
 
     return html`
       <div class="timeline">
@@ -130,7 +144,9 @@ export class HaScheduleTimeline extends LitElement {
             )}
           </div>
         </div>
-        ${days.map((day) => this._renderDay(day))}
+        ${days.map((day) =>
+          this._renderDay(day, preview, conflicts.includes(day))
+        )}
       </div>
       ${
         this.readonly
@@ -144,11 +160,44 @@ export class HaScheduleTimeline extends LitElement {
     `;
   }
 
-  private _renderDay(day: ScheduleWeekday): TemplateResult {
+  /** The preview, unless the user is dragging the block it replaces. */
+  private _visiblePreview(): ScheduleBlockPreview | undefined {
+    const source = this.preview?.source;
+    const drag = this._drag;
+    if (
+      source &&
+      drag?.moved &&
+      drag.day === source.day &&
+      drag.index === source.index
+    ) {
+      return undefined;
+    }
+    return this.preview;
+  }
+
+  private _renderDay(
+    day: ScheduleWeekday,
+    preview: ScheduleBlockPreview | undefined,
+    conflict: boolean
+  ): TemplateResult {
     const { locale, localize } = this._i18n;
     const blocks = this.value![day];
     const drag = this._drag?.day === day ? this._drag : undefined;
     const dayName = formatScheduleWeekday(day, locale);
+    // The block being edited is its own preview until its times change, and
+    // fades once the preview moves it or removes it from this day.
+    const previewBlock = preview?.days.includes(day)
+      ? preview.block
+      : undefined;
+    const sourceIndex =
+      preview?.source?.day === day ? preview.source.index : undefined;
+    const source = sourceIndex === undefined ? undefined : blocks[sourceIndex];
+    const unchanged =
+      !!source &&
+      source.from === previewBlock?.from &&
+      source.to === previewBlock.to;
+    const ghost = unchanged ? undefined : previewBlock;
+    const replacedIndex = unchanged ? undefined : sourceIndex;
 
     return html`
       <div class="row">
@@ -170,8 +219,16 @@ export class HaScheduleTimeline extends LitElement {
               drag && drag.mode !== "create" && drag.index === index
                 ? drag.range
                 : undefined;
-            return this._renderBlock(day, dayName, block, index, range);
+            return this._renderBlock(
+              day,
+              dayName,
+              block,
+              index,
+              range,
+              replacedIndex === index
+            );
           })}
+          ${ghost ? this._renderPreview(ghost, conflict) : nothing}
           ${
             drag?.mode === "create" && drag.moved
               ? html`<div
@@ -225,7 +282,8 @@ export class HaScheduleTimeline extends LitElement {
     dayName: string,
     block: ScheduleBlock,
     index: number,
-    dragRange?: MinuteRange
+    dragRange: MinuteRange | undefined,
+    replaced: boolean
   ): TemplateResult {
     const { locale, localize } = this._i18n;
     const range = dragRange ?? blockRange(block);
@@ -247,6 +305,7 @@ export class HaScheduleTimeline extends LitElement {
           block: true,
           selected,
           dragging: !!dragRange,
+          replaced,
         })}
         style=${styleMap(this._rangeStyle(range))}
         data-index=${index}
@@ -272,6 +331,23 @@ export class HaScheduleTimeline extends LitElement {
             ? nothing
             : html`<span class="handle end" data-edge="end"></span>`
         }
+      </div>
+    `;
+  }
+
+  private _renderPreview(block: ScheduleBlock, conflict: boolean) {
+    const locale = this._i18n.locale;
+    const range = blockRange(block);
+    const from = formatScheduleTime(range.start, locale);
+    const to = formatScheduleTime(range.end, locale);
+    // The block editor describes the draft and its errors to screen readers.
+    return html`
+      <div
+        class=${classMap({ block: true, ghost: true, conflict })}
+        style=${styleMap(this._rangeStyle(range))}
+        aria-hidden="true"
+      >
+        <span class="label">${from} – ${to}</span>
       </div>
     `;
   }
@@ -634,10 +710,31 @@ export class HaScheduleTimeline extends LitElement {
       outline-offset: 2px;
     }
 
+    /* The block being edited gives way to its preview. */
+    .block.replaced {
+      opacity: 0.4;
+    }
+
+    /* A block that is not placed yet: drawn on a track or in the editor. */
     .block.ghost {
       background-color: var(--ha-color-fill-primary-quiet-resting);
       border: 2px dashed var(--ha-color-fill-primary-loud-resting);
+      color: var(--ha-color-on-primary-quiet);
       pointer-events: none;
+    }
+
+    /* See-through, so the overlapped blocks stay visible. */
+    .block.ghost.conflict {
+      background-color: color-mix(
+        in srgb,
+        var(--ha-color-fill-danger-quiet-resting) 60%,
+        transparent
+      );
+      border-color: var(--ha-color-border-danger-loud);
+    }
+
+    .block.ghost.conflict .label {
+      display: none;
     }
 
     .label {

@@ -14,6 +14,7 @@ import { internationalizationContext } from "../../../../data/context";
 import type {
   ScheduleBlock,
   ScheduleBlockData,
+  ScheduleBlockPreview,
   ScheduleBlockRef,
   ScheduleWeek,
   ScheduleWeekday,
@@ -33,6 +34,9 @@ import "./ha-schedule-weekday-picker";
  * Inline editor for one time block: start, end, the days it applies to, and
  * optional additional data.
  *
+ * @fires schedule-block-preview - The draft changed. `detail.preview` is
+ * not set while the times or days are incomplete or the end is before the
+ * start.
  * @fires schedule-block-apply - Apply the block to the selected days.
  * @fires schedule-block-delete - Delete the block being edited.
  * @fires schedule-block-close - Close the editor without changes.
@@ -69,6 +73,17 @@ export class HaScheduleBlockEditor extends LitElement {
       this._days = this.source ? [this.source.day] : [];
       this._data = this.block.data;
       this._dataValid = true;
+    }
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (
+      ["block", "source", "_from", "_to", "_days", "_data"].some((prop) =>
+        changedProps.has(prop)
+      )
+    ) {
+      fireEvent(this, "schedule-block-preview", { preview: this._preview() });
     }
   }
 
@@ -163,6 +178,19 @@ export class HaScheduleBlockEditor extends LitElement {
       block.data = this._data;
     }
     return block;
+  }
+
+  private _preview(): ScheduleBlockPreview | undefined {
+    const block = this._draft();
+    if (
+      !this._from ||
+      !this._to ||
+      !this._days.length ||
+      timeToMinutes(block.to) <= timeToMinutes(block.from)
+    ) {
+      return undefined;
+    }
+    return { block, days: this._days, source: this.source };
   }
 
   private _error(
@@ -297,6 +325,7 @@ declare global {
   }
 
   interface HASSDomEvents {
+    "schedule-block-preview": { preview?: ScheduleBlockPreview };
     "schedule-block-apply": {
       block: ScheduleBlock;
       days: ScheduleWeekday[];

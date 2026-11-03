@@ -43,6 +43,14 @@ export interface ScheduleBlockRef {
   index: number;
 }
 
+/** A block being created or edited, shown before it is applied. */
+export interface ScheduleBlockPreview {
+  block: ScheduleBlock;
+  days: ScheduleWeekday[];
+  /** The block being edited, which the preview replaces. */
+  source?: ScheduleBlockRef;
+}
+
 type ScheduleDays = Partial<Record<ScheduleWeekday, ScheduleBlock[]>>;
 
 export interface Schedule extends ScheduleDays {
