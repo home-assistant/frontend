@@ -64,9 +64,33 @@ export function integralUnits(
   return totalUnits.includes(unit) ? { unit_time: "h" } : undefined;
 }
 
-export interface PowerIntegral extends Omit<IntegralRequest, "name"> {
+export interface PowerIntegral<
+  Energy extends string = "stat_energy_from" | "stat_energy_to",
+> extends Omit<IntegralRequest, "name"> {
   /** Energy statistic the helper provides. */
-  energy: "stat_energy_from" | "stat_energy_to";
+  energy: Energy;
+}
+
+/**
+ * Returns the energy statistics of a source that are not set yet and can be
+ * calculated from the power sensor paired with them.
+ */
+export function pendingIntegrals<Energy extends string>(
+  states: HomeAssistant["states"],
+  source: Partial<Record<Energy, string | null>>,
+  pairs: readonly (readonly [Energy, string | undefined])[],
+  totalUnits: string[]
+): PowerIntegral<Energy>[] {
+  return pairs.flatMap(([energy, rate]) => {
+    if (!rate || source[energy]) {
+      return [];
+    }
+    const units = integralUnits(
+      states[rate]?.attributes.unit_of_measurement,
+      totalUnits
+    );
+    return units ? [{ energy, rate, units }] : [];
+  });
 }
 
 /**
@@ -84,21 +108,15 @@ export function pendingPowerIntegrals(
   if (powerType !== "two_sensors") {
     return [];
   }
-  const rates = {
-    stat_energy_from: powerConfig.stat_rate_from,
-    stat_energy_to: powerConfig.stat_rate_to,
-  };
-  return (["stat_energy_from", "stat_energy_to"] as const).flatMap((energy) => {
-    const rate = rates[energy];
-    if (!rate || source[energy]) {
-      return [];
-    }
-    const units = integralUnits(
-      states[rate]?.attributes.unit_of_measurement,
-      totalUnits
-    );
-    return units ? [{ energy, rate, units }] : [];
-  });
+  return pendingIntegrals(
+    states,
+    source,
+    [
+      ["stat_energy_from", powerConfig.stat_rate_from],
+      ["stat_energy_to", powerConfig.stat_rate_to],
+    ],
+    totalUnits
+  );
 }
 
 /**
