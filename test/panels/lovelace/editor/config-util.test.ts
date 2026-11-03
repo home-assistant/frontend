@@ -6,8 +6,9 @@ import type { LovelaceViewConfig } from "../../../../src/data/lovelace/config/vi
 import {
   adoptViewLayout,
   duplicateSection,
+  indexAfterMove,
   moveCardToContainer,
-  swapView,
+  moveView,
 } from "../../../../src/panels/lovelace/editor/config-util";
 
 describe("moveCardToContainer", () => {
@@ -92,65 +93,45 @@ describe("moveCardToContainer", () => {
   });
 });
 
-describe("swapView", () => {
-  it("swaps 2 view", () => {
-    const config: LovelaceConfig = {
-      views: [
-        {
-          title: "view1",
-          cards: [],
-        },
-        {
-          title: "view2",
-          cards: [],
-        },
-      ],
-    };
+describe("moveView", () => {
+  const config: LovelaceConfig = {
+    views: [{ title: "a" }, { title: "b" }, { title: "c" }, { title: "d" }],
+  };
+  const titles = (result: LovelaceConfig) =>
+    result.views.map((view) => view.title);
 
-    const result = swapView(config, 1, 0);
-    const expected: LovelaceConfig = {
-      views: [
-        {
-          title: "view2",
-          cards: [],
-        },
-        {
-          title: "view1",
-          cards: [],
-        },
-      ],
-    };
-    assert.deepEqual(expected, result);
+  it("moves a view to the right", () => {
+    assert.deepEqual(titles(moveView(config, 0, 2)), ["b", "c", "a", "d"]);
   });
 
-  it("swaps the same views", () => {
-    const config: LovelaceConfig = {
-      views: [
-        {
-          title: "view1",
-          cards: [],
-        },
-        {
-          title: "view2",
-          cards: [],
-        },
-      ],
-    };
+  it("moves a view to the left", () => {
+    assert.deepEqual(titles(moveView(config, 3, 1)), ["a", "d", "b", "c"]);
+  });
 
-    const result = swapView(config, 0, 0);
-    const expected: LovelaceConfig = {
-      views: [
-        {
-          title: "view1",
-          cards: [],
-        },
-        {
-          title: "view2",
-          cards: [],
-        },
-      ],
+  it("does not mutate the original config", () => {
+    moveView(config, 0, 3);
+    assert.deepEqual(titles(config), ["a", "b", "c", "d"]);
+  });
+});
+
+describe("indexAfterMove", () => {
+  it("matches where moveView puts every view", () => {
+    const config: LovelaceConfig = {
+      views: [{ title: "a" }, { title: "b" }, { title: "c" }, { title: "d" }],
     };
-    assert.deepEqual(expected, result);
+    const count = config.views.length;
+    for (let from = 0; from < count; from++) {
+      for (let to = 0; to < count; to++) {
+        const result = moveView(config, from, to);
+        for (let index = 0; index < count; index++) {
+          assert.strictEqual(
+            result.views[indexAfterMove(index, from, to)],
+            config.views[index],
+            `view ${index} after moving ${from} to ${to}`
+          );
+        }
+      }
+    }
   });
 });
 

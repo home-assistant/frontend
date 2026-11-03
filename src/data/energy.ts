@@ -425,6 +425,7 @@ export interface EnergyData {
   startCompare?: Date;
   endCompare?: Date;
   compareMode?: CompareMode;
+  combineSources?: boolean;
   prefs: EnergyPreferences;
   info: EnergyInfo;
   stats: Statistics;
@@ -961,10 +962,13 @@ export interface EnergyCollection extends Omit<
   start: Date;
   end?: Date;
   compare?: CompareMode;
+  combineSources?: boolean;
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
   setCompare(compare: CompareMode): void;
+  setCombineSources(combine: boolean): void;
+  setDefaultCombineSources(combine: boolean): void;
   isActive(): boolean;
   _refreshTimeout?: number;
   _updatePeriodTimeout?: number;
@@ -1050,6 +1054,24 @@ export const getEnergyDefaultPeriodStorageKey = (
 ): string => {
   const [key] = convertCollectionKeyToConnection(panelUrl, collectionKey);
   return `energy-default-period-${key}`;
+};
+
+export const getEnergyCombineSourcesStorageKey = (
+  panelUrl: string,
+  collectionKey?: string
+): string => {
+  const [key] = convertCollectionKeyToConnection(panelUrl, collectionKey);
+  return `energy-combine-sources-${key}`;
+};
+
+export const hasCombinableEnergySources = (
+  prefs: EnergyPreferences,
+  types?: EnergySource["type"][]
+): boolean => {
+  const sources = types
+    ? prefs.energy_sources.filter((source) => types.includes(source.type))
+    : prefs.energy_sources;
+  return new Set(sources.map((source) => source.type)).size < sources.length;
 };
 
 // When today's first hourly statistic becomes available (01:00 in the
@@ -1196,6 +1218,11 @@ export const getEnergyDataCollection = (
       : preferredPeriod;
 
   const [initialStart, initialEnd] = calcDateRange(locale, config, period);
+  const combineSourcesStorageKey = getEnergyCombineSourcesStorageKey(
+    panelUrl,
+    options.key
+  );
+  const storedCombineSources = localStorage.getItem(combineSourcesStorageKey);
   // True while tracking today (or hour-0 yesterday), rather than a custom range.
   let followLiveDay = preferredPeriod === "today";
 
@@ -1250,7 +1277,7 @@ export const getEnergyDataCollection = (
       return;
     }
     publishedSelectionRevision = requestSelectionRevision;
-    store.setState(data, true);
+    store.setState(withCombineSources(data), true);
   };
 
   // Use the collection's subscription lifecycle, but publish explicitly so an
@@ -1370,6 +1397,23 @@ export const getEnergyDataCollection = (
     };
   };
 
+  // The setting only applies while a source type is configured twice, so it
+  // cannot leave cards split once there is nothing left to combine.
+  const withCombineSources = (data: EnergyData): EnergyData => ({
+    ...data,
+    combineSources: hasCombinableEnergySources(data.prefs)
+      ? collection.combineSources
+      : undefined,
+  });
+
+  // Display-only: re-publish the current data instead of fetching it again.
+  const applyCombineSources = (combine: boolean) => {
+    collection.combineSources = combine;
+    if (store.state) {
+      store.setState(withCombineSources(store.state), true);
+    }
+  };
+
   const collection: EnergyCollection = {
     get state() {
       return store.state;
@@ -1378,6 +1422,12 @@ export const getEnergyDataCollection = (
     subscribe,
     start: calcDate(initialStart, startOfDay, locale, config),
     end: calcDate(initialEnd, endOfDay, locale, config),
+    combineSources:
+      storedCombineSources === "true"
+        ? true
+        : storedCombineSources === "false"
+          ? false
+          : undefined,
     prefs: options.prefs,
     _active: 0,
     isActive: () => !!collection._active,
@@ -1412,6 +1462,15 @@ export const getEnergyDataCollection = (
         revision++;
         selectionRevision++;
         collection.compare = compare;
+      }
+    },
+    setCombineSources(combine: boolean) {
+      applyCombineSources(combine);
+      localStorage.setItem(combineSourcesStorageKey, String(combine));
+    },
+    setDefaultCombineSources(combine: boolean) {
+      if (collection.combineSources === undefined) {
+        applyCombineSources(combine);
       }
     },
   };

@@ -1,5 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { replaceCurrentUrl } from "../../../common/navigate";
+import { nextRender } from "../../../common/util/render-status";
 import "../../../layouts/hass-subpage";
 import "./ai-task-pref";
 import "./mcp-pref";
@@ -10,6 +12,26 @@ class HaConfigSectionAI extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._scrollToSection();
+  }
+
+  private async _scrollToSection() {
+    const hash = window.location.hash.substring(1);
+    if (!hash) {
+      return;
+    }
+    await nextRender();
+    // In the demo, the hash is the route of the page, not a section.
+    const section = this.shadowRoot!.getElementById(hash);
+    if (!section) {
+      return;
+    }
+    section.scrollIntoView();
+    replaceCurrentUrl(window.location.pathname);
+  }
 
   protected render() {
     return html`
@@ -24,7 +46,11 @@ class HaConfigSectionAI extends LitElement {
             .hass=${this.hass}
             .narrow=${this.narrow}
           ></ai-task-pref>
-          <mcp-pref .hass=${this.hass} .narrow=${this.narrow}></mcp-pref>
+          <mcp-pref
+            id="mcp"
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></mcp-pref>
         </div>
       </hass-subpage>
     `;
@@ -32,14 +58,12 @@ class HaConfigSectionAI extends LitElement {
 
   static styles = css`
     .content {
-      padding: var(--ha-space-7) var(--ha-space-5) var(--ha-space-6);
-      max-width: 1040px;
+      padding: var(--ha-space-7) var(--ha-content-gutter) var(--ha-space-6);
+      max-width: var(--ha-content-width-narrow);
       margin: 0 auto;
     }
     ai-task-pref,
     mcp-pref {
-      max-width: 600px;
-      margin: 0 auto;
       display: block;
     }
     mcp-pref {

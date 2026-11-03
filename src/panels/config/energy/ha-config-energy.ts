@@ -336,15 +336,14 @@ class HaConfigEnergy extends LitElement {
           align-items: center;
         }
         .content {
-          padding: 0 var(--ha-space-5);
-          max-width: 1040px;
+          padding: 0 var(--ha-content-gutter);
+          max-width: var(--ha-content-width-narrow);
           margin: 0 auto;
         }
 
         ha-alert {
           display: block;
           margin: 12px auto;
-          max-width: 600px;
         }
 
         ha-energy-grid-settings,

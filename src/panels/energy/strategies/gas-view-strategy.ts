@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators";
 import {
   DEFAULT_ENERGY_COLLECTION_KEY,
   getEnergyDataCollection,
+  hasCombinableEnergySources,
 } from "../../../data/energy";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
@@ -59,6 +60,11 @@ export class GasViewStrategy extends ReactiveElement {
     // No gas sources or devices available
     if (!prefs || (!hasGasSource(prefs) && !hasGasDevices(prefs))) {
       return view;
+    }
+
+    if (hasCombinableEnergySources(prefs, ["gas"])) {
+      view.footer!.card!.show_combine_sources = true;
+      energyCollection.setDefaultCombineSources(false);
     }
 
     const section = view.sections![0] as LovelaceSectionConfig;

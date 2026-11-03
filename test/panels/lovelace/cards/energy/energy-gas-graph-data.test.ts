@@ -208,6 +208,55 @@ describe("generateEnergyGasGraphData", () => {
     ).toMatchSnapshot();
   });
 
+  it("sums all gas sources into one series when combinedName is set", () => {
+    const energyData = generateEnergyData(12, {
+      days: 1,
+      period: "hour",
+      compare: true,
+      prefs: gasOnlyPrefs(3),
+    });
+    const params = { ...baseParams, energyData, computedStyles, now };
+    const separate = generateEnergyGasGraphData(params);
+    const combined = generateEnergyGasGraphData({
+      ...params,
+      combinedName: "Gas",
+    });
+
+    const sumByX = (datasets: BarSeriesOption[]) => {
+      const sums = new Map<number, number>();
+      for (const dataset of datasets) {
+        for (const item of dataset.data as any[]) {
+          const [x, y] = item.value ?? item;
+          sums.set(x, (sums.get(x) ?? 0) + y);
+        }
+      }
+      return sums;
+    };
+    const isCompare = (dataset: BarSeriesOption) =>
+      String(dataset.id).startsWith("compare-");
+
+    expect(
+      combined.chartData.map((dataset) => [dataset.id, dataset.name])
+    ).toEqual([
+      ["compare-gas", "Gas"],
+      ["gas", "Gas"],
+    ]);
+    expect(combined.chartData[1].color).toBe(
+      separate.chartData.find(
+        (dataset) => dataset.id === "sensor.gas_consumption_0"
+      )!.color
+    );
+    expect(sumByX(combined.chartData.filter(isCompare))).toEqual(
+      sumByX(separate.chartData.filter(isCompare))
+    );
+    expect(
+      sumByX(combined.chartData.filter((dataset) => !isCompare(dataset)))
+    ).toEqual(
+      sumByX(separate.chartData.filter((dataset) => !isCompare(dataset)))
+    );
+    expect(combined.total).toBe(separate.total);
+  });
+
   // Regression tests for #52938: sparse statistics (e.g. a meter that reports
   // once per day) must be zero-filled across the whole range, otherwise
   // ECharts derives the bar band width from the data gaps — a lone bucket

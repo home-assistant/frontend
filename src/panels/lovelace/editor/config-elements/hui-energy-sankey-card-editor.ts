@@ -41,6 +41,7 @@ const cardConfigStruct = assign(
     group_by_area: optional(boolean()),
     max_devices: optional(number()),
     show_values: optional(boolean()),
+    combine_sources: optional(boolean()),
   })
 );
 
@@ -60,7 +61,7 @@ export class HuiEnergySankeyCardEditor
     this._config = config;
   }
 
-  private _schema = memoizeOne((localize: LocalizeFunc) => {
+  private _schema = memoizeOne((localize: LocalizeFunc, type: string) => {
     const schema: HaFormSchema[] = [
       { name: "title", selector: { text: {} } },
       {
@@ -100,6 +101,12 @@ export class HuiEnergySankeyCardEditor
                 required: false,
                 selector: { boolean: {} },
               },
+              {
+                name: "combine_sources",
+                required: false,
+                default: type === "energy-sankey" || type === "power-sankey",
+                selector: { boolean: {} },
+              },
             ],
           },
           {
@@ -123,7 +130,7 @@ export class HuiEnergySankeyCardEditor
       return nothing;
     }
 
-    const schema = this._schema(this.hass.localize);
+    const schema = this._schema(this.hass.localize, this._config.type);
 
     const data = {
       ...this._config,

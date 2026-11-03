@@ -11,7 +11,7 @@ export const energyEntities = () =>
       entity_id: "sensor.solar_production",
       state: "88.6",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Solar",
         unit_of_measurement: "kWh",
       },
@@ -20,7 +20,7 @@ export const energyEntities = () =>
       entity_id: "sensor.battery_input",
       state: "4",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Battery Input",
         unit_of_measurement: "kWh",
       },
@@ -29,7 +29,7 @@ export const energyEntities = () =>
       entity_id: "sensor.battery_output",
       state: "3",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Battery Output",
         unit_of_measurement: "kWh",
       },
@@ -38,7 +38,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_consumption_tarif_1",
       state: "88.6",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Grid consumption low tariff",
         unit_of_measurement: "kWh",
       },
@@ -47,7 +47,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_consumption_tarif_2",
       state: "88.6",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Grid consumption high tariff",
         unit_of_measurement: "kWh",
       },
@@ -56,7 +56,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_production_tarif_1",
       state: "88.6",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Returned to grid low tariff",
         unit_of_measurement: "kWh",
       },
@@ -65,7 +65,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_production_tarif_2",
       state: "88.6",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Returned to grid high tariff",
         unit_of_measurement: "kWh",
       },
@@ -74,7 +74,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_consumption_tarif_1_cost",
       state: "2",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         unit_of_measurement: "EUR",
       },
     },
@@ -82,7 +82,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_consumption_tarif_2_cost",
       state: "2",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         unit_of_measurement: "EUR",
       },
     },
@@ -90,7 +90,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_production_tarif_1_compensation",
       state: "2",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         unit_of_measurement: "EUR",
       },
     },
@@ -98,7 +98,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_production_tarif_2_compensation",
       state: "2",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         unit_of_measurement: "EUR",
       },
     },
@@ -138,7 +138,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_gas_cost",
       state: "2",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         unit_of_measurement: "EUR",
       },
     },
@@ -146,7 +146,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_gas",
       state: "4",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Gas",
         unit_of_measurement: "m³",
       },
@@ -155,7 +155,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_water",
       state: "4000",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Water",
         unit_of_measurement: "L",
       },
@@ -184,7 +184,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_car",
       state: "4",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Electric car",
         unit_of_measurement: "kWh",
       },
@@ -193,7 +193,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_ac",
       state: "3",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Air conditioning",
         unit_of_measurement: "kWh",
       },
@@ -202,7 +202,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_washing_machine",
       state: "6",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Washing machine",
         unit_of_measurement: "kWh",
       },
@@ -211,7 +211,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_dryer",
       state: "5.5",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Dryer",
         unit_of_measurement: "kWh",
       },
@@ -220,7 +220,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_heat_pump",
       state: "6",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Heat pump",
         unit_of_measurement: "kWh",
       },
@@ -229,7 +229,7 @@ export const energyEntities = () =>
       entity_id: "sensor.energy_boiler",
       state: "7",
       attributes: {
-        last_reset: "1970-01-01T00:00:00:00+00",
+        state_class: "total_increasing",
         friendly_name: "Boiler",
         unit_of_measurement: "kWh",
       },
