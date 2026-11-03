@@ -221,7 +221,12 @@ export class TargetExclusionsController extends ContextController {
         return area?.floor_id === item.id;
       case "label":
         return (
-          device.labels.includes(item.id) || !!area?.labels.includes(item.id)
+          device.labels.includes(item.id) ||
+          !!(
+            device.parent_device_id &&
+            devices[device.parent_device_id]?.labels.includes(item.id)
+          ) ||
+          !!area?.labels.includes(item.id)
         );
       default:
         return false;
