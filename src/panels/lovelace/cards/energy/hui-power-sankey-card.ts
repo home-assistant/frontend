@@ -336,7 +336,7 @@ class HuiPowerSankeyCard
       }
     }
 
-    if (this._config.combine_sources ?? true) {
+    if (this._config.combine_sources ?? this._data.combineSources ?? true) {
       nodes.push(...typeNodes);
       links.push(...typeLinks);
     } else {

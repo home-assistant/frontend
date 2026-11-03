@@ -9,7 +9,6 @@ import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
 import {
-  getCombineSources,
   hasGasRateSource,
   hasNowViewContent,
   hasPowerSources,
@@ -69,8 +68,6 @@ export class PowerViewStrategy extends ReactiveElement {
       return view;
     }
 
-    const combineSources = getCombineSources(_config, prefs);
-
     if (hasPowerSrc) {
       badges.push({
         type: "power-total",
@@ -83,7 +80,6 @@ export class PowerViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.power_sources_graph_title"),
         type: "power-sources-graph",
         collection_key: collectionKey,
-        combine_sources: combineSources,
         grid_options: {
           columns: 36,
         },
@@ -129,7 +125,6 @@ export class PowerViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.power_sankey_title"),
         type: "power-sankey",
         collection_key: collectionKey,
-        combine_sources: combineSources,
         group_by_floor: showFloorsAndAreas,
         group_by_area: showFloorsAndAreas,
         grid_options: {
@@ -148,7 +143,6 @@ export class PowerViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.water_flow_sankey_title"),
         type: "water-flow-sankey",
         collection_key: collectionKey,
-        combine_sources: combineSources,
         group_by_floor: showFloorsAndAreas,
         group_by_area: showFloorsAndAreas,
         grid_options: {

@@ -11007,6 +11007,7 @@
               "name": "Energy date picker",
               "description": "This card allows you to pick what data to show on linked statistics graphs and other energy cards.",
               "disable_compare": "Disable data comparison",
+              "show_combine_sources": "Show the combine sources option",
               "vertical_opening_direction": "Vertical opening direction",
               "vertical_opening_directions": {
                 "auto": "Automatic",

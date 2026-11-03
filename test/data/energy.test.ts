@@ -31,6 +31,7 @@ import {
 } from "../../src/data/energy";
 import type {
   EnergyData,
+  EnergyPreferences,
   EnergySource,
   EnergySumData,
 } from "../../src/data/energy";
@@ -1217,7 +1218,10 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
     vi.useRealTimers();
   });
 
-  const createCollection = (key = "energy_overlapping") => {
+  const createCollection = (
+    key = "energy_overlapping",
+    prefs: EnergyPreferences = EMPTY_PREFERENCES
+  ) => {
     const hass = createMockHass();
     const pending: {
       resolve: (info: {
@@ -1227,6 +1231,11 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
       reject: (error: Error) => void;
     }[] = [];
     const callWS = vi.fn((msg: { type: string }) => {
+      if (msg.type.startsWith("recorder/")) {
+        return Promise.resolve(
+          msg.type === "recorder/get_statistics_metadata" ? [] : {}
+        );
+      }
       if (msg.type !== "energy/info") {
         throw new Error(`unexpected ${msg.type}`);
       }
@@ -1250,7 +1259,7 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
       config: hass.config,
       panelUrl: hass.panelUrl,
       key,
-      prefs: EMPTY_PREFERENCES,
+      prefs,
     });
     collection.setPeriod(
       new Date("2026-01-01T00:00:00Z"),
@@ -1343,6 +1352,45 @@ describe("getEnergyDataCollection overlapping refreshes", () => {
     await complete(pending[0]);
     assert.equal(received.mock.calls.length, 1);
     assert.equal(collection.state?.compareMode, CompareMode.PREVIOUS);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("re-publishes combineSources without refetching and remembers only explicit choices", async () => {
+    vi.useFakeTimers();
+    const solar = { type: "solar", stat_energy_from: "sensor.solar" };
+    const prefs = {
+      ...EMPTY_PREFERENCES,
+      energy_sources: [solar, { ...solar, stat_energy_from: "sensor.solar_2" }],
+    } as EnergyPreferences;
+    const { collection, pending } = createCollection(undefined, prefs);
+    const received: EnergyData[] = [];
+    const unsub = collection.subscribe((data) => received.push(data));
+    await complete(pending[0]);
+    collection.setDefaultCombineSources(false);
+    collection.setDefaultCombineSources(true);
+    assert.isUndefined(createCollection().collection.combineSources);
+    collection.setCombineSources(true);
+    assert.equal(pending.length, 1);
+    assert.deepEqual(
+      received.map((data) => data.combineSources),
+      [undefined, false, true]
+    );
+    assert.strictEqual(received[2].stats, received[0].stats);
+    assert.isTrue(createCollection().collection.combineSources);
+    unsub();
+    await vi.advanceTimersByTimeAsync(5000);
+  });
+
+  it("does not apply combineSources while no source type is configured twice", async () => {
+    vi.useFakeTimers();
+    const { collection, pending } = createCollection();
+    const received: EnergyData[] = [];
+    const unsub = collection.subscribe((data) => received.push(data));
+    await complete(pending[0]);
+    collection.setCombineSources(false);
+    assert.isFalse(collection.combineSources);
+    assert.isUndefined(received[received.length - 1].combineSources);
     unsub();
     await vi.advanceTimersByTimeAsync(5000);
   });

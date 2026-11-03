@@ -261,7 +261,9 @@ export class HuiEnergyWaterGraphCard
         (source) => source.type === "water"
       ) as WaterSourceTypeEnergyPreference[];
 
-    const combine = !!this._config!.combine_sources && waterSources.length > 0;
+    const combine =
+      (this._config!.combine_sources ?? energyData.combineSources ?? false) &&
+      waterSources.length > 0;
     const statIds = waterSources.map((source) => source.stat_energy_from);
     const chartSources: WaterChartSource[] = combine
       ? [

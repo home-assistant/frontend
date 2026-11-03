@@ -3,12 +3,13 @@ import { customElement } from "lit/decorators";
 import {
   DEFAULT_ENERGY_COLLECTION_KEY,
   getEnergyDataCollection,
+  hasCombinableEnergySources,
 } from "../../../data/energy";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type { LovelaceViewConfig } from "../../../data/lovelace/config/view";
 import type { HomeAssistant } from "../../../types";
 import type { EnergyViewStrategyConfig } from "./energy-cards";
-import { getCombineSources, isEnergyCardVisible } from "./energy-cards";
+import { isEnergyCardVisible } from "./energy-cards";
 import { shouldShowFloorsAndAreas } from "./show-floors-and-areas";
 import {
   LARGE_SCREEN_CONDITION,
@@ -41,6 +42,7 @@ export class EnergyViewStrategy extends ReactiveElement {
           collection_key: collectionKey,
           opening_direction: "right",
           vertical_opening_direction: "up",
+          show_combine_sources: true,
         },
       },
     };
@@ -68,9 +70,8 @@ export class EnergyViewStrategy extends ReactiveElement {
       return view;
     }
 
-    const combineSources = getCombineSources(_config, prefs);
-    if (combineSources !== undefined) {
-      view.footer!.card!.combine_sources = combineSources;
+    if (hasCombinableEnergySources(prefs)) {
+      energyCollection.setDefaultCombineSources(false);
     }
 
     const mainCards: LovelaceCardConfig[] = [];
@@ -205,7 +206,6 @@ export class EnergyViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.energy_usage_graph_title"),
         type: "energy-usage-graph",
         collection_key: collectionKey,
-        combine_sources: combineSources,
         grid_options: { columns: 36 },
       });
     }
@@ -218,7 +218,6 @@ export class EnergyViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.energy_solar_graph_title"),
         type: "energy-solar-graph",
         collection_key: collectionKey,
-        combine_sources: combineSources,
         grid_options: { columns: 36 },
       });
     }
@@ -233,7 +232,6 @@ export class EnergyViewStrategy extends ReactiveElement {
         type: "energy-sources-table",
         collection_key: collectionKey,
         types: ["grid", "solar", "battery", "home"],
-        combine_sources: combineSources,
         grid_options: { columns: 36 },
       });
     }
@@ -278,7 +276,6 @@ export class EnergyViewStrategy extends ReactiveElement {
         title: hass.localize("ui.panel.energy.cards.energy_sankey_title"),
         type: "energy-sankey",
         collection_key: collectionKey,
-        combine_sources: combineSources,
         group_by_floor: showFloorsAndAreas,
         group_by_area: showFloorsAndAreas,
         grid_options: { columns: 36 },

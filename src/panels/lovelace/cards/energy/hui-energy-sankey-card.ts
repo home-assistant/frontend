@@ -189,7 +189,8 @@ class HuiEnergySankeyCard
 
     const minEnergyThreshold = homeNode.value * MIN_SANKEY_THRESHOLD_FACTOR;
 
-    const combine = this._config.combine_sources ?? true;
+    const combine =
+      this._config.combine_sources ?? this._data.combineSources ?? true;
     if (!combine) {
       const separate = this._computeSeparateSources(
         types,

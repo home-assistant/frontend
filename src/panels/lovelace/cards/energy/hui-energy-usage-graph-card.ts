@@ -313,7 +313,8 @@ export class HuiEnergyUsageGraphCard
       return;
     }
 
-    const combine = !!this._config!.combine_sources;
+    const combine =
+      this._config!.combine_sources ?? energyData.combineSources ?? false;
     const datasets: BarSeriesOption[] = [];
 
     let yMin = Infinity;

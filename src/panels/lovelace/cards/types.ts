@@ -196,7 +196,7 @@ export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
   vertical_opening_direction?: "auto" | "up" | "down";
   opening_direction?: "auto" | "right" | "left" | "center" | "inline";
   disable_compare?: boolean;
-  combine_sources?: boolean;
+  show_combine_sources?: boolean;
 }
 
 export interface EnergyDistributionCardConfig extends EnergyCardConfig {

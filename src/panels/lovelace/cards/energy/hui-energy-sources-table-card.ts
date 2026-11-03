@@ -563,7 +563,9 @@ export class HuiEnergySourcesTableCard
     };
 
     const showOnlyTotals = this._config.show_only_totals;
-    const combine = !showOnlyTotals && !!this._config.combine_sources;
+    const combine =
+      !showOnlyTotals &&
+      (this._config.combine_sources ?? this._data.combineSources ?? false);
 
     const combinedRows: Partial<
       Record<

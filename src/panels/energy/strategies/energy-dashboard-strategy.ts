@@ -75,7 +75,6 @@ export interface EnergyDashboardStrategyConfig extends LovelaceStrategyConfig {
   type: "energy";
   default_collection?: string;
   hidden_cards?: string[];
-  combine_sources?: boolean;
 }
 
 @customElement("energy-dashboard-strategy")
@@ -141,11 +140,7 @@ export class EnergyDashboardStrategy extends ReactiveElement {
     return {
       views: views.map((view) => ({
         ...view,
-        strategy: {
-          ...view.strategy,
-          hidden_cards: hidden,
-          combine_sources: _config.combine_sources,
-        },
+        strategy: { ...view.strategy, hidden_cards: hidden },
         title:
           view.title ||
           hass.localize(`ui.panel.energy.title.${view.path}` as LocalizeKeys),

@@ -239,6 +239,12 @@ export class HuiEnergySolarGraphCard
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
 
+    // A settings-only re-publish keeps the same statistics and forecasts
+    if (energyData.stats === this._data?.energyData.stats) {
+      this._data = { energyData, forecasts: this._data.forecasts };
+      return;
+    }
+
     let forecasts: EnergySolarForecasts | undefined;
     if (
       solarSources.some((source) => source.config_entry_solar_forecast?.length)
@@ -268,7 +274,8 @@ export class HuiEnergySolarGraphCard
       forecasts,
       computedStyles: getComputedStyle(this),
       now: endOfToday(),
-      combineSources: this._config.combine_sources,
+      combineSources:
+        this._config.combine_sources ?? energyData.combineSources ?? false,
     });
 
     this._start = result.start;

@@ -169,7 +169,7 @@ export class HuiPowerSourcesGraphCard
       this._energyData,
       this._states,
       this._formatPower,
-      this._config?.combine_sources ?? true
+      this._config?.combine_sources ?? this._energyData.combineSources ?? true
     );
     if (this._legendData.every((item) => item.value === values[item.id!])) {
       return false;
@@ -280,7 +280,8 @@ export class HuiPowerSourcesGraphCard
       start: this._start,
       end: this._end,
       now: Date.now(),
-      combineSources: this._config?.combine_sources ?? true,
+      combineSources:
+        this._config?.combine_sources ?? energyData.combineSources ?? true,
       formatEntityName: this._formatters.formatEntityName,
       darkMode: this._ui.themes.darkMode,
     });

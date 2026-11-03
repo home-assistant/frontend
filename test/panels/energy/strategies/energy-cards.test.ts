@@ -7,7 +7,6 @@ import {
   applicableEnergyCardKeys,
   ENERGY_CARD_CATALOG,
   energyCardKey,
-  getCombineSources,
   hasEnergySource,
   hasGasRateSource,
   hasNowViewContent,
@@ -274,24 +273,5 @@ describe("isEnergyCardVisible", () => {
         isEnergyCardVisible(card.view, cardType, richPrefs, [card.key])
       ).toBe(false);
     }
-  });
-});
-
-describe("getCombineSources", () => {
-  const single = makePrefs({ energy_sources: [SOLAR, GRID_RETURN] });
-  const double = makePrefs({ energy_sources: [SOLAR, SOLAR, GRID_RETURN] });
-
-  it("leaves cards on their own default while no type has two sources", () => {
-    expect(getCombineSources({ type: "energy" }, single)).toBeUndefined();
-  });
-
-  it("applies the setting once a type has two sources, or while it is on", () => {
-    expect(getCombineSources({ type: "energy" }, double)).toBe(false);
-    expect(
-      getCombineSources({ type: "energy", combine_sources: true }, double)
-    ).toBe(true);
-    expect(
-      getCombineSources({ type: "energy", combine_sources: true }, single)
-    ).toBe(true);
   });
 });

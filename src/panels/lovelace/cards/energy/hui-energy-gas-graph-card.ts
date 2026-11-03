@@ -309,11 +309,12 @@ export class HuiEnergyGasGraphCard extends LitElement implements LovelaceCard {
       energyData,
       computedStyles: getComputedStyle(this),
       now: endOfToday(),
-      combinedName: this._config!.combine_sources
-        ? this._i18n.localize(
-            "ui.panel.lovelace.cards.energy.energy_distribution.gas"
-          )
-        : undefined,
+      combinedName:
+        (this._config!.combine_sources ?? energyData.combineSources)
+          ? this._i18n.localize(
+              "ui.panel.lovelace.cards.energy.energy_distribution.gas"
+            )
+          : undefined,
     });
 
     this._start = result.start;
