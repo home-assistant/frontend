@@ -1,7 +1,7 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { ensureArray } from "../../../src/common/array/ensure-array";
 import type {
-  ExplainTargetExcludeResult,
+  TargetExplanation,
   HassServiceTargetWithExclude,
   TargetItem,
   TargetType,
@@ -16,25 +16,29 @@ const items = (target?: HassServiceTarget): TargetItem[] =>
   });
 
 /**
- * Like core's explain_target_exclude: resolves each item of the target and of
- * its `exclude` on its own with `resolve`, and tells what each exclude takes
- * out of each included item. Like core, excludes resolve every entity, not
- * only the primary ones.
+ * Like core's explain_target: resolves each item of the target and of its
+ * `exclude` on its own with `resolve`, and tells what each exclude takes out
+ * of each included item. Like core, `entity_id: all` is every entity in
+ * `entityIds`, and excludes resolve every entity, not only the primary ones.
  */
-export const explainTargetExclude = (
+export const explainTarget = (
   target: HassServiceTargetWithExclude,
   resolve: (
     target: HassServiceTarget,
     primaryEntitiesOnly: boolean
   ) => string[],
+  entityIds: string[],
   primaryEntitiesOnly = true
-): ExplainTargetExcludeResult => {
+): TargetExplanation => {
   const single = ({ type, id }: TargetItem): HassServiceTarget => ({
     [`${type}_id`]: [id],
   });
   const includes = items(target).map((item) => ({
     ...item,
-    entities: resolve(single(item), primaryEntitiesOnly),
+    entities:
+      item.type === "entity" && item.id === "all"
+        ? entityIds
+        : resolve(single(item), primaryEntitiesOnly),
   }));
   return {
     includes,

@@ -80,30 +80,57 @@ export interface TargetItemEntities extends TargetItem {
   entities: string[];
 }
 
-export interface ExplainedTargetExclude extends TargetItem {
+export interface TargetExcludeEffect extends TargetItem {
   removed: TargetItemEntities[];
 }
 
-export interface ExplainTargetExcludeResult {
+export interface TargetExplanation {
   includes: TargetItemEntities[];
-  excludes: ExplainedTargetExclude[];
+  excludes: TargetExcludeEffect[];
 }
 
-export const explainTargetExclude = (
+export const explainTarget = (
   callWS: CallWS,
   target: HassServiceTargetWithExclude,
   expandGroup = true,
   primaryEntitiesOnly = true
 ) => {
   const request = {
-    type: "explain_target_exclude" as const,
+    type: "explain_target" as const,
     target,
     expand_group: expandGroup,
     primary_entities_only: primaryEntitiesOnly,
   };
 
   return shareInFlightRequest(callWS, JSON.stringify(request), () =>
-    callWS<ExplainTargetExcludeResult>(request)
+    callWS<TargetExplanation>(request)
+  );
+};
+
+/**
+ * What each item of an explained target is left with once every exclude is
+ * taken out of it, by its `type:id`.
+ */
+export const targetEntitiesAfterExclude = (
+  explanation: TargetExplanation
+): Record<string, string[]> => {
+  const removed: Record<string, Set<string>> = {};
+  explanation.excludes.forEach((exclude) =>
+    exclude.removed.forEach(({ type, id, entities }) => {
+      const key = `${type}:${id}`;
+      removed[key] ??= new Set();
+      entities.forEach((entityId) => removed[key].add(entityId));
+    })
+  );
+  return Object.fromEntries(
+    explanation.includes.map(({ type, id, entities }) => {
+      const key = `${type}:${id}`;
+      const out = removed[key];
+      return [
+        key,
+        out ? entities.filter((entityId) => !out.has(entityId)) : entities,
+      ];
+    })
   );
 };
 

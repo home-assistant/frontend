@@ -288,7 +288,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       changedProps.has("entityFilter") ||
       registriesChanged
     ) {
-      this._exclusions.resolve({ registriesChanged });
+      this._exclusions.resolve();
     }
 
     if (
@@ -623,6 +623,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       primaryEntitiesOnly: this.primaryEntitiesOnly,
       exclusions,
       exclude: this.value?.exclude,
+      expandGroup: this._exclusions.expandGroup,
       explainExclusion: editable
         ? (item) => this._exclusions.explainExclusion(key, item)
         : undefined,

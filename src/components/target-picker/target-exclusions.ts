@@ -1,10 +1,10 @@
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { ensureArray } from "../../common/array/ensure-array";
 import {
-  explainTargetExclude,
-  type ExplainTargetExcludeResult,
+  explainTarget,
   type ExtractFromTargetResultReferenced,
   type HassServiceTargetWithExclude,
+  type TargetExplanation,
   type TargetItem,
   type TargetType,
 } from "../../data/target";
@@ -53,22 +53,30 @@ export interface TargetExclusions {
 }
 
 /**
+ * Whether the picker's filters leave `entityId` in a target `item` other
+ * than an entity. An entity item is what it is, filters or not.
+ */
+export type TargetNarrowing = (item: TargetItem, entityId: string) => boolean;
+
+/**
  * Which exclusions take what out of each included target, from what core
  * explained. Excludes are global, so one exclusion is listed under every
  * target it affects; one that affects none, including one whose item no
- * longer exists, has no effect. `narrowed` gives, by `type:id`, what is left
- * of a target once the picker's filters are applied; what an exclusion takes
- * out of it is narrowed the same way.
+ * longer exists, has no effect. `keeps` narrows each target to what is left
+ * of it once the picker's filters are applied; what an exclusion takes out
+ * of it is narrowed the same way.
  */
 export const computeExclusionsPerTarget = (
-  explained: ExplainTargetExcludeResult,
-  narrowed: Record<string, string[]> = {}
+  explained: TargetExplanation,
+  keeps?: TargetNarrowing
 ): TargetExclusions => {
   const included = Object.fromEntries(
-    explained.includes.map((include) => {
-      const key = targetItemKey(include);
-      return [key, narrowed[key] ?? include.entities];
-    })
+    explained.includes.map((include) => [
+      targetItemKey(include),
+      include.type === "entity" || !keeps
+        ? include.entities
+        : include.entities.filter((entityId) => keeps(include, entityId)),
+    ])
   );
   const perTarget: Record<string, TargetExclusion[]> = {};
   const noEffect: TargetItem[] = [];
@@ -147,7 +155,7 @@ export const resolveItemExclusions = async (
   if (!hasIncludedTargets(exclude)) {
     return [];
   }
-  const explained = await explainTargetExclude(
+  const explained = await explainTarget(
     hass.callWS,
     { [`${item.type}_id`]: [item.id], exclude },
     expandGroup,

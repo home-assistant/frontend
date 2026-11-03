@@ -19,7 +19,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { until } from "lit/directives/until";
+import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { transform } from "../../../../common/decorators/transform";
@@ -56,8 +56,10 @@ import {
   type TargetSelector,
 } from "../../../../data/selector";
 import {
-  extractFromTarget,
+  explainTarget,
+  targetEntitiesAfterExclude,
   type HassServiceTargetWithExclude,
+  type TargetExplanation,
   type TargetType,
 } from "../../../../data/target";
 import { showMoreInfoDialog } from "../../../../dialogs/more-info/show-ha-more-info-dialog";
@@ -111,6 +113,8 @@ export class HaAutomationRowTargets extends LitElement {
   @consume({ context: connectionContext, subscribe: true })
   private _connection!: ContextType<typeof connectionContext>;
 
+  // Whether the target expands the groups it names, like an action does.
+  @state()
   @consume({ context: targetExpandGroupContext, subscribe: true })
   private _expandGroup?: boolean;
 
@@ -122,29 +126,22 @@ export class HaAutomationRowTargets extends LitElement {
 
   private _loadingCompositeSplits = false;
 
-  private _countCache = new Map<
-    string,
-    Promise<TargetCount | undefined> | TargetCount | undefined
-  >();
+  // What each target resolves to and what the exclude takes out, from core.
+  // `null` once core couldn't tell.
+  @state() private _explanation?: TargetExplanation | null;
 
-  // What the target's `exclude` resolves to, shared by every count.
-  private _excludedEntities?: Promise<Set<string>>;
-
-  // The same, once resolved, to mark excluded entity targets.
-  @state() private _excludedEntityIds = new Set<string>();
-
-  private _rerenderCount = true;
+  private _explainRequest = 0;
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (
       changedProps.has("target") ||
       changedProps.has("selector") ||
+      changedProps.has("interactive") ||
+      changedProps.has("_expandGroup") ||
       changedProps.has("_registries")
     ) {
-      this._rerenderCount = true;
-      this._excludedEntities = undefined;
-      this._resolveExcludedEntityIds();
+      this._explain();
     }
 
     if (
@@ -183,11 +180,6 @@ export class HaAutomationRowTargets extends LitElement {
     } finally {
       this._loadingCompositeSplits = false;
     }
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    this._rerenderCount = false;
   }
 
   private _countMatchingEntities(referencedEntities: string[]): number {
@@ -241,102 +233,89 @@ export class HaAutomationRowTargets extends LitElement {
       : undefined;
   }
 
-  private async _resolveExcludedEntityIds() {
-    if (!this._api || !this._getExclude()) {
-      this._excludedEntityIds = new Set();
+  // The target without its templated ids, which only resolve when the
+  // automation runs, so core can explain the rest.
+  private _explainableTarget(): HassServiceTargetWithExclude | undefined {
+    const { exclude: _exclude, ...target } = isConfigObject(this.target)
+      ? this.target
+      : {};
+    const explainable: HassServiceTargetWithExclude = {};
+    Object.entries(target).forEach(([key, ids]) => {
+      const plain = ensureArray(ids).filter((id) => !isTemplate(id));
+      if (plain.length) {
+        explainable[key] = plain;
+      }
+    });
+    return Object.keys(explainable).length ? explainable : undefined;
+  }
+
+  // The counts need every target explained; without them, only an entity
+  // target the exclude takes out again needs to be known.
+  private async _explain() {
+    const request = ++this._explainRequest;
+    const target = this._explainableTarget();
+    const exclude = this._getExclude();
+    if (!this._api || !target || (!this.interactive && !exclude)) {
+      this._explanation = undefined;
       return;
     }
-    const request = this._getExcludedEntities();
-    const excluded = await request;
-    // A newer target started its own lookup in the meantime.
-    if (request === this._excludedEntities) {
-      this._excludedEntityIds = excluded;
-    }
-  }
-
-  private _getExcludedEntities(): Promise<Set<string>> {
-    const exclude = this._getExclude();
-    if (!exclude) {
-      return Promise.resolve(new Set());
-    }
-    if (!this._excludedEntities) {
-      this._excludedEntities = extractFromTarget(
+    let explanation: TargetExplanation | null;
+    try {
+      explanation = await explainTarget(
         this._api.callWS,
-        exclude,
-        false,
-        false
-      )
-        .then((result) => new Set(result.referenced_entities))
-        // Counts then leave the exclude out rather than failing altogether.
-        .catch(() => new Set<string>());
+        { ...target, exclude },
+        this._expandGroup ?? true,
+        this.selector?.target?.primary_entities_only
+      );
+    } catch (_err) {
+      explanation = null;
     }
-    return this._excludedEntities;
+    if (request === this._explainRequest) {
+      this._explanation = explanation;
+    }
   }
 
-  private _formatCount(count: TargetCount | undefined) {
-    if (!count) {
-      return " (-)";
+  // What each target is left with once the exclude is taken out of it.
+  private _remaining = memoizeOne(
+    (explanation: TargetExplanation | null | undefined) =>
+      explanation ? targetEntitiesAfterExclude(explanation) : undefined
+  );
+
+  // The entity targets the exclude block takes out again entirely.
+  private _excludedEntities = memoizeOne(
+    (explanation: TargetExplanation | null | undefined): Set<string> => {
+      const remaining = this._remaining(explanation);
+      return new Set(
+        explanation?.includes
+          .filter(
+            ({ type, id, entities }) =>
+              type === "entity" &&
+              entities.length > 0 &&
+              remaining![`entity:${id}`].length === 0
+          )
+          .map(({ id }) => id)
+      );
     }
-    return ` (${count.count})`;
+  );
+
+  private _isExcludedEntity(entityId: string): boolean {
+    return this._excludedEntities(this._explanation).has(entityId);
   }
 
   private _renderCount(
     targetType: "floor" | "area" | "device" | "label",
     targetId: string
   ) {
-    const key = `${targetType}:${targetId}`;
-    let fallback = " (-)";
-    if (!this._countCache.has(key) || this._rerenderCount) {
-      const cached = this._countCache.get(key);
-      if (cached && !(cached instanceof Promise)) {
-        fallback = this._formatCount(cached);
-      }
-      this._countCache.set(
-        key,
-        Promise.all([
-          extractFromTarget(
-            this._api.callWS,
-            {
-              [`${targetType}_id`]: [targetId],
-            },
-            false,
-            this.selector?.target?.primary_entities_only
-          ),
-          this._getExcludedEntities(),
-        ])
-          .then(([result, excluded]): TargetCount => {
-            // Excludes are global, so anything they resolve to is taken out
-            // of this target too.
-            const remaining = result.referenced_entities.filter(
-              (entityId) => !excluded.has(entityId)
-            );
-            return { count: this._countMatchingEntities(remaining) };
-          })
-          .catch((err) => {
-            // eslint-disable-next-line no-console
-            console.error("Error counting target entities", err);
-            return undefined;
-          })
-      );
+    if (this._explanation === null) {
+      return nothing;
     }
-
-    const cached = this._countCache.get(key);
-    if (cached instanceof Promise) {
-      return until(
-        cached.then((count) => {
-          if (this._countCache.get(key) === cached) {
-            this._countCache.set(key, count);
-          }
-          return count === undefined ? nothing : this._formatCount(count);
-        }),
-        fallback
-      );
+    const remaining = this._remaining(this._explanation)?.[
+      `${targetType}:${targetId}`
+    ];
+    if (!remaining) {
+      return " (-)";
     }
-
-    if (cached) {
-      return this._formatCount(cached);
-    }
-    return nothing;
+    return ` (${this._countMatchingEntities(remaining)})`;
   }
 
   protected render() {
@@ -372,7 +351,7 @@ export class HaAutomationRowTargets extends LitElement {
       0
     );
     const excludedEntityTargets = ensureArray(target.entity_id ?? []).filter(
-      (entityId) => this._excludedEntityIds.has(entityId)
+      (entityId) => this._isExcludedEntity(entityId)
     ).length;
 
     if (totalLength <= 5) {
@@ -557,9 +536,8 @@ export class HaAutomationRowTargets extends LitElement {
     let badgeTargetId: string | undefined = targetId;
     let badgeTargetType: string | undefined = targetType;
     let countTemplate: unknown = nothing;
-    // An entity target that the exclude block takes out again.
     const excluded =
-      targetType === "entity" && this._excludedEntityIds.has(targetId);
+      targetType === "entity" && this._isExcludedEntity(targetId);
 
     if (targetType === "entity" && ["all", "none"].includes(targetId)) {
       icon = mdiShape;
@@ -843,10 +821,6 @@ export class HaAutomationRowTargets extends LitElement {
       color: var(--ha-color-on-warning-normal);
     }
   `;
-}
-
-interface TargetCount {
-  count: number;
 }
 
 declare global {

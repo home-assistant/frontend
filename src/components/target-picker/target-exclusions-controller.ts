@@ -6,15 +6,13 @@ import {
 } from "../../common/decorators/consume";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import {
-  explainTargetExclude,
-  extractFromTarget,
-  type ExtractFromTargetResult,
+  entityRegMeetsFilter,
+  explainTarget,
   type HassServiceTargetWithExclude,
   type TargetItem,
 } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
-import { filterTargetEntries } from "./filter-target-entries";
 import { targetExpandGroupContext } from "./target-expand-group-context";
 import {
   computeExclusionsPerTarget,
@@ -23,6 +21,7 @@ import {
   targetItems,
   type TargetExclusion,
   type TargetExclusions,
+  type TargetNarrowing,
 } from "./target-exclusions";
 
 export type TargetExclusionsHost = ReactiveControllerHost &
@@ -53,15 +52,10 @@ export class TargetExclusionsController extends ContextController {
 
   private _host: TargetExclusionsHost;
 
-  // Whether the target expands the groups it names, like an action does.
   @consumeContext({ context: targetExpandGroupContext, subscribe: true })
   private _expandGroup?: boolean;
 
   private _request = 0;
-
-  // What each target item resolves to, so a change only asks core about the
-  // items it adds.
-  private _itemEntries = new Map<string, Promise<ExtractFromTargetResult>>();
 
   constructor(host: TargetExclusionsHost) {
     super(host);
@@ -72,18 +66,17 @@ export class TargetExclusionsController extends ContextController {
     this.resolve();
   }
 
+  /** Whether the target expands the groups it names, like an action does. */
+  public get expandGroup(): boolean {
+    return this._expandGroup ?? true;
+  }
+
   /**
    * Works the exclusions out again. Without an exclude, the targets are only
    * needed to tell whether an exclusion made in the details is shared with
    * another target, so they are only resolved for that or when `force`d.
    */
-  public async resolve({
-    registriesChanged = false,
-    force = false,
-  }: { registriesChanged?: boolean; force?: boolean } = {}) {
-    if (registriesChanged) {
-      this._itemEntries.clear();
-    }
+  public async resolve({ force = false }: { force?: boolean } = {}) {
     const request = ++this._request;
     const { hass, value, allowExclude } = this._host;
     if (
@@ -93,33 +86,24 @@ export class TargetExclusionsController extends ContextController {
         !hasIncludedTargets(value.exclude) &&
         (!allowExclude || targetItems(value).length < 2))
     ) {
-      this._set(undefined, true);
+      this._update(undefined, true);
       return;
     }
     // Until the targets resolve, the exclusions shown are from before and
     // may not say which ones are shared now.
-    this._set(this.exclusions, false);
+    this._update(this.exclusions, false);
 
-    let exclusions: TargetExclusions;
+    let exclusions: TargetExclusions | undefined;
     try {
-      const [explained, narrowed] = await Promise.all([
-        explainTargetExclude(
-          hass.callWS,
-          value,
-          this._expandGroup ?? true,
-          this._host.primaryEntitiesOnly ?? true
-        ),
-        this._narrow(targetItems(value)),
-      ]);
-      exclusions = computeExclusionsPerTarget(explained, narrowed);
+      exclusions = computeExclusionsPerTarget(
+        await this._explain(value),
+        this._keeps()
+      );
     } catch (_err) {
-      if (request === this._request) {
-        this._set(undefined, false);
-      }
-      return;
+      // Without an answer, the exclusions stay unplaced.
     }
     if (request === this._request) {
-      this._set(exclusions, true);
+      this._update(exclusions, !!exclusions);
     }
   }
 
@@ -155,82 +139,66 @@ export class TargetExclusionsController extends ContextController {
     targetKey: string,
     item: TargetItem
   ): Promise<TargetExclusion | undefined> {
-    const { hass, value } = this._host;
+    const { value } = this._host;
     if (!value) {
       return undefined;
     }
-    const { exclude: _exclude, ...include } = value;
-    const explained = await explainTargetExclude(
-      hass.callWS,
-      { ...include, exclude: { [`${item.type}_id`]: [item.id] } },
-      this._expandGroup ?? true,
-      this._host.primaryEntitiesOnly ?? true
-    );
-    return computeExclusionsPerTarget(explained, this.exclusions?.included)
-      .perTarget[targetKey]?.[0];
+    const explained = await this._explain({
+      ...value,
+      exclude: { [`${item.type}_id`]: [item.id] },
+    });
+    return computeExclusionsPerTarget(explained, this._keeps()).perTarget[
+      targetKey
+    ]?.[0];
   }
 
-  private _set(exclusions: TargetExclusions | undefined, complete: boolean) {
-    if (exclusions === this.exclusions && complete === this.complete) {
-      return;
-    }
+  private _explain(target: HassServiceTargetWithExclude) {
+    return explainTarget(
+      this._host.hass.callWS,
+      target,
+      this.expandGroup,
+      this._host.primaryEntitiesOnly ?? true
+    );
+  }
+
+  private _update(exclusions: TargetExclusions | undefined, complete: boolean) {
     this.exclusions = exclusions;
     this.complete = complete;
     this._host.requestUpdate();
   }
 
-  // Targets other than entities, narrowed like their rows so what an
-  // exclusion takes out matches what a row counts.
-  private async _narrow(
-    items: TargetItem[]
-  ): Promise<Record<string, string[]>> {
-    const { hass } = this._host;
-    const narrowed = items
-      .filter((item) => item.type !== "entity")
-      .map(async (item) => {
-        const entries = await this._extractItem(item);
-        return [
-          targetItemKey(item),
-          filterTargetEntries(
-            hass.states,
-            hass.entities,
-            hass.devices,
-            hass.areas,
-            item,
-            entries,
-            {
-              deviceFilter: this._host.deviceFilter,
-              entityFilter: this._host.entityFilter,
-              includeDomains: this._host.includeDomains,
-              includeDeviceClasses: this._host.includeDeviceClasses,
-              primaryEntitiesOnly: this._host.primaryEntitiesOnly,
-            }
-          ).referenced_entities,
-        ] as const;
-      });
-    return Object.fromEntries(await Promise.all(narrowed));
-  }
-
-  private _extractItem(item: TargetItem): Promise<ExtractFromTargetResult> {
-    const primaryEntitiesOnly = this._host.primaryEntitiesOnly ?? true;
-    const key = `${primaryEntitiesOnly}:${targetItemKey(item)}`;
-    let entries = this._itemEntries.get(key);
-    if (!entries) {
-      entries = extractFromTarget(
-        this._host.hass.callWS,
-        { [`${item.type}_id`]: [item.id] },
-        false,
-        primaryEntitiesOnly
+  // Whether the picker's filters leave an entity in a target, so what an
+  // exclusion takes out matches what the target's row counts.
+  private _keeps(): TargetNarrowing {
+    const {
+      hass,
+      deviceFilter,
+      entityFilter,
+      includeDomains,
+      includeDeviceClasses,
+      primaryEntitiesOnly,
+    } = this._host;
+    return (item, entityId) => {
+      const entity = hass.entities[entityId];
+      if (!entity) {
+        return false;
+      }
+      if (
+        deviceFilter &&
+        entity.device_id &&
+        !deviceFilter(hass.devices[entity.device_id])
+      ) {
+        return false;
+      }
+      return entityRegMeetsFilter(
+        entity,
+        item.type === "label" || !primaryEntitiesOnly,
+        includeDomains,
+        includeDeviceClasses,
+        hass.states,
+        entityFilter
       );
-      this._itemEntries.set(key, entries);
-      const cached = entries;
-      cached.catch(() => {
-        if (this._itemEntries.get(key) === cached) {
-          this._itemEntries.delete(key);
-        }
-      });
-    }
-    return entries;
+    };
   }
 
   private _includedEntities = memoizeOne(

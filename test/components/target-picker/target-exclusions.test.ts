@@ -160,10 +160,7 @@ describe("computeExclusionsPerTarget", () => {
           },
         ],
       },
-      {
-        "area:kitchen": kitchen.entities,
-        "area:hallway": hallway.entities,
-      }
+      (_item, entityId) => entityId.startsWith("light.")
     );
 
     expect(noEffect).toEqual([{ type: "entity", id: "switch.fan" }]);
@@ -328,7 +325,7 @@ describe("resolveItemExclusions", () => {
     ]);
     expect(requests).toEqual([
       {
-        type: "explain_target_exclude",
+        type: "explain_target",
         target: {
           entity_id: ["switch.lamp_config"],
           exclude: { device_id: ["lamp"] },
