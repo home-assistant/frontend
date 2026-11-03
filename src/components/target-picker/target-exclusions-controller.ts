@@ -183,10 +183,17 @@ export class TargetExclusionsController extends ContextController {
       if (!entity) {
         return false;
       }
+      // A device target keeps the entities of its child devices whatever the
+      // device filter says, like its rows do, and a device the registry
+      // doesn't know can't be checked against it.
+      const device = entity.device_id
+        ? hass.devices[entity.device_id]
+        : undefined;
       if (
         deviceFilter &&
-        entity.device_id &&
-        !deviceFilter(hass.devices[entity.device_id])
+        device &&
+        item.type !== "device" &&
+        !deviceFilter(device)
       ) {
         return false;
       }

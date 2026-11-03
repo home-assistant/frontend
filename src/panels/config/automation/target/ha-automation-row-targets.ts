@@ -249,13 +249,18 @@ export class HaAutomationRowTargets extends LitElement {
     return Object.keys(explainable).length ? explainable : undefined;
   }
 
-  // The counts need every target explained; without them, only an entity
-  // target the exclude takes out again needs to be known.
+  // Only targets other than entities show a count, and only when the summary
+  // is interactive; without one of those, the explanation is only needed to
+  // tell which entity targets the exclude takes out again.
   private async _explain() {
     const request = ++this._explainRequest;
     const target = this._explainableTarget();
     const exclude = this._getExclude();
-    if (!this._api || !target || (!this.interactive && !exclude)) {
+    const counts =
+      this.interactive &&
+      !!target &&
+      Object.keys(target).some((key) => key !== "entity_id");
+    if (!this._api || !target || (!counts && !exclude)) {
       this._explanation = undefined;
       return;
     }
