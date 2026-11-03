@@ -10,6 +10,16 @@ import type { Api } from "../../../src/resources/markdown-worker";
 
 vi.mock("comlink", () => ({ expose: vi.fn() }));
 
+// The worker exposes its API once, when it is first imported
+let workerApi: Api | undefined;
+const workerRenderMarkdown = async () => {
+  if (!workerApi) {
+    await import("../../../src/resources/markdown-worker");
+    workerApi = vi.mocked(expose).mock.calls[0][0] as Api;
+  }
+  return workerApi.renderMarkdown;
+};
+
 const repository = {
   id: "42",
   full_name: "owner/repo",
@@ -470,8 +480,7 @@ describe("rewriteHtmlUrls with the README of a repository", () => {
   });
 
   it("shows the dark logo of a README from the repository", async () => {
-    await import("../../../src/resources/markdown-worker");
-    const { renderMarkdown } = vi.mocked(expose).mock.calls[0][0] as Api;
+    const renderMarkdown = await workerRenderMarkdown();
     const html = (
       await renderMarkdown(
         [
@@ -495,6 +504,26 @@ describe("rewriteHtmlUrls with the README of a repository", () => {
     );
     expect(picture.querySelector("img")?.getAttribute("src")).toBe(
       `${raw}/images/logo-light.png`
+    );
+  });
+
+  it("shows images and links with a plain relative path", async () => {
+    const renderMarkdown = await workerRenderMarkdown();
+    const html = (
+      await renderMarkdown(
+        "![Logo](images/logo.png) [Setup](docs/setup.md)",
+        {},
+        { allowRelativeUrls: true }
+      )
+    ).join("");
+
+    const template = document.createElement("template");
+    template.innerHTML = rewriteHtmlUrls(html, toReadme);
+    expect(template.content.querySelector("img")?.getAttribute("src")).toBe(
+      `${raw}/images/logo.png`
+    );
+    expect(template.content.querySelector("a")?.getAttribute("href")).toBe(
+      "https://github.com/owner/repo/blob/v1.0.0/docs/setup.md"
     );
   });
 });
