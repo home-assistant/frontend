@@ -55,6 +55,10 @@ export interface MaintenanceFrontendSystemData {
   hidden_entities?: string[];
 }
 
+export interface ClimateFrontendSystemData {
+  hidden_entities?: string[];
+}
+
 export interface EnergyFrontendSystemData {
   // Stable "<view>.<card-type>" keys of energy dashboard cards the user has
   // hidden. An absent key or array means nothing is hidden (all cards visible),
@@ -74,6 +78,7 @@ declare global {
     energy: EnergyFrontendSystemData;
     security: SecurityFrontendSystemData;
     maintenance: MaintenanceFrontendSystemData;
+    climate: ClimateFrontendSystemData;
   }
 }
 

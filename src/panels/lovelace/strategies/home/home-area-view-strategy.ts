@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators";
 import { computeDeviceName } from "../../../../common/entity/compute_device_name";
 import { getEntityContext } from "../../../../common/entity/context/get_entity_context";
 import {
+  excludeEntities,
   findEntities,
   generateEntityFilter,
 } from "../../../../common/entity/entity_filter";
@@ -29,6 +30,7 @@ import {
 export interface HomeAreaViewStrategyConfig {
   type: "home-area";
   area?: string;
+  climate_hidden_entities?: string[];
   home_panel?: boolean;
 }
 
@@ -91,6 +93,10 @@ export class HomeAreaViewStrategy extends ReactiveElement {
     const allEntities = Object.keys(hass.states);
     const areaEntities = allEntities.filter(areaFilter);
 
+    const hiddenEntities: Partial<Record<HomeSummary, string[]>> = {
+      climate: config.climate_hidden_entities,
+    };
+
     const entitiesBySummary = HOME_SUMMARIES.reduce(
       (acc, summary) => {
         const summariesFilters = HOME_SUMMARIES_FILTERS[summary];
@@ -104,7 +110,10 @@ export class HomeAreaViewStrategy extends ReactiveElement {
             filter
           )
         );
-        acc[summary] = findEntities(areaEntities, filterFunctions);
+        acc[summary] = excludeEntities(
+          findEntities(areaEntities, filterFunctions),
+          hiddenEntities[summary]
+        );
         return acc;
       },
       {} as Record<HomeSummary, string[]>
