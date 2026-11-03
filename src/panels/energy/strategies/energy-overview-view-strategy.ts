@@ -175,6 +175,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
                 ),
                 type: "energy-water-graph",
                 collection_key: collectionKey,
+                combine_sources: true,
               }
             : {
                 title: hass.localize(
