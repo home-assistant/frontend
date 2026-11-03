@@ -214,16 +214,18 @@ const createRspackConfig = ({
           },
         },
         {
-          // MapLibre's worker loads ESM plugins through `import(url)`, and the
-          // page side builds a blob import from `new URL(url, import.meta.url)`
-          // for a cross-origin worker. Neither path is taken here: the RTL
-          // plugin is UMD and the worker is served from the page's origin.
-          // Rspack's stubs for these fully dynamic requests are exactly what
-          // should remain - rejecting, and free of syntax the legacy floor
-          // cannot parse - so the warnings about them are noise.
+          // MapLibre's worker loads ESM plugins through `import(url)`, which
+          // is never taken here: the RTL plugin is UMD. Rspack's stub for that
+          // fully dynamic request is exactly what should remain - rejecting,
+          // and free of syntax the legacy floor cannot parse - so the warning
+          // about it is noise. The page side builds a blob import from
+          // `new URL(url, import.meta.url)` for a worker on another origin,
+          // as in the demo embed. That is a URL, not an asset to bundle, and
+          // the worker URL is absolute, so leave it as it is.
           test: /[\\/]maplibre-gl[\\/]dist[\\/]maplibre-gl(?:-worker)?\.mjs$/,
           parser: {
             exprContextCritical: false,
+            url: false,
           },
         },
         {
