@@ -2,7 +2,7 @@ import "@home-assistant/webawesome/dist/components/popover/popover";
 import type WaPopover from "@home-assistant/webawesome/dist/components/popover/popover";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { ContextType } from "@lit/context";
-import { mdiPlaylistPlus } from "@mdi/js";
+import { mdiPlaylistPlus, mdiRefresh } from "@mdi/js";
 import {
   css,
   html,
@@ -21,9 +21,11 @@ import { configContext, internationalizationContext } from "../data/context";
 import { PickerMixin } from "../mixins/picker-mixin";
 import type { FuseWeightedKey } from "../resources/fuseMultiTerm";
 import { isIosApp } from "../util/is_ios";
+import "./ha-alert";
 import "./ha-bottom-sheet";
 import "./ha-button";
 import "./ha-combo-box-item";
+import "./ha-icon-button";
 import "./ha-input-helper-text";
 import "./ha-picker-combo-box";
 import type {
@@ -118,6 +120,12 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   /** Shows a skeleton in place of the field while its items load. */
   @property({ type: Boolean, reflect: true }) public loading = false;
 
+  /**
+   * Shows this error with a retry button in place of the field when its items
+   * failed to load. The retry button fires `picker-retry`.
+   */
+  @property({ attribute: false }) public loadError?: string;
+
   @query(".container") private _containerElement?: HTMLDivElement;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -183,7 +191,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     if (
       changedProperties.has("value") ||
       changedProperties.has("noUnknownState") ||
-      changedProperties.has("loading")
+      changedProperties.has("loading") ||
+      changedProperties.has("loadError")
     ) {
       this._setUnknownValue();
     }
@@ -209,7 +218,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
             : nothing
         }
         <div id="picker">
-          <div class="field" ?inert=${this.loading}>
+          <div class="field" ?inert=${this.loading || !!this.loadError}>
             <slot name="field">
               ${
                 this.addButtonLabel && !this.value
@@ -261,6 +270,21 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
                   @transitionend=${this._skeletonTransitionEnd}
                   @transitioncancel=${this._skeletonTransitionEnd}
                 ></ha-skeleton>`
+              : nothing
+          }
+          ${
+            this.loadError
+              ? html`<div class="load-error">
+                  <ha-alert alert-type="error">
+                    ${this.loadError}
+                    <ha-icon-button
+                      slot="action"
+                      .path=${mdiRefresh}
+                      .label=${this._i18n?.localize("ui.common.retry")}
+                      @click=${this._retry}
+                    ></ha-icon-button>
+                  </ha-alert>
+                </div>`
               : nothing
           }
         </div>
@@ -345,10 +369,16 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     }
   }
 
+  private _retry(ev: Event) {
+    ev.stopPropagation();
+    fireEvent(this, "picker-retry");
+  }
+
   private _setUnknownValue = () => {
     const items = this.getItems();
     if (
       this.loading ||
+      this.loadError ||
       this.noUnknownState ||
       this.allowCustomValue ||
       this.value === undefined ||
@@ -462,7 +492,7 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   ) {
     ev?.stopPropagation();
 
-    if (this.disabled || this.loading) {
+    if (this.disabled || this.loading || this.loadError) {
       return;
     }
     this._selectedValue = options?.selectedValue;
@@ -517,7 +547,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .loading-skeleton {
           transition: opacity var(--ha-animation-duration-fast, 150ms) ease-out;
         }
-        :host([loading]) .field {
+        :host([loading]) .field,
+        .field[inert] {
           opacity: 0;
         }
         .loading-skeleton {
@@ -533,6 +564,15 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         :host(:not([loading])) .loading-skeleton {
           opacity: 0;
           pointer-events: none;
+        }
+        .load-error {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+        }
+        .load-error ha-alert {
+          flex: 1;
         }
         label[disabled] {
           color: var(--mdc-text-field-disabled-ink-color, rgba(0, 0, 0, 0.6));
@@ -615,5 +655,6 @@ declare global {
   interface HASSDomEvents {
     "picker-closed": undefined;
     "picker-opened": undefined;
+    "picker-retry": undefined;
   }
 }
