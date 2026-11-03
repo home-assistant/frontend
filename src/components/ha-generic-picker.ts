@@ -132,8 +132,6 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   @query("wa-popover") private _popover?: WaPopover;
 
-  @query(".loading-skeleton") private _skeleton?: HTMLElement;
-
   @state()
   @consume({ context: configContext, subscribe: true })
   private _hassConfig?: ContextType<typeof configContext>;
@@ -142,7 +140,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n?: ContextType<typeof internationalizationContext>;
 
-  // Kept once loading ends, so the skeleton fades out over the field
+  // Set once loading starts, then hidden with CSS once it ends, so the
+  // skeleton fades out over the field
   @state() private _skeletonShown = false;
 
   @state() private _opened = false;
@@ -176,17 +175,8 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
   private _unsubscribeTinyKeys?: () => void;
 
   protected willUpdate(changedProperties: PropertyValues<this>) {
-    if (changedProperties.has("loading")) {
-      if (this.loading) {
-        this._skeletonShown = true;
-      } else if (
-        // Loading that ends before the skeleton faded in leaves nothing to
-        // fade out, so no transition would ever remove it
-        this._skeletonShown &&
-        (!this._skeleton || getComputedStyle(this._skeleton).opacity === "0")
-      ) {
-        this._skeletonShown = false;
-      }
+    if (changedProperties.has("loading") && this.loading) {
+      this._skeletonShown = true;
     }
     if (
       changedProperties.has("value") ||
@@ -263,12 +253,10 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
             this._skeletonShown
               ? html`<ha-skeleton
                   class="loading-skeleton"
-                  role="progressbar"
+                  role=${ifDefined(this.loading ? "progressbar" : undefined)}
                   aria-label=${ifDefined(
-                    this._i18n?.localize("ui.common.loading")
+                    this.loading ? this._loadingLabel() : undefined
                   )}
-                  @transitionend=${this._skeletonTransitionEnd}
-                  @transitioncancel=${this._skeletonTransitionCancel}
                 ></ha-skeleton>`
               : nothing
           }
@@ -363,18 +351,13 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
     `;
   }
 
-  private _skeletonTransitionEnd() {
-    if (!this.loading) {
-      this._skeletonShown = false;
-    }
-  }
-
-  private _skeletonTransitionCancel() {
-    // A fade-in cut short by loading ending turns into the fade-out, so wait
-    // for that to end unless there is nothing left to fade
-    if (!this._skeleton || getComputedStyle(this._skeleton).opacity === "0") {
-      this._skeletonTransitionEnd();
-    }
+  private _loadingLabel() {
+    const label = this.ariaLabel || this.label || this.placeholder;
+    return label
+      ? this._i18n?.localize("ui.components.generic-picker.loading", {
+          label,
+        })
+      : this._i18n?.localize("ui.common.loading");
   }
 
   private _retry(ev: Event) {
@@ -546,13 +529,20 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           display: block;
           max-width: 100%;
         }
+        /* The error shares the field's cell, so a wrapping error grows the
+           picker instead of covering what follows */
         #picker {
           position: relative;
+          display: grid;
+        }
+        #picker > .field,
+        #picker > .load-error {
+          grid-area: 1 / 1;
+          min-width: 0;
         }
         /* The field keeps its place under the skeleton, so nothing moves and
            the two cross fade once loading ends */
-        .field,
-        .loading-skeleton {
+        .field {
           transition: opacity var(--ha-animation-duration-fast, 150ms) ease-out;
         }
         :host([loading]) .field,
@@ -563,19 +553,23 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
           position: absolute;
           inset: 0;
           --ha-skeleton-border-radius: var(--ha-border-radius-sm);
+          transition: opacity var(--ha-animation-duration-fast, 150ms) ease-out;
         }
         @starting-style {
           .loading-skeleton {
             opacity: 0;
           }
         }
+        /* Hidden once faded out, and at once when no fade runs */
         :host(:not([loading])) .loading-skeleton {
           opacity: 0;
+          visibility: hidden;
           pointer-events: none;
+          transition:
+            opacity var(--ha-animation-duration-fast, 150ms) ease-out,
+            visibility 0s linear var(--ha-animation-duration-fast, 150ms);
         }
         .load-error {
-          position: absolute;
-          inset: 0;
           display: flex;
           align-items: center;
         }

@@ -1016,6 +1016,9 @@
         "unknown": "Unknown user selected",
         "load_failed": "Failed to load users"
       },
+      "generic-picker": {
+        "loading": "Loading {label}"
+      },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
       },
@@ -1060,6 +1063,7 @@
         "no_categories": "No categories available",
         "no_match": "No categories found for {term}",
         "unknown": "Unknown category selected",
+        "load_failed": "Failed to load categories",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
