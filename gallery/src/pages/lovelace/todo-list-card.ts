@@ -42,6 +42,23 @@ const CONFIGS = [
       entity: "todo.read_only",
     },
   },
+  {
+    heading: "List with search",
+    config: {
+      type: "todo-list",
+      entity: "todo.shopping_list",
+      show_search: true,
+    },
+  },
+  {
+    heading: "List with search and without add field",
+    config: {
+      type: "todo-list",
+      entity: "todo.shopping_list",
+      show_search: true,
+      hide_create: true,
+    },
+  },
 ] satisfies DemoCardConfig<TodoListCardConfig>[];
 
 @customElement("demo-lovelace-todo-list-card")

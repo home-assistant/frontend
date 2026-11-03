@@ -1,6 +1,8 @@
+import { endOfDay } from "date-fns";
 import type { Connection, HassEntities } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { stringCompare } from "../common/string/compare";
+import { stripDiacritics } from "../common/string/strip-diacritics";
 import type {
   HomeAssistant,
   HomeAssistantFormatters,
@@ -65,6 +67,49 @@ export const getTodoLists = (
       name: formatEntityName(states[entityId]),
     }))
     .sort((a, b) => stringCompare(a.name, b.name, language));
+
+export const getTodoDueDate = (item: TodoItem): Date | undefined =>
+  item.due
+    ? item.due.includes("T")
+      ? new Date(item.due)
+      : endOfDay(new Date(`${item.due}T00:00:00`))
+    : undefined;
+
+export interface TodoItemsFilter {
+  status: (TodoItemStatus | null)[];
+  /** Only keep items that are due on or before this date. */
+  endDate?: Date;
+  /** Every word must appear in the summary or description. */
+  search?: string;
+}
+
+export const filterTodoItems = (
+  items: TodoItem[],
+  { status, endDate, search }: TodoItemsFilter
+): TodoItem[] => {
+  const terms = search
+    ? stripDiacritics(search.toLowerCase()).split(/\s+/).filter(Boolean)
+    : [];
+
+  return items.filter((item) => {
+    if (!status.includes(item.status || null)) {
+      return false;
+    }
+    if (terms.length) {
+      const searchString = stripDiacritics(
+        `${item.summary ?? ""} ${item.description ?? ""}`.toLowerCase()
+      );
+      if (!terms.every((term) => searchString.includes(term))) {
+        return false;
+      }
+    }
+    if (!endDate) {
+      return true;
+    }
+    const dueDate = getTodoDueDate(item);
+    return dueDate !== undefined && dueDate <= endDate;
+  });
+};
 
 export interface TodoItems {
   items: TodoItem[];
