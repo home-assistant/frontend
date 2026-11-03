@@ -396,6 +396,7 @@ export class HaCodeEditor extends ReactiveElement {
       changedProps.has("_canRedo") ||
       changedProps.has("testing") ||
       changedProps.has("mode") ||
+      changedProps.has("downloadName") ||
       changedProps.has("_i18n") ||
       changedProps.has("toolbarItems")
     ) {
@@ -624,7 +625,7 @@ export class HaCodeEditor extends ReactiveElement {
         path: mdiContentCopy,
         action: (e: Event) => this._handleClipboardClick(e),
       },
-      ...(this.mode === "yaml"
+      ...(this.mode === "yaml" && this.downloadName
         ? [
             {
               id: "download",
@@ -691,15 +692,11 @@ export class HaCodeEditor extends ReactiveElement {
   private _handleDownloadClick = (e: Event) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!this.value) {
+    if (!this.value || !this.downloadName) {
       return;
     }
     const blob = new Blob([this.value], { type: "application/yaml" });
-    const timestamp = Math.floor(Date.now() / 1000);
-    fileDownload(
-      URL.createObjectURL(blob),
-      `${this.downloadName || "HAbackup"}_${timestamp}.yaml`
-    );
+    fileDownload(URL.createObjectURL(blob), `${this.downloadName}.yaml`);
   };
 
   private _handleTestClick = (e: Event) => {

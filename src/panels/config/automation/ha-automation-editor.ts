@@ -28,6 +28,7 @@ import { UndoRedoController } from "../../../common/controllers/undo-redo-contro
 import { fireEvent } from "../../../common/dom/fire_event";
 import { isNavigationClick } from "../../../common/dom/is-navigation-click";
 import { goBack, navigate } from "../../../common/navigate";
+import { slugify } from "../../../common/string/slugify";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
@@ -652,6 +653,9 @@ export class HaAutomationEditor extends AutomationScriptEditorMixin<AutomationCo
                     <ha-yaml-editor
                       .defaultValue=${this._preprocessYaml()}
                       .downloadName=${
+                        (this.config?.alias
+                          ? slugify(this.config.alias)
+                          : undefined) ||
                         this.automationId ||
                         (this.entityId ? this.config?.id : undefined)
                       }
