@@ -25,14 +25,14 @@ describe("navigationUrl", () => {
       "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Home Assistant/2024.1"
     );
     expect(navigationUrl(52.37, 4.9)).toBe(
-      "https://maps.apple.com/directions?destination=52.37,4.9"
+      "https://maps.apple.com/?daddr=52.37,4.9"
     );
   });
 
   it("opens Apple Maps on an iPad that reports a desktop user agent", () => {
     setNavigator(MAC_UA, 5);
     expect(navigationUrl(52.37, -4.9)).toBe(
-      "https://maps.apple.com/directions?destination=52.37,-4.9"
+      "https://maps.apple.com/?daddr=52.37,-4.9"
     );
   });
 
