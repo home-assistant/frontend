@@ -10981,7 +10981,6 @@
                 "label": "Label"
               },
               "severity": {
-                "define": "Define severity",
                 "green": "Green",
                 "red": "Red",
                 "yellow": "Yellow"
@@ -12069,7 +12068,8 @@
                 "label": "Bar gauge",
                 "min": "Minimum value",
                 "max": "Maximum value",
-                "show_severity": "[%key:ui::panel::lovelace::editor::card::gauge::severity::define%]",
+                "color_mode": "[%key:ui::panel::lovelace::editor::card::gauge::color_mode%]",
+                "segments": "[%key:ui::panel::lovelace::editor::card::gauge::segments%]",
                 "green": "[%key:ui::panel::lovelace::editor::card::gauge::severity::green%]",
                 "yellow": "[%key:ui::panel::lovelace::editor::card::gauge::severity::yellow%]",
                 "red": "[%key:ui::panel::lovelace::editor::card::gauge::severity::red%]"
