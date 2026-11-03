@@ -2,11 +2,14 @@ import { ContextEvent } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { createRef, ref } from "lit/directives/ref";
 import { consume } from "../../../src/common/decorators/consume";
 import { computeRTLDirection } from "../../../src/common/util/compute_rtl";
 import type { LovelaceCardConfig } from "../../../src/data/lovelace/config/card";
 import { handleAction } from "../../../src/panels/lovelace/common/handle-action";
+import { computeCardGridSize } from "../../../src/panels/lovelace/common/compute-card-grid-size";
 import "../../../src/panels/lovelace/cards/hui-card";
+import type { HuiCard } from "../../../src/panels/lovelace/cards/hui-card";
 import type { HomeAssistant } from "../../../src/types";
 import { embedHassContext } from "./context";
 import { readScriptData } from "./script-data";
@@ -37,6 +40,10 @@ const insideProvider = (element: Element): boolean => {
  * Renders a Lovelace card. The card uses the provider with the ID in
  * `provider`, else the closest provider around it, else the first provider on
  * the page. If the page has no provider, the card adds an empty one.
+ *
+ * The card takes the columns and rows it would take in a section, so cards
+ * in an element with `display: grid` and 12 columns lay out like a section.
+ * It also sets `--column-size` and `--row-size` on itself.
  */
 @customElement("ha-embed-card")
 export class HaEmbedCard extends LitElement {
@@ -58,6 +65,8 @@ export class HaEmbedCard extends LitElement {
   private _linkedProvider?: HTMLElement;
 
   private _scriptRead = false;
+
+  private _card = createRef<HuiCard>();
 
   constructor() {
     super();
@@ -116,15 +125,66 @@ export class HaEmbedCard extends LitElement {
       class=${classMap({ theme: true, dark: this._hass.themes.darkMode })}
       dir=${computeRTLDirection(this._hass)}
     >
-      <hui-card .hass=${this._hass} .config=${this.config}></hui-card>
+      <hui-card
+        ${ref(this._card)}
+        .hass=${this._hass}
+        .config=${this.config}
+        .layout=${"grid"}
+        @card-updated=${this._updateSize}
+        @card-visibility-changed=${this._updateSize}
+      ></hui-card>
     </div>`;
   }
+
+  protected updated() {
+    // The card element only exists once hui-card has updated
+    this._card.value?.updateComplete.then(() => this._updateSize());
+  }
+
+  // The size the card gets in a section, set on the host so that the page can
+  // lay out cards in a grid of 12 columns, like a section
+  private _updateSize = () => {
+    const card = this._card.value;
+    if (!card) {
+      return;
+    }
+    const { rows, columns } = computeCardGridSize(card.getGridOptions());
+    this.hidden = card.hidden;
+    this.toggleAttribute("full-width", columns === "full");
+    this.toggleAttribute("fit-rows", typeof rows === "number");
+    this.style.setProperty(
+      "--column-size",
+      typeof columns === "number" ? String(columns) : null
+    );
+    this.style.setProperty(
+      "--row-size",
+      typeof rows === "number" ? String(rows) : null
+    );
+  };
 
   static styles = [
     embedThemeStyles,
     css`
+      /* The sizes of a card in a section, see hui-grid-section */
       :host {
+        --row-gap: var(--ha-section-grid-row-gap, 8px);
+        --row-height: var(--ha-section-grid-row-height, 56px);
         display: block;
+        grid-row: span var(--row-size, 1);
+        grid-column: span min(var(--column-size, 12), 12);
+      }
+      :host([full-width]) {
+        grid-column: 1 / -1;
+      }
+      :host([hidden]) {
+        display: none;
+      }
+      :host([fit-rows]) .theme {
+        height: calc(
+          (var(--row-size, 1) * (var(--row-height) + var(--row-gap))) - var(
+              --row-gap
+            )
+        );
       }
       /* The text styles the app sets on html and body, so that the card does
          not inherit the text styles of the page that embeds it. */
