@@ -42,6 +42,7 @@ export default [
           "ha-input",
           "ha-textarea",
           "ha-picker-combo-box",
+          "ha-schedule-timeline",
         ],
       },
       {
