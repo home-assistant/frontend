@@ -4,7 +4,10 @@ import type { MapStyleConfig } from "../../../common/map/map-styles";
 import type { HaDurationData } from "../../../components/ha-duration-input";
 import type { MapCardMarkerLabelMode } from "../../../components/map/ha-map";
 import type { EnergySourceByType } from "../../../data/energy";
-import type { SecurityAlertEntityConfig } from "../../../data/frontend";
+import type {
+  SecurityAlertEntityConfig,
+  SecurityAlertSeverity,
+} from "../../../data/frontend";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
 import type {
@@ -71,9 +74,16 @@ export interface ConditionalCardConfig extends LovelaceCardConfig {
   conditions: VisibilityCondition[];
 }
 
+export type EntityVisibilityAlertLevel = "none" | SecurityAlertSeverity;
+
 export interface EntityVisibilityCardConfig extends LovelaceCardConfig {
   entity: string;
   hidden?: boolean;
+  favorite?: boolean;
+  alert?: EntityVisibilityAlertLevel;
+  alert_select?: boolean;
+  neighbor_entity?: string;
+  fallback_entity?: string;
   card: LovelaceCardConfig;
 }
 
