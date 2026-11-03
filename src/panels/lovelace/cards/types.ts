@@ -323,6 +323,7 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   min?: number;
   max?: number;
   severity?: SeverityConfig;
+  color?: string;
   theme?: string;
   needle?: boolean;
   segments?: GaugeSegment[];
