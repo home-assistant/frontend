@@ -10,7 +10,10 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-adaptive-dialog";
@@ -292,8 +295,8 @@ class DialogNewAutomation extends LitElement {
     this._filter = ev.target.value ?? "";
   }
 
-  private _blueprint(ev: Event) {
-    const path = (ev.currentTarget as HTMLElement).dataset.path!;
+  private _blueprint(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    const path = ev.currentTarget.dataset.path!;
     if (this._mode === "script") {
       showScriptEditor({ use_blueprint: { path } });
     } else {

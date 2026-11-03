@@ -5,6 +5,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
@@ -596,16 +597,16 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _itemClicked(ev: Event) {
+  private _itemClicked(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
     if (this.narrow) {
       this._openEditEntry(ev);
       return;
     }
-    this._zoomZone((ev.currentTarget as HTMLElement).dataset.value!);
+    this._zoomZone(ev.currentTarget.dataset.value!);
   }
 
-  private _stateItemClicked(ev: Event) {
-    const entryId = (ev.currentTarget as HTMLElement).dataset.value!;
+  private _stateItemClicked(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    const entryId = ev.currentTarget.dataset.value!;
 
     if (this.narrow && entryId === HOME_ZONE_ENTITY_ID) {
       this._editHomeZone(ev);
