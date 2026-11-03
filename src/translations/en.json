@@ -1013,7 +1013,8 @@
         "no_match": "No users found for {term}",
         "user": "User",
         "add_user": "Add user",
-        "unknown": "Unknown user selected"
+        "unknown": "Unknown user selected",
+        "load_failed": "Failed to load users"
       },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
@@ -1115,7 +1116,8 @@
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
         "learn_more": "Learn more about statistics",
-        "unknown": "Unknown statistic selected"
+        "unknown": "Unknown statistic selected",
+        "load_failed": "Failed to load statistics"
       },
       "app-picker": {
         "app": "App",
