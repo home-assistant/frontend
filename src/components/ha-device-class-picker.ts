@@ -1,8 +1,6 @@
-import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
-import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
 import { ensureArray } from "../common/array/ensure-array";
@@ -20,12 +18,8 @@ import type {
 } from "../types";
 import "./chips/ha-chip-set";
 import "./chips/ha-input-chip";
-import "./ha-combo-box-item";
 import "./ha-generic-picker";
-import {
-  DEFAULT_ROW_RENDERER_CONTENT,
-  type PickerComboBoxItem,
-} from "./ha-picker-combo-box";
+import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
 export const getDeviceClassOptions = (
   domain: string,
@@ -36,33 +30,12 @@ export const getDeviceClassOptions = (
     return { id: deviceClass, primary, sorting_label: primary };
   });
 
-interface DeviceClassItem extends PickerComboBoxItem {
-  /** The device class does not support the unit, choosing it clears the unit */
-  unsupported?: boolean;
-}
-
 // The reason line of a device class that does not support the unit names the
 // unit, so searching it would match every unsupported device class
 const UNIT_FILTER_SEARCH_KEYS: FuseWeightedKey[] = [
   { name: "primary", weight: 10 },
   { name: "id", weight: 3 },
 ];
-
-// An unsupported device class is greyed out but stays selectable: with both
-// fields required there is no clear button, so it is the way to another unit
-const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
-  <ha-combo-box-item
-    style=${styleMap(
-      (item as DeviceClassItem).unsupported
-        ? {
-            "--ha-combo-box-item-headline-color": "var(--secondary-text-color)",
-          }
-        : {}
-    )}
-  >
-    ${DEFAULT_ROW_RENDERER_CONTENT(item)}
-  </ha-combo-box-item>
-`;
 
 @customElement("ha-device-class-picker")
 export class HaDeviceClassPicker extends LitElement {
@@ -80,7 +53,7 @@ export class HaDeviceClassPicker extends LitElement {
 
   @property({ type: Boolean }) public required = false;
 
-  /** Unit of measurement: device classes that do not support it are listed last and greyed out */
+  /** Unit of measurement: device classes that do not support it are listed last */
   @property() public unit?: string;
 
   @state()
@@ -113,7 +86,7 @@ export class HaDeviceClassPicker extends LitElement {
       localize: LocalizeFunc | undefined,
       unit: string | undefined,
       language: string | undefined
-    ): DeviceClassItem[] => {
+    ): PickerComboBoxItem[] => {
       if (!domain || !localize) {
         return [];
       }
@@ -136,7 +109,7 @@ export class HaDeviceClassPicker extends LitElement {
       return options
         .map((option) =>
           rank(option.id) === 2
-            ? { ...option, secondary: notSupported, unsupported: true }
+            ? { ...option, secondary: notSupported }
             : option
         )
         .sort(
@@ -231,7 +204,6 @@ export class HaDeviceClassPicker extends LitElement {
           .emptyLabel=${emptyLabel}
           .noSort=${filtered}
           .searchKeys=${searchKeys}
-          .rowRenderer=${rowRenderer}
           @value-changed=${this._itemAdded}
         ></ha-generic-picker>
       `;
@@ -253,7 +225,6 @@ export class HaDeviceClassPicker extends LitElement {
         .emptyLabel=${emptyLabel}
         .noSort=${filtered}
         .searchKeys=${searchKeys}
-        .rowRenderer=${rowRenderer}
         @value-changed=${this._valueChanged}
       ></ha-generic-picker>
     `;

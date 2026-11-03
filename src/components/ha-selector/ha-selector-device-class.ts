@@ -41,7 +41,9 @@ export class HaDeviceClassSelector extends LitElement {
 
   protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
+    // A unit does not imply a device class, so an optional field stays empty
     if (
+      !this.required ||
       !changedProps.has("context") ||
       this.value ||
       this.selector.device_class?.multiple
