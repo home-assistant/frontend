@@ -28,14 +28,6 @@ vi.mock("../../../src/components/chips/ha-assist-chip", () =>
   stubElement("ha-assist-chip")
 );
 
-vi.mock("../../../src/components/ha-dropdown", () =>
-  stubElement("ha-dropdown")
-);
-
-vi.mock("../../../src/components/ha-dropdown-item", () =>
-  stubElement("ha-dropdown-item")
-);
-
 vi.mock("../../../src/components/ha-button", () => stubElement("ha-button"));
 
 vi.mock("../../../src/components/ha-icon-button", () =>
@@ -67,15 +59,13 @@ const repository = (overrides: Partial<RepositoryBase>) =>
 const openPage = async (
   repositories: RepositoryBase[] = [repository({})],
   sendMessagePromise: SendMessage = async () => null,
-  disabledReason: string | null = null,
-  narrow = false
+  disabledReason: string | null = null
 ) => {
   const host = document.createElement("div");
   const hass = provideHass(host, { localize: (key: string) => key });
   Object.assign(hass.connection, mockConnection(sendMessagePromise));
   document.body.append(host);
   const page = document.createElement("ha-marketplace-custom-repositories");
-  page.narrow = narrow;
   page.marketplace = {
     repositories,
     info: { categories: ["integration"], disabled_reason: disabledReason },
@@ -142,36 +132,6 @@ describe("ha-marketplace-custom-repositories", () => {
       ["2", false],
     ]);
   });
-
-  it.each([
-    { name: "clears it when one becomes installed", installed: true, calls: 1 },
-    { name: "keeps it otherwise", installed: false, calls: 0 },
-  ])(
-    "watches the selection on refresh, $name",
-    async ({ installed, calls }) => {
-      const page = await openPage([
-        repository({ id: "1" }),
-        repository({ id: "2" }),
-      ]);
-      const clearSelection = vi.fn();
-      table(page).clearSelection = clearSelection;
-      table(page).dispatchEvent(
-        new CustomEvent("selection-changed", { detail: { value: ["1"] } })
-      );
-      await page.updateComplete;
-
-      page.marketplace = {
-        ...page.marketplace,
-        repositories: [
-          repository({ id: "1", installed }),
-          repository({ id: "2" }),
-        ],
-      };
-      await page.updateComplete;
-
-      expect(clearSelection).toHaveBeenCalledTimes(calls);
-    }
-  );
 
   it.each([
     {

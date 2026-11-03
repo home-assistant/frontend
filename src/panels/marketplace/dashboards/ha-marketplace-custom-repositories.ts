@@ -1,6 +1,6 @@
 import type { ContextType } from "@lit/context";
-import { mdiDelete, mdiDeleteOff, mdiLinkPlus, mdiMenuDown } from "@mdi/js";
-import type { CSSResultGroup, PropertyValues } from "lit";
+import { mdiDelete, mdiDeleteOff, mdiLinkPlus } from "@mdi/js";
+import type { CSSResultGroup } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -19,8 +19,6 @@ import type {
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button";
-import "../../../components/ha-dropdown";
-import "../../../components/ha-dropdown-item";
 import "../../../components/ha-icon-button";
 import type { HaIconButton } from "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
@@ -146,27 +144,11 @@ export class HaMarketplaceCustomRepositories extends LitElement {
     })
   );
 
-  protected willUpdate(changedProperties: PropertyValues<this>) {
-    if (
-      changedProperties.has("marketplace") &&
-      this._selected.length &&
-      this.marketplace.repositories.some(
-        (repository) =>
-          repository.installed && this._selected.includes(repository.id)
-      )
-    ) {
-      this._dataTable.clearSelection();
-    }
-  }
-
   protected render() {
     const repositories = this._customRepositories(
       this.marketplace.repositories,
       this.marketplace.info.categories,
       this._i18n.localize
-    );
-    const removeLabel = this._i18n.localize(
-      "ui.panel.marketplace.custom_repositories.remove_selected"
     );
 
     return html`
@@ -191,37 +173,12 @@ export class HaMarketplaceCustomRepositories extends LitElement {
         clickable
         @row-click=${this._handleRowClicked}
       >
-        ${
-          this.narrow
-            ? html`<ha-dropdown
-                slot="selection-bar"
-                @wa-select=${this._removeSelected}
-              >
-                <ha-assist-chip
-                  slot="trigger"
-                  .label=${this._i18n.localize(
-                    "ui.panel.marketplace.custom_repositories.bulk_action"
-                  )}
-                >
-                  <ha-svg-icon
-                    slot="trailing-icon"
-                    .path=${mdiMenuDown}
-                  ></ha-svg-icon>
-                </ha-assist-chip>
-                <ha-dropdown-item
-                  value="remove"
-                  .disabled=${!this._selected.length || this._removing}
-                >
-                  ${removeLabel}
-                </ha-dropdown-item>
-              </ha-dropdown>`
-            : html`<ha-assist-chip
-                slot="selection-bar"
-                .label=${removeLabel}
-                .disabled=${!this._selected.length || this._removing}
-                @click=${this._removeSelected}
-              ></ha-assist-chip>`
-        }
+        <ha-assist-chip
+          slot="selection-bar"
+          .label=${this._i18n.localize("ui.common.remove")}
+          .disabled=${!this._selected.length || this._removing}
+          @click=${this._removeSelected}
+        ></ha-assist-chip>
         <ha-button slot="fab" size="l" @click=${this._addFromLink}>
           <ha-svg-icon slot="start" .path=${mdiLinkPlus}></ha-svg-icon>
           ${this._i18n.localize("ui.panel.marketplace.tabs.add_from_link")}
