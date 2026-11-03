@@ -4,6 +4,8 @@ import {
   consumeContext,
   ContextController,
 } from "../../common/decorators/consume";
+import { getDeviceAreaId } from "../../common/entity/context/get_device_context";
+import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import {
   entityRegMeetsFilter,
@@ -183,16 +185,13 @@ export class TargetExclusionsController extends ContextController {
       if (!entity) {
         return false;
       }
-      // A device target keeps the entities of its child devices whatever the
-      // device filter says, like its rows do, and a device the registry
-      // doesn't know can't be checked against it.
       const device = entity.device_id
         ? hass.devices[entity.device_id]
         : undefined;
       if (
         deviceFilter &&
         device &&
-        item.type !== "device" &&
+        this._reaches(item, device) &&
         !deviceFilter(device)
       ) {
         return false;
@@ -206,6 +205,27 @@ export class TargetExclusionsController extends ContextController {
         entityFilter
       );
     };
+  }
+
+  // Whether a target reaches a device, so the device filter applies to the
+  // device's entities. Like the rows, an entity reached through its own area
+  // or label stays whatever its device is, and a device target keeps the
+  // entities of its child devices.
+  private _reaches(item: TargetItem, device: DeviceRegistryEntry): boolean {
+    const { areas, devices } = this._host.hass;
+    const area = areas[getDeviceAreaId(device, devices) ?? ""];
+    switch (item.type) {
+      case "area":
+        return area?.area_id === item.id;
+      case "floor":
+        return area?.floor_id === item.id;
+      case "label":
+        return (
+          device.labels.includes(item.id) || !!area?.labels.includes(item.id)
+        );
+      default:
+        return false;
+    }
   }
 
   private _includedEntities = memoizeOne(
