@@ -3,9 +3,10 @@ import { customElement } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import {
-  findEntities,
+  findFilteredEntities,
   generateEntityFilter,
   type EntityFilter,
+  type EntityFilterSources,
 } from "../../../common/entity/entity_filter";
 import { floorDefaultIcon } from "../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -32,6 +33,10 @@ export const maintenanceEntityFilters: EntityFilter[] = [
     device_class: ["battery", "problem"],
   },
 ];
+
+export const findMaintenanceEntities = (
+  sources: EntityFilterSources
+): string[] => findFilteredEntities(sources, maintenanceEntityFilters);
 
 const LOW_BATTERY_THRESHOLD = 20;
 
@@ -198,20 +203,7 @@ export class MaintenanceViewStrategy extends ReactiveElement {
 
     const sections: LovelaceSectionRawConfig[] = [];
 
-    const allEntities = Object.keys(hass.states);
-
-    const batteryFilters = maintenanceEntityFilters.map((filter) =>
-      generateEntityFilter(
-        hass.states,
-        hass.entities,
-        hass.devices,
-        hass.areas,
-        hass.floors,
-        filter
-      )
-    );
-
-    const entities = findEntities(allEntities, batteryFilters);
+    const entities = findMaintenanceEntities(hass);
 
     const floorCount =
       hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);
