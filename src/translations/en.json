@@ -13118,8 +13118,8 @@
             "last_change": "Last change on GitHub {time}",
             "downloads": "{number, plural,\n  one {Downloaded {count} time}\n  other {Downloaded {count} times}\n}",
             "stars": "{number, plural,\n  one {{count} star on GitHub}\n  other {{count} stars on GitHub}\n}",
-            "open_issues": "{number, plural,\n  one {{count} open issue on GitHub}\n  other {{count} open issues on GitHub}\n}",
-            "no_open_issues": "No open issues on GitHub"
+            "open_issues_and_prs": "{number, plural,\n  one {{count} open issue or pull request on GitHub}\n  other {{count} open issues and pull requests on GitHub}\n}",
+            "no_open_issues_and_prs": "No open issues or pull requests on GitHub"
           },
           "details": {
             "requires": "Requires Home Assistant {version} or newer",

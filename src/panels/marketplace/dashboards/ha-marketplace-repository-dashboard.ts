@@ -968,7 +968,7 @@ type: module</pre>`,
         ? {
             icon: mdiAlertCircleOutline,
             text: localize(
-              "ui.panel.marketplace.repository.community.open_issues",
+              "ui.panel.marketplace.repository.community.open_issues_and_prs",
               {
                 number: repository.issues,
                 count: html`<strong
@@ -980,7 +980,7 @@ type: module</pre>`,
         : {
             icon: mdiCheckCircleOutline,
             text: localize(
-              "ui.panel.marketplace.repository.community.no_open_issues"
+              "ui.panel.marketplace.repository.community.no_open_issues_and_prs"
             ),
           }
     );
