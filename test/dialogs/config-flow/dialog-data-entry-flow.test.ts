@@ -491,13 +491,19 @@ describe("dialog-data-entry-flow helper area", () => {
 
   const openCreateEntryStep = async (
     integrationType: IntegrationManifest["integration_type"],
-    entities: EntityRegistryEntry[] = [registryEntry("sensor.outside")]
+    entities: EntityRegistryEntry[] = [registryEntry("sensor.outside")],
+    params: Partial<DataEntryFlowDialogParams> = {
+      manifest: manifest(integrationType),
+    }
   ) => {
     vi.mocked(hass.callWS).mockImplementation((async (msg: {
       type: string;
     }) => {
       if (msg.type === "config_entries/get") {
         return [];
+      }
+      if (msg.type === "manifest/get") {
+        return manifest(integrationType);
       }
       if (msg.type === "config/entity_registry/get_automatic_entity_ids") {
         return { "sensor.outside": "sensor.garden_outside" };
@@ -514,17 +520,19 @@ describe("dialog-data-entry-flow helper area", () => {
       context: fullEntitiesContext,
       initialValue: entities,
     });
-    const dialog = await openDialog(
-      createEntryStep,
-      { manifest: manifest(integrationType) },
-      host
-    );
+    const dialog = await openDialog(createEntryStep, params, host);
     await nextTask();
     await dialog.updateComplete;
     const step = dialog.shadowRoot!.querySelector("step-flow-create-entry")!;
     await step.updateComplete;
     return { dialog, step, requestedContexts };
   };
+
+  const manifestCalls = () =>
+    vi
+      .mocked(hass.callWS)
+      .mock.calls.map(([msg]) => msg)
+      .filter((msg) => msg.type === "manifest/get");
 
   const entityRegistryCalls = () =>
     vi
@@ -570,6 +578,15 @@ describe("dialog-data-entry-flow helper area", () => {
     ]);
   });
 
+  it("shows the area picker for a helper opened without a manifest", async () => {
+    const { step } = await openCreateEntryStep("helper", undefined, {});
+
+    expect(manifestCalls()).toEqual([
+      { type: "manifest/get", integration: "template" },
+    ]);
+    expect(step.shadowRoot!.querySelector("ha-area-picker")).not.toBeNull();
+  });
+
   it("shows no area picker for an entity linked to a device", async () => {
     // The entity follows the area of the device it was linked to
     const { step } = await openCreateEntryStep("helper", [
@@ -589,6 +606,7 @@ describe("dialog-data-entry-flow helper area", () => {
     await step.finish();
 
     expect(requestedContexts).not.toContain(fullEntitiesContext);
+    expect(manifestCalls()).toEqual([]);
     expect(entityRegistryCalls()).toEqual([]);
   });
 });

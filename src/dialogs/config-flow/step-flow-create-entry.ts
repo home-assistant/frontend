@@ -17,7 +17,7 @@ import { assistSatelliteSupportsSetupFlow } from "../../data/assist_satellite";
 import { getConfigEntries } from "../../data/config_entries";
 import type { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import type { ConfigEntry } from "../../data/config_entries";
-import { fullEntitiesContext, manifestsContext } from "../../data/context";
+import { fullEntitiesContext } from "../../data/context";
 import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
@@ -28,7 +28,7 @@ import {
 } from "../../data/entity/entity_registry";
 import {
   domainToName,
-  type DomainManifestLookup,
+  fetchIntegrationManifest,
   type IntegrationManifest,
 } from "../../data/integration";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
@@ -42,11 +42,6 @@ interface DeviceTarget {
   device: string;
 }
 
-/**
- * The entity of a new config entry that can get an area in the success step:
- * the only entity of the entry without a device. Entities with a device take
- * the area of their device, and several entities would need one picker each.
- */
 export const getSingleEntityWithoutDevice = (
   entities: EntityRegistryEntry[],
   entryId: string
@@ -79,16 +74,11 @@ class StepFlowCreateEntry extends LitElement {
     { name?: string; area?: string }
   > = {};
 
-  // Area picked for the entity of a new helper, undefined until picked.
   @state() private _entityArea?: string | null;
 
-  @state() private _manifests?: DomainManifestLookup;
+  @state() private _fetchedManifest?: IntegrationManifest;
 
   @state() private _entityRegistry?: EntityRegistryEntry[];
-
-  // Subscribed only when a helper entity can get an area, so other flows do
-  // not load all manifests or the full entity registry.
-  private _manifestsSubscription?: ContextSubscriptionController<DomainManifestLookup>;
 
   private _entityRegistrySubscription?: ContextSubscriptionController<
     EntityRegistryEntry[]
@@ -112,6 +102,7 @@ class StepFlowCreateEntry extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadDomains();
+    this._loadManifest();
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -285,9 +276,7 @@ class StepFlowCreateEntry extends LitElement {
 
   private _isHelperEntry(domain: string): boolean {
     const manifest =
-      this.manifest?.domain === domain
-        ? this.manifest
-        : this._manifests?.[domain];
+      this.manifest?.domain === domain ? this.manifest : this._fetchedManifest;
     return manifest?.integration_type === "helper";
   }
 
@@ -313,19 +302,6 @@ class StepFlowCreateEntry extends LitElement {
       return;
     }
     if (
-      this.manifest?.domain !== entry.domain &&
-      !this._manifestsSubscription
-    ) {
-      // A chained flow is opened without the manifest of its integration.
-      this._manifestsSubscription = new ContextSubscriptionController(
-        this,
-        manifestsContext,
-        (manifests) => {
-          this._manifests = manifests;
-        }
-      );
-    }
-    if (
       this._isHelperEntry(entry.domain) &&
       !this._entityRegistrySubscription
     ) {
@@ -337,6 +313,18 @@ class StepFlowCreateEntry extends LitElement {
         }
       );
     }
+  }
+
+  private async _loadManifest() {
+    const domain = this.step.result?.domain;
+    if (
+      !domain ||
+      this.manifest?.domain === domain ||
+      !this._mayHaveHelperEntity()
+    ) {
+      return;
+    }
+    this._fetchedManifest = await fetchIntegrationManifest(this.hass, domain);
   }
 
   private async _loadDomains() {
