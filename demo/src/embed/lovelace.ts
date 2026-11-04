@@ -81,6 +81,32 @@ export abstract class EmbedLovelaceElement<
   /** The dashboard to render. The same object until it changes. */
   protected abstract get rawConfig(): LovelaceRawConfig | undefined;
 
+  /**
+   * The view of the dashboard a path goes to, relative like `batteries` or
+   * with the dashboard like `/maintenance/batteries`, if it has that view.
+   */
+  protected viewOfPath(path: string | undefined): string | undefined {
+    const views = this._lovelace?.config.views;
+
+    const view = path
+      ? new URL(path, "http://embed/").pathname.split("/").filter(Boolean).pop()
+      : undefined;
+
+    return views && view !== undefined && viewIndex(views, view) !== undefined
+      ? view
+      : undefined;
+  }
+
+  // A path to one of the dashboard's views shows that view. Other paths leave
+  // the dashboard where it is.
+  protected navigateTo(path: string) {
+    const view = this.viewOfPath(path);
+
+    if (view !== undefined) {
+      this.view = view;
+    }
+  }
+
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 

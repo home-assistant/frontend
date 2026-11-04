@@ -89,6 +89,14 @@ export abstract class EmbedElement<
         handleAction(node, this._hass, ev.detail.config, ev.detail.action);
       }
     });
+    // The page's address belongs to the page, so only a hash on it, such as
+    // an anchor, navigates there
+    this.addEventListener("hass-navigate", (ev) => {
+      if (!ev.detail.path.startsWith("#")) {
+        ev.preventDefault();
+        this.navigateTo(ev.detail.path);
+      }
+    });
   }
 
   public connectedCallback() {
@@ -112,6 +120,14 @@ export abstract class EmbedElement<
     if (data !== undefined) {
       this.setScriptData(data);
     }
+  }
+
+  /**
+   * A navigate action of the content, other than to a hash on the page. It
+   * leaves the page where it is, like actions that open a dialog.
+   */
+  protected navigateTo(_path: string) {
+    // Nothing to navigate to, outside a dashboard
   }
 
   /** Whether the data of a script child is a configuration of the content. */
