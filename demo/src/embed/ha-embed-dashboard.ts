@@ -35,11 +35,14 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
     return isDashboardConfig(data);
   }
 
-  // The view shown, and the one before it, which a subview without a
-  // `back_path` goes back to, as the browser's back would in the app
+  // The view shown, and the views before it, which the back button of a
+  // subview without a `back_path` goes back through, as the browser's back
+  // would in the app
   private _shownView?: string;
 
-  private _previousView?: string;
+  private _history: (string | undefined)[] = [];
+
+  private _goingBack = false;
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
@@ -49,10 +52,14 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
     }
 
     if (this._shownView !== undefined) {
-      this._previousView = this._shownView;
+      if (!this._goingBack) {
+        this._history.push(this._shownView);
+      }
+
       this._scroller.value?.scrollTo({ top: 0 });
     }
 
+    this._goingBack = false;
     this._shownView = this.view;
   }
 
@@ -76,10 +83,25 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
     </div>`;
   }
 
-  // A tab, or the back button of a subview, which goes back to the view
-  // before it without a `back_path` to one of the dashboard's views
+  // A tab, or the back button of a subview, which goes to its `back_path`
+  // when that is one of the dashboard's views, else to the view before it
   private _viewNavigate(ev: HASSDomEvent<HASSDomEvents["view-navigate"]>) {
-    this.view = this.viewOfPath(ev.detail.path) ?? this._previousView;
+    const view = this.viewOfPath(ev.detail.path);
+
+    if (!ev.detail.back) {
+      if (view !== undefined) {
+        this.view = view;
+      }
+
+      return;
+    }
+
+    const target = view ?? this._history.pop();
+
+    if (target !== this.view) {
+      this._goingBack = true;
+      this.view = target;
+    }
   }
 
   static styles = [

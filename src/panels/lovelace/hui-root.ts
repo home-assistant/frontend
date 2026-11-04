@@ -590,6 +590,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         class=${classMap({
           "edit-mode": this._editMode,
           narrow: this.narrow,
+          embedded: this.embedded,
         })}
       >
         <div class="header">
@@ -955,6 +956,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 
       fireEvent(this, "view-navigate", {
         path: curViewConfig?.back_path ?? "",
+        back: true,
       });
 
       return;
@@ -1677,9 +1679,15 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
               var(--view-container-padding-bottom, 0px)
           );
         }
-        /* Its own height comes from the page around it */
+        /* At least as high as the element it is embedded in, rather than the
+           window, so that panel views fill it */
+        :host([embedded]),
+        .embedded {
+          display: block;
+          height: 100%;
+        }
         :host([embedded]) hui-view-container {
-          min-height: auto;
+          min-height: 100%;
         }
         .narrow hui-view-container {
           --view-container-inset-left: var(--safe-area-inset-left);
@@ -1722,7 +1730,8 @@ declare global {
   }
 
   interface HASSDomEvents {
-    // A view to show, fired instead of navigating when embedded
-    "view-navigate": { path: string };
+    // A view to show, fired instead of navigating when embedded. `back` is
+    // set for the back button of a subview.
+    "view-navigate": { path: string; back?: boolean };
   }
 }

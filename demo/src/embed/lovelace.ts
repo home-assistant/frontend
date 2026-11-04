@@ -181,6 +181,7 @@ export abstract class EmbedLovelaceElement<
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
       showToast: () => undefined,
+      embedded: true,
     };
   }
 
