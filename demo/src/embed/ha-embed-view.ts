@@ -1,4 +1,4 @@
-import { html } from "lit";
+import { css, html } from "lit";
 import { customElement, property } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
 import memoizeOne from "memoize-one";
@@ -8,6 +8,8 @@ import type {
 } from "../../../src/data/lovelace/config/types";
 import type { LovelaceViewRawConfig } from "../../../src/data/lovelace/config/view";
 import "../../../src/panels/lovelace/views/hui-view";
+import "../../../src/panels/lovelace/views/hui-view-background";
+import "../../../src/panels/lovelace/views/hui-view-container";
 import type { HomeAssistant } from "../../../src/types";
 import {
   EmbedLovelaceElement,
@@ -70,8 +72,10 @@ export class HaEmbedView extends EmbedLovelaceElement<LovelaceViewRawConfig> {
   }
 
   // Nothing for a dashboard without views, such as an empty strategy result.
-  // Each view gets its own hui-view, as in hui-root, so that a view strategy
-  // still generating for the view before can't replace the cards of this one.
+  // The view's theme and background, or the dashboard's background, as in
+  // hui-root. Each view gets its own hui-view, as there, so that a view
+  // strategy still generating for the view before can't replace the cards of
+  // this one.
   protected renderContent(hass: HomeAssistant) {
     const views = this._lovelace?.config.views;
 
@@ -80,17 +84,47 @@ export class HaEmbedView extends EmbedLovelaceElement<LovelaceViewRawConfig> {
     }
 
     const index = findViewIndex(views, this.view);
+    const viewConfig = views[index];
 
-    return keyed(
-      views[index],
-      html`<hui-view
-        .hass=${hass}
-        .lovelace=${this._lovelace}
-        .index=${index}
-        .narrow=${this._narrow.value ?? false}
-      ></hui-view>`
-    );
+    const background =
+      viewConfig.background || this._lovelace.config.background;
+
+    return html`<hui-view-container .hass=${hass} .theme=${viewConfig.theme}>
+      <hui-view-background .hass=${hass} .background=${background}>
+      </hui-view-background>
+      ${keyed(
+        viewConfig,
+        html`<hui-view
+          .hass=${hass}
+          .lovelace=${this._lovelace}
+          .index=${index}
+          .narrow=${this._narrow.value ?? false}
+        ></hui-view>`
+      )}
+    </hui-view-container>`;
   }
+
+  // A fixed background stays inside the element. With a height set on the
+  // element, a panel view fills it, and other views keep their own height.
+  static styles = [
+    EmbedLovelaceElement.styles,
+    css`
+      :host {
+        contain: layout paint;
+      }
+      .theme,
+      hui-view-container,
+      hui-view {
+        display: block;
+        height: 100%;
+      }
+      /* The background sits below the view, above the element's own */
+      hui-view-container {
+        position: relative;
+        isolation: isolate;
+      }
+    `,
+  ];
 }
 
 declare global {
