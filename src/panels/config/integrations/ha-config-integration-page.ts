@@ -264,6 +264,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.hass.loadBackendTranslation("config", [this.domain]);
       this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
+      this._manifest = undefined;
       this._filter = "";
       this._subEntries = {};
       this._fetchManifest();
@@ -426,14 +427,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
           )
         : [];
     const showDependents = normalEntries.length === 0 && dependents.length > 0;
-    // Hold back the YAML texts until the dependents are known. Entries do
-    // not wait, so a failed manifest list cannot hide them.
-    const dependentsLoading = Boolean(
+    // Hold back the YAML texts and "Add entry" until the manifest and the
+    // dependents are known. Entries do not wait, so a failed request cannot
+    // hide them.
+    const dependentsLoading =
       normalEntries.length === 0 &&
-      this._manifest &&
-      !this._manifest.config_flow &&
-      !this._loadedManifests
-    );
+      (!this._manifest ||
+        (!this._manifest.config_flow && !this._loadedManifests));
 
     const configPanel = isComponentLoaded(this.hass.config, this.domain)
       ? getConfigPanelPath(this.domain, this.hass.panels)
