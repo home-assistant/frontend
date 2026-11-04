@@ -116,12 +116,34 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
       return;
     }
 
-    const target = view ?? this._history.pop();
+    const target = view === undefined ? this._previousView() : view;
+
+    // Following a `back_path` goes back too, so the view it goes to leaves
+    // the views before
+    if (
+      view !== undefined &&
+      this._history[this._history.length - 1] === view
+    ) {
+      this._history.pop();
+    }
 
     if (target !== this.view) {
       this._skipHistory = true;
       this.view = target;
     }
+  }
+
+  // The last view before that isn't the one shown, else the first view
+  private _previousView(): string | undefined {
+    while (this._history.length) {
+      const previous = this._history.pop();
+
+      if (previous !== this.view) {
+        return previous;
+      }
+    }
+
+    return undefined;
   }
 
   static styles = [
