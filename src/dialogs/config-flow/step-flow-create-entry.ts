@@ -20,13 +20,17 @@ import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
   getAutomaticEntityIds,
+  getExtendedEntityRegistryEntries,
   updateEntityRegistryEntry,
   type EntityRegistryDisplayEntry,
+  type ExtEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
-import { domainToName } from "../../data/integration";
+import { domainToName, type IntegrationManifest } from "../../data/integration";
+import { findRelated } from "../../data/search";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
+import { showMoreInfoDialog } from "../more-info/show-ha-more-info-dialog";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
@@ -45,6 +49,8 @@ class StepFlowCreateEntry extends LitElement {
   public step!: DataEntryFlowStepCreateEntry<ConfigEntry>;
 
   @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
+
+  @property({ attribute: false }) public manifest?: IntegrationManifest | null;
 
   private _domains: Record<string, string> = {};
 
@@ -283,16 +289,66 @@ class StepFlowCreateEntry extends LitElement {
       await Promise.allSettled(entityUpdates);
     }
 
+    const entry = this.navigateToResult ? this.step.result : undefined;
+    const result = entry ? await this._findResult(entry.entry_id) : undefined;
+
     fireEvent(this, "flow-update", { step: undefined });
-    if (this.step.result && this.navigateToResult) {
-      if (this.devices.length === 1) {
-        navigate(`/config/devices/device/${this.devices[0].id}`);
-      } else {
-        navigate(
-          `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
-        );
-      }
+    if (!entry) {
+      return;
     }
+    if (result?.deviceId) {
+      navigate(`/config/devices/device/${result.deviceId}`);
+    } else if (result?.entityId) {
+      showMoreInfoDialog(this, { entityId: result.entityId });
+    } else {
+      navigate(
+        `/config/integrations/integration/${entry.domain}#config_entry=${entry.entry_id}`
+      );
+    }
+  }
+
+  private async _findResult(
+    entryId: string
+  ): Promise<{ deviceId?: string; entityId?: string } | undefined> {
+    if (this.devices.length === 1) {
+      return { deviceId: this.devices[0].id };
+    }
+    // Helpers link their entities to an existing device instead of creating one
+    if (this.devices.length || this.manifest?.integration_type !== "helper") {
+      return undefined;
+    }
+    try {
+      const { entity: entityIds = [] } = await findRelated(
+        this.hass,
+        "config_entry",
+        entryId
+      );
+      if (!entityIds.length) {
+        return undefined;
+      }
+      const entities = Object.values(
+        await getExtendedEntityRegistryEntries(this.hass, entityIds)
+      ).filter(
+        (entity): entity is ExtEntityRegistryEntry =>
+          entity?.config_entry_id === entryId
+      );
+      const deviceIds = [
+        ...new Set(
+          entities.flatMap((entity) =>
+            entity.device_id ? [entity.device_id] : []
+          )
+        ),
+      ];
+      if (deviceIds.length === 1) {
+        return { deviceId: deviceIds[0] };
+      }
+      if (!deviceIds.length && entities.length === 1) {
+        return { entityId: entities[0].entity_id };
+      }
+    } catch (_err) {
+      // Fall back to the integration page
+    }
+    return undefined;
   }
 
   public finish(): Promise<void> {

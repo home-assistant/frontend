@@ -43,6 +43,7 @@ import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -137,6 +138,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     startFlowHandler: string;
     manifest: IntegrationManifest;
     dialogClosedCallback?: ShowDialogHelperDetailParams["dialogClosedCallback"];
+    navigateToResult?: boolean;
   };
 
   private _params?: ShowDialogHelperDetailParams;
@@ -185,6 +187,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         startFlowHandler: pendingConfigFlow.startFlowHandler,
         manifest: pendingConfigFlow.manifest,
         dialogClosedCallback: pendingConfigFlow.dialogClosedCallback,
+        navigateToResult: pendingConfigFlow.navigateToResult,
       });
     }
   }
@@ -394,14 +397,21 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         this.hass,
         this._item
       );
-      if (this._params?.dialogClosedCallback && createdEntity.id) {
+      const entityId = createdEntity.id
+        ? `${this._domain}.${createdEntity.id}`
+        : undefined;
+      if (this._params?.dialogClosedCallback && entityId) {
         this._params.dialogClosedCallback({
           flowFinished: true,
-          entityId: `${this._domain}.${createdEntity.id}`,
+          entityId,
         });
       }
+      const showResult = this._params?.navigateToResult && entityId;
       this._markDirtyStateClean();
       this.closeDialog();
+      if (showResult) {
+        showMoreInfoDialog(this, { entityId });
+      }
     } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {
@@ -444,6 +454,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         startFlowHandler: domain,
         manifest: await fetchIntegrationManifest(this.hass, domain),
         dialogClosedCallback: this._params?.dialogClosedCallback,
+        navigateToResult: this._params?.navigateToResult,
       };
       this.closeDialog();
     }
