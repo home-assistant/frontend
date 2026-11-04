@@ -18,6 +18,7 @@ import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-icon";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/item/ha-list-item-option";
+import type { HaListItemOption } from "../../../../src/components/item/ha-list-item-option";
 import "../../../../src/components/list/ha-list-selectable";
 import {
   getLegacyLovelaceCollection,
@@ -95,13 +96,18 @@ class HcCast extends LitElement {
                   </p>
                 `
               : html`
-                  <div class="section-header">PICK A VIEW</div>
+                  <div class="section-header" id="pick-view-header">
+                    PICK A VIEW
+                  </div>
                   <ha-list-selectable
-                    @ha-list-item-selected=${this._handlePickView}
+                    controlled
+                    aria-labelledby="pick-view-header"
                   >
                     ${views.map(
                       (view, idx) => html`
                         <ha-list-item-option
+                          data-index=${idx}
+                          @click=${this._handlePickView}
                           .headline=${view.title || view.path || "Unnamed view"}
                           .selected=${
                             this.castManager.status?.lovelacePath ===
@@ -200,8 +206,11 @@ class HcCast extends LitElement {
     this.castManager.requestSession();
   }
 
-  private async _handlePickView(ev: CustomEvent<number>) {
-    const path = this.lovelaceViews?.[ev.detail]?.path ?? ev.detail;
+  // Listens to clicks instead of `ha-list-item-selected`, which does not fire
+  // for the selected view, so the current view can still be cast again.
+  private async _handlePickView(ev: MouseEvent) {
+    const index = Number((ev.currentTarget as HaListItemOption).dataset.index);
+    const path = this.lovelaceViews?.[index]?.path ?? index;
     await ensureConnectedCastSession(this.castManager!, this.auth!);
     castSendShowLovelaceView(this.castManager, this.auth.data.hassUrl, path);
   }
