@@ -23,9 +23,9 @@
       .content {
         max-width: 560px;
         margin: 0 auto;
-        padding: 0 calc(var(--ha-space-4) + var(--safe-area-inset-right, 0px))
+        padding: 0 calc(var(--ha-space-4, 16px) + var(--safe-area-inset-right, 0px))
           var(--safe-area-inset-bottom, 0px)
-          calc(var(--ha-space-4) + var(--safe-area-inset-left, 0px));
+          calc(var(--ha-space-4, 16px) + var(--safe-area-inset-left, 0px));
         box-sizing: content-box;
       }
 
