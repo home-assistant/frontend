@@ -85,6 +85,11 @@ const mount = async (
       (toggle) => toggle.entityId === entityId
     )!;
 
+  const rowOrder = () =>
+    [...dialog.shadowRoot!.querySelectorAll("ha-media-player-toggle")].map(
+      (toggle) => toggle.entityId
+    );
+
   const settle = async () => {
     await vi.waitFor(() => expect(row(BEDROOM).disabled).toBe(false));
     await dialog.updateComplete;
@@ -102,7 +107,7 @@ const mount = async (
     await dialog.updateComplete;
   };
 
-  return { dialog, row, flip, settle, setMembers, callService };
+  return { dialog, row, rowOrder, flip, settle, setMembers, callService };
 };
 
 describe("dialog-join-media-players", () => {
@@ -125,6 +130,71 @@ describe("dialog-join-media-players", () => {
       { group_members: [KITCHEN, BEDROOM] },
       { entity_id: ENTITY_ID }
     );
+  });
+
+  it("joins through the group leader when opened on a follower", async () => {
+    const { flip, settle, callService } = await mount(undefined, [
+      KITCHEN,
+      ENTITY_ID,
+    ]);
+
+    await flip(BEDROOM, true);
+    await settle();
+
+    expect(callService).toHaveBeenCalledExactlyOnceWith(
+      "media_player",
+      "join",
+      { group_members: [ENTITY_ID, BEDROOM] },
+      { entity_id: KITCHEN }
+    );
+  });
+
+  it("lists the group first with its leader on top and marked", async () => {
+    const { row, rowOrder } = await mount(undefined, [KITCHEN, ENTITY_ID]);
+
+    expect(rowOrder()).toEqual([KITCHEN, ENTITY_ID, BEDROOM, OFFICE]);
+    expect(rowOrder().filter((id) => row(id).leader)).toEqual([KITCHEN]);
+  });
+
+  it("unjoins the leader when it is switched off", async () => {
+    const { flip, settle, callService } = await mount(undefined, [
+      KITCHEN,
+      ENTITY_ID,
+    ]);
+
+    await flip(KITCHEN, false);
+    await settle();
+
+    expect(callService).toHaveBeenCalledExactlyOnceWith(
+      "media_player",
+      "unjoin",
+      {},
+      { entity_id: KITCHEN }
+    );
+  });
+
+  it("lets the opened player leave its group", async () => {
+    const { flip, settle, row, callService } = await mount();
+
+    expect(row(ENTITY_ID).disabled).toBe(false);
+    await flip(ENTITY_ID, false);
+    await settle();
+
+    expect(callService).toHaveBeenCalledExactlyOnceWith(
+      "media_player",
+      "unjoin",
+      {},
+      { entity_id: ENTITY_ID }
+    );
+  });
+
+  it("locks the opened player while it is alone", async () => {
+    const { row, rowOrder } = await mount(undefined, [ENTITY_ID]);
+
+    expect(rowOrder()[0]).toBe(ENTITY_ID);
+    expect(row(ENTITY_ID).checked).toBe(true);
+    expect(row(ENTITY_ID).disabled).toBe(true);
+    expect(row(ENTITY_ID).leader).toBe(false);
   });
 
   it("unjoins the speaker that was switched off", async () => {

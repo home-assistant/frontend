@@ -30,6 +30,8 @@ class HaMediaPlayerToggle extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public leader = false;
+
   @property({ type: Boolean, attribute: "show-volume" })
   public showVolume = false;
 
@@ -105,7 +107,16 @@ class HaMediaPlayerToggle extends LitElement {
     return html`<div class="list-item">
       <ha-svg-icon .path=${icon}></ha-svg-icon>
       <div class="info">
-        <div class="main-text">${primary}</div>
+        <div class="main-text">
+          ${primary}
+          ${
+            this.leader
+              ? html`<span class="leader">
+                  ${this._i18n.localize("ui.card.media_player.group_leader")}
+                </span>`
+              : nothing
+          }
+        </div>
         <div class="secondary-text">${secondary}</div>
       </div>
       <ha-switch
@@ -147,6 +158,15 @@ class HaMediaPlayerToggle extends LitElement {
 
         .main-text {
           color: var(--primary-text-color);
+        }
+
+        .leader {
+          margin-inline-start: var(--ha-space-2);
+          padding: 0 var(--ha-space-2);
+          border-radius: var(--ha-border-radius-pill);
+          background-color: var(--ha-color-fill-neutral-quiet-resting);
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-xs);
         }
 
         .main-text[take-height] {

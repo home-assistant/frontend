@@ -87,8 +87,10 @@ class DialogJoinMediaPlayers extends LitElement {
     }
     const entityId = this._entityId;
     const stateObj = this._states[entityId] as MediaPlayerEntity | undefined;
+    const members = stateObj?.attributes.group_members ?? [];
+    // The group with its leader first, or just the opened player when alone
     const groupMembers =
-      stateObj?.attributes.group_members?.filter((id) => id !== entityId) || [];
+      members.length > 1 && members.includes(entityId) ? members : [entityId];
     const opened = changedProps.has("_entityId");
 
     if (!opened && deepEqual(groupMembers, this._groupMembers)) {
@@ -145,22 +147,13 @@ class DialogJoinMediaPlayers extends LitElement {
             : nothing
         }
         <div class="content">
-          <ha-media-player-toggle
-            .entityId=${entityId}
-            checked
-            disabled
-            show-volume
-          ></ha-media-player-toggle>
-          ${this._mediaPlayerEntities(
-            entityId,
-            this._entities,
-            this._states
-          ).map(
+          ${this._rows(entityId).map(
             (id) =>
               html`<ha-media-player-toggle
                 .entityId=${id}
                 .checked=${this._selectedEntities.includes(id)}
-                .disabled=${!!this._submitting}
+                .disabled=${!!this._submitting || this._isOnlyMember(id)}
+                .leader=${this._isLeader(id)}
                 .showVolume=${this._groupMembers.includes(id)}
                 @change=${this._handleSelectedChange}
               ></ha-media-player-toggle>`
@@ -173,6 +166,30 @@ class DialogJoinMediaPlayers extends LitElement {
         </ha-dialog-footer>
       </ha-dialog>
     `;
+  }
+
+  // The group first, leader on top, then the players that could join it
+  private _rows(entityId: string): string[] {
+    const groupMembers = this._groupMembers.filter((id) => this._states[id]);
+    return [
+      ...groupMembers,
+      ...this._mediaPlayerEntities(
+        entityId,
+        this._entities,
+        this._states
+      ).filter((id) => !groupMembers.includes(id)),
+    ];
+  }
+
+  private _isLeader(entityId: string): boolean {
+    return this._groupMembers.length > 1 && this._groupMembers[0] === entityId;
+  }
+
+  // A player alone has no group to leave
+  private _isOnlyMember(entityId: string): boolean {
+    return (
+      this._groupMembers.length === 1 && this._groupMembers[0] === entityId
+    );
   }
 
   private _mediaPlayerEntities = memoizeOne(
@@ -250,12 +267,14 @@ class DialogJoinMediaPlayers extends LitElement {
     this._submitting = true;
     try {
       if (hasAdded) {
-        // Send every member: some integrations form a new group with only the
-        // players they receive when the target isn't the group leader.
+        // Join through the group leader and send every member: some
+        // integrations form a new group with only the players they receive
+        // when the target isn't the leader.
+        const leader = this._groupMembers[0];
         await mediaPlayerJoin(
           this._api.callService,
-          this._entityId,
-          selectedEntities
+          leader,
+          selectedEntities.filter((id) => id !== leader)
         );
       }
       await Promise.all(
