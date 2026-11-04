@@ -32,6 +32,7 @@ Never run `tsc` or `pnpm lint:types` with file arguments. When `tsc` receives fi
 - Use `@state()` for internal Lit state and `@property()` for public API.
 - Do not query or manipulate DOM manually when Lit decorators, component refs, or render state are appropriate.
 - Scope styles to components, use theme custom properties, and keep layouts mobile-first and RTL-safe.
+- When changing CSS for onboarding screens, provide fallback values for custom properties because the onboarding HTML is delivered before the JS-loaded global stylesheets.
 - All user-facing text must be localized through the translation system.
 - Do not write tests just because you changed some code. Write a test when there is real logic that could break without anyone noticing, and explain what the test protects.
 
