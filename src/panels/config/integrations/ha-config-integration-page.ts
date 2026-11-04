@@ -848,36 +848,34 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ? html`<div class="section">
                     <ha-alert
                       alert-type="info"
-                      dismissable
                       .narrow=${this.narrow}
                       .title=${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.debug_log_ready"
                       )}
-                      @alert-dismissed-clicked=${this._dismissDebugLogReady}
                     >
                       ${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.debug_log_ready_description"
                       )}
-                      <ha-button
-                        slot="action"
-                        size="s"
-                        appearance="filled"
-                        @click=${this._downloadDebugLog}
-                      >
-                        <ha-svg-icon
-                          slot="start"
-                          .path=${mdiDownload}
-                        ></ha-svg-icon>
-                        ${this.hass.localize("ui.common.download")}
-                      </ha-button>
-                      <ha-button
-                        slot="action"
-                        size="s"
-                        appearance="plain"
-                        @click=${this._dismissDebugLogReady}
-                      >
-                        ${this.hass.localize("ui.common.dismiss_alert")}
-                      </ha-button>
+                      <div slot="action" class="debug-actions">
+                        <ha-button
+                          size="s"
+                          appearance="plain"
+                          @click=${this._dismissDebugLogReady}
+                        >
+                          ${this.hass.localize("ui.common.dismiss_alert")}
+                        </ha-button>
+                        <ha-button
+                          size="s"
+                          appearance="filled"
+                          @click=${this._downloadDebugLog}
+                        >
+                          <ha-svg-icon
+                            slot="start"
+                            .path=${mdiDownload}
+                          ></ha-svg-icon>
+                          ${this.hass.localize("ui.common.download")}
+                        </ha-button>
+                      </div>
                     </ha-alert>
                   </div>`
                 : nothing
