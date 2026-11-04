@@ -469,6 +469,7 @@ export interface ObjectSelector {
     translation_key?: string;
     fields?: Record<string, ObjectSelectorField>;
     multiple?: boolean;
+    reorder?: boolean;
   } | null;
 }
 

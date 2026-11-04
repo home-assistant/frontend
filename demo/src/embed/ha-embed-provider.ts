@@ -22,13 +22,14 @@ import {
   mockCalendarEvents,
   WORK_EVENTS,
 } from "../stubs/calendar";
-import { newEntry } from "../stubs/entity_registry";
+import { extEntry, newEntry } from "../stubs/entity_registry";
 import { mockHistory } from "../stubs/history";
 import { mockIcons } from "../stubs/icons";
 import { mockLogbook } from "../stubs/logbook";
 import { mockMediaPlayer } from "../stubs/media_player";
 import { mockRecorder } from "../stubs/recorder";
 import { mockSensor } from "../stubs/sensor";
+import { mockExtractFromTarget } from "../stubs/target";
 import { mockTemplate } from "../stubs/template";
 import { mockTodo } from "../stubs/todo";
 import { mockWeather } from "../stubs/weather";
@@ -155,10 +156,9 @@ export class HaEmbedProvider extends LitElement {
       Object.values(currentHass.areas)
     );
     // The registry of the entities, without settings such as calendar colors
-    hass.mockWS(
-      "config/entity_registry/list",
-      (_msg, currentHass): EntityRegistryEntry[] =>
-        Object.values(currentHass.entities).map((entity) => ({
+    const registryEntries = (currentHass: MockHomeAssistant) =>
+      Object.values(currentHass.entities).map(
+        (entity): EntityRegistryEntry => ({
           ...newEntry({
             entity_id: entity.entity_id,
             platform: entity.platform ?? "demo",
@@ -166,8 +166,24 @@ export class HaEmbedProvider extends LitElement {
           }),
           area_id: entity.area_id ?? null,
           device_id: entity.device_id ?? null,
-        }))
+        })
+      );
+    hass.mockWS("config/entity_registry/list", (_msg, currentHass) =>
+      registryEntries(currentHass)
     );
+    hass.mockWS(
+      "config/entity_registry/get",
+      (msg: { entity_id: string }, currentHass: MockHomeAssistant) => {
+        const entry = registryEntries(currentHass).find(
+          (item) => item.entity_id === msg.entity_id
+        );
+        if (!entry) {
+          throw new Error(`Entity not found: ${msg.entity_id}`);
+        }
+        return extEntry(entry);
+      }
+    );
+    mockExtractFromTarget(hass);
     hass.mockWS("energy/get_prefs", (): EnergyPreferences => ({
       ...EMPTY_PREFERENCES,
       ...this.energy,

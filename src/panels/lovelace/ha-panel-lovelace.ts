@@ -26,6 +26,7 @@ import {
   saveConfig,
 } from "../../data/lovelace/config/types";
 import { fetchResources } from "../../data/lovelace/resource";
+import { LOVELACE_PANEL } from "../../data/panel";
 import type { WindowWithPreloads } from "../../data/preloads";
 import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
@@ -83,7 +84,11 @@ export class LovelacePanel extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    if (
+    if (this._fetchConfigOnConnect) {
+      // Config was changed when we were not at the lovelace panel
+      this._fetchConfigOnConnect = false;
+      this._fetchConfig(false);
+    } else if (
       this.lovelace &&
       this.hass &&
       this.lovelace.locale !== this.hass.locale
@@ -94,17 +99,15 @@ export class LovelacePanel extends LitElement {
         this.lovelace.rawConfig,
         this.lovelace.mode
       );
-    } else if (this._fetchConfigOnConnect) {
-      // Config was changed when we were not at the lovelace panel
-      this._fetchConfig(false);
     }
     window.addEventListener("connection-status", this._handleConnectionStatus);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    // On the main dashboard we want to stay subscribed as that one is cached.
-    if (this.urlPath !== null && this._unsubUpdates) {
+    // The "lovelace" panel is cached by the panel resolver, stay subscribed so
+    // we refetch its config when it is shown again.
+    if (this.urlPath !== LOVELACE_PANEL && this._unsubUpdates) {
       this._unsubUpdates.then((unsub) => unsub());
       this._unsubUpdates = undefined;
     }

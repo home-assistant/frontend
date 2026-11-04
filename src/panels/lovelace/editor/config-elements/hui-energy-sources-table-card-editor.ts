@@ -40,6 +40,7 @@ const cardConfigStruct = assign(
       )
     ),
     show_only_totals: optional(boolean()),
+    combine_sources: optional(boolean()),
   })
 );
 
@@ -91,6 +92,11 @@ export class HuiEnergySourcesTableCardEditor
           },
           {
             name: "show_only_totals",
+            required: false,
+            selector: { boolean: {} },
+          },
+          {
+            name: "combine_sources",
             required: false,
             selector: { boolean: {} },
           },

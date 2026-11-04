@@ -189,12 +189,14 @@ export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   group_by_area?: boolean;
   max_devices?: number;
   show_values?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
   vertical_opening_direction?: "auto" | "up" | "down";
   opening_direction?: "auto" | "right" | "left" | "center" | "inline";
   disable_compare?: boolean;
+  show_combine_sources?: boolean;
 }
 
 export interface EnergyDistributionCardConfig extends EnergyCardConfig {
@@ -205,18 +207,22 @@ export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
   show_legend?: boolean;
   expand_legend?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
   type: "energy-solar-graph";
+  combine_sources?: boolean;
 }
 
 export interface EnergyGasGraphCardConfig extends EnergyCardConfig {
   type: "energy-gas-graph";
+  combine_sources?: boolean;
 }
 
 export interface EnergyWaterGraphCardConfig extends EnergyCardConfig {
   type: "energy-water-graph";
+  combine_sources?: boolean;
 }
 
 export interface EnergyDevicesGraphCardConfig extends EnergyCardConfig {
@@ -237,6 +243,7 @@ export interface EnergySourcesTableCardConfig extends EnergyCardConfig {
   type: "energy-sources-table";
   types?: (keyof EnergySourceByType)[];
   show_only_totals?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergySolarGaugeCardConfig extends EnergyCardConfig {
@@ -263,6 +270,7 @@ export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
   type: "power-sources-graph";
   show_legend?: boolean;
   expand_legend?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
@@ -323,6 +331,7 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   min?: number;
   max?: number;
   severity?: SeverityConfig;
+  color?: string;
   theme?: string;
   needle?: boolean;
   segments?: GaugeSegment[];

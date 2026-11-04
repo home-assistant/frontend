@@ -86,6 +86,7 @@ class HaMarkdownElement extends ReactiveElement {
       allowSvg: this.allowSvg,
       allowDataUrl: this.allowDataUrl,
       breaks: this.breaks,
+      rewriteUrl: Boolean(this.rewriteUrl),
     });
   }
 
@@ -99,6 +100,7 @@ class HaMarkdownElement extends ReactiveElement {
       {
         allowSvg: this.allowSvg,
         allowDataUrl: this.allowDataUrl,
+        allowRelativeUrls: Boolean(this.rewriteUrl),
       }
     );
 
