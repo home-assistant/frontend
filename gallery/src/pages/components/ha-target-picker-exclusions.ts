@@ -229,7 +229,14 @@ class DemoHaTargetPickerExclusions
     hass.mockWS("explain_target", ({ target }: { target: HassServiceTarget }) =>
       explainTarget(
         target,
-        (single) => extractFromTarget({ target: single }).referenced_entities,
+        (single) => {
+          const resolved = extractFromTarget({ target: single });
+          return {
+            areas: resolved.referenced_areas,
+            devices: resolved.referenced_devices,
+            entities: resolved.referenced_entities,
+          };
+        },
         Object.keys(hass.states)
       )
     );

@@ -135,7 +135,7 @@ export const mockAutomationPlatforms = (hass: MockHomeAssistant) => {
       explainTarget(
         msg.target,
         (target, primaryEntitiesOnly) =>
-          expandTarget(currentHass, target, primaryEntitiesOnly).entities,
+          expandTarget(currentHass, target, primaryEntitiesOnly),
         Object.keys(currentHass.states),
         msg.primary_entities_only ?? true
       )

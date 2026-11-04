@@ -4,17 +4,15 @@ import {
   consumeContext,
   ContextController,
 } from "../../common/decorators/consume";
-import { getDeviceAreaId } from "../../common/entity/context/get_device_context";
-import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import {
-  entityRegMeetsFilter,
   explainTarget,
   type HassServiceTargetWithExclude,
   type TargetItem,
 } from "../../data/target";
 import type { HomeAssistant } from "../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
+import { filterTargetEntries } from "./filter-target-entries";
 import { targetExpandGroupContext } from "./target-expand-group-context";
 import {
   computeExclusionsPerTarget,
@@ -169,8 +167,8 @@ export class TargetExclusionsController extends ContextController {
     this._host.requestUpdate();
   }
 
-  // Whether the picker's filters leave an entity in a target, so what an
-  // exclusion takes out matches what the target's row counts.
+  // What the picker's filters leave of a target, narrowed like the target's
+  // row, so what an exclusion takes out matches what the row counts.
   private _keeps(): TargetNarrowing {
     const {
       hass,
@@ -180,57 +178,26 @@ export class TargetExclusionsController extends ContextController {
       includeDeviceClasses,
       primaryEntitiesOnly,
     } = this._host;
-    return (item, entityId) => {
-      const entity = hass.entities[entityId];
-      if (!entity) {
-        return false;
-      }
-      const device = entity.device_id
-        ? hass.devices[entity.device_id]
-        : undefined;
-      if (
-        deviceFilter &&
-        device &&
-        this._reaches(item, device) &&
-        !deviceFilter(device)
-      ) {
-        return false;
-      }
-      return entityRegMeetsFilter(
-        entity,
-        item.type === "label" || !primaryEntitiesOnly,
-        includeDomains,
-        includeDeviceClasses,
+    return (include) =>
+      filterTargetEntries(
         hass.states,
-        entityFilter
-      );
-    };
-  }
-
-  // Whether a target reaches a device, so the device filter applies to the
-  // device's entities. Like the rows, an entity reached through its own area
-  // or label stays whatever its device is, and a device target keeps the
-  // entities of its child devices.
-  private _reaches(item: TargetItem, device: DeviceRegistryEntry): boolean {
-    const { areas, devices } = this._host.hass;
-    const area = areas[getDeviceAreaId(device, devices) ?? ""];
-    switch (item.type) {
-      case "area":
-        return area?.area_id === item.id;
-      case "floor":
-        return area?.floor_id === item.id;
-      case "label":
-        return (
-          device.labels.includes(item.id) ||
-          !!(
-            device.parent_device_id &&
-            devices[device.parent_device_id]?.labels.includes(item.id)
-          ) ||
-          !!area?.labels.includes(item.id)
-        );
-      default:
-        return false;
-    }
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        include,
+        {
+          referenced_areas: include.referenced_areas,
+          referenced_devices: include.referenced_devices,
+          referenced_entities: include.entities,
+        },
+        {
+          deviceFilter,
+          entityFilter,
+          includeDomains,
+          includeDeviceClasses,
+          primaryEntitiesOnly,
+        }
+      ).referenced_entities;
   }
 
   private _includedEntities = memoizeOne(

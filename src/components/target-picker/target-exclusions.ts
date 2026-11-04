@@ -5,6 +5,7 @@ import {
   type ExtractFromTargetResultReferenced,
   type HassServiceTargetWithExclude,
   type TargetExplanation,
+  type TargetIncludeEntities,
   type TargetItem,
   type TargetType,
 } from "../../data/target";
@@ -53,10 +54,10 @@ export interface TargetExclusions {
 }
 
 /**
- * Whether the picker's filters leave `entityId` in a target `item` other
- * than an entity. An entity item is what it is, filters or not.
+ * The entities the picker's filters leave in an included target other than
+ * an entity. An entity item is what it is, filters or not.
  */
-export type TargetNarrowing = (item: TargetItem, entityId: string) => boolean;
+export type TargetNarrowing = (include: TargetIncludeEntities) => string[];
 
 /**
  * Which exclusions take what out of each included target, from what core
@@ -73,9 +74,7 @@ export const computeExclusionsPerTarget = (
   const included = Object.fromEntries(
     explained.includes.map((include) => [
       targetItemKey(include),
-      include.type === "entity" || !keeps
-        ? include.entities
-        : include.entities.filter((entityId) => keeps(include, entityId)),
+      include.type === "entity" || !keeps ? include.entities : keeps(include),
     ])
   );
   const perTarget: Record<string, TargetExclusion[]> = {};

@@ -84,8 +84,17 @@ export interface TargetExcludeEffect extends TargetItem {
   removed: TargetItemEntities[];
 }
 
+/**
+ * An included item with what it resolves to, and the areas and devices it
+ * reaches on the way, so the picker's filters can narrow it like its row.
+ */
+export interface TargetIncludeEntities extends TargetItemEntities {
+  referenced_areas: string[];
+  referenced_devices: string[];
+}
+
 export interface TargetExplanation {
-  includes: TargetItemEntities[];
+  includes: TargetIncludeEntities[];
   excludes: TargetExcludeEffect[];
 }
 

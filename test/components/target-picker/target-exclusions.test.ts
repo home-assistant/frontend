@@ -53,11 +53,15 @@ describe("computeExclusionsPerTarget", () => {
     type: "area" as const,
     id: "kitchen",
     entities: ["light.table", "light.main", "light.night"],
+    referenced_areas: ["kitchen"],
+    referenced_devices: [],
   };
   const hallway = {
     type: "area" as const,
     id: "hallway",
     entities: ["light.hall", "light.night_hall"],
+    referenced_areas: ["hallway"],
+    referenced_devices: [],
   };
 
   it("lists an exclusion under each target it takes something out of", () => {
@@ -160,7 +164,8 @@ describe("computeExclusionsPerTarget", () => {
           },
         ],
       },
-      (_item, entityId) => entityId.startsWith("light.")
+      (include) =>
+        include.entities.filter((entityId) => entityId.startsWith("light."))
     );
 
     expect(noEffect).toEqual([{ type: "entity", id: "switch.fan" }]);
@@ -182,6 +187,8 @@ describe("computeExclusionsPerTarget", () => {
     type: "entity" as const,
     id: "group.downstairs",
     entities: ["light.hall", "light.stairs"],
+    referenced_areas: [],
+    referenced_devices: [],
   };
 
   it("counts a targeted group as out once all its members are", () => {

@@ -84,6 +84,12 @@ export class HaAutomationRowTargets extends LitElement {
   @property({ reflect: true })
   public size: "s" | "m" = "m";
 
+  /**
+   * Whether the target expands the groups it names. Overrides what the
+   * context provides, for a place that shows targets of different kinds.
+   */
+  @property({ attribute: false }) public expandGroup?: boolean;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
@@ -132,12 +138,17 @@ export class HaAutomationRowTargets extends LitElement {
 
   private _explainRequest = 0;
 
+  private get _resolvedExpandGroup(): boolean {
+    return this.expandGroup ?? this._expandGroup ?? true;
+  }
+
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
     if (
       changedProps.has("target") ||
       changedProps.has("selector") ||
       changedProps.has("interactive") ||
+      changedProps.has("expandGroup") ||
       changedProps.has("_expandGroup") ||
       changedProps.has("_registries")
     ) {
@@ -269,7 +280,7 @@ export class HaAutomationRowTargets extends LitElement {
       explanation = await explainTarget(
         this._api.callWS,
         { ...target, exclude },
-        this._expandGroup ?? true,
+        this._resolvedExpandGroup,
         this.selector?.target?.primary_entities_only
       );
     } catch (_err) {
@@ -711,7 +722,7 @@ export class HaAutomationRowTargets extends LitElement {
       itemId: targetId,
       selector: this.selector,
       exclude: this._getExclude(),
-      expandGroup: this._expandGroup,
+      expandGroup: this._resolvedExpandGroup,
     });
   }
 
