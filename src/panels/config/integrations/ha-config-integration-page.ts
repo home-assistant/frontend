@@ -178,7 +178,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @storage({
     key: "downloadLogAfterDebugLogging",
     state: true,
-    subscribe: false,
+    subscribe: true,
   })
   private _downloadLogAfterDebug = true;
 
