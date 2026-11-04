@@ -105,9 +105,13 @@ export abstract class EmbedLovelaceElement<
       return;
     }
 
+    // A strategy is only asked whether to generate again when the backend
+    // changed, as in ha-panel-lovelace, not when the generated dashboard
+    // arrives
     if (
       raw !== this._rawConfig ||
       (oldHass &&
+        oldHass !== this._hass &&
         isStrategyDashboard(raw) &&
         this._hass.config.state === "RUNNING" &&
         checkStrategyShouldRegenerate(

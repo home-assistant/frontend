@@ -1,5 +1,6 @@
 import { html } from "lit";
 import { customElement, property } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import memoizeOne from "memoize-one";
 import type {
   LovelaceConfig,
@@ -68,18 +69,27 @@ export class HaEmbedView extends EmbedLovelaceElement<LovelaceViewRawConfig> {
     }
   }
 
-  // Nothing for a dashboard without views, such as an empty strategy result
+  // Nothing for a dashboard without views, such as an empty strategy result.
+  // Each view gets its own hui-view, as in hui-root, so that a view strategy
+  // still generating for the view before can't replace the cards of this one.
   protected renderContent(hass: HomeAssistant) {
-    if (!this._lovelace?.config.views.length) {
+    const views = this._lovelace?.config.views;
+
+    if (!this._lovelace || !views?.length) {
       return undefined;
     }
 
-    return html`<hui-view
-      .hass=${hass}
-      .lovelace=${this._lovelace}
-      .index=${findViewIndex(this._lovelace.config.views, this.view)}
-      .narrow=${this._narrow.value ?? false}
-    ></hui-view>`;
+    const index = findViewIndex(views, this.view);
+
+    return keyed(
+      views[index],
+      html`<hui-view
+        .hass=${hass}
+        .lovelace=${this._lovelace}
+        .index=${index}
+        .narrow=${this._narrow.value ?? false}
+      ></hui-view>`
+    );
   }
 }
 
