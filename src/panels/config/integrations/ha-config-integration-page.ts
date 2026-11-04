@@ -244,6 +244,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       subscribeLogInfo(this.hass.connection, (log_infos) => {
         for (const log_info of log_infos) {
           if (log_info.domain === this.domain) {
+            if (
+              log_info.level === LogSeverity.DEBUG &&
+              this._logInfo?.level !== LogSeverity.DEBUG
+            ) {
+              this._resetDebugLogReady();
+            }
             this._logInfo = log_info;
           }
         }
@@ -863,7 +869,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         <ha-button
                           size="s"
                           appearance="plain"
-                          @click=${this._dismissDebugLogReady}
+                          @click=${this._resetDebugLogReady}
                         >
                           ${this.hass.localize("ui.common.dismiss_alert")}
                         </ha-button>
@@ -1412,7 +1418,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       LogSeverity[LogSeverity.DEBUG],
       "once"
     );
-    this._debugLogReady = false;
   }
 
   private _showLiveLog() {
@@ -1450,10 +1455,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       return;
     }
     this._debugLogReady = true;
-  }
-
-  private _dismissDebugLogReady() {
-    this._debugLogReady = false;
   }
 
   // Also invalidates pending disable requests so they can't restore the alert.
