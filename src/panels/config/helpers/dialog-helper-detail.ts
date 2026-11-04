@@ -28,6 +28,11 @@ import type { HaListSelectable } from "../../../components/list/ha-list-selectab
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
+import {
+  fetchEntityRegistry,
+  getExtendedEntityRegistryEntry,
+  type EntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
 import { createInputBoolean } from "../../../data/input_boolean";
 import { createInputButton } from "../../../data/input_button";
 import { createInputDateTime } from "../../../data/input_datetime";
@@ -390,32 +395,54 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     if (!this._domain || !this._item) {
       return;
     }
+    const domain = this._domain;
     this._submitting = true;
     this._error = "";
     try {
-      const createdEntity = await HELPERS[this._domain].create(
-        this.hass,
-        this._item
-      );
-      const entityId = createdEntity.id
-        ? `${this._domain}.${createdEntity.id}`
-        : undefined;
-      if (this._params?.dialogClosedCallback && entityId) {
+      const createdEntity = await HELPERS[domain].create(this.hass, this._item);
+      if (this._params?.dialogClosedCallback && createdEntity.id) {
         this._params.dialogClosedCallback({
           flowFinished: true,
-          entityId,
+          entityId: `${domain}.${createdEntity.id}`,
         });
       }
-      const showResult = this._params?.navigateToResult && entityId;
+      const resultEntityId =
+        this._params?.navigateToResult && createdEntity.id
+          ? await this._findEntityId(domain, createdEntity.id)
+          : undefined;
+      // The dialog was closed while waiting
+      const showResult = resultEntityId && this._params;
       this._markDirtyStateClean();
       this.closeDialog();
       if (showResult) {
-        showMoreInfoDialog(this, { entityId });
+        showMoreInfoDialog(this, { entityId: resultEntityId });
       }
     } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {
       this._submitting = false;
+    }
+  }
+
+  private async _findEntityId(
+    domain: string,
+    uniqueId: string
+  ): Promise<string | undefined> {
+    const isCreated = (entry: EntityRegistryEntry) =>
+      entry.platform === domain && entry.unique_id === uniqueId;
+    try {
+      // The entity ID usually matches the helper ID, unless it was taken
+      const entry = await getExtendedEntityRegistryEntry(
+        this.hass,
+        `${domain}.${uniqueId}`
+      ).catch(() => undefined);
+      if (entry && isCreated(entry)) {
+        return entry.entity_id;
+      }
+      return (await fetchEntityRegistry(this.hass.connection)).find(isCreated)
+        ?.entity_id;
+    } catch (_err) {
+      return undefined;
     }
   }
 

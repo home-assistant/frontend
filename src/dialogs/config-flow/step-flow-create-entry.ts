@@ -39,6 +39,11 @@ interface DeviceTarget {
   device: string;
 }
 
+interface HelperResult {
+  deviceId?: string;
+  entityId?: string;
+}
+
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
   @property({ attribute: false }) public flowConfig!: FlowConfig;
@@ -55,6 +60,8 @@ class StepFlowCreateEntry extends LitElement {
   private _domains: Record<string, string> = {};
 
   public navigateToResult = false;
+
+  private _helperResult?: Promise<HelperResult | undefined>;
 
   @state() private _deviceUpdate: Record<
     string,
@@ -77,6 +84,13 @@ class StepFlowCreateEntry extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadDomains();
+    if (
+      this.navigateToResult &&
+      this.step.result &&
+      this.manifest?.integration_type === "helper"
+    ) {
+      this._helperResult = this._findHelperResult(this.step.result.entry_id);
+    }
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -290,16 +304,24 @@ class StepFlowCreateEntry extends LitElement {
     }
 
     const entry = this.navigateToResult ? this.step.result : undefined;
-    const result = entry ? await this._findResult(entry.entry_id) : undefined;
+    // Helpers link their entities to an existing device instead of creating one
+    const helperResult =
+      entry && !this.devices.length ? await this._helperResult : undefined;
 
+    // The dialog was closed while waiting
+    if (!this.isConnected) {
+      return;
+    }
     fireEvent(this, "flow-update", { step: undefined });
     if (!entry) {
       return;
     }
-    if (result?.deviceId) {
-      navigate(`/config/devices/device/${result.deviceId}`);
-    } else if (result?.entityId) {
-      showMoreInfoDialog(this, { entityId: result.entityId });
+    const deviceId =
+      this.devices.length === 1 ? this.devices[0].id : helperResult?.deviceId;
+    if (deviceId) {
+      navigate(`/config/devices/device/${deviceId}`);
+    } else if (helperResult?.entityId) {
+      showMoreInfoDialog(this, { entityId: helperResult.entityId });
     } else {
       navigate(
         `/config/integrations/integration/${entry.domain}#config_entry=${entry.entry_id}`
@@ -307,16 +329,9 @@ class StepFlowCreateEntry extends LitElement {
     }
   }
 
-  private async _findResult(
+  private async _findHelperResult(
     entryId: string
-  ): Promise<{ deviceId?: string; entityId?: string } | undefined> {
-    if (this.devices.length === 1) {
-      return { deviceId: this.devices[0].id };
-    }
-    // Helpers link their entities to an existing device instead of creating one
-    if (this.devices.length || this.manifest?.integration_type !== "helper") {
-      return undefined;
-    }
+  ): Promise<HelperResult | undefined> {
     try {
       const { entity: entityIds = [] } = await findRelated(
         this.hass,
