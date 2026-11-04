@@ -8,6 +8,8 @@ import {
   mdiInformationOutline,
   mdiMoonNew,
   mdiReload,
+  mdiTestTube,
+  mdiTestTubeOff,
 } from "@mdi/js";
 import { html } from "lit";
 import { navigate } from "../../../common/navigate";
@@ -21,7 +23,10 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import type { RepositoryBase } from "../../../data/marketplace/repository";
+import type {
+  RepositoryBase,
+  RepositoryInfo,
+} from "../../../data/marketplace/repository";
 import { marketplaceErrorMessage } from "../../../data/marketplace/websocket";
 import {
   dismissNewMarketplaceRepository,
@@ -144,10 +149,27 @@ const confirmUninstallRepository = async (
   });
 };
 
+const includePreReleases = async (
+  element: MarketplaceDashboardElement,
+  api: MarketplaceApi,
+  localize: LocalizeFunc,
+  include: boolean
+) => {
+  try {
+    await (element as HaMarketplaceRepositoryDashboard).includePreReleases(
+      include
+    );
+  } catch (err: unknown) {
+    if (!handleGitHubRateLimited(element, api, localize, err)) {
+      showError(element, localize, err);
+    }
+  }
+};
+
 export const repositoryMenuItems = (
   element: MarketplaceDashboardElement,
   api: MarketplaceApi,
-  repository: RepositoryBase,
+  repository: RepositoryBase | RepositoryInfo,
   localize: LocalizeFunc
 ): MarketplaceRepositoryMenuEntry[] => {
   const entries: MarketplaceRepositoryMenuEntry[] = [];
@@ -227,6 +249,41 @@ export const repositoryMenuItems = (
         chooseVersion: true,
       }),
   });
+
+  // Only the repository page knows if pre-releases are included
+  if ("beta" in repository) {
+    entries.push({
+      value: "pre_releases",
+      path: repository.beta ? mdiTestTubeOff : mdiTestTube,
+      label: localize(
+        repository.beta
+          ? "ui.panel.marketplace.repository_menu.exclude_pre_releases"
+          : "ui.panel.marketplace.repository_menu.include_pre_releases"
+      ),
+      action: () => {
+        if (repository.beta) {
+          includePreReleases(element, api, localize, false);
+          return;
+        }
+
+        showConfirmationDialog(element, {
+          title: localize(
+            "ui.panel.marketplace.dialog.include_pre_releases.title",
+            { name: repository.name }
+          ),
+          text: localize(
+            "ui.panel.marketplace.dialog.include_pre_releases.text"
+          ),
+          confirmText: localize(
+            "ui.panel.marketplace.dialog.include_pre_releases.confirm"
+          ),
+          confirm: () => {
+            includePreReleases(element, api, localize, true);
+          },
+        });
+      },
+    });
+  }
 
   if (repository.new) {
     entries.push({

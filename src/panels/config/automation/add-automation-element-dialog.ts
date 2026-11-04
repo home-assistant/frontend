@@ -37,6 +37,7 @@ import {
   isDynamic,
 } from "../../../data/automation";
 import { getConditionDomain } from "../../../data/condition";
+import type { ConditionDescriptions } from "../../../data/condition";
 import {
   apiContext,
   conditionDescriptionsContext,
@@ -56,6 +57,7 @@ import {
   getTriggerIcons,
 } from "../../../data/icons";
 import { domainToName } from "../../../data/integration";
+import type { DomainManifestLookup } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   TARGET_SEPARATOR,
@@ -63,6 +65,7 @@ import {
   type SingleHassServiceTarget,
 } from "../../../data/target";
 import { getTriggerDomain } from "../../../data/trigger";
+import type { TriggerDescriptions } from "../../../data/trigger";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyleScrollbar } from "../../../resources/styles";
@@ -154,33 +157,29 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
   @consume({ context: statesContext, subscribe: true })
   @transform<HomeAssistant["states"], Set<string>>({
     transformer: function (this: DialogAddAutomationElement, states) {
-      const domains = new Set(Object.keys(states).map(computeDomain));
+      const entityIds = new Set(Object.keys(states));
       // keep the previous set, so a state change doesn't rerender the dialog
-      return deepEqual(domains, this._usedDomains)
-        ? this._usedDomains
-        : domains;
+      return deepEqual(entityIds, this._entityIds)
+        ? this._entityIds
+        : entityIds;
     },
   })
-  private _usedDomains?: Set<string>;
+  private _entityIds?: Set<string>;
 
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  @transform<HomeAssistant["states"], SystemDomains | undefined>({
-    transformer: function (this: DialogAddAutomationElement, states) {
-      const systemDomains = this._calculateSystemDomains(states);
-      // keep the previous result, so a state change doesn't rerender the dialog
-      return deepEqual(systemDomains, this._systemDomains)
-        ? this._systemDomains
-        : systemDomains;
-    },
-    watch: [
-      "_manifests",
-      "_triggerDescriptions",
-      "_conditionDescriptions",
-      "_registries",
-    ],
-  })
-  private _systemDomains?: SystemDomains;
+  private get _usedDomains(): Set<string> | undefined {
+    return this._computeUsedDomains(this._entityIds);
+  }
+
+  private get _systemDomains(): SystemDomains | undefined {
+    return this._calculateSystemDomains(
+      this.params?.type,
+      this._triggerDescriptions,
+      this._conditionDescriptions,
+      this._manifests,
+      this._registries,
+      this._entityIds
+    );
+  }
 
   @state()
   @consume({ context: servicesContext, subscribe: true })
@@ -884,32 +883,43 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     })
   );
 
-  private _calculateSystemDomains(
-    states: HomeAssistant["states"]
-  ): SystemDomains | undefined {
-    const type = this.params?.type;
-    if (!type || type === "action" || !this._manifests || !this._registries) {
-      return undefined;
+  private _computeUsedDomains = memoizeOne(
+    (entityIds: Set<string> | undefined) =>
+      entityIds && new Set(Array.from(entityIds, computeDomain))
+  );
+
+  private _calculateSystemDomains = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"] | undefined,
+      triggerDescriptions: TriggerDescriptions,
+      conditionDescriptions: ConditionDescriptions,
+      manifests: DomainManifestLookup | undefined,
+      registries: ContextType<typeof registriesContext> | undefined,
+      _entityIds: Set<string> | undefined
+    ): SystemDomains | undefined => {
+      if (!type || type === "action" || !manifests || !registries) {
+        return undefined;
+      }
+      const { entities, devices } = registries;
+      return type === "trigger"
+        ? calculateActiveSystemDomains(
+            triggerDescriptions,
+            manifests,
+            getTriggerDomain,
+            this._states,
+            entities,
+            devices
+          )
+        : calculateActiveSystemDomains(
+            conditionDescriptions,
+            manifests,
+            getConditionDomain,
+            this._states,
+            entities,
+            devices
+          );
     }
-    const { entities, devices } = this._registries;
-    return type === "trigger"
-      ? calculateActiveSystemDomains(
-          this._triggerDescriptions,
-          this._manifests,
-          getTriggerDomain,
-          states,
-          entities,
-          devices
-        )
-      : calculateActiveSystemDomains(
-          this._conditionDescriptions,
-          this._manifests,
-          getConditionDomain,
-          states,
-          entities,
-          devices
-        );
-  }
+  );
 
   private _getAllItems = memoizeOne(getAllItems);
 

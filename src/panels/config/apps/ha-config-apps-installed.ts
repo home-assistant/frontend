@@ -292,8 +292,8 @@ export class HaConfigAppsInstalled extends LitElement {
       }
 
       .content {
-        padding: var(--ha-space-4);
-        margin-bottom: var(--ha-space-18);
+        padding: var(--ha-space-6) var(--ha-space-4) var(--ha-space-4);
+        margin: 0 0 var(--ha-space-18);
         gap: var(--ha-space-4);
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(min(336px, 100%), 1fr));

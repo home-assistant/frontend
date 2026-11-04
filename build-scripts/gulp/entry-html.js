@@ -232,7 +232,11 @@ gulp.task(
   )
 );
 
-const DEMO_PAGE_ENTRIES = { "index.html": ["main"] };
+const DEMO_PAGE_ENTRIES = {
+  "index.html": ["main"],
+  "components.html": ["embed"],
+  "embed.js": ["embed"],
+};
 
 gulp.task(
   "gen-pages-demo-dev",

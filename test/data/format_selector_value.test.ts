@@ -139,3 +139,35 @@ describe("formatSelectorValue duration selector", () => {
     ).toBe("");
   });
 });
+
+describe("formatSelectorValue ui_color selector", () => {
+  const colorOptions = {
+    localize: (key: string) => `localized:${key}`,
+  } as unknown as FormatSelectorValueOptions;
+
+  it("localizes theme colors and special values", () => {
+    expect(formatSelectorValue(colorOptions, "red", { ui_color: {} })).toBe(
+      "localized:ui.components.color-picker.colors.red"
+    );
+    expect(formatSelectorValue(colorOptions, "none", { ui_color: {} })).toBe(
+      "localized:ui.components.color-picker.none"
+    );
+  });
+
+  it("uses the label of an extra option", () => {
+    expect(
+      formatSelectorValue(colorOptions, "custom", {
+        ui_color: { extra_options: [{ value: "custom", label: "My color" }] },
+      })
+    ).toBe("My color");
+  });
+
+  it("shows custom colors as written", () => {
+    expect(formatSelectorValue(colorOptions, "#ff0000", { ui_color: {} })).toBe(
+      "#ff0000"
+    );
+    expect(formatSelectorValue(colorOptions, "Red", { ui_color: {} })).toBe(
+      "Red"
+    );
+  });
+});
