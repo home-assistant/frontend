@@ -68,8 +68,9 @@ export class HaEmbedView extends EmbedLovelaceElement<LovelaceViewRawConfig> {
     }
   }
 
+  // Nothing for a dashboard without views, such as an empty strategy result
   protected renderContent(hass: HomeAssistant) {
-    if (!this._lovelace) {
+    if (!this._lovelace?.config.views.length) {
       return undefined;
     }
 

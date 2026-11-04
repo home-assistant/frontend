@@ -71,6 +71,10 @@ export abstract class EmbedLovelaceElement<
   // The configuration of the dashboard in `_lovelace`, or being generated
   private _rawConfig?: LovelaceRawConfig;
 
+  // Counts the generations started, so that only the latest one is shown.
+  // Generating again for changed registries keeps the same configuration.
+  private _generation = 0;
+
   // The backend at the last update, to tell what a strategy depends on changed
   private _previousHass?: HomeAssistant;
 
@@ -85,7 +89,19 @@ export abstract class EmbedLovelaceElement<
 
     this._previousHass = this._hass;
 
-    if (!this._hass || !raw) {
+    // Without a configuration, nothing is shown, and a generation still
+    // running is dropped
+    if (!raw) {
+      if (this._rawConfig) {
+        this._rawConfig = undefined;
+        this._lovelace = undefined;
+        this._generation++;
+      }
+
+      return;
+    }
+
+    if (!this._hass) {
       return;
     }
 
@@ -102,20 +118,24 @@ export abstract class EmbedLovelaceElement<
         ))
     ) {
       this._rawConfig = raw;
-      this._generate(raw, this._hass);
+      this._generate(raw, this._hass, ++this._generation);
     }
   }
 
-  private async _generate(raw: LovelaceRawConfig, hass: HomeAssistant) {
+  private async _generate(
+    raw: LovelaceRawConfig,
+    hass: HomeAssistant,
+    generation: number
+  ) {
     const generated = isStrategyDashboard(raw)
       ? await generateLovelaceDashboardStrategy(raw, hass)
       : raw;
 
     const config = normalizeLovelaceConfig(generated);
 
-    // A newer configuration is being generated. A generated dashboard has its
-    // views, rather than a strategy.
-    if (raw !== this._rawConfig || isStrategyDashboard(config)) {
+    // A newer generation has started. A generated dashboard has its views,
+    // rather than a strategy.
+    if (generation !== this._generation || isStrategyDashboard(config)) {
       return;
     }
 
