@@ -857,34 +857,27 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                 ? html`<div class="section">
                     <ha-alert
                       alert-type="info"
-                      .narrow=${this.narrow}
+                      dismissable
                       .title=${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.debug_log_ready"
                       )}
+                      @alert-dismissed-clicked=${this._resetDebugLogReady}
                     >
                       ${this.hass.localize(
                         "ui.panel.config.integrations.config_entry.debug_log_ready_description"
                       )}
-                      <div slot="action" class="debug-actions">
-                        <ha-button
-                          size="s"
-                          appearance="plain"
-                          @click=${this._resetDebugLogReady}
-                        >
-                          ${this.hass.localize("ui.common.dismiss_alert")}
-                        </ha-button>
-                        <ha-button
-                          size="s"
-                          appearance="filled"
-                          @click=${this._downloadDebugLog}
-                        >
-                          <ha-svg-icon
-                            slot="start"
-                            .path=${mdiDownload}
-                          ></ha-svg-icon>
-                          ${this.hass.localize("ui.common.download")}
-                        </ha-button>
-                      </div>
+                      <br /><br />
+                      <ha-button
+                        size="s"
+                        appearance="filled"
+                        @click=${this._downloadDebugLog}
+                      >
+                        <ha-svg-icon
+                          slot="start"
+                          .path=${mdiDownload}
+                        ></ha-svg-icon>
+                        ${this.hass.localize("ui.common.download")}
+                      </ha-button>
                     </ha-alert>
                   </div>`
                 : nothing
