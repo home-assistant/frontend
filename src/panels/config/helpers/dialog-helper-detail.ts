@@ -396,22 +396,25 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
       return;
     }
     const domain = this._domain;
+    const params = this._params;
     this._submitting = true;
     this._error = "";
     try {
       const createdEntity = await HELPERS[domain].create(this.hass, this._item);
-      if (this._params?.dialogClosedCallback && createdEntity.id) {
-        this._params.dialogClosedCallback({
+      // The dialog was closed or reopened while waiting
+      if (this._params !== params) {
+        return;
+      }
+      if (params?.dialogClosedCallback && createdEntity.id) {
+        params.dialogClosedCallback({
           flowFinished: true,
           entityId: `${domain}.${createdEntity.id}`,
         });
       }
-      const params = this._params;
       const resultEntityId =
         params?.navigateToResult && createdEntity.id
           ? await this._findEntityId(domain, createdEntity.id)
           : undefined;
-      // The dialog was closed or reopened while waiting
       if (this._params !== params) {
         return;
       }
