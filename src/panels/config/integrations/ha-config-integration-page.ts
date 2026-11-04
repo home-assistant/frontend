@@ -175,6 +175,8 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _debugLogReady = false;
 
+  private _debugLogRequest = 0;
+
   @state() private _searchParms = new URLSearchParams(
     __DEMO__ ? window.location.search : window.location.hash.substring(1)
   );
@@ -231,6 +233,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("hashchange", this._handleHashChange);
+    this._resetDebugLogReady();
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -254,7 +257,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.hass.loadBackendTranslation("config", [this.domain]);
       this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
-      this._debugLogReady = false;
+      this._resetDebugLogReady();
       this._filter = "";
       this._subEntries = {};
       this._fetchManifest();
@@ -1402,7 +1405,6 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _handleEnableDebugLogging() {
-    this._debugLogReady = false;
     const integration = this.domain;
     await setIntegrationLogLevel(
       this.hass,
@@ -1410,6 +1412,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       LogSeverity[LogSeverity.DEBUG],
       "once"
     );
+    this._debugLogReady = false;
   }
 
   private _showLiveLog() {
@@ -1423,12 +1426,16 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     // Stop propagation since otherwise we end up here twice while we await the log level change.
     ev.stopPropagation();
     const integration = this.domain;
+    const request = this._debugLogRequest;
     await setIntegrationLogLevel(
       this.hass,
       integration,
       LogSeverity[LogSeverity.NOTSET],
       "once"
     );
+    if (request !== this._debugLogRequest) {
+      return;
+    }
     const logFileDownloadUnavailableReason =
       getCoreLogFileDownloadUnavailableReason(this.hass);
     if (logFileDownloadUnavailableReason) {
@@ -1447,6 +1454,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   private _dismissDebugLogReady() {
     this._debugLogReady = false;
+  }
+
+  // Also invalidates pending disable requests so they can't restore the alert.
+  private _resetDebugLogReady() {
+    this._debugLogReady = false;
+    this._debugLogRequest++;
   }
 
   private async _downloadDebugLog() {
