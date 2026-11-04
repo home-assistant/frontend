@@ -21,9 +21,11 @@
       }
 
       .content {
-        max-width: min(560px, calc(100vw - var(--safe-area-inset-right, 0px) - var(--safe-area-inset-left, 0px)));
+        max-width: 560px;
         margin: 0 auto;
-        padding: 0 16px;
+        padding: 0 calc(16px + var(--safe-area-inset-right, 0px))
+          var(--safe-area-inset-bottom, 0px)
+          calc(16px + var(--safe-area-inset-left, 0px));
         box-sizing: content-box;
       }
 
