@@ -76,7 +76,11 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
 
   private _escapePressed = false;
 
+  /** Whether the drawer has shown since `open` was last set. */
+  private _shown = false;
+
   private _handleShow = async () => {
+    this._shown = true;
     this._drawerOpen = true;
     this.open = true;
     fireEvent(this, "opened");
@@ -202,6 +206,14 @@ export class HaBottomSheet extends ScrollableFadeMixin(LitElement) {
     super.updated(changedProperties);
     if (changedProperties.has("open")) {
       this._drawerOpen = this.open;
+      if (!this.open) {
+        if (!this._shown) {
+          // Closed before the drawer showed, so it has nothing to hide and
+          // never reports the close itself.
+          fireEvent(this, "closed");
+        }
+        this._shown = false;
+      }
     }
   }
 

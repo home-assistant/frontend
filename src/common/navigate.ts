@@ -16,6 +16,13 @@ declare global {
 export interface NavigateOptions {
   replace?: boolean;
   data?: Record<string, unknown>;
+  /**
+   * Leave open dialogs open. For a replace that only canonicalizes the current
+   * URL, like a router filling in its default page: a dialog restored from the
+   * URL, such as a more-info deep link, may already be open at that point, and
+   * the entry keeps its state so back still closes it.
+   */
+  keepDialogs?: boolean;
 }
 
 // max time to wait for dialogs to close before navigating
@@ -196,7 +203,8 @@ const buildHistoryState = (
 };
 
 const performNavigation = async (path: string, options?: NavigateOptions) => {
-  const canProceed = await ensureDialogsClosed(Date.now());
+  const keepDialogs = options?.keepDialogs || false;
+  const canProceed = keepDialogs || (await ensureDialogsClosed(Date.now()));
   if (!canProceed) {
     return false;
   }
@@ -215,7 +223,10 @@ const performNavigation = async (path: string, options?: NavigateOptions) => {
 
   const { history } = mainWindow;
 
-  if (replace) {
+  if (replace && keepDialogs) {
+    // Same entry under its canonical URL: its state, dialog included, stays.
+    history.replaceState(history.state, "", path);
+  } else if (replace) {
     // A replaced entry keeps its predecessor, so it keeps `from`.
     const { root, from } = history.state ?? {};
     const data = root ? { root: true } : options?.data;
