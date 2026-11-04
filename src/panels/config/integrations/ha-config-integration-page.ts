@@ -20,6 +20,7 @@ import memoizeOne from "memoize-one";
 import { ensureArray } from "../../../common/array/ensure-array";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
+import { storage } from "../../../common/decorators/storage";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import {
@@ -36,6 +37,8 @@ import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-switch";
+import type { HaSwitch } from "../../../components/ha-switch";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import "../../../components/item/ha-list-item-base";
@@ -171,6 +174,13 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   @state() private _diagnosticHandler?: DiagnosticInfo;
 
   @state() private _logInfo?: IntegrationLogInfo;
+
+  @storage({
+    key: "downloadLogAfterDebugLogging",
+    state: true,
+    subscribe: false,
+  })
+  private _downloadLogAfterDebug = true;
 
   @state() private _searchParms = new URLSearchParams(
     __DEMO__ ? window.location.search : window.location.hash.substring(1)
@@ -818,6 +828,15 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.debug_logging_enabled_description"
                     )}
+                    <ha-switch
+                      class="debug-download"
+                      .checked=${this._downloadLogAfterDebug}
+                      @change=${this._downloadLogAfterDebugChanged}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.download_log_after_debug"
+                      )}
+                    </ha-switch>
                     <div slot="action" class="debug-actions">
                       <ha-button
                         size="s"
@@ -1380,6 +1399,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
     });
   }
 
+  private _downloadLogAfterDebugChanged(ev: Event) {
+    this._downloadLogAfterDebug = (ev.target as HaSwitch).checked;
+  }
+
   private async _handleDisableDebugLogging(ev: Event) {
     // Stop propagation since otherwise we end up here twice while we await the log level change
     // and trigger two identical debug log downloads.
@@ -1391,6 +1414,9 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       LogSeverity[LogSeverity.NOTSET],
       "once"
     );
+    if (!this._downloadLogAfterDebug) {
+      return;
+    }
     const logFileDownloadUnavailableReason =
       getCoreLogFileDownloadUnavailableReason(this.hass);
     if (logFileDownloadUnavailableReason) {
@@ -1621,6 +1647,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
         .debug-actions {
           display: flex;
           gap: var(--ha-space-2);
+        }
+        .debug-download {
+          display: flex;
+          margin-top: var(--ha-space-2);
         }
         .debug-actions ha-button::part(label) {
           white-space: nowrap;
