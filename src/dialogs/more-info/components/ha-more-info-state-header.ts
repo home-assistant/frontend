@@ -1,6 +1,7 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { consume } from "../../../common/decorators/consume";
 import "../../../components/ha-absolute-time";
 import "../../../components/ha-relative-time";
@@ -20,6 +21,8 @@ export class HaMoreInfoStateHeader extends LitElement {
   @property({ attribute: false }) public changedOverride?: number;
 
   @property({ attribute: false }) public secondaryOverride?: string;
+
+  @property({ attribute: false }) public stateAccent = false;
 
   @state() private _absoluteTime = false;
 
@@ -53,7 +56,9 @@ export class HaMoreInfoStateHeader extends LitElement {
     const stateDisplay = this.stateOverride ?? this._localizeState();
 
     return html`
-      <p class="state">${stateDisplay}</p>
+      <p class=${classMap({ state: true, accent: this.stateAccent })}>
+        ${stateDisplay}
+      </p>
       <div class="time-row">
         ${
           this.secondaryOverride
@@ -134,8 +139,10 @@ export class HaMoreInfoStateHeader extends LitElement {
       padding: 0;
       border: 0;
     }
-    .last-changed.secondary {
+    .state.accent {
       color: var(--primary-color);
+    }
+    .last-changed.secondary {
       cursor: default;
     }
   `;

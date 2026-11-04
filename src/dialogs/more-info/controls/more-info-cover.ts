@@ -149,23 +149,30 @@ class MoreInfoCover extends LitElement {
     );
   }
 
-  private _stateOverride(): string {
-    const stateObj = this.stateObj!;
-    if (this._drag && !this._drag.swipe) {
-      return this._formatValue(this._mode, this._drag.value);
+  private _stateOverride(): { text: string; accent: boolean } {
+    if (this._drag?.swipe?.flipped) {
+      return {
+        text: this._localize(
+          this._drag.swipe.start
+            ? "ui.dialogs.more_info_control.cover.closes_on_release"
+            : "ui.dialogs.more_info_control.cover.opens_on_release"
+        ),
+        accent: true,
+      };
     }
-    return this._positionState(
-      stateObj.state,
-      stateObj.attributes.current_position
-    );
+    if (this._drag && !this._drag.swipe) {
+      return {
+        text: this._formatValue(this._mode, this._drag.value),
+        accent: true,
+      };
+    }
+    return { text: this._stateText(), accent: false };
   }
 
-  private _positionState(entityState: string, position?: number): string {
+  private _stateText(): string {
     const stateObj = this.stateObj!;
-    const stateDisplay = this._formatters.formatEntityState(
-      stateObj,
-      entityState
-    );
+    const stateDisplay = this._formatters.formatEntityState(stateObj);
+    const position = stateObj.attributes.current_position;
     if (!position || Math.round(position) === 0) {
       return stateDisplay;
     }
@@ -180,22 +187,16 @@ class MoreInfoCover extends LitElement {
         | "requested_open"
         | "requested_closed"
         | "currently"
-        | "release_to_open"
-        | "release_to_close",
+        | "currently_unknown",
       values?: Record<string, string>
     ) => this._localize(`ui.dialogs.more_info_control.cover.${key}`, values);
     if (this._drag?.swipe) {
-      if (!this._drag.swipe.flipped) {
-        return undefined;
-      }
-      return localize(
-        this._drag.swipe.start ? "release_to_close" : "release_to_open"
-      );
+      return undefined;
     }
     if (this._drag) {
       const current = coverModeValue(stateObj, this._mode);
       return current === undefined
-        ? undefined
+        ? localize("currently_unknown")
         : localize("currently", {
             value: this._formatValue(this._mode, current),
           });
@@ -254,12 +255,14 @@ class MoreInfoCover extends LitElement {
       supportsFeature(stateObj, CoverEntityFeature.SPEED)
         ? this._speedOptions(stateObj)
         : [];
+    const header = this._stateOverride();
 
     return html`
       <ha-more-info-state-header
         .stateObj=${stateObj}
-        .stateOverride=${this._stateOverride()}
+        .stateOverride=${header.text}
         .secondaryOverride=${this._secondaryOverride()}
+        .stateAccent=${header.accent}
       ></ha-more-info-state-header>
       <div
         class="controls"

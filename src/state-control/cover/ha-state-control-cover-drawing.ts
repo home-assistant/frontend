@@ -1,5 +1,5 @@
 import type { PropertyValues } from "lit";
-import { LitElement, css, html, nothing } from "lit";
+import { LitElement, css, html, nothing, svg } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -15,21 +15,20 @@ import {
   uiContext,
 } from "../../data/context";
 import type { CoverControlMode, CoverEntity } from "../../data/cover";
-import {
-  CoverEntityFeature,
-  coverIsMoving,
-  coverModeValue,
-} from "../../data/cover";
+import { CoverEntityFeature, coverModeValue } from "../../data/cover";
 import { UNAVAILABLE } from "../../data/entity/entity";
 import type { HomeAssistantFormatters, HomeAssistantUI } from "../../types";
 import { awningShape } from "./drawing/awning";
 import { curtainShape } from "./drawing/curtain";
-import { rollerShape, venetianShape } from "./drawing/roller";
+import { doorShape } from "./drawing/door";
+import { hopperShape } from "./drawing/hopper";
+import { rollerShape } from "./drawing/roller";
 import { sashShape } from "./drawing/sash";
-import type { CoverShape } from "./drawing/shared";
-import { VB } from "./drawing/shared";
+import type { CoverShape, CoverWave } from "./drawing/shared";
+import { VB, clamp } from "./drawing/shared";
 import { slatsShape } from "./drawing/slats";
 import { slideShape } from "./drawing/slide";
+import { venetianShape } from "./drawing/venetian";
 
 export type CoverService =
   | "open_cover"
@@ -58,9 +57,12 @@ export interface CoverDrag {
 
 type HandleMotion = "follow" | "drag" | "snap" | "request" | "hold";
 
-interface ModeValues {
-  position: number;
-  tilt: number;
+type ModeValues = Record<CoverControlMode, number>;
+
+interface SpringOptions {
+  instant?: boolean;
+  stiffness?: number;
+  damping?: number;
 }
 
 const SPRING = 7;
@@ -70,7 +72,15 @@ const DRAG_THRESHOLD = 6;
 const KEY_COMMIT_DELAY = 500;
 const SWIPE_RESISTANCE = 20;
 
-const clamp = (value: number) => Math.max(0, Math.min(100, value));
+const SKY_LAYERS = ["sky", "warm", "cool"];
+
+const pill = (cx: number, cy: number, vertical: boolean) =>
+  vertical
+    ? svg`<rect class="handle" x=${cx - 4} y=${cy - 22} width="8" height="44" rx="4"></rect>`
+    : svg`<rect class="handle" x=${cx - 24} y=${cy - 4} width="48" height="8" rx="4"></rect>`;
+
+const knob = (cx: number, cy: number) =>
+  svg`<circle class="knob-handle" cx=${cx} cy=${cy} r="9"></circle>`;
 
 @customElement("ha-state-control-cover-drawing")
 export class HaStateControlCoverDrawing extends LitElement {
@@ -100,6 +110,8 @@ export class HaStateControlCoverDrawing extends LitElement {
 
   @state() private _drag?: CoverDrag;
 
+  @state() private _pointerFocus = false;
+
   @query(".control") private _control?: HTMLElement;
 
   private _shown: ModeValues = { position: 0, tilt: 0 };
@@ -109,6 +121,12 @@ export class HaStateControlCoverDrawing extends LitElement {
   private _handle: ModeValues = { position: 0, tilt: 0 };
 
   private _handleVelocity: ModeValues = { position: 0, tilt: 0 };
+
+  private _wave: CoverWave & { position: number } = {
+    position: 0,
+    velocity: 0,
+    phase: 0,
+  };
 
   private _holding: Record<CoverControlMode, boolean> = {
     position: false,
@@ -164,14 +182,13 @@ export class HaStateControlCoverDrawing extends LitElement {
         this._shownVelocity[mode] = 0;
         this._handleVelocity[mode] = 0;
       }
+      this._wave = { position: this._shown.position, velocity: 0, phase: 0 };
     }
     if (changedProps.has("request")) {
       const oldRequest = changedProps.get("request") as
         CoverRequest | undefined;
       if (oldRequest && !this.request) {
-        const value = coverModeValue(this.stateObj, oldRequest.mode);
-        this._holding[oldRequest.mode] =
-          value !== undefined && Math.round(value) === oldRequest.value;
+        this._holding[oldRequest.mode] = true;
       }
       if (this.request) {
         this._holding[this.request.mode] = false;
@@ -226,29 +243,31 @@ export class HaStateControlCoverDrawing extends LitElement {
     return this._shown[mode];
   }
 
-  private _shape(): CoverShape {
-    if (this.mode === "tilt") {
-      return slatsShape;
+  private _requestedValue(mode: CoverControlMode): number {
+    if (this.request?.mode === mode) {
+      return this.request.value;
     }
-    switch (this.stateObj.attributes.device_class) {
+    return Math.round(this._goal(mode));
+  }
+
+  private _shape(): CoverShape {
+    const deviceClass = this.stateObj.attributes.device_class;
+    if (this.mode === "tilt") {
+      return deviceClass === "window" ? hopperShape : slatsShape;
+    }
+    switch (deviceClass) {
       case "awning":
         return awningShape;
       case "curtain":
         return curtainShape;
       case "door":
+        return doorShape;
       case "gate":
         return slideShape;
       case "window":
         return sashShape;
       case "blind":
-        return supportsFeature(
-          this.stateObj,
-          CoverEntityFeature.SET_TILT_POSITION
-        ) ||
-          supportsFeature(this.stateObj, CoverEntityFeature.OPEN_TILT) ||
-          supportsFeature(this.stateObj, CoverEntityFeature.CLOSE_TILT)
-          ? venetianShape
-          : rollerShape;
+        return venetianShape;
       default:
         return rollerShape;
     }
@@ -278,11 +297,31 @@ export class HaStateControlCoverDrawing extends LitElement {
         changed;
       changed = this._moveHandle(mode, goal, dt) || changed;
     }
+    if (this._shape() === curtainShape) {
+      changed = this._moveWave(dt) || changed;
+    }
     if (changed) {
       this.requestUpdate();
       this._frame = requestAnimationFrame(this._tick);
     }
   };
+
+  private _moveWave(dt: number): boolean {
+    const wave = this._wave;
+    const frames = Math.max(0.01, (dt * 1000) / 16.7);
+    const keep = 0.9 ** frames;
+    const instant = (this._shown.position - wave.position) / frames;
+    wave.velocity = wave.velocity * keep + instant * (1 - keep);
+    if (Math.abs(wave.velocity) < 0.015 && Math.abs(instant) < 0.001) {
+      wave.velocity = 0;
+    }
+    wave.position = this._shown.position;
+    if (!wave.velocity) {
+      return false;
+    }
+    wave.phase += (0.06 + Math.abs(wave.velocity) * 0.03) * frames;
+    return true;
+  }
 
   private _handleMotion(mode: CoverControlMode): HandleMotion {
     if (this._drag && this.mode === mode) {
@@ -310,38 +349,22 @@ export class HaStateControlCoverDrawing extends LitElement {
     const velocity = this._handleVelocity;
     switch (this._handleMotion(mode)) {
       case "drag":
-        return this._spring(
-          handle,
-          velocity,
-          mode,
-          this._drag!.value,
-          dt,
-          true
-        );
+        return this._spring(handle, velocity, mode, this._drag!.value, dt, {
+          instant: true,
+        });
       case "snap":
-        return this._spring(
-          handle,
-          velocity,
-          mode,
-          this._drag!.value,
-          dt,
-          false,
-          SNAP_SPRING,
-          SNAP_DAMPING
-        );
+        return this._spring(handle, velocity, mode, this._drag!.value, dt, {
+          stiffness: SNAP_SPRING,
+          damping: SNAP_DAMPING,
+        });
       case "request":
         return this._spring(handle, velocity, mode, this.request!.value, dt);
       case "hold":
         return this._spring(handle, velocity, mode, goal, dt);
       default:
-        return this._spring(
-          handle,
-          velocity,
-          mode,
-          this._shown[mode],
-          dt,
-          true
-        );
+        return this._spring(handle, velocity, mode, this._shown[mode], dt, {
+          instant: true,
+        });
     }
   }
 
@@ -351,9 +374,7 @@ export class HaStateControlCoverDrawing extends LitElement {
     mode: CoverControlMode,
     goal: number,
     dt: number,
-    instant = false,
-    stiffness = SPRING,
-    damping = 1
+    { instant = false, stiffness = SPRING, damping = 1 }: SpringOptions = {}
   ): boolean {
     if (
       instant ||
@@ -458,6 +479,7 @@ export class HaStateControlCoverDrawing extends LitElement {
     }
     const shape = this._shape();
     this._readDirection();
+    this._pointerFocus = true;
     this._control?.focus({ preventScroll: true });
     ev.preventDefault();
     if (this._supportsSwipe) {
@@ -466,11 +488,9 @@ export class HaStateControlCoverDrawing extends LitElement {
     }
     const startPointer = this._valueFromPointer(ev, shape, true);
     const startValue =
-      this.request?.mode === this.mode
-        ? this.request.value
-        : this._unknown
-          ? startPointer
-          : Math.round(this._goal(this.mode));
+      this._unknown && this.request?.mode !== this.mode
+        ? startPointer
+        : this._requestedValue(this.mode);
     const { clientX: x0, clientY: y0 } = ev;
 
     const move = (e: PointerEvent) => {
@@ -566,7 +586,12 @@ export class HaStateControlCoverDrawing extends LitElement {
     this._trackPointer(move, end);
   }
 
+  private _onBlur() {
+    this._pointerFocus = false;
+  }
+
   private _onKeyDown(ev: KeyboardEvent) {
+    this._pointerFocus = false;
     if (!this._interactive) {
       return;
     }
@@ -580,16 +605,10 @@ export class HaStateControlCoverDrawing extends LitElement {
       }
       return;
     }
-    const shape = this._shape();
-    const horizontal = shape.horizontal;
     this._readDirection();
-    const current =
-      this._keyValue ??
-      (this.request?.mode === this.mode
-        ? this.request.value
-        : Math.round(this._goal(this.mode)));
+    const current = this._keyValue ?? this._requestedValue(this.mode);
     const step = ev.shiftKey ? 10 : 1;
-    const rightStep = horizontal ? (this._isRtl ? step : -step) : step;
+    const rightStep = this._shape().horizontal && !this._isRtl ? -step : step;
     let value: number;
     switch (ev.key) {
       case "ArrowUp":
@@ -639,53 +658,91 @@ export class HaStateControlCoverDrawing extends LitElement {
     );
   }
 
+  private _movingAngle(shape: CoverShape): number | undefined {
+    if (
+      this.mode !== "position" ||
+      shape.openingAngle === undefined ||
+      this._unknown
+    ) {
+      return undefined;
+    }
+    if (this.stateObj.state === "opening") {
+      return shape.openingAngle;
+    }
+    if (this.stateObj.state === "closing") {
+      return shape.openingAngle + 180;
+    }
+    return undefined;
+  }
+
+  private _valueText(value: number, active: boolean): string {
+    const current = Math.round(this._goal(this.mode));
+    if (this._unknown && !active) {
+      return this._localize("state.default.unknown");
+    }
+    if (!this._drag && this.request?.mode === this.mode && value !== current) {
+      return this._localize(
+        "ui.dialogs.more_info_control.cover.requested_value_text",
+        {
+          value: this._formatValue(value),
+          current: this._formatValue(current),
+        }
+      );
+    }
+    return this._formatValue(value);
+  }
+
+  private _renderTarget(shape: CoverShape, value: number) {
+    return svg`
+      ${shape.silhouette?.(value, this._id) ?? nothing}
+      ${shape.edge ? svg`<path class="target-edge" d=${shape.edge(value)}></path>` : nothing}
+    `;
+  }
+
+  private _renderHandle(shape: CoverShape, value: number) {
+    const [cx, cy] = shape.grip(value);
+    return shape.knob ? knob(cx, cy) : pill(cx, cy, shape.horizontal);
+  }
+
+  private _renderMovingHint(angle: number) {
+    const { x, y, iw, ih } = VB;
+    return svg`
+      <g transform="translate(${x + iw / 2} ${y + ih / 2}) rotate(${angle})">
+        <g class="moving-hint">
+          <path class="chevron back" d="M-6 6.5 L0 0.5 L6 6.5"></path>
+          <path class="chevron" d="M-6 -0.5 L0 -6.5 L6 -0.5"></path>
+        </g>
+      </g>
+    `;
+  }
+
   protected render() {
     if (!this.stateObj) {
       return nothing;
     }
     const shape = this._shape();
+    const mode = this.mode;
     const unknown = this._unknown;
     const interactive = this._interactive;
-    const mode = this.mode;
     const active = this._drag !== undefined || this.request?.mode === mode;
-    const handleValue =
-      interactive && (!unknown || active) ? this._handle[mode] : undefined;
-    const showTarget =
+    const withHandle = interactive && (!unknown || active);
+    const withTarget =
       active &&
       (unknown || Math.abs(this._handle[mode] - this._shown[mode]) > 1);
-    const { cover, ghost, handle } = shape.render({
+    const { back, cover, front } = shape.render({
       stateObj: this.stateObj,
       value: this._shown.position,
       tilt: this._shown.tilt,
-      handle: handleValue,
-      target: showTarget ? this._handle[mode] : undefined,
+      withHandle,
+      wave: this._wave,
       id: this._id,
     });
     const flip = shape.horizontal && this._isRtl;
-    const { x, y, iw, ih } = VB;
-    const current = Math.round(this._goal(mode));
-    const value = Math.round(
-      this._drag?.value ??
-        (this.request?.mode === mode ? this.request.value : current)
-    );
-    const valueText =
-      unknown && !active
-        ? this._localize("state.default.unknown")
-        : !this._drag && this.request?.mode === mode && value !== current
-          ? this._localize(
-              "ui.dialogs.more_info_control.cover.requested_value_text",
-              {
-                value: this._formatValue(value),
-                current: this._formatValue(current),
-              }
-            )
-          : this._formatValue(value);
+    const movingAngle = this._movingAngle(shape);
+    const value = Math.round(this._drag?.value ?? this._requestedValue(mode));
     const slider = interactive && this._supportsValue;
     const swipe = interactive && this._supportsSwipe;
-    const label = this._formatters.formatEntityAttributeName(
-      this.stateObj,
-      mode === "tilt" ? "current_tilt_position" : "current_position"
-    );
+    const { x, y, iw, ih } = VB;
 
     return html`
       <div
@@ -693,16 +750,25 @@ export class HaStateControlCoverDrawing extends LitElement {
           control: true,
           interactive,
           disabled: this.stateObj.state === UNAVAILABLE,
-          moving: coverIsMoving(this.stateObj),
           dark: this._darkMode,
+          "pointer-focus": this._pointerFocus,
         })}
         role=${ifDefined(slider ? "slider" : swipe ? "switch" : undefined)}
         tabindex=${ifDefined(interactive ? "0" : undefined)}
-        aria-label=${ifDefined(interactive ? label : undefined)}
+        aria-label=${ifDefined(
+          interactive
+            ? this._formatters.formatEntityAttributeName(
+                this.stateObj,
+                mode === "tilt" ? "current_tilt_position" : "current_position"
+              )
+            : undefined
+        )}
         aria-valuemin=${ifDefined(slider ? "0" : undefined)}
         aria-valuemax=${ifDefined(slider ? "100" : undefined)}
         aria-valuenow=${ifDefined(slider ? String(value) : undefined)}
-        aria-valuetext=${ifDefined(slider ? valueText : undefined)}
+        aria-valuetext=${ifDefined(
+          slider ? this._valueText(value, active) : undefined
+        )}
         aria-orientation=${ifDefined(
           slider ? (shape.horizontal ? "horizontal" : "vertical") : undefined
         )}
@@ -711,6 +777,7 @@ export class HaStateControlCoverDrawing extends LitElement {
         )}
         @pointerdown=${this._onPointerDown}
         @keydown=${this._onKeyDown}
+        @blur=${this._onBlur}
       >
         <svg viewBox="0 0 ${VB.w} ${VB.h}" aria-hidden="true">
           <defs>
@@ -718,29 +785,67 @@ export class HaStateControlCoverDrawing extends LitElement {
               <stop offset="0" class="sky-top"></stop>
               <stop offset="1" class="sky-bottom"></stop>
             </linearGradient>
+            <radialGradient id="${this._id}-warm" cx="22%" cy="14%" r="58%">
+              <stop offset="0" class="sky-warm" stop-opacity="0.55"></stop>
+              <stop offset="1" class="sky-warm" stop-opacity="0"></stop>
+            </radialGradient>
+            <radialGradient id="${this._id}-cool" cx="82%" cy="92%" r="62%">
+              <stop offset="0" class="sky-cool" stop-opacity="0.45"></stop>
+              <stop offset="1" class="sky-cool" stop-opacity="0"></stop>
+            </radialGradient>
             <linearGradient id="${this._id}-grass" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" class="grass-top"></stop>
               <stop offset="1" class="grass-bottom"></stop>
             </linearGradient>
+            <filter
+              id="${this._id}-box"
+              x="-5%"
+              y="-50%"
+              width="110%"
+              height="300%"
+            >
+              <feDropShadow
+                dx="0"
+                dy="1.2"
+                stdDeviation="1.2"
+                flood-color="#000"
+                flood-opacity="0.18"
+              ></feDropShadow>
+            </filter>
             <clipPath id="${this._id}-clip">
-              <rect x=${x} y=${y} width=${iw} height=${ih} rx="4"></rect>
+              <rect x=${x} y=${y} width=${iw} height=${ih} rx="12"></rect>
             </clipPath>
           </defs>
-          <rect class="frame" width=${VB.w} height=${VB.h} rx="24"></rect>
+          <rect class="frame" width=${VB.w} height=${VB.h} rx="22"></rect>
           <g
             transform=${ifDefined(flip ? `translate(${VB.w} 0) scale(-1 1)` : undefined)}
           >
             <g clip-path="url(#${this._id}-clip)">
-              <rect
-                x=${x}
-                y=${y}
-                width=${iw}
-                height=${ih}
-                fill="url(#${this._id}-sky)"
-              ></rect>
-              ${unknown ? nothing : cover}
+              ${SKY_LAYERS.map(
+                (layer) => svg`
+                  <rect
+                    x=${x}
+                    y=${y}
+                    width=${iw}
+                    height=${ih}
+                    fill="url(#${this._id}-${layer})"
+                  ></rect>
+                `
+              )}
+              ${back ?? nothing} ${unknown ? nothing : cover}
+              ${front ?? nothing}
+              ${withTarget ? this._renderTarget(shape, this._handle[mode]) : nothing}
             </g>
-            ${ghost} ${handle}
+            <rect
+              class="opening-edge"
+              x=${x - 0.5}
+              y=${y - 0.5}
+              width=${iw + 1}
+              height=${ih + 1}
+              rx="12.5"
+            ></rect>
+            ${movingAngle !== undefined ? this._renderMovingHint(movingAngle) : nothing}
+            ${withHandle ? this._renderHandle(shape, this._handle[mode]) : nothing}
           </g>
         </svg>
       </div>
@@ -751,14 +856,26 @@ export class HaStateControlCoverDrawing extends LitElement {
     :host {
       display: flex;
       justify-content: center;
-      --cover-drawing-sky-top: #8fcbf2;
-      --cover-drawing-sky-bottom: #e3f3fd;
-      --cover-drawing-frame: #d6dbe0;
-      --cover-drawing-frame-edge: #c3cad1;
-      --cover-drawing-fabric: #c4cad1;
-      --cover-drawing-fabric-line: #adb4bc;
-      --cover-drawing-fabric-edge: #959ea8;
-      --cover-drawing-glass: rgba(255, 255, 255, 0.35);
+      width: 100%;
+      --cover-drawing-sky-top: #9ed3f6;
+      --cover-drawing-sky-bottom: #3f97e6;
+      --cover-drawing-sky-warm: #ffffff;
+      --cover-drawing-sky-cool: #2b86d9;
+      --cover-drawing-frame: color-mix(
+        in srgb,
+        var(--disabled-color) 20%,
+        var(--ha-dialog-surface-background, var(--card-background-color))
+      );
+      --cover-drawing-frame-edge: #e6e0d8;
+      --cover-drawing-fabric: #e1e1e1;
+      --cover-drawing-fabric-edge: #bdbdbd;
+      --cover-drawing-seam: #bdbdbd;
+      --cover-drawing-lift: #f5f5f5;
+      --cover-drawing-stripe: #ffffff;
+      --cover-drawing-door: #fbf9f6;
+      --cover-drawing-slot: #cfe8fb;
+      --cover-drawing-ghost: #e1e1e1;
+      --cover-drawing-glass: rgba(255, 255, 255, 0.3);
       --cover-drawing-metal: #6f7a84;
       --cover-drawing-grass-top: #a8d49a;
       --cover-drawing-grass-bottom: #7fb071;
@@ -766,13 +883,19 @@ export class HaStateControlCoverDrawing extends LitElement {
       --cover-drawing-handle-shadow: rgba(0, 0, 0, 0.28);
     }
     .control.dark {
-      --cover-drawing-sky-top: #1d2c47;
-      --cover-drawing-sky-bottom: #3b5a83;
-      --cover-drawing-frame: #3a4148;
-      --cover-drawing-frame-edge: #4a525a;
+      --cover-drawing-sky-top: #1a2140;
+      --cover-drawing-sky-bottom: #2c5490;
+      --cover-drawing-sky-warm: #3e59a6;
+      --cover-drawing-sky-cool: #0a1733;
+      --cover-drawing-frame-edge: #3a4149;
       --cover-drawing-fabric: #5a6069;
-      --cover-drawing-fabric-line: #707884;
       --cover-drawing-fabric-edge: #858e99;
+      --cover-drawing-seam: #464b53;
+      --cover-drawing-lift: #6e757e;
+      --cover-drawing-stripe: #676e78;
+      --cover-drawing-door: #6b727c;
+      --cover-drawing-slot: #3b5f96;
+      --cover-drawing-ghost: #9aa3ad;
       --cover-drawing-glass: rgba(255, 255, 255, 0.08);
       --cover-drawing-metal: #9aa5b0;
       --cover-drawing-grass-top: #3f6b45;
@@ -783,10 +906,9 @@ export class HaStateControlCoverDrawing extends LitElement {
     .control {
       position: relative;
       flex: none;
-      height: 45vh;
-      max-height: 320px;
-      min-height: 200px;
-      aspect-ratio: 4 / 5;
+      width: clamp(200px, 45vh, 300px);
+      max-width: 100%;
+      aspect-ratio: 1 / 1;
       border-radius: var(--ha-border-radius-4xl);
       touch-action: none;
       user-select: none;
@@ -800,31 +922,43 @@ export class HaStateControlCoverDrawing extends LitElement {
     .control.interactive:active {
       cursor: grabbing;
     }
-    .control:focus-visible {
+    .control:focus-visible:not(.pointer-focus) {
       box-shadow: 0 0 0 3px var(--primary-color);
     }
     .control.disabled {
       opacity: 0.4;
     }
-    .control.moving::after {
-      content: "";
-      position: absolute;
-      inset: -4px;
-      border-radius: calc(var(--ha-border-radius-4xl) + 4px);
-      border: 2px solid var(--primary-color);
-      opacity: 0;
-      animation: pulse 1.2s ease-in-out infinite;
-      pointer-events: none;
+    .moving-hint {
+      animation: drift 1.4s linear infinite;
     }
-    @keyframes pulse {
+    .chevron {
+      fill: none;
+      stroke: var(--cover-drawing-handle);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.8;
+      filter: drop-shadow(0 1px 1.5px var(--cover-drawing-handle-shadow));
+    }
+    .chevron.back {
+      opacity: 0.45;
+    }
+    @keyframes drift {
+      from {
+        transform: translateY(4px);
+        opacity: 0;
+      }
       50% {
-        opacity: 0.8;
+        opacity: 1;
+      }
+      to {
+        transform: translateY(-4px);
+        opacity: 0;
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .control.moving::after {
+      .moving-hint {
         animation: none;
-        opacity: 0.7;
       }
     }
     svg {
@@ -838,6 +972,12 @@ export class HaStateControlCoverDrawing extends LitElement {
     .sky-bottom {
       stop-color: var(--cover-drawing-sky-bottom);
     }
+    .sky-warm {
+      stop-color: var(--cover-drawing-sky-warm);
+    }
+    .sky-cool {
+      stop-color: var(--cover-drawing-sky-cool);
+    }
     .grass-top {
       stop-color: var(--cover-drawing-grass-top);
     }
@@ -847,38 +987,80 @@ export class HaStateControlCoverDrawing extends LitElement {
     .frame {
       fill: var(--cover-drawing-frame);
     }
+    .opening-edge {
+      fill: none;
+      stroke: var(--cover-drawing-frame);
+      stroke-width: 3;
+    }
     .fabric {
       fill: var(--cover-drawing-fabric);
     }
-    .fabric.door {
-      stroke: var(--cover-drawing-fabric-edge);
+    .stripe {
+      fill: var(--cover-drawing-stripe);
     }
-    .fabric-line,
-    .panel {
-      stroke: var(--cover-drawing-fabric-line);
-      fill: none;
-    }
-    .edge,
-    .knob {
+    .edge {
       fill: var(--cover-drawing-fabric-edge);
     }
-    .slat {
-      fill: var(--cover-drawing-fabric);
+    .seam,
+    .cord {
+      fill: var(--cover-drawing-seam);
+    }
+    .seam.faint {
+      opacity: 0.5;
+    }
+    .cord {
+      opacity: 0.85;
+    }
+    .lift {
+      fill: var(--cover-drawing-lift);
+      opacity: 0.75;
+    }
+    .slat-line {
       stroke: var(--cover-drawing-fabric-edge);
-      stroke-width: 0.5;
+    }
+    .slot {
+      fill: var(--cover-drawing-slot);
+    }
+    .panel-shadow {
+      fill: #000;
+    }
+    .floor {
+      fill: var(--cover-drawing-seam);
+      opacity: 0.55;
+    }
+    .door {
+      fill: var(--cover-drawing-door);
+    }
+    .door-frame {
+      fill: none;
+      stroke: var(--cover-drawing-seam);
+      stroke-width: 5;
+      stroke-linejoin: round;
+    }
+    .ghost {
+      fill: var(--cover-drawing-ghost);
+    }
+    .target-edge {
+      fill: none;
+      stroke: var(--cover-drawing-handle);
+      stroke-width: 2;
+      stroke-linecap: round;
+      filter: drop-shadow(0 1px 1.5px var(--cover-drawing-handle-shadow));
     }
     .metal {
       fill: var(--cover-drawing-metal);
     }
+    .window-frame {
+      fill: none;
+      stroke: var(--cover-drawing-frame-edge);
+      stroke-width: 8;
+    }
     .glass {
       fill: var(--cover-drawing-glass);
-      stroke-width: 6;
-    }
-    .frame-sash {
-      stroke: var(--cover-drawing-frame-edge);
     }
     .sash {
       stroke: var(--cover-drawing-fabric-edge);
+      stroke-width: 5;
     }
     .mullion {
       stroke: var(--cover-drawing-fabric-edge);
@@ -902,11 +1084,9 @@ export class HaStateControlCoverDrawing extends LitElement {
       filter: drop-shadow(0 1px 2px var(--cover-drawing-handle-shadow));
     }
     .target {
+      fill: none;
       stroke: var(--primary-color);
       stroke-width: 2.5;
-      stroke-dasharray: 6 5;
-    }
-    circle.target {
       stroke-dasharray: 4 3;
     }
   `;

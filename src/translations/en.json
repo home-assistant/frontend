@@ -2012,9 +2012,10 @@
           "requested_open": "Requested open",
           "requested_closed": "Requested closed",
           "currently": "Currently {value}",
+          "currently_unknown": "Currently unknown",
           "requested_value_text": "{value}, currently {current}",
-          "release_to_open": "Release to open",
-          "release_to_close": "Release to close",
+          "opens_on_release": "Opens on release",
+          "closes_on_release": "Closes on release",
           "favorite_position": {
             "set": "Set position to {value}",
             "edit": "Set position to {value}",

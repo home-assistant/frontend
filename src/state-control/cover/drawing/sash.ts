@@ -1,33 +1,37 @@
-import { nothing, svg } from "lit";
+import { svg } from "lit";
 import type { CoverShape } from "./shared";
-import { VB, pill, targetLine } from "./shared";
+import { VB, ghost, horizontalEdge } from "./shared";
 
 const HALF = VB.ih / 2;
 const TRAVEL = HALF * 0.92;
+const SASH_HEIGHT = HALF - 4;
 
-const sashBottom = (value: number) => VB.y + VB.ih - (TRAVEL * value) / 100;
+const lowerTop = (value: number) => VB.y + HALF - (TRAVEL * value) / 100;
+
+const gripY = (value: number) => lowerTop(value) + SASH_HEIGHT + 1;
 
 export const sashShape: CoverShape = {
   horizontal: false,
-  render: ({ value, handle, target }) => {
-    const { x, y, iw } = VB;
-    const top = (y + HALF - (TRAVEL * value) / 100).toFixed(1);
-    const bottom = (y + 2 * HALF - (TRAVEL * value) / 100).toFixed(1);
+  openingAngle: 0,
+  render: ({ value }) => {
+    const { x, y, iw, ih } = VB;
+    const top = lowerTop(value);
     return {
-      cover: svg`
-        <rect class="glass frame-sash" x=${x} y=${y} width=${iw} height=${HALF + 3}></rect>
-        <rect class="glass sash" x=${x} y=${top} width=${iw} height=${HALF}></rect>
-        <line class="mullion" x1=${x + iw / 2} y1=${top} x2=${x + iw / 2} y2=${bottom}></line>
+      back: svg`
+        <rect class="window-frame" x=${x} y=${y} width=${iw} height=${ih}></rect>
+        <rect class="glass sash" x=${x + 4} y=${y + 4} width=${iw - 8} height=${HALF}></rect>
       `,
-      ghost:
-        target !== undefined
-          ? targetLine(x, sashBottom(target), x + iw, sashBottom(target))
-          : nothing,
-      handle:
-        handle !== undefined
-          ? pill(x + iw / 2, sashBottom(handle) - 3, false)
-          : nothing,
+      cover: svg`
+        <rect class="glass sash" x=${x + 4} y=${top.toFixed(1)} width=${iw - 8} height=${SASH_HEIGHT}></rect>
+        <line class="mullion" x1=${x + iw / 2} y1=${top.toFixed(1)} x2=${x + iw / 2} y2=${(top + SASH_HEIGHT).toFixed(1)}></line>
+      `,
     };
   },
+  grip: (value) => [VB.x + VB.iw / 2, gripY(value)],
+  edge: (value) => horizontalEdge(gripY(value), 4),
+  silhouette: (value) =>
+    ghost(
+      svg`<rect x=${VB.x + 4} y=${lowerTop(value).toFixed(1)} width=${VB.iw - 8} height=${SASH_HEIGHT}></rect>`
+    ),
   valueAt: (_x, y) => ((VB.y + VB.ih - y) / TRAVEL) * 100,
 };
