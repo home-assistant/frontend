@@ -13,7 +13,7 @@ import { toggleEntity } from "./entity/toggle-entity";
 declare global {
   interface HASSDomEvents {
     "ll-custom": ActionConfig;
-    "hass-navigate": { path: string };
+    "hass-navigate": { path: string; replace?: boolean };
   }
 }
 
@@ -126,7 +126,10 @@ export const handleAction = async (
         const navigateEvent = fireEvent(
           node,
           "hass-navigate",
-          { path: actionConfig.navigation_path },
+          {
+            path: actionConfig.navigation_path,
+            replace: actionConfig.navigation_replace,
+          },
           { cancelable: true }
         );
 

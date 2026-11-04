@@ -90,11 +90,19 @@ export abstract class EmbedElement<
       }
     });
     // The page's address belongs to the page, so only a hash on it, such as
-    // an anchor, navigates there
+    // an anchor, navigates there. The browser does that itself, as the app's
+    // navigate() doesn't scroll to the anchor.
     this.addEventListener("hass-navigate", (ev) => {
-      if (!ev.detail.path.startsWith("#")) {
-        ev.preventDefault();
-        this.navigateTo(ev.detail.path);
+      const { path, replace } = ev.detail;
+
+      ev.preventDefault();
+
+      if (!path.startsWith("#")) {
+        this.navigateTo(path, replace);
+      } else if (replace) {
+        window.location.replace(path);
+      } else {
+        window.location.hash = path;
       }
     });
   }
@@ -124,9 +132,10 @@ export abstract class EmbedElement<
 
   /**
    * A navigate action of the content, other than to a hash on the page. It
-   * leaves the page where it is, like actions that open a dialog.
+   * leaves the page where it is, like actions that open a dialog. `replace`
+   * is the action's `navigation_replace`.
    */
-  protected navigateTo(_path: string) {
+  protected navigateTo(_path: string, _replace?: boolean) {
     // Nothing to navigate to, outside a dashboard
   }
 

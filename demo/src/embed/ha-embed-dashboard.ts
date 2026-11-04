@@ -4,7 +4,10 @@ import { customElement } from "lit/decorators";
 import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../src/common/dom/fire_event";
-import type { LovelaceRawConfig } from "../../../src/data/lovelace/config/types";
+import type {
+  LovelaceConfig,
+  LovelaceRawConfig,
+} from "../../../src/data/lovelace/config/types";
 import "../../../src/panels/lovelace/hui-root";
 import type { HomeAssistant } from "../../../src/types";
 import { EmbedLovelaceElement, isDashboardConfig } from "./lovelace";
@@ -21,11 +24,15 @@ import type { ScriptObject } from "./script-data";
 export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
   private _scroller = createRef<HTMLDivElement>();
 
-  // The route of hui-root, here without a page URL around it
-  private _route = memoizeOne((view = "") => ({
-    prefix: "",
-    path: `/${view}`,
-  }));
+  // The route of hui-root, here without a page URL around it. A new
+  // configuration gives a new route, as hui-root only looks up the view of
+  // the path again when its route changes, and the views may have moved.
+  private _route = memoizeOne(
+    (view: string | undefined, _config: LovelaceConfig) => ({
+      prefix: "",
+      path: `/${view ?? ""}`,
+    })
+  );
 
   protected get rawConfig() {
     return this.config;
@@ -42,7 +49,9 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
 
   private _history: (string | undefined)[] = [];
 
-  private _goingBack = false;
+  // Going back, or a navigate action with `navigation_replace`, which
+  // replaces the view shown rather than adding to the views before it
+  private _skipHistory = false;
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
@@ -52,15 +61,26 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
     }
 
     if (this._shownView !== undefined) {
-      if (!this._goingBack) {
+      if (!this._skipHistory) {
         this._history.push(this._shownView);
       }
 
       this._scroller.value?.scrollTo({ top: 0 });
     }
 
-    this._goingBack = false;
+    this._skipHistory = false;
     this._shownView = this.view;
+  }
+
+  protected navigateTo(path: string, replace?: boolean) {
+    const view = this.viewOfPath(path);
+
+    if (view === undefined || view === this.view) {
+      return;
+    }
+
+    this._skipHistory = Boolean(replace);
+    this.view = view;
   }
 
   // The embedded attribute is in the template, so that hui-root has it when
@@ -76,7 +96,7 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
         no-edit
         .hass=${hass}
         .lovelace=${this._lovelace}
-        .route=${this._route(this.view)}
+        .route=${this._route(this.view, this._lovelace.config)}
         .narrow=${this._narrow.value ?? false}
         @view-navigate=${this._viewNavigate}
       ></hui-root>
@@ -99,7 +119,7 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
     const target = view ?? this._history.pop();
 
     if (target !== this.view) {
-      this._goingBack = true;
+      this._skipHistory = true;
       this.view = target;
     }
   }

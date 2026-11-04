@@ -870,7 +870,9 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         }
       }
 
-      if (huiView) {
+      // A view the new configuration no longer has keeps its old one until
+      // another view is selected, instead of failing to find its config
+      if (huiView && !(huiView.index >= this.config.views.length)) {
         huiView.lovelace = this.lovelace!;
       }
     }
