@@ -315,20 +315,21 @@ export class LovelacePanel extends LitElement {
         (resources) => loadLovelaceResources(resources, this.hass!)
       );
     }
-    if (this.urlPath !== null || !confProm) {
-      // Refreshing a YAML config can trigger an update event. We will ignore
-      // all update events while fetching the config and for 2 seconds after the config is back.
-      // We ignore because we already have the latest config.
-      if (confMode === "yaml") {
-        this._ignoreNextUpdateEvent = true;
-      }
-
-      confProm = fetchConfig(
-        this.hass!.connection,
-        this.urlPath,
-        forceDiskRefresh
-      );
+    // Refreshing a YAML config can trigger an update event. We will ignore
+    // all update events while fetching the config and for 2 seconds after the config is back.
+    // We ignore because we already have the latest config.
+    if (confMode === "yaml") {
+      this._ignoreNextUpdateEvent = true;
     }
+
+    const fetchDashboardConfig = () =>
+      fetchConfig(this.hass!.connection, this.urlPath, forceDiskRefresh);
+    // The preload is the config of the "lovelace" dashboard. Fetch it again if
+    // it failed, for example because the connection dropped before it came back.
+    confProm =
+      confProm && this.urlPath === "lovelace"
+        ? confProm.catch(fetchDashboardConfig)
+        : fetchDashboardConfig();
 
     try {
       rawConf = await confProm;
