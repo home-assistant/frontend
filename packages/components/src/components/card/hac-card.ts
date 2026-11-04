@@ -6,12 +6,19 @@ import {
 } from "../../utils/element/slot";
 
 /**
- * Container that groups related content.
+ * @element hac-card
+ *
+ * @summary
+ * Card that groups related content, with an optional header and footer.
  *
  * @slot header - Header of the card. Its spacing replaces the top padding of
  * the content.
  * @slot - Content of the card. Its padding is omitted when empty.
- * @slot footer - Footer of the card, e.g. actions. Hidden when empty.
+ * @slot footer - Footer of the card. Hidden when empty.
+ *
+ * @csspart header - Wrapper of the header slot.
+ * @csspart content - Wrapper of the default slot.
+ * @csspart footer - Wrapper of the footer slot.
  *
  * @cssprop --hac-card-background - Background of the card.
  * @cssprop --hac-card-color - Text color of the card.
@@ -23,7 +30,10 @@ import {
  * @cssprop --hac-card-footer-padding - Padding of the footer.
  */
 export class HacCard extends LitElement {
-  /** Visual style of the card. */
+  /**
+   * Visual style of the card. `outlined` draws a border without a shadow.
+   * `raised` hides the border and lifts the card with a shadow instead.
+   */
   @property({ reflect: true }) public appearance: "outlined" | "raised" =
     "outlined";
 
@@ -35,14 +45,17 @@ export class HacCard extends LitElement {
 
   protected render() {
     return html`
-      <slot name="header" @slotchange=${this._headerChanged}></slot>
+      <div class="header" part="header" ?hidden=${!this._hasHeader}>
+        <slot name="header" @slotchange=${this._headerChanged}></slot>
+      </div>
       <div
         class="content ${this._hasHeader ? "below-header" : ""}"
+        part="content"
         ?hidden=${!this._hasContent}
       >
         <slot @slotchange=${this._contentChanged}></slot>
       </div>
-      <div class="footer" ?hidden=${!this._hasFooter}>
+      <div class="footer" part="footer" ?hidden=${!this._hasFooter}>
         <slot name="footer" @slotchange=${this._footerChanged}></slot>
       </div>
     `;
@@ -86,9 +99,11 @@ export class HacCard extends LitElement {
       border-color: transparent;
       box-shadow: var(
         --hac-card-box-shadow,
-        0 2px 1px -1px rgba(0, 0, 0, 0.2),
-        0 1px 1px 0 rgba(0, 0, 0, 0.14),
-        0 1px 3px 0 rgba(0, 0, 0, 0.12)
+        var(
+          --ha-box-shadow-s,
+          0 1px 2px 0 rgba(0, 0, 0, 0.08),
+          0 1px 3px 0 rgba(0, 0, 0, 0.12)
+        )
       );
     }
 
@@ -104,7 +119,6 @@ export class HacCard extends LitElement {
     .footer {
       display: flex;
       flex-wrap: wrap;
-      justify-content: flex-end;
       align-items: center;
       gap: var(--ha-space-2, 8px);
       padding: var(--hac-card-footer-padding, var(--ha-space-2, 8px));
@@ -115,6 +129,7 @@ export class HacCard extends LitElement {
         );
     }
 
+    .header[hidden],
     .content[hidden],
     .footer[hidden] {
       display: none;

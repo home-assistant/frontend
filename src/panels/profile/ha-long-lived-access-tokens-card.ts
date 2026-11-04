@@ -147,6 +147,9 @@ class HaLongLivedTokens extends LitElement {
     return [
       haStyle,
       css`
+        hac-card::part(footer) {
+          justify-content: flex-end;
+        }
         ha-settings-row {
           padding: 0;
         }

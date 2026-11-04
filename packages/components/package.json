@@ -13,6 +13,7 @@
     "./dist/components/**/global.js",
     "./src/components/**/global.ts"
   ],
+  "customElements": "dist/custom-elements.json",
   "exports": {
     "./scoped": {
       "ha-source": "./src/scoped.ts",
@@ -43,14 +44,15 @@
     "access": "public"
   },
   "scripts": {
-    "build": "rslib build",
+    "build": "rslib build && cem analyze",
     "dev": "rslib build --watch",
-    "prepublishOnly": "rslib build"
+    "prepublishOnly": "pnpm run build"
   },
   "peerDependencies": {
     "lit": "^3.3.0"
   },
   "devDependencies": {
+    "@custom-elements-manifest/analyzer": "0.11.0",
     "@rslib/core": "1.0.3",
     "lit": "3.3.3",
     "typescript": "6.0.3"

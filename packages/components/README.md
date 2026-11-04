@@ -140,11 +140,14 @@ side effects, which `sideEffects` relies on for tree shaking.
 ## Development
 
 ```bash
-pnpm --filter @home-assistant/components build   # ESM + type declarations to dist/
+pnpm --filter @home-assistant/components build   # ESM, type declarations and custom-elements.json to dist/
 pnpm --filter @home-assistant/components dev     # rebuild on change
 ```
 
 Inside this repository the app uses the sources directly through
 the `ha-source` export condition, so no build is needed during development.
 The package is built with [Rslib](https://rslib.rs) in bundleless mode: every
-source file becomes its own ES module.
+source file becomes its own ES module. The build then generates a
+[custom elements manifest](https://custom-elements-manifest.open-wc.org) from
+the JSDoc of each element, so document new slots, parts, CSS properties and
+events there.

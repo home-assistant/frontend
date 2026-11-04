@@ -2,7 +2,6 @@ import { mdiCellphone, mdiEarth, mdiLock, mdiMonitor, mdiTune } from "@mdi/js";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import "@home-assistant/components/card";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
@@ -72,9 +71,6 @@ class HaProfileDashboard extends LitElement {
         .header=${this.hass.localize("panel.profile")}
       >
         <div class="container">
-          <hac-card>
-            ${this.hass.localize("ui.panel.profile.greeting_title")}
-          </hac-card>
           <ha-card>
             <div class="card-content">
               <div class="heading">
@@ -162,8 +158,7 @@ class HaProfileDashboard extends LitElement {
             calc(var(--ha-space-4) + var(--safe-area-inset-bottom));
         }
 
-        ha-card,
-        hac-card {
+        ha-card {
           margin: 0 auto var(--ha-space-4);
           max-width: var(--ha-content-width-narrow);
         }
