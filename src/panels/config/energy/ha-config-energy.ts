@@ -373,7 +373,11 @@ class HaConfigEnergy extends LitElement {
       this._error = err.message;
     }
     this._info = await energyInfoPromise;
-    await this._fetchMetaData();
+    try {
+      await this._fetchMetaData();
+    } catch (err: any) {
+      this._error = err.message;
+    }
   }
 
   private async _prefsChanged(ev: CustomEvent) {
