@@ -870,6 +870,14 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                         ></ha-svg-icon>
                         ${this.hass.localize("ui.common.download")}
                       </ha-button>
+                      <ha-button
+                        slot="action"
+                        size="s"
+                        appearance="plain"
+                        @click=${this._dismissDebugLogReady}
+                      >
+                        ${this.hass.localize("ui.common.dismiss_alert")}
+                      </ha-button>
                     </ha-alert>
                   </div>`
                 : nothing
