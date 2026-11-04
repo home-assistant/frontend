@@ -1105,7 +1105,7 @@ export class HaConfigEntities extends LitElement {
         ></ha-filter-devices>
         <ha-filter-device-classes
           .label=${this.hass.localize(
-            "ui.components.device-class-picker.device_class"
+            "ui.panel.config.entities.picker.headers.device_class"
           )}
           .value=${this._filters["ha-filter-device-classes"]}
           @data-table-filter-changed=${this._filterChanged}
