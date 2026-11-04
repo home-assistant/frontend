@@ -48,11 +48,6 @@ vi.mock("../../../src/components/ha-form/ha-form", () => {
   return {};
 });
 
-vi.mock("../../../src/components/ha-list-item", () => {
-  customElements.define("ha-list-item", class extends HTMLElement {});
-  return {};
-});
-
 const formStep: DataEntryFlowStepForm = {
   type: "form",
   flow_id: "test-flow",
