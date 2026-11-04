@@ -10,6 +10,7 @@ import {
   conditionDescriptions,
   triggerDescriptions,
 } from "./automation_platforms_data";
+import { explainTarget } from "./explain_target";
 
 type Descriptions = TriggerDescriptions | ConditionDescriptions;
 
@@ -249,6 +250,20 @@ export const mockAutomationPlatforms = (hass: MockHomeAssistant) => {
         referenced_entities: entities,
       };
     }
+  );
+  hass.mockWS(
+    "explain_target",
+    (
+      msg: { target: HassServiceTarget; primary_entities_only?: boolean },
+      currentHass: MockHomeAssistant
+    ) =>
+      explainTarget(
+        msg.target,
+        (target, primaryEntitiesOnly) =>
+          expandTarget(currentHass, target, primaryEntitiesOnly),
+        Object.keys(currentHass.states),
+        msg.primary_entities_only ?? true
+      )
   );
   hass.mockWS(
     "get_services_for_target",
