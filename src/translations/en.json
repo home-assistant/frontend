@@ -13233,7 +13233,8 @@
         "menu": {
           "custom_repositories": "Custom repositories",
           "dismiss": "Dismiss new repositories",
-          "documentation": "Documentation"
+          "documentation": "Documentation",
+          "download_source": "Download source"
         },
         "dialog": {
           "error": {
