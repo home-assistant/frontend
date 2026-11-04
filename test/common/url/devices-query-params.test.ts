@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   devicesFilterQueryParamConfig,
   devicesFilterQueryParams,
+  devicesFilterQueryString,
   devicesLinkFromUrl,
 } from "../../../src/common/url/devices-query-params";
 import { createQueryString } from "../../../src/common/url/query-params";
@@ -47,6 +48,30 @@ describe("devices query params", () => {
         )
       )
     ).toEqual({ search: "", filters });
+  });
+
+  // Without it in the URL, reading the URL back drops the "No area" choice
+  it("round trips the no area choice on its own", () => {
+    const query = createQueryString(
+      devicesFilterQueryParams({
+        "ha-filter-floor-areas": {
+          value: { no_area: true },
+          items: undefined,
+        },
+      }),
+      devicesFilterQueryParamConfig
+    );
+
+    expect(query).toBe("no_area=1");
+    // The page stores a filter as the user's choice when this string changes
+    expect(
+      devicesFilterQueryString({
+        "ha-filter-floor-areas": { value: { no_area: true }, items: undefined },
+      })
+    ).toBe("no_area=1");
+    expect(
+      devicesLinkFromUrl(query)?.filters["ha-filter-floor-areas"].value
+    ).toEqual({ floors: [], areas: [], no_area: true });
   });
 
   it("writes the values, not the items the filters found", () => {
