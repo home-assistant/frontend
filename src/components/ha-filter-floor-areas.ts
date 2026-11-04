@@ -189,7 +189,7 @@ export class HaFilterFloorAreas extends LitElement {
                   )}
                   ${
                     groupOtherAreas
-                      ? html`<ha-list-item-base>
+                      ? html`<ha-list-item-base role="presentation">
                           <ha-svg-icon
                             slot="start"
                             .path=${mdiTextureBox}
