@@ -1013,7 +1013,11 @@
         "no_match": "No users found for {term}",
         "user": "User",
         "add_user": "Add user",
-        "unknown": "Unknown user selected"
+        "unknown": "Unknown user selected",
+        "load_failed": "Failed to load users"
+      },
+      "generic-picker": {
+        "loading": "Loading {label}"
       },
       "blueprint-picker": {
         "select_blueprint": "Select a blueprint"
@@ -1059,6 +1063,7 @@
         "no_categories": "No categories available",
         "no_match": "No categories found for {term}",
         "unknown": "Unknown category selected",
+        "load_failed": "Failed to load categories",
         "add_dialog": {
           "title": "Add new category",
           "text": "Enter the name of the new category.",
@@ -1115,7 +1120,8 @@
         "no_state": "Entity without state",
         "missing_entity": "Why is my entity not listed?",
         "learn_more": "Learn more about statistics",
-        "unknown": "Unknown statistic selected"
+        "unknown": "Unknown statistic selected",
+        "load_failed": "Failed to load statistics"
       },
       "app-picker": {
         "app": "App",
@@ -1666,7 +1672,8 @@
         "search_or_custom": "Search | Add custom item",
         "add_custom_item": "Add custom item",
         "result_count": "{count} {count, plural,\n one {result}\n other {results}\n} for {term}",
-        "no_results": "No results for {term}"
+        "no_results": "No results for {term}",
+        "filter_by_section": "Filter: {section}"
       },
       "suggest_with_ai": {
         "label": "Suggest",
@@ -7920,8 +7927,10 @@
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
-            "debug_logging_enabled_description": "Extra detail from this integration is being written to the logs. Reproduce the problem, then disable it. Home Assistant will download the log for your issue report if log file downloads are available. Leaving it on can slow Home Assistant down and fill up the logs.",
+            "debug_logging_enabled_description": "Extra detail from this integration is being written to the logs. Reproduce the problem, then disable it to download the log for your issue report. Leaving it on can slow Home Assistant down and fill up the logs.",
             "show_logs": "Show logs",
+            "debug_log_ready": "Debug log ready",
+            "debug_log_ready_description": "Debug logging is disabled. Download the log to attach it to your issue report.",
             "live_log": {
               "title": "Live log",
               "waiting": "Waiting for log messages from {integration}…",
@@ -10106,6 +10115,7 @@
               "show_more": "Show more",
               "no_activity": "No recent activity",
               "activity_unavailable": "Activity couldn't be loaded",
+              "directions": "Directions",
               "entered": "Entered",
               "left": "Left",
               "people_in_zone": "{count, plural, =0 {No one here} one {{count} person} other {{count} people}}"
@@ -10982,7 +10992,6 @@
                 "label": "Label"
               },
               "severity": {
-                "define": "Define severity",
                 "green": "Green",
                 "red": "Red",
                 "yellow": "Yellow"
@@ -11368,9 +11377,10 @@
                 "dark": "Dark"
               },
               "map_style": "Map style",
-              "map_style_helper": "Each style has a light and a dark version. The theme mode picks which one is shown.",
+              "map_style_helper": "Most styles have a light and a dark version. The theme mode picks which one is shown.",
               "map_styles": {
                 "default": "Default",
+                "neon": "Neon",
                 "colorful": "Colorful",
                 "natural": "Natural",
                 "muted": "Muted",
@@ -11767,7 +11777,16 @@
                 "label": "Fan direction"
               },
               "fan-speed": {
-                "label": "Fan speed"
+                "label": "Fan speed",
+                "style": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style%]",
+                "style_list": {
+                  "buttons": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::buttons%]",
+                  "buttons_description": "Pick a speed from a row of buttons",
+                  "slider": "[%key:ui::panel::lovelace::editor::features::types::numeric-input::style_list::slider%]",
+                  "slider_description": "Drag to set the speed"
+                },
+                "style_helper": "Buttons switch to a slider when the card is too narrow to fit them.",
+                "style_unavailable": "This fan has too many speeds to show them as buttons."
               },
               "alarm-modes": {
                 "label": "Alarm modes",
@@ -12070,7 +12089,8 @@
                 "label": "Bar gauge",
                 "min": "Minimum value",
                 "max": "Maximum value",
-                "show_severity": "[%key:ui::panel::lovelace::editor::card::gauge::severity::define%]",
+                "color_mode": "[%key:ui::panel::lovelace::editor::card::gauge::color_mode%]",
+                "segments": "[%key:ui::panel::lovelace::editor::card::gauge::segments%]",
                 "green": "[%key:ui::panel::lovelace::editor::card::gauge::severity::green%]",
                 "yellow": "[%key:ui::panel::lovelace::editor::card::gauge::severity::yellow%]",
                 "red": "[%key:ui::panel::lovelace::editor::card::gauge::severity::red%]"
@@ -12536,6 +12556,7 @@
           "description": "Create long-lived access tokens to allow your scripts to interact with your Home Assistant instance. Each token will be valid for 10 years from creation. The following long-lived access tokens are currently active.",
           "learn_auth_requests": "Learn how to make authenticated requests.",
           "created": "Created {date}",
+          "last_used": "[%key:ui::panel::profile::refresh_tokens::last_used%]",
           "confirm_delete_title": "Delete long-lived access token?",
           "confirm_delete_text": "Are you sure you want to delete the long-lived access token for {name}?",
           "delete_failed": "Failed to delete the access token.",
@@ -12786,6 +12807,7 @@
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "address_label": "Search address",
+          "search_results": "Search results",
           "button_detect": "Detect",
           "finish": "Next"
         },
@@ -13131,7 +13153,6 @@
           "install_intro": "This installs {name} version {version} in Home Assistant.",
           "update_intro": "This updates {name} from version {installed} to {version}.",
           "reinstall_intro": "This installs version {version} of {name} again.",
-          "fetching_releases": "Loading versions…",
           "no_releases": "There are no other versions to choose from.",
           "release": "Version",
           "release_warning": "To go back to an earlier version, restoring a backup is the safer way.",
@@ -13176,11 +13197,12 @@
             "last_change": "Last change on GitHub {time}",
             "downloads": "{number, plural,\n  one {Downloaded {count} time}\n  other {Downloaded {count} times}\n}",
             "stars": "{number, plural,\n  one {{count} star on GitHub}\n  other {{count} stars on GitHub}\n}",
-            "open_issues": "{number, plural,\n  one {{count} open issue on GitHub}\n  other {{count} open issues on GitHub}\n}",
-            "no_open_issues": "No open issues on GitHub"
+            "open_issues_and_prs": "{number, plural,\n  one {{count} open issue or pull request on GitHub}\n  other {{count} open issues and pull requests on GitHub}\n}",
+            "no_open_issues_and_prs": "No open issues or pull requests on GitHub"
           },
           "details": {
             "requires": "Requires Home Assistant {version} or newer",
+            "pre_releases_included": "Pre-releases included",
             "source_code": "View source code",
             "issue_tracker": "Issue tracker"
           },
@@ -13206,6 +13228,8 @@
         },
         "repository_menu": {
           "dismiss_new": "Dismiss new",
+          "exclude_pre_releases": "Exclude pre-releases",
+          "include_pre_releases": "Include pre-releases",
           "issue_tracker": "Issue tracker",
           "install_other_version": "Install another version",
           "reinstall": "Reinstall",
@@ -13226,7 +13250,8 @@
         "menu": {
           "custom_repositories": "Custom repositories",
           "dismiss": "Dismiss new repositories",
-          "documentation": "Documentation"
+          "documentation": "Documentation",
+          "download_source": "Download source"
         },
         "dialog": {
           "error": {
@@ -13240,6 +13265,11 @@
           "reload": {
             "description": "You need to reload your browser for the updated resources to be used.",
             "confirm": "Do you want to do that now?"
+          },
+          "include_pre_releases": {
+            "title": "Include pre-releases of {name}?",
+            "text": "Updates will include versions marked as pre-release on GitHub, such as betas and release candidates. They are for testers and can contain unstable changes. If you exclude them again later, an installed pre-release stays until a newer stable version is out.",
+            "confirm": "Include"
           },
           "uninstall": {
             "title": "Uninstall {name}?",

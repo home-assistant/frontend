@@ -3,6 +3,7 @@ import {
   mdiBugPlay,
   mdiBugStop,
   mdiDotsVertical,
+  mdiDownload,
   mdiFileCodeOutline,
   mdiHelpCircleOutline,
   mdiOpenInNew,
@@ -172,6 +173,10 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
 
   @state() private _logInfo?: IntegrationLogInfo;
 
+  @state() private _debugLogReady = false;
+
+  private _debugLogRequest = 0;
+
   @state() private _searchParms = new URLSearchParams(
     __DEMO__ ? window.location.search : window.location.hash.substring(1)
   );
@@ -228,6 +233,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     window.removeEventListener("hashchange", this._handleHashChange);
+    this._resetDebugLogReady();
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {
@@ -238,6 +244,12 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       subscribeLogInfo(this.hass.connection, (log_infos) => {
         for (const log_info of log_infos) {
           if (log_info.domain === this.domain) {
+            if (
+              log_info.level === LogSeverity.DEBUG &&
+              this._logInfo?.level !== LogSeverity.DEBUG
+            ) {
+              this._resetDebugLogReady();
+            }
             this._logInfo = log_info;
           }
         }
@@ -251,6 +263,7 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       this.hass.loadBackendTranslation("config", [this.domain]);
       this.hass.loadBackendTranslation("config_subentries", [this.domain]);
       this._extraConfigEntries = undefined;
+      this._resetDebugLogReady();
       this._filter = "";
       this._subEntries = {};
       this._fetchManifest();
@@ -840,7 +853,34 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
                     </div>
                   </ha-alert>
                 </div>`
-              : nothing
+              : this._debugLogReady
+                ? html`<div class="section">
+                    <ha-alert
+                      alert-type="info"
+                      dismissable
+                      .title=${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.debug_log_ready"
+                      )}
+                      @alert-dismissed-clicked=${this._resetDebugLogReady}
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.debug_log_ready_description"
+                      )}
+                      <br /><br />
+                      <ha-button
+                        size="s"
+                        appearance="filled"
+                        @click=${this._downloadDebugLog}
+                      >
+                        <ha-svg-icon
+                          slot="start"
+                          .path=${mdiDownload}
+                        ></ha-svg-icon>
+                        ${this.hass.localize("ui.common.download")}
+                      </ha-button>
+                    </ha-alert>
+                  </div>`
+                : nothing
           }
           ${
             filteredDiscoveryData.length
@@ -1381,16 +1421,19 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
   }
 
   private async _handleDisableDebugLogging(ev: Event) {
-    // Stop propagation since otherwise we end up here twice while we await the log level change
-    // and trigger two identical debug log downloads.
+    // Stop propagation since otherwise we end up here twice while we await the log level change.
     ev.stopPropagation();
     const integration = this.domain;
+    const request = this._debugLogRequest;
     await setIntegrationLogLevel(
       this.hass,
       integration,
       LogSeverity[LogSeverity.NOTSET],
       "once"
     );
+    if (request !== this._debugLogRequest) {
+      return;
+    }
     const logFileDownloadUnavailableReason =
       getCoreLogFileDownloadUnavailableReason(this.hass);
     if (logFileDownloadUnavailableReason) {
@@ -1404,7 +1447,17 @@ class HaConfigIntegrationPage extends SubscribeMixin(LitElement) {
       });
       return;
     }
+    this._debugLogReady = true;
+  }
 
+  // Also invalidates pending disable requests so they can't restore the alert.
+  private _resetDebugLogReady() {
+    this._debugLogReady = false;
+    this._debugLogRequest++;
+  }
+
+  private async _downloadDebugLog() {
+    const integration = this.domain;
     const timeString = new Date().toISOString().replace(/:/g, "-");
     const logFileName = `home-assistant_${integration}_${timeString}.log`;
     const signedUrl = await getSignedPath(
