@@ -13,6 +13,7 @@ import {
   enableWrite,
   saveTokens,
 } from "../../../../src/common/auth/token_storage";
+import type { HASSDomCurrentTargetEvent } from "../../../../src/common/dom/fire_event";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-icon";
@@ -208,8 +209,10 @@ class HcCast extends LitElement {
 
   // Listens to clicks instead of `ha-list-item-selected`, which does not fire
   // for the selected view, so the current view can still be cast again.
-  private async _handlePickView(ev: MouseEvent) {
-    const index = Number((ev.currentTarget as HaListItemOption).dataset.index);
+  private async _handlePickView(
+    ev: HASSDomCurrentTargetEvent<HaListItemOption>
+  ) {
+    const index = Number(ev.currentTarget.dataset.index);
     const path = this.lovelaceViews?.[index]?.path ?? index;
     await ensureConnectedCastSession(this.castManager!, this.auth!);
     castSendShowLovelaceView(this.castManager, this.auth.data.hassUrl, path);
