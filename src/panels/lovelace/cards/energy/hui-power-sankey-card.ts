@@ -30,6 +30,7 @@ import {
   formatPowerShort,
   getBatteryFlowPowerIds,
   getBatteryName,
+  getBatteryPrimaryStat,
   getPowerFromState,
   validateEnergyCollectionKey,
 } from "../../../../data/energy";
@@ -134,9 +135,17 @@ class HuiPowerSankeyCard
             if (source.type === "gas" || source.type === "water") {
               return [];
             }
-            const rates =
-              source.type === "battery" && getBatteryFlowPowerIds(source);
-            return rates ? Object.values(rates) : [source.stat_rate];
+            if (source.type === "battery") {
+              const rates = getBatteryFlowPowerIds(source);
+              if (rates) {
+                return [
+                  ...Object.values(rates),
+                  // Names a battery that has no name of its own
+                  source.name ? undefined : getBatteryPrimaryStat(source),
+                ];
+              }
+            }
+            return [source.stat_rate];
           }),
           ...prefs.device_consumption.map((device) => device.stat_rate),
         ].forEach((entityId) => {

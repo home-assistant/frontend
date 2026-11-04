@@ -185,8 +185,8 @@ export interface HomeSourceTypeEnergyPreference {
 
 export interface BatteryTotalsSourceTypeEnergyPreference {
   type: "battery";
-  stat_energy_from: string; // battery → home
-  stat_energy_to: string; // home → battery
+  stat_energy_from: string; // out of the battery
+  stat_energy_to: string; // into the battery
   stat_rate?: string; // always available if power_config is set
   power_config?: PowerConfig;
   stat_soc?: string;
