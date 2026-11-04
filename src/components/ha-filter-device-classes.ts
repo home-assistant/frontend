@@ -5,6 +5,7 @@ import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { computeDomain } from "../common/entity/compute_domain";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { stringCompare } from "../common/string/compare";
 import { internationalizationContext, statesContext } from "../data/context";
 import { computeDeviceClassName } from "../data/entity/device_class";
 import { HaFilterStates } from "./ha-filter-states";
@@ -46,7 +47,7 @@ export class HaFilterDeviceClasses extends HaFilterStates {
 
       return [...classes]
         .map(([value, label]) => ({ value, label }))
-        .sort((a, b) => a.label.localeCompare(b.label, language));
+        .sort((a, b) => stringCompare(a.label, b.label, language));
     }
   );
 

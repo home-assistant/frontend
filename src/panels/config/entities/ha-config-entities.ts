@@ -305,9 +305,13 @@ export class HaConfigEntities extends LitElement {
     return this.hass.states[entry.entity_id]?.attributes.device_class ?? null;
   }
 
-  private _getDeviceClassName(entityId: string, deviceClass: string): string {
+  private _getDeviceClassName(
+    localize: LocalizeFunc,
+    entityId: string,
+    deviceClass: string
+  ): string {
     return computeDeviceClassName(
-      this.hass.localize,
+      localize,
       computeDomain(entityId),
       deviceClass
     );
@@ -408,7 +412,7 @@ export class HaConfigEntities extends LitElement {
       },
       domain: getDomainTableColumn(localize),
       device_class: {
-        title: localize("ui.components.device-class-picker.device_class"),
+        title: localize("ui.panel.config.entities.picker.headers.device_class"),
         sortable: true,
         filterable: true,
         defaultHidden: true,
@@ -749,7 +753,7 @@ export class HaConfigEntities extends LitElement {
         result.push({
           ...entry,
           device_class: deviceClass
-            ? this._getDeviceClassName(entry.entity_id, deviceClass)
+            ? this._getDeviceClassName(localize, entry.entity_id, deviceClass)
             : null,
           name:
             entityName ||
@@ -1209,6 +1213,7 @@ export class HaConfigEntities extends LitElement {
   }
 
   protected firstUpdated() {
+    this.hass.loadBackendTranslation("entity_component");
     this._fetchExposedEntities();
     fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states).then(
       (sources) => {
