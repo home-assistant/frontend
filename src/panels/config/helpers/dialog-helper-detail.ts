@@ -406,15 +406,18 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
           entityId: `${domain}.${createdEntity.id}`,
         });
       }
+      const params = this._params;
       const resultEntityId =
-        this._params?.navigateToResult && createdEntity.id
+        params?.navigateToResult && createdEntity.id
           ? await this._findEntityId(domain, createdEntity.id)
           : undefined;
-      // The dialog was closed while waiting
-      const showResult = resultEntityId && this._params;
+      // The dialog was closed or reopened while waiting
+      if (this._params !== params) {
+        return;
+      }
       this._markDirtyStateClean();
       this.closeDialog();
-      if (showResult) {
+      if (resultEntityId) {
         showMoreInfoDialog(this, { entityId: resultEntityId });
       }
     } catch (err: any) {
