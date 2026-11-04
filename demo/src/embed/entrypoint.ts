@@ -5,6 +5,7 @@ import "./workers";
 import "./ha-embed-provider";
 import "./ha-embed-card";
 import "./ha-embed-section";
+import "./ha-embed-view";
 // For custom cards, which can't load them themselves. The built-in cards only
 // load ha-list-item-button with the map card. The full app loads ha-select
 // with the more info dialog.
