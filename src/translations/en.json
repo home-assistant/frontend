@@ -12804,6 +12804,7 @@
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "address_label": "Search address",
+          "search_results": "Search results",
           "button_detect": "Detect",
           "finish": "Next"
         },
