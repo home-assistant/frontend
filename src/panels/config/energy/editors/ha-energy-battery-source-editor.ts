@@ -496,7 +496,7 @@ export class HaEnergyBatterySourceEditor extends EnergyEditorMixin(
       <ha-energy-power-config
         .powerType=${this._powerType}
         .powerConfig=${this._powerConfig}
-        .excludeList=${this._excludeList}
+        .excludeList=${this._exclude(this._generatedStatRate)}
         .helperEntityId=${getPowerHelperEntityId(
           this.params.source,
           this._powerConfig
