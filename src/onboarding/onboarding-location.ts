@@ -143,7 +143,11 @@ class OnboardingLocation extends LitElement {
         ${
           this._places !== undefined
             ? html`
-                <ha-list-base>
+                <ha-list-base
+                  aria-label=${this._localize(
+                    "ui.panel.page-onboarding.core-config.search_results"
+                  )}
+                >
                   ${
                     this._places?.length
                       ? this._places.map((place) => {
