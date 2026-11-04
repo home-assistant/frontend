@@ -1663,7 +1663,8 @@
         "no_items": "No items available",
         "unknown_item": "Unknown item",
         "search_or_custom": "Search | Add custom item",
-        "add_custom_item": "Add custom item"
+        "add_custom_item": "Add custom item",
+        "filter_by_section": "Filter: {section}"
       },
       "suggest_with_ai": {
         "label": "Suggest",
