@@ -1,11 +1,16 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
+import type { ContextType } from "@lit/context";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import type { LocalizeFunc } from "../common/translations/localize";
 import type { ConfigEntry } from "../data/config_entries";
 import { getConfigEntries } from "../data/config_entries";
+import { apiContext } from "../data/context";
 import { domainToName } from "../data/integration";
-import type { HomeAssistant, ValueChangedEvent } from "../types";
+import type { ValueChangedEvent } from "../types";
 import "./ha-combo-box-item";
 import "./ha-domain-icon";
 import "./ha-generic-picker";
@@ -20,7 +25,10 @@ const SEARCH_KEYS = [
 
 @customElement("ha-config-entry-picker")
 class HaConfigEntryPicker extends LitElement {
-  public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property() public integration?: string;
 
@@ -57,11 +65,8 @@ class HaConfigEntryPicker extends LitElement {
     return html`
       <ha-generic-picker
         .label=${
-          this.label === undefined && this.hass
-            ? this.hass.localize(
-                "ui.components.config-entry-picker.config_entry"
-              )
-            : this.label
+          this.label ??
+          this._localize("ui.components.config-entry-picker.config_entry")
         }
         .value=${this.value}
         .required=${this.required}
@@ -89,18 +94,18 @@ class HaConfigEntryPicker extends LitElement {
   `;
 
   private async _getConfigEntries() {
-    getConfigEntries(this.hass, {
+    getConfigEntries(this._api, {
       type: ["device", "hub", "service"],
       domain: this.integration,
     }).then((configEntries) => {
       this._configEntries = configEntries.map((entry: ConfigEntry) => {
-        const domainName = domainToName(this.hass.localize, entry.domain);
+        const domainName = domainToName(this._localize, entry.domain);
         return {
           id: entry.entry_id,
           icon: entry.domain,
           primary:
             entry.title ||
-            this.hass.localize(
+            this._localize(
               "ui.panel.config.integrations.config_entry.unnamed_entry"
             ),
           secondary: domainName,

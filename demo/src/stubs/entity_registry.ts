@@ -8,7 +8,7 @@ import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 
 let entries: EntityRegistryEntry[] = [];
 
-const newEntry = (
+export const newEntry = (
   entry: Pick<EntityRegistryEntry, "entity_id" | "platform" | "unique_id">
 ): EntityRegistryEntry => {
   const now = Date.now() / 1000;
@@ -43,7 +43,9 @@ const displayFields = (entry: EntityRegistryEntry) => ({
   hidden: entry.hidden_by !== null,
 });
 
-const extEntry = (entry: EntityRegistryEntry): ExtEntityRegistryEntry => ({
+export const extEntry = (
+  entry: EntityRegistryEntry
+): ExtEntityRegistryEntry => ({
   ...entry,
   capabilities: {},
   aliases: [],
@@ -56,6 +58,16 @@ export const mockEntityRegistry = (
   entries = [...data];
   // A new array, so subscribers see the registry changed after an update
   hass.mockWS("config/entity_registry/list", () => [...entries]);
+  hass.mockWS(
+    "config/entity_registry/get",
+    (msg: { entity_id: string }): ExtEntityRegistryEntry => {
+      const entry = entries.find((e) => e.entity_id === msg.entity_id);
+      if (!entry) {
+        throw new Error(`Entity not found: ${msg.entity_id}`);
+      }
+      return extEntry(entry);
+    }
+  );
   hass.mockWS(
     "config/entity_registry/get_entries",
     (msg: { entity_ids: string[] }) => {
@@ -187,6 +199,39 @@ export const removeEntityRegistryEntry = (
   entityId: string
 ) => {
   entries = entries.filter((e) => e.entity_id !== entityId);
+  hass.mockEvent("entity_registry_updated");
+};
+
+export const removeLabelFromEntityRegistry = (
+  hass: MockHomeAssistant,
+  labelId: string
+) => {
+  const withoutLabel = (labels: string[]) =>
+    labels.filter((id) => id !== labelId);
+  for (const [key, entry] of retiredEntries) {
+    if (entry.labels.includes(labelId)) {
+      retiredEntries.set(key, { ...entry, labels: withoutLabel(entry.labels) });
+    }
+  }
+  if (!entries.some((entry) => entry.labels.includes(labelId))) {
+    return;
+  }
+  entries = entries.map((entry) =>
+    entry.labels.includes(labelId)
+      ? { ...entry, labels: withoutLabel(entry.labels) }
+      : entry
+  );
+  const entities = { ...hass.entities };
+  for (const entry of entries) {
+    const entity = entities[entry.entity_id];
+    if (entity?.labels.includes(labelId)) {
+      entities[entry.entity_id] = {
+        ...entity,
+        labels: withoutLabel(entity.labels),
+      };
+    }
+  }
+  hass.updateHass({ entities });
   hass.mockEvent("entity_registry_updated");
 };
 

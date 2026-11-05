@@ -91,11 +91,7 @@ class AssistDevicesPage extends LitElement {
         return {
           ...assistDevice,
           name: device
-            ? computeDeviceNameDisplay(
-                device,
-                this.hass.localize,
-                this.hass.states
-              )
+            ? computeDeviceNameDisplay(device, this.hass.localize)
             : "",
           pipeline: isPreferred
             ? localize("ui.components.pipeline-picker.preferred", {
@@ -111,7 +107,7 @@ class AssistDevicesPage extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
 
-    listAssistPipelines(this.hass).then((pipelines) => {
+    listAssistPipelines(this.hass.callWS).then((pipelines) => {
       const lookup: Record<string, AssistPipeline> = {};
       for (const pipeline of pipelines.pipelines) {
         lookup[pipeline.id] = pipeline;

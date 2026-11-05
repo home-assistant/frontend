@@ -196,6 +196,11 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import("./integrations/integration-panels/zha/zha-config-dashboard-router"),
       },
+      lorawan: {
+        tag: "lorawan-router",
+        load: () =>
+          import("./integrations/integration-panels/lorawan/lorawan-router"),
+      },
       mqtt: {
         tag: "mqtt-config-panel",
         load: () =>
@@ -281,6 +286,8 @@ class HaPanelConfig extends HassRouterPage {
 
   private _cloudStatusRequestId = 0;
 
+  private _cloudStatusTimeout?: number;
+
   public connectedCallback() {
     super.connectedCallback();
     this._listeners.push(
@@ -318,6 +325,7 @@ class HaPanelConfig extends HassRouterPage {
     }
     this._unsubCloudEvents?.then((unsub) => unsub()).catch(() => undefined);
     this._unsubCloudEvents = undefined;
+    this._clearCloudStatusTimeout();
     entityRegistryByEntityId.clear();
     entityRegistryById.clear();
   }
@@ -381,10 +389,11 @@ class HaPanelConfig extends HassRouterPage {
   }
 
   private async _updateCloudStatus() {
+    this._clearCloudStatusTimeout();
     const requestId = ++this._cloudStatusRequestId;
-    const status = await fetchCloudStatus(this.hass);
+    const status = await fetchCloudStatus(this.hass.callWS);
 
-    if (requestId !== this._cloudStatusRequestId) {
+    if (requestId !== this._cloudStatusRequestId || !this.isConnected) {
       return;
     }
     this._cloudStatus = status;
@@ -397,8 +406,16 @@ class HaPanelConfig extends HassRouterPage {
         this._cloudStatus.prefs.remote_enabled &&
         !this._cloudStatus.remote_connected)
     ) {
-      setTimeout(() => this._updateCloudStatus(), 5000);
+      this._cloudStatusTimeout = window.setTimeout(
+        () => this._updateCloudStatus(),
+        5000
+      );
     }
+  }
+
+  private _clearCloudStatusTimeout() {
+    clearTimeout(this._cloudStatusTimeout);
+    this._cloudStatusTimeout = undefined;
   }
 }
 

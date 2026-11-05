@@ -185,12 +185,17 @@ class MqttSubscribeCard extends LitElement {
       this._subscribed();
       this._subscribed = undefined;
     } else {
-      this._subscribed = await subscribeMQTTTopic(
+      const unsubscribe = await subscribeMQTTTopic(
         this.hass!,
         this._topic,
         (message) => this._handleMessage(message),
         parseInt(this._qos)
       );
+      if (!this.isConnected) {
+        unsubscribe();
+        return;
+      }
+      this._subscribed = unsubscribe;
     }
   }
 

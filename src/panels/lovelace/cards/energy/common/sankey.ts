@@ -379,7 +379,7 @@ export const buildSankeyDeviceNodes = (
     }
   });
 
-  // Add untracked consumption nodes for parent devices whose sub-devices
+  // Add untracked consumption nodes for parent devices whose child devices
   // don't account for the parent's full consumption
   const parentDeviceIds = new Set(Object.values(parentLinks));
   parentDeviceIds.forEach((parentId) => {
@@ -668,4 +668,45 @@ export const buildSankeyLayout = (
   }
 
   return { nodes, links };
+};
+
+/** Node id and weight of one side of a split flow; non-positive weights get no share. */
+export type SankeyFlowShare = [id: string, weight: number];
+
+/**
+ * Split `value` across every source/target pair by their shares on both ends
+ * and add the parts to `links`, keyed by pair so repeated calls accumulate.
+ */
+export const addSplitSankeyLinks = (
+  links: Map<string, Link & { value: number }>,
+  value: number,
+  sources: SankeyFlowShare[],
+  targets: SankeyFlowShare[]
+): void => {
+  const sumShares = (shares: SankeyFlowShare[]) =>
+    shares.reduce((sum, [, weight]) => sum + Math.max(weight, 0), 0);
+  const sourceTotal = sumShares(sources);
+  const targetTotal = sumShares(targets);
+  if (!(value > 0) || sourceTotal <= 0 || targetTotal <= 0) {
+    return;
+  }
+  for (const [source, sourceWeight] of sources) {
+    if (sourceWeight <= 0) {
+      continue;
+    }
+    for (const [target, targetWeight] of targets) {
+      if (targetWeight <= 0) {
+        continue;
+      }
+      const part =
+        (value * sourceWeight * targetWeight) / (sourceTotal * targetTotal);
+      const key = `${source}\n${target}`;
+      const link = links.get(key);
+      if (link) {
+        link.value += part;
+      } else {
+        links.set(key, { source, target, value: part });
+      }
+    }
+  }
 };

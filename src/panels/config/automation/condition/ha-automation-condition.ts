@@ -11,14 +11,11 @@ import { stopPropagation } from "../../../../common/dom/stop_propagation";
 import "../../../../components/ha-button";
 import "../../../../components/ha-sortable";
 import "../../../../components/ha-svg-icon";
-import {
-  getValueFromDynamic,
-  isDynamic,
-  type Condition,
-} from "../../../../data/automation";
+import type { Condition } from "../../../../data/automation";
 import type { ConditionDescriptions } from "../../../../data/condition";
 import { CONDITION_BUILDING_BLOCKS } from "../../../../data/condition";
 import { conditionDescriptionsContext } from "../../../../data/context";
+import { createCondition } from "../automation-element-config";
 import { EDITOR_SAVE_FAB_TOAST_BOTTOM_OFFSET } from "../editor-toast";
 import {
   getAddAutomationElementTargetFromQuery,
@@ -141,12 +138,6 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
             mode === "moved")
         ) {
           row.openSidebar();
-          if (this.narrow) {
-            row.scrollIntoView({
-              block: "start",
-              behavior: "smooth",
-            });
-          }
         }
 
         if (mode === "new") {
@@ -207,6 +198,7 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
                 @duplicate=${this.duplicateItem}
                 @paste=${this.pasteItem}
                 @insert-after=${this.insertAfter}
+                @replace-item=${this.replaceItem}
                 @move-down=${this.moveDown}
                 @move-up=${this.moveUp}
                 @value-changed=${this.itemChanged}
@@ -272,30 +264,14 @@ export default class HaAutomationCondition extends AutomationSortableListMixin<C
   }
 
   private _addCondition = (value: string, target?: HassServiceTarget) => {
-    let conditions: Condition[];
-    if (value === PASTE_VALUE) {
-      conditions = this.conditions.concat(
-        deepClone(this._clipboard!.condition!)
-      );
-    } else if (isDynamic(value)) {
-      conditions = this.conditions.concat({
-        condition: getValueFromDynamic(value),
-        target,
-      });
-    } else {
-      const condition = value as Condition["condition"];
-      const elClass = customElements.get(
-        `ha-automation-condition-${condition}`
-      ) as CustomElementConstructor & {
-        defaultConfig: Condition;
-      };
-      conditions = this.conditions.concat({
-        ...elClass.defaultConfig,
-        ...(target?.entity_id ? { entity_id: target.entity_id } : {}),
-      });
-    }
+    const condition =
+      value === PASTE_VALUE
+        ? deepClone(this._clipboard!.condition!)
+        : createCondition(value, target);
     this.focusLastItemOnChange = true;
-    fireEvent(this, "value-changed", { value: conditions });
+    fireEvent(this, "value-changed", {
+      value: this.conditions.concat(condition),
+    });
   };
 
   static styles = automationRowsStyles;

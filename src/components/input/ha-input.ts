@@ -126,6 +126,10 @@ export class HaInput extends WaInputMixin(LitElement) {
   @property({ type: Boolean, attribute: "inset-label" })
   public insetLabel = false;
 
+  /** Accessible name for the input when it has no visible label. */
+  @property({ attribute: "accessible-label" })
+  public accessibleLabel?: string;
+
   /** Sets the native input id (and label `for`) on the inner `wa-input`. */
   @property({ attribute: "input-id" })
   public inputId?: string;
@@ -276,6 +280,7 @@ export class HaInput extends WaInputMixin(LitElement) {
         .name=${this.name}
         .disabled=${this.disabled}
         .inputId=${this.inputId || "input"}
+        .accessibleLabel=${this.accessibleLabel ?? ""}
         class=${classMap({
           input: true,
           invalid: this.invalid || this._invalid,

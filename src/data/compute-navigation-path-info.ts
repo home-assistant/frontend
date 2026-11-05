@@ -9,7 +9,11 @@ import {
   mdiShape,
   mdiTextureBox,
 } from "@mdi/js";
-import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import type {
+  Connection,
+  HassConfig,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { computeDeviceName } from "../common/entity/compute_device_name";
 import {
@@ -25,8 +29,25 @@ import {
   getPanelIconPath,
   getPanelTitleFromUrlPath,
 } from "./panel";
-import type { LocalizeKeys } from "../common/translations/localize";
-import type { HomeAssistant } from "../types";
+import type {
+  LocalizeFunc,
+  LocalizeKeys,
+} from "../common/translations/localize";
+import type { AreaRegistryEntry } from "./area/area_registry";
+import type { DeviceRegistryEntry } from "./device/device_registry";
+import type { Panels } from "../types";
+
+export interface NavigationPathInfoOptions {
+  localize: LocalizeFunc;
+  panels: Panels;
+  areas: Record<string, AreaRegistryEntry>;
+  devices: Record<string, DeviceRegistryEntry>;
+}
+
+export interface SubscribeNavigationPathInfoOptions extends NavigationPathInfoOptions {
+  config: HassConfig;
+  connection: Connection;
+}
 
 export interface NavigationPathInfo {
   label: string;
@@ -81,7 +102,7 @@ export const CONFIG_SUB_ROUTES: Record<
  * For lovelace views, pass the dashboard config to resolve view title/icon.
  */
 export const computeNavigationPathInfo = (
-  hass: HomeAssistant,
+  options: NavigationPathInfoOptions,
   path: string,
   lovelaceConfig?: LovelaceRawConfig,
   ingressPanels?: IngressPanelInfoMap
@@ -97,7 +118,7 @@ export const computeNavigationPathInfo = (
     segments[2] === "area" &&
     segments[3]
   ) {
-    return computeAreaNavigationPathInfo(hass, segments[3]);
+    return computeAreaNavigationPathInfo(options.areas, segments[3]);
   }
 
   // /config/devices/device/{deviceId}
@@ -107,7 +128,7 @@ export const computeNavigationPathInfo = (
     segments[2] === "device" &&
     segments[3]
   ) {
-    return computeDeviceNavigationPathInfo(hass, segments[3]);
+    return computeDeviceNavigationPathInfo(options.devices, segments[3]);
   }
 
   // /app/<slug> (ingress addon panel)
@@ -119,25 +140,25 @@ export const computeNavigationPathInfo = (
   if (panelUrlPath === "config" && subPath && subPath in CONFIG_SUB_ROUTES) {
     const route = CONFIG_SUB_ROUTES[subPath];
     return {
-      label: hass.localize(route.translationKey) || subPath,
+      label: options.localize(route.translationKey) || subPath,
       iconPath: route.iconPath,
     };
   }
 
-  const panel = panelUrlPath ? hass.panels[panelUrlPath] : undefined;
+  const panel = panelUrlPath ? options.panels[panelUrlPath] : undefined;
   const panelIcon = panel ? getPanelIcon(panel) : undefined;
   const panelIconPath = panel ? getPanelIconPath(panel) : undefined;
 
   // /home/areas-{areaId} (area dashboard view)
   if (subPath?.startsWith(AREA_VIEW_PREFIX)) {
     const areaId = subPath.slice(AREA_VIEW_PREFIX.length);
-    return computeAreaNavigationPathInfo(hass, areaId);
+    return computeAreaNavigationPathInfo(options.areas, areaId);
   }
 
   const isDashboard = panel?.component_name === "lovelace";
 
   const panelInfo: NavigationPathInfo = {
-    label: getPanelTitleFromUrlPath(hass, panelUrlPath) || panelUrlPath,
+    label: getPanelTitleFromUrlPath(options, panelUrlPath) || panelUrlPath,
     icon: panelIcon || (isDashboard ? "mdi:view-dashboard" : undefined),
     iconPath: panelIconPath || mdiLink,
   };
@@ -161,10 +182,10 @@ export const computeNavigationPathInfo = (
 };
 
 const computeAreaNavigationPathInfo = (
-  hass: HomeAssistant,
+  areas: Record<string, AreaRegistryEntry>,
   areaId: string
 ): NavigationPathInfo => {
-  const area = hass.areas[areaId];
+  const area = areas[areaId];
   return {
     label: area?.name || areaId,
     icon: area?.icon || undefined,
@@ -173,10 +194,10 @@ const computeAreaNavigationPathInfo = (
 };
 
 const computeDeviceNavigationPathInfo = (
-  hass: HomeAssistant,
+  devices: Record<string, DeviceRegistryEntry>,
   deviceId: string
 ): NavigationPathInfo => {
-  const device = hass.devices[deviceId];
+  const device = devices[deviceId];
   return {
     label: (device ? computeDeviceName(device) : undefined) || deviceId,
     iconPath: mdiDevices,
@@ -201,7 +222,7 @@ const computeIngressNavigationPathInfo = (
  * updates for view paths and ingress panel info for app paths.
  */
 export const subscribeNavigationPathInfo = (
-  hass: HomeAssistant,
+  options: SubscribeNavigationPathInfoOptions,
   path: string,
   onChange: (info: NavigationPathInfo) => void
 ): UnsubscribeFunc | undefined => {
@@ -212,13 +233,13 @@ export const subscribeNavigationPathInfo = (
   if (
     panelUrlPath === APP_PANEL &&
     segments[1] &&
-    isComponentLoaded(hass.config, "hassio")
+    isComponentLoaded(options.config, "hassio")
   ) {
     try {
-      const collection = getIngressPanelInfoCollection(hass.connection);
+      const collection = getIngressPanelInfoCollection(options.connection);
       // Use cached state for immediate resolution if available
       const info = computeNavigationPathInfo(
-        hass,
+        options,
         path,
         undefined,
         collection.state
@@ -227,7 +248,7 @@ export const subscribeNavigationPathInfo = (
       let current = info;
       return collection.subscribe((panels) => {
         const newInfo = computeNavigationPathInfo(
-          hass,
+          options,
           path,
           undefined,
           panels
@@ -242,15 +263,15 @@ export const subscribeNavigationPathInfo = (
     }
   }
 
-  const info = computeNavigationPathInfo(hass, path);
+  const info = computeNavigationPathInfo(options, path);
   onChange(info);
 
-  const panel = panelUrlPath ? hass.panels[panelUrlPath] : undefined;
+  const panel = panelUrlPath ? options.panels[panelUrlPath] : undefined;
   if (segments[1] && panel?.component_name === "lovelace") {
     let current = info;
-    const collection = getLovelaceCollection(hass.connection, panelUrlPath);
+    const collection = getLovelaceCollection(options.connection, panelUrlPath);
     return collection.subscribe((config) => {
-      const newInfo = computeNavigationPathInfo(hass, path, config);
+      const newInfo = computeNavigationPathInfo(options, path, config);
       if (newInfo.label !== current.label || newInfo.icon !== current.icon) {
         current = newInfo;
         onChange(newInfo);

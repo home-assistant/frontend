@@ -10,7 +10,6 @@ import "../../../../components/ha-control-button";
 import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-list-item";
 import "../../../../components/ha-select";
 import type { HaSelectSelectEvent } from "../../../../components/ha-select";
 import "../../../../components/input/ha-input";

@@ -38,6 +38,10 @@ export class HaBaseTimeInput extends LitElement {
    */
   @property() label?: string;
 
+  /** Accessible name for the input when it has no visible label. */
+  @property({ attribute: "accessible-label" })
+  public accessibleLabel?: string;
+
   /**
    * Helper for the input
    */
@@ -178,6 +182,7 @@ export class HaBaseTimeInput extends LitElement {
           class="time-input-wrap"
           role="group"
           aria-labelledby=${ifDefined(this.label ? "label" : undefined)}
+          aria-label=${ifDefined(this.label ? undefined : this.accessibleLabel)}
         >
           ${
             this.enableSign

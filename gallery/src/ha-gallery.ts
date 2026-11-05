@@ -242,7 +242,6 @@ class HaGallery extends LitElement {
               ${
                 isSettingsPage
                   ? html`<gallery-settings
-                      .hass=${this._galleryHass}
                       .themeSettings=${this._themeSettings}
                       .narrow=${this._narrow}
                       .rtl=${this._rtl}

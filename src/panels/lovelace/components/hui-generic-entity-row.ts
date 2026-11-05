@@ -97,7 +97,6 @@ export class HuiGenericEntityRow extends LitElement {
                             this.secondaryText ||
                             html`<state-display
                               .stateObj=${stateObj}
-                              .hass=${this.hass}
                               .content=${this.config.secondary_info}
                               .timeFormat=${this.config.time_format}
                               .name=${name}

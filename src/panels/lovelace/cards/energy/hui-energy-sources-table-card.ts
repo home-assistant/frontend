@@ -6,7 +6,10 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
-import { formatNumber } from "../../../../common/number/format_number";
+import {
+  formatNumber,
+  formatNumberWithUnit,
+} from "../../../../common/number/format_number";
 import { shallowEqual } from "../../../../common/util/shallow-equal";
 import { getEnergyColor } from "./common/color";
 import "../../../../components/ha-card";
@@ -49,6 +52,7 @@ const colorPropertyMap = {
   solar: "--energy-solar-color",
   gas: "--energy-gas-color",
   water: "--energy-water-color",
+  home: "--primary-color",
 };
 
 @customElement("hui-energy-sources-table-card")
@@ -71,7 +75,7 @@ export class HuiEnergySourcesTableCard
     return {
       type: "energy-sources-table",
       show_only_totals: false,
-      types: ["grid", "solar", "battery"],
+      types: ["grid", "solar", "battery", "home"],
     };
   }
 
@@ -193,6 +197,19 @@ export class HuiEnergySourcesTableCard
           }
         : undefined;
 
+    const formattedEnergy = formatNumberWithUnit(
+      energy,
+      energyUnit,
+      this._i18n.locale,
+      formatOptions
+    );
+    const formattedCompareEnergy = formatNumberWithUnit(
+      compareEnergy,
+      energyUnit,
+      this._i18n.locale,
+      formatOptions
+    );
+
     const label =
       name ||
       getStatisticLabel(
@@ -238,8 +255,7 @@ export class HuiEnergySourcesTableCard
       ${
         compare
           ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-                ${formatNumber(compareEnergy, this._i18n.locale, formatOptions)}
-                ${energyUnit}
+                ${formattedCompareEnergy}
               </td>
               ${
                 showCosts
@@ -260,7 +276,7 @@ export class HuiEnergySourcesTableCard
           : ""
       }
       <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-        ${formatNumber(energy, this._i18n.locale, formatOptions)} ${energyUnit}
+        ${formattedEnergy}
       </td>
       ${
         showCosts
@@ -294,6 +310,25 @@ export class HuiEnergySourcesTableCard
     isFinalTotal?: boolean,
     formatOptions?: Intl.NumberFormatOptions
   ) {
+    const formattedEnergy =
+      energy === null
+        ? ""
+        : formatNumberWithUnit(
+            energy,
+            energyUnit,
+            this._i18n.locale,
+            formatOptions
+          );
+    const formattedCompareEnergy =
+      compareEnergy === null
+        ? ""
+        : formatNumberWithUnit(
+            compareEnergy,
+            energyUnit,
+            this._i18n.locale,
+            formatOptions
+          );
+
     return html` <tr
       class="mdc-data-table__row ${bulletColor && !isFinalTotal ? "" : "total"}"
     >
@@ -316,15 +351,7 @@ export class HuiEnergySourcesTableCard
       ${
         compare
           ? html`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-                ${
-                  compareEnergy === null
-                    ? ""
-                    : `${formatNumber(
-                        compareEnergy,
-                        this._i18n.locale,
-                        formatOptions
-                      )} ${energyUnit}`
-                }
+                ${formattedCompareEnergy}
               </td>
               ${
                 showCosts
@@ -345,15 +372,7 @@ export class HuiEnergySourcesTableCard
           : ""
       }
       <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-        ${
-          energy === null
-            ? ""
-            : `${formatNumber(
-                energy,
-                this._i18n.locale,
-                formatOptions
-              )} ${energyUnit}`
-        }
+        ${formattedEnergy}
       </td>
       ${
         showCosts
@@ -427,6 +446,25 @@ export class HuiEnergySourcesTableCard
       : allTypes;
 
     const computedStyles = getComputedStyle(this);
+
+    const typeBulletColor = (type: keyof typeof colorPropertyMap) => ({
+      border: getEnergyColor(
+        computedStyles,
+        this._themes.darkMode,
+        false,
+        false,
+        colorPropertyMap[type],
+        0
+      ),
+      background: getEnergyColor(
+        computedStyles,
+        this._themes.darkMode,
+        true,
+        false,
+        colorPropertyMap[type],
+        0
+      ),
+    });
 
     // Check if any source has cost configuration
     const gridHasCosts = types.grid?.some(
@@ -525,6 +563,73 @@ export class HuiEnergySourcesTableCard
     };
 
     const showOnlyTotals = this._config.show_only_totals;
+    const combine =
+      !showOnlyTotals &&
+      (this._config.combine_sources ?? this._data.combineSources ?? false);
+    const combineType = (type: keyof EnergySourceByType) =>
+      combine && (types[type]?.length ?? 0) > 1;
+
+    const combinedRows: Partial<
+      Record<
+        keyof typeof colorPropertyMap,
+        {
+          energy: number;
+          energyCompare: number;
+          cost: number | null;
+          costCompare: number | null;
+        }
+      >
+    > = {};
+
+    const addToCombinedRow = (
+      type: keyof typeof colorPropertyMap,
+      energy: number,
+      energyCompare: number,
+      cost: number | null = null,
+      costCompare: number | null = null
+    ) => {
+      const row = combinedRows[type];
+      if (!row) {
+        combinedRows[type] = { energy, energyCompare, cost, costCompare };
+        return;
+      }
+      row.energy += energy;
+      row.energyCompare += energyCompare;
+      if (cost !== null) {
+        row.cost = (row.cost ?? 0) + cost;
+      }
+      if (costCompare !== null) {
+        row.costCompare = (row.costCompare ?? 0) + costCompare;
+      }
+    };
+
+    const renderCombinedRow = (
+      type: keyof typeof colorPropertyMap,
+      label: string
+    ) => {
+      const row = combinedRows[type];
+      return row
+        ? this._renderTotalRow(
+            label,
+            row.energy,
+            row.energyCompare,
+            "kWh",
+            row.cost,
+            row.costCompare,
+            showCosts,
+            compare,
+            typeBulletColor(type),
+            false
+          )
+        : nothing;
+    };
+
+    const batteryName = this._i18n.localize(
+      "ui.panel.lovelace.cards.energy.energy_distribution.battery"
+    );
+    const gridName = this._i18n.localize(
+      "ui.panel.lovelace.cards.energy.energy_distribution.grid"
+    );
 
     const _renderSimpleCategory = (type: "solar" | "gas" | "water") =>
       html` ${types[type]?.map((source, idx) => {
@@ -548,7 +653,7 @@ export class HuiEnergySourcesTableCard
           totalCostsCompare[type] += costCompare;
         }
 
-        if (showOnlyTotals) {
+        if (showOnlyTotals || combineType(type)) {
           return nothing;
         }
 
@@ -580,25 +685,8 @@ export class HuiEnergySourcesTableCard
               hasCosts[type] ? totalCostsCompare[type] : null,
               showCosts,
               compare,
-              showOnlyTotals
-                ? {
-                    border: getEnergyColor(
-                      computedStyles,
-                      this._themes.darkMode,
-                      false,
-                      false,
-                      colorPropertyMap[type],
-                      0
-                    ),
-                    background: getEnergyColor(
-                      computedStyles,
-                      this._themes.darkMode,
-                      true,
-                      false,
-                      colorPropertyMap[type],
-                      0
-                    ),
-                  }
+              showOnlyTotals || combineType(type)
+                ? typeBulletColor(type)
                 : undefined,
               false,
               type === "gas" ? gasFormatOptions : undefined
@@ -678,6 +766,28 @@ export class HuiEnergySourcesTableCard
               </tr>
             </thead>
             <tbody class="mdc-data-table__content">
+              ${types.home?.map((source, idx) => {
+                const { hasData, energy, energyCompare } = _extractStatData(
+                  source.stat_energy_to,
+                  null
+                );
+                return hasData
+                  ? this._renderRow(
+                      computedStyles,
+                      "home",
+                      source.stat_energy_to,
+                      idx,
+                      energy,
+                      energyCompare,
+                      "kWh",
+                      null,
+                      null,
+                      showCosts,
+                      compare,
+                      source.name || this._hassConfig.location_name
+                    )
+                  : nothing;
+              })}
               ${_renderSimpleCategory("solar")}
               ${types.battery?.map((source, idx) => {
                 const {
@@ -699,6 +809,16 @@ export class HuiEnergySourcesTableCard
                 totalBatteryCompare += energyFromCompare - energyToCompare;
 
                 if (showOnlyTotals) {
+                  return nothing;
+                }
+
+                if (combineType("battery")) {
+                  addToCombinedRow(
+                    "battery_out",
+                    energyFrom,
+                    energyFromCompare
+                  );
+                  addToCombinedRow("battery_in", -energyTo, -energyToCompare);
                   return nothing;
                 }
 
@@ -740,6 +860,20 @@ export class HuiEnergySourcesTableCard
                     : ""
                 )}`;
               })}
+              ${renderCombinedRow(
+                "battery_out",
+                this._i18n.localize(
+                  "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
+                  { name: batteryName }
+                )
+              )}
+              ${renderCombinedRow(
+                "battery_in",
+                this._i18n.localize(
+                  "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
+                  { name: batteryName }
+                )
+              )}
               ${
                 types.battery
                   ? this._renderTotalRow(
@@ -754,24 +888,7 @@ export class HuiEnergySourcesTableCard
                       showCosts,
                       compare,
                       showOnlyTotals
-                        ? {
-                            border: getEnergyColor(
-                              computedStyles,
-                              this._themes.darkMode,
-                              false,
-                              false,
-                              colorPropertyMap.battery_out,
-                              0
-                            ),
-                            background: getEnergyColor(
-                              computedStyles,
-                              this._themes.darkMode,
-                              true,
-                              false,
-                              colorPropertyMap.battery_out,
-                              0
-                            ),
-                          }
+                        ? typeBulletColor("battery_out")
                         : undefined
                     )
                   : ""
@@ -804,6 +921,17 @@ export class HuiEnergySourcesTableCard
                   }
 
                   if (showOnlyTotals) {
+                    return nothing;
+                  }
+
+                  if (combineType("grid")) {
+                    addToCombinedRow(
+                      "grid_consumption",
+                      energy,
+                      energyCompare,
+                      cost,
+                      costCompare
+                    );
                     return nothing;
                   }
 
@@ -858,6 +986,17 @@ export class HuiEnergySourcesTableCard
                     return nothing;
                   }
 
+                  if (combineType("grid")) {
+                    addToCombinedRow(
+                      "grid_return",
+                      -energy,
+                      -energyCompare,
+                      -cost,
+                      -costCompare
+                    );
+                    return nothing;
+                  }
+
                   const name = !source.name
                     ? ""
                     : source.stat_energy_from
@@ -885,6 +1024,24 @@ export class HuiEnergySourcesTableCard
 
                 return html`${importResult}${exportResult}`;
               })}
+              ${renderCombinedRow(
+                "grid_consumption",
+                types.grid?.some((source) => source.stat_energy_to)
+                  ? this._i18n.localize(
+                      "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_imported",
+                      { name: gridName }
+                    )
+                  : gridName
+              )}
+              ${renderCombinedRow(
+                "grid_return",
+                types.grid?.some((source) => source.stat_energy_from)
+                  ? this._i18n.localize(
+                      "ui.panel.lovelace.cards.energy.energy_sources_table.named_grid_exported",
+                      { name: gridName }
+                    )
+                  : gridName
+              )}
               ${
                 types.grid &&
                 types.grid.some(
@@ -902,24 +1059,7 @@ export class HuiEnergySourcesTableCard
                       showCosts,
                       compare,
                       showOnlyTotals
-                        ? {
-                            border: getEnergyColor(
-                              computedStyles,
-                              this._themes.darkMode,
-                              false,
-                              false,
-                              colorPropertyMap.grid_consumption,
-                              0
-                            ),
-                            background: getEnergyColor(
-                              computedStyles,
-                              this._themes.darkMode,
-                              true,
-                              false,
-                              colorPropertyMap.grid_consumption,
-                              0
-                            ),
-                          }
+                        ? typeBulletColor("grid_consumption")
                         : undefined
                     )
                   : ""
@@ -974,7 +1114,7 @@ export class HuiEnergySourcesTableCard
       text-transform: inherit;
     }
     .mdc-data-table {
-      background-color: var(--card-background-color);
+      background: transparent;
       border-radius: var(--ha-border-radius-sm);
       border: 0;
       box-sizing: border-box;
@@ -984,7 +1124,6 @@ export class HuiEnergySourcesTableCard
       width: 100%;
     }
     .mdc-data-table__table-container {
-      -webkit-overflow-scrolling: touch;
       overflow-x: auto;
       width: 100%;
     }
@@ -1022,7 +1161,7 @@ export class HuiEnergySourcesTableCard
       white-space: nowrap;
     }
     .mdc-data-table__header-cell {
-      background-color: var(--card-background-color);
+      background: transparent;
       font-family: var(--ha-font-family-body);
       -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
       -webkit-font-smoothing: var(--ha-font-smoothing);

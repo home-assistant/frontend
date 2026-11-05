@@ -9,7 +9,7 @@ import { fireEvent, type HASSDomEvent } from "../../common/dom/fire_event";
 import { isNavigationClick } from "../../common/dom/is-navigation-click";
 import "../../components/ha-alert";
 import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
-import { getHiddenFields } from "../../components/ha-form/conditions";
+import { getHiddenSchemaFields } from "../../components/ha-form/conditions";
 import "../../components/ha-form/ha-form";
 import type {
   HaFormSchema,
@@ -228,7 +228,7 @@ class StepFlowForm extends LitElement {
       schema: readonly HaFormSchema[],
       data: Record<string, any>
     ) => {
-      const hidden = getHiddenFields(schema, data);
+      const hidden = getHiddenSchemaFields(schema, data);
       return schema.every(
         (field) =>
           hidden.has(field.name) ||
@@ -259,7 +259,7 @@ class StepFlowForm extends LitElement {
 
     const flowId = this.step.flow_id;
 
-    const hiddenFields = getHiddenFields(this.step.data_schema, stepData);
+    const hiddenFields = getHiddenSchemaFields(this.step.data_schema, stepData);
 
     const toSendData: Record<string, unknown> = {};
     Object.keys(stepData).forEach((key) => {
@@ -348,11 +348,15 @@ class StepFlowForm extends LitElement {
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);
 
-  private _localizeValueCallback = (key: string) =>
+  private _localizeValueCallback = (
+    key: string,
+    values?: Record<string, string>
+  ) =>
     this.flowConfig.renderShowFormStepFieldLocalizeValue(
       this.hass,
       this.step,
-      key
+      key,
+      values
     );
 
   static get styles(): CSSResultGroup {

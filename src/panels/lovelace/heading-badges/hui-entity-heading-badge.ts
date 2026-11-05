@@ -177,7 +177,6 @@ export class HuiEntityHeadingBadge
           config.show_state
             ? html`
                 <state-display
-                  .hass=${this.hass}
                   .stateObj=${stateObj}
                   .content=${config.state_content}
                   .name=${name}

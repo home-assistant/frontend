@@ -2,7 +2,6 @@ import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { computeDeviceNameDisplay } from "../../../../../../common/entity/compute_device_name";
-import { computeStateName } from "../../../../../../common/entity/compute_state_name";
 import { fireEvent } from "../../../../../../common/dom/fire_event";
 import "../../../../../../components/ha-dialog-footer";
 import "../../../../../../components/ha-switch";
@@ -55,8 +54,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
           {
             device: computeDeviceNameDisplay(
               this._params.device,
-              this.hass.localize,
-              this.hass.states
+              this.hass.localize
             ),
           }
         )}
@@ -146,7 +144,9 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
       ${this._debugInfo!.entities.map(
         (entity) => html`
           <li class="entitylistitem">
-            ${computeStateName(this.hass.states[entity.entity_id])}
+            ${this.hass.formatEntityName(this.hass.states[entity.entity_id], {
+              type: "entity",
+            })}
             (<code>${entity.entity_id}</code>)
             <br />MQTT discovery data:
             <ul class="discoverydata">

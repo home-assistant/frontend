@@ -1,8 +1,13 @@
-import type { CalendarOptions } from "@fullcalendar/core";
-import { Calendar } from "@fullcalendar/core";
-import allLocales from "@fullcalendar/core/locales-all";
-import interactionPlugin from "@fullcalendar/interaction";
-import timeGridPlugin from "@fullcalendar/timegrid";
+import type {
+  CalendarOptions,
+  DateSelectInfo,
+  EventClickInfo,
+  EventInput,
+} from "fullcalendar";
+import { Calendar } from "fullcalendar";
+import allLocales from "fullcalendar/locales-all";
+import interactionPlugin from "fullcalendar/interaction";
+import timeGridPlugin from "fullcalendar/timegrid";
 import type { Day } from "date-fns";
 import { addDays, isSameDay, isSameWeek, nextDay } from "date-fns";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -17,12 +22,16 @@ import "../../../../components/input/ha-input";
 import type { Schedule, ScheduleDay } from "../../../../data/schedule";
 import { weekdays } from "../../../../data/schedule";
 import { TimeZone } from "../../../../data/translation";
+import {
+  fullCalendarStyles,
+  fullCalendarTheme,
+} from "../../../../resources/fullcalendar-theme";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import { showScheduleBlockInfoDialog } from "./show-dialog-schedule-block-info";
 
 const defaultFullCalendarConfig: CalendarOptions = {
-  plugins: [timeGridPlugin, interactionPlugin],
+  plugins: [fullCalendarTheme, timeGridPlugin, interactionPlugin],
   headerToolbar: false,
   initialView: "timeGridWeek",
   editable: true,
@@ -31,10 +40,14 @@ const defaultFullCalendarConfig: CalendarOptions = {
   selectOverlap: false,
   eventOverlap: false,
   allDaySlot: false,
-  height: "parent",
+  slotMinHeight: 24,
+  height: 450,
   locales: allLocales,
   firstDay: 1,
   dayHeaderFormat: { weekday: "short", month: undefined, day: undefined },
+  dayLaneInnerClass: "ha-fc-lane",
+  columnEventClass: "ha-fc-block",
+  columnEventTimeClass: ({ isShort }) => (isShort ? "" : "ha-fc-block-time"),
 };
 
 @customElement("ha-schedule-form")
@@ -64,8 +77,6 @@ class HaScheduleForm extends LitElement {
   @state() private _sunday!: ScheduleDay[];
 
   @state() private calendar?: Calendar;
-
-  @query("style[data-fullcalendar]") private _fullCalendarStyle?: HTMLElement;
 
   @query("[dialogInitialFocus]") private _focusElement?: HTMLElement;
 
@@ -100,7 +111,6 @@ class HaScheduleForm extends LitElement {
     super.disconnectedCallback();
     this.calendar?.destroy();
     this.calendar = undefined;
-    this._fullCalendarStyle?.remove();
   }
 
   public connectedCallback(): void {
@@ -188,7 +198,7 @@ class HaScheduleForm extends LitElement {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
       firstDay: firstWeekdayIndex(this.hass.locale),
-      slotLabelFormat: {
+      slotHeaderFormat: {
         hour: "numeric",
         minute: undefined,
         hour12: useAmPm(this.hass.locale),
@@ -216,7 +226,7 @@ class HaScheduleForm extends LitElement {
   }
 
   private get _events() {
-    const events: any[] = [];
+    const events: EventInput[] = [];
 
     for (const [i, day] of weekdays.entries()) {
       if (!this[`_${day}`].length) {
@@ -256,7 +266,7 @@ class HaScheduleForm extends LitElement {
     return events;
   }
 
-  private _handleSelect(info: { start: Date; end: Date }) {
+  private _handleSelect(info: DateSelectInfo) {
     const { start, end } = info;
 
     const day = weekdays[start.getDay()];
@@ -357,7 +367,7 @@ class HaScheduleForm extends LitElement {
     }
   }
 
-  private async _handleEventClick(info: any) {
+  private async _handleEventClick(info: EventClickInfo) {
     const [day, index] = info.event.id.split("-");
     const item = [...this[`_${day}`]][index];
     showScheduleBlockInfoDialog(this, {
@@ -420,7 +430,15 @@ class HaScheduleForm extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      fullCalendarStyles,
       css`
+        :host {
+          --fc-classic-background: var(
+            --ha-dialog-surface-background,
+            var(--mdc-theme-surface, #fff)
+          );
+        }
+
         .form {
           color: var(--primary-text-color);
         }
@@ -432,61 +450,25 @@ class HaScheduleForm extends LitElement {
 
         #calendar {
           margin: var(--ha-space-2) 0;
-          height: 450px;
           width: 100%;
           user-select: none;
-          --fc-border-color: var(--divider-color);
-          --fc-event-border-color: var(--divider-color);
         }
 
-        .fc-v-event .fc-event-time {
-          white-space: inherit;
-        }
-        .fc-theme-standard .fc-scrollgrid {
-          border: 1px solid var(--divider-color);
-          border-radius: var(--mdc-shape-small, 4px);
+        .ha-fc-block {
+          border-color: var(--divider-color);
         }
 
-        .fc-scrollgrid-section-header td {
-          border: none;
-        }
-        :host([narrow]) .fc-scrollgrid-sync-table {
-          overflow: hidden;
-        }
-        table.fc-scrollgrid-sync-table
-          tbody
-          tr:first-child
-          .fc-daygrid-day-top {
-          padding-top: 0;
-        }
-        .fc-scroller::-webkit-scrollbar {
-          width: 0.4rem;
-          height: 0.4rem;
-        }
-        .fc-scroller::-webkit-scrollbar-thumb {
-          border-radius: var(--ha-border-radius-sm);
-          background: var(--scrollbar-thumb-color);
-        }
-        .fc-scroller {
-          overflow-y: auto;
-          scrollbar-color: var(--scrollbar-thumb-color) transparent;
-          scrollbar-width: thin;
+        .ha-fc-block-time {
+          white-space: normal;
         }
 
-        .fc-timegrid-event-short .fc-event-time:after {
-          content: ""; /* prevent trailing dash in half hour events since we do not have event titles */
-        }
-
-        a {
-          color: inherit !important;
-        }
-
-        th.fc-col-header-cell.fc-day {
-          background-color: var(--table-header-background-color);
-          color: var(--primary-text-color);
-          font-size: var(--ha-font-size-xs);
-          font-weight: var(--ha-font-weight-bold);
-          text-transform: uppercase;
+        /* Older browsers drop the inline logical insets that place blocks.
+           Blocks never overlap, so each one fills its day. */
+        @supports not (inset-inline-start: 0) {
+          .ha-fc-lane > * {
+            left: 0;
+            right: 0;
+          }
         }
       `,
     ];

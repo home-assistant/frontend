@@ -5,20 +5,24 @@ import {
   mdiCommentTextOutline,
   mdiDelete,
   mdiDotsVertical,
+  mdiPlaylistEdit,
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
 } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { consume } from "../../../../common/decorators/consume";
+import { assert } from "superstruct";
 import { ensureArray } from "../../../../common/array/ensure-array";
+import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { preventDefaultStopPropagation } from "../../../../common/dom/prevent_default_stop_propagation";
 import { stopPropagation } from "../../../../common/dom/stop_propagation";
+import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import { truncateWithEllipsis } from "../../../../common/string/truncate-with-ellipsis";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import "../../../../components/automation/ha-automation-row";
 import type { HaAutomationRow } from "../../../../components/automation/ha-automation-row";
 import "../../../../components/ha-card";
@@ -28,15 +32,19 @@ import "../../../../components/ha-dropdown-item";
 import "../../../../components/ha-expansion-panel";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-yaml-editor";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type {
   Condition,
   OptionSidebarConfig,
   TriggerCondition,
 } from "../../../../data/automation";
+import { getRowNote } from "../../../../data/automation";
 import { describeCondition } from "../../../../data/automation_i18n";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type { Action, Option } from "../../../../data/script";
+import { migrateAutomationAction } from "../../../../data/script";
 import { showPromptDialog } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
@@ -45,14 +53,17 @@ import type HaAutomationAction from "../action/ha-automation-action";
 import "../condition/ha-automation-condition";
 import type HaAutomationCondition from "../condition/ha-automation-condition";
 import { showEditorToast } from "../editor-toast";
-import "../trigger/ha-automation-trigger-references";
+import "../ha-automation-editor-warning";
+import { scrollRowIntoView } from "../scroll-row-into-view";
+import { optionStruct } from "../structs";
 import {
   editorStyles,
   indentStyle,
   overflowStyles,
   rowStyles,
 } from "../styles";
-import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
+import "../trigger/ha-automation-trigger-references";
+import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 
 @customElement("ha-automation-option-row")
 export default class HaAutomationOptionRow extends LitElement {
@@ -84,6 +95,15 @@ export default class HaAutomationOptionRow extends LitElement {
 
   @state() private _collapsed = true;
 
+  @state() private _yamlMode = false;
+
+  @state() private _warnings?: string[];
+
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+
+  // Unknown because sidebar YAML may not be a valid option
+  private _sidebarOption?: unknown;
+
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
@@ -99,6 +119,44 @@ export default class HaAutomationOptionRow extends LitElement {
 
   get selected() {
     return this._selected;
+  }
+
+  public static checkUiSupport(
+    _localize: LocalizeFunc,
+    option: Option
+  ): Error | undefined {
+    try {
+      assert(option, optionStruct);
+    } catch (err: any) {
+      return err;
+    }
+    return undefined;
+  }
+
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (changedProperties.has("option") || changedProperties.has("_yamlMode")) {
+      this._warnings =
+        this._yamlMode && isConfigObject(this.option)
+          ? getUiSupportWarnings(
+              this.hass.localize,
+              "ha-automation-option-row",
+              this.option
+            )
+          : undefined;
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // Sync the sidebar with inline edits, skip its own saves to keep focus
+    if (
+      changedProperties.has("option") &&
+      this._selected &&
+      this.optionsInSidebar &&
+      this.option !== this._sidebarOption
+    ) {
+      this.openSidebar();
+    }
   }
 
   private _expandedChanged(ev) {
@@ -158,10 +216,7 @@ export default class HaAutomationOptionRow extends LitElement {
       firstCondition?.condition === "trigger"
         ? (firstCondition as TriggerCondition)
         : undefined;
-    const noteTooltipText = truncateWithEllipsis(
-      this.option?.note?.trim() || "",
-      250
-    );
+    const note = getRowNote(this.option?.note);
 
     return html`
       <h3 slot="header">
@@ -192,7 +247,7 @@ export default class HaAutomationOptionRow extends LitElement {
             : nothing
         }
         ${
-          this.option?.note?.trim()
+          note
             ? html`
                 <ha-svg-icon
                   id="note-icon"
@@ -204,7 +259,7 @@ export default class HaAutomationOptionRow extends LitElement {
                   class="note-indicator"
                 ></ha-svg-icon>
                 <ha-tooltip for="note-icon"
-                  ><p>${noteTooltipText}</p></ha-tooltip
+                  ><p>${truncateWithEllipsis(note, 250)}</p></ha-tooltip
                 >
               `
             : nothing
@@ -258,6 +313,21 @@ export default class HaAutomationOptionRow extends LitElement {
                   ${this._renderOverflowLabel(
                     this.hass.localize(
                       "ui.panel.config.automation.editor.actions.duplicate"
+                    )
+                  )}
+                </ha-dropdown-item>
+
+                <ha-dropdown-item
+                  value="toggle_yaml_mode"
+                  .disabled=${!!this._warnings}
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${mdiPlaylistEdit}
+                  ></ha-svg-icon>
+                  ${this._renderOverflowLabel(
+                    this.hass.localize(
+                      `ui.panel.config.automation.editor.edit_${!this._yamlMode ? "yaml" : "ui"}`
                     )
                   )}
                 </ha-dropdown-item>
@@ -327,6 +397,30 @@ export default class HaAutomationOptionRow extends LitElement {
   }
 
   private _renderContent() {
+    // In sidebar layout, YAML is edited in the sidebar
+    if (this._yamlMode && this.option && !this.optionsInSidebar) {
+      return html`<div class="card-content card">
+        ${
+          this._warnings
+            ? html`<ha-automation-editor-warning
+                .localize=${this.hass.localize}
+                .warnings=${this._warnings}
+              ></ha-automation-editor-warning>`
+            : nothing
+        }
+        <ha-yaml-editor
+          .defaultValue=${this.option}
+          .readOnly=${this.disabled}
+          @value-changed=${this._onYamlChange}
+        ></ha-yaml-editor>
+      </div>`;
+    }
+
+    // The visual editors can't render options that aren't UI-supported
+    if (this._warnings) {
+      return nothing;
+    }
+
     return html`<div
       class=${classMap({
         "card-content": true,
@@ -416,6 +510,39 @@ export default class HaAutomationOptionRow extends LitElement {
     fireEvent(this, "duplicate");
   };
 
+  private _toggleYamlMode = () => {
+    this._yamlMode = !this._yamlMode;
+    if (this.optionsInSidebar) {
+      // YAML is edited in the sidebar, so open (or refresh) it
+      this.openSidebar();
+    } else {
+      this.expand();
+    }
+  };
+
+  private _onYamlChange(ev: CustomEvent) {
+    ev.stopPropagation();
+    if (!ev.detail.isValid) {
+      return;
+    }
+    this._saveYamlOption(ev.detail.value);
+  }
+
+  private _saveYamlOption(value: unknown) {
+    // YAML can parse to scalars or lists, which are never valid options
+    if (!isConfigObject(value)) {
+      return;
+    }
+    const option = value.sequence
+      ? {
+          ...value,
+          sequence: migrateAutomationAction(value.sequence as Action[]),
+        }
+      : value;
+    this._sidebarOption = option;
+    fireEvent(this, "value-changed", { value: option });
+  }
+
   private _moveUp() {
     fireEvent(this, "move-up");
   }
@@ -444,6 +571,9 @@ export default class HaAutomationOptionRow extends LitElement {
         break;
       case "duplicate":
         this._duplicateOption();
+        break;
+      case "toggle_yaml_mode":
+        this._toggleYamlMode();
         break;
       case "move_up":
         this._moveUp();
@@ -490,7 +620,7 @@ export default class HaAutomationOptionRow extends LitElement {
       confirmText: this.hass.localize("ui.common.submit"),
     });
     if (alias !== null) {
-      const value = { ...this.option };
+      const value: Option = { ...this.option! };
       if (alias === "") {
         delete value.alias;
       } else {
@@ -499,6 +629,12 @@ export default class HaAutomationOptionRow extends LitElement {
       fireEvent(this, "value-changed", {
         value,
       });
+
+      if (this._selected) {
+        this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this._yamlEditor?.setValue(value);
+      }
     }
   };
 
@@ -531,6 +667,8 @@ export default class HaAutomationOptionRow extends LitElement {
 
       if (this._selected) {
         this.openSidebar(value); // refresh sidebar
+      } else if (this._yamlMode) {
+        this._yamlEditor?.setValue(value);
       }
     }
   };
@@ -568,7 +706,11 @@ export default class HaAutomationOptionRow extends LitElement {
 
   public openSidebar(option?: Option): void {
     const sidebarOption = option ?? this.option;
+    this._sidebarOption = sidebarOption;
     fireEvent(this, "open-sidebar", {
+      save: (value) => {
+        this._saveYamlOption(value);
+      },
       close: (focus?: boolean) => {
         this._selected = false;
         fireEvent(this, "close-sidebar");
@@ -582,6 +724,15 @@ export default class HaAutomationOptionRow extends LitElement {
       editNote: this._editNoteOption,
       delete: this._removeOption,
       duplicate: this._duplicateOption,
+      toggleYamlMode: (yamlMode?: boolean) => {
+        if (yamlMode === undefined || yamlMode !== this._yamlMode) {
+          this._toggleYamlMode();
+        }
+      },
+      yamlMode: this._yamlMode,
+      config: {
+        option: sidebarOption,
+      },
       defaultOption: !!this.defaultActions,
       note: sidebarOption?.note,
     } satisfies OptionSidebarConfig);
@@ -590,10 +741,7 @@ export default class HaAutomationOptionRow extends LitElement {
 
     if (this.narrow) {
       window.setTimeout(() => {
-        this.scrollIntoView({
-          block: "start",
-          behavior: "smooth",
-        });
+        scrollRowIntoView(this);
       }, 180); // duration of transition of added padding for bottom sheet
     }
   }

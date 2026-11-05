@@ -1,5 +1,6 @@
 import { endOfToday, isToday, startOfToday } from "date-fns";
 import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
+import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -7,6 +8,7 @@ import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
 import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { getEnergyColor } from "./common/color";
+import { sumEnergyStatistics } from "./common/sum-statistics";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import { formatNumber } from "../../../../common/number/format_number";
@@ -29,6 +31,7 @@ import type {
 } from "../../../../data/energy";
 import {
   computeConsumptionData,
+  energySourcesByType,
   getSuggestedPeriod,
   getSummedData,
   validateEnergyCollectionKey,
@@ -66,6 +69,7 @@ const colorPropertyMap = {
   used_solar: "--energy-solar-color",
   from_battery: "--energy-battery-out-color",
   used_battery: "--energy-battery-out-color",
+  used_home: "--primary-color",
 };
 
 const stackOrder = {
@@ -76,6 +80,7 @@ const stackOrder = {
   used_battery: 4,
   from_grid: 5,
   used_grid: 5,
+  used_home: 6,
 };
 
 @customElement("hui-energy-usage-graph-card")
@@ -116,6 +121,8 @@ export class HuiEnergyUsageGraphCard
 
   @state() private _total?: number;
 
+  private _data?: EnergyData;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: HomeAssistantInternationalization;
@@ -140,7 +147,10 @@ export class HuiEnergyUsageGraphCard
     super();
     new EnergyCollectionController(this, {
       config: () => this._config,
-      onData: (data) => this._getStatistics(data),
+      onData: (data) => {
+        this._data = data;
+        this._getStatistics(data);
+      },
     });
   }
 
@@ -153,6 +163,12 @@ export class HuiEnergyUsageGraphCard
       validateEnergyCollectionKey(config.collection_key);
     }
     this._config = config;
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    if (changedProps.has("_config") && this._data) {
+      this._getStatistics(this._data);
+    }
   }
 
   protected render() {
@@ -292,11 +308,22 @@ export class HuiEnergyUsageGraphCard
     }
   );
 
-  private async _getStatistics(energyData: EnergyData): Promise<void> {
+  private _getStatistics(energyData: EnergyData): void {
     if (!this.isConnected) {
       return;
     }
 
+    const combine =
+      this._config!.combine_sources ?? energyData.combineSources ?? false;
+    const combineTypes = new Set<string>(
+      (["grid", "battery"] as const).filter(
+        (type) =>
+          combine &&
+          energyData.prefs.energy_sources.filter(
+            (source) => source.type === type
+          ).length > 1
+      )
+    );
     const datasets: BarSeriesOption[] = [];
 
     let yMin = Infinity;
@@ -397,6 +424,42 @@ export class HuiEnergyUsageGraphCard
       }
     }
 
+    if (combineTypes.size) {
+      const gridName = this._i18n.localize(
+        "ui.panel.lovelace.cards.energy.energy_distribution.grid"
+      );
+      const batteryName = this._i18n.localize(
+        "ui.panel.lovelace.cards.energy.energy_distribution.battery"
+      );
+      const combinedLabels = {
+        from_grid: statIds.to_grid
+          ? this._i18n.localize(
+              "ui.panel.lovelace.cards.energy.energy_usage_graph.named_grid_consumed",
+              { name: gridName }
+            )
+          : gridName,
+        to_grid: statIds.from_grid
+          ? this._i18n.localize(
+              "ui.panel.lovelace.cards.energy.energy_usage_graph.named_grid_exported",
+              { name: gridName }
+            )
+          : gridName,
+        to_battery: this._i18n.localize(
+          "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_charged",
+          { name: batteryName }
+        ),
+        from_battery: this._i18n.localize(
+          "ui.panel.lovelace.cards.energy.energy_sources_table.named_battery_discharged",
+          { name: batteryName }
+        ),
+      };
+      Object.entries(combinedLabels).forEach(([key, label]) => {
+        if (statIds[key] && combineTypes.has(key.split("_")[1])) {
+          statLabels[key][statIds[key][0]] = label;
+        }
+      });
+    }
+
     const computedStyles = getComputedStyle(this);
 
     const colorIndices: Record<string, Record<string, number>> = {};
@@ -426,6 +489,9 @@ export class HuiEnergyUsageGraphCard
       used_battery: this._i18n.localize(
         "ui.panel.lovelace.cards.energy.energy_usage_graph.consumed_battery"
       ),
+      used_home:
+        energySourcesByType(energyData.prefs).home?.[0]?.name ||
+        this._hassConfig.location_name,
     };
 
     this._start = energyData.start;
@@ -453,6 +519,7 @@ export class HuiEnergyUsageGraphCard
           typeLabels,
           statLabels,
           trackY,
+          combineTypes,
           true
         )
       );
@@ -481,6 +548,7 @@ export class HuiEnergyUsageGraphCard
         typeLabels,
         statLabels,
         trackY,
+        combineTypes,
         false
       )
     );
@@ -514,10 +582,18 @@ export class HuiEnergyUsageGraphCard
         .map((dataset) => dataset.id as string)
         .filter((id) => id?.startsWith("compare-"))
     );
+    const idsWithData = new Set(
+      datasets
+        .filter((dataset) => (dataset.data as unknown[]).length)
+        .map((dataset) => dataset.id as string)
+    );
     return datasets
       .filter(
         (dataset) =>
-          dataset.id && !(dataset.id as string).startsWith("compare-")
+          dataset.id &&
+          !(dataset.id as string).startsWith("compare-") &&
+          (idsWithData.has(dataset.id as string) ||
+            idsWithData.has(`compare-${dataset.id}`))
       )
       .map((dataset) => {
         const id = dataset.id as string;
@@ -554,6 +630,7 @@ export class HuiEnergyUsageGraphCard
       used_grid: string;
       used_solar: string;
       used_battery: string;
+      used_home: string;
     },
     statLabels: {
       to_grid: Record<string, string>;
@@ -562,6 +639,7 @@ export class HuiEnergyUsageGraphCard
       from_battery: Record<string, string>;
     },
     trackY: (v: number) => void,
+    combineTypes: Set<string>,
     compare = false
   ) {
     const data: BarSeriesOption[] = [];
@@ -574,6 +652,7 @@ export class HuiEnergyUsageGraphCard
       used_grid?: Record<string, Record<number, number>>;
       used_solar?: Record<string, Record<number, number>>;
       used_battery?: Record<string, Record<number, number>>;
+      used_home?: Record<string, Record<number, number>>;
     } = {};
 
     Object.entries(statIdsByCat).forEach(([key, statIds]) => {
@@ -583,9 +662,22 @@ export class HuiEnergyUsageGraphCard
         return;
       }
       const sets: Record<string, Record<number, number>> = {};
+      if (combineTypes.has(key.split("_")[1])) {
+        // The first source carries the sum and the others stay as empty
+        // series, so switching modes keeps the stack order.
+        statIds!.forEach((id) => {
+          sets[id] = {};
+        });
+        sumEnergyStatistics(statistics, statIds!).forEach((stat) => {
+          sets[statIds![0]][stat.start] = stat.change!;
+        });
+        combinedData[key] = sets;
+        return;
+      }
       statIds!.forEach((id) => {
         const stats = statistics[id];
         if (!stats) {
+          sets[id] = {};
           return;
         }
 
@@ -607,7 +699,8 @@ export class HuiEnergyUsageGraphCard
     // Only add the solar consumption series when solar is configured,
     // otherwise the legend shows an empty solar entry for grid-only setups.
     // Combined used_grid and used_battery are fallbacks for periods that
-    // can't be split per source; skip them when they have no points.
+    // can't be split per source; they stay as empty series when they have no
+    // points, so the stack keeps its order.
     if (statIdsByCat.solar) {
       combinedData.used_solar = { used_solar: consumptionData.used_solar };
     }
@@ -620,25 +713,39 @@ export class HuiEnergyUsageGraphCard
           (summedData.from_battery?.[start] ?? 0) -
           consumptionData.used_battery[start];
       }
-      const used_battery = buildCombinedUsed(
-        combinedData.from_battery,
-        batteryNotUsed,
-        consumptionData.used_battery
-      );
-      if (used_battery) {
-        combinedData.used_battery = { used_battery };
-      }
+      combinedData.used_battery = {
+        used_battery:
+          buildCombinedUsed(
+            combinedData.from_battery,
+            batteryNotUsed,
+            consumptionData.used_battery
+          ) ?? {},
+      };
     }
 
     if (combinedData.from_grid && summedData.to_battery) {
-      const used_grid = buildCombinedUsed(
-        combinedData.from_grid,
-        consumptionData.grid_to_battery,
-        consumptionData.used_grid
-      );
-      if (used_grid) {
-        combinedData.used_grid = { used_grid };
+      combinedData.used_grid = {
+        used_grid:
+          buildCombinedUsed(
+            combinedData.from_grid,
+            consumptionData.grid_to_battery,
+            consumptionData.used_grid
+          ) ?? {},
+      };
+    }
+
+    if (summedData.home) {
+      const used_home: Record<number, number> = {};
+      for (const start of summedData.timestamps) {
+        used_home[start] = Math.max(
+          0,
+          consumptionData.used_total[start] -
+            consumptionData.used_grid[start] -
+            consumptionData.used_solar[start] -
+            consumptionData.used_battery[start]
+        );
       }
+      combinedData.used_home = { used_home };
     }
 
     const uniqueKeys = summedData.timestamps;
@@ -661,7 +768,7 @@ export class HuiEnergyUsageGraphCard
       Object.entries(sources).forEach(([statId, source]) => {
         const points: BarSeriesOption["data"] = [];
         // Process chart data.
-        for (const key of uniqueKeys) {
+        for (const key of Object.keys(source).length ? uniqueKeys : []) {
           const value = source[key] || 0;
           const y =
             value && ["to_grid", "to_battery"].includes(type)

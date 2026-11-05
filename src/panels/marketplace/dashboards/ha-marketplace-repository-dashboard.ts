@@ -11,6 +11,7 @@ import {
   mdiGithub,
   mdiRestart,
   mdiStar,
+  mdiTestTube,
   mdiUpdate,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -19,6 +20,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { consume } from "../../../common/decorators/consume";
+import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { formatNumber } from "../../../common/number/format_number";
@@ -37,11 +39,13 @@ import "../../../components/ha-svg-icon";
 import { getConfigEntries } from "../../../data/config_entries";
 import {
   apiContext,
+  brandsAccessTokenContext,
   configContext,
   internationalizationContext,
-  statesContext,
   uiContext,
 } from "../../../data/context";
+import type { UpdateEntity } from "../../../data/update";
+import { latestVersionIsSkipped } from "../../../data/update";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showRestartDialog } from "../../../dialogs/restart/show-dialog-restart";
@@ -69,6 +73,7 @@ import {
   addMarketplaceRepository,
   fetchMarketplaceRepositories,
   fetchMarketplaceRepository,
+  setMarketplaceRepositoryBeta,
 } from "../../../data/marketplace/repository";
 import {
   ERROR_GITHUB_RATE_LIMITED,
@@ -144,11 +149,17 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   })
   private _hassUrl!: string;
 
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
+
   @consume({ context: apiContext, subscribe: true })
   private _api!: ContextType<typeof apiContext>;
 
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
+  @state()
+  @consumeEntityState({ entityIdPath: ["_repository", "update_entity_id"] })
+  private _updateEntity?: UpdateEntity;
 
   @state() private _repository?: RepositoryInfo;
 
@@ -163,6 +174,8 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
   // Only the newest request counts, also one for the same repository
   private _request = 0;
+
+  private _settingPreReleases = new Set<string>();
 
   protected async firstUpdated(
     changedProperties: PropertyValues<this>
@@ -333,6 +346,31 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   // The list does not carry the fields only this page shows, those need a fetch
   public reloadRepository(): void {
     this._fetchRepository();
+  }
+
+  // Core fetches the repository from GitHub again before answering
+  public async includePreReleases(include: boolean): Promise<void> {
+    const repositoryId = this._repository!.id;
+    if (this._settingPreReleases.has(repositoryId)) {
+      return;
+    }
+    this._repository = { ...this._repository!, beta: include };
+    this._settingPreReleases.add(repositoryId);
+
+    try {
+      await setMarketplaceRepositoryBeta(this._api, repositoryId, include);
+    } catch (err: unknown) {
+      if (this._repository?.id === repositoryId) {
+        this._repository = { ...this._repository, beta: !include };
+      }
+      throw err;
+    } finally {
+      this._settingPreReleases.delete(repositoryId);
+    }
+
+    if (this._repository?.id === repositoryId) {
+      this._fetchRepository();
+    }
   }
 
   private _loadRepositoryFromRoute(): void {
@@ -601,7 +639,11 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
     }
 
     // Installing and updating are the main actions, a reinstall stays in the menu
-    if (repository.pending_upgrade) {
+    const updateSkipped =
+      this._updateEntity !== undefined &&
+      latestVersionIsSkipped(this._updateEntity);
+
+    if (repository.pending_upgrade && !updateSkipped) {
       return {
         kind: "update",
         icon: mdiArrowUpBoldCircleOutline,
@@ -630,8 +672,39 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
         detail: localize("ui.panel.marketplace.repository.next_step.restart", {
           name,
         }),
-        action: html`<ha-button appearance="filled" @click=${this._restart}>
+        action: html`<ha-button
+          variant="warning"
+          appearance="filled"
+          @click=${this._restart}
+        >
+          <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
           ${localize("ui.panel.marketplace.repository.next_step.restart_button")}
+        </ha-button>`,
+      };
+    }
+
+    // A skipped update can still be installed or unskipped from its entity
+    if (repository.pending_upgrade) {
+      return {
+        kind: "installed",
+        icon: mdiCheckCircle,
+        title: localize(
+          "ui.panel.marketplace.repository_status.update_skipped"
+        ),
+        detail: localize("ui.panel.marketplace.repository.version_skipped", {
+          installed: repository.installed_version,
+          version: repository.available_version,
+        }),
+        action: html`<ha-button
+          variant="neutral"
+          appearance="outlined"
+          @click=${this._update}
+        >
+          <ha-svg-icon
+            slot="start"
+            .path=${mdiArrowUpBoldCircleOutline}
+          ></ha-svg-icon>
+          ${localize("ui.common.update")}
         </ha-button>`,
       };
     }
@@ -852,6 +925,14 @@ type: module</pre>`,
         }),
       });
     }
+    if (repository.beta) {
+      signals.push({
+        icon: mdiTestTube,
+        text: localize(
+          "ui.panel.marketplace.repository.details.pre_releases_included"
+        ),
+      });
+    }
     const lastChange = this._relativeTime(repository.last_updated);
     if (lastChange) {
       signals.push({
@@ -887,7 +968,7 @@ type: module</pre>`,
         ? {
             icon: mdiAlertCircleOutline,
             text: localize(
-              "ui.panel.marketplace.repository.community.open_issues",
+              "ui.panel.marketplace.repository.community.open_issues_and_prs",
               {
                 number: repository.issues,
                 count: html`<strong
@@ -899,7 +980,7 @@ type: module</pre>`,
         : {
             icon: mdiCheckCircleOutline,
             text: localize(
-              "ui.panel.marketplace.repository.community.no_open_issues"
+              "ui.panel.marketplace.repository.community.no_open_issues_and_prs"
             ),
           }
     );
@@ -921,10 +1002,10 @@ type: module</pre>`,
   // Updates are installed from their update entity everywhere else too, the
   // install dialog is for when there is none
   private _update() {
-    const entityId = this._repository!.update_entity_id;
-
-    if (entityId && this._states[entityId]) {
-      fireEvent(this, "hass-more-info", { entityId });
+    if (this._updateEntity) {
+      fireEvent(this, "hass-more-info", {
+        entityId: this._updateEntity.entity_id,
+      });
       return;
     }
 
@@ -972,8 +1053,8 @@ type: module</pre>`,
           flex-direction: column;
           gap: var(--ha-space-4);
           margin: auto;
-          padding: var(--ha-space-4);
-          max-width: 1200px;
+          padding: var(--ha-space-4) var(--ha-content-gutter);
+          max-width: var(--ha-content-width-wide);
         }
         .header {
           display: flex;

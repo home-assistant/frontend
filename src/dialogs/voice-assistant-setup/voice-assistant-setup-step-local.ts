@@ -362,7 +362,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       return;
     }
 
-    const pipelines = await listAssistPipelines(this.hass);
+    const pipelines = await listAssistPipelines(this.hass.callWS);
 
     if (pipelines.preferred_pipeline) {
       pipelines.pipelines.sort((a) =>
@@ -402,11 +402,11 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   private async _createPipeline(ttsEntityId: string, sttEntityId: string) {
     // Create a pipeline with local TTS and STT
 
-    const pipelines = await listAssistPipelines(this.hass);
+    const pipelines = await listAssistPipelines(this.hass.callWS);
 
     const agent = (
       await listAgents(
-        this.hass,
+        this.hass.callWS,
         this.language || this.hass.config.language,
         this.hass.config.country || undefined
       )
@@ -420,7 +420,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     const ttsEngine = (
       await listTTSEngines(
-        this.hass,
+        this.hass.callWS,
         this.language,
         this.hass.config.country || undefined
       )
@@ -431,7 +431,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
 
     const ttsVoices = await listTTSVoices(
-      this.hass,
+      this.hass.callWS,
       ttsEntityId,
       ttsEngine.supported_languages[0]
     );
@@ -442,7 +442,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     const sttEngine = (
       await listSTTEngines(
-        this.hass,
+        this.hass.callWS,
         this.language,
         this.hass.config.country || undefined
       )

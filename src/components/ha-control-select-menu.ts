@@ -71,11 +71,12 @@ export class HaControlSelectMenu extends LitElement {
     >
       ${this._renderIcon()}
       <div class="content">
-        ${
-          this.hideLabel
-            ? nothing
-            : html`<p id="label" class="label">${this.label}</p>`
-        }
+        <p
+          id="label"
+          class="label ${classMap({ "visually-hidden": this.hideLabel })}"
+        >
+          ${this.label}
+        </p>
         ${selectedText ? html`<p class="value">${selectedText}</p>` : nothing}
       </div>
       ${this._renderArrow()}
@@ -233,6 +234,17 @@ export class HaControlSelectMenu extends LitElement {
 
       .content .value {
         font-size: var(--ha-font-size-m);
+      }
+
+      .content .visually-hidden {
+        position: absolute;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        width: 1px;
+        margin: -1px;
+        padding: 0;
+        border: 0;
       }
 
       .select-anchor:focus-visible {

@@ -49,10 +49,24 @@ class TestDirtyStateProvider extends DirtyStateProviderMixin<TestState>()(
 
 customElements.define("test-dirty-state-provider", TestDirtyStateProvider);
 
+class TestReloadBlockingProvider extends TestDirtyStateProvider {
+  @state() public blocking = false;
+
+  protected override get _blocksReload(): boolean {
+    return this.isDirtyState || this.blocking;
+  }
+}
+
+customElements.define(
+  "test-reload-blocking-provider",
+  TestReloadBlockingProvider
+);
+
 declare global {
   interface HTMLElementTagNameMap {
     "test-dirty-state-consumer": TestDirtyStateConsumer;
     "test-dirty-state-provider": TestDirtyStateProvider;
+    "test-reload-blocking-provider": TestReloadBlockingProvider;
   }
 }
 
@@ -68,9 +82,13 @@ const mountProvider = async () => {
 };
 
 afterEach(() => {
-  document.querySelectorAll("test-dirty-state-provider").forEach((element) => {
-    element.remove();
-  });
+  document
+    .querySelectorAll(
+      "test-dirty-state-provider, test-reload-blocking-provider"
+    )
+    .forEach((element) => {
+      element.remove();
+    });
   provider = undefined;
   window.isDirtyState = false;
 });
@@ -272,6 +290,26 @@ describe("DirtyStateProviderMixin", () => {
     expect(listener).toHaveBeenCalledOnce();
     expect(listener.mock.calls[0][0].detail).toEqual({ isDirty: false });
     window.removeEventListener("dirty-state-changed", listener);
+  });
+
+  it("publishes a reload block without marking its own state dirty", async () => {
+    const element = document.createElement("test-reload-blocking-provider");
+    document.body.append(element);
+    element.initialize(
+      { type: "shallow" },
+      { name: "Kitchen", enabled: false }
+    );
+    await element.updateComplete;
+    expect(window.isDirtyState).toBe(false);
+
+    element.blocking = true;
+    await element.updateComplete;
+    expect(window.isDirtyState).toBe(true);
+    expect(element.isDirtyState).toBe(false);
+
+    element.blocking = false;
+    await element.updateComplete;
+    expect(window.isDirtyState).toBe(false);
   });
 
   it("hands global dirty state to the next provider after disconnecting", async () => {

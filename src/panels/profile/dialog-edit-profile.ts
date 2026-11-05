@@ -224,7 +224,7 @@ class DialogEditProfile extends DirtyStateProviderMixin<ProfileFormState>()(
         ha-picture-upload {
           display: block;
           margin-bottom: var(--ha-space-4);
-          --file-upload-image-border-radius: var(--ha-border-radius-circle);
+          --file-upload-image-border-radius: var(--ha-picture-border-radius);
         }
         ha-alert {
           display: block;

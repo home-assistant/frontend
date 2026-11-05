@@ -16,8 +16,8 @@ import {
 // other one is built in the browser. The attribution comes from the TileJSON,
 // deliberately: it follows whoever serves the tiles.
 const SHIPPED_STYLES = {
-  light: "/static/map/light.json",
-  dark: "/static/map/dark.json",
+  light: `${__STATIC_PATH__}map/light.json`,
+  dark: `${__STATIC_PATH__}map/dark.json`,
 } as const;
 
 // MapLibre needs WebGL2 even for raster, so the fallback stays a Leaflet layer.
@@ -28,7 +28,7 @@ const RASTER_TILE_URL = `${MAP_TILES_PATH}/raster/{z}/{x}/{y}.png?token={token}`
 // policy strips again unless the tiles ask for it back.
 const DEMO_RASTER_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const OSM_ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
 // Browsers keep about 16 live WebGL contexts and drop the oldest, which a
 // dashboard full of map cards hits. A transient loss is restored, hence a grace.
@@ -70,13 +70,10 @@ export const supportsWebGL2 = (): boolean => {
 
 // The one gate for MapLibre, whether through the Leaflet adapter or the
 // engine `ha-map` drives directly. Its worker is bundled per build target
-// like the rest of it, so wherever the page runs, the worker runs too - with
-// one exception. Babel transpiles everything MapLibre is written in except
-// BigInt literals, which have no ES2017 spelling. A browser without BigInt
-// (Chromium below 67, such as Fire OS 5 tablets) cannot parse the chunk, and
-// a worker that cannot parse never reports back, hence the check up front.
-export const supportsVectorMaps = (): boolean =>
-  supportsWebGL2() && typeof BigInt === "function";
+// like the rest of it, so wherever the page runs, the worker runs too: the
+// legacy floor (Chrome 67 / Safari 15) guarantees the BigInt literals MapLibre
+// uses, which Babel cannot transpile.
+export const supportsVectorMaps = (): boolean => supportsWebGL2();
 
 // The demo has no core to proxy through. OSM sets CORS on its tiles but not on
 // its glyphs, which is why those come from VersaTiles.
@@ -95,8 +92,12 @@ const useDemoUpstream = (style: StyleSpecification): StyleSpecification => {
   return style;
 };
 
+// The origin that serves the frontend's files: the page, except for the demo
+// embed on another site
+const filesBase = () => new URL(__STATIC_PATH__, location.href);
+
 // MapLibre rejects a relative sprite URL
-const absoluteSprite = (url: string) => new URL(url, location.href).href;
+const absoluteSprite = (url: string) => new URL(url, filesBase()).href;
 
 // Shared only while in flight, or a style that failed once would never be
 // fetched again. Text rather than a parsed style: MapLibre mutates what it
@@ -128,7 +129,7 @@ export const loadStyle = async (
       ).buildMapStyle(
         mapStyle.palette,
         mapStyle.options ?? {},
-        mapStyle.baseColors
+        mapStyle.styleOptions
       );
 
   if (typeof style.sprite === "string") {
@@ -144,14 +145,15 @@ export const loadStyle = async (
 
 // Global to MapLibre; set once before the first map is created. Absolute,
 // because on Cast the page is not served from the instance. The URL comes
-// from the build: the worker is an entry of its own, next to the app.
+// from the build: the worker is an entry of its own, next to the app. MapLibre
+// starts a worker from another origin itself.
 let workerUrlSet = false;
 export const ensureWorkerUrl = (setUrl: typeof setWorkerUrl) => {
   if (workerUrlSet) {
     return;
   }
   workerUrlSet = true;
-  setUrl(new URL(__MAPLIBRE_WORKER_URL__, location.href).href);
+  setUrl(new URL(__MAPLIBRE_WORKER_URL__, filesBase()).href);
 };
 
 const createVectorLayer = async (

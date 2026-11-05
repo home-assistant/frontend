@@ -75,7 +75,7 @@ export interface LovelaceBaseViewConfig {
 
 export interface LovelaceViewConfig extends LovelaceBaseViewConfig {
   type?: string;
-  badges?: (string | Partial<LovelaceBadgeConfig>)[]; // Badge can be just an entity_id or without type
+  badges?: LovelaceBadgeConfig[];
   cards?: LovelaceCardConfig[];
   sections?: LovelaceSectionRawConfig[];
   header?: LovelaceViewHeaderConfig;

@@ -8,6 +8,7 @@ import {
   assert,
   assign,
   boolean,
+  enums,
   number,
   object,
   optional,
@@ -23,6 +24,7 @@ import type {
   HaFormSchema,
   SchemaUnion,
 } from "../../../../components/ha-form/types";
+import { isTimelineEntity } from "../../../../data/history";
 import type { HomeAssistant } from "../../../../types";
 import { DEFAULT_HOURS_TO_SHOW } from "../../cards/hui-history-graph-card";
 import type {
@@ -46,6 +48,7 @@ const cardConfigStruct = assign(
     hours_to_show: optional(number()),
     refresh_interval: optional(number()), // deprecated
     show_names: optional(boolean()),
+    label_position: optional(enums(["side", "below"])),
     logarithmic_scale: optional(boolean()),
     expand_legend: optional(boolean()),
     min_y_axis: optional(number()),
@@ -53,65 +56,6 @@ const cardConfigStruct = assign(
     fit_y_data: optional(boolean()),
   })
 );
-
-const SCHEMA = [
-  { name: "title", selector: { text: {} } },
-  {
-    name: "",
-    type: "grid",
-    schema: [
-      {
-        name: "hours_to_show",
-        default: DEFAULT_HOURS_TO_SHOW,
-        selector: { number: { min: 0, step: "any", mode: "box" } },
-      },
-      {
-        name: "show_names",
-        default: true,
-        required: false,
-        selector: { boolean: {} },
-      },
-      {
-        name: "logarithmic_scale",
-        required: false,
-        selector: { boolean: {} },
-      },
-      {
-        name: "expand_legend",
-        required: false,
-        selector: { boolean: {} },
-      },
-    ],
-  },
-  {
-    name: "",
-    type: "grid",
-    schema: [
-      {
-        name: "min_y_axis",
-        required: false,
-        selector: { number: { mode: "box", step: "any" } },
-      },
-      {
-        name: "max_y_axis",
-        required: false,
-        selector: { number: { mode: "box", step: "any" } },
-      },
-    ],
-  },
-  {
-    name: "fit_y_data",
-    required: false,
-    visible: {
-      condition: "or",
-      conditions: [
-        { field: "min_y_axis", operator: "exists" },
-        { field: "max_y_axis", operator: "exists" },
-      ],
-    },
-    selector: { boolean: {} },
-  },
-] as const satisfies readonly HaFormSchema[];
 
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
@@ -123,6 +67,90 @@ export class HuiHistoryGraphCardEditor
   @state() private _config?: HistoryGraphCardConfig;
 
   @state() private _subElementEditorConfig?: SubElementEditorConfig;
+
+  private _schema = memoizeOne(
+    (localize: LocalizeFunc, hasTimeline: boolean) =>
+      [
+        { name: "title", selector: { text: {} } },
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            {
+              name: "hours_to_show",
+              default: DEFAULT_HOURS_TO_SHOW,
+              selector: { number: { min: 0, step: "any", mode: "box" } },
+            },
+            {
+              name: "show_names",
+              default: true,
+              required: false,
+              selector: { boolean: {} },
+            },
+            {
+              name: "logarithmic_scale",
+              required: false,
+              selector: { boolean: {} },
+            },
+            {
+              name: "expand_legend",
+              required: false,
+              selector: { boolean: {} },
+            },
+          ],
+        },
+        ...(hasTimeline
+          ? ([
+              {
+                name: "label_position",
+                required: false,
+                visible: [
+                  { field: "show_names", operator: "not_eq", value: false },
+                ],
+                selector: {
+                  select: {
+                    mode: "dropdown",
+                    options: ["side", "below"].map((value) => ({
+                      value,
+                      label: localize(
+                        `ui.panel.lovelace.editor.card.history-graph.label_position_options.${value}`
+                      ),
+                    })),
+                  },
+                },
+              },
+            ] as const satisfies readonly HaFormSchema[])
+          : []),
+        {
+          name: "",
+          type: "grid",
+          schema: [
+            {
+              name: "min_y_axis",
+              required: false,
+              selector: { number: { mode: "box", step: "any" } },
+            },
+            {
+              name: "max_y_axis",
+              required: false,
+              selector: { number: { mode: "box", step: "any" } },
+            },
+          ],
+        },
+        {
+          name: "fit_y_data",
+          required: false,
+          visible: {
+            condition: "or",
+            conditions: [
+              { field: "min_y_axis", operator: "exists" },
+              { field: "max_y_axis", operator: "exists" },
+            ],
+          },
+          selector: { boolean: {} },
+        },
+      ] as const satisfies readonly HaFormSchema[]
+  );
 
   public setConfig(config: HistoryGraphCardConfig): void {
     assert(config, cardConfigStruct);
@@ -179,12 +207,19 @@ export class HuiHistoryGraphCardEditor
     const configEntities = this._config.entities
       ? (processEditorEntities(this._config.entities) as GraphEntityConfig[])
       : [];
+    const hasTimeline = configEntities.some((entityConf) =>
+      isTimelineEntity(
+        computeDomain(entityConf.entity),
+        this.hass!.states[entityConf.entity]
+      )
+    );
     return html`
       <ha-form
         .hass=${this.hass}
         .data=${this._config}
-        .schema=${SCHEMA}
+        .schema=${this._schema(this.hass.localize, hasTimeline)}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
       <hui-entity-editor
@@ -278,9 +313,21 @@ export class HuiHistoryGraphCardEditor
     ) as HistoryGraphCardConfig;
   }
 
-  private _computeLabelCallback = (schema: SchemaUnion<typeof SCHEMA>) => {
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) =>
+    schema.name === "label_position"
+      ? this.hass!.localize(
+          "ui.panel.lovelace.editor.card.history-graph.label_position_helper"
+        )
+      : undefined;
+
+  private _computeLabelCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
     switch (schema.name) {
       case "show_names":
+      case "label_position":
       case "logarithmic_scale":
       case "expand_legend":
       case "min_y_axis":

@@ -3,9 +3,13 @@ import type { PropertyValues } from "lit";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../common/decorators/consume";
-import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
+import {
+  consumeEntityState,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-number-buttons";
 import "../../../components/ha-control-slider";
@@ -55,6 +59,10 @@ class HuiNumericInputCardFeature
   @state()
   @consume({ context: apiContext, subscribe: true })
   private _api!: HomeAssistantApi;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
 
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
@@ -119,9 +127,18 @@ class HuiNumericInputCardFeature
     const parsedState = Number(stateObj.state);
     const value = !isNaN(parsedState) ? parsedState : undefined;
 
+    const deviceClass = stateObj.attributes.device_class;
+    const label =
+      (deviceClass &&
+        this._localize(
+          `component.number.entity_component.${deviceClass}.name`
+        )) ||
+      this._localize("ui.card.common.value");
+
     if (this._config.style === "buttons") {
       return html`
         <ha-control-number-buttons
+          .label=${label}
           .value=${value}
           .min=${stateObj.attributes.min}
           .max=${stateObj.attributes.max}
@@ -135,6 +152,7 @@ class HuiNumericInputCardFeature
     }
     return html`
       <ha-control-slider
+        .label=${label}
         .value=${value}
         .min=${stateObj.attributes.min}
         .max=${stateObj.attributes.max}

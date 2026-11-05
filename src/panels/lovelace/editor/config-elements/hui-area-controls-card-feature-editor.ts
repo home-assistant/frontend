@@ -16,6 +16,7 @@ import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import {
   getAreaControlEntities,
+  getAreaEntityIds,
   MAX_DEFAULT_AREA_CONTROLS,
 } from "../../../../data/area/area_controls";
 import {
@@ -59,19 +60,25 @@ export class HuiAreaControlsCardFeatureEditor
     (
       areaId: string,
       excludeEntities: string[] | undefined,
-      // needed to update memoized function when entities, devices or areas change
-      _entities: HomeAssistant["entities"],
-      _devices: HomeAssistant["devices"],
-      _areas: HomeAssistant["areas"]
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areas: HomeAssistant["areas"],
+      floors: HomeAssistant["floors"]
     ) => {
-      if (!this.hass) {
-        return [];
-      }
-      const controlEntities = getAreaControlEntities(
-        AREA_CONTROL_DOMAINS,
+      const areaEntities = getAreaEntityIds(
+        entities,
+        devices,
         areaId,
-        excludeEntities,
-        this.hass!
+        excludeEntities
+      );
+      const controlEntities = getAreaControlEntities(
+        areaEntities,
+        this.hass!.states,
+        entities,
+        devices,
+        areas,
+        floors,
+        AREA_CONTROL_DOMAINS
       );
       return (
         Object.keys(controlEntities) as (keyof typeof controlEntities)[]
@@ -89,7 +96,8 @@ export class HuiAreaControlsCardFeatureEditor
       this.context.exclude_entities,
       this.hass.entities,
       this.hass.devices,
-      this.hass.areas
+      this.hass.areas,
+      this.hass.floors
     );
 
     if (supportedControls.length === 0) {
@@ -160,7 +168,6 @@ export class HuiAreaControlsCardFeatureEditor
                   : nothing
               }
               <ha-area-controls-picker
-                .hass=${this.hass}
                 .areaId=${this.context.area_id}
                 .excludeEntities=${this.context.exclude_entities}
                 .excludeValues=${excludeValues}
@@ -248,7 +255,8 @@ export class HuiAreaControlsCardFeatureEditor
         this.context!.exclude_entities,
         this.hass!.entities,
         this.hass!.devices,
-        this.hass!.areas
+        this.hass!.areas,
+        this.hass!.floors
       ).slice(0, MAX_DEFAULT_AREA_CONTROLS); // Limit to max default controls
     }
 

@@ -3,8 +3,6 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-button";
@@ -41,8 +39,8 @@ class EntityPreviewRow extends LitElement {
     }
     const stateObj = this.stateObj;
     return html`<state-badge .stateObj=${stateObj} color="state"></state-badge>
-      <div class="name" .title=${computeStateName(stateObj)}>
-        ${computeStateName(stateObj)}
+      <div class="name" .title=${this.hass.formatEntityName(stateObj)}>
+        ${this.hass.formatEntityName(stateObj)}
       </div>
       <div class="value">${this._renderEntityState(stateObj)}</div>`;
   }
@@ -160,7 +158,7 @@ class EntityPreviewRow extends LitElement {
       return html`
         <div class="datetimeflex">
           <ha-date-input
-            .label=${computeStateName(stateObj)}
+            .label=${this.hass.formatEntityName(stateObj)}
             .locale=${this.hass.locale}
             .value=${date}
             .disabled=${disabled}
@@ -225,7 +223,7 @@ class EntityPreviewRow extends LitElement {
       }
       return html`
         <img
-          alt=${ifDefined(stateObj?.attributes.friendly_name)}
+          alt=${this.hass.formatEntityName(stateObj)}
           src=${this.hass.hassUrl(image)}
         />
       `;
@@ -294,7 +292,7 @@ class EntityPreviewRow extends LitElement {
     if (domain === "select") {
       return html`
         <ha-select
-          .label=${computeStateName(stateObj)}
+          .label=${this.hass.formatEntityName(stateObj)}
           .value=${stateObj.state}
           .disabled=${disabled}
           .options=${
@@ -336,7 +334,7 @@ class EntityPreviewRow extends LitElement {
     if (domain === "text") {
       return html`
         <ha-input
-          .label=${computeStateName(stateObj)}
+          .label=${this.hass.formatEntityName(stateObj)}
           .disabled=${disabled}
           .value=${stateObj.state}
           .minlength=${stateObj.attributes.min}

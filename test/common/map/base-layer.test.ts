@@ -227,18 +227,6 @@ describe("createBaseLayer", () => {
     expect(options.referrerPolicy).toBe("origin");
   });
 
-  // MapLibre's code has BigInt literals in it, which Babel cannot transpile
-  // away, and a worker that fails to parse is silent - so no BigInt, no vector.
-  it("falls back to raster tiles without BigInt", async () => {
-    vi.stubGlobal("BigInt", undefined);
-    const createBaseLayer = await setWebGL2(true);
-
-    await createBaseLayer(leaflet, map, COLORFUL, TOKEN);
-
-    expect(isRaster()).toBe(true);
-    expect(maplibreGL).not.toHaveBeenCalled();
-  });
-
   // The worker is an entry of the build, and the build hands over its URL.
   // Absolute, because on Cast the page is not served from the instance.
   it("points MapLibre at the built worker once, before the first map", async () => {

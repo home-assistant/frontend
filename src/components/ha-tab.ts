@@ -1,7 +1,6 @@
 import type { TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import "./ha-ripple";
 
 @customElement("ha-tab")
@@ -17,14 +16,7 @@ export class HaTab extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div
-        tabindex="0"
-        role="tab"
-        aria-selected=${this.active}
-        aria-label=${ifDefined(this.name)}
-        aria-describedby=${ifDefined(this.badge ? "badge" : undefined)}
-        @keydown=${this._handleKeyDown}
-      >
+      <div>
         <span class="content">
           <span class="icon">
             <slot name="icon"></slot>
@@ -37,19 +29,13 @@ export class HaTab extends LitElement {
           <span class="name">${this.name}</span>
           ${
             this.badge
-              ? html`<span class="badge" id="badge">${this.badge}</span>`
+              ? html`<span class="badge">${this.badge}</span>`
               : nothing
           }
         </span>
         <ha-ripple></ha-ripple>
       </div>
     `;
-  }
-
-  private _handleKeyDown(ev: KeyboardEvent): void {
-    if (ev.key === "Enter") {
-      (ev.target as HTMLElement).click();
-    }
   }
 
   static styles = css`
@@ -64,7 +50,6 @@ export class HaTab extends LitElement {
       height: var(--header-height);
       cursor: pointer;
       position: relative;
-      outline: none;
     }
 
     .content {
@@ -115,7 +100,7 @@ export class HaTab extends LitElement {
       background-color: var(--ha-color-fill-primary-loud-resting);
     }
 
-    /* Hidden from view but still read out through aria-describedby */
+    /* Hidden from view but still read out as part of the link name */
     :host([narrow]) .badge {
       position: absolute;
       width: 1px;
@@ -158,20 +143,6 @@ export class HaTab extends LitElement {
 
     :host(:not([narrow])) ::slotted([slot="icon"]) {
       margin-bottom: 0;
-    }
-
-    div:focus-visible {
-      background-color: rgba(var(--rgb-secondary-text-color), 0.08);
-    }
-
-    @supports (color: color-mix(in srgb, black, transparent)) {
-      div:focus-visible {
-        background-color: color-mix(
-          in srgb,
-          var(--secondary-text-color) 8%,
-          transparent
-        );
-      }
     }
   `;
 }

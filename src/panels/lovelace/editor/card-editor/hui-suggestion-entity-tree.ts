@@ -76,6 +76,15 @@ const SELECTED_SEARCH_ROW_STYLE = {
   "--ha-combo-box-item-headline-font-weight": "var(--ha-font-weight-medium)",
 };
 
+/**
+ * @element hui-suggestion-entity-tree
+ *
+ * @summary Searchable tree of entities grouped by floor, area and domain.
+ *
+ * @cssprop --ha-suggestion-entity-tree-padding-bottom - Space at the end of the scrolling tree. Defaults to `var(--ha-space-3)` when smaller.
+ *
+ * @fires entity-picked - Fired with the ID of the picked entity.
+ */
 @customElement("hui-suggestion-entity-tree")
 export class HuiSuggestionEntityTree extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -608,7 +617,17 @@ export class HuiSuggestionEntityTree extends LitElement {
     const stateObj = this.hass.states[entityId];
     const selected = this.selectedEntityId === entityId;
     const name = stateObj
-      ? computeEntityPickerDisplay(this.hass, stateObj).primary
+      ? computeEntityPickerDisplay(
+          {
+            entities: this.hass.entities,
+            devices: this.hass.devices,
+            areas: this.hass.areas,
+            floors: this.hass.floors,
+            language: this.hass.language,
+            translationMetadata: this.hass.translationMetadata,
+          },
+          stateObj
+        ).primary
       : entityId;
     return html`
       <ha-list-item-button
@@ -782,7 +801,10 @@ export class HuiSuggestionEntityTree extends LitElement {
         .search-results {
           flex: 1;
           min-height: 0;
-          padding-bottom: var(--ha-space-3);
+          padding-bottom: max(
+            var(--ha-suggestion-entity-tree-padding-bottom, 0px),
+            var(--ha-space-3)
+          );
           --ha-row-item-padding-block: 0;
           --ha-row-item-padding-inline: 0;
           --ha-row-item-gap: 0;

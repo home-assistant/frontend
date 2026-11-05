@@ -35,7 +35,11 @@ export type LovelaceDashboardStrategyGetCreateSuggestions = (
 
 export interface LovelaceViewStrategy extends LovelaceStrategy<LovelaceViewConfig> {}
 
-export interface LovelaceSectionStrategy extends LovelaceStrategy<LovelaceSectionConfig> {}
+export interface LovelaceSectionStrategy extends LovelaceStrategy<LovelaceSectionConfig> {
+  getStubConfig?(
+    hass: HomeAssistant
+  ): LovelaceStrategyConfig | Promise<LovelaceStrategyConfig>;
+}
 
 export interface LovelaceStrategyEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceStrategyConfig): void;

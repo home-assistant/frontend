@@ -1,5 +1,6 @@
-import type { HomeAssistant } from "../../../types";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { Lovelace } from "../types";
+import { LOVELACE_EDIT_TOAST_ID } from "../types";
 import type { LovelacePath } from "./lovelace-path";
 import { deleteAtPath } from "./lovelace-path";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -10,10 +11,10 @@ export interface DeleteCardParams {
 }
 
 export async function performDeleteCard(
-  hass: HomeAssistant,
+  localize: LocalizeFunc,
   lovelace: Lovelace,
   params: DeleteCardParams
-): Promise<void> {
+): Promise<boolean> {
   try {
     const { path, silent } = params;
     const oldConfig = lovelace.config;
@@ -21,22 +22,26 @@ export async function performDeleteCard(
     await lovelace.saveConfig(newConfig);
 
     if (silent) {
-      return;
+      return true;
     }
 
     lovelace.showToast({
-      message: hass.localize("ui.common.successfully_deleted"),
+      id: LOVELACE_EDIT_TOAST_ID,
+      message: localize("ui.common.successfully_deleted"),
       duration: 8000,
       action: {
         action: () => fireEvent(window, "undo-change"),
-        text: hass.localize("ui.common.undo"),
+        text: localize("ui.common.undo"),
       },
     });
+    return true;
   } catch (err: any) {
     // eslint-disable-next-line no-console
     console.error(err);
     lovelace.showToast({
-      message: hass.localize("ui.common.deleting_failed"),
+      id: LOVELACE_EDIT_TOAST_ID,
+      message: localize("ui.common.deleting_failed"),
     });
+    return false;
   }
 }

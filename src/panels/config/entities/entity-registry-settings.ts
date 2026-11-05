@@ -70,7 +70,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     }
     try {
       const configEntry = (
-        await getConfigEntry(this.hass, this.entry.config_entry_id)
+        await getConfigEntry(this.hass.callWS, this.entry.config_entry_id)
       ).config_entry;
       const manifest = await fetchIntegrationManifest(
         this.hass,

@@ -125,7 +125,7 @@ const referenceUrl = (): string | undefined => {
  */
 const askServer = async (
   url: string,
-  signal?: AbortSignal
+  signal: AbortSignal
 ): Promise<ChunkVerdict> => {
   try {
     const response = await fetch(url, {
@@ -145,20 +145,17 @@ const askServer = async (
 };
 
 const probeChunk = async (url: string): Promise<ChunkVerdict> => {
-  const controller =
-    typeof AbortController === "undefined" ? undefined : new AbortController();
+  const controller = new AbortController();
   try {
-    // Timed out rather than relying on the abort alone: without
-    // AbortController a stalled request would never settle, pinning the probe.
+    // Timed out as well as aborted: the timeout settles the probe even if the
+    // request never does, the abort then frees the connection.
     const verdict: ChunkVerdict = await promiseTimeout(
       PROBE_TIMEOUT,
-      askServer(url, controller?.signal)
+      askServer(url, controller.signal)
     );
     return verdict;
   } catch (_err) {
-    if (controller) {
-      controller.abort();
-    }
+    controller.abort();
     return "unknown";
   }
 };

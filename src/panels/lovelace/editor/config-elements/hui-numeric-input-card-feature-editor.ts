@@ -35,12 +35,20 @@ export class HuiNumericInputCardFeatureEditor
           selector: {
             select: {
               multiple: false,
-              mode: "list",
+              mode: "box",
               options: ["slider", "buttons"].map((mode) => ({
                 value: mode,
                 label: localize(
                   `ui.panel.lovelace.editor.features.types.numeric-input.style_list.${mode}`
                 ),
+                description: localize(
+                  `ui.panel.lovelace.editor.features.types.numeric-input.style_list.${mode}_description`
+                ),
+                image: {
+                  src: `/static/images/form/feature_style_${mode}.svg`,
+                  src_dark: `/static/images/form/feature_style_${mode}_dark.svg`,
+                  flip_rtl: true,
+                },
               })),
             },
           },

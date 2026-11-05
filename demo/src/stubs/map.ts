@@ -221,7 +221,14 @@ const personEntity = (person: DemoPerson, now: number): EntityInput => {
 const personHistory = (person: DemoPerson, now: number): EntityHistoryState[] =>
   person.timeline.map(([hoursAgo, state]) => {
     const time = (now - hoursAgo * HOUR) / 1000;
-    return { s: state, a: {}, lu: time, lc: time };
+    const zoneId =
+      state === "home" ? "home" : zones.find((zone) => zone.name === state)?.id;
+    return {
+      s: state,
+      a: { in_zones: zoneId ? [`zone.${zoneId}`] : [] },
+      lu: time,
+      lc: time,
+    };
   });
 
 export const mockMap = (hass: MockHomeAssistant) => {

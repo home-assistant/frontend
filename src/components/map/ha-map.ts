@@ -17,8 +17,10 @@ import { UNIT_KM } from "../../common/const";
 import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { computeStateName } from "../../common/entity/compute_state_name";
-import { getEntityLocation } from "../../common/entity/get_entity_location";
+import {
+  findFirstActiveZone,
+  getEntityLocation,
+} from "../../common/entity/get_entity_location";
 import { supportsVectorMaps } from "../../common/map/base-layer";
 import type {
   MapCircleHandle,
@@ -43,7 +45,7 @@ import {
   distanceMeters,
 } from "../../common/map/map-engine";
 import type { MapStyleConfig } from "../../common/map/map-styles";
-import { resolveMapStyle } from "../../common/map/map-styles";
+import { isDarkMapStyle, resolveMapStyle } from "../../common/map/map-styles";
 import { readMapThemeColors } from "../../common/map/map-theme-colors";
 import { editableCircleStyles } from "../../common/map/editable-circle";
 import { entityMapColor, zoneColor } from "../../common/map/entity-map-colors";
@@ -67,6 +69,7 @@ import {
   statesContext,
   uiContext,
 } from "../../data/context";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity/entity";
 import type { EntityRegistryEntry } from "../../data/entity/entity_registry";
 import { ensureMapTilesToken } from "../../data/map_tiles";
 import "../ha-tooltip";
@@ -528,8 +531,19 @@ export class HaMap extends ReactiveElement {
     } else if (this._loaded && oldStates && this.entities) {
       // Check if any state has changed
       for (const entity of this.entities) {
+        const entityId = getEntityId(entity);
+        const stateObj = this._states[entityId];
+        const inZones: string[] | undefined = stateObj?.attributes.in_zones;
         if (
-          oldStates[getEntityId(entity)] !== this._states[getEntityId(entity)]
+          oldStates[entityId] !== stateObj ||
+          (stateObj &&
+            ["person", "device_tracker"].includes(
+              computeStateDomain(stateObj)
+            ) &&
+            Array.isArray(inZones) &&
+            inZones.some(
+              (zoneId) => oldStates[zoneId] !== this._states[zoneId]
+            ))
         ) {
           this._drawEntities();
           autoFitRequired = !this._pauseAutoFit;
@@ -604,15 +618,15 @@ export class HaMap extends ReactiveElement {
       });
     }
 
-    if (changedProps.has("mapStyle")) {
-      this._engine?.setMapStyle(this._resolvedMapStyle);
-    }
-
     const oldUi = changedProps.get("_ui") as HomeAssistantUI | undefined;
     if (
       !changedProps.has("themeMode") &&
       (!changedProps.has("_ui") || (oldUi && oldUi.themes === this._ui.themes))
     ) {
+      // A style can have one half only, so the chrome follows it too
+      if (changedProps.has("mapStyle")) {
+        this._updateMapAppearance();
+      }
       return;
     }
 
@@ -633,6 +647,11 @@ export class HaMap extends ReactiveElement {
     );
   }
 
+  // What the map draws, which a style with one half decides over the theme mode
+  private get _styleDark() {
+    return isDarkMapStyle(this.mapStyle, this._darkMode);
+  }
+
   // Memoized: it is read on every appearance sync, and the engines compare
   // what they are handed against what they applied.
   private _resolveMapStyle = memoizeOne(resolveMapStyle);
@@ -645,12 +664,12 @@ export class HaMap extends ReactiveElement {
   // arguments, and a fresh object per read would defeat it.
   private _readThemeColors(): void {
     // Only one set of --ha-color-map-* is live on the page, the one for the
-    // mode the page is in. A card forced to the other mode draws the other
-    // palette, so those values would be the wrong half of the theme; the
-    // style's own colors are the better answer there.
+    // mode the page is in. A card forced to the other mode, or a style with
+    // only the other half, draws the other palette, so those values would be
+    // the wrong half of the theme; the style's own colors are the better answer.
     const pageDark = Boolean(this._ui?.themes?.darkMode);
     const colors =
-      this._darkMode === pageDark ? readMapThemeColors(this) : undefined;
+      this._styleDark === pageDark ? readMapThemeColors(this) : undefined;
     if (!deepEqual(colors, this._themeColors)) {
       this._themeColors = colors;
     }
@@ -676,13 +695,19 @@ export class HaMap extends ReactiveElement {
       return;
     }
     map.classList.toggle("clickable", this.clickable);
-    map.classList.toggle("dark", this._darkMode);
+    map.classList.toggle("dark", this._styleDark);
     map.classList.toggle("drawn", this._mapDrawn);
     // The sky belongs behind a drawn globe; on a blank canvas it is just a
     // gradient with a glow in it
     map.classList.toggle("space", this._vectorEngine && this._mapDrawn);
-    map.classList.toggle("forced-dark", this.themeMode === "dark");
-    map.classList.toggle("forced-light", this.themeMode === "light");
+    map.classList.toggle(
+      "forced-dark",
+      this._styleDark && (this.themeMode === "dark" || !this._darkMode)
+    );
+    map.classList.toggle(
+      "forced-light",
+      !this._styleDark && (this.themeMode === "light" || this._darkMode)
+    );
     this._engine?.setMapStyle(this._resolvedMapStyle);
   }
 
@@ -751,7 +776,7 @@ export class HaMap extends ReactiveElement {
     map.id = "map";
     // Which ground shows in the gap before the first frame; the rest of the
     // classes wait for the engine (_updateMapAppearance)
-    map.classList.toggle("dark", this._darkMode);
+    map.classList.toggle("dark", this._styleDark);
     this.shadowRoot!.append(map);
     this._loading = true;
     this._mapDrawn = false;
@@ -1347,8 +1372,6 @@ export class HaMap extends ReactiveElement {
     this._watchRegistry();
 
     const computedStyles = getComputedStyle(this);
-    // A person's state is "home" for the home zone, the zone name otherwise
-    const zoneByState: Record<string, string> = {};
     this._zonePositions = {};
     this._zoneRadii = {};
     for (const entity of this.entities) {
@@ -1359,11 +1382,6 @@ export class HaMap extends ReactiveElement {
         computeStateDomain(stateObj) === "zone" &&
         (this.renderPassive || !stateObj.attributes.passive)
       ) {
-        zoneByState[
-          stateObj.entity_id === "zone.home"
-            ? "home"
-            : computeStateName(stateObj)
-        ] = stateObj.entity_id;
         if (
           typeof stateObj.attributes.latitude === "number" &&
           typeof stateObj.attributes.longitude === "number"
@@ -1522,6 +1540,22 @@ export class HaMap extends ReactiveElement {
         typeof entity !== "string" && (entity.selected ?? false);
       entityMarker.floating = true;
 
+      let zoneId: string | undefined;
+      if (["person", "device_tracker"].includes(computeStateDomain(stateObj))) {
+        const inZones: string[] | undefined = stateObj.attributes.in_zones;
+        if (Array.isArray(inZones) && inZones.length > 0) {
+          const activeZone = findFirstActiveZone(inZones, states);
+          if (activeZone && this._zonePositions[activeZone.entity_id]) {
+            zoneId = activeZone.entity_id;
+          }
+        } else if (
+          !Array.isArray(inZones) ||
+          !["not_home", UNKNOWN, UNAVAILABLE].includes(stateObj.state)
+        ) {
+          zoneId = this._zoneContaining(position, gpsAccuracy);
+        }
+      }
+
       const clusterData: ClusterData = {
         entityId,
         title,
@@ -1531,11 +1565,7 @@ export class HaMap extends ReactiveElement {
         unit: entityMarker.entityUnit ?? "",
         color: entityColor,
         selected: entityMarker.selected,
-        zoneId: ["person", "device_tracker"].includes(
-          computeStateDomain(stateObj)
-        )
-          ? (zoneByState[stateObj.state] ?? this._zoneContaining(position))
-          : undefined,
+        zoneId,
       };
 
       const accuracy =
@@ -1595,16 +1625,26 @@ export class HaMap extends ReactiveElement {
     );
   }
 
-  private _zoneContaining(position: MapLatLng): string | undefined {
+  private _zoneContaining(
+    position: MapLatLng,
+    gpsAccuracy = 0
+  ): string | undefined {
     let found: string | undefined;
     let foundRadius = Infinity;
+    let foundDistance = Infinity;
     for (const [zoneId, radius] of Object.entries(this._zoneRadii)) {
+      if (this._states[zoneId]?.attributes.passive) {
+        continue;
+      }
+      const distance = distanceMeters(position, this._zonePositions[zoneId]);
       if (
-        radius < foundRadius &&
-        distanceMeters(position, this._zonePositions[zoneId]) <= radius
+        distance - gpsAccuracy < radius &&
+        (radius < foundRadius ||
+          (radius === foundRadius && distance < foundDistance))
       ) {
         found = zoneId;
         foundRadius = radius;
+        foundDistance = distance;
       }
     }
     return found;
@@ -1991,13 +2031,8 @@ export class HaMap extends ReactiveElement {
       font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
     }
-    /* Markers are rounded squares to match the cluster bubble avatars */
-    ha-entity-marker {
-      --ha-marker-border-radius: var(--ha-border-radius-lg);
-    }
     .cluster-bubble ha-entity-marker {
       flex: none;
-      --ha-marker-border-radius: 10px;
     }
     ${unsafeCSS(zoneMarkerStyles)}
     .leaflet-bottom {
@@ -2055,10 +2090,6 @@ export class HaMap extends ReactiveElement {
       border-radius: var(--ha-border-radius-sm);
       box-shadow: none !important;
       text-align: center;
-    }
-
-    ha-icon {
-      --mdc-icon-size: calc(var(--ha-marker-size, 48px) / 2);
     }
   `;
 }

@@ -16,6 +16,7 @@ import type { KeyBinding, DecorationSet, ViewUpdate } from "@codemirror/view";
 import { Decoration, EditorView, ViewPlugin } from "@codemirror/view";
 import { tags } from "@lezer/highlight";
 import { NodeProp } from "@lezer/common";
+import type { LocalizeFunc } from "../common/translations/localize";
 
 export {
   autocompletion,
@@ -92,6 +93,43 @@ export const langCompartment = new Compartment();
 export const readonlyCompartment = new Compartment();
 export const linewrapCompartment = new Compartment();
 export const yamlLintCompartment = new Compartment();
+export const phrasesCompartment = new Compartment();
+
+// CodeMirror renders the search panel and the go to line dialog with
+// hardcoded English text, looked up through `state.phrase()`. Map those
+// phrases to our translations. CodeMirror replaces `$` with the line number or
+// match count after the lookup, so pass it in as the placeholder value.
+export const localizedPhrases = (localize: LocalizeFunc) => {
+  const phrases: Record<string, string> = {
+    Find: localize("ui.components.yaml-editor.search.find"),
+    Replace: localize("ui.common.replace"),
+    next: localize("ui.common.next"),
+    previous: localize("ui.common.previous"),
+    all: localize("ui.components.yaml-editor.search.select_all"),
+    "match case": localize("ui.components.yaml-editor.search.match_case"),
+    regexp: localize("ui.components.yaml-editor.search.regexp"),
+    "by word": localize("ui.components.yaml-editor.search.by_word"),
+    replace: localize("ui.common.replace"),
+    "replace all": localize("ui.components.yaml-editor.search.replace_all"),
+    close: localize("ui.common.close"),
+    "current match": localize("ui.components.yaml-editor.search.current_match"),
+    "on line": localize("ui.components.yaml-editor.search.on_line"),
+    "replaced match on line $": localize(
+      "ui.components.yaml-editor.search.replaced_match_on_line",
+      { line: "$" }
+    ),
+    "replaced $ matches": localize(
+      "ui.components.yaml-editor.search.replaced_matches",
+      { count: "$" }
+    ),
+    "Go to line": localize("ui.components.yaml-editor.go_to_line.label"),
+    go: localize("ui.components.yaml-editor.go_to_line.go"),
+  };
+  // Leave out missing translations so CodeMirror falls back to its own text
+  return EditorState.phrases.of(
+    Object.fromEntries(Object.entries(phrases).filter(([, value]) => value))
+  );
+};
 
 // ---------------------------------------------------------------------------
 // YAML scalar type highlighter

@@ -131,6 +131,7 @@ class HaPanelDevState extends LitElement {
       attributeFilter: string,
       deviceFilter: string,
       areaFilter: string,
+      deviceColumnShown: boolean,
       states: HassEntities,
       entities: HomeAssistantRegistries["entities"],
       devices: HomeAssistantRegistries["devices"],
@@ -142,6 +143,7 @@ class HaPanelDevState extends LitElement {
         attributeFilter,
         deviceFilter,
         areaFilter,
+        deviceColumnShown,
         states,
         entities,
         devices,
@@ -156,6 +158,7 @@ class HaPanelDevState extends LitElement {
       this._attributeFilter,
       this._deviceFilter,
       this._areaFilter,
+      !this.narrow && this._showDevice,
       this._states,
       this._registries.entities,
       this._registries.devices,
@@ -492,6 +495,7 @@ class HaPanelDevState extends LitElement {
     attributeFilter: string,
     deviceFilter: string,
     areaFilter: string,
+    deviceColumnShown: boolean,
     states: HassEntities,
     entities: HomeAssistantRegistries["entities"],
     devices: HomeAssistantRegistries["devices"],
@@ -539,11 +543,17 @@ class HaPanelDevState extends LitElement {
 
     return Object.values(states)
       .filter((value) => {
+        // Match the entity column's name; without the device column, match
+        // the full name.
         if (
           entityFilterRegExp &&
           !entityFilterRegExp.test(value.entity_id) &&
-          (value.attributes.friendly_name === undefined ||
-            !entityFilterRegExp.test(value.attributes.friendly_name))
+          !entityFilterRegExp.test(
+            this.hass.formatEntityName(
+              value,
+              deviceColumnShown ? { type: "entity" } : undefined
+            )
+          )
         ) {
           return false;
         }

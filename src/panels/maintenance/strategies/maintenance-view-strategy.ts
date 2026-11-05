@@ -3,9 +3,10 @@ import { customElement } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import {
-  findEntities,
+  findFilteredEntities,
   generateEntityFilter,
   type EntityFilter,
+  type EntityFilterSources,
 } from "../../../common/entity/entity_filter";
 import { floorDefaultIcon } from "../../../components/ha-floor-icon";
 import type { LovelaceCardConfig } from "../../../data/lovelace/config/card";
@@ -29,9 +30,13 @@ export const maintenanceEntityFilters: EntityFilter[] = [
   },
   {
     domain: "binary_sensor",
-    device_class: ["battery"],
+    device_class: ["battery", "problem"],
   },
 ];
+
+export const findMaintenanceEntities = (
+  sources: EntityFilterSources
+): string[] => findFilteredEntities(sources, maintenanceEntityFilters);
 
 const LOW_BATTERY_THRESHOLD = 20;
 
@@ -48,7 +53,8 @@ export const filterLowBatteryEntities = (
     const state = states[entityId]?.state ?? "";
 
     if (computeDomain(entityId) === "binary_sensor") {
-      return state === BINARY_STATE_ON;
+      const device_class = states[entityId]?.attributes?.device_class ?? "";
+      return state === BINARY_STATE_ON && device_class === "battery";
     }
 
     const stateValue = parseFloat(state);
@@ -73,6 +79,16 @@ export const filterLowBatteryEntities = (
   });
 };
 
+export const filterProblemEntities = (
+  states: HomeAssistant["states"],
+  entityIds: string[]
+): string[] =>
+  entityIds.filter((entityId) => {
+    const state = states[entityId]?.state ?? "";
+    const device_class = states[entityId]?.attributes?.device_class ?? "";
+    return device_class === "problem" && state === BINARY_STATE_ON;
+  });
+
 export const filterUnavailableBatteryEntities = (
   states: HomeAssistant["states"],
   entityIds: string[]
@@ -81,16 +97,22 @@ export const filterUnavailableBatteryEntities = (
     return states[entityId]?.state === "unavailable";
   });
 
-const computeBatteryTileCard = (
+const computeMaintenanceTileCard = (
+  states: HomeAssistant["states"],
   entities: HomeAssistant["entities"],
   entityId: string
 ): TileCardConfig => {
-  const entity = entities[entityId];
-  const deviceId = entity?.device_id;
+  const deviceId = entities[entityId]?.device_id;
+  if (!deviceId) {
+    return { type: "tile", entity: entityId, name: { type: "entity" } };
+  }
+  const isProblem = states[entityId]?.attributes?.device_class === "problem";
   return {
     type: "tile",
     entity: entityId,
-    name: { type: deviceId ? "device" : "entity" },
+    name: isProblem
+      ? [{ type: "device" }, { type: "entity" }]
+      : { type: "device" },
   };
 };
 
@@ -119,7 +141,9 @@ const processAreasForBattery = (
     const areaCards: LovelaceCardConfig[] = [];
 
     for (const entityId of areaBatteryEntities) {
-      areaCards.push(computeBatteryTileCard(hass.entities, entityId));
+      areaCards.push(
+        computeMaintenanceTileCard(hass.states, hass.entities, entityId)
+      );
     }
 
     if (areaCards.length > 0) {
@@ -159,7 +183,9 @@ const processUnassignedEntities = (
   const cards: LovelaceCardConfig[] = [];
 
   for (const entityId of unassignedEntities) {
-    cards.push(computeBatteryTileCard(hass.entities, entityId));
+    cards.push(
+      computeMaintenanceTileCard(hass.states, hass.entities, entityId)
+    );
   }
 
   return cards;
@@ -177,20 +203,7 @@ export class MaintenanceViewStrategy extends ReactiveElement {
 
     const sections: LovelaceSectionRawConfig[] = [];
 
-    const allEntities = Object.keys(hass.states);
-
-    const batteryFilters = maintenanceEntityFilters.map((filter) =>
-      generateEntityFilter(
-        hass.states,
-        hass.entities,
-        hass.devices,
-        hass.areas,
-        hass.floors,
-        filter
-      )
-    );
-
-    const entities = findEntities(allEntities, batteryFilters);
+    const entities = findMaintenanceEntities(hass);
 
     const floorCount =
       hierarchy.floors.length + (hierarchy.areas.length ? 1 : 0);

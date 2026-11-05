@@ -266,14 +266,13 @@ export class AssistPipelineDebug extends LitElement {
         align-items: center;
         justify-content: center;
         height: var(--header-height);
-        background-color: var(--primary-background-color);
         color: var(--app-header-text-color, white);
         border-bottom: var(--app-header-border-bottom, none);
         box-sizing: border-box;
       }
       .content {
         padding: 24px 0 32px;
-        max-width: 600px;
+        max-width: var(--ha-content-width-narrow);
         margin: 0 auto;
         direction: ltr;
       }

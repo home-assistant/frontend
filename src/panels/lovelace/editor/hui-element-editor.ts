@@ -6,8 +6,10 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { handleStructError } from "../../../common/structs/handle-errors";
 import { deepEqual } from "../../../common/util/deep-equal";
+import "../../../components/animation/ha-fade-in";
 import "../../../components/ha-alert";
-import "../../../components/ha-spinner";
+import "../../../components/skeleton/ha-skeleton";
+import "../../../components/skeleton/ha-skeleton-text";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import type { LovelaceConfig } from "../../../data/lovelace/config/types";
@@ -150,11 +152,15 @@ export abstract class HuiElementEditor<
     });
   }
 
-  public toggleMode() {
+  public async toggleMode() {
     if (!this.GUImode) {
       this._yamlEditor?.disableCodeEditorFullscreen();
     }
     this.GUImode = !this.GUImode;
+    if (!this.GUImode) {
+      await this.updateComplete;
+      this._yamlEditor?.focus();
+    }
   }
 
   public focusYamlEditor() {
@@ -226,6 +232,31 @@ export abstract class HuiElementEditor<
     };
   }
 
+  private _renderLoading() {
+    return html`
+      <ha-fade-in .duration=${300} easing="ease-in">
+        <div
+          class="loading"
+          role="progressbar"
+          aria-label=${this.hass.localize("ui.common.loading")}
+        >
+          <div class="loading-field">
+            <ha-skeleton-text></ha-skeleton-text>
+            <ha-skeleton class="input"></ha-skeleton>
+          </div>
+          <div class="loading-field">
+            <ha-skeleton-text></ha-skeleton-text>
+            <div class="boxes">
+              <ha-skeleton class="box"></ha-skeleton>
+              <ha-skeleton class="box"></ha-skeleton>
+              <ha-skeleton class="box"></ha-skeleton>
+            </div>
+          </div>
+        </div>
+      </ha-fade-in>
+    `;
+  }
+
   protected render(): TemplateResult {
     return html`
       <div class="wrapper">
@@ -238,9 +269,7 @@ export abstract class HuiElementEditor<
                 >
                   ${
                     this._loading
-                      ? html`
-                          <ha-spinner class="center margin-bot"></ha-spinner>
-                        `
+                      ? this._renderLoading()
                       : cache(
                           this._subElementEditorConfig
                             ? this._renderSubElement()
@@ -253,7 +282,6 @@ export abstract class HuiElementEditor<
                 <div class="yaml-editor">
                   <ha-yaml-editor
                     .defaultValue=${this._config}
-                    autofocus
                     .inDialog=${this.inDialog}
                     @value-changed=${this._handleYAMLChanged}
                     @keydown=${this._ignoreKeydown}
@@ -365,7 +393,11 @@ export abstract class HuiElementEditor<
   }
 
   protected async loadConfigElement(): Promise<void> {
-    if (this._configElement) return;
+    if (this._configElement) {
+      return;
+    }
+
+    this._loading = true;
 
     let configElement = await this.getConfigElement();
 
@@ -444,7 +476,9 @@ export abstract class HuiElementEditor<
       }
       this.GUImode = false;
     } finally {
-      this._loading = false;
+      if (loadNum === this._loadCount) {
+        this._loading = false;
+      }
     }
   }
 
@@ -466,9 +500,33 @@ export abstract class HuiElementEditor<
     ha-code-editor {
       --code-mirror-max-height: calc(100vh - 245px);
     }
-    ha-spinner {
-      display: block;
-      margin: auto;
+    .loading {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-6);
+    }
+    .loading-field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--ha-space-2);
+    }
+    .loading ha-skeleton-text {
+      --ha-skeleton-text-width: 120px;
+    }
+    .loading .input {
+      height: 56px;
+    }
+    .loading .boxes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--ha-space-3);
+    }
+    .loading .box {
+      height: 96px;
+      --ha-skeleton-border-radius: var(
+        --ha-card-border-radius,
+        var(--ha-border-radius-lg)
+      );
     }
   ` as CSSResultGroup;
 }

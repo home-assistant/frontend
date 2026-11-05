@@ -197,7 +197,7 @@ export class HaImagecropperDialog extends DirtyStateProviderMixin<Cropper.Data>(
         }
         .container.round .cropper-view-box,
         .container.round .cropper-face {
-          border-radius: var(--ha-border-radius-circle);
+          border-radius: var(--ha-picture-border-radius);
         }
         .cropper-line,
         .cropper-point,

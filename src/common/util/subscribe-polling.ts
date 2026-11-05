@@ -5,14 +5,20 @@ export const subscribePollingCollection = (
   updateData: (hass: HomeAssistant) => void,
   interval: number
 ) => {
-  let timeout;
+  let timeout: number | undefined;
+  let cancelled = false;
   const fetchData = async () => {
     try {
       await updateData(hass);
     } finally {
-      timeout = setTimeout(() => fetchData(), interval);
+      if (!cancelled) {
+        timeout = window.setTimeout(() => fetchData(), interval);
+      }
     }
   };
   fetchData();
-  return () => clearTimeout(timeout);
+  return () => {
+    cancelled = true;
+    clearTimeout(timeout);
+  };
 };

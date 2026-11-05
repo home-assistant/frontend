@@ -8,15 +8,13 @@ import {
   mdiPlaylistCheck,
   mdiRobotOutline,
   mdiScriptTextOutline,
+  mdiViewDashboardOutline,
 } from "@mdi/js";
 import { consume } from "../../../../common/decorators/consume";
 import { computeDeviceNameDisplay } from "../../../../common/entity/compute_device_name";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-adaptive-dialog";
-import {
-  internationalizationContext,
-  statesContext,
-} from "../../../../data/context";
+import { internationalizationContext } from "../../../../data/context";
 import { showSceneEditor } from "../../../../data/scene";
 import "../../../../dialogs/add-to/ha-add-to-action-list";
 import type {
@@ -37,17 +35,14 @@ type DeviceAddToAction =
       kind: "add-to";
       key: AddToAutomationScriptActionKey;
     })
-  | (AddToActionListItem & { kind: "scene" });
+  | (AddToActionListItem & { kind: "scene" })
+  | (AddToActionListItem & { kind: "dashboard" });
 
 @customElement("dialog-device-add-to")
 export class DialogDeviceAddTo extends LitElement {
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
-
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  private _states!: ContextType<typeof statesContext>;
 
   @state() private _params?: DeviceAddToDialogParams;
 
@@ -78,8 +73,7 @@ export class DialogDeviceAddTo extends LitElement {
 
     const deviceName = computeDeviceNameDisplay(
       this._params.device,
-      this._i18n.localize,
-      this._states
+      this._i18n.localize
     );
 
     return html`
@@ -102,6 +96,20 @@ export class DialogDeviceAddTo extends LitElement {
     }
 
     const sections: AddToActionListSection<DeviceAddToAction>[] = [
+      {
+        title: this._i18n.localize(
+          "ui.dialogs.more_info_control.add_to.dashboards_heading"
+        ),
+        actions: [
+          {
+            kind: "dashboard",
+            iconPath: mdiViewDashboardOutline,
+            name: this._i18n.localize(
+              "ui.dialogs.more_info_control.add_to.action_options.dashboard"
+            ),
+          },
+        ],
+      },
       {
         title: this._i18n.localize(
           "ui.panel.config.devices.automation.automations_heading"
@@ -192,6 +200,11 @@ export class DialogDeviceAddTo extends LitElement {
     const { action } = ev.detail;
     if (action.kind === "scene") {
       this._handleCreateScene();
+      return;
+    }
+    if (action.kind === "dashboard") {
+      this.closeDialog();
+      this._params.addToDashboard();
       return;
     }
 

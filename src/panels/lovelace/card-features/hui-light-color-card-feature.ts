@@ -11,6 +11,7 @@ import {
 } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { stateActive } from "../../../common/entity/state_active";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-button";
 import "../../../components/ha-control-scrubber";
@@ -127,8 +128,11 @@ class HuiLightColorCardFeature
     const hue = hsColor?.[0];
     const saturation = hsColor?.[1];
 
-    const previewHue = this._liveHue ?? hue ?? 0;
-    const saturationGradient = `hsl(${previewHue} 0% 100%), hsl(${previewHue} 100% 50%)`;
+    const previewHue = this._liveHue ?? hue;
+    const saturationGradient =
+      previewHue == null
+        ? "hsl(0 0% 100%), hsl(0 0% 50%)"
+        : `hsl(${previewHue} 0% 100%), hsl(${previewHue} 100% 50%)`;
 
     const controls = this._config.controls ?? DEFAULT_LIGHT_COLOR_CONTROLS;
     const showHue = controls !== "saturation";
@@ -136,12 +140,13 @@ class HuiLightColorCardFeature
     const single = !(showHue && showSaturation);
 
     const disabled = this._stateObj.state === UNAVAILABLE;
+    const inactive = !disabled && !stateActive(this._stateObj);
     const showHandle = hsColor != null;
     const hueLabel = this._localize("ui.card.light.hue");
     const saturationLabel = this._localize("ui.card.light.saturation");
 
     return html`
-      <div class="container">
+      <div class=${classMap({ container: true, inactive })}>
         ${
           showHue
             ? this._renderAxis({
@@ -287,7 +292,7 @@ class HuiLightColorCardFeature
       css`
         .container {
           --hue-track-width: max(
-            100% * 12 / var(--column-size, 12),
+            100% * 12 * var(--feature-columns, 1) / var(--column-size, 12),
             var(--feature-height) * 3
           );
           display: flex;
@@ -310,13 +315,14 @@ class HuiLightColorCardFeature
             var(--gradient)
           );
           --control-scrubber-track-width: var(--hue-track-width);
+          --control-scrubber-background-opacity: var(--gradient-opacity, 1);
         }
         ha-control-slider {
           --control-slider-background: linear-gradient(
             to right,
             var(--gradient)
           );
-          --control-slider-background-opacity: 1;
+          --control-slider-background-opacity: var(--gradient-opacity, 1);
           --control-slider-inset-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
         }
         ha-control-button {
@@ -331,6 +337,7 @@ class HuiLightColorCardFeature
           overflow: hidden;
           border-radius: inherit;
           background: linear-gradient(to right, var(--gradient));
+          opacity: var(--gradient-opacity, 1);
         }
         .hue .preview-track {
           position: absolute;
@@ -347,6 +354,10 @@ class HuiLightColorCardFeature
         }
         .saturation .preview {
           box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        .inactive .axis {
+          filter: saturate(0.5);
+          --gradient-opacity: 0.4;
         }
         ha-control-button[disabled] .preview {
           opacity: 0.2;

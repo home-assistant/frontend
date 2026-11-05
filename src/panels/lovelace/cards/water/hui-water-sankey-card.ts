@@ -35,7 +35,7 @@ import type { LovelaceCard, LovelaceGridOptions } from "../../types";
 import type { WaterSankeyCardConfig } from "../types";
 import "../../../../components/chart/ha-sankey-chart";
 import type { Link, Node } from "../../../../components/chart/ha-sankey-chart";
-import { formatNumber } from "../../../../common/number/format_number";
+import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import { MobileAwareMixin } from "../../../../mixins/mobile-aware-mixin";
 import {
   buildSankeyDeviceNodes,
@@ -204,8 +204,27 @@ class HuiWaterSankeyCard
     const waterColor = computedStyle
       .getPropertyValue("--energy-water-color")
       .trim();
+    const combineSources =
+      waterSources.length > 1 &&
+      (this._config.combine_sources ?? this._data.combineSources ?? false);
+    if (combineSources && totalSourceSupply > 0) {
+      nodes.push({
+        id: "source-water",
+        label: this._i18n.localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.water"
+        ),
+        value: totalSourceSupply,
+        color: waterColor,
+        index: 0,
+      });
+      links.push({
+        source: "source-water",
+        target: "home",
+        value: totalSourceSupply,
+      });
+    }
     waterSources.forEach((source) => {
-      if (source.type !== "water") {
+      if (combineSources || source.type !== "water") {
         return;
       }
       const value =
@@ -335,8 +354,16 @@ class HuiWaterSankeyCard
     `;
   }
 
-  private _valueFormatter = (value: number) =>
-    `${formatNumber(value, this._i18n.locale, value < 0.1 ? { maximumFractionDigits: 3 } : undefined)} ${this._data!.waterUnit}`;
+  private _valueFormatter = (value: number) => {
+    const formatOptions =
+      value < 0.1 ? { maximumFractionDigits: 3 } : undefined;
+    return formatNumberWithUnit(
+      value,
+      this._data!.waterUnit,
+      this._i18n.locale,
+      formatOptions
+    );
+  };
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     fireSankeyNodeMoreInfo(this, ev.detail.node);

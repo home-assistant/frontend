@@ -55,6 +55,8 @@ class StepFlowCreateEntry extends LitElement {
     { name?: string; area?: string }
   > = {};
 
+  @state() private _loading = false;
+
   private _deviceEntities = memoizeOne(
     (
       deviceId: string,
@@ -183,11 +185,7 @@ class StepFlowCreateEntry extends LitElement {
                             .label=${localize(
                               "ui.panel.config.integrations.config_flow.device_name"
                             )}
-                            .placeholder=${computeDeviceNameDisplay(
-                              device,
-                              this.hass.localize,
-                              this.hass.states
-                            )}
+                            .placeholder=${computeDeviceNameDisplay(device, this.hass.localize)}
                             .value=${
                               this._deviceUpdate[device.id]?.name ??
                               computeDeviceName(device)
@@ -221,6 +219,11 @@ class StepFlowCreateEntry extends LitElement {
         hasPendingUpdates: Object.keys(this._deviceUpdate).length > 0,
       });
     }
+    if (changedProps.has("_loading")) {
+      fireEvent(this, "flow-step-footer-state-changed", {
+        loading: this._loading,
+      });
+    }
   }
 
   private async _loadDomains() {
@@ -232,13 +235,9 @@ class StepFlowCreateEntry extends LitElement {
 
   private async _flowDone(): Promise<void> {
     if (Object.keys(this._deviceUpdate).length) {
-      const renamedDevices: string[] = [];
       const deviceUpdates = Object.entries(this._deviceUpdate).map(
-        ([deviceId, update]) => {
-          if (update.name) {
-            renamedDevices.push(deviceId);
-          }
-          return updateDeviceRegistryEntry(this.hass, deviceId, {
+        ([deviceId, update]) =>
+          updateDeviceRegistryEntry(this.hass, deviceId, {
             name_by_user: update.name,
             area_id: update.area,
           }).catch((err: unknown) => {
@@ -250,13 +249,16 @@ class StepFlowCreateEntry extends LitElement {
                 { error: message }
               ),
             });
-          });
-        }
+          })
       );
       await Promise.allSettled(deviceUpdates);
+
+      // Entity IDs include the device's name and, depending on the user's
+      // entity ID format, its area, so regenerate them for every device
+      // whose name or area was edited.
       const entityUpdates: Promise<unknown>[] = [];
       const entityIds: string[] = [];
-      renamedDevices.forEach((deviceId) => {
+      Object.keys(this._deviceUpdate).forEach((deviceId) => {
         const entities = this._deviceEntities(
           deviceId,
           Object.values(this.hass.entities)
@@ -300,8 +302,19 @@ class StepFlowCreateEntry extends LitElement {
     }
   }
 
-  public finish(): Promise<void> {
-    return this._flowDone();
+  public async finish(): Promise<void> {
+    if (this._loading) {
+      return;
+    }
+    // Stay loading until the dialog closes, so a second click cannot save
+    // the updates again
+    this._loading = true;
+    try {
+      await this._flowDone();
+    } catch (err) {
+      this._loading = false;
+      throw err;
+    }
   }
 
   private async _areaPicked(ev: ValueChangedEvent<string>) {

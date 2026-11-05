@@ -153,7 +153,7 @@ class HaEntityMarker extends LitElement {
       width: var(--ha-marker-size, 48px);
       height: var(--ha-marker-size, 48px);
       font-size: var(--ha-marker-font-size, var(--ha-font-size-xl));
-      border-radius: var(--ha-marker-border-radius, 50%);
+      border-radius: var(--ha-picture-border-radius);
       border: var(--ha-marker-border-width, 3px) solid
         var(--ha-marker-color, var(--card-background-color, #fff));
       color: var(--primary-text-color);

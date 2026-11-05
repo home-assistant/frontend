@@ -221,7 +221,7 @@ export class MQTTConfigPanel extends LitElement {
             )}
           >
             <ha-list-item-button
-              href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+              href=${`/config/devices/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}&status=disabled`}
             >
               <ha-svg-icon slot="start" .path=${mdiDevices}></ha-svg-icon>
               <div slot="headline">
@@ -232,7 +232,7 @@ export class MQTTConfigPanel extends LitElement {
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
             <ha-list-item-button
-              href=${`/config/entities/dashboard?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
+              href=${`/config/entities?historyBack=1&config_entry=${this._configEntry?.entry_id}`}
             >
               <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
               <div slot="headline">
@@ -438,7 +438,7 @@ export class MQTTConfigPanel extends LitElement {
         }
         ha-card {
           margin: 0 auto var(--ha-space-4);
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
         }
         ha-select {
           width: 96px;
@@ -531,7 +531,7 @@ export class MQTTConfigPanel extends LitElement {
         }
 
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4)
+          padding: var(--ha-space-2) var(--ha-content-gutter)
             calc(var(--ha-space-16) + var(--safe-area-inset-bottom, 0px));
         }
 

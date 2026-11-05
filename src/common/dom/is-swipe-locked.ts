@@ -5,6 +5,8 @@ const SWIPE_LOCKED_COMPONENTS = new Set([
   "ha-control-circular-slider",
   "ha-hs-color-picker",
   "ha-map",
+  // Charts pan and pinch-zoom on touch
+  "ha-chart-base",
   "ha-more-info-control-select-container",
   "ha-filter-chip",
 ]);

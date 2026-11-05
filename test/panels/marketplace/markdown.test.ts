@@ -1,9 +1,24 @@
-import { describe, expect, it } from "vitest";
+import { expose } from "comlink";
+import { describe, expect, it, vi } from "vitest";
+import { rewriteHtmlUrls } from "../../../src/common/dom/rewrite-html-urls";
 import type { RepositoryInfo } from "../../../src/data/marketplace/repository";
 import {
   markdownWithRepositoryContext,
   repositoryUrl,
 } from "../../../src/panels/marketplace/tools/markdown";
+import type { Api } from "../../../src/resources/markdown-worker";
+
+vi.mock("comlink", () => ({ expose: vi.fn() }));
+
+// The worker exposes its API once, when it is first imported
+let workerApi: Api | undefined;
+const workerRenderMarkdown = async () => {
+  if (!workerApi) {
+    await import("../../../src/resources/markdown-worker");
+    workerApi = vi.mocked(expose).mock.calls[0][0] as Api;
+  }
+  return workerApi.renderMarkdown;
+};
 
 const repository = {
   id: "42",
@@ -288,6 +303,99 @@ describe("markdownWithRepositoryContext", () => {
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
   });
 
+  it("leaves out a section marked for the Marketplace to skip", () => {
+    const input = [
+      "# Card",
+      "",
+      "<!-- ha-marketplace:exclude-start -->",
+      "## Installation",
+      "",
+      "Add it through HACS, see #12.",
+      "<!-- ha-marketplace:exclude-end -->",
+      "",
+      "## Configuration",
+    ].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(
+      "# Card\n\n\n\n## Configuration"
+    );
+  });
+
+  it("leaves out an unclosed section to the end", () => {
+    const input =
+      "Shown\n<!-- ha-marketplace:exclude-start -->\nhidden\n\nstill hidden";
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe("Shown\n");
+  });
+
+  it("keeps exclusion markers in code as written", () => {
+    const input = [
+      "Wrap it in `<!-- ha-marketplace:exclude-start -->` to hide it:",
+      "",
+      "```md",
+      "<!-- ha-marketplace:exclude-start -->",
+      "Installation",
+      "<!-- ha-marketplace:exclude-end -->",
+      "```",
+    ].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps exclusion markers in a fence opened on a list item as written", () => {
+    const input = [
+      "- ```md",
+      "  <!-- ha-marketplace:exclude-start -->",
+      "  ```",
+      "- Shown",
+    ].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it("keeps exclusion markers in a fence inside a nested list item as written", () => {
+    const input = [
+      "- a",
+      "  - b",
+      "",
+      "    ~~~md",
+      "    <!-- ha-marketplace:exclude-start -->",
+      "    ~~~",
+      "",
+      "Shown",
+    ].join("\n");
+
+    expect(markdownWithRepositoryContext(input, repository)).toBe(input);
+  });
+
+  it.each([
+    {
+      name: "a tab past the text of the item does not close the fence",
+      input: [
+        "- ~~~md",
+        "\t  ~~~",
+        "  <!-- ha-marketplace:exclude-start -->",
+        "  ~~~",
+        "",
+        "Shown",
+      ].join("\n"),
+    },
+    {
+      name: "too many spaces after the marker do not open a fence",
+      input: [
+        "-      ```",
+        "<!-- ha-marketplace:exclude-start -->",
+        "hidden",
+        "<!-- ha-marketplace:exclude-end -->",
+      ].join("\n"),
+      output: "-      ```\n",
+    },
+  ])("keeps up with list indentation, $name", ({ input, output }) => {
+    expect(markdownWithRepositoryContext(input, repository)).toBe(
+      output ?? input
+    );
+  });
+
   it("keeps text that looks like a placeholder", () => {
     const input = "Private \uE0000\uE000 and \u00001\u0000 characters";
 
@@ -300,6 +408,10 @@ describe("markdownWithRepositoryContext", () => {
     { name: "many unclosed tags", input: "<a ".repeat(30_000) },
     { name: "many unclosed links", input: "[a](".repeat(30_000) },
     { name: "a long scheme", input: `${"a".repeat(100_000)}:` },
+    {
+      name: "many end markers",
+      input: "<!-- ha-marketplace:exclude-end -->".repeat(30_000),
+    },
   ])("keeps up with a README of $name", ({ input }) => {
     const start = performance.now();
 
@@ -315,5 +427,103 @@ describe("markdownWithRepositoryContext", () => {
     expect(markdownWithRepositoryContext(input, repository)).toBe(input);
     // Scanning all of them again for every one takes seconds
     expect(performance.now() - start).toBeLessThan(1000);
+  });
+});
+
+describe("rewriteHtmlUrls with the README of a repository", () => {
+  const toReadme = repositoryUrl(repository);
+  const raw = "https://raw.githubusercontent.com/owner/repo/v1.0.0";
+
+  const srcsetOf = (input: string) =>
+    rewriteHtmlUrls(`<source srcset="${input}">`, toReadme).match(
+      /srcset="([^"]*)"/
+    )?.[1];
+
+  it.each([
+    {
+      name: "relative addresses into the repository",
+      input: "./images/logo.png 1x, images/logo@2x.png 2x",
+      output: `${raw}/images/logo.png 1x, ${raw}/images/logo@2x.png 2x`,
+    },
+    {
+      name: "a file shown on GitHub to raw",
+      input:
+        "https://github.com/owner/repo/blob/main/logo.png, https://github.com/other/repo/blob/v2/logo@2x.png 2x",
+      output:
+        "https://raw.githubusercontent.com/owner/repo/main/logo.png, https://raw.githubusercontent.com/other/repo/v2/logo@2x.png 2x",
+    },
+    {
+      // Never requested from Home Assistant, same as the src of an image
+      name: "an address at the root of the host into the repository",
+      input: "/api/states 1x, /local/x.png 2x",
+      output: `${raw}/api/states 1x, ${raw}/local/x.png 2x`,
+    },
+    {
+      name: "relative and absolute addresses together",
+      input: "a.png 100w, https://example.com/b.png 200w, /c.png 300w",
+      output: `${raw}/a.png 100w, https://example.com/b.png 200w, ${raw}/c.png 300w`,
+    },
+  ])("points $name", ({ input, output }) => {
+    expect(srcsetOf(input)).toBe(output);
+    expect(
+      rewriteHtmlUrls(`<img src="${input.split(" ")[0]}">`, toReadme)
+    ).toBe(`<img src="${output.split(" ")[0]}">`);
+  });
+
+  it("points the src of the source of a video", () => {
+    expect(
+      rewriteHtmlUrls(
+        '<video><source src="/api/camera_proxy/camera.x"></video>',
+        toReadme
+      )
+    ).toBe(`<video><source src="${raw}/api/camera_proxy/camera.x"></video>`);
+  });
+
+  it("shows the dark logo of a README from the repository", async () => {
+    const renderMarkdown = await workerRenderMarkdown();
+    const html = (
+      await renderMarkdown(
+        [
+          "<picture>",
+          '  <source media="(prefers-color-scheme: dark)" srcset="./images/logo-dark.png">',
+          '  <img src="./images/logo-light.png" alt="Logo">',
+          "</picture>",
+        ].join("\n"),
+        {}
+      )
+    ).join("");
+
+    const template = document.createElement("template");
+    template.innerHTML = rewriteHtmlUrls(html, toReadme);
+    const picture = template.content.querySelector("picture")!;
+    expect(picture.querySelector("source")?.getAttribute("media")).toBe(
+      "(prefers-color-scheme: dark)"
+    );
+    expect(picture.querySelector("source")?.getAttribute("srcset")).toBe(
+      `${raw}/images/logo-dark.png`
+    );
+    expect(picture.querySelector("img")?.getAttribute("src")).toBe(
+      `${raw}/images/logo-light.png`
+    );
+  });
+
+  it("shows images and links with a plain relative path", async () => {
+    const renderMarkdown = await workerRenderMarkdown();
+    const html = (
+      await renderMarkdown(
+        "![Logo](images/logo.png) [Setup](docs/setup.md)",
+        {},
+        { allowRelativeUrls: true }
+      )
+    ).join("");
+
+    const template = document.createElement("template");
+    template.innerHTML = rewriteHtmlUrls(html, toReadme);
+    expect(template.content.querySelector("img")?.getAttribute("src")).toBe(
+      `${raw}/images/logo.png`
+    );
+    expect(template.content.querySelector("a")?.getAttribute("href")).toBe(
+      "https://github.com/owner/repo/blob/v1.0.0/docs/setup.md"
+    );
   });
 });

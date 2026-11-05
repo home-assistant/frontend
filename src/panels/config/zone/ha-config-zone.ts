@@ -5,19 +5,19 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import "../../../components/ha-button";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import "../../../components/map/ha-locations-editor";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import type {
   HaLocationsEditor,
   MarkerLocation,
@@ -109,6 +109,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     (
       storageItems: Zone[],
       stateItems: HassEntity[],
+      formatEntityName: HomeAssistant["formatEntityName"],
       language: string
     ): ({ entry: Zone } | { stateObject: HassEntity })[] => {
       const items = [
@@ -119,7 +120,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         })),
         ...stateItems.map((stateObject) => ({
           stateObject,
-          name: stateObject.attributes.friendly_name || stateObject.entity_id,
+          name: formatEntityName(stateObject) || stateObject.entity_id,
           home: stateObject.entity_id === HOME_ZONE_ENTITY_ID,
         })),
       ];
@@ -136,13 +137,12 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   private _renderStorageItem(entry: Zone) {
     const hass = this.hass;
     return html`
-      <ha-list-item
+      <ha-list-item-button
         .entry=${entry}
         .id=${this.narrow ? entry.id : ""}
-        graphic="avatar"
-        .hasMeta=${!this.narrow}
-        @request-selected=${this._itemClicked}
-        .value=${entry.id}
+        .headline=${entry.name}
+        data-value=${entry.id}
+        @click=${this._itemClicked}
       >
         ${this._renderZoneGraphic(
           this._zoneEntityIds[entry.id] ?? `zone.${entry.id}`,
@@ -150,54 +150,48 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           entry.icon,
           entry.name
         )}
-        ${entry.name}
         ${
           !this.narrow
             ? html`
-                <div slot="meta">
-                  <ha-icon-button
-                    .id=${entry.id}
-                    .entry=${entry}
-                    @click=${this._openEditEntry}
-                    .path=${mdiPencil}
-                    .label=${hass.localize("ui.common.edit_item", {
-                      name: entry.name,
-                    })}
-                  ></ha-icon-button>
-                </div>
+                <ha-icon-button
+                  slot="end"
+                  .id=${entry.id}
+                  .entry=${entry}
+                  @click=${this._openEditEntry}
+                  .path=${mdiPencil}
+                  .label=${hass.localize("ui.common.edit_item", {
+                    name: entry.name,
+                  })}
+                ></ha-icon-button>
               `
             : ""
         }
-      </ha-list-item>
+      </ha-list-item-button>
     `;
   }
 
   private _renderStateItem(stateObject: HassEntity) {
     const hass = this.hass;
+    const name = hass.formatEntityName(stateObject) || stateObject.entity_id;
     return html`
-      <ha-list-item
-        graphic="avatar"
+      <ha-list-item-button
         .id=${this.narrow ? stateObject.entity_id : ""}
-        .hasMeta=${!this.narrow || stateObject.entity_id !== "zone.home"}
-        .value=${stateObject.entity_id}
-        @request-selected=${this._stateItemClicked}
+        .headline=${name}
+        data-value=${stateObject.entity_id}
         .noEdit=${stateObject.entity_id !== "zone.home" || !this._canEditCore}
+        @click=${this._stateItemClicked}
       >
         ${this._renderZoneGraphic(
           stateObject.entity_id,
           !!stateObject.attributes.passive,
           stateObject.attributes.icon,
-          stateObject.attributes.friendly_name || stateObject.entity_id
+          name
         )}
-        ${stateObject.attributes.friendly_name || stateObject.entity_id}
         ${
-          this.narrow &&
-          stateObject.entity_id === "zone.home" &&
-          !this._canEditCore
+          this.narrow && stateObject.entity_id === "zone.home"
             ? nothing
             : html`<ha-icon-button
                   .id="zone-${slugify(stateObject.entity_id)}"
-                  .entityId=${stateObject.entity_id}
                   .noEdit=${
                     stateObject.entity_id !== "zone.home" || !this._canEditCore
                   }
@@ -210,9 +204,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     name: hass.config.location_name,
                   })}
                   @click=${this._editHomeZone}
-                  slot="meta"
+                  slot="end"
                 ></ha-icon-button>
                 <ha-tooltip
+                  slot="end"
                   .for="zone-${slugify(stateObject.entity_id)}"
                   placement="left"
                   .disabled=${stateObject.entity_id === "zone.home"}
@@ -221,7 +216,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                   ${hass.localize("ui.panel.config.zone.configured_in_yaml")}
                 </ha-tooltip>`
         }
-      </ha-list-item>
+      </ha-list-item-button>
     `;
   }
 
@@ -240,7 +235,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     );
     return html`
       <div
-        slot="graphic"
+        slot="start"
         class="zone-avatar"
         style=${styleMap({
           background: color,
@@ -256,6 +251,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     (
       storageItems: Zone[],
       stateItems: HassEntity[],
+      formatEntityName: HomeAssistant["formatEntityName"],
       zoneEntityIds: Record<string, string>,
       pendingEdits: Record<string, PendingEdit>,
       entityReg: EntityRegistryEntry[],
@@ -267,7 +263,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         (entityState) => ({
           id: entityState.entity_id,
           icon: entityState.attributes.icon,
-          name: entityState.attributes.friendly_name || entityState.entity_id,
+          name: formatEntityName(entityState) || entityState.entity_id,
           latitude: entityState.attributes.latitude,
           longitude: entityState.attributes.longitude,
           radius: entityState.attributes.radius,
@@ -343,17 +339,20 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
             </div>
           `
         : html`
-            <ha-list>
+            <ha-list-base
+              aria-label=${hass.localize("ui.panel.config.zone.caption")}
+            >
               ${this._sortedItems(
                 this._storageItems,
                 this._stateItems,
+                hass.formatEntityName,
                 hass.locale.language
               ).map((item) =>
                 "entry" in item
                   ? this._renderStorageItem(item.entry)
                   : this._renderStateItem(item.stateObject)
               )}
-            </ha-list>
+            </ha-list-base>
           `;
 
     return html`
@@ -384,6 +383,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     .locations=${this._getZones(
                       this._storageItems,
                       this._stateItems,
+                      hass.formatEntityName,
                       this._zoneEntityIds,
                       this._pendingEdits,
                       this._entityReg,
@@ -597,24 +597,16 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     }
   }
 
-  private _itemClicked(ev: CustomEvent) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
+  private _itemClicked(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
     if (this.narrow) {
       this._openEditEntry(ev);
       return;
     }
-    this._zoomZone((ev.currentTarget! as any).value);
+    this._zoomZone(ev.currentTarget.dataset.value!);
   }
 
-  private _stateItemClicked(ev: CustomEvent) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-
-    const entryId: string = (ev.currentTarget! as any).value;
+  private _stateItemClicked(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    const entryId = ev.currentTarget.dataset.value!;
 
     if (this.narrow && entryId === HOME_ZONE_ENTITY_ID) {
       this._editHomeZone(ev);
@@ -736,8 +728,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       --app-header-background-color: var(--sidebar-background-color);
       --app-header-text-color: var(--sidebar-text-color);
     }
-    ha-list-item {
-      --mdc-list-item-meta-size: 48px;
+    ha-list-base {
+      --ha-list-padding: var(--ha-space-2) 0;
+    }
+    ha-list-item-button {
+      --ha-row-item-padding-block: 0;
     }
     a {
       color: var(--primary-color);
@@ -781,10 +776,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       flex-grow: 1;
       height: 100%;
     }
-    .flex ha-list {
+    .flex ha-list-base {
       padding-bottom: 64px;
     }
-    .flex ha-list,
+    .flex ha-list-base,
     .flex .empty {
       border-left: 1px solid var(--divider-color);
       width: 250px;
