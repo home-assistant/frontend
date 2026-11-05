@@ -29,13 +29,13 @@ import {
 } from "../../../common/integrations/protocolIntegrationPicked";
 import { navigate } from "../../../common/navigate";
 import type { LocalizeFunc } from "../../../common/translations/localize";
-import { deepEqual } from "../../../common/util/deep-equal";
 import {
   devicesFilterQueryParamConfig,
   devicesFilterQueryParams,
   devicesFilterQueryString,
   devicesLinkFromUrl,
 } from "../../../common/url/devices-query-params";
+import { deepEqual } from "../../../common/util/deep-equal";
 import {
   hasRejectedItems,
   rejectedItems,
@@ -48,8 +48,6 @@ import type {
 import "../../../components/data-table/ha-data-table-labels";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-alert";
-import "../../../components/skeleton/ha-skeleton-icon";
-import "../../../components/skeleton/ha-skeleton-text";
 import "../../../components/ha-button";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
@@ -59,6 +57,8 @@ import "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-labels";
 import "../../../components/ha-filter-states";
 import "../../../components/ha-icon-button";
+import "../../../components/skeleton/ha-skeleton-icon";
+import "../../../components/skeleton/ha-skeleton-text";
 import { createAreaRegistryEntry } from "../../../data/area/area_registry";
 import type { ConfigEntry, SubEntry } from "../../../data/config_entries";
 import { getSubEntries, sortConfigEntries } from "../../../data/config_entries";
@@ -460,9 +460,6 @@ export class HaConfigDeviceDashboard extends LitElement {
           parentDevice ??
           (deviceIdsWithChildren.has(device.id) ? device : undefined);
 
-        // Only the device's own area, or the one inherited from its parent
-        // device. The via device is not used here: it is how the device
-        // connects (e.g. a Zigbee coordinator), not where it is.
         const area = getDeviceArea(device, areas, this.hass.devices);
         const areaName = area ? computeAreaName(area) : undefined;
 
