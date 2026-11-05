@@ -7974,6 +7974,7 @@
             "error_saving_device": "Error updating device: {error}",
             "error_saving_entity": "Error updating entity: {error}",
             "created_config": "Created configuration for {name}.",
+            "helper_area": "This helper isn't part of a device, so you can add it to an area.",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
