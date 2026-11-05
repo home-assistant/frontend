@@ -60,6 +60,9 @@ export interface ClimateFrontendSystemData {
   hidden_entities?: string[];
 }
 
+export type HomeSummaryPanelSystemDataKey =
+  "security" | "maintenance" | "climate";
+
 export interface EnergyFrontendSystemData {
   // Stable "<view>.<card-type>" keys of energy dashboard cards the user has
   // hidden. An absent key or array means nothing is hidden (all cards visible),
