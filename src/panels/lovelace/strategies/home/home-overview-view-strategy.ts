@@ -37,6 +37,7 @@ import type {
   UpdatesCardConfig,
 } from "../../cards/types";
 import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
+import { findLightEntities } from "../../../light/strategies/light-view-strategy";
 import { findMaintenanceEntities } from "../../../maintenance/strategies/maintenance-view-strategy";
 import {
   computeDefaultSecurityAlertVisibility,
@@ -60,6 +61,7 @@ export interface HomeOverviewViewStrategyConfig {
   security_hidden_entities?: string[];
   maintenance_hidden_entities?: string[];
   climate_hidden_entities?: string[];
+  light_hidden_entities?: string[];
   favorite_entities?: string[];
   home_panel?: boolean;
   hide_welcome_message?: boolean;
@@ -348,19 +350,9 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
         )
     );
 
-    const lightsFilters = HOME_SUMMARIES_FILTERS.light.map((filter) =>
-      generateEntityFilter(
-        hass.states,
-        hass.entities,
-        hass.devices,
-        hass.areas,
-        hass.floors,
-        filter
-      )
-    );
-
     const hasLights =
-      hass.panels.light && findEntities(allEntities, lightsFilters).length > 0;
+      hass.panels.light &&
+      findLightEntities(hass, config.light_hidden_entities).length > 0;
     const hasMediaPlayers =
       findEntities(allEntities, mediaPlayerFilter).length > 0;
     const hasClimate =
@@ -421,6 +413,9 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
           ? ({
               type: "home-summary",
               summary: "light",
+              hidden_entities: config.light_hidden_entities?.length
+                ? config.light_hidden_entities
+                : undefined,
               tap_action: {
                 action: "navigate",
                 navigation_path: "/light?historyBack=1",
