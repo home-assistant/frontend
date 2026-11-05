@@ -3,7 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import { getGraphColorByIndex } from "../../../common/color/colors";
+import { COLORS_COUNT } from "../../../common/color/colors";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
@@ -27,7 +27,7 @@ import "../../../components/ha-spinner";
 import {
   apiContext,
   configContext,
-  entitiesContext,
+  fullEntitiesContext,
   internationalizationContext,
   statesContext,
 } from "../../../data/context";
@@ -35,6 +35,7 @@ import type {
   RecorderDatabaseUsage,
   RecorderTableUsage,
 } from "../../../data/recorder";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import {
   fetchRecorderDatabaseUsage,
   groupSmallTables,
@@ -87,8 +88,9 @@ export class StorageDatabaseCard extends LitElement {
   @consume({ context: statesContext, subscribe: true })
   private _states!: HomeAssistant["states"];
 
-  @consume({ context: entitiesContext, subscribe: true })
-  private _entities!: HomeAssistant["entities"];
+  // Includes disabled entities, which have no state but can have recorded data.
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  private _entityRegistry: EntityRegistryEntry[] = [];
 
   @state() private _usage?: RecorderDatabaseUsage;
 
@@ -188,7 +190,6 @@ export class StorageDatabaseCard extends LitElement {
 
   private _tableSegments = memoizeOne(
     (tables: RecorderTableUsage[], localize: LocalizeFunc): Segment[] => {
-      const computedStyles = getComputedStyle(this);
       const grouped = groupSmallTables(tables);
       const segments = grouped.tables.map((table) => ({
         name: table.table,
@@ -202,7 +203,8 @@ export class StorageDatabaseCard extends LitElement {
       }
       return segments.map((segment, index) => ({
         value: segment.bytes,
-        color: getGraphColorByIndex(index, computedStyles),
+        // CSS variables, so a theme change applies without a new report.
+        color: `var(--graph-color-${index + 1}, var(--color-${(index % COLORS_COUNT) + 1}))`,
         label: html`${segment.name}
           <span style="color: var(--secondary-text-color)"
             >${bytesToString(segment.bytes)}</span
@@ -295,7 +297,10 @@ export class StorageDatabaseCard extends LitElement {
   private _rowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const entityId = ev.detail.id;
     // Statistics of external sources (e.g. "sensor:energy") have no entity.
-    if (entityId in this._states || entityId in this._entities) {
+    if (
+      entityId in this._states ||
+      this._entityRegistry.some((entry) => entry.entity_id === entityId)
+    ) {
       showMoreInfoDialog(this, { entityId, view: "settings" });
     }
   }
