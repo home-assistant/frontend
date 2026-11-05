@@ -166,6 +166,9 @@ class HaLongLivedTokens extends LitElement {
           font-weight: var(--ha-font-weight-normal);
           line-height: var(--ha-line-height-condensed);
           letter-spacing: -0.012em;
+          /* haStyle truncates h2 to one line, long titles should wrap */
+          white-space: normal;
+          overflow: visible;
         }
       `,
     ];

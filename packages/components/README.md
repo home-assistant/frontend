@@ -5,17 +5,21 @@ with [Lit](https://lit.dev).
 
 > Work in progress, not published yet.
 
-## Loading modes
+## Registration
 
 Every element is imported on its own, in one of two ways:
 
-| Import                                        | Registers in         | Uses                                             |
-| --------------------------------------------- | -------------------- | ------------------------------------------------ |
-| `@home-assistant/components/<element>`        | Global registry      | The bundled copy. Used by Home Assistant itself. |
-| `@home-assistant/components/<element>/scoped` | Your scoped registry | The bundled copy, isolated from other copies.    |
+| Import                                        | Registers in         | For                                                         |
+| --------------------------------------------- | -------------------- | ----------------------------------------------------------- |
+| `@home-assistant/components/<element>`        | Global registry      | Home Assistant itself                                       |
+| `@home-assistant/components/<element>/scoped` | Your scoped registry | Custom cards and other code that runs inside Home Assistant |
 
-`<element>` is the group, like `card` for `hac-card`, or the group and a
-variant (`<group>/<variant>`, see [Structure](#structure)).
+`<element>` is the tag name without the `hac-` prefix, like `card` for
+`hac-card`.
+
+Both use the copy bundled with your code. A scoped copy is isolated from the
+one Home Assistant registers globally, so a custom card keeps the version it
+was built with.
 
 Global registration skips tag names that are already registered, so the first
 registration wins and nothing throws.
@@ -109,27 +113,19 @@ outside Home Assistant. The legacy theme variables (`--card-background-color`,
 
 ## Structure
 
-Elements are organized in groups. A group's directory holds its default
-element, and variants live in subdirectories, so the directories mirror the
-import paths:
+Each element has its own directory, named like its import path:
 
 ```
-src/components/card/           <hac-card>  -> @home-assistant/components/card
-  hac-card.ts                  class, does not register itself
-  info.ts                      tag name and version
-  global.ts                    registers globally
-  scoped.ts                    elements for a scoped registry  -> …/scoped
-  <variant>/                   <hac-card-variant>  -> @home-assistant/components/card/<variant>
-    hac-card-<variant>.ts
-    info.ts, global.ts, scoped.ts
+src/components/card/   <hac-card>  -> @home-assistant/components/card
+  hac-card.ts          class, does not register itself
+  info.ts              tag name and version
+  global.ts            registers globally
+  scoped.ts            element for a scoped registry  -> …/card/scoped
 ```
 
 Shared code lives in `src/utils/`: `registration/` for defining elements
 (global and scoped) and `element/` for helpers that components use
 themselves, like slot checks.
-
-A variant's tag name is `hac-<group>-<variant>`. `scoped` and `info` are
-reserved and cannot be variant names.
 
 Every element has its own version in `info.ts`.
 

@@ -75,8 +75,7 @@ const CONFIG_FILES = [
 // Resolve @home-assistant/components entry points to their sources, so the package
 // needs no build step during development. The entry points are read from the
 // "ha-source" export condition of the package; subpath patterns are expanded
-// for every element, i.e. every directory with a global.ts, like "button" and
-// "button/close".
+// for every element, i.e. every directory with a global.ts, like "card".
 const COMPONENTS_PACKAGE_DIR = path.join(
   paths.root_dir,
   "packages",

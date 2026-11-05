@@ -45,9 +45,40 @@ const publicApiOnly = () => ({
   },
 });
 
+const distPaths = () => {
+  const toDist = (value) => value.replace(/^src\/(.+)\.ts$/, "dist/$1.js");
+  const rewrite = (node) => {
+    if (Array.isArray(node)) {
+      node.forEach(rewrite);
+      return;
+    }
+    if (!node || typeof node !== "object") {
+      return;
+    }
+    for (const [key, value] of Object.entries(node)) {
+      if ((key === "path" || key === "module") && typeof value === "string") {
+        node[key] = toDist(value);
+      } else {
+        rewrite(value);
+      }
+    }
+  };
+  return {
+    name: "dist-paths",
+    packageLinkPhase({ customElementsManifest }) {
+      rewrite(customElementsManifest.modules);
+    },
+  };
+};
+
 export default {
   globs: ["src/components/**/hac-*.ts"],
   outdir: "dist",
   litelement: true,
-  plugins: [packageReadme(), summaryAsDescription(), publicApiOnly()],
+  plugins: [
+    packageReadme(),
+    summaryAsDescription(),
+    publicApiOnly(),
+    distPaths(),
+  ],
 };
