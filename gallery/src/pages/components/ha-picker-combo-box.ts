@@ -36,7 +36,7 @@ const localize: LocalizeFunc = (key, values) => {
     return key;
   }
   return new IntlMessageFormat(message, "en").format(
-    values as Record<string, string | number> | undefined
+    values as Record<string, string | number> | undefined,
   ) as string;
 };
 
@@ -113,8 +113,8 @@ const VIRTUALIZED_ITEMS: PickerComboBoxItem[] = AREAS.flatMap((area, a) =>
         primary: `${fixture} ${n}`,
         secondary: area,
       };
-    })
-  )
+    }),
+  ),
 );
 
 @customElement("demo-components-ha-picker-combo-box")
