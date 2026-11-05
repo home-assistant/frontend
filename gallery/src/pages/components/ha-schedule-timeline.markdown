@@ -7,6 +7,7 @@ subtitle: Weekly time blocks for the schedule helper
 
 - Tap a track to create a one-hour time block, or drag on it to draw one.
 - Drag a block to move it, or drag its edges to change the start or end. Blocks snap to 15 minutes and cannot overlap.
+- On touch screens, every block has a tap area of at least 24px. Blocks narrower than 48px have no edges to drag, so dragging moves them, and their times are changed in the editor.
 - Focus a block to move it with the arrow keys, change its end time with Shift and the arrow keys, or delete it with Delete. Enter selects it.
 - The day menu copies a day to other days or clears it.
 - Hovering or focusing a block shows its day and times, which narrow blocks cannot show inside.

@@ -376,6 +376,7 @@ export class HaScheduleTimeline extends LitElement {
         @click=${this._blockClick}
         @keydown=${this._blockKeyDown}
       >
+        <span class="hit-area"></span>
         ${
           this.readonly
             ? nothing
@@ -777,7 +778,6 @@ export class HaScheduleTimeline extends LitElement {
       color: var(--ha-color-on-primary-loud);
       font-size: var(--ha-font-size-xs);
       font-weight: var(--ha-font-weight-medium);
-      overflow: hidden;
       container-type: inline-size;
       cursor: grab;
       transition: box-shadow var(--ha-animation-duration-fast, 150ms)
@@ -861,6 +861,30 @@ export class HaScheduleTimeline extends LitElement {
     .handle.end {
       inset-inline-start: auto;
       inset-inline-end: 0;
+    }
+
+    .hit-area {
+      display: none;
+    }
+
+    /* A 15-minute block is a few pixels wide on a phone. On touch screens,
+       blocks get a tap area of at least 24px, and narrow ones drop their
+       handles so dragging always moves them. Their times are changed in the
+       editor. */
+    @media (pointer: coarse) {
+      .hit-area {
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        inset-inline: min(0px, (100% - 24px) / 2);
+      }
+
+      @container (max-width: 47px) {
+        .handle {
+          display: none;
+        }
+      }
     }
 
     .shown-block {

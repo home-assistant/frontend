@@ -17,13 +17,20 @@ export type ScheduleWeekday = WeekdayLong;
 /** Extra attributes the schedule entity shows while a block is active. */
 export type ScheduleBlockData = Record<string, boolean | string | number>;
 
+/** A plain mapping, not a list or a value like a `Date` the YAML parser made. */
+const isPlainObject = (value: unknown): value is object => {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+};
+
 // The backend only accepts text, numbers, and booleans as additional data.
 export const isScheduleBlockData = (
   value: unknown
 ): value is ScheduleBlockData =>
-  typeof value === "object" &&
-  value !== null &&
-  !Array.isArray(value) &&
+  isPlainObject(value) &&
   Object.values(value).every(
     (item) =>
       typeof item === "string" ||
@@ -282,13 +289,23 @@ export const resizeRange = (
   return { start: range.start, end: clamp(snapped, min, bounds.end) };
 };
 
+/**
+ * Like `minutesToTime`, but keeps the seconds of a range that ends at a
+ * neighbor with seconds, so the block does not overlap it.
+ */
+const rangeTime = (minutes: number): string => {
+  const seconds = Math.round(minutes * 60);
+  const time = minutesToTime(Math.floor(seconds / 60));
+  return seconds % 60 ? `${time}:${pad(seconds % 60)}` : time;
+};
+
 export const rangeToBlock = (
   range: MinuteRange,
   block?: ScheduleBlock
 ): ScheduleBlock => ({
   ...block,
-  from: minutesToTime(range.start),
-  to: minutesToTime(range.end),
+  from: rangeTime(range.start),
+  to: rangeTime(range.end),
 });
 
 /** Whether two days have the same time blocks, ignoring additional data. */

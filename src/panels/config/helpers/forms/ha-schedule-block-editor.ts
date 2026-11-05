@@ -32,6 +32,10 @@ import {
 import type { ValueChangedEvent } from "../../../../types";
 import "./ha-schedule-weekday-picker";
 
+/** Cleared additional data is `{}`, which saves the same as no data. */
+const withoutEmptyData = (data?: ScheduleBlockData) =>
+  data && Object.keys(data).length ? data : undefined;
+
 /** The time input passes on hours and minutes out of range, like `08:99`. */
 const isValidTime = (time: string): boolean => {
   const [hours, minutes] = time.split(":").map(Number);
@@ -195,8 +199,9 @@ export class HaScheduleBlockEditor extends LitElement {
       from: this._from || "00:00",
       to: this._to || "00:00",
     });
-    if (this._data && Object.keys(this._data).length) {
-      block.data = this._data;
+    const data = withoutEmptyData(this._data);
+    if (data) {
+      block.data = data;
     }
     return block;
   }
@@ -210,7 +215,10 @@ export class HaScheduleBlockEditor extends LitElement {
       this._days.length !== days.length ||
       this._days.some((day) => !days.includes(day)) ||
       !this._dataValid ||
-      !deepEqual(this._data, this.block.data)
+      !deepEqual(
+        withoutEmptyData(this._data),
+        withoutEmptyData(this.block.data)
+      )
     );
   }
 
@@ -231,9 +239,7 @@ export class HaScheduleBlockEditor extends LitElement {
     draft: ScheduleBlock
   ): { type: "error" | "info"; message: string } | undefined {
     const { localize, locale } = this._i18n;
-    if (!this._from || !this._to) {
-      return undefined;
-    }
+    // A cleared time input is empty, which is not midnight.
     if (!isValidTime(this._from) || !isValidTime(this._to)) {
       return {
         type: "error",

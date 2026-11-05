@@ -13,6 +13,7 @@ import {
   isScheduleBlockData,
   localeWeekdays,
   normalizeScheduleTime,
+  rangeToBlock,
   resizeRange,
   timeToMinutes,
 } from "../../src/data/schedule";
@@ -95,6 +96,10 @@ describe("isScheduleBlockData", () => {
     assert.isFalse(isScheduleBlockData(null));
   });
 
+  it("rejects values the YAML parser makes, like dates", () => {
+    assert.isFalse(isScheduleBlockData(new Date(2026, 0, 1)));
+  });
+
   it("rejects numbers that JSON turns into null", () => {
     assert.isFalse(isScheduleBlockData({ level: Infinity }));
     assert.isFalse(isScheduleBlockData({ level: NaN }));
@@ -138,6 +143,16 @@ describe("moveRange and resizeRange", () => {
       start: 480,
       end: 540,
     });
+  });
+
+  it("stops at a neighbor with seconds without overlapping it", () => {
+    const block = rangeToBlock(
+      resizeRange({ start: 600, end: 660 }, "end", 700, {
+        start: 480,
+        end: 660.5,
+      })
+    );
+    assert.deepEqual(block, { from: "10:00", to: "11:00:30" });
   });
 
   it("keeps at least 15 minutes when resizing", () => {

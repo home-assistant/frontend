@@ -88,9 +88,20 @@ class HaScheduleForm extends LitElement {
 
   // Hosts warn before closing with unsaved changes, including block drafts.
   @consume({ context: dirtyStateContext, subscribe: true })
-  private _dirtyState?: DirtyStateContext<boolean, typeof DRAFT_DIRTY_KEY>;
+  @state()
+  private _dirtyState?: DirtyStateContext<number, typeof DRAFT_DIRTY_KEY>;
 
   private _draftDirty = false;
+
+  /**
+   * The draft slice holds a number: `_cleanDraftValue` while there is no
+   * unapplied draft, a different one while there is. Hosts reset baselines
+   * with `markClean` after saving, which can make a dirty value the new clean
+   * one, so the values are not fixed.
+   */
+  private _cleanDraftValue = 0;
+
+  private _draftValue = 0;
 
   @query("[dialogInitialFocus]") private _focusElement?: HaInput;
 
@@ -137,6 +148,17 @@ class HaScheduleForm extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+    if (
+      changedProps.has("_dirtyState") &&
+      this._dirtyState &&
+      !this._dirtyState.isDirty &&
+      this._draftValue !== this._cleanDraftValue
+    ) {
+      // The host saved without the draft and took its value as clean. The
+      // draft is still not applied, so it has to count as a change again.
+      this._cleanDraftValue = this._draftValue;
+      this._pushDraftState();
+    }
     if (!changedProps.has("_panel")) {
       return;
     }
@@ -157,10 +179,17 @@ class HaScheduleForm extends LitElement {
       return;
     }
     this._draftDirty = dirty;
+    this._pushDraftState();
+  }
+
+  private _pushDraftState() {
     // The first value of a slice is its baseline, so it has to be clean.
-    this._dirtyState?.setState(false, DRAFT_DIRTY_KEY);
-    if (dirty) {
-      this._dirtyState?.setState(true, DRAFT_DIRTY_KEY);
+    this._dirtyState?.setState(this._cleanDraftValue, DRAFT_DIRTY_KEY);
+    this._draftValue = this._draftDirty
+      ? this._cleanDraftValue + 1
+      : this._cleanDraftValue;
+    if (this._draftDirty) {
+      this._dirtyState?.setState(this._draftValue, DRAFT_DIRTY_KEY);
     }
   }
 
