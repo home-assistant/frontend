@@ -36,6 +36,7 @@ import type { HomeAssistant } from "../../../../../types";
 import { brandsUrl } from "../../../../../util/brands-url";
 import { showToast } from "../../../../../util/toast";
 import "./mqtt-subscribe-card";
+import "./mqtt-explorer-card";
 
 const qosLevel = ["0", "1", "2"];
 
@@ -137,6 +138,7 @@ export class MQTTConfigPanel extends LitElement {
             ${this._renderMyNetworkCard(deviceIds.size, entityCount)}
             ${this._renderNavigationCard()} ${this._renderPublishCard()}
             <mqtt-subscribe-card .hass=${this.hass}></mqtt-subscribe-card>
+            <mqtt-explorer-card .hass=${this.hass}></mqtt-explorer-card>
           </div>
         </div>
       </hass-subpage>
@@ -465,6 +467,11 @@ export class MQTTConfigPanel extends LitElement {
         mqtt-subscribe-card {
           display: block;
           margin: 16px auto;
+        }
+        mqtt-explorer-card {
+          display: block;
+          margin: 0 auto var(--ha-space-4);
+          max-width: var(--ha-content-width-wide);
         }
         .network-status div.heading {
           display: flex;
