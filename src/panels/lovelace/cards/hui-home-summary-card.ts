@@ -57,6 +57,7 @@ import {
   isSecurityAlertActive,
   resolveSecurityAlertSeverity,
 } from "../../security/strategies/security-alerts";
+import { findLightEntities } from "../../light/strategies/light-view-strategy";
 import { findSecurityEntities } from "../../security/strategies/security-view-strategy";
 import type { LovelaceCard, LovelaceGridOptions } from "../types";
 import { tileCardStyle } from "./tile/tile-card-style";
@@ -172,11 +173,10 @@ export class HuiHomeSummaryCard extends LitElement implements LovelaceCard {
     switch (this._config.summary) {
       case "light": {
         // Number of lights on
-        const lightsFilters = HOME_SUMMARIES_FILTERS.light.map((filter) =>
-          generateEntityFilter(states, entities, devices, areas, floors, filter)
+        const lightEntities = findLightEntities(
+          { states, entities, devices, areas, floors },
+          this._config.hidden_entities
         );
-
-        const lightEntities = findEntities(allEntities, lightsFilters);
 
         const onLights = lightEntities.filter((entityId) => {
           const s = states[entityId]?.state;

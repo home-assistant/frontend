@@ -42,6 +42,7 @@ const SUMMARY_PANEL_KEYS: HomeSummaryPanelSystemDataKey[] = [
   "security",
   "maintenance",
   "climate",
+  "light",
 ];
 
 type SummaryPanelConfigs = {
@@ -66,6 +67,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
     security: {},
     maintenance: {},
     climate: {},
+    light: {},
   };
 
   @state() private _extraActionItems?: ExtraActionItem[];
@@ -81,6 +83,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
     security: 0,
     maintenance: 0,
     climate: 0,
+    light: 0,
   };
 
   public hassSubscribe() {
@@ -425,6 +428,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
         maintenance_hidden_entities:
           this._summaryConfigs.maintenance.hidden_entities,
         climate_hidden_entities: this._summaryConfigs.climate.hidden_entities,
+        light_hidden_entities: this._summaryConfigs.light.hidden_entities,
         favorite_entities: this._config?.favorite_entities,
         home_panel: true,
         hide_welcome_message: this._config?.hide_welcome_message,
