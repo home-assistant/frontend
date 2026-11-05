@@ -322,7 +322,7 @@ export class HuiViewHeader extends LitElement {
       position: relative;
       flex: 1;
       width: 100%;
-      max-width: 700px;
+      max-width: 100%;
       display: flex;
       min-height: calc(
         var(--ha-font-size-xl) * var(--ha-line-height-condensed) + 4px
