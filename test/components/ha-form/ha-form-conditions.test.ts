@@ -163,6 +163,24 @@ describe("getHiddenFields", () => {
       ...getHiddenFields(fields, { mode: "advanced", token: "kept" }),
     ]).toEqual([]);
   });
+
+  it("does not depend on the order of the fields", () => {
+    const duration = [
+      "duration",
+      { field: "end_of_track", operator: "not_exists" },
+    ] as const;
+    const endOfTrack = [
+      "end_of_track",
+      { field: "mode", value: "end_of_track" },
+    ] as const;
+    const data = { mode: "duration", end_of_track: true };
+    expect([...getHiddenFields([duration, endOfTrack], data)]).toEqual([
+      "end_of_track",
+    ]);
+    expect([...getHiddenFields([endOfTrack, duration], data)]).toEqual([
+      "end_of_track",
+    ]);
+  });
 });
 
 describe("getHiddenSchemaFields", () => {
