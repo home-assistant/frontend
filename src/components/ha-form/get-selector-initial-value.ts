@@ -100,6 +100,8 @@ const SELECTOR_INITIAL_VALUES = {
   text: (selector) => (selector.text?.multiple ? [] : ""),
   time: () => "00:00:00",
   icon: () => "",
+  // Stays empty until a region is drawn.
+  image_region: () => undefined,
   media: (selector) => (selector.media?.multiple ? [] : {}),
   theme: () => "",
   timezone: undefined,
