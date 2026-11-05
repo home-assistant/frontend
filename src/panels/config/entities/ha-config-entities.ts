@@ -67,6 +67,7 @@ import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
 import "../../../components/ha-entity-id-icon";
+import "../../../components/ha-filter-device-classes";
 import "../../../components/ha-filter-devices";
 import "../../../components/ha-filter-domains";
 import "../../../components/ha-filter-floor-areas";
@@ -87,6 +88,7 @@ import type {
   DataTableFiltersItems,
   DataTableFiltersValues,
 } from "../../../data/data_table_filters";
+import { computeDeviceClassName } from "../../../data/entity/device_class";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type {
   EntityRegistryEntry,
@@ -160,6 +162,7 @@ export interface EntityRow extends StateEntity {
   status: string | undefined;
   area?: string;
   device?: string;
+  device_class: string | null;
   device_full?: string;
   localized_platform: string;
   domain: string;
@@ -298,6 +301,22 @@ export class HaConfigEntities extends LitElement {
     );
   }
 
+  private _getDeviceClass(entry: StateEntity): string | null {
+    return this.hass.states[entry.entity_id]?.attributes.device_class ?? null;
+  }
+
+  private _getDeviceClassName(
+    localize: LocalizeFunc,
+    entityId: string,
+    deviceClass: string
+  ): string {
+    return computeDeviceClassName(
+      localize,
+      computeDomain(entityId),
+      deviceClass
+    );
+  }
+
   private _states = memoize((localize: LocalizeFunc) => [
     {
       value: "available",
@@ -392,6 +411,13 @@ export class HaConfigEntities extends LitElement {
         filterable: true,
       },
       domain: getDomainTableColumn(localize),
+      device_class: {
+        title: localize("ui.panel.config.entities.picker.headers.device_class"),
+        sortable: true,
+        filterable: true,
+        defaultHidden: true,
+        template: (entry) => entry.device_class || "—",
+      },
       disabled_by: {
         title: localize("ui.panel.config.entities.picker.headers.disabled_by"),
         hidden: true,
@@ -630,6 +656,15 @@ export class HaConfigEntities extends LitElement {
           );
           filter!.forEach((domain) => filteredDomains.add(domain));
         } else if (
+          key === "ha-filter-device-classes" &&
+          Array.isArray(filter) &&
+          filter.length
+        ) {
+          filteredEntities = filteredEntities.filter((entry) => {
+            const deviceClass = this._getDeviceClass(entry);
+            return deviceClass != null && filter.includes(deviceClass);
+          });
+        } else if (
           key === "ha-filter-domains" &&
           Array.isArray(filter) &&
           filter.length
@@ -713,9 +748,13 @@ export class HaConfigEntities extends LitElement {
           exposedEntities,
           entry.entity_id
         );
+        const deviceClass = this._getDeviceClass(entry);
 
         result.push({
           ...entry,
+          device_class: deviceClass
+            ? this._getDeviceClassName(localize, entry.entity_id, deviceClass)
+            : null,
           name:
             entityName ||
             deviceName ||
@@ -1064,6 +1103,17 @@ export class HaConfigEntities extends LitElement {
           .narrow=${this.narrow}
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-devices>
+        <ha-filter-device-classes
+          .label=${this.hass.localize(
+            "ui.panel.config.entities.picker.headers.device_class"
+          )}
+          .value=${this._filters["ha-filter-device-classes"]}
+          @data-table-filter-changed=${this._filterChanged}
+          slot="filter-pane"
+          .expanded=${this._expandedFilter === "ha-filter-device-classes"}
+          .narrow=${this.narrow}
+          @expanded-changed=${this._filterExpanded}
+        ></ha-filter-device-classes>
         <ha-filter-domains
           .value=${this._filters["ha-filter-domains"]}
           @data-table-filter-changed=${this._filterChanged}
@@ -1163,6 +1213,7 @@ export class HaConfigEntities extends LitElement {
   }
 
   protected firstUpdated() {
+    this.hass.loadBackendTranslation("entity_component");
     this._fetchExposedEntities();
     fetchEntitySourcesWithCache(this.hass.callWS, this.hass.states).then(
       (sources) => {

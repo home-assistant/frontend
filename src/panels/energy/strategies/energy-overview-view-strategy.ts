@@ -115,6 +115,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
             ),
             type: "power-sources-graph",
             collection_key: collectionKey,
+            combine_sources: true,
             show_legend: false,
           },
         ],
@@ -131,6 +132,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
             ),
             type: "energy-usage-graph",
             collection_key: collectionKey,
+            combine_sources: true,
           },
         ],
       });
@@ -146,6 +148,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
             ),
             type: "energy-gas-graph",
             collection_key: collectionKey,
+            combine_sources: true,
           },
         ],
       });
@@ -162,6 +165,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
                 ),
                 type: "energy-water-graph",
                 collection_key: collectionKey,
+                combine_sources: true,
               }
             : {
                 title: hass.localize(

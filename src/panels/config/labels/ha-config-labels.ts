@@ -285,7 +285,7 @@ export class HaConfigLabels extends LitElement {
         ></ha-icon-button>
         <ha-assist-chip
           slot="selection-bar"
-          .label=${this.hass.localize("ui.panel.config.labels.delete_selected")}
+          .label=${this.hass.localize("ui.common.delete")}
           .disabled=${!this._selected.length}
           @click=${this._deleteSelected}
         ></ha-assist-chip>

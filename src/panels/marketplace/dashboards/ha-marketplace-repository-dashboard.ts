@@ -11,6 +11,7 @@ import {
   mdiGithub,
   mdiRestart,
   mdiStar,
+  mdiTestTube,
   mdiUpdate,
 } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -72,6 +73,7 @@ import {
   addMarketplaceRepository,
   fetchMarketplaceRepositories,
   fetchMarketplaceRepository,
+  setMarketplaceRepositoryBeta,
 } from "../../../data/marketplace/repository";
 import {
   ERROR_GITHUB_RATE_LIMITED,
@@ -172,6 +174,8 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
 
   // Only the newest request counts, also one for the same repository
   private _request = 0;
+
+  private _settingPreReleases = new Set<string>();
 
   protected async firstUpdated(
     changedProperties: PropertyValues<this>
@@ -342,6 +346,31 @@ export class HaMarketplaceRepositoryDashboard extends LitElement {
   // The list does not carry the fields only this page shows, those need a fetch
   public reloadRepository(): void {
     this._fetchRepository();
+  }
+
+  // Core fetches the repository from GitHub again before answering
+  public async includePreReleases(include: boolean): Promise<void> {
+    const repositoryId = this._repository!.id;
+    if (this._settingPreReleases.has(repositoryId)) {
+      return;
+    }
+    this._repository = { ...this._repository!, beta: include };
+    this._settingPreReleases.add(repositoryId);
+
+    try {
+      await setMarketplaceRepositoryBeta(this._api, repositoryId, include);
+    } catch (err: unknown) {
+      if (this._repository?.id === repositoryId) {
+        this._repository = { ...this._repository, beta: !include };
+      }
+      throw err;
+    } finally {
+      this._settingPreReleases.delete(repositoryId);
+    }
+
+    if (this._repository?.id === repositoryId) {
+      this._fetchRepository();
+    }
   }
 
   private _loadRepositoryFromRoute(): void {
@@ -896,6 +925,14 @@ type: module</pre>`,
         }),
       });
     }
+    if (repository.beta) {
+      signals.push({
+        icon: mdiTestTube,
+        text: localize(
+          "ui.panel.marketplace.repository.details.pre_releases_included"
+        ),
+      });
+    }
     const lastChange = this._relativeTime(repository.last_updated);
     if (lastChange) {
       signals.push({
@@ -931,7 +968,7 @@ type: module</pre>`,
         ? {
             icon: mdiAlertCircleOutline,
             text: localize(
-              "ui.panel.marketplace.repository.community.open_issues",
+              "ui.panel.marketplace.repository.community.open_issues_and_prs",
               {
                 number: repository.issues,
                 count: html`<strong
@@ -943,7 +980,7 @@ type: module</pre>`,
         : {
             icon: mdiCheckCircleOutline,
             text: localize(
-              "ui.panel.marketplace.repository.community.no_open_issues"
+              "ui.panel.marketplace.repository.community.no_open_issues_and_prs"
             ),
           }
     );
@@ -1016,8 +1053,8 @@ type: module</pre>`,
           flex-direction: column;
           gap: var(--ha-space-4);
           margin: auto;
-          padding: var(--ha-space-4);
-          max-width: 1200px;
+          padding: var(--ha-space-4) var(--ha-content-gutter);
+          max-width: var(--ha-content-width-wide);
         }
         .header {
           display: flex;

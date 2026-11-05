@@ -234,7 +234,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         ></ha-icon-button>
         <ha-assist-chip
           slot="selection-bar"
-          .label=${this.hass.localize("ui.panel.config.tag.delete_selected")}
+          .label=${this.hass.localize("ui.common.delete")}
           .disabled=${!this._selected.length}
           @click=${this._removeSelected}
         ></ha-assist-chip>
