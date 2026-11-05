@@ -124,16 +124,16 @@ export interface DataTableRowData {
 
 export type SortableColumnContainer = Record<string, ClonedDataTableColumnData>;
 
-// Slot for the actions at the end of a group's header, they don't toggle the
-// group. Put `ha-icon-button`s with a label in it. They get the rows' icon
+// Renders the actions at the end of a group's header, they don't toggle the
+// group. Return `ha-icon-button`s with a label. They get the rows' icon
 // colour and size by default, which `--data-table-group-actions-color`,
 // `--data-table-group-actions-button-size` and
 // `--data-table-group-actions-icon-size` change for all of them; style a
-// button itself for its own colour or size.
-export const GROUP_ACTIONS_SLOT_PREFIX = "group-actions-";
-
-export const groupActionsSlot = (group: string) =>
-  `${GROUP_ACTIONS_SLOT_PREFIX}${group}`;
+// button itself for its own colour or size. Not a slot per group, as WebKit
+// is slow to add and remove slots while the rows scroll.
+export type DataTableGroupActions = (
+  group: string
+) => TemplateResult | typeof nothing;
 
 const UNDEFINED_GROUP_KEY = "zzzzz_undefined";
 
@@ -196,6 +196,9 @@ export class HaDataTable extends LitElement {
   @property({ attribute: false }) public groupColumn?: string;
 
   @property({ attribute: false }) public groupOrder?: string[];
+
+  @property({ attribute: false })
+  public renderGroupActions?: DataTableGroupActions;
 
   @property({ attribute: false }) public sortColumn?: string;
 
@@ -506,7 +509,8 @@ export class HaDataTable extends LitElement {
           this.groupOrder,
           this._collapsedGroups,
           this.sortColumn,
-          this.sortDirection
+          this.sortDirection,
+          this.renderGroupActions
         )
       : [];
 
@@ -759,8 +763,6 @@ export class HaDataTable extends LitElement {
                     `
               : html`
                   ${
-                    // Rendered before the rows, so the group's actions slot
-                    // shows here and not in its scrolled out header row
                     this.groupColumn &&
                     !this.autoHeight &&
                     this._stickyGroup !== undefined
@@ -779,6 +781,7 @@ export class HaDataTable extends LitElement {
                             this._stickyGroup,
                             this._collapsedGroups.includes(this._stickyGroup),
                             this._i18n?.localize,
+                            this.renderGroupActions,
                             true
                           )}
                         </div>`
@@ -1063,7 +1066,8 @@ export class HaDataTable extends LitElement {
       groupOrder: string[] | undefined,
       collapsedGroups: string[],
       sortColumn: string | undefined,
-      sortDirection: SortingDirection
+      sortDirection: SortingDirection,
+      renderGroupActions: DataTableGroupActions | undefined
     ) => {
       if (appendRow || groupColumn) {
         let items = [...data];
@@ -1122,7 +1126,8 @@ export class HaDataTable extends LitElement {
               content: this._renderGroupHeader(
                 groupName,
                 collapsedGroups.includes(groupName),
-                localize
+                localize,
+                renderGroupActions
               ),
             });
             if (!collapsedGroups.includes(groupName)) {
@@ -1148,6 +1153,7 @@ export class HaDataTable extends LitElement {
     groupName: string,
     collapsed: boolean,
     localize: LocalizeFunc | undefined,
+    renderGroupActions: DataTableGroupActions | undefined,
     sticky = false
   ) {
     // The sticky copy's button and name are hidden from assistive technology,
@@ -1183,7 +1189,7 @@ export class HaDataTable extends LitElement {
         }
       </span>
       <div class="group-actions" @click=${this._stopGroupToggle}>
-        <slot name=${groupActionsSlot(groupName)}></slot>
+        ${renderGroupActions?.(groupName)}
       </div>
     </div>`;
   }
@@ -1264,7 +1270,8 @@ export class HaDataTable extends LitElement {
       this.groupOrder,
       this._collapsedGroups,
       this.sortColumn,
-      this.sortDirection
+      this.sortDirection,
+      this.renderGroupActions
     );
 
     if (
