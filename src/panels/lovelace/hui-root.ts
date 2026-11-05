@@ -1688,8 +1688,11 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
           display: block;
           height: 100%;
         }
+        /* The view background sits below the view, above the opaque
+           background of the element it is embedded in */
         :host([embedded]) hui-view-container {
           min-height: 100%;
+          isolation: isolate;
         }
         .narrow hui-view-container {
           --view-container-inset-left: var(--safe-area-inset-left);
