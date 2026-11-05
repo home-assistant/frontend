@@ -15,6 +15,7 @@ import type { WindowWithPreloads } from "../data/preloads";
 import type { RecorderInfo } from "../data/recorder";
 import { getRecorderInfo } from "../data/recorder";
 import { showHttpPendingConfigDialog } from "../dialogs/http-pending-config/show-dialog-http-pending-config";
+import { isDialogOpen } from "../dialogs/make-dialog-manager";
 import { showMoreInfoDialog } from "../dialogs/more-info/show-ha-more-info-dialog";
 import "../resources/custom-card-support";
 import { HassElement } from "../state/hass-element";
@@ -327,6 +328,9 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     // Wait for the next render to ensure the view is fully loaded
     // because the more info dialog is closed when the url changes
     afterNextRender(() => {
+      if (isDialogOpen("ha-more-info-dialog")) {
+        return;
+      }
       showMoreInfoDialog(this, {
         entityId,
         view,
