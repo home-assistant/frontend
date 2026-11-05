@@ -1,17 +1,30 @@
+import type { ContextType } from "@lit/context";
+import type { HassConfig, HassEntities } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { consume } from "../../../common/decorators/consume";
+import { preserveUnchangedEntityStatesRecord } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-alert";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
 import "../../../components/ha-spinner";
+import {
+  apiContext,
+  configContext,
+  connectionContext,
+  fullEntitiesContext,
+  internationalizationContext,
+  statesContext,
+} from "../../../data/context";
+import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import { domainToName } from "../../../data/integration";
 import type {
   RepairsIssue,
@@ -28,15 +41,12 @@ import {
 } from "../../../data/repairs";
 import type { RelatedResult } from "../../../data/search";
 import { findRelated } from "../../../data/search";
+import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { haStyleDialog } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistantConfig } from "../../../types";
 
 @customElement("dialog-update-report")
-class DialogUpdateReport extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
-  @state() private _open = false;
-
+class DialogUpdateReport extends DialogMixin(LitElement) {
   // undefined while loading, null when there is no report
   @state() private _report?: UpdateReport | null;
 
@@ -46,100 +56,141 @@ class DialogUpdateReport extends LitElement {
 
   @state() private _error?: string;
 
-  public async showDialog(): Promise<void> {
-    this._open = true;
-    this._report = undefined;
-    this._affected = [];
-    this._error = undefined;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, boolean>({
+    transformer: ({ user }) => user?.is_admin ?? false,
+  })
+  private _isAdmin = false;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  @transform<HassEntities, HassEntities>({
+    transformer: function (this: DialogUpdateReport, states) {
+      const affected: HassEntities = {};
+      this._affected.forEach(({ entity_id }) => {
+        if (states?.[entity_id]) {
+          affected[entity_id] = states[entity_id];
+        }
+      });
+      return preserveUnchangedEntityStatesRecord(this._states, affected);
+    },
+    watch: ["_affected"],
+  })
+  private _states: HassEntities = {};
+
+  // Script config IDs are registry unique_ids, not entity object IDs
+  @state()
+  @consume({ context: fullEntitiesContext, subscribe: true })
+  @transform<EntityRegistryEntry[] | undefined, Record<string, string>>({
+    transformer: function (this: DialogUpdateReport, entries) {
+      const affected = new Set(this._affected.map((item) => item.entity_id));
+      return Object.fromEntries(
+        (entries ?? [])
+          .filter((entry) => affected.has(entry.entity_id))
+          .map((entry) => [entry.entity_id, entry.unique_id])
+      );
+    },
+    watch: ["_affected"],
+  })
+  private _uniqueIds?: Record<string, string>;
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._fetchReport();
+  }
+
+  private async _fetchReport(): Promise<void> {
+    let report: UpdateReport | null;
     try {
-      const [report, { issues }] = await Promise.all([
-        fetchUpdateReport(this.hass),
-        fetchRepairsIssues(this.hass.connection),
+      const [fetchedReport, { issues }] = await Promise.all([
+        fetchUpdateReport(this._api),
+        fetchRepairsIssues(this._connection.connection),
       ]);
+      report = fetchedReport;
       this._issues = Object.fromEntries(
         issues.map((issue) => [`${issue.domain}.${issue.issue_id}`, issue])
       );
-      this.hass.loadBackendTranslation("issues", [
+      this._i18n.loadBackendTranslation("issues", [
         ...new Set(issues.map((issue) => issue.domain)),
       ]);
-      this._report = report;
     } catch (err: any) {
       this._error = err.message;
       return;
     }
-    if (this._report) {
-      this._loadAffected(this._report);
+    this._report = report;
+    if (report) {
+      this._loadAffected(report);
     }
   }
 
   private async _loadAffected(report: UpdateReport): Promise<void> {
     const oldEntityIds = updateReportOldEntityIds(report);
-    if (!oldEntityIds.size || !isComponentLoaded(this.hass.config, "search")) {
+    if (!oldEntityIds.size || !isComponentLoaded(this._hassConfig, "search")) {
       return;
     }
     const related: Record<string, RelatedResult> = Object.fromEntries(
       await Promise.all(
         [...oldEntityIds.keys()].map(async (entityId) => [
           entityId,
-          await findRelated(this.hass, "entity", entityId).catch(() => ({})),
+          await findRelated(this._api, "entity", entityId).catch(() => ({})),
         ])
       )
     );
-    // The dialog may have been closed or reopened in the meantime.
-    if (this._report === report) {
-      this._affected = updateReportAffected(oldEntityIds, related);
-    }
-  }
-
-  public closeDialog(): void {
-    this._open = false;
-  }
-
-  private _dialogClosed(): void {
-    this._open = false;
-    this._report = undefined;
-    this._affected = [];
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
+    this._affected = updateReportAffected(oldEntityIds, related);
   }
 
   protected render() {
-    if (!this._open) {
-      return nothing;
-    }
     const report = this._report;
 
     return html`
       <ha-dialog
-        .open=${this._open}
+        open
         width="large"
         header-title=${
           report
-            ? this.hass.localize(
+            ? this._i18n.localize(
                 "ui.panel.config.repairs.update_report.title",
                 {
                   version: report.to_version,
                 }
               )
-            : this.hass.localize(
+            : this._i18n.localize(
                 "ui.panel.config.repairs.update_report.caption"
               )
         }
         header-subtitle=${
           report
-            ? this.hass.localize(
+            ? this._i18n.localize(
                 "ui.panel.config.repairs.update_report.subtitle",
                 {
                   version: report.from_version,
                   date: formatDateTime(
                     new Date(report.created),
-                    this.hass.locale,
-                    this.hass.config
+                    this._i18n.locale,
+                    this._hassConfig
                   ),
                 }
               )
             : ""
         }
-        @closed=${this._dialogClosed}
       >
         <div class="content">${this._renderContent()}</div>
         <ha-dialog-footer slot="footer">
@@ -148,13 +199,13 @@ class DialogUpdateReport extends LitElement {
             appearance="plain"
             @click=${this.closeDialog}
           >
-            ${this.hass.localize("ui.common.close")}
+            ${this._i18n.localize("ui.common.close")}
           </ha-button>
           ${
-            report && this.hass.user?.is_admin
+            report && this._isAdmin
               ? html`
                   <ha-button slot="primaryAction" @click=${this._dismiss}>
-                    ${this.hass.localize(
+                    ${this._i18n.localize(
                       "ui.panel.config.repairs.update_report.dismiss"
                     )}
                   </ha-button>
@@ -175,7 +226,7 @@ class DialogUpdateReport extends LitElement {
     }
     if (this._report === null) {
       return html`<p>
-        ${this.hass.localize("ui.panel.config.repairs.update_report.no_report")}
+        ${this._i18n.localize("ui.panel.config.repairs.update_report.no_report")}
       </p>`;
     }
     const report = this._report;
@@ -190,7 +241,7 @@ class DialogUpdateReport extends LitElement {
       ${
         nothingChanged
           ? html`<p>
-              ${this.hass.localize(
+              ${this._i18n.localize(
                 "ui.panel.config.repairs.update_report.nothing_changed"
               )}
             </p>`
@@ -211,13 +262,13 @@ class DialogUpdateReport extends LitElement {
                   : entry.title
               }
               <span class="secondary">
-                ${domainToName(this.hass.localize, entry.domain)} ·
+                ${domainToName(this._i18n.localize, entry.domain)} ·
                 ${
                   entry.state
-                    ? this.hass.localize(
+                    ? this._i18n.localize(
                         `ui.panel.config.integrations.config_entry.state.${entry.state}`
                       )
-                    : this.hass.localize(
+                    : this._i18n.localize(
                         "ui.panel.config.repairs.update_report.removed"
                       )
                 }
@@ -233,8 +284,8 @@ class DialogUpdateReport extends LitElement {
             <li>
               ${this._renderEntity(entity.entity_id)}
               <span class="secondary">
-                ${domainToName(this.hass.localize, entity.platform)} ·
-                ${this.hass.localize(
+                ${domainToName(this._i18n.localize, entity.platform)} ·
+                ${this._i18n.localize(
                   `ui.panel.config.repairs.update_report.${entity.state ?? "no_state"}`
                 )}
               </span>
@@ -247,8 +298,8 @@ class DialogUpdateReport extends LitElement {
               <code>${entity.old_entity_id}</code> →
               ${this._renderEntity(entity.entity_id)}
               <span class="secondary">
-                ${domainToName(this.hass.localize, entity.platform)} ·
-                ${this.hass.localize(
+                ${domainToName(this._i18n.localize, entity.platform)} ·
+                ${this._i18n.localize(
                   "ui.panel.config.repairs.update_report.renamed"
                 )}
               </span>
@@ -260,8 +311,8 @@ class DialogUpdateReport extends LitElement {
             <li>
               <code>${entity.entity_id}</code>
               <span class="secondary">
-                ${domainToName(this.hass.localize, entity.platform)} ·
-                ${this.hass.localize(
+                ${domainToName(this._i18n.localize, entity.platform)} ·
+                ${this._i18n.localize(
                   "ui.panel.config.repairs.update_report.removed"
                 )}
               </span>
@@ -284,14 +335,14 @@ class DialogUpdateReport extends LitElement {
             <li>
               ${this._issueTitle(issue)}
               <span class="secondary">
-                ${this.hass.localize(
+                ${this._i18n.localize(
                   "ui.panel.config.repairs.update_report.breaks_in_version",
                   { version: issue.breaks_in_ha_version }
                 )}
                 ${
                   issue.dismissed
                     ? html` ·
-                      ${this.hass.localize(
+                      ${this._i18n.localize(
                         "ui.panel.config.repairs.update_report.ignored"
                       )}`
                     : nothing
@@ -313,7 +364,7 @@ class DialogUpdateReport extends LitElement {
     }
     return html`
       <h3>
-        ${this.hass.localize(
+        ${this._i18n.localize(
           `ui.panel.config.repairs.update_report.sections.${key}`
         )}
       </h3>
@@ -335,34 +386,29 @@ class DialogUpdateReport extends LitElement {
 
   private _renderAffected(item: UpdateReportAffected) {
     const domain = computeDomain(item.entity_id);
-    const stateObj = this.hass.states[item.entity_id];
+    const stateObj = this._states[item.entity_id];
     const name = stateObj ? computeStateName(stateObj) : item.entity_id;
     const configId =
       domain === "automation"
         ? stateObj?.attributes.id
-        : computeObjectId(item.entity_id);
+        : this._uniqueIds?.[item.entity_id];
+    const href = configId
+      ? `/config/${domain}/edit/${encodeURIComponent(configId)}`
+      : `/config/${domain}/show/${encodeURIComponent(item.entity_id)}`;
     return html`
       <li>
-        ${
-          configId
-            ? html`<a
-                href=${`/config/${domain}/edit/${encodeURIComponent(configId)}`}
-                @click=${this.closeDialog}
-                >${name}</a
-              >`
-            : name
-        }
+        <a href=${href} @click=${this.closeDialog}>${name}</a>
         <span class="secondary">
           ${
             item.new_entity_id
-              ? this.hass.localize(
+              ? this._i18n.localize(
                   "ui.panel.config.repairs.update_report.uses_renamed",
                   {
                     old_entity_id: item.old_entity_id,
                     new_entity_id: item.new_entity_id,
                   }
                 )
-              : this.hass.localize(
+              : this._i18n.localize(
                   "ui.panel.config.repairs.update_report.uses_removed",
                   { old_entity_id: item.old_entity_id }
                 )
@@ -376,7 +422,7 @@ class DialogUpdateReport extends LitElement {
     const current = this._issues[`${issue.domain}.${issue.issue_id}`];
     const key = current?.translation_key || issue.issue_id;
     return (
-      this.hass.localize(
+      this._i18n.localize(
         `component.${issue.domain}.issues.${key}.title`,
         current?.translation_placeholders || {}
       ) || `${issue.domain}: ${key}`
@@ -392,7 +438,7 @@ class DialogUpdateReport extends LitElement {
 
   private async _dismiss(): Promise<void> {
     try {
-      await dismissUpdateReport(this.hass);
+      await dismissUpdateReport(this._api);
     } catch (err: any) {
       this._error = err.message;
       return;
@@ -403,6 +449,10 @@ class DialogUpdateReport extends LitElement {
   static styles: CSSResultGroup = [
     haStyleDialog,
     css`
+      ha-dialog {
+        --ha-dialog-header-white-space: normal;
+        --ha-dialog-header-title-height: auto;
+      }
       .content {
         padding-top: 0;
       }

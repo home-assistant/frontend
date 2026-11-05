@@ -2,7 +2,7 @@ import type { Connection } from "home-assistant-js-websocket";
 import { createCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
 import { debounce } from "../common/util/debounce";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 import type { ConfigEntry } from "./config_entries";
 import type { DataEntryFlowStep } from "./data_entry_flow";
 import type { RelatedResult } from "./search";
@@ -155,11 +155,11 @@ export interface UpdateReport {
 
 export const UPDATE_REPORT_ISSUE_ID = "update_report";
 
-export const fetchUpdateReport = (hass: HomeAssistant) =>
-  hass.callWS<UpdateReport | null>({ type: "repairs/update_report" });
+export const fetchUpdateReport = (api: HomeAssistantApi) =>
+  api.callWS<UpdateReport | null>({ type: "repairs/update_report" });
 
-export const dismissUpdateReport = (hass: HomeAssistant) =>
-  hass.callWS<null>({ type: "repairs/update_report/dismiss" });
+export const dismissUpdateReport = (api: HomeAssistantApi) =>
+  api.callWS<null>({ type: "repairs/update_report/dismiss" });
 
 // Old entity_id of each removed or renamed entity, with its new entity_id
 // (null when removed).
