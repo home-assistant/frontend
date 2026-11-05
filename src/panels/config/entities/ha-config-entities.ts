@@ -1742,7 +1742,7 @@ ${rejected
     }
   }
 
-  // Alexa and Google Assistant can't be exposed to from the UI when they
+  // Alexa and Google Home can't be exposed to from the UI when they
   // are configured manually in YAML, same as on the voice assistants expose page
   private _exposableAssistants = memoize(
     (cloudStatus: CloudStatus | undefined, hass: HomeAssistant) =>
