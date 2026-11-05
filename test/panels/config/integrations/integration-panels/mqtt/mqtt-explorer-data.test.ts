@@ -80,6 +80,21 @@ describe("diffJsonPayloads", () => {
     ]);
   });
 
+  it("keeps dotted keys apart from nested objects", () => {
+    expect(
+      diffJsonPayloads('{"a.b": 1, "a": {"b": 2}}', '{"a.b": 3, "a": {"b": 2}}')
+    ).toEqual([
+      { key: '["a.b"]', type: "changed", oldValue: "1", newValue: "3" },
+    ]);
+  });
+
+  it("keeps array indexes apart from numeric object keys", () => {
+    expect(diffJsonPayloads('{"a": [1]}', '{"a": {"0": 1}}')).toEqual([
+      { key: 'a["0"]', type: "added", newValue: "1" },
+      { key: "a[0]", type: "removed", oldValue: "1" },
+    ]);
+  });
+
   it("returns no changes for identical payloads", () => {
     expect(diffJsonPayloads('{"a": 1}', '{"a": 1}')).toEqual([]);
   });

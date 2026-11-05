@@ -1,23 +1,45 @@
 import { mdiClose, mdiContentCopy } from "@mdi/js";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import { consume } from "../../../../../common/decorators/consume";
+import { transform } from "../../../../../common/decorators/transform";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { formatTimeWithSeconds } from "../../../../../common/datetime/format_time";
 import { formatNumber } from "../../../../../common/number/format_number";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/item/ha-list-item-option";
+import "../../../../../components/list/ha-list-selectable";
+import {
+  configContext,
+  internationalizationContext,
+} from "../../../../../data/context";
 import type { MQTTExplorerTopic } from "../../../../../data/mqtt";
-import type { HomeAssistant } from "../../../../../types";
+import type {
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+} from "../../../../../types";
 import { bytesToString } from "../../../../../util/bytes-to-string";
 import { showToast } from "../../../../../util/toast";
 import type { ExplorerMessage } from "./mqtt-explorer-data";
 import { diffJsonPayloads, formatPayload } from "./mqtt-explorer-data";
 
+const CHANGE_SIGNS = { added: "+", removed: "−", changed: "~" } as const;
+
 @customElement("mqtt-explorer-topic")
 class MqttExplorerTopic extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: HomeAssistantInternationalization;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
 
   @property({ attribute: false }) public topic!: MQTTExplorerTopic;
 
@@ -27,7 +49,10 @@ class MqttExplorerTopic extends LitElement {
   @state() private _selectedId?: number;
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
-    if (changedProps.get("topic")?.topic !== this.topic.topic) {
+    if (
+      changedProps.has("topic") &&
+      changedProps.get("topic")?.topic !== this.topic.topic
+    ) {
       this._selectedId = undefined;
     }
   }
@@ -45,69 +70,65 @@ class MqttExplorerTopic extends LitElement {
         <code class="topic">${this.topic.topic}</code>
         <ha-icon-button
           .path=${mdiClose}
-          .label=${this.hass.localize("ui.common.close")}
+          .label=${this._i18n.localize("ui.common.close")}
           @click=${this._close}
         ></ha-icon-button>
       </div>
       <div class="stats">
-        ${this.hass.localize("ui.panel.config.mqtt.explorer.topic_stats", {
-          messages: formatNumber(this.topic.messages, this.hass.locale),
-          rate: formatNumber(this.topic.message_rate, this.hass.locale, {
+        ${this._i18n.localize("ui.panel.config.mqtt.explorer.topic_stats", {
+          messages: formatNumber(this.topic.messages, this._i18n.locale),
+          rate: formatNumber(this.topic.message_rate, this._i18n.locale, {
             maximumFractionDigits: 1,
           }),
           bytes: bytesToString(this.topic.bytes, 1),
         })}
         ·
-        ${this.hass.localize("ui.panel.config.mqtt.explorer.subscriptions", {
+        ${this._i18n.localize("ui.panel.config.mqtt.explorer.subscriptions", {
           count: this.topic.subscriptions,
         })}
       </div>
 
-      <h3>${this.hass.localize("ui.panel.config.mqtt.explorer.messages")}</h3>
-      <div
+      <h3>${this._i18n.localize("ui.panel.config.mqtt.explorer.messages")}</h3>
+      <ha-list-selectable
         class="messages"
-        role="listbox"
-        aria-label=${this.hass.localize(
+        controlled
+        aria-label=${this._i18n.localize(
           "ui.panel.config.mqtt.explorer.messages"
         )}
+        @ha-list-item-selected=${this._selectMessage}
       >
         ${this.messages.map(
           (msg, i) => html`
-            <button
-              role="option"
-              aria-selected=${i === index}
-              class=${classMap({ message: true, selected: i === index })}
-              data-id=${msg.id}
-              @click=${this._selectMessage}
-            >
-              <span>${this._formatTimestamp(msg.timestamp)}</span>
-              <span>${bytesToString(msg.size, 1)}</span>
-              <span>
-                QoS
+            <ha-list-item-option .selected=${i === index}>
+              <span slot="headline"
+                >${this._formatTimestamp(msg.timestamp)}</span
+              >
+              <span slot="end" class="message-meta">
+                ${bytesToString(msg.size, 1)} · QoS
                 ${msg.qos}${
                   msg.retain
                     ? html` ·
-                      ${this.hass.localize(
+                      ${this._i18n.localize(
                         "ui.panel.config.mqtt.explorer.retained"
                       )}`
                     : nothing
                 }
               </span>
-            </button>
+            </ha-list-item-option>
           `
         )}
-      </div>
+      </ha-list-selectable>
 
       ${
         selected
           ? html`
               <div class="section-header">
                 <h3>
-                  ${this.hass.localize("ui.panel.config.mqtt.explorer.payload")}
+                  ${this._i18n.localize("ui.panel.config.mqtt.explorer.payload")}
                 </h3>
                 <ha-icon-button
                   .path=${mdiContentCopy}
-                  .label=${this.hass.localize(
+                  .label=${this._i18n.localize(
                     "ui.panel.config.mqtt.explorer.copy_payload"
                   )}
                   @click=${this._copyPayload}
@@ -117,14 +138,14 @@ class MqttExplorerTopic extends LitElement {
               ${
                 selected.truncated
                   ? html`<p class="secondary">
-                      ${this.hass.localize(
+                      ${this._i18n.localize(
                         "ui.panel.config.mqtt.explorer.truncated"
                       )}
                     </p>`
                   : nothing
               }
               <h3>
-                ${this.hass.localize("ui.panel.config.mqtt.explorer.changes")}
+                ${this._i18n.localize("ui.panel.config.mqtt.explorer.changes")}
               </h3>
               ${this._renderChanges(selected, previous)}
             `
@@ -139,37 +160,55 @@ class MqttExplorerTopic extends LitElement {
   ): TemplateResult {
     if (!previous) {
       return html`<p class="secondary">
-        ${this.hass.localize("ui.panel.config.mqtt.explorer.no_previous")}
+        ${this._i18n.localize("ui.panel.config.mqtt.explorer.no_previous")}
       </p>`;
     }
     if (previous.payload === selected.payload) {
       return html`<p class="secondary">
-        ${this.hass.localize("ui.panel.config.mqtt.explorer.unchanged")}
+        ${this._i18n.localize("ui.panel.config.mqtt.explorer.unchanged")}
       </p>`;
     }
     const changes = diffJsonPayloads(previous.payload, selected.payload);
     if (!changes) {
       return html`
         <div class="changes" dir="ltr">
-          <div class="removed">${previous.payload}</div>
-          <div class="added">${selected.payload}</div>
+          ${this._renderChange("removed", "previous", previous.payload)}
+          ${this._renderChange("added", "current", selected.payload)}
         </div>
       `;
     }
     return html`
       <div class="changes" dir="ltr">
-        ${changes.map(
-          (change) => html`
-            <div class=${change.type}>
-              <code>${change.key}</code>:
+        ${changes.map((change) =>
+          this._renderChange(
+            change.type,
+            change.type,
+            html`<code>${change.key}</code>:
               ${
                 change.type === "changed"
                   ? `${change.oldValue} → ${change.newValue}`
                   : (change.newValue ?? change.oldValue)
-              }
-            </div>
-          `
+              }`
+          )
         )}
+      </div>
+    `;
+  }
+
+  private _renderChange(
+    type: keyof typeof CHANGE_SIGNS,
+    label: "added" | "removed" | "changed" | "previous" | "current",
+    content: unknown
+  ): TemplateResult {
+    return html`
+      <div class=${type}>
+        <span class="sign" aria-hidden="true">${CHANGE_SIGNS[type]}</span>
+        <span class="visually-hidden"
+          >${this._i18n.localize(
+            `ui.panel.config.mqtt.explorer.change_${label}`
+          )}:</span
+        >
+        ${content}
       </div>
     `;
   }
@@ -177,13 +216,13 @@ class MqttExplorerTopic extends LitElement {
   private _formatTimestamp(timestamp: number): string {
     return formatTimeWithSeconds(
       new Date(timestamp * 1000),
-      this.hass.locale,
-      this.hass.config
+      this._i18n.locale,
+      this._hassConfig
     );
   }
 
-  private _selectMessage(ev: Event): void {
-    this._selectedId = Number((ev.currentTarget as HTMLElement).dataset.id);
+  private _selectMessage(ev: CustomEvent<number>): void {
+    this._selectedId = this.messages[ev.detail]?.id;
   }
 
   private async _copyPayload(): Promise<void> {
@@ -195,7 +234,7 @@ class MqttExplorerTopic extends LitElement {
     }
     await copyToClipboard(selected.payload);
     showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
+      message: this._i18n.localize("ui.common.copied_clipboard"),
     });
   }
 
@@ -232,30 +271,18 @@ class MqttExplorerTopic extends LitElement {
       margin: var(--ha-space-2) 0 0;
     }
     .messages {
-      display: flex;
-      flex-direction: column;
+      display: block;
       max-height: 180px;
       overflow-y: auto;
       border: 1px solid var(--divider-color);
       border-radius: var(--ha-border-radius-md);
+      --ha-row-item-min-height: 32px;
+      --ha-row-item-padding-block: var(--ha-space-1);
     }
-    .message {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: var(--ha-space-4);
-      padding: var(--ha-space-1) var(--ha-space-2);
-      border: none;
-      background: none;
-      color: var(--primary-text-color);
-      font: inherit;
-      text-align: start;
-      cursor: pointer;
-    }
-    .message:hover {
-      background-color: var(--secondary-background-color);
-    }
-    .message.selected {
-      background-color: rgba(var(--rgb-primary-color), 0.12);
+    .message-meta {
+      font-size: var(--ha-font-size-s);
+      color: var(--secondary-text-color);
+      white-space: nowrap;
     }
     pre,
     .changes {
@@ -274,6 +301,22 @@ class MqttExplorerTopic extends LitElement {
     }
     pre {
       white-space: pre-wrap;
+    }
+    .changes {
+      position: relative;
+    }
+    .sign {
+      display: inline-block;
+      width: 1ch;
+      font-weight: var(--ha-font-weight-bold);
+    }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
     .added {
       color: var(--success-color);

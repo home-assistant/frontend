@@ -3,7 +3,6 @@ import type {
   MQTTExplorerTopic,
 } from "../../../../../data/mqtt";
 
-export const MAX_TOPICS = 5000;
 export const MAX_MESSAGES_PER_TOPIC = 20;
 
 export interface ExplorerMessage extends MQTTExplorerMessage {
@@ -75,6 +74,20 @@ export const formatPayload = (payload: string): string => {
   return parsed === undefined ? payload : JSON.stringify(parsed, null, 2);
 };
 
+const IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
+
+// Keys that need it are quoted, so `{"a.b": 1}` and `{"a": {"b": 1}}` or an
+// array index and a numeric object key never end up on the same path.
+const childPath = (prefix: string, key: string, isArray: boolean): string => {
+  if (isArray) {
+    return `${prefix}[${key}]`;
+  }
+  if (!IDENTIFIER.test(key)) {
+    return `${prefix}[${JSON.stringify(key)}]`;
+  }
+  return prefix ? `${prefix}.${key}` : key;
+};
+
 const flatten = (
   value: unknown,
   prefix: string,
@@ -85,8 +98,9 @@ const flatten = (
     if (!entries.length && prefix) {
       out.set(prefix, JSON.stringify(value));
     }
+    const isArray = Array.isArray(value);
     for (const [key, child] of entries) {
-      flatten(child, prefix ? `${prefix}.${key}` : key, out);
+      flatten(child, childPath(prefix, key, isArray), out);
     }
   } else {
     out.set(prefix, JSON.stringify(value));

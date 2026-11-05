@@ -8158,7 +8158,12 @@
             "truncated": "The payload was truncated by Home Assistant.",
             "changes": "Changes from the previous message",
             "no_previous": "No previous message to compare with.",
-            "unchanged": "Same payload as the previous message."
+            "unchanged": "Same payload as the previous message.",
+            "change_added": "Added",
+            "change_removed": "Removed",
+            "change_changed": "Changed",
+            "change_previous": "Previous payload",
+            "change_current": "New payload"
           }
         },
         "infrared": {

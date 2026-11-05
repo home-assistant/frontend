@@ -28,12 +28,14 @@ import type { ExplorerMessage, TopicTreeNode } from "./mqtt-explorer-data";
 import {
   buildTopicTree,
   MAX_MESSAGES_PER_TOPIC,
-  MAX_TOPICS,
   sortedChildren,
 } from "./mqtt-explorer-data";
 import "./mqtt-explorer-topic";
 
 const MAX_BUSIEST_ROWS = 200;
+// The backend sends an event every interval, also when nothing changed.
+const STALL_CHECK_MS = 5000;
+const STALLED_INTERVALS = 3;
 
 @customElement("mqtt-explorer-card")
 class MqttExplorerCard extends LitElement {
@@ -57,6 +59,8 @@ class MqttExplorerCard extends LitElement {
 
   @state() private _unsubscribe?: () => void;
 
+  @state() private _starting = false;
+
   @state() private _total?: MQTTExplorerTotals;
 
   // Server clock of the last event, used for all relative times
@@ -76,6 +80,14 @@ class MqttExplorerCard extends LitElement {
   private _messages = new Map<string, ExplorerMessage[]>();
 
   private _messageId = 0;
+
+  private _lastEvent = 0;
+
+  private _interval = 2;
+
+  private _stallCheck?: number;
+
+  private _resubscribing = false;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -114,12 +126,13 @@ class MqttExplorerCard extends LitElement {
                 "ui.panel.config.mqtt.explorer.filter"
               )}
               .value=${this._filter}
-              .disabled=${this._unsubscribe !== undefined}
+              .disabled=${this._unsubscribe !== undefined || this._starting}
               @change=${this._handleFilter}
             ></ha-input>
             <ha-button
               appearance="plain"
               .disabled=${!this._filter}
+              .loading=${this._starting}
               @click=${this._toggle}
             >
               ${this.hass.localize(
@@ -145,19 +158,29 @@ class MqttExplorerCard extends LitElement {
                     "with-detail": selectedTopic !== undefined,
                   })}
                 >
-                  <div class="tree" role="tree">
+                  <div class="tree">
                     ${
                       this._topics.size
-                        ? this._busiest
-                          ? this._busiestTopics(this._version).map((topic) =>
-                              this._renderRow(
-                                topic.topic,
-                                topic.topic,
-                                0,
-                                topic
-                              )
-                            )
-                          : this._renderChildren(this._tree(this._version), 0)
+                        ? html`<div role="list">
+                            ${
+                              this._busiest
+                                ? this._busiestTopics(this._version).map(
+                                    (topic) =>
+                                      html`<div role="listitem">
+                                        ${this._renderRow(
+                                          topic.topic,
+                                          topic.topic,
+                                          0,
+                                          topic
+                                        )}
+                                      </div>`
+                                  )
+                                : this._renderChildren(
+                                    this._tree(this._version),
+                                    0
+                                  )
+                            }
+                          </div>`
                         : html`<p class="secondary empty">
                             ${this.hass.localize(
                               "ui.panel.config.mqtt.explorer.no_topics"
@@ -169,7 +192,6 @@ class MqttExplorerCard extends LitElement {
                     selectedTopic
                       ? html`
                           <mqtt-explorer-topic
-                            .hass=${this.hass}
                             .topic=${selectedTopic}
                             .messages=${
                               this._messages.get(selectedTopic.topic) ?? []
@@ -231,8 +253,16 @@ class MqttExplorerCard extends LitElement {
     return sortedChildren(node).map((child) => {
       const expanded = this._expanded.has(child.path);
       return html`
-        ${this._renderRow(child.name, child.path, depth, child.topic, child)}
-        ${expanded ? this._renderChildren(child, depth + 1) : nothing}
+        <div role="listitem">
+          ${this._renderRow(child.name, child.path, depth, child.topic, child)}
+          ${
+            expanded
+              ? html`<div role="list">
+                  ${this._renderChildren(child, depth + 1)}
+                </div>`
+              : nothing
+          }
+        </div>
       `;
     });
   }
@@ -249,14 +279,10 @@ class MqttExplorerCard extends LitElement {
     const lastMessage = topic
       ? this._messages.get(topic.topic)?.[0]
       : undefined;
+    const selected = topic !== undefined && path === this._selected;
     return html`
       <div
-        class=${classMap({ row: true, selected: path === this._selected })}
-        role="treeitem"
-        aria-selected=${path === this._selected ? "true" : "false"}
-        aria-expanded=${ifDefined(
-          hasChildren ? (expanded ? "true" : "false") : undefined
-        )}
+        class=${classMap({ row: true, selected })}
         style=${styleMap({ "padding-inline-start": `${depth * 16}px` })}
       >
         ${
@@ -277,6 +303,10 @@ class MqttExplorerCard extends LitElement {
           class="label"
           data-path=${path}
           data-topic=${topic ? "1" : ""}
+          aria-expanded=${ifDefined(
+            !topic && hasChildren ? (expanded ? "true" : "false") : undefined
+          )}
+          aria-current=${ifDefined(selected ? "true" : undefined)}
           @click=${this._rowClicked}
         >
           <span class="main">
@@ -357,7 +387,7 @@ class MqttExplorerCard extends LitElement {
   }
 
   private _handleFilter(ev: InputEvent): void {
-    this._filter = (ev.target as HTMLInputElement).value.trim();
+    this._filter = (ev.target as HTMLInputElement).value;
   }
 
   private _handleBusiest(ev: Event): void {
@@ -412,32 +442,23 @@ class MqttExplorerCard extends LitElement {
         )
       );
     }
-    this._evictTopics();
+    this._lastEvent = Date.now();
+    this._interval = event.interval;
     this._total = event.total;
     this._now = event.now;
     this._started = event.started;
     this._version++;
   };
 
-  private _evictTopics(): void {
-    const excess = this._topics.size - MAX_TOPICS;
-    if (excess <= 0) {
-      return;
-    }
-    [...this._topics.values()]
-      .sort((a, b) => a.last_received - b.last_received)
-      .slice(0, excess)
-      .forEach((topic) => {
-        this._topics.delete(topic.topic);
-        this._messages.delete(topic.topic);
-      });
-  }
-
   private async _toggle(): Promise<void> {
     if (this._unsubscribe) {
       this._stop();
       return;
     }
+    if (this._starting) {
+      return;
+    }
+    this._starting = true;
     this._topics = new Map();
     this._messages = new Map();
     this._total = undefined;
@@ -458,18 +479,57 @@ class MqttExplorerCard extends LitElement {
         ),
       });
       return;
+    } finally {
+      this._starting = false;
     }
     if (!this.isConnected) {
       unsubscribe();
       return;
     }
     this._unsubscribe = unsubscribe;
+    this._lastEvent = Date.now();
+    this._stallCheck = window.setInterval(this._checkStalled, STALL_CHECK_MS);
   }
 
   private _stop(): void {
     this._unsubscribe?.();
     this._unsubscribe = undefined;
+    clearInterval(this._stallCheck);
+    this._stallCheck = undefined;
   }
+
+  // A reload of the MQTT integration ends the subscription without an error.
+  private _checkStalled = async (): Promise<void> => {
+    const stalled = this._unsubscribe;
+    if (
+      !stalled ||
+      this._resubscribing ||
+      !this.hass.connection.connected ||
+      Date.now() - this._lastEvent < this._interval * STALLED_INTERVALS * 1000
+    ) {
+      return;
+    }
+    this._resubscribing = true;
+    try {
+      const unsubscribe = await subscribeMQTTExplorer(
+        this.hass,
+        this._handleEvent,
+        this._filter
+      );
+      // Stopped by the user while subscribing.
+      if (this._unsubscribe !== stalled) {
+        unsubscribe();
+        return;
+      }
+      stalled();
+      this._unsubscribe = unsubscribe;
+    } catch (_err: unknown) {
+      // MQTT is not loaded again yet; the next check retries.
+    } finally {
+      this._lastEvent = Date.now();
+      this._resubscribing = false;
+    }
+  };
 
   static get styles(): CSSResultGroup {
     return [
