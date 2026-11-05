@@ -19,7 +19,8 @@ export interface ESPHomeZWaveProxyCapabilities {
 export interface ESPHomeSerialProxy {
   name: string;
   port_type: ESPHomeSerialPortType | null;
-  url: string;
+  // Null while no device is behind the port
+  url: string | null;
 }
 
 export interface ESPHomeDeviceCapabilities {
