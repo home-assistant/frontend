@@ -166,6 +166,14 @@ describe("getServiceHiddenFields", () => {
     ).toEqual(new Set());
   });
 
+  it("never hides a field based on a template", () => {
+    expect(
+      getServiceHiddenFields(visibility, defaults, {
+        mode: "{{ states('input_select.mode') }}",
+      })
+    ).toEqual(new Set());
+  });
+
   it("uses the value of the field when it has one", () => {
     expect(
       getServiceHiddenFields(visibility, defaults, { mode: "end_of_track" })

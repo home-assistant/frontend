@@ -1,5 +1,6 @@
 import type { HassService } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
+import { hasTemplate } from "../common/string/has-template";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
 import {
   combineVisible,
@@ -96,18 +97,40 @@ export const getServiceFieldDefaults = (
   return defaults;
 };
 
+const getConditionFields = (visible: HaFormVisible | undefined): string[] =>
+  visible === undefined || typeof visible === "boolean"
+    ? []
+    : ensureArray(visible).flatMap((condition) =>
+        "condition" in condition
+          ? condition.conditions.flatMap((sub) => getConditionFields(sub))
+          : [condition.field]
+      );
+
 // Like in config flows and blueprints, a field without a value is evaluated
-// with its default.
+// with its default. A template is only known when the action runs, so a
+// condition on a field holding one never hides anything.
 export const getServiceHiddenFields = (
   visibility: [string, HaFormVisible | undefined][],
   defaults: HaFormDataContainer,
   data: Record<string, any> | undefined
 ): Set<string> => {
   const values = { ...defaults };
+  const templates = new Set<string>();
   for (const [key, value] of Object.entries(data ?? {})) {
     if (value !== undefined) {
       values[key] = value;
     }
+    if (hasTemplate(value)) {
+      templates.add(key);
+    }
   }
-  return getHiddenFields(visibility, values);
+  return getHiddenFields(
+    visibility.map(([key, visible]) => [
+      key,
+      getConditionFields(visible).some((field) => templates.has(field))
+        ? undefined
+        : visible,
+    ]),
+    values
+  );
 };

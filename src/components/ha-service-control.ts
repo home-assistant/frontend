@@ -5,6 +5,7 @@ import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { ensureArray } from "../common/array/ensure-array";
+import { deepEqual } from "../common/util/deep-equal";
 import {
   fireEvent,
   type HASSDomCurrentTargetEvent,
@@ -344,23 +345,35 @@ export class HaServiceControl extends LitElement {
     if (!serviceData?.fieldVisibility.length) {
       return data;
     }
-    const hidden = this._hiddenFields(serviceData, data);
-    const wasHidden = this._hiddenFields(serviceData, this._value?.data);
-    const visibleData = { ...data };
-    hidden.forEach((key) => {
-      delete visibleData[key];
-      delete this._stickySelector[key];
-      this._checkedKeys.delete(key);
-    });
-    const shownAgain = serviceData.flatFields.filter(
-      (field) => wasHidden.has(field.key) && !hidden.has(field.key)
-    );
-    return fillFieldDefaults(
-      visibleData,
-      shownAgain.map((field) => [field.key, field]),
-      true,
-      (field) => !field.required
-    ).values;
+    let previous = this._value?.data;
+    let current = data;
+    // A restored default can hide or show other fields, settle until nothing
+    // changes. The bound guards against conditions that keep flipping.
+    for (let i = 0; i <= serviceData.flatFields.length; i++) {
+      const hidden = this._hiddenFields(serviceData, current);
+      const wasHidden = this._hiddenFields(serviceData, previous);
+      const visibleData = { ...current };
+      hidden.forEach((key) => {
+        delete visibleData[key];
+        delete this._stickySelector[key];
+        this._checkedKeys.delete(key);
+      });
+      const shownAgain = serviceData.flatFields.filter(
+        (field) => wasHidden.has(field.key) && !hidden.has(field.key)
+      );
+      const next = fillFieldDefaults(
+        visibleData,
+        shownAgain.map((field) => [field.key, field]),
+        true,
+        (field) => !field.required
+      ).values;
+      if (deepEqual(next, current)) {
+        return next;
+      }
+      previous = current;
+      current = next;
+    }
+    return current;
   }
 
   private _getTargetedEntities = memoizeOne((target, value) => {
