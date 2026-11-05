@@ -49,6 +49,7 @@ import {
   MIN_SANKEY_THRESHOLD_FACTOR,
   resolveSankeyParents,
 } from "../energy/common/sankey";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 
 const DEFAULT_CONFIG = {
   group_by_floor: true,
@@ -207,7 +208,7 @@ abstract class HuiWaterGasSankeyCard
       nodes.push({
         id: `source-${resource}`,
         label: this._i18n.localize(
-          `ui.panel.lovelace.cards.energy.energy_distribution.${resource}` as any
+          `ui.panel.lovelace.cards.energy.energy_distribution.${resource}` as LocalizeKeys
         ),
         value: totalSourceSupply,
         color: resourceColor,

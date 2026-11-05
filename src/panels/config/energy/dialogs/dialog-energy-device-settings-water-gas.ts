@@ -30,9 +30,11 @@ import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import type { IntegralUnits } from "./energy-integral";
 import { confirmIntegrals, integralUnits } from "./energy-integral";
 import type { EnergySettingsDeviceWaterGasDialogParams } from "./show-dialogs-energy";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 
 const flowRateUnitClasses = ["volume_flow_rate"];
 
+// Without a consumption sensor, saving offers to create one from the flow rate sensor
 type DeviceConsumptionDraft = Partial<DeviceConsumptionEnergyPreference>;
 
 @customElement("dialog-energy-device-settings-water-gas")
@@ -100,7 +102,7 @@ export class DialogEnergyDeviceSettingsWaterGas
 
   private _t(key: string, params?: Record<string, string>): string {
     return this.hass.localize(
-      `ui.panel.config.energy.device_consumption_${this._resource}.dialog.${key}` as any,
+      `ui.panel.config.energy.device_consumption_${this._resource}.dialog.${key}` as LocalizeKeys,
       params as any
     );
   }
@@ -141,6 +143,7 @@ export class DialogEnergyDeviceSettingsWaterGas
         }
       });
     }
+    // Saving without a consumption sensor can reuse the original one
     const stat =
       this._device.stat_consumption ?? this._params.device?.stat_consumption;
     if (stat) {
@@ -175,8 +178,12 @@ export class DialogEnergyDeviceSettingsWaterGas
 
     const resource = this._resource;
     const pickableUnit = [
-      ...(this._volume_units || []),
-      ...(this._energy_units || []),
+      ...(this._params.allowedUnitClass === "energy"
+        ? []
+        : this._volume_units || []),
+      ...(this._params.allowedUnitClass === "volume"
+        ? []
+        : this._energy_units || []),
     ].join(", ");
 
     const labelStatistic =
@@ -284,6 +291,7 @@ export class DialogEnergyDeviceSettingsWaterGas
     this._device =
       device.stat_consumption || device.stat_rate ? device : undefined;
     this._computePossibleParents();
+    // The new consumption sensor can rule out the picked upstream device
     if (
       device.included_in_stat &&
       !this._possibleParents.some(
@@ -357,7 +365,11 @@ export class DialogEnergyDeviceSettingsWaterGas
     ) {
       return undefined;
     }
-    return this._t("flow_rate_no_volume");
+    return this._t(
+      this._params?.allowedUnitClass === "energy"
+        ? "flow_rate_energy_sources"
+        : "flow_rate_no_volume"
+    );
   }
 
   private _integralUnits(): IntegralUnits | undefined {
@@ -376,6 +388,8 @@ export class DialogEnergyDeviceSettingsWaterGas
   }
 
   private async _save() {
+    // Closing or reopening the dialog replaces its state, but a created helper
+    // must still be saved with the submitted device
     const params = this._params!;
     const draft = this._device!;
     const isCurrent = () => this._params === params;
@@ -426,7 +440,7 @@ export class DialogEnergyDeviceSettingsWaterGas
           rate: statRate,
           units,
           name: this.hass.localize(
-            `ui.panel.config.energy.integral.${resource}.sensor_name` as any,
+            `ui.panel.config.energy.integral.${resource}.sensor_name` as LocalizeKeys,
             {
               name: computeEnergyLabel(
                 this.hass.states,

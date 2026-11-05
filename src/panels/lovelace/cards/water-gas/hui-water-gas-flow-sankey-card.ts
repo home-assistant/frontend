@@ -48,6 +48,7 @@ import {
   MIN_SANKEY_THRESHOLD_FACTOR,
   resolveSankeyParents,
 } from "../energy/common/sankey";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 
 const DEFAULT_CONFIG = {
   group_by_floor: true,
@@ -122,17 +123,6 @@ abstract class HuiWaterGasFlowSankeyCard
   @consume({ context: registriesContext, subscribe: true })
   private _registries!: HomeAssistantRegistries;
 
-  // Gas shows the unit of its rate sensors (as the gas badge does); water keeps
-  // the fixed L/min or gal/min. Set at the start of every render.
-  private _rateUnit?: string;
-
-  protected willUpdate(): void {
-    this._rateUnit =
-      this.resource === "water" || !this._data
-        ? undefined
-        : getFlowRateUnit(this.resource, this._data.prefs, this._states);
-  }
-
   constructor() {
     super();
     new EnergyCollectionController(this, {
@@ -163,6 +153,12 @@ abstract class HuiWaterGasFlowSankeyCard
     };
   }
 
+  private _getRateUnit(): string | undefined {
+    return this.resource === "water" || !this._data
+      ? undefined
+      : getFlowRateUnit(this.resource, this._data.prefs, this._states);
+  }
+
   protected render() {
     if (!this._config) {
       return nothing;
@@ -175,6 +171,9 @@ abstract class HuiWaterGasFlowSankeyCard
     const resource = this.resource;
     const isWater = resource === "water";
     const prefs = this._data.prefs;
+    // Gas shows the unit of its rate sensors (as the gas badge does); water keeps
+    // the fixed L/min or gal/min. Set at the start of every render.
+    const rateUnit = this._getRateUnit();
     const computedStyle = getComputedStyle(this);
 
     const prefDevices = getWaterGasDevices(prefs, resource);
@@ -190,13 +189,14 @@ abstract class HuiWaterGasFlowSankeyCard
     // Devices whose parent has no flow move up to the nearest ancestor with flow
     const devices = resolveSankeyParents(
       prefDevices,
-      (d) => !!d.stat_rate && this._getCurrentFlowRate(d.stat_rate) > 0
+      (d) =>
+        !!d.stat_rate && this._getCurrentFlowRate(d.stat_rate, rateUnit) > 0
     );
 
     let totalInflow = 0;
     sources.forEach((source) => {
       if (source.type === resource && source.stat_rate) {
-        const value = this._getCurrentFlowRate(source.stat_rate);
+        const value = this._getCurrentFlowRate(source.stat_rate, rateUnit);
         if (value > 0) totalInflow += value;
       }
     });
@@ -210,7 +210,10 @@ abstract class HuiWaterGasFlowSankeyCard
     if (sources.length === 0) {
       devices.forEach((d) => {
         if (!d.included_in_stat && d.stat_rate) {
-          totalDeviceFlow += Math.max(0, this._getCurrentFlowRate(d.stat_rate));
+          totalDeviceFlow += Math.max(
+            0,
+            this._getCurrentFlowRate(d.stat_rate, rateUnit)
+          );
         }
       });
     }
@@ -234,7 +237,7 @@ abstract class HuiWaterGasFlowSankeyCard
       .trim();
 
     const defaultSourceLabel = this._i18n.localize(
-      `ui.panel.lovelace.cards.energy.energy_distribution.${resource}` as any
+      `ui.panel.lovelace.cards.energy.energy_distribution.${resource}` as LocalizeKeys
     );
 
     // Determine the "root" node for device links.
@@ -252,7 +255,7 @@ abstract class HuiWaterGasFlowSankeyCard
       // Add source nodes and link to home
       sources.forEach((source) => {
         if (source.type !== resource || !source.stat_rate) return;
-        const value = this._getCurrentFlowRate(source.stat_rate);
+        const value = this._getCurrentFlowRate(source.stat_rate, rateUnit);
         if (value <= 0) return;
         const sourceNodeId = `${resource}_source_${source.stat_rate}`;
         nodes.push({
@@ -287,7 +290,7 @@ abstract class HuiWaterGasFlowSankeyCard
     } else {
       const source = sources[0];
       if (source.type === resource && source.stat_rate) {
-        const value = this._getCurrentFlowRate(source.stat_rate);
+        const value = this._getCurrentFlowRate(source.stat_rate, rateUnit);
         nodes.push({
           id: source.stat_rate,
           label: this._getEntityLabel(source.stat_rate) || defaultSourceLabel,
@@ -326,7 +329,7 @@ abstract class HuiWaterGasFlowSankeyCard
       ceilOtherValue: isWater,
       initialUntracked: effectiveTotalInflow,
       getId: (device) => device.stat_rate,
-      getValue: (id) => this._getCurrentFlowRate(id),
+      getValue: (id) => this._getCurrentFlowRate(id, rateUnit),
       getLabel: (id) => deviceLabels[id] || this._getEntityLabel(id),
       getEntityId: (id) => id,
     });
@@ -382,11 +385,12 @@ abstract class HuiWaterGasFlowSankeyCard
     `;
   }
 
-  private _valueFormatter = (value: number) =>
-    this._rateUnit
+  private _valueFormatter = (value: number) => {
+    const rateUnit = this._getRateUnit();
+    return rateUnit
       ? formatNumberWithUnit(
           value,
-          this._rateUnit,
+          rateUnit,
           this._i18n.locale,
           value < 0.1 ? { maximumFractionDigits: 3 } : undefined
         )
@@ -395,16 +399,17 @@ abstract class HuiWaterGasFlowSankeyCard
           this._hassConfig.unit_system.length,
           value
         );
+  };
 
   private _handleNodeClick(ev: CustomEvent<{ node: Node }>) {
     fireSankeyNodeMoreInfo(this, ev.detail.node);
   }
 
-  private _getCurrentFlowRate(entityId: string): number {
+  private _getCurrentFlowRate(entityId: string, rateUnit?: string): number {
     const stateObj = this._states[entityId];
     return (
-      (this._rateUnit
-        ? getFlowRateInUnit(stateObj, this._rateUnit)
+      (rateUnit
+        ? getFlowRateInUnit(stateObj, rateUnit)
         : getFlowRateFromState(stateObj)) ?? 0
     );
   }

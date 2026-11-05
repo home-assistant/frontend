@@ -45,6 +45,7 @@ import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsDeviceWaterGasDialog } from "../dialogs/show-dialogs-energy";
 import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
+import type { LocalizeKeys } from "../../../../common/translations/localize";
 
 const ICONS: Record<WaterGasResource, string> = {
   water: mdiWater,
@@ -81,7 +82,7 @@ export class EnergyDeviceSettingsWaterGas extends LitElement {
 
   private _t(key: string): string {
     return this.hass.localize(
-      `ui.panel.config.energy.device_consumption_${this.resource}.${key}` as any
+      `ui.panel.config.energy.device_consumption_${this.resource}.${key}` as LocalizeKeys
     );
   }
 
@@ -105,7 +106,7 @@ export class EnergyDeviceSettingsWaterGas extends LitElement {
               rel="noopener noreferrer"
               href=${documentationUrl(
                 this.hass,
-                `/docs/energy/${this.resource}/#individual-devices`
+                `/docs/energy/${this.resource}/#individual-${this.resource}-devices`
               )}
               >${this._t("learn_more")}</a
             >

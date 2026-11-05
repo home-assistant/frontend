@@ -4891,7 +4891,8 @@
               "included_in_device_helper": "If this device is already counted by another device (such as a gas meter measured by the main gas supply), selecting the upstream device prevents duplicate gas tracking.",
               "no_upstream_devices": "No eligible upstream devices",
               "gas_sensor_needed": "To track this device, you need a gas sensor.",
-              "flow_rate_no_volume": "[%key:ui::panel::config::energy::gas::dialog::flow_rate_no_volume%]"
+              "flow_rate_no_volume": "[%key:ui::panel::config::energy::gas::dialog::flow_rate_no_volume%]",
+              "flow_rate_energy_sources": "[%key:ui::panel::config::energy::gas::dialog::flow_rate_energy_sources%]"
             }
           },
           "integral": {
