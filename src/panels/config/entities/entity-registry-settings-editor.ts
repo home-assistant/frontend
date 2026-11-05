@@ -73,6 +73,7 @@ import type {
   LockEntityOptions,
   SensorEntityOptions,
 } from "../../../data/entity/entity_registry";
+import type { IconSuggestionContext } from "../../../data/icon_suggestion";
 import {
   getAutomaticEntityIds,
   subscribeEntityRegistry,
@@ -577,6 +578,13 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   until(entryIcon(this.hass, this.entry))
                 }
                 .disabled=${this.disabled}
+                .suggestionContext=${this._iconSuggestionContext(
+                  this._name,
+                  this.entry.entity_id,
+                  this._deviceClass,
+                  this._device,
+                  this._areaId
+                )}
               >
                 ${
                   !this._icon && !stateObj?.attributes.icon && stateObj
@@ -1776,6 +1784,28 @@ export class EntityRegistrySettingsEditor extends LitElement {
   private get _useDeviceArea(): boolean {
     return !!this._device && !this._hasOwnName && !this._mainEntityWithOwnArea;
   }
+
+  private _iconSuggestionContext = memoizeOne(
+    (
+      name: string,
+      entityId: string,
+      deviceClass: string | null | undefined,
+      device: DeviceRegistryEntry | undefined,
+      areaId: string | null | undefined
+    ): IconSuggestionContext => {
+      const area = areaId ?? device?.area_id;
+      return {
+        type: "entity",
+        name: name || null,
+        domain: computeDomain(entityId),
+        device_class: deviceClass ?? null,
+        device: device
+          ? computeDeviceNameDisplay(device, this.hass.localize)
+          : null,
+        area: (area && this.hass.areas[area]?.name) || null,
+      };
+    }
+  );
 
   private get _originalName(): string {
     return String(this.entry.original_name ?? "");

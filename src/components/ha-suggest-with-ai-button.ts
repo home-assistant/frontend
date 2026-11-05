@@ -1,23 +1,12 @@
-import type { ContextType } from "@lit/context";
 import { mdiStarFourPoints } from "@mdi/js";
-import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 
 import { customElement, property, query, state } from "lit/decorators";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
-import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
-import { transform } from "../common/decorators/transform";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
-import type {
-  AITaskPreferences,
-  GenDataTask,
-  GenDataTaskResult,
-} from "../data/ai_task";
-import { fetchAITaskPreferences, generateDataAITask } from "../data/ai_task";
-import { apiContext, configContext } from "../data/context";
-import type { HomeAssistantConfig } from "../types";
+import type { GenDataTask, GenDataTaskResult } from "../data/ai_task";
+import { AITaskController } from "../data/ai_task_controller";
 import "./chips/ha-assist-chip";
 import "./ha-svg-icon";
 
@@ -44,19 +33,7 @@ export class HaSuggestWithAIButton extends LitElement {
   @consumeLocalize()
   private _localize!: LocalizeFunc;
 
-  @state()
-  @consume({ context: configContext, subscribe: true })
-  @transform<HomeAssistantConfig, boolean>({
-    transformer: (value) =>
-      !!value?.config && isComponentLoaded(value.config, "ai_task"),
-  })
-  private _aiTaskLoaded?: boolean;
-
-  @consume({ context: apiContext, subscribe: true })
-  private _api!: ContextType<typeof apiContext>;
-
-  @state()
-  private _aiPrefs?: AITaskPreferences;
+  private _aiTask = new AITaskController(this);
 
   @state()
   private _state: {
@@ -76,17 +53,8 @@ export class HaSuggestWithAIButton extends LitElement {
 
   private _intervalId?: number;
 
-  protected willUpdate(changedProps: PropertyValues): void {
-    super.willUpdate(changedProps);
-    if (changedProps.has("_aiTaskLoaded") && this._aiTaskLoaded) {
-      fetchAITaskPreferences(this._api.callWS).then((prefs) => {
-        this._aiPrefs = prefs;
-      });
-    }
-  }
-
   render() {
-    if (!this._aiPrefs || !this._aiPrefs.gen_data_entity_id) {
+    if (!this._aiTask.canGenerateData) {
       return nothing;
     }
 
@@ -154,7 +122,7 @@ export class HaSuggestWithAIButton extends LitElement {
       const info = await this.generateTask();
       let result: GenDataTaskResult;
       if (info.type === "data") {
-        result = await generateDataAITask(this._api.callService, info.task);
+        result = await this._aiTask.generateData(info.task);
       } else {
         throw new Error("Unsupported task type");
       }

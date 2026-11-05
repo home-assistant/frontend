@@ -1,6 +1,7 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
+import memoizeOne from "memoize-one";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
@@ -24,6 +25,7 @@ import type { SuggestWithAIGenerateTask } from "../../../components/ha-suggest-w
 import "../../../components/input/ha-input";
 import type { HaInput } from "../../../components/input/ha-input";
 import type { GenDataTaskResult } from "../../../data/ai_task";
+import type { IconSuggestionContext } from "../../../data/icon_suggestion";
 import type {
   AreaRegistryEntry,
   AreaRegistryEntryMutableParams,
@@ -193,6 +195,11 @@ class DialogAreaDetail
         .value=${this._icon}
         @value-changed=${this._iconChanged}
         .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
+        .suggestionContext=${this._iconSuggestionContext(
+          this._name,
+          this._aliases,
+          this._floor
+        )}
       ></ha-icon-picker>
 
       <ha-floor-picker
@@ -295,6 +302,19 @@ class DialogAreaDetail
       .map((labelId) => labels[labelId])
       .filter((name): name is string => Boolean(name));
   }
+
+  private _iconSuggestionContext = memoizeOne(
+    (
+      name: string,
+      aliases: string[],
+      floor: string | null
+    ): IconSuggestionContext => ({
+      type: "area",
+      name,
+      aliases,
+      floor: (floor && this.hass.floors?.[floor]?.name) || null,
+    })
+  );
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {
     this._suggestionInclude = {

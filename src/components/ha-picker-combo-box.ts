@@ -211,6 +211,8 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @state() private _items: PickerComboBoxItem[] = [];
 
+  @state() private _unpinned = false;
+
   @state() private _plainList = false;
 
   @state() private _selectedSection?: string;
@@ -331,12 +333,26 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     this._status = undefined;
   }
 
-  public refreshItems() {
+  public async refreshItems(options?: {
+    scrollToTop?: boolean;
+    clearSearch?: boolean;
+  }) {
+    if (options?.clearSearch) {
+      this.setFieldValue("");
+      this._search = "";
+    }
     this._allItems = this._getItems();
     if (!this._search || this.sections?.length) {
       this._items = this._allItems;
     }
     this._updateListMode();
+    if (options?.scrollToTop) {
+      // The list keeps the selected row in view until it is unpinned
+      this._unpinned = true;
+      await this.updateComplete;
+      await this._list?.updateComplete;
+      this._resetListScroll();
+    }
   }
 
   // Filtering keeps the mode it opened with, only the full list decides it.
@@ -356,13 +372,16 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           "Search | Add custom value")
         : (this.i18n?.localize?.("ui.common.search") ?? "Search"));
 
-    return html`<ha-input-search
-        appearance="outlined"
-        .placeholder=${searchLabel}
-        @blur=${this._resetSelectedItem}
-        @input=${this._filterChanged}
-      >
-      </ha-input-search>
+    return html`<div class="search">
+        <ha-input-search
+          appearance="outlined"
+          .placeholder=${searchLabel}
+          @blur=${this._resetSelectedItem}
+          @input=${this._filterChanged}
+        >
+        </ha-input-search>
+        <slot name="search-actions"></slot>
+      </div>
       ${this._renderSectionButtons()}
       ${
         this.sections?.length
@@ -451,7 +470,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           this.rowRenderer,
           this.value
         )}
-        .pinIndex=${this.value ? this._getInitialSelectedIndex() : undefined}
+        .pinIndex=${
+          this.value && !this._unpinned
+            ? this._getInitialSelectedIndex()
+            : undefined
+        }
         @mousedown=${this._preventBlur}
         @focus=${this._focusList}
         @blur=${this._resetSelectedItem}
@@ -684,6 +707,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
     fireEvent(this, "index-selected", { index, item, newTab });
   }
 
+  // Fuse indexes every row as text when the first one is a section title
+  private _searchableItems = memoizeOne((items: PickerComboBoxItem[]) =>
+    items.filter((item) => typeof item !== "string")
+  );
+
   private _fuseIndex = memoizeOne(
     (states: PickerComboBoxItem[], searchKeys?: FuseWeightedKey[]) =>
       Fuse.createIndex(searchKeys || DEFAULT_SEARCH_KEYS, states)
@@ -703,10 +731,11 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
         return;
       }
 
-      const index = this._fuseIndex(this._allItems, this.searchKeys);
+      const searchableItems = this._searchableItems(this._allItems);
+      const index = this._fuseIndex(searchableItems, this.searchKeys);
 
       let filteredItems = multiTermSortedSearch<PickerComboBoxItem>(
-        this._allItems,
+        searchableItems,
         searchString,
         (item) => item.id,
         index
@@ -952,12 +981,20 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
           --text-field-padding-end: 0;
         }
 
-        ha-input-search {
+        .search {
+          display: flex;
+          align-items: center;
+          gap: var(--ha-space-1);
           padding: 0 var(--ha-space-3) var(--ha-space-3);
         }
 
-        :host([mode="dialog"]) ha-input-search {
+        :host([mode="dialog"]) .search {
           padding: 0 var(--ha-space-4) var(--ha-space-3);
+        }
+
+        ha-input-search {
+          flex: 1;
+          min-width: 0;
         }
 
         .list-wrapper {

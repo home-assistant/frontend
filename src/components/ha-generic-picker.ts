@@ -347,7 +347,9 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
         .searchKeys=${this.searchKeys}
         .customValueLabel=${this.customValueLabel}
         .noSort=${this.noSort}
-      ></ha-picker-combo-box>
+      >
+        <slot name="search-actions" slot="search-actions"></slot>
+      </ha-picker-combo-box>
     `;
   }
 
@@ -408,8 +410,11 @@ export class HaGenericPicker extends PickerMixin(LitElement) {
 
   private _initialFieldValue?: string;
 
-  public refreshItems() {
-    this._comboBox?.refreshItems();
+  public refreshItems(options?: {
+    scrollToTop?: boolean;
+    clearSearch?: boolean;
+  }) {
+    this._comboBox?.refreshItems(options);
   }
 
   private _dialogOpened = () => {

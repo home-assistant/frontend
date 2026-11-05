@@ -1700,6 +1700,13 @@
           "devices": "[%key:ui::panel::config::devices::caption%]",
           "entities": "[%key:ui::panel::config::entities::caption%]"
         }
+      },
+      "icon_picker": {
+        "suggest": "Suggest icons with AI",
+        "suggested": "Suggested",
+        "all_icons": "All icons",
+        "no_suggestions": "No matching icons found",
+        "suggestion_failed": "Icons couldn't be suggested"
       }
     },
     "dialogs": {
