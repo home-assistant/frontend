@@ -77,7 +77,14 @@ export const mockFrontend = (hass: MockHomeAssistant) => {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     return () => {};
   });
-  hass.mockWS("frontend/get_system_data", () => ({ value: null }));
+  const systemData: Record<string, unknown> = {};
+  hass.mockWS("frontend/get_system_data", (msg) => ({
+    value: systemData[msg.key] ?? null,
+  }));
+  hass.mockWS("frontend/set_system_data", (msg) => {
+    systemData[msg.key] = msg.value;
+    return null;
+  });
   hass.mockWS("repairs/list_issues", () => ({ issues: [] }));
   hass.mockWS("frontend/get_themes", (_msg, currentHass) => currentHass.themes);
 };
