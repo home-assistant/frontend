@@ -24,6 +24,7 @@ import { subscribeMQTTExplorer } from "../../../../../data/mqtt";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
+import { getWsErrorMessage } from "../../../../../util/ws-error";
 import type { ExplorerMessage, TopicTreeNode } from "./mqtt-explorer-data";
 import {
   buildTopicTree,
@@ -510,7 +511,7 @@ class MqttExplorerCard extends LitElement {
       showToast(this, {
         message: this.hass.localize(
           "ui.panel.config.mqtt.explorer.start_failed",
-          { error: err instanceof Error ? err.message : String(err) }
+          { error: getWsErrorMessage(err) ?? String(err) }
         ),
       });
       return;

@@ -69,6 +69,11 @@ describe("formatPayload", () => {
 });
 
 describe("diffJsonPayloads", () => {
+  it("compares full payloads when the root changes between object and array", () => {
+    expect(diffJsonPayloads("{}", "[]")).toBeUndefined();
+    expect(diffJsonPayloads('{"0": 1}', "[1]")).toBeUndefined();
+  });
+
   it("lists changed, added and removed keys with dotted paths", () => {
     expect(
       diffJsonPayloads(

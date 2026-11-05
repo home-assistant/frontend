@@ -191,7 +191,12 @@ export const diffJsonPayloads = (
 ): PayloadChange[] | undefined => {
   const oldJson = parseJsonPayload(oldPayload);
   const newJson = parseJsonPayload(newPayload);
-  if (oldJson === undefined || newJson === undefined) {
+  // Also when the root changes between object and array: both empty flatten alike.
+  if (
+    oldJson === undefined ||
+    newJson === undefined ||
+    Array.isArray(oldJson) !== Array.isArray(newJson)
+  ) {
     return undefined;
   }
   const oldFlat = flatten(oldJson, "", new Map());

@@ -163,6 +163,12 @@ class MqttExplorerTopic extends LitElement {
         ${this._i18n.localize("ui.panel.config.mqtt.explorer.no_previous")}
       </p>`;
     }
+    // Only the start of a truncated payload is known.
+    if (previous.truncated || selected.truncated) {
+      return html`<p class="secondary">
+        ${this._i18n.localize("ui.panel.config.mqtt.explorer.not_comparable")}
+      </p>`;
+    }
     if (previous.payload === selected.payload) {
       return html`<p class="secondary">
         ${this._i18n.localize("ui.panel.config.mqtt.explorer.unchanged")}
