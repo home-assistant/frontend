@@ -8,6 +8,7 @@ import type {
   Trigger,
   TriggerList,
 } from "./automation";
+import type { CallWS } from "../types";
 import type { Selector, TargetSelector } from "./selector";
 
 export const TRIGGER_COLLECTIONS: AutomationElementGroupCollection[] = [
@@ -69,6 +70,11 @@ export interface TriggerDescription {
       context?: Record<string, string>;
     }
   >;
+  /**
+   * Set when the integration amends the fields at runtime. Fetch the merged
+   * description with `fetchTriggerDescription`.
+   */
+  has_dynamic_fields?: boolean;
 }
 
 export type TriggerDescriptions = Record<string, TriggerDescription>;
@@ -79,6 +85,12 @@ export const subscribeTriggers = (
 ) =>
   connection.subscribeMessage<TriggerDescriptions>(callback, {
     type: "trigger_platforms/subscribe",
+  });
+
+export const fetchTriggerDescription = (callWS: CallWS, trigger: string) =>
+  callWS<TriggerDescription>({
+    type: "trigger_platforms/description",
+    trigger,
   });
 
 export const getTriggerDomain = (trigger: string) =>
