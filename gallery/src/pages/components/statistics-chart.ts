@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/chart/statistics-chart";
+import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-card";
 import type {
   Statistics,
@@ -13,6 +14,7 @@ import { StatisticMeanType } from "../../../../src/data/recorder";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
 import type { HomeAssistant } from "../../../../src/types";
+import { followGalleryTheme } from "../../data/follow-gallery-theme";
 
 const HOUR = 60 * 60 * 1000;
 const HOURS = 48;
@@ -122,42 +124,27 @@ interface RangeExample {
   statTypes: StatisticType[];
   chartType: "line" | "bar";
   unit: string;
-  selectRange: boolean;
 }
 
 const RANGE_EXAMPLES: RangeExample[] = [
   {
-    id: "single",
-    title: "Single selection",
+    id: "bar",
+    title: "Range selection on bars",
     description:
-      "A click on the plot sends the clicked time, here used to select one bar. Dragging still zooms. The bars outside the selection fade.",
+      "With select-range, a click selects the clicked time and a drag selects a time range instead of zooming. Here the selection is rounded to whole hours, and everything outside it fades.",
     statistics: { [HEAT_PUMP_ID]: HEAT_PUMP },
     statTypes: ["change"],
     chartType: "bar",
     unit: "kWh",
-    selectRange: false,
   },
   {
-    id: "range-bar",
-    title: "Range selection",
-    description:
-      "With select-range, dragging sends a time range instead of zooming, so several bars can be selected at once. A click still selects one bar.",
-    statistics: { [HEAT_PUMP_ID]: HEAT_PUMP },
-    statTypes: ["change"],
-    chartType: "bar",
-    unit: "kWh",
-    selectRange: true,
-  },
-  {
-    id: "range-line",
+    id: "line",
     title: "Range selection on lines",
-    description:
-      "The same on a line chart, where the selection is a band behind the lines.",
+    description: "The same on a line chart.",
     statistics: { [LIVING_ROOM_ID]: LIVING_ROOM },
     statTypes: ["mean", "min", "max"],
     chartType: "line",
     unit: "°C",
-    selectRange: true,
   },
 ];
 
@@ -226,6 +213,7 @@ export class DemoStatisticsChart extends LitElement {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
+    followGalleryTheme(this, hass);
   }
 
   protected render() {
@@ -277,32 +265,47 @@ export class DemoStatisticsChart extends LitElement {
             .highlight=${selection}
             .clickForMoreInfo=${false}
             data-example=${example.id}
-            .selectRange=${example.selectRange}
+            select-range
             hide-legend
-            @chart-grid-click=${this._gridClicked}
             @chart-range-select=${this._rangeSelected}
           ></statistics-chart>
-          <p class="selection">
-            ${selection ? formatRange(selection) : "Nothing selected"}
-          </p>
+          <div class="selection">
+            ${
+              selection
+                ? html`
+                    <span>${formatRange(selection)}</span>
+                    <ha-button
+                      appearance="plain"
+                      size="s"
+                      data-example=${example.id}
+                      @click=${this._clearSelection}
+                    >
+                      Clear
+                    </ha-button>
+                  `
+                : html`<span class="hint">
+                    Click or drag on the chart to select a period.
+                  </span>`
+            }
+          </div>
         </div>
       </ha-card>
     `;
   }
 
-  private _gridClicked(ev: HASSDomEvent<HASSDomEvents["chart-grid-click"]>) {
-    this._select(ev, snapToHours(ev.detail.x, ev.detail.x));
-  }
-
   private _rangeSelected(
     ev: HASSDomEvent<HASSDomEvents["chart-range-select"]>
   ) {
-    this._select(ev, snapToHours(ev.detail.start, ev.detail.end));
+    const id = (ev.currentTarget as HTMLElement).dataset.example!;
+    this._selections = {
+      ...this._selections,
+      [id]: snapToHours(ev.detail.start, ev.detail.end),
+    };
   }
 
-  private _select(ev: Event, range: TimeRange) {
+  private _clearSelection(ev: Event) {
     const id = (ev.currentTarget as HTMLElement).dataset.example!;
-    this._selections = { ...this._selections, [id]: range };
+    this._selections = { ...this._selections, [id]: undefined };
   }
 
   static styles = css`
@@ -314,7 +317,17 @@ export class DemoStatisticsChart extends LitElement {
       margin-top: 0;
     }
     .selection {
-      margin: 8px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--ha-space-2);
+      min-height: 48px;
+      margin-top: var(--ha-space-2);
+      padding: 0 var(--ha-space-2) 0 var(--ha-space-4);
+      border-radius: var(--ha-border-radius-lg);
+      background-color: var(--secondary-background-color);
+    }
+    .hint {
       color: var(--secondary-text-color);
     }
   `;

@@ -76,6 +76,13 @@ const STAT_TYPE_SUFFIXES = (
   Object.keys(supportedStatTypeMap) as StatisticType[]
 ).map((t) => `-${t}`);
 
+interface TimeRange {
+  start: number;
+  end: number;
+}
+
+const MASK_OPACITY = 0.7;
+
 @customElement("statistics-chart")
 export class StatisticsChart extends LitElement {
   @property({ attribute: false }) public statisticsData?: Statistics;
@@ -138,10 +145,9 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: "zoom-slider" })
   public zoomSlider: ZoomSliderMode = "auto";
 
-  @property({ attribute: false }) public highlight?: {
-    start: number;
-    end: number;
-  };
+  @property({ attribute: false }) public highlight?: TimeRange;
+
+  @state() private _selectingRange?: TimeRange;
 
   @query("ha-chart-base") private _chartBase?: HaChartBase;
 
@@ -258,12 +264,14 @@ export class StatisticsChart extends LitElement {
       </div>`;
     }
 
+    const highlight = this._selectingRange ?? this.highlight;
+
     return html`
       <ha-chart-base
         .data=${this._highlightedChartData(
           this._chartData,
-          this.highlight,
-          getComputedStyle(this).getPropertyValue("--primary-color").trim()
+          highlight,
+          highlight ? this._maskColor() : undefined
         )}
         .options=${this._chartOptions}
         .height=${this.height}
@@ -278,6 +286,8 @@ export class StatisticsChart extends LitElement {
           !this._statisticIds.every(isExternalStatistic)
         }
         @legend-label-click=${this._handleLegendLabelClick}
+        @chart-range-selecting=${this._rangeSelecting}
+        @chart-range-select=${this._rangeSelected}
       ></ha-chart-base>
     `;
   }
@@ -286,54 +296,48 @@ export class StatisticsChart extends LitElement {
     this._chartBase?.zoom(0, 100);
   }
 
+  // Every series gets a mask, empty when nothing is highlighted, as the
+  // chart merges series and would keep an old one
   private _highlightedChartData = memoizeOne(
     (
       data: (LineSeriesOption | BarSeriesOption)[],
-      highlight: { start: number; end: number } | undefined,
-      color: string
-    ): (LineSeriesOption | BarSeriesOption)[] => {
-      if (!data.length) {
-        return data;
-      }
-      if (data[0].type === "bar") {
-        if (!highlight) {
-          return data;
-        }
-        // Bars outside the highlight fade, so the highlighted ones stand out.
-        // Some points are already objects, like negative bars with round caps.
-        return data.map((series) => ({
-          ...series,
-          data: (series.data as any[]).map((item) => {
-            const point =
-              item && typeof item === "object" && "value" in item
-                ? item
-                : { value: item };
-            // Current state bars only carry their time
-            const start = new Date(point.value[2] ?? point.value[0]).getTime();
-            return start >= highlight.start && start < highlight.end
-              ? item
-              : {
-                  ...point,
-                  itemStyle: { ...point.itemStyle, opacity: 0.3 },
-                };
-          }),
-        })) as BarSeriesOption[];
-      }
-      // Every series gets an area, empty when not highlighted, as the chart
-      // merges series and would keep an old one
-      return data.map((series, index) => ({
+      highlight: TimeRange | undefined,
+      maskColor: string | undefined
+    ): (LineSeriesOption | BarSeriesOption)[] =>
+      data.map((series, index) => ({
         ...series,
         markArea: {
           silent: true,
-          itemStyle: { color, opacity: 0.15 },
+          z: 10,
+          itemStyle: { color: maskColor, opacity: MASK_OPACITY },
           data:
             highlight && index === 0
-              ? [[{ xAxis: highlight.start }, { xAxis: highlight.end }]]
+              ? [
+                  [{ xAxis: -Infinity }, { xAxis: highlight.start }],
+                  [{ xAxis: highlight.end }, { xAxis: Infinity }],
+                ]
               : [],
         },
-      }));
-    }
+      }))
   );
+
+  private _maskColor() {
+    const style = this._computedStyle ?? getComputedStyle(this);
+    return (
+      style.getPropertyValue("--card-background-color").trim() ||
+      style.getPropertyValue("--primary-background-color").trim()
+    );
+  }
+
+  private _rangeSelecting(
+    ev: HASSDomEvent<HASSDomEvents["chart-range-selecting"]>
+  ) {
+    this._selectingRange = ev.detail;
+  }
+
+  private _rangeSelected() {
+    this._selectingRange = undefined;
+  }
 
   private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);
