@@ -5,10 +5,79 @@ import type {
 
 export const MAX_MESSAGES_PER_TOPIC = 20;
 
+// Payloads are strings (UTF-16), so 8M characters is about 16 MB, or 488
+// payloads at the backend's 16 KiB limit. The per message overhead also caps
+// the number of small messages.
+export const MAX_RETAINED_SIZE = 8_000_000;
+const MESSAGE_OVERHEAD = 100;
+// Trim below the budget so the sort does not run on every event once full.
+const TRIM_TARGET = 0.9;
+
 export interface ExplorerMessage extends MQTTExplorerMessage {
   // Client side id, stable while the message is kept
   id: number;
 }
+
+const messageSize = (message: MQTTExplorerMessage): number =>
+  message.payload.length + MESSAGE_OVERHEAD;
+
+const messagesSize = (messages: Iterable<MQTTExplorerMessage>): number => {
+  let size = 0;
+  for (const message of messages) {
+    size += messageSize(message);
+  }
+  return size;
+};
+
+/**
+ * Removes the oldest messages when their total size exceeds the budget.
+ * Messages of other topics go first; the newest message of `keepTopic` is
+ * never removed. Mutates `messages` and returns the number removed.
+ */
+export const trimMessages = (
+  messages: Map<string, ExplorerMessage[]>,
+  maxSize: number,
+  keepTopic?: string
+): number => {
+  let size = 0;
+  for (const kept of messages.values()) {
+    size += messagesSize(kept);
+  }
+  if (size <= maxSize) {
+    return 0;
+  }
+  const target = maxSize * TRIM_TARGET;
+  const candidates: ExplorerMessage[] = [];
+  const kept: ExplorerMessage[] = [];
+  for (const [topic, topicMessages] of messages) {
+    if (topic === keepTopic) {
+      kept.push(...topicMessages.slice(1));
+    } else {
+      candidates.push(...topicMessages);
+    }
+  }
+  candidates.sort((a, b) => a.id - b.id);
+  kept.sort((a, b) => a.id - b.id);
+  const removed = new Set<number>();
+  for (const message of [...candidates, ...kept]) {
+    if (size <= target) {
+      break;
+    }
+    removed.add(message.id);
+    size -= messageSize(message);
+  }
+  for (const [topic, topicMessages] of messages) {
+    const remaining = topicMessages.filter(
+      (message) => !removed.has(message.id)
+    );
+    if (!remaining.length) {
+      messages.delete(topic);
+    } else if (remaining.length !== topicMessages.length) {
+      messages.set(topic, remaining);
+    }
+  }
+  return removed.size;
+};
 
 export interface TopicTreeNode {
   name: string;

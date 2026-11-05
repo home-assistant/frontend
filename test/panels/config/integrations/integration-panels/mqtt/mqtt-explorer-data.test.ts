@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { MQTTExplorerTopic } from "../../../../../../src/data/mqtt";
+import type { ExplorerMessage } from "../../../../../../src/panels/config/integrations/integration-panels/mqtt/mqtt-explorer-data";
 import {
   buildTopicTree,
   diffJsonPayloads,
   formatPayload,
   sortedChildren,
+  trimMessages,
 } from "../../../../../../src/panels/config/integrations/integration-panels/mqtt/mqtt-explorer-data";
 
 const topic = (
@@ -101,5 +103,87 @@ describe("diffJsonPayloads", () => {
 
   it("can't compare payloads that aren't JSON", () => {
     expect(diffJsonPayloads("online", "offline")).toBeUndefined();
+  });
+});
+
+// Each message costs its payload length plus 100.
+const message = (
+  topicName: string,
+  id: number,
+  payloadLength = 900
+): ExplorerMessage => ({
+  id,
+  topic: topicName,
+  payload: "x".repeat(payloadLength),
+  truncated: false,
+  size: payloadLength,
+  timestamp: id,
+  retain: false,
+  qos: 0,
+});
+
+// Newest first, like the card keeps them.
+const history = (topicName: string, ids: number[]): ExplorerMessage[] =>
+  ids.map((id) => message(topicName, id)).reverse();
+
+const ids = (messages: Map<string, ExplorerMessage[]>) =>
+  Object.fromEntries(
+    [...messages].map(([topicName, kept]) => [
+      topicName,
+      kept.map((item) => item.id),
+    ])
+  );
+
+describe("trimMessages", () => {
+  it("keeps everything within the budget", () => {
+    const messages = new Map([
+      ["a", history("a", [1, 3])],
+      ["b", history("b", [2])],
+    ]);
+    expect(trimMessages(messages, 3000)).toBe(0);
+    expect(ids(messages)).toEqual({ a: [3, 1], b: [2] });
+  });
+
+  it("removes the oldest messages below the budget", () => {
+    const messages = new Map([
+      ["a", history("a", [1, 3, 5])],
+      ["b", history("b", [2, 4])],
+    ]);
+    // 5000 is over 4000, trimmed to 90%: two oldest go.
+    expect(trimMessages(messages, 4000)).toBe(2);
+    expect(ids(messages)).toEqual({ a: [5, 3], b: [4] });
+  });
+
+  it("drops topics without messages left", () => {
+    const messages = new Map([
+      ["a", history("a", [1])],
+      ["b", history("b", [2, 3])],
+    ]);
+    expect(trimMessages(messages, 2500)).toBe(1);
+    expect(ids(messages)).toEqual({ b: [3, 2] });
+  });
+
+  it("removes other topics before the kept topic", () => {
+    const messages = new Map([
+      ["a", history("a", [1, 2, 3])],
+      ["b", history("b", [4, 5])],
+    ]);
+    expect(trimMessages(messages, 4000, "a")).toBe(2);
+    expect(ids(messages)).toEqual({ a: [3, 2, 1] });
+  });
+
+  it("never removes the newest message of the kept topic", () => {
+    const messages = new Map([
+      ["a", history("a", [1, 2, 3])],
+      ["b", history("b", [4])],
+    ]);
+    expect(trimMessages(messages, 500, "a")).toBe(3);
+    expect(ids(messages)).toEqual({ a: [3] });
+  });
+
+  it("counts the per message overhead for small payloads", () => {
+    const messages = new Map([["a", [message("a", 2, 0), message("a", 1, 0)]]]);
+    expect(trimMessages(messages, 150)).toBe(1);
+    expect(ids(messages)).toEqual({ a: [2] });
   });
 });

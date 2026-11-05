@@ -94,6 +94,8 @@ export interface MQTTExplorerTotals {
   message_rate: number;
   byte_rate: number;
   dropped_messages: number;
+  // Messages counted without their payload because a snapshot was too large.
+  dropped_payloads?: number;
 }
 
 // Each event only holds the topics and messages that changed since the previous one.

@@ -28,7 +28,9 @@ import type { ExplorerMessage, TopicTreeNode } from "./mqtt-explorer-data";
 import {
   buildTopicTree,
   MAX_MESSAGES_PER_TOPIC,
+  MAX_RETAINED_SIZE,
   sortedChildren,
+  trimMessages,
 } from "./mqtt-explorer-data";
 import "./mqtt-explorer-topic";
 
@@ -74,6 +76,9 @@ class MqttExplorerCard extends LitElement {
   @state() private _expanded = new Set<string>();
 
   @state() private _selected?: string;
+
+  // Messages removed from the local history to stay within the size budget
+  @state() private _trimmed = 0;
 
   private _topics = new Map<string, MQTTExplorerTopic>();
 
@@ -239,6 +244,22 @@ class MqttExplorerCard extends LitElement {
             ? html`<br />${this.hass.localize(
                   "ui.panel.config.mqtt.explorer.dropped",
                   { count: this._total.dropped_messages }
+                )}`
+            : nothing
+        }
+        ${
+          this._total.dropped_payloads
+            ? html`<br />${this.hass.localize(
+                  "ui.panel.config.mqtt.explorer.dropped_payloads",
+                  { count: this._total.dropped_payloads }
+                )}`
+            : nothing
+        }
+        ${
+          this._trimmed
+            ? html`<br />${this.hass.localize(
+                  "ui.panel.config.mqtt.explorer.trimmed",
+                  { count: this._trimmed }
                 )}`
             : nothing
         }
@@ -417,6 +438,13 @@ class MqttExplorerCard extends LitElement {
   }
 
   private _handleEvent = (event: MQTTExplorerEvent): void => {
+    // A resubscribe starts a new backend session with a full snapshot; expanded
+    // and selected paths are kept so the view survives an MQTT reload.
+    if (event.started !== this._started) {
+      this._topics = new Map();
+      this._messages = new Map();
+      this._trimmed = 0;
+    }
     for (const topic of this._topics.values()) {
       if (topic.message_rate || topic.byte_rate) {
         this._topics.set(topic.topic, {
@@ -442,6 +470,11 @@ class MqttExplorerCard extends LitElement {
         )
       );
     }
+    this._trimmed += trimMessages(
+      this._messages,
+      MAX_RETAINED_SIZE,
+      this._selected
+    );
     this._lastEvent = Date.now();
     this._interval = event.interval;
     this._total = event.total;
@@ -462,8 +495,10 @@ class MqttExplorerCard extends LitElement {
     this._topics = new Map();
     this._messages = new Map();
     this._total = undefined;
+    this._started = 0;
     this._selected = undefined;
     this._expanded = new Set();
+    this._trimmed = 0;
     let unsubscribe: () => void;
     try {
       unsubscribe = await subscribeMQTTExplorer(

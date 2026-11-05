@@ -8142,6 +8142,8 @@
             "waiting": "Waiting for messages…",
             "totals": "{messages} msg/s · {kilobytes} KB/s · {topics, plural,\n  one {# topic}\n  other {# topics}\n} · {elapsed}",
             "dropped": "Too many topics: {count, plural,\n  one {# message}\n  other {# messages}\n} on new topics were not shown. Use a narrower topic filter.",
+            "dropped_payloads": "Too much traffic: {count, plural,\n  one {# payload was}\n  other {# payloads were}\n} not shown, so a topic can show an older payload as its latest.",
+            "trimmed": "{count, plural,\n  one {# older message was}\n  other {# older messages were}\n} removed from the history to limit memory use.",
             "no_topics": "No messages received yet",
             "start_failed": "Could not start the MQTT explorer: {error}",
             "expand": "Expand",
