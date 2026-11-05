@@ -127,4 +127,20 @@ describe("ha-schedule-timeline dragging", () => {
 
     expect(changed).not.toHaveBeenCalled();
   });
+
+  it("drops a drawn block when the change is not confirmed", async () => {
+    const { el, track } = await mountTimeline(week());
+    const changed = vi.fn();
+    el.addEventListener("value-changed", changed);
+    el.confirmChange = vi.fn().mockResolvedValue(false);
+
+    // Draw a block from 12:00 to 13:00 on the empty part of the track.
+    pointer(track, "pointerdown", 720);
+    pointer(track, "pointermove", 780);
+    pointer(track, "pointerup", 780);
+    await Promise.resolve();
+
+    expect(el.confirmChange).toHaveBeenCalledOnce();
+    expect(changed).not.toHaveBeenCalled();
+  });
 });

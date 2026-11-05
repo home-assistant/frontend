@@ -24,8 +24,12 @@ export const isScheduleBlockData = (
   typeof value === "object" &&
   value !== null &&
   !Array.isArray(value) &&
-  Object.values(value).every((item) =>
-    ["string", "number", "boolean"].includes(typeof item)
+  Object.values(value).every(
+    (item) =>
+      typeof item === "string" ||
+      typeof item === "boolean" ||
+      // JSON turns infinite numbers and NaN into null.
+      (typeof item === "number" && Number.isFinite(item))
   );
 
 export interface ScheduleBlock {
@@ -120,10 +124,13 @@ const DEFAULT_BLOCK_MINUTES = 60;
 
 const pad = (value: number) => value.toString().padStart(2, "0");
 
-/** Convert `HH:MM` or `HH:MM:SS` to minutes since midnight. `24:00` is 1440. */
+/**
+ * Convert `HH:MM` or `HH:MM:SS` to minutes since midnight, with seconds as a
+ * fraction. `24:00` is 1440.
+ */
 export const timeToMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(":");
-  return clamp(Number(hours) * 60 + Number(minutes ?? 0), 0, MINUTES_PER_DAY);
+  const [hours, minutes = 0, seconds = 0] = time.split(":").map(Number);
+  return clamp(hours * 60 + minutes + seconds / 60, 0, MINUTES_PER_DAY);
 };
 
 /** Convert minutes since midnight to `HH:MM`. 1440 becomes `24:00`. */
@@ -143,13 +150,20 @@ export const snapDownInRange = (minutes: number, range: MinuteRange): number =>
     range.end
   );
 
+// `schedule.get_schedule` returns the end of the day as Python's `time.max`.
+const END_OF_DAY = "23:59:59.999999";
+
 /**
  * Normalize a time to `HH:MM`. An end time of midnight means the end of the
- * day, so it becomes `24:00`.
+ * day, so it becomes `24:00`. Times with seconds, which only come from the
+ * API, keep them, so saving another change does not move them.
  */
 export const normalizeScheduleTime = (time: string, isEnd = false): string => {
   const minutes = timeToMinutes(time);
-  return minutesToTime(isEnd && minutes === 0 ? MINUTES_PER_DAY : minutes);
+  if (isEnd && (minutes === 0 || time === END_OF_DAY)) {
+    return minutesToTime(MINUTES_PER_DAY);
+  }
+  return Number.isInteger(minutes) ? minutesToTime(minutes) : time;
 };
 
 export const normalizeScheduleBlock = (

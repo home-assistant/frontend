@@ -4,7 +4,6 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { consume } from "../common/decorators/consume";
 import type { HASSDomCurrentTargetEvent } from "../common/dom/fire_event";
@@ -44,8 +43,15 @@ import "./ha-dropdown";
 import "./ha-dropdown-item";
 import "./ha-icon-button";
 import "./ha-svg-icon";
+import "./ha-tooltip";
 
 const AXIS_HOURS = [0, 6, 12, 18, 24];
+
+const blockId = (day: ScheduleWeekday, index: number) =>
+  `block-${day}-${index}`;
+
+const hasBlockData = (block: ScheduleBlock) =>
+  !!block.data && Object.keys(block.data).length > 0;
 
 // Pointer movement in pixels before a press turns into a drag.
 const DRAG_THRESHOLD = 4;
@@ -87,8 +93,15 @@ export class HaScheduleTimeline extends LitElement {
 
   @property({ attribute: false }) public selected?: ScheduleBlockRef;
 
-  /** A block being created or edited, shown in the accent color. */
+  /** A block being created or edited, drawn dashed until it is applied. */
   @property({ attribute: false }) public preview?: ScheduleBlockPreview;
+
+  /**
+   * Asked before the user's change is applied, like a block drawn on a track.
+   * When it resolves to `false`, the change is dropped.
+   */
+  @property({ attribute: false })
+  public confirmChange?: () => Promise<boolean>;
 
   @property({ type: Boolean, reflect: true }) public readonly = false;
 
@@ -97,6 +110,9 @@ export class HaScheduleTimeline extends LitElement {
   private _i18n!: ContextType<typeof internationalizationContext>;
 
   @state() private _drag?: DragState;
+
+  /** The block whose times are shown below a read-only timeline. */
+  @state() private _shownBlock?: ScheduleBlockRef;
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
     super.willUpdate(changedProps);
@@ -148,9 +164,10 @@ export class HaScheduleTimeline extends LitElement {
           this._renderDay(day, preview, conflicts.includes(day))
         )}
       </div>
+      ${this._renderTooltips(days)}
       ${
         this.readonly
-          ? nothing
+          ? this._renderShownBlock()
           : html`<span id="keyboard-hint" hidden
               >${this._i18n.localize(
                 "ui.dialogs.helper_settings.schedule.keyboard_hint"
@@ -158,6 +175,55 @@ export class HaScheduleTimeline extends LitElement {
             >`
       }
     `;
+  }
+
+  /**
+   * Narrow blocks hide their times, and read-only blocks cannot be opened in
+   * an editor, so the selected block's times are shown below the timeline.
+   */
+  private _renderShownBlock() {
+    const ref = this._shownBlock;
+    const block = ref && this.value![ref.day][ref.index];
+    return html`<p class="shown-block">
+      ${
+        block
+          ? this._blockLabel(ref.day, block, blockRange(block))
+          : this._i18n.localize(
+              "ui.dialogs.helper_settings.schedule.readonly_hint"
+            )
+      }
+    </p>`;
+  }
+
+  /** Narrow blocks hide their times, so hovering or focusing shows them. */
+  private _renderTooltips(days: ScheduleWeekday[]) {
+    return days.map((day) =>
+      this.value![day].map(
+        (block, index) =>
+          html`<ha-tooltip for=${blockId(day, index)} .disabled=${!!this._drag}>
+            ${this._blockLabel(day, block, blockRange(block), false)}
+          </ha-tooltip>`
+      )
+    );
+  }
+
+  private _blockLabel(
+    day: ScheduleWeekday,
+    block: ScheduleBlock,
+    range: MinuteRange,
+    mentionData = true
+  ): string {
+    const { locale, localize } = this._i18n;
+    return localize(
+      mentionData && hasBlockData(block)
+        ? "ui.dialogs.helper_settings.schedule.block_label_with_data"
+        : "ui.dialogs.helper_settings.schedule.block_label",
+      {
+        day: formatScheduleWeekday(day, locale),
+        from: formatScheduleTime(range.start, locale),
+        to: formatScheduleTime(range.end, locale),
+      }
+    );
   }
 
   /** The preview, unless the user is dragging the block it replaces. */
@@ -221,7 +287,6 @@ export class HaScheduleTimeline extends LitElement {
                 : undefined;
             return this._renderBlock(
               day,
-              dayName,
               block,
               index,
               range,
@@ -279,25 +344,18 @@ export class HaScheduleTimeline extends LitElement {
 
   private _renderBlock(
     day: ScheduleWeekday,
-    dayName: string,
     block: ScheduleBlock,
     index: number,
     dragRange: MinuteRange | undefined,
     replaced: boolean
   ): TemplateResult {
-    const { locale, localize } = this._i18n;
+    const locale = this._i18n.locale;
     const range = dragRange ?? blockRange(block);
     const from = formatScheduleTime(range.start, locale);
     const to = formatScheduleTime(range.end, locale);
-    const selected =
-      this.selected?.day === day && this.selected.index === index;
-    const hasData = !!block.data && Object.keys(block.data).length > 0;
-    const label = localize(
-      hasData
-        ? "ui.dialogs.helper_settings.schedule.block_label_with_data"
-        : "ui.dialogs.helper_settings.schedule.block_label",
-      { day: dayName, from, to }
-    );
+    const selectedRef = this.readonly ? this._shownBlock : this.selected;
+    const selected = selectedRef?.day === day && selectedRef.index === index;
+    const label = this._blockLabel(day, block, range);
 
     return html`
       <div
@@ -308,15 +366,14 @@ export class HaScheduleTimeline extends LitElement {
           replaced,
         })}
         style=${styleMap(this._rangeStyle(range))}
+        id=${blockId(day, index)}
         data-index=${index}
-        role=${this.readonly ? "img" : "button"}
-        tabindex=${this.readonly ? "-1" : "0"}
+        role="button"
+        tabindex="0"
         aria-label=${label}
-        aria-pressed=${ifDefined(
-          this.readonly ? undefined : selected ? "true" : "false"
-        )}
+        aria-pressed=${selected ? "true" : "false"}
         aria-describedby=${this.readonly ? nothing : "keyboard-hint"}
-        title=${`${from} – ${to}`}
+        @click=${this._blockClick}
         @keydown=${this._blockKeyDown}
       >
         ${
@@ -325,7 +382,6 @@ export class HaScheduleTimeline extends LitElement {
             : html`<span class="handle" data-edge="start"></span>`
         }
         <span class="label">${from} – ${to}</span>
-        ${hasData ? html`<span class="data-dot"></span>` : nothing}
         ${
           this.readonly
             ? nothing
@@ -352,10 +408,12 @@ export class HaScheduleTimeline extends LitElement {
     `;
   }
 
+  // Logical properties are only converted for older browsers in the
+  // stylesheet, so the inline style only sets custom properties.
   private _rangeStyle(range: MinuteRange) {
     return {
-      "inset-inline-start": `${(range.start / MINUTES_PER_DAY) * 100}%`,
-      width: `${((range.end - range.start) / MINUTES_PER_DAY) * 100}%`,
+      "--block-start": `${(range.start / MINUTES_PER_DAY) * 100}%`,
+      "--block-width": `${((range.end - range.start) / MINUTES_PER_DAY) * 100}%`,
     };
   }
 
@@ -498,18 +556,50 @@ export class HaScheduleTimeline extends LitElement {
     this._drag = undefined;
   }
 
+  private _blockRef(blockEl: HTMLElement): ScheduleBlockRef {
+    return {
+      day: blockEl.closest<HTMLElement>(".track")!.dataset
+        .day as ScheduleWeekday,
+      index: Number(blockEl.dataset.index),
+    };
+  }
+
+  /**
+   * Screen readers activate a button with a click that has no pointer or key
+   * events, and `detail` 0. Pointer clicks are already handled on release.
+   */
+  private _blockClick(
+    ev: MouseEvent & HASSDomCurrentTargetEvent<HTMLElement>
+  ): void {
+    if (this.readonly) {
+      this._toggleShownBlock(this._blockRef(ev.currentTarget));
+    } else if (ev.detail === 0) {
+      this._select(this._blockRef(ev.currentTarget));
+    }
+  }
+
+  private _toggleShownBlock(ref: ScheduleBlockRef): void {
+    const shown = this._shownBlock;
+    this._shownBlock =
+      shown?.day === ref.day && shown.index === ref.index ? undefined : ref;
+  }
+
   private _blockKeyDown(
     ev: KeyboardEvent & HASSDomCurrentTargetEvent<HTMLElement>
   ): void {
-    if (this.readonly || !this.value) {
+    if (this.readonly) {
+      if (ev.key === "Enter" || ev.key === " ") {
+        ev.preventDefault();
+        this._toggleShownBlock(this._blockRef(ev.currentTarget));
+      }
+      return;
+    }
+    if (!this.value) {
       return;
     }
     const blockEl = ev.currentTarget;
     const track = blockEl.closest<HTMLElement>(".track")!;
-    const ref: ScheduleBlockRef = {
-      day: track.dataset.day as ScheduleWeekday,
-      index: Number(blockEl.dataset.index),
-    };
+    const ref = this._blockRef(blockEl);
     const blocks = this.value[ref.day];
     const block = blocks[ref.index];
 
@@ -568,7 +658,13 @@ export class HaScheduleTimeline extends LitElement {
     }
   }
 
-  private _commit(value: ScheduleWeek, selected?: ScheduleBlockRef): void {
+  private async _commit(
+    value: ScheduleWeek,
+    selected?: ScheduleBlockRef
+  ): Promise<void> {
+    if (this.confirmChange && !(await this.confirmChange())) {
+      return;
+    }
     fireEvent(this, "value-changed", { value });
     this._select(selected);
   }
@@ -668,6 +764,8 @@ export class HaScheduleTimeline extends LitElement {
       position: absolute;
       top: var(--ha-space-1);
       bottom: var(--ha-space-1);
+      inset-inline-start: var(--block-start);
+      width: var(--block-width);
       box-sizing: border-box;
       display: flex;
       align-items: center;
@@ -687,7 +785,7 @@ export class HaScheduleTimeline extends LitElement {
     }
 
     :host([readonly]) .block {
-      cursor: default;
+      cursor: pointer;
     }
 
     .block:hover {
@@ -750,27 +848,25 @@ export class HaScheduleTimeline extends LitElement {
       }
     }
 
-    .data-dot {
-      flex: none;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background-color: currentColor;
-      pointer-events: none;
-    }
-
     .handle {
       position: absolute;
       top: 0;
       bottom: 0;
       inset-inline-start: 0;
-      width: var(--ha-space-2);
+      /* Narrow blocks keep half their width to move them. */
+      width: min(var(--ha-space-2), 25%);
       cursor: ew-resize;
     }
 
     .handle.end {
       inset-inline-start: auto;
       inset-inline-end: 0;
+    }
+
+    .shown-block {
+      margin: var(--ha-space-2) 0 0;
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
     }
 
     ha-dropdown {

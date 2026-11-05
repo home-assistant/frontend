@@ -36,6 +36,14 @@ describe("schedule times", () => {
   it("treats a midnight end time as the end of the day", () => {
     assert.equal(normalizeScheduleTime("00:00:00", true), "24:00");
     assert.equal(normalizeScheduleTime("00:00:00"), "00:00");
+    // `schedule.get_schedule` returns the end of the day as `time.max`.
+    assert.equal(normalizeScheduleTime("23:59:59.999999", true), "24:00");
+  });
+
+  it("keeps seconds, so saving other changes does not move a block", () => {
+    assert.equal(normalizeScheduleTime("08:00:30"), "08:00:30");
+    assert.equal(normalizeScheduleTime("08:00:00"), "08:00");
+    assert.equal(timeToMinutes("08:00:30"), 480.5);
   });
 
   it("keeps 24:00 in 24-hour format", () => {
@@ -85,6 +93,11 @@ describe("isScheduleBlockData", () => {
     assert.isFalse(isScheduleBlockData({ modes: ["eco"] }));
     assert.isFalse(isScheduleBlockData(["eco"]));
     assert.isFalse(isScheduleBlockData(null));
+  });
+
+  it("rejects numbers that JSON turns into null", () => {
+    assert.isFalse(isScheduleBlockData({ level: Infinity }));
+    assert.isFalse(isScheduleBlockData({ level: NaN }));
   });
 });
 

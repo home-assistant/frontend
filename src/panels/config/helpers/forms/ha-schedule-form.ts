@@ -3,15 +3,19 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { keyed } from "lit/directives/keyed";
+import { consume } from "../../../../common/decorators/consume";
 import type { HASSDomEvent } from "../../../../common/dom/fire_event";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-schedule-timeline";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/input/ha-input";
 import type { HaInput } from "../../../../components/input/ha-input";
+import type { DirtyStateContext } from "../../../../data/context/dirty-state";
+import { dirtyStateContext } from "../../../../data/context/dirty-state";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
 import type {
   Schedule,
@@ -29,6 +33,7 @@ import {
   getScheduleWeek,
   removeScheduleBlock,
 } from "../../../../data/schedule";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../types";
 import "./ha-schedule-block-editor";
@@ -40,6 +45,8 @@ type SchedulePanel =
       source?: ScheduleBlockRef;
       /** The editor's draft, shown on the timeline until it is applied. */
       preview?: ScheduleBlockPreview;
+      /** Whether the editor has changes that are not applied yet. */
+      dirty?: boolean;
     }
   | { type: "copy"; day: ScheduleWeekday; targets: ScheduleWeekday[] };
 
@@ -53,6 +60,8 @@ const panelKind = (panel?: SchedulePanel) =>
         : "new";
 
 const NEW_BLOCK: ScheduleBlock = { from: "08:00", to: "17:00" };
+
+const DRAFT_DIRTY_KEY = "schedule-block-draft";
 
 @customElement("ha-schedule-form")
 class HaScheduleForm extends LitElement {
@@ -75,12 +84,25 @@ class HaScheduleForm extends LitElement {
   /** Read-only week of a schedule that cannot be edited in the UI. */
   @state() private _readonlyWeek?: ScheduleWeek;
 
+  @state() private _readonlyError = false;
+
+  // Hosts warn before closing with unsaved changes, including block drafts.
+  @consume({ context: dirtyStateContext, subscribe: true })
+  private _dirtyState?: DirtyStateContext<boolean, typeof DRAFT_DIRTY_KEY>;
+
+  private _draftDirty = false;
+
   @query("[dialogInitialFocus]") private _focusElement?: HaInput;
 
   @query(".panel") private _panelElement?: HTMLElement;
 
   public focus() {
     this.updateComplete.then(() => this._focusElement?.focus());
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._reportDraftDirty(false);
   }
 
   protected willUpdate(changedProps: PropertyValues<this>): void {
@@ -101,9 +123,13 @@ class HaScheduleForm extends LitElement {
       }
     }
     if (
-      (changedProps.has("entry") || changedProps.has("disabled")) &&
+      (changedProps.has("entry") ||
+        changedProps.has("disabled") ||
+        // Fetch once `hass` arrives, if it came after the entry.
+        (changedProps.has("hass") && !changedProps.get("hass"))) &&
       this.disabled &&
-      this.entry
+      this.entry &&
+      this.hass
     ) {
       this._fetchReadonlyWeek(this.entry.entity_id);
     }
@@ -111,6 +137,12 @@ class HaScheduleForm extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+    if (!changedProps.has("_panel")) {
+      return;
+    }
+    this._reportDraftDirty(
+      this._panel?.type === "block" && !!this._panel.dirty
+    );
     const oldPanel = changedProps.get("_panel") as SchedulePanel | undefined;
     if (this._panel && panelKind(this._panel) !== panelKind(oldPanel)) {
       this._panelElement?.scrollIntoView({
@@ -120,12 +152,25 @@ class HaScheduleForm extends LitElement {
     }
   }
 
+  private _reportDraftDirty(dirty: boolean) {
+    if (dirty === this._draftDirty) {
+      return;
+    }
+    this._draftDirty = dirty;
+    // The first value of a slice is its baseline, so it has to be clean.
+    this._dirtyState?.setState(false, DRAFT_DIRTY_KEY);
+    if (dirty) {
+      this._dirtyState?.setState(true, DRAFT_DIRTY_KEY);
+    }
+  }
+
   private async _fetchReadonlyWeek(entityId: string) {
+    this._readonlyError = false;
     try {
       this._readonlyWeek = await fetchScheduleEntityWeek(this.hass, entityId);
     } catch (_err) {
-      // The schedule is still shown in the entity's more info dialog.
       this._readonlyWeek = undefined;
+      this._readonlyError = true;
     }
   }
 
@@ -162,6 +207,11 @@ class HaScheduleForm extends LitElement {
   }
 
   private _renderReadonly() {
+    if (this._readonlyError) {
+      return html`<ha-alert alert-type="error">
+        ${this.hass.localize("ui.dialogs.helper_settings.schedule.error_load")}
+      </ha-alert>`;
+    }
     if (!this._readonlyWeek) {
       return nothing;
     }
@@ -170,6 +220,9 @@ class HaScheduleForm extends LitElement {
         readonly
         .value=${this._readonlyWeek}
       ></ha-schedule-timeline>
+      <p class="readonly-note">
+        ${this.hass.localize("ui.dialogs.helper_settings.schedule.readonly_yaml")}
+      </p>
     `;
   }
 
@@ -182,6 +235,7 @@ class HaScheduleForm extends LitElement {
           .value=${this._week}
           .selected=${panel?.type === "block" ? panel.source : undefined}
           .preview=${panel?.type === "block" ? panel.preview : undefined}
+          .confirmChange=${this._confirmTimelineChange}
           @value-changed=${this._weekChanged}
           @schedule-block-selected=${this._blockSelected}
           @schedule-day-copy=${this._copyDay}
@@ -220,7 +274,7 @@ class HaScheduleForm extends LitElement {
                               : NEW_BLOCK
                           }
                           .source=${panel.source}
-                          @schedule-block-preview=${this._previewChanged}
+                          @schedule-block-draft-changed=${this._draftChanged}
                           @schedule-block-apply=${this._applyBlock}
                           @schedule-block-delete=${this._deleteBlock}
                           @schedule-block-close=${this._closePanel}
@@ -277,39 +331,72 @@ class HaScheduleForm extends LitElement {
     this._setWeek(ev.detail.value);
   }
 
-  private _blockSelected(
+  private async _blockSelected(
     ev: HASSDomEvent<HASSDomEvents["schedule-block-selected"]>
   ) {
     ev.stopPropagation();
     const source = ev.detail.block;
     const current =
       this._panel?.type === "block" ? this._panel.source : undefined;
-    if (source) {
-      // Selecting the block being edited again keeps its unsaved changes.
-      if (current?.day !== source.day || current.index !== source.index) {
-        this._panel = { type: "block", source };
-      }
-    } else if (current) {
-      this._panel = undefined;
+    // Selecting the block being edited again keeps its unsaved changes.
+    const sameBlock =
+      current?.day === source?.day && current?.index === source?.index;
+    if ((!source && !current) || sameBlock || !(await this._confirmDiscard())) {
+      return;
     }
+    this._panel = source ? { type: "block", source } : undefined;
   }
 
-  private _previewChanged(
-    ev: HASSDomEvent<HASSDomEvents["schedule-block-preview"]>
+  private _draftChanged(
+    ev: HASSDomEvent<HASSDomEvents["schedule-block-draft-changed"]>
   ) {
     ev.stopPropagation();
     if (this._panel?.type === "block") {
-      this._panel = { ...this._panel, preview: ev.detail.preview };
+      this._panel = { ...this._panel, ...ev.detail };
     }
   }
 
-  private _newBlock() {
-    this._panel = { type: "block" };
+  /**
+   * Changes on the timeline replace or reset the block editor, so ask first
+   * and only make them once its unapplied changes are discarded.
+   */
+  private _confirmTimelineChange = async (): Promise<boolean> => {
+    if (!(await this._confirmDiscard())) {
+      return false;
+    }
+    if (this._panel?.type === "block" && this._panel.dirty) {
+      this._panel = undefined;
+    }
+    return true;
+  };
+
+  /** Ask before replacing a block editor that has changes not applied. */
+  private async _confirmDiscard(): Promise<boolean> {
+    if (this._panel?.type !== "block" || !this._panel.dirty) {
+      return true;
+    }
+    const localize = this.hass.localize;
+    return showConfirmationDialog(this, {
+      title: localize("ui.dialogs.helper_settings.schedule.discard_title"),
+      text: localize("ui.dialogs.helper_settings.schedule.discard_text"),
+      confirmText: localize("ui.dialogs.helper_settings.schedule.discard"),
+      dismissText: localize("ui.dialogs.helper_settings.schedule.keep_editing"),
+      destructive: true,
+    });
   }
 
-  private _copyDay(ev: HASSDomEvent<HASSDomEvents["schedule-day-copy"]>) {
+  private async _newBlock() {
+    if (await this._confirmDiscard()) {
+      this._panel = { type: "block" };
+    }
+  }
+
+  private async _copyDay(ev: HASSDomEvent<HASSDomEvents["schedule-day-copy"]>) {
     ev.stopPropagation();
-    this._panel = { type: "copy", day: ev.detail.day, targets: [] };
+    const day = ev.detail.day;
+    if (await this._confirmDiscard()) {
+      this._panel = { type: "copy", day, targets: [] };
+    }
   }
 
   private _copyTargetsChanged(ev: ValueChangedEvent<ScheduleWeekday[]>) {
@@ -452,6 +539,12 @@ class HaScheduleForm extends LitElement {
           font-size: var(--ha-font-size-l);
           font-weight: var(--ha-font-weight-medium);
           line-height: var(--ha-line-height-condensed);
+        }
+
+        .readonly-note {
+          margin: 0;
+          color: var(--secondary-text-color);
+          font-size: var(--ha-font-size-s);
         }
 
         .panel-note {

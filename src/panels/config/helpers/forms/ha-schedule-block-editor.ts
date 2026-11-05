@@ -2,8 +2,10 @@ import type { ContextType } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { keyed } from "lit/directives/keyed";
 import { consume } from "../../../../common/decorators/consume";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { deepEqual } from "../../../../common/util/deep-equal";
 import { formatListWithAnds } from "../../../../common/string/format-list";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
@@ -30,13 +32,26 @@ import {
 import type { ValueChangedEvent } from "../../../../types";
 import "./ha-schedule-weekday-picker";
 
+/** The time input passes on hours and minutes out of range, like `08:99`. */
+const isValidTime = (time: string): boolean => {
+  const [hours, minutes] = time.split(":").map(Number);
+  return (
+    Number.isInteger(hours) &&
+    Number.isInteger(minutes) &&
+    hours >= 0 &&
+    hours < 24 &&
+    minutes >= 0 &&
+    minutes < 60
+  );
+};
+
 /**
  * Inline editor for one time block: start, end, the days it applies to, and
  * optional additional data.
  *
- * @fires schedule-block-preview - The draft changed. `detail.preview` is
- * not set while the times or days are incomplete or the end is before the
- * start.
+ * @fires schedule-block-draft-changed - The draft changed. `detail.preview`
+ * is not set while the times or days are incomplete or invalid, and
+ * `detail.dirty` tells whether the draft differs from the block.
  * @fires schedule-block-apply - Apply the block to the selected days.
  * @fires schedule-block-delete - Delete the block being edited.
  * @fires schedule-block-close - Close the editor without changes.
@@ -79,11 +94,14 @@ export class HaScheduleBlockEditor extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (
-      ["block", "source", "_from", "_to", "_days", "_data"].some((prop) =>
-        changedProps.has(prop)
+      ["block", "source", "_from", "_to", "_days", "_data", "_dataValid"].some(
+        (prop) => changedProps.has(prop)
       )
     ) {
-      fireEvent(this, "schedule-block-preview", { preview: this._preview() });
+      fireEvent(this, "schedule-block-draft-changed", {
+        preview: this._preview(),
+        dirty: this._isDirty(),
+      });
     }
   }
 
@@ -129,12 +147,15 @@ export class HaScheduleBlockEditor extends LitElement {
         )}
         .expanded=${!!this.block.data}
       >
-        <ha-yaml-editor
-          auto-update
-          in-dialog
-          .value=${this.block.data}
-          @value-changed=${this._dataChanged}
-        ></ha-yaml-editor>
+        ${keyed(
+          // A new editor for each block, so no text of the previous one stays.
+          this.block,
+          html`<ha-yaml-editor
+            in-dialog
+            .defaultValue=${this.block.data}
+            @value-changed=${this._dataChanged}
+          ></ha-yaml-editor>`
+        )}
         ${
           this._dataValid
             ? nothing
@@ -180,11 +201,24 @@ export class HaScheduleBlockEditor extends LitElement {
     return block;
   }
 
+  /** Whether the draft differs from the block, so closing loses changes. */
+  private _isDirty(): boolean {
+    const days = this.source ? [this.source.day] : [];
+    return (
+      this._from !== this.block.from ||
+      this._to !== (this.block.to === "24:00" ? "00:00" : this.block.to) ||
+      this._days.length !== days.length ||
+      this._days.some((day) => !days.includes(day)) ||
+      !this._dataValid ||
+      !deepEqual(this._data, this.block.data)
+    );
+  }
+
   private _preview(): ScheduleBlockPreview | undefined {
     const block = this._draft();
     if (
-      !this._from ||
-      !this._to ||
+      !isValidTime(this._from) ||
+      !isValidTime(this._to) ||
       !this._days.length ||
       timeToMinutes(block.to) <= timeToMinutes(block.from)
     ) {
@@ -199,6 +233,14 @@ export class HaScheduleBlockEditor extends LitElement {
     const { localize, locale } = this._i18n;
     if (!this._from || !this._to) {
       return undefined;
+    }
+    if (!isValidTime(this._from) || !isValidTime(this._to)) {
+      return {
+        type: "error",
+        message: localize(
+          "ui.dialogs.helper_settings.schedule.error_invalid_time"
+        ),
+      };
     }
     if (timeToMinutes(draft.to) <= timeToMinutes(draft.from)) {
       return {
@@ -244,9 +286,12 @@ export class HaScheduleBlockEditor extends LitElement {
     this._to = this._inputTime(ev.detail.value);
   }
 
-  /** Drop the seconds the time input adds. */
+  /** Drop the seconds the time input adds, keeping invalid input to show. */
   private _inputTime(value?: string): string {
-    return value ? normalizeScheduleTime(value) : "";
+    if (!value) {
+      return "";
+    }
+    return isValidTime(value) ? normalizeScheduleTime(value) : value;
   }
 
   private _daysChanged(ev: ValueChangedEvent<ScheduleWeekday[]>) {
@@ -325,7 +370,10 @@ declare global {
   }
 
   interface HASSDomEvents {
-    "schedule-block-preview": { preview?: ScheduleBlockPreview };
+    "schedule-block-draft-changed": {
+      preview?: ScheduleBlockPreview;
+      dirty: boolean;
+    };
     "schedule-block-apply": {
       block: ScheduleBlock;
       days: ScheduleWeekday[];
