@@ -12,7 +12,6 @@ import type { DeviceRegistryEntry } from "../../../src/data/device/device_regist
 import type { EnergyInfo, EnergyPreferences } from "../../../src/data/energy";
 import { EMPTY_PREFERENCES } from "../../../src/data/energy";
 import type { EntityRegistryEntry } from "../../../src/data/entity/entity_registry";
-import type { LovelaceInfo } from "../../../src/data/lovelace/resource";
 import type { EntityInput } from "../../../src/fake_data/entities/types";
 import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { provideHass } from "../../../src/fake_data/provide_hass";
@@ -169,10 +168,6 @@ export class HaEmbedProvider extends LitElement {
     hass.mockWS("config/device_registry/list", (_msg, currentHass) =>
       Object.values(currentHass.devices)
     );
-    // Read by the toolbar of a dashboard
-    hass.mockWS("lovelace/info", (): LovelaceInfo => ({
-      resource_mode: "storage",
-    }));
     // The registry of the entities, without settings such as calendar colors
     const registryEntries = (currentHass: MockHomeAssistant) =>
       Object.values(currentHass.entities).map(
