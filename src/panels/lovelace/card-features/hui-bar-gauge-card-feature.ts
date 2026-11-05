@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { css, LitElement, nothing, html } from "lit";
 import { ifDefined } from "lit/directives/if-defined";
 import { customElement, property, state } from "lit/decorators";
+import { computeCssColor } from "../../../common/color/compute-color";
 import { consumeEntityState } from "../../../common/decorators/consume-context-entry";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { isNumericFromAttributes } from "../../../common/number/format_number";
@@ -55,11 +56,13 @@ const computeSeverityColor = (
 const computeSegmentColor = (
   segments: BarGaugeCardFeatureConfig["segments"],
   value: number
-): string | undefined =>
-  segments
+): string | undefined => {
+  const color = segments
     ?.filter((segment) => value >= segment.from)
     .sort((a, b) => a.from - b.from)
     .pop()?.color;
+  return color && computeCssColor(color);
+};
 
 @customElement("hui-bar-gauge-card-feature")
 class HuiBarGaugeCardFeature extends LitElement implements LovelaceCardFeature {

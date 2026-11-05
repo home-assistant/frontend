@@ -595,6 +595,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
           <ha-dialog-footer slot="footer">
             <ha-button
               slot="primaryAction"
+              .loading=${this._formStepLoading}
               @click=${this._finishCreateEntryStep}
             >
               ${this.hass.localize(

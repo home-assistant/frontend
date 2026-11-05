@@ -20,6 +20,7 @@ import {
   mdiStopCircleOutline,
   mdiSwapHorizontal,
 } from "@mdi/js";
+import { provide } from "@lit/context";
 import deepClone from "deep-clone-simple";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
@@ -29,6 +30,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
 import "../trigger/ha-automation-trigger-references";
+import { targetExpandGroupContext } from "../../../../components/target-picker/target-expand-group-context";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -165,6 +167,11 @@ const getWaitTemplateCondition = (template: unknown): Condition | undefined =>
 
 @customElement("ha-automation-action-row")
 export default class HaAutomationActionRow extends LitElement {
+  // Conditions don't expand the groups their targets name; other actions do.
+  @provide({ context: targetExpandGroupContext })
+  @state()
+  protected _targetExpandGroup = true;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public action!: Action;
@@ -257,6 +264,7 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
     const type = getAutomationActionType(this.action);
+    this._targetExpandGroup = type !== "condition";
     if (this._warnings && this._yamlMode && type) {
       this._warnings = getUiSupportWarnings(
         this.hass.localize,

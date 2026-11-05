@@ -371,7 +371,9 @@ export async function searchAddress(page: Page) {
   const input = location.locator("ha-input input");
   await input.fill(place.name);
   await input.press("Enter");
-  await expect(location.locator("ha-list")).toContainText(place.name);
+  await expect(
+    location.getByRole("list", { name: "Search results" })
+  ).toContainText(place.name);
 }
 
 export async function confirmLocation(page: Page) {

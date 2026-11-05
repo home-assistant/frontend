@@ -46,6 +46,7 @@ import {
   circleBoundsPoints,
   pixelDistance,
 } from "../../../common/map/map-engine";
+import { isDarkMapStyle } from "../../../common/map/map-styles";
 import {
   entityMapColor,
   zoneColor,
@@ -413,6 +414,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
     const themeMode =
       this._config.theme_mode || (this._config.dark_mode ? "dark" : "auto");
+    // The buttons sit on the map, which a style can make dark on its own
+    const buttonsDark = isDarkMapStyle(this._config.map_style, isDarkMode);
 
     return html`
       <ha-card id="card" .header=${this._config.title}>
@@ -465,7 +468,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
                           ? mdiGoogleCirclesCommunities
                           : mdiDotsHexagon
                       }
-                      style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
+                      style=${buttonsDark ? "color:#ffffff" : "color:#000000"}
                       @click=${this._toggleClusterMarkers}
                       tabindex="0"
                     ></ha-icon-button>
@@ -477,7 +480,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
                 "ui.panel.lovelace.cards.map.reset_focus"
               )}
               .path=${mdiImageFilterCenterFocus}
-              style=${isDarkMode ? "color:#ffffff" : "color:#000000"}
+              style=${buttonsDark ? "color:#ffffff" : "color:#000000"}
               @click=${this._resetFocus}
               tabindex="0"
             ></ha-icon-button>
