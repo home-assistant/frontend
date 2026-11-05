@@ -1,31 +1,31 @@
 import { mdiAlertOutline } from "@mdi/js";
-import type { CSSResultGroup, TemplateResult } from "lit";
+import Fuse from "fuse.js";
+import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import type {
-  HASSDomCurrentTargetEvent,
-  HASSDomEvent,
-  HASSDomTargetEvent,
-} from "../../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stringCompare } from "../../../common/string/compare";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-button";
+import "../../../components/ha-combo-box-item";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-picker-combo-box";
+import type {
+  HaPickerComboBox,
+  PickerComboBoxIndexSelectedDetail,
+  PickerComboBoxItem,
+} from "../../../components/ha-picker-combo-box";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
-import "../../../components/input/ha-input-search";
-import type { HaInputSearch } from "../../../components/input/ha-input-search";
-import "../../../components/item/ha-list-item-option";
-import type { HaListItemOption } from "../../../components/item/ha-list-item-option";
-import "../../../components/list/ha-list-selectable";
-import type { HaListSelectable } from "../../../components/list/ha-list-selectable";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
@@ -51,11 +51,20 @@ import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
+import {
+  multiTermSortedSearch,
+  type FuseWeightedKey,
+} from "../../../resources/fuseMultiTerm";
+import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import type { Helper, HelperDomain, HelperFormItem } from "./const";
-import { isHelperDomain } from "./const";
+import type {
+  Helper,
+  HelperCategory,
+  HelperDomain,
+  HelperFormItem,
+} from "./const";
+import { getHelperCategory, HELPER_CATEGORIES, isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
 type HelperCreators = Record<
@@ -116,6 +125,17 @@ const HELPERS: HelperCreators = {
   },
 };
 
+interface HelperPickerItem extends PickerComboBoxItem {
+  category: HelperCategory;
+  loaded: boolean;
+}
+
+const HELPER_SEARCH_KEYS: FuseWeightedKey[] = [
+  { name: "primary", weight: 10 },
+  { name: "search_labels.aliases", weight: 8 },
+  { name: "id", weight: 4 },
+];
+
 @customElement("dialog-helper-detail")
 export class DialogHelperDetail extends DirtyStateProviderMixin<
   { item?: HelperFormItem; area?: string } | undefined
@@ -138,10 +158,10 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
   @state() private _loading = false;
 
-  @state() private _filter?: string;
+  // Kept for going back from a helper form, the picker reads it when it opens.
+  private _category?: HelperCategory;
 
-  @query("ha-input-search")
-  private _searchInput?: HTMLElement & { updateComplete?: Promise<unknown> };
+  @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
   private _pendingConfigFlow?: {
     startFlowHandler: string;
@@ -157,6 +177,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._domain = params.domain;
     this._item = params.item;
     this._area = undefined;
+    this._category = undefined;
     if (this._domain && this._domain in HELPERS) {
       this._loading = true;
       try {
@@ -178,7 +199,17 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._helperFlows = flows;
 
     await this.updateComplete;
-    await this._focusSearchInput();
+    this._focusPicker();
+  }
+
+  protected updated(changedProps: PropertyValues<this>): void {
+    super.updated(changedProps);
+    // The config translations may load after the list was built, and the
+    // picker only asks for its items again when told to.
+    const oldHass = changedProps.get("hass");
+    if (oldHass && oldHass.localize !== this.hass.localize) {
+      this._comboBox?.refreshItems();
+    }
   }
 
   public closeDialog(): void {
@@ -190,7 +221,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._error = undefined;
     this._domain = undefined;
     this._params = undefined;
-    this._filter = undefined;
+    this._category = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
 
     if (this._pendingConfigFlow) {
@@ -255,73 +286,20 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     } else if (this._loading || this._helperFlows === undefined) {
       content = html`<ha-spinner></ha-spinner>`;
     } else {
-      const items = this._filterHelpers(
-        HELPERS,
-        this._helperFlows,
-        this._filter
-      );
-
       content = html`
-        <ha-input-search
-          appearance="outlined"
+        <ha-picker-combo-box
           autofocus
-          .value=${this._filter}
-          @input=${this._filterChanged}
-          .placeholder=${this.hass.localize(
+          mode="dialog"
+          no-sort
+          .label=${this.hass.localize(
             "ui.panel.config.integrations.search_helper"
           )}
-        ></ha-input-search>
-        <ha-list-selectable
-          controlled
-          aria-label=${this.hass.localize(
-            "ui.panel.config.helpers.dialog.create_helper"
-          )}
-          @ha-list-item-selected=${this._domainPicked}
-        >
-          ${items.map(([domain, label]) => {
-            // Only OG helpers need to be loaded prior adding one
-            const isLoaded =
-              !(domain in HELPERS) ||
-              isComponentLoaded(this.hass.config, domain);
-
-            return html`
-              <ha-list-item-option appearance="line" .value=${domain}>
-                <img
-                  slot="start"
-                  loading="lazy"
-                  alt=""
-                  src=${brandsUrl(
-                    {
-                      domain,
-                      type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
-                    },
-                    this.hass.auth.data.hassUrl
-                  )}
-                  crossorigin="anonymous"
-                  referrerpolicy="no-referrer"
-                />
-                <span slot="headline">${label}</span>
-                ${
-                  isLoaded
-                    ? html`<ha-icon-next slot="end"></ha-icon-next>`
-                    : html`<ha-svg-icon
-                          slot="end"
-                          .id="icon-${domain}"
-                          path=${mdiAlertOutline}
-                          @click=${stopPropagation}
-                        ></ha-svg-icon>
-                        <ha-tooltip slot="end" .for="icon-${domain}">
-                          ${this.hass.localize(
-                            "ui.dialogs.helper_settings.platform_not_loaded",
-                            { platform: domain }
-                          )}
-                        </ha-tooltip>`
-                }
-              </ha-list-item-option>
-            `;
-          })}
-        </ha-list-selectable>
+          .getItems=${this._getItems}
+          .rowRenderer=${this._renderHelperRow}
+          .sections=${this._getSections(this._helperFlows, this.hass.localize)}
+          .selectedSection=${this._category}
+          @index-selected=${this._helperPicked}
+        ></ha-picker-combo-box>
       `;
     }
 
@@ -353,51 +331,132 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     `;
   }
 
-  private _filterHelpers = memoizeOne(
-    (
-      predefinedHelpers: HelperCreators,
-      flowHelpers?: string[],
-      filter?: string
-    ) => {
-      const items: [string, string][] = [];
-
-      for (const helper of Object.keys(
-        predefinedHelpers
-      ) as (keyof typeof predefinedHelpers)[]) {
-        items.push([
-          helper,
-          this.hass.localize(`ui.panel.config.helpers.types.${helper}`) ||
-            helper,
-        ]);
-      }
-
-      if (flowHelpers) {
-        for (const domain of flowHelpers) {
-          items.push([domain, domainToName(this.hass.localize, domain)]);
-        }
-      }
-
-      return items
-        .filter(([domain, label]) => {
-          if (filter) {
-            const lowerFilter = filter.toLowerCase();
-            return (
-              label.toLowerCase().includes(lowerFilter) ||
-              domain.toLowerCase().includes(lowerFilter) ||
-              (predefinedHelpers[domain as HelperDomain]?.alias || []).some(
-                (alias) => alias.toLowerCase().includes(lowerFilter)
-              )
-            );
-          }
-          return true;
+  private _getHelperItems = memoizeOne(
+    (flowHelpers: string[], localize: LocalizeFunc): HelperPickerItem[] => {
+      const domains = [
+        ...(Object.keys(HELPERS) as HelperDomain[]),
+        ...flowHelpers,
+      ];
+      return domains
+        .map((domain) => {
+          const helperDomain = isHelperDomain(domain) ? domain : undefined;
+          return {
+            id: domain,
+            primary:
+              (helperDomain &&
+                localize(`ui.panel.config.helpers.types.${helperDomain}`)) ||
+              domainToName(localize, domain),
+            category: getHelperCategory(domain),
+            // Only OG helpers need to be loaded prior adding one
+            loaded:
+              !helperDomain || isComponentLoaded(this.hass.config, domain),
+            search_labels: {
+              aliases: helperDomain
+                ? (HELPERS[helperDomain].alias?.join(" ") ?? null)
+                : null,
+            },
+          };
         })
-        .sort((a, b) => stringCompare(a[1], b[1], this.hass.locale.language));
+        .sort((a, b) =>
+          stringCompare(a.primary, b.primary, this.hass.locale.language)
+        );
     }
   );
 
-  private async _filterChanged(e: HASSDomTargetEvent<HaInputSearch>) {
-    this._filter = e.target.value;
-  }
+  // Only offer the categories that have helpers.
+  private _getSections = memoizeOne(
+    (flowHelpers: string[], localize: LocalizeFunc) => {
+      const items = this._getHelperItems(flowHelpers, localize);
+      return HELPER_CATEGORIES.filter((category) =>
+        items.some((item) => item.category === category)
+      ).map((category) => ({
+        id: category,
+        label: localize(
+          `ui.panel.config.helpers.dialog.categories.${category}`
+        ),
+      }));
+    }
+  );
+
+  private _fuseIndex = memoizeOne((items: HelperPickerItem[]) =>
+    Fuse.createIndex(HELPER_SEARCH_KEYS, items)
+  );
+
+  private _getItems = (
+    search?: string,
+    section?: string
+  ): (HelperPickerItem | string)[] => {
+    this._category = section as HelperCategory | undefined;
+    const allItems = this._getHelperItems(
+      this._helperFlows ?? [],
+      this.hass.localize
+    );
+    const items = search
+      ? multiTermSortedSearch(
+          allItems,
+          search,
+          (item) => item.id,
+          this._fuseIndex(allItems)
+        )
+      : allItems;
+
+    if (this._category) {
+      return items.filter((item) => item.category === this._category);
+    }
+
+    // Group by category, keeping the search order within each one.
+    return HELPER_CATEGORIES.flatMap((category) => {
+      const categoryItems = items.filter((item) => item.category === category);
+      return categoryItems.length
+        ? [
+            this.hass.localize(
+              `ui.panel.config.helpers.dialog.categories.${category}`
+            ),
+            ...categoryItems,
+          ]
+        : [];
+    });
+  };
+
+  private _renderHelperRow = (item: PickerComboBoxItem) => {
+    const { id: domain, primary, loaded } = item as HelperPickerItem;
+    return html`
+      <ha-combo-box-item>
+        <img
+          slot="start"
+          loading="lazy"
+          alt=""
+          src=${brandsUrl(
+            {
+              domain,
+              type: "icon",
+              darkOptimized: this.hass.themes?.darkMode,
+            },
+            this.hass.auth.data.hassUrl
+          )}
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"
+        />
+        <span slot="headline">${primary}</span>
+        ${
+          loaded
+            ? html`<ha-icon-next slot="end"></ha-icon-next>`
+            : html`<ha-svg-icon
+                  slot="end"
+                  .id="icon-${domain}"
+                  .path=${mdiAlertOutline}
+                  @click=${stopPropagation}
+                ></ha-svg-icon>
+                <ha-tooltip slot="end" .for="icon-${domain}">
+                  ${this.hass.localize(
+                    "ui.dialogs.helper_settings.platform_not_loaded",
+                    { platform: domain }
+                  )}
+                </ha-tooltip>`
+        }
+      </ha-combo-box-item>
+    `;
+  };
 
   private _valueChanged(ev: CustomEvent): void {
     this._item = ev.detail.value;
@@ -498,18 +557,12 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._updateDirtyState({ item: this._item, area: this._area });
   }
 
-  private async _domainPicked(
-    ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
+  private async _helperPicked(
+    ev: HASSDomEvent<PickerComboBoxIndexSelectedDetail>
   ): Promise<void> {
-    const domain = (
-      ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
-    )?.value;
-    if (!domain) {
-      return;
-    }
-    const isLoaded =
-      !(domain in HELPERS) || isComponentLoaded(this.hass.config, domain);
-    if (!isLoaded) {
+    ev.stopPropagation();
+    const { id: domain, loaded } = ev.detail.item as HelperPickerItem;
+    if (!loaded) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.dialogs.helper_settings.platform_not_loaded",
@@ -548,23 +601,16 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._area = undefined;
     this._error = undefined;
     await this.updateComplete;
-    await this._focusSearchInput();
+    this._focusPicker();
   }
 
-  private async _focusSearchInput() {
-    const searchInput = this._searchInput;
-
-    if (!searchInput) {
-      return;
-    }
-
-    await searchInput.updateComplete;
-    searchInput.focus();
+  private async _focusPicker() {
+    await this._comboBox?.updateComplete;
+    this._comboBox?.focus();
   }
 
   static get styles(): CSSResultGroup {
     return [
-      haStyleScrollbar,
       haStyleDialog,
       css`
         ha-dialog {
@@ -573,7 +619,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         ha-icon-next {
           width: var(--ha-space-6);
         }
-        ha-list-item-option img {
+        ha-combo-box-item img {
           width: 24px;
           height: 24px;
           object-fit: contain;
@@ -588,17 +634,14 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
           display: block;
           margin-top: var(--ha-space-4);
         }
-        ha-input-search {
-          margin: 0 var(--ha-space-4) var(--ha-space-3);
-        }
-        ha-list-selectable::part(base) {
-          height: calc(60vh - 184px);
+        ha-picker-combo-box {
+          height: calc(60vh - 116px);
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-list-selectable::part(base) {
+          ha-picker-combo-box {
             height: calc(
               100vh -
-                184px - var(--safe-area-inset-top, 0px) - var(
+                116px - var(--safe-area-inset-top, 0px) - var(
                   --safe-area-inset-bottom,
                   0px
                 )

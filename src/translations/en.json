@@ -4941,7 +4941,14 @@
           "dialog": {
             "create": "Create",
             "create_helper": "Create helper",
-            "create_platform": "Create {platform}"
+            "create_platform": "Create {platform}",
+            "categories": {
+              "input": "Inputs",
+              "time": "Time and schedules",
+              "calculation": "Calculations",
+              "combine": "Groups and templates",
+              "other": "Other"
+            }
           }
         },
         "core": {

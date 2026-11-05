@@ -38,3 +38,47 @@ export type Helper =
 type HelperWithoutId<T> = T extends { id: string } ? Omit<T, "id"> : never;
 
 export type HelperFormItem = HelperWithoutId<Helper>;
+
+export const HELPER_CATEGORIES = [
+  "input",
+  "time",
+  "calculation",
+  "combine",
+  "other",
+] as const;
+
+export type HelperCategory = (typeof HELPER_CATEGORIES)[number];
+
+// Helper integrations have no category in their manifest, so the known ones
+// are grouped here. Any other helper falls into "other".
+const HELPER_DOMAIN_CATEGORIES: Record<string, HelperCategory> = {
+  input_boolean: "input",
+  input_button: "input",
+  input_datetime: "input",
+  input_number: "input",
+  input_select: "input",
+  input_text: "input",
+  counter: "input",
+  schedule: "time",
+  timer: "time",
+  tod: "time",
+  history_stats: "time",
+  derivative: "calculation",
+  filter: "calculation",
+  integration: "calculation",
+  min_max: "calculation",
+  mold_indicator: "calculation",
+  random: "calculation",
+  statistics: "calculation",
+  threshold: "calculation",
+  trend: "calculation",
+  utility_meter: "calculation",
+  generic_hygrostat: "combine",
+  generic_thermostat: "combine",
+  group: "combine",
+  switch_as_x: "combine",
+  template: "combine",
+};
+
+export const getHelperCategory = (domain: string): HelperCategory =>
+  HELPER_DOMAIN_CATEGORIES[domain] ?? "other";
