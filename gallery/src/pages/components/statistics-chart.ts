@@ -1,6 +1,6 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/chart/statistics-chart";
 import "../../../../src/components/ha-card";
 import type {
@@ -11,6 +11,7 @@ import type {
 } from "../../../../src/data/recorder";
 import { StatisticMeanType } from "../../../../src/data/recorder";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
+import type { HASSDomEvent } from "../../../../src/common/dom/fire_event";
 import type { HomeAssistant } from "../../../../src/types";
 
 const HOUR = 60 * 60 * 1000;
@@ -108,6 +109,66 @@ interface Example {
   height?: string;
 }
 
+interface TimeRange {
+  start: number;
+  end: number;
+}
+
+interface RangeExample {
+  id: string;
+  title: string;
+  description: string;
+  statistics: Statistics;
+  statTypes: StatisticType[];
+  chartType: "line" | "bar";
+  unit: string;
+  selectRange: boolean;
+}
+
+const RANGE_EXAMPLES: RangeExample[] = [
+  {
+    id: "single",
+    title: "Single selection",
+    description:
+      "A click on the plot sends the clicked time, here used to select one bar. Dragging still zooms. The bars outside the selection fade.",
+    statistics: { [HEAT_PUMP_ID]: HEAT_PUMP },
+    statTypes: ["change"],
+    chartType: "bar",
+    unit: "kWh",
+    selectRange: false,
+  },
+  {
+    id: "range-bar",
+    title: "Range selection",
+    description:
+      "With select-range, dragging sends a time range instead of zooming, so several bars can be selected at once. A click still selects one bar.",
+    statistics: { [HEAT_PUMP_ID]: HEAT_PUMP },
+    statTypes: ["change"],
+    chartType: "bar",
+    unit: "kWh",
+    selectRange: true,
+  },
+  {
+    id: "range-line",
+    title: "Range selection on lines",
+    description:
+      "The same on a line chart, where the selection is a band behind the lines.",
+    statistics: { [LIVING_ROOM_ID]: LIVING_ROOM },
+    statTypes: ["mean", "min", "max"],
+    chartType: "line",
+    unit: "°C",
+    selectRange: true,
+  },
+];
+
+const snapToHours = (start: number, end: number): TimeRange => ({
+  start: Math.floor(start / HOUR) * HOUR,
+  end: Math.max(Math.ceil(end / HOUR), Math.floor(start / HOUR) + 1) * HOUR,
+});
+
+const formatRange = (range: TimeRange) =>
+  `${new Date(range.start).toLocaleString()} to ${new Date(range.end).toLocaleString()}`;
+
 const EXAMPLES: Example[] = [
   {
     title: "Sum as bars",
@@ -159,6 +220,8 @@ const EXAMPLES: Example[] = [
 export class DemoStatisticsChart extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
+  @state() private _selections: Record<string, TimeRange | undefined> = {};
+
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     const hass = provideHass(this);
@@ -169,7 +232,7 @@ export class DemoStatisticsChart extends LitElement {
     if (!this.hass) {
       return nothing;
     }
-    return EXAMPLES.map(
+    return html`${EXAMPLES.map(
       (example) => html`
         <ha-card header=${example.title}>
           <div class="card-content">
@@ -191,7 +254,55 @@ export class DemoStatisticsChart extends LitElement {
           </div>
         </ha-card>
       `
-    );
+    )}
+    ${RANGE_EXAMPLES.map((example) => this._renderRangeExample(example))}`;
+  }
+
+  private _renderRangeExample(example: RangeExample) {
+    const selection = this._selections[example.id];
+    return html`
+      <ha-card header=${example.title}>
+        <div class="card-content">
+          <p>${example.description}</p>
+          <statistics-chart
+            .statisticsData=${example.statistics}
+            .metadata=${METADATA}
+            .names=${NAMES}
+            .statTypes=${example.statTypes}
+            .chartType=${example.chartType}
+            period="hour"
+            .unit=${example.unit}
+            .startTime=${START}
+            .endTime=${END}
+            .highlight=${selection}
+            .clickForMoreInfo=${false}
+            data-example=${example.id}
+            .selectRange=${example.selectRange}
+            hide-legend
+            @chart-grid-click=${this._gridClicked}
+            @chart-range-select=${this._rangeSelected}
+          ></statistics-chart>
+          <p class="selection">
+            ${selection ? formatRange(selection) : "Nothing selected"}
+          </p>
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private _gridClicked(ev: HASSDomEvent<HASSDomEvents["chart-grid-click"]>) {
+    this._select(ev, snapToHours(ev.detail.x, ev.detail.x));
+  }
+
+  private _rangeSelected(
+    ev: HASSDomEvent<HASSDomEvents["chart-range-select"]>
+  ) {
+    this._select(ev, snapToHours(ev.detail.start, ev.detail.end));
+  }
+
+  private _select(ev: Event, range: TimeRange) {
+    const id = (ev.currentTarget as HTMLElement).dataset.example!;
+    this._selections = { ...this._selections, [id]: range };
   }
 
   static styles = css`
@@ -201,6 +312,10 @@ export class DemoStatisticsChart extends LitElement {
     }
     p {
       margin-top: 0;
+    }
+    .selection {
+      margin: 8px 0 0;
+      color: var(--secondary-text-color);
     }
   `;
 }
