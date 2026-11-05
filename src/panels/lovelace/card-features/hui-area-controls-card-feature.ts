@@ -12,6 +12,7 @@ import {
 } from "../../../common/decorators/consume-context-entry";
 import { transform } from "../../../common/decorators/transform";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { getEntityAreaId } from "../../../common/entity/context/get_entity_context";
 import {
   computeGroupEntitiesState,
   toggleGroupEntities,
@@ -236,8 +237,25 @@ class HuiAreaControlsCardFeature
       .map((n) => n.value)
   );
 
+  private _areaEntities = memoizeOne(
+    (
+      entities: HomeAssistant["entities"],
+      devices: HomeAssistant["devices"],
+      areaId: string
+    ): HomeAssistant["entities"] => {
+      const areaEntities: HomeAssistant["entities"] = {};
+      for (const [entityId, entry] of Object.entries(entities)) {
+        if (getEntityAreaId(entityId, entities, devices) === areaId) {
+          areaEntities[entityId] = entry;
+        }
+      }
+      return areaEntities;
+    }
+  );
+
   // States are part of the key: the filter reads device classes from them,
-  // so an entity can only match once its state exists.
+  // so an entity can only match once its state exists. Only the area's
+  // entities are filtered, as this runs on every state change.
   private _controlEntities = memoizeOne(
     (
       controls: AreaControlDomain[],
@@ -248,7 +266,7 @@ class HuiAreaControlsCardFeature
     ) =>
       getAreaControlEntities(
         states,
-        registries.entities,
+        this._areaEntities(registries.entities, registries.devices, areaId),
         registries.devices,
         registries.areas,
         registries.floors,
