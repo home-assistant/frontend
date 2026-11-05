@@ -1602,10 +1602,12 @@ describe("getEnergyDataCollection live day", () => {
     unsub();
   });
 
-  it("refreshes after the first short-term bucket when the day starts off the UTC hour", async () => {
+  it("waits for the first queryable hour when the day starts off the UTC hour", async () => {
     vi.useFakeTimers();
-    // Asia/Kolkata is UTC+05:30, so its midnight falls at :30 past a UTC hour
-    // and the first short-term bucket of the new day is compiled at :35:10Z.
+    // Asia/Kolkata is UTC+05:30, so its midnight is 18:30Z. Statistics are
+    // queried with `start >= period start`, so the 18:00Z hour is never
+    // returned for this period and its 18:35:10Z bucket is not worth a fetch.
+    // The first hour that can come back is 19:00Z, compiled from 19:05:10Z.
     vi.setSystemTime(new Date("2026-06-20T23:50:00+05:30"));
 
     const { collection, callWS } = createCollection(
@@ -1626,9 +1628,14 @@ describe("getEnergyDataCollection live day", () => {
     );
     assert.equal(refresh.mock.calls.length, 1);
 
+    // Nothing at 18:35:15Z: that bucket belongs to an hour this period excludes.
     refresh.mockClear();
     callWS.mockClear();
     await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 15 * 1000);
+    assert.equal(refresh.mock.calls.length, 0);
+
+    // 19:05:15Z, once the first bucket of the 19:00Z hour is compiled.
+    await vi.advanceTimersByTimeAsync(30 * 60 * 1000);
     assert.equal(refresh.mock.calls.length, 1);
     assert.equal(energyInfoFetches(callWS).length, 1);
 

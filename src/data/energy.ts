@@ -977,6 +977,7 @@ const clearEnergyCollectionPreferences = (
   });
 };
 
+const HOUR_IN_MS = 60 * 60 * 1000;
 const SHORT_TERM_STATS_INTERVAL = 5 * 60 * 1000;
 const SHORT_TERM_STATS_MARGIN = 15 * 1000;
 
@@ -986,6 +987,13 @@ const firstShortTermStatsAfter = (timestamp: number): number =>
   (Math.floor(timestamp / SHORT_TERM_STATS_INTERVAL) + 1) *
     SHORT_TERM_STATS_INTERVAL +
   SHORT_TERM_STATS_MARGIN;
+
+// Statistics are keyed by the hour they start in and queried with
+// `start >= period start`, so a period beginning mid-hour never sees that hour.
+// Zones offset by half or quarter hours start their day there, and for them the
+// first hour worth waiting for is the next whole one.
+const firstQueryableHour = (timestamp: number): number =>
+  Math.ceil(timestamp / HOUR_IN_MS) * HOUR_IN_MS;
 
 const scheduleHourlyRefresh = (collection: EnergyCollection) => {
   if (collection._refreshTimeout !== undefined) {
@@ -1002,17 +1010,18 @@ const scheduleHourlyRefresh = (collection: EnergyCollection) => {
     }
     hourlyRefresh.setUTCMinutes(20, 0, 0);
 
-    // Before that, Core can already stitch the open hour from short-term rows,
-    // so refresh as soon as the first bucket of the period or of the current
-    // hour exists. The period starts on a day boundary in the server's zone,
-    // which need not sit on a UTC hour.
+    // Before that, Core can already stitch an open hour from short-term rows,
+    // so refresh as soon as the first bucket of the period's first queryable
+    // hour, or of the current hour, exists.
     const currentHourBucket = new Date(now);
     currentHourBucket.setUTCMinutes(5, 15, 0);
 
     const nextFetch = Math.min(
       hourlyRefresh.getTime(),
       ...[
-        firstShortTermStatsAfter(collection.start.getTime()),
+        firstShortTermStatsAfter(
+          firstQueryableHour(collection.start.getTime())
+        ),
         currentHourBucket.getTime(),
       ].filter((candidate) => candidate > now)
     );
