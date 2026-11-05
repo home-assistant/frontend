@@ -288,6 +288,12 @@ export class LovelacePanel extends LitElement {
     this._fetchConfig(true);
   }
 
+  private _redirectToHome() {
+    // Keeps the query and any open dialog: a more-info deep link may be
+    // restored from the URL around this redirect.
+    navigate(`/home${location.search}`, { replace: true, keepDialogs: true });
+  }
+
   private async _fetchConfig(forceDiskRefresh: boolean) {
     this._loading = true;
 
@@ -297,7 +303,7 @@ export class LovelacePanel extends LitElement {
 
     // If no mode, redirect to /home as there is no "lovelace" dashboard
     if (!confMode) {
-      navigate("/home", { replace: true });
+      this._redirectToHome();
       return;
     }
 
@@ -357,7 +363,7 @@ export class LovelacePanel extends LitElement {
         const dashboards = await fetchDashboards(this.hass!);
         const dashboard = dashboards.find((d) => d.url_path === "lovelace");
         if (!dashboard) {
-          navigate("/home", { replace: true });
+          this._redirectToHome();
           return;
         }
       }
