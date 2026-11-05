@@ -165,21 +165,14 @@ describe("getHiddenFields", () => {
   });
 
   it("does not depend on the order of the fields", () => {
-    const duration = [
-      "duration",
-      { field: "end_of_track", operator: "not_exists" },
+    const token = ["token", { field: "mode", value: "advanced" }] as const;
+    const extra = [
+      "extra",
+      { field: "token", operator: "not_exists" },
     ] as const;
-    const endOfTrack = [
-      "end_of_track",
-      { field: "mode", value: "end_of_track" },
-    ] as const;
-    const data = { mode: "duration", end_of_track: true };
-    expect([...getHiddenFields([duration, endOfTrack], data)]).toEqual([
-      "end_of_track",
-    ]);
-    expect([...getHiddenFields([endOfTrack, duration], data)]).toEqual([
-      "end_of_track",
-    ]);
+    const data = { mode: "simple", token: "stale" };
+    expect([...getHiddenFields([token, extra], data)]).toEqual(["token"]);
+    expect([...getHiddenFields([extra, token], data)]).toEqual(["token"]);
   });
 });
 
