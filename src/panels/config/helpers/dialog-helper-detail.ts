@@ -118,7 +118,7 @@ const HELPERS: HelperCreators = {
 
 @customElement("dialog-helper-detail")
 export class DialogHelperDetail extends DirtyStateProviderMixin<
-  HelperFormItem | undefined
+  { item?: HelperFormItem; area?: string } | undefined
 >()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -161,7 +161,10 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
       this._loading = true;
       try {
         await HELPERS[this._domain].import();
-        this._initDirtyTracking({ type: "deep" }, undefined);
+        this._initDirtyTracking(
+          { type: "deep" },
+          { item: this._item, area: undefined }
+        );
       } finally {
         this._loading = false;
       }
@@ -398,7 +401,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
   private _valueChanged(ev: CustomEvent): void {
     this._item = ev.detail.value;
-    this._updateDirtyState(this._item);
+    this._updateDirtyState({ item: this._item, area: this._area });
   }
 
   private async _createItem(): Promise<void> {
@@ -492,6 +495,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   private _areaChanged(ev: ValueChangedEvent<string | undefined>): void {
     ev.stopPropagation();
     this._area = ev.detail.value || undefined;
+    this._updateDirtyState({ item: this._item, area: this._area });
   }
 
   private async _domainPicked(
@@ -520,7 +524,10 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
       try {
         await HELPERS[domain].import();
         this._domain = domain;
-        this._initDirtyTracking({ type: "deep" }, undefined);
+        this._initDirtyTracking(
+          { type: "deep" },
+          { item: this._item, area: undefined }
+        );
       } finally {
         this._loading = false;
       }
