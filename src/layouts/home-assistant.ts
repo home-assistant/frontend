@@ -329,7 +329,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     // Wait for the next render to ensure the view is fully loaded
     // because the more info dialog is closed when the url changes
     afterNextRender(() => {
-      if (decodeMoreInfoUrl(window.location.search).entityId !== entityId) {
+      const current = decodeMoreInfoUrl(window.location.search);
+      if (current.entityId !== entityId || current.view !== view) {
         return;
       }
       if (
