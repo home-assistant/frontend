@@ -582,8 +582,10 @@ export class EntityRegistrySettingsEditor extends LitElement {
                   this._name,
                   this.entry.entity_id,
                   this._deviceClass,
-                  this._device,
-                  this._areaId
+                  this._device
+                    ? computeDeviceNameDisplay(this._device, this.hass.localize)
+                    : null,
+                  this._iconSuggestionArea
                 )}
               >
                 ${
@@ -1790,22 +1792,22 @@ export class EntityRegistrySettingsEditor extends LitElement {
       name: string,
       entityId: string,
       deviceClass: string | null | undefined,
-      device: DeviceRegistryEntry | undefined,
-      areaId: string | null | undefined
-    ): IconSuggestionContext => {
-      const area = areaId ?? device?.area_id;
-      return {
-        type: "entity",
-        name: name || null,
-        domain: computeDomain(entityId),
-        device_class: deviceClass ?? null,
-        device: device
-          ? computeDeviceNameDisplay(device, this.hass.localize)
-          : null,
-        area: (area && this.hass.areas[area]?.name) || null,
-      };
-    }
+      device: string | null,
+      area: string | null
+    ): IconSuggestionContext => ({
+      type: "entity",
+      name: name || null,
+      domain: computeDomain(entityId),
+      device_class: deviceClass ?? null,
+      device,
+      area,
+    })
   );
+
+  private get _iconSuggestionArea(): string | null {
+    const areaId = this._areaId ?? this._device?.area_id;
+    return (areaId && this.hass.areas[areaId]?.name) || null;
+  }
 
   private get _originalName(): string {
     return String(this.entry.original_name ?? "");

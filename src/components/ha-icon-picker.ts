@@ -117,7 +117,7 @@ type SuggestionState =
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => {
   if (item.id === SUGGESTION_SKELETON_ID) {
     return html`
-      <ha-combo-box-item>
+      <ha-combo-box-item role="progressbar" aria-label=${item.primary}>
         <ha-skeleton-icon slot="start"></ha-skeleton-icon>
         <ha-skeleton-text></ha-skeleton-text>
       </ha-combo-box-item>
@@ -163,7 +163,7 @@ export class HaIconPicker extends LitElement {
   @query("ha-generic-picker") private _picker?: HaGenericPicker;
 
   private _getIconPickerItems = () =>
-    this._itemsWithSuggestions(ICONS, this._suggestion);
+    this._itemsWithSuggestions(ICONS, this._suggestion, this._localize);
 
   // Only created for pickers that can suggest, the others never ask for AI
   private _aiTask?: AITaskController;
@@ -182,6 +182,8 @@ export class HaIconPicker extends LitElement {
         scrollToTop: true,
         clearSearch: this._suggestion?.status === "loading",
       });
+    } else if (changedProps.has("_localize") && this._suggestion) {
+      this._picker?.refreshItems();
     }
   }
 
@@ -224,14 +226,21 @@ export class HaIconPicker extends LitElement {
   private _itemsWithSuggestions = memoizeOne(
     (
       icons: PickerComboBoxItem[],
-      suggestion: SuggestionState | undefined
+      suggestion: SuggestionState | undefined,
+      localize: LocalizeFunc
     ): (PickerComboBoxItem | string)[] => {
       if (!suggestion) {
         return icons;
       }
       let rows: PickerComboBoxItem[];
       if (suggestion.status === "loading") {
-        rows = [{ id: SUGGESTION_SKELETON_ID, primary: "", disabled: true }];
+        rows = [
+          {
+            id: SUGGESTION_SKELETON_ID,
+            primary: localize("ui.components.icon_picker.suggesting"),
+            disabled: true,
+          },
+        ];
       } else if (suggestion.status === "done" && suggestion.icons.length) {
         rows = suggestion.icons.map((icon) => ({
           id: `${SUGGESTION_PREFIX}${icon}`,
@@ -246,15 +255,15 @@ export class HaIconPicker extends LitElement {
         rows = [
           {
             id: SUGGESTION_STATUS_ID,
-            primary: this._localize(`ui.components.icon_picker.${status}`),
+            primary: localize(`ui.components.icon_picker.${status}`),
             disabled: true,
           },
         ];
       }
       return [
-        this._localize("ui.components.icon_picker.suggested"),
+        localize("ui.components.icon_picker.suggested"),
         ...rows,
-        this._localize("ui.components.icon_picker.all_icons"),
+        localize("ui.components.icon_picker.all_icons"),
         ...icons,
       ];
     }

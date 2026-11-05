@@ -198,7 +198,7 @@ class DialogAreaDetail
         .suggestionContext=${this._iconSuggestionContext(
           this._name,
           this._aliases,
-          this._floor
+          (this._floor && this.hass.floors?.[this._floor]?.name) || null
         )}
       ></ha-icon-picker>
 
@@ -308,12 +308,7 @@ class DialogAreaDetail
       name: string,
       aliases: string[],
       floor: string | null
-    ): IconSuggestionContext => ({
-      type: "area",
-      name,
-      aliases,
-      floor: (floor && this.hass.floors?.[floor]?.name) || null,
-    })
+    ): IconSuggestionContext => ({ type: "area", name, aliases, floor })
   );
 
   private _generateTask = async (): Promise<SuggestWithAIGenerateTask> => {

@@ -205,6 +205,9 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
 
   @query("ha-input-search") private _searchFieldElement?: HaInputSearch;
 
+  @query('slot[name="search-actions"]')
+  private _searchActionsSlot?: HTMLSlotElement;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private i18n?: ContextType<typeof internationalizationContext>;
@@ -905,6 +908,13 @@ export class HaPickerComboBox extends ScrollableFadeMixin(LitElement) {
   };
 
   private _pickItem = (ev: KeyboardEvent, newTab: boolean) => {
+    // Enter on a search action activates it, it does not pick a row
+    if (
+      this._searchActionsSlot &&
+      ev.composedPath().includes(this._searchActionsSlot)
+    ) {
+      return;
+    }
     ev.stopPropagation();
     const options = this._items.filter(this._isOption);
     if (options.length === 1) {

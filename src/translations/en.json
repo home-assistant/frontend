@@ -1705,6 +1705,7 @@
         "suggest": "Suggest icons with AI",
         "suggested": "Suggested",
         "all_icons": "All icons",
+        "suggesting": "Suggesting icons",
         "no_suggestions": "No matching icons found",
         "suggestion_failed": "Icons couldn't be suggested"
       }
