@@ -16,6 +16,8 @@ import type { HaCheckbox } from "../../components/ha-checkbox";
 import "../../components/ha-date-input";
 import "../../components/ha-dialog";
 import "../../components/ha-dialog-footer";
+import "../../components/ha-select";
+import type { HaSelectSelectEvent } from "../../components/ha-select";
 import "../../components/ha-textarea";
 import type { HaTextArea } from "../../components/ha-textarea";
 import "../../components/ha-time-input";
@@ -38,6 +40,7 @@ import type { TodoItemEditDialogParams } from "./show-dialog-todo-item-editor";
 interface TodoItemFormState {
   summary: string;
   description?: string;
+  section?: string;
   due?: Date;
   checked: boolean;
   hasTime: boolean;
@@ -56,6 +59,8 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
   @state() private _summary = "";
 
   @state() private _description? = "";
+
+  @state() private _section?: string;
 
   @state() private _due?: Date;
 
@@ -88,6 +93,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
       this._checked = entry.status === TodoItemStatus.Completed;
       this._summary = entry.summary;
       this._description = entry.description || "";
+      this._section = entry.section || undefined;
       this._completedTime = entry.completed
         ? new Date(entry.completed)
         : undefined;
@@ -99,6 +105,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
       this._hasTime = false;
       this._checked = false;
       this._due = undefined;
+      this._section = undefined;
     }
     this._initDirtyTracking({ type: "deep" }, this._currentState());
   }
@@ -107,6 +114,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
     return {
       summary: this._summary,
       description: this._description,
+      section: this._section,
       due: this._due,
       checked: this._checked,
       hasTime: this._hasTime,
@@ -127,6 +135,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
     this._due = undefined;
     this._summary = "";
     this._description = "";
+    this._section = undefined;
     this._hasTime = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -221,6 +230,13 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
           }
           ${
             this._todoListSupportsFeature(
+              TodoListEntityFeature.SET_SECTION_ON_ITEM
+            )
+              ? this._renderSection(canUpdate)
+              : nothing
+          }
+          ${
+            this._todoListSupportsFeature(
               TodoListEntityFeature.SET_DUE_DATE_ON_ITEM
             ) ||
             this._todoListSupportsFeature(
@@ -301,6 +317,33 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
     `;
   }
 
+  private _renderSection(canUpdate: boolean) {
+    const label = this.hass.localize("ui.components.todo.item.section");
+    const sections = this.hass.states[this._params!.entity]?.attributes
+      .sections as string[] | undefined;
+    if (!sections) {
+      return html`<ha-input
+        name="section"
+        .label=${label}
+        .value=${this._section ?? ""}
+        @input=${this._handleSectionInput}
+        .disabled=${!canUpdate}
+      ></ha-input>`;
+    }
+    const options =
+      this._section && !sections.includes(this._section)
+        ? [...sections, this._section]
+        : sections;
+    return html`<ha-select
+      clearable
+      .label=${label}
+      .value=${this._section}
+      .options=${options}
+      @selected=${this._handleSectionSelected}
+      .disabled=${!canUpdate}
+    ></ha-select>`;
+  }
+
   private _todoListSupportsFeature(feature: number): boolean {
     if (!this._params?.entity) {
       return false;
@@ -355,6 +398,16 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
     this._updateDirtyState(this._currentState());
   }
 
+  private _handleSectionInput(ev: InputEvent & HASSDomTargetEvent<HaInput>) {
+    this._section = ev.target.value?.trim() || undefined;
+    this._updateDirtyState(this._currentState());
+  }
+
+  private _handleSectionSelected(ev: HaSelectSelectEvent<string, true>) {
+    this._section = ev.detail.value || undefined;
+    this._updateDirtyState(this._currentState());
+  }
+
   private _dueDateChanged(ev: ValueChangedEvent<string | undefined>) {
     if (!ev.detail.value) {
       this._due = undefined;
@@ -387,6 +440,7 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
       await createItem(this.hass!.callService, this._params!.entity, {
         summary: this._summary,
         description: this._description,
+        section: this._section,
         due: this._due
           ? this._hasTime
             ? this._due.toISOString()
@@ -424,6 +478,11 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
           )
             ? null
             : undefined),
+        section: this._todoListSupportsFeature(
+          TodoListEntityFeature.SET_SECTION_ON_ITEM
+        )
+          ? (this._section ?? null)
+          : undefined,
         due: this._due
           ? this._hasTime
             ? this._due.toISOString()

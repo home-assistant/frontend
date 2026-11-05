@@ -33,6 +33,12 @@ export interface TodoItem {
   description?: string | null;
   due?: string | null;
   completed?: string | null;
+  section?: string | null;
+}
+
+export interface TodoItemSectionGroup {
+  section: string | null;
+  items: TodoItem[];
 }
 
 export enum TodoListEntityFeature {
@@ -43,6 +49,7 @@ export enum TodoListEntityFeature {
   SET_DUE_DATE_ON_ITEM = 16,
   SET_DUE_DATETIME_ON_ITEM = 32,
   SET_DESCRIPTION_ON_ITEM = 64,
+  SET_SECTION_ON_ITEM = 128,
 }
 
 export const getTodoLists = (
@@ -104,6 +111,7 @@ export const updateItem = (
       rename: item.summary,
       status: item.status,
       description: item.description,
+      section: item.section,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
       due_date:
         item.due === undefined || item.due?.includes("T")
@@ -124,6 +132,7 @@ export const createItem = (
     {
       item: item.summary,
       description: item.description || undefined,
+      section: item.section || undefined,
       due_datetime: item.due?.includes("T") ? item.due : undefined,
       due_date:
         item.due === undefined || item.due?.includes("T")
@@ -159,3 +168,39 @@ export const moveItem = (
     uid,
     previous_uid,
   });
+
+/**
+ * Group items by section, in the order of the sections of the list.
+ *
+ * Sections that are not in `sections` follow in order of appearance, and items
+ * without a section come last. Returns undefined when no item has a section.
+ */
+export const groupItemsBySection = (
+  items: TodoItem[],
+  sections: string[] = []
+): TodoItemSectionGroup[] | undefined => {
+  if (!items.some((item) => item.section)) {
+    return undefined;
+  }
+  const groups = new Map<string | null, TodoItem[]>(
+    sections.map((section) => [section, []])
+  );
+  const withoutSection: TodoItem[] = [];
+  for (const item of items) {
+    if (!item.section) {
+      withoutSection.push(item);
+      continue;
+    }
+    const group = groups.get(item.section);
+    if (group) {
+      group.push(item);
+    } else {
+      groups.set(item.section, [item]);
+    }
+  }
+  groups.set(null, withoutSection);
+  return Array.from(groups, ([section, groupItems]) => ({
+    section,
+    items: groupItems,
+  })).filter((group) => group.items.length);
+};

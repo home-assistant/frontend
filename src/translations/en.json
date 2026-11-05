@@ -1433,6 +1433,7 @@
         "item": {
           "summary": "Task name",
           "description": "Description",
+          "section": "Section",
           "add": "Add item",
           "delete": "Delete item",
           "edit": "Edit item",
@@ -10076,6 +10077,7 @@
             "no_unchecked_items": "You have no to-do items!",
             "checked_items": "Completed",
             "no_status_items": "No status",
+            "no_section_items": "Other",
             "clear_items": "Remove completed items",
             "add_item": "Add item",
             "today": "Today",

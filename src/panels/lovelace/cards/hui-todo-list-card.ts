@@ -76,6 +76,7 @@ import {
   TodoSortMode,
   createItem,
   deleteItems,
+  groupItemsBySection,
   moveItem,
   subscribeItems,
   updateItem,
@@ -597,7 +598,7 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                           </div>`
                         : nothing
                     }
-                    ${this._renderItems(uncheckedItems, unavailable)}
+                    ${this._renderItemsBySection(uncheckedItems, unavailable)}
                   `
                 : nothing
             }
@@ -712,6 +713,34 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
         ? new Date(item.due)
         : endOfDay(new Date(`${item.due}T00:00:00`))
       : undefined;
+  }
+
+  private _groupItemsBySection = memoizeOne(groupItemsBySection);
+
+  private _renderItemsBySection(items: TodoItem[], unavailable: boolean) {
+    const sections = this._stateObj?.attributes.sections as
+      string[] | undefined;
+    const groups = this._groupItemsBySection(items, sections);
+    if (!groups) {
+      return this._renderItems(items, unavailable);
+    }
+    return repeat(
+      groups,
+      (group) => group.section,
+      (group) => html`
+        <div class="section-header" role="separator">
+          <h3>
+            ${
+              group.section ??
+              this._i18n.localize(
+                "ui.panel.lovelace.cards.todo-list.no_section_items"
+              )
+            }
+          </h3>
+        </div>
+        ${this._renderItems(group.items, unavailable)}
+      `
+    );
   }
 
   private _renderItems(items: TodoItem[], unavailable = false) {
@@ -1135,6 +1164,19 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     .header h2 {
       color: var(--primary-text-color);
       font-size: inherit;
+      font-weight: var(--ha-font-weight-medium);
+    }
+
+    .section-header {
+      padding-inline: var(--ha-space-4);
+      margin-top: var(--ha-space-2);
+      direction: var(--direction);
+    }
+
+    .section-header h3 {
+      margin: var(--ha-space-2) 0 0;
+      color: var(--secondary-text-color);
+      font-size: var(--ha-font-size-s);
       font-weight: var(--ha-font-weight-medium);
     }
 
