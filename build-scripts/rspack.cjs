@@ -95,10 +95,10 @@ const componentsSourceAliases = Object.fromEntries(
     .filter(([, target]) => target["ha-source"])
     .flatMap(([subpath, target]) =>
       (subpath.includes("*") ? componentElements : [undefined]).map((name) => [
-        `${path.posix.join("@home-assistant/components", name ? subpath.replace("*", name) : subpath)}$`,
+        `${path.posix.join("@home-assistant/components", name ? subpath.replaceAll("*", name) : subpath)}$`,
         path.join(
           COMPONENTS_PACKAGE_DIR,
-          name ? target["ha-source"].replace("*", name) : target["ha-source"]
+          name ? target["ha-source"].replaceAll("*", name) : target["ha-source"]
         ),
       ])
     )
