@@ -32,6 +32,7 @@ import { UndoRedoController } from "../../common/controllers/undo-redo-controlle
 import { fireEvent } from "../../common/dom/fire_event";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
+import type { NavigateOptions } from "../../common/navigate";
 import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -831,7 +832,12 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 
       if (!viewPath && views.length) {
         newSelectView = views.findIndex(this._isVisible);
-        this._navigateToView(views[newSelectView].path || newSelectView, true);
+        // Filling in the default view keeps the entry as is: a dialog restored
+        // from the URL, like a more-info deep link, can already be open.
+        this._navigateToView(views[newSelectView].path || newSelectView, {
+          replace: true,
+          keepDialogs: true,
+        });
       } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
       } else if (viewPath) {
@@ -865,10 +871,9 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
           viewPath === "hass-unused-entities"
         ) {
           newSelectView = views.findIndex(this._isVisible);
-          this._navigateToView(
-            views[newSelectView].path || newSelectView,
-            true
-          );
+          this._navigateToView(views[newSelectView].path || newSelectView, {
+            replace: true,
+          });
         }
       }
 
@@ -1197,7 +1202,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
     });
   }
 
-  private _navigateToView(path: string | number, replace?: boolean) {
+  private _navigateToView(path: string | number, options?: NavigateOptions) {
     if (this.embedded) {
       fireEvent(this, "view-navigate", { path: String(path) });
 
@@ -1208,7 +1213,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 
     const currentUrl = `${location.pathname}${location.search}`;
     if (currentUrl !== url) {
-      navigate(url, { replace });
+      navigate(url, options);
     }
   }
 
@@ -1278,7 +1283,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
       newCurView = indexAfterMove(curView, oldIndex, newIndex);
       // Views without a path are addressed by their index in the URL
       if (newCurView !== curView && !this.config.views[curView].path) {
-        this._navigateToView(newCurView, true);
+        this._navigateToView(newCurView, { replace: true });
       }
     }
     lovelace.saveConfig(moveView(lovelace.config, oldIndex, newIndex));
