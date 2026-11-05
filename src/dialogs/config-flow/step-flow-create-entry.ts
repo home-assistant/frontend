@@ -20,19 +20,28 @@ import type { DeviceRegistryEntry } from "../../data/device/device_registry";
 import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
   getAutomaticEntityIds,
+  getExtendedEntityRegistryEntries,
   updateEntityRegistryEntry,
   type EntityRegistryDisplayEntry,
+  type ExtEntityRegistryEntry,
 } from "../../data/entity/entity_registry";
-import { domainToName } from "../../data/integration";
+import { domainToName, type IntegrationManifest } from "../../data/integration";
+import { findRelated } from "../../data/search";
 import type { HomeAssistant, ValueChangedEvent } from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import { showAlertDialog } from "../generic/show-dialog-box";
+import { showMoreInfoDialog } from "../more-info/show-ha-more-info-dialog";
 import { showVoiceAssistantSetupDialog } from "../voice-assistant-setup/show-voice-assistant-setup-dialog";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
 
 interface DeviceTarget {
   device: string;
+}
+
+interface HelperResult {
+  deviceId?: string;
+  entityId?: string;
 }
 
 @customElement("step-flow-create-entry")
@@ -46,9 +55,13 @@ class StepFlowCreateEntry extends LitElement {
 
   @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
 
+  @property({ attribute: false }) public manifest?: IntegrationManifest | null;
+
   private _domains: Record<string, string> = {};
 
   public navigateToResult = false;
+
+  private _helperResult?: Promise<HelperResult | undefined>;
 
   @state() private _deviceUpdate: Record<
     string,
@@ -73,6 +86,13 @@ class StepFlowCreateEntry extends LitElement {
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
     this._loadDomains();
+    if (
+      this.navigateToResult &&
+      this.step.result &&
+      this.manifest?.integration_type === "helper"
+    ) {
+      this._helperResult = this._findHelperResult(this.step.result.entry_id);
+    }
   }
 
   protected willUpdate(changedProps: PropertyValues<this>) {
@@ -290,16 +310,67 @@ class StepFlowCreateEntry extends LitElement {
       await Promise.allSettled(entityUpdates);
     }
 
-    fireEvent(this, "flow-update", { step: undefined });
-    if (this.step.result && this.navigateToResult) {
-      if (this.devices.length === 1) {
-        navigate(`/config/devices/device/${this.devices[0].id}`);
-      } else {
-        navigate(
-          `/config/integrations/integration/${this.step.result.domain}#config_entry=${this.step.result.entry_id}`
-        );
-      }
+    const entry = this.navigateToResult ? this.step.result : undefined;
+    // Helpers link their entities to an existing device instead of creating one
+    const helperResult =
+      entry && !this.devices.length ? await this._helperResult : undefined;
+
+    // The dialog was closed while waiting
+    if (!this.isConnected) {
+      return;
     }
+    fireEvent(this, "flow-update", { step: undefined });
+    if (!entry) {
+      return;
+    }
+    const deviceId =
+      this.devices.length === 1 ? this.devices[0].id : helperResult?.deviceId;
+    if (deviceId) {
+      navigate(`/config/devices/device/${deviceId}`);
+    } else if (helperResult?.entityId) {
+      showMoreInfoDialog(this, { entityId: helperResult.entityId });
+    } else {
+      navigate(
+        `/config/integrations/integration/${entry.domain}#config_entry=${entry.entry_id}`
+      );
+    }
+  }
+
+  private async _findHelperResult(
+    entryId: string
+  ): Promise<HelperResult | undefined> {
+    try {
+      const { entity: entityIds = [] } = await findRelated(
+        this.hass,
+        "config_entry",
+        entryId
+      );
+      if (!entityIds.length) {
+        return undefined;
+      }
+      const entities = Object.values(
+        await getExtendedEntityRegistryEntries(this.hass, entityIds)
+      ).filter(
+        (entity): entity is ExtEntityRegistryEntry =>
+          entity?.config_entry_id === entryId
+      );
+      const deviceIds = [
+        ...new Set(
+          entities.flatMap((entity) =>
+            entity.device_id ? [entity.device_id] : []
+          )
+        ),
+      ];
+      if (deviceIds.length === 1) {
+        return { deviceId: deviceIds[0] };
+      }
+      if (!deviceIds.length && entities.length === 1) {
+        return { entityId: entities[0].entity_id };
+      }
+    } catch (_err) {
+      // Fall back to the integration page
+    }
+    return undefined;
   }
 
   public async finish(): Promise<void> {

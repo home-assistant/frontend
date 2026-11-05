@@ -28,6 +28,11 @@ import type { HaListSelectable } from "../../../components/list/ha-list-selectab
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
+import {
+  fetchEntityRegistry,
+  getExtendedEntityRegistryEntry,
+  type EntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
 import { createInputBoolean } from "../../../data/input_boolean";
 import { createInputButton } from "../../../data/input_button";
 import { createInputDateTime } from "../../../data/input_datetime";
@@ -43,6 +48,7 @@ import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -137,6 +143,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     startFlowHandler: string;
     manifest: IntegrationManifest;
     dialogClosedCallback?: ShowDialogHelperDetailParams["dialogClosedCallback"];
+    navigateToResult?: boolean;
   };
 
   private _params?: ShowDialogHelperDetailParams;
@@ -185,6 +192,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         startFlowHandler: pendingConfigFlow.startFlowHandler,
         manifest: pendingConfigFlow.manifest,
         dialogClosedCallback: pendingConfigFlow.dialogClosedCallback,
+        navigateToResult: pendingConfigFlow.navigateToResult,
       });
     }
   }
@@ -387,25 +395,60 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     if (!this._domain || !this._item) {
       return;
     }
+    const domain = this._domain;
+    const params = this._params;
     this._submitting = true;
     this._error = "";
     try {
-      const createdEntity = await HELPERS[this._domain].create(
-        this.hass,
-        this._item
-      );
-      if (this._params?.dialogClosedCallback && createdEntity.id) {
-        this._params.dialogClosedCallback({
+      const createdEntity = await HELPERS[domain].create(this.hass, this._item);
+      // The dialog was closed or reopened while waiting
+      if (this._params !== params) {
+        return;
+      }
+      if (params?.dialogClosedCallback && createdEntity.id) {
+        params.dialogClosedCallback({
           flowFinished: true,
-          entityId: `${this._domain}.${createdEntity.id}`,
+          entityId: `${domain}.${createdEntity.id}`,
         });
+      }
+      const resultEntityId =
+        params?.navigateToResult && createdEntity.id
+          ? await this._findEntityId(domain, createdEntity.id)
+          : undefined;
+      if (this._params !== params) {
+        return;
       }
       this._markDirtyStateClean();
       this.closeDialog();
+      if (resultEntityId) {
+        showMoreInfoDialog(this, { entityId: resultEntityId });
+      }
     } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {
       this._submitting = false;
+    }
+  }
+
+  private async _findEntityId(
+    domain: string,
+    uniqueId: string
+  ): Promise<string | undefined> {
+    const isCreated = (entry: EntityRegistryEntry) =>
+      entry.platform === domain && entry.unique_id === uniqueId;
+    try {
+      // The entity ID usually matches the helper ID, unless it was taken
+      const entry = await getExtendedEntityRegistryEntry(
+        this.hass,
+        `${domain}.${uniqueId}`
+      ).catch(() => undefined);
+      if (entry && isCreated(entry)) {
+        return entry.entity_id;
+      }
+      return (await fetchEntityRegistry(this.hass.connection)).find(isCreated)
+        ?.entity_id;
+    } catch (_err) {
+      return undefined;
     }
   }
 
@@ -444,6 +487,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         startFlowHandler: domain,
         manifest: await fetchIntegrationManifest(this.hass, domain),
         dialogClosedCallback: this._params?.dialogClosedCallback,
+        navigateToResult: this._params?.navigateToResult,
       };
       this.closeDialog();
     }

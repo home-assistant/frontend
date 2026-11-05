@@ -481,6 +481,7 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
                                       .flowConfig=${this._params.flowConfig}
                                       .step=${this._step}
                                       .hass=${this.hass}
+                                      .manifest=${this._params.manifest}
                                       .navigateToResult=${
                                         this._params.navigateToResult ?? false
                                       }
