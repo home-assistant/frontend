@@ -73,6 +73,13 @@ export class HacCard extends LitElement {
     this._hasFooter = hasAssignedElements(ev);
   }
 
+  /*
+   * Fallback order: --hac-card-*, then the theme variables of ha-card
+   * (--ha-card-*, --card-background-color, --divider-color,
+   * --primary-text-color) so existing themes keep working, then the semantic
+   * tokens and their light values for use outside Home Assistant.
+   * The ha-card variables are temporary, see "Theming" in the README.
+   */
   static styles = css`
     :host {
       display: block;
@@ -80,19 +87,30 @@ export class HacCard extends LitElement {
       box-sizing: border-box;
       background: var(
         --hac-card-background,
-        var(--ha-color-surface-default, #fff)
+        var(
+          --ha-card-background,
+          var(--card-background-color, var(--ha-color-surface-default, #fff))
+        )
       );
-      color: var(--hac-card-color, var(--ha-color-on-surface-default, #141414));
-      border: var(--hac-card-border-width, 1px) solid
+      backdrop-filter: var(--ha-card-backdrop-filter, none);
+      color: var(
+        --hac-card-color,
+        var(--primary-text-color, var(--ha-color-on-surface-default, #141414))
+      );
+      border: var(--hac-card-border-width, var(--ha-card-border-width, 1px))
+        solid
         var(
           --hac-card-border-color,
-          var(--ha-color-border-neutral-quiet, #e6e6e6)
+          var(
+            --ha-card-border-color,
+            var(--divider-color, var(--ha-color-border-neutral-quiet, #e6e6e6))
+          )
         );
       border-radius: var(
         --hac-card-border-radius,
-        var(--ha-border-radius-lg, 12px)
+        var(--ha-card-border-radius, var(--ha-border-radius-lg, 12px))
       );
-      box-shadow: var(--hac-card-box-shadow, none);
+      box-shadow: var(--hac-card-box-shadow, var(--ha-card-box-shadow, none));
     }
 
     :host([appearance="raised"]) {
@@ -100,9 +118,12 @@ export class HacCard extends LitElement {
       box-shadow: var(
         --hac-card-box-shadow,
         var(
-          --ha-box-shadow-s,
-          0 1px 2px 0 rgba(0, 0, 0, 0.08),
-          0 1px 3px 0 rgba(0, 0, 0, 0.12)
+          --ha-card-box-shadow,
+          var(
+            --ha-box-shadow-s,
+            0 1px 2px 0 rgba(0, 0, 0, 0.08),
+            0 1px 3px 0 rgba(0, 0, 0, 0.12)
+          )
         )
       );
     }
@@ -125,7 +146,7 @@ export class HacCard extends LitElement {
       border-block-start: 1px solid
         var(
           --hac-card-border-color,
-          var(--ha-color-border-neutral-quiet, #e6e6e6)
+          var(--divider-color, var(--ha-color-border-neutral-quiet, #e6e6e6))
         );
     }
 

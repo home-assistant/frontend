@@ -104,12 +104,19 @@ The package has no root entry point: each element and the scoped helpers
 
 ## Theming
 
-Components use the semantic color tokens of Home Assistant (`--ha-color-*`,
-like `--ha-color-surface-default` for the card background) and fall back to
-their light values when the tokens are not defined, so they also render
-outside Home Assistant. The legacy theme variables (`--card-background-color`,
-`--primary-color`, …) are not used. Each component also exposes its own
-`--hac-*` custom properties, documented in its source, which take precedence.
+Each component exposes its own `--hac-*` custom properties, documented in its
+source, which take precedence. Next come the theme variables of the existing
+Home Assistant element it replaces, so current themes keep working: `hac-card`
+reads the variables of `ha-card` (`--ha-card-background`,
+`--card-background-color`, `--ha-card-border-radius`, …). Last come the
+semantic color tokens (`--ha-color-*`, like `--ha-color-surface-default`) and
+their light values, so the components also render outside Home Assistant.
+
+The legacy theme variables are a temporary bridge for this experiment, not the
+target design. Home Assistant always defines some of them, like
+`--card-background-color`, so inside Home Assistant they currently win over
+the semantic tokens. Once themes move to the semantic tokens, the legacy
+variables will be removed from the fallbacks.
 
 ## Structure
 
