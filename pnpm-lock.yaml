@@ -223,14 +223,14 @@ importers:
         specifier: 2.0.17
         version: 2.0.17
       '@formatjs/intl-datetimeformat':
-        specifier: 8.0.1
-        version: 8.0.1
+        specifier: 8.0.2
+        version: 8.0.2
       '@formatjs/intl-displaynames':
         specifier: 8.0.1
         version: 8.0.1
       '@formatjs/intl-durationformat':
-        specifier: 0.12.2
-        version: 0.12.2
+        specifier: 0.12.3
+        version: 0.12.3
       '@formatjs/intl-getcanonicallocales':
         specifier: 3.3.0
         version: 3.3.0
@@ -241,11 +241,11 @@ importers:
         specifier: 5.4.2
         version: 5.4.2
       '@formatjs/intl-numberformat':
-        specifier: 10.0.1
-        version: 10.0.1
+        specifier: 10.0.2
+        version: 10.0.2
       '@formatjs/intl-pluralrules':
-        specifier: 7.0.1
-        version: 7.0.1
+        specifier: 7.0.2
+        version: 7.0.2
       '@formatjs/intl-relativetimeformat':
         specifier: 13.0.1
         version: 13.0.1
@@ -488,8 +488,8 @@ importers:
         specifier: 8.0.7
         version: 8.0.7(@babel/core@8.0.10)
       '@bundle-stats/plugin-webpack-filter':
-        specifier: 4.22.3
-        version: 4.22.3(core-js@3.51.0)
+        specifier: 4.23.0
+        version: 4.23.0(core-js@3.51.0)
       '@eslint/js':
         specifier: 10.0.1
         version: 10.0.1(eslint@10.14.0(supports-color@8.1.1))
@@ -623,8 +623,8 @@ importers:
         specifier: 14.0.3
         version: 14.0.3
       globals:
-        specifier: 17.13.0
-        version: 17.13.0
+        specifier: 17.14.0
+        version: 17.14.0
       gulp:
         specifier: 5.0.1
         version: 5.0.1
@@ -1740,8 +1740,8 @@ packages:
     resolution: {integrity: sha512-ctxtJ/eA+t+6q2++vj5j7FYX3nRu311q1wfYH3xjlLOsczhlhxAg2FWNUXhpGvAw3BWo1xBcvOV6/YLc2r5FJw==}
     hasBin: true
 
-  '@bundle-stats/plugin-webpack-filter@4.22.3':
-    resolution: {integrity: sha512-tDYUsXFf1LLwaYF2v7ntWjDx1weh4PCEgNtySzNJgf+AwcC8WPydjad1TiGclLG3XuqUi/ZgTW+7tn/lhAZqCg==}
+  '@bundle-stats/plugin-webpack-filter@4.23.0':
+    resolution: {integrity: sha512-tqPJqUmyev0Kef8qPWcaAwvJ0c/CAClj0EKwJeSFnED4zYprjb7j5Tk8e6i4gJBNFp4KC+5gVgxqhZYoIx08ww==}
     engines: {node: '>= 14.0'}
     peerDependencies:
       core-js: ^3.0.0
@@ -1929,8 +1929,8 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@formatjs/bigdecimal@0.2.9':
-    resolution: {integrity: sha512-rV5U95Koz9LADq080OdPOLy629Z1HNaid3842EORxm+0Q7QhvUalH7rgVAK3Zsa9pbmNvac/mNmkP7+xf8wYwg==}
+  '@formatjs/bigdecimal@0.2.10':
+    resolution: {integrity: sha512-npIs6UARNOg5amJY5UOVsd6HUQQfzYjet0sa0SWIqzsnVhxLSpaIx2DjoIVrr/vqmjURjvroeW6dItjfy3Uf8A==}
 
   '@formatjs/ecma402-abstract@2.3.4':
     resolution: {integrity: sha512-qrycXDeaORzIqNhBOx0btnhpD1c+/qFIHAN9znofuMJX6QBwtbrmlpWfD4oiUUD2vJUOIYFA/gYtg2KAMGG7sA==}
@@ -1953,14 +1953,14 @@ packages:
   '@formatjs/icu-skeleton-parser@2.1.12':
     resolution: {integrity: sha512-ca7tZMLpfHX3sUD7hP6gE/qr6Iq89EDd3ZLeRhbsB7r0UD55DGJq+tmFLzrGrnx5StahUevQmQQVtbDRHsfDHA==}
 
-  '@formatjs/intl-datetimeformat@8.0.1':
-    resolution: {integrity: sha512-NSgDp17ZaXNkSuKpvSfzh5bzV0x6i4KlQKgv8fEfLobkL/spFRBrY/WzWJAeangH18bcmAVoHXgz1Uyz9l7KRw==}
+  '@formatjs/intl-datetimeformat@8.0.2':
+    resolution: {integrity: sha512-isKDo8jeQ8VoYvrweku92ajF/Z9fJ76DDnw2eCmKBTJTwZa5GeGl4u40RJiFYPbR6ROluvN0CsbNtGtnd2NyIQ==}
 
   '@formatjs/intl-displaynames@8.0.1':
     resolution: {integrity: sha512-8RTQvKIGx+SAqI+bvVrrupwzeEZGGzdzJwVbZaK9U5VKuVo34LOFOkn7GX9KfwHuVIKxM7pKv8yYTs6UIkeyTA==}
 
-  '@formatjs/intl-durationformat@0.12.2':
-    resolution: {integrity: sha512-qQzwm47mlPFRGv0vl7xBzzy6xdUQSo+1bIJqy05vxRCT4J0CXu7U0LUHYtW/LMY7o2bCyWi9ZHhMtF7roOLXkg==}
+  '@formatjs/intl-durationformat@0.12.3':
+    resolution: {integrity: sha512-cpyMSdAZxRXVmA0TjZZn38ERjfxV8Kc1nDcp1RBAXyU6pB7Mgox+o3dVUnPLsNfblW5OAr1o281IyPRrod/T6g==}
 
   '@formatjs/intl-getcanonicallocales@3.3.0':
     resolution: {integrity: sha512-ndj9jw/LHAftSe34D/A6+lj3Y7GHVfPEZ6FZP2wjd8/beYeh3d1sjlSpZSBlzegSKS3U3mUEIzLCpI0+jKNT6w==}
@@ -1977,11 +1977,11 @@ packages:
   '@formatjs/intl-localematcher@0.6.1':
     resolution: {integrity: sha512-ePEgLgVCqi2BBFnTMWPfIghu6FkbZnnBVhO2sSxvLfrdFw7wCHAHiDoM2h4NRgjbaY7+B7HgOLZGkK187pZTZg==}
 
-  '@formatjs/intl-numberformat@10.0.1':
-    resolution: {integrity: sha512-P0PUpnUZz9Gy70EYYdUVVgDqd4H/dBRiO0k82hoYWS0mlxcjAjQica63sVJIO8+892bd80ybjZC4QZHVXHh+Rg==}
+  '@formatjs/intl-numberformat@10.0.2':
+    resolution: {integrity: sha512-iLS3ly1lGZ/a/IVpcSUgC37RjQUZ2wN6zR9+Zbr2uXsxATfMLD+fBqggiXuFudLmZXpbPueCs4Mz3vDsaOVE9A==}
 
-  '@formatjs/intl-pluralrules@7.0.1':
-    resolution: {integrity: sha512-Ca0gf/5lplUfDXl0OATgcQIogrGJzXTZPBz8xx1tnkALuibvS5fA71h+V0ghnUJsp1cA4PyPVj5LkbrlyhVvGw==}
+  '@formatjs/intl-pluralrules@7.0.2':
+    resolution: {integrity: sha512-PJ4+ldlqXlo3csmP02u2HqyXw09TDB/fatYpDCyWryfEQeVWl2EbMzij9SBksPaW2U//+q69lXR3IMnCRQAmrw==}
 
   '@formatjs/intl-relativetimeformat@13.0.1':
     resolution: {integrity: sha512-Gl5dCHb7elEC19tTzxIyllWLHaHnN+HpQYEaA9xxAt9rKgRLwC3vGty1w8bVGG7p2YcGSPIg5c4qn4KdkGcTqg==}
@@ -5126,8 +5126,8 @@ packages:
     resolution: {integrity: sha512-5lsx1NUDHtSjfg0eHlmYvZKv8/nVqX4ckFbM+FrGcQ+04KWcWFo9P5MxPZYSzUvyzmdTbI7Eix8Q4IbELDqzKg==}
     engines: {node: '>=0.10.0'}
 
-  globals@17.13.0:
-    resolution: {integrity: sha512-RwMTC61u7hrG3ZJMkZQOK4JLJrKS8QtoTii63EmWvFXHqycY9FObBJQCbsLxSO8kjKhWE5kV1GC+Vb1g3RI0Zg==}
+  globals@17.14.0:
+    resolution: {integrity: sha512-UtdkTVyAJePQv0J2M9Xe4L0ruNSDV314XiIJsADI2Zf40bcdAonE/D/OhAU8AT99oij9mhLByb+NvA3QWZYgCg==}
     engines: {node: '>=18'}
 
   globalthis@1.0.4:
@@ -9135,7 +9135,7 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@bundle-stats/plugin-webpack-filter@4.22.3(core-js@3.51.0)':
+  '@bundle-stats/plugin-webpack-filter@4.23.0(core-js@3.51.0)':
     dependencies:
       core-js: 3.51.0
       tslib: 2.9.1
@@ -9384,7 +9384,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@formatjs/bigdecimal@0.2.9': {}
+  '@formatjs/bigdecimal@0.2.10': {}
 
   '@formatjs/ecma402-abstract@2.3.4':
     dependencies:
@@ -9416,18 +9416,18 @@ snapshots:
 
   '@formatjs/icu-skeleton-parser@2.1.12': {}
 
-  '@formatjs/intl-datetimeformat@8.0.1':
+  '@formatjs/intl-datetimeformat@8.0.2':
     dependencies:
-      '@formatjs/bigdecimal': 0.2.9
+      '@formatjs/bigdecimal': 0.2.10
       '@formatjs/intl-localematcher': 0.10.1
 
   '@formatjs/intl-displaynames@8.0.1':
     dependencies:
       '@formatjs/intl-localematcher': 0.10.1
 
-  '@formatjs/intl-durationformat@0.12.2':
+  '@formatjs/intl-durationformat@0.12.3':
     dependencies:
-      '@formatjs/bigdecimal': 0.2.9
+      '@formatjs/bigdecimal': 0.2.10
       '@formatjs/intl-localematcher': 0.10.1
 
   '@formatjs/intl-getcanonicallocales@3.3.0': {}
@@ -9449,14 +9449,14 @@ snapshots:
     dependencies:
       tslib: 2.9.1
 
-  '@formatjs/intl-numberformat@10.0.1':
+  '@formatjs/intl-numberformat@10.0.2':
     dependencies:
-      '@formatjs/bigdecimal': 0.2.9
+      '@formatjs/bigdecimal': 0.2.10
       '@formatjs/intl-localematcher': 0.10.1
 
-  '@formatjs/intl-pluralrules@7.0.1':
+  '@formatjs/intl-pluralrules@7.0.2':
     dependencies:
-      '@formatjs/bigdecimal': 0.2.9
+      '@formatjs/bigdecimal': 0.2.10
       '@formatjs/intl-localematcher': 0.10.1
 
   '@formatjs/intl-relativetimeformat@13.0.1':
@@ -12889,7 +12889,7 @@ snapshots:
       is-windows: 1.0.2
       which: 1.3.1
 
-  globals@17.13.0: {}
+  globals@17.14.0: {}
 
   globalthis@1.0.4:
     dependencies:

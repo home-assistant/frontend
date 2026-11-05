@@ -1050,7 +1050,8 @@
         "device_class": "Device class",
         "add": "Add device class",
         "no_device_classes": "No device classes available",
-        "no_match": "No device classes found for {term}"
+        "no_match": "No device classes found for {term}",
+        "unit_not_supported": "Does not support {unit}"
       },
       "category-picker": {
         "clear": "Clear",
@@ -2860,13 +2861,15 @@
     },
     "panel": {
       "app": {
+        "error_loading_app": "Unable to load the app information from the Supervisor: {error}",
+        "error_app_unauthorized": "You do not have permission to open this app.",
         "error_app_not_installed": "The app is not installed. Please install it first.",
         "error_app_no_ingress": "This app does not support ingress.",
         "error_app_not_running": "The app is not running. Do you want to start it now?",
         "start_app": "Start app",
         "app_starting": "The app is starting, this can take some time...",
         "error_starting_app": "Error starting the app",
-        "error_creating_session": "Unable to create an ingress session",
+        "error_creating_session": "Unable to create an ingress session: {error}",
         "error_app_not_ready": "The app seems to not be ready, it might still be starting. Do you want to try again?",
         "retry": "Retry"
       },
@@ -7634,6 +7637,7 @@
               "state_icon": "State icon",
               "entity": "Entity",
               "device": "Device",
+              "device_class": "Device class",
               "integration": "Integration",
               "disabled_by": "Disabled by",
               "status": "Status",
@@ -7926,8 +7930,10 @@
             "no_config_flow": "This integration was not set up from the UI",
             "disabled_polling": "Automatic polling for updated data disabled",
             "debug_logging_enabled": "Debug logging enabled",
-            "debug_logging_enabled_description": "Extra detail from this integration is being written to the logs. Reproduce the problem, then disable it. Home Assistant will download the log for your issue report if log file downloads are available. Leaving it on can slow Home Assistant down and fill up the logs.",
+            "debug_logging_enabled_description": "Extra detail from this integration is being written to the logs. Reproduce the problem, then disable it to download the log for your issue report. Leaving it on can slow Home Assistant down and fill up the logs.",
             "show_logs": "Show logs",
+            "debug_log_ready": "Debug log ready",
+            "debug_log_ready_description": "Debug logging is disabled. Download the log to attach it to your issue report.",
             "live_log": {
               "title": "Live log",
               "waiting": "Waiting for log messages from {integration}…",
@@ -12804,6 +12810,7 @@
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
           "address_label": "Search address",
+          "search_results": "Search results",
           "button_detect": "Detect",
           "finish": "Next"
         },
@@ -13193,8 +13200,8 @@
             "last_change": "Last change on GitHub {time}",
             "downloads": "{number, plural,\n  one {Downloaded {count} time}\n  other {Downloaded {count} times}\n}",
             "stars": "{number, plural,\n  one {{count} star on GitHub}\n  other {{count} stars on GitHub}\n}",
-            "open_issues": "{number, plural,\n  one {{count} open issue on GitHub}\n  other {{count} open issues on GitHub}\n}",
-            "no_open_issues": "No open issues on GitHub"
+            "open_issues_and_prs": "{number, plural,\n  one {{count} open issue or pull request on GitHub}\n  other {{count} open issues and pull requests on GitHub}\n}",
+            "no_open_issues_and_prs": "No open issues or pull requests on GitHub"
           },
           "details": {
             "requires": "Requires Home Assistant {version} or newer",
