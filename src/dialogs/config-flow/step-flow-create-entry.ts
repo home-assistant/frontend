@@ -21,6 +21,7 @@ import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
   getAutomaticEntityIds,
   getExtendedEntityRegistryEntries,
+  updateEntitiesArea,
   updateEntityRegistryEntry,
   type EntityRegistryDisplayEntry,
   type ExtEntityRegistryEntry,
@@ -44,6 +45,23 @@ interface HelperResult {
   entityId?: string;
 }
 
+const computeHelperResult = (
+  entities: ExtEntityRegistryEntry[]
+): HelperResult | undefined => {
+  const deviceIds = [
+    ...new Set(
+      entities.flatMap((entity) => (entity.device_id ? [entity.device_id] : []))
+    ),
+  ];
+  if (deviceIds.length === 1) {
+    return { deviceId: deviceIds[0] };
+  }
+  if (!deviceIds.length && entities.length === 1) {
+    return { entityId: entities[0].entity_id };
+  }
+  return undefined;
+};
+
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
   @property({ attribute: false }) public flowConfig!: FlowConfig;
@@ -61,7 +79,11 @@ class StepFlowCreateEntry extends LitElement {
 
   public navigateToResult = false;
 
-  private _helperResult?: Promise<HelperResult | undefined>;
+  private _helperEntitiesLookup?: Promise<ExtEntityRegistryEntry[]>;
+
+  @state() private _helperEntities?: ExtEntityRegistryEntry[];
+
+  @state() private _helperArea?: string;
 
   @state() private _deviceUpdate: Record<
     string,
@@ -87,11 +109,16 @@ class StepFlowCreateEntry extends LitElement {
     super.firstUpdated(changedProps);
     this._loadDomains();
     if (
-      this.navigateToResult &&
+      this.flowConfig.flowType === "config_flow" &&
       this.step.result &&
       this.manifest?.integration_type === "helper"
     ) {
-      this._helperResult = this._findHelperResult(this.step.result.entry_id);
+      this._helperEntitiesLookup = this._findHelperEntities(
+        this.step.result.entry_id
+      );
+      this._helperEntitiesLookup.then((entities) => {
+        this._helperEntities = entities;
+      });
     }
   }
 
@@ -153,11 +180,23 @@ class StepFlowCreateEntry extends LitElement {
             ? nothing
             : this.devices.length === 0
               ? html`<p>
-                  ${localize(
-                    "ui.panel.config.integrations.config_flow.created_config",
-                    { name: this.step.title }
-                  )}
-                </p>`
+                    ${localize(
+                      "ui.panel.config.integrations.config_flow.created_config",
+                      { name: html`<b>${this.step.title}</b>` }
+                    )}
+                  </p>
+                  ${
+                    this._entitiesWithoutDevice(this._helperEntities).length
+                      ? html`<ha-area-picker
+                          .value=${this._helperArea}
+                          .disabled=${this._loading}
+                          .helper=${localize(
+                            "ui.panel.config.integrations.config_flow.helper_area"
+                          )}
+                          @value-changed=${this._helperAreaPicked}
+                        ></ha-area-picker>`
+                      : nothing
+                  }`
               : html`
                   <div class="devices">
                     ${this.devices.map(
@@ -234,9 +273,11 @@ class StepFlowCreateEntry extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (changedProps.has("_deviceUpdate")) {
+    if (changedProps.has("_deviceUpdate") || changedProps.has("_helperArea")) {
       fireEvent(this, "flow-step-footer-state-changed", {
-        hasPendingUpdates: Object.keys(this._deviceUpdate).length > 0,
+        hasPendingUpdates:
+          Object.keys(this._deviceUpdate).length > 0 ||
+          this._helperArea !== undefined,
       });
     }
     if (changedProps.has("_loading")) {
@@ -245,6 +286,11 @@ class StepFlowCreateEntry extends LitElement {
       });
     }
   }
+
+  private _entitiesWithoutDevice = memoizeOne(
+    (entities?: ExtEntityRegistryEntry[]): ExtEntityRegistryEntry[] =>
+      (entities ?? []).filter((entity) => !entity.device_id)
+  );
 
   private async _loadDomains() {
     const entries = await getConfigEntries(this.hass);
@@ -310,10 +356,22 @@ class StepFlowCreateEntry extends LitElement {
       await Promise.allSettled(entityUpdates);
     }
 
-    const entry = this.navigateToResult ? this.step.result : undefined;
     // Helpers link their entities to an existing device instead of creating one
-    const helperResult =
-      entry && !this.devices.length ? await this._helperResult : undefined;
+    let helperEntities =
+      this._helperEntitiesLookup && !this.devices.length
+        ? await this._helperEntitiesLookup
+        : [];
+    if (this._helperArea) {
+      helperEntities = await this._saveHelperArea(
+        helperEntities,
+        this._helperArea
+      );
+    }
+
+    const entry = this.navigateToResult ? this.step.result : undefined;
+    const helperResult = entry
+      ? computeHelperResult(helperEntities)
+      : undefined;
 
     // The dialog was closed while waiting
     if (!this.isConnected) {
@@ -336,9 +394,9 @@ class StepFlowCreateEntry extends LitElement {
     }
   }
 
-  private async _findHelperResult(
+  private async _findHelperEntities(
     entryId: string
-  ): Promise<HelperResult | undefined> {
+  ): Promise<ExtEntityRegistryEntry[]> {
     try {
       const { entity: entityIds = [] } = await findRelated(
         this.hass,
@@ -346,31 +404,47 @@ class StepFlowCreateEntry extends LitElement {
         entryId
       );
       if (!entityIds.length) {
-        return undefined;
+        return [];
       }
-      const entities = Object.values(
+      return Object.values(
         await getExtendedEntityRegistryEntries(this.hass, entityIds)
       ).filter(
         (entity): entity is ExtEntityRegistryEntry =>
           entity?.config_entry_id === entryId
       );
-      const deviceIds = [
-        ...new Set(
-          entities.flatMap((entity) =>
-            entity.device_id ? [entity.device_id] : []
-          )
-        ),
-      ];
-      if (deviceIds.length === 1) {
-        return { deviceId: deviceIds[0] };
-      }
-      if (!deviceIds.length && entities.length === 1) {
-        return { entityId: entities[0].entity_id };
-      }
     } catch (_err) {
-      // Fall back to the integration page
+      return [];
     }
-    return undefined;
+  }
+
+  private async _saveHelperArea(
+    entities: ExtEntityRegistryEntry[],
+    areaId: string
+  ): Promise<ExtEntityRegistryEntry[]> {
+    try {
+      const newEntityIds = await updateEntitiesArea(
+        this.hass,
+        this._entitiesWithoutDevice(entities).map((entity) => entity.entity_id),
+        areaId
+      );
+      return entities.map((entity) =>
+        entity.entity_id in newEntityIds
+          ? { ...entity, entity_id: newEntityIds[entity.entity_id] }
+          : entity
+      );
+    } catch (err: unknown) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_flow.error_saving_entity",
+          { error: (err as { message?: string })?.message ?? "Unknown error" }
+        ),
+      });
+      return entities;
+    }
+  }
+
+  private _helperAreaPicked(ev: ValueChangedEvent<string | undefined>): void {
+    this._helperArea = ev.detail.value || undefined;
   }
 
   public async finish(): Promise<void> {

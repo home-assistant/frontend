@@ -13,6 +13,7 @@ import type {
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stringCompare } from "../../../common/string/compare";
+import "../../../components/ha-area-picker";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
@@ -31,6 +32,7 @@ import { createCounter } from "../../../data/counter";
 import {
   fetchEntityRegistry,
   getExtendedEntityRegistryEntry,
+  updateEntitiesArea,
   type EntityRegistryEntry,
 } from "../../../data/entity/entity_registry";
 import { createInputBoolean } from "../../../data/input_boolean";
@@ -50,7 +52,7 @@ import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-c
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import type { Helper, HelperDomain, HelperFormItem } from "./const";
 import { isHelperDomain } from "./const";
@@ -116,11 +118,13 @@ const HELPERS: HelperCreators = {
 
 @customElement("dialog-helper-detail")
 export class DialogHelperDetail extends DirtyStateProviderMixin<
-  HelperFormItem | undefined
+  { item?: HelperFormItem; area?: string } | undefined
 >()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _item?: HelperFormItem;
+
+  @state() private _area?: string;
 
   @state() private _open = false;
 
@@ -152,11 +156,15 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._params = params;
     this._domain = params.domain;
     this._item = params.item;
+    this._area = undefined;
     if (this._domain && this._domain in HELPERS) {
       this._loading = true;
       try {
         await HELPERS[this._domain].import();
-        this._initDirtyTracking({ type: "deep" }, undefined);
+        this._initDirtyTracking(
+          { type: "deep" },
+          { item: this._item, area: undefined }
+        );
       } finally {
         this._loading = false;
       }
@@ -214,6 +222,11 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
             new: true,
             autofocus: true,
           })}
+          <ha-area-picker
+            .value=${this._area}
+            .disabled=${this._submitting}
+            @value-changed=${this._areaChanged}
+          ></ha-area-picker>
         </div>
       `;
       footer = html`
@@ -388,7 +401,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
   private _valueChanged(ev: CustomEvent): void {
     this._item = ev.detail.value;
-    this._updateDirtyState(this._item);
+    this._updateDirtyState({ item: this._item, area: this._area });
   }
 
   private async _createItem(): Promise<void> {
@@ -397,6 +410,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     }
     const domain = this._domain;
     const params = this._params;
+    const area = this._area;
     this._submitting = true;
     this._error = "";
     try {
@@ -405,23 +419,26 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
       if (this._params !== params) {
         return;
       }
+      let entityId: string | undefined;
+      if (createdEntity.id && (area || params?.navigateToResult)) {
+        entityId = await this._findEntityId(domain, createdEntity.id);
+        if (area) {
+          entityId = await this._saveArea(entityId, area);
+        }
+        if (this._params !== params) {
+          return;
+        }
+      }
       if (params?.dialogClosedCallback && createdEntity.id) {
         params.dialogClosedCallback({
           flowFinished: true,
-          entityId: `${domain}.${createdEntity.id}`,
+          entityId: entityId ?? `${domain}.${createdEntity.id}`,
         });
-      }
-      const resultEntityId =
-        params?.navigateToResult && createdEntity.id
-          ? await this._findEntityId(domain, createdEntity.id)
-          : undefined;
-      if (this._params !== params) {
-        return;
       }
       this._markDirtyStateClean();
       this.closeDialog();
-      if (resultEntityId) {
-        showMoreInfoDialog(this, { entityId: resultEntityId });
+      if (params?.navigateToResult && entityId) {
+        showMoreInfoDialog(this, { entityId });
       }
     } catch (err: any) {
       this._error = err.message || "Unknown error";
@@ -452,6 +469,35 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     }
   }
 
+  private async _saveArea(
+    entityId: string | undefined,
+    areaId: string
+  ): Promise<string | undefined> {
+    let error = "Entity not found";
+    if (entityId) {
+      try {
+        return (await updateEntitiesArea(this.hass, [entityId], areaId))[
+          entityId
+        ];
+      } catch (err: unknown) {
+        error = (err as { message?: string })?.message ?? "Unknown error";
+      }
+    }
+    showAlertDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_flow.error_saving_entity",
+        { error }
+      ),
+    });
+    return entityId;
+  }
+
+  private _areaChanged(ev: ValueChangedEvent<string | undefined>): void {
+    ev.stopPropagation();
+    this._area = ev.detail.value || undefined;
+    this._updateDirtyState({ item: this._item, area: this._area });
+  }
+
   private async _domainPicked(
     ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
   ): Promise<void> {
@@ -478,7 +524,10 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
       try {
         await HELPERS[domain].import();
         this._domain = domain;
-        this._initDirtyTracking({ type: "deep" }, undefined);
+        this._initDirtyTracking(
+          { type: "deep" },
+          { item: this._item, area: undefined }
+        );
       } finally {
         this._loading = false;
       }
@@ -496,6 +545,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   private async _goBack() {
     this._domain = undefined;
     this._item = undefined;
+    this._area = undefined;
     this._error = undefined;
     await this.updateComplete;
     await this._focusSearchInput();
@@ -533,6 +583,10 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         }
         .form {
           padding: var(--ha-space-6);
+        }
+        .form ha-area-picker {
+          display: block;
+          margin-top: var(--ha-space-4);
         }
         ha-input-search {
           margin: 0 var(--ha-space-4) var(--ha-space-3);
