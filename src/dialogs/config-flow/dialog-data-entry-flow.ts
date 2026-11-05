@@ -837,6 +837,9 @@ class DataEntryFlowDialog extends DirtyStateProviderMixin<
     return [
       haStyleDialog,
       css`
+        ha-dialog {
+          --ha-dialog-header-title-height: auto;
+        }
         .dialog-title {
           overflow: hidden;
           text-overflow: ellipsis;
