@@ -91,6 +91,11 @@ export const DEFAULT_CHART_WIDTH = 500;
 const VISIBILITY_ROOT_MARGIN_NARROW = "100%";
 const VISIBILITY_ROOT_MARGIN = "300px";
 const CLICK_DRAG_TOLERANCE = 4;
+// The selection is shown by the chart data, not by the brush
+const BRUSH_STYLE = {
+  color: "rgba(0, 0, 0, 0)",
+  borderColor: "rgba(0, 0, 0, 0)",
+};
 
 export type ZoomSliderMode = "auto" | "always" | "never";
 const DEFERRED_PROPS = [
@@ -177,7 +182,6 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   @property({ attribute: "grow-for-zoom-slider", type: Boolean })
   public growForZoomSlider = false;
 
-  // Dragging selects a time range instead of zooming
   @property({ attribute: "select-range", type: Boolean })
   public selectRange = false;
 
@@ -919,6 +923,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         this._pointerDownX = e.offsetX;
       });
       this.chart.getZr().on("click", (e: ECElementEvent) => {
+        if (!this.selectRange) {
+          return;
+        }
         const point = [e.offsetX, e.offsetY];
         // A drag that ends on the plot is not a click
         const dragged =
@@ -927,8 +934,17 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         if (dragged || !this.chart?.containPixel("grid", point)) {
           return;
         }
-        const [x, y] = this.chart.convertFromPixel("grid", point) as number[];
-        fireEvent(this, "chart-grid-click", { x, y });
+        const [x] = this.chart.convertFromPixel("grid", point) as number[];
+        fireEvent(this, "chart-range-select", { start: x, end: x });
+      });
+      this.chart.on("brush", (e: any) => {
+        const range = e.areas?.[0]?.coordRange as number[] | undefined;
+        if (range) {
+          fireEvent(this, "chart-range-selecting", {
+            start: range[0],
+            end: range[1],
+          });
+        }
       });
       this.chart.on("brushEnd", (e: any) => {
         const range = e.areas?.[0]?.coordRange as number[] | undefined;
@@ -1079,7 +1095,11 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     }
     if (this.selectRange) {
       this.chart.setOption({
-        brush: { xAxisIndex: 0, transformable: false },
+        brush: {
+          xAxisIndex: 0,
+          transformable: false,
+          brushStyle: BRUSH_STYLE,
+        },
       });
     }
     const brushCursor = {
@@ -1088,6 +1108,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       brushOption: {
         brushType: this.selectRange ? "lineX" : false,
         brushMode: "single",
+        brushStyle: BRUSH_STYLE,
       },
     };
     // Brush and drag to zoom share the global cursor, the last one taken wins
@@ -2404,7 +2425,7 @@ declare global {
     "dataset-hidden": { id: string };
     "dataset-unhidden": { id: string };
     "chart-click": ECElementEvent;
-    "chart-grid-click": { x: number; y: number };
+    "chart-range-selecting": { start: number; end: number };
     "chart-range-select": { start: number; end: number };
     "legend-label-click": { id: string };
     "chart-zoom": {
