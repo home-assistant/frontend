@@ -85,6 +85,9 @@ const _removeOpenDialogTag = (dialogTag: string) => {
 export const getTopOpenDialogTag = (): string | undefined =>
   OPEN_DIALOG_TAGS[OPEN_DIALOG_TAGS.length - 1];
 
+export const isDialogOpen = (dialogTag: string): boolean =>
+  OPEN_DIALOG_STACK.some((dialog) => dialog.dialogTag === dialogTag);
+
 /** The URL of the last dialog's entry, when the dialog went back to close. */
 let closedDialogUrl: { pathname: string; search: string } | undefined;
 
