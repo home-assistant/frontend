@@ -204,7 +204,7 @@ const buildHistoryState = (
 
 const performNavigation = async (path: string, options?: NavigateOptions) => {
   const keepDialogs = options?.keepDialogs || false;
-  const canProceed = keepDialogs || (await ensureDialogsClosed(Date.now()));
+  const canProceed = await (keepDialogs || ensureDialogsClosed(Date.now()));
   if (!canProceed) {
     return false;
   }

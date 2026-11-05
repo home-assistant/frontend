@@ -126,6 +126,18 @@ describe("navigate", () => {
       from: "/",
     });
   });
+
+  it("does not drop a navigation right after one that keeps dialogs", async () => {
+    setEntry("/home");
+
+    const results = await Promise.all([
+      navigate("/home/overview", { replace: true, keepDialogs: true }),
+      navigate("/config"),
+    ]);
+
+    expect(results).toEqual([true, true]);
+    expect(window.location.pathname).toEqual("/config");
+  });
 });
 
 describe("unsaved changes guard", () => {
