@@ -977,31 +977,49 @@ const clearEnergyCollectionPreferences = (
   });
 };
 
+const SHORT_TERM_STATS_INTERVAL = 5 * 60 * 1000;
+const SHORT_TERM_STATS_MARGIN = 15 * 1000;
+
+// Recorder compiles short-term statistics on the UTC 5-minute grid at :10s, so
+// the first bucket covering `timestamp` is readable just after the next one.
+const firstShortTermStatsAfter = (timestamp: number): number =>
+  (Math.floor(timestamp / SHORT_TERM_STATS_INTERVAL) + 1) *
+    SHORT_TERM_STATS_INTERVAL +
+  SHORT_TERM_STATS_MARGIN;
+
 const scheduleHourlyRefresh = (collection: EnergyCollection) => {
   if (collection._refreshTimeout !== undefined) {
     window.clearTimeout(collection._refreshTimeout);
   }
 
   if (collection._active && (!collection.end || collection.end > new Date())) {
-    // Long-term hourly stats land around :20. Before that, Core can already
-    // stitch the open hour from short-term rows once the first 5-minute
-    // bucket exists (recorder compiles at :05:10), so prefer an early
-    // refresh after midnight / early-hour fetches, then resume :20.
-    const nextFetch = new Date();
-    const firstShortTermRefresh = new Date(nextFetch);
-    firstShortTermRefresh.setMinutes(5, 15, 0);
-    if (nextFetch < firstShortTermRefresh) {
-      nextFetch.setTime(firstShortTermRefresh.getTime());
-    } else {
-      if (nextFetch.getMinutes() >= 20) {
-        nextFetch.setHours(nextFetch.getHours() + 1);
-      }
-      nextFetch.setMinutes(20, 0, 0);
+    const now = Date.now();
+
+    // Long-term hourly stats land just after the hour, so wait until :20 UTC.
+    const hourlyRefresh = new Date(now);
+    if (hourlyRefresh.getUTCMinutes() >= 20) {
+      hourlyRefresh.setUTCHours(hourlyRefresh.getUTCHours() + 1);
     }
+    hourlyRefresh.setUTCMinutes(20, 0, 0);
+
+    // Before that, Core can already stitch the open hour from short-term rows,
+    // so refresh as soon as the first bucket of the period or of the current
+    // hour exists. The period starts on a day boundary in the server's zone,
+    // which need not sit on a UTC hour.
+    const currentHourBucket = new Date(now);
+    currentHourBucket.setUTCMinutes(5, 15, 0);
+
+    const nextFetch = Math.min(
+      hourlyRefresh.getTime(),
+      ...[
+        firstShortTermStatsAfter(collection.start.getTime()),
+        currentHourBucket.getTime(),
+      ].filter((candidate) => candidate > now)
+    );
 
     collection._refreshTimeout = window.setTimeout(
       () => collection.refresh(),
-      nextFetch.getTime() - Date.now()
+      nextFetch - Date.now()
     );
   }
 };

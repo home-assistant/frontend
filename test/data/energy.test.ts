@@ -1504,10 +1504,14 @@ describe("getEnergyDataCollection live day", () => {
     vi.useRealTimers();
   });
 
-  const createCollection = (key: string, preset?: string) => {
+  const createCollection = (
+    key: string,
+    preset?: string,
+    timeZone = "America/New_York"
+  ) => {
     const hass = createMockHass();
     hass.locale = energyPeriodLocale;
-    hass.config = { ...hass.config, time_zone: "America/New_York" };
+    hass.config = { ...hass.config, time_zone: timeZone };
     const callWS = vi.fn(async (msg: { type: string }) => {
       if (msg.type === "energy/info") {
         return { cost_sensors: {}, solar_forecast_domains: [] };
@@ -1592,6 +1596,39 @@ describe("getEnergyDataCollection live day", () => {
     refresh.mockClear();
     callWS.mockClear();
     await vi.advanceTimersByTimeAsync(14 * 60 * 1000 + 45 * 1000);
+    assert.equal(refresh.mock.calls.length, 1);
+    assert.equal(energyInfoFetches(callWS).length, 1);
+
+    unsub();
+  });
+
+  it("refreshes after the first short-term bucket when the day starts off the UTC hour", async () => {
+    vi.useFakeTimers();
+    // Asia/Kolkata is UTC+05:30, so its midnight falls at :30 past a UTC hour
+    // and the first short-term bucket of the new day is compiled at :35:10Z.
+    vi.setSystemTime(new Date("2026-06-20T23:50:00+05:30"));
+
+    const { collection, callWS } = createCollection(
+      "energy_half_hour_zone",
+      undefined,
+      "Asia/Kolkata"
+    );
+    const refresh = vi.spyOn(collection, "refresh");
+    const unsub = collection.subscribe(() => undefined);
+    await vi.advanceTimersByTimeAsync(0);
+    refresh.mockClear();
+    callWS.mockClear();
+
+    await vi.advanceTimersByTimeAsync(10 * 60 * 1000);
+    assert.equal(
+      collection.start.getTime(),
+      new Date("2026-06-21T00:00:00+05:30").getTime()
+    );
+    assert.equal(refresh.mock.calls.length, 1);
+
+    refresh.mockClear();
+    callWS.mockClear();
+    await vi.advanceTimersByTimeAsync(5 * 60 * 1000 + 15 * 1000);
     assert.equal(refresh.mock.calls.length, 1);
     assert.equal(energyInfoFetches(callWS).length, 1);
 
