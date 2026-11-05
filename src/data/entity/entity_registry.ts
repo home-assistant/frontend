@@ -382,13 +382,20 @@ export const getEntityPlatformLookup = (
   return entityLookup;
 };
 
+export interface AutomaticEntityIdOverrides {
+  name?: string | null;
+  area_id?: string | null;
+}
+
 export const getAutomaticEntityIds = (
   hass: HomeAssistant,
-  entity_ids: string[]
+  entity_ids: string[],
+  overrides?: Record<string, AutomaticEntityIdOverrides>
 ) =>
   hass.callWS<Record<string, string | null>>({
     type: "config/entity_registry/get_automatic_entity_ids",
     entity_ids,
+    ...(overrides && { overrides }),
   });
 
 /**
