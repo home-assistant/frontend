@@ -163,6 +163,57 @@ export const getRecorderInfo = (conn: Connection) =>
     type: "recorder/info",
   });
 
+export interface RecorderTableUsage {
+  table: string;
+  bytes: number;
+}
+
+export interface RecorderEntityUsage {
+  entity_id: string;
+  states: number;
+  statistics: number;
+  statistics_short_term: number;
+  bytes: number;
+}
+
+export interface RecorderEventTypeUsage {
+  event_type: string;
+  events: number;
+  bytes: number;
+}
+
+export interface RecorderDatabaseUsage {
+  generated_at: string;
+  total_bytes: number;
+  tables: RecorderTableUsage[];
+  entities: RecorderEntityUsage[];
+  event_types: RecorderEventTypeUsage[];
+}
+
+export const fetchRecorderDatabaseUsage = (
+  hass: Pick<HomeAssistant, "callWS">,
+  refresh = false
+) =>
+  hass.callWS<RecorderDatabaseUsage>({
+    type: "recorder/database_usage",
+    refresh,
+  });
+
+// Tables below minShare of the total are summed into otherBytes.
+export const groupSmallTables = (
+  tables: RecorderTableUsage[],
+  minShare = 0.01
+): { tables: RecorderTableUsage[]; otherBytes: number } => {
+  const total = tables.reduce((sum, table) => sum + table.bytes, 0);
+  const large = tables.filter(
+    (table) => table.bytes > 0 && table.bytes >= total * minShare
+  );
+  return {
+    tables: large,
+    otherBytes: total - large.reduce((sum, table) => sum + table.bytes, 0),
+  };
+};
+
 export type EntityRecordingDisabler = "user";
 
 export interface RecorderEntityOptions {

@@ -52,6 +52,7 @@ import { bytesToString } from "../../../util/bytes-to-string";
 import { showMoveDatadiskDialog } from "./show-dialog-move-datadisk";
 import { showMountViewDialog } from "./show-dialog-view-mount";
 import "./storage-breakdown-chart";
+import "./storage-database-card";
 
 @customElement("ha-config-section-storage")
 class HaConfigSectionStorage extends LitElement {
@@ -152,101 +153,121 @@ class HaConfigSectionStorage extends LitElement {
                 `
               : ""
           }
-
-          <ha-card
-            outlined
-            .header=${this.hass.localize(
-              "ui.panel.config.storage.network_mounts.title"
-            )}
-          >
-            ${
-              this._mountsInfo === null
-                ? html`<ha-alert
-                    class="mounts-not-supported"
-                    alert-type="warning"
-                    .title=${this.hass.localize(
-                      "ui.panel.config.storage.network_mounts.not_supported.title"
-                    )}
-                  >
-                    ${
-                      isHAOS
-                        ? html`${this.hass.localize(
-                              "ui.panel.config.storage.network_mounts.not_supported.os",
-                              { version: "10.2" }
-                            )}
-                            <ha-button
-                              appearance="plain"
-                              slot="action"
-                              @click=${this._navigateToUpdates}
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.storage.network_mounts.not_supported.navigate_to_updates"
-                              )}
-                            </ha-button>`
-                        : this.hass.localize(
-                            "ui.panel.config.storage.network_mounts.not_supported.supervised"
-                          )
-                    }
-                  </ha-alert>`
-                : validMounts?.length
-                  ? html`<ha-list-base
-                      aria-label=${this.hass.localize(
-                        "ui.panel.config.storage.network_mounts.title"
-                      )}
-                    >
-                      ${validMounts.map((mount) =>
-                        mount.state === SupervisorMountState.ACTIVE
-                          ? html`<ha-list-item-button
-                              .mount=${mount}
-                              @click=${this._changeMount}
-                            >
-                              ${this._renderMountContent(mount)}
-                              <ha-icon-next slot="end"></ha-icon-next>
-                            </ha-list-item-button>`
-                          : html`<ha-list-item-base>
-                              ${this._renderMountContent(mount)}
-                              <div slot="end" class="mount-actions">
-                                <ha-icon-button
-                                  .mount=${mount}
-                                  .label=${this.hass.localize(
-                                    "ui.panel.config.storage.network_mounts.reload"
-                                  )}
-                                  @click=${this._reloadMount}
-                                  .path=${mdiReload}
-                                ></ha-icon-button>
-                                <ha-icon-button
-                                  .mount=${mount}
-                                  .label=${this.hass.localize("ui.common.edit")}
-                                  @click=${this._changeMount}
-                                  .path=${mdiPencil}
-                                ></ha-icon-button>
-                              </div>
-                            </ha-list-item-base>`
-                      )}
-                    </ha-list-base>`
-                  : html`<div class="no-mounts">
-                      <ha-svg-icon .path=${mdiNas}></ha-svg-icon>
-                      <p>
-                        ${this.hass.localize(
-                          "ui.panel.config.storage.network_mounts.no_mounts"
-                        )}
-                      </p>
-                    </div>`
-            }
-            ${
-              this._mountsInfo !== null
-                ? html`<div class="card-actions">
-                    <ha-button appearance="plain" @click=${this._addMount}>
-                      ${this.hass.localize(
-                        "ui.panel.config.storage.network_mounts.add_title"
-                      )}
-                    </ha-button>
-                  </div>`
-                : nothing
-            }
-          </ha-card>
+          ${
+            isComponentLoaded(this.hass.config, "recorder")
+              ? html`<storage-database-card
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                ></storage-database-card>`
+              : nothing
+          }
+          ${
+            isComponentLoaded(this.hass.config, "hassio")
+              ? this._renderMounts(validMounts, isHAOS)
+              : nothing
+          }
         </div>
       </hass-subpage>
+    `;
+  }
+
+  private _renderMounts(
+    validMounts: SupervisorMount[] | undefined,
+    isHAOS: boolean | undefined
+  ) {
+    return html`
+      <ha-card
+        outlined
+        .header=${this.hass.localize(
+          "ui.panel.config.storage.network_mounts.title"
+        )}
+      >
+        ${
+          this._mountsInfo === null
+            ? html`<ha-alert
+                class="mounts-not-supported"
+                alert-type="warning"
+                .title=${this.hass.localize(
+                  "ui.panel.config.storage.network_mounts.not_supported.title"
+                )}
+              >
+                ${
+                  isHAOS
+                    ? html`${this.hass.localize(
+                          "ui.panel.config.storage.network_mounts.not_supported.os",
+                          { version: "10.2" }
+                        )}
+                        <ha-button
+                          appearance="plain"
+                          slot="action"
+                          @click=${this._navigateToUpdates}
+                        >
+                          ${this.hass.localize(
+                            "ui.panel.config.storage.network_mounts.not_supported.navigate_to_updates"
+                          )}
+                        </ha-button>`
+                    : this.hass.localize(
+                        "ui.panel.config.storage.network_mounts.not_supported.supervised"
+                      )
+                }
+              </ha-alert>`
+            : validMounts?.length
+              ? html`<ha-list-base
+                  aria-label=${this.hass.localize(
+                    "ui.panel.config.storage.network_mounts.title"
+                  )}
+                >
+                  ${validMounts.map((mount) =>
+                    mount.state === SupervisorMountState.ACTIVE
+                      ? html`<ha-list-item-button
+                          .mount=${mount}
+                          @click=${this._changeMount}
+                        >
+                          ${this._renderMountContent(mount)}
+                          <ha-icon-next slot="end"></ha-icon-next>
+                        </ha-list-item-button>`
+                      : html`<ha-list-item-base>
+                          ${this._renderMountContent(mount)}
+                          <div slot="end" class="mount-actions">
+                            <ha-icon-button
+                              .mount=${mount}
+                              .label=${this.hass.localize(
+                                "ui.panel.config.storage.network_mounts.reload"
+                              )}
+                              @click=${this._reloadMount}
+                              .path=${mdiReload}
+                            ></ha-icon-button>
+                            <ha-icon-button
+                              .mount=${mount}
+                              .label=${this.hass.localize("ui.common.edit")}
+                              @click=${this._changeMount}
+                              .path=${mdiPencil}
+                            ></ha-icon-button>
+                          </div>
+                        </ha-list-item-base>`
+                  )}
+                </ha-list-base>`
+              : html`<div class="no-mounts">
+                  <ha-svg-icon .path=${mdiNas}></ha-svg-icon>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.storage.network_mounts.no_mounts"
+                    )}
+                  </p>
+                </div>`
+        }
+        ${
+          this._mountsInfo !== null
+            ? html`<div class="card-actions">
+                <ha-button appearance="plain" @click=${this._addMount}>
+                  ${this.hass.localize(
+                    "ui.panel.config.storage.network_mounts.add_title"
+                  )}
+                </ha-button>
+              </div>`
+            : nothing
+        }
+      </ha-card>
     `;
   }
 
