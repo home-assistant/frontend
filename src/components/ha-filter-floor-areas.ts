@@ -8,6 +8,7 @@ import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
+import { getDeviceAreaId } from "../common/entity/context/get_device_context";
 import {
   FilterPanelController,
   filterPanelStyles,
@@ -26,6 +27,7 @@ import {
   floorsContext,
   fullEntitiesContext,
   internationalizationContext,
+  statesContext,
 } from "../data/context";
 import { getFloorAreaLookup } from "../data/floor_registry";
 import type { RelatedResult } from "../data/search";
@@ -72,6 +74,10 @@ export class HaFilterFloorAreas extends LitElement {
   @state()
   private _entities?: ContextType<typeof fullEntitiesContext>;
 
+  @consume({ context: statesContext, subscribe: true })
+  @state()
+  private _states?: ContextType<typeof statesContext>;
+
   @property({ attribute: false }) public value?: FloorAreasFilterValue;
 
   @property() public type?: keyof RelatedResult;
@@ -99,7 +105,10 @@ export class HaFilterFloorAreas extends LitElement {
         !deepEqual(this.value, properties.get("value"))) ||
       // Items without an area are worked out from the registries
       (this.value?.no_area &&
-        (properties.has("_devices") || properties.has("_entities")))
+        (properties.has("_devices") ||
+          properties.has("_entities") ||
+          (properties.has("_states") &&
+            this._stateIdsChanged(properties.get("_states")))))
     ) {
       this._findRelated();
     }
@@ -410,19 +419,52 @@ export class HaFilterFloorAreas extends LitElement {
   private _itemsWithoutArea(): string[] {
     if (this.type === "device") {
       return Object.values(this._devices)
-        .filter((device) => !device.area_id)
+        .filter((device) => !getDeviceAreaId(device, this._devices))
         .map((device) => device.id);
     }
-    // Matches the area column of the entities table: an entity without its
-    // own area takes the area of its device
-    return (this._entities || [])
+    // Matches the area column of each table: the entities and helpers tables
+    // give an entity without its own area the area of its device, the
+    // automations, scripts and scenes tables only show the entity's own area
+    const useDeviceArea = this.type === "entity";
+    const entities = this._entities || [];
+    const items = entities
       .filter(
         (entity) =>
           (this.includeDisabledEntities || !entity.disabled_by) &&
           !entity.area_id &&
-          !(entity.device_id && this._devices[entity.device_id]?.area_id)
+          !(
+            useDeviceArea &&
+            entity.device_id &&
+            this._devices[entity.device_id]?.area_id
+          )
       )
       .map((entity) => entity.entity_id);
+    // Entities without a registry entry can't have an area
+    const registered = new Set(entities.map((entity) => entity.entity_id));
+    for (const entityId of Object.keys(this._states || {})) {
+      if (!registered.has(entityId)) {
+        items.push(entityId);
+      }
+    }
+    return items;
+  }
+
+  // Only a state being added or removed can change the state-only entities,
+  // so skip the lookup on plain state updates
+  private _stateIdsChanged(
+    oldStates?: ContextType<typeof statesContext>
+  ): boolean {
+    if (this.type === "device") {
+      return false;
+    }
+    if (!this._states || !oldStates) {
+      return true;
+    }
+    const ids = Object.keys(this._states);
+    return (
+      ids.length !== Object.keys(oldStates).length ||
+      ids.some((id) => !(id in oldStates))
+    );
   }
 
   private _handleClearFilterKeydown(ev: KeyboardEvent) {
