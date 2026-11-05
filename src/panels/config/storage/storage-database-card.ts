@@ -1,9 +1,13 @@
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import { getGraphColorByIndex } from "../../../common/color/colors";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
+import { consume } from "../../../common/decorators/consume";
+import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
@@ -20,6 +24,13 @@ import "../../../components/ha-card";
 import "../../../components/ha-segmented-bar";
 import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-spinner";
+import {
+  apiContext,
+  configContext,
+  entitiesContext,
+  internationalizationContext,
+  statesContext,
+} from "../../../data/context";
 import type {
   RecorderDatabaseUsage,
   RecorderTableUsage,
@@ -29,7 +40,13 @@ import {
   groupSmallTables,
 } from "../../../data/recorder";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
-import type { HomeAssistant } from "../../../types";
+import type { FrontendLocaleData } from "../../../data/translation";
+import type {
+  HomeAssistant,
+  HomeAssistantApi,
+  HomeAssistantConfig,
+  HomeAssistantInternationalization,
+} from "../../../types";
 import { bytesToString } from "../../../util/bytes-to-string";
 
 interface EntityUsageRow extends DataTableRowData {
@@ -43,9 +60,35 @@ interface EntityUsageRow extends DataTableRowData {
 
 @customElement("storage-database-card")
 export class StorageDatabaseCard extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean }) public narrow = false;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  @transform<HomeAssistantInternationalization, FrontendLocaleData>({
+    transformer: ({ locale }) => locale,
+  })
+  private _locale!: FrontendLocaleData;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: HomeAssistantApi;
+
+  @state()
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: HomeAssistant["states"];
+
+  @consume({ context: entitiesContext, subscribe: true })
+  private _entities!: HomeAssistant["entities"];
 
   @state() private _usage?: RecorderDatabaseUsage;
 
@@ -63,7 +106,7 @@ export class StorageDatabaseCard extends LitElement {
     return html`
       <ha-card
         outlined
-        .header=${this.hass.localize("ui.panel.config.storage.database.title")}
+        .header=${this._localize("ui.panel.config.storage.database.title")}
       >
         <div class="card-content">
           ${
@@ -78,7 +121,7 @@ export class StorageDatabaseCard extends LitElement {
                 ? html`<div class="loading">
                     <ha-spinner></ha-spinner>
                     <span>
-                      ${this.hass.localize(
+                      ${this._localize(
                         "ui.panel.config.storage.database.loading"
                       )}
                     </span>
@@ -93,7 +136,7 @@ export class StorageDatabaseCard extends LitElement {
             .disabled=${this._loading}
             @click=${this._refresh}
           >
-            ${this.hass.localize("ui.panel.config.storage.database.refresh")}
+            ${this._localize("ui.panel.config.storage.database.refresh")}
           </ha-button>
         </div>
       </ha-card>
@@ -105,11 +148,11 @@ export class StorageDatabaseCard extends LitElement {
       <div class="summary">
         <span class="total">${bytesToString(usage.total_bytes)}</span>
         <span class="generated">
-          ${this.hass.localize("ui.panel.config.storage.database.as_of", {
+          ${this._localize("ui.panel.config.storage.database.as_of", {
             time: formatDateTime(
               new Date(usage.generated_at),
-              this.hass.locale,
-              this.hass.config
+              this._locale,
+              this._hassConfig
             ),
           })}
         </span>
@@ -117,35 +160,30 @@ export class StorageDatabaseCard extends LitElement {
       ${
         usage.tables.length
           ? html`<ha-segmented-bar
-              .heading=${this.hass.localize(
+              .heading=${this._localize(
                 "ui.panel.config.storage.database.tables"
               )}
-              .segments=${this._tableSegments(usage.tables, this.hass.localize)}
+              .segments=${this._tableSegments(usage.tables, this._localize)}
             ></ha-segmented-bar>`
           : nothing
       }
       <div class="table">
         <ha-data-table
           .narrow=${this.narrow}
-          .columns=${this._columns(this.hass.localize, this.narrow)}
-          .data=${this._rows(usage)}
-          .searchLabel=${this.hass.localize(
+          .columns=${this._columns(this._localize, this._locale, this.narrow)}
+          .data=${this._rows(usage, this._states)}
+          .searchLabel=${this._localize(
             "ui.panel.config.storage.database.search"
           )}
           id="entity_id"
           clickable
-          .noDataText=${this.hass.localize(
+          .noDataText=${this._localize(
             "ui.panel.config.storage.database.no_entities"
           )}
           @row-click=${this._rowClicked}
         ></ha-data-table>
       </div>
     `;
-  }
-
-  private _name(entityId: string): string {
-    const stateObj = this.hass.states[entityId];
-    return stateObj ? computeStateName(stateObj) : entityId;
   }
 
   private _tableSegments = memoizeOne(
@@ -173,16 +211,24 @@ export class StorageDatabaseCard extends LitElement {
     }
   );
 
-  private _rows = memoizeOne((usage: RecorderDatabaseUsage): EntityUsageRow[] =>
-    usage.entities.map((entity) => ({
-      ...entity,
-      name: this._name(entity.entity_id),
-    }))
+  private _rows = memoizeOne(
+    (
+      usage: RecorderDatabaseUsage,
+      states: HomeAssistant["states"]
+    ): EntityUsageRow[] =>
+      usage.entities.map((entity) => {
+        const stateObj = states[entity.entity_id];
+        return {
+          ...entity,
+          name: stateObj ? computeStateName(stateObj) : entity.entity_id,
+        };
+      })
   );
 
   private _columns = memoizeOne(
     (
       localize: LocalizeFunc,
+      locale: FrontendLocaleData,
       narrow: boolean
     ): DataTableColumnContainer<EntityUsageRow> => ({
       name: {
@@ -211,7 +257,7 @@ export class StorageDatabaseCard extends LitElement {
         maxWidth: "100px",
         sortable: true,
         hidden: narrow,
-        template: (row) => formatNumber(row.states, this.hass.locale),
+        template: (row) => formatNumber(row.states, locale),
       },
       statistics: {
         title: localize("ui.panel.config.storage.database.columns.statistics"),
@@ -220,7 +266,7 @@ export class StorageDatabaseCard extends LitElement {
         maxWidth: "100px",
         sortable: true,
         hidden: narrow,
-        template: (row) => formatNumber(row.statistics, this.hass.locale),
+        template: (row) => formatNumber(row.statistics, locale),
       },
       statistics_short_term: {
         title: localize(
@@ -231,8 +277,7 @@ export class StorageDatabaseCard extends LitElement {
         maxWidth: "130px",
         sortable: true,
         hidden: narrow,
-        template: (row) =>
-          formatNumber(row.statistics_short_term, this.hass.locale),
+        template: (row) => formatNumber(row.statistics_short_term, locale),
       },
       bytes: {
         title: localize("ui.panel.config.storage.database.columns.size"),
@@ -250,7 +295,7 @@ export class StorageDatabaseCard extends LitElement {
   private _rowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const entityId = ev.detail.id;
     // Statistics of external sources (e.g. "sensor:energy") have no entity.
-    if (entityId in this.hass.states || entityId in this.hass.entities) {
+    if (entityId in this._states || entityId in this._entities) {
       showMoreInfoDialog(this, { entityId, view: "settings" });
     }
   }
@@ -263,7 +308,7 @@ export class StorageDatabaseCard extends LitElement {
     this._loading = true;
     this._error = undefined;
     try {
-      this._usage = await fetchRecorderDatabaseUsage(this.hass, refresh);
+      this._usage = await fetchRecorderDatabaseUsage(this._api, refresh);
     } catch (err: any) {
       this._error = err.message || err.code || String(err);
     } finally {

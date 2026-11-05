@@ -156,7 +156,6 @@ class HaConfigSectionStorage extends LitElement {
           ${
             isComponentLoaded(this.hass.config, "recorder")
               ? html`<storage-database-card
-                  .hass=${this.hass}
                   .narrow=${this.narrow}
                 ></storage-database-card>`
               : nothing
