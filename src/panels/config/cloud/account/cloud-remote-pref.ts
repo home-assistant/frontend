@@ -311,6 +311,9 @@ export class CloudRemotePref extends LitElement {
       ha-list-base {
         --ha-row-item-padding-inline: 0;
       }
+      ha-list-item-base::part(supporting-text) {
+        white-space: normal;
+      }
       ha-tip {
         max-width: 600px;
         margin: 0 auto;
