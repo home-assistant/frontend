@@ -724,14 +724,16 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
-    fetchLovelaceInfo(this.hass).then((info) => {
-      this._resourceMode = info.resource_mode;
-    });
 
-    // The page's URL and scroll position belong to the page around it
+    // The page's URL and scroll position belong to the page around it, and
+    // the action items that need the resource mode aren't shown
     if (this.embedded) {
       return;
     }
+
+    fetchLovelaceInfo(this.hass).then((info) => {
+      this._resourceMode = info.resource_mode;
+    });
 
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
@@ -1738,5 +1740,9 @@ declare global {
     // A view to show, fired instead of navigating when embedded. `back` is
     // set for the back button of a subview.
     "view-navigate": { path: string; back?: boolean };
+  }
+
+  interface HTMLElementEventMap {
+    "view-navigate": HASSDomEvent<HASSDomEvents["view-navigate"]>;
   }
 }

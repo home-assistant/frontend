@@ -1,4 +1,5 @@
 import { sanitizeUrl } from "@braintree/sanitize-url";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
@@ -14,6 +15,10 @@ declare global {
   interface HASSDomEvents {
     "ll-custom": ActionConfig;
     "hass-navigate": { path: string; replace?: boolean };
+  }
+
+  interface HTMLElementEventMap {
+    "hass-navigate": HASSDomEvent<HASSDomEvents["hass-navigate"]>;
   }
 }
 
