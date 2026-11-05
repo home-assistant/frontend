@@ -157,6 +157,13 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 
   @property({ attribute: false }) public backPath?: string;
 
+  /**
+   * Inside another page, such as the demo embed. Views change through
+   * `view-navigate` instead of the page's URL, the page's scroll position and
+   * history stay untouched, and only the tabs and titles show in the toolbar.
+   */
+  @property({ type: Boolean, reflect: true }) public embedded = false;
+
   @state() private _curView?: number | "hass-unused-entities";
 
   @state() private _resourceMode: "yaml" | "storage" = "storage";
@@ -583,6 +590,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         class=${classMap({
           "edit-mode": this._editMode,
           narrow: this.narrow,
+          embedded: this.embedded,
         })}
       >
         <div class="header">
@@ -612,19 +620,23 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
                     `
                   : html`
                       ${
-                        isSubview || this.backButton
-                          ? html`
-                              <ha-icon-button-arrow-prev
-                                slot="navigationIcon"
-                                .href=${this._backPath}
-                                @click=${this._handleBackClick}
-                              ></ha-icon-button-arrow-prev>
-                            `
-                          : html`
-                              <ha-menu-button
-                                slot="navigationIcon"
-                              ></ha-menu-button>
-                            `
+                        this.embedded && !isSubview
+                          ? nothing
+                          : isSubview || this.backButton
+                            ? html`
+                                <ha-icon-button-arrow-prev
+                                  slot="navigationIcon"
+                                  .href=${
+                                    this.embedded ? undefined : this._backPath
+                                  }
+                                  @click=${this._handleBackClick}
+                                ></ha-icon-button-arrow-prev>
+                              `
+                            : html`
+                                <ha-menu-button
+                                  slot="navigationIcon"
+                                ></ha-menu-button>
+                              `
                       }
                       ${
                         isSubview
@@ -641,9 +653,13 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
                                 </div>
                               `
                       }
-                      <div class="action-items">
-                        ${this._renderActionItems()}
-                      </div>
+                      ${
+                        this.embedded
+                          ? nothing
+                          : html`<div class="action-items">
+                              ${this._renderActionItems()}
+                            </div>`
+                      }
                     `
               }
             </div>
@@ -708,17 +724,30 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 
   protected firstUpdated(changedProps: PropertyValues<this>) {
     super.firstUpdated(changedProps);
+
+    // The page's URL and scroll position belong to the page around it, and
+    // the action items that need the resource mode aren't shown
+    if (this.embedded) {
+      return;
+    }
+
+    fetchLovelaceInfo(this.hass).then((info) => {
+      this._resourceMode = info.resource_mode;
+    });
+
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
     });
     this._handleUrlChanged();
-    fetchLovelaceInfo(this.hass).then((info) => {
-      this._resourceMode = info.resource_mode;
-    });
   }
 
   public connectedCallback(): void {
     super.connectedCallback();
+
+    if (this.embedded) {
+      return;
+    }
+
     window.addEventListener("scroll", this._handleWindowScroll, {
       passive: true,
     });
@@ -730,6 +759,11 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
+
+    if (this.embedded) {
+      return;
+    }
+
     window.removeEventListener("scroll", this._handleWindowScroll);
     window.removeEventListener("popstate", this._handlePopState);
     window.removeEventListener("location-changed", this._locationChanged);
@@ -838,7 +872,9 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
         }
       }
 
-      if (huiView) {
+      // A view the new configuration no longer has keeps its old one until
+      // another view is selected, instead of failing to find its config
+      if (huiView && !(huiView.index >= this.config.views.length)) {
         huiView.lovelace = this.lovelace!;
       }
     }
@@ -846,7 +882,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
     if (newSelectView !== undefined) {
       // Will allow for ripples to start rendering
       afterNextRender(() => {
-        if (changedProperties.has("route")) {
+        if (changedProperties.has("route") && !this.embedded) {
           const position =
             (this._restoreScroll && this._viewScrollPositions[newSelectView]) ||
             0;
@@ -913,6 +949,23 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _handleBackClick(ev: MouseEvent): void {
+    if (this.embedded) {
+      // The view the subview goes back to, without the page's history
+      const views = this.lovelace?.config.views ?? [];
+
+      const curViewConfig =
+        this._curView === "hass-unused-entities" || this._curView === undefined
+          ? undefined
+          : views[this._curView];
+
+      fireEvent(this, "view-navigate", {
+        path: curViewConfig?.back_path ?? "",
+        back: true,
+      });
+
+      return;
+    }
+
     handleBackClick(ev, this._backPath, () => this._goBack());
   }
 
@@ -1145,6 +1198,12 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
   }
 
   private _navigateToView(path: string | number, replace?: boolean) {
+    if (this.embedded) {
+      fireEvent(this, "view-navigate", { path: String(path) });
+
+      return;
+    }
+
     const url = this._viewUrl(path);
 
     const currentUrl = `${location.pathname}${location.search}`;
@@ -1162,6 +1221,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
   private _handleViewTabNewTabClick(ev: MouseEvent): void {
     if (
       this._editMode ||
+      this.embedded ||
       (ev.button !== 1 && !ev.metaKey && !ev.ctrlKey && !ev.shiftKey)
     ) {
       return;
@@ -1282,7 +1342,7 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
     }
 
     // Save scroll position of current view
-    if (this._curView != null) {
+    if (this._curView != null && !this.embedded) {
       this._viewScrollPositions[this._curView] = window.scrollY;
     }
 
@@ -1623,6 +1683,19 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
               var(--view-container-padding-bottom, 0px)
           );
         }
+        /* At least as high as the element it is embedded in, rather than the
+           window, so that panel views fill it */
+        :host([embedded]),
+        .embedded {
+          display: block;
+          height: 100%;
+        }
+        /* The view background sits below the view, above the opaque
+           background of the element it is embedded in */
+        :host([embedded]) hui-view-container {
+          min-height: 100%;
+          isolation: isolate;
+        }
         .narrow hui-view-container {
           --view-container-inset-left: var(--safe-area-inset-left);
           padding-left: var(--view-container-inset-left);
@@ -1661,5 +1734,15 @@ class HUIRoot extends KeyboardShortcutMixin(LitElement) {
 declare global {
   interface HTMLElementTagNameMap {
     "hui-root": HUIRoot;
+  }
+
+  interface HASSDomEvents {
+    // A view to show, fired instead of navigating when embedded. `back` is
+    // set for the back button of a subview.
+    "view-navigate": { path: string; back?: boolean };
+  }
+
+  interface HTMLElementEventMap {
+    "view-navigate": HASSDomEvent<HASSDomEvents["view-navigate"]>;
   }
 }
