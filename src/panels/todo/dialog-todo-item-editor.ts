@@ -25,6 +25,7 @@ import "../../components/input/ha-input";
 import type { HaInput } from "../../components/input/ha-input";
 import type { TodoItem } from "../../data/todo";
 import {
+  getTodoSections,
   TodoItemStatus,
   TodoListEntityFeature,
   createItem,
@@ -319,9 +320,8 @@ class DialogTodoItemEditor extends DirtyStateProviderMixin<TodoItemFormState>()(
 
   private _renderSection(canUpdate: boolean) {
     const label = this.hass.localize("ui.components.todo.item.section");
-    const sections = this.hass.states[this._params!.entity]?.attributes
-      .sections as string[] | undefined;
-    if (!sections) {
+    const sections = getTodoSections(this.hass.states[this._params!.entity]);
+    if (!sections?.length) {
       return html`<ha-input
         name="section"
         .label=${label}

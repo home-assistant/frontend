@@ -76,6 +76,7 @@ import {
   TodoSortMode,
   createItem,
   deleteItems,
+  getTodoSections,
   groupItemsBySection,
   moveItem,
   subscribeItems,
@@ -580,7 +581,11 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
                           </h2>
                           ${this._renderMenu(this._config, unavailable)}
                         </div>
-                        ${this._renderItems(reorderableItems ?? [], unavailable)}`
+                        ${this._renderItemsBySection(
+                          reorderableItems ?? [],
+                          unavailable,
+                          true
+                        )}`
                     : nothing
             }
             ${
@@ -717,27 +722,45 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
 
   private _groupItemsBySection = memoizeOne(groupItemsBySection);
 
-  private _renderItemsBySection(items: TodoItem[], unavailable: boolean) {
-    const sections = this._stateObj?.attributes.sections as
-      string[] | undefined;
-    const groups = this._groupItemsBySection(items, sections);
+  private _renderItemsBySection(
+    items: TodoItem[],
+    unavailable: boolean,
+    reordering = false
+  ) {
+    const groups = this._groupItemsBySection(
+      items,
+      getTodoSections(this._stateObj),
+      reordering &&
+        this._todoListSupportsFeature(TodoListEntityFeature.SET_SECTION_ON_ITEM)
+    );
     if (!groups) {
       return this._renderItems(items, unavailable);
     }
+    const showHeaders = reordering || !this._config!.hide_section_headers;
     return repeat(
       groups,
       (group) => group.section,
       (group) => html`
-        <div class="section-header" role="separator">
-          <h3>
-            ${
-              group.section ??
-              this._i18n.localize(
-                "ui.panel.lovelace.cards.todo-list.no_section_items"
-              )
-            }
-          </h3>
-        </div>
+        ${
+          showHeaders
+            ? html`<div
+                class="section-header ${classMap({
+                  // Lets items be dropped under it, it has no drag handle
+                  draggable: reordering,
+                })}"
+                data-section=${group.section ?? ""}
+              >
+                <h3>
+                  ${
+                    group.section ??
+                    this._i18n.localize(
+                      "ui.panel.lovelace.cards.todo-list.no_section_items"
+                    )
+                  }
+                </h3>
+              </div>`
+            : nothing
+        }
         ${this._renderItems(group.items, unavailable)}
       `
     );
@@ -1108,9 +1131,20 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
       ) as HaListItemOption | undefined
     )?.value;
 
+    const section = this._findSection(
+      items,
+      newIndex < oldIndex ? newIndex - 1 : newIndex,
+      oldIndex
+    );
+
     // Optimistic change
     const itemIndex = this._items!.findIndex((itm) => itm.uid === itemId);
-    const item = this._items!.splice(itemIndex, 1)[0];
+    let item = this._items!.splice(itemIndex, 1)[0];
+    const changeSection =
+      section !== undefined && section !== (item.section || null);
+    if (changeSection) {
+      item = { ...item, section };
+    }
 
     if (!prevItemId) {
       this._items!.unshift(item);
@@ -1120,7 +1154,31 @@ export class HuiTodoListCard extends LitElement implements LovelaceCard {
     }
     this._items = [...this._items!];
 
+    if (changeSection) {
+      await updateItem(this._api.callService, this._entityId!, item);
+    }
     await moveItem(this._api.callWS, this._entityId!, itemId, prevItemId);
+  }
+
+  /**
+   * Return the section of the header above an index, ignoring the moved item.
+   * Returns undefined when the list isn't grouped by section.
+   */
+  private _findSection(
+    items: HTMLCollection,
+    start: number,
+    movedIndex: number
+  ): string | null | undefined {
+    for (let index = start; index >= 0; index--) {
+      const element = items[index] as HTMLElement | undefined;
+      if (
+        index !== movedIndex &&
+        element?.classList.contains("section-header")
+      ) {
+        return element.dataset.section || null;
+      }
+    }
+    return undefined;
   }
 
   static styles = css`

@@ -1,4 +1,8 @@
-import type { Connection, HassEntities } from "home-assistant-js-websocket";
+import type {
+  Connection,
+  HassEntities,
+  HassEntity,
+} from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
 import { stringCompare } from "../common/string/compare";
 import type {
@@ -169,17 +173,27 @@ export const moveItem = (
     previous_uid,
   });
 
+export const getTodoSections = (
+  stateObj: HassEntity | undefined
+): string[] | undefined => stateObj?.attributes.sections;
+
 /**
  * Group items by section, in the order of the sections of the list.
  *
  * Sections that are not in `sections` follow in order of appearance, and items
  * without a section come last. Returns undefined when no item has a section.
+ * With `includeEmpty`, every section and the group of items without a section
+ * are returned even when they have no items, so items can be moved to them.
  */
 export const groupItemsBySection = (
   items: TodoItem[],
-  sections: string[] = []
+  sections: string[] = [],
+  includeEmpty = false
 ): TodoItemSectionGroup[] | undefined => {
-  if (!items.some((item) => item.section)) {
+  if (
+    !items.some((item) => item.section) &&
+    !(includeEmpty && sections.length)
+  ) {
     return undefined;
   }
   const groups = new Map<string | null, TodoItem[]>(
@@ -202,5 +216,5 @@ export const groupItemsBySection = (
   return Array.from(groups, ([section, groupItems]) => ({
     section,
     items: groupItems,
-  })).filter((group) => group.items.length);
+  })).filter((group) => includeEmpty || group.items.length);
 };

@@ -50,4 +50,27 @@ describe("groupItemsBySection", () => {
       [null, ["soap", "bread"]],
     ]);
   });
+
+  it("keeps empty groups so items can be moved to them", () => {
+    expect(
+      summarize(
+        groupItemsBySection(
+          [item("pasta", "Grocery")],
+          ["Fresh produce", "Grocery"],
+          true
+        )
+      )
+    ).toEqual([
+      ["Fresh produce", []],
+      ["Grocery", ["pasta"]],
+      [null, []],
+    ]);
+    expect(
+      summarize(groupItemsBySection([item("soap")], ["Fresh produce"], true))
+    ).toEqual([
+      ["Fresh produce", []],
+      [null, ["soap"]],
+    ]);
+    expect(groupItemsBySection([item("soap")], [], true)).toBeUndefined();
+  });
 });
