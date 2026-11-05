@@ -89,12 +89,24 @@ export abstract class EmbedLovelaceElement<
     const views = this._lovelace?.config.views;
 
     const view = path
-      ? new URL(path, "http://embed/").pathname.split("/").filter(Boolean).pop()
+      ? decodeURI(new URL(path, "http://embed/").pathname)
+          .split("/")
+          .filter(Boolean)
+          .pop()
       : undefined;
 
     return views && view !== undefined && viewIndex(views, view) !== undefined
       ? view
       : undefined;
+  }
+
+  /** Whether two paths or indexes go to the same view of the dashboard. */
+  protected isSameView(a?: string, b?: string): boolean {
+    const views = this._lovelace?.config.views;
+
+    return views
+      ? findViewIndex(views, a) === findViewIndex(views, b)
+      : a === b;
   }
 
   // A path to one of the dashboard's views shows that view. Other paths leave

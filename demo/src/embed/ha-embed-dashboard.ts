@@ -75,7 +75,7 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
   protected navigateTo(path: string, replace?: boolean) {
     const view = this.viewOfPath(path);
 
-    if (view === undefined || view === this.view) {
+    if (view === undefined || this.isSameView(view, this.view)) {
       return;
     }
 
@@ -86,7 +86,7 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
   // The embedded attribute is in the template, so that hui-root has it when
   // it connects and skips the listeners on the page
   protected renderContent(hass: HomeAssistant) {
-    if (!this._lovelace) {
+    if (!this._lovelace?.config.views.length) {
       return undefined;
     }
 
@@ -122,12 +122,12 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
     // the views before
     if (
       view !== undefined &&
-      this._history[this._history.length - 1] === view
+      this.isSameView(this._history[this._history.length - 1], view)
     ) {
       this._history.pop();
     }
 
-    if (target !== this.view) {
+    if (!this.isSameView(target, this.view)) {
       this._skipHistory = true;
       this.view = target;
     }
@@ -138,7 +138,7 @@ export class HaEmbedDashboard extends EmbedLovelaceElement<LovelaceRawConfig> {
     while (this._history.length) {
       const previous = this._history.pop();
 
-      if (previous !== this.view) {
+      if (!this.isSameView(previous, this.view)) {
         return previous;
       }
     }
