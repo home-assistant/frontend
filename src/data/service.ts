@@ -1,5 +1,8 @@
+import type { HassService } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
+import { combineVisible } from "../components/ha-form/conditions";
+import type { HaFormVisible } from "../components/ha-form/types";
 import type { Context, HomeAssistant, ServiceCallRequest } from "../types";
 import type { Action } from "./script";
 
@@ -40,3 +43,26 @@ export const getServiceCallEntityIds = (
       .filter(isValidEntityId)
   ),
 ];
+
+interface ServiceFieldOrSection {
+  visible?: HaFormVisible;
+  fields?: Record<string, { visible?: HaFormVisible }>;
+}
+
+// Fields inside a section are flattened, they are only shown when both the
+// section and the field are visible.
+export const getServiceFieldVisibility = (
+  fields: HassService["fields"]
+): [string, HaFormVisible | undefined][] =>
+  Object.entries(fields as Record<string, ServiceFieldOrSection>).flatMap(
+    ([key, field]) =>
+      field.fields
+        ? Object.entries(field.fields).map(
+            ([subKey, subField]) =>
+              [subKey, combineVisible(field.visible, subField.visible)] as [
+                string,
+                HaFormVisible,
+              ]
+          )
+        : [[key, field.visible] as [string, HaFormVisible | undefined]]
+  );
