@@ -43,7 +43,11 @@ import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
-import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
+import {
+  haStyleDialog,
+  haStyleDialogFixedTop,
+  haStyleScrollbar,
+} from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import type { Helper, HelperDomain, HelperFormItem } from "./const";
@@ -472,6 +476,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     return [
       haStyleScrollbar,
       haStyleDialog,
+      haStyleDialogFixedTop,
       css`
         ha-dialog {
           --dialog-content-padding: 0;
