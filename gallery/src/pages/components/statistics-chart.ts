@@ -124,34 +124,47 @@ interface RangeExample {
   statTypes: StatisticType[];
   chartType: "line" | "bar";
   unit: string;
+  selectRange: boolean;
+  hint: string;
 }
 
 const RANGE_EXAMPLES: RangeExample[] = [
   {
-    id: "bar",
-    title: "Range selection on bars",
+    id: "point",
+    title: "Point selection",
     description:
-      "With select-range, a click selects the clicked time and a drag selects a time range instead of zooming. Here the selection is rounded to whole hours, and everything outside it fades.",
+      "A click selects the hour that contains it, and everything outside fades. Dragging still zooms.",
     statistics: { [HEAT_PUMP_ID]: HEAT_PUMP },
     statTypes: ["change"],
     chartType: "bar",
     unit: "kWh",
+    selectRange: false,
+    hint: "Click on a bar to select its hour.",
   },
   {
-    id: "line",
+    id: "range-bar",
+    title: "Range selection on bars",
+    description:
+      "With select-range, dragging selects a time range instead of zooming, so several bars can be selected at once. A click still selects one bar.",
+    statistics: { [HEAT_PUMP_ID]: HEAT_PUMP },
+    statTypes: ["change"],
+    chartType: "bar",
+    unit: "kWh",
+    selectRange: true,
+    hint: "Click or drag on the chart to select one or more bars.",
+  },
+  {
+    id: "range",
     title: "Range selection on lines",
     description: "The same on a line chart.",
     statistics: { [LIVING_ROOM_ID]: LIVING_ROOM },
     statTypes: ["mean", "min", "max"],
     chartType: "line",
     unit: "°C",
+    selectRange: true,
+    hint: "Click or drag on the chart to select a period.",
   },
 ];
-
-const snapToHours = (start: number, end: number): TimeRange => ({
-  start: Math.floor(start / HOUR) * HOUR,
-  end: Math.max(Math.ceil(end / HOUR), Math.floor(start / HOUR) + 1) * HOUR,
-});
 
 const formatRange = (range: TimeRange) =>
   `${new Date(range.start).toLocaleString()} to ${new Date(range.end).toLocaleString()}`;
@@ -265,9 +278,9 @@ export class DemoStatisticsChart extends LitElement {
             .highlight=${selection}
             .clickForMoreInfo=${false}
             data-example=${example.id}
-            select-range
+            .selectRange=${example.selectRange}
             hide-legend
-            @chart-range-select=${this._rangeSelected}
+            @chart-select=${this._rangeSelected}
           ></statistics-chart>
           <div class="selection">
             ${
@@ -283,9 +296,7 @@ export class DemoStatisticsChart extends LitElement {
                       Clear
                     </ha-button>
                   `
-                : html`<span class="hint">
-                    Click or drag on the chart to select a period.
-                  </span>`
+                : html`<span class="hint">${example.hint}</span>`
             }
           </div>
         </div>
@@ -293,13 +304,11 @@ export class DemoStatisticsChart extends LitElement {
     `;
   }
 
-  private _rangeSelected(
-    ev: HASSDomEvent<HASSDomEvents["chart-range-select"]>
-  ) {
+  private _rangeSelected(ev: HASSDomEvent<HASSDomEvents["chart-select"]>) {
     const id = (ev.currentTarget as HTMLElement).dataset.example!;
     this._selections = {
       ...this._selections,
-      [id]: snapToHours(ev.detail.start, ev.detail.end),
+      [id]: ev.detail,
     };
   }
 

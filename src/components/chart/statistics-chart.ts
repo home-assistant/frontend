@@ -50,6 +50,7 @@ import type {
 } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
 import type {
+  ChartTimeRange,
   CustomLegendOption,
   HaChartBase,
   ZoomSliderMode,
@@ -75,13 +76,6 @@ export const supportedStatTypeMap: Record<StatisticType, StatisticType> = {
 const STAT_TYPE_SUFFIXES = (
   Object.keys(supportedStatTypeMap) as StatisticType[]
 ).map((t) => `-${t}`);
-
-interface TimeRange {
-  start: number;
-  end: number;
-}
-
-const MASK_OPACITY = 0.7;
 
 @customElement("statistics-chart")
 export class StatisticsChart extends LitElement {
@@ -145,9 +139,7 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: "zoom-slider" })
   public zoomSlider: ZoomSliderMode = "auto";
 
-  @property({ attribute: false }) public highlight?: TimeRange;
-
-  @state() private _selectingRange?: TimeRange;
+  @property({ attribute: false }) public highlight?: ChartTimeRange;
 
   @query("ha-chart-base") private _chartBase?: HaChartBase;
 
@@ -264,15 +256,11 @@ export class StatisticsChart extends LitElement {
       </div>`;
     }
 
-    const highlight = this._selectingRange ?? this.highlight;
-
     return html`
       <ha-chart-base
-        .data=${this._highlightedChartData(
-          this._chartData,
-          highlight,
-          highlight ? this._maskColor() : undefined
-        )}
+        .data=${this._chartData}
+        .highlight=${this.highlight}
+        .snapSelection=${this._snapSelection}
         .options=${this._chartOptions}
         .height=${this.height}
         .selectRange=${this.selectRange}
@@ -286,8 +274,6 @@ export class StatisticsChart extends LitElement {
           !this._statisticIds.every(isExternalStatistic)
         }
         @legend-label-click=${this._handleLegendLabelClick}
-        @chart-range-selecting=${this._rangeSelecting}
-        @chart-range-select=${this._rangeSelected}
       ></ha-chart-base>
     `;
   }
@@ -296,48 +282,29 @@ export class StatisticsChart extends LitElement {
     this._chartBase?.zoom(0, 100);
   }
 
-  // Every series gets a mask, empty when nothing is highlighted, as the
-  // chart merges series and would keep an old one
-  private _highlightedChartData = memoizeOne(
-    (
-      data: (LineSeriesOption | BarSeriesOption)[],
-      highlight: TimeRange | undefined,
-      maskColor: string | undefined
-    ): (LineSeriesOption | BarSeriesOption)[] =>
-      data.map((series, index) => ({
-        ...series,
-        markArea: {
-          silent: true,
-          z: 10,
-          itemStyle: { color: maskColor, opacity: MASK_OPACITY },
-          data:
-            highlight && index === 0
-              ? [
-                  [{ xAxis: -Infinity }, { xAxis: highlight.start }],
-                  [{ xAxis: highlight.end }, { xAxis: Infinity }],
-                ]
-              : [],
-        },
-      }))
-  );
-
-  private _maskColor() {
-    const style = this._computedStyle ?? getComputedStyle(this);
-    return (
-      style.getPropertyValue("--card-background-color").trim() ||
-      style.getPropertyValue("--primary-background-color").trim()
+  // A click selects the period that contains it, a drag every period it
+  // touches
+  private _snapSelection = (
+    range: ChartTimeRange
+  ): ChartTimeRange | undefined => {
+    let start: number | undefined;
+    let end: number | undefined;
+    Object.values(this.statisticsData ?? {}).forEach((values) =>
+      values.forEach((value) => {
+        const touched =
+          range.start === range.end
+            ? value.start <= range.start && range.start < value.end
+            : value.start < range.end && value.end > range.start;
+        if (touched) {
+          start = Math.min(start ?? value.start, value.start);
+          end = Math.max(end ?? value.end, value.end);
+        }
+      })
     );
-  }
-
-  private _rangeSelecting(
-    ev: HASSDomEvent<HASSDomEvents["chart-range-selecting"]>
-  ) {
-    this._selectingRange = ev.detail;
-  }
-
-  private _rangeSelected() {
-    this._selectingRange = undefined;
-  }
+    return start === undefined || end === undefined
+      ? undefined
+      : { start, end };
+  };
 
   private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);
