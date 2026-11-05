@@ -185,7 +185,9 @@ class HaLongLivedTokens extends LitElement {
         .header {
           margin: 0;
           padding: var(--ha-space-5) var(--ha-space-4) var(--ha-space-4);
-          font-size: var(--ha-font-size-2xl);
+          color: var(--ha-card-header-color, var(--primary-text-color));
+          font-family: var(--ha-card-header-font-family, inherit);
+          font-size: var(--ha-card-header-font-size, var(--ha-font-size-2xl));
           font-weight: var(--ha-font-weight-normal);
           line-height: var(--ha-line-height-condensed);
           letter-spacing: -0.012em;
