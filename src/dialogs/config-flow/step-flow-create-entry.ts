@@ -182,13 +182,14 @@ class StepFlowCreateEntry extends LitElement {
               ? html`<p>
                     ${localize(
                       "ui.panel.config.integrations.config_flow.created_config",
-                      { name: this.step.title }
+                      { name: html`<b>${this.step.title}</b>` }
                     )}
                   </p>
                   ${
                     this._entitiesWithoutDevice(this._helperEntities).length
                       ? html`<ha-area-picker
                           .value=${this._helperArea}
+                          .disabled=${this._loading}
                           .helper=${localize(
                             "ui.panel.config.integrations.config_flow.helper_area"
                           )}
