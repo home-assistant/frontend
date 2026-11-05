@@ -451,6 +451,9 @@ export class HaConfigDeviceDashboard extends LitElement {
         const parentDevice = device.parent_device_id
           ? this.hass.devices[device.parent_device_id]
           : undefined;
+        const viaDevice = device.via_device_id
+          ? this.hass.devices[device.via_device_id]
+          : undefined;
         // The device that identifies this device's family: its parent for a
         // child device, itself for a device that has children.
         const familyParentDevice =
@@ -499,6 +502,9 @@ export class HaConfigDeviceDashboard extends LitElement {
           parent_device_name: parentDevice
             ? computeDeviceNameDisplay(parentDevice, this.hass.localize)
             : "",
+          via_device_name: viaDevice
+            ? computeDeviceNameDisplay(viaDevice, this.hass.localize)
+            : undefined,
           // Grouping key that keeps a device with its family: children group
           // under their parent's name, a parent groups under its own name, and
           // standalone devices stay ungrouped. The name is always computed from
@@ -621,6 +627,15 @@ export class HaConfigDeviceDashboard extends LitElement {
         defaultHidden: true,
         minWidth: "120px",
         template: (device) => device.parent_device_name || "",
+      },
+      via_device_name: {
+        title: localize("ui.panel.config.devices.data_table.connected_via"),
+        sortable: true,
+        filterable: true,
+        groupable: true,
+        urlName: "via",
+        defaultHidden: true,
+        minWidth: "120px",
       },
       manufacturer: {
         title: localize("ui.panel.config.devices.data_table.manufacturer"),
