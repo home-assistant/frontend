@@ -174,6 +174,32 @@ describe("getServiceHiddenFields", () => {
     ).toEqual(new Set());
   });
 
+  it("keeps the conditions that do not depend on a template", () => {
+    const fields = {
+      enabled: { selector: { boolean: {} } },
+      mode: { selector: { text: {} } },
+      section: {
+        visible: { field: "enabled", value: true },
+        fields: {
+          duration: {
+            selector: { duration: {} },
+            visible: { field: "mode", value: "duration" },
+          },
+        },
+      },
+    } as unknown as HassService["fields"];
+    expect(
+      getServiceHiddenFields(
+        getServiceFieldVisibility(fields),
+        {},
+        {
+          enabled: false,
+          mode: "{{ states('input_select.mode') }}",
+        }
+      )
+    ).toEqual(new Set(["duration"]));
+  });
+
   it("uses the value of the field when it has one", () => {
     expect(
       getServiceHiddenFields(visibility, defaults, { mode: "end_of_track" })

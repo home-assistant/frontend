@@ -127,9 +127,14 @@ export const getServiceHiddenFields = (
   return getHiddenFields(
     visibility.map(([key, visible]) => [
       key,
-      getConditionFields(visible).some((field) => templates.has(field))
-        ? undefined
-        : visible,
+      visible === undefined || typeof visible === "boolean"
+        ? visible
+        : ensureArray(visible).filter(
+            (condition) =>
+              !getConditionFields(condition).some((field) =>
+                templates.has(field)
+              )
+          ),
     ]),
     values
   );
