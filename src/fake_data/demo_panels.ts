@@ -32,6 +32,14 @@ export const demoPanels: Panels = {
     config: null,
     url_path: "climate",
   },
+  weather: {
+    component_name: "weather",
+    icon: "mdi:weather-partly-cloudy",
+    title: "weather",
+    default_visible: false,
+    config: null,
+    url_path: "weather",
+  },
   security: {
     component_name: "security",
     icon: "mdi:security",
