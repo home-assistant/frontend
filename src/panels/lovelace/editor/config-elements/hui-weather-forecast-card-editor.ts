@@ -37,6 +37,7 @@ const cardConfigStruct = assign(
     show_forecast: optional(boolean()),
     forecast_type: optional(string()),
     forecast_slots: optional(number()),
+    show_day_names: optional(boolean()),
     secondary_info_attribute: optional(string()),
     round_temperature: optional(boolean()),
     tap_action: optional(actionConfigStruct),
@@ -143,7 +144,8 @@ export class HuiWeatherForecastCardEditor
       hasForecastLegacy?: boolean,
       hasForecastDaily?: boolean,
       hasForecastHourly?: boolean,
-      hasForecastTwiceDaily?: boolean
+      hasForecastTwiceDaily?: boolean,
+      forecastType?: ForecastType
     ) =>
       [
         {
@@ -255,6 +257,15 @@ export class HuiWeatherForecastCardEditor
                 selector: { number: { min: 1, max: 72 } },
                 default: 5,
               },
+              ...(forecastType === "hourly" || forecastType === "twice_daily"
+                ? ([
+                    {
+                      name: "show_day_names",
+                      selector: { boolean: {} },
+                      default: true,
+                    },
+                  ] as const)
+                : []),
               {
                 name: "interactions",
                 type: "expandable",
@@ -303,7 +314,8 @@ export class HuiWeatherForecastCardEditor
       this._forecastSupported("legacy"),
       this._forecastSupported("daily"),
       this._forecastSupported("hourly"),
-      this._forecastSupported("twice_daily")
+      this._forecastSupported("twice_daily"),
+      this._config.forecast_type
     );
 
     const data: WeatherForecastCardConfig = {
@@ -325,6 +337,7 @@ export class HuiWeatherForecastCardEditor
         .data=${data}
         .schema=${schema}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
@@ -371,6 +384,10 @@ export class HuiWeatherForecastCardEditor
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.weather-forecast.forecast_slots"
         );
+      case "show_day_names":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.weather-forecast.show_day_names"
+        );
       case "forecast":
         return this.hass!.localize(
           "ui.panel.lovelace.editor.card.weather-forecast.weather_to_show"
@@ -379,6 +396,19 @@ export class HuiWeatherForecastCardEditor
         return this.hass!.localize(
           `ui.panel.lovelace.editor.card.generic.${schema.name}`
         );
+    }
+  };
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "show_day_names":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.weather-forecast.show_day_names_helper"
+        );
+      default:
+        return undefined;
     }
   };
 }
