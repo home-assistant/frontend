@@ -2,7 +2,6 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import {
-  excludeEntities,
   findFilteredEntities,
   generateEntityFilter,
   type EntityFilter,
@@ -56,37 +55,45 @@ export const findClimateEntities = (
 ): string[] =>
   findFilteredEntities(sources, climateEntityFilters, hiddenEntities);
 
+type ClimateAreaSensorKind = "temperature" | "humidity";
+
 export const findClimateAreaSensors = (
   sources: EntityFilterSources,
   hiddenEntities?: string[]
-): string[] =>
-  excludeEntities(
-    Object.values(sources.areas).flatMap((area) =>
-      [area.temperature_entity_id, area.humidity_entity_id].filter(
-        (entityId): entityId is string =>
-          !!entityId && entityId in sources.states
-      )
-    ),
-    hiddenEntities
-  );
+): Map<string, ClimateAreaSensorKind> => {
+  const hidden = new Set(hiddenEntities);
+  const sensors = new Map<string, ClimateAreaSensorKind>();
+  for (const area of Object.values(sources.areas)) {
+    const slots = [
+      [area.temperature_entity_id, "temperature"],
+      [area.humidity_entity_id, "humidity"],
+    ] as const;
+    for (const [entityId, kind] of slots) {
+      if (entityId && entityId in sources.states && !hidden.has(entityId)) {
+        sensors.set(entityId, kind);
+      }
+    }
+  }
+  return sensors;
+};
 
 export const hasClimateEntities = (
   hass: HomeAssistant,
   hiddenEntities?: string[]
 ): boolean =>
-  findClimateAreaSensors(hass, hiddenEntities).length > 0 ||
+  findClimateAreaSensors(hass, hiddenEntities).size > 0 ||
   findClimateEntities(hass, hiddenEntities).length > 0;
 
 interface ClimateCardOptions {
   entities: string[];
-  showAreaSensor: (entityId: string) => boolean;
+  areaSensors: Map<string, ClimateAreaSensorKind>;
   computeCard: ComputeEntityCard;
 }
 
 const processAreasForClimate = (
   areaIds: string[],
   hass: HomeAssistant,
-  { entities, showAreaSensor, computeCard }: ClimateCardOptions
+  { entities, areaSensors, computeCard }: ClimateCardOptions
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
 
@@ -109,20 +116,12 @@ const processAreasForClimate = (
 
     // Add temperature and humidity sensors with trend graphs for areas
     const temperatureEntityId = area.temperature_entity_id;
-    if (
-      temperatureEntityId &&
-      hass.states[temperatureEntityId] &&
-      showAreaSensor(temperatureEntityId)
-    ) {
+    if (temperatureEntityId && areaSensors.has(temperatureEntityId)) {
       areaCards.push(computeCard(temperatureEntityId));
     }
 
     const humidityEntityId = area.humidity_entity_id;
-    if (
-      humidityEntityId &&
-      hass.states[humidityEntityId] &&
-      showAreaSensor(humidityEntityId)
-    ) {
+    if (humidityEntityId && areaSensors.has(humidityEntityId)) {
       areaCards.push(computeCard(humidityEntityId));
     }
 
@@ -198,30 +197,29 @@ export class ClimateViewStrategy extends ReactiveElement {
       editVisibility ? undefined : config.hidden_entities
     );
 
-    const areaSensorIds = new Set(findClimateAreaSensors(hass));
+    const areaSensors = findClimateAreaSensors(
+      hass,
+      editVisibility ? undefined : config.hidden_entities
+    );
     const computeTileCard = computeAreaTileCardConfig(hass, true);
     const computeClimateCard = (entityId: string): LovelaceCardConfig => {
       const tileCard = computeTileCard(entityId);
-      const deviceClass = hass.states[entityId]?.attributes.device_class;
-      if (areaSensorIds.has(entityId)) {
-        return {
-          ...tileCard,
-          name:
-            hass.localize(
-              `component.sensor.entity_component.${deviceClass}.name`
-            ) || undefined,
-          features: [{ type: "trend-graph" }],
-        };
+      const areaSensor = areaSensors.get(entityId);
+      if (!areaSensor) {
+        return tileCard;
       }
-      if (deviceClass === "temperature" || deviceClass === "humidity") {
-        return { ...tileCard, features: [{ type: "trend-graph" }] };
-      }
-      return tileCard;
+      return {
+        ...tileCard,
+        name:
+          hass.localize(
+            `component.sensor.entity_component.${areaSensor}.name`
+          ) || undefined,
+        features: [{ type: "trend-graph" }],
+      };
     };
     const cardOptions: ClimateCardOptions = {
       entities,
-      showAreaSensor: (entityId) =>
-        editVisibility || !hiddenEntities.has(entityId),
+      areaSensors,
       computeCard: editVisibility
         ? wrapEntityVisibility(hiddenEntities, computeClimateCard)
         : computeClimateCard,
