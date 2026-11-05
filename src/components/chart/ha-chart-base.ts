@@ -1660,8 +1660,15 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
           } as HaECSeriesItem;
         }
       }
-      if (index === 0 && maskArea) {
-        result = { ...result, markArea: maskArea } as HaECSeriesItem;
+      // ECharts merges series by id and would keep a mask left out here
+      if (s.type === "line" || s.type === "bar") {
+        result = {
+          ...result,
+          markArea:
+            index === 0 && maskArea
+              ? maskArea
+              : ((s as LineSeriesOption).markArea ?? { data: [] }),
+        } as HaECSeriesItem;
       }
       return processSeriesTooltipFormatter(result);
     });
