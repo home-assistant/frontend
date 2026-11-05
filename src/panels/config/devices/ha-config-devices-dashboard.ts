@@ -18,6 +18,7 @@ import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeAreaName } from "../../../common/entity/compute_area_name";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeFloorName } from "../../../common/entity/compute_floor_name";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -67,7 +68,6 @@ import {
   deserializeFilters,
   serializeFilters,
 } from "../../../data/data_table_filters";
-import { computeDeviceAreaLabel } from "../../../data/device/device_picker";
 import type {
   DeviceEntityLookup,
   DeviceRegistryEntry,
@@ -457,25 +457,13 @@ export class HaConfigDeviceDashboard extends LitElement {
           parentDevice ??
           (deviceIdsWithChildren.has(device.id) ? device : undefined);
 
-        const { areaName } = computeDeviceAreaLabel(
-          device,
-          this.hass.areas,
-          this.hass.devices,
-          this.hass.localize,
-          this.hass.language,
-          this.hass.translationMetadata
-        );
+        // Only the device's own area, or the one inherited from its parent
+        // device. The via device is not used here: it is how the device
+        // connects (e.g. a Zigbee coordinator), not where it is.
+        const area = getDeviceArea(device, areas, this.hass.devices);
+        const areaName = area ? computeAreaName(area) : undefined;
 
-        const floorArea =
-          getDeviceArea(device, areas, this.hass.devices) ??
-          (device.via_device_id && this.hass.devices[device.via_device_id]
-            ? getDeviceArea(
-                this.hass.devices[device.via_device_id],
-                areas,
-                this.hass.devices
-              )
-            : undefined);
-        const floorId = floorArea?.floor_id;
+        const floorId = area?.floor_id;
         const floorName =
           floorId && this.hass.floors?.[floorId]
             ? computeFloorName(this.hass.floors[floorId])
