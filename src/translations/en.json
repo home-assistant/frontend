@@ -7634,6 +7634,7 @@
               "state_icon": "State icon",
               "entity": "Entity",
               "device": "Device",
+              "device_class": "Device class",
               "integration": "Integration",
               "disabled_by": "Disabled by",
               "status": "Status",
