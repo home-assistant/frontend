@@ -12,15 +12,12 @@ import { isDate } from "../../common/string/is_date";
 import "../../components/entity/state-info";
 import "../../components/ha-alert";
 import "../../components/ha-button";
-import "../../components/ha-date-input";
 import "../../components/ha-dialog-footer";
-import "../../components/ha-time-input";
 import "../../components/ha-dialog";
 import type { CalendarEventMutableParams } from "../../data/calendar";
 import { deleteCalendarEvent } from "../../data/calendar";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
-import "../lovelace/components/hui-generic-entity-row";
 import { renderRRuleAsText } from "./recurrence";
 import { showConfirmEventDialog } from "./show-confirm-event-dialog-box";
 import type { CalendarEventDetailDialogParams } from "./show-dialog-calendar-event-detail";
@@ -86,6 +83,15 @@ class DialogCalendarEventDetail extends LitElement {
                   : ""
               }
               ${
+                this._params.entry.status === "tentative"
+                  ? html`<div class="status">
+                      ${this.hass.localize(
+                        "ui.components.calendar.event.tentative"
+                      )}
+                    </div>`
+                  : nothing
+              }
+              ${
                 this._data.location
                   ? html`${this._data.location} <br />`
                   : nothing
@@ -101,7 +107,6 @@ class DialogCalendarEventDetail extends LitElement {
 
           <div class="attribute">
             <state-info
-              .hass=${this.hass}
               .stateObj=${stateObj}
               .color=${this._params.color}
               in-dialog

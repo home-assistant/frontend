@@ -3,9 +3,7 @@ import { customElement, property } from "lit/decorators";
 import type { TemplateTrigger } from "../../../../../data/automation";
 import type { HomeAssistant } from "../../../../../types";
 import "../../../../../components/ha-form/ha-form";
-import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { hasTemplate } from "../../../../../common/string/has-template";
 import type { SchemaUnion } from "../../../../../components/ha-form/types";
 
 const SCHEMA = [
@@ -37,21 +35,6 @@ export class HaTemplateTrigger extends LitElement {
     return { trigger: "template", value_template: "" };
   }
 
-  private _wrapForValue(
-    forValue: TemplateTrigger["for"]
-  ): Record<string, unknown> | undefined {
-    if (forValue === undefined) {
-      return undefined;
-    }
-    if (typeof forValue === "string" && hasTemplate(forValue)) {
-      return { active_choice: "template", template: forValue };
-    }
-    return {
-      active_choice: "duration",
-      duration: createDurationData(forValue),
-    };
-  }
-
   private _unwrapForValue(
     forValue: Record<string, unknown> | undefined
   ): TemplateTrigger["for"] {
@@ -67,7 +50,6 @@ export class HaTemplateTrigger extends LitElement {
   protected render() {
     const data = {
       ...this.trigger,
-      for: this._wrapForValue(this.trigger.for),
     };
 
     return html`

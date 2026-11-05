@@ -12,7 +12,10 @@ import "../../components/demo-cards";
 import { mockIcons } from "../../../../demo/src/stubs/icons";
 import { ClimateEntityFeature } from "../../../../src/data/climate";
 import { FanEntityFeature } from "../../../../src/data/fan";
-import type { TileCardConfig } from "../../../../src/panels/lovelace/cards/types";
+import type {
+  GridCardConfig,
+  TileCardConfig,
+} from "../../../../src/panels/lovelace/cards/types";
 
 const ENTITIES = [
   {
@@ -29,6 +32,8 @@ const ENTITIES = [
     attributes: {
       friendly_name: "Bed Light",
       supported_color_modes: [LightColorMode.HS, LightColorMode.COLOR_TEMP],
+      color_mode: LightColorMode.HS,
+      hs_color: [210, 60],
     },
   },
   {
@@ -163,6 +168,83 @@ const ENTITIES = [
         FanEntityFeature.OSCILLATE,
     },
   },
+  {
+    entity_id: "fan.three_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Desk fan",
+      device_class: "fan",
+      percentage: 67,
+      percentage_step: 100 / 3,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.four_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Bedroom fan",
+      device_class: "fan",
+      percentage: 50,
+      percentage_step: 25,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.five_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Attic fan",
+      device_class: "fan",
+      percentage: 80,
+      percentage_step: 20,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.on_off_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Bathroom fan",
+      device_class: "fan",
+      percentage: 100,
+      percentage_step: 100,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.six_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Kitchen fan",
+      device_class: "fan",
+      percentage: 50,
+      percentage_step: 100 / 6,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.ten_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Living room fan",
+      device_class: "fan",
+      percentage: 70,
+      percentage_step: 10,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
+  {
+    entity_id: "fan.eleven_speed_fan",
+    state: "on",
+    attributes: {
+      friendly_name: "Office fan",
+      device_class: "fan",
+      percentage: 45,
+      percentage_step: 100 / 11,
+      supported_features: FanEntityFeature.SET_SPEED,
+    },
+  },
 ];
 
 const CONFIGS = [
@@ -237,6 +319,22 @@ const CONFIGS = [
       type: "tile",
       entity: "light.bed_light",
       features: [{ type: "light-brightness" }],
+    },
+  },
+  {
+    heading: "Light color feature",
+    config: {
+      type: "tile",
+      entity: "light.bed_light",
+      features: [{ type: "light-color" }],
+    },
+  },
+  {
+    heading: "Light color feature with hue and saturation",
+    config: {
+      type: "tile",
+      entity: "light.bed_light",
+      features: [{ type: "light-color", controls: "hue_saturation" }],
     },
   },
   {
@@ -333,6 +431,120 @@ const CONFIGS = [
     },
   },
   {
+    heading: "Fan speed feature (3 speeds)",
+    config: {
+      type: "tile",
+      entity: "fan.three_speed_fan",
+      features: [{ type: "fan-speed" }],
+    },
+  },
+  {
+    heading: "Fan speed feature (4 speeds)",
+    config: {
+      type: "tile",
+      entity: "fan.four_speed_fan",
+      features: [{ type: "fan-speed" }],
+    },
+  },
+  {
+    heading: "Fan speed feature (5 speeds)",
+    config: {
+      type: "tile",
+      entity: "fan.five_speed_fan",
+      features: [{ type: "fan-speed" }],
+    },
+  },
+  {
+    heading: "Fan speed feature (5 speeds, slider style)",
+    config: {
+      type: "tile",
+      entity: "fan.five_speed_fan",
+      features: [{ type: "fan-speed", style: "slider" }],
+    },
+  },
+  {
+    heading: "Fan speed feature (off/on, slider style falls back to buttons)",
+    config: {
+      type: "tile",
+      entity: "fan.on_off_fan",
+      features: [{ type: "fan-speed", style: "slider" }],
+    },
+  },
+  {
+    heading: "Fan speed feature (6 speeds, slider by default)",
+    config: {
+      type: "tile",
+      entity: "fan.six_speed_fan",
+      features: [{ type: "fan-speed" }],
+    },
+  },
+  {
+    heading: "Fan speed feature (6 speeds, buttons style)",
+    config: {
+      type: "tile",
+      entity: "fan.six_speed_fan",
+      features: [{ type: "fan-speed", style: "buttons" }],
+    },
+  },
+  {
+    heading: "Fan speed feature (10 speeds, buttons style)",
+    config: {
+      type: "tile",
+      entity: "fan.ten_speed_fan",
+      features: [{ type: "fan-speed", style: "buttons" }],
+    },
+  },
+  {
+    heading:
+      "Fan speed feature (11 speeds, buttons style falls back to slider)",
+    config: {
+      type: "tile",
+      entity: "fan.eleven_speed_fan",
+      features: [{ type: "fan-speed", style: "buttons" }],
+    },
+  },
+  {
+    heading: "Fan speed feature (half width)",
+    config: {
+      type: "grid",
+      columns: 2,
+      square: false,
+      cards: [
+        {
+          type: "tile",
+          entity: "fan.four_speed_fan",
+          features: [{ type: "fan-speed" }],
+        },
+        {
+          type: "tile",
+          entity: "fan.five_speed_fan",
+          features: [{ type: "fan-speed" }],
+        },
+      ],
+    },
+  },
+  {
+    heading:
+      "Fan speed feature (half width, buttons fall back to a slider when they do not fit)",
+    config: {
+      type: "grid",
+      columns: 2,
+      square: false,
+      cards: [
+        {
+          type: "tile",
+          entity: "fan.six_speed_fan",
+          features: [{ type: "fan-speed", style: "buttons" }],
+        },
+        {
+          type: "tile",
+          entity: "fan.ten_speed_fan",
+          features: [{ type: "fan-speed", style: "buttons" }],
+        },
+      ],
+    },
+  },
+  {
     heading: "Fan oscillate feature",
     config: {
       type: "tile",
@@ -418,7 +630,7 @@ const CONFIGS = [
       ],
     },
   },
-] satisfies DemoCardConfig<TileCardConfig>[];
+] satisfies DemoCardConfig<TileCardConfig | GridCardConfig>[];
 
 @customElement("demo-lovelace-tile-card")
 class DemoTile extends LitElement {

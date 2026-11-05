@@ -6,6 +6,7 @@ import { lightEntityFilters } from "../../../../light/strategies/light-view-stra
 import { securityEntityFilters } from "../../../../security/strategies/security-view-strategy";
 
 export const HOME_SUMMARIES = [
+  "alerts",
   "light",
   "climate",
   "security",
@@ -18,6 +19,7 @@ export const HOME_SUMMARIES = [
 export type HomeSummary = (typeof HOME_SUMMARIES)[number];
 
 export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
+  alerts: "mdi:alarm-plus",
   light: "mdi:lamps",
   climate: "mdi:home-thermometer",
   security: "mdi:security",
@@ -28,6 +30,7 @@ export const HOME_SUMMARIES_ICONS: Record<HomeSummary, string> = {
 };
 
 export const HOME_SUMMARIES_COLORS: Record<HomeSummary, string> = {
+  alerts: "red",
   light: "amber",
   climate: "deep-orange",
   security: "blue-grey",
@@ -38,6 +41,7 @@ export const HOME_SUMMARIES_COLORS: Record<HomeSummary, string> = {
 };
 
 export const HOME_SUMMARIES_FILTERS: Record<HomeSummary, EntityFilter[]> = {
+  alerts: [],
   light: lightEntityFilters,
   climate: climateEntityFilters,
   security: securityEntityFilters,

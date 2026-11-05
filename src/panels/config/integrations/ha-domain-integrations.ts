@@ -1,9 +1,10 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item-base";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { getShadowRootHost } from "../../../common/dom/get-shadow-root-host";
 import {
   PROTOCOL_INTEGRATIONS,
   protocolIntegrationPicked,
@@ -274,8 +275,10 @@ class HaDomainIntegrations extends LitElement {
     </ha-list-base> `;
   }
 
-  private async _integrationPicked(ev: CustomEvent<RequestSelectedDetail>) {
-    const domain = (ev.currentTarget as any).domain;
+  private async _integrationPicked(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { domain: string }>
+  ) {
+    const domain = ev.currentTarget.domain;
 
     if (
       ["cloud", "google_assistant", "alexa"].includes(domain) &&
@@ -317,29 +320,21 @@ class HaDomainIntegrations extends LitElement {
       return;
     }
 
-    const root = this.getRootNode();
-    showConfigFlowDialog(
-      root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
-      {
-        startFlowHandler: domain,
-        navigateToResult: this.navigateToResult,
-        manifest: await fetchIntegrationManifest(this.hass, domain),
-      }
-    );
+    showConfigFlowDialog(getShadowRootHost(this) ?? this, {
+      startFlowHandler: domain,
+      navigateToResult: this.navigateToResult,
+      manifest: await fetchIntegrationManifest(this.hass, domain),
+    });
     fireEvent(this, "close-dialog");
   }
 
   private async _flowInProgressPicked(ev: Event) {
     const flow: DataEntryFlowProgress = (ev.currentTarget as any).flow;
-    const root = this.getRootNode();
-    showConfigFlowDialog(
-      root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
-      {
-        continueFlowId: flow.flow_id,
-        navigateToResult: this.navigateToResult,
-        manifest: await fetchIntegrationManifest(this.hass, flow.handler),
-      }
-    );
+    showConfigFlowDialog(getShadowRootHost(this) ?? this, {
+      continueFlowId: flow.flow_id,
+      navigateToResult: this.navigateToResult,
+      manifest: await fetchIntegrationManifest(this.hass, flow.handler),
+    });
     fireEvent(this, "close-dialog");
   }
 
@@ -348,16 +343,15 @@ class HaDomainIntegrations extends LitElement {
     navigate("/config/integrations/dashboard?historyBack=1");
   }
 
-  private _standardPicked(ev: CustomEvent<RequestSelectedDetail>) {
-    const domain = (ev.currentTarget as any).domain;
-    const root = this.getRootNode();
+  private _standardPicked(
+    ev: HASSDomCurrentTargetEvent<HTMLElement & { domain: string }>
+  ) {
+    const domain = ev.currentTarget.domain;
+    const dialogParentElement = getShadowRootHost(this) ?? this;
     fireEvent(this, "close-dialog");
-    protocolIntegrationPicked(
-      root instanceof ShadowRoot ? (root.host as HTMLElement) : this,
-      this.hass,
-      domain,
-      { brand: this.domain }
-    );
+    protocolIntegrationPicked(dialogParentElement, this.hass, domain, {
+      brand: this.domain,
+    });
   }
 
   static styles = [

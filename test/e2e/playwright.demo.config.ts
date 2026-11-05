@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 import { getE2EWorkers } from "./playwright-workers";
 
 // Port 8090 matches the `develop_demo` dev server (rspack-dev-server-demo).
-// This means running `demo/script/develop_demo` and then `yarn test:e2e:local`
+// This means running `demo/script/develop_demo` and then `pnpm test:e2e:demo`
 // works out of the box locally — Playwright will reuse the already-running
 // server instead of starting a new one.
 // In CI we serve the pre-built demo/dist on the same port.

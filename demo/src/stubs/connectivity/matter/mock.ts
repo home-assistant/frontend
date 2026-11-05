@@ -192,9 +192,9 @@ const buildNodeDiagnostics = (
   node_type: node.is_bridge
     ? NodeType.BRIDGE
     : (NODE_TYPE_BY_ROLE[node.role ?? ""] ?? NodeType.END_DEVICE),
-  network_name: node.network_name ?? node.ssid ?? undefined,
+  network_name: node.network_name ?? node.ssid ?? null,
   ip_adresses: [nodeIpAddress(node)],
-  mac_address: node.ext_address?.match(/.{2}/g)?.join(":"),
+  mac_address: node.ext_address?.match(/.{2}/g)?.join(":") ?? null,
   available: node.available !== false,
   active_fabrics: FABRICS,
   active_fabric_index: 1,

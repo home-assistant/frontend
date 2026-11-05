@@ -1,0 +1,119 @@
+diff --git a/modular/sortable.core.esm.js b/modular/sortable.core.esm.js
+index cb433ff25353f4836d2ffc813356f945f42acc6b..0a86ad22d05390a5b9ef002905fcd5926852b956 100644
+--- a/modular/sortable.core.esm.js
++++ b/modular/sortable.core.esm.js
+@@ -1777,11 +1777,16 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+         }
+         if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, !!target) !== false) {
+           capture();
+-          if (elLastChild && elLastChild.nextSibling) {
+-            // the last draggable element is not the last node
+-            el.insertBefore(dragEl, elLastChild.nextSibling);
+-          } else {
+-            el.appendChild(dragEl);
++          try {
++            if (elLastChild && elLastChild.nextSibling) {
++              // the last draggable element is not the last node
++              el.insertBefore(dragEl, elLastChild.nextSibling);
++            } else {
++              el.appendChild(dragEl);
++            }
++          }
++          catch(err) {
++            return completed(false);
+           }
+           parentEl = el; // actualization
+ 
+@@ -1798,7 +1803,12 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+         targetRect = getRect(target);
+         if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, false) !== false) {
+           capture();
+-          el.insertBefore(dragEl, firstChild);
++          try {
++            el.insertBefore(dragEl, firstChild);
++          }
++          catch(err) {
++            return completed(false);
++          }
+           parentEl = el; // actualization
+ 
+           changed();
+@@ -1818,7 +1828,7 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+           pastFirstInvertThresh = false;
+           isCircumstantialInvert = !differentRowCol && options.invertSwap || differentLevel;
+         }
+-        direction = _getSwapDirection(evt, target, targetRect, vertical, differentRowCol ? 1 : options.swapThreshold, options.invertedSwapThreshold == null ? options.swapThreshold : options.invertedSwapThreshold, isCircumstantialInvert, lastTarget === target);
++        direction = _getSwapDirection(evt, target, targetRect, vertical, differentRowCol ? 1 : options.swapThreshold, options.invertedSwapThreshold == null ? options.swapThreshold : options.invertedSwapThreshold, isCircumstantialInvert, lastTarget === target, _isRtl(el, vertical));
+         var sibling;
+         if (direction !== 0) {
+           // Check if target is beside dragEl in respective direction (ignoring hidden elements)
+@@ -1845,10 +1855,15 @@ Sortable.prototype = /** @lends Sortable.prototype */{
+           _silent = true;
+           setTimeout(_unsilent, 30);
+           capture();
+-          if (after && !nextSibling) {
+-            el.appendChild(dragEl);
+-          } else {
+-            target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
++          try {
++            if (after && !nextSibling) {
++              el.appendChild(dragEl);
++            } else {
++              target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
++            }
++          }
++          catch(err) {
++            return completed(false);
+           }
+ 
+           // Undo chrome's scroll adjustment (has no effect on other browsers)
+@@ -2242,19 +2257,48 @@ function _disableDraggable(el) {
+ function _unsilent() {
+   _silent = false;
+ }
++// Horizontal RTL lists run from right to left. Mirroring the x axis lets the
++// checks below keep assuming that the list runs from left to right.
++function _isRtl(el, vertical) {
++  return !vertical && css(el, 'direction') === 'rtl';
++}
++function _mirrorX(rect) {
++  return {
++    left: -rect.right,
++    right: -rect.left,
++    top: rect.top,
++    bottom: rect.bottom,
++    width: rect.width,
++    height: rect.height
++  };
++}
+ function _ghostIsFirst(evt, vertical, sortable) {
+   var firstElRect = getRect(getChild(sortable.el, 0, sortable.options, true));
+   var childContainingRect = getChildContainingRectFromElement(sortable.el, sortable.options, ghostEl);
++  if (_isRtl(sortable.el, vertical)) {
++    evt = { clientX: -evt.clientX, clientY: evt.clientY };
++    firstElRect = _mirrorX(firstElRect);
++    childContainingRect = _mirrorX(childContainingRect);
++  }
+   var spacer = 10;
+   return vertical ? evt.clientX < childContainingRect.left - spacer || evt.clientY < firstElRect.top && evt.clientX < firstElRect.right : evt.clientY < childContainingRect.top - spacer || evt.clientY < firstElRect.bottom && evt.clientX < firstElRect.left;
+ }
+ function _ghostIsLast(evt, vertical, sortable) {
+   var lastElRect = getRect(lastChild(sortable.el, sortable.options.draggable));
+   var childContainingRect = getChildContainingRectFromElement(sortable.el, sortable.options, ghostEl);
++  if (_isRtl(sortable.el, vertical)) {
++    evt = { clientX: -evt.clientX, clientY: evt.clientY };
++    lastElRect = _mirrorX(lastElRect);
++    childContainingRect = _mirrorX(childContainingRect);
++  }
+   var spacer = 10;
+   return vertical ? evt.clientX > childContainingRect.right + spacer || evt.clientY > lastElRect.bottom && evt.clientX > lastElRect.left : evt.clientY > childContainingRect.bottom + spacer || evt.clientX > lastElRect.right && evt.clientY > lastElRect.top;
+ }
+-function _getSwapDirection(evt, target, targetRect, vertical, swapThreshold, invertedSwapThreshold, invertSwap, isLastTarget) {
++function _getSwapDirection(evt, target, targetRect, vertical, swapThreshold, invertedSwapThreshold, invertSwap, isLastTarget, rtl) {
++  if (rtl) {
++    evt = { clientX: -evt.clientX, clientY: evt.clientY };
++    targetRect = _mirrorX(targetRect);
++  }
+   var mouseOnAxis = vertical ? evt.clientY : evt.clientX,
+     targetLength = vertical ? targetRect.height : targetRect.width,
+     targetS1 = vertical ? targetRect.top : targetRect.left,

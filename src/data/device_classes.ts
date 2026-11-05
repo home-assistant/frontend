@@ -12,6 +12,7 @@ export const DOMAIN_DEVICE_CLASSES: Record<string, string[]> = {
     "door",
     "garage_door",
     "gas",
+    "glass_break",
     "heat",
     "light",
     "lock",
@@ -110,6 +111,7 @@ export const DOMAIN_DEVICE_CLASSES: Record<string, string[]> = {
     "wind_direction",
     "wind_speed",
   ],
+  radio_frequency: ["receiver", "transmitter"],
   sensor: [
     "absolute_humidity",
     "apparent_power",

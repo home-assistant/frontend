@@ -4,7 +4,7 @@ import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type { SelectSelector } from "../../data/selector";
-import type { HomeAssistant, ValueChangedEvent } from "../../types";
+import type { ValueChangedEvent } from "../../types";
 import "../ha-selector/ha-selector-select";
 import type {
   HaFormElement,
@@ -28,8 +28,6 @@ export const matchSelectOptionValue = (
 
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public schema!: HaFormSelectSchema;
 
   @property({ attribute: false }) public data!: HaFormSelectData;
@@ -65,7 +63,6 @@ export class HaFormSelect extends LitElement implements HaFormElement {
   protected render(): TemplateResult {
     return html`
       <ha-selector-select
-        .hass=${this.hass}
         .value=${this.data}
         .label=${this.label}
         .helper=${this.helper}

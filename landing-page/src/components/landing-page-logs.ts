@@ -1,8 +1,9 @@
 import { IntersectionController } from "@lit-labs/observers/intersection-controller.js";
 import { mdiArrowCollapseDown, mdiDownload } from "@mdi/js";
 import { LitElement, type PropertyValues, css, html, nothing } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consumeLocalize } from "../../../src/common/decorators/consume-context-entry";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import type {
   LandingPageKeys,
@@ -20,10 +21,13 @@ import {
   getObserverLogs,
   downloadUrl as observerLogsDownloadUrl,
 } from "../data/observer";
-import { getSupervisorLogs, getSupervisorLogsFollow } from "../data/supervisor";
+import {
+  getSupervisorLogs,
+  getSupervisorLogsFollow,
+  isSupervisorLogError,
+} from "../data/supervisor";
 import { ASSUME_CORE_START_SECONDS } from "../ha-landing-page";
 
-const ERROR_CHECK = /^[\d\s-:]+(ERROR|CRITICAL)(.*)/gm;
 declare global {
   interface HASSDomEvents {
     "landing-page-error": undefined;
@@ -34,15 +38,16 @@ const SCHEDULE_FETCH_OBSERVER_LOGS = 5;
 
 @customElement("landing-page-logs")
 class LandingPageLogs extends LitElement {
-  @property({ attribute: false })
-  public localize!: LocalizeFunc<LandingPageKeys>;
-
   @query("ha-ansi-to-html") private _ansiToHtmlElement?: HaAnsiToHtml;
 
   @query(".logs") private _logElement?: HTMLElement;
 
   @query("#scroll-bottom-marker")
   private _scrollBottomMarkerElement?: HTMLElement;
+
+  @state()
+  @consumeLocalize()
+  private _localize!: LocalizeFunc<LandingPageKeys>;
 
   @state() private _show = false;
 
@@ -59,16 +64,18 @@ class LandingPageLogs extends LitElement {
 
   @state() private _logLinesCount = 0;
 
+  private _errorFound = false;
+
   protected render() {
     return html`
       <div class="actions">
         <ha-button appearance="plain" @click=${this._toggleLogDetails}>
-          ${this.localize(this._show ? "hide_details" : "show_details")}
+          ${this._localize(this._show ? "hide_details" : "show_details")}
         </ha-button>
         ${
           this._show
             ? html`<ha-icon-button
-                .label=${this.localize("logs.download_logs")}
+                .label=${this._localize("logs.download_logs")}
                 .path=${mdiDownload}
                 @click=${this._downloadLogs}
               ></ha-icon-button>`
@@ -80,14 +87,14 @@ class LandingPageLogs extends LitElement {
           ? html`
               <ha-alert
                 alert-type="error"
-                .title=${this.localize("logs.fetch_error")}
+                .title=${this._localize("logs.fetch_error")}
               >
                 <ha-button
                   size="small"
                   variant="danger"
                   @click=${this._startLogStream}
                 >
-                  ${this.localize("logs.retry")}
+                  ${this._localize("logs.retry")}
                 </ha-button>
               </ha-alert>
             `
@@ -115,7 +122,7 @@ class LandingPageLogs extends LitElement {
         @click=${this._scrollToBottom}
       >
         <ha-svg-icon .path=${mdiArrowCollapseDown} slot="start"></ha-svg-icon>
-        ${this.localize("logs.scroll_down_button")}
+        ${this._localize("logs.scroll_down_button")}
         <ha-svg-icon .path=${mdiArrowCollapseDown} slot="end"></ha-svg-icon>
       </ha-button>
     `;
@@ -158,26 +165,28 @@ class LandingPageLogs extends LitElement {
       this._logLinesCount = 0;
     }
 
-    const showError = ERROR_CHECK.test(logs);
-
     const scrolledToBottom = this._scrolledToBottomController.value;
     const lines = `${tempLogLine}${logs}`
       .split("\n")
       .filter((line) => line.trim() !== "");
 
     // handle edge case where the last line is not complete
-    if (logs.endsWith("\n")) {
+    if (clear || logs.endsWith("\n")) {
       tempLogLine = "";
     } else {
       tempLogLine = lines.splice(-1, 1)[0];
     }
+
+    const showError = lines.some(isSupervisorLogError);
 
     if (lines.length) {
       this._ansiToHtmlElement?.parseLinesToColoredPre(lines);
       this._logLinesCount += lines.length;
     }
 
-    if (showError) {
+    // only open the logs once, so they can be closed again
+    if (showError && !this._errorFound) {
+      this._errorFound = true;
       fireEvent(this, "landing-page-error");
       this._show = true;
     }

@@ -37,7 +37,13 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
       },
     };
 
-    const energyCollection = getEnergyDataCollection(hass, {
+    const energyCollection = getEnergyDataCollection(hass.connection, {
+      callWS: hass.callWS,
+      entities: hass.entities,
+      states: hass.states,
+      locale: hass.locale,
+      config: hass.config,
+      panelUrl: hass.panelUrl,
       key: collectionKey,
     });
     if (!energyCollection.prefs) {
@@ -53,6 +59,18 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
     ) {
       return view;
     }
+
+    view.sections!.push({
+      type: "grid",
+      column_span: 3,
+      cards: [
+        {
+          type: "energy-compare",
+          collection_key: collectionKey,
+          grid_options: { columns: "full" },
+        },
+      ],
+    });
 
     if (isEnergyCardVisible("overview", "energy-distribution", prefs, hidden)) {
       view.sections!.push({
@@ -97,6 +115,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
             ),
             type: "power-sources-graph",
             collection_key: collectionKey,
+            combine_sources: true,
             show_legend: false,
           },
         ],
@@ -113,6 +132,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
             ),
             type: "energy-usage-graph",
             collection_key: collectionKey,
+            combine_sources: true,
           },
         ],
       });
@@ -128,6 +148,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
             ),
             type: "energy-gas-graph",
             collection_key: collectionKey,
+            combine_sources: true,
           },
         ],
       });
@@ -144,6 +165,7 @@ export class EnergyOverviewViewStrategy extends ReactiveElement {
                 ),
                 type: "energy-water-graph",
                 collection_key: collectionKey,
+                combine_sources: true,
               }
             : {
                 title: hass.localize(

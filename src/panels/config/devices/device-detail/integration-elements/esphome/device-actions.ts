@@ -28,9 +28,12 @@ export const getESPHomeDeviceActions = async (
   const entryId = configEntry.entry_id;
 
   try {
-    const encryptionKey = await fetchESPHomeEncryptionKey(hass, entryId);
+    const { encryption_key: encryptionKey } = await fetchESPHomeEncryptionKey(
+      hass,
+      entryId
+    );
 
-    if (encryptionKey.encryption_key) {
+    if (encryptionKey) {
       actions.push({
         label: hass.localize(
           "ui.panel.config.devices.esphome.show_encryption_key"
@@ -39,7 +42,7 @@ export const getESPHomeDeviceActions = async (
         action: () =>
           showESPHomeEncryptionKeyDialog(el, {
             entry_id: entryId,
-            encryption_key: encryptionKey.encryption_key,
+            encryption_key: encryptionKey,
           }),
       });
     }

@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import { format } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { transform } from "../../../common/decorators/transform";
 import "../../../components/ha-date-input";
 import "../../../components/ha-time-input";

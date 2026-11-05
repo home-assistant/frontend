@@ -13,6 +13,7 @@ import { AutomationSortableListMixin } from "../ha-automation-sortable-list-mixi
 import { automationRowsStyles } from "../styles";
 import "./ha-automation-option-row";
 import type HaAutomationOptionRow from "./ha-automation-option-row";
+import { scrollRowIntoView } from "../scroll-row-into-view";
 
 @customElement("ha-automation-option")
 export default class HaAutomationOption extends AutomationSortableListMixin<Option>(
@@ -141,13 +142,6 @@ export default class HaAutomationOption extends AutomationSortableListMixin<Opti
       this.focusItemIndexOnChange = undefined;
 
       row.updateComplete.then(() => {
-        if (this.narrow) {
-          row.scrollIntoView({
-            block: "start",
-            behavior: "smooth",
-          });
-        }
-
         if (mode === "new") {
           row.expand();
         }
@@ -155,6 +149,9 @@ export default class HaAutomationOption extends AutomationSortableListMixin<Opti
         if (this.optionsInSidebar) {
           row.openSidebar();
         } else {
+          if (this.narrow) {
+            scrollRowIntoView(row);
+          }
           row.focus();
         }
       });

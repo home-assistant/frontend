@@ -10,7 +10,7 @@ import { finished } from "node:stream/promises";
 import env from "../env.cjs";
 import paths from "../paths.cjs";
 import { mergeTranslations } from "./merge-translations.js";
-import "./fetch-nightly-translations.js";
+import "./fetch-nightly-translations.mts";
 
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";
@@ -136,6 +136,9 @@ const lokaliseTransform = (data, path, original = data) => {
 };
 
 gulp.task("clean-translations", () => deleteAsync([workDir]));
+
+// Keep translationMetadata.json, the dev server's rspack watcher imports it.
+const cleanTranslationOutput = () => deleteAsync([outDir]);
 
 const makeWorkDir = () => mkdir(workDir, { recursive: true });
 
@@ -307,7 +310,7 @@ gulp.task(
   gulp.series(
     gulp.parallel(
       "fetch-nightly-translations",
-      gulp.series("clean-translations", makeWorkDir)
+      gulp.series(cleanTranslationOutput, makeWorkDir)
     ),
     createTestTranslation,
     createMasterTranslation,

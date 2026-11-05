@@ -51,7 +51,6 @@ export class CloudLoginPanel extends LitElement {
           <cloud-login
             .hass=${this.hass}
             .email=${this.email}
-            .localize=${this.hass.localize}
             .lead=${this.hass.localize(
               "ui.panel.config.cloud.login.sign_in_lead"
             )}
@@ -97,8 +96,6 @@ export class CloudLoginPanel extends LitElement {
         cloud-login {
           display: block;
           width: 100%;
-          max-width: 600px;
-          margin-inline: auto;
         }
       `,
     ];

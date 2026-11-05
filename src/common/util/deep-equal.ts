@@ -4,6 +4,8 @@
 interface DeepEqualOptions {
   /** Compare Symbol properties in addition to string keys */
   compareSymbols?: boolean;
+  /** Treat objects with the same keys in a different order as not equal */
+  compareKeyOrder?: boolean;
 }
 
 export const deepEqual = (
@@ -90,9 +92,17 @@ export const deepEqual = (
     }
 
     const keys = Object.keys(a);
+    const keysB = Object.keys(b);
     length = keys.length;
-    if (length !== Object.keys(b).length) {
+    if (length !== keysB.length) {
       return false;
+    }
+    if (options?.compareKeyOrder) {
+      for (i = length; i-- !== 0;) {
+        if (keys[i] !== keysB[i]) {
+          return false;
+        }
+      }
     }
     for (i = length; i-- !== 0;) {
       if (!Object.prototype.hasOwnProperty.call(b, keys[i])) {

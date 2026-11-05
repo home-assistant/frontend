@@ -7,6 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import { atLeastVersion } from "../../common/config/version";
 import { navigate } from "../../common/navigate";
 import { debounce } from "../../common/util/debounce";
+import { deepEqual } from "../../common/util/deep-equal";
 import "../../components/ha-button";
 import "../../components/ha-svg-icon";
 import { updateAreaRegistryEntry } from "../../data/area/area_registry";
@@ -14,9 +15,12 @@ import { updateDeviceRegistryEntry } from "../../data/device/device_registry";
 import {
   fetchFrontendSystemData,
   saveFrontendSystemData,
+  subscribeFrontendSystemData,
   type HomeFrontendSystemData,
+  type SecurityFrontendSystemData,
 } from "../../data/frontend";
 import type { LovelaceDashboardStrategyConfig } from "../../data/lovelace/config/types";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { mdiHomeAssistant } from "../../resources/home-assistant-logo-svg";
 import type { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
@@ -35,7 +39,7 @@ import { showNewOverviewDialog } from "./dialogs/show-dialog-new-overview";
 import { hasLegacyOverviewPanel } from "../../data/panel";
 
 @customElement("ha-panel-home")
-class PanelHome extends LitElement {
+class PanelHome extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
@@ -46,7 +50,9 @@ class PanelHome extends LitElement {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _config: FrontendSystemData["home"] = {};
+  @state() private _config?: HomeFrontendSystemData;
+
+  @state() private _securityConfig: SecurityFrontendSystemData = {};
 
   @state() private _extraActionItems?: ExtraActionItem[];
 
@@ -54,9 +60,31 @@ class PanelHome extends LitElement {
 
   private _loadConfigPromise?: Promise<void>;
 
+  private _securityConfigRevision = 0;
+
+  public hassSubscribe() {
+    return [
+      subscribeFrontendSystemData(
+        this.hass.connection,
+        "security",
+        ({ value }) => {
+          this._securityConfigRevision++;
+          const config = value || {};
+          if (deepEqual(config, this._securityConfig)) {
+            return;
+          }
+          this._securityConfig = config;
+          if (this.hasUpdated) {
+            this._setLovelace();
+          }
+        }
+      ),
+    ];
+  }
+
   private get _showBanner(): boolean {
-    // Don't show if already dismissed
-    if (this._config.welcome_banner_dismissed) {
+    // Don't show until the config loaded or if already dismissed
+    if (!this._config || this._config.welcome_banner_dismissed) {
       return false;
     }
     // Don't show if HA is not running
@@ -150,16 +178,41 @@ class PanelHome extends LitElement {
   }
 
   private async _loadConfig() {
-    try {
-      const [_, data] = await Promise.all([
+    const securityConfigRevision = this._securityConfigRevision;
+    const [translationsResult, homeResult, securityResult] =
+      await Promise.allSettled([
         this.hass.loadFragmentTranslation("lovelace"),
         fetchFrontendSystemData(this.hass.connection, "home"),
+        fetchFrontendSystemData(this.hass.connection, "security"),
       ]);
-      this._config = data || {};
-    } catch (err) {
+
+    if (translationsResult.status === "rejected") {
       // eslint-disable-next-line no-console
-      console.error("Failed to load favorites:", err);
-      this._config = {};
+      console.error(
+        "Failed to load Lovelace translations:",
+        translationsResult.reason
+      );
+    }
+
+    if (homeResult.status === "rejected") {
+      // eslint-disable-next-line no-console
+      console.error("Failed to load home configuration:", homeResult.reason);
+      this._config = undefined;
+    } else {
+      this._config = homeResult.value || {};
+    }
+
+    if (securityResult.status === "rejected") {
+      // eslint-disable-next-line no-console
+      console.error(
+        "Failed to load security configuration:",
+        securityResult.reason
+      );
+      if (securityConfigRevision === this._securityConfigRevision) {
+        this._securityConfig = {};
+      }
+    } else if (securityConfigRevision === this._securityConfigRevision) {
+      this._securityConfig = securityResult.value || {};
     }
   }
 
@@ -207,7 +260,7 @@ class PanelHome extends LitElement {
 
   private _editHome = () => {
     showEditHomeDialog(this, {
-      config: this._config,
+      config: this._config ?? {},
       saveConfig: async (config) => {
         await this._saveConfig(config);
       },
@@ -228,7 +281,7 @@ class PanelHome extends LitElement {
     showAreaRegistryDetailDialog(this, {
       entry: area,
       updateEntry: (values) =>
-        updateAreaRegistryEntry(this.hass, areaId, values),
+        updateAreaRegistryEntry(this.hass.callWS, areaId, values),
     });
   };
 
@@ -329,6 +382,9 @@ class PanelHome extends LitElement {
   private _learnMore() {
     showNewOverviewDialog(this, {
       dismiss: async () => {
+        if (!this._config) {
+          return;
+        }
         const newConfig = {
           ...this._config,
           welcome_banner_dismissed: true,
@@ -343,11 +399,12 @@ class PanelHome extends LitElement {
     return {
       strategy: {
         type: "home",
-        favorite_entities: this._config.favorite_entities,
+        alert_entities: this._securityConfig.alert_entities,
+        favorite_entities: this._config?.favorite_entities,
         home_panel: true,
-        hide_welcome_message: this._config.hide_welcome_message,
-        hide_suggested_entities: this._config.hide_suggested_entities,
-        shortcuts: this._config.shortcuts,
+        hide_welcome_message: this._config?.hide_welcome_message,
+        hide_suggested_entities: this._config?.hide_suggested_entities,
+        shortcuts: this._config?.shortcuts,
       },
     };
   }

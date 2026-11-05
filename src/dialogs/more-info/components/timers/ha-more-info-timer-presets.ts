@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../../../common/decorators/consume";
 import { durationDataToSeconds } from "../../../../common/datetime/duration_to_seconds";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { transform } from "../../../../common/decorators/transform";

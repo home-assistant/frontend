@@ -1,10 +1,18 @@
 import type { HomeAssistantConfig } from "../types";
 
-export const documentationUrl = (hass: HomeAssistantConfig, path: string) =>
+const DOCUMENTATION_DOMAIN = "home-assistant.io";
+
+export const DOCUMENTATION_URL = `https://www.${DOCUMENTATION_DOMAIN}`;
+
+export const SECURE_CONNECTION_DOCUMENTATION_PATH =
+  "/docs/configuration/securing/#remote-access";
+
+export const documentationUrl = (
+  { config }: Pick<HomeAssistantConfig, "config">,
+  path: string
+) => documentationUrlForVersion(config.version, path);
+
+export const documentationUrlForVersion = (version: string, path: string) =>
   `https://${
-    hass.config.version.includes("b")
-      ? "rc"
-      : hass.config.version.includes("dev")
-        ? "next"
-        : "www"
-  }.home-assistant.io${path}`;
+    version.includes("b") ? "rc" : version.includes("dev") ? "next" : "www"
+  }.${DOCUMENTATION_DOMAIN}${path}`;

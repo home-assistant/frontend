@@ -1,7 +1,8 @@
-import { consume } from "@lit/context";
+import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { computeAttributeNameDisplay } from "../../../common/entity/compute_attribute_display";
 import {
   consumeEntityState,
@@ -12,6 +13,7 @@ import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { formatNumber } from "../../../common/number/format_number";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-control-select";
 import type { ControlSelectOption } from "../../../components/ha-control-select";
@@ -26,13 +28,13 @@ import { UNAVAILABLE } from "../../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../../data/entity/entity_attributes";
 import type { FanEntity, FanSpeed } from "../../../data/fan";
 import {
-  computeFanSpeedCount,
   computeFanSpeedIcon,
-  FAN_SPEED_COUNT_MAX_FOR_BUTTONS,
-  FAN_SPEEDS,
+  computeFanSpeeds,
   FanEntityFeature,
   fanPercentageToSpeed,
   fanSpeedToPercentage,
+  isNumberedFanSpeed,
+  resolveFanSpeedStyle,
 } from "../../../data/fan";
 import type { FrontendLocaleData } from "../../../data/translation";
 import type {
@@ -41,12 +43,15 @@ import type {
   HomeAssistantFormatters,
   HomeAssistantInternationalization,
 } from "../../../types";
-import type { LovelaceCardFeature } from "../types";
+import type { LovelaceCardFeature, LovelaceCardFeatureEditor } from "../types";
 import { cardFeatureStyles } from "./common/card-feature-styles";
 import type {
   FanSpeedCardFeatureConfig,
   LovelaceCardFeatureContext,
 } from "./types";
+
+// WCAG 2.2 AA target size, feature buttons have no gap between them
+const SPEED_BUTTON_MIN_WIDTH = 24;
 
 const supportsFanSpeedCardFeatureFromState = (stateObj: HassEntity) => {
   const domain = computeDomain(stateObj.entity_id);
@@ -99,10 +104,21 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
 
   @state() private _config?: FanSpeedCardFeatureConfig;
 
+  private _resizeController = new ResizeController<number | undefined>(this, {
+    callback: (entries: { contentRect?: { width: number } }[]) =>
+      entries[0]?.contentRect?.width || undefined,
+  });
+
   static getStubConfig(): FanSpeedCardFeatureConfig {
     return {
       type: "fan-speed",
     };
+  }
+
+  public static async getConfigElement(): Promise<LovelaceCardFeatureEditor> {
+    await import("../editor/config-elements/hui-fan-speed-card-feature-editor");
+
+    return document.createElement("hui-fan-speed-card-feature-editor");
   }
 
   public setConfig(config: FanSpeedCardFeatureConfig): void {
@@ -115,6 +131,11 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
   private _localizeSpeed(speed: FanSpeed) {
     if (speed === "on" || speed === "off") {
       return this._formatters.formatEntityState(this._stateObj!, speed);
+    }
+    if (isNumberedFanSpeed(speed)) {
+      return this._localize("ui.card.fan.speed.numbered", {
+        speed: formatNumber(speed, this._locale),
+      });
     }
     return this._localize(`ui.card.fan.speed.${speed}`) || speed;
   }
@@ -129,19 +150,33 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
       return nothing;
     }
 
-    const speedCount = computeFanSpeedCount(this._stateObj);
+    const speeds =
+      resolveFanSpeedStyle(this._stateObj, this._config.style) === "buttons"
+        ? computeFanSpeeds(this._stateObj)
+        : undefined;
+
+    // Fall back to the slider when the buttons do not fit the card width.
+    const width = this._resizeController.value;
+    const buttonsFit =
+      !speeds || !width || width >= speeds.length * SPEED_BUTTON_MIN_WIDTH;
 
     const percentage = stateActive(this._stateObj)
       ? (this._stateObj.attributes.percentage ?? 0)
       : 0;
 
-    if (speedCount <= FAN_SPEED_COUNT_MAX_FOR_BUTTONS) {
-      const options = FAN_SPEEDS[speedCount]!.map<ControlSelectOption>(
-        (speed) => ({
-          value: speed,
-          label: this._localizeSpeed(speed),
-          path: computeFanSpeedIcon(this._stateObj!, speed),
-        })
+    if (speeds && buttonsFit) {
+      const options = speeds.map<ControlSelectOption>((speed) =>
+        isNumberedFanSpeed(speed)
+          ? {
+              value: speed,
+              label: formatNumber(speed, this._locale),
+              ariaLabel: this._localizeSpeed(speed),
+            }
+          : {
+              value: speed,
+              ariaLabel: this._localizeSpeed(speed),
+              path: computeFanSpeedIcon(this._stateObj!, speed),
+            }
       );
 
       const speed = fanPercentageToSpeed(this._stateObj, percentage);
@@ -151,7 +186,6 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
           .options=${options}
           .value=${speed}
           @value-changed=${this._speedValueChanged}
-          hide-option-label
           .label=${computeAttributeNameDisplay(
             this._localize,
             this._stateObj,
@@ -212,6 +246,9 @@ class HuiFanSpeedCardFeature extends LitElement implements LovelaceCardFeature {
     return [
       cardFeatureStyles,
       css`
+        :host {
+          display: block;
+        }
         ha-control-select {
           /* Color the background to match the slider style */
           --control-select-background: var(--feature-color);

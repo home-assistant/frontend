@@ -1,23 +1,30 @@
-import { consume, type ContextType } from "@lit/context";
+import { provide, type ContextType } from "@lit/context";
 import { mdiCommentTextOutline } from "@mdi/js";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import { truncateWithEllipsis } from "../../common/string/truncate-with-ellipsis";
 import type { Condition } from "../../data/automation";
+import { getRowNote } from "../../data/automation";
 import type { ConditionDescription } from "../../data/condition";
 import { internationalizationContext } from "../../data/context";
-import "../../panels/config/automation/ha-automation-row-behavior";
 import "../../panels/config/automation/ha-automation-row-options";
+import "../../panels/config/automation/ha-automation-row-threshold";
 import { getDeviceTarget } from "../../panels/config/automation/target/get_device_target";
 import { getEntityTarget } from "../../panels/config/automation/target/get_entity_target";
 import "../../panels/config/automation/target/ha-automation-row-targets";
 import "../ha-svg-icon";
 import "../ha-tooltip";
+import { targetExpandGroupContext } from "../target-picker/target-expand-group-context";
 
 @customElement("ha-automation-condition-summary")
 export class HaAutomationConditionSummary extends LitElement {
+  // Triggers and conditions don't expand the groups their targets name.
+  @provide({ context: targetExpandGroupContext })
+  protected _targetExpandGroup = false;
+
   @property() public label = "";
 
   @property({ attribute: false }) public condition?: Condition;
@@ -41,7 +48,7 @@ export class HaAutomationConditionSummary extends LitElement {
       this.condition?.condition === "numeric_state";
     const targetRequired =
       (descriptionHasTarget || hasEntityTarget) && !this.isNew;
-    const note = this.condition?.note?.trim();
+    const note = getRowNote(this.condition?.note);
 
     let target: HassServiceTarget | undefined;
     if (this.condition) {
@@ -63,10 +70,13 @@ export class HaAutomationConditionSummary extends LitElement {
         ${this.label}
         ${
           this.description && this.condition
-            ? html`<ha-automation-row-behavior
-                mode="condition"
-                .config=${this.condition}
-              ></ha-automation-row-behavior>`
+            ? html`<ha-automation-row-threshold
+                  .config=${this.condition}
+                  .description=${this.description}
+                ></ha-automation-row-threshold>
+                <ha-automation-row-options
+                  .config=${this.condition}
+                ></ha-automation-row-options> `
             : nothing
         }
         ${
@@ -83,13 +93,7 @@ export class HaAutomationConditionSummary extends LitElement {
               ></ha-automation-row-targets>`
             : nothing
         }
-        ${
-          this.description && this.condition
-            ? html`<ha-automation-row-options
-                .config=${this.condition}
-              ></ha-automation-row-options>`
-            : nothing
-        }
+        <slot name="references"></slot>
         ${
           note
             ? html`

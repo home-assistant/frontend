@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   mdiArrowOscillating,
   mdiArrowOscillatingOff,
@@ -10,11 +10,11 @@ import {
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { stateActive } from "../../../common/entity/state_active";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
-import "../../../components/ha-list-item";
 import "../../../components/ha-outlined-icon-button";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import type { FanEntity } from "../../../data/fan";
@@ -131,6 +131,10 @@ class MoreInfoFan extends LitElement {
       return nothing;
     }
 
+    const supportsOnOff =
+      supportsFeature(this.stateObj, FanEntityFeature.TURN_ON) ||
+      supportsFeature(this.stateObj, FanEntityFeature.TURN_OFF);
+
     const supportsSpeed = supportsFeature(
       this.stateObj,
       FanEntityFeature.SET_SPEED
@@ -174,21 +178,15 @@ class MoreInfoFan extends LitElement {
               `
         }
         ${
-          supportSpeedPercentage
+          supportSpeedPercentage && supportsOnOff
             ? html`
                 <div class="buttons">
-                  ${
-                    supportSpeedPercentage
-                      ? html`
-                          <ha-outlined-icon-button
-                            .disabled=${this.stateObj.state === UNAVAILABLE}
-                            @click=${this._toggle}
-                          >
-                            <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
-                          </ha-outlined-icon-button>
-                        `
-                      : nothing
-                  }
+                  <ha-outlined-icon-button
+                    .disabled=${this.stateObj.state === UNAVAILABLE}
+                    @click=${this._toggle}
+                  >
+                    <ha-svg-icon .path=${mdiPower}></ha-svg-icon>
+                  </ha-outlined-icon-button>
                 </div>
               `
             : nothing

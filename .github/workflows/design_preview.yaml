@@ -29,17 +29,17 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
 
       - name: Build Gallery
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-gallery
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy preview to Netlify
         id: deploy
-        uses: ./.github/actions/netlify-deploy
+        uses: $/.github/actions/netlify-deploy
         with:
           dir: gallery/dist
           alias: deploy-preview-${{ github.event.number }}

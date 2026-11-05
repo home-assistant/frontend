@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { mdiShieldOff } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { PropertyValues, TemplateResult } from "lit";
@@ -6,6 +5,7 @@ import { html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityState,
   consumeLocalize,

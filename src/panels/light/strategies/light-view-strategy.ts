@@ -38,13 +38,20 @@ const processAreasForLight = (
     const area = hass.areas[areaId];
     if (!area) continue;
 
-    const areaFilter = generateEntityFilter(hass, {
-      area: area.area_id,
-    });
+    const areaFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        area: area.area_id,
+      }
+    );
     const areaLights = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+    const computeTileCard = computeAreaTileCardConfig(hass, false);
 
     for (const entityId of areaLights) {
       areaCards.push(computeTileCard(entityId));
@@ -77,6 +84,10 @@ const processAreasForLight = (
             type: "button",
             icon: "mdi:power",
             text: hass.localize("ui.panel.lovelace.strategy.light.off"),
+            label: hass.localize(
+              "ui.panel.lovelace.strategy.light.turn_on_area",
+              { area: area.name }
+            ),
             tap_action: {
               action: "perform-action",
               perform_action: "light.turn_on",
@@ -97,6 +108,10 @@ const processAreasForLight = (
             icon: "mdi:power",
             color: "orange",
             text: hass.localize("ui.panel.lovelace.strategy.light.on"),
+            label: hass.localize(
+              "ui.panel.lovelace.strategy.light.turn_off_area",
+              { area: area.name }
+            ),
             tap_action: {
               action: "perform-action",
               perform_action: "light.turn_off",
@@ -151,12 +166,19 @@ const processUnassignedLights = (
   hass: HomeAssistant,
   entities: string[]
 ): LovelaceCardConfig[] => {
-  const unassignedFilter = generateEntityFilter(hass, {
-    area: null,
-  });
+  const unassignedFilter = generateEntityFilter(
+    hass.states,
+    hass.entities,
+    hass.devices,
+    hass.areas,
+    hass.floors,
+    {
+      area: null,
+    }
+  );
   const unassignedLights = entities.filter(unassignedFilter);
   const areaCards: LovelaceCardConfig[] = [];
-  const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+  const computeTileCard = computeAreaTileCardConfig(hass, false);
 
   for (const entityId of unassignedLights) {
     areaCards.push(computeTileCard(entityId));
@@ -180,7 +202,14 @@ export class LightViewStrategy extends ReactiveElement {
     const allEntities = Object.keys(hass.states);
 
     const lightFilters = lightEntityFilters.map((filter) =>
-      generateEntityFilter(hass, filter)
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        filter
+      )
     );
 
     const entities = findEntities(allEntities, lightFilters);

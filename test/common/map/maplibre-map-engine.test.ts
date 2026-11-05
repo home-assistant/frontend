@@ -1,7 +1,15 @@
 import type { LayerSpecification, StyleSpecification } from "maplibre-gl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { CONTEXT_RESTORE_GRACE } from "../../../src/common/map/base-layer";
-import { MapLibreMapEngine } from "../../../src/common/map/engines/maplibre-map-engine";
+import {
+  circleBoundsPoints,
+  distanceMeters,
+  pointEastOf,
+} from "../../../src/common/map/map-engine";
+import {
+  CLUSTER_REBUILD_DELAY,
+  MapLibreMapEngine,
+} from "../../../src/common/map/engines/maplibre-map-engine";
 import type {
   MapEngineEvents,
   MapLatLng,
@@ -34,8 +42,14 @@ const fakes = vi.hoisted(() => {
 
     onMap = false;
 
+    handlers: Record<string, Listener[]> = {};
+
     constructor(options: any) {
       this.options = options;
+    }
+
+    fire(type: string) {
+      (this.handlers[type] ?? []).forEach((handler) => handler());
     }
 
     setLngLat(lngLat: [number, number]) {
@@ -50,7 +64,13 @@ const fakes = vi.hoisted(() => {
     addTo() {
       this.onMap = true;
       FakeMarker.all.push(this);
-      document.body.appendChild(this.options.element);
+      const element = this.options.element as HTMLElement;
+      element.classList.add(
+        "maplibregl-marker",
+        "maplibregl-marker-anchor-center"
+      );
+      element.style.transform = "translate(10px, 10px)";
+      document.body.appendChild(element);
       return this;
     }
 
@@ -68,7 +88,8 @@ const fakes = vi.hoisted(() => {
       return this.options.element as HTMLElement;
     }
 
-    on() {
+    on(type: string, handler: Listener) {
+      (this.handlers[type] ??= []).push(handler);
       return this;
     }
   }
@@ -91,6 +112,36 @@ const fakes = vi.hoisted(() => {
     }
   }
 
+  class FakeAttributionControl {
+    static all: FakeAttributionControl[] = [];
+
+    element?: HTMLElement;
+
+    constructor(public options: { compact?: boolean }) {
+      FakeAttributionControl.all.push(this);
+    }
+
+    onAdd() {
+      const element = document.createElement("details");
+      element.className = "maplibregl-ctrl maplibregl-ctrl-attrib";
+      const button = document.createElement("summary");
+      button.className = "maplibregl-ctrl-attrib-button";
+      button.addEventListener("click", () =>
+        element.classList.toggle("maplibregl-compact-show")
+      );
+      element.append(button);
+      if (this.options.compact) {
+        element.classList.add("maplibregl-compact", "maplibregl-compact-show");
+      }
+      this.element = element;
+      return element;
+    }
+
+    onRemove() {
+      this.element?.remove();
+    }
+  }
+
   class FakeMap {
     static instances: FakeMap[] = [];
 
@@ -108,7 +159,12 @@ const fakes = vi.hoisted(() => {
 
     fitBounds = vi.fn();
 
+    // A fit towards the members lands at the maximum zoom
+    cameraForBounds = vi.fn(() => ({ zoom: this.getMaxZoom() }));
+
     easeTo = vi.fn();
+
+    flyTo = vi.fn();
 
     jumpTo = vi.fn();
 
@@ -120,9 +176,16 @@ const fakes = vi.hoisted(() => {
 
     remove = vi.fn();
 
-    addControl = vi.fn();
+    addControl = vi.fn((control: { onAdd?: () => HTMLElement }) => {
+      const element = control.onAdd?.();
+      if (element) {
+        this._container.append(element);
+      }
+    });
 
-    removeControl = vi.fn();
+    removeControl = vi.fn((control: { onRemove?: () => void }) =>
+      control.onRemove?.()
+    );
 
     setStyle = vi.fn(
       (
@@ -226,8 +289,17 @@ const fakes = vi.hoisted(() => {
       this.style.sources[id] = source;
     }
 
+    // A live source updates the spec it was created from, as MapLibre's does
     getSource(id: string) {
-      return this.style.sources[id];
+      const spec = this.style.sources[id] as { data?: unknown } | undefined;
+      return spec
+        ? {
+            ...spec,
+            setData: (data: unknown) => {
+              spec.data = data;
+            },
+          }
+        : undefined;
     }
 
     removeSource(id: string) {
@@ -288,25 +360,24 @@ const fakes = vi.hoisted(() => {
     }
   }
 
-  return { baseStyle, FakeMap, FakeMarker, FakePopup };
+  return { baseStyle, FakeMap, FakeMarker, FakePopup, FakeAttributionControl };
 });
 
 vi.mock("maplibre-gl", () => ({
-  default: {
-    Map: fakes.FakeMap,
-    Marker: fakes.FakeMarker,
-    Popup: fakes.FakePopup,
-    NavigationControl: vi.fn(),
-    ScaleControl: vi.fn(),
-    setRTLTextPlugin: vi.fn(),
-  },
+  Map: fakes.FakeMap,
+  Marker: fakes.FakeMarker,
+  Popup: fakes.FakePopup,
+  AttributionControl: fakes.FakeAttributionControl,
+  NavigationControl: vi.fn(),
+  ScaleControl: vi.fn(),
+  setWorkerUrl: vi.fn(),
 }));
 
 const loadStyle = vi.hoisted(() => vi.fn());
 vi.mock("../../../src/common/map/base-layer", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
   loadStyle,
-  ensureRTLTextPlugin: vi.fn(),
+  ensureWorkerUrl: vi.fn(),
 }));
 
 const tokenListeners = vi.hoisted(() => new Set<(token: string) => void>());
@@ -314,7 +385,7 @@ const refreshMapTilesToken = vi.hoisted(() => vi.fn());
 vi.mock("../../../src/data/map_tiles", () => ({
   MAP_TILES_PATH: "/api/map_tiles",
   mapTilesUrl: (path: string) => path,
-  withMapTilesToken: (url: string) => url,
+  withMapTilesToken: (url: string) => ({ url }),
   refreshMapTilesToken,
   subscribeMapTilesToken: (listener: (token: string) => void) => {
     tokenListeners.add(listener);
@@ -331,6 +402,19 @@ const flush = () =>
     setTimeout(resolve, 0);
   });
 
+const fakeAttribution = fakes.FakeAttributionControl;
+
+const viewport = {
+  matches: false,
+  listeners: new Set<Listener>(),
+  addEventListener: (_type: string, listener: Listener) => {
+    viewport.listeners.add(listener);
+  },
+  removeEventListener: (_type: string, listener: Listener) => {
+    viewport.listeners.delete(listener);
+  },
+};
+
 const createEngine = async (events: Partial<MapEngineEvents> = {}) => {
   const container = document.createElement("div");
   document.body.appendChild(container);
@@ -338,7 +422,7 @@ const createEngine = async (events: Partial<MapEngineEvents> = {}) => {
   const ready = engine.init(container, {
     center: [52, 4],
     zoom: 13,
-    darkMode: false,
+    mapStyle: { palette: "colorful" as const },
     zoomControlPosition: "topleft",
     events,
   });
@@ -359,15 +443,77 @@ describe("MapLibreMapEngine", () => {
     fakeMap.startLoaded = true;
     fakeMap.failNextSetStyle = false;
     fakeMarker.all.length = 0;
+    fakeAttribution.all.length = 0;
+    viewport.matches = false;
+    viewport.listeners.clear();
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn(() => viewport)
+    );
     tokenListeners.clear();
     refreshMapTilesToken.mockClear();
     loadStyle.mockReset();
     loadStyle.mockImplementation(async () => baseStyle());
   });
 
+  describe("attribution", () => {
+    const attribution = (map: InstanceType<typeof fakeMap>) =>
+      map.getContainer().querySelector(".maplibregl-ctrl-attrib")!;
+    const shown = (map: InstanceType<typeof fakeMap>) =>
+      attribution(map).classList.contains("maplibregl-compact-show");
+
+    const narrowWithFakeTimers = async () => {
+      const created = await createEngine();
+      await created.ready;
+      vi.useFakeTimers();
+      viewport.matches = true;
+      viewport.listeners.forEach((listener) => listener());
+      return created.map;
+    };
+
+    it("collapses the opened compact attribution by itself", async () => {
+      const map = await narrowWithFakeTimers();
+      expect(shown(map)).toBe(true);
+
+      vi.advanceTimersByTime(4999);
+      expect(shown(map)).toBe(true);
+      vi.advanceTimersByTime(1);
+      expect(shown(map)).toBe(false);
+    });
+
+    it("leaves an attribution the user opened alone", async () => {
+      const map = await narrowWithFakeTimers();
+      vi.advanceTimersByTime(5000);
+      expect(shown(map)).toBe(false);
+
+      attribution(map)
+        .querySelector<HTMLElement>(".maplibregl-ctrl-attrib-button")!
+        .click();
+      await Promise.resolve();
+      expect(shown(map)).toBe(true);
+      vi.advanceTimersByTime(5000);
+      expect(shown(map)).toBe(true);
+    });
+
+    it("forces a compact attribution on a narrow viewport only", async () => {
+      const { map, ready } = await createEngine();
+      await ready;
+      expect(fakeAttribution.all).toHaveLength(1);
+      expect(fakeAttribution.all[0].options.compact).toBeUndefined();
+
+      viewport.matches = true;
+      viewport.listeners.forEach((listener) => listener());
+      expect(map.removeControl).toHaveBeenCalledWith(fakeAttribution.all[0]);
+      expect(fakeAttribution.all).toHaveLength(2);
+      expect(fakeAttribution.all[1].options.compact).toBe(true);
+      expect(attribution(map)).toBe(fakeAttribution.all[1].element);
+    });
+  });
+
   afterEach(() => {
     document.body.innerHTML = "";
     vi.useRealTimers();
+    vi.unstubAllGlobals();
   });
 
   describe("style lifecycle", () => {
@@ -405,7 +551,7 @@ describe("MapLibreMapEngine", () => {
       const { engine, map, ready } = await createEngine();
       await ready;
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledOnce();
       expect(map.isStyleLoaded()).toBe(false);
@@ -434,7 +580,7 @@ describe("MapLibreMapEngine", () => {
       const customLayers = layerIds(map).filter((id) => id.startsWith("ha-"));
       expect(customLayers).toHaveLength(2);
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       map.loadStyle();
 
@@ -452,10 +598,10 @@ describe("MapLibreMapEngine", () => {
       await ready;
       engine.addCircle([52, 4], { radius: 100, color: "red" });
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       // The dark style has not loaded, so this swap sees no previous style
-      engine.setDarkMode(false);
+      engine.setMapStyle({ palette: "colorful" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledTimes(2);
 
@@ -471,18 +617,18 @@ describe("MapLibreMapEngine", () => {
       await ready;
       expect(loadStyle).toHaveBeenCalledTimes(1);
 
-      engine.setDarkMode(false);
+      engine.setMapStyle({ palette: "colorful" });
       await flush();
       expect(loadStyle).toHaveBeenCalledTimes(1);
 
       // The dark style fails to fetch: the map stays light and dark can be
       // requested again
       loadStyle.mockRejectedValueOnce(new Error("offline"));
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).not.toHaveBeenCalled();
 
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(loadStyle).toHaveBeenCalledTimes(3);
       expect(map.setStyle).toHaveBeenCalledOnce();
@@ -493,13 +639,13 @@ describe("MapLibreMapEngine", () => {
       await ready;
 
       fakeMap.failNextSetStyle = true;
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledOnce();
       expect(map.isStyleLoaded()).toBe(true);
 
       // Dark was not applied, so asking for it again applies it
-      engine.setDarkMode(true);
+      engine.setMapStyle({ palette: "colorful-dark" });
       await flush();
       expect(map.setStyle).toHaveBeenCalledTimes(2);
       expect(map.isStyleLoaded()).toBe(false);
@@ -574,9 +720,202 @@ describe("MapLibreMapEngine", () => {
       map.fire("movestart");
       expect(moveStart).toHaveBeenCalledOnce();
     });
+
+    it("reports the map drawn on its first load only", async () => {
+      const drawn = vi.fn();
+      const { map, ready } = await createEngine({ drawn });
+      await ready;
+      expect(drawn).not.toHaveBeenCalled();
+
+      map.fire("load");
+      map.fire("load");
+      expect(drawn).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe("fitting", () => {
+    it("keeps overlays clear of the fitted bounds", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      engine.fitBounds(
+        [
+          [52, 4],
+          [53, 5],
+        ],
+        { maxZoom: 15, padding: { bottom: 200 } }
+      );
+      expect(map.fitBounds).toHaveBeenCalledOnce();
+      const [, options] = map.fitBounds.mock.calls[0];
+      expect(options.maxZoom).toBe(14);
+      expect(options.padding).toEqual({
+        top: 0,
+        right: 0,
+        bottom: 200,
+        left: 0,
+      });
+    });
+
+    it("centers on a single point instead of fitting it", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // Centered, not fitted; padding becomes a transient offset
+      engine.fitBounds([[52, 4]], { maxZoom: 15, padding: { bottom: 200 } });
+      expect(map.fitBounds).not.toHaveBeenCalled();
+      expect(map.easeTo).toHaveBeenCalledWith(
+        expect.objectContaining({
+          center: [4, 52],
+          zoom: 14,
+          offset: [0, -100],
+        })
+      );
+    });
+
+    it("flies to a single point when the fit asked to fly", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      engine.fitBounds([[52, 4]], { maxZoom: 15, fly: true, animate: true });
+      expect(map.fitBounds).not.toHaveBeenCalled();
+      expect(map.easeTo).not.toHaveBeenCalled();
+      expect(map.flyTo).toHaveBeenCalledWith(
+        expect.objectContaining({ center: [4, 52], zoom: 14, animate: true })
+      );
+    });
+
+    it("eases to a fly fit under reduced motion to keep the offset", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // flyTo jumps and drops the offset under reduced motion, so ease instead
+      viewport.matches = true;
+      engine.fitBounds([[52, 4]], {
+        maxZoom: 15,
+        fly: true,
+        animate: true,
+        padding: { bottom: 200 },
+      });
+      expect(map.flyTo).not.toHaveBeenCalled();
+      expect(map.easeTo).toHaveBeenCalledWith(
+        expect.objectContaining({ center: [4, 52], offset: [0, -100] })
+      );
+    });
+
+    it("keeps padded bounds within the poles", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // Points 150 degrees apart; half of that as padding would overshoot
+      engine.fitBounds(
+        [
+          [-75, -20],
+          [75, 20],
+        ],
+        { pad: 0.5 }
+      );
+      const [bounds] = map.fitBounds.mock.calls[0];
+      expect(bounds[0][1]).toBe(-90);
+      expect(bounds[1][1]).toBe(90);
+      expect(bounds[0][0]).toBe(-40);
+      expect(bounds[1][0]).toBe(40);
+    });
   });
 
   describe("markers", () => {
+    it("hands a removed element back without MapLibre's positioning", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      const handle = engine.addMarker(element, [52, 4], { size: [36, 36] });
+      expect(element.classList.contains("maplibregl-marker")).toBe(true);
+
+      handle.remove();
+      expect(element.className).toBe("");
+      expect(element.style.transform).toBe("");
+    });
+
+    it("resets every element it placed when destroyed", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      engine.addMarker(element, [52, 4], { size: [36, 36] });
+      const center = document.createElement("div");
+      engine.editing.addEditableCircle([52, 4], {
+        radius: 100,
+        color: "red",
+        centerElement: center,
+      });
+
+      engine.destroy();
+      expect(element.className).toBe("");
+      expect(center.className).toBe("");
+      expect(center.style.transform).toBe("");
+    });
+
+    it("shows a move cursor only on elements it made draggable", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const plain = document.createElement("div");
+      engine.addMarker(plain, [52, 4], { size: [36, 36] });
+      const draggable = document.createElement("div");
+      const handle = engine.editing.addDraggableMarker(draggable, [52, 4], {
+        size: [36, 36],
+      });
+      const center = document.createElement("div");
+      engine.editing.addEditableCircle([52, 4], {
+        radius: 100,
+        color: "red",
+        centerElement: center,
+        moveable: true,
+      });
+
+      expect(plain.style.cursor).toBe("");
+      expect(draggable.style.cursor).toBe("move");
+      expect(center.style.cursor).toBe("move");
+      handle.remove();
+      expect(draggable.style.cursor).toBe("");
+    });
+
+    it("relabels a reused element and leaves the caller's own attributes alone", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      engine
+        .addMarker(element, [52, 4], { size: [36, 36], title: "Thuis" })
+        .remove();
+      expect(element.hasAttribute("aria-label")).toBe(false);
+      expect(element.tabIndex).toBe(-1);
+
+      engine.addMarker(element, [52, 4], {
+        size: [36, 36],
+        title: "Home",
+        focusable: false,
+      });
+      expect(element.getAttribute("aria-label")).toBe("Home");
+      expect(element.getAttribute("role")).toBe("img");
+
+      const named = document.createElement("div");
+      named.setAttribute("aria-label", "Mine");
+      engine.addMarker(named, [52, 4], { size: [36, 36], title: "Engine" });
+      expect(named.getAttribute("aria-label")).toBe("Mine");
+    });
+
+    it("gives button semantics only to focusable markers", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const element = document.createElement("div");
+      engine.addMarker(element, [52, 4], {
+        size: [36, 36],
+        title: "Pin",
+        focusable: false,
+      });
+
+      expect(element.tabIndex).toBe(-1);
+      expect(element.getAttribute("role")).toBe("img");
+      expect(element.style.pointerEvents).toBe("");
+    });
+
     it("lets input through non-interactive markers", async () => {
       const { engine, ready } = await createEngine();
       await ready;
@@ -607,12 +946,26 @@ describe("MapLibreMapEngine", () => {
         clusterData,
       });
 
-    const iconBuilder = vi.fn((members: MapMarkerHandle[]) => ({
-      element: Object.assign(document.createElement("div"), {
-        textContent: String(members.length),
-      }),
-      size: [40, 40] as [number, number],
-    }));
+    const iconBuilder = vi.fn(
+      (
+        members: MapMarkerHandle[],
+        _location: MapLatLng,
+        _key?: string,
+        expanded?: boolean
+      ) => {
+        const element = document.createElement("div");
+        element.textContent = String(members.length);
+        if (expanded) {
+          // Like ha-map's expanded bubble: each avatar is a button
+          members.forEach(() =>
+            element.appendChild(
+              Object.assign(document.createElement("button"), { tabIndex: 0 })
+            )
+          );
+        }
+        return { element, size: [40, 40] as [number, number] };
+      }
+    );
 
     beforeEach(() => {
       iconBuilder.mockClear();
@@ -685,6 +1038,71 @@ describe("MapLibreMapEngine", () => {
       expect(fakeMarker.all).toHaveLength(2);
     });
 
+    it("hands the icon builder the key of a zone group only", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4.0], { zone: "home" });
+      addMarker(engine, [52, 4.01], { zone: "home" });
+      // Two keyless markers 20px apart cluster by proximity
+      addMarker(engine, [52.01, 4.0]);
+      addMarker(engine, [52.01, 4.002]);
+      engine.setClustering({
+        radius: 40,
+        groupRadius: 160,
+        groupKey: (marker) =>
+          (marker.clusterData as { zone?: string } | undefined)?.zone,
+        iconBuilder,
+      });
+
+      expect(iconBuilder).toHaveBeenCalledTimes(2);
+      expect(iconBuilder.mock.calls[0][2]).toBe("home");
+      expect(iconBuilder.mock.calls[1][2]).toBeUndefined();
+    });
+
+    it("merges bubbles that would overlap on screen into one", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      // Two zone groups whose 40px icons sit 30px apart
+      addMarker(engine, [52, 4.0], { zone: "home" });
+      addMarker(engine, [52, 4.001], { zone: "home" });
+      addMarker(engine, [52, 4.003], { zone: "work" });
+      addMarker(engine, [52, 4.004], { zone: "work" });
+      engine.setClustering({
+        radius: 40,
+        groupRadius: 160,
+        groupKey: (marker) =>
+          (marker.clusterData as { zone?: string } | undefined)?.zone,
+        iconBuilder,
+      });
+
+      expect(fakeMarker.all).toHaveLength(1);
+      const [members, , key] = iconBuilder.mock.lastCall!;
+      expect(members).toHaveLength(4);
+      expect(key).toBeUndefined();
+    });
+
+    it("keeps a zone's key when its bubble absorbs an overlapping plain one", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4.0], { zone: "home" });
+      addMarker(engine, [52, 4.001], { zone: "home" });
+      addMarker(engine, [52, 4.003]);
+      addMarker(engine, [52, 4.004]);
+      engine.setClustering({
+        radius: 40,
+        groupRadius: 160,
+        groupKey: (marker) =>
+          (marker.clusterData as { zone?: string } | undefined)?.zone,
+        iconBuilder,
+      });
+
+      expect(fakeMarker.all).toHaveLength(1);
+      expect(iconBuilder.mock.lastCall![2]).toBe("home");
+    });
+
     it("drops removed markers from their cluster on refresh", async () => {
       const { engine, ready } = await createEngine();
       await ready;
@@ -701,40 +1119,361 @@ describe("MapLibreMapEngine", () => {
       expect(fakeMarker.all).toHaveLength(1);
     });
 
-    const openBubble = () => {
-      expect(fakeMarker.all).toHaveLength(1);
-      const [bubble] = fakeMarker.all;
-      expect(bubble.options.anchor).toBe("bottom");
-      return (bubble.options.element as HTMLElement).querySelectorAll(
-        ".cluster-open-members > *"
-      );
+    // The zoom towards the members has settled; the delayed regroup runs
+    const settle = (map: { fire: (type: string) => void }) => {
+      map.fire("moveend");
+      vi.advanceTimersByTime(CLUSTER_REBUILD_DELAY);
     };
 
-    it("opens a cluster whose members share a spot in a bubble", async () => {
+    // The one marker on the map is the bubble built expanded, with every member
+    const openBubble = () => {
+      expect(fakeMarker.all).toHaveLength(1);
+      const call = iconBuilder.mock.calls[iconBuilder.mock.calls.length - 1];
+      expect(call[3]).toBe(true);
+      expect(fakeMarker.all[0].options.element).toBe(
+        iconBuilder.mock.results[iconBuilder.mock.results.length - 1].value
+          .element
+      );
+      return call[0];
+    };
+
+    it("opens a bubble right away when zooming could not pull it apart", async () => {
+      vi.useFakeTimers();
       const { engine, map, ready } = await createEngine();
       await ready;
 
       const elements = [
         addMarker(engine, [52, 4]),
         addMarker(engine, [52, 4]),
-        addMarker(engine, [52, 4]),
+        // 0.1px away now, under the radius even at the maximum zoom
+        addMarker(engine, [52, 4.00001]),
       ];
       engine.setClustering({ radius: 40, iconBuilder });
       expect(fakeMarker.all).toHaveLength(1);
 
+      // Opens at once and still zooms in on the spot
       (iconBuilder.mock.results[0].value.element as HTMLElement).click();
-      // Zooming would change nothing; the members themselves sit in a
-      // bubble pointing at the spot
-      expect(map.fitBounds).not.toHaveBeenCalled();
+      expect(map.fitBounds).toHaveBeenCalledOnce();
       expect(openBubble()).toHaveLength(elements.length);
 
-      // A refresh keeps it open; regrouping after the map moves closes it
+      // Landing at maximum zoom keeps it open through the regroup
+      map.zoom = map.getMaxZoom();
+      settle(map);
+      expect(openBubble()).toHaveLength(elements.length);
+
+      // A refresh keeps it open; regrouping after zooming back out closes it
       engine.refreshClusters();
       expect(openBubble()).toHaveLength(elements.length);
+      map.zoom = 12;
       engine.setClustering({ radius: 40, iconBuilder });
+      expect(iconBuilder).toHaveBeenCalledTimes(5);
+      expect(iconBuilder.mock.calls[iconBuilder.mock.calls.length - 1][3]).toBe(
+        false
+      );
+      expect(fakeMarker.all).toHaveLength(1);
+    });
+
+    it("keeps focus on the same avatar when an open bubble is rebuilt", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      map.zoom = map.getMaxZoom();
+
+      // Like ha-map, the builder hands out the same avatar element per member
+      const avatars = new Map<MapMarkerHandle, HTMLButtonElement>();
+      const reusing = (members: MapMarkerHandle[]) => {
+        const element = document.createElement("div");
+        members.forEach((member) => {
+          let avatar = avatars.get(member);
+          if (!avatar) {
+            avatar = Object.assign(document.createElement("button"), {
+              tabIndex: 0,
+            });
+            avatars.set(member, avatar);
+          }
+          element.appendChild(avatar);
+        });
+        return { element, size: [40, 40] as [number, number] };
+      };
+      iconBuilder.mockImplementationOnce(reusing);
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      engine.setClustering({ radius: 40, iconBuilder });
+
+      const [, second] = avatars.values();
+      second.focus();
+      iconBuilder.mockImplementationOnce(reusing);
+      engine.refreshClusters();
+      expect(fakeMarker.all[0].options.element.contains(second)).toBe(true);
+      expect(document.activeElement).toBe(second);
+    });
+
+    it("moves keyboard focus off a member the split hides", async () => {
+      vi.useFakeTimers();
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      // The first member parts on its own and starts hidden
+      const first = document.createElement("div");
+      engine.addMarker(first, [52, 4.002], { size: [48, 48], cluster: true });
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      const icon = iconBuilder.mock.results[0].value.element as HTMLElement;
+
+      icon.focus();
+      icon.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      expect(first.style.visibility).toBe("hidden");
+      const staying = fakeMarker.all.find(
+        (marker) => marker.options.element !== first
+      )!.options.element as HTMLElement;
+      expect(staying.style.visibility).toBe("");
+      expect(staying.contains(document.activeElement)).toBe(true);
+    });
+
+    it("opens a chain of members each within the radius of the next", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // 38px apart at the maximum zoom, so 77px end to end: one chained
+      // cluster there, further apart than the radius as a whole
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4.00003]);
+      addMarker(engine, [52, 4.00006]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      expect(fakeMarker.all).toHaveLength(1);
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      expect(map.fitBounds).toHaveBeenCalledOnce();
+      expect(openBubble()).toHaveLength(3);
+    });
+
+    it("splits off the members a zoom will part and opens the rest at once", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      // Leaves the bubble at the maximum zoom; the other two do not
+      const leaving = addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      expect(fakeMarker.all).toHaveLength(1);
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      expect(map.fitBounds).toHaveBeenCalledOnce();
+      // Its own marker already, next to the opened bubble of the other two
+      expect(fakeMarker.all).toHaveLength(2);
+      const call = iconBuilder.mock.calls[iconBuilder.mock.calls.length - 1];
+      expect(call[3]).toBe(true);
+      expect(call[0]).toHaveLength(2);
+      expect(call[0]).not.toContain(leaving);
+
+      // Hidden while still under the bubble on screen: 20px between centres,
+      // under half the 40px bubble plus half the 48px marker
+      const element = fakeMarker.all.find(
+        (marker) =>
+          marker.options.element !== call[0] && marker.lngLat?.[0] === 4.002
+      )!.options.element as HTMLElement;
+      expect(element.style.visibility).toBe("hidden");
+      map.fire("move");
+      expect(element.style.visibility).toBe("hidden");
+      // 40px apart: past the marker's own half size but still under the bubble
+      map.project = ([lng, lat]) => ({ x: lng * 20000, y: -lat * 20000 });
+      map.fire("move");
+      expect(element.style.visibility).toBe("hidden");
+      // 200px apart: clear of it
+      map.project = ([lng, lat]) => ({ x: lng * 100000, y: -lat * 100000 });
+      map.fire("move");
+      expect(element.style.visibility).toBe("");
+    });
+
+    it("hides a second bubble that opens away from the activated one", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // Two pairs the zoom parts, neither of which can be split further
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4.002]);
+      addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      expect(fakeMarker.all).toHaveLength(1);
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      expect(fakeMarker.all).toHaveLength(2);
+      const expanded = iconBuilder.mock.calls.slice(1);
+      expect(expanded.map((call) => call[3])).toEqual([true, true]);
+      const visibilities = fakeMarker.all
+        .map(
+          (marker) => (marker.options.element as HTMLElement).style.visibility
+        )
+        .sort();
+      expect(visibilities).toEqual(["", "hidden"]);
+      // The parted bubble shows once the zoom has carried it clear
+      map.project = ([lng, lat]) => ({ x: lng * 100000, y: -lat * 100000 });
+      map.fire("move");
+      expect(
+        fakeMarker.all.every(
+          (marker) =>
+            (marker.options.element as HTMLElement).style.visibility === ""
+        )
+      ).toBe(true);
+    });
+
+    it("regroups clusters elsewhere on the map too when one is activated", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4.002]);
+      // Far away, and internally 20px apart just like the activated one
+      addMarker(engine, [52, 5]);
+      addMarker(engine, [52, 5.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      expect(fakeMarker.all).toHaveLength(2);
+      const other = fakeMarker.all[1];
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      expect(map.fitBounds).toHaveBeenCalledOnce();
+      // Both pairs part: the fit regroups everything for the landing zoom
+      expect(fakeMarker.all).toHaveLength(4);
+      expect(fakeMarker.all).not.toContain(other);
+      const far = fakeMarker.all.filter((marker) => marker.lngLat![0] >= 5);
+      expect(far).toHaveLength(2);
+      far.forEach((marker) => {
+        expect(marker.onMap).toBe(true);
+        expect((marker.options.element as HTMLElement).style.visibility).toBe(
+          ""
+        );
+      });
+      expect(iconBuilder).toHaveBeenCalledTimes(2);
+    });
+
+    it("hands a marker removed while hidden back visible", async () => {
+      vi.useFakeTimers();
+      const { engine, ready } = await createEngine();
+      await ready;
+
+      const element = document.createElement("div");
+      engine.addMarker(element, [52, 4], { size: [48, 48], cluster: true });
+      engine.addMarker(element, [52, 4], { size: [48, 48], cluster: true });
+      const leaving = engine.addMarker(
+        document.createElement("div"),
+        [52, 4.002],
+        { size: [48, 48], cluster: true }
+      );
+      engine.setClustering({ radius: 40, iconBuilder });
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      const parted = fakeMarker.all.find(
+        (marker) => marker.lngLat?.[0] === 4.002
+      )!.options.element as HTMLElement;
+      expect(parted.style.visibility).toBe("hidden");
+      leaving.remove();
+      expect(parted.style.visibility).toBe("");
+    });
+
+    it("keeps a bubble that stays closed after the split visible", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // 5px apart: one bubble at the zoom the fit lands on, parted further in
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4.0005]);
+      const leaving = addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      map.cameraForBounds = vi.fn(() => ({ zoom: 15 }));
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      expect(fakeMarker.all).toHaveLength(2);
+      const bubble = fakeMarker.all.find(
+        (marker) => marker.lngLat?.[0] !== 4.002
+      )!;
+      const single = fakeMarker.all.find(
+        (marker) => marker.lngLat?.[0] === 4.002
+      )!;
+      const call = iconBuilder.mock.calls[iconBuilder.mock.calls.length - 1];
+      expect(call[3]).toBe(false);
+      expect(call[0]).not.toContain(leaving);
+      expect((bubble.options.element as HTMLElement).style.visibility).toBe("");
+      expect((single.options.element as HTMLElement).style.visibility).toBe(
+        "hidden"
+      );
+    });
+
+    it("merges expanded bubbles that would overlap at the maximum zoom", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      map.zoom = map.getMaxZoom();
+
+      // Two pairs 30px apart: past the radius, but 40px bubbles centred on
+      // them overlap, so they share one expanded bubble
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4.003]);
+      addMarker(engine, [52, 4.003]);
+      engine.setClustering({ radius: 20, iconBuilder });
+
+      expect(openBubble()).toHaveLength(4);
+      expect(fakeMarker.all).toHaveLength(1);
+    });
+
+    it("opens every bubble at the maximum zoom without being activated", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      map.zoom = map.getMaxZoom();
+
+      addMarker(engine, [52, 4.0]);
+      addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+
+      expect(openBubble()).toHaveLength(2);
+    });
+
+    it("opens a bubble once a zoom towards it lands at maximum zoom", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      // 20px apart: as far as the engine can tell before the zoom, zooming
+      // in would pull them apart
+      addMarker(engine, [52, 4.0]);
+      addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+      const icon = iconBuilder.mock.results[0].value.element as HTMLElement;
+
+      icon.click();
+      expect(map.fitBounds).toHaveBeenCalledOnce();
+      // Regrouped as parted already
+      expect(fakeMarker.all).toHaveLength(2);
+
+      // The zoom landed at maximum zoom with them still together after all
+      map.zoom = map.getMaxZoom();
+      settle(map);
+      expect(openBubble()).toHaveLength(2);
+    });
+
+    it("keeps a bubble closed when the zoom stops short of maximum zoom", async () => {
+      vi.useFakeTimers();
+      const { engine, map, ready } = await createEngine();
+      await ready;
+
+      addMarker(engine, [52, 4.0]);
+      addMarker(engine, [52, 4.002]);
+      engine.setClustering({ radius: 40, iconBuilder });
+
+      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
+      settle(map);
+      // Rebuilt as a bubble, not opened
       expect(iconBuilder).toHaveBeenCalledTimes(2);
       expect(fakeMarker.all).toHaveLength(1);
-      expect(fakeMarker.all[0].options.anchor).toBeUndefined();
+      expect(fakeMarker.all[0].options.element).toBe(
+        iconBuilder.mock.results[1].value.element
+      );
     });
 
     it("moves keyboard focus into an opened cluster and back to its icon", async () => {
@@ -749,26 +1488,47 @@ describe("MapLibreMapEngine", () => {
 
       icon.focus();
       icon.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
-      expect(document.activeElement).toBe(first);
+      // Regrouped for the maximum zoom the fit lands on, so opened at once,
+      // with focus on its first member
+      const opened = iconBuilder.mock.results[1].value.element as HTMLElement;
+      expect(opened.getAttribute("role")).toBe("group");
+      expect(document.activeElement).toBe(opened.firstElementChild);
 
-      // The bubble closes on the next regroup; focus lands on the new icon
+      // The regroup after the zoom keeps it open, focus on a member again
       engine.setClustering({ radius: 40, iconBuilder });
-      const reopened = iconBuilder.mock.results[1].value.element as HTMLElement;
-      expect(document.activeElement).toBe(reopened);
+      const reopened = iconBuilder.mock.results[2].value.element as HTMLElement;
+      expect(document.activeElement).toBe(reopened.firstElementChild);
+
+      // A later regroup closes it; focus lands on the closed icon
+      engine.setClustering({ radius: 40, iconBuilder });
+      const closed = iconBuilder.mock.results[3].value.element as HTMLElement;
+      expect(closed.getAttribute("role")).toBe("button");
+      expect(document.activeElement).toBe(closed);
     });
 
-    it("opens a cluster at maximum zoom in a bubble", async () => {
+    it("places an opened bubble where its builder puts it, like a closed one", async () => {
       const { engine, map, ready } = await createEngine();
       await ready;
       map.zoom = map.getMaxZoom();
 
-      addMarker(engine, [52, 4.0]);
-      addMarker(engine, [52, 4.002]);
+      addMarker(engine, [52, 4]);
+      addMarker(engine, [52, 4]);
+      // At maximum zoom the one build is the expanded bubble
+      iconBuilder.mockImplementationOnce((members) => ({
+        element: Object.assign(document.createElement("div"), {
+          textContent: String(members.length),
+        }),
+        size: [40, 40] as [number, number],
+        location: [52.001, 4.001] as MapLatLng,
+        anchor: [20, 60] as [number, number],
+      }));
       engine.setClustering({ radius: 40, iconBuilder });
 
-      (iconBuilder.mock.results[0].value.element as HTMLElement).click();
-      expect(map.fitBounds).not.toHaveBeenCalled();
-      expect(openBubble()).toHaveLength(2);
+      expect(iconBuilder).toHaveBeenCalledOnce();
+      const [bubble] = fakeMarker.all;
+      expect(bubble.lngLat).toEqual([4.001, 52.001]);
+      expect(bubble.options.anchor).toBe("top-left");
+      expect(bubble.options.offset).toEqual([-20, -60]);
     });
 
     it("zooms in on a cluster's members when it is activated", async () => {
@@ -784,6 +1544,274 @@ describe("MapLibreMapEngine", () => {
       expect(map.fitBounds).toHaveBeenCalledOnce();
       icon.click();
       expect(map.fitBounds).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("editing", () => {
+    const circleSource = (map: InstanceType<typeof fakeMap>) =>
+      Object.entries(map.style.sources).find(([id]) =>
+        id.startsWith("ha-map-editable")
+      )?.[1] as { data: unknown } | undefined;
+
+    const addCircle = (
+      engine: MapLibreMapEngine,
+      overrides: Partial<
+        Parameters<typeof engine.editing.addEditableCircle>[1]
+      > = {}
+    ) => {
+      const callbacks = {
+        onMove: vi.fn(),
+        onResize: vi.fn(),
+        onClick: vi.fn(),
+      };
+      const handle = engine.editing.addEditableCircle([52, 4], {
+        radius: 100,
+        color: "red",
+        moveable: true,
+        resizable: true,
+        title: "Home",
+        ...callbacks,
+        ...overrides,
+      });
+      const [center, resize] = fakeMarker.all;
+      return { handle, center, resize, ...callbacks };
+    };
+
+    beforeEach(() => {
+      // The circle redraws once per frame; run frames synchronously
+      // Returning a frame id here would land in the engine's pending frame
+      // after the callback already cleared it, suppressing later redraws
+      vi.stubGlobal("requestAnimationFrame", (callback: () => void) => {
+        callback();
+        return undefined;
+      });
+      vi.stubGlobal("cancelAnimationFrame", () => undefined);
+    });
+
+    it("draws a circle with a draggable center and a resize handle", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      const { center, resize } = addCircle(engine);
+
+      expect(fakeMarker.all).toHaveLength(2);
+      expect(center.options.draggable).toBe(true);
+      expect(center.options.element.getAttribute("role")).toBe("button");
+      expect(resize.options.draggable).toBe(true);
+      expect(resize.options.element.getAttribute("role")).toBe("slider");
+      expect(resize.options.element.getAttribute("aria-valuenow")).toBe("100");
+      expect(circleSource(map)).toBeDefined();
+      expect(
+        layerIds(map).filter((id) => id.startsWith("ha-map-editable"))
+      ).toHaveLength(2);
+    });
+
+    it("moves with its center and reports the drop", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      const { handle, center, resize, onMove } = addCircle(engine);
+      const before = circleSource(map)!.data;
+
+      center.lngLat = [4.01, 52];
+      center.fire("dragstart");
+      center.fire("drag");
+      expect(onMove).not.toHaveBeenCalled();
+      // The circle and the handle follow while dragging
+      expect(circleSource(map)!.data).not.toBe(before);
+      expect(resize.lngLat![0]).toBeCloseTo(pointEastOf([52, 4.01], 100)[1], 6);
+
+      center.fire("dragend");
+      expect(onMove).toHaveBeenCalledWith([52, 4.01]);
+      expect(handle.center).toEqual([52, 4.01]);
+    });
+
+    it("resizes from the handle and snaps it back onto the edge", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize, onResize } = addCircle(engine);
+
+      const east = pointEastOf([52, 4], 250);
+      resize.lngLat = [east[1], east[0]];
+      resize.fire("dragstart");
+      resize.fire("drag");
+      resize.fire("dragend");
+
+      expect(onResize).toHaveBeenCalledOnce();
+      expect(onResize.mock.calls[0][0]).toBeCloseTo(250, 0);
+      expect(handle.radius).toBeCloseTo(250, 0);
+      expect(resize.options.element.getAttribute("aria-valuenow")).toBe("250");
+    });
+
+    it("resizes in steps with the arrow keys, committing on key release", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize, onResize } = addCircle(engine);
+      const element = resize.options.element as HTMLElement;
+
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+      expect(handle.radius).toBeCloseTo(121, 5);
+      expect(onResize).not.toHaveBeenCalled();
+
+      element.dispatchEvent(new KeyboardEvent("keyup", { key: "ArrowUp" }));
+      expect(onResize).toHaveBeenCalledOnce();
+      expect(onResize.mock.calls[0][0]).toBeCloseTo(121, 5);
+    });
+
+    it("holds a keyboard resize against host updates like a drag", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize } = addCircle(engine);
+      const element = resize.options.element as HTMLElement;
+
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp" }));
+      // A re-render with the old radius while the key is held changes nothing
+      handle.update([52, 4], 100);
+      expect(handle.radius).toBeCloseTo(110, 5);
+
+      element.dispatchEvent(new KeyboardEvent("keyup", { key: "ArrowUp" }));
+      // Once committed, the host is the truth again
+      handle.update([52, 4], 100);
+      expect(handle.radius).toBe(100);
+    });
+
+    it("keeps arrow keys on the resize handle from reaching the map", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize } = addCircle(engine);
+      const reachedMap = vi.fn();
+      document.body.addEventListener("keydown", reachedMap);
+
+      (resize.options.element as HTMLElement).dispatchEvent(
+        new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true })
+      );
+      expect(handle.radius).toBeCloseTo(110, 5);
+      expect(reachedMap).not.toHaveBeenCalled();
+      document.body.removeEventListener("keydown", reachedMap);
+    });
+
+    it("places the handle on the drawn circle at any latitude", () => {
+      for (const [latitude, radius] of [
+        [0, 1000],
+        [52, 1000],
+        [89.9, 1000],
+        [89.9, 100000],
+      ]) {
+        const center: [number, number] = [latitude, 4];
+        const east = pointEastOf(center, radius);
+        expect(distanceMeters(center, east)).toBeCloseTo(radius, 0);
+        const [southWest, northEast] = circleBoundsPoints(center, radius);
+        // Valid bounds that contain the handle
+        expect(southWest[0]).toBeGreaterThanOrEqual(-90);
+        expect(northEast[0]).toBeLessThanOrEqual(90);
+        expect(east[1]).toBeGreaterThanOrEqual(southWest[1] - 1e-9);
+        expect(east[1]).toBeLessThanOrEqual(northEast[1] + 1e-9);
+      }
+      // A circle over the pole covers every longitude
+      expect(circleBoundsPoints([89.9, 4], 100000)[1]).toEqual([90, 180]);
+    });
+
+    it("keeps a click on the resize handle from reaching the map", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { resize } = addCircle(engine);
+      const reachedMap = vi.fn();
+      document.body.addEventListener("click", reachedMap);
+
+      (resize.options.element as HTMLElement).dispatchEvent(
+        new MouseEvent("click", { bubbles: true })
+      );
+      expect(reachedMap).not.toHaveBeenCalled();
+      document.body.removeEventListener("click", reachedMap);
+    });
+
+    it("raises the advertised maximum above a larger radius", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, resize } = addCircle(engine);
+      const element = resize.options.element as HTMLElement;
+      expect(element.getAttribute("aria-valuemax")).toBe("100000");
+
+      handle.update([52, 4], 150000);
+      expect(element.getAttribute("aria-valuemax")).toBe("150000");
+      expect(element.getAttribute("aria-valuenow")).toBe("150000");
+    });
+
+    it("ignores host updates only while a drag is in progress", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { handle, center } = addCircle(engine);
+
+      center.lngLat = [4.01, 52];
+      center.fire("dragstart");
+      // The user's hand wins while dragging
+      handle.update([53, 5], 500);
+      expect(handle.center).toEqual([52, 4]);
+      center.fire("drag");
+      center.fire("dragend");
+      expect(handle.center).toEqual([52, 4.01]);
+
+      // Afterwards the host is the truth, even when it moves the circle back
+      handle.update([52, 4], 100);
+      expect(handle.center).toEqual([52, 4]);
+      expect(handle.radius).toBe(100);
+    });
+
+    it("activates the center by click, Enter and Space, but not after a drag", async () => {
+      const { engine, ready } = await createEngine();
+      await ready;
+      const { center, onClick } = addCircle(engine);
+      const element = center.options.element as HTMLElement;
+
+      element.dispatchEvent(new MouseEvent("pointerdown"));
+      element.click();
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: " " }));
+      expect(onClick).toHaveBeenCalledTimes(3);
+
+      // A drag ends with a click on the element; that one is not an activation
+      element.dispatchEvent(new MouseEvent("pointerdown"));
+      center.fire("dragstart");
+      center.fire("dragend");
+      element.click();
+      expect(onClick).toHaveBeenCalledTimes(3);
+    });
+
+    it("keeps a circle moved while a swapped style was loading", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      engine.setMapStyle({ palette: "colorful-dark" });
+      await flush();
+      expect(map.isStyleLoaded()).toBe(false);
+
+      const handle = engine.editing.addEditableCircle([52, 4], {
+        radius: 100,
+        color: "red",
+      });
+      handle.update([53, 5], 200);
+      map.loadStyle();
+
+      const source = circleSource(map)!;
+      const ring = (source.data as { geometry: { coordinates: number[][][] } })
+        .geometry.coordinates[0];
+      // The polygon sits around the moved center, not the original one
+      expect(ring[0][1]).toBeCloseTo(53, 1);
+      expect(ring[0][0]).toBeCloseTo(5, 1);
+    });
+
+    it("removes its markers, layers, and listeners", async () => {
+      const { engine, map, ready } = await createEngine();
+      await ready;
+      const { handle, center, onClick } = addCircle(engine);
+      const element = center.options.element as HTMLElement;
+
+      handle.remove();
+      expect(fakeMarker.all).toHaveLength(0);
+      expect(circleSource(map)).toBeUndefined();
+      expect(
+        layerIds(map).filter((id) => id.startsWith("ha-map-editable"))
+      ).toHaveLength(0);
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
+      expect(onClick).not.toHaveBeenCalled();
     });
   });
 });

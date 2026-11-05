@@ -1,18 +1,23 @@
 import type {
   HassConfig,
-  HassEntities,
   HassEntity,
   HassEntityAttributeBase,
   MessageBase,
 } from "home-assistant-js-websocket";
 import { computeDomain } from "../common/entity/compute_domain";
+import { DEFAULT_ENTITY_NAME } from "../common/entity/compute_entity_name_display";
 import { computeStateDisplayFromEntityAttributes } from "../common/entity/compute_state_display";
 import { computeStateNameFromEntityAttributes } from "../common/entity/compute_state_name";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { computeRTL } from "../common/util/compute_rtl";
 import type { HomeAssistant } from "../types";
 import { isNumericSensorDeviceClass } from "./sensor";
 import type { FrontendLocaleData } from "./translation";
-import type { Statistics } from "./recorder";
+import {
+  isExternalStatistic,
+  type Statistics,
+  type StatisticsMetaData,
+} from "./recorder";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
 const NEED_ATTRIBUTE_DOMAINS = [
@@ -79,7 +84,7 @@ export interface EntityHistoryState {
   /** state */
   s: string;
   /** attributes */
-  a: Record<string, any>;
+  a?: Record<string, any>;
   /** last_changed; if set, also applies to lu */
   lc?: number;
   /** last_updated */
@@ -93,23 +98,26 @@ export interface HistoryStreamMessage {
 }
 
 export const entityIdHistoryNeedsAttributes = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states">,
   entityId: string
 ) =>
   !hass.states[entityId] ||
   NEED_ATTRIBUTE_DOMAINS.includes(computeDomain(entityId));
 
 export const fetchDateWS = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "states" | "callWS">,
   startTime: Date,
   endTime: Date,
-  entityIds: string[]
+  entityIds: string[],
+  options: {
+    minimalResponse?: boolean;
+  } = {}
 ) => {
   const params = {
     type: "history/history_during_period",
     start_time: startTime.toISOString(),
     end_time: endTime.toISOString(),
-    minimal_response: true,
+    minimal_response: options.minimalResponse ?? true,
     no_attributes: !entityIds.some((entityId) =>
       entityIdHistoryNeedsAttributes(hass, entityId)
     ),
@@ -119,6 +127,32 @@ export const fetchDateWS = (
   }
   return hass.callWS<HistoryStates>(params);
 };
+
+// Rebuilding the charts for this many states takes tens of milliseconds
+const LARGE_HISTORY_STATES = 100_000;
+const MIN_LARGE_HISTORY_UPDATE_DELAY = 1000;
+
+export const countHistoryStates = (history: HistoryStates): number => {
+  let count = 0;
+  for (const states of Object.values(history)) {
+    count += states.length;
+  }
+  return count;
+};
+
+/** How long a live update may wait: none for a small history, else the time one chart pixel covers (1 s to `maxDelay`) */
+export const computeHistoryUpdateDelay = (
+  stateCount: number,
+  timespanMs: number,
+  chartPixels: number,
+  maxDelay: number
+): number =>
+  stateCount < LARGE_HISTORY_STATES
+    ? 0
+    : Math.min(
+        Math.max(timespanMs / chartPixels, MIN_LARGE_HISTORY_UPDATE_DELAY),
+        maxDelay
+      );
 
 export const subscribeHistory = (
   hass: HomeAssistant,
@@ -139,14 +173,11 @@ export const subscribeHistory = (
   }));
 
 export class HistoryStream {
-  hass: HomeAssistant;
-
   hoursToShow?: number;
 
   combinedHistory: HistoryStates;
 
-  constructor(hass: HomeAssistant, hoursToShow?: number) {
-    this.hass = hass;
+  constructor(hoursToShow?: number) {
     this.hoursToShow = hoursToShow;
     this.combinedHistory = {};
   }
@@ -237,7 +268,7 @@ export class HistoryStream {
 }
 
 export const subscribeHistoryStatesTimeWindow = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection" | "states">,
   callbackFunction: (data: HistoryStates) => void,
   hoursToShow: number,
   entityIds: string[],
@@ -279,7 +310,7 @@ export const subscribeHistoryStatesTimeWindow = (
  * a fresh `HistoryStream`, so consumers don't need to listen for reconnects.
  */
 const subscribeHistoryStream = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   callbackFunction: (data: HistoryStates) => void,
   buildParams: () => MessageBase,
   hoursToShow?: number
@@ -288,7 +319,7 @@ const subscribeHistoryStream = async (
   let disposed = false;
 
   const doSubscribe = async () => {
-    const stream = new HistoryStream(hass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const unsub = await hass.connection.subscribeMessage<HistoryStreamMessage>(
       (message) => callbackFunction(stream.processMessage(message)),
       buildParams(),
@@ -336,7 +367,7 @@ const processTimelineEntity = (
   localize: LocalizeFunc,
   locale: FrontendLocaleData,
   config: HassConfig,
-  entities: HomeAssistant["entities"],
+  hass: HomeAssistant,
   entityId: string,
   states: EntityHistoryState[],
   current_state: HassEntity | undefined
@@ -358,7 +389,7 @@ const processTimelineEntity = (
         localize,
         locale,
         config,
-        entities[entityId],
+        hass.entities[entityId],
         entityId,
         {
           ...(state.a || first.a),
@@ -374,10 +405,16 @@ const processTimelineEntity = (
   }
 
   return {
-    name: computeStateNameFromEntityAttributes(
-      entityId,
-      current_state?.attributes || first.a
-    ),
+    name: current_state
+      ? hass.formatEntityName(current_state, DEFAULT_ENTITY_NAME, {
+          separator: computeRTL(
+            hass.language,
+            hass.translationMetadata.translations
+          )
+            ? " ◂ "
+            : " ▸ ",
+        }) || current_state.entity_id
+      : computeStateNameFromEntityAttributes(entityId, first.a ?? {}),
     entity_id: entityId,
     data,
   };
@@ -387,9 +424,15 @@ const processLineChartEntities = (
   unit: string,
   device_class: string | undefined,
   entities: HistoryStates,
-  hassEntities: HassEntities
+  hass: HomeAssistant
 ): LineChartUnit => {
   const data: LineChartEntity[] = [];
+  const nameSeparator = computeRTL(
+    hass.language,
+    hass.translationMetadata.translations
+  )
+    ? " ◂ "
+    : " ▸ ";
 
   const entityIds = Object.keys(entities);
   entityIds.forEach((entityId) => {
@@ -410,7 +453,7 @@ const processLineChartEntities = (
         };
 
         for (const attr of LINE_ATTRIBUTES_TO_KEEP) {
-          if (attr in state.a) {
+          if (state.a && attr in state.a) {
             processedState.attributes![attr] = state.a[attr];
           }
         }
@@ -436,16 +479,19 @@ const processLineChartEntities = (
       processedStates.push(processedState);
     }
 
-    const attributes =
-      entityId in hassEntities
-        ? hassEntities[entityId].attributes
-        : "friendly_name" in first.a
-          ? first.a
-          : undefined;
+    const name =
+      entityId in hass.states
+        ? hass.formatEntityName(hass.states[entityId], DEFAULT_ENTITY_NAME, {
+            separator: nameSeparator,
+          }) || entityId
+        : computeStateNameFromEntityAttributes(
+            entityId,
+            first.a && "friendly_name" in first.a ? first.a : {}
+          );
 
     data.push({
       domain,
-      name: computeStateNameFromEntityAttributes(entityId, attributes || {}),
+      name,
       entity_id: entityId,
       states: processedStates,
     });
@@ -475,11 +521,29 @@ const isNumericFromAttributes = (attributes: Record<string, any>) =>
 
 const BLANK_UNIT = " ";
 
+/**
+ * Attributes for an external statistic, which has no entity. Without them the
+ * history names the series after its ID and shows it without a unit.
+ */
+const statisticAttributes = (
+  metadata: StatisticsMetaData | undefined
+): Record<string, string> => {
+  const attributes: Record<string, string> = {};
+  if (metadata?.name) {
+    attributes.friendly_name = metadata.name;
+  }
+  if (metadata?.statistics_unit_of_measurement) {
+    attributes.unit_of_measurement = metadata.statistics_unit_of_measurement;
+  }
+  return attributes;
+};
+
 export const convertStatisticsToHistory = (
   hass: HomeAssistant,
   statistics: Statistics,
   statisticIds: string[],
-  splitDeviceClasses = false
+  splitDeviceClasses = false,
+  statisticsMetadata?: Record<string, StatisticsMetaData>
 ): HistoryResult => {
   // Maintain the statistic id ordering
   const orderedStatistics: Statistics = {};
@@ -492,10 +556,15 @@ export const convertStatisticsToHistory = (
   // Convert statistics to HistoryResult format
   const statsHistoryStates: HistoryStates = {};
   Object.entries(orderedStatistics).forEach(([key, value]) => {
+    // Other statistics keep a blank unit, so that they merge into the history
+    // line of their entity even after the entity was removed.
+    const attributes = isExternalStatistic(key)
+      ? statisticAttributes(statisticsMetadata?.[key])
+      : {};
     const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
       s: e.mean != null ? e.mean.toString() : e.state!.toString(),
       lc: e.end / 1000,
-      a: {},
+      a: attributes,
       lu: e.end / 1000,
     }));
     statsHistoryStates[key] = entityHistoryStates;
@@ -587,7 +656,7 @@ export const computeHistory = (
     if (isNumeric) {
       unit =
         currentState?.attributes.unit_of_measurement ||
-        numericStateFromHistory?.a.unit_of_measurement ||
+        numericStateFromHistory?.a?.unit_of_measurement ||
         BLANK_UNIT;
     } else {
       unit = {
@@ -610,7 +679,7 @@ export const computeHistory = (
           localize,
           hass.locale,
           hass.config,
-          hass.entities,
+          hass,
           entityId,
           stateInfo,
           currentState
@@ -638,7 +707,7 @@ export const computeHistory = (
       unit,
       deviceClass,
       lineChartDevices[key],
-      hass.states
+      hass
     );
   });
 
@@ -665,6 +734,16 @@ export const isNumericEntity = (
     isNumericSensorDeviceClass(currentState.attributes.device_class)) ||
   numericStateFromHistory != null;
 
+// Non-numeric domains that computeHistory gives a unit, so they get a line chart
+const LINE_CHART_DOMAINS = ["climate", "humidifier", "water_heater", "zone"];
+
+export const isTimelineEntity = (
+  domain: string,
+  currentState: HassEntity | undefined
+): boolean =>
+  !isNumericEntity(domain, currentState, undefined) &&
+  !LINE_CHART_DOMAINS.includes(domain);
+
 export const mergeHistoryResults = (
   historyResult: HistoryResult,
   ltsResult?: HistoryResult,
@@ -680,6 +759,7 @@ export const mergeHistoryResults = (
     { historyItem?: LineChartUnit; ltsItem?: LineChartUnit }
   > = {};
 
+  const historyItemByEntity = new Map<string, LineChartUnit>();
   for (const item of historyResult.line) {
     const key = computeGroupKey(
       item.unit,
@@ -691,27 +771,39 @@ export const mergeHistoryResults = (
         historyItem: item,
       };
     }
+    for (const { entity_id } of item.data) {
+      historyItemByEntity.set(entity_id, item);
+    }
   }
 
-  for (const item of ltsResult.line) {
-    if (item.unit === BLANK_UNIT) {
-      // disabled entities have no unit, so we need to find the unit from the history result
-      item.unit =
-        historyResult.line.find((line) => line.identifier === item.identifier)
-          ?.unit ?? BLANK_UNIT;
-    }
+  const addLtsItem = (item: LineChartUnit) => {
     const key = computeGroupKey(
       item.unit,
       item.device_class,
       splitDeviceClasses
     );
     if (!key) {
+      return;
+    }
+    const entry = (lookup[key] ??= {});
+    if (entry.ltsItem) {
+      entry.ltsItem.data.push(...item.data);
+    } else {
+      entry.ltsItem = { ...item, data: [...item.data] };
+    }
+  };
+
+  for (const item of ltsResult.line) {
+    if (item.unit !== BLANK_UNIT) {
+      addLtsItem(item);
       continue;
     }
-    if (key in lookup) {
-      lookup[key].ltsItem = item;
-    } else {
-      lookup[key] = { ltsItem: item };
+    // Entities missing from hass.states when statistics were fetched have no
+    // unit, so each takes the unit of the history line it is in
+    for (const data of item.data) {
+      const { unit, device_class } =
+        historyItemByEntity.get(data.entity_id) ?? item;
+      addLtsItem({ ...item, unit, device_class, data: [data] });
     }
   }
 

@@ -1,77 +1,107 @@
-// Generates the MapLibre styles for the vector base map.
+// Generates the MapLibre styles for the vector base map. Only the styles:
+// glyphs and tiles come from core's proxy, the sprite sheet ships with the
+// frontend (see map-sprites.js). They are generated here because core has no
+// node toolchain to run @versatiles/style with.
 //
-// Only the styles. Glyphs, sprites and tiles are served by core's proxy, which
-// is what lets them be requested with an application User-Agent and without a
-// referrer. The styles stay here because they come from @versatiles/style and
-// core has no node toolchain to regenerate them with.
+// Only the default pair is written out; anything else is built in the browser
+// from the same builder, which is why the preparation is shared with the
+// frontend and why the asset URLs are written alongside the styles.
 
-import { writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { colorful, eclipse } from "@versatiles/style";
+import { osm } from "@versatiles/style";
 import fs from "fs-extra";
 import gulp from "gulp";
 import paths from "../paths.cjs";
-import { addLatinLabels } from "./map-labels.js";
+import { finalizeMapStyle } from "../../src/common/map/map-style-transforms.ts";
+import {
+  HA_MAP_COLORS,
+  HA_MAP_COLORS_DARK,
+} from "../../src/common/map/ha-map-palette.ts";
+import {
+  missingSprites,
+  SHEET_FILES,
+  SPRITE_SHEET,
+  spritesDir,
+} from "./map-sprites.js";
 
 const PROXY_PATH = "/api/map_tiles";
-const TILEJSON_URL = `${PROXY_PATH}/tilejson.json`;
 
 const outputDir = path.resolve(paths.build_dir, "map");
 
-// MapLibre extends the fetched TileJSON with the style's source options, so
-// anything left here wins and freezes at build time. Dropping them is what lets
-// the proxy move the attribution and zoom range too, not just the URLs.
-const TILEJSON_FIELDS = [
-  "tiles",
-  "attribution",
-  "bounds",
-  "minzoom",
-  "maxzoom",
-  "scheme",
-];
+// Core serves /static with a month of max-age, so a re-vendored sheet would
+// otherwise be read from cache next to a style expecting the new one.
+const sheetHash = async () => {
+  const contents = await Promise.all(
+    SHEET_FILES.map((file) => readFile(path.join(spritesDir, file)))
+  );
+  const hash = createHash("sha256");
+  contents.forEach((content) => hash.update(content));
+  return hash.digest("hex").slice(0, 8);
+};
 
-// The builder can only write a tile URL, so the source is repointed afterwards.
-// Keyed on there being exactly one source: any other shape means the builder's
-// own default host would ship unnoticed.
-const useTileJson = (name, style) => {
-  const sources = Object.values(style.sources);
+const styleUrls = (spriteVersion) => ({
+  // Keeps the generated URLs origin relative.
+  base: "",
+  glyphsPattern: `${PROXY_PATH}/fonts/{fontstack}/{range}.pbf`,
+  sprite: [
+    {
+      id: SPRITE_SHEET,
+      url: `/static/map/sprites/${SPRITE_SHEET}?v=${spriteVersion}`,
+    },
+  ],
+});
 
-  if (sources.length !== 1) {
+const checkSprites = (name, style, sheet) => {
+  const missing = missingSprites(style, sheet);
+  if (missing.length) {
     throw new Error(
-      `Style "${name}" has ${sources.length} sources, expected exactly one to ` +
-        `point at the TileJSON. Check what @versatiles/style emits.`
+      `Style "${name}" references icons missing from the bundled ${SPRITE_SHEET} ` +
+        `sprite sheet: ${missing.join(", ")}. Run \`pnpm exec gulp update-map-sprites\` ` +
+        `and commit the result.`
     );
   }
-
-  for (const field of TILEJSON_FIELDS) {
-    delete sources[0][field];
-  }
-  sources[0].url = TILEJSON_URL;
   return style;
 };
 
-const styleOptions = {
-  // Keeps the generated URLs origin relative.
-  baseUrl: "",
-  glyphs: `${PROXY_PATH}/fonts/{fontstack}/{range}.pbf`,
-  sprite: [{ id: "basics", url: `${PROXY_PATH}/sprites/basics/sprites` }],
+// The styles a card can pick, each as a light and a dark palette. Kept in sync
+// with MAP_STYLES in src/common/map/map-styles.ts.
+const STYLES = ["colorful", "natural", "muted", "gray", "toner"];
+const PALETTES = STYLES.flatMap((style) => [style, `${style}-dark`]);
+
+// Colors baked in, so the map a dashboard shows without configuration costs
+// no builder and no second request.
+const SHIPPED = [
+  ["light", "colorful", HA_MAP_COLORS],
+  ["dark", "colorful-dark", HA_MAP_COLORS_DARK],
+];
+
+const generateStyles = async () => {
+  const sheet = await fs.readJson(
+    path.join(spritesDir, `${SPRITE_SHEET}.json`)
+  );
+  const urls = styleUrls(await sheetHash());
+  // Built so a bump that needs an icon the sheet lacks fails here, not in a
+  // browser. Recoloring cannot add icons, so the palettes cover it.
+  PALETTES.forEach((theme) => checkSprites(theme, osm({ theme, urls }), sheet));
+  return urls;
 };
 
 const buildMapAssets = async () => {
   await fs.emptyDir(outputDir);
-
-  await Promise.all(
-    // Both themes up front: dark is a real cartography, not an inverted raster.
-    [
-      ["light", colorful],
-      ["dark", eclipse],
-    ].map(([name, builder]) =>
+  const urls = await generateStyles();
+  await Promise.all([
+    // Read by src/common/map/build-map-style.ts, which cannot know the hash
+    // of the sprite sheet this build vendored.
+    writeFile(path.join(outputDir, "urls.json"), JSON.stringify(urls)),
+    ...SHIPPED.map(([name, theme, colors]) =>
       writeFile(
         path.join(outputDir, `${name}.json`),
-        JSON.stringify(addLatinLabels(useTileJson(name, builder(styleOptions))))
+        JSON.stringify(finalizeMapStyle(name, osm({ theme, colors, urls })))
       )
-    )
-  );
+    ),
+  ]);
 };
 
 // Shared so it does not have to be wired into every pipeline separately.
@@ -82,5 +112,9 @@ export const ensureMapAssets = () => {
 };
 
 gulp.task("build-map-assets", ensureMapAssets);
+
+// Runs in the required lint job so a @versatiles/style bump that needs new
+// icons cannot merge before the sheet is re-vendored on that branch.
+gulp.task("check-map-sprites", generateStyles);
 
 export const mapAssetsDir = outputDir;

@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues } from "lit";
@@ -6,6 +6,8 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
 import { computeCssColor } from "../../common/color/compute-color";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -17,8 +19,13 @@ import {
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import { cameraUrlWithWidthHeight } from "../../data/camera";
 import { CLIMATE_HVAC_ACTION_TO_MODE } from "../../data/climate";
-import { connectionContext } from "../../data/context";
-import { isBrandUrl } from "../../util/brands-url";
+import {
+  brandsAccessTokenContext,
+  connectionContext,
+  uiContext,
+} from "../../data/context";
+import type { HomeAssistantUI } from "../../types";
+import { darkBrandUrl, isBrandUrl } from "../../util/brands-url";
 import "../ha-state-icon";
 
 @customElement("state-badge")
@@ -46,6 +53,18 @@ export class StateBadge extends LitElement {
   @state()
   @consume({ context: connectionContext, subscribe: true })
   private _connection?: ContextType<typeof connectionContext>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore read in willUpdate through changedProps only
+  private _brandsAccessToken?: string;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: (ui) => ui?.themes?.darkMode,
+  })
+  private _darkMode?: boolean;
 
   @state() private _iconStyle: Record<string, string | undefined> = {};
 
@@ -131,7 +150,10 @@ export class StateBadge extends LitElement {
       !changedProps.has("overrideIcon") &&
       !changedProps.has("stateColor") &&
       !changedProps.has("color") &&
-      !changedProps.has("_connection")
+      !changedProps.has("_connection") &&
+      !changedProps.has("_brandsAccessToken") &&
+      // Brand images have a dark variant, so the picture changes with the theme
+      !changedProps.has("_darkMode")
     ) {
       return;
     }
@@ -207,15 +229,17 @@ export class StateBadge extends LitElement {
   // Sign the image URL via the connection context so brand images
   // (/api/brands/...) get their access token. Without a way to sign, a brands
   // request would be rejected (and logged/blocked by core), so skip it until
-  // we can sign.
+  // we can sign. In dark mode, brand images (e.g. the integration icon of an
+  // update entity) use their dark-optimized variant.
   private _resolveImageUrl(url: string | undefined): string {
     if (!url) {
       return "";
     }
+    const themedUrl = this._darkMode ? darkBrandUrl(url) : url;
     if (this._connection) {
-      return this._connection.hassUrl(url);
+      return this._connection.hassUrl(themedUrl);
     }
-    return isBrandUrl(url) ? "" : url;
+    return isBrandUrl(themedUrl) ? "" : themedUrl;
   }
 
   protected getClass() {
@@ -229,7 +253,7 @@ export class StateBadge extends LitElement {
       const domain = computeDomain(this.stateObj.entity_id);
       if (domain === "update") {
         cls.set("has-no-radius", true);
-      } else if (domain === "media_player" || domain === "camera") {
+      } else if (domain === "media_player") {
         cls.set("has-media-image", true);
       } else if (this.style.backgroundImage !== "") {
         cls.set("has-image", true);
@@ -256,7 +280,10 @@ export class StateBadge extends LitElement {
           justify-content: center;
         }
         :host(.has-image) {
-          border-radius: var(--state-badge-with-image-border-radius, 50%);
+          border-radius: var(
+            --state-badge-with-image-border-radius,
+            var(--ha-picture-border-radius)
+          );
         }
         :host(.has-media-image) {
           border-radius: var(--state-badge-with-media-image-border-radius, 8%);

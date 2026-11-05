@@ -19,6 +19,7 @@ import type {
   SplitConditionTree,
 } from "../condition/split";
 import { splitConditionTree } from "../condition/split";
+import { getWsErrorMessage } from "../../util/ws-error";
 
 /** `unknown` until a server subtree reports. */
 export type ConditionEvaluation = "visible" | "hidden" | "unknown";
@@ -266,7 +267,7 @@ export class ConditionEvaluatorController implements ReactiveController {
         }
         this._serverResults[subtree.id] = false;
         this._subtreeErrors[subtree.id] =
-          err instanceof Error ? err.message : String(err);
+          getWsErrorMessage(err) ?? hass.localize("ui.common.unknown_error");
         this._recompute();
       });
       this._subscriptions.push(subscription);

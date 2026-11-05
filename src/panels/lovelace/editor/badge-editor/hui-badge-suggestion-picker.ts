@@ -11,7 +11,6 @@ import "../../../../components/entity/state-badge";
 import "../../../../components/ha-button";
 import "../../../../components/ha-combo-box-item";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-ripple";
 import "../../../../components/ha-section-title";
 import "../../../../components/ha-svg-icon";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
@@ -26,6 +25,19 @@ import "../card-editor/hui-suggestion-entity-tree";
 import type { HuiSuggestionEntityTree } from "../card-editor/hui-suggestion-entity-tree";
 import "./hui-suggestion-badge";
 
+/**
+ * @element hui-badge-suggestion-picker
+ *
+ * @summary Entity tree with badge suggestions for the picked entity.
+ *
+ * @slot - Footer below the entity tree, e.g. an action bar.
+ *
+ * @cssprop --ha-suggestion-picker-main-padding-bottom - Space at the end of the scrolling suggestions.
+ * @cssprop --ha-suggestion-picker-tree-padding-bottom - Space at the end of the scrolling entity tree.
+ *
+ * @fires badge-suggestion-picked - Fired with the config of the picked suggestion.
+ * @fires browse-badges - Fired when the user wants to browse all badges.
+ */
 @customElement("hui-badge-suggestion-picker")
 export class HuiBadgeSuggestionPicker extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -103,6 +115,7 @@ export class HuiBadgeSuggestionPicker extends LitElement {
           .selectedEntityId=${this._entityId}
           @entity-picked=${this._handleEntityPicked}
         ></hui-suggestion-entity-tree>
+        <slot></slot>
       </div>
       <div class=${classMap({ main: true, hidden: !showMain })}>
         <div class="content ha-scrollbar">
@@ -162,7 +175,17 @@ export class HuiBadgeSuggestionPicker extends LitElement {
   private _renderSelectedEntity(): TemplateResult {
     const stateObj = this.hass.states[this._entityId!];
     const { primary, secondary } = stateObj
-      ? computeEntityPickerDisplay(this.hass, stateObj)
+      ? computeEntityPickerDisplay(
+          {
+            entities: this.hass.entities,
+            devices: this.hass.devices,
+            areas: this.hass.areas,
+            floors: this.hass.floors,
+            language: this.hass.language,
+            translationMetadata: this.hass.translationMetadata,
+          },
+          stateObj
+        )
       : { primary: this._entityId!, secondary: undefined };
     return html`
       <ha-section-title>
@@ -170,12 +193,11 @@ export class HuiBadgeSuggestionPicker extends LitElement {
           "ui.panel.lovelace.editor.badge_picker.selected_entity"
         )}
       </ha-section-title>
-      <ha-combo-box-item compact class="selected-entity">
+      <ha-combo-box-item class="selected-entity">
         ${
           stateObj
             ? html`<state-badge
                 slot="start"
-                .hass=${this.hass}
                 .stateObj=${stateObj}
               ></state-badge>`
             : nothing
@@ -298,6 +320,10 @@ export class HuiBadgeSuggestionPicker extends LitElement {
         .tree {
           flex: 1;
           min-height: 0;
+          --ha-suggestion-entity-tree-padding-bottom: var(
+            --ha-suggestion-picker-tree-padding-bottom,
+            0px
+          );
         }
         .main {
           flex: 1;
@@ -309,6 +335,7 @@ export class HuiBadgeSuggestionPicker extends LitElement {
           flex: 1;
           min-height: 0;
           overflow: auto;
+          padding-bottom: var(--ha-suggestion-picker-main-padding-bottom, 0px);
         }
         .hidden {
           display: none !important;

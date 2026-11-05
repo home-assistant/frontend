@@ -25,7 +25,7 @@ export interface HaFormBaseSchema {
   disabled?: boolean;
   // Field is visible while the condition holds (visible by default).
   // Serializable so it can be shared with the backend and other renderers.
-  visible?: boolean | HaFormCondition | HaFormCondition[];
+  visible?: HaFormVisible;
   description?: {
     suffix?: string;
     // This value will be set initially when form is loaded
@@ -33,6 +33,8 @@ export interface HaFormBaseSchema {
   };
   context?: Record<string, string>;
 }
+
+export type HaFormVisible = boolean | HaFormCondition | HaFormCondition[];
 
 export type HaFormConditionOperator =
   "eq" | "not_eq" | "in" | "not_in" | "exists" | "not_exists";

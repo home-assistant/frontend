@@ -1,7 +1,11 @@
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { firstWeekdayIndex } from "../../../../../common/datetime/first_weekday";
+import { ensureArray } from "../../../../../common/array/ensure-array";
+import {
+  sortWeekdays,
+  weekdaysFromFirst,
+} from "../../../../../common/datetime/sort_weekdays";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
@@ -10,8 +14,6 @@ import type { TimeCondition } from "../../../../../data/automation";
 import type { FrontendLocaleData } from "../../../../../data/translation";
 import type { HomeAssistant } from "../../../../../types";
 import type { ConditionElement } from "../ha-automation-condition-row";
-
-const DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 
 @customElement("ha-automation-condition-time")
 export class HaTimeCondition extends LitElement implements ConditionElement {
@@ -36,10 +38,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
       inputModeAfter?: boolean,
       inputModeBefore?: boolean
     ) => {
-      const dayIndex = firstWeekdayIndex(locale);
-      const sortedDays = DAYS.slice(dayIndex, DAYS.length).concat(
-        DAYS.slice(0, dayIndex)
-      );
+      const sortedDays = weekdaysFromFirst(locale);
       return [
         {
           name: "mode_after",
@@ -170,6 +169,13 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
     delete newValue.mode_after;
     delete newValue.mode_before;
+
+    if (newValue.weekday) {
+      newValue.weekday = sortWeekdays(
+        this.hass.locale,
+        ensureArray(newValue.weekday)
+      );
+    }
 
     Object.keys(newValue).forEach((key) =>
       newValue[key] === undefined ||

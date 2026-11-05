@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-condition-picker";
 import "../../../../../components/device/ha-device-picker";
@@ -64,7 +64,7 @@ export class HaDeviceCondition extends LitElement {
   private _extraFieldsData = memoizeOne(
     (condition: DeviceCondition, capabilities: DeviceCapabilities) => {
       const extraFieldsData: Record<string, any> = {};
-      capabilities.extra_fields.forEach((item) => {
+      capabilities.extra_fields?.forEach((item) => {
         if (condition[item.name] !== undefined) {
           extraFieldsData![item.name] = condition[item.name];
         }
@@ -118,7 +118,10 @@ export class HaDeviceCondition extends LitElement {
     try {
       // Resolve the candidates before exposing the split map, so the picker
       // never offers one that cannot host the automation.
-      const compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      const compositeSplits = await fetchDeviceCompositeSplits(
+        this.hass.connection,
+        this.hass.callWS
+      );
       await this._resolveReplacements(compositeSplits);
       this._compositeSplits = compositeSplits;
     } catch (_err) {
@@ -136,7 +139,6 @@ export class HaDeviceCondition extends LitElement {
         .value=${deviceId}
         .replacementDeviceIds=${this._replacementDeviceIds}
         @value-changed=${this._devicePicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type.device.label"
@@ -146,7 +148,6 @@ export class HaDeviceCondition extends LitElement {
         .value=${this.condition}
         .deviceId=${deviceId}
         @value-changed=${this._deviceConditionPicked}
-        .hass=${this.hass}
         .disabled=${this.disabled}
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.conditions.type.device.condition"

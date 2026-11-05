@@ -1,14 +1,26 @@
-import { describe, it, assert, vi } from "vitest";
-import { HistoryStream } from "../../src/data/history";
+import { describe, it, assert, expect, vi } from "vitest";
+import { computeDomain } from "../../src/common/entity/compute_domain";
+import {
+  HistoryStream,
+  computeHistory,
+  convertStatisticsToHistory,
+  isTimelineEntity,
+  mergeHistoryResults,
+} from "../../src/data/history";
+import { StatisticMeanType } from "../../src/data/recorder";
 import type { HomeAssistant } from "../../src/types";
-
-const mockHass = {} as HomeAssistant;
+import { mockDevice, mockEntity } from "../common/entity/context/context-mock";
+import {
+  createMockEntityState,
+  createMockHass,
+  mockLocalize,
+} from "../fixtures/hass";
 
 describe("HistoryStream.processMessage", () => {
   it("should delete lc from boundary state when pruning expired history", () => {
     const now = Date.now();
     const hoursToShow = 1;
-    const stream = new HistoryStream(mockHass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const purgeBeforePythonTime = (now - 60 * 60 * hoursToShow * 1000) / 1000;
 
     // Seed combinedHistory with states where lc differs from lu
@@ -45,7 +57,7 @@ describe("HistoryStream.processMessage", () => {
   it("should handle boundary state without lc correctly", () => {
     const now = Date.now();
     const hoursToShow = 1;
-    const stream = new HistoryStream(mockHass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const purgeBeforePythonTime = (now - 60 * 60 * hoursToShow * 1000) / 1000;
 
     // State without lc (lc equals lu, so lc is omitted)
@@ -76,7 +88,7 @@ describe("HistoryStream.processMessage", () => {
   it("should not modify states when none are expired", () => {
     const now = Date.now();
     const hoursToShow = 1;
-    const stream = new HistoryStream(mockHass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const purgeBeforePythonTime = (now - 60 * 60 * hoursToShow * 1000) / 1000;
 
     // All states are within the time window
@@ -106,5 +118,343 @@ describe("HistoryStream.processMessage", () => {
     const firstState = result["sensor.power"][0];
     assert.equal(firstState.lc, purgeBeforePythonTime + 50);
     assert.equal(firstState.lu, purgeBeforePythonTime + 100);
+  });
+});
+
+const namedHistoryHass = (options: {
+  entityId: string;
+  entityName?: string;
+  deviceName: string;
+  attributes?: Record<string, unknown>;
+  rtl?: boolean;
+}): HomeAssistant => {
+  const hass = createMockHass(
+    {
+      [options.entityId]: createMockEntityState(
+        options.entityId,
+        "on",
+        options.attributes ?? { friendly_name: "Caméra Allée Battery state" }
+      ),
+    },
+    {
+      entities: {
+        [options.entityId]: mockEntity({
+          entity_id: options.entityId,
+          name: options.entityName,
+          device_id: "device_1",
+        }),
+      },
+      devices: {
+        device_1: mockDevice({
+          id: "device_1",
+          name: options.deviceName,
+        }),
+      },
+    }
+  );
+  if (options.rtl) {
+    hass.language = "he";
+    hass.translationMetadata = {
+      fragments: [],
+      translations: {
+        he: { nativeName: "Hebrew", isRTL: true, hash: "" },
+      },
+    };
+  }
+  return hass;
+};
+
+const binaryHistory = (entityId: string, friendlyName?: string) => ({
+  [entityId]: [
+    {
+      s: "on",
+      a: friendlyName ? { friendly_name: friendlyName } : {},
+      lu: 1_700_000_000,
+    },
+  ],
+});
+
+const numericHistory = (entityId: string, friendlyName?: string) => ({
+  [entityId]: [
+    {
+      s: "12",
+      a: {
+        unit_of_measurement: "W",
+        ...(friendlyName ? { friendly_name: friendlyName } : {}),
+      },
+      lu: 1_700_000_000,
+    },
+  ],
+});
+
+describe("computeHistory entity names", () => {
+  it("labels a timeline entity as Device ▸ Entity when the entity has its own name", () => {
+    const entityId = "binary_sensor.allee_battery";
+    const result = computeHistory(
+      namedHistoryHass({
+        entityId,
+        entityName: "Battery state",
+        deviceName: "Caméra Allée",
+      }),
+      binaryHistory(entityId),
+      [],
+      mockLocalize
+    );
+    expect(result.timeline[0]?.name).toBe("Caméra Allée ▸ Battery state");
+  });
+
+  it("labels a line entity as Device ▸ Entity when the entity has its own name", () => {
+    const entityId = "sensor.allee_power";
+    const result = computeHistory(
+      namedHistoryHass({
+        entityId,
+        entityName: "Power",
+        deviceName: "Caméra Allée",
+        attributes: {
+          unit_of_measurement: "W",
+          friendly_name: "Caméra Allée Power",
+        },
+      }),
+      numericHistory(entityId),
+      [],
+      mockLocalize
+    );
+    expect(result.line[0]?.data[0]?.name).toBe("Caméra Allée ▸ Power");
+  });
+
+  it("uses just the device name when the entity has no name of its own", () => {
+    const entityId = "binary_sensor.desk";
+    const result = computeHistory(
+      namedHistoryHass({
+        entityId,
+        deviceName: "Desk",
+        attributes: { friendly_name: "Desk" },
+      }),
+      binaryHistory(entityId),
+      [],
+      mockLocalize
+    );
+    expect(result.timeline[0]?.name).toBe("Desk");
+  });
+
+  it("falls back to friendly_name when the entity has no current state", () => {
+    const entityId = "binary_sensor.removed";
+    const result = computeHistory(
+      createMockHass(),
+      binaryHistory(entityId, "Gone sensor"),
+      [],
+      mockLocalize
+    );
+    expect(result.timeline[0]?.name).toBe("Gone sensor");
+  });
+
+  it("uses the RTL separator when the language is RTL", () => {
+    const entityId = "binary_sensor.allee_battery";
+    const result = computeHistory(
+      namedHistoryHass({
+        entityId,
+        entityName: "Battery state",
+        deviceName: "Caméra Allée",
+        rtl: true,
+      }),
+      binaryHistory(entityId),
+      [],
+      mockLocalize
+    );
+    expect(result.timeline[0]?.name).toBe("Caméra Allée ◂ Battery state");
+  });
+});
+
+describe("isTimelineEntity", () => {
+  it("matches how computeHistory splits timeline and line entities", () => {
+    const states = Object.fromEntries(
+      (
+        [
+          ["binary_sensor.door", "on", {}],
+          ["light.hallway", "off", {}],
+          ["sensor.power", "12", { unit_of_measurement: "W" }],
+          ["counter.visits", "3", {}],
+          ["climate.bedroom", "heat", {}],
+          ["humidifier.bedroom", "on", {}],
+          ["water_heater.tank", "eco", {}],
+          ["zone.home", "1", {}],
+        ] as const
+      ).map(([entityId, state, attributes]) => [
+        entityId,
+        createMockEntityState(entityId, state, attributes),
+      ])
+    );
+    const result = computeHistory(
+      createMockHass(states),
+      Object.fromEntries(
+        Object.values(states).map((stateObj) => [
+          stateObj.entity_id,
+          [{ s: stateObj.state, a: stateObj.attributes, lu: 1_700_000_000 }],
+        ])
+      ),
+      [],
+      mockLocalize
+    );
+    const timelineIds = result.timeline.map((entity) => entity.entity_id);
+
+    for (const [entityId, stateObj] of Object.entries(states)) {
+      expect(
+        isTimelineEntity(computeDomain(entityId), stateObj),
+        entityId
+      ).toBe(timelineIds.includes(entityId));
+    }
+    expect(timelineIds).toEqual(["binary_sensor.door", "light.hallway"]);
+  });
+});
+
+describe("mergeHistoryResults", () => {
+  it("merges unit-less statistics into the history line of each entity", () => {
+    const battery = { unit_of_measurement: "%", device_class: "battery" };
+    const states = {
+      "sensor.soc_a": createMockEntityState("sensor.soc_a", "50", battery),
+      "sensor.soc_b": createMockEntityState("sensor.soc_b", "60", battery),
+      "sensor.soc_template": createMockEntityState(
+        "sensor.soc_template",
+        "55",
+        battery
+      ),
+      "sensor.temperature": createMockEntityState("sensor.temperature", "21", {
+        unit_of_measurement: "°C",
+        device_class: "temperature",
+      }),
+    };
+    const statisticIds = ["sensor.soc_a", "sensor.soc_b", "sensor.temperature"];
+    // Statistics fetched before the entities were loaded have no unit
+    const ltsResult = convertStatisticsToHistory(
+      createMockHass(),
+      Object.fromEntries(
+        statisticIds.map((id) => [
+          id,
+          [{ start: 1_700_000_000_000, end: 1_700_003_600_000, mean: 50 }],
+        ])
+      ),
+      statisticIds,
+      true
+    );
+    const historyResult = computeHistory(
+      createMockHass(states),
+      Object.fromEntries(
+        Object.values(states).map((stateObj) => [
+          stateObj.entity_id,
+          [{ s: stateObj.state, a: stateObj.attributes, lu: 1_700_010_000 }],
+        ])
+      ),
+      [],
+      mockLocalize,
+      true
+    );
+
+    expect(
+      mergeHistoryResults(historyResult, ltsResult).line.map(
+        ({ unit, data }) => ({
+          unit,
+          withStatistics: data
+            .filter((entity) => entity.statistics?.length)
+            .map((entity) => entity.entity_id),
+        })
+      )
+    ).toEqual([
+      { unit: "%", withStatistics: ["sensor.soc_a", "sensor.soc_b"] },
+      { unit: "°C", withStatistics: ["sensor.temperature"] },
+    ]);
+  });
+});
+
+describe("convertStatisticsToHistory without an entity", () => {
+  const statisticId = "example:outdoor_temperature";
+  const statistics = {
+    [statisticId]: [
+      { start: 1_700_000_000_000, end: 1_700_003_600_000, mean: 12.5 },
+      { start: 1_700_003_600_000, end: 1_700_007_200_000, mean: 13.5 },
+    ],
+  };
+
+  it("takes name and unit of an external statistic from its metadata", () => {
+    const result = convertStatisticsToHistory(
+      createMockHass(),
+      statistics,
+      [statisticId],
+      true,
+      {
+        [statisticId]: {
+          statistic_id: statisticId,
+          source: "example",
+          name: "Outdoor temperature",
+          statistics_unit_of_measurement: "°C",
+          has_sum: false,
+          mean_type: StatisticMeanType.ARITHMETIC,
+          unit_class: "temperature",
+        },
+      }
+    );
+
+    expect(result.line).toHaveLength(1);
+    expect(result.line[0].unit).toBe("°C");
+    expect(result.line[0].data.map(({ name }) => name)).toEqual([
+      "Outdoor temperature",
+    ]);
+  });
+
+  it("keeps a removed entity in one chart with its state history", () => {
+    // The entity is gone from hass.states, but its recent states are recorded
+    const entityId = "sensor.removed_temperature";
+    const temperature = {
+      unit_of_measurement: "°C",
+      device_class: "temperature",
+    };
+    const historyResult = computeHistory(
+      createMockHass(),
+      { [entityId]: [{ s: "21", a: temperature, lu: 1_700_010_000 }] },
+      [],
+      mockLocalize,
+      true
+    );
+    const ltsResult = convertStatisticsToHistory(
+      createMockHass(),
+      {
+        [entityId]: [
+          { start: 1_700_000_000_000, end: 1_700_003_600_000, mean: 20 },
+        ],
+      },
+      [entityId],
+      true,
+      {
+        [entityId]: {
+          statistic_id: entityId,
+          source: "recorder",
+          name: null,
+          statistics_unit_of_measurement: "°C",
+          has_sum: false,
+          mean_type: StatisticMeanType.ARITHMETIC,
+          unit_class: "temperature",
+        },
+      }
+    );
+
+    const merged = mergeHistoryResults(historyResult, ltsResult, true);
+
+    expect(merged.line).toHaveLength(1);
+    expect(merged.line[0].unit).toBe("°C");
+    expect(merged.line[0].data.map(({ entity_id }) => entity_id)).toEqual([
+      entityId,
+    ]);
+  });
+
+  it("keeps the ID and no unit without metadata", () => {
+    const result = convertStatisticsToHistory(
+      createMockHass(),
+      statistics,
+      [statisticId],
+      true
+    );
+
+    expect(result.line).toHaveLength(1);
+    expect(result.line[0].unit).toBe(" ");
+    expect(result.line[0].data[0].name).not.toBe("Outdoor temperature");
   });
 });

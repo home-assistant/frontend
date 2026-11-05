@@ -16,7 +16,7 @@ export class DialogZWaveJSAddNode extends HTMLElement {
 
   private async _openDialog() {
     await navigate(
-      `/config/devices/dashboard?config_entry=${this.configEntryId}`,
+      `/config/devices/dashboard?config_entry=${this.configEntryId}&status=disabled`,
       {
         replace: true,
       }

@@ -32,11 +32,11 @@ const DEMO_ADDONS: HassioAddonInfo[] = [
     detached: false,
     homeassistant: "2025.7.0",
     icon: false,
-    installed: true,
     logo: false,
     repository: "d5369777",
     stage: "stable",
     state: "started",
+    system_managed: false,
     update_available: false,
     url: "https://github.com/music-assistant/home-assistant-addon",
     version: "2.6.3",
@@ -53,11 +53,11 @@ const DEMO_ADDONS: HassioAddonInfo[] = [
     detached: false,
     homeassistant: "2025.7.0",
     icon: false,
-    installed: true,
     logo: false,
     repository: "5c53de3b",
     stage: "stable",
     state: "started",
+    system_managed: false,
     update_available: false,
     url: "https://esphome.io/",
     version: "2025.7.3",
@@ -114,13 +114,14 @@ const addonDetails = (addon: HassioAddonInfo): HassioAddonDetails => ({
   audio_output: null,
   audio: false,
   auth_api: false,
-  auto_uart: false,
   auto_update: false,
   boot: "auto",
+  boot_config: "auto",
   changelog: false,
   devices: [],
   devicetree: false,
   discovery: [],
+  dns: [],
   docker_api: false,
   documentation: false,
   full_access: false,
@@ -133,8 +134,10 @@ const addonDetails = (addon: HassioAddonInfo): HassioAddonDetails => ({
   host_ipc: false,
   host_network: false,
   host_pid: false,
+  host_uts: false,
   ingress_entry: null,
   ingress_panel: false,
+  ingress_port: null,
   ingress_url: null,
   ingress: false,
   ip_address: "172.30.33.2",
@@ -148,13 +151,16 @@ const addonDetails = (addon: HassioAddonInfo): HassioAddonDetails => ({
   protected: true,
   rating: 6,
   schema: CONFIG_SCHEMAS[addon.slug] ?? null,
-  services_role: [],
+  services: [],
   signed: false,
   startup: "application",
   stdin: false,
-  system_managed: false,
   system_managed_config_entry: null,
   translations: {},
+  uart: false,
+  udev: false,
+  usb: false,
+  video: false,
   watchdog: true,
   webui: null,
 });
@@ -181,11 +187,14 @@ const ADDON_STATS: HassioStats = {
   blk_read: 12300000,
   blk_write: 4500000,
   cpu_percent: 1.4,
+  cpu_system_usage: 1420000000000,
+  cpu_usage: 19800000000,
   memory_limit: 3900000000,
   memory_percent: 4.2,
   memory_usage: 163000000,
   network_rx: 8900000,
   network_tx: 2300000,
+  online_cpus: 4,
 };
 
 export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
@@ -209,9 +218,13 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
         wait_boot: 5,
         timezone: "Europe/Amsterdam",
         logging: "info",
+        auto_update: true,
+        country: "NL",
         debug: false,
         debug_block: false,
+        detect_blocking_io: false,
         diagnostics: true,
+        feature_flags: {},
         addons: DEMO_ADDONS as any,
         addons_repositories: [
           "https://github.com/music-assistant/home-assistant-addon",
@@ -224,22 +237,6 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
     if (msg.endpoint === "/addons") {
       const data: HassioAddonsInfo = {
         addons: DEMO_ADDONS,
-        repositories: [
-          {
-            slug: "d5369777",
-            name: "Music Assistant",
-            source: "https://github.com/music-assistant/home-assistant-addon",
-            url: "https://github.com/music-assistant/home-assistant-addon",
-            maintainer: "Music Assistant",
-          },
-          {
-            slug: "5c53de3b",
-            name: "ESPHome",
-            source: "https://github.com/esphome/home-assistant-addon",
-            url: "https://esphome.io/",
-            maintainer: "ESPHome",
-          },
-        ],
       };
       return data;
     }
@@ -264,6 +261,7 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
         hostname: "homeassistant",
         logging: "info",
         machine: "green",
+        machine_id: "0123456789abcdef0123456789abcdef",
         state: "running",
         operating_system: "Home Assistant OS 18.2",
         supervisor: "2026.07.1",
@@ -301,6 +299,7 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
         update_available: false,
         version: "18.2",
         version_latest: "18.2",
+        version_pending: null,
         data_disk: "Home Assistant Green (mmcblk0)",
       };
       return data;
@@ -334,8 +333,9 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
       const data: NetworkInfo = {
         interfaces: [
           {
+            connected: true,
+            mac: "aa:bb:cc:dd:ee:ff",
             primary: true,
-            privacy: false,
             interface: "eth0",
             enabled: true,
             type: "ethernet",
@@ -354,8 +354,16 @@ export const mockHassioSupervisor = (hass: MockHomeAssistant) => {
           gateway: "172.30.32.1",
           interface: "hassio",
         },
+        host_internet: true,
+        supervisor_internet: true,
       };
       return data;
+    }
+
+    if (msg.endpoint === "/ingress/panels") {
+      // The navigation picker waits for this collection before it enables
+      // itself, so it has to answer even when no add-on exposes a panel.
+      return { panels: {} };
     }
 
     if (msg.endpoint === "/store/reload") {

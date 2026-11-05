@@ -11,6 +11,7 @@ interface WebSocketMessage {
 
 export interface OnboardingCalls {
   user?: Record<string, unknown>;
+  coreConfigDetected?: boolean;
   coreConfig?: Record<string, unknown>;
   coreConfigCompleted?: boolean;
   analyticsPreferences?: Record<string, unknown>;
@@ -35,6 +36,14 @@ export const onboardingData = {
     currency: "EUR",
     timeZone: "Europe/Amsterdam",
     unitSystem: "metric",
+  },
+  searchedPlace: {
+    place_id: 1,
+    lat: "40.7128",
+    lon: "-74.006",
+    name: "New York",
+    address: { city: "New York", country: "United States", country_code: "us" },
+    boundingbox: [40.4774, 40.9176, -74.2591, -73.7004],
   },
 } as const;
 
@@ -73,6 +82,15 @@ const commandResults: Record<string, unknown> = {
   "auth/current_user": currentUser,
   "brands/access_token": { token: "brands-token" },
   "config/area_registry/list": [],
+  "config/core/detect": {
+    unit_system: onboardingData.location.unitSystem,
+    latitude: onboardingData.location.latitude,
+    longitude: onboardingData.location.longitude,
+    elevation: onboardingData.location.elevation,
+    time_zone: onboardingData.location.timeZone,
+    currency: onboardingData.location.currency,
+    country: onboardingData.location.country,
+  },
   "config/core/update": demoConfig,
   "config/device_registry/list": [],
   "config/entity_registry/list_for_display": {
@@ -135,7 +153,9 @@ const handleWebSocketMessage = (
     throw new Error(`WebSocket command ${message.type} has no id`);
   }
 
-  if (message.type === "config/core/update") {
+  if (message.type === "config/core/detect") {
+    calls.coreConfigDetected = true;
+  } else if (message.type === "config/core/update") {
     calls.coreConfig = message;
   } else if (message.type === "analytics/preferences") {
     calls.analyticsPreferences = message;
@@ -176,6 +196,7 @@ export async function setupOnboardingMocks(
   page: Page
 ): Promise<OnboardingCalls> {
   const calls: OnboardingCalls = { tokenRequests: [] };
+  const completedSteps = new Set<string>();
 
   // The location step shows a map. This app builds with __DEMO__ true, so its
   // tiles come from the demo upstreams; answering those here keeps CI off the
@@ -195,7 +216,12 @@ export async function setupOnboardingMocks(
     const pathname = new URL(request.url()).pathname;
 
     if (pathname === "/api/onboarding") {
-      await route.fulfill({ json: onboardingSteps });
+      await route.fulfill({
+        json: onboardingSteps.map((step) => ({
+          ...step,
+          done: completedSteps.has(step.step),
+        })),
+      });
       return;
     }
     if (pathname === "/api/onboarding/installation_type") {
@@ -205,23 +231,29 @@ export async function setupOnboardingMocks(
       return;
     }
     if (pathname === "/api/onboarding/users") {
+      completedSteps.add("user");
       calls.user = request.postDataJSON() as Record<string, unknown>;
       await route.fulfill({ json: { auth_code: "onboarding-auth-code" } });
       return;
     }
     if (pathname === "/api/onboarding/core_config") {
+      completedSteps.add("core_config");
       calls.coreConfigCompleted = true;
       await route.fulfill({ json: {} });
       return;
     }
     if (pathname === "/api/onboarding/analytics") {
+      completedSteps.add("analytics");
       calls.analyticsCompleted = true;
       await route.fulfill({ json: {} });
       return;
     }
     if (pathname === "/api/onboarding/integration") {
+      completedSteps.add("integration");
       calls.integration = request.postDataJSON() as Record<string, unknown>;
-      await route.fulfill({ json: { auth_code: "dashboard-auth-code" } });
+      await route.fulfill({
+        json: { auth_code: "dashboard-auth-code" },
+      });
       return;
     }
 
@@ -249,14 +281,22 @@ export async function setupOnboardingMocks(
   return calls;
 }
 
-export async function openOnboarding(page: Page, baseURL: string) {
+export async function openOnboarding(
+  page: Page,
+  baseURL: string,
+  authorizationParams: Record<string, string> = {}
+) {
   const origin = new URL(baseURL).origin;
   const state = btoa(
     JSON.stringify({ hassUrl: origin, clientId: `${origin}/` })
   );
-  await page.goto(
-    `/onboarding.html?client_id=${encodeURIComponent(`${origin}/`)}&redirect_uri=${encodeURIComponent(`${origin}/dashboard.html?auth_callback=1`)}&state=${encodeURIComponent(state)}`
-  );
+  const params = new URLSearchParams({
+    client_id: `${origin}/`,
+    redirect_uri: `${origin}/dashboard.html?auth_callback=1`,
+    state,
+    ...authorizationParams,
+  });
+  await page.goto(`/onboarding.html?${params}`);
   await expect(page.locator("onboarding-welcome")).toBeAttached({
     timeout: SHELL_TIMEOUT,
   });
@@ -264,7 +304,8 @@ export async function openOnboarding(page: Page, baseURL: string) {
 
 export async function createOwner(page: Page) {
   await page
-    .locator("onboarding-welcome ha-button.start")
+    .locator("onboarding-welcome")
+    .getByRole("button", { name: "Create my smart home", exact: true })
     .click({ timeout: SHELL_TIMEOUT });
 
   const inputs = page.locator("onboarding-create-user ha-input >> input");
@@ -279,26 +320,67 @@ export async function createOwner(page: Page) {
     .click();
 }
 
-export async function completeCoreConfig(page: Page) {
+export async function completeCoreConfig(
+  page: Page,
+  detectedUnitSystem?: "metric" | "us_customary"
+) {
   const location = page.locator("onboarding-location");
   await expect(location).toBeAttached({ timeout: PANEL_TIMEOUT });
-  await location.evaluate((element, locationData) => {
-    element.dispatchEvent(
-      new CustomEvent("value-changed", {
-        bubbles: true,
-        composed: true,
-        detail: {
-          value: {
-            location: [locationData.latitude, locationData.longitude],
-            country: locationData.country,
-            elevation: String(locationData.elevation),
-            timezone: locationData.timeZone,
-            currency: locationData.currency,
+  await location.evaluate(
+    (element, { locationData, unitSystem }) => {
+      element.dispatchEvent(
+        new CustomEvent("value-changed", {
+          bubbles: true,
+          composed: true,
+          detail: {
+            value: {
+              location: [locationData.latitude, locationData.longitude],
+              country: locationData.country,
+              elevation: String(locationData.elevation),
+              time_zone: locationData.timeZone,
+              currency: locationData.currency,
+              unit_system: unitSystem,
+            },
           },
-        },
-      })
-    );
-  }, onboardingData.location);
+        })
+      );
+    },
+    { locationData: onboardingData.location, unitSystem: detectedUnitSystem }
+  );
+}
+
+export async function detectLocation(page: Page, calls: OnboardingCalls) {
+  const location = page.locator("onboarding-location");
+  await expect(location).toBeAttached({ timeout: PANEL_TIMEOUT });
+  await location.getByRole("button", { name: "Detect", exact: true }).click();
+  const confirm = page
+    .locator("dialog-box")
+    .getByRole("button", { name: "OK", exact: true });
+  await confirm.click();
+  await expect(confirm).toBeHidden();
+  await expect.poll(() => calls.coreConfigDetected).toBe(true);
+}
+
+export async function searchAddress(page: Page) {
+  const place = onboardingData.searchedPlace;
+  await page.route(
+    "https://nominatim.openstreetmap.org/search.php**",
+    (route) => route.fulfill({ json: [place] })
+  );
+  const location = page.locator("onboarding-location");
+  const input = location.locator("ha-input input");
+  await input.fill(place.name);
+  await input.press("Enter");
+  await expect(
+    location.getByRole("list", { name: "Search results" })
+  ).toContainText(place.name);
+}
+
+export async function confirmLocation(page: Page) {
+  await page
+    .locator("onboarding-location")
+    .getByRole("button", { name: "Next", exact: true })
+    .click();
 }
 
 export async function completeAnalytics(page: Page) {

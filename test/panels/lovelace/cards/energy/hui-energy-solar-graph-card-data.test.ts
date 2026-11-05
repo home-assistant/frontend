@@ -10,7 +10,6 @@ import type {
   EnergySolarForecasts,
   SolarSourceTypeEnergyPreference,
 } from "../../../../../src/data/energy";
-import type { HomeAssistant } from "../../../../../src/types";
 import { createMockComputedStyle } from "../../../../fixtures/computed-style";
 import { digestResult } from "../../../../fixtures/digest";
 import { createMockHass } from "../../../../fixtures/hass";
@@ -24,10 +23,8 @@ const computedStyles = createMockComputedStyle({
   "--primary-text-color": "#212121",
 });
 
-const hass = {
-  ...createMockHass(),
-  themes: { darkMode: false },
-} as unknown as HomeAssistant;
+const { localize, states, formatEntityName } = createMockHass();
+const baseParams = { localize, states, formatEntityName, darkMode: false };
 
 const now = new Date(FIXED_EPOCH_MS + dayMs);
 
@@ -84,7 +81,7 @@ describe("generateEnergySolarGraphData", () => {
       },
     });
     const result = generateEnergySolarGraphData({
-      hass,
+      ...baseParams,
       energyData,
       forecasts: undefined,
       computedStyles,
@@ -102,7 +99,7 @@ describe("generateEnergySolarGraphData", () => {
     });
     expect(
       generateEnergySolarGraphData({
-        hass,
+        ...baseParams,
         energyData,
         forecasts: undefined,
         computedStyles,
@@ -119,7 +116,7 @@ describe("generateEnergySolarGraphData", () => {
       prefs: solarPrefs({ sources: 2 }),
     });
     const result = generateEnergySolarGraphData({
-      hass,
+      ...baseParams,
       energyData,
       forecasts: undefined,
       computedStyles,
@@ -140,7 +137,7 @@ describe("generateEnergySolarGraphData", () => {
     });
     expect(
       generateEnergySolarGraphData({
-        hass,
+        ...baseParams,
         energyData,
         forecasts: undefined,
         computedStyles,
@@ -157,7 +154,7 @@ describe("generateEnergySolarGraphData", () => {
     });
     const forecasts = buildForecasts(2 * 24, 60 * 60 * 1000, ["entry_0"]);
     const result = generateEnergySolarGraphData({
-      hass,
+      ...baseParams,
       energyData,
       forecasts,
       computedStyles,
@@ -181,7 +178,7 @@ describe("generateEnergySolarGraphData", () => {
     ]);
     expect(
       generateEnergySolarGraphData({
-        hass,
+        ...baseParams,
         energyData,
         forecasts,
         computedStyles,
@@ -200,7 +197,7 @@ describe("generateEnergySolarGraphData", () => {
     expect(
       digestResult(
         generateEnergySolarGraphData({
-          hass,
+          ...baseParams,
           energyData,
           forecasts: undefined,
           computedStyles,
@@ -208,6 +205,64 @@ describe("generateEnergySolarGraphData", () => {
         })
       )
     ).toMatchSnapshot();
+  });
+
+  it("combines all sources into one series and one forecast", () => {
+    const HOUR = 60 * 60 * 1000;
+    const prefs = solarPrefs({ sources: 2, forecast: true });
+    for (const source of prefs.energy_sources as SolarSourceTypeEnergyPreference[]) {
+      source.config_entry_solar_forecast = ["entry_0"];
+    }
+    const energyData = generateEnergyData(8, {
+      days: 2,
+      period: "hour",
+      compare: true,
+      prefs,
+    });
+    const params = {
+      ...baseParams,
+      energyData,
+      forecasts: buildForecasts(2 * 24, HOUR, ["entry_0"]),
+      computedStyles,
+      now,
+    };
+    const separate = generateEnergySolarGraphData(params);
+    const combined = generateEnergySolarGraphData({
+      ...params,
+      combineSources: true,
+    });
+    const sumBars = (series: (typeof combined.chartData)[number]) =>
+      (series.data as any[]).reduce(
+        (sum, item) => sum + Number(item?.value?.[1] ?? item?.[1]),
+        0
+      );
+
+    expect(combined.chartData.map((d) => d.id)).toEqual([
+      "compare-solar",
+      "solar",
+      "forecast-solar",
+    ]);
+    const [compareBars, bars, forecast] = combined.chartData;
+    expect(bars.name).toBe(
+      localize("ui.panel.lovelace.cards.energy.energy_solar_graph.production", {
+        name: localize(
+          "ui.panel.lovelace.cards.energy.energy_distribution.solar"
+        ),
+      })
+    );
+    expect(sumBars(bars)).toBeCloseTo(combined.total);
+    expect(combined.total).toBe(separate.total);
+    expect(sumBars(compareBars)).toBeCloseTo(
+      separate.chartData
+        .filter((d) => String(d.id).startsWith("compare-"))
+        .reduce((sum, d) => sum + sumBars(d), 0)
+    );
+    // Both sources share one forecast entry, which must not be counted twice.
+    expect(forecast.data).toEqual(
+      separate.chartData.find(
+        (d) => d.id === "forecast-sensor.solar_production"
+      )!.data
+    );
   });
 
   // Regression test for #52938: a lone statistics bucket must be zero-filled
@@ -232,7 +287,7 @@ describe("generateEnergySolarGraphData", () => {
     };
     const forecasts = buildForecasts(24, HOUR, ["entry_0"]);
     const result = generateEnergySolarGraphData({
-      hass,
+      ...baseParams,
       energyData,
       forecasts,
       computedStyles,

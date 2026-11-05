@@ -145,7 +145,6 @@ class HaConfigSystemNavigation extends LitElement {
         >
           <ha-card outlined>
             <ha-config-navigation-list
-              .hass=${this.hass}
               .narrow=${this.narrow}
               .pages=${pages}
               has-secondary
@@ -194,9 +193,9 @@ class HaConfigSystemNavigation extends LitElement {
       const hardwareInfo: HardwareInfo = await this.hass.callWS({
         type: "hardware/info",
       });
-      this._boardName = hardwareInfo?.hardware.find(
-        (hw) => hw.board !== null
-      )?.name;
+      this._boardName =
+        hardwareInfo?.hardware.find((hw) => hw.board !== null)?.name ??
+        undefined;
     } else if (isHassioLoaded) {
       const osData: HassioHassOSInfo = await fetchHassioHassOsInfo(this.hass);
       if (osData.board) {
@@ -216,7 +215,7 @@ class HaConfigSystemNavigation extends LitElement {
 
   private async _fetchNetworkStatus() {
     if (isComponentLoaded(this.hass.config, "cloud")) {
-      const cloudStatus = await fetchCloudStatus(this.hass);
+      const cloudStatus = await fetchCloudStatus(this.hass.callWS);
       if (cloudStatus.logged_in) {
         this._externalAccess = true;
         return;
@@ -246,7 +245,8 @@ class HaConfigSystemNavigation extends LitElement {
         ha-config-section {
           margin: auto;
           margin-top: -32px;
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
+          padding-inline: var(--ha-content-gutter);
         }
 
         ha-card {
@@ -282,6 +282,7 @@ class HaConfigSystemNavigation extends LitElement {
           }
           ha-config-section {
             margin-top: -42px;
+            padding-inline: 0;
           }
         }
       `,

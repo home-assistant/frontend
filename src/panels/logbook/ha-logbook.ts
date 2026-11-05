@@ -2,6 +2,7 @@ import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
@@ -14,6 +15,7 @@ import { fetchUsers } from "../../data/user";
 import type { HomeAssistant } from "../../types";
 import "./ha-logbook-renderer";
 import type { LogbookNameDetail } from "./logbook-entry-model";
+import { computeLogbookCauseKey, computeRowCause } from "./logbook-entry-model";
 
 interface LogbookTimePeriod {
   now: Date;
@@ -57,6 +59,9 @@ export class HaLogbook extends LitElement {
 
   @property({ attribute: false }) public stateFilter?: string[];
 
+  /** Keys from `computeLogbookCauseKey` to keep. */
+  @property({ attribute: false }) public causeFilter?: string[];
+
   @property({ type: Boolean }) public narrow = false;
 
   @property({ type: Boolean, reflect: true }) public virtualize = false;
@@ -77,13 +82,18 @@ export class HaLogbook extends LitElement {
   @property({ attribute: "show-more-link", type: Boolean })
   public showMoreLink = true;
 
+  @property({ type: Number, attribute: "max-entries" })
+  public maxEntries?: number;
+
   @state() private _logbookEntries?: LogbookEntry[];
 
   @state() private _traceContexts: TraceContexts = {};
 
-  @state() private _userIdToName = {};
+  @state() private _userIdToName: Record<string, string> = {};
 
   @state() private _systemUserIds = new Set<string>();
+
+  @state() private _personUserIds = new Set<string>();
 
   @state() private _error?: string;
 
@@ -103,7 +113,7 @@ export class HaLogbook extends LitElement {
   private _readyListenerAttached = false;
 
   public getEntries(): LogbookEntry[] {
-    return this._logbookEntries || [];
+    return this._shownEntries() ?? [];
   }
 
   protected render() {
@@ -119,7 +129,9 @@ export class HaLogbook extends LitElement {
       </div>`;
     }
 
-    if (this._logbookEntries === undefined) {
+    const entries = this._shownEntries();
+
+    if (entries === undefined) {
       return html`
         <div class="progress-wrapper">
           <ha-spinner></ha-spinner>
@@ -127,7 +139,7 @@ export class HaLogbook extends LitElement {
       `;
     }
 
-    if (this._logbookEntries.length === 0) {
+    if (entries.length === 0) {
       return html`<slot name="empty">
         <div class="no-entries">
           ${this.hass.localize("ui.components.logbook.entries_not_found")}
@@ -144,7 +156,7 @@ export class HaLogbook extends LitElement {
         .graphColor=${this.graphColor}
         .showCause=${this.showCause}
         .nameDetail=${this.nameDetail}
-        .entries=${this._logbookEntries}
+        .entries=${this._limitEntries(entries, this.maxEntries)}
         .traceContexts=${this._traceContexts}
         .userIdToName=${this._userIdToName}
         .systemUserIds=${this._systemUserIds}
@@ -152,6 +164,45 @@ export class HaLogbook extends LitElement {
       ></ha-logbook-renderer>
     `;
   }
+
+  private _shownEntries(): LogbookEntry[] | undefined {
+    return this._filterEntriesByCause(
+      this._logbookEntries,
+      this.causeFilter,
+      this._userIdToName,
+      this._systemUserIds,
+      this._personUserIds
+    );
+  }
+
+  private _limitEntries = memoizeOne(
+    (entries: LogbookEntry[], maxEntries: number | undefined) =>
+      maxEntries ? entries.slice(0, maxEntries) : entries
+  );
+
+  private _filterEntriesByCause = memoizeOne(
+    (
+      entries: LogbookEntry[] | undefined,
+      causeFilter: string[] | undefined,
+      userIdToName: Record<string, string>,
+      systemUserIds: Set<string>,
+      personUserIds: Set<string>
+    ): LogbookEntry[] | undefined => {
+      if (!entries || !causeFilter?.length) {
+        return entries;
+      }
+      const causes = new Set(causeFilter);
+      return entries.filter((entry) =>
+        causes.has(
+          computeLogbookCauseKey(
+            entry,
+            computeRowCause(this.hass, entry, userIdToName, systemUserIds),
+            personUserIds
+          )
+        )
+      );
+    }
+  );
 
   public async refresh(force = false) {
     if (!force && (this._unsubLogbook || this._logbookEntries === undefined)) {
@@ -204,18 +255,26 @@ export class HaLogbook extends LitElement {
 
     if (changed) {
       this.refresh(true);
+    } else if (changedProps.has("causeFilter")) {
+      // A filter without matches removes the renderer, which is what resumes
+      // the live updates paused while scrolled down.
+      this._setLiveUpdates(true);
     }
   }
 
   private _handleLogbookLive(ev: CustomEvent) {
-    if (ev.detail.enable && !this._liveUpdatesEnabled) {
+    this._setLiveUpdates(ev.detail.enable);
+  }
+
+  private _setLiveUpdates(enable: boolean) {
+    if (enable && !this._liveUpdatesEnabled) {
       // Process everything we queued up while we were scrolled down
       this._pendingStreamMessages.forEach((msg) =>
         this._processStreamMessage(msg)
       );
       this._pendingStreamMessages = [];
     }
-    this._liveUpdatesEnabled = ev.detail.enable;
+    this._liveUpdatesEnabled = enable;
   }
 
   private get _filterAlwaysEmptyResults(): boolean {
@@ -471,9 +530,10 @@ export class HaLogbook extends LitElement {
   private _updateUsers = throttle(async () => {
     const userIdToName = {};
     const systemUserIds = new Set<string>();
+    const personUserIds = new Set<string>();
 
     // Start loading users
-    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
+    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass.callWS);
 
     // Process persons
     for (const entity of Object.values(this.hass.states)) {
@@ -482,7 +542,8 @@ export class HaLogbook extends LitElement {
         computeStateDomain(entity) === "person"
       ) {
         userIdToName[entity.attributes.user_id] =
-          entity.attributes.friendly_name;
+          this.hass.formatEntityName(entity);
+        personUserIds.add(entity.attributes.user_id);
       }
     }
 
@@ -501,6 +562,7 @@ export class HaLogbook extends LitElement {
 
     this._userIdToName = userIdToName;
     this._systemUserIds = systemUserIds;
+    this._personUserIds = personUserIds;
   }, 60000);
 
   static get styles() {

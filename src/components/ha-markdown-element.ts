@@ -4,6 +4,7 @@ import { customElement, property } from "lit/decorators";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import hash from "object-hash";
 import { fireEvent } from "../common/dom/fire_event";
+import { rewriteHtmlUrls } from "../common/dom/rewrite-html-urls";
 import { renderMarkdown } from "../resources/render-markdown";
 import { CacheManager } from "../util/cache-manager";
 
@@ -38,6 +39,9 @@ class HaMarkdownElement extends ReactiveElement {
     false;
 
   @property({ type: Boolean }) public cache = false;
+
+  // For content whose relative addresses belong elsewhere, like a README
+  @property({ attribute: false }) public rewriteUrl?: (url: string) => string;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -82,6 +86,7 @@ class HaMarkdownElement extends ReactiveElement {
       allowSvg: this.allowSvg,
       allowDataUrl: this.allowDataUrl,
       breaks: this.breaks,
+      rewriteUrl: Boolean(this.rewriteUrl),
     });
   }
 
@@ -95,10 +100,19 @@ class HaMarkdownElement extends ReactiveElement {
       {
         allowSvg: this.allowSvg,
         allowDataUrl: this.allowDataUrl,
+        allowRelativeUrls: Boolean(this.rewriteUrl),
       }
     );
 
-    render(h(unsafeHTML(elements.join(""))), this.renderRoot);
+    const output = elements.join("");
+    render(
+      h(
+        unsafeHTML(
+          this.rewriteUrl ? rewriteHtmlUrls(output, this.rewriteUrl) : output
+        )
+      ),
+      this.renderRoot
+    );
 
     this._resize();
 

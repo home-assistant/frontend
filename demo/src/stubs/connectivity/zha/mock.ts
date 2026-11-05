@@ -15,6 +15,7 @@ import type {
   ZHANetworkBackup,
   ZHANetworkSettings,
 } from "../../../../../src/data/zha";
+import { ZHADeviceType } from "../../../../../src/data/zha";
 import type { MockHomeAssistant } from "../../../../../src/fake_data/provide_hass";
 import { minutesAgo } from "../helpers";
 
@@ -45,7 +46,7 @@ const DEVICES: ZHADevice[] = [
     ieee: COORDINATOR_IEEE,
     nwk: 0x0000,
     lqi: 255,
-    rssi: "0",
+    rssi: 0,
     last_seen: minutesAgo(0),
     manufacturer: "Nabu Casa",
     model: "Connect ZBT-1",
@@ -56,7 +57,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-coordinator",
     user_given_name: "Home Assistant Connect ZBT-1",
     power_source: "Mains",
-    device_type: "Coordinator",
+    device_type: ZHADeviceType.Coordinator,
     active_coordinator: true,
     signature: {},
     neighbors: [
@@ -72,7 +73,7 @@ const DEVICES: ZHADevice[] = [
     ieee: PORCH_IEEE,
     nwk: 0x1a2b,
     lqi: 224,
-    rssi: "-58",
+    rssi: -58,
     last_seen: minutesAgo(2),
     manufacturer: "IKEA of Sweden",
     model: "TRADFRI bulb E27 CWS 806lm",
@@ -83,7 +84,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-porch-light",
     user_given_name: "Porch light",
     power_source: "Mains",
-    device_type: "Router",
+    device_type: ZHADeviceType.Router,
     active_coordinator: false,
     signature: {},
     neighbors: [
@@ -99,7 +100,7 @@ const DEVICES: ZHADevice[] = [
     ieee: MOTION_IEEE,
     nwk: 0x5e6f,
     lqi: 142,
-    rssi: "-77",
+    rssi: -77,
     last_seen: minutesAgo(9),
     manufacturer: "IKEA of Sweden",
     model: "TRADFRI motion sensor",
@@ -110,7 +111,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-hall-motion",
     user_given_name: "Hall motion",
     power_source: "Battery",
-    device_type: "EndDevice",
+    device_type: ZHADeviceType.EndDevice,
     active_coordinator: false,
     signature: {},
     neighbors: [neighbor(PORCH_IEEE, "0x1a2b", "142", "Parent", "1")],
@@ -122,7 +123,7 @@ const DEVICES: ZHADevice[] = [
     ieee: PLUG_IEEE,
     nwk: 0x3c4d,
     lqi: 198,
-    rssi: "-64",
+    rssi: -64,
     last_seen: minutesAgo(240),
     manufacturer: "Innr",
     model: "SP 220",
@@ -133,7 +134,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-tv-plug",
     user_given_name: "TV plug",
     power_source: "Mains",
-    device_type: "Router",
+    device_type: ZHADeviceType.Router,
     active_coordinator: false,
     signature: {},
     neighbors: [neighbor(COORDINATOR_IEEE, "0x0000", "198", "Parent", "0")],
@@ -145,7 +146,7 @@ const DEVICES: ZHADevice[] = [
     ieee: KITCHEN_IEEE,
     nwk: 0x9c0d,
     lqi: 186,
-    rssi: "-69",
+    rssi: -69,
     last_seen: minutesAgo(4),
     manufacturer: "IKEA of Sweden",
     model: "TRADFRI on/off switch",
@@ -156,7 +157,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-kitchen-switch",
     user_given_name: "Kitchen switch",
     power_source: "Battery",
-    device_type: "EndDevice",
+    device_type: ZHADeviceType.EndDevice,
     active_coordinator: false,
     signature: {},
     neighbors: [neighbor(PORCH_IEEE, "0x1a2b", "186", "Parent", "1")],
@@ -168,7 +169,7 @@ const DEVICES: ZHADevice[] = [
     ieee: LANDING_IEEE,
     nwk: 0xab12,
     lqi: 164,
-    rssi: "-74",
+    rssi: -74,
     last_seen: minutesAgo(6),
     manufacturer: "Aqara",
     model: "WSDCGQ11LM",
@@ -179,7 +180,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-landing-sensor",
     user_given_name: "Landing sensor",
     power_source: "Battery",
-    device_type: "EndDevice",
+    device_type: ZHADeviceType.EndDevice,
     active_coordinator: false,
     signature: {},
     neighbors: [neighbor(OFFICE_IEEE, "0x7a8b", "164", "Parent", "2")],
@@ -191,7 +192,7 @@ const DEVICES: ZHADevice[] = [
     ieee: GARAGE_IEEE,
     nwk: 0xcd34,
     lqi: 118,
-    rssi: "-83",
+    rssi: -83,
     last_seen: minutesAgo(21),
     manufacturer: "Aqara",
     model: "MCCGQ11LM",
@@ -202,7 +203,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-garage-contact",
     user_given_name: "Garage contact",
     power_source: "Battery",
-    device_type: "EndDevice",
+    device_type: ZHADeviceType.EndDevice,
     active_coordinator: false,
     signature: {},
     neighbors: [neighbor(OFFICE_IEEE, "0x7a8b", "118", "Parent", "2")],
@@ -214,7 +215,7 @@ const DEVICES: ZHADevice[] = [
     ieee: OFFICE_IEEE,
     nwk: 0x7a8b,
     lqi: 211,
-    rssi: "-61",
+    rssi: -61,
     last_seen: minutesAgo(1),
     manufacturer: "Innr",
     model: "SP 240",
@@ -225,7 +226,7 @@ const DEVICES: ZHADevice[] = [
     device_reg_id: "zha-office-plug",
     user_given_name: "Office plug",
     power_source: "Mains",
-    device_type: "Router",
+    device_type: ZHADeviceType.Router,
     active_coordinator: false,
     signature: {},
     neighbors: [
@@ -593,7 +594,8 @@ export const mockZha = (hass: MockHomeAssistant) => {
   hass.mockWS("zha/devices/bindable", (msg: { ieee: string }) =>
     DEVICES.filter(
       (candidate) =>
-        candidate.device_type === "Router" && candidate.ieee !== msg.ieee
+        candidate.device_type === ZHADeviceType.Router &&
+        candidate.ieee !== msg.ieee
     )
   );
   hass.mockWS("zha/devices/bind", () => undefined);

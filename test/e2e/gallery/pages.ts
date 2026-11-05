@@ -40,6 +40,10 @@ export const componentPages: GalleryPageSmokeCase[] = [
   { name: "ha-list", selector: "demo-components-ha-list" },
   { name: "ha-marquee-text", selector: "demo-components-ha-marquee-text" },
   {
+    name: "ha-picker-combo-box",
+    selector: "demo-components-ha-picker-combo-box",
+  },
+  {
     name: "ha-progress-button",
     selector: "demo-components-ha-progress-button",
   },

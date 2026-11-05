@@ -125,8 +125,8 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }
@@ -140,8 +140,8 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       : undefined;
 
     return html`
-      <ha-card>
-        <p class="title">${name}</p>
+      <ha-card role="group" aria-labelledby="title">
+        <p class="title" id="title">${name}</p>
         <div class="container">
           <ha-state-control-humidifier-humidity
             style=${styleMap({

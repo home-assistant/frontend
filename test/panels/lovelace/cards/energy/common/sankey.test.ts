@@ -4,6 +4,7 @@ import type {
   SankeyDeviceNode,
 } from "../../../../../../src/panels/lovelace/cards/energy/common/sankey";
 import {
+  addSplitSankeyLinks,
   buildSankeyDeviceNodes,
   buildSankeyLayout,
   DEFAULT_MAX_SANKEY_DEVICES,
@@ -11,17 +12,39 @@ import {
   getSankeyDeviceSections,
   groupSankeyDevicesByFloorAndArea,
 } from "../../../../../../src/panels/lovelace/cards/energy/common/sankey";
-import type { Node } from "../../../../../../src/components/chart/ha-sankey-chart";
+import type {
+  Link,
+  Node,
+} from "../../../../../../src/components/chart/ha-sankey-chart";
 import type { DeviceConsumptionEnergyPreference } from "../../../../../../src/data/energy";
-import type { HomeAssistant } from "../../../../../../src/types";
+import type { HomeAssistantRegistries } from "../../../../../../src/types";
 import { createMockComputedStyle } from "../../../../../fixtures/computed-style";
 import {
   createMockEntityState,
-  createMockHass,
   mockLocalize,
 } from "../../../../../fixtures/hass";
 
 const computedStyle = createMockComputedStyle();
+
+const emptyRegistries: HomeAssistantRegistries = {
+  entities: {},
+  devices: {},
+  areas: {},
+  floors: {},
+};
+
+const kitchenRegistries = {
+  entities: {
+    "sensor.a": { entity_id: "sensor.a", area_id: "kitchen" },
+  },
+  devices: {},
+  areas: {
+    kitchen: { area_id: "kitchen", name: "Kitchen", floor_id: "ground" },
+  },
+  floors: {
+    ground: { floor_id: "ground", name: "Ground", level: 0 },
+  },
+} as unknown as HomeAssistantRegistries;
 
 const devices = (
   ...items: DeviceConsumptionEnergyPreference[]
@@ -867,7 +890,8 @@ describe("buildSankeyDeviceNodes", () => {
 
       // flow conservation: every device node plus untracked accounts for home
       const { nodes } = buildSankeyLayout({
-        hass: createMockHass(),
+        states: {},
+        registries: emptyRegistries,
         computedStyle,
         localize: mockLocalize,
         deviceNodes: result.deviceNodes,
@@ -887,28 +911,21 @@ describe("buildSankeyDeviceNodes", () => {
 });
 
 describe("groupSankeyDevicesByFloorAndArea", () => {
-  const hass = {
-    ...createMockHass({
-      "sensor.a": createMockEntityState("sensor.a", "1"),
-      "sensor.b": createMockEntityState("sensor.b", "2"),
-    }),
-    entities: {
-      "sensor.a": { entity_id: "sensor.a", area_id: "kitchen" },
-    },
-    areas: {
-      kitchen: { area_id: "kitchen", name: "Kitchen", floor_id: "ground" },
-    },
-    floors: {
-      ground: { floor_id: "ground", name: "Ground", level: 0 },
-    },
-  } as unknown as HomeAssistant;
+  const states = {
+    "sensor.a": createMockEntityState("sensor.a", "1"),
+    "sensor.b": createMockEntityState("sensor.b", "2"),
+  };
 
   it("buckets devices by their entity's area and floor, unknown ones under no_area", () => {
     const nodes: Node[] = [
       { id: "sensor.a", value: 3, index: 4 },
       { id: "sensor.b", value: 2, index: 4 },
     ];
-    const { areas, floors } = groupSankeyDevicesByFloorAndArea(hass, nodes);
+    const { areas, floors } = groupSankeyDevicesByFloorAndArea(
+      states,
+      kitchenRegistries,
+      nodes
+    );
     expect(areas.kitchen.value).toBe(3);
     expect(areas.kitchen.devices.map((n) => n.id)).toEqual(["sensor.a"]);
     expect(floors.ground.value).toBe(3);
@@ -919,12 +936,11 @@ describe("groupSankeyDevicesByFloorAndArea", () => {
 });
 
 describe("buildSankeyLayout", () => {
-  const hass = createMockHass();
-
   it("links top-level devices to the root and emits the untracked node above the floor", () => {
     const deviceNodes: SankeyDeviceNode[] = [{ id: "a", value: 10, index: 4 }];
     const { nodes, links } = buildSankeyLayout({
-      hass,
+      states: {},
+      registries: emptyRegistries,
       computedStyle,
       localize: mockLocalize,
       deviceNodes,
@@ -947,7 +963,8 @@ describe("buildSankeyLayout", () => {
 
   it("suppresses the untracked node at or below the floor", () => {
     const { nodes } = buildSankeyLayout({
-      hass,
+      states: {},
+      registries: emptyRegistries,
       computedStyle,
       localize: mockLocalize,
       deviceNodes: [{ id: "a", value: 10, index: 4 }],
@@ -963,7 +980,8 @@ describe("buildSankeyLayout", () => {
 
   it("honors a non-home root node id (single-source water-flow case)", () => {
     const { links } = buildSankeyLayout({
-      hass,
+      states: {},
+      registries: emptyRegistries,
       computedStyle,
       localize: mockLocalize,
       deviceNodes: [{ id: "a", value: 4, index: 4 }],
@@ -983,7 +1001,8 @@ describe("buildSankeyLayout", () => {
 
   it("numbers device sections and the untracked node by section depth", () => {
     const { nodes } = buildSankeyLayout({
-      hass,
+      states: {},
+      registries: emptyRegistries,
       computedStyle,
       localize: mockLocalize,
       deviceNodes: [
@@ -1005,24 +1024,12 @@ describe("buildSankeyLayout", () => {
   });
 
   it("builds floor and area nodes and links devices through them", () => {
-    const groupedHass = {
-      ...createMockHass({
+    const { nodes, links } = buildSankeyLayout({
+      states: {
         "sensor.a": createMockEntityState("sensor.a", "3"),
         "sensor.b": createMockEntityState("sensor.b", "2"),
-      }),
-      entities: {
-        "sensor.a": { entity_id: "sensor.a", area_id: "kitchen" },
       },
-      areas: {
-        kitchen: { area_id: "kitchen", name: "Kitchen", floor_id: "ground" },
-      },
-      floors: {
-        ground: { floor_id: "ground", name: "Ground", level: 0 },
-      },
-    } as unknown as HomeAssistant;
-
-    const { nodes, links } = buildSankeyLayout({
-      hass: groupedHass,
+      registries: kitchenRegistries,
       computedStyle,
       localize: mockLocalize,
       deviceNodes: [
@@ -1061,5 +1068,32 @@ describe("buildSankeyLayout", () => {
       target: "sensor.b",
       value: 2,
     });
+  });
+});
+
+describe("addSplitSankeyLinks", () => {
+  it("splits a flow by the shares on both ends and accumulates repeated calls", () => {
+    const links = new Map<string, Link & { value: number }>();
+    addSplitSankeyLinks(
+      links,
+      10,
+      [
+        ["solar:a", 3],
+        ["solar:b", 1],
+        ["solar:c", -2],
+      ],
+      [
+        ["battery_in:x", 1],
+        ["battery_in:y", 1],
+      ]
+    );
+    addSplitSankeyLinks(links, 4, [["solar:b", 5]], [["battery_in:y", 2]]);
+
+    expect([...links.values()]).toEqual([
+      { source: "solar:a", target: "battery_in:x", value: 3.75 },
+      { source: "solar:a", target: "battery_in:y", value: 3.75 },
+      { source: "solar:b", target: "battery_in:x", value: 1.25 },
+      { source: "solar:b", target: "battery_in:y", value: 5.25 },
+    ]);
   });
 });

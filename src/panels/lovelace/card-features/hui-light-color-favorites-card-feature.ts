@@ -1,4 +1,3 @@
-import { consume } from "@lit/context";
 import { ResizeController } from "@lit-labs/observers/resize-controller";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing, unsafeCSS } from "lit";
@@ -8,6 +7,7 @@ import type {
   UnsubscribeFunc,
   HassEntity,
 } from "home-assistant-js-websocket";
+import { consume } from "../../../common/decorators/consume";
 import {
   consumeEntityState,
   consumeLocalize,

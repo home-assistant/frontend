@@ -1,10 +1,10 @@
 import { mdiStop, mdiValveClosed, mdiValveOpen } from "@mdi/js";
-import { consume } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
 import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { supportsFeature } from "../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../common/translations/localize";

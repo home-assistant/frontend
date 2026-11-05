@@ -62,21 +62,32 @@ export const AREA_CONTROLS_BUTTONS: Record<
 };
 
 export const getAreaControlEntities = (
+  states: HomeAssistant["states"],
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"],
   controls: readonly AreaControlDomain[],
   areaId: string,
-  excludeEntities: string[] | undefined,
-  hass: HomeAssistant
+  excludeEntities: string[] | undefined
 ): Record<AreaControlDomain, string[]> =>
   controls.reduce(
     (acc, control) => {
       const controlButton = AREA_CONTROLS_BUTTONS[control];
-      const filter = generateEntityFilter(hass, {
-        area: areaId,
-        entity_category: "none",
-        ...controlButton.filter,
-      });
+      const filter = generateEntityFilter(
+        states,
+        entities,
+        devices,
+        areas,
+        floors,
+        {
+          area: areaId,
+          entity_category: "none",
+          ...controlButton.filter,
+        }
+      );
 
-      acc[control] = Object.keys(hass.entities).filter(
+      acc[control] = Object.keys(entities).filter(
         (entityId) => filter(entityId) && !excludeEntities?.includes(entityId)
       );
       return acc;

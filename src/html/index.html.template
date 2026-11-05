@@ -152,31 +152,48 @@
         window.latestJS = true;
       }
     </script>
-    <% if (obj.hassUrl === "") { %>
-      <script>
-        {%- for extra_module in extra_modules -%}
-        // Caught, or the boot recovery guard reads it as a stale build.
-        import("{{ extra_module }}").catch(function (err) {
-          console.error("Failed to load extra module {{ extra_module }}", err);
-        });
-        {%- endfor -%}
-      </script>
-    <% } %>
     <script>
         if (!window.latestJS) {
-          window.customPanelJS = "<%= es5CustomPanelJS %>";
-          <% for (const entry of es5EntryJS) { %>
-            _ls("<%= entry %>", true);
-          <% } %>
+          // Below the [legacy] browserslist floor the entry bundles cannot be
+          // parsed, or dialogs cannot open, and nothing would ever leave the
+          // launch screen. Test the features that set the floors: BigInt for
+          // Chrome 67, native <dialog> for Safari 15.4 and Firefox 98. Not
+          // transpiled, so keep this ES5.
+          if (
+            typeof BigInt === "undefined" ||
+            typeof document.createElement("dialog").showModal !== "function"
+          ) {
+            document.getElementById("ha-launch-screen-info-box").textContent =
+              "This browser is too old to run Home Assistant.";
+          } else {
+            window.customPanelJS = "<%= es5CustomPanelJS %>";
+            <% for (const entry of es5EntryJS) { %>
+              _ls("<%= entry %>", true);
+            <% } %>
+          }
         }
     </script>
 
     <% if (obj.hassUrl === "") { %>
       <script>
-        if (!window.latestJS) {
-          {%- for extra_script in extra_js_es5 -%}
-          _ls("{{ extra_script }}");
+        // The app entry calls this right after it installs the scoped custom
+        // element registry polyfill, so extra modules define their elements in
+        // the registry that the app uses.
+        window.__haLoadExtraModules = function () {
+          {%- for extra_module in extra_modules -%}
+          // Caught, or the boot recovery guard reads it as a stale build.
+          import("{{ extra_module }}").catch(function (err) {
+            console.error("Failed to load extra module {{ extra_module }}", err);
+          });
           {%- endfor -%}
+          if (!window.latestJS) {
+            {%- for extra_script in extra_js_es5 -%}
+            _ls("{{ extra_script }}");
+            {%- endfor -%}
+          }
+        };
+        if (window.__haScopedRegistryReady) {
+          window.__haLoadExtraModules();
         }
       </script>
     <% } %>

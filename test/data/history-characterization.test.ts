@@ -143,7 +143,7 @@ describe("HistoryStream characterization", () => {
     vi.setSystemTime(nowMs);
 
     const hoursToShow = 2;
-    const stream = new HistoryStream(createMockHass(), hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const windowStartMs = nowMs - hoursToShow * 60 * 60 * 1000;
 
     // Initial chunk: 1 hour of data starting just inside the window,
@@ -179,7 +179,7 @@ describe("HistoryStream characterization", () => {
     vi.useFakeTimers();
     vi.setSystemTime(nowMs);
 
-    const stream = new HistoryStream(createMockHass(), 1);
+    const stream = new HistoryStream(1);
     const result = stream.processMessage({
       states: {
         "sensor.power_meter": generateNumericSensorStates(9, {
@@ -205,7 +205,7 @@ describe("HistoryStream characterization", () => {
     vi.setSystemTime(nowMs);
 
     const hoursToShow = 2;
-    const stream = new HistoryStream(createMockHass(), hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const windowStartMs = nowMs - hoursToShow * 60 * 60 * 1000;
 
     // Initial chunk with two entities.

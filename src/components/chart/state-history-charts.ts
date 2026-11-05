@@ -1,7 +1,7 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import { mdiRestart } from "@mdi/js";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { PropertyValues } from "lit";
-import { css, html, LitElement, nothing } from "lit";
+import { css, html, LitElement } from "lit";
 import {
   customElement,
   eventOptions,
@@ -10,20 +10,24 @@ import {
   state,
 } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
+import { transform } from "../../common/decorators/transform";
+import { fireEvent } from "../../common/dom/fire_event";
 import type {
   HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
+import { configContext } from "../../data/context";
 import type {
   HistoryResult,
   LineChartUnit,
   TimelineEntity,
 } from "../../data/history";
 import { loadVirtualizer } from "../../resources/virtualizer";
-import type { HomeAssistant } from "../../types";
-import "../ha-button";
-import "../ha-svg-icon";
+import type { HomeAssistantConfig } from "../../types";
 import "./state-history-chart-line";
 import type { StateHistoryChartLine } from "./state-history-chart-line";
 import "./state-history-chart-timeline";
@@ -49,13 +53,12 @@ declare global {
       end: number;
       chartIndex: number;
     };
+    "history-charts-zoom": { start: number; end: number };
   }
 }
 
 @customElement("state-history-charts")
 export class StateHistoryCharts extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public historyData?: HistoryResult;
 
   @property({ type: Boolean }) public narrow = false;
@@ -78,6 +81,11 @@ export class StateHistoryCharts extends LitElement {
   @property({ attribute: false }) public hoursToShow?: number;
 
   @property({ attribute: "show-names", type: Boolean }) public showNames = true;
+
+  // Render timeline row names inside the plot (under each bar) instead of in a
+  // left-hand column. Opt-in; used by the history panel and history-graph card.
+  @property({ attribute: "inside-labels", type: Boolean })
+  public insideLabels = false;
 
   @property({ attribute: "click-for-more-info", type: Boolean })
   public clickForMoreInfo = true;
@@ -112,7 +120,14 @@ export class StateHistoryCharts extends LitElement {
 
   @state() private _chartCount = 0;
 
-  @state() private _hasZoomedCharts = false;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
 
   @queryAll("state-history-chart-line, state-history-chart-timeline")
   private _chartComponents!: NodeListOf<
@@ -125,21 +140,21 @@ export class StateHistoryCharts extends LitElement {
   @restoreScroll(".container") private _savedScrollPos?: number;
 
   protected render() {
-    if (!isComponentLoaded(this.hass.config, "history")) {
+    if (!isComponentLoaded(this._hassConfig, "history")) {
       return html`<div class="info">
-        ${this.hass.localize("ui.components.history_charts.history_disabled")}
+        ${this._localize("ui.components.history_charts.history_disabled")}
       </div>`;
     }
 
     if (this.isLoadingData && !this.historyData) {
       return html`<div class="info">
-        ${this.hass.localize("ui.components.history_charts.loading_history")}
+        ${this._localize("ui.components.history_charts.loading_history")}
       </div>`;
     }
 
     if (this._isHistoryEmpty()) {
       return html`<div class="info">
-        ${this.hass.localize("ui.components.history_charts.no_history_found")}
+        ${this._localize("ui.components.history_charts.no_history_found")}
       </div>`;
     }
     const combinedItems = this.historyData!.timeline.length
@@ -171,18 +186,6 @@ export class StateHistoryCharts extends LitElement {
               this._renderHistoryItem(item, index)
             )}`
       }
-      ${
-        this.syncCharts && this._hasZoomedCharts
-          ? html`<ha-button
-              size="l"
-              class="reset-button"
-              @click=${this._handleGlobalZoomReset}
-            >
-              <ha-svg-icon slot="start" .path=${mdiRestart}></ha-svg-icon>
-              ${this.hass.localize("ui.components.history_charts.zoom_reset")}
-            </ha-button>`
-          : nothing
-      }
     `;
   }
 
@@ -196,7 +199,6 @@ export class StateHistoryCharts extends LitElement {
     if (!Array.isArray(item)) {
       return html`<div class="entry-container line">
         <state-history-chart-line
-          .hass=${this.hass}
           .unit=${item.unit}
           .data=${item.data}
           .identifier=${item.identifier}
@@ -216,17 +218,17 @@ export class StateHistoryCharts extends LitElement {
           @chart-zoom-with-index=${this._handleTimelineSync}
           .height=${this.virtualize ? undefined : this.height}
           .expandLegend=${this.expandLegend}
-          ?hide-reset-button=${this.syncCharts}
+          .zoomSlider=${this.syncCharts ? "never" : "auto"}
         ></state-history-chart-line>
       </div> `;
     }
     return html`<div class="entry-container timeline">
       <state-history-chart-timeline
-        .hass=${this.hass}
         .data=${item}
         .startTime=${this._computedStartTime}
         .endTime=${this._computedEndTime}
         .showNames=${this.showNames}
+        .insideLabels=${this.insideLabels}
         .names=${this.names}
         .narrow=${this.narrow}
         .chunked=${this.virtualize}
@@ -235,15 +237,12 @@ export class StateHistoryCharts extends LitElement {
         .clickForMoreInfo=${this.clickForMoreInfo}
         @y-width-changed=${this._yWidthChanged}
         @chart-zoom-with-index=${this._handleTimelineSync}
-        ?hide-reset-button=${this.syncCharts}
+        .zoomSlider=${this.syncCharts ? "never" : "auto"}
       ></state-history-chart-timeline>
     </div> `;
   };
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.size === 1 && changedProps.has("hass")) {
-      return false;
-    }
     if (
       changedProps.size === 1 &&
       changedProps.has("_maxYWidth") &&
@@ -267,7 +266,12 @@ export class StateHistoryCharts extends LitElement {
       )
     ) {
       // Don't recompute times when we just want to update layout
-      const now = new Date();
+      // A browser clock behind the server's would put the newest states past
+      // the end time, and the charts drop those. Rounded up because Date
+      // truncates their sub-millisecond timestamps.
+      const now = new Date(
+        Math.max(Date.now(), Math.ceil(this._newestStateTime()))
+      );
 
       this._computedEndTime =
         this.upToNow || !this.endTime || this.endTime > now
@@ -278,7 +282,7 @@ export class StateHistoryCharts extends LitElement {
         this._computedStartTime = this.startTime;
       } else if (this.hoursToShow) {
         this._computedStartTime = new Date(
-          new Date().getTime() - 60 * 60 * this.hoursToShow * 1000
+          now.getTime() - 60 * 60 * this.hoursToShow * 1000
         );
       } else {
         let minTimeAll = (this.historyData?.timeline ?? []).reduce(
@@ -334,7 +338,7 @@ export class StateHistoryCharts extends LitElement {
 
     const { start, end, chartIndex } = e.detail;
 
-    this._hasZoomedCharts = start !== 0 || end !== 100;
+    fireEvent(this, "history-charts-zoom", { start, end });
     this._syncZoomToAllCharts(start, end, chartIndex);
   }
 
@@ -360,21 +364,27 @@ export class StateHistoryCharts extends LitElement {
     });
   }
 
-  private _handleGlobalZoomReset() {
-    this._hasZoomedCharts = false;
-    this._isSyncing = true;
+  public zoom(start: number, end: number) {
+    this._syncZoomToAllCharts(start, end);
+  }
 
-    requestAnimationFrame(() => {
-      this._chartComponents.forEach((chartComponent: any) => {
-        const chartBase =
-          chartComponent.renderRoot?.querySelector("ha-chart-base");
-
-        if (chartBase && chartBase.chart) {
-          chartBase.zoom(0, 100);
-        }
-      });
-      this._isSyncing = false;
-    });
+  private _newestStateTime(): number {
+    let newest = 0;
+    for (const entity of this.historyData?.timeline ?? []) {
+      newest = Math.max(
+        newest,
+        entity.data[entity.data.length - 1]?.last_changed ?? 0
+      );
+    }
+    for (const unit of this.historyData?.line ?? []) {
+      for (const entity of unit.data) {
+        newest = Math.max(
+          newest,
+          entity.states[entity.states.length - 1]?.last_changed ?? 0
+        );
+      }
+    }
+    return newest;
   }
 
   private _isHistoryEmpty(): boolean {
@@ -444,6 +454,10 @@ export class StateHistoryCharts extends LitElement {
       margin-top: 16px;
     }
 
+    .entry-container.timeline:not(:first-child) {
+      margin-top: var(--ha-space-8);
+    }
+
     .container,
     lit-virtualizer {
       height: 100%;
@@ -457,13 +471,6 @@ export class StateHistoryCharts extends LitElement {
     state-history-chart-timeline,
     state-history-chart-line {
       width: 100%;
-    }
-    .reset-button {
-      position: fixed;
-      bottom: calc(24px + var(--safe-area-inset-bottom));
-      right: calc(24px + var(--safe-area-inset-bottom));
-      z-index: 1;
-      --ha-button-box-shadow: var(--ha-box-shadow-l);
     }
   `;
 }

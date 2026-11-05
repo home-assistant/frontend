@@ -1,10 +1,14 @@
+import type { ContextType } from "@lit/context";
 import type { TemplateResult } from "lit";
 import { LitElement, html } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../common/decorators/consume";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../common/translations/localize";
+import { apiContext } from "../data/context";
 import { getAppKey } from "../data/notify_html5";
 import { showPromptDialog } from "../dialogs/generic/show-dialog-box";
 import type { HaSwitch } from "./ha-switch";
-import type { HomeAssistant } from "../types";
 import { fireEvent, type HASSDomTargetEvent } from "../common/dom/fire_event";
 import "./ha-switch";
 
@@ -17,9 +21,13 @@ export const pushSupported =
 
 @customElement("ha-push-notifications-toggle")
 class HaPushNotificationsToggle extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ type: Boolean }) public disabled!: boolean;
+
+  @consumeLocalize()
+  private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @state() private _pushChecked: boolean =
     "Notification" in window && Notification.permission === "granted";
@@ -81,10 +89,10 @@ class HaPushNotificationsToggle extends LitElement {
       }
 
       const name = await showPromptDialog(this, {
-        title: this.hass.localize(
+        title: this._localize(
           "ui.panel.profile.push_notifications.add_device_prompt.title"
         ),
-        inputLabel: this.hass.localize(
+        inputLabel: this._localize(
           "ui.panel.profile.push_notifications.add_device_prompt.input_label"
         ),
       });
@@ -95,7 +103,7 @@ class HaPushNotificationsToggle extends LitElement {
 
       let applicationServerKey: Uint8Array<ArrayBuffer> | null;
       try {
-        applicationServerKey = await getAppKey(this.hass);
+        applicationServerKey = await getAppKey(this._api.callWS);
       } catch (_err) {
         applicationServerKey = null;
       }
@@ -109,7 +117,7 @@ class HaPushNotificationsToggle extends LitElement {
         sub = await reg.pushManager.subscribe({ userVisibleOnly: true });
       }
 
-      await this.hass.callApi("POST", "notify.html5", {
+      await this._api.callApi("POST", "notify.html5", {
         subscription: sub,
         browser: browserName,
         name,
@@ -136,7 +144,7 @@ class HaPushNotificationsToggle extends LitElement {
 
       if (!sub) return;
 
-      await this.hass.callApi("DELETE", "notify.html5", { subscription: sub });
+      await this._api.callApi("DELETE", "notify.html5", { subscription: sub });
       await sub.unsubscribe();
     } catch (err: any) {
       const message =

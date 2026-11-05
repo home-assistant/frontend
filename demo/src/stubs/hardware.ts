@@ -13,6 +13,7 @@ const HARDWARE_INFO: HardwareInfo = {
         hassio_board_id: "green",
         manufacturer: "homeassistant",
         model: "green",
+        revision: null,
       },
       dongle: null,
       config_entries: [],

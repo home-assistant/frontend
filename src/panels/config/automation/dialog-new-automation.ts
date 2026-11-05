@@ -10,17 +10,19 @@ import type { CSSResultGroup } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-adaptive-dialog";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-tip";
 import "../../../components/input/ha-input-search";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
 import { showAutomationEditor } from "../../../data/automation";
 import type {
@@ -81,7 +83,7 @@ class DialogNewAutomation extends LitElement {
     this.blueprints = undefined;
     this._loadingBlueprints = true;
 
-    fetchBlueprints(this.hass!, this._mode)
+    fetchBlueprints(this.hass!.callWS, this._mode)
       .then((blueprints) => {
         this.blueprints = blueprints;
       })
@@ -172,28 +174,20 @@ class DialogNewAutomation extends LitElement {
                 ></ha-input-search>`
               : nothing
           }
-          <ha-list>
-            <ha-list-item
-              hasmeta
-              twoline
-              graphic="icon"
-              @request-selected=${this._blank}
-            >
-              <ha-svg-icon
-                slot="graphic"
-                .path=${mdiPencilOutline}
-              ></ha-svg-icon>
-              ${this.hass.localize(
+          <ha-list-base>
+            <ha-list-item-button
+              .headline=${this.hass.localize(
                 `ui.panel.config.${this._mode}.dialog_new.create_empty`
               )}
-              <span slot="secondary">
-                ${this.hass.localize(
-                  `ui.panel.config.${this._mode}.dialog_new.create_empty_description`
-                )}
-              </span>
-              <ha-icon-next slot="meta"></ha-icon-next>
-            </ha-list-item>
-          </ha-list>
+              .supportingText=${this.hass.localize(
+                `ui.panel.config.${this._mode}.dialog_new.create_empty_description`
+              )}
+              @click=${this._blank}
+            >
+              <ha-svg-icon slot="start" .path=${mdiPencilOutline}></ha-svg-icon>
+              <ha-icon-next slot="end"></ha-icon-next>
+            </ha-list-item-button>
+          </ha-list-base>
           <div class="blueprints-container">
             <div class="blueprints-list ha-scrollbar">
               ${
@@ -202,79 +196,71 @@ class DialogNewAutomation extends LitElement {
                       <ha-spinner></ha-spinner>
                     </div>`
                   : html`
-                      <ha-list>
+                      <ha-list-base>
                         ${filteredBlueprints.map(
                           (blueprint) => html`
-                            <ha-list-item
-                              hasmeta
-                              twoline
-                              graphic="icon"
-                              @request-selected=${this._blueprint}
-                              .path=${blueprint.path}
+                            <ha-list-item-button
+                              .headline=${blueprint.name}
+                              .supportingText=${
+                                blueprint.author
+                                  ? this.hass.localize(
+                                      `ui.panel.config.${this._mode}.dialog_new.blueprint_source.author`,
+                                      { author: blueprint.author }
+                                    )
+                                  : this.hass.localize(
+                                      `ui.panel.config.${this._mode}.dialog_new.blueprint_source.${blueprint.sourceType}`
+                                    )
+                              }
+                              data-path=${blueprint.path}
+                              @click=${this._blueprint}
                             >
                               <ha-svg-icon
-                                slot="graphic"
+                                slot="start"
                                 .path=${SOURCE_TYPE_ICONS[blueprint.sourceType]}
                               ></ha-svg-icon>
-                              ${blueprint.name}
-                              <span slot="secondary">
-                                ${
-                                  blueprint.author
-                                    ? this.hass.localize(
-                                        `ui.panel.config.${this._mode}.dialog_new.blueprint_source.author`,
-                                        { author: blueprint.author }
-                                      )
-                                    : this.hass.localize(
-                                        `ui.panel.config.${this._mode}.dialog_new.blueprint_source.${blueprint.sourceType}`
-                                      )
-                                }
-                              </span>
-                              <ha-icon-next slot="meta"></ha-icon-next>
-                            </ha-list-item>
+                              <ha-icon-next slot="end"></ha-icon-next>
+                            </ha-list-item-button>
                           `
                         )}
-                      </ha-list>
-                      ${
-                        processedBlueprints.length === 0
-                          ? html`
-                              <a
-                                href=${documentationUrl(
+                        ${
+                          processedBlueprints.length === 0
+                            ? html`<ha-list-item-button
+                                .href=${documentationUrl(
                                   this.hass,
                                   "/get-blueprints"
                                 )}
                                 target="_blank"
                                 rel="noreferrer noopener"
-                                class="item"
+                                .headline=${this.hass.localize(
+                                  `ui.panel.config.${this._mode}.dialog_new.create_blueprint`
+                                )}
+                                .supportingText=${this.hass.localize(
+                                  `ui.panel.config.${this._mode}.dialog_new.create_blueprint_description`
+                                )}
                               >
-                                <ha-list-item hasmeta twoline graphic="icon">
-                                  <ha-svg-icon
-                                    slot="graphic"
-                                    .path=${mdiWeb}
-                                  ></ha-svg-icon>
-                                  ${this.hass.localize(
-                                    `ui.panel.config.${this._mode}.dialog_new.create_blueprint`
-                                  )}
-                                  <span slot="secondary">
-                                    ${this.hass.localize(
-                                      `ui.panel.config.${this._mode}.dialog_new.create_blueprint_description`
-                                    )}
-                                  </span>
-                                  <ha-svg-icon
-                                    slot="meta"
-                                    path=${mdiOpenInNew}
-                                  ></ha-svg-icon>
-                                </ha-list-item>
-                              </a>
-                            `
-                          : filteredBlueprints.length === 0
-                            ? html`
-                                <div class="empty-search">
-                                  ${this.hass.localize(
-                                    `ui.panel.config.${this._mode}.dialog_new.no_blueprints_match_search`
-                                  )}
-                                </div>
-                              `
+                                <ha-svg-icon
+                                  slot="start"
+                                  .path=${mdiWeb}
+                                ></ha-svg-icon>
+                                <ha-svg-icon
+                                  slot="end"
+                                  .path=${mdiOpenInNew}
+                                ></ha-svg-icon>
+                              </ha-list-item-button>`
                             : nothing
+                        }
+                      </ha-list-base>
+                      ${
+                        processedBlueprints.length > 0 &&
+                        filteredBlueprints.length === 0
+                          ? html`
+                              <div class="empty-search">
+                                ${this.hass.localize(
+                                  `ui.panel.config.${this._mode}.dialog_new.no_blueprints_match_search`
+                                )}
+                              </div>
+                            `
+                          : nothing
                       }
                       ${
                         processedBlueprints.length > 0
@@ -309,11 +295,8 @@ class DialogNewAutomation extends LitElement {
     this._filter = ev.target.value ?? "";
   }
 
-  private async _blueprint(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
-    const path = (ev.currentTarget! as any).path;
+  private _blueprint(ev: HASSDomCurrentTargetEvent<HTMLElement>) {
+    const path = ev.currentTarget.dataset.path!;
     if (this._mode === "script") {
       showScriptEditor({ use_blueprint: { path } });
     } else {
@@ -321,10 +304,7 @@ class DialogNewAutomation extends LitElement {
     }
   }
 
-  private async _blank(ev) {
-    if (!shouldHandleRequestSelectedEvent(ev)) {
-      return;
-    }
+  private _blank() {
     if (this._mode === "script") {
       showScriptEditor();
     } else {
@@ -385,8 +365,12 @@ class DialogNewAutomation extends LitElement {
           justify-content: center;
           padding: var(--ha-space-8) 0;
         }
-        ha-icon-next {
-          width: 24px;
+        ha-list-base {
+          --ha-list-padding: var(--ha-space-2) 0;
+        }
+        ha-list-item-button ha-icon-next,
+        ha-list-item-button ha-svg-icon {
+          color: var(--secondary-text-color);
         }
         ha-tip {
           margin: var(--ha-space-2) var(--ha-space-4);
@@ -394,9 +378,6 @@ class DialogNewAutomation extends LitElement {
         .empty-search {
           color: var(--secondary-text-color);
           padding: var(--ha-space-4);
-        }
-        a.item {
-          text-decoration: unset;
         }
       `,
     ];

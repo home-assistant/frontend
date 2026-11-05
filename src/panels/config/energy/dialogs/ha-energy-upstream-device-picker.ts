@@ -4,8 +4,10 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, nothing } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import { computeEntityNameList } from "../../../../common/entity/compute_entity_name_display";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
+import {
+  computeEntityNameParts,
+  computeEntitySearchLabels,
+} from "../../../../common/entity/compute_entity_name_display";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-combo-box-item";
@@ -31,6 +33,7 @@ const SEARCH_KEYS = [
   { name: "search_labels.entityName", weight: 10 },
   { name: "search_labels.friendlyName", weight: 9 },
   { name: "search_labels.deviceName", weight: 8 },
+  { name: "search_labels.parentDeviceName", weight: 6 },
   { name: "search_labels.areaName", weight: 6 },
   { name: "search_labels.domainName", weight: 4 },
   { name: "id", weight: 2 },
@@ -64,39 +67,27 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     const stateObj = this.hass.states[statisticId];
 
     if (stateObj) {
-      const [entityName, deviceName, areaName] = computeEntityNameList(
-        stateObj,
-        [{ type: "entity" }, { type: "device" }, { type: "area" }],
-        this.hass.entities,
-        this.hass.devices,
-        this.hass.areas,
-        this.hass.floors
-      );
-
-      const friendlyName = computeStateName(stateObj); // Keep this for search
+      const { area: areaName } = computeEntityNameParts(stateObj, this.hass);
 
       return {
         id: statisticId,
         // Match the label shown in the device list and the graphs.
         primary: computeEnergyLabel(
-          this.hass,
+          this.hass.states,
+          this.hass.formatEntityName,
           statisticId,
           this.statsMetadata?.[statisticId],
           name
         ),
         secondary: areaName,
         stateObj,
-        search_labels: {
-          entityName: entityName || null,
-          deviceName: deviceName || null,
-          areaName: areaName || null,
-          friendlyName,
-        },
+        search_labels: computeEntitySearchLabels(stateObj, this.hass),
       };
     }
 
     const label = getStatisticLabel(
-      this.hass,
+      this.hass.states,
+      this.hass.formatEntityName,
       statisticId,
       this.statsMetadata?.[statisticId]
     );
@@ -158,11 +149,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     ${
       item.stateObj
         ? html`
-            <state-badge
-              slot="start"
-              .stateObj=${item.stateObj}
-              .hass=${this.hass}
-            ></state-badge>
+            <state-badge slot="start" .stateObj=${item.stateObj}></state-badge>
           `
         : item.icon_path
           ? html`
@@ -186,7 +173,7 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
     item,
     index
   ) => html`
-    <ha-combo-box-item type="button" compact .borderTop=${index !== 0}>
+    <ha-combo-box-item .borderTop=${index !== 0}>
       ${this._renderItem(item)}
     </ha-combo-box-item>
   `;
@@ -200,7 +187,6 @@ export class HaEnergyUpstreamDevicePicker extends LitElement {
   protected render() {
     return html`
       <ha-generic-picker
-        .hass=${this.hass}
         use-top-label
         .label=${this.label}
         .helper=${this.helper}

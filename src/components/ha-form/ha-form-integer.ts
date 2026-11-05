@@ -91,7 +91,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
           </div>
           ${
             this.helper
-              ? html`<ha-input-helper-text .disabled=${this.disabled}
+              ? html`<ha-input-helper-text
                   >${this.helper}</ha-input-helper-text
                 >`
               : nothing

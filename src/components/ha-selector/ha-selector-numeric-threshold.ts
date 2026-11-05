@@ -1,8 +1,8 @@
-import memoizeOne from "memoize-one";
+import { mdiChartBellCurveCumulative } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { mdiChartBellCurveCumulative } from "@mdi/js";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
   NumericThresholdSelector,
@@ -28,14 +28,14 @@ const iconThresholdOutside =
 
 type ThresholdType = "above" | "below" | "between" | "outside" | "any";
 
-interface ThresholdValueEntry {
+export interface ThresholdValueEntry {
   active_choice?: string;
   number?: number;
   entity?: string;
   unit_of_measurement?: string;
 }
 
-interface NumericThresholdValue {
+export interface NumericThresholdValue {
   type: ThresholdType;
   value?: ThresholdValueEntry;
   value_min?: ThresholdValueEntry;

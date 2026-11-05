@@ -67,14 +67,14 @@ export function canReturnHome(stateObj: VacuumEntity): boolean {
 export interface Segment {
   id: string;
   name: string;
-  group?: string;
+  group: string | null;
 }
 
 export const getVacuumSegments = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   entity_id: string
 ): Promise<{ segments: Segment[] }> =>
-  hass.callWS({
+  callWS({
     type: "vacuum/get_segments",
     entity_id,
   });

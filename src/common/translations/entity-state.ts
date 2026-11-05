@@ -31,11 +31,9 @@ export type FormatEntityAttributeNameFunc = (
   attribute: string
 ) => string;
 
-export type EntityNameType = "entity" | "device" | "area" | "floor";
-
 export type FormatEntityNameFunc = (
   stateObj: HassEntity,
-  name: EntityNameItem | EntityNameItem[],
+  name?: string | EntityNameItem | EntityNameItem[],
   options?: EntityNameOptions
 ) => string;
 
@@ -94,10 +92,7 @@ export const computeFormatFunctions = async (
       computeEntityNameDisplay(
         stateObj,
         name,
-        entities,
-        devices,
-        areas,
-        floors,
+        { entities, devices, areas, floors },
         options
       ),
   };

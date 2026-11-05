@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import {
   mdiBrightness6,
   mdiCreation,
@@ -10,14 +10,15 @@ import {
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
+import { fireEvent, type HASSDomEvent } from "../../../common/dom/fire_event";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
 import "../../../components/ha-icon-button-group";
 import "../../../components/ha-icon-button-toggle";
-import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import {
   shouldShowFavoriteOptions,
@@ -38,7 +39,6 @@ import "../../../state-control/light/ha-state-control-light-brightness";
 import { apiContext, formattersContext } from "../../../data/context";
 import "../components/ha-more-info-control-select-container";
 import "../components/ha-more-info-state-header";
-import "../components/lights/ha-favorite-color-button";
 import "../components/lights/ha-more-info-light-favorite-colors";
 import "../components/lights/light-color-rgb-picker";
 import "../components/lights/light-color-temp-picker";
@@ -86,12 +86,26 @@ class MoreInfoLight extends LitElement {
 
   private _setMainControl(ev: any) {
     ev.stopPropagation();
-    this._mainControl = ev.currentTarget.control;
+    this._changeMainControl(ev.currentTarget.control);
   }
 
   private _resetMainControl(ev: any) {
     ev.stopPropagation();
-    this._mainControl = "brightness";
+    this._changeMainControl("brightness");
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    // A container that outlives this control (e.g. more-info-content when the
+    // dialog moves between entities) resyncs with the default control.
+    fireEvent(this, "light-main-control-changed", {
+      control: this._mainControl,
+    });
+  }
+
+  private _changeMainControl(control: MainControl) {
+    this._mainControl = control;
+    fireEvent(this, "light-main-control-changed", { control });
   }
 
   private get _stateOverride() {
@@ -399,5 +413,15 @@ class MoreInfoLight extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "more-info-light": MoreInfoLight;
+  }
+
+  interface HASSDomEvents {
+    "light-main-control-changed": { control: MainControl };
+  }
+
+  interface HTMLElementEventMap {
+    "light-main-control-changed": HASSDomEvent<
+      HASSDomEvents["light-main-control-changed"]
+    >;
   }
 }

@@ -1,5 +1,6 @@
 import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
+import type { FanSpeedStyle } from "../../../data/fan";
 import type { OperationMode } from "../../../data/water_heater";
 import type { ForecastPrecipitationType } from "../../../data/weather";
 
@@ -37,6 +38,23 @@ export interface CoverTiltFavoriteCardFeatureConfig {
 
 export interface LightBrightnessCardFeatureConfig {
   type: "light-brightness";
+}
+
+export const LIGHT_COLOR_CONTROLS = [
+  "hue",
+  "saturation",
+  "hue_saturation",
+] as const;
+
+export type LightColorCardFeatureControls =
+  (typeof LIGHT_COLOR_CONTROLS)[number];
+
+export const DEFAULT_LIGHT_COLOR_CONTROLS: LightColorCardFeatureControls =
+  "hue";
+
+export interface LightColorCardFeatureConfig {
+  type: "light-color";
+  controls?: LightColorCardFeatureControls;
 }
 
 export interface LightColorTempCardFeatureConfig {
@@ -123,6 +141,7 @@ export interface FanPresetModesCardFeatureConfig {
 
 export interface FanSpeedCardFeatureConfig {
   type: "fan-speed";
+  style?: FanSpeedStyle;
 }
 
 export interface AlarmModesCardFeatureConfig {
@@ -186,10 +205,12 @@ export interface NumericInputCardFeatureConfig {
 
 export interface TargetHumidityCardFeatureConfig {
   type: "target-humidity";
+  style?: "buttons" | "slider";
 }
 
 export interface TargetTemperatureCardFeatureConfig {
   type: "target-temperature";
+  style?: "buttons" | "slider";
 }
 
 export interface ToggleCardFeatureConfig {
@@ -264,7 +285,7 @@ export interface ValvePositionFavoriteCardFeatureConfig {
   type: "valve-position-favorite";
 }
 
-export const LAWN_MOWER_COMMANDS = ["start_pause", "dock"] as const;
+export const LAWN_MOWER_COMMANDS = ["start_pause", "stop", "dock"] as const;
 
 export type LawnMowerCommand = (typeof LAWN_MOWER_COMMANDS)[number];
 
@@ -334,6 +355,8 @@ export interface BarGaugeCardFeatureConfig {
   type: "bar-gauge";
   min?: number;
   max?: number;
+  severity?: Partial<Record<"green" | "yellow" | "red", number>>;
+  segments?: { from: number; color: string }[];
 }
 
 export type LovelaceCardFeaturePosition = "bottom" | "inline";
@@ -365,6 +388,7 @@ export type LovelaceCardFeatureConfig =
   | HumidifierModesCardFeatureConfig
   | LawnMowerCommandsCardFeatureConfig
   | LightBrightnessCardFeatureConfig
+  | LightColorCardFeatureConfig
   | LightColorTempCardFeatureConfig
   | LightColorFavoritesCardFeatureConfig
   | LightEffectCardFeatureConfig

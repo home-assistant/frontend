@@ -1,9 +1,12 @@
 import {
   mdiAccount,
+  mdiArrowLeft,
+  mdiArrowRight,
   mdiCodeBraces,
   mdiCommentProcessingOutline,
   mdiDevices,
   mdiDotsVertical,
+  mdiDragHorizontalVariant,
   mdiFileMultiple,
   mdiFormatListBulletedTriangle,
   mdiHelpCircleOutline,
@@ -27,6 +30,8 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { UndoRedoController } from "../../common/controllers/undo-redo-controller";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { HASSDomEvent } from "../../common/dom/fire_event";
+import { ctrlOrCmdLabel } from "../../common/keyboard/ctrl-or-cmd";
 import { goBack, navigate, replaceCurrentUrl } from "../../common/navigate";
 import type { LocalizeKeys } from "../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
@@ -36,6 +41,7 @@ import {
   extractSearchParamsObject,
   removeSearchParam,
 } from "../../common/url/search-params";
+import { computeRTL } from "../../common/util/compute_rtl";
 import { afterNextRender } from "../../common/util/render-status";
 import "../../components/ha-button";
 import type { HaDropdownSelectEvent } from "../../components/ha-dropdown";
@@ -43,7 +49,6 @@ import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import "../../components/ha-icon";
 import "../../components/ha-icon-button";
-import "../../components/ha-icon-button-arrow-next";
 import "../../components/ha-icon-button-arrow-prev";
 import "../../components/ha-menu-button";
 import "../../components/ha-svg-icon";
@@ -75,9 +80,9 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { haStyle } from "../../resources/styles";
 import { handleBackClick } from "../../layouts/back-navigation";
 import { ChildPanelReady } from "../../layouts/panel-ready";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
 import type { HomeAssistant, PanelInfo } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
-import { isMac } from "../../util/is_mac";
 import { isMobileClient } from "../../util/is_mobile";
 import { showToast } from "../../util/toast";
 import { showAreaRegistryDetailDialog } from "../config/areas/show-dialog-area-registry-detail";
@@ -85,7 +90,7 @@ import { showNewAutomationDialog } from "../config/automation/show-dialog-new-au
 import { showAddIntegrationDialog } from "../config/integrations/show-add-integration-dialog";
 import { showDashboardDetailDialog } from "../config/lovelace/dashboards/show-dialog-lovelace-dashboard-detail";
 import { showPersonDetailDialog } from "../config/person/show-dialog-person-detail";
-import { swapView } from "./editor/config-util";
+import { indexAfterMove, moveView } from "./editor/config-util";
 import { showDashboardStrategyEditorDialog } from "./editor/dashboard-strategy-editor/dialogs/show-dialog-dashboard-strategy-editor";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
@@ -96,6 +101,7 @@ import "./views/hui-view";
 import type { HUIView } from "./views/hui-view";
 import "./views/hui-view-background";
 import "./views/hui-view-container";
+import { LOVELACE_EDIT_TOAST_ID } from "./types";
 
 interface ActionItem {
   icon: string;
@@ -129,7 +135,7 @@ interface UndoStackItem {
 }
 
 @customElement("hui-root")
-class HUIRoot extends LitElement {
+class HUIRoot extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public panel?: PanelInfo;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -211,14 +217,7 @@ class HUIRoot extends LitElement {
             @click=${this._editModeDisable}
           >
             ${this.hass!.localize("ui.panel.lovelace.menu.exit_edit_mode")}
-          </ha-button>
-          <ha-icon-button
-            .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
-            .path=${mdiHelpCircleOutline}
-            href=${documentationUrl(this.hass, "/dashboards/")}
-            rel="noreferrer"
-            target="_blank"
-          ></ha-icon-button>`
+          </ha-button>`
       );
     }
 
@@ -250,6 +249,13 @@ class HUIRoot extends LitElement {
         icon: mdiFileMultiple,
         key: "ui.panel.lovelace.editor.menu.manage_resources",
         overflowAction: this._handleManageResources,
+        visible: this._editMode,
+        overflow: true,
+      },
+      {
+        icon: mdiHelpCircleOutline,
+        key: "ui.panel.lovelace.menu.help",
+        overflowAction: this._handleHelp,
         visible: this._editMode,
         overflow: true,
       },
@@ -296,9 +302,7 @@ class HUIRoot extends LitElement {
         overflowAction: this._showQuickBar,
         suffix:
           this.hass.enableShortcuts && !isMobileClient
-            ? isMac
-              ? "(⌘ + K)"
-              : "(Ctrl + K)"
+            ? `(${ctrlOrCmdLabel(this.hass.localize)} + K)`
             : undefined,
         visible: !this._editMode && !this.hass.kioskMode,
         overflow: this.narrow,
@@ -467,14 +471,29 @@ class HUIRoot extends LitElement {
         !view.visible.some((e) => e.user === this.hass!.user?.id)) ||
         view.visible === false);
 
-    const tabs = html`<ha-tab-group @wa-tab-show=${this._handleViewSelected}>
+    // The move buttons point and are labelled in the on-screen direction.
+    const rtl = computeRTL(
+      this.hass.language,
+      this.hass.translationMetadata.translations
+    );
+
+    const tabs = html`<ha-tab-group
+      .active=${typeof this._curView === "number" ? String(this._curView) : ""}
+      .sortable=${this._editMode}
+      handle-selector=".handle"
+      @wa-tab-show=${this._handleViewSelected}
+      @item-moved=${this._viewMoved}
+    >
       ${views.map((view, index) => {
         const icon_and_title =
           view.show_icon_and_title && view.icon && view.title;
         const icon_only = view.icon && !icon_and_title;
         const title_only = !icon_only && !icon_and_title;
+        const current = this._curView === index;
         const hidden =
-          !this._editMode && (view.subview || _isTabHiddenForUser(view));
+          !this._editMode &&
+          !current &&
+          (view.subview || _isTabHiddenForUser(view));
         const tabContent = html`
           ${
             icon_only || icon_and_title
@@ -499,9 +518,12 @@ class HUIRoot extends LitElement {
           <ha-tab-group-tab
             slot="nav"
             panel=${index}
-            .active=${this._curView === index}
+            .active=${current}
             .disabled=${hidden}
             aria-label=${ifDefined(view.title)}
+            aria-keyshortcuts=${ifDefined(
+              this._editMode ? "Alt+ArrowUp Alt+ArrowDown" : undefined
+            )}
             data-path=${view.path || index}
             @auxclick=${this._handleViewTabNewTabClick}
             @click=${this._handleViewTabNewTabClick}
@@ -514,14 +536,19 @@ class HUIRoot extends LitElement {
             ${
               this._editMode
                 ? html`
-                    <ha-icon-button-arrow-prev
+                    <ha-svg-icon
+                      class="edit-icon view handle"
+                      .path=${mdiDragHorizontalVariant}
+                    ></ha-svg-icon>
+                    <ha-icon-button
                       .label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_view.move_left"
+                        `ui.panel.lovelace.editor.edit_view.${rtl ? "move_right" : "move_left"}`
                       )}
-                      class="edit-icon view"
-                      @click=${this._moveViewLeft}
-                      .disabled=${this._curView === 0}
-                    ></ha-icon-button-arrow-prev>
+                      .path=${rtl ? mdiArrowRight : mdiArrowLeft}
+                      class="edit-icon view move move-prev"
+                      @click=${this._moveViewPrev}
+                      .disabled=${index === 0}
+                    ></ha-icon-button>
                     ${tabContent}
                     <ha-icon-button
                       .title=${this.hass!.localize(
@@ -531,14 +558,15 @@ class HUIRoot extends LitElement {
                       .path=${mdiPencil}
                       @click=${this._editView}
                     ></ha-icon-button>
-                    <ha-icon-button-arrow-next
+                    <ha-icon-button
                       .label=${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_view.move_right"
+                        `ui.panel.lovelace.editor.edit_view.${rtl ? "move_left" : "move_right"}`
                       )}
-                      class="edit-icon view"
-                      @click=${this._moveViewRight}
-                      .disabled=${(this._curView! as number) + 1 === views.length}
-                    ></ha-icon-button-arrow-next>
+                      .path=${rtl ? mdiArrowLeft : mdiArrowRight}
+                      class="edit-icon view move move-next"
+                      @click=${this._moveViewNext}
+                      .disabled=${index === views.length - 1}
+                    ></ha-icon-button>
                   `
                 : tabContent
             }
@@ -970,6 +998,10 @@ class HUIRoot extends LitElement {
     this.lovelace!.enableFullEditMode();
   };
 
+  protected supportedShortcutsInInput(): SupportedShortcuts {
+    return this.lovelace?.editMode ? { Y: this._handleRawEditor } : {};
+  }
+
   private _handleManageDashboards = () => {
     navigate("/config/lovelace/dashboards");
   };
@@ -1052,6 +1084,14 @@ class HUIRoot extends LitElement {
       return;
     }
     this.lovelace!.setEditMode(true);
+  };
+
+  private _handleHelp = () => {
+    window.open(
+      documentationUrl(this.hass, "/dashboards/"),
+      "_blank",
+      "noreferrer"
+    );
   };
 
   private _editModeDisable(): void {
@@ -1148,34 +1188,62 @@ class HUIRoot extends LitElement {
     });
   }
 
-  private _moveViewLeft(ev) {
+  private _viewMoved(ev: HASSDomEvent<HASSDomEvents["item-moved"]>) {
     ev.stopPropagation();
-    if (this._curView === 0) {
-      return;
-    }
-    const lovelace = this.lovelace!;
-    const oldIndex = this._curView as number;
-    const newIndex = (this._curView as number) - 1;
-    if (!this.config.views[oldIndex].path) {
-      this._navigateToView(newIndex, true);
-    }
-    lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
-    this._selectView(newIndex);
+    this._moveView(ev.detail.oldIndex, ev.detail.newIndex);
   }
 
-  private _moveViewRight(ev) {
+  private _moveViewPrev(ev: Event) {
     ev.stopPropagation();
-    if ((this._curView! as number) + 1 === this.lovelace!.config.views.length) {
+    const index = this._curView as number;
+    this._moveView(index, index - 1);
+  }
+
+  private _moveViewNext(ev: Event) {
+    ev.stopPropagation();
+    const index = this._curView as number;
+    this._moveView(index, index + 1);
+  }
+
+  private async _moveView(oldIndex: number, newIndex: number) {
+    if (oldIndex === newIndex) {
       return;
     }
+    const focused = this.shadowRoot!.activeElement;
+    const focusedTab = focused?.closest("ha-tab-group-tab");
     const lovelace = this.lovelace!;
-    const oldIndex = this._curView as number;
-    const newIndex = (this._curView as number) + 1;
-    if (!this.config.views[oldIndex].path) {
-      this._navigateToView(newIndex, true);
+    const curView = this._curView;
+    let newCurView = curView;
+    if (typeof curView === "number") {
+      newCurView = indexAfterMove(curView, oldIndex, newIndex);
+      // Views without a path are addressed by their index in the URL
+      if (newCurView !== curView && !this.config.views[curView].path) {
+        this._navigateToView(newCurView, true);
+      }
     }
-    lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
-    this._selectView(newIndex);
+    lovelace.saveConfig(moveView(lovelace.config, oldIndex, newIndex));
+    this._selectView(newCurView);
+
+    // Tabs are rendered by position, so focus has to follow the moved view.
+    if (!focusedTab) {
+      return;
+    }
+    const focusedIndex = indexAfterMove(
+      Number(focusedTab.getAttribute("panel")),
+      oldIndex,
+      newIndex
+    );
+    await this.updateComplete;
+    const tab = this.shadowRoot!.querySelector<HTMLElement>(
+      `ha-tab-group-tab[panel="${focusedIndex}"]`
+    );
+    const moveClass = ["move-prev", "move-next"].find((cls) =>
+      focused!.classList.contains(cls)
+    );
+    const button = moveClass
+      ? tab?.querySelector<HTMLElement & { disabled: boolean }>(`.${moveClass}`)
+      : undefined;
+    (button && !button.disabled ? button : tab)?.focus();
   }
 
   private _addView() {
@@ -1194,8 +1262,6 @@ class HUIRoot extends LitElement {
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
       this._navigateToView(path);
-    } else if (!this._editMode) {
-      scrollTo({ behavior: "smooth", top: 0 });
     }
   }
 
@@ -1277,6 +1343,7 @@ class HUIRoot extends LitElement {
     } catch (err: any) {
       this._configChangedByUndo = false;
       showToast(this, {
+        id: LOVELACE_EDIT_TOAST_ID,
         message: this.hass.localize(
           "ui.panel.lovelace.editor.undo_redo_failed_to_apply_changes",
           {
@@ -1343,25 +1410,10 @@ class HUIRoot extends LitElement {
           color: var(--app-header-text-color, white);
           position: fixed;
           top: 0;
-          width: calc(
-            var(--ha-top-app-bar-width, 100%) - var(
-                --safe-area-inset-right,
-                0px
-              )
-          );
+          width: var(--ha-top-app-bar-width, 100%);
           backdrop-filter: var(--app-header-backdrop-filter, none);
           padding-top: var(--safe-area-inset-top);
-          padding-right: var(--safe-area-inset-right);
           z-index: 4;
-        }
-        .narrow .header {
-          width: calc(
-            var(--ha-top-app-bar-width, 100%) - var(
-                --safe-area-inset-left,
-                0px
-              ) - var(--safe-area-inset-right, 0px)
-          );
-          padding-left: var(--safe-area-inset-left);
         }
         :host([scrolled]) .header {
           box-shadow: var(
@@ -1382,6 +1434,7 @@ class HUIRoot extends LitElement {
           align-items: center;
           font-size: var(--ha-font-size-xl);
           padding: 0px 12px;
+          padding-right: calc(12px + var(--safe-area-inset-right, 0px));
           font-weight: var(--ha-font-weight-normal);
           box-sizing: border-box;
         }
@@ -1389,7 +1442,8 @@ class HUIRoot extends LitElement {
           border-bottom: none;
         }
         .narrow .toolbar {
-          padding: 0 4px;
+          padding: 0 calc(4px + var(--safe-area-inset-right, 0px)) 0
+            calc(4px + var(--safe-area-inset-left, 0px));
         }
         .main-title {
           margin-inline-start: var(--ha-space-6);
@@ -1467,6 +1521,10 @@ class HUIRoot extends LitElement {
         }
         .tab-bar {
           display: flex;
+          padding-right: var(--safe-area-inset-right, 0px);
+        }
+        .narrow .tab-bar {
+          padding-left: var(--safe-area-inset-left, 0px);
         }
         .edit-mode ha-tab-group {
           flex-grow: 0;
@@ -1517,6 +1575,24 @@ class HUIRoot extends LitElement {
         .edit-icon.view {
           display: none;
         }
+        /* Only shown while focused, for keyboard and screen reader users */
+        .edit-icon.move:not(:focus-within) {
+          position: absolute;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          height: 1px;
+          width: 1px;
+          margin: -1px;
+          padding: 0;
+          border: 0;
+        }
+        .edit-icon.handle {
+          padding: var(--ha-space-3);
+          cursor: move; /* fallback if grab cursor is unsupported */
+          cursor: grab;
+          /* Drag the tab instead of scrolling the tab bar */
+          touch-action: none;
+        }
         #add-view {
           white-space: nowrap;
           display: flex;
@@ -1534,20 +1610,22 @@ class HUIRoot extends LitElement {
           display: flex;
           min-height: 100vh;
           box-sizing: border-box;
+          --view-container-inset-left: 0px;
+          --view-container-inset-right: var(--safe-area-inset-right);
+          --view-container-inset-bottom: var(--safe-area-inset-bottom);
           padding-top: calc(
             var(--header-height) + var(--safe-area-inset-top) +
               var(--view-container-padding-top, 0px)
           );
-          padding-right: var(--safe-area-inset-right);
-          padding-inline-end: var(--safe-area-inset-right);
+          padding-right: var(--view-container-inset-right);
           padding-bottom: calc(
-            var(--safe-area-inset-bottom) +
+            var(--view-container-inset-bottom) +
               var(--view-container-padding-bottom, 0px)
           );
         }
         .narrow hui-view-container {
-          padding-left: var(--safe-area-inset-left);
-          padding-inline-start: var(--safe-area-inset-left);
+          --view-container-inset-left: var(--safe-area-inset-left);
+          padding-left: var(--view-container-inset-left);
         }
         hui-view-container > * {
           display: flex;
@@ -1571,7 +1649,6 @@ class HUIRoot extends LitElement {
         .exit-edit-mode {
           --mdc-theme-primary: var(--app-header-edit-text-color, #fff);
           --mdc-button-outline-color: var(--app-header-edit-text-color, #fff);
-          --mdc-typography-button-font-size: var(--ha-font-size-m);
         }
         .child-view-icon {
           opacity: 0.5;

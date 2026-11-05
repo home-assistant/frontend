@@ -3,10 +3,13 @@ import { ReactiveElement } from "lit";
 import { customElement } from "lit/decorators";
 import { getAreasFloorHierarchy } from "../../../common/areas/areas-floor-hierarchy";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { ALERT_DOMAINS } from "../../../common/entity/alert_active";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import {
-  findEntities,
+  findFilteredEntities,
   generateEntityFilter,
   type EntityFilter,
+  type EntityFilterSources,
 } from "../../../common/entity/entity_filter";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { floorDefaultIcon } from "../../../components/ha-floor-icon";
@@ -60,6 +63,7 @@ export const securityEntityFilters: EntityFilter[] = [
       // Safety
       "carbon_monoxide",
       "gas",
+      "glass_break",
       "moisture",
       "safety",
       "smoke",
@@ -75,15 +79,22 @@ export const securityEntityFilters: EntityFilter[] = [
   },
 ];
 
+export const findSecurityEntities = (sources: EntityFilterSources): string[] =>
+  findFilteredEntities(sources, securityEntityFilters);
+
 export const isSecurityPanelEntity = (
-  hass: Pick<
-    HomeAssistant,
-    "states" | "entities" | "devices" | "areas" | "floors"
-  >,
+  hass: EntityFilterSources,
   stateObj: HassEntity
 ): boolean =>
   securityEntityFilters.some((filter) =>
-    generateEntityFilter(hass, filter)(stateObj.entity_id)
+    generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      filter
+    )(stateObj.entity_id)
   );
 
 const processAreasForSecurity = (
@@ -97,13 +108,20 @@ const processAreasForSecurity = (
     const area = hass.areas[areaId];
     if (!area) continue;
 
-    const areaFilter = generateEntityFilter(hass, {
-      area: area.area_id,
-    });
+    const areaFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        area: area.area_id,
+      }
+    );
     const areaSecurityEntities = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
-    const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+    const computeTileCard = computeAreaTileCardConfig(hass, false);
 
     for (const entityId of areaSecurityEntities) {
       areaCards.push(computeTileCard(entityId));
@@ -132,12 +150,19 @@ const processUnassignedEntities = (
   hass: HomeAssistant,
   entities: string[]
 ): LovelaceCardConfig[] => {
-  const unassignedFilter = generateEntityFilter(hass, {
-    area: null,
-  });
+  const unassignedFilter = generateEntityFilter(
+    hass.states,
+    hass.entities,
+    hass.devices,
+    hass.areas,
+    hass.floors,
+    {
+      area: null,
+    }
+  );
   const unassignedLights = entities.filter(unassignedFilter);
   const areaCards: LovelaceCardConfig[] = [];
-  const computeTileCard = computeAreaTileCardConfig(hass, "", false);
+  const computeTileCard = computeAreaTileCardConfig(hass, false);
 
   for (const entityId of unassignedLights) {
     areaCards.push(computeTileCard(entityId));
@@ -158,13 +183,7 @@ export class SecurityViewStrategy extends ReactiveElement {
 
     const sections: LovelaceSectionRawConfig[] = [];
 
-    const allEntities = Object.keys(hass.states);
-
-    const securityFilters = securityEntityFilters.map((filter) =>
-      generateEntityFilter(hass, filter)
-    );
-
-    const entities = findEntities(allEntities, securityFilters);
+    const entities = findSecurityEntities(hass);
 
     const favoriteEntities = (config.favorite_entities ?? []).filter(
       (entityId) =>
@@ -284,12 +303,16 @@ export class SecurityViewStrategy extends ReactiveElement {
 
     const sidebarSections: LovelaceSectionConfig[] = [];
 
-    const alertCards = config.alert_entities?.map((alertEntity) =>
-      computeSecurityAlertCardConfig(
-        hass.states[alertEntity.entity],
-        alertEntity
+    const alertCards = config.alert_entities
+      ?.filter((alertEntity) =>
+        ALERT_DOMAINS.includes(computeDomain(alertEntity.entity))
       )
-    );
+      .map((alertEntity) =>
+        computeSecurityAlertCardConfig(
+          hass.states[alertEntity.entity],
+          alertEntity
+        )
+      );
 
     if (alertCards?.length) {
       sidebarSections.push({

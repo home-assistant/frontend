@@ -152,6 +152,11 @@ export class MoreInfoInfo extends LitElement {
       margin-bottom: var(--ha-space-4);
     }
 
+    ha-more-info-history,
+    ha-more-info-logbook {
+      margin-inline: calc(var(--ha-space-6) * -1);
+    }
+
     ha-alert {
       display: block;
     }

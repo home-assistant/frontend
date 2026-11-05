@@ -1,4 +1,4 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiDeleteOutline, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
@@ -10,6 +10,7 @@ import {
   state,
 } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consume } from "../../common/decorators/consume";
 import { fireEvent } from "../../common/dom/fire_event";
 import { uid } from "../../common/util/uid";
 import { internationalizationContext } from "../../data/context";
@@ -208,9 +209,7 @@ class HaInputMulti extends LitElement {
       </div>
       ${
         this.helper
-          ? html`<ha-input-helper-text .disabled=${this.disabled}
-              >${this.helper}</ha-input-helper-text
-            >`
+          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
           : nothing
       }
     `;

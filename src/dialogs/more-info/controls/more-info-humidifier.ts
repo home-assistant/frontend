@@ -1,15 +1,14 @@
-import { consume } from "@lit/context";
 import type { ContextType } from "@lit/context";
 import { mdiPower, mdiTuneVariant } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import "../../../components/ha-attribute-icon";
 import "../../../components/ha-control-select-menu";
-import "../../../components/ha-list-item";
 import { UNAVAILABLE } from "../../../data/entity/entity";
 import { apiContext, formattersContext } from "../../../data/context";
 import type { HumidifierEntity } from "../../../data/humidifier";

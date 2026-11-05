@@ -100,7 +100,7 @@ export class HaNumberSelector extends LitElement {
                   labeled
                   .min=${this.selector.number!.min}
                   .max=${this.selector.number!.max}
-                  .value=${this.value}
+                  .value=${this.value ?? this.placeholder}
                   .step=${sliderStep}
                   .disabled=${this.disabled}
                   .required=${this.required}
@@ -134,7 +134,7 @@ export class HaNumberSelector extends LitElement {
           .required=${this.required}
           .validationMessage=${this.selector.number?.validation_message}
           type="number"
-          autoValidate
+          auto-validate
           .withoutSpinButtons=${!isBox}
           @input=${this._handleInputChange}
         >
@@ -143,9 +143,7 @@ export class HaNumberSelector extends LitElement {
       </div>
       ${
         !isBox && this.helper
-          ? html`<ha-input-helper-text .disabled=${this.disabled}
-              >${this.helper}</ha-input-helper-text
-            >`
+          ? html`<ha-input-helper-text>${this.helper}</ha-input-helper-text>`
           : nothing
       }
     `;

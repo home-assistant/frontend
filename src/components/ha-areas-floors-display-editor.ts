@@ -1,10 +1,11 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { mdiDragHorizontalVariant, mdiTextureBox } from "@mdi/js";
 import type { TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
+import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
 import type {
@@ -244,15 +245,15 @@ export class HaAreasFloorsDisplayEditor extends LitElement {
     const newOrder: string[] = [];
 
     for (const floorId of floorIds) {
+      const isOnFloor = (areaId: string) =>
+        (this._areas[areaId]?.floor_id ?? UNASSIGNED_FLOOR) === floorId;
       if ((currentFloorId ?? UNASSIGNED_FLOOR) === floorId) {
-        newHidden.push(...(value.hidden ?? []));
+        // Reordering returns the hidden areas of every floor, not just this one
+        newHidden.push(...(value.hidden ?? []).filter(isOnFloor));
         newOrder.push(...(value.order ?? []));
         continue;
       }
-      const hidden = oldHidden.filter((areaId) => {
-        const id = this._areas[areaId]?.floor_id ?? UNASSIGNED_FLOOR;
-        return id === floorId;
-      });
+      const hidden = oldHidden.filter(isOnFloor);
       if (hidden?.length) {
         newHidden.push(...hidden);
       }

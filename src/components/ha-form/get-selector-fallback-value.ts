@@ -76,6 +76,7 @@ const SELECTOR_FALLBACK_VALUES = {
   ui_color: undefined,
   ui_state_content: undefined,
   ui_time_format: undefined,
+  unit_of_measurement: undefined,
 } satisfies SelectorFallbackValues;
 
 /**

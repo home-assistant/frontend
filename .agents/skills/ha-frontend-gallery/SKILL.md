@@ -14,11 +14,11 @@ Run commands from the repository root unless noted otherwise:
 ```bash
 gallery/script/develop_gallery  # Start the gallery development server
 gallery/script/build_gallery    # Build the static gallery
-yarn lint                       # ESLint, Prettier, TypeScript, and Lit checks
-yarn lint:types                 # TypeScript compiler, without file arguments
+pnpm lint                       # ESLint, Prettier, TypeScript, and Lit checks
+pnpm lint:types                 # TypeScript compiler, without file arguments
 ```
 
-Never run `yarn lint:types` or `tsc` with file arguments. File arguments make `tsc` ignore `tsconfig.json` and can emit `.js` files into `src/`.
+Never run `pnpm lint:types` or `tsc` with file arguments. File arguments make `tsc` ignore `tsconfig.json` and can emit `.js` files into `src/`.
 
 ## Purpose
 
@@ -122,7 +122,7 @@ Follow the detailed copy standards in `ha-frontend-user-facing-text`: use Americ
 ## Verification
 
 - For markdown, sidebar, and page-generation changes, run `gallery/script/build_gallery`.
-- For TypeScript demo or gallery shell changes, run the smallest relevant check plus `yarn lint` when practical.
-- For type checking, run `yarn lint:types` without file arguments.
+- For TypeScript demo or gallery shell changes, run the smallest relevant check plus `pnpm lint` when practical.
+- For type checking, run `pnpm lint:types` without file arguments.
 - For visual changes, run `gallery/script/develop_gallery` and check the affected page on desktop, narrow viewport, and RTL when relevant.
 - If verification is skipped, state which command was skipped and why.

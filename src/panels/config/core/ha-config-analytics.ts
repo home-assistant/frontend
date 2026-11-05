@@ -76,7 +76,6 @@ class ConfigAnalytics extends SubscribeMixin(LitElement) {
           <ha-analytics
             translation_key_panel="config"
             @analytics-preferences-changed=${this._preferencesChanged}
-            .localize=${this.hass.localize}
             .analytics=${this._analyticsDetails}
           ></ha-analytics>
         </div>

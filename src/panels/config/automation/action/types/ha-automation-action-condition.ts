@@ -1,16 +1,14 @@
-import { consume } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type {
   LocalizeFunc,
   LocalizeKeys,
 } from "../../../../../common/translations/localize";
 import { CONDITION_ICONS } from "../../../../../components/ha-condition-icon";
-import "../../../../../components/ha-dropdown-item";
 import type { PickerComboBoxItem } from "../../../../../components/ha-picker-combo-box";
-import "../../../../../components/ha-select";
 import {
   DYNAMIC_PREFIX,
   getValueFromDynamic,
@@ -26,6 +24,7 @@ import {
 import { conditionDescriptionsContext } from "../../../../../data/context";
 import { domainToName } from "../../../../../data/integration";
 import type { HomeAssistant, ValueChangedEvent } from "../../../../../types";
+import { checkElementUiSupport } from "../../ui-support";
 import "../../condition/ha-automation-condition-editor";
 import type HaAutomationConditionEditor from "../../condition/ha-automation-condition-editor";
 import "../../condition/types/ha-automation-condition-and";
@@ -66,6 +65,19 @@ export class HaConditionAction extends LitElement implements ActionElement {
     return { condition: "state" };
   }
 
+  public static checkUiSupport(
+    localize: LocalizeFunc,
+    action: Condition
+  ): Error | undefined {
+    return typeof action.condition === "string"
+      ? checkElementUiSupport(
+          localize,
+          `ha-automation-condition-${action.condition}`,
+          action
+        )
+      : undefined;
+  }
+
   protected render() {
     const buildingBlock = CONDITION_BUILDING_BLOCKS.includes(
       this.action.condition
@@ -81,7 +93,6 @@ export class HaConditionAction extends LitElement implements ActionElement {
         this.inSidebar || (!this.inSidebar && !this.indent)
           ? html`
               <ha-generic-picker
-                .hass=${this.hass}
                 .label=${this.hass.localize(
                   "ui.panel.config.automation.editor.conditions.type_select"
                 )}
@@ -144,17 +155,15 @@ export class HaConditionAction extends LitElement implements ActionElement {
 
     return html`<ha-condition-icon
         slot="start"
-        .hass=${this.hass}
         .condition=${condition}
       ></ha-condition-icon
       ><span slot="headline">${label}</span>`;
   };
 
   private _rowRenderer = (item: PickerComboBoxItem) => html`
-    <ha-combo-box-item type="button">
+    <ha-combo-box-item>
       <ha-condition-icon
         slot="start"
-        .hass=${this.hass}
         .condition=${item.search_labels!.condition || undefined}
       ></ha-condition-icon>
       <span slot="headline">${item.primary}</span>

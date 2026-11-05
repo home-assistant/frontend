@@ -4,7 +4,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import type { ContextType } from "@lit/context";
-import { consume } from "@lit/context";
+import { consume } from "../common/decorators/consume";
 import { fireEvent } from "../common/dom/fire_event";
 import { copyToClipboard } from "../common/util/copy-clipboard";
 import { haStyle } from "../resources/styles";
@@ -65,6 +65,8 @@ export class HaYamlEditor extends LitElement {
 
   @query("ha-code-editor") _codeEditor?: HaCodeEditor;
 
+  private _focusPending = false;
+
   public setValue(value): void {
     try {
       this._yaml = !isEmpty(value)
@@ -93,9 +95,26 @@ export class HaYamlEditor extends LitElement {
     }
   }
 
+  /**
+   * Focuses the editor. If it is still being created, it is focused once it
+   * has been rendered.
+   */
   public focus(): void {
-    if (this._codeEditor?.codemirror) {
-      this._codeEditor?.codemirror.focus();
+    if (!this.isConnected) {
+      return;
+    }
+    if (this._codeEditor) {
+      this._codeEditor.focus();
+      return;
+    }
+    this._focusPending = true;
+  }
+
+  protected updated(changedProperties: PropertyValues<this>): void {
+    super.updated(changedProperties);
+    if (this._focusPending && this._codeEditor) {
+      this._focusPending = false;
+      this._codeEditor.focus();
     }
   }
 

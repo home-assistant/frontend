@@ -19,6 +19,8 @@ export const coreStyles = css`
     --ha-border-radius-pill: 9999px;
     --ha-border-radius-circle: 50%;
     --ha-border-radius-square: 0;
+    --ha-picture-border-radius: var(--ha-border-radius-lg);
+    --ha-picture-border-radius-sm: var(--ha-border-radius-sm);
 
     /* Spacing */
     --ha-space-1: 4px;
@@ -41,6 +43,11 @@ export const coreStyles = css`
     --ha-space-18: 72px;
     --ha-space-19: 76px;
     --ha-space-20: 80px;
+
+    /* Content layout */
+    --ha-content-width-narrow: 720px;
+    --ha-content-width-wide: 1280px;
+    --ha-content-gutter: var(--ha-space-4);
 
     --ha-animation-duration-none: 1ms;
     --ha-animation-duration-instant: 75ms;

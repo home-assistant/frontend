@@ -17,6 +17,8 @@ export type EntityInput = Pick<
   device_id?: string;
   /** Integration that provides the entity, defaults to "demo" */
   platform?: string;
+  /** When the state last changed, a random recent time by default */
+  last_changed?: string;
 };
 
 /**

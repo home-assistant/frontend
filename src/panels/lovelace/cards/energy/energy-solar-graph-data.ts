@@ -1,4 +1,6 @@
 import type { BarSeriesOption, LineSeriesOption } from "echarts/charts";
+import type { HassEntities } from "home-assistant-js-websocket";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import type {
   EnergyData,
@@ -10,6 +12,7 @@ import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
 import { getEnergyColor } from "./common/color";
+import { sumEnergyStatistics } from "./common/sum-statistics";
 import {
   type EnergyDataPoint,
   fillDataGapsAndRoundCaps,
@@ -19,7 +22,10 @@ import {
 } from "./common/energy-chart-options";
 
 export interface EnergySolarGraphDataParams {
-  hass: HomeAssistant;
+  localize: LocalizeFunc;
+  states: HassEntities;
+  formatEntityName: HomeAssistant["formatEntityName"];
+  darkMode: boolean;
   energyData: EnergyData;
   /**
    * Solar forecasts resolved by the caller (the async fetch stays in the
@@ -29,6 +35,7 @@ export interface EnergySolarGraphDataParams {
   computedStyles: CSSStyleDeclaration;
   /** Fallback for `energyData.end` (the component uses `endOfToday()`). */
   now: Date;
+  combineSources?: boolean;
 }
 
 export interface EnergySolarGraphData {
@@ -44,13 +51,14 @@ export interface EnergySolarGraphData {
 /**
  * Transforms an `EnergyData` collection update into the ECharts series and
  * derived state for `hui-energy-solar-graph-card`. Pure data processing: all
- * environment inputs (current time, theme style, hass, resolved forecasts) are
- * injected so the transform is deterministic and benchmarkable.
+ * environment inputs (current time, theme style, localize, entity states and
+ * names, resolved forecasts) are injected so the transform is deterministic
+ * and benchmarkable.
  */
 export function generateEnergySolarGraphData(
   params: EnergySolarGraphDataParams
 ): EnergySolarGraphData {
-  const { hass, energyData, forecasts, computedStyles, now } = params;
+  const { energyData, forecasts, computedStyles, now } = params;
 
   const start = energyData.start;
   const end = energyData.end || now;
@@ -58,10 +66,19 @@ export function generateEnergySolarGraphData(
   const compareStart = energyData.startCompare;
   const compareEnd = energyData.endCompare;
 
-  const solarSources: SolarSourceTypeEnergyPreference[] =
+  const configuredSources: SolarSourceTypeEnergyPreference[] =
     energyData.prefs.energy_sources.filter(
       (source) => source.type === "solar"
     ) as SolarSourceTypeEnergyPreference[];
+
+  const { solarSources, stats, statsCompare } =
+    params.combineSources && configuredSources.length > 1
+      ? combineSolarSources(params, configuredSources)
+      : {
+          solarSources: configuredSources,
+          stats: energyData.stats,
+          statsCompare: energyData.statsCompare,
+        };
 
   // Both processDataSet calls below receive identical start/end/compareStart,
   // so the compare transform and the suggested period are loop-invariant across
@@ -79,13 +96,13 @@ export function generateEnergySolarGraphData(
     if (v > yMax) yMax = v;
   };
 
-  if (energyData.statsCompare) {
+  if (statsCompare) {
     datasets.push(
       ...processDataSet(
-        hass,
+        params,
         compareTransform,
         period,
-        energyData.statsCompare,
+        statsCompare,
         energyData.statsMetadata,
         solarSources,
         computedStyles,
@@ -107,10 +124,10 @@ export function generateEnergySolarGraphData(
 
   datasets.push(
     ...processDataSet(
-      hass,
+      params,
       compareTransform,
       period,
-      energyData.stats,
+      stats,
       energyData.statsMetadata,
       solarSources,
       computedStyles,
@@ -127,7 +144,7 @@ export function generateEnergySolarGraphData(
   if (forecasts) {
     datasets.push(
       ...processForecast(
-        hass,
+        params,
         energyData.statsMetadata,
         forecasts,
         solarSources,
@@ -141,12 +158,43 @@ export function generateEnergySolarGraphData(
 
   return {
     chartData: datasets,
-    total: processTotal(energyData.stats, solarSources),
+    total: processTotal(energyData.stats, configuredSources),
     start,
     end,
     compareStart,
     compareEnd,
     yAxisFractionDigits: computeYAxisFractionDigits(yMin, yMax, true),
+  };
+}
+
+const COMBINED_SOLAR_ID = "solar";
+
+function combineSolarSources(
+  { localize, energyData }: EnergySolarGraphDataParams,
+  sources: SolarSourceTypeEnergyPreference[]
+) {
+  const statIds = sources.map((source) => source.stat_energy_from);
+  const combined: SolarSourceTypeEnergyPreference = {
+    type: "solar",
+    stat_energy_from: COMBINED_SOLAR_ID,
+    name: localize("ui.panel.lovelace.cards.energy.energy_distribution.solar"),
+    config_entry_solar_forecast: [
+      ...new Set(
+        sources.flatMap((source) => source.config_entry_solar_forecast ?? [])
+      ),
+    ],
+  };
+  return {
+    solarSources: [combined],
+    stats: {
+      [COMBINED_SOLAR_ID]: sumEnergyStatistics(energyData.stats, statIds),
+    },
+    statsCompare: energyData.statsCompare && {
+      [COMBINED_SOLAR_ID]: sumEnergyStatistics(
+        energyData.statsCompare,
+        statIds
+      ),
+    },
   };
 }
 
@@ -168,7 +216,7 @@ function processTotal(
 }
 
 function processDataSet(
-  hass: HomeAssistant,
+  { localize, states, formatEntityName, darkMode }: EnergySolarGraphDataParams,
   compareTransform: (ts: Date) => Date,
   period: "5minute" | "hour" | "day" | "month",
   statistics: Statistics,
@@ -185,8 +233,6 @@ function processDataSet(
   // `period` is fixed for the whole call, so resolve the midpoint mode once
   // instead of re-deriving it (and re-comparing the period string) per point.
   const center = period === "hour" || period === "5minute";
-  // hass.themes.darkMode is read twice per source below; cache it once.
-  const darkMode = hass.themes.darkMode;
 
   solarSources.forEach((source, idx) => {
     let prevStart: number | null = null;
@@ -236,13 +282,14 @@ function processDataSet(
       id: compare
         ? "compare-" + source.stat_energy_from
         : source.stat_energy_from,
-      name: hass.localize(
+      name: localize(
         "ui.panel.lovelace.cards.energy.energy_solar_graph.production",
         {
           name:
             source.name ||
             getStatisticLabel(
-              hass,
+              states,
+              formatEntityName,
               source.stat_energy_from,
               statisticsMetaData[source.stat_energy_from]
             ),
@@ -276,7 +323,7 @@ function processDataSet(
 }
 
 function processForecast(
-  hass: HomeAssistant,
+  { localize, states, formatEntityName }: EnergySolarGraphDataParams,
   statisticsMetaData: Record<string, StatisticsMetaData>,
   forecasts: EnergySolarForecasts,
   solarSources: SolarSourceTypeEnergyPreference[],
@@ -350,13 +397,14 @@ function processForecast(
             id: "forecast-" + source.stat_energy_from,
             type: "line",
             stack: "forecast",
-            name: hass.localize(
+            name: localize(
               "ui.panel.lovelace.cards.energy.energy_solar_graph.forecast",
               {
                 name:
                   source.name ||
                   getStatisticLabel(
-                    hass,
+                    states,
+                    formatEntityName,
                     source.stat_energy_from,
                     statisticsMetaData[source.stat_energy_from]
                   ),

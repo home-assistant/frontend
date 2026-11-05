@@ -286,7 +286,11 @@ class HaPanelDevTemplate extends LitElement {
                   ${this.hass.localize(
                     "ui.panel.config.tools.tabs.templates.keyboard_tip",
                     {
-                      autocomplete: html`<kbd>Ctrl</kbd>+<kbd>Space</kbd>`,
+                      autocomplete: html`<kbd
+                          >${this.hass.localize(
+                            "ui.dialogs.shortcuts.keys.ctrl"
+                          )}</kbd
+                        >+<kbd>Space</kbd>`,
                     }
                   )}
                 </ha-tip>
@@ -341,10 +345,10 @@ class HaPanelDevTemplate extends LitElement {
                     </ha-label>
                     <pre class="rendered">
 ${
-  type === "object"
-    ? JSON.stringify(this._templateResult.result, null, 2)
-    : this._templateResult.result
-}</pre>
+                        type === "object"
+                          ? JSON.stringify(this._templateResult.result, null, 2)
+                          : this._templateResult.result
+                      }</pre>
                     ${
                       this._templateResult.listeners.time
                         ? html`
