@@ -4944,9 +4944,8 @@
             "create_platform": "Create {platform}",
             "categories": {
               "input": "Inputs",
-              "time": "Time and schedules",
+              "time": "Time",
               "calculation": "Calculations",
-              "combine": "Groups and templates",
               "other": "Other"
             }
           }

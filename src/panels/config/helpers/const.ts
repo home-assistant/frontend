@@ -43,7 +43,6 @@ export const HELPER_CATEGORIES = [
   "input",
   "time",
   "calculation",
-  "combine",
   "other",
 ] as const;
 
@@ -72,12 +71,8 @@ const HELPER_DOMAIN_CATEGORIES: Record<string, HelperCategory> = {
   statistics: "calculation",
   threshold: "calculation",
   trend: "calculation",
+  template: "calculation",
   utility_meter: "calculation",
-  generic_hygrostat: "combine",
-  generic_thermostat: "combine",
-  group: "combine",
-  switch_as_x: "combine",
-  template: "combine",
 };
 
 export const getHelperCategory = (domain: string): HelperCategory =>
