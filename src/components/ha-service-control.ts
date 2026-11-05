@@ -29,13 +29,16 @@ import {
   type Selector,
   type TargetSelector,
 } from "../data/selector";
-import { getServiceFieldVisibility } from "../data/service";
+import {
+  getServiceFieldDefaults,
+  getServiceFieldVisibility,
+  getServiceHiddenFields,
+} from "../data/service";
 import type { HassServiceTargetWithExclude } from "../data/target";
 import type { HomeAssistant, ValueChangedEvent } from "../types";
 import { documentationUrl } from "../util/documentation-url";
-import { getHiddenFields } from "./ha-form/conditions";
 import { getSelectorFallbackValue } from "./ha-form/get-selector-fallback-value";
-import type { HaFormVisible } from "./ha-form/types";
+import type { HaFormDataContainer, HaFormVisible } from "./ha-form/types";
 import "./ha-checkbox";
 import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-icon-button";
@@ -102,6 +105,7 @@ interface ExtHassService extends Omit<HassService, "fields"> {
   flatFields: Field[];
   hasSelector: string[];
   fieldVisibility: [string, HaFormVisible | undefined][];
+  fieldDefaults: HaFormDataContainer;
 }
 
 @customElement("ha-service-control")
@@ -219,7 +223,7 @@ export class HaServiceControl extends LitElement {
         if (filled.changed) {
           updatedDefaultValue = true;
           this._value.data = this._withoutHiddenDefaults(
-            serviceData.fieldVisibility,
+            serviceData,
             filled.values,
             this._value.data
           );
@@ -293,27 +297,36 @@ export class HaServiceControl extends LitElement {
         fieldVisibility: getServiceFieldVisibility(
           serviceDomains[domain][serviceName].fields
         ),
+        fieldDefaults: getServiceFieldDefaults(
+          serviceDomains[domain][serviceName].fields
+        ),
       };
     }
   );
 
   private _hiddenFields = memoizeOne(
     (
-      fieldVisibility: ExtHassService["fieldVisibility"] | undefined,
+      serviceData: ExtHassService | undefined,
       data: Record<string, any> | undefined
     ): Set<string> =>
-      fieldVisibility ? getHiddenFields(fieldVisibility, data) : new Set()
+      serviceData
+        ? getServiceHiddenFields(
+            serviceData.fieldVisibility,
+            serviceData.fieldDefaults,
+            data
+          )
+        : new Set()
   );
 
   // Defaults are not added to hidden fields, existing values are kept so
   // opening an action does not change it
   private _withoutHiddenDefaults(
-    fieldVisibility: ExtHassService["fieldVisibility"],
+    serviceData: ExtHassService,
     filled: Record<string, any>,
     original: Record<string, any>
   ) {
     const data = { ...filled };
-    getHiddenFields(fieldVisibility, filled).forEach((key) => {
+    this._hiddenFields(serviceData, filled).forEach((key) => {
       if (!(key in original)) {
         delete data[key];
       }
@@ -331,11 +344,8 @@ export class HaServiceControl extends LitElement {
     if (!serviceData?.fieldVisibility.length) {
       return data;
     }
-    const hidden = getHiddenFields(serviceData.fieldVisibility, data);
-    const wasHidden = getHiddenFields(
-      serviceData.fieldVisibility,
-      this._value?.data
-    );
+    const hidden = this._hiddenFields(serviceData, data);
+    const wasHidden = this._hiddenFields(serviceData, this._value?.data);
     const visibleData = { ...data };
     hidden.forEach((key) => {
       delete visibleData[key];
@@ -541,10 +551,7 @@ export class HaServiceControl extends LitElement {
       this._value
     );
 
-    const hiddenFields = this._hiddenFields(
-      serviceData?.fieldVisibility,
-      this._value?.data
-    );
+    const hiddenFields = this._hiddenFields(serviceData, this._value?.data);
 
     const domain = this._value?.action
       ? computeDomain(this._value.action)

@@ -1,8 +1,14 @@
 import type { HassService } from "home-assistant-js-websocket";
 import { ensureArray } from "../common/array/ensure-array";
 import { isValidEntityId } from "../common/entity/valid_entity_id";
-import { combineVisible } from "../components/ha-form/conditions";
-import type { HaFormVisible } from "../components/ha-form/types";
+import {
+  combineVisible,
+  getHiddenFields,
+} from "../components/ha-form/conditions";
+import type {
+  HaFormDataContainer,
+  HaFormVisible,
+} from "../components/ha-form/types";
 import type { Context, HomeAssistant, ServiceCallRequest } from "../types";
 import type { Action } from "./script";
 
@@ -46,7 +52,8 @@ export const getServiceCallEntityIds = (
 
 interface ServiceFieldOrSection {
   visible?: HaFormVisible;
-  fields?: Record<string, { visible?: HaFormVisible }>;
+  default?: unknown;
+  fields?: Record<string, { visible?: HaFormVisible; default?: unknown }>;
 }
 
 // Fields inside a section are flattened, they are only shown when both the
@@ -66,3 +73,41 @@ export const getServiceFieldVisibility = (
           )
         : [[key, field.visible] as [string, HaFormVisible | undefined]]
   );
+
+export const getServiceFieldDefaults = (
+  fields: HassService["fields"]
+): HaFormDataContainer => {
+  const defaults: HaFormDataContainer = {};
+  for (const [key, field] of Object.entries(
+    fields as Record<string, ServiceFieldOrSection>
+  )) {
+    const entries = field.fields
+      ? Object.entries(field.fields)
+      : [[key, field]];
+    for (const [fieldKey, subField] of entries as [
+      string,
+      { default?: HaFormDataContainer[string] },
+    ][]) {
+      if (subField.default !== undefined) {
+        defaults[fieldKey] = subField.default;
+      }
+    }
+  }
+  return defaults;
+};
+
+// Like in config flows and blueprints, a field without a value is evaluated
+// with its default.
+export const getServiceHiddenFields = (
+  visibility: [string, HaFormVisible | undefined][],
+  defaults: HaFormDataContainer,
+  data: Record<string, any> | undefined
+): Set<string> => {
+  const values = { ...defaults };
+  for (const [key, value] of Object.entries(data ?? {})) {
+    if (value !== undefined) {
+      values[key] = value;
+    }
+  }
+  return getHiddenFields(visibility, values);
+};

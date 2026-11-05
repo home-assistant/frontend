@@ -2,7 +2,9 @@ import type { HassService } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import {
   getServiceCallEntityIds,
+  getServiceFieldDefaults,
   getServiceFieldVisibility,
+  getServiceHiddenFields,
 } from "../../src/data/service";
 
 describe("getServiceCallEntityIds", () => {
@@ -130,5 +132,43 @@ describe("getServiceFieldVisibility", () => {
         })
       )
     ).toEqual([["a", false]]);
+  });
+});
+
+describe("getServiceHiddenFields", () => {
+  const modeFields = {
+    mode: {
+      required: true,
+      default: "duration",
+      selector: { select: { options: ["duration", "end_of_track"] } },
+    },
+    advanced: {
+      fields: {
+        duration: {
+          required: true,
+          selector: { duration: {} },
+          visible: { field: "mode", value: "duration" },
+        },
+      },
+    },
+  } as unknown as HassService["fields"];
+  const visibility = getServiceFieldVisibility(modeFields);
+  const defaults = getServiceFieldDefaults(modeFields);
+
+  it("collects the defaults of fields, including fields in sections", () => {
+    expect(defaults).toEqual({ mode: "duration" });
+  });
+
+  it("evaluates a field without a value with its default", () => {
+    expect(getServiceHiddenFields(visibility, defaults, {})).toEqual(new Set());
+    expect(
+      getServiceHiddenFields(visibility, defaults, { mode: undefined })
+    ).toEqual(new Set());
+  });
+
+  it("uses the value of the field when it has one", () => {
+    expect(
+      getServiceHiddenFields(visibility, defaults, { mode: "end_of_track" })
+    ).toEqual(new Set(["duration"]));
   });
 });
