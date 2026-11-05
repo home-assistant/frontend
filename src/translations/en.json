@@ -2861,13 +2861,15 @@
     },
     "panel": {
       "app": {
+        "error_loading_app": "Unable to load the app information from the Supervisor: {error}",
+        "error_app_unauthorized": "You do not have permission to open this app.",
         "error_app_not_installed": "The app is not installed. Please install it first.",
         "error_app_no_ingress": "This app does not support ingress.",
         "error_app_not_running": "The app is not running. Do you want to start it now?",
         "start_app": "Start app",
         "app_starting": "The app is starting, this can take some time...",
         "error_starting_app": "Error starting the app",
-        "error_creating_session": "Unable to create an ingress session",
+        "error_creating_session": "Unable to create an ingress session: {error}",
         "error_app_not_ready": "The app seems to not be ready, it might still be starting. Do you want to try again?",
         "retry": "Retry"
       },

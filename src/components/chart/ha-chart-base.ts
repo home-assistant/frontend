@@ -7,7 +7,10 @@ import {
   mdiRestart,
 } from "@mdi/js";
 import { differenceInMinutes } from "date-fns";
-import type { DataZoomComponentOption } from "echarts/components";
+import type {
+  DataZoomComponentOption,
+  MarkAreaComponentOption,
+} from "echarts/components";
 import type { EChartsType } from "echarts/core";
 import type {
   ECElementEvent,
@@ -91,6 +94,11 @@ export const DEFAULT_CHART_WIDTH = 500;
 const VISIBILITY_ROOT_MARGIN_NARROW = "100%";
 const VISIBILITY_ROOT_MARGIN = "300px";
 const CLICK_DRAG_TOLERANCE = 4;
+// The selection is shown by the mask, not by the brush
+const BRUSH_STYLE = {
+  color: "rgba(0, 0, 0, 0)",
+  borderColor: "rgba(0, 0, 0, 0)",
+};
 
 export type ZoomSliderMode = "auto" | "always" | "never";
 const DEFERRED_PROPS = [
@@ -98,7 +106,14 @@ const DEFERRED_PROPS = [
   "data",
   "_hiddenDatasets",
   "_isZoomed",
+  "highlight",
 ] as const;
+const MASK_OPACITY = 0.7;
+
+export interface ChartTimeRange {
+  start: number;
+  end: number;
+}
 
 type RawSeriesOption = Exclude<
   NonNullable<ECOption["series"]>,
@@ -181,6 +196,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   @property({ attribute: "select-range", type: Boolean })
   public selectRange = false;
 
+  // Everything outside this time range fades
+  @property({ attribute: false }) public highlight?: ChartTimeRange;
+
+  // Rounds a selection to the periods of the data, or drops it
+  @property({ attribute: false })
+  public snapSelection?: (range: ChartTimeRange) => ChartTimeRange | undefined;
   // extraComponents is not reactive and should not trigger updates
   public extraComponents?: any[];
 
@@ -207,6 +228,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   @state() private _isZoomed = false;
 
   private _pointerDownX?: number;
+
+  private _selectingRange?: ChartTimeRange;
 
   // Separate from _isZoomed, whose touch handling reruns graph layouts
   @state() private _isGraphRoamed = false;
@@ -509,6 +532,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       ) {
         this._disposeSonification();
       }
+    } else if (changedProps.has("highlight")) {
+      this._updateMask();
     }
     if (changedProps.has("options")) {
       chartOptions = { ...chartOptions, ...this._createOptions() };
@@ -929,16 +954,38 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
         }
         const [x, y] = this.chart.convertFromPixel("grid", point) as number[];
         fireEvent(this, "chart-grid-click", { x, y });
+        const selection = this._snapRange({ start: x, end: x });
+        if (selection) {
+          fireEvent(this, "chart-select", selection);
+        }
+      });
+      this.chart.on("brush", (e: any) => {
+        const range = e.areas?.[0]?.coordRange as number[] | undefined;
+        if (range) {
+          this._selectingRange = this._snapRange({
+            start: range[0],
+            end: range[1],
+          });
+          this._updateMask();
+        }
       });
       this.chart.on("brushEnd", (e: any) => {
         const range = e.areas?.[0]?.coordRange as number[] | undefined;
-        // The caller shows the selection, snapped to its data
         this.chart?.dispatchAction({ type: "brush", areas: [] });
+        this._selectingRange = undefined;
+        this._updateMask();
         if (range) {
           fireEvent(this, "chart-range-select", {
             start: range[0],
             end: range[1],
           });
+          const selection = this._snapRange({
+            start: range[0],
+            end: range[1],
+          });
+          if (selection) {
+            fireEvent(this, "chart-select", selection);
+          }
         }
       });
       this.chart.on("sankeyroam", () => {
@@ -1073,13 +1120,52 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
     });
   }
 
+  private _snapRange(range: ChartTimeRange) {
+    return this.snapSelection ? this.snapSelection(range) : range;
+  }
+
+  private _getMaskArea(): MarkAreaComponentOption | undefined {
+    const range = this._selectingRange ?? this.highlight;
+    if (!range) {
+      return undefined;
+    }
+    const style = getComputedStyle(this);
+    return {
+      silent: true,
+      z: 10,
+      itemStyle: {
+        color:
+          style.getPropertyValue("--card-background-color").trim() ||
+          style.getPropertyValue("--primary-background-color").trim(),
+        opacity: MASK_OPACITY,
+      },
+      data: [
+        [{ xAxis: -Infinity }, { xAxis: range.start }],
+        [{ xAxis: range.end }, { xAxis: Infinity }],
+      ],
+    };
+  }
+
+  // Only the first series carries the mask, merged in without resending data
+  private _updateMask() {
+    this.chart?.setOption({
+      series: [{ markArea: this._getMaskArea() ?? { data: [] } }],
+    });
+  }
+
   private _updateSelectRange() {
     if (!this.chart) {
       return;
     }
     if (this.selectRange) {
       this.chart.setOption({
-        brush: { xAxisIndex: 0, transformable: false },
+        brush: {
+          xAxisIndex: 0,
+          // Only measures the range, the mask fades what is outside
+          seriesIndex: [],
+          transformable: false,
+          brushStyle: BRUSH_STYLE,
+        },
       });
     }
     const brushCursor = {
@@ -1088,6 +1174,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       brushOption: {
         brushType: this.selectRange ? "lineX" : false,
         brushMode: "single",
+        brushStyle: BRUSH_STYLE,
       },
     };
     // Brush and drag to zoom share the global cursor, the last one taken wins
@@ -1542,7 +1629,8 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _getSeries() {
     const xAxis = (this.options?.xAxis?.[0] ?? this.options?.xAxis) as
       XAXisOption | undefined;
-    const series = ensureArray(this.data).map((s) => {
+    const maskArea = this._getMaskArea();
+    const series = ensureArray(this.data).map((s, index) => {
       const data = this._hiddenDatasets.has(String(s.id ?? s.name))
         ? undefined
         : s.data;
@@ -1579,6 +1667,16 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
             ),
           } as HaECSeriesItem;
         }
+      }
+      // ECharts merges series by id and would keep a mask left out here
+      if (s.type === "line" || s.type === "bar") {
+        result = {
+          ...result,
+          markArea:
+            index === 0 && maskArea
+              ? maskArea
+              : ((s as LineSeriesOption).markArea ?? { data: [] }),
+        } as HaECSeriesItem;
       }
       return processSeriesTooltipFormatter(result);
     });
@@ -2406,6 +2504,7 @@ declare global {
     "chart-click": ECElementEvent;
     "chart-grid-click": { x: number; y: number };
     "chart-range-select": { start: number; end: number };
+    "chart-select": ChartTimeRange;
     "legend-label-click": { id: string };
     "chart-zoom": {
       start: number;

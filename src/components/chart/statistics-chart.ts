@@ -50,6 +50,7 @@ import type {
 } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
 import type {
+  ChartTimeRange,
   CustomLegendOption,
   HaChartBase,
   ZoomSliderMode,
@@ -260,11 +261,9 @@ export class StatisticsChart extends LitElement {
 
     return html`
       <ha-chart-base
-        .data=${this._highlightedChartData(
-          this._chartData,
-          this.highlight,
-          getComputedStyle(this).getPropertyValue("--primary-color").trim()
-        )}
+        .data=${this._chartData}
+        .highlight=${this.highlight}
+        .snapSelection=${this._snapSelection}
         .options=${this._chartOptions}
         .height=${this.height}
         .selectRange=${this.selectRange}
@@ -286,54 +285,29 @@ export class StatisticsChart extends LitElement {
     this._chartBase?.zoom(0, 100);
   }
 
-  private _highlightedChartData = memoizeOne(
-    (
-      data: (LineSeriesOption | BarSeriesOption)[],
-      highlight: { start: number; end: number } | undefined,
-      color: string
-    ): (LineSeriesOption | BarSeriesOption)[] => {
-      if (!data.length) {
-        return data;
-      }
-      if (data[0].type === "bar") {
-        if (!highlight) {
-          return data;
+  // A click selects the period that contains it, a drag every period it
+  // touches
+  private _snapSelection = (
+    range: ChartTimeRange
+  ): ChartTimeRange | undefined => {
+    let start: number | undefined;
+    let end: number | undefined;
+    Object.values(this.statisticsData ?? {}).forEach((values) =>
+      values.forEach((value) => {
+        const touched =
+          range.start === range.end
+            ? value.start <= range.start && range.start < value.end
+            : value.start < range.end && value.end > range.start;
+        if (touched) {
+          start = Math.min(start ?? value.start, value.start);
+          end = Math.max(end ?? value.end, value.end);
         }
-        // Bars outside the highlight fade, so the highlighted ones stand out.
-        // Some points are already objects, like negative bars with round caps.
-        return data.map((series) => ({
-          ...series,
-          data: (series.data as any[]).map((item) => {
-            const point =
-              item && typeof item === "object" && "value" in item
-                ? item
-                : { value: item };
-            // Current state bars only carry their time
-            const start = new Date(point.value[2] ?? point.value[0]).getTime();
-            return start >= highlight.start && start < highlight.end
-              ? item
-              : {
-                  ...point,
-                  itemStyle: { ...point.itemStyle, opacity: 0.3 },
-                };
-          }),
-        })) as BarSeriesOption[];
-      }
-      // Every series gets an area, empty when not highlighted, as the chart
-      // merges series and would keep an old one
-      return data.map((series, index) => ({
-        ...series,
-        markArea: {
-          silent: true,
-          itemStyle: { color, opacity: 0.15 },
-          data:
-            highlight && index === 0
-              ? [[{ xAxis: highlight.start }, { xAxis: highlight.end }]]
-              : [],
-        },
-      }));
-    }
-  );
+      })
+    );
+    return start === undefined || end === undefined
+      ? undefined
+      : { start, end };
+  };
 
   private _datasetHidden(ev: HASSDomEvent<HASSDomEvents["dataset-hidden"]>) {
     this._hiddenStats.add(ev.detail.id);
