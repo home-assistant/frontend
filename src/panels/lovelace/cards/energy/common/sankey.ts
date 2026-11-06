@@ -141,6 +141,36 @@ export const findDevicesOverCap = ({
   return grouped;
 };
 
+/**
+ * Re-parent each device to its nearest ancestor that has data, so a device
+ * whose parent has no usable value is not orphaned or double-counted.
+ */
+export const resolveSankeyParents = (
+  devices: DeviceConsumptionEnergyPreference[],
+  isUsable: (device: DeviceConsumptionEnergyPreference) => boolean
+): DeviceConsumptionEnergyPreference[] => {
+  const usable = new Set(
+    devices.filter(isUsable).map((d) => d.stat_consumption)
+  );
+  const parentByStat = new Map(
+    devices.map((d) => [d.stat_consumption, d.included_in_stat])
+  );
+  return devices.map((d) => {
+    const seen = new Set([d.stat_consumption]);
+    let parent = d.included_in_stat;
+    while (parent && !usable.has(parent) && !seen.has(parent)) {
+      seen.add(parent);
+      parent = parentByStat.get(parent);
+    }
+    if (parent && !usable.has(parent)) {
+      parent = undefined;
+    }
+    return parent === d.included_in_stat
+      ? d
+      : { ...d, included_in_stat: parent };
+  });
+};
+
 export interface BuildSankeyDeviceNodesOptions {
   devices: DeviceConsumptionEnergyPreference[];
   computedStyle: CSSStyleDeclaration;

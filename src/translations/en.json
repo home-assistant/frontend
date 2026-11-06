@@ -2347,7 +2347,7 @@
         "aliases_description": "Aliases are the names voice assistants use for this entity.",
         "aliases_description_assist": "Assist uses all aliases equally.",
         "aliases_description_alexa": "Amazon Alexa uses only the first alias.",
-        "aliases_description_google": "Google Assistant uses the first alias as the main name and the rest as alternatives.",
+        "aliases_description_google": "Google Home uses the first alias as the main name and the rest as alternatives.",
         "aliases_no_unique_id": "Aliases are not supported for entities without a unique ID. See the {faq_link} for more detail.",
         "entity_name_alias_description": "Default name. When enabled, it is used as the first alias.",
         "ask_pin": "Ask for PIN",
@@ -2861,13 +2861,15 @@
     },
     "panel": {
       "app": {
+        "error_loading_app": "Unable to load the app information from the Supervisor: {error}",
+        "error_app_unauthorized": "You do not have permission to open this app.",
         "error_app_not_installed": "The app is not installed. Please install it first.",
         "error_app_no_ingress": "This app does not support ingress.",
         "error_app_not_running": "The app is not running. Do you want to start it now?",
         "start_app": "Start app",
         "app_starting": "The app is starting, this can take some time...",
         "error_starting_app": "Error starting the app",
-        "error_creating_session": "Unable to create an ingress session",
+        "error_creating_session": "Unable to create an ingress session: {error}",
         "error_app_not_ready": "The app seems to not be ready, it might still be starting. Do you want to try again?",
         "retry": "Retry"
       },
@@ -4877,6 +4879,26 @@
               "flow_rate_no_volume": "[%key:ui::panel::config::energy::water::dialog::flow_rate_no_volume%]"
             }
           },
+          "device_consumption_gas": {
+            "title": "Individual gas devices",
+            "sub": "Tracking the gas usage of individual devices allows Home Assistant to break down your gas usage by device.",
+            "learn_more": "More information on how to get started",
+            "devices": "Devices",
+            "add_device": "Add device",
+            "dialog": {
+              "header": "Add a gas device",
+              "display_name": "Display name",
+              "device_consumption_gas": "Device gas consumption",
+              "device_consumption_gas_flow_rate": "Device gas flow rate",
+              "selected_stat_intro": "Select the gas sensor that measures the device's gas consumption in either of {unit}.",
+              "included_in_device": "Upstream device",
+              "included_in_device_helper": "If this device is already counted by another device (such as a gas meter measured by the main gas supply), selecting the upstream device prevents duplicate gas tracking.",
+              "no_upstream_devices": "No eligible upstream devices",
+              "gas_sensor_needed": "To track this device, you need a gas sensor.",
+              "flow_rate_no_volume": "[%key:ui::panel::config::energy::gas::dialog::flow_rate_no_volume%]",
+              "flow_rate_energy_sources": "[%key:ui::panel::config::energy::gas::dialog::flow_rate_energy_sources%]"
+            }
+          },
           "integral": {
             "energy": {
               "create_title": "{count, plural,\n one {Create energy sensor?}\n other {Create energy sensors?}\n}",
@@ -4939,7 +4961,42 @@
           "dialog": {
             "create": "Create",
             "create_helper": "Create helper",
-            "create_platform": "Create {platform}"
+            "create_platform": "Create {platform}",
+            "categories": {
+              "input": "Inputs",
+              "time": "Time",
+              "calculation": "Calculations",
+              "other": "Other"
+            },
+            "descriptions": {
+              "input_boolean": "Switches between on and off",
+              "input_button": "Starts automations when pressed",
+              "input_text": "Stores a text value you can change",
+              "input_number": "Stores a number you can set with a slider or input field",
+              "input_datetime": "Stores a date, a time, or both",
+              "input_select": "Lets you choose from a list of options",
+              "counter": "Counts up or down in steps",
+              "schedule": "Turns on during the time blocks you set for each day",
+              "timer": "Counts down from a set duration",
+              "tod": "Turns on between two times of the day",
+              "history_stats": "Measures how long or how often an entity was in a state over a period",
+              "derivative": "Shows how fast a sensor's value changes",
+              "filter": "Smooths out or cleans up the values of a sensor",
+              "integration": "Adds up a sensor's value over time, like power into energy",
+              "min_max": "Combines sensors into their minimum, maximum, mean, median, or sum",
+              "mold_indicator": "Estimates the risk of mold from temperature and humidity",
+              "random": "Creates random values",
+              "statistics": "Calculates statistics, like the average, from a sensor's history",
+              "threshold": "Turns on when a sensor's value is above or below a limit",
+              "trend": "Turns on when a sensor's value is rising or falling",
+              "template": "Creates an entity whose state comes from a template",
+              "utility_meter": "Tracks consumption, like energy or water, per billing period",
+              "generic_hygrostat": "Controls humidity using a switch or fan and a humidity sensor",
+              "generic_thermostat": "Controls temperature using a switch or fan and a temperature sensor",
+              "group": "Combines entities of the same type into one",
+              "otp": "Creates one-time passwords for two-factor authentication",
+              "switch_as_x": "Shows a switch as a light, fan, cover, or another entity type"
+            }
           }
         },
         "core": {
@@ -5398,8 +5455,8 @@
               "title": "Get the best assistant with {home_assistant_cloud}",
               "features": {
                 "assistants": {
-                  "title": "Google Assistant and Amazon Alexa",
-                  "text": "Control all your Home Assistant devices via any Google Assistant-enabled or Alexa-enabled device."
+                  "title": "Google Home and Amazon Alexa",
+                  "text": "Control all your Home Assistant devices via any Google Home-enabled or Alexa-enabled device."
                 },
                 "speech": {
                   "title": "Amazing speech options for Assist",
@@ -7006,7 +7063,7 @@
         "cloud": {
           "description_login": "Logged in and connected",
           "description_not_login": "Not logged in",
-          "description_features": "Control home when away and integrate with Alexa and Google Assistant",
+          "description_features": "Control home when away and integrate with Alexa and Google Home",
           "login": {
             "title": "Cloud login",
             "landing_title": "[%key:ui::panel::config::cloud::account::onboarding::ha_cloud_title%]",
@@ -7110,7 +7167,7 @@
               "alexa_google_both": "Alexa and Google linked",
               "alexa_google_alexa": "Alexa linked",
               "alexa_google_google": "Google linked",
-              "alexa_google_none": "Control your home with Amazon Alexa and Google Assistant",
+              "alexa_google_none": "Control your home with Amazon Alexa and Google Home",
               "feature_cameras": "Cameras and streaming",
               "feature_webhooks": "Webhooks",
               "webhooks_active": "{count} active",
@@ -7147,7 +7204,7 @@
               "backup_body": "Keep an encrypted off-site copy of your latest backup, ready to restore on first boot.",
               "voice_title": "Voice assistants",
               "voice_helper": "Alexa, Google, and Home Assistant voice",
-              "voice_body": "Talk to your home your way. Home Assistant Cloud powers fast, private voice for Assist out of the box, and you can add Amazon Alexa or Google Assistant.",
+              "voice_body": "Talk to your home your way. Home Assistant Cloud powers fast, private voice for Assist out of the box, and you can add Amazon Alexa or Google Home.",
               "streaming_title": "Smoother streaming",
               "streaming_helper": "Faster, more reliable camera feeds",
               "streaming_body": "Make camera feeds and Music Assistant playback faster and more reliable, over a secure connection.",
@@ -7162,7 +7219,7 @@
               "alexa_tagline": "Voice control with Echo devices",
               "alexa_bullet1": "Control devices from your Echo by voice",
               "alexa_bullet2": "Use Home Assistant in your Alexa routines",
-              "google_name": "Google Assistant",
+              "google_name": "Google Home",
               "google_tagline": "Hands-free control with Nest devices",
               "google_bullet1": "Control devices from your Nest speakers by voice",
               "google_bullet2": "Cast your cameras to a Nest Hub display"
@@ -7207,7 +7264,7 @@
             "support_package_privacy_warning": "This file may contain personal data about your home. Avoid sharing them with unverified or untrusted parties.",
             "reset_cloud_data": "Reset cloud data",
             "reset_data_confirm_title": "Reset cloud data?",
-            "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Assistant, and Amazon Alexa integrations. This action cannot be undone.",
+            "reset_data_confirm_text": "This will reset all your cloud settings. This includes your remote connection, Google Home, and Amazon Alexa integrations. This action cannot be undone.",
             "reset": "Reset",
             "reset_data_failed": "Failed to reset cloud data",
             "thank_you_note": "It's because of people like you that we are able to make a great home automation experience for everyone.",
@@ -7220,7 +7277,7 @@
             "integrations_introduction": "Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.",
             "integrations_introduction2": "Check the website for ",
             "integrations_link_all_features": " all available features",
-            "tip_moved_voice_assistants": "Looking for Google Assistant and Amazon Alexa settings? They are moved to the new voice assistants page.",
+            "tip_moved_voice_assistants": "Looking for Google Home and Amazon Alexa settings? They are moved to the new voice assistants page.",
             "connected": "Connected",
             "connecting": "Connecting…",
             "not_connected": "Not connected",
@@ -7307,26 +7364,26 @@
               "expose_new_entities_info": "Should new entities be exposed to Alexa automatically? Exposes supported devices that are not classified as security devices."
             },
             "google": {
-              "title": "Google Assistant",
-              "info": "With the Google Assistant integration for Home Assistant Cloud, you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
+              "title": "Google Home",
+              "info": "With the Google Home integration for Home Assistant Cloud, you'll be able to control all your Home Assistant devices via any Google Home-enabled device.",
               "http_use_ssl_warning_title": "Local communication unavailable",
               "http_use_ssl_warning_text": "Google devices will not be able to talk locally with Home Assistant, because you have configured an SSL certificate for your HTTP integration.",
               "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable state reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This speeds up voice commands and allows you to always see the latest states in the Google app.",
               "security_devices": "Security devices",
-              "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors, and locks. You will be asked to say/enter this PIN when interacting with security devices via Google Assistant.",
+              "enter_pin_info": "Please enter a PIN to interact with security devices. Security devices are doors, garage doors, and locks. You will be asked to say/enter this PIN when interacting with security devices via Google Home.",
               "devices_pin": "Security devices PIN",
               "enter_pin_hint": "Enter a PIN to use security devices",
               "show_entities": "Show entities",
               "exposed_entities": "{number} {number, plural,\n  one {entity}\n  other {entities}\n} exposed",
               "manual_config": "Editing which entities are exposed via the UI is disabled because you have configured entity filters in configuration.yaml.",
               "enter_pin_error": "Unable to store PIN:",
-              "not_configured_title": "Continue setting up Google Assistant",
-              "not_configured_text": "To start using Google Assistant, add the 'Home Assistant Cloud by Nabu Casa' service in the Google Home app on your smartphone.",
+              "not_configured_title": "Continue setting up Google Home",
+              "not_configured_text": "To start using Google Home, add the 'Home Assistant Cloud by Nabu Casa' service in the Google Home app on your smartphone.",
               "link_learn_how_it_works": "[%key:ui::panel::config::cloud::account::remote::link_learn_how_it_works%]",
               "expose_new_entities": "Expose new entities",
-              "expose_new_entities_info": "Should new entities be exposed to Google Assistant automatically? Exposes supported devices that are not classified as security devices."
+              "expose_new_entities_info": "Should new entities be exposed to Google Home automatically? Exposes supported devices that are not classified as security devices."
             },
             "webhooks": {
               "title": "Webhooks",
@@ -7521,6 +7578,7 @@
             "integration": "Integration",
             "parent_device": "Parent device",
             "part_of_device": "Part of {name}",
+            "connected_via": "[%key:ui::panel::config::integrations::config_entry::via%]",
             "firmware_version": "Firmware",
             "battery": "Battery",
             "disabled_by": "Disabled",
@@ -7972,6 +8030,7 @@
             "error_saving_device": "Error updating device: {error}",
             "error_saving_entity": "Error updating entity: {error}",
             "created_config": "Created configuration for {name}.",
+            "helper_area": "This helper isn't part of a device, so you can add it to an area.",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
@@ -11145,6 +11204,14 @@
               "name": "Water flow Sankey graph",
               "description": "This card shows the real-time flow of water in your home."
             },
+            "gas-sankey": {
+              "name": "Gas Sankey graph",
+              "description": "This card shows the distribution of gas consumption in your home on a Sankey graph."
+            },
+            "gas-flow-sankey": {
+              "name": "Gas flow Sankey graph",
+              "description": "This card shows the real-time flow of gas in your home."
+            },
             "energy-solar-consumed-gauge": {
               "name": "Solar consumed gauge",
               "description": "This card shows how much of the solar energy was used by your home and was not exported to the grid."
@@ -13011,9 +13078,11 @@
           "energy_devices_detail_graph_title": "Individual devices detail",
           "energy_sankey_title": "Energy flow",
           "water_sankey_title": "Water flow",
+          "gas_sankey_title": "Gas flow",
           "energy_top_consumers_title": "Top consumers",
           "power_sankey_title": "Current power flow",
           "water_flow_sankey_title": "Current water flow",
+          "gas_flow_sankey_title": "Current gas flow",
           "power_sources_graph_title": "Power sources",
           "energy_grid_balance_title": "Grid energy balance",
           "energy_grid_neutrality_gauge_title": "Grid neutrality gauge",

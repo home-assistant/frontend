@@ -10,6 +10,7 @@ Use this skill when editing CSS, layout, visual hierarchy, theme integration, re
 ## Theme And Layout Basics
 
 - Use Home Assistant CSS custom properties instead of hardcoded colors.
+- CSS in the static HTML templates under `src/html/` must give custom properties a fallback value (for example `var(--ha-space-4, 16px)`), because the global tokens only exist once the JS-appended global stylesheet from `append-ha-style` has loaded.
 - Use `--ha-space-*` spacing tokens instead of hardcoded spacing where possible.
 - Keep components mobile-first and enhance for desktop.
 - Keep layouts RTL-safe. Prefer logical properties when they fit.

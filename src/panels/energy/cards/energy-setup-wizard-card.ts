@@ -34,6 +34,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
     energy_sources: [],
     device_consumption: [],
     device_consumption_water: [],
+    device_consumption_gas: [],
   };
 
   public getCardSize() {

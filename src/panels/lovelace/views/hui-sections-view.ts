@@ -79,6 +79,10 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
 
   @state() private _sidebarVisible = true;
 
+  // Set on connecting, so that the next update reads the sidebar tab from the
+  // page's history state, once `lovelace` has been set
+  private _readSidebarTab = false;
+
   private _contentScrollTop = 0;
 
   private _sidebarScrollTop = 0;
@@ -142,7 +146,8 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
       "section-visibility-changed",
       this._sectionVisibilityChanged
     );
-    this._sidebarTabActive = Boolean(getHistoryState()?.sidebar);
+    this._readSidebarTab = true;
+    this.requestUpdate();
   }
 
   disconnectedCallback(): void {
@@ -154,6 +159,12 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   willUpdate(changedProperties: PropertyValues<this>): void {
+    // An embedded dashboard leaves the page's history state alone
+    if (this._readSidebarTab) {
+      this._readSidebarTab = false;
+      this._sidebarTabActive =
+        !this.lovelace?.embedded && Boolean(getHistoryState()?.sidebar);
+    }
     if (changedProperties.has("sections")) {
       this._computeSectionsCount();
     }
@@ -491,6 +502,14 @@ export class SectionsView extends LitElement implements LovelaceViewElement {
   }
 
   private _toggleView() {
+    // The page around an embedded dashboard owns the window's history and
+    // scroll position
+    if (this.lovelace?.embedded) {
+      this._sidebarTabActive = !this._sidebarTabActive;
+
+      return;
+    }
+
     // Save current scroll position
     if (this._sidebarTabActive) {
       this._sidebarScrollTop = window.scrollY;
