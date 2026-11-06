@@ -196,12 +196,13 @@ export const getGroups = (
 // are hidden from the generic dynamic domain grouping so they don't appear
 // both standalone and inside the curated group. Domains of a mixed group
 // (static members + domains, e.g. "calendar"/"schedule" under Time) are NOT
-// hidden — they still surface as their own domain group as well.
+// hidden — they still surface as their own domain group as well. Mixed groups
+// in the generic collection (e.g. Event) do own their domains.
 export const getExclusiveDomains = (type: AddElementType): Set<string> => {
   const domains = new Set<string>();
   ELEMENT_TYPES[type].collections.forEach((collection) =>
     Object.values(collection.groups).forEach((group) => {
-      if (group.domains && !group.members) {
+      if (group.domains && (!group.members || collection.generic)) {
         group.domains.forEach((domain) => domains.add(domain));
       }
     })

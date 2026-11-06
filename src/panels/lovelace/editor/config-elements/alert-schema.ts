@@ -1,5 +1,4 @@
 import { mdiAlertOutline, mdiTextShort } from "@mdi/js";
-import { DEFAULT_ALERT_COLOR } from "../../../../common/entity/alert_active";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
 import type { HaFormSchema } from "../../../../components/ha-form/types";
 import { contentLayoutSchema, displayedElementsSchema } from "./content-schema";
@@ -18,7 +17,11 @@ export const alertSchema = () =>
           {
             name: "clear_color",
             selector: {
-              ui_color: { include_none: true, default_color: "none" },
+              ui_color: {
+                include_none: true,
+                include_state: true,
+                default_color: "none",
+              },
             },
           },
           {
@@ -26,7 +29,8 @@ export const alertSchema = () =>
             selector: {
               ui_color: {
                 include_none: true,
-                default_color: DEFAULT_ALERT_COLOR,
+                include_state: true,
+                default_color: "state",
               },
             },
           },

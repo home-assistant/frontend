@@ -19,13 +19,12 @@ import {
   type IntegrationManifest,
 } from "../data/integration";
 import {
-  areaMeetsTargetSelector,
-  deviceMeetsTargetSelector,
-  entityMeetsTargetSelector,
   expandAreaTarget,
   expandDeviceTarget,
   expandFloorTarget,
   expandLabelTarget,
+  fillFieldDefaults,
+  filterTargetForSelector,
   resolveEntityIDs,
   type Selector,
   type TargetSelector,
@@ -201,31 +200,18 @@ export class HaServiceControl extends LitElement {
       let updatedDefaultValue = false;
       if (this._value && serviceData) {
         const loadDefaults = this.value && !("data" in this.value);
-        // Set mandatory bools without a default value to false
         if (!this._value.data) {
           this._value.data = {};
         }
-        serviceData.flatFields.forEach((field) => {
-          if (
-            field.selector &&
-            field.required &&
-            field.default === undefined &&
-            "boolean" in field.selector &&
-            this._value!.data![field.key] === undefined
-          ) {
-            updatedDefaultValue = true;
-            this._value!.data![field.key] = false;
-          }
-          if (
-            loadDefaults &&
-            field.selector &&
-            field.default !== undefined &&
-            this._value!.data![field.key] === undefined
-          ) {
-            updatedDefaultValue = true;
-            this._value!.data![field.key] = field.default;
-          }
-        });
+        const filled = fillFieldDefaults(
+          this._value.data,
+          serviceData.flatFields.map((field) => [field.key, field]),
+          !!loadDefaults
+        );
+        if (filled.changed) {
+          updatedDefaultValue = true;
+          this._value.data = filled.values;
+        }
       }
       if (updatedDefaultValue) {
         fireEvent(this, "value-changed", {
@@ -860,87 +846,19 @@ export class HaServiceControl extends LitElement {
       const serviceData = this._getServiceInfo(newService, this.hass.services);
       const currentTarget = this._value?.target;
       if (currentTarget && serviceData?.target) {
-        const targetSelector = { target: { ...serviceData.target } };
-        let targetEntities =
-          ensureArray(
-            currentTarget.entity_id || this._value!.data?.entity_id
-          )?.slice() || [];
-        let targetDevices =
-          ensureArray(
-            currentTarget.device_id || this._value!.data?.device_id
-          )?.slice() || [];
-        let targetAreas =
-          ensureArray(
-            currentTarget.area_id || this._value!.data?.area_id
-          )?.slice() || [];
-        if (targetAreas.length) {
-          targetAreas = targetAreas.filter((area) =>
-            areaMeetsTargetSelector(
-              this.hass,
-              this.hass.entities,
-              this.hass.devices,
-              area,
-              targetSelector
-            )
-          );
-        }
-        if (targetDevices.length) {
-          targetDevices = targetDevices.filter((device) =>
-            deviceMeetsTargetSelector(
-              this.hass.states,
-              Object.values(this.hass.entities),
-              this.hass.devices[device],
-              targetSelector
-            )
-          );
-        }
-        if (targetEntities.length) {
-          targetEntities = targetEntities.filter((entity) =>
-            entityMeetsTargetSelector(
-              this.hass.states[entity],
-              targetSelector,
-              undefined,
-              this.hass.entities,
-              this.hass.devices
-            )
-          );
-        }
-        const targetFloors = ensureArray(
-          currentTarget.floor_id || this._value!.data?.floor_id
-        )?.filter(
-          (floor) =>
-            expandFloorTarget(this.hass, floor, this.hass.areas, targetSelector)
-              .areas.length > 0
+        const data = this._value!.data;
+        target = filterTargetForSelector(
+          {
+            entity_id: currentTarget.entity_id || data?.entity_id,
+            device_id: currentTarget.device_id || data?.device_id,
+            area_id: currentTarget.area_id || data?.area_id,
+            floor_id: currentTarget.floor_id || data?.floor_id,
+            label_id: currentTarget.label_id || data?.label_id,
+            exclude: currentTarget.exclude,
+          },
+          { target: { ...serviceData.target } },
+          this.hass
         );
-        const targetLabels = ensureArray(
-          currentTarget.label_id || this._value!.data?.label_id
-        )?.filter((label) => {
-          const expanded = expandLabelTarget(
-            this.hass,
-            label,
-            this.hass.areas,
-            this.hass.devices,
-            this.hass.entities,
-            targetSelector
-          );
-          return (
-            expanded.areas.length > 0 ||
-            expanded.devices.length > 0 ||
-            expanded.entities.length > 0
-          );
-        });
-        target = {
-          ...(targetEntities.length ? { entity_id: targetEntities } : {}),
-          ...(targetDevices.length ? { device_id: targetDevices } : {}),
-          ...(targetAreas.length ? { area_id: targetAreas } : {}),
-          ...(targetFloors?.length ? { floor_id: targetFloors } : {}),
-          ...(targetLabels?.length ? { label_id: targetLabels } : {}),
-        };
-        // An exclude on its own is not a target, so it only stays while
-        // something is still included.
-        if (currentTarget.exclude && Object.keys(target).length) {
-          target.exclude = currentTarget.exclude;
-        }
       }
     }
 

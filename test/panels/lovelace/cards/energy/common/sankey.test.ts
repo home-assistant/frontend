@@ -4,6 +4,7 @@ import type {
   SankeyDeviceNode,
 } from "../../../../../../src/panels/lovelace/cards/energy/common/sankey";
 import {
+  addSplitSankeyLinks,
   buildSankeyDeviceNodes,
   buildSankeyLayout,
   DEFAULT_MAX_SANKEY_DEVICES,
@@ -11,7 +12,10 @@ import {
   getSankeyDeviceSections,
   groupSankeyDevicesByFloorAndArea,
 } from "../../../../../../src/panels/lovelace/cards/energy/common/sankey";
-import type { Node } from "../../../../../../src/components/chart/ha-sankey-chart";
+import type {
+  Link,
+  Node,
+} from "../../../../../../src/components/chart/ha-sankey-chart";
 import type { DeviceConsumptionEnergyPreference } from "../../../../../../src/data/energy";
 import type { HomeAssistantRegistries } from "../../../../../../src/types";
 import { createMockComputedStyle } from "../../../../../fixtures/computed-style";
@@ -1064,5 +1068,32 @@ describe("buildSankeyLayout", () => {
       target: "sensor.b",
       value: 2,
     });
+  });
+});
+
+describe("addSplitSankeyLinks", () => {
+  it("splits a flow by the shares on both ends and accumulates repeated calls", () => {
+    const links = new Map<string, Link & { value: number }>();
+    addSplitSankeyLinks(
+      links,
+      10,
+      [
+        ["solar:a", 3],
+        ["solar:b", 1],
+        ["solar:c", -2],
+      ],
+      [
+        ["battery_in:x", 1],
+        ["battery_in:y", 1],
+      ]
+    );
+    addSplitSankeyLinks(links, 4, [["solar:b", 5]], [["battery_in:y", 2]]);
+
+    expect([...links.values()]).toEqual([
+      { source: "solar:a", target: "battery_in:x", value: 3.75 },
+      { source: "solar:a", target: "battery_in:y", value: 3.75 },
+      { source: "solar:b", target: "battery_in:x", value: 1.25 },
+      { source: "solar:b", target: "battery_in:y", value: 5.25 },
+    ]);
   });
 });

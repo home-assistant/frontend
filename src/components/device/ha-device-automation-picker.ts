@@ -161,7 +161,8 @@ export abstract class HaDeviceAutomationPicker<
     return html`<ha-generic-picker
       .label=${this.label}
       .value=${value}
-      .disabled=${!this._automations || this._automations.length === 0}
+      .disabled=${this._automations?.length === 0}
+      .loading=${this._automations === undefined}
       .getItems=${this._getItems(
         value,
         this._automations,

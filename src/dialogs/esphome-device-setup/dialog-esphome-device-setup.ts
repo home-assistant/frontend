@@ -690,7 +690,7 @@ class DialogESPHomeDeviceSetup extends DialogMixin<ESPHomeDeviceSetupDialogParam
    * is always in the scan, so a missing or absent port means it is offline.
    * Without the usb integration nothing is scanned, so a missing port says nothing.
    */
-  private _serialPortUsage(url: string) {
+  private _serialPortUsage(url: string | null) {
     if (!this._serialPorts) {
       return undefined;
     }

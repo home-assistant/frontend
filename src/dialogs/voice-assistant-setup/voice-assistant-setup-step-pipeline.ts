@@ -261,7 +261,7 @@ export class HaVoiceAssistantSetupStepPipeline extends LitElement {
     // instead of leaving the step blank.
     let cloudStatus: CloudStatus;
     try {
-      cloudStatus = await fetchCloudStatus(this.hass);
+      cloudStatus = await fetchCloudStatus(this.hass.callWS);
     } catch (_err: any) {
       return false;
     }

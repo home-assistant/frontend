@@ -36,6 +36,14 @@ export interface DeviceAreaLabel {
 }
 
 export interface GetDevicesOptions {
+  states: HomeAssistant["states"];
+  areas: HomeAssistant["areas"];
+  devices: HomeAssistant["devices"];
+  entities: HomeAssistant["entities"];
+  localize: LocalizeFunc;
+  language: string;
+  translationMetadata: HomeAssistant["translationMetadata"];
+  configEntryLookup: Record<string, ConfigEntry>;
   includeDomains?: string[];
   excludeDomains?: string[];
   includeDeviceClasses?: string[];
@@ -130,18 +138,16 @@ export const deviceComboBoxKeys: FuseWeightedKey[] = [
   },
 ];
 
-export const getDevices = (
-  states: HomeAssistant["states"],
-  areas: HomeAssistant["areas"],
-  devices: HomeAssistant["devices"],
-  entities: HomeAssistant["entities"],
-  localize: LocalizeFunc,
-  language: string,
-  translationMetadata: HomeAssistant["translationMetadata"],
-  configEntryLookup: Record<string, ConfigEntry>,
-  options?: GetDevicesOptions
-): DevicePickerItem[] => {
+export const getDevices = (options: GetDevicesOptions): DevicePickerItem[] => {
   const {
+    states,
+    areas,
+    devices,
+    entities,
+    localize,
+    language,
+    translationMetadata,
+    configEntryLookup,
     includeDomains,
     excludeDomains,
     includeDeviceClasses,
@@ -151,7 +157,7 @@ export const getDevices = (
     value,
     idPrefix = "",
     nested,
-  } = options ?? {};
+  } = options;
 
   const deviceList = Object.values(devices);
   const entityList = Object.values(entities);

@@ -68,6 +68,7 @@ import { ZOOM_SLIDER_HEIGHT } from "./ha-chart-zoom-slider";
 import { formatTimeLabel } from "./axis-label";
 import type { ChartSonification } from "./chart-sonification";
 import { canSonifyChart, sonifyChart } from "./chart-sonification";
+import { windowTooltipPosition } from "./chart-tooltip-position";
 import { downSampleLineData } from "./down-sample";
 import { wrapLitTooltipFormatter } from "./lit-tooltip-formatter";
 
@@ -89,6 +90,8 @@ export const DEFAULT_CHART_WIDTH = 500;
 // is short enough for a whole screenful; on a desktop that would cover the page.
 const VISIBILITY_ROOT_MARGIN_NARROW = "100%";
 const VISIBILITY_ROOT_MARGIN = "300px";
+
+export type ZoomSliderMode = "auto" | "always" | "never";
 const DEFERRED_PROPS = [
   "options",
   "data",
@@ -163,9 +166,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   @property({ attribute: "small-controls", type: Boolean })
   public smallControls?: boolean;
 
-  // For charts zoomed from outside, like the synced History charts
-  @property({ attribute: "hide-zoom-controls", type: Boolean })
-  public hideZoomControls = false;
+  // "auto" shows the zoom slider once zoomed. "never" hides every zoom
+  // control, for charts zoomed from outside like the synced History charts.
+  @property({ attribute: "zoom-slider" })
+  public zoomSlider: ZoomSliderMode = "auto";
 
   // For charts sized to their content, like timelines, which grow to fit the
   // zoom slider instead of giving up plot height
@@ -617,7 +621,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
           >
             ${
               (this._isZoomed || this._isGraphRoamed) &&
-              !this.hideZoomControls &&
+              this.zoomSlider !== "never" &&
               !showZoomSlider
                 ? html`<ha-icon-button
                     class="zoom-reset"
@@ -969,6 +973,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       if (zoomStart !== 0 || zoomEnd !== 100) {
         this.zoom(zoomStart, zoomEnd, true);
       }
+      fireEvent(this, "chart-setup");
     } finally {
       this._loading = false;
       this._applyDeferredWork();
@@ -1063,9 +1068,12 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
   private _showZoomSlider() {
     const [start, end] = this._zoomRange;
     return (
-      !this.hideZoomControls &&
+      this.zoomSlider !== "never" &&
       this._hasZoomableXAxis() &&
-      (this._zoomSliderHeld || start !== 0 || end !== 100)
+      (this.zoomSlider === "always" ||
+        this._zoomSliderHeld ||
+        start !== 0 ||
+        end !== 100)
     );
   }
 
@@ -1245,9 +1253,19 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       const processTooltip = (tooltip: HaTooltipOption): TooltipOption => {
         const next = convertHaTooltipFormatter(tooltip);
         if (isMobile) {
+          next.appendTo = undefined;
+        }
+        if (next.position === undefined) {
+          // ECharts confines after the position callback, which would undo the
+          // window fit, so the callback confines itself
+          next.position = windowTooltipPosition(
+            () => this._chartContainer?.getBoundingClientRect(),
+            isMobile || next.confine === true
+          );
+          next.confine = false;
+        } else if (isMobile) {
           // mobile charts are full width so we need to confine the tooltip to the chart
           next.confine = true;
-          next.appendTo = undefined;
         }
         if (isMobile || this._touchInput) {
           next.triggerOn = "click";
@@ -1296,6 +1314,10 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       },
       bar: { itemStyle: { barBorderWidth: 1.5 } },
       graph: {
+        itemStyle: {
+          borderColor: style.getPropertyValue("--primary-text-color"),
+          borderWidth: 0,
+        },
         label: {
           color: style.getPropertyValue("--primary-text-color"),
           textBorderColor,
@@ -2301,6 +2323,9 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       --ha-assist-chip-trailing-space: var(--ha-space-2);
       --ha-assist-chip-icon-label-space: var(--ha-space-1);
     }
+    .zoom-reset {
+      margin-inline-end: var(--ha-space-3);
+    }
   `;
 }
 
@@ -2318,5 +2343,6 @@ declare global {
       end: number;
     };
     "chart-sankeyroam": { zoom: number };
+    "chart-setup": undefined;
   }
 }

@@ -2,15 +2,28 @@ import { mdiSwapHorizontal } from "@mdi/js";
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
 import type { HassEntity } from "home-assistant-js-websocket";
 import { css, html, LitElement, nothing, type PropertyValues } from "lit";
+import type { ContextType } from "@lit/context";
 import { customElement, property, query, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../../common/decorators/consume";
+import { transform } from "../../common/decorators/transform";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeAreaName } from "../../common/entity/compute_area_name";
 import { computeDeviceName } from "../../common/entity/compute_device_name";
 import { getDeviceArea } from "../../common/entity/context/get_device_context";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { getConfigEntries, type ConfigEntry } from "../../data/config_entries";
+import {
+  apiContext,
+  brandsAccessTokenContext,
+  configContext,
+  connectionContext,
+  internationalizationContext,
+  registriesContext,
+  statesContext,
+  uiContext,
+} from "../../data/context";
 import {
   deviceComboBoxKeys,
   getDevices,
@@ -23,7 +36,11 @@ import {
 } from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import { domainToName } from "../../data/integration";
-import type { HomeAssistant } from "../../types";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantUI,
+} from "../../types";
 import { brandsUrl } from "../../util/brands-url";
 import "../ha-alert";
 import "../ha-button";
@@ -42,7 +59,40 @@ export type HaDevicePickerEntityFilterFunc = (entity: HassEntity) => boolean;
 
 @customElement("ha-device-picker")
 export class HaDevicePicker extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @consume({ context: statesContext, subscribe: true })
+  private _states!: ContextType<typeof statesContext>;
+
+  @state()
+  @consume({ context: registriesContext, subscribe: true })
+  private _registries!: ContextType<typeof registriesContext>;
+
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, boolean | undefined>({
+    transformer: (ui) => ui?.themes?.darkMode,
+  })
+  private _darkMode?: boolean;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, string | undefined>({
+    transformer: (config) => config?.auth?.data.hassUrl,
+  })
+  private _hassUrl?: string;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  private _brandsAccessToken?: string;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api?: ContextType<typeof apiContext>;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection?: ContextType<typeof connectionContext>;
 
   // eslint-disable-next-line lit/no-native-attributes
   @property({ type: Boolean }) public autofocus = false;
@@ -123,7 +173,9 @@ export class HaDevicePicker extends LitElement {
 
   private _getDevicesMemoized = memoizeOne(
     (
-      _devices: HomeAssistant["devices"],
+      states: HomeAssistant["states"],
+      registries: ContextType<typeof registriesContext>,
+      i18n: ContextType<typeof internationalizationContext>,
       configEntryLookup: Record<string, ConfigEntry>,
       includeDomains?: string[],
       excludeDomains?: string[],
@@ -133,26 +185,24 @@ export class HaDevicePicker extends LitElement {
       excludeDevices?: string[],
       value?: string
     ) =>
-      getDevices(
-        this.hass.states,
-        this.hass.areas,
-        this.hass.devices,
-        this.hass.entities,
-        this.hass.localize,
-        this.hass.locale.language,
-        this.hass.translationMetadata,
+      getDevices({
+        states,
+        areas: registries.areas,
+        devices: registries.devices,
+        entities: registries.entities,
+        localize: i18n.localize,
+        language: i18n.locale.language,
+        translationMetadata: i18n.translationMetadata,
         configEntryLookup,
-        {
-          includeDomains,
-          excludeDomains,
-          includeDeviceClasses,
-          deviceFilter,
-          entityFilter,
-          excludeDevices,
-          value,
-          nested: true,
-        }
-      )
+        includeDomains,
+        excludeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeDevices,
+        value,
+        nested: true,
+      })
   );
 
   protected firstUpdated(_changedProperties: PropertyValues<this>): void {
@@ -160,21 +210,24 @@ export class HaDevicePicker extends LitElement {
     this._loadConfigEntries();
   }
 
-  protected willUpdate(changedProperties: PropertyValues<this>): void {
+  protected willUpdate(changedProperties: PropertyValues): void {
+    const devices = this._registries?.devices;
     if (
-      !this.hass ||
+      !devices ||
       !this.value ||
       this._compositeSplits !== undefined ||
       this._loadingCompositeSplits
     ) {
       return;
     }
-    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
+    const oldRegistries = changedProperties.get("_registries") as
+      ContextType<typeof registriesContext> | undefined;
     const devicesChanged =
-      changedProperties.has("hass") && this.hass.devices !== oldHass?.devices;
+      changedProperties.has("_registries") &&
+      devices !== oldRegistries?.devices;
     if (
       (changedProperties.has("value") || devicesChanged) &&
-      !this.hass.devices[this.value]
+      !devices[this.value]
     ) {
       // The selected device is not in the registry; it might be a legacy
       // composite device that was split into separate devices. Fetch the
@@ -184,16 +237,25 @@ export class HaDevicePicker extends LitElement {
   }
 
   private async _loadConfigEntries() {
-    const configEntries = await getConfigEntries(this.hass);
+    if (!this._api) {
+      return;
+    }
+    const configEntries = await getConfigEntries(this._api);
     this._configEntryLookup = Object.fromEntries(
       configEntries.map((entry) => [entry.entry_id, entry])
     );
   }
 
   private async _loadCompositeSplits() {
+    if (!this._api || !this._connection) {
+      return;
+    }
     this._loadingCompositeSplits = true;
     try {
-      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      this._compositeSplits = await fetchDeviceCompositeSplits(
+        this._connection.connection,
+        this._api.callWS
+      );
     } catch (_err) {
       this._compositeSplits = {};
     } finally {
@@ -204,12 +266,12 @@ export class HaDevicePicker extends LitElement {
   private _getReplacement = memoizeOne(
     (
       value: string | undefined,
-      _devices: HomeAssistant["devices"],
+      devices: HomeAssistant["devices"],
       compositeSplits: DeviceCompositeSplits | undefined,
       items: (DevicePickerItem | string)[],
       replacementDeviceIds: string[] | undefined
     ) => {
-      if (!value || !compositeSplits || this.hass.devices[value]) {
+      if (!value || !compositeSplits || devices[value]) {
         return undefined;
       }
       const split = compositeSplits[value];
@@ -234,7 +296,9 @@ export class HaDevicePicker extends LitElement {
 
   private _getItems = () =>
     this._getDevicesMemoized(
-      this.hass.devices,
+      this._states,
+      this._registries,
+      this._i18n,
       this._configEntryLookup,
       this.includeDomains,
       this.excludeDomains,
@@ -274,10 +338,18 @@ export class HaDevicePicker extends LitElement {
   };
 
   private _valueRenderer = memoizeOne(
-    (configEntriesLookup: Record<string, ConfigEntry>, isReplaced: boolean) =>
+    (
+      configEntriesLookup: Record<string, ConfigEntry>,
+      isReplaced: boolean,
+      registries: ContextType<typeof registriesContext>,
+      localize: ContextType<typeof internationalizationContext>["localize"],
+      darkMode: boolean | undefined,
+      hassUrl: string | undefined,
+      _brandsAccessToken: string | undefined
+    ) =>
       (value: string) => {
         const deviceId = value;
-        const device = this.hass.devices[deviceId];
+        const device = registries.devices[deviceId];
 
         if (!device) {
           // The removed device has no name left to show, so say what happened
@@ -290,16 +362,18 @@ export class HaDevicePicker extends LitElement {
                 .path=${mdiSwapHorizontal}
               ></ha-svg-icon>
               <span slot="headline"
-                >${this.hass.localize(
-                  "ui.components.device-picker.device_replaced"
-                )}</span
+                >${localize("ui.components.device-picker.device_replaced")}</span
               >
             `;
           }
           return html`<span slot="headline">${deviceId}</span>`;
         }
 
-        const area = getDeviceArea(device, this.hass.areas, this.hass.devices);
+        const area = getDeviceArea(
+          device,
+          registries.areas,
+          registries.devices
+        );
 
         const deviceName = device ? computeDeviceName(device) : undefined;
         const areaName = area ? computeAreaName(area) : undefined;
@@ -323,9 +397,9 @@ export class HaDevicePicker extends LitElement {
                     {
                       domain: configEntry.domain,
                       type: "icon",
-                      darkOptimized: this.hass.themes?.darkMode,
+                      darkOptimized: darkMode,
                     },
-                    this.hass.auth.data.hassUrl
+                    hassUrl
                   )}
                 />`
               : nothing
@@ -338,8 +412,8 @@ export class HaDevicePicker extends LitElement {
 
   private _rowRenderer: RenderItemFunction<DevicePickerItem> = (item) => {
     const rtl = computeRTL(
-      this.hass.language,
-      this.hass.translationMetadata.translations
+      this._i18n.language,
+      this._i18n.translationMetadata.translations
     );
     return html`
       <ha-combo-box-item
@@ -378,9 +452,9 @@ export class HaDevicePicker extends LitElement {
                     {
                       domain: item.domain,
                       type: "icon",
-                      darkOptimized: this.hass.themes.darkMode,
+                      darkOptimized: this._darkMode,
                     },
-                    this.hass.auth.data.hassUrl
+                    this._hassUrl
                   )}
                 />
               `
@@ -409,18 +483,18 @@ export class HaDevicePicker extends LitElement {
   protected render() {
     const placeholder =
       this.placeholder ??
-      this.hass.localize("ui.components.device-picker.placeholder");
+      this._i18n.localize("ui.components.device-picker.placeholder");
 
     // Only resolve a replacement (which needs the full item list) when the
     // value is a missing device that we know was replaced, to avoid computing
     // the item list on every render for the common case.
     const replacement =
       this.value &&
-      !this.hass.devices[this.value] &&
+      !this._registries.devices[this.value] &&
       this._compositeSplits?.[this.value]
         ? this._getReplacement(
             this.value,
-            this.hass.devices,
+            this._registries.devices,
             this._compositeSplits,
             this._getItems(),
             this.replacementDeviceIds
@@ -433,7 +507,12 @@ export class HaDevicePicker extends LitElement {
 
     const valueRenderer = this._valueRenderer(
       this._configEntryLookup,
-      canReplace
+      canReplace,
+      this._registries,
+      this._i18n.localize,
+      this._darkMode,
+      this._hassUrl,
+      this._brandsAccessToken
     );
 
     return html`
@@ -445,7 +524,7 @@ export class HaDevicePicker extends LitElement {
         .label=${this.label}
         .searchLabel=${this.searchLabel}
         .notFoundLabel=${this._notFoundLabel}
-        .emptyLabel=${this.hass.localize(
+        .emptyLabel=${this._i18n.localize(
           "ui.components.device-picker.no_devices"
         )}
         .placeholder=${placeholder}
@@ -457,7 +536,7 @@ export class HaDevicePicker extends LitElement {
         .hideClearIcon=${this.hideClearIcon}
         .valueRenderer=${valueRenderer}
         .searchKeys=${deviceComboBoxKeys}
-        .unknownItemText=${this.hass.localize(
+        .unknownItemText=${this._i18n.localize(
           "ui.components.device-picker.unknown"
         )}
         @value-changed=${this._valueChanged}
@@ -476,7 +555,9 @@ export class HaDevicePicker extends LitElement {
     // The split devices all inherit the composite's name, so the integration is
     // what tells them apart.
     const replacementDevice =
-      candidates.length === 1 ? this.hass.devices[candidates[0]] : undefined;
+      candidates.length === 1
+        ? this._registries.devices[candidates[0]]
+        : undefined;
     const replacementName = replacementDevice
       ? computeDeviceName(replacementDevice)
       : undefined;
@@ -488,22 +569,22 @@ export class HaDevicePicker extends LitElement {
       <ha-alert alert-type="warning">
         ${
           replacementName && replacementDomain
-            ? this.hass.localize(
+            ? this._i18n.localize(
                 "ui.components.device-picker.device_replaced_by_one_integration",
                 {
                   device: replacementName,
                   integration: domainToName(
-                    this.hass.localize,
+                    this._i18n.localize,
                     replacementDomain
                   ),
                 }
               )
             : replacementName
-              ? this.hass.localize(
+              ? this._i18n.localize(
                   "ui.components.device-picker.device_replaced_by_one",
                   { device: replacementName }
                 )
-              : this.hass.localize(
+              : this._i18n.localize(
                   "ui.components.device-picker.device_replaced_by_multiple",
                   { count: candidates.length }
                 )
@@ -516,8 +597,12 @@ export class HaDevicePicker extends LitElement {
         >
           ${
             candidates.length === 1
-              ? this.hass.localize("ui.components.device-picker.replace_update")
-              : this.hass.localize("ui.components.device-picker.replace_choose")
+              ? this._i18n.localize(
+                  "ui.components.device-picker.replace_update"
+                )
+              : this._i18n.localize(
+                  "ui.components.device-picker.replace_choose"
+                )
           }
         </ha-button>
       </ha-alert>
@@ -527,7 +612,7 @@ export class HaDevicePicker extends LitElement {
   private _handleReplace = () => {
     const replacement = this._getReplacement(
       this.value,
-      this.hass.devices,
+      this._registries.devices,
       this._compositeSplits,
       this._getItems(),
       this.replacementDeviceIds
@@ -566,7 +651,7 @@ export class HaDevicePicker extends LitElement {
   }
 
   private _notFoundLabel = (search: string) =>
-    this.hass.localize("ui.components.device-picker.no_match", {
+    this._i18n.localize("ui.components.device-picker.no_match", {
       term: html`<b>‘${search}’</b>`,
     });
 

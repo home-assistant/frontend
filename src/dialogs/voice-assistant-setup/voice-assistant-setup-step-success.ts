@@ -261,7 +261,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
     ) {
       return;
     }
-    setSelectOption(this.hass!, stateObj.entity_id, option);
+    setSelectOption(this.hass!.callService, stateObj.entity_id, option);
   }
 
   private async _setTtsSettings() {
@@ -335,7 +335,7 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
       return;
     }
 
-    const cloudStatus = await fetchCloudStatus(this.hass);
+    const cloudStatus = await fetchCloudStatus(this.hass.callWS);
 
     showVoiceAssistantPipelineDetailDialog(this, {
       cloudActiveSubscription:
@@ -375,21 +375,16 @@ export class HaVoiceAssistantSetupStepSuccess extends LitElement {
         margin-top: 24px;
       }
       .rows {
-        gap: var(--ha-space-4);
-        display: flex;
-        flex-direction: column;
-      }
-      .row {
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: var(--ha-space-4) var(--ha-space-1);
         align-items: center;
       }
-      .row > *:first-child {
-        flex: 1;
-        margin-right: 4px;
+      .row {
+        display: contents;
       }
-      .row ha-button {
-        width: 82px;
+      .row > :only-child {
+        grid-column: 1 / -1;
       }
 
       ha-select {

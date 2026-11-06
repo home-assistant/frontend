@@ -41,9 +41,7 @@ import { domainToName } from "../data/integration";
 import { getLabels, labelComboBoxKeys } from "../data/label/label_picker";
 import type { LabelRegistryEntry } from "../data/label/label_registry";
 import {
-  extractFromTarget,
   getTargetComboBoxItemType,
-  type ExtractFromTargetResult,
   type HassServiceTargetWithExclude,
   type TargetItem,
   type TargetType,
@@ -71,21 +69,15 @@ import "./list/ha-list-base";
 import "./target-picker/ha-target-picker-item-group";
 import "./target-picker/ha-target-picker-item-row";
 import { showTargetDetailsDialog } from "./target-picker/dialog/show-dialog-target-details";
-import { filterTargetEntries } from "./target-picker/filter-target-entries";
+import { TargetExclusionsController } from "./target-picker/target-exclusions-controller";
 import {
   addToExclude,
   applyExclusionChanges,
-  computeExclusionsPerTarget,
   hasIncludedTargets,
   removeFromExclude,
-  resolveTargetItemEntities,
   TARGET_TYPES,
   targetItemKey,
-  targetItems,
   withExclude,
-  type ResolvedTargetItem,
-  type TargetExclusion,
-  type TargetExclusions,
 } from "./target-picker/target-exclusions";
 
 const SEPARATOR = "________";
@@ -152,24 +144,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   @state() private _excludeSection?: TargetTypeFloorless;
 
-  // What each exclusion takes out of each target, worked out from the value.
-  @state() private _exclusions?: TargetExclusions;
-
-  // Whether every included target and every exclusion resolved, so it is
-  // known what each exclusion takes out, which ones are shared with another
-  // target, and the details can edit them.
-  @state() private _exclusionsComplete = true;
-
-  // Every entity the included targets resolve to, so the exclude picker only
-  // offers what would take something out.
-  private _includedEntities?: string[];
-
-  private _resolveRequest = 0;
-
-  // What each target item resolves to, so a change only asks core about the
-  // items it adds.
-  private _itemEntries = new Map<string, Promise<ExtractFromTargetResult>>();
-
   @state() private _replaceTarget?: TargetItem;
 
   @state() private _replaceTargetAnchor?: HTMLElement;
@@ -190,6 +164,8 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   private _newTarget?: TargetItem;
 
+  private _exclusions = new TargetExclusionsController(this);
+
   private _getDevicesMemoized = memoizeOne(
     (
       hass: HomeAssistant,
@@ -202,26 +178,24 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       value?: string,
       idPrefix?: string
     ) =>
-      getDevices(
-        hass.states,
-        hass.areas,
-        hass.devices,
-        hass.entities,
-        hass.localize,
-        hass.locale.language,
-        hass.translationMetadata,
+      getDevices({
+        states: hass.states,
+        areas: hass.areas,
+        devices: hass.devices,
+        entities: hass.entities,
+        localize: hass.localize,
+        language: hass.locale.language,
+        translationMetadata: hass.translationMetadata,
         configEntryLookup,
-        {
-          includeDomains,
-          includeDeviceClasses,
-          deviceFilter,
-          entityFilter,
-          excludeDevices,
-          value,
-          idPrefix,
-          nested: true,
-        }
-      )
+        includeDomains,
+        includeDeviceClasses,
+        deviceFilter,
+        entityFilter,
+        excludeDevices,
+        value,
+        idPrefix,
+        nested: true,
+      })
   );
 
   private _getLabelsMemoized = memoizeOne(getLabels);
@@ -305,9 +279,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       (devicesChanged ||
         this.hass.entities !== changedProps.get("hass")?.entities ||
         this.hass.areas !== changedProps.get("hass")?.areas);
-    if (registriesChanged) {
-      this._itemEntries.clear();
-    }
     if (
       changedProps.has("value") ||
       changedProps.has("allowExclude") ||
@@ -318,7 +289,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       changedProps.has("entityFilter") ||
       registriesChanged
     ) {
-      this._resolveExclusions();
+      this._exclusions.resolve();
     }
 
     if (
@@ -354,12 +325,9 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       ? ensureArray(this.value?.label_id)
       : [];
 
-    const noEffect = this._exclusions?.noEffect ?? [];
-    const unplaced = this._unplacedExclusions(
-      this.value?.exclude,
-      this._exclusions
-    );
-    const perTarget = this._exclusionsPerTarget();
+    const noEffect = this._exclusions.exclusions?.noEffect ?? [];
+    const unplaced = this._exclusions.unplaced;
+    const perTarget = this._exclusions.perTarget;
 
     if (
       !entityIds.length &&
@@ -386,7 +354,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @remove-target-item=${this._handleRemove}
                   @replace-target-item=${this._handleReplace}
                   type="entity"
-                  .hass=${this.hass}
                   .exclusions=${perTarget}
                   .items=${{ entity: entityIds }}
                   .deviceFilter=${this.deviceFilter}
@@ -408,7 +375,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @replace-target-item=${this._handleReplace}
                   @migrate-target-item=${this._handleMigrate}
                   type="device"
-                  .hass=${this.hass}
                   .exclusions=${perTarget}
                   .items=${{ device: deviceIds }}
                   .deviceFilter=${this.deviceFilter}
@@ -430,7 +396,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @remove-target-item=${this._handleRemove}
                   @replace-target-item=${this._handleReplace}
                   type="area"
-                  .hass=${this.hass}
                   .exclusions=${perTarget}
                   .items=${{
                     floor: floorIds,
@@ -454,7 +419,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                   @remove-target-item=${this._handleRemove}
                   @replace-target-item=${this._handleReplace}
                   type="label"
-                  .hass=${this.hass}
                   .exclusions=${perTarget}
                   .items=${{ label: labelIds }}
                   .deviceFilter=${this.deviceFilter}
@@ -496,7 +460,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
           (item) =>
             html`<ha-target-picker-item-row
               exclusion
-              .hass=${this.hass}
               .type=${item.type}
               .itemId=${item.id}
             ></ha-target-picker-item-row>`
@@ -504,25 +467,6 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       </ha-list-base>
     `;
   }
-
-  // Excludes that aren't listed under a target or as having no effect,
-  // because they are still being resolved or resolving them failed.
-  private _unplacedExclusions = memoizeOne(
-    (
-      exclude: HassServiceTarget | undefined,
-      exclusions: TargetExclusions | undefined
-    ): TargetItem[] => {
-      const placed = new Set([
-        ...Object.values(exclusions?.perTarget ?? {}).flatMap((list) =>
-          list.map(targetItemKey)
-        ),
-        ...(exclusions?.noEffect ?? []).map(targetItemKey),
-      ]);
-      return targetItems(exclude).filter(
-        (item) => !placed.has(targetItemKey(item))
-      );
-    }
-  );
 
   private _renderItems() {
     return html` ${this._renderValueGroups()} `;
@@ -629,147 +573,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  private _extractItem(
-    item: TargetItem,
-    primaryEntitiesOnly: boolean
-  ): Promise<ExtractFromTargetResult> {
-    const key = `${primaryEntitiesOnly}:${targetItemKey(item)}`;
-    let entries = this._itemEntries.get(key);
-    if (!entries) {
-      entries = extractFromTarget(
-        this.hass.callWS,
-        { [`${item.type}_id`]: [item.id] },
-        false,
-        primaryEntitiesOnly
-      );
-      this._itemEntries.set(key, entries);
-      const cached = entries;
-      cached.catch(() => {
-        if (this._itemEntries.get(key) === cached) {
-          this._itemEntries.delete(key);
-        }
-      });
-    }
-    return entries;
-  }
-
-  // The entities an included item adds, filtered like its row so what an
-  // exclusion takes out matches what the row counts.
-  private async _resolveInclude(item: TargetItem): Promise<string[]> {
-    if (item.type === "entity") {
-      return resolveTargetItemEntities(this.hass, item);
-    }
-    const entries = await this._extractItem(
-      item,
-      this.primaryEntitiesOnly ?? true
-    );
-    return filterTargetEntries(this.hass, item, entries, {
-      deviceFilter: this.deviceFilter,
-      entityFilter: this.entityFilter,
-      includeDomains: this.includeDomains,
-      includeDeviceClasses: this.includeDeviceClasses,
-      primaryEntitiesOnly: this.primaryEntitiesOnly,
-    }).referenced_entities;
-  }
-
-  // Like core, an exclude takes out every entity of an item, not only the
-  // primary ones, and isn't narrowed by the filters.
-  private async _resolveExclude(item: TargetItem): Promise<string[]> {
-    if (item.type === "entity") {
-      return resolveTargetItemEntities(this.hass, item);
-    }
-    return (await this._extractItem(item, false)).referenced_entities;
-  }
-
-  private async _resolveExclusions() {
-    const request = ++this._resolveRequest;
-    this._includedEntities = undefined;
-    const value = this.value;
-    const excludes = targetItems(value?.exclude);
-    const includes = targetItems(value);
-    // Without an exclude, the targets are only needed to tell whether an
-    // exclusion made in the details is shared with another target.
-    if (
-      !this.hass ||
-      (!excludes.length && (!this.allowExclude || includes.length < 2))
-    ) {
-      this._exclusions = undefined;
-      this._exclusionsComplete = true;
-      return;
-    }
-    // Until the targets resolve, the exclusions shown are from before and
-    // may not say which ones are shared now.
-    this._exclusionsComplete = false;
-
-    // Each item on its own, so it is known which exclusion takes out what
-    // from which target. One that fails only loses its own part.
-    const [includeResults, excludeResults] = await Promise.all([
-      Promise.allSettled(includes.map((item) => this._resolveInclude(item))),
-      Promise.allSettled(excludes.map((item) => this._resolveExclude(item))),
-    ]);
-    if (request !== this._resolveRequest) {
-      return;
-    }
-    const resolvedIncludes: ResolvedTargetItem[] = [];
-    includes.forEach((item, index) => {
-      const result = includeResults[index];
-      if (result.status === "fulfilled") {
-        resolvedIncludes.push({ ...item, entities: result.value });
-      }
-    });
-    const resolvedExcludes: ResolvedTargetItem[] = [];
-    excludes.forEach((item, index) => {
-      const result = excludeResults[index];
-      if (result.status === "fulfilled") {
-        resolvedExcludes.push({ ...item, entities: result.value });
-      }
-    });
-    const allIncluded = resolvedIncludes.length === includes.length;
-    const exclusions = computeExclusionsPerTarget(
-      resolvedIncludes,
-      resolvedExcludes
-    );
-    if (!allIncluded) {
-      // Without every target, no effect can't be told from not known, and a
-      // shared exclusion can't be told from one that isn't.
-      exclusions.noEffect = [];
-    }
-    this._exclusions = exclusions;
-    this._exclusionsComplete =
-      allIncluded && resolvedExcludes.length === excludes.length;
-    this._includedEntities = allIncluded
-      ? [
-          ...new Set(
-            includeResults.flatMap((result) =>
-              result.status === "fulfilled" ? result.value : []
-            )
-          ),
-        ]
-      : undefined;
-  }
-
   // Without an exclude yet, what the target includes is only needed once the
-  // exclude picker opens.
-  private async _resolveIncludedEntities() {
-    const request = this._resolveRequest;
-    try {
-      const included = await Promise.all(
-        targetItems(this.value).map((item) => this._resolveInclude(item))
-      );
-      if (request !== this._resolveRequest) {
-        return;
-      }
-      this._includedEntities = [...new Set(included.flat())];
-      this._excludePicker?.refreshItems();
-    } catch (_err) {
-      // The picker then offers everything instead.
-    }
-  }
-
-  private _openExcludePicker(ev: Event) {
+  // exclude picker opens, so it only offers what would take something out.
+  private async _openExcludePicker(ev: Event) {
     this._excludePicker?.open(ev);
-    if (!this._includedEntities) {
-      this._resolveIncludedEntities();
+    if (!this._exclusions.includedEntities) {
+      await this._exclusions.resolve({ force: true });
+      this._excludePicker?.refreshItems();
     }
   }
 
@@ -800,27 +610,17 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _exclusionsPerTarget():
-    Record<string, TargetExclusion[]> | undefined {
-    return (
-      this._exclusions?.perTarget ??
-      (this.allowExclude && !hasIncludedTargets(this.value?.exclude)
-        ? {}
-        : undefined)
-    );
-  }
-
   private _openDetails(ev: HASSDomEvent<HASSDomEvents["open-target-details"]>) {
     ev.stopPropagation();
     const { type, id, title } = ev.detail;
     const key = targetItemKey({ type, id });
-    const perTarget = this._exclusionsPerTarget();
+    const perTarget = this._exclusions.perTarget;
     const exclusions = perTarget ? (perTarget[key] ?? []) : undefined;
     const editable =
       exclusions &&
       this.allowExclude &&
       !this.disabled &&
-      this._exclusionsComplete;
+      this._exclusions.complete;
     showTargetDetailsDialog(this, {
       title,
       type,
@@ -833,9 +633,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       primaryEntitiesOnly: this.primaryEntitiesOnly,
       exclusions,
       exclude: this.value?.exclude,
-      otherTargetEntities: Object.entries(
-        this._exclusions?.included ?? {}
-      ).flatMap(([targetKey, entities]) => (targetKey === key ? [] : entities)),
+      expandGroup: this._exclusions.expandGroup,
+      explainExclusion: editable
+        ? (item) => this._exclusions.explainExclusion(key, item)
+        : undefined,
       exclusionsChanged: editable
         ? (initial, current) => {
             fireEvent(this, "value-changed", {
@@ -897,7 +698,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
     return this._getItemsMemoized(
       this.hass.localize,
-      this._excludeEntityFilter(this.entityFilter, this._includedEntities),
+      this._excludeEntityFilter(
+        this.entityFilter,
+        this._exclusions.includedEntities
+      ),
       this.deviceFilter,
       this.includeDomains,
       this.includeDeviceClasses,
@@ -1441,7 +1245,10 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
   private async _loadCompositeSplits() {
     this._loadingCompositeSplits = true;
     try {
-      this._compositeSplits = await fetchDeviceCompositeSplits(this.hass);
+      this._compositeSplits = await fetchDeviceCompositeSplits(
+        this.hass.connection,
+        this.hass.callWS
+      );
     } catch (_err) {
       this._compositeSplits = {};
     } finally {

@@ -9,6 +9,7 @@ import {
   mdiRadar,
   mdiVolumeHigh,
 } from "@mdi/js";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -17,16 +18,14 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { atLeastVersion } from "../../../common/config/version";
 import { QueryParamsController } from "../../../common/controllers/query-params-controller";
 import { consume } from "../../../common/decorators/consume";
+import { storage } from "../../../common/decorators/storage";
 import type {
   HASSDomEvent,
   HASSDomTargetEvent,
 } from "../../../common/dom/fire_event";
-import {
-  getHistoryState,
-  navigate,
-  updateHistoryState,
-} from "../../../common/navigate";
+import { navigate } from "../../../common/navigate";
 import { stringCompare } from "../../../common/string/compare";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { currentPath } from "../../../common/url/current-path";
 import { deepEqual } from "../../../common/util/deep-equal";
 import {
@@ -35,12 +34,14 @@ import {
   logsLinkFromUrl,
   logsQueryParamConfig,
   logsQueryParams,
+  type LogsState,
 } from "../../../common/url/logs-query-params";
 import { createQueryString } from "../../../common/url/query-params";
 import "../../../components/ha-app-icon";
 import "../../../components/ha-button";
 import "../../../components/ha-combo-box-item";
 import "../../../components/ha-filter-integrations";
+import type { IntegrationFilterCount } from "../../../components/ha-filter-integrations";
 import "../../../components/ha-filter-pane";
 import "../../../components/ha-filter-pane-chip";
 import "../../../components/ha-generic-picker";
@@ -55,16 +56,22 @@ import {
   fetchHassioAddonsInfo,
   type HassioAddonInfo,
 } from "../../../data/hassio/addon";
+import type { LoggedError, SystemLogLevel } from "../../../data/system_log";
+import type { FrontendLocaleData } from "../../../data/translation";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { mdiHomeAssistant } from "../../../resources/home-assistant-logo-svg";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route, ValueChangedEvent } from "../../../types";
 import "./error-log-card";
+import "./ha-filter-log-levels";
 import "./system-log-card";
 import type { SystemLogCard } from "./system-log-card";
+import { filterSystemLogItems, LOG_LEVELS } from "./util";
 
 const NO_INTEGRATIONS: string[] = [];
+
+const NO_LEVELS: SystemLogLevel[] = [];
 
 const logProviders: LogProvider[] = [
   {
@@ -92,8 +99,6 @@ const logProviders: LogProvider[] = [
     name: "Multicast",
   },
 ];
-
-const LOGS_HISTORY_STATE = "logsPage";
 
 interface LogProviderPickerItem extends PickerComboBoxItem {
   addon?: HassioAddonInfo;
@@ -124,9 +129,44 @@ export class HaConfigLogs extends LitElement {
 
   @state() private _logProviders = logProviders;
 
-  @state() private _showFilters?: boolean;
+  @state() private _showFilters = false;
 
-  @state() private _integrationsExpanded = true;
+  @state() private _levels: SystemLogLevel[] = [];
+
+  // Only one filter is expanded at a time, so that it can use the height
+  // that is left in the pane.
+  @state() private _expandedFilter?: string = "ha-filter-integrations";
+
+  @state() private _logItems?: LoggedError[];
+
+  // What the user picked, shown again when the page is opened without params,
+  // like from the sidebar. What a link shows isn't stored.
+  @storage({
+    storage: "sessionStorage",
+    key: "logs-search",
+    state: false,
+    subscribe: false,
+  })
+  private _storedSearch = "";
+
+  @storage({
+    storage: "sessionStorage",
+    key: "logs-integrations",
+    state: false,
+    subscribe: false,
+  })
+  private _storedIntegrations: string[] = [];
+
+  @storage({
+    storage: "sessionStorage",
+    key: "logs-levels",
+    state: false,
+    subscribe: false,
+  })
+  private _storedLevels: SystemLogLevel[] = [];
+
+  @storage({ key: "logs-raw", state: false, subscribe: false })
+  private _storedRaw = false;
 
   @state()
   @consume({ context: manifestsContext, subscribe: true })
@@ -138,7 +178,7 @@ export class HaConfigLogs extends LitElement {
 
   private _queryParams = new QueryParamsController(this, logsQueryParamConfig, {
     enabled: () => true,
-    navigated: () => this._applyUrl(),
+    navigated: (ev) => this._navigated(ev),
   });
 
   public connectedCallback() {
@@ -164,6 +204,10 @@ export class HaConfigLogs extends LitElement {
 
   private _filterChanged(ev: HASSDomTargetEvent<HaInputSearch>) {
     this._filter = ev.target.value ?? "";
+
+    if (this._currentProvider() === DEFAULT_LOG_PROVIDER) {
+      this._storedSearch = this._filter;
+    }
     this._writeUrl(true);
   }
 
@@ -174,7 +218,9 @@ export class HaConfigLogs extends LitElement {
   protected render(): TemplateResult {
     const core = this._selectedLogProvider === DEFAULT_LOG_PROVIDER;
     const integrations = core ? this._integrations : NO_INTEGRATIONS;
-    const filtersShown = core && this._filtersShown();
+    const levels = core && !this._detail ? this._levels : NO_LEVELS;
+    const filterCount = integrations.length + levels.length;
+    const filtersShown = core && this._showFilters;
     const filtersLabel = this.hass.localize(
       "ui.components.subpage-data-table.filters"
     );
@@ -224,17 +270,62 @@ export class HaConfigLogs extends LitElement {
             filtersShown
               ? html`<ha-filter-pane
                   .narrow=${this.narrow}
-                  .count=${this._integrations.length}
+                  .count=${filterCount}
                   @close-filter-pane=${this._closeFilters}
-                  @clear-filter=${this._clearIntegrations}
+                  @clear-filter=${this._clearFilters}
                 >
                   <ha-filter-integrations
                     .narrow=${this.narrow}
                     .value=${this._integrations}
-                    .expanded=${this._integrationsExpanded}
+                    .expanded=${
+                      this._expandedFilter === "ha-filter-integrations"
+                    }
+                    .counts=${
+                      this._detail
+                        ? undefined
+                        : this._getIntegrationCounts(
+                            this._getIntegrationCountItems(
+                              this._logItems,
+                              this._filter,
+                              undefined,
+                              levels,
+                              this.hass.localize,
+                              this.hass.locale,
+                              this.hass.config
+                            ),
+                            this._manifests,
+                            this.hass.localize
+                          )
+                    }
                     @data-table-filter-changed=${this._integrationsChanged}
-                    @expanded-changed=${this._integrationsExpandedChanged}
+                    @expanded-changed=${this._filterExpanded}
                   ></ha-filter-integrations>
+                  ${
+                    this._detail
+                      ? nothing
+                      : html`<ha-filter-log-levels
+                          .value=${this._levels}
+                          .expanded=${
+                            this._expandedFilter === "ha-filter-log-levels"
+                          }
+                          .counts=${this._getLevelCounts(
+                            this._getLevelCountItems(
+                              this._logItems,
+                              this._filter,
+                              this._getIntegrationLoggers(
+                                integrations,
+                                this._manifests
+                              ),
+                              undefined,
+                              this.hass.localize,
+                              this.hass.locale,
+                              this.hass.config
+                            )
+                          )}
+                          @data-table-filter-changed=${this._levelsChanged}
+                          @expanded-changed=${this._filterExpanded}
+                        ></ha-filter-log-levels>`
+                  }
                 </ha-filter-pane>`
               : nothing
           }
@@ -245,8 +336,8 @@ export class HaConfigLogs extends LitElement {
                   ? html`<ha-filter-pane-chip
                       .label=${filtersLabel}
                       .path=${mdiFilterVariant}
-                      .count=${this._integrations.length}
-                      .active=${this._integrations.length > 0}
+                      .count=${filterCount}
+                      .active=${filterCount > 0}
                       @click=${this._toggleFilters}
                     ></ha-filter-pane-chip>`
                   : nothing
@@ -276,7 +367,9 @@ export class HaConfigLogs extends LitElement {
                           integrations,
                           this._manifests
                         )}
+                        .levels=${levels}
                         @switch-log-view=${this._showDetail}
+                        @system-log-items-changed=${this._logItemsChanged}
                       ></system-log-card>
                     `
                   : html`<error-log-card
@@ -301,6 +394,10 @@ export class HaConfigLogs extends LitElement {
 
   private _showDetail() {
     this._detail = !this._detail;
+
+    if (this._currentProvider() === DEFAULT_LOG_PROVIDER) {
+      this._storedRaw = this._detail;
+    }
     this._writeUrl();
   }
 
@@ -317,33 +414,31 @@ export class HaConfigLogs extends LitElement {
     this._selectedLogProvider = provider;
     this._filter = "";
     this._integrations = [];
+    this._levels = [];
+    this._storedSearch = "";
+    this._storedIntegrations = [];
+    this._storedLevels = [];
     // Keep the search typed so far on the entry Back returns to
     this._queryParams.flush();
     // Picking another provider is a navigation of its own, so Back returns
-    // to the previous one. Both entries are marked, so going back to one
-    // without params shows the default view instead of keeping the provider.
-    updateHistoryState({ [LOGS_HISTORY_STATE]: true });
+    // to the previous one
     const search = createQueryString(
       logsQueryParams({
         provider,
         search: "",
         integrations: [],
+        levels: [],
         raw: this._detail,
       }),
       logsQueryParamConfig
     );
-    // From the current path, so a trailing slash still matches the controller
-    navigate(`${currentPath()}${search ? `?${search}` : ""}`, {
-      data: { [LOGS_HISTORY_STATE]: true },
-    });
-  }
 
-  private _filtersShown(): boolean {
-    return this._showFilters ?? !this.narrow;
+    // From the current path, so a trailing slash still matches the controller
+    navigate(`${currentPath()}${search ? `?${search}` : ""}`);
   }
 
   private _toggleFilters() {
-    this._showFilters = !this._filtersShown();
+    this._showFilters = !this._showFilters;
   }
 
   private _closeFilters() {
@@ -355,35 +450,116 @@ export class HaConfigLogs extends LitElement {
   ) {
     ev.stopPropagation();
     const value = ev.detail.value;
-    this._integrations = Array.isArray(value) ? value : [];
+    const integrations = Array.isArray(value) ? value : [];
+
+    // The filter also sends the value it was given once it has its items, in
+    // its own order, so only a change is the user's
+    if (
+      this._currentProvider() === DEFAULT_LOG_PROVIDER &&
+      !deepEqual([...integrations].sort(), [...this._integrations].sort())
+    ) {
+      this._storedIntegrations = integrations;
+    }
+
+    this._integrations = integrations;
     this._writeUrl();
   }
 
-  private _clearIntegrations() {
+  private _clearFilters() {
+    const core = this._currentProvider() === DEFAULT_LOG_PROVIDER;
+
     this._integrations = [];
+
+    if (core) {
+      this._storedIntegrations = [];
+    }
+
+    // Levels don't apply to the raw log, so they're kept for the errors view
+    if (!this._detail) {
+      this._levels = [];
+
+      if (core) {
+        this._storedLevels = [];
+      }
+    }
     this._writeUrl();
   }
 
-  private _integrationsExpandedChanged(
-    ev: HASSDomEvent<{ expanded: boolean }>
+  private _filterExpanded(
+    ev: HASSDomEvent<HASSDomEvents["expanded-changed"]> &
+      HASSDomTargetEvent<HTMLElement>
   ) {
-    this._integrationsExpanded = ev.detail.expanded;
+    if (ev.detail.expanded) {
+      this._expandedFilter = ev.target.localName;
+    } else if (this._expandedFilter === ev.target.localName) {
+      this._expandedFilter = undefined;
+    }
+  }
+
+  private _levelsChanged(ev: HASSDomEvent<{ value: DataTableFiltersValue }>) {
+    ev.stopPropagation();
+
+    const value = ev.detail.value;
+
+    const levels = Array.isArray(value)
+      ? LOG_LEVELS.map((item) => item.level).filter((level) =>
+          value.includes(level)
+        )
+      : [];
+
+    this._levels = levels;
+
+    if (this._currentProvider() === DEFAULT_LOG_PROVIDER) {
+      this._storedLevels = levels;
+    }
+
+    this._writeUrl();
+  }
+
+  // Until the apps are loaded, the provider is the one the URL asks for
+  private _currentProvider(): string {
+    return this._providersLoaded
+      ? this._selectedLogProvider
+      : (logsLinkFromUrl(this._queryParams.searchParams() ?? "")?.provider ??
+          DEFAULT_LOG_PROVIDER);
   }
 
   private _writeUrl(debounced = false) {
-    this._queryParams.write(
-      logsQueryParams({
-        // Until the apps are loaded, keep the provider the URL asks for
-        provider: this._providersLoaded
-          ? this._selectedLogProvider
-          : (logsLinkFromUrl(this._queryParams.searchParams() ?? "")
-              ?.provider ?? DEFAULT_LOG_PROVIDER),
-        search: this._filter,
-        integrations: this._integrations,
-        raw: this._detail,
-      }),
-      debounced
-    );
+    this._queryParams.write(logsQueryParams(this._urlState()), debounced);
+  }
+
+  private _urlState(): LogsState {
+    return {
+      provider: this._currentProvider(),
+      search: this._filter,
+      integrations: this._integrations,
+      levels: this._levels,
+      raw: this._detail,
+    };
+  }
+
+  // Closing a dialog, like an entry's details, goes back to the URL the page
+  // is already showing, so there's nothing to apply. A link is always applied.
+  private _navigated(ev?: Event) {
+    const searchParams = this._queryParams.searchParams();
+
+    if (ev?.type === "popstate" && searchParams) {
+      const shown = createQueryString(
+        logsQueryParams(this._urlState()),
+        logsQueryParamConfig
+      );
+
+      const back = createQueryString(
+        logsQueryParams(logsLinkFromUrl(searchParams) ?? DEFAULT_LOGS_STATE),
+        logsQueryParamConfig
+      );
+
+      if (back === shown) {
+        return;
+      }
+    }
+
+    this._applyUrl();
   }
 
   private async _init() {
@@ -393,18 +569,31 @@ export class HaConfigLogs extends LitElement {
     // Keep a search typed while the apps were loading
     this._queryParams.flush();
     this._providersLoaded = true;
-    this._applyUrl();
+    // What was stored is already applied, and an empty URL now is a link like
+    // `?provider=core` that was tidied up
+    this._applyUrl(false);
   }
 
-  private _applyUrl() {
+  private _applyUrl(restoreStored = true) {
     const searchParams = this._queryParams.searchParams();
     if (!searchParams) {
       return;
     }
+    // A link is shown, but not stored. Opened without params, like from the
+    // sidebar or Back to before another provider was picked, the page shows
+    // what the user picked.
     const link =
       logsLinkFromUrl(searchParams) ??
-      (getHistoryState()?.[LOGS_HISTORY_STATE]
-        ? DEFAULT_LOGS_STATE
+      (searchParams.toString() === ""
+        ? restoreStored
+          ? {
+              ...DEFAULT_LOGS_STATE,
+              search: this._storedSearch,
+              integrations: this._storedIntegrations,
+              levels: this._storedLevels,
+              raw: this._storedRaw,
+            }
+          : DEFAULT_LOGS_STATE
         : undefined);
     let missingProvider: string | undefined;
     if (link) {
@@ -424,6 +613,10 @@ export class HaConfigLogs extends LitElement {
       this._filter = link.search;
       if (link.provider === DEFAULT_LOG_PROVIDER) {
         this._detail = link.raw;
+      }
+
+      if (!deepEqual(link.levels, this._levels)) {
+        this._levels = link.levels;
       }
       const integrations = link.integrations.filter((domain) =>
         loaded.includes(domain)
@@ -488,6 +681,128 @@ export class HaConfigLogs extends LitElement {
           ])
         : undefined
   );
+
+  // Each filter counts the entries the other filters and the search leave
+  private _filterLogItems = (
+    items: LoggedError[] | undefined,
+    search: string,
+    loggers: string[] | undefined,
+    levels: SystemLogLevel[] | undefined,
+    localize: LocalizeFunc,
+    locale: FrontendLocaleData,
+    config: HassConfig
+  ) =>
+    items &&
+    filterSystemLogItems(
+      items,
+      { search, loggers, levels },
+      localize,
+      locale,
+      config
+    );
+
+  private _getLevelCountItems = memoizeOne(this._filterLogItems);
+
+  private _getIntegrationCountItems = memoizeOne(this._filterLogItems);
+
+  private _getLevelCounts = memoizeOne(
+    (
+      items: LoggedError[] | undefined
+    ): Partial<Record<SystemLogLevel, number>> | undefined => {
+      if (!items) {
+        return undefined;
+      }
+
+      const counts: Partial<Record<SystemLogLevel, number>> = {};
+
+      for (const item of items) {
+        counts[item.level] = (counts[item.level] ?? 0) + 1;
+      }
+
+      return counts;
+    }
+  );
+
+  // Matches entries to integrations by logger name, the same way
+  // `_getIntegrationLoggers` filters them
+  private _getIntegrationCounts = memoizeOne(
+    (
+      items: LoggedError[] | undefined,
+      manifests: ContextType<typeof manifestsContext> | undefined,
+      localize: LocalizeFunc
+    ): Record<string, IntegrationFilterCount[]> | undefined => {
+      if (!items?.length || !manifests) {
+        return undefined;
+      }
+
+      const loggerDomains = new Map<string, string[]>();
+
+      for (const { domain, loggers } of Object.values(manifests)) {
+        for (const logger of [
+          `homeassistant.components.${domain}`,
+          `custom_components.${domain}`,
+          ...(loggers ?? []),
+        ]) {
+          loggerDomains.set(logger, [
+            ...(loggerDomains.get(logger) ?? []),
+            domain,
+          ]);
+        }
+      }
+
+      const levelCounts: Record<
+        string,
+        Partial<Record<SystemLogLevel, number>>
+      > = {};
+
+      for (const item of items) {
+        const parts = item.name.split(".");
+
+        const domains = new Set(
+          parts.flatMap(
+            (_part, index) =>
+              loggerDomains.get(parts.slice(0, index + 1).join(".")) ?? []
+          )
+        );
+
+        for (const domain of domains) {
+          const counts = (levelCounts[domain] ??= {});
+
+          counts[item.level] = (counts[item.level] ?? 0) + 1;
+        }
+      }
+
+      return Object.fromEntries(
+        Object.entries(levelCounts).map(([domain, counts]) => [
+          domain,
+          LOG_LEVELS.flatMap(({ level, path, color }) => {
+            const count = counts[level];
+
+            return count
+              ? [
+                  {
+                    key: level,
+                    path,
+                    color,
+                    count,
+                    label: localize(
+                      `ui.panel.config.logs.level_count.${level}`,
+                      { count }
+                    ),
+                  },
+                ]
+              : [];
+          }),
+        ])
+      );
+    }
+  );
+
+  private _logItemsChanged(
+    ev: HASSDomEvent<HASSDomEvents["system-log-items-changed"]>
+  ) {
+    this._logItems = ev.detail.items;
+  }
 
   private _getLogProviderItems = (): LogProviderPickerItem[] =>
     this._logProviders.map((provider) => ({

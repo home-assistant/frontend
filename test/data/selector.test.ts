@@ -2,6 +2,7 @@ import type { HassEntity } from "home-assistant-js-websocket";
 import { describe, expect, it } from "vitest";
 import type { DeviceRegistryEntry } from "../../src/data/device/device_registry";
 import {
+  fillFieldDefaults,
   filterSelectorEntities,
   resolveEntityIDs,
 } from "../../src/data/selector";
@@ -240,5 +241,29 @@ describe("resolveEntityIDs", () => {
     it("resolves nothing for an exclude on its own", () => {
       expect(resolve({ exclude: { area_id: "kitchen" } })).toEqual([]);
     });
+  });
+});
+
+describe("fillFieldDefaults", () => {
+  const fields: Parameters<typeof fillFieldDefaults>[1] = [
+    ["flash", { required: true, selector: { boolean: {} } }],
+    ["transition", { default: 2, selector: { number: {} } }],
+    ["effect", { default: "none" }],
+  ];
+
+  it("only sets required booleans unless defaults are loaded", () => {
+    expect(fillFieldDefaults({}, fields, false)).toEqual({
+      values: { flash: false },
+      changed: true,
+    });
+  });
+
+  it("loads defaults for fields with a selector, without touching set ones", () => {
+    const values = { transition: 5 };
+    expect(fillFieldDefaults(values, fields, true)).toEqual({
+      values: { flash: false, transition: 5 },
+      changed: true,
+    });
+    expect(values).toEqual({ transition: 5 });
   });
 });

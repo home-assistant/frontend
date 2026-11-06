@@ -6,7 +6,6 @@ import { customElement, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { addRecent } from "../../../common/array/add-recent";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { consume } from "../../../common/decorators/consume";
 import { storage } from "../../../common/decorators/storage";
 import { transform } from "../../../common/decorators/transform";
@@ -16,6 +15,7 @@ import type {
 } from "../../../common/dom/fire_event";
 import { mainWindow } from "../../../common/dom/get_main_window";
 import { listenMediaQuery } from "../../../common/dom/media_query";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import type { LocalizeKeys } from "../../../common/translations/localize";
 import { constructUrlCurrentPath } from "../../../common/url/construct-url";
 import { debounce } from "../../../common/util/debounce";
@@ -31,8 +31,13 @@ import "../../../components/ha-icon-button-prev";
 import "../../../components/ha-paste-bar";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
-import { getValueFromDynamic, isDynamic } from "../../../data/automation";
+import {
+  DYNAMIC_PREFIX,
+  getValueFromDynamic,
+  isDynamic,
+} from "../../../data/automation";
 import { getConditionDomain } from "../../../data/condition";
+import type { ConditionDescriptions } from "../../../data/condition";
 import {
   apiContext,
   conditionDescriptionsContext,
@@ -52,6 +57,7 @@ import {
   getTriggerIcons,
 } from "../../../data/icons";
 import { domainToName } from "../../../data/integration";
+import type { DomainManifestLookup } from "../../../data/integration";
 import type { LabelRegistryEntry } from "../../../data/label/label_registry";
 import {
   TARGET_SEPARATOR,
@@ -59,6 +65,7 @@ import {
   type SingleHassServiceTarget,
 } from "../../../data/target";
 import { getTriggerDomain } from "../../../data/trigger";
+import type { TriggerDescriptions } from "../../../data/trigger";
 import { DialogMixin } from "../../../dialogs/dialog-mixin";
 import { KeyboardShortcutMixin } from "../../../mixins/keyboard-shortcut-mixin";
 import { haStyleScrollbar } from "../../../resources/styles";
@@ -75,15 +82,22 @@ import {
 } from "./add-automation-element/collections";
 import {
   BUILDING_BLOCKS,
+  ELEMENT_TYPES,
   MAX_RECENT_ELEMENTS,
   RECENT_ELEMENTS_STORAGE_KEY,
 } from "./add-automation-element/constants";
 import { calculateActiveSystemDomains } from "./add-automation-element/domain-classification";
+import { getExclusiveDomains } from "./add-automation-element/element-items";
 import "./add-automation-element/ha-automation-add-from-target";
 import "./add-automation-element/ha-automation-add-groups";
+import type { HaAutomationAddGroups } from "./add-automation-element/ha-automation-add-groups";
 import "./add-automation-element/ha-automation-add-items";
 import type { HaAutomationAddItems } from "./add-automation-element/ha-automation-add-items";
 import "./add-automation-element/ha-automation-add-search";
+import {
+  fetchTargetElementKeys,
+  getTargetSections,
+} from "./add-automation-element/target-items";
 import {
   extractTypeAndIdFromTarget,
   getSelectedTargetLabel,
@@ -92,10 +106,6 @@ import {
   isTargetWithId,
   type TargetLabelSources,
 } from "./add-automation-element/target-labels";
-import {
-  fetchTargetElementKeys,
-  getTargetSections,
-} from "./add-automation-element/target-items";
 import type {
   AddElementHistoryData,
   AddElementTab,
@@ -115,8 +125,8 @@ import {
   getAddAutomationElementTargetFromQuery,
 } from "./show-add-automation-element-dialog";
 import {
-  addRecentTarget,
   RECENT_TARGETS_STORAGE_KEY,
+  addRecentTarget,
 } from "./target/recent_targets";
 
 const DOCUMENTATION_PATHS: Record<AddElementType, string> = {
@@ -147,33 +157,29 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
   @consume({ context: statesContext, subscribe: true })
   @transform<HomeAssistant["states"], Set<string>>({
     transformer: function (this: DialogAddAutomationElement, states) {
-      const domains = new Set(Object.keys(states).map(computeDomain));
+      const entityIds = new Set(Object.keys(states));
       // keep the previous set, so a state change doesn't rerender the dialog
-      return deepEqual(domains, this._usedDomains)
-        ? this._usedDomains
-        : domains;
+      return deepEqual(entityIds, this._entityIds)
+        ? this._entityIds
+        : entityIds;
     },
   })
-  private _usedDomains?: Set<string>;
+  private _entityIds?: Set<string>;
 
-  @state()
-  @consume({ context: statesContext, subscribe: true })
-  @transform<HomeAssistant["states"], SystemDomains | undefined>({
-    transformer: function (this: DialogAddAutomationElement, states) {
-      const systemDomains = this._calculateSystemDomains(states);
-      // keep the previous result, so a state change doesn't rerender the dialog
-      return deepEqual(systemDomains, this._systemDomains)
-        ? this._systemDomains
-        : systemDomains;
-    },
-    watch: [
-      "_manifests",
-      "_triggerDescriptions",
-      "_conditionDescriptions",
-      "_registries",
-    ],
-  })
-  private _systemDomains?: SystemDomains;
+  private get _usedDomains(): Set<string> | undefined {
+    return this._computeUsedDomains(this._entityIds);
+  }
+
+  private get _systemDomains(): SystemDomains | undefined {
+    return this._calculateSystemDomains(
+      this.params?.type,
+      this._triggerDescriptions,
+      this._conditionDescriptions,
+      this._manifests,
+      this._registries,
+      this._entityIds
+    );
+  }
 
   @state()
   @consume({ context: servicesContext, subscribe: true })
@@ -244,6 +250,9 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
   @query(".content")
   private _contentElement?: HTMLDivElement;
 
+  @query("ha-automation-add-groups")
+  private _groupsElement?: HaAutomationAddGroups;
+
   private _initialized = false;
 
   // The mode is kept while open, resizing would otherwise lose the view state
@@ -293,13 +302,23 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     this._hasManagerHistoryEntry =
       mainWindow.history.state?.dialog === this.localName;
 
-    const queryTarget = getAddAutomationElementTargetFromQuery(
-      this._states,
-      this._registries.devices,
-      this._registries.areas,
-      type
-    );
+    const replacing = this.params!.replacingItemKey;
+    const queryTarget = replacing
+      ? undefined
+      : getAddAutomationElementTargetFromQuery(
+          this._states,
+          this._registries.devices,
+          this._registries.areas,
+          type
+        );
     this._openedFromQuery = !!queryTarget;
+
+    if (replacing) {
+      const view = this._getReplacingView(type, replacing);
+      this._tab = view.tab;
+      this._selectedGroup = view.group;
+      this._selectedCollectionIndex = view.collectionIndex;
+    }
 
     if (queryTarget) {
       const searchParams = new URLSearchParams(mainWindow.location.search);
@@ -315,6 +334,13 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     } else {
       // add initial dialog view state to history
       this._pushHistory({});
+      // Same state as selecting the group, so back returns to the groups.
+      if (this._selectedGroup) {
+        this._pushHistory({
+          group: this._selectedGroup,
+          collectionIndex: this._selectedCollectionIndex,
+        });
+      }
     }
 
     const { connection } = this._connection;
@@ -386,6 +412,59 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     return super.closeDialog(historyState);
   }
 
+  private _getReplacingView(
+    type: AddElementType,
+    key: string
+  ): {
+    tab: "groups" | "blocks";
+    group?: string;
+    collectionIndex?: number;
+  } {
+    if (key in BUILDING_BLOCKS[type]) {
+      return { tab: "blocks" };
+    }
+
+    let domain: string | undefined;
+    if (isDynamic(key)) {
+      const value = getValueFromDynamic(key);
+      const domains =
+        type === "trigger"
+          ? Object.keys(this._triggerDescriptions).map(getTriggerDomain)
+          : type === "condition"
+            ? Object.keys(this._conditionDescriptions).map(getConditionDomain)
+            : Object.keys(this._services);
+      domain =
+        type === "trigger"
+          ? getTriggerDomain(value)
+          : type === "condition"
+            ? getConditionDomain(value)
+            : computeDomain(value);
+      // Descriptions may still be loading. Until then, trust the key.
+      if (domains.length && !domains.includes(domain)) {
+        return { tab: "groups" };
+      }
+      if (!getExclusiveDomains(type).has(domain)) {
+        // Dynamic groups list their items regardless of the collection.
+        return { tab: "groups", group: `${DYNAMIC_PREFIX}${domain}` };
+      }
+    }
+
+    for (const [collectionIndex, collection] of ELEMENT_TYPES[
+      type
+    ].collections.entries()) {
+      for (const [group, options] of Object.entries(collection.groups)) {
+        if (
+          domain
+            ? options.domains?.includes(domain)
+            : group === key || (options.members && key in options.members)
+        ) {
+          return { tab: "groups", group, collectionIndex };
+        }
+      }
+    }
+    return { tab: "groups" };
+  }
+
   protected supportedShortcuts(): SupportedShortcuts {
     return {
       v: () => this._addClipboard(),
@@ -449,14 +528,25 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
 
     if (this._bottomSheetMode) {
       return html`
-        <ha-bottom-sheet open @closed=${this._handleClosed} flexcontent>
+        <ha-bottom-sheet
+          open
+          @closed=${this._handleClosed}
+          @after-show=${this._handleAfterShow}
+          flexcontent
+        >
           ${this._renderContent(this.params)}
         </ha-bottom-sheet>
       `;
     }
 
     return html`
-      <ha-dialog width="large" open @closed=${this._handleClosed} flexcontent>
+      <ha-dialog
+        width="large"
+        open
+        @closed=${this._handleClosed}
+        @after-show=${this._handleAfterShow}
+        flexcontent
+      >
         ${this._renderContent(this.params)}
       </ha-dialog>
     `;
@@ -569,6 +659,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
                 .filter=${this._filter}
                 .narrow=${this._narrow}
                 .addElementType=${type}
+                .replacingItemKey=${params.replacingItemKey}
                 .items=${this._getAllItems(sources)}
                 @search-element-picked=${this._searchItemSelected}
               >
@@ -617,6 +708,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
                           .recentElements=${recentElements}
                           .selectedGroup=${this._selectedGroup}
                           .narrow=${this._narrow}
+                          .replacingItemKey=${params.replacingItemKey}
                           @group-selected=${this._groupSelected}
                           @recent-element-selected=${this._recentSelected}
                           @clear-recent-elements=${this._clearRecentElements}
@@ -626,6 +718,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
                 </div>
                 <ha-automation-add-items
                   .items=${this._getItemSections(sources, systemDomains)}
+                  .replacingItemKey=${params.replacingItemKey}
                   .scrollable=${!this._narrow || this._tab === "blocks"}
                   .error=${
                     this._tab === "targets" && this._loadItemsError
@@ -741,7 +834,13 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       }
     }
 
-    return localize(`ui.panel.config.automation.editor.${type}s.add`);
+    return this._getModeTitle(type);
+  }
+
+  private _getModeTitle(type: AddElementType): string {
+    return this._i18n.localize(
+      `ui.panel.config.automation.editor.${type}s.${this.params!.replacingItemKey ? "replace_title" : "add"}`
+    );
   }
 
   private _getSubtitle(type: AddElementType): string | undefined {
@@ -749,9 +848,7 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       return undefined;
     }
     if (this._selectedGroup) {
-      return this._i18n.localize(
-        `ui.panel.config.automation.editor.${type}s.add`
-      );
+      return this._getModeTitle(type);
     }
     if (this._selectedTarget) {
       return getTargetSubtitle(
@@ -786,32 +883,43 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
     })
   );
 
-  private _calculateSystemDomains(
-    states: HomeAssistant["states"]
-  ): SystemDomains | undefined {
-    const type = this.params?.type;
-    if (!type || type === "action" || !this._manifests || !this._registries) {
-      return undefined;
+  private _computeUsedDomains = memoizeOne(
+    (entityIds: Set<string> | undefined) =>
+      entityIds && new Set(Array.from(entityIds, computeDomain))
+  );
+
+  private _calculateSystemDomains = memoizeOne(
+    (
+      type: AddAutomationElementDialogParams["type"] | undefined,
+      triggerDescriptions: TriggerDescriptions,
+      conditionDescriptions: ConditionDescriptions,
+      manifests: DomainManifestLookup | undefined,
+      registries: ContextType<typeof registriesContext> | undefined,
+      _entityIds: Set<string> | undefined
+    ): SystemDomains | undefined => {
+      if (!type || type === "action" || !manifests || !registries) {
+        return undefined;
+      }
+      const { entities, devices } = registries;
+      return type === "trigger"
+        ? calculateActiveSystemDomains(
+            triggerDescriptions,
+            manifests,
+            getTriggerDomain,
+            this._states,
+            entities,
+            devices
+          )
+        : calculateActiveSystemDomains(
+            conditionDescriptions,
+            manifests,
+            getConditionDomain,
+            this._states,
+            entities,
+            devices
+          );
     }
-    const { entities, devices } = this._registries;
-    return type === "trigger"
-      ? calculateActiveSystemDomains(
-          this._triggerDescriptions,
-          this._manifests,
-          getTriggerDomain,
-          states,
-          entities,
-          devices
-        )
-      : calculateActiveSystemDomains(
-          this._conditionDescriptions,
-          this._manifests,
-          getConditionDomain,
-          states,
-          entities,
-          devices
-        );
-  }
+  );
 
   private _getAllItems = memoizeOne(getAllItems);
 
@@ -1019,6 +1127,17 @@ class DialogAddAutomationElement extends DialogMixin<AddAutomationElementDialogP
       // DialogMixin removes the dialog on this event
       ev.stopPropagation();
       this._closedWhileHistoryPending = true;
+    }
+  }
+
+  // The content renders before the dialog is shown, so the group and item
+  // being replaced can only be scrolled to now.
+  private _handleAfterShow() {
+    if (this._selectedGroup) {
+      this._groupsElement?.scrollToSelected();
+    }
+    if (this.params?.replacingItemKey) {
+      this._itemsListElement?.scrollToCurrent();
     }
   }
 

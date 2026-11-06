@@ -5,20 +5,22 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { arrayWith, arrayWithout } from "../../common/array/array-with";
 import { storage } from "../../common/decorators/storage";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button";
-import "../../components/ha-card";
 import "../../components/ha-dropdown";
 import "../../components/ha-dropdown-item";
 import type { HaDropdownItem } from "../../components/ha-dropdown-item";
 import "../../components/ha-icon-button";
-import "../../components/ha-list";
-import "../../components/ha-list-item";
 import "../../components/ha-spinner";
 import "../../components/ha-state-icon";
 import "../../components/ha-svg-icon";
 import "../../components/ha-two-pane-top-app-bar-fixed";
+import "../../components/item/ha-list-item-option";
+import type { HaListItemOption } from "../../components/item/ha-list-item-option";
+import "../../components/list/ha-list-selectable";
+import type { HaListSelectable } from "../../components/list/ha-list-selectable";
 import type { Calendar } from "../../data/calendar";
 import { getCalendars } from "../../data/calendar";
 import { CalendarEventsController } from "../../data/calendar-events-controller";
@@ -177,21 +179,50 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         ></ha-icon-button>
         ${
           showPane
-            ? html`<ha-list slot="pane" multi>${calendarItems}</ha-list>${
+            ? html`<ha-list-selectable
+                  slot="pane"
+                  multi
+                  aria-label=${this.hass.localize(
+                    "ui.components.calendar.my_calendars"
+                  )}
+                  @ha-list-item-selected=${this._handleCalendarToggled}
+                  @ha-list-item-deselected=${this._handleCalendarToggled}
+                >
+                  ${this._calendars.map(
+                    (selCal) => html`
+                      <ha-list-item-option
+                        appearance="checkbox"
+                        selection-position="end"
+                        .value=${selCal.entity_id}
+                        .selected=${!this._deSelectedCalendars.includes(
+                          selCal.entity_id
+                        )}
+                      >
+                        <ha-state-icon
+                          slot="start"
+                          .stateObj=${selCal}
+                          style="--icon-primary-color: ${selCal.backgroundColor}"
+                        ></ha-state-icon>
+                        <span slot="headline">${selCal.name}</span>
+                      </ha-list-item-option>
+                    `
+                  )}
+                </ha-list-selectable>
+                ${
                   this.hass.user?.is_admin
-                    ? html`<ha-list-item
-                        graphic="icon"
+                    ? html`<ha-button
                         slot="pane-footer"
+                        appearance="filled"
                         @click=${this._addCalendar}
                       >
                         <ha-svg-icon
+                          slot="start"
                           .path=${mdiPlus}
-                          slot="graphic"
                         ></ha-svg-icon>
                         ${this.hass.localize(
                           "ui.components.calendar.create_calendar"
                         )}
-                      </ha-list-item>`
+                      </ha-button>`
                     : nothing
                 }`
             : nothing
@@ -227,12 +258,26 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
   private _requestSelected(ev: Event) {
     ev.stopPropagation();
     const item = ev.currentTarget as HaDropdownItem;
-    const entityId = item.value as string;
-    const checked = item.checked;
+    this._setCalendarSelected(item.value as string, !item.checked);
+  }
 
-    if (!checked) {
-      this._deSelectedCalendars = this._deSelectedCalendars.filter(
-        (cal) => cal !== entityId
+  private _handleCalendarToggled(ev: CustomEvent<number>) {
+    const option = (ev.currentTarget as HaListSelectable).items[ev.detail] as
+      HaListItemOption | undefined;
+    if (!option?.value) {
+      return;
+    }
+    this._setCalendarSelected(
+      option.value,
+      ev.type === "ha-list-item-selected"
+    );
+  }
+
+  private _setCalendarSelected(entityId: string, selected: boolean) {
+    if (selected) {
+      this._deSelectedCalendars = arrayWithout(
+        this._deSelectedCalendars,
+        entityId
       );
       const calendar = this._calendars.find(
         (cal) => cal.entity_id === entityId
@@ -242,7 +287,10 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
       }
       this._subscribeCalendarEvents([calendar]);
     } else {
-      this._deSelectedCalendars = [...this._deSelectedCalendars, entityId];
+      this._deSelectedCalendars = arrayWith(
+        this._deSelectedCalendars,
+        entityId
+      );
       this._events.unsubscribe(entityId);
     }
   }
@@ -311,12 +359,23 @@ class PanelCalendar extends SubscribeMixin(LitElement) {
         ha-dropdown ha-button {
           --ha-font-size-m: var(--ha-font-size-l);
         }
+        ha-button[slot="pane-footer"] {
+          display: block;
+          width: fit-content;
+          margin: var(--ha-space-2) auto var(--ha-space-2);
+        }
 
-        ha-dropdown-item {
+        ha-dropdown-item[type="checkbox"] {
           padding-left: 32px;
           padding-inline-start: 32px;
           padding-inline-end: initial;
           --icon-primary-color: var(--ha-color-fill-neutral-loud-resting);
+        }
+
+        /* The dropdown indents every item when some are checkboxes, but the
+           create item sits below a divider */
+        ha-dropdown-item:not([type="checkbox"]) {
+          padding-inline-start: 1em;
         }
 
         ha-dropdown-item[aria-checked="true"] {

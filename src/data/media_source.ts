@@ -35,21 +35,21 @@ export const resolveMediaSourceWithCache = (
   );
 
 export const browseLocalMediaPlayer = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   mediaContentId?: string
 ): Promise<MediaPlayerItem> =>
-  hass.callWS<MediaPlayerItem>({
+  callWS<MediaPlayerItem>({
     type: "media_source/browse_media",
     media_content_id: mediaContentId,
   });
 
 export const searchMedia = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   mediaContentId: string | undefined,
   searchQuery: string,
   mediaFilterClasses?: string[]
 ): Promise<SearchMediaResult> =>
-  hass.callWS<SearchMediaResult>({
+  callWS<SearchMediaResult>({
     type: "media_source/search_media",
     media_content_id: mediaContentId,
     search_query: searchQuery,
@@ -103,10 +103,10 @@ export const uploadLocalMedia = async (
 };
 
 export const removeLocalMedia = async (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   media_content_id: string
 ) =>
-  hass.callWS({
+  callWS({
     type: "media_source/local_source/remove",
     media_content_id,
   });

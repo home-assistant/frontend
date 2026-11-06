@@ -1,6 +1,6 @@
 import type { ContextType } from "@lit/context";
-import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { css, html, LitElement, nothing, type PropertyValues } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
 import { consume } from "../../../../common/decorators/consume";
 import type { HASSDomCurrentTargetEvent } from "../../../../common/dom/fire_event";
@@ -42,9 +42,35 @@ export class HaAutomationAddGroups extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
+  @property({ attribute: false }) public replacingItemKey?: string;
+
   @state()
   @consume({ context: internationalizationContext, subscribe: true })
   private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @query("ha-list-item-button.selected")
+  private _selectedItem?: HTMLElement;
+
+  private _scrollToSelected = false;
+
+  /** Scrolls to the selected group once it is rendered. */
+  public scrollToSelected() {
+    this._scrollToSelected = true;
+    this._scrollIfPending();
+  }
+
+  protected updated(changedProps: PropertyValues<this>) {
+    super.updated(changedProps);
+    this._scrollIfPending();
+  }
+
+  private _scrollIfPending() {
+    if (!this._scrollToSelected || !this._selectedItem) {
+      return;
+    }
+    this._scrollToSelected = false;
+    this._selectedItem.scrollIntoView({ block: "center" });
+  }
 
   protected render() {
     const { localize } = this._i18n;
@@ -73,6 +99,9 @@ export class HaAutomationAddGroups extends LitElement {
                   ({ item, groupName }) => html`
                     <ha-list-item-button
                       .value=${item.key}
+                      class=${this._isCurrent(item) ? "current" : ""}
+                      .disabled=${this._isCurrent(item)}
+                      aria-current=${this._isCurrent(item) ? "true" : nothing}
                       @click=${this._recentSelected}
                     >
                       <div slot="headline">${item.name}</div>
@@ -131,6 +160,10 @@ export class HaAutomationAddGroups extends LitElement {
     `;
   }
 
+  private _isCurrent(item: AddAutomationElementListItem) {
+    return item.key === this.replacingItemKey;
+  }
+
   private _renderIcon(item: AddAutomationElementListItem) {
     return item.icon
       ? html`<span slot="start">${item.icon}</span>`
@@ -140,6 +173,7 @@ export class HaAutomationAddGroups extends LitElement {
   }
 
   private _groupSelected(ev: HASSDomCurrentTargetEvent<ListItemButton>) {
+    this._scrollToSelected = false;
     fireEvent(this, "group-selected", {
       group: ev.currentTarget.value,
       collectionIndex: ev.currentTarget.index!,
@@ -169,6 +203,14 @@ export class HaAutomationAddGroups extends LitElement {
     ha-list-item-button::part(start),
     ha-list-item-button::part(end) {
       color: var(--ha-color-on-neutral-quiet);
+    }
+
+    .current {
+      color: var(--primary-text-color);
+      background-color: var(--ha-color-fill-primary-quiet-resting);
+    }
+    .current::part(base) {
+      color: inherit;
     }
 
     .selected {

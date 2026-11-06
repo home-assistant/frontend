@@ -9,6 +9,7 @@ import {
   computeAttributeNameDisplay,
 } from "../../../src/common/entity/compute_attribute_display";
 import type { FrontendLocaleData } from "../../../src/data/translation";
+import { TimeZone } from "../../../src/data/translation";
 import type { HomeAssistant } from "../../../src/types";
 
 export const localizeMock = (key: string) => {
@@ -105,6 +106,19 @@ describe("computeAttributeValueDisplay", () => {
       stateObjMock,
       localeMock,
       configMock,
+      entitiesMock,
+      "attribute",
+      "2023-10-10"
+    );
+    expect(result).toBe("October 10, 2023");
+  });
+
+  it("should not shift date string to another day in a server time zone", () => {
+    const result = computeAttributeValueDisplay(
+      localizeMock,
+      stateObjMock,
+      { ...localeMock, time_zone: TimeZone.server },
+      { ...configMock, time_zone: "America/New_York" },
       entitiesMock,
       "attribute",
       "2023-10-10"

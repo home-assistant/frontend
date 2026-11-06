@@ -1,3 +1,4 @@
+import { getEntityAreaId } from "../../common/entity/context/get_entity_context";
 import { generateEntityFilter } from "../../common/entity/entity_filter";
 import type { HomeAssistant } from "../../types";
 
@@ -61,34 +62,43 @@ export const AREA_CONTROLS_BUTTONS: Record<
   "cover-window": coverButton("window"),
 };
 
-export const getAreaControlEntities = (
-  controls: readonly AreaControlDomain[],
+export const getAreaEntityIds = (
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
   areaId: string,
-  excludeEntities: string[] | undefined,
-  hass: Pick<
-    HomeAssistant,
-    "states" | "entities" | "devices" | "areas" | "floors"
-  >
+  excludeEntities?: string[]
+): string[] =>
+  Object.keys(entities).filter(
+    (entityId) =>
+      getEntityAreaId(entityId, entities, devices) === areaId &&
+      !excludeEntities?.includes(entityId)
+  );
+
+export const getAreaControlEntities = (
+  areaEntities: string[],
+  states: HomeAssistant["states"],
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"],
+  controls: readonly AreaControlDomain[]
 ): Record<AreaControlDomain, string[]> =>
   controls.reduce(
     (acc, control) => {
       const controlButton = AREA_CONTROLS_BUTTONS[control];
       const filter = generateEntityFilter(
-        hass.states,
-        hass.entities,
-        hass.devices,
-        hass.areas,
-        hass.floors,
+        states,
+        entities,
+        devices,
+        areas,
+        floors,
         {
-          area: areaId,
           entity_category: "none",
           ...controlButton.filter,
         }
       );
 
-      acc[control] = Object.keys(hass.entities).filter(
-        (entityId) => filter(entityId) && !excludeEntities?.includes(entityId)
-      );
+      acc[control] = areaEntities.filter(filter);
       return acc;
     },
     {} as Record<AreaControlDomain, string[]>

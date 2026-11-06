@@ -6,6 +6,7 @@ import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import type { BarSeriesOption } from "echarts/charts";
+import type { TopLevelFormatterParams } from "echarts/types/dist/shared";
 import { consume } from "../../../../common/decorators/consume";
 import { transform } from "../../../../common/decorators/transform";
 import "../../../../components/ha-card";
@@ -46,8 +47,11 @@ import type { CustomLegendOption } from "../../../../components/chart/ha-chart-b
 import {
   generateEnergyDevicesDetailGraphData,
   getStatIdFromId,
+  limitTooltipParams,
   UNIT,
 } from "./energy-devices-detail-graph-data";
+
+const TOOLTIP_MAX_ROWS = 10;
 
 @customElement("hui-energy-devices-detail-graph-card")
 export class HuiEnergyDevicesDetailGraphCard
@@ -190,6 +194,12 @@ export class HuiEnergyDevicesDetailGraphCard
     `;
   }
 
+  private _formatOtherDevices = (count: number) =>
+    this._i18n.localize(
+      "ui.panel.lovelace.cards.energy.energy_devices_detail_graph.other_devices",
+      { count }
+    );
+
   private _formatTotal = (total: number) =>
     this._i18n.localize(
       "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
@@ -248,6 +258,13 @@ export class HuiEnergyDevicesDetailGraphCard
         yAxisFractionDigits,
         this._getSeriesArea
       );
+      const tooltip = commonOptions.tooltip;
+      const baseFormatter =
+        tooltip &&
+        !Array.isArray(tooltip) &&
+        typeof tooltip.formatter === "function"
+          ? tooltip.formatter
+          : undefined;
 
       const selected = legendData
         ? legendData
@@ -263,6 +280,19 @@ export class HuiEnergyDevicesDetailGraphCard
 
       return {
         ...commonOptions,
+        tooltip: {
+          ...tooltip,
+          formatter: (params: TopLevelFormatterParams) =>
+            baseFormatter?.(
+              Array.isArray(params)
+                ? limitTooltipParams(
+                    params,
+                    TOOLTIP_MAX_ROWS,
+                    this._formatOtherDevices
+                  )
+                : params
+            ) ?? nothing,
+        },
         legend: {
           show: true,
           type: "custom",

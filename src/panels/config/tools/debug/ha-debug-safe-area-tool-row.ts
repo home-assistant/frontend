@@ -1,4 +1,4 @@
-import { html, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators";
 import { consumeLocalize } from "../../../../common/decorators/consume-context-entry";
 import { storage } from "../../../../common/decorators/storage";
@@ -42,6 +42,13 @@ class HaDebugSafeAreaToolRow extends LitElement {
   private _checkedChanged(ev: Event) {
     this._enabled = (ev.target as HaSwitch).checked;
   }
+
+  static styles = css`
+    ha-list-item-base::part(headline),
+    ha-list-item-base::part(supporting-text) {
+      white-space: normal;
+    }
+  `;
 }
 
 declare global {

@@ -11,7 +11,6 @@ import { getTriggerDomain } from "../../../../data/trigger";
 import {
   BUILDING_BLOCKS,
   DYNAMIC_KEYWORDS,
-  DYNAMIC_TO_GENERIC,
   ELEMENT_TYPES,
   MAX_RECENT_ELEMENTS,
   TIME_LOCATION_GROUPS,
@@ -209,9 +208,6 @@ export const getCollections = (
   } = sources;
   const generatedCollections: CollectionGroup[] = [];
 
-  let genericCollectionIndex = -1;
-  let dynamicCollectionIndex = -1;
-
   const exclusiveDomains = getExclusiveDomains(type);
 
   const domainList =
@@ -267,13 +263,6 @@ export const getCollections = (
     );
 
     if (groups.length) {
-      if (collection.generic) {
-        genericCollectionIndex = generatedCollections.length;
-      }
-      if (collection.groups.dynamicGroups) {
-        dynamicCollectionIndex = generatedCollections.length;
-      }
-
       generatedCollections.push({
         collectionIndex: index,
         titleKey: collection.titleKey,
@@ -282,22 +271,6 @@ export const getCollections = (
       });
     }
   });
-
-  // move groups from dynamic to generic
-  if (genericCollectionIndex !== -1 && dynamicCollectionIndex !== -1) {
-    const dynamicCollection = generatedCollections[dynamicCollectionIndex];
-    const genericCollection = generatedCollections[genericCollectionIndex];
-    const groupsToMove = dynamicCollection.groups.filter((group) =>
-      DYNAMIC_TO_GENERIC.has(group.key)
-    );
-    dynamicCollection.groups = dynamicCollection.groups.filter(
-      (group) => !DYNAMIC_TO_GENERIC.has(group.key)
-    );
-    genericCollection.groups = sortByName(
-      [...genericCollection.groups, ...groupsToMove],
-      language
-    );
-  }
 
   return generatedCollections;
 };

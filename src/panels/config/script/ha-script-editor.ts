@@ -679,7 +679,7 @@ export class HaScriptEditor extends SubscribeMixin(
   }
 
   private async _runScript() {
-    if (hasScriptFields(this.hass, this.currentEntityId!)) {
+    if (hasScriptFields(this.hass.services, this.currentEntityId!)) {
       showMoreInfoDialog(this, {
         entityId: this.currentEntityId!,
       });

@@ -1,25 +1,21 @@
 import { mdiFan, mdiFanSpeed1, mdiFanSpeed2, mdiFanSpeed3 } from "@mdi/js";
 import type { TemplateResult } from "lit";
-import { LitElement, css, html, nothing } from "lit";
-import { customElement } from "lit/decorators";
+import { LitElement, css, html } from "lit";
+import { customElement, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import type { HASSDomCurrentTargetEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-card";
+import type { HaDropdownSelectEvent } from "../../../../src/components/ha-dropdown";
 import "../../../../src/components/ha-control-select-menu";
-import "../../../../src/components/ha-list-item";
+import type { SelectOption } from "../../../../src/components/ha-control-select-menu";
 import "../../../../src/components/ha-svg-icon";
-
-interface SelectMenuOptions {
-  label: string;
-  value: string;
-  icon?: string;
-}
 
 interface SelectMenu {
   label: string;
   icon: string;
   class?: string;
   disabled?: boolean;
-  options: SelectMenuOptions[];
+  options: SelectOption[];
 }
 
 const selects: SelectMenu[] = [
@@ -48,17 +44,17 @@ const selects: SelectMenu[] = [
       {
         value: "low",
         label: "Low",
-        icon: mdiFanSpeed1,
+        iconPath: mdiFanSpeed1,
       },
       {
         value: "medium",
         label: "Medium",
-        icon: mdiFanSpeed2,
+        iconPath: mdiFanSpeed2,
       },
       {
         value: "high",
         label: "High",
-        icon: mdiFanSpeed3,
+        iconPath: mdiFanSpeed3,
       },
     ],
   },
@@ -72,6 +68,8 @@ const selects: SelectMenu[] = [
 
 @customElement("demo-components-ha-control-select-menu")
 export class DemoHaControlSelectMenu extends LitElement {
+  @state() private _values: Record<string, string> = {};
+
   protected render(): TemplateResult {
     return html`
       <ha-card>
@@ -81,37 +79,30 @@ export class DemoHaControlSelectMenu extends LitElement {
             <div class="card-content">
               <ha-control-select-menu
                 .label=${select.label}
+                .value=${this._values[select.label]}
+                .options=${select.options}
                 ?disabled=${select.disabled}
-                fixedMenuPosition
-                naturalMenuWidth
+                data-label=${select.label}
+                @wa-select=${this._handleSelect}
               >
                 <ha-svg-icon slot="icon" .path=${select.icon}></ha-svg-icon>
-                ${select.options.map(
-                  (option) => html`
-                    <ha-list-item
-                      .value=${option.value}
-                      .graphic=${option.icon ? "icon" : undefined}
-                    >
-                      ${
-                        option.icon
-                          ? html`
-                              <ha-svg-icon
-                                slot="graphic"
-                                .path=${option.icon}
-                              ></ha-svg-icon>
-                            `
-                          : nothing
-                      }
-                      ${option.label ?? option.value}
-                    </ha-list-item>
-                  `
-                )}
               </ha-control-select-menu>
             </div>
           `
         )}
       </ha-card>
     `;
+  }
+
+  private _handleSelect(
+    ev: HaDropdownSelectEvent & HASSDomCurrentTargetEvent<HTMLElement>
+  ) {
+    const label = ev.currentTarget.dataset.label;
+    const value = ev.detail.item.value;
+    if (!label || !value) {
+      return;
+    }
+    this._values = { ...this._values, [label]: value };
   }
 
   static styles = css`

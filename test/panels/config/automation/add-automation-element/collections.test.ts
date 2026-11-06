@@ -60,9 +60,11 @@ describe("getCollections", () => {
     expect(keys).toContain(`${DYNAMIC_PREFIX}calendar`);
   });
 
-  it("moves the event domain to the generic collection", () => {
+  it("lists the event domain only in the generic Event group", () => {
     expect(groupKeys(0)).not.toContain(`${DYNAMIC_PREFIX}event`);
-    expect(groupKeys(1)).toContain(`${DYNAMIC_PREFIX}event`);
+    expect(groupKeys(0)).not.toContain("event");
+    expect(groupKeys(1)).not.toContain(`${DYNAMIC_PREFIX}event`);
+    expect(groupKeys(1)).toContain("event");
   });
 });
 
@@ -74,6 +76,14 @@ describe("getGroupItems", () => {
     expect(
       getGroupItems(sources, "time", 0, undefined).map((item) => item.key)
     ).toContain(`${DYNAMIC_PREFIX}calendar.event_started`);
+  });
+
+  it("lists the manual event trigger next to the event domain triggers", () => {
+    expect(
+      getGroupItems(sources, "event", 1, undefined)
+        .map((item) => item.key)
+        .sort()
+    ).toEqual([`${DYNAMIC_PREFIX}event.received`, "event"]);
   });
 
   it("adds system domain elements to the entity domain they cover", () => {

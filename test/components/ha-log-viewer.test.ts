@@ -4,7 +4,7 @@ import "../../src/components/ha-log-viewer";
 vi.mock("../../src/components/ha-button", () => ({}));
 vi.mock("../../src/components/ha-svg-icon", () => ({}));
 
-const MAX_RETAINED_LINES = 5000;
+const MAX_RETAINED_LINES = 50;
 const LOG_LINE_HEIGHT = 20;
 const LOG_VIEWPORT_HEIGHT = 200;
 const ANIMATION_FRAME_DURATION = 16;
@@ -29,6 +29,7 @@ const openLogViewer = async () => {
   viewer = document.createElement("ha-log-viewer");
   Object.assign(viewer, {
     _i18n: { localize: (key: string) => key },
+    maxLines: MAX_RETAINED_LINES,
   });
   document.body.append(viewer);
   await viewer.updateComplete;
@@ -100,7 +101,7 @@ const search = async (value: string) => {
   await vi.advanceTimersByTimeAsync(FILTER_DEBOUNCE);
 };
 
-describe("ha-log-viewer retention", { timeout: 15000 }, () => {
+describe("ha-log-viewer retention", () => {
   it("renders lines added before the first render", async () => {
     viewer = document.createElement("ha-log-viewer");
     Object.assign(viewer, {
@@ -122,7 +123,7 @@ describe("ha-log-viewer retention", { timeout: 15000 }, () => {
     const initialLines = createLogLines(0, MAX_RETAINED_LINES);
     expectRetainedLines(renderedLog, initialLines);
 
-    const linesPerBatch = 100;
+    const linesPerBatch = 10;
     const numberOfBatches = 3;
     let totalReceivedLines = MAX_RETAINED_LINES;
 
@@ -142,7 +143,7 @@ describe("ha-log-viewer retention", { timeout: 15000 }, () => {
 
   it("retains only the newest lines up to the limit from an oversized multiline batch", async () => {
     const { renderedLog } = await openLogViewer();
-    const excessLineCount = 1000;
+    const excessLineCount = 20;
     const incomingLines = createLogLines(
       0,
       MAX_RETAINED_LINES + excessLineCount
@@ -166,7 +167,7 @@ describe("ha-log-viewer retention", { timeout: 15000 }, () => {
 
   it("preserves the reading position when lines above it are removed", async () => {
     const { renderedLog, scrollContainer } = await openViewerWithFullLog();
-    const initialScrollTop = 2007;
+    const initialScrollTop = 507;
     scrollContainer.scrollTop = initialScrollTop;
 
     const incomingLines = createLogLines(MAX_RETAINED_LINES, 2);
@@ -222,7 +223,7 @@ describe("ha-log-viewer retention", { timeout: 15000 }, () => {
   });
 });
 
-describe("ha-log-viewer high volume", { timeout: 15000 }, () => {
+describe("ha-log-viewer high volume", () => {
   it("bounds high-volume batches without exceeding the function argument limit", async () => {
     const { renderedLog } = await openLogViewer();
     const batchSize = 150000;
@@ -250,7 +251,7 @@ describe("ha-log-viewer high volume", { timeout: 15000 }, () => {
 
   it("shows the new logs indicator when scrolled up", async () => {
     const { scrollContainer } = await openLogViewer();
-    viewer.addLines(createLogLines(0, 50));
+    viewer.addLines(createLogLines(0, 40));
     await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
     scrollContainer.scrollTop = 107;
     scrollContainer.dispatchEvent(new Event("scroll"));
@@ -268,7 +269,7 @@ describe("ha-log-viewer high volume", { timeout: 15000 }, () => {
     >(".new-logs-indicator")!;
     expect(indicator.disabled).toBe(true);
 
-    viewer.addLines(createLogLines(0, 50));
+    viewer.addLines(createLogLines(0, 40));
     await vi.advanceTimersByTimeAsync(ANIMATION_FRAME_DURATION);
     scrollContainer.scrollTop = 107;
     scrollContainer.dispatchEvent(new Event("scroll"));

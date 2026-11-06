@@ -5,10 +5,9 @@ import {
   ACTION_COLLECTIONS,
   ACTION_ICONS,
 } from "../../../../data/action";
-import {
-  DYNAMIC_PREFIX,
-  type AutomationElementGroup,
-  type AutomationElementGroupCollection,
+import type {
+  AutomationElementGroup,
+  AutomationElementGroupCollection,
 } from "../../../../data/automation";
 import {
   CONDITION_BUILDING_BLOCKS_GROUP,
@@ -57,9 +56,6 @@ export const DYNAMIC_KEYWORDS = [
   "helpers",
   "integrationGroups",
 ];
-
-// Dynamic domain groups listed in the generic collection instead
-export const DYNAMIC_TO_GENERIC = new Set([`${DYNAMIC_PREFIX}event`]);
 
 export const MAX_RECENT_ELEMENTS = 4;
 
