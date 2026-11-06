@@ -1198,6 +1198,7 @@ export class HaChartBase extends MobileAwareMixin(LitElement) {
       this.chart.dispatchAction(brushCursor);
     } else {
       this.chart.dispatchAction(brushCursor);
+      this._dragToZoom = false;
       this._updateDragToZoom();
     }
   }
