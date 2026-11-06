@@ -7523,6 +7523,7 @@
             "integration": "Integration",
             "parent_device": "Parent device",
             "part_of_device": "Part of {name}",
+            "connected_via": "[%key:ui::panel::config::integrations::config_entry::via%]",
             "firmware_version": "Firmware",
             "battery": "Battery",
             "disabled_by": "Disabled",
