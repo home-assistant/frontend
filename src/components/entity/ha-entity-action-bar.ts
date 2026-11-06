@@ -103,11 +103,14 @@ export class HaEntityActionBar extends HaActionBar {
       return;
     }
     const entityId = this.entityId;
+    // Closing can remove this bar from the DOM (target picker), so the toast
+    // is fired from the picker around it, which stays connected.
+    const toastTarget = this.parentElement ?? this;
     // Close before the async copy, so a late close-picker can't hit a reopened
     // picker or drop a queued afterClose callback.
     fireEvent(this, "close-picker");
     await copyToClipboard(entityId);
-    showToast(this, {
+    showToast(toastTarget, {
       message: this._i18n.localize(
         "ui.components.entity.entity-action-bar.copied_entity_id"
       ),
