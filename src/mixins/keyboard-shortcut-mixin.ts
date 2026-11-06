@@ -31,14 +31,22 @@ export const KeyboardShortcutMixin = <T extends Constructor<ReactiveElement>>(
     private _keydownEvent = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.altKey && !event.shiftKey) {
         const altShortcuts = this.supportedAltShortcuts();
+        const logicalKey = normalizeShortcutKey(event).toUpperCase();
         const code = event.code.replace("Key", "");
+        const key =
+          logicalKey in altShortcuts
+            ? logicalKey
+            : !/^[A-Z]$/.test(logicalKey) && code in altShortcuts
+              ? code
+              : undefined;
         if (
-          code in altShortcuts &&
+          key &&
           !getTopOpenDialogTag() &&
+          this._isEventInScope(event) &&
           canOverrideAlphanumericInput(event.composedPath())
         ) {
           event.preventDefault();
-          altShortcuts[code]();
+          altShortcuts[key]();
         }
         return;
       }
