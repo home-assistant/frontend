@@ -220,19 +220,22 @@ describe("filtersOfTab", () => {
     expect(statusesOfTab("browse")).toContain("new");
   });
 
-  it("leaves out a status picked on browse that the installed tab can't list", () => {
+  it("leaves out a status picked on one tab that the other can't list", () => {
     const filters = { status: ["new", "installed"], type: ["theme"] };
 
     expect(filtersOfTab(filters, "installed")).toEqual({
       status: ["installed"],
       type: ["theme"],
     });
-    expect(filtersOfTab(filters, "browse")).toEqual(filters);
-    // Kept as picked, for when browse is opened again
+    expect(filtersOfTab(filters, "browse")).toEqual({
+      status: ["new"],
+      type: ["theme"],
+    });
+    // Kept as picked, for when the installed tab is opened again
     expect(filters.status).toEqual(["new", "installed"]);
   });
 
-  it("keeps a status picked on browse when the installed status pane changes", () => {
+  it("keeps a status picked on the other tab when a status pane changes", () => {
     const filters = { status: ["new", "installed"] };
 
     expect(
@@ -242,6 +245,7 @@ describe("filtersOfTab", () => {
     // The pane's clear button sends no value
     expect(statusFilterOfTab(filters, "installed", undefined)).toEqual(["new"]);
     expect(statusFilterOfTab(filters, "browse", ["default"])).toEqual([
+      "installed",
       "default",
     ]);
   });
