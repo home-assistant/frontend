@@ -207,6 +207,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._helperFlows = flows;
 
     await this.updateComplete;
+    this._comboBox?.refreshItems();
     this._focusPicker();
   }
 
