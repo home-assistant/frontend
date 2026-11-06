@@ -1,0 +1,60 @@
+{
+  "name": "@home-assistant/components",
+  "version": "0.0.0",
+  "description": "Home Assistant web components (hac-* elements) built with Lit",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/home-assistant/frontend.git",
+    "directory": "packages/components"
+  },
+  "type": "module",
+  "sideEffects": [
+    "./dist/components/**/global.js",
+    "./src/components/**/global.ts"
+  ],
+  "customElements": "dist/custom-elements.json",
+  "exports": {
+    "./scoped": {
+      "ha-source": "./src/scoped.ts",
+      "types": "./dist/scoped.d.ts",
+      "import": "./dist/scoped.js"
+    },
+    "./package.json": "./package.json",
+    "./*/scoped": {
+      "ha-source": "./src/components/*/scoped.ts",
+      "types": "./dist/components/*/scoped.d.ts",
+      "import": "./dist/components/*/scoped.js"
+    },
+    "./*/info": {
+      "ha-source": "./src/components/*/info.ts",
+      "types": "./dist/components/*/info.d.ts",
+      "import": "./dist/components/*/info.js"
+    },
+    "./*": {
+      "ha-source": "./src/components/*/global.ts",
+      "types": "./dist/components/*/global.d.ts",
+      "import": "./dist/components/*/global.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rslib build && cem analyze",
+    "dev": "rslib build --watch",
+    "prepublishOnly": "pnpm run build"
+  },
+  "peerDependencies": {
+    "lit": "^3.3.0"
+  },
+  "devDependencies": {
+    "@custom-elements-manifest/analyzer": "0.11.0",
+    "@rslib/core": "1.0.5",
+    "lit": "3.3.3",
+    "typescript": "6.0.3"
+  }
+}

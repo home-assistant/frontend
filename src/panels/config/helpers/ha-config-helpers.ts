@@ -123,7 +123,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { fileDownload } from "../../../util/file_download";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
-import { renderCategoryGroupActions } from "../category/render-category-group-actions";
+import { categoryGroupActions } from "../category/category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -718,6 +718,12 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
         .columns=${this._columns(this.hass.localize, helpers)}
         .data=${helpers}
         .initialGroupColumn=${this._tableSettings.grouping}
+        .renderGroupActions=${this._groupActions(
+          "helpers",
+          this._categories,
+          this._tableSettings.grouping,
+          this._categoryDeleted
+        )}
         .initialCollapsedGroups=${this._activeCollapsed}
         .initialSorting=${this._tableSettings.sorting}
         .columnOrder=${this._activeColumnOrder}
@@ -880,12 +886,6 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
           .hass=${this.hass}
           slot="toolbar-icon"
         ></ha-integration-overflow-menu>
-        ${renderCategoryGroupActions(
-          "helpers",
-          this._categories,
-          this._tableSettings.grouping,
-          this._categoryDeleted
-        )}
         <ha-button slot="fab" size="l" @click=${this._createHelper}>
           <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
           ${this.hass.localize("ui.panel.config.helpers.picker.create_helper")}
@@ -930,6 +930,8 @@ export class HaConfigHelpers extends SubscribeMixin(LitElement) {
     this._writeFilters();
     this._applyFilters();
   }
+
+  private _groupActions = memoizeOne(categoryGroupActions);
 
   private _categoryDeleted = (categoryId: string) => {
     const value = this._filters["ha-filter-categories"];
