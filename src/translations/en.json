@@ -849,7 +849,8 @@
           "view": "View",
           "view_entity": "View {name}",
           "copy_id": "Copy ID",
-          "copy_entity_id": "Copy ID of {name}"
+          "copy_entity_id": "Copy ID of {name}",
+          "copied_entity_id": "Copied entity ID to clipboard"
         },
         "entity-name-picker": {
           "types": {

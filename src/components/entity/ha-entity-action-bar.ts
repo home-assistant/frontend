@@ -104,7 +104,9 @@ export class HaEntityActionBar extends HaActionBar {
     }
     await copyToClipboard(this.entityId);
     showToast(this, {
-      message: this._i18n.localize("ui.common.copied_clipboard"),
+      message: this._i18n.localize(
+        "ui.components.entity.entity-action-bar.copied_entity_id"
+      ),
     });
     fireEvent(this, "close-picker");
   }
