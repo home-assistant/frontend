@@ -1092,7 +1092,6 @@ class HaConfigAreaPage extends LitElement {
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-4);
-          box-sizing: border-box;
           margin: auto;
           padding: var(--ha-space-4) var(--ha-content-gutter);
           max-width: var(--ha-content-width-wide);
@@ -1103,8 +1102,11 @@ class HaConfigAreaPage extends LitElement {
           gap: var(--ha-space-4);
         }
 
+        /* The actions move to their own row when the name would get too
+           narrow, for example with long translated labels. */
         .area-header-content {
           display: flex;
+          flex-wrap: wrap;
           align-items: center;
           gap: var(--ha-space-4);
         }
@@ -1132,7 +1134,7 @@ class HaConfigAreaPage extends LitElement {
           --mdc-icon-size: 40px;
         }
         .area-info {
-          flex: 1 1 auto;
+          flex: 1 1 200px;
           min-width: 0;
         }
         .area-name {
@@ -1153,11 +1155,9 @@ class HaConfigAreaPage extends LitElement {
           flex-wrap: wrap;
           justify-content: flex-end;
           gap: var(--ha-space-2);
+          margin-inline-start: auto;
         }
 
-        :host([narrow]) .area-header-content {
-          flex-wrap: wrap;
-        }
         :host([narrow]) .area-media {
           width: 96px;
         }
@@ -1197,6 +1197,10 @@ class HaConfigAreaPage extends LitElement {
           width: 24px;
           height: 24px;
           object-fit: contain;
+          border-radius: var(
+            --ha-card-border-radius,
+            var(--ha-border-radius-lg)
+          );
         }
         ha-card:not(.area-header) > *:first-child {
           margin-top: -16px;
