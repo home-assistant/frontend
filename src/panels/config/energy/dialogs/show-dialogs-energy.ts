@@ -9,6 +9,7 @@ import type {
   SolarSourceTypeEnergyPreference,
   WaterSourceTypeEnergyPreference,
   HomeSourceTypeEnergyPreference,
+  WaterGasResource,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
@@ -63,10 +64,12 @@ export interface EnergySettingsDeviceDialogParams {
   saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
 }
 
-export interface EnergySettingsDeviceWaterDialogParams {
+export interface EnergySettingsDeviceWaterGasDialogParams {
+  resource: WaterGasResource;
   device?: DeviceConsumptionEnergyPreference;
   device_consumptions: DeviceConsumptionEnergyPreference[];
   statsMetadata?: Record<string, StatisticsMetaData>;
+  allowedUnitClass?: EnergyGasUnitClass;
   saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
 }
 
@@ -136,14 +139,14 @@ export const showEnergySettingsWaterDialog = (
   });
 };
 
-export const showEnergySettingsDeviceWaterDialog = (
+export const showEnergySettingsDeviceWaterGasDialog = (
   element: HTMLElement,
-  dialogParams: EnergySettingsDeviceWaterDialogParams
+  dialogParams: EnergySettingsDeviceWaterGasDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-energy-device-settings-water",
-    dialogImport: () => import("./dialog-energy-device-settings-water"),
-    dialogParams: dialogParams,
+    dialogTag: "dialog-energy-device-settings-water-gas",
+    dialogImport: () => import("./dialog-energy-device-settings-water-gas"),
+    dialogParams,
   });
 };
 

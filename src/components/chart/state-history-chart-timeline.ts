@@ -22,6 +22,7 @@ import type {
   HomeAssistantInternationalization,
 } from "../../types";
 import { DEFAULT_CHART_WIDTH, MIN_TIME_BETWEEN_UPDATES } from "./ha-chart-base";
+import type { ZoomSliderMode } from "./ha-chart-base";
 import { itemTooltipPosition } from "./chart-tooltip-position";
 import "./ha-chart-tooltip-marker";
 import type { HaECOption, HaECSeries } from "../../resources/echarts/echarts";
@@ -68,8 +69,8 @@ export class StateHistoryChartTimeline extends LitElement {
 
   @property({ attribute: false }) public chartIndex?;
 
-  @property({ attribute: "hide-zoom-controls", type: Boolean })
-  public hideZoomControls = false;
+  @property({ attribute: "zoom-slider" })
+  public zoomSlider: ZoomSliderMode = "auto";
 
   @state() private _chartData: CustomSeriesOption[] = [];
 
@@ -105,7 +106,7 @@ export class StateHistoryChartTimeline extends LitElement {
         grow-for-zoom-slider
         @chart-click=${this._handleChartClick}
         @chart-zoom=${this._handleDataZoom}
-        .hideZoomControls=${this.hideZoomControls}
+        .zoomSlider=${this.zoomSlider}
       ></ha-chart-base>
     `;
   }

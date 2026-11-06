@@ -3,6 +3,12 @@ import { ref } from "lit/directives/ref";
 
 const MAX_ROWS = 2;
 
+// A narrow list, as on a phone or a half width card, fits about one item per
+// row, so two rows hide most of the legend. 450px is about the widest list a
+// phone viewport gives.
+const NARROW_MAX_ROWS = 3;
+const NARROW_WIDTH = 450;
+
 // How many items fit in maxRows of a wrapping row, leaving room for the
 // "more" item after them when not all of them fit.
 export const fitInRows = (
@@ -34,9 +40,10 @@ export const fitInRows = (
   return widths.length;
 };
 
-// Fits the items of a wrapping legend list into two rows. The list keeps its
-// "more" item rendered with the legend-more class, and items past the fit
-// stay rendered out of the flow, so both can always be measured.
+// Fits the items of a wrapping legend list into two rows, three when it is
+// narrow. The list keeps its "more" item rendered with the legend-more class,
+// and items past the fit stay rendered out of the flow, so both can always be
+// measured.
 export class LegendFitController {
   // Items to show while collapsed, undefined until the list is measured
   public fit?: number;
@@ -118,7 +125,7 @@ export class LegendFitController {
       more?.getBoundingClientRect().width ?? 0,
       rowWidth,
       parseFloat(getComputedStyle(list).columnGap) || 0,
-      MAX_ROWS
+      rowWidth < NARROW_WIDTH ? NARROW_MAX_ROWS : MAX_ROWS
     );
     if (fit !== this.fit) {
       this.fit = fit;

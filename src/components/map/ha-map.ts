@@ -45,7 +45,7 @@ import {
   distanceMeters,
 } from "../../common/map/map-engine";
 import type { MapStyleConfig } from "../../common/map/map-styles";
-import { resolveMapStyle } from "../../common/map/map-styles";
+import { isDarkMapStyle, resolveMapStyle } from "../../common/map/map-styles";
 import { readMapThemeColors } from "../../common/map/map-theme-colors";
 import { editableCircleStyles } from "../../common/map/editable-circle";
 import { entityMapColor, zoneColor } from "../../common/map/entity-map-colors";
@@ -618,15 +618,15 @@ export class HaMap extends ReactiveElement {
       });
     }
 
-    if (changedProps.has("mapStyle")) {
-      this._engine?.setMapStyle(this._resolvedMapStyle);
-    }
-
     const oldUi = changedProps.get("_ui") as HomeAssistantUI | undefined;
     if (
       !changedProps.has("themeMode") &&
       (!changedProps.has("_ui") || (oldUi && oldUi.themes === this._ui.themes))
     ) {
+      // A style can have one half only, so the chrome follows it too
+      if (changedProps.has("mapStyle")) {
+        this._updateMapAppearance();
+      }
       return;
     }
 
@@ -647,6 +647,11 @@ export class HaMap extends ReactiveElement {
     );
   }
 
+  // What the map draws, which a style with one half decides over the theme mode
+  private get _styleDark() {
+    return isDarkMapStyle(this.mapStyle, this._darkMode);
+  }
+
   // Memoized: it is read on every appearance sync, and the engines compare
   // what they are handed against what they applied.
   private _resolveMapStyle = memoizeOne(resolveMapStyle);
@@ -659,12 +664,12 @@ export class HaMap extends ReactiveElement {
   // arguments, and a fresh object per read would defeat it.
   private _readThemeColors(): void {
     // Only one set of --ha-color-map-* is live on the page, the one for the
-    // mode the page is in. A card forced to the other mode draws the other
-    // palette, so those values would be the wrong half of the theme; the
-    // style's own colors are the better answer there.
+    // mode the page is in. A card forced to the other mode, or a style with
+    // only the other half, draws the other palette, so those values would be
+    // the wrong half of the theme; the style's own colors are the better answer.
     const pageDark = Boolean(this._ui?.themes?.darkMode);
     const colors =
-      this._darkMode === pageDark ? readMapThemeColors(this) : undefined;
+      this._styleDark === pageDark ? readMapThemeColors(this) : undefined;
     if (!deepEqual(colors, this._themeColors)) {
       this._themeColors = colors;
     }
@@ -690,13 +695,19 @@ export class HaMap extends ReactiveElement {
       return;
     }
     map.classList.toggle("clickable", this.clickable);
-    map.classList.toggle("dark", this._darkMode);
+    map.classList.toggle("dark", this._styleDark);
     map.classList.toggle("drawn", this._mapDrawn);
     // The sky belongs behind a drawn globe; on a blank canvas it is just a
     // gradient with a glow in it
     map.classList.toggle("space", this._vectorEngine && this._mapDrawn);
-    map.classList.toggle("forced-dark", this.themeMode === "dark");
-    map.classList.toggle("forced-light", this.themeMode === "light");
+    map.classList.toggle(
+      "forced-dark",
+      this._styleDark && (this.themeMode === "dark" || !this._darkMode)
+    );
+    map.classList.toggle(
+      "forced-light",
+      !this._styleDark && (this.themeMode === "light" || this._darkMode)
+    );
     this._engine?.setMapStyle(this._resolvedMapStyle);
   }
 
@@ -765,7 +776,7 @@ export class HaMap extends ReactiveElement {
     map.id = "map";
     // Which ground shows in the gap before the first frame; the rest of the
     // classes wait for the engine (_updateMapAppearance)
-    map.classList.toggle("dark", this._darkMode);
+    map.classList.toggle("dark", this._styleDark);
     this.shadowRoot!.append(map);
     this._loading = true;
     this._mapDrawn = false;

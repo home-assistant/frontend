@@ -16,6 +16,7 @@ import "../../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../../types";
 import {
   getAreaControlEntities,
+  getAreaEntityIds,
   MAX_DEFAULT_AREA_CONTROLS,
 } from "../../../../data/area/area_controls";
 import {
@@ -64,15 +65,20 @@ export class HuiAreaControlsCardFeatureEditor
       areas: HomeAssistant["areas"],
       floors: HomeAssistant["floors"]
     ) => {
+      const areaEntities = getAreaEntityIds(
+        entities,
+        devices,
+        areaId,
+        excludeEntities
+      );
       const controlEntities = getAreaControlEntities(
+        areaEntities,
         this.hass!.states,
         entities,
         devices,
         areas,
         floors,
-        AREA_CONTROL_DOMAINS,
-        areaId,
-        excludeEntities
+        AREA_CONTROL_DOMAINS
       );
       return (
         Object.keys(controlEntities) as (keyof typeof controlEntities)[]

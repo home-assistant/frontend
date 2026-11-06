@@ -24,7 +24,7 @@ runs:
 
     - name: Setup Node and install
       if: steps.dependencies.outputs.cache-hit != 'true'
-      uses: ./.github/actions/setup
+      uses: $/.github/actions/setup
       with:
         cache: false
 

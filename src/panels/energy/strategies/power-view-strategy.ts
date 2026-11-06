@@ -151,6 +151,24 @@ export class PowerViewStrategy extends ReactiveElement {
       });
     }
 
+    if (isEnergyCardVisible("now", "gas-flow-sankey", prefs, hidden)) {
+      const showFloorsAndAreas = shouldShowFloorsAndAreas(
+        prefs.device_consumption_gas,
+        hass,
+        (d) => d.stat_rate
+      );
+      chartsSection.cards!.push({
+        title: hass.localize("ui.panel.energy.cards.gas_flow_sankey_title"),
+        type: "gas-flow-sankey",
+        collection_key: collectionKey,
+        group_by_floor: showFloorsAndAreas,
+        group_by_area: showFloorsAndAreas,
+        grid_options: {
+          columns: 36,
+        },
+      });
+    }
+
     if (badges.length) {
       view.badges = badges;
     }

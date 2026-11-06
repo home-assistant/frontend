@@ -1652,9 +1652,8 @@ export class HaConfigDevicePage extends LitElement {
           flex-wrap: wrap;
           gap: var(--ha-space-4);
           margin: auto;
-          max-width: 1280px;
-          box-sizing: border-box;
-          padding: var(--ha-space-2) var(--ha-space-4);
+          max-width: var(--ha-content-width-wide);
+          padding: var(--ha-space-2) var(--ha-content-gutter);
           margin-top: var(--ha-space-8);
           margin-bottom: var(--ha-space-8);
         }

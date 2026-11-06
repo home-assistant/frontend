@@ -5,6 +5,7 @@ import {
   array,
   assert,
   assign,
+  boolean,
   object,
   optional,
   string,
@@ -38,6 +39,7 @@ const cardConfigStruct = assign(
   object({
     title: optional(string()),
     entities: array(union([string(), distributionEntityConfigStruct])),
+    expand_legend: optional(boolean()),
   })
 );
 
@@ -58,7 +60,10 @@ const SUB_FORM = {
   ] as const,
 };
 
-const SCHEMA = [{ name: "title", selector: { text: {} } }] as const;
+const SCHEMA = [
+  { name: "title", selector: { text: {} } },
+  { name: "expand_legend", required: false, selector: { boolean: {} } },
+] as const;
 
 @customElement("hui-distribution-card-editor")
 export class HuiDistributionCardEditor
@@ -207,6 +212,10 @@ export class HuiDistributionCardEditor
         )} (${this.hass!.localize(
           "ui.panel.lovelace.editor.card.config.optional"
         )})`;
+      case "expand_legend":
+        return this.hass!.localize(
+          "ui.panel.lovelace.editor.card.generic.expand_legend"
+        );
       default:
         return "";
     }

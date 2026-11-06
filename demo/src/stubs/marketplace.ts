@@ -149,6 +149,7 @@ const repositories: RepositoryBase[] = [
 const repositoryInfo = (repository: RepositoryBase): RepositoryInfo => ({
   ...repository,
   additional_info: `# ${repository.name}\n\n${repository.description}\n\nThis is a demo. Installing is not available.`,
+  beta: false,
   default_branch: "main",
   issues: 12,
   releases: [repository.available_version],

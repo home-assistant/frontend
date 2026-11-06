@@ -1,3 +1,4 @@
+import { provide } from "@lit/context";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiArrowDown,
@@ -120,6 +121,7 @@ import "./types/ha-automation-trigger-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { scrollRowIntoView } from "../scroll-row-into-view";
 import { AutomationPathController } from "../automation-path";
+import { targetExpandGroupContext } from "../../../../components/target-picker/target-expand-group-context";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -149,6 +151,10 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
 
 @customElement("ha-automation-trigger-row")
 export default class HaAutomationTriggerRow extends LitElement {
+  // Triggers and conditions don't expand the groups their targets name.
+  @provide({ context: targetExpandGroupContext })
+  protected _targetExpandGroup = false;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: Trigger;

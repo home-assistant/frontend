@@ -305,15 +305,13 @@ class ZHADevicePage extends LitElement {
         }
 
         .container {
-          box-sizing: border-box;
           display: grid;
           grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
           gap: var(--ha-space-4);
           align-items: start;
-          max-width: 1400px;
-          width: 100%;
+          max-width: var(--ha-content-width-wide);
           margin: 0 auto;
-          padding: var(--ha-space-4) var(--ha-space-4)
+          padding: var(--ha-space-4) var(--ha-content-gutter)
             calc(var(--ha-space-20) + var(--safe-area-inset-bottom, 0px));
         }
 
