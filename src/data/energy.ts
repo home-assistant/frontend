@@ -2133,7 +2133,8 @@ export type MeasuredBatteryFlows = Record<
  * Splits the energy or power of one period into flows. Batteries with
  * direction statistics pass them in `measured`, and `to_battery` and
  * `from_battery` then only hold the batteries configured with totals.
- * Measured flows are kept as they are; only the rest is estimated.
+ * Measured flows are kept as they are; only the rest is estimated. Leave a
+ * meter undefined when it isn't configured, rather than 0.
  */
 export const computeConsumptionSingle = (
   data: ConsumptionInput,
@@ -2151,8 +2152,18 @@ export const computeConsumptionSingle = (
   const fromGrid = clamp(data.from_grid);
   const toGrid = clamp(data.to_grid);
   const solar = clamp(data.solar);
-  const toBattery = clamp(data.to_battery) + gridToBattery + solarToBattery;
-  const fromBattery = clamp(data.from_battery) + batteryToHome + batteryToGrid;
+  // A flow without a configured meter never passed one, so it stays out of
+  // the home load
+  const metered = (meter: number | undefined, flow: number) =>
+    meter === undefined ? 0 : flow;
+  const toBattery =
+    clamp(data.to_battery) +
+    metered(data.from_grid, gridToBattery) +
+    metered(data.solar, solarToBattery);
+  const fromBattery =
+    clamp(data.from_battery) +
+    batteryToHome +
+    metered(data.to_grid, batteryToGrid);
   const usedTotal =
     options.used_total ?? fromGrid + solar + fromBattery - toGrid - toBattery;
 
