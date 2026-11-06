@@ -123,8 +123,12 @@ export const coverModeValue = (
   if (mode === "tilt") {
     return stateObj.attributes.current_tilt_position ?? undefined;
   }
-  if (supportsFeature(stateObj, CoverEntityFeature.SET_POSITION)) {
-    return stateObj.attributes.current_position ?? undefined;
+  const position = stateObj.attributes.current_position;
+  if (
+    position != null ||
+    supportsFeature(stateObj, CoverEntityFeature.SET_POSITION)
+  ) {
+    return position ?? undefined;
   }
   if (stateObj.state === UNKNOWN || stateObj.state === UNAVAILABLE) {
     return undefined;

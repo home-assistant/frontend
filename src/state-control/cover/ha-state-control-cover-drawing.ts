@@ -412,13 +412,17 @@ export class HaStateControlCoverDrawing extends LitElement {
       this._stopTracking?.();
       end(ev);
     };
+    const handleCancel = () => {
+      this._stopTracking?.();
+      this._setDrag(undefined);
+    };
     window.addEventListener("pointermove", move);
     window.addEventListener("pointerup", handleEnd);
-    window.addEventListener("pointercancel", handleEnd);
+    window.addEventListener("pointercancel", handleCancel);
     this._stopTracking = () => {
       window.removeEventListener("pointermove", move);
       window.removeEventListener("pointerup", handleEnd);
-      window.removeEventListener("pointercancel", handleEnd);
+      window.removeEventListener("pointercancel", handleCancel);
       this._stopTracking = undefined;
     };
   }
@@ -512,7 +516,7 @@ export class HaStateControlCoverDrawing extends LitElement {
         const value = this._drag.value;
         this._setDrag(undefined);
         this._commitValue(value);
-      } else if (e.type === "pointerup") {
+      } else {
         this._commitValue(this._valueFromPointer(e, shape));
       }
     };
@@ -571,11 +575,11 @@ export class HaStateControlCoverDrawing extends LitElement {
       });
     };
     const end = (e: PointerEvent) => {
-      let flipped = false;
+      let flipped: boolean;
       if (this._drag) {
         flipped = Boolean(this._drag.swipe?.flipped);
         this._setDrag(undefined);
-      } else if (e.type === "pointerup") {
+      } else {
         const value = this._valueFromPointer(e, shape);
         flipped = Number.isFinite(value) && (value >= 50 ? 100 : 0) !== start;
       }

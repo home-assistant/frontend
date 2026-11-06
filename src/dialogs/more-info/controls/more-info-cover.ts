@@ -172,7 +172,9 @@ class MoreInfoCover extends LitElement {
   private _stateText(): string {
     const stateObj = this.stateObj!;
     const stateDisplay = this._formatters.formatEntityState(stateObj);
-    const position = stateObj.attributes.current_position;
+    const position =
+      stateObj.attributes.current_position ??
+      stateObj.attributes.current_tilt_position;
     if (!position || Math.round(position) === 0) {
       return stateDisplay;
     }
