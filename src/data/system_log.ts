@@ -3,6 +3,14 @@ import type { HomeAssistant } from "../types";
 export type SystemLogLevel =
   "critical" | "error" | "warning" | "info" | "debug";
 
+// The levels Core's system log keeps, most severe first. It drops anything
+// below warning.
+export const SYSTEM_LOG_LEVELS = [
+  "critical",
+  "error",
+  "warning",
+] as const satisfies readonly SystemLogLevel[];
+
 export interface LoggedError {
   name: string;
   message: [string, ...string[]];

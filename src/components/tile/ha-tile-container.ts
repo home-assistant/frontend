@@ -59,7 +59,7 @@ export class HaTileContainer extends LitElement {
         class="background"
         role=${ifDefined(this.interactive ? "button" : undefined)}
         tabindex=${ifDefined(this.interactive ? "0" : undefined)}
-        aria-labelledby="info"
+        aria-labelledby=${ifDefined(this.interactive ? "info" : undefined)}
         .actionHandler=${actionHandler(this.actionHandlerOptions)}
         @focus=${this._handleFocus}
         @blur=${this._handleBlur}
@@ -74,7 +74,13 @@ export class HaTileContainer extends LitElement {
         <div class="row">
           <div class="content ${classMap(contentClasses)}">
             <slot name="icon"></slot>
-            <slot name="info" id="info"></slot>
+            <div
+              class="info"
+              id="info"
+              aria-hidden=${ifDefined(this.interactive ? "true" : undefined)}
+            >
+              <slot name="info"></slot>
+            </div>
           </div>
           <slot name="features-inline"></slot>
         </div>
@@ -153,6 +159,12 @@ export class HaTileContainer extends LitElement {
       --_tile-info-fixed-primary-min-height: var(--ha-space-8);
       --_tile-info-fixed-min-height: var(--ha-space-12);
     }
+    .info {
+      display: flex;
+      width: 100%;
+      min-width: 0;
+    }
+    .vertical .info,
     .vertical ::slotted([slot="info"]) {
       width: 100%;
       flex: none;

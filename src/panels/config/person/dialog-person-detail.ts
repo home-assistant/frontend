@@ -455,7 +455,7 @@ class DialogPersonDetail
     if (target.checked) {
       target.checked = false;
 
-      const users = await fetchUsers(this.hass);
+      const users = await fetchUsers(this.hass.callWS);
       const currentLinkedUsers = new Set(
         Object.values(this.hass.states)
           .filter(

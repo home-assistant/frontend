@@ -124,6 +124,7 @@ class AddIntegrationDialog extends LitElement {
   private _loadId = 0;
 
   public async showDialog(params?: AddIntegrationDialogParams): Promise<void> {
+    this._navigateToResult = params?.navigateToResult ?? false;
     const loadPromise = this._load(params?.integrationFilter);
 
     if (params?.domain) {
@@ -137,6 +138,8 @@ class AddIntegrationDialog extends LitElement {
       ]);
 
       if (!flowsInProgress.length) {
+        // This dialog never opens, the config flow dialog is shown instead
+        fireEvent(this, "dialog-closed", { dialog: this.localName });
         await this._createFlow(params.domain);
         return;
       }
@@ -157,7 +160,6 @@ class AddIntegrationDialog extends LitElement {
     this._openedDirectly = !!(params?.brand || params?.domain);
     this._initialFilter = params?.initialFilter;
     this._integrationFilter = params?.integrationFilter;
-    this._navigateToResult = params?.navigateToResult ?? false;
     this._narrow = matchMedia(
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;

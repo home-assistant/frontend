@@ -1,10 +1,11 @@
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import type { DeviceCompositeSplits } from "../../data/device/device_registry";
 import type { HaEntityPickerEntityFilterFunc } from "../../data/entity/entity";
 import type { TargetType, TargetTypeFloorless } from "../../data/target";
-import type { HomeAssistant } from "../../types";
 import type { HaDevicePickerDeviceFilterFunc } from "../device/ha-device-picker";
 import "../ha-expansion-panel";
 import "../list/ha-list-base";
@@ -20,7 +21,7 @@ const TYPE_PLURAL = {
 
 @customElement("ha-target-picker-item-group")
 export class HaTargetPickerItemGroup extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
 
   @property() public type!: TargetTypeFloorless;
 
@@ -78,7 +79,7 @@ export class HaTargetPickerItemGroup extends LitElement {
       @expanded-changed=${this._expandedChanged}
     >
       <div slot="header" class="heading">
-        ${this.hass.localize(
+        ${this._localize(
           `ui.components.target-picker.type.${TYPE_PLURAL[this.type]}`
         )}
         ${
@@ -98,7 +99,6 @@ export class HaTargetPickerItemGroup extends LitElement {
                       ] ?? [])
                     : undefined;
                   return html`<ha-target-picker-item-row
-                      .hass=${this.hass}
                       .type=${type as TargetTypeFloorless}
                       .itemId=${item}
                       .deviceFilter=${this.deviceFilter}
@@ -114,7 +114,6 @@ export class HaTargetPickerItemGroup extends LitElement {
                       (exclusion) =>
                         html`<ha-target-picker-item-row
                           exclusion
-                          .hass=${this.hass}
                           .type=${exclusion.type}
                           .itemId=${exclusion.id}
                           .removedCount=${exclusion.removed.length}

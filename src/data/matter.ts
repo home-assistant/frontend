@@ -113,10 +113,70 @@ export interface MatterCommissioningParameters {
   setup_pin_code: number;
   setup_manual_code: string;
   setup_qr_code: string;
+  // Null when the Matter server does not report them, absent with an older Core.
+  discriminator?: number | null;
+  vendor_id?: number | null;
+  product_id?: number | null;
+  commissioning_timeout?: number | null;
 }
 
 export const canCommissionMatterExternal = (hass: HomeAssistant) =>
   hass.auth.external?.config.canCommissionMatter;
+
+export type MatterShareTarget = "apple_home" | "app_chooser";
+
+export interface MatterShareDeviceParams {
+  // Always sent: the iOS app falls back to it, the Android app ignores it.
+  setup_qr_code: string;
+  setup_pin_code: number;
+  discriminator?: number;
+  vendor_id?: number;
+  product_id?: number;
+  device_name?: string;
+  remaining_seconds?: number;
+}
+
+/** The app chooser opens a window of its own, so unlike Apple Home it needs the discriminator and timeout. */
+export const matterShareTargetExternal = (
+  hass: HomeAssistant,
+  params: MatterCommissioningParameters | undefined
+): MatterShareTarget | undefined => {
+  const config = hass.auth.external?.config;
+  if (!config || !params) {
+    return undefined;
+  }
+  if (config.canShareMatterDeviceToAppleHome) {
+    return "apple_home";
+  }
+  if (
+    config.canShareMatterDeviceToOtherApps &&
+    params.discriminator != null &&
+    params.commissioning_timeout != null
+  ) {
+    return "app_chooser";
+  }
+  return undefined;
+};
+
+/** Capped at `timeout` in case the clock went back. */
+export const matterShareRemainingSeconds = (
+  timeout: number | null | undefined,
+  requestedAt: number | undefined,
+  now: number
+): number | undefined =>
+  timeout != null && requestedAt !== undefined
+    ? Math.min(timeout, Math.floor(timeout - (now - requestedAt) / 1000))
+    : undefined;
+
+/** Rejects with `{code, message}`; `code` is `canceled` when the user backed out. */
+export const shareMatterDeviceExternal = (
+  hass: HomeAssistant,
+  params: MatterShareDeviceParams
+) =>
+  hass.auth.external!.sendMessage<"matter/share_device">({
+    type: "matter/share_device",
+    payload: params,
+  });
 
 export const startExternalCommissioning = async (hass: HomeAssistant) => {
   if (isComponentLoaded(hass.config, "thread")) {

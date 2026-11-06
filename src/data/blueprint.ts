@@ -53,8 +53,10 @@ export interface BlueprintSubstituteResults {
   script: { substituted_config: ManualScriptConfig };
 }
 
-export const fetchBlueprints = (hass: HomeAssistant, domain: BlueprintDomain) =>
-  hass.callWS<Blueprints>({ type: "blueprint/list", domain });
+export const fetchBlueprints = (
+  callWS: HomeAssistant["callWS"],
+  domain: BlueprintDomain
+) => callWS<Blueprints>({ type: "blueprint/list", domain });
 
 export const importBlueprint = (hass: HomeAssistant, url: string) =>
   hass.callWS<BlueprintImportResult>({ type: "blueprint/import", url });

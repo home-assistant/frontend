@@ -617,7 +617,17 @@ export class HuiSuggestionEntityTree extends LitElement {
     const stateObj = this.hass.states[entityId];
     const selected = this.selectedEntityId === entityId;
     const name = stateObj
-      ? computeEntityPickerDisplay(this.hass, stateObj).primary
+      ? computeEntityPickerDisplay(
+          {
+            entities: this.hass.entities,
+            devices: this.hass.devices,
+            areas: this.hass.areas,
+            floors: this.hass.floors,
+            language: this.hass.language,
+            translationMetadata: this.hass.translationMetadata,
+          },
+          stateObj
+        ).primary
       : entityId;
     return html`
       <ha-list-item-button

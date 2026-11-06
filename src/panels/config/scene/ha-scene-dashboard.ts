@@ -109,6 +109,7 @@ import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 import { showAreaRegistryDetailDialog } from "../areas/show-dialog-area-registry-detail";
 import { showAssignCategoryDialog } from "../category/show-dialog-assign-category";
+import { renderCategoryGroupActions } from "../category/render-category-group-actions";
 import { showCategoryRegistryDetailDialog } from "../category/show-dialog-category-registry-detail";
 import {
   getAreaTableColumn,
@@ -562,6 +563,12 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircleOutline}
         ></ha-icon-button>
+        ${renderCategoryGroupActions(
+          "scene",
+          this._categories,
+          this._tableSettings.grouping,
+          this._categoryDeleted
+        )}
 
         <ha-filter-floor-areas
           .type=${"scene"}
@@ -599,7 +606,6 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
           @expanded-changed=${this._filterExpanded}
         ></ha-filter-labels>
         <ha-filter-categories
-          .hass=${this.hass}
           scope="scene"
           .value=${this._filters["ha-filter-categories"]?.value}
           @data-table-filter-changed=${this._filterChanged}
@@ -789,6 +795,21 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
     });
   };
 
+  private _categoryDeleted = (categoryId: string) => {
+    const value = this._filters["ha-filter-categories"]?.value;
+
+    if (!Array.isArray(value) || !value.includes(categoryId)) {
+      return;
+    }
+
+    const remaining = value.filter((id) => id !== categoryId);
+
+    this._setFilter("ha-filter-categories", {
+      value: remaining.length ? remaining : undefined,
+      items: undefined,
+    });
+  };
+
   private _filterChanged(ev) {
     this._setFilter(ev.target.localName, ev.detail);
   }
@@ -830,13 +851,17 @@ class HaSceneDashboard extends SubscribeMixin(LitElement) {
         // the filters below only expose the selected options (as filter.value);
         // applying the filter must be done here
       } else if (isFilterUsed(key, filter, "ha-filter-categories")) {
-        // category filter only allows a single selected option
-        filteredEntityIds = filteredEntityIds.filter(
-          (entityId) =>
-            filter.value![0] ===
-            this._entityReg.find((reg) => reg.entity_id === entityId)
-              ?.categories.scene
-        );
+        filteredEntityIds = filteredEntityIds.filter((entityId) => {
+          const category = this._entityReg.find(
+            (reg) => reg.entity_id === entityId
+          )?.categories.scene;
+
+          return (
+            category !== undefined &&
+            Array.isArray(filter.value) &&
+            filter.value.includes(category)
+          );
+        });
       } else if (isFilterUsed(key, filter, "ha-filter-labels")) {
         filteredEntityIds = filteredEntityIds.filter((entityId) =>
           this._entityReg
@@ -1040,7 +1065,7 @@ ${rejected
   }
 
   private _activateScene = async (scene: SceneEntity) => {
-    await activateScene(this.hass, scene.entity_id);
+    await activateScene(this.hass.callService, scene.entity_id);
     showToast(this, {
       message: this.hass.localize("ui.panel.config.scene.activated", {
         name: this.hass.formatEntityName(scene),
@@ -1141,7 +1166,7 @@ ${rejected
       scope: "scene",
       createEntry: async (values) => {
         const category = await createCategoryRegistryEntry(
-          this.hass,
+          this.hass.callWS,
           "scene",
           values
         );
@@ -1154,7 +1179,7 @@ ${rejected
   private _bulkCreateLabel = () => {
     showLabelDetailDialog(this, {
       createEntry: async (values) => {
-        const label = await createLabelRegistryEntry(this.hass, values);
+        const label = await createLabelRegistryEntry(this.hass.callWS, values);
         this._bulkLabel(label.label_id, "add");
       },
     });

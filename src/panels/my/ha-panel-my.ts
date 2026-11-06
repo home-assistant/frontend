@@ -162,6 +162,25 @@ const devicesTableParams = {
   sub_entry: "string?",
 } satisfies Redirect["params"];
 
+// The entities table reads these from the link
+const entitiesTableParams = {
+  search: "string?",
+  sort: "string?",
+  direction: "string?",
+  group: "string?",
+  status: "string?",
+  floor: "string?",
+  area: "string?",
+  device: "string?",
+  device_class: "string?",
+  domain: "string?",
+  entity_domain: "string?",
+  label: "string?",
+  assistants: "string?",
+  config_entry: "string?",
+  sub_entry: "string?",
+} satisfies Redirect["params"];
+
 // The automations table reads these from the link
 const automationsTableParams = {
   search: "string?",
@@ -274,10 +293,15 @@ export const getMyRedirects = (): Redirects => ({
     redirect: "/config/integrations/integration",
     params: {
       domain: "string",
+      search: "string?",
     },
   },
   integrations: {
-    redirect: "/config/integrations",
+    redirect: "/config/integrations/dashboard",
+    params: {
+      search: "string?",
+      status: "string?",
+    },
   },
   config_mqtt: {
     component: "mqtt",
@@ -387,6 +411,7 @@ export const getMyRedirects = (): Redirects => ({
   },
   entities: {
     redirect: "/config/entities",
+    params: entitiesTableParams,
   },
   labels: {
     redirect: "/config/labels",
@@ -485,6 +510,7 @@ export const getMyRedirects = (): Redirects => ({
       provider: "string?",
       search: "string?",
       integration: "string?",
+      level: "string?",
       raw: "string?",
     },
   },
@@ -864,7 +890,13 @@ class HaPanelMy extends LitElement {
       this._redirect!.redirect === "/config/integrations/integration" &&
       params.domain === "hacs"
     ) {
-      return `${this._redirect!.redirect}?${createSearchParam({ domain: "marketplace" })}`;
+      const marketplaceParams = new URLSearchParams(
+        this._createRedirectParams()
+      );
+
+      marketplaceParams.set("domain", "marketplace");
+
+      return `${this._redirect!.redirect}?${marketplaceParams}`;
     }
 
     // Special case for supervisor_app/supervisor_addon: use path-based URL

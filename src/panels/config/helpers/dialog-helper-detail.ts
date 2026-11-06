@@ -5,23 +5,36 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
-import type { HASSDomTargetEvent } from "../../../common/dom/fire_event";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+  HASSDomTargetEvent,
+} from "../../../common/dom/fire_event";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
 import { stringCompare } from "../../../common/string/compare";
+import "../../../components/ha-area-picker";
 import "../../../components/ha-button";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
-import "../../../components/ha-list";
-import "../../../components/ha-list-item";
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
 import "../../../components/input/ha-input-search";
 import type { HaInputSearch } from "../../../components/input/ha-input-search";
+import "../../../components/item/ha-list-item-option";
+import type { HaListItemOption } from "../../../components/item/ha-list-item-option";
+import "../../../components/list/ha-list-selectable";
+import type { HaListSelectable } from "../../../components/list/ha-list-selectable";
 import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
+import {
+  fetchEntityRegistry,
+  getExtendedEntityRegistryEntry,
+  updateEntitiesArea,
+  type EntityRegistryEntry,
+} from "../../../data/entity/entity_registry";
 import { createInputBoolean } from "../../../data/input_boolean";
 import { createInputButton } from "../../../data/input_button";
 import { createInputDateTime } from "../../../data/input_datetime";
@@ -37,10 +50,11 @@ import { createSchedule } from "../../../data/schedule";
 import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import { haStyleDialog, haStyleScrollbar } from "../../../resources/styles";
-import type { HomeAssistant } from "../../../types";
+import type { HomeAssistant, ValueChangedEvent } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
-import type { Helper, HelperDomain } from "./const";
+import type { Helper, HelperDomain, HelperFormItem } from "./const";
 import { isHelperDomain } from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
@@ -104,11 +118,13 @@ const HELPERS: HelperCreators = {
 
 @customElement("dialog-helper-detail")
 export class DialogHelperDetail extends DirtyStateProviderMixin<
-  Helper | undefined
+  { item?: HelperFormItem; area?: string } | undefined
 >()(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _item?: Helper;
+  @state() private _item?: HelperFormItem;
+
+  @state() private _area?: string;
 
   @state() private _open = false;
 
@@ -131,6 +147,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     startFlowHandler: string;
     manifest: IntegrationManifest;
     dialogClosedCallback?: ShowDialogHelperDetailParams["dialogClosedCallback"];
+    navigateToResult?: boolean;
   };
 
   private _params?: ShowDialogHelperDetailParams;
@@ -138,12 +155,16 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   public async showDialog(params: ShowDialogHelperDetailParams): Promise<void> {
     this._params = params;
     this._domain = params.domain;
-    this._item = undefined;
+    this._item = params.item;
+    this._area = undefined;
     if (this._domain && this._domain in HELPERS) {
       this._loading = true;
       try {
         await HELPERS[this._domain].import();
-        this._initDirtyTracking({ type: "deep" }, undefined);
+        this._initDirtyTracking(
+          { type: "deep" },
+          { item: this._item, area: undefined }
+        );
       } finally {
         this._loading = false;
       }
@@ -179,6 +200,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         startFlowHandler: pendingConfigFlow.startFlowHandler,
         manifest: pendingConfigFlow.manifest,
         dialogClosedCallback: pendingConfigFlow.dialogClosedCallback,
+        navigateToResult: pendingConfigFlow.navigateToResult,
       });
     }
   }
@@ -200,6 +222,11 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
             new: true,
             autofocus: true,
           })}
+          <ha-area-picker
+            .value=${this._area}
+            .disabled=${this._submitting}
+            @value-changed=${this._areaChanged}
+          ></ha-area-picker>
         </div>
       `;
       footer = html`
@@ -244,29 +271,23 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
             "ui.panel.config.integrations.search_helper"
           )}
         ></ha-input-search>
-        <ha-list
-          class="ha-scrollbar"
-          innerRole="listbox"
-          itemRoles="option"
-          innerAriaLabel=${this.hass.localize(
+        <ha-list-selectable
+          controlled
+          aria-label=${this.hass.localize(
             "ui.panel.config.helpers.dialog.create_helper"
           )}
-          rootTabbable
+          @ha-list-item-selected=${this._domainPicked}
         >
           ${items.map(([domain, label]) => {
             // Only OG helpers need to be loaded prior adding one
             const isLoaded =
               !(domain in HELPERS) ||
               isComponentLoaded(this.hass.config, domain);
+
             return html`
-              <ha-list-item
-                hasmeta
-                .domain=${domain}
-                @request-selected=${this._domainPicked}
-                graphic="icon"
-              >
+              <ha-list-item-option appearance="line" .value=${domain}>
                 <img
-                  slot="graphic"
+                  slot="start"
                   loading="lazy"
                   alt=""
                   src=${brandsUrl(
@@ -280,27 +301,27 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
                   crossorigin="anonymous"
                   referrerpolicy="no-referrer"
                 />
-                <span class="item-text"> ${label} </span>
+                <span slot="headline">${label}</span>
                 ${
                   isLoaded
-                    ? html`<ha-icon-next slot="meta"></ha-icon-next>`
+                    ? html`<ha-icon-next slot="end"></ha-icon-next>`
                     : html`<ha-svg-icon
-                          slot="meta"
+                          slot="end"
                           .id="icon-${domain}"
                           path=${mdiAlertOutline}
                           @click=${stopPropagation}
                         ></ha-svg-icon>
-                        <ha-tooltip .for="icon-${domain}">
+                        <ha-tooltip slot="end" .for="icon-${domain}">
                           ${this.hass.localize(
                             "ui.dialogs.helper_settings.platform_not_loaded",
                             { platform: domain }
                           )}
                         </ha-tooltip>`
                 }
-              </ha-list-item>
+              </ha-list-item-option>
             `;
           })}
-        </ha-list>
+        </ha-list-selectable>
       `;
     }
 
@@ -380,28 +401,45 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
   private _valueChanged(ev: CustomEvent): void {
     this._item = ev.detail.value;
-    this._updateDirtyState(this._item);
+    this._updateDirtyState({ item: this._item, area: this._area });
   }
 
   private async _createItem(): Promise<void> {
     if (!this._domain || !this._item) {
       return;
     }
+    const domain = this._domain;
+    const params = this._params;
+    const area = this._area;
     this._submitting = true;
     this._error = "";
     try {
-      const createdEntity = await HELPERS[this._domain].create(
-        this.hass,
-        this._item
-      );
-      if (this._params?.dialogClosedCallback && createdEntity.id) {
-        this._params.dialogClosedCallback({
+      const createdEntity = await HELPERS[domain].create(this.hass, this._item);
+      // The dialog was closed or reopened while waiting
+      if (this._params !== params) {
+        return;
+      }
+      let entityId: string | undefined;
+      if (createdEntity.id && (area || params?.navigateToResult)) {
+        entityId = await this._findEntityId(domain, createdEntity.id);
+        if (area) {
+          entityId = await this._saveArea(entityId, area);
+        }
+        if (this._params !== params) {
+          return;
+        }
+      }
+      if (params?.dialogClosedCallback && createdEntity.id) {
+        params.dialogClosedCallback({
           flowFinished: true,
-          entityId: `${this._domain}.${createdEntity.id}`,
+          entityId: entityId ?? `${domain}.${createdEntity.id}`,
         });
       }
       this._markDirtyStateClean();
       this.closeDialog();
+      if (params?.navigateToResult && entityId) {
+        showMoreInfoDialog(this, { entityId });
+      }
     } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {
@@ -409,8 +447,66 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     }
   }
 
-  private async _domainPicked(ev): Promise<void> {
-    const domain = ev.target.closest("ha-list-item").domain;
+  private async _findEntityId(
+    domain: string,
+    uniqueId: string
+  ): Promise<string | undefined> {
+    const isCreated = (entry: EntityRegistryEntry) =>
+      entry.platform === domain && entry.unique_id === uniqueId;
+    try {
+      // The entity ID usually matches the helper ID, unless it was taken
+      const entry = await getExtendedEntityRegistryEntry(
+        this.hass,
+        `${domain}.${uniqueId}`
+      ).catch(() => undefined);
+      if (entry && isCreated(entry)) {
+        return entry.entity_id;
+      }
+      return (await fetchEntityRegistry(this.hass.connection)).find(isCreated)
+        ?.entity_id;
+    } catch (_err) {
+      return undefined;
+    }
+  }
+
+  private async _saveArea(
+    entityId: string | undefined,
+    areaId: string
+  ): Promise<string | undefined> {
+    let error = "Entity not found";
+    if (entityId) {
+      try {
+        return (await updateEntitiesArea(this.hass, [entityId], areaId))[
+          entityId
+        ];
+      } catch (err: unknown) {
+        error = (err as { message?: string })?.message ?? "Unknown error";
+      }
+    }
+    showAlertDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_flow.error_saving_entity",
+        { error }
+      ),
+    });
+    return entityId;
+  }
+
+  private _areaChanged(ev: ValueChangedEvent<string | undefined>): void {
+    ev.stopPropagation();
+    this._area = ev.detail.value || undefined;
+    this._updateDirtyState({ item: this._item, area: this._area });
+  }
+
+  private async _domainPicked(
+    ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
+  ): Promise<void> {
+    const domain = (
+      ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
+    )?.value;
+    if (!domain) {
+      return;
+    }
     const isLoaded =
       !(domain in HELPERS) || isComponentLoaded(this.hass.config, domain);
     if (!isLoaded) {
@@ -428,7 +524,10 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
       try {
         await HELPERS[domain].import();
         this._domain = domain;
-        this._initDirtyTracking({ type: "deep" }, undefined);
+        this._initDirtyTracking(
+          { type: "deep" },
+          { item: this._item, area: undefined }
+        );
       } finally {
         this._loading = false;
       }
@@ -437,6 +536,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         startFlowHandler: domain,
         manifest: await fetchIntegrationManifest(this.hass, domain),
         dialogClosedCallback: this._params?.dialogClosedCallback,
+        navigateToResult: this._params?.navigateToResult,
       };
       this.closeDialog();
     }
@@ -445,6 +545,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   private async _goBack() {
     this._domain = undefined;
     this._item = undefined;
+    this._area = undefined;
     this._error = undefined;
     await this.updateComplete;
     await this._focusSearchInput();
@@ -472,20 +573,29 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         ha-icon-next {
           width: var(--ha-space-6);
         }
+        ha-list-item-option img {
+          width: 24px;
+          height: 24px;
+          object-fit: contain;
+        }
         ha-tooltip {
           pointer-events: auto;
         }
         .form {
           padding: var(--ha-space-6);
         }
+        .form ha-area-picker {
+          display: block;
+          margin-top: var(--ha-space-4);
+        }
         ha-input-search {
           margin: 0 var(--ha-space-4) var(--ha-space-3);
         }
-        ha-list {
+        ha-list-selectable::part(base) {
           height: calc(60vh - 184px);
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-list {
+          ha-list-selectable::part(base) {
             height: calc(
               100vh -
                 184px - var(--safe-area-inset-top, 0px) - var(

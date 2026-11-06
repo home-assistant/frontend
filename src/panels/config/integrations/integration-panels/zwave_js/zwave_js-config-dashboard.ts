@@ -338,7 +338,7 @@ class ZWaveJSConfigDashboard extends LitElement {
               <ha-icon-next slot="end"></ha-icon-next>
             </ha-list-item-button>
             <ha-list-item-button
-              href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
+              href=${`/config/entities?historyBack=1&config_entry=${this.configEntryId}`}
             >
               <ha-svg-icon slot="start" .path=${mdiShape}></ha-svg-icon>
               <div slot="headline">
@@ -923,7 +923,7 @@ class ZWaveJSConfigDashboard extends LitElement {
 
         ha-card {
           margin: 0px auto var(--ha-space-4);
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
         }
 
         .network-card .card-header {
@@ -1027,7 +1027,7 @@ class ZWaveJSConfigDashboard extends LitElement {
         }
 
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4)
+          padding: var(--ha-space-2) var(--ha-content-gutter)
             calc(var(--ha-space-16) + var(--safe-area-inset-bottom, 0px));
         }
       `,

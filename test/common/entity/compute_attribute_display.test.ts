@@ -9,6 +9,7 @@ import {
   computeAttributeNameDisplay,
 } from "../../../src/common/entity/compute_attribute_display";
 import type { FrontendLocaleData } from "../../../src/data/translation";
+import { TimeZone } from "../../../src/data/translation";
 import type { HomeAssistant } from "../../../src/types";
 
 export const localizeMock = (key: string) => {
@@ -112,6 +113,19 @@ describe("computeAttributeValueDisplay", () => {
     expect(result).toBe("October 10, 2023");
   });
 
+  it("should not shift date string to another day in a server time zone", () => {
+    const result = computeAttributeValueDisplay(
+      localizeMock,
+      stateObjMock,
+      { ...localeMock, time_zone: TimeZone.server },
+      { ...configMock, time_zone: "America/New_York" },
+      entitiesMock,
+      "attribute",
+      "2023-10-10"
+    );
+    expect(result).toBe("October 10, 2023");
+  });
+
   it("should return formatted datetime for timestamp", () => {
     const result = computeAttributeValueDisplay(
       localizeMock,
@@ -166,7 +180,7 @@ describe("computeAttributeValueDisplay", () => {
       entitiesMock,
       "temperature"
     );
-    expect(result).toBe("42 °C");
+    expect(result).toBe("42\u00A0°C");
   });
 
   it("should set temperature unit for temperature attribute", () => {
@@ -184,7 +198,7 @@ describe("computeAttributeValueDisplay", () => {
       entitiesMock,
       "temperature"
     );
-    expect(result).toBe("42 °C");
+    expect(result).toBe("42\u00A0°C");
   });
 
   it("should return translation from translation key", () => {

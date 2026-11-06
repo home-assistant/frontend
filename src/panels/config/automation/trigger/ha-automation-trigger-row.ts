@@ -1,3 +1,4 @@
+import { provide } from "@lit/context";
 import "@home-assistant/webawesome/dist/components/divider/divider";
 import {
   mdiArrowDown,
@@ -15,6 +16,7 @@ import {
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
+  mdiSwapHorizontal,
 } from "@mdi/js";
 import type {
   HassServiceTarget,
@@ -63,6 +65,7 @@ import {
   subscribeTrigger,
 } from "../../../../data/automation";
 import { describeTrigger } from "../../../../data/automation_i18n";
+import { portTrigger } from "../../../../data/automation_replace";
 import { validateConfig } from "../../../../data/config";
 import { fullEntitiesContext } from "../../../../data/context";
 import type { EntityRegistryEntry } from "../../../../data/entity/entity_registry";
@@ -76,11 +79,17 @@ import {
 import type { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { isMac } from "../../../../util/is_mac";
-import { showEditorToast } from "../editor-toast";
+import {
+  createTrigger,
+  getTriggerPickerKey,
+  isTriggerReplaceable,
+} from "../automation-element-config";
+import { showEditorToast, showReplacedToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import "../ha-automation-row-options";
 import "../ha-automation-row-threshold";
 import { overflowStyles, rowStyles } from "../styles";
+import { showAddAutomationElementDialog } from "../show-add-automation-element-dialog";
 import { getUiSupportWarnings, isConfigObject } from "../ui-support";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
@@ -111,6 +120,7 @@ import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
 import { renderCtrlOrCmd } from "../../../../common/keyboard/ctrl-or-cmd";
 import { scrollRowIntoView } from "../scroll-row-into-view";
+import { targetExpandGroupContext } from "../../../../components/target-picker/target-expand-group-context";
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -140,6 +150,10 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
 
 @customElement("ha-automation-trigger-row")
 export default class HaAutomationTriggerRow extends LitElement {
+  // Triggers and conditions don't expand the groups their targets name.
+  @provide({ context: targetExpandGroupContext })
+  protected _targetExpandGroup = false;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: Trigger;
@@ -394,6 +408,21 @@ export default class HaAutomationTriggerRow extends LitElement {
           .label=${this.hass.localize("ui.common.menu")}
           .path=${mdiDotsVertical}
         ></ha-icon-button>
+        ${
+          isTriggerReplaceable(this.trigger)
+            ? html`<ha-dropdown-item value="replace" .disabled=${this.disabled}>
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiSwapHorizontal}
+                ></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.replace"
+                  )
+                )}
+              </ha-dropdown-item>`
+            : nothing
+        }
         <ha-dropdown-item
           value="rename"
           .disabled=${this.disabled || type === "list"}
@@ -813,6 +842,7 @@ export default class HaAutomationTriggerRow extends LitElement {
           this.focus();
         }
       },
+      replace: isTriggerReplaceable(trigger) ? this._replaceTrigger : undefined,
       rename: () => {
         this._renameTrigger();
       },
@@ -859,6 +889,36 @@ export default class HaAutomationTriggerRow extends LitElement {
 
     copyToClipboard(dump(this.trigger));
   }
+
+  private _replaceTrigger = () => {
+    if (isTriggerList(this.trigger)) {
+      return;
+    }
+    if (this.narrow) {
+      fireEvent(this, "request-close-sidebar");
+    }
+    const trigger = this.trigger;
+    const key = getTriggerPickerKey(trigger, this.triggerDescriptions);
+    showAddAutomationElementDialog(this, {
+      type: "trigger",
+      clipboardItem: undefined,
+      replacingItemKey: key,
+      add: (value, target) => {
+        if (value === key && !target) {
+          return;
+        }
+        fireEvent(this, "replace-item", {
+          value: portTrigger(
+            trigger,
+            createTrigger(value, target),
+            this.hass,
+            this.triggerDescriptions
+          ),
+        });
+        showReplacedToast(this, this.hass.localize);
+      },
+    });
+  };
 
   private _onDelete = () => {
     fireEvent(this, "value-changed", { value: null });
@@ -1173,6 +1233,9 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
 
     switch (action) {
+      case "replace":
+        this._replaceTrigger();
+        break;
       case "rename":
         this._renameTrigger();
         break;

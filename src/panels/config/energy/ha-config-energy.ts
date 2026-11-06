@@ -33,6 +33,7 @@ import "./components/ha-energy-device-settings";
 import "./components/ha-energy-device-settings-water";
 import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
+import "./components/ha-energy-home-settings";
 import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
 import "./components/ha-energy-water-settings";
@@ -171,6 +172,12 @@ class HaConfigEnergy extends LitElement {
             .info=${this._info}
             @value-changed=${this._prefsChanged}
           ></ha-energy-solar-settings>
+          <ha-energy-home-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            .validationResult=${this._validationResult}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-home-settings>
           <ha-energy-battery-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
@@ -319,27 +326,26 @@ class HaConfigEnergy extends LitElement {
           align-items: center;
         }
         .content {
-          padding: 0 var(--ha-space-5);
-          max-width: 1040px;
+          padding: 0 var(--ha-content-gutter);
+          max-width: var(--ha-content-width-narrow);
           margin: 0 auto;
         }
 
         ha-alert {
           display: block;
           margin: 12px auto;
-          max-width: 600px;
         }
 
         ha-energy-grid-settings,
         ha-energy-solar-settings,
+        ha-energy-home-settings,
         ha-energy-battery-settings,
         ha-energy-gas-settings,
         ha-energy-water-settings,
         ha-energy-device-settings,
         ha-energy-device-settings-water {
           display: block;
-          max-width: 600px;
-          margin: 0 auto 12px;
+          margin-bottom: 12px;
         }
       `,
     ];

@@ -135,6 +135,25 @@ const listItemContent = (item: RegExpExecArray) => {
   return before.length + marker.length + spacing;
 };
 
+// The line past up to `columns` of indentation, a tab moving on to the next
+// multiple of four, like CommonMark. The columns of a tab past that are kept.
+const withoutIndentation = (line: string, columns: number) => {
+  let width = 0;
+  let index = 0;
+  while (index < line.length && width < columns) {
+    const character = line[index];
+    if (character === " ") {
+      width += 1;
+    } else if (character === "\t") {
+      width += 4 - (width % 4);
+    } else {
+      break;
+    }
+    index++;
+  }
+  return " ".repeat(Math.max(0, width - columns)) + line.slice(index);
+};
+
 const isClosingFence = (line: string, fence: string) => {
   const closing = FENCE_CLOSING.exec(line);
   return (
@@ -152,6 +171,8 @@ const splitCodeBlocks = (input: string) => {
   const blocks: MarkdownBlock[] = [];
   let current: MarkdownBlock | undefined;
   let fence: string | undefined;
+  // A fence in a list item is indented like the text of the item
+  let fenceIndentation = 0;
 
   let indented = false;
   let previousBlank = true;
@@ -162,7 +183,9 @@ const splitCodeBlocks = (input: string) => {
     const content = line.replace(QUOTE_MARKERS, "");
     if (current?.code && fence) {
       current.lines.push(line);
-      if (isClosingFence(content, fence)) {
+      if (
+        isClosingFence(withoutIndentation(content, fenceIndentation), fence)
+      ) {
         fence = undefined;
       }
       continue;
@@ -197,9 +220,19 @@ const splitCodeBlocks = (input: string) => {
     }
     previousBlank = blank;
 
-    const opening = FENCE_OPENING.exec(content);
+    // A fence can open on the line of a list marker, after the marker and its
+    // spacing. More spaces than that are indentation of the text of the item.
+    const opening = FENCE_OPENING.exec(
+      item
+        ? withoutIndentation(
+            content.slice(item[1].length + item[2].length),
+            listContent - item[1].length - item[2].length
+          )
+        : withoutIndentation(content, listContent)
+    );
     if (opening) {
       fence = opening[1] ?? opening[2];
+      fenceIndentation = listContent;
       current = { code: true, lines: [line] };
       blocks.push(current);
       continue;
@@ -264,14 +297,44 @@ const maskInlineCode = (text: string, mask: (code: string) => string) =>
     .map((paragraph) => maskInlineCodeSpans(paragraph, mask))
     .join("");
 
-// Links issue references, like #12, to the repository. The addresses of links
-// and images are rewritten by repositoryUrl, once the README is rendered.
+// A section of a README that is not for the Marketplace is between these
+const EXCLUSION_MARKER = /<!--\s*ha-marketplace:exclude-(start|end)\s*-->/g;
+
+/**
+ * Leave out the sections a README marks for the Marketplace to skip, like
+ * installation instructions that the header of the page already covers.
+ *
+ * A section starts at `<!-- ha-marketplace:exclude-start -->` and runs to the
+ * next `<!-- ha-marketplace:exclude-end -->`, or to the end of the README
+ * without one, like an unclosed fence. Markers in code are text.
+ */
+const withoutExcludedSections = (input: string) => {
+  let output = "";
+  let position = 0;
+  let excluded = false;
+
+  for (const marker of input.matchAll(EXCLUSION_MARKER)) {
+    if (marker[1] === "start" && !excluded) {
+      output += input.slice(position, marker.index);
+      excluded = true;
+    } else if (marker[1] === "end" && excluded) {
+      position = marker.index + marker[0].length;
+      excluded = false;
+    }
+  }
+
+  return excluded ? output : output + input.slice(position);
+};
+
+// Leaves out the sections marked for the Marketplace to skip and links issue
+// references, like #12, to the repository. The addresses of links and images
+// are rewritten by repositoryUrl, once the README is rendered.
 export const markdownWithRepositoryContext = (
   input: string,
   repository?: RepositoryInfo
 ) => {
   // The placeholders would be mistaken for content, a README never has them
-  if (!repository || input.includes("\0") || input.includes("\uE000")) {
+  if (input.includes("\0") || input.includes("\uE000")) {
     return input;
   }
 
@@ -289,7 +352,10 @@ export const markdownWithRepositoryContext = (
     })
     .join("\n");
 
-  return linkIssueReferences(masked, repository).replace(
+  const shown = withoutExcludedSections(masked);
+  const linked = repository ? linkIssueReferences(shown, repository) : shown;
+
+  return linked.replace(
     CODE_PLACEHOLDER,
     (_placeholder, index) => code[Number(index)]
   );

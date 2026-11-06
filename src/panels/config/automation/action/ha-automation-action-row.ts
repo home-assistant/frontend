@@ -18,7 +18,9 @@ import {
   mdiPlusCircleMultipleOutline,
   mdiRenameBox,
   mdiStopCircleOutline,
+  mdiSwapHorizontal,
 } from "@mdi/js";
+import { provide } from "@lit/context";
 import deepClone from "deep-clone-simple";
 import type { HassServiceTarget } from "home-assistant-js-websocket";
 import { dump } from "js-yaml";
@@ -28,6 +30,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { consume } from "../../../../common/decorators/consume";
 import "../trigger/ha-automation-trigger-references";
+import { targetExpandGroupContext } from "../../../../components/target-picker/target-expand-group-context";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -84,6 +87,7 @@ import type {
 } from "../../../../data/script";
 import { isAction } from "../../../../data/script";
 import { describeAction } from "../../../../data/script_i18n";
+import { portAction } from "../../../../data/automation_replace";
 import type { TargetSelector } from "../../../../data/selector";
 import { callExecuteScript } from "../../../../data/service";
 import {
@@ -92,10 +96,16 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import type { HomeAssistant } from "../../../../types";
 import { isMac } from "../../../../util/is_mac";
-import { showEditorToast } from "../editor-toast";
+import {
+  createAction,
+  getActionPickerKey,
+  isActionReplaceable,
+} from "../automation-element-config";
+import { showEditorToast, showReplacedToast } from "../editor-toast";
 import "../ha-automation-editor-warning";
 import "../ha-automation-row-options";
 import { overflowStyles, rowStyles } from "../styles";
+import { showAddAutomationElementDialog } from "../show-add-automation-element-dialog";
 import { getUiSupportWarnings } from "../ui-support";
 import { getDeviceTarget } from "../target/get_device_target";
 import { getEntityTarget } from "../target/get_entity_target";
@@ -157,6 +167,11 @@ const getWaitTemplateCondition = (template: unknown): Condition | undefined =>
 
 @customElement("ha-automation-action-row")
 export default class HaAutomationActionRow extends LitElement {
+  // Conditions don't expand the groups their targets name; other actions do.
+  @provide({ context: targetExpandGroupContext })
+  @state()
+  protected _targetExpandGroup = true;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public action!: Action;
@@ -249,6 +264,7 @@ export default class HaAutomationActionRow extends LitElement {
       return;
     }
     const type = getAutomationActionType(this.action);
+    this._targetExpandGroup = type !== "condition";
     if (this._warnings && this._yamlMode && type) {
       this._warnings = getUiSupportWarnings(
         this.hass.localize,
@@ -495,6 +511,21 @@ export default class HaAutomationActionRow extends LitElement {
             this.hass.localize("ui.panel.config.automation.editor.actions.run")
           )}
         </ha-dropdown-item>
+        ${
+          isActionReplaceable(this.action)
+            ? html`<ha-dropdown-item value="replace" .disabled=${this.disabled}>
+                <ha-svg-icon
+                  slot="icon"
+                  .path=${mdiSwapHorizontal}
+                ></ha-svg-icon>
+                ${this._renderOverflowLabel(
+                  this.hass.localize(
+                    "ui.panel.config.automation.editor.actions.replace"
+                  )
+                )}
+              </ha-dropdown-item>`
+            : nothing
+        }
         <ha-dropdown-item value="rename" .disabled=${this.disabled}>
           <ha-svg-icon slot="icon" .path=${mdiRenameBox}></ha-svg-icon>
           ${this._renderOverflowLabel(
@@ -987,6 +1018,32 @@ export default class HaAutomationActionRow extends LitElement {
     });
   };
 
+  private _replaceAction = () => {
+    // The sidebar keeps its callback when YAML turns the action into a block.
+    if (!isActionReplaceable(this.action)) {
+      return;
+    }
+    if (this.narrow) {
+      fireEvent(this, "request-close-sidebar");
+    }
+    const action = this.action;
+    const key = getActionPickerKey(action);
+    showAddAutomationElementDialog(this, {
+      type: "action",
+      clipboardItem: undefined,
+      replacingItemKey: key,
+      add: (value, target) => {
+        if (value === key && !target) {
+          return;
+        }
+        fireEvent(this, "replace-item", {
+          value: portAction(action, createAction(value, target), this.hass),
+        });
+        showReplacedToast(this, this.hass.localize);
+      },
+    });
+  };
+
   private _onDelete = () => {
     fireEvent(this, "value-changed", { value: null });
     if (this._selected) {
@@ -1207,6 +1264,9 @@ export default class HaAutomationActionRow extends LitElement {
           this.focus();
         }
       },
+      replace: isActionReplaceable(sidebarAction)
+        ? this._replaceAction
+        : undefined,
       rename: () => {
         this._renameAction();
       },
@@ -1301,6 +1361,9 @@ export default class HaAutomationActionRow extends LitElement {
     switch (action) {
       case "run":
         this._runAction();
+        break;
+      case "replace":
+        this._replaceAction();
         break;
       case "rename":
         this._renameAction();

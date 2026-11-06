@@ -41,6 +41,10 @@ import type {
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceHeadingBadgeConfig } from "../heading-badges/types";
 import type { HomeSummary } from "../strategies/home/helpers/home-summaries";
+import type {
+  PICTURE_ELEMENTS_EDITOR_BRIDGE,
+  PictureElementsEditorBridge,
+} from "./picture-elements/editor-bridge";
 
 export type AlarmPanelCardConfigState =
   "arm_away" | "arm_home" | "arm_night" | "arm_vacation" | "arm_custom_bypass";
@@ -88,6 +92,7 @@ export interface EntityCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
+  color?: string;
   attribute?: string;
   unit?: string;
   theme?: string;
@@ -184,12 +189,14 @@ export interface EnergyCardSankeyConfig extends EnergyCardConfig {
   group_by_area?: boolean;
   max_devices?: number;
   show_values?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergyDateSelectorCardConfig extends EnergyCardBaseConfig {
   vertical_opening_direction?: "auto" | "up" | "down";
   opening_direction?: "auto" | "right" | "left" | "center" | "inline";
   disable_compare?: boolean;
+  show_combine_sources?: boolean;
 }
 
 export interface EnergyDistributionCardConfig extends EnergyCardConfig {
@@ -200,18 +207,22 @@ export interface EnergyUsageGraphCardConfig extends EnergyCardConfig {
   type: "energy-usage-graph";
   show_legend?: boolean;
   expand_legend?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergySolarGraphCardConfig extends EnergyCardConfig {
   type: "energy-solar-graph";
+  combine_sources?: boolean;
 }
 
 export interface EnergyGasGraphCardConfig extends EnergyCardConfig {
   type: "energy-gas-graph";
+  combine_sources?: boolean;
 }
 
 export interface EnergyWaterGraphCardConfig extends EnergyCardConfig {
   type: "energy-water-graph";
+  combine_sources?: boolean;
 }
 
 export interface EnergyDevicesGraphCardConfig extends EnergyCardConfig {
@@ -232,6 +243,7 @@ export interface EnergySourcesTableCardConfig extends EnergyCardConfig {
   type: "energy-sources-table";
   types?: (keyof EnergySourceByType)[];
   show_only_totals?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergySolarGaugeCardConfig extends EnergyCardConfig {
@@ -258,6 +270,7 @@ export interface PowerSourcesGraphCardConfig extends EnergyCardConfig {
   type: "power-sources-graph";
   show_legend?: boolean;
   expand_legend?: boolean;
+  combine_sources?: boolean;
 }
 
 export interface EnergySankeyCardConfig extends EnergyCardSankeyConfig {
@@ -318,6 +331,7 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   min?: number;
   max?: number;
   severity?: SeverityConfig;
+  color?: string;
   theme?: string;
   needle?: boolean;
   segments?: GaugeSegment[];
@@ -467,7 +481,7 @@ export interface ClockCardConfig extends LovelaceCardConfig {
   time_format?: TimeFormat;
   time_zone?: string;
   no_background?: boolean;
-  date_format?: ClockCardDatePart[];
+  date_format?: ClockCardDateFormat;
   // Analog clock options
   border?: boolean;
   ticks?: "none" | "quarter" | "hour" | "minute";
@@ -488,7 +502,24 @@ export type ClockCardDatePart =
   | "separator-dash"
   | "separator-slash"
   | "separator-dot"
+  | "separator-comma"
   | "separator-new-line";
+
+export type ClockCardDatePreset = "short" | "medium" | "long" | "full" | "iso";
+
+/**
+ * A preset name, or a custom list of date parts in display order.
+ */
+export type ClockCardDateFormat = ClockCardDatePreset | ClockCardDatePart[];
+
+export interface DateCardConfig extends LovelaceCardConfig {
+  type: "date";
+  title?: string;
+  date_size?: "small" | "medium" | "large";
+  date_format?: ClockCardDateFormat;
+  time_zone?: string;
+  no_background?: boolean;
+}
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -557,10 +588,6 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   alt_text?: string;
 }
 
-// Symbol for preview click callback - preserved through spreads, not serialized
-// This allows the editor to attach a callback that only exists on the edited card's config
-export const PREVIEW_CLICK_CALLBACK = Symbol("previewClickCallback");
-
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
   title?: string;
   image?: string | MediaSelectorValue;
@@ -575,7 +602,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   theme?: string;
   dark_mode_image?: string | MediaSelectorValue;
   dark_mode_filter?: string;
-  [PREVIEW_CLICK_CALLBACK]?: (x: number, y: number) => void;
+  [PICTURE_ELEMENTS_EDITOR_BRIDGE]?: PictureElementsEditorBridge;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
@@ -630,6 +657,7 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string | EntityNameItem | EntityNameItem[];
   icon?: string;
+  color?: string;
   graph?: string;
   unit?: string;
   detail?: number;
@@ -770,6 +798,7 @@ export interface DistributionCardConfig extends LovelaceCardConfig {
   type: "distribution";
   title?: string;
   entities: (string | DistributionEntityConfig)[];
+  expand_legend?: boolean;
 }
 
 export interface DiscoveredDevicesCardConfig extends LovelaceCardConfig {

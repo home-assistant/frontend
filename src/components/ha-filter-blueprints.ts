@@ -1,4 +1,4 @@
-import type { SelectedDetail } from "@material/mwc-list";
+import type { ContextType } from "@lit/context";
 import { mdiFilterVariantRemove } from "@mdi/js";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -8,28 +8,36 @@ import {
   FilterPanelController,
   filterPanelStyles,
 } from "../common/controllers/filter-panel-controller";
+import { consume } from "../common/decorators/consume";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import type { LocalizeFunc } from "../common/translations/localize";
+import { arrayWith, arrayWithout } from "../common/array/array-with";
+import type {
+  HASSDomCurrentTargetEvent,
+  HASSDomEvent,
+} from "../common/dom/fire_event";
 import { fireEvent } from "../common/dom/fire_event";
 import { deepEqual } from "../common/util/deep-equal";
 import type { Blueprints } from "../data/blueprint";
 import { fetchBlueprints } from "../data/blueprint";
+import { apiContext } from "../data/context";
 import type { RelatedResult } from "../data/search";
 import { findRelated } from "../data/search";
-import { haStyleScrollbar } from "../resources/styles";
-import type { HomeAssistant } from "../types";
-import "./ha-check-list-item";
 import "./ha-expansion-panel";
 import "./ha-icon-button";
-import "./ha-list";
+import "./item/ha-list-item-option";
+import type { HaListItemOption } from "./item/ha-list-item-option";
+import "./list/ha-list-selectable";
+import type { HaListSelectable } from "./list/ha-list-selectable";
 
 @customElement("ha-filter-blueprints")
 export class HaFilterBlueprints extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @state()
   @consumeLocalize()
   private _localize!: LocalizeFunc;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @property({ attribute: false }) public value?: string[];
 
@@ -85,23 +93,30 @@ export class HaFilterBlueprints extends LitElement {
                 ${
                   this._blueprints
                     ? html`
-                        <ha-list
-                          @selected=${this._blueprintsSelected}
+                        <ha-list-selectable
                           multi
-                          class="ha-scrollbar"
+                          aria-label=${this._localize(
+                            "ui.panel.config.blueprint.caption"
+                          )}
+                          @ha-list-item-selected=${this._handleItemToggled}
+                          @ha-list-item-deselected=${this._handleItemToggled}
                         >
                           ${Object.entries(this._blueprints).map(
                             ([id, blueprint]) =>
                               "error" in blueprint
                                 ? nothing
-                                : html`<ha-check-list-item
+                                : html`<ha-list-item-option
+                                    appearance="checkbox"
+                                    selection-position="end"
                                     .value=${id}
-                                    .selected=${(this.value || []).includes(id)}
+                                    .selected=${this.value?.includes(id) ?? false}
                                   >
-                                    ${blueprint.metadata.name || id}
-                                  </ha-check-list-item>`
+                                    <span slot="headline"
+                                      >${blueprint.metadata.name || id}</span
+                                    >
+                                  </ha-list-item-option>`
                           )}
-                        </ha-list>
+                        </ha-list-selectable>
                       `
                     : nothing
                 }
@@ -116,35 +131,27 @@ export class HaFilterBlueprints extends LitElement {
     if (!this.type) {
       return;
     }
-    this._blueprints = await fetchBlueprints(this.hass, this.type);
+    this._blueprints = await fetchBlueprints(this._api.callWS, this.type);
   }
 
   private _expandedChanged(ev) {
     this.expanded = ev.detail.expanded;
   }
 
-  private async _blueprintsSelected(
-    ev: CustomEvent<SelectedDetail<Set<number>>>
+  private _handleItemToggled(
+    ev: HASSDomEvent<number> & HASSDomCurrentTargetEvent<HaListSelectable>
   ) {
-    const blueprints = this._blueprints!;
-
-    if (!ev.detail.index.size) {
-      fireEvent(this, "data-table-filter-changed", {
-        value: [],
-        items: undefined,
-      });
-      this.value = [];
+    const blueprintId = (
+      ev.currentTarget.items[ev.detail] as HaListItemOption | undefined
+    )?.value;
+    if (!blueprintId) {
       return;
     }
 
-    const value: string[] = [];
-
-    for (const index of ev.detail.index) {
-      const blueprintId = Object.keys(blueprints)[index];
-      value.push(blueprintId);
-    }
-
-    this.value = value;
+    this.value =
+      ev.type === "ha-list-item-selected"
+        ? arrayWith(this.value, blueprintId)
+        : arrayWithout(this.value, blueprintId);
   }
 
   private async _findRelated() {
@@ -163,7 +170,7 @@ export class HaFilterBlueprints extends LitElement {
     for (const blueprintId of this.value) {
       if (this.type) {
         relatedPromises.push(
-          findRelated(this.hass, `${this.type}_blueprint`, blueprintId)
+          findRelated(this._api, `${this.type}_blueprint`, blueprintId)
         );
       }
     }
@@ -199,10 +206,14 @@ export class HaFilterBlueprints extends LitElement {
 
   static get styles(): CSSResultGroup {
     return [
-      haStyleScrollbar,
       filterPanelStyles,
       css`
-        ha-list {
+        ha-list-selectable {
+          display: flex;
+          flex: 1;
+          min-height: 0;
+        }
+        ha-list-selectable::part(base) {
           flex: 1;
           min-height: 0;
         }

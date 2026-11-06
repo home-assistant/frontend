@@ -185,6 +185,7 @@ export function storage(options: {
     if (options.subscribe) {
       const connectedCallback = proto.connectedCallback;
       const disconnectedCallback = proto.disconnectedCallback;
+      const disconnectedValues = new WeakMap<ReactiveElement, unknown>();
 
       proto.connectedCallback = function () {
         connectedCallback.call(this);
@@ -192,12 +193,20 @@ export function storage(options: {
         if (!el.__unbsubLocalStorage) {
           el.__unbsubLocalStorage = subscribeChanges?.(this);
         }
+        if (disconnectedValues.has(el)) {
+          const oldValue = disconnectedValues.get(el);
+          disconnectedValues.delete(el);
+          if (oldValue !== storageInstance.getValue(storageKey)) {
+            el.requestUpdate(propertyKey, oldValue);
+          }
+        }
       };
       proto.disconnectedCallback = function () {
         disconnectedCallback.call(this);
         const el = this as unknown as ReactiveStorageElement;
         el.__unbsubLocalStorage?.();
         el.__unbsubLocalStorage = undefined;
+        disconnectedValues.set(el, storageInstance.getValue(storageKey));
       };
     }
 

@@ -26,6 +26,13 @@ const CONFIGS = [
     },
   },
   {
+    heading: "Playing Music (all features)",
+    config: {
+      type: "media-control",
+      entity: "media_player.music_all_features",
+    },
+  },
+  {
     heading: "Playing Stream",
     config: {
       type: "media-control",

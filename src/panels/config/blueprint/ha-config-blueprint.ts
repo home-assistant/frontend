@@ -40,8 +40,8 @@ class HaConfigBlueprint extends HassRouterPage {
 
   private async _getBlueprints() {
     const [automation, script] = await Promise.all([
-      fetchBlueprints(this.hass, "automation"),
-      fetchBlueprints(this.hass, "script"),
+      fetchBlueprints(this.hass.callWS, "automation"),
+      fetchBlueprints(this.hass.callWS, "script"),
     ]);
     this.blueprints = { automation, script };
   }

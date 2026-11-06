@@ -1,24 +1,6 @@
 import type { DeviceRegistryEntry } from "../../../src/data/device/device_registry";
 import { connectivityDevices } from "./connectivity/fixtures";
-
-const baseDevice = {
-  config_entries_subentries: {},
-  connections: [] as [string, string][],
-  identifiers: [] as [string, string][],
-  model_id: null,
-  labels: [] as string[],
-  sw_version: null,
-  hw_version: null,
-  serial_number: null,
-  via_device_id: null,
-  area_id: null,
-  name_by_user: null,
-  disabled_by: null,
-  configuration_url: null,
-  parent_device_id: null,
-  created_at: 0,
-  modified_at: 0,
-};
+import { baseDevice } from "./device_registry";
 
 export const demoDevices: DeviceRegistryEntry[] = [
   {

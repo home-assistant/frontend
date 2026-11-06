@@ -1,11 +1,16 @@
+import type { ContextType } from "@lit/context";
 import { mdiContentCopy } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
+import { consumeLocalize } from "../../common/decorators/consume-context-entry";
 import { storage } from "../../common/decorators/storage";
 import { fireEvent } from "../../common/dom/fire_event";
+import type { LocalizeFunc } from "../../common/translations/localize";
 import { copyToClipboard } from "../../common/util/copy-clipboard";
 import { fetchCloudStatus } from "../../data/cloud";
+import { apiContext, configContext } from "../../data/context";
 import type {
   MediaPlayerBrowseAction,
   MediaPlayerItem,
@@ -13,7 +18,6 @@ import type {
 import type { TTSEngine } from "../../data/tts";
 import { getProviderFromTTSMediaSource, getTTSEngine } from "../../data/tts";
 import { buttonLinkStyle } from "../../resources/styles";
-import type { HomeAssistant } from "../../types";
 import { showToast } from "../../util/toast";
 import "../ha-button";
 import "../ha-card";
@@ -33,11 +37,18 @@ declare global {
 
 @customElement("ha-browse-media-tts")
 class BrowseMediaTTS extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public item!: MediaPlayerItem;
 
   @property() public action!: MediaPlayerBrowseAction;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  private _hassConfig?: ContextType<typeof configContext>;
+
+  @consume({ context: apiContext, subscribe: true })
+  private _api!: ContextType<typeof apiContext>;
 
   @state() private _language?: string;
 
@@ -59,15 +70,13 @@ class BrowseMediaTTS extends LitElement {
         <div class="card-content">
           <ha-textarea
             resize="auto"
-            .label=${this.hass.localize(
-              "ui.components.media-browser.tts.message"
-            )}
+            .label=${this._localize("ui.components.media-browser.tts.message")}
             .value=${
               this._message ||
-              this.hass.localize(
+              this._localize(
                 "ui.components.media-browser.tts.example_message",
                 {
-                  name: this.hass.user?.name || "Alice",
+                  name: this._hassConfig?.user?.name || "Alice",
                 }
               )
             }
@@ -83,7 +92,6 @@ class BrowseMediaTTS extends LitElement {
                     @value-changed=${this._languageChanged}
                   ></ha-language-picker>
                   <ha-tts-voice-picker
-                    .hass=${this.hass}
                     .value=${this._voice}
                     .engineId=${this._provider.engine_id}
                     .language=${this._language}
@@ -96,7 +104,7 @@ class BrowseMediaTTS extends LitElement {
         </div>
         <div class="card-actions">
           <ha-button appearance="plain" @click=${this._ttsClicked}>
-            ${this.hass.localize(
+            ${this._localize(
               `ui.components.media-browser.tts.action_${this.action}`
             )}
           </ha-button>
@@ -106,14 +114,14 @@ class BrowseMediaTTS extends LitElement {
         this._voice
           ? html`
               <div class="footer">
-                ${this.hass.localize(
+                ${this._localize(
                   `ui.components.media-browser.tts.selected_voice_id`
                 )}
                 <code>${this._voice || "-"}</code>
                 <ha-icon-button
                   .path=${mdiContentCopy}
                   @click=${this._copyVoiceId}
-                  title=${this.hass.localize(
+                  title=${this._localize(
                     "ui.components.media-browser.tts.copy_voice_id"
                   )}
                 ></ha-icon-button>
@@ -149,14 +157,15 @@ class BrowseMediaTTS extends LitElement {
         );
         if (provider !== this._provider?.engine_id) {
           this._provider = undefined;
-          getTTSEngine(this.hass, provider).then((engine) => {
+          getTTSEngine(this._api.callWS, provider).then((engine) => {
             this._provider = engine.provider;
             if (
               !this._language &&
               engine.provider.supported_languages?.length
             ) {
+              const config = this._hassConfig?.config;
               const langRegionCode =
-                `${this.hass.config.language}-${this.hass.config.country}`.toLowerCase();
+                `${config?.language}-${config?.country}`.toLowerCase();
               const countryLang = engine.provider.supported_languages.find(
                 (lang) => lang.toLowerCase() === langRegionCode
               );
@@ -166,14 +175,13 @@ class BrowseMediaTTS extends LitElement {
               }
               this._language = engine.provider.supported_languages?.find(
                 (lang) =>
-                  lang.substring(0, 2) ===
-                  this.hass.config.language.substring(0, 2)
+                  lang.substring(0, 2) === config?.language.substring(0, 2)
               );
             }
           });
 
           if (provider === "cloud") {
-            fetchCloudStatus(this.hass).then((status) => {
+            fetchCloudStatus(this._api.callWS).then((status) => {
               if (status.logged_in) {
                 this._language = status.prefs.tts_default_voice[0];
               }
@@ -229,7 +237,7 @@ class BrowseMediaTTS extends LitElement {
     ev.preventDefault();
     await copyToClipboard(this._voice);
     showToast(this, {
-      message: this.hass.localize("ui.common.copied_clipboard"),
+      message: this._localize("ui.common.copied_clipboard"),
     });
   }
 

@@ -189,7 +189,11 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     const stateObj = this.hass!.states[this._config!.entity];
 
     if ((ev.target as HaInput).value !== stateObj.state) {
-      setValue(this.hass!, stateObj.entity_id, (ev.target as HaInput).value!);
+      setValue(
+        this.hass!.callService,
+        stateObj.entity_id,
+        (ev.target as HaInput).value!
+      );
     }
   }
 }

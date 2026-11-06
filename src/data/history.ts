@@ -13,7 +13,11 @@ import { computeRTL } from "../common/util/compute_rtl";
 import type { HomeAssistant } from "../types";
 import { isNumericSensorDeviceClass } from "./sensor";
 import type { FrontendLocaleData } from "./translation";
-import type { Statistics } from "./recorder";
+import {
+  isExternalStatistic,
+  type Statistics,
+  type StatisticsMetaData,
+} from "./recorder";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
 const NEED_ATTRIBUTE_DOMAINS = [
@@ -169,14 +173,11 @@ export const subscribeHistory = (
   }));
 
 export class HistoryStream {
-  hass: HomeAssistant;
-
   hoursToShow?: number;
 
   combinedHistory: HistoryStates;
 
-  constructor(hass: HomeAssistant, hoursToShow?: number) {
-    this.hass = hass;
+  constructor(hoursToShow?: number) {
     this.hoursToShow = hoursToShow;
     this.combinedHistory = {};
   }
@@ -267,7 +268,7 @@ export class HistoryStream {
 }
 
 export const subscribeHistoryStatesTimeWindow = (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection" | "states">,
   callbackFunction: (data: HistoryStates) => void,
   hoursToShow: number,
   entityIds: string[],
@@ -309,7 +310,7 @@ export const subscribeHistoryStatesTimeWindow = (
  * a fresh `HistoryStream`, so consumers don't need to listen for reconnects.
  */
 const subscribeHistoryStream = async (
-  hass: HomeAssistant,
+  hass: Pick<HomeAssistant, "connection">,
   callbackFunction: (data: HistoryStates) => void,
   buildParams: () => MessageBase,
   hoursToShow?: number
@@ -318,7 +319,7 @@ const subscribeHistoryStream = async (
   let disposed = false;
 
   const doSubscribe = async () => {
-    const stream = new HistoryStream(hass, hoursToShow);
+    const stream = new HistoryStream(hoursToShow);
     const unsub = await hass.connection.subscribeMessage<HistoryStreamMessage>(
       (message) => callbackFunction(stream.processMessage(message)),
       buildParams(),
@@ -520,11 +521,29 @@ const isNumericFromAttributes = (attributes: Record<string, any>) =>
 
 const BLANK_UNIT = " ";
 
+/**
+ * Attributes for an external statistic, which has no entity. Without them the
+ * history names the series after its ID and shows it without a unit.
+ */
+const statisticAttributes = (
+  metadata: StatisticsMetaData | undefined
+): Record<string, string> => {
+  const attributes: Record<string, string> = {};
+  if (metadata?.name) {
+    attributes.friendly_name = metadata.name;
+  }
+  if (metadata?.statistics_unit_of_measurement) {
+    attributes.unit_of_measurement = metadata.statistics_unit_of_measurement;
+  }
+  return attributes;
+};
+
 export const convertStatisticsToHistory = (
   hass: HomeAssistant,
   statistics: Statistics,
   statisticIds: string[],
-  splitDeviceClasses = false
+  splitDeviceClasses = false,
+  statisticsMetadata?: Record<string, StatisticsMetaData>
 ): HistoryResult => {
   // Maintain the statistic id ordering
   const orderedStatistics: Statistics = {};
@@ -537,10 +556,15 @@ export const convertStatisticsToHistory = (
   // Convert statistics to HistoryResult format
   const statsHistoryStates: HistoryStates = {};
   Object.entries(orderedStatistics).forEach(([key, value]) => {
+    // Other statistics keep a blank unit, so that they merge into the history
+    // line of their entity even after the entity was removed.
+    const attributes = isExternalStatistic(key)
+      ? statisticAttributes(statisticsMetadata?.[key])
+      : {};
     const entityHistoryStates: EntityHistoryState[] = value.map((e) => ({
       s: e.mean != null ? e.mean.toString() : e.state!.toString(),
       lc: e.end / 1000,
-      a: {},
+      a: attributes,
       lu: e.end / 1000,
     }));
     statsHistoryStates[key] = entityHistoryStates;
@@ -735,6 +759,7 @@ export const mergeHistoryResults = (
     { historyItem?: LineChartUnit; ltsItem?: LineChartUnit }
   > = {};
 
+  const historyItemByEntity = new Map<string, LineChartUnit>();
   for (const item of historyResult.line) {
     const key = computeGroupKey(
       item.unit,
@@ -746,27 +771,39 @@ export const mergeHistoryResults = (
         historyItem: item,
       };
     }
+    for (const { entity_id } of item.data) {
+      historyItemByEntity.set(entity_id, item);
+    }
   }
 
-  for (const item of ltsResult.line) {
-    if (item.unit === BLANK_UNIT) {
-      // disabled entities have no unit, so we need to find the unit from the history result
-      item.unit =
-        historyResult.line.find((line) => line.identifier === item.identifier)
-          ?.unit ?? BLANK_UNIT;
-    }
+  const addLtsItem = (item: LineChartUnit) => {
     const key = computeGroupKey(
       item.unit,
       item.device_class,
       splitDeviceClasses
     );
     if (!key) {
+      return;
+    }
+    const entry = (lookup[key] ??= {});
+    if (entry.ltsItem) {
+      entry.ltsItem.data.push(...item.data);
+    } else {
+      entry.ltsItem = { ...item, data: [...item.data] };
+    }
+  };
+
+  for (const item of ltsResult.line) {
+    if (item.unit !== BLANK_UNIT) {
+      addLtsItem(item);
       continue;
     }
-    if (key in lookup) {
-      lookup[key].ltsItem = item;
-    } else {
-      lookup[key] = { ltsItem: item };
+    // Entities missing from hass.states when statistics were fetched have no
+    // unit, so each takes the unit of the history line it is in
+    for (const data of item.data) {
+      const { unit, device_class } =
+        historyItemByEntity.get(data.entity_id) ?? item;
+      addLtsItem({ ...item, unit, device_class, data: [data] });
     }
   }
 

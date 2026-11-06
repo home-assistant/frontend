@@ -352,6 +352,7 @@ export class HaChipBase extends HaButton {
         }
         .container {
           display: flex;
+          flex: 1;
           align-items: center;
           min-width: 0;
           max-width: 100%;
