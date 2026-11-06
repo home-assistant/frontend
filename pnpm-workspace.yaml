@@ -1,3 +1,7 @@
+packages:
+  - "."
+  - "packages/*"
+
 savePrefix: ""
 autoInstallPeers: false
 
@@ -19,6 +23,7 @@ trustPolicyExclude:
 allowBuilds:
   "@tsparticles/engine": false
   core-js: false
+  rs-module-lexer: false
   unrs-resolver: false
 
 overrides:
