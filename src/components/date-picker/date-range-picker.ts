@@ -187,6 +187,7 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
             .locale=${this._i18n.locale.language}
             .focusedDate=${this._focusDate}
             @focusday=${this._focusChanged}
+            @rangestart=${this._handleRangeStart}
             @change=${this._handleChange}
             show-outside-days
             .firstDayOfWeek=${firstWeekdayIndex(this._i18n.locale)}
@@ -321,6 +322,13 @@ export class DateRangePicker extends MobileAwareMixin(LitElement) {
   ) {
     this._pickerMonthYear = formatCallyMonthYear(ev.detail, this._i18n.locale);
     this._focusDate = ev.target.focusedDate;
+  }
+
+  private _handleRangeStart(
+    ev: HASSDomTargetEvent<HTMLElementTagNameMap["calendar-range"]>
+  ) {
+    const day = ev.target.tentative;
+    this._dateValue = `${day}/${day}`;
   }
 
   private _handleChange(

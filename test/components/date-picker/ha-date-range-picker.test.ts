@@ -150,6 +150,18 @@ const saveRange = (el: DateRangePicker) => {
 };
 
 describe("date-range-picker time zone", () => {
+  it("saves a single picked day instead of the previous range", async () => {
+    const el = await createRangePicker(TimeZone.server, {
+      startDate: new Date("2026-09-01T04:00:00.000Z"),
+      endDate: new Date("2026-10-01T03:59:00.000Z"),
+    });
+    (el as any)._handleRangeStart({ target: { tentative: "2026-09-15" } });
+    expect(saveRange(el)).toEqual({
+      start: "2026-09-15T04:00:00.000Z",
+      end: "2026-09-16T03:59:00.000Z",
+    });
+  });
+
   it("saves picked days in the server time zone", async () => {
     const el = await createRangePicker(TimeZone.server);
     (el as any)._dateValue = "2026-09-18/2026-09-21";
