@@ -63,7 +63,6 @@ const HELPER_DOMAIN_CATEGORIES = {
   timer: "time",
   tod: "time",
   history_stats: "time",
-  compensation: "calculation",
   derivative: "calculation",
   filter: "calculation",
   integration: "calculation",
@@ -78,7 +77,6 @@ const HELPER_DOMAIN_CATEGORIES = {
   generic_hygrostat: "other",
   generic_thermostat: "other",
   group: "other",
-  manual: "other",
   otp: "other",
   switch_as_x: "other",
 } as const satisfies Record<string, HelperCategory>;

@@ -4960,7 +4960,6 @@
               "timer": "Counts down from a set duration",
               "tod": "Turns on between two times of the day",
               "history_stats": "Measures how long or how often an entity was in a state over a period",
-              "compensation": "Corrects a sensor's value using calibration points",
               "derivative": "Shows how fast a sensor's value changes",
               "filter": "Smooths out or cleans up the values of a sensor",
               "integration": "Adds up a sensor's value over time, like power into energy",
@@ -4975,7 +4974,6 @@
               "generic_hygrostat": "Controls humidity using a switch or fan and a humidity sensor",
               "generic_thermostat": "Controls temperature using a switch or fan and a temperature sensor",
               "group": "Combines entities of the same type into one",
-              "manual": "Adds an alarm panel that runs fully within Home Assistant",
               "otp": "Creates one-time passwords for two-factor authentication",
               "switch_as_x": "Shows a switch as a light, fan, cover, or another entity type"
             }

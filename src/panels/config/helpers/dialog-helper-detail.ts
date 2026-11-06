@@ -169,6 +169,8 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
   private _category?: HelperCategory;
 
+  private _search?: string;
+
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
 
   private _pendingConfigFlow?: {
@@ -186,6 +188,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._item = params.item;
     this._area = undefined;
     this._category = undefined;
+    this._search = undefined;
     if (this._domain && this._domain in HELPERS) {
       this._loading = true;
       try {
@@ -241,6 +244,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._domain = undefined;
     this._params = undefined;
     this._category = undefined;
+    this._search = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
 
     if (this._pendingConfigFlow) {
@@ -434,6 +438,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     section?: string
   ): (HelperPickerItem | string)[] => {
     this._category = section as HelperCategory | undefined;
+    this._search = search;
     const allItems = this._getHelperItems(
       this._helperFlows ?? [],
       this.hass.localize,
@@ -641,11 +646,16 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   }
 
   private async _goBack() {
+    const search = this._search;
     this._domain = undefined;
     this._item = undefined;
     this._area = undefined;
     this._error = undefined;
     await this.updateComplete;
+    await this._comboBox?.updateComplete;
+    if (search) {
+      this._comboBox?.setFieldValue(search);
+    }
     this._focusPicker();
   }
 
@@ -665,12 +675,6 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
           ha-dialog.picker {
             --ha-dialog-min-height: min(620px, 90vh);
           }
-        }
-        ha-icon-next {
-          width: var(--ha-space-6);
-        }
-        ha-tooltip {
-          pointer-events: auto;
         }
         .form {
           padding: var(--ha-space-6);
