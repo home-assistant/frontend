@@ -220,6 +220,14 @@ export interface EnergyGasGraphCardConfig extends EnergyCardConfig {
   combine_sources?: boolean;
 }
 
+export interface GasSankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "gas-sankey";
+}
+
+export interface GasFlowSankeyCardConfig extends EnergyCardSankeyConfig {
+  type: "gas-flow-sankey";
+}
+
 export interface EnergyWaterGraphCardConfig extends EnergyCardConfig {
   type: "energy-water-graph";
   combine_sources?: boolean;
@@ -293,7 +301,9 @@ export type SankeyCardConfig =
   | EnergySankeyCardConfig
   | PowerSankeyCardConfig
   | WaterSankeyCardConfig
-  | WaterFlowSankeyCardConfig;
+  | WaterFlowSankeyCardConfig
+  | GasSankeyCardConfig
+  | GasFlowSankeyCardConfig;
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
@@ -798,6 +808,7 @@ export interface DistributionCardConfig extends LovelaceCardConfig {
   type: "distribution";
   title?: string;
   entities: (string | DistributionEntityConfig)[];
+  expand_legend?: boolean;
 }
 
 export interface DiscoveredDevicesCardConfig extends LovelaceCardConfig {

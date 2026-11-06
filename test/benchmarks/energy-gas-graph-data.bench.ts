@@ -27,6 +27,7 @@ const gasPrefs = (sources: number): EnergyPreferences => ({
   })),
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
 });
 
 const small = generateEnergyData(1, {

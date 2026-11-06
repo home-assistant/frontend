@@ -30,7 +30,7 @@ import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-alert";
 import "./components/ha-energy-device-settings";
-import "./components/ha-energy-device-settings-water";
+import "./components/ha-energy-device-settings-water-gas";
 import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
 import "./components/ha-energy-home-settings";
@@ -46,6 +46,7 @@ const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
 };
 
 const TABS: PageNavigation[] = [
@@ -72,7 +73,7 @@ const TABS: PageNavigation[] = [
 // Editor pages are at <tab>/<kind>/<key>, with `new` as the key of a new item
 const EDITOR_KINDS: Record<string, string[]> = {
   electricity: ["grid", "solar", "home", "battery", "device"],
-  gas: ["gas"],
+  gas: ["gas", "device"],
   water: ["water", "device"],
 };
 
@@ -232,6 +233,15 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-gas-settings>
+          <ha-energy-device-settings-water-gas
+            .hass=${this.hass}
+            .resource=${"gas"}
+            .preferences=${this._preferences!}
+            .listPath=${listPath}
+            .statsMetadata=${this._statsMetadata}
+            .validationResult=${this._validationResult}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-device-settings-water-gas>
         `;
       case "water":
         return html`
@@ -243,14 +253,15 @@ class HaConfigEnergy extends LitElement {
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
           ></ha-energy-water-settings>
-          <ha-energy-device-settings-water
+          <ha-energy-device-settings-water-gas
             .hass=${this.hass}
+            .resource=${"water"}
             .preferences=${this._preferences!}
             .listPath=${listPath}
             .statsMetadata=${this._statsMetadata}
             .validationResult=${this._validationResult}
             @value-changed=${this._prefsChanged}
-          ></ha-energy-device-settings-water>
+          ></ha-energy-device-settings-water-gas>
         `;
       default:
         return nothing;
@@ -337,17 +348,30 @@ class HaConfigEnergy extends LitElement {
           .editKey=${key}
           @value-changed=${this._prefsChanged}
         ></ha-energy-water-settings>`;
-      case "water/device":
-        return html`<ha-energy-device-settings-water
+      case "gas/device":
+        return html`<ha-energy-device-settings-water-gas
           class="editor-page"
           .hass=${this.hass}
           .narrow=${this.narrow}
+          .resource=${"gas"}
           .preferences=${this._preferences!}
           .statsMetadata=${this._statsMetadata}
           .listPath=${listPath}
           .editKey=${key}
           @value-changed=${this._prefsChanged}
-        ></ha-energy-device-settings-water>`;
+        ></ha-energy-device-settings-water-gas>`;
+      case "water/device":
+        return html`<ha-energy-device-settings-water-gas
+          class="editor-page"
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .resource=${"water"}
+          .preferences=${this._preferences!}
+          .statsMetadata=${this._statsMetadata}
+          .listPath=${listPath}
+          .editKey=${key}
+          @value-changed=${this._prefsChanged}
+        ></ha-energy-device-settings-water-gas>`;
       default:
         return nothing;
     }
@@ -373,7 +397,11 @@ class HaConfigEnergy extends LitElement {
       this._error = err.message;
     }
     this._info = await energyInfoPromise;
-    await this._fetchMetaData();
+    try {
+      await this._fetchMetaData();
+    } catch (err: any) {
+      this._error = err.message;
+    }
   }
 
   private async _prefsChanged(ev: CustomEvent) {
@@ -471,7 +499,7 @@ class HaConfigEnergy extends LitElement {
         ha-energy-gas-settings,
         ha-energy-water-settings,
         ha-energy-device-settings,
-        ha-energy-device-settings-water {
+        ha-energy-device-settings-water-gas {
           display: block;
           margin-bottom: 12px;
         }

@@ -78,7 +78,7 @@ const POSITIONS: Record<
   bottomright: "bottom-right",
 };
 
-const MAPLIBRE_CSS_URL = "/static/map/maplibre-gl.css";
+const MAPLIBRE_CSS_URL = `${__STATIC_PATH__}map/maplibre-gl.css`;
 // Fully hidden behind the globe, not MapLibre's faint ghost
 const MARKER_OPTIONS = { opacityWhenCovered: 0 };
 

@@ -237,7 +237,11 @@ class HaPanelApp extends LitElement {
     } catch (err: any) {
       await this._showErrorAndNavigateHome(
         addonSlug,
-        extractApiErrorMessage(err)
+        err?.code === "unauthorized"
+          ? this.hass.localize("ui.panel.app.error_app_unauthorized")
+          : this.hass.localize("ui.panel.app.error_loading_app", {
+              error: extractApiErrorMessage(err),
+            })
       );
       return;
     }
@@ -317,13 +321,15 @@ class HaPanelApp extends LitElement {
 
     try {
       session = await createSessionPromise;
-    } catch (_err: any) {
+    } catch (err: any) {
       if (this._sessionKeepAlive) {
         clearInterval(this._sessionKeepAlive);
       }
       await this._showErrorAndNavigateHome(
         addon.name,
-        this.hass.localize("ui.panel.app.error_creating_session")
+        this.hass.localize("ui.panel.app.error_creating_session", {
+          error: extractApiErrorMessage(err),
+        })
       );
       return;
     }

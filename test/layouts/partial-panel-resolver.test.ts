@@ -45,7 +45,7 @@ describe("partial-panel-resolver", () => {
     // The Marketplace loads its translations for the path it is at
     expect(navigate).toHaveBeenCalledWith(
       "/marketplace/repository/1?category=theme#top",
-      { replace: true }
+      { replace: true, keepDialogs: true }
     );
   });
 

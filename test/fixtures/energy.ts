@@ -93,6 +93,7 @@ export const generateEnergyPreferences = (
     energy_sources: sources,
     device_consumption: [],
     device_consumption_water: [],
+    device_consumption_gas: [],
   };
 };
 

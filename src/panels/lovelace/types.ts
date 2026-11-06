@@ -43,6 +43,11 @@ export interface Lovelace {
   saveConfig: (newConfig: LovelaceRawConfig) => Promise<void>;
   deleteConfig: () => Promise<void>;
   showToast: (params: ShowToastParams) => void;
+  /**
+   * Shown inside another page, such as the demo embed, which owns the
+   * window's history and scroll position.
+   */
+  embedded?: boolean;
 }
 
 export interface LovelaceBadge extends HTMLElement {

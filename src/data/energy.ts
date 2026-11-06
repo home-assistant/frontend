@@ -360,12 +360,14 @@ export interface EnergyPreferences {
   energy_sources: EnergySource[];
   device_consumption: DeviceConsumptionEnergyPreference[];
   device_consumption_water: DeviceConsumptionEnergyPreference[];
+  device_consumption_gas: DeviceConsumptionEnergyPreference[];
 }
 
 export const EMPTY_PREFERENCES: EnergyPreferences = {
   energy_sources: [],
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
 };
 
 export interface EnergyInfo {
@@ -383,6 +385,7 @@ export interface EnergyPreferencesValidation {
   energy_sources: EnergyValidationIssue[][];
   device_consumption: EnergyValidationIssue[][];
   device_consumption_water: EnergyValidationIssue[][];
+  device_consumption_gas: EnergyValidationIssue[][];
 }
 
 export const getEnergyInfo = (callWS: HomeAssistant["callWS"]) =>
@@ -637,6 +640,11 @@ export const getReferencedStatisticIds = (
       ...prefs.device_consumption_water.map((d) => d.stat_consumption)
     );
   }
+  if (!(includeTypes && !includeTypes.includes("gas"))) {
+    statIDs.push(
+      ...prefs.device_consumption_gas.map((d) => d.stat_consumption)
+    );
+  }
 
   return statIDs;
 };
@@ -673,6 +681,7 @@ export const getReferencedStatisticIdsPower = (
   }
   statIDs.push(...prefs.device_consumption.map((d) => d.stat_rate));
   statIDs.push(...prefs.device_consumption_water.map((d) => d.stat_rate));
+  statIDs.push(...prefs.device_consumption_gas.map((d) => d.stat_rate));
 
   return statIDs.filter(Boolean) as string[];
 };
@@ -781,9 +790,16 @@ const getEnergyData = async (
   const gasIsOtherEnergy =
     ENERGY_UNITS.includes(gasUnit as any) && gasUnit !== "kWh";
   const gasEnergyStatIds = gasIsOtherEnergy
-    ? (energySourcesByType(prefs).gas ?? []).map(
-        (source) => source.stat_energy_from
-      )
+    ? [
+        ...new Set([
+          ...(energySourcesByType(prefs).gas ?? []).map(
+            (source) => source.stat_energy_from
+          ),
+          ...prefs.device_consumption_gas.map(
+            (device) => device.stat_consumption
+          ),
+        ]),
+      ]
     : [];
   const gasEnergyUnits: StatisticsUnitConfiguration = {
     energy: gasIsOtherEnergy
@@ -1604,13 +1620,18 @@ export type EnergyGasUnitClass = (typeof energyGasUnitClass)[number];
 export const getEnergyGasUnitClass = (
   prefs: EnergyPreferences,
   excludeSource?: string,
-  statisticsMetaData: Record<string, StatisticsMetaData> = {}
+  statisticsMetaData: Record<string, StatisticsMetaData> = {},
+  excludeFrom?: "source" | "device"
 ): EnergyGasUnitClass | undefined => {
   for (const source of prefs.energy_sources) {
     if (source.type !== "gas") {
       continue;
     }
-    if (excludeSource && excludeSource === source.stat_energy_from) {
+    if (
+      excludeSource &&
+      excludeSource === source.stat_energy_from &&
+      excludeFrom !== "device"
+    ) {
       continue;
     }
     const statisticIdWithMeta = statisticsMetaData[source.stat_energy_from];
@@ -1622,6 +1643,19 @@ export const getEnergyGasUnitClass = (
       return statisticIdWithMeta.unit_class as EnergyGasUnitClass;
     }
   }
+  for (const device of prefs.device_consumption_gas) {
+    if (
+      excludeSource &&
+      excludeSource === device.stat_consumption &&
+      excludeFrom !== "source"
+    ) {
+      continue;
+    }
+    const unitClass = statisticsMetaData[device.stat_consumption]?.unit_class;
+    if (energyGasUnitClass.includes(unitClass as EnergyGasUnitClass)) {
+      return unitClass as EnergyGasUnitClass;
+    }
+  }
   return undefined;
 };
 
@@ -1631,15 +1665,15 @@ const getEnergyGasUnit = (
   prefs: EnergyPreferences,
   statisticsMetaData: Record<string, StatisticsMetaData> = {}
 ): string => {
-  const units = prefs.energy_sources
-    .filter((s) => s.type === "gas")
-    .map((s) =>
-      getDisplayUnit(
-        states,
-        s.stat_energy_from,
-        statisticsMetaData[s.stat_energy_from]
-      )
-    );
+  const gasStatIds = [
+    ...prefs.energy_sources.flatMap((s) =>
+      s.type === "gas" ? [s.stat_energy_from] : []
+    ),
+    ...prefs.device_consumption_gas.map((d) => d.stat_consumption),
+  ];
+  const units = gasStatIds.map((id) =>
+    getDisplayUnit(states, id, statisticsMetaData[id])
+  );
 
   const unitClass = getEnergyGasUnitClass(prefs, undefined, statisticsMetaData);
   if (unitClass === "energy") {
@@ -1666,10 +1700,7 @@ const getEnergyGasUnit = (
         return [];
       }),
     ]);
-    const isSharedWithKWh = prefs.energy_sources.some(
-      (source) =>
-        source.type === "gas" && kWhStatIds.has(source.stat_energy_from)
-    );
+    const isSharedWithKWh = gasStatIds.some((id) => kWhStatIds.has(id));
     const first = units[0];
     if (
       !isSharedWithKWh &&
@@ -2434,6 +2465,48 @@ export const formatFlowRateShort = (
   });
 };
 
+export type WaterGasResource = "water" | "gas";
+
+export const getWaterGasDevicesKey = (resource: WaterGasResource) =>
+  `device_consumption_${resource}` as const;
+
+export const getWaterGasDevices = (
+  prefs: EnergyPreferences,
+  resource: WaterGasResource
+): DeviceConsumptionEnergyPreference[] =>
+  prefs[getWaterGasDevicesKey(resource)];
+
+export const getFlowRateUnit = (
+  resource: WaterGasResource,
+  prefs: EnergyPreferences,
+  states: HomeAssistant["states"]
+): string | undefined => {
+  const ids = [
+    ...prefs.energy_sources.flatMap((s) =>
+      s.type === resource && s.stat_rate ? [s.stat_rate] : []
+    ),
+    ...getWaterGasDevices(prefs, resource).flatMap((d) =>
+      d.stat_rate ? [d.stat_rate] : []
+    ),
+  ];
+  for (const id of ids) {
+    const unit = states[id]?.attributes.unit_of_measurement;
+    if (unit) {
+      return unit;
+    }
+  }
+  return undefined;
+};
+
+export const getFlowRateInUnit = (
+  stateObj: HassEntity | undefined,
+  unit: string
+): number | undefined => {
+  const value = getFlowRateFromState(stateObj);
+  const factor = FLOW_RATE_TO_LMIN[unit];
+  return value === undefined || factor === undefined ? value : value / factor;
+};
+
 /**
  * Get current power value from entity state, normalized to watts (W)
  * @param stateObj - The entity state object to get power value from
@@ -2514,6 +2587,7 @@ export const downloadEnergyData = (
   const energy_sources = energyData.prefs.energy_sources;
   const device_consumption = energyData.prefs.device_consumption;
   const device_consumption_water = energyData.prefs.device_consumption_water;
+  const device_consumption_gas = energyData.prefs.device_consumption_gas;
   const stats = state.stats;
 
   interface CsvRow {
@@ -2728,6 +2802,16 @@ export const downloadEnergyData = (
     });
 
     printCategory("device_consumption_water", waterDevices, state.waterUnit);
+  }
+
+  if (device_consumption_gas) {
+    const gasDevices: string[] = [];
+    device_consumption_gas.forEach((source) => {
+      source = source as DeviceConsumptionEnergyPreference;
+      gasDevices.push(source.stat_consumption);
+    });
+
+    printCategory("device_consumption_gas", gasDevices, state.gasUnit);
   }
 
   const { summedData } = getSummedData(state);
