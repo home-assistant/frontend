@@ -9,6 +9,7 @@ import {
   mdiFormatListNumbered,
   mdiGestureDoubleTap,
   mdiHandBackRight,
+  mdiMessageAlert,
   mdiPlay,
   mdiRefresh,
   mdiRoomService,
@@ -25,6 +26,7 @@ export const ACTION_ICONS = {
   condition: mdiAbTesting,
   delay: mdiTimerOutline,
   event: mdiGestureDoubleTap,
+  notify: mdiMessageAlert,
   play_media: mdiPlay,
   service: mdiRoomService,
   wait_template: mdiCodeBraces,
@@ -71,6 +73,7 @@ export const ACTION_COLLECTIONS: AutomationElementGroupCollection[] = [
     groups: {
       dynamicGroups: {},
       event: {},
+      notify: {},
       service: {},
       set_conversation_response: {},
       helpers: {},
