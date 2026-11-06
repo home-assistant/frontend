@@ -311,6 +311,10 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     return html`
       <ha-dialog
         .open=${this._open}
+        .width=${
+          // The schedule editor shows its time block panel beside the week.
+          this._domain === "schedule" ? "large" : "medium"
+        }
         .preventScrimClose=${this.isDirtyState}
         header-title=${
           this._domain

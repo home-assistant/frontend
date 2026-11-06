@@ -688,7 +688,17 @@ export class MoreInfoDialog extends DirtyStateProviderMixin<
     return html`
       <ha-adaptive-dialog
         .open=${this._open}
-        .width=${this._fill ? "full" : this.large ? "large" : "medium"}
+        .width=${
+          this._fill
+            ? "full"
+            : this.large ||
+                // The schedule editor shows its time block panel beside the week.
+                (this._currView === "settings" &&
+                  !!this._entityId &&
+                  computeDomain(this._entityId) === "schedule")
+              ? "large"
+              : "medium"
+        }
         @closed=${this._dialogClosed}
         @opened=${this._handleOpened}
         @show-child-view=${this._showChildView}

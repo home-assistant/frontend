@@ -259,31 +259,33 @@ class HaScheduleForm extends LitElement {
     const panel = this._panel;
     const kind = panelKind(panel);
     return html`
-      <div class="schedule">
-        <ha-schedule-timeline
-          .value=${this._week}
-          .selected=${panel?.type === "block" ? panel.source : undefined}
-          .preview=${panel?.type === "block" ? panel.preview : undefined}
-          .confirmChange=${this._confirmTimelineChange}
-          @value-changed=${this._weekChanged}
-          @schedule-block-selected=${this._blockSelected}
-          @schedule-day-copy=${this._copyDay}
-        ></ha-schedule-timeline>
-        <div class="toolbar">
-          <ha-button
-            appearance="filled"
-            size="s"
-            @click=${this._newBlock}
-            .disabled=${kind === "new"}
-          >
-            <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
-            ${this.hass.localize("ui.dialogs.helper_settings.schedule.new_block")}
-          </ha-button>
-          <span class="hint">
-            ${this.hass.localize(
-              "ui.dialogs.helper_settings.schedule.timeline_hint"
-            )}
-          </span>
+      <div class="schedule ${panel ? "with-panel" : ""}">
+        <div class="main">
+          <ha-schedule-timeline
+            .value=${this._week}
+            .selected=${panel?.type === "block" ? panel.source : undefined}
+            .preview=${panel?.type === "block" ? panel.preview : undefined}
+            .confirmChange=${this._confirmTimelineChange}
+            @value-changed=${this._weekChanged}
+            @schedule-block-selected=${this._blockSelected}
+            @schedule-day-copy=${this._copyDay}
+          ></ha-schedule-timeline>
+          <div class="toolbar">
+            <ha-button
+              appearance="filled"
+              size="s"
+              @click=${this._newBlock}
+              .disabled=${kind === "new"}
+            >
+              <ha-svg-icon slot="start" .path=${mdiPlus}></ha-svg-icon>
+              ${this.hass.localize("ui.dialogs.helper_settings.schedule.new_block")}
+            </ha-button>
+            <span class="hint">
+              ${this.hass.localize(
+                "ui.dialogs.helper_settings.schedule.timeline_hint"
+              )}
+            </span>
+          </div>
         </div>
         ${
           panel
@@ -515,6 +517,7 @@ class HaScheduleForm extends LitElement {
       haStyle,
       css`
         .form {
+          container-type: inline-size;
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-4);
@@ -529,6 +532,23 @@ class HaScheduleForm extends LitElement {
           display: flex;
           flex-direction: column;
           gap: var(--ha-space-3);
+        }
+
+        .main {
+          display: flex;
+          flex-direction: column;
+          gap: var(--ha-space-3);
+        }
+
+        /* With enough room, the panel sits next to the timeline, so both
+           stay in view while editing. */
+        @container (min-width: 840px) {
+          .schedule.with-panel {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            align-items: start;
+            gap: var(--ha-space-6);
+          }
         }
 
         .toolbar {

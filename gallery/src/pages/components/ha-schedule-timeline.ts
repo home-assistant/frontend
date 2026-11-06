@@ -108,7 +108,7 @@ export class DemoHaScheduleTimeline
 
   protected render(): TemplateResult {
     return html`
-      <ha-card header="Schedule helper editor">
+      <ha-card class="editor" header="Schedule helper editor">
         <div class="card-content">
           <ha-schedule-form
             .hass=${this.hass}
@@ -138,6 +138,12 @@ export class DemoHaScheduleTimeline
       display: block;
       max-width: 560px;
       margin: 24px auto;
+    }
+
+    /* As wide as the dialog the editor opens in, which shows the time block
+       panel beside the week. */
+    ha-card.editor {
+      max-width: 1024px;
     }
   `;
 }
