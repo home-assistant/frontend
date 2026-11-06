@@ -180,8 +180,13 @@ class DialogAreaDetail
     }
     this._suggestedIcons = icons;
     if (this._iconFollowsName) {
+      const untouched = !this.isDirtyState;
       this._icon = icons[0] ?? null;
-      this._updateDirtyState(this._currentState());
+      if (untouched) {
+        this._initDirtyTracking({ type: "deep" }, this._currentState());
+      } else {
+        this._updateDirtyState(this._currentState());
+      }
     }
   }
 
