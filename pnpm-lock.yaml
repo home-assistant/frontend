@@ -488,8 +488,8 @@ importers:
         specifier: 8.0.7
         version: 8.0.7(@babel/core@8.1.0)
       '@bundle-stats/plugin-webpack-filter':
-        specifier: 4.23.0
-        version: 4.23.0(core-js@3.51.0)
+        specifier: 4.23.1
+        version: 4.23.1(core-js@3.51.0)
       '@eslint/js':
         specifier: 10.0.1
         version: 10.0.1(eslint@10.14.0(supports-color@8.1.1))
@@ -1740,8 +1740,8 @@ packages:
     resolution: {integrity: sha512-ctxtJ/eA+t+6q2++vj5j7FYX3nRu311q1wfYH3xjlLOsczhlhxAg2FWNUXhpGvAw3BWo1xBcvOV6/YLc2r5FJw==}
     hasBin: true
 
-  '@bundle-stats/plugin-webpack-filter@4.23.0':
-    resolution: {integrity: sha512-tqPJqUmyev0Kef8qPWcaAwvJ0c/CAClj0EKwJeSFnED4zYprjb7j5Tk8e6i4gJBNFp4KC+5gVgxqhZYoIx08ww==}
+  '@bundle-stats/plugin-webpack-filter@4.23.1':
+    resolution: {integrity: sha512-2O8LlyIsM9c/wO2yicIyiinv30gLzAQF5SAMXrx5wUfI2wmAO1/G6j4J6ye6WcyTDnnAJ5E31Bq3wt3z2+hpqg==}
     engines: {node: '>= 14.0'}
     peerDependencies:
       core-js: ^3.0.0
@@ -9135,7 +9135,7 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@bundle-stats/plugin-webpack-filter@4.23.0(core-js@3.51.0)':
+  '@bundle-stats/plugin-webpack-filter@4.23.1(core-js@3.51.0)':
     dependencies:
       core-js: 3.51.0
       tslib: 2.9.1
