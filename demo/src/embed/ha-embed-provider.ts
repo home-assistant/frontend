@@ -8,6 +8,7 @@ import { listenMediaQuery } from "../../../src/common/dom/media_query";
 import type { AreaRegistryEntry } from "../../../src/data/area/area_registry";
 import type { CalendarEventApiData } from "../../../src/data/calendar";
 import { reducedMotionContext } from "../../../src/data/context";
+import type { DeviceRegistryEntry } from "../../../src/data/device/device_registry";
 import type { EnergyInfo, EnergyPreferences } from "../../../src/data/energy";
 import { EMPTY_PREFERENCES } from "../../../src/data/energy";
 import type { EntityRegistryEntry } from "../../../src/data/entity/entity_registry";
@@ -22,13 +23,16 @@ import {
   mockCalendarEvents,
   WORK_EVENTS,
 } from "../stubs/calendar";
-import { newEntry } from "../stubs/entity_registry";
+import type { DemoDevice } from "../stubs/device_registry";
+import { toDeviceRegistryEntry } from "../stubs/device_registry";
+import { extEntry, newEntry } from "../stubs/entity_registry";
 import { mockHistory } from "../stubs/history";
 import { mockIcons } from "../stubs/icons";
 import { mockLogbook } from "../stubs/logbook";
 import { mockMediaPlayer } from "../stubs/media_player";
 import { mockRecorder } from "../stubs/recorder";
 import { mockSensor } from "../stubs/sensor";
+import { mockExtractFromTarget } from "../stubs/target";
 import { mockTemplate } from "../stubs/template";
 import { mockTodo } from "../stubs/todo";
 import { mockWeather } from "../stubs/weather";
@@ -39,6 +43,7 @@ import { readScriptData } from "./script-data";
 interface EmbedProviderData {
   entities?: EntityInput[];
   areas?: DemoArea[];
+  devices?: DemoDevice[];
   calendars?: Record<string, CalendarEventApiData[]>;
   energy?: Partial<EnergyPreferences>;
 }
@@ -53,8 +58,8 @@ const areaName = (areaId: string) => {
 };
 
 /**
- * Holds a mocked Home Assistant backend for all `ha-embed-card` elements
- * inside it. Cards in the same provider share their entities.
+ * Holds a mocked Home Assistant backend for all embed elements inside it.
+ * Elements in the same provider share their entities.
  */
 @customElement("ha-embed-provider")
 export class HaEmbedProvider extends LitElement {
@@ -66,12 +71,18 @@ export class HaEmbedProvider extends LitElement {
    * All entities of the backend. Each change replaces all entities.
    * Also read from a JSON or YAML script child, see `readScriptData`. The
    * script holds either the list of entities or an object with `entities`,
-   * `areas`, `calendars` and `energy`.
+   * `areas`, `devices`, `calendars` and `energy`.
    */
   @property({ type: Array }) public entities: EntityInput[] = [];
 
-  /** All areas. Without them, an area for each `area_id` of the entities. */
+  /**
+   * All areas. Without them, an area for each `area_id` of the entities and
+   * devices.
+   */
   @property({ attribute: false }) public areas?: DemoArea[];
+
+  /** All devices, which entities reference with their `device_id`. */
+  @property({ attribute: false }) public devices?: DemoDevice[];
 
   /**
    * Events of calendar entities by entity ID. Calendars without events here
@@ -154,11 +165,14 @@ export class HaEmbedProvider extends LitElement {
     hass.mockWS("config/area_registry/list", (_msg, currentHass) =>
       Object.values(currentHass.areas)
     );
-    // The registry of the entities, without settings such as calendar colors
-    hass.mockWS(
-      "config/entity_registry/list",
-      (_msg, currentHass): EntityRegistryEntry[] =>
-        Object.values(currentHass.entities).map((entity) => ({
+    hass.mockWS("config/device_registry/list", (_msg, currentHass) =>
+      Object.values(currentHass.devices)
+    );
+    // The registry of the entities, with the options each entity sets, such
+    // as timer presets. Other settings, such as calendar colors, are not set.
+    const registryEntries = (currentHass: MockHomeAssistant) =>
+      Object.values(currentHass.entities).map(
+        (entity): EntityRegistryEntry => ({
           ...newEntry({
             entity_id: entity.entity_id,
             platform: entity.platform ?? "demo",
@@ -166,8 +180,27 @@ export class HaEmbedProvider extends LitElement {
           }),
           area_id: entity.area_id ?? null,
           device_id: entity.device_id ?? null,
-        }))
+          options:
+            this.entities.find((item) => item.entity_id === entity.entity_id)
+              ?.options ?? null,
+        })
+      );
+    hass.mockWS("config/entity_registry/list", (_msg, currentHass) =>
+      registryEntries(currentHass)
     );
+    hass.mockWS(
+      "config/entity_registry/get",
+      (msg: { entity_id: string }, currentHass: MockHomeAssistant) => {
+        const entry = registryEntries(currentHass).find(
+          (item) => item.entity_id === msg.entity_id
+        );
+        if (!entry) {
+          throw new Error(`Entity not found: ${msg.entity_id}`);
+        }
+        return extEntry(entry);
+      }
+    );
+    mockExtractFromTarget(hass);
     hass.mockWS("energy/get_prefs", (): EnergyPreferences => ({
       ...EMPTY_PREFERENCES,
       ...this.energy,
@@ -206,6 +239,7 @@ export class HaEmbedProvider extends LitElement {
     } else if (data) {
       this.entities = data.entities ?? [];
       this.areas = data.areas;
+      this.devices = data.devices;
       this.calendars = data.calendars;
       this.energy = data.energy;
     }
@@ -222,14 +256,19 @@ export class HaEmbedProvider extends LitElement {
       this._applyColorScheme();
     }
 
-    if (changedProps.has("entities") || changedProps.has("areas")) {
+    if (
+      changedProps.has("entities") ||
+      changedProps.has("areas") ||
+      changedProps.has("devices")
+    ) {
+      const devices = this.devices ?? [];
       const areas: DemoArea[] =
         this.areas ??
         [
           ...new Set(
-            this.entities
-              .map((entity) => entity.area_id)
-              .filter((areaId) => areaId !== undefined)
+            [...this.entities, ...devices].flatMap((item) =>
+              item.area_id === undefined ? [] : [item.area_id]
+            )
           ),
         ].map((areaId) => ({ area_id: areaId, name: areaName(areaId) }));
 
@@ -237,11 +276,16 @@ export class HaEmbedProvider extends LitElement {
       areas.forEach((area) => {
         areasById[area.area_id] = toAreaRegistryEntry(area);
       });
-      // Before the entities, so that their names can include the area
-      this.hass.updateHass({ areas: areasById });
+      const devicesById: Record<string, DeviceRegistryEntry> = {};
+      devices.forEach((device) => {
+        devicesById[device.id] = toDeviceRegistryEntry(device);
+      });
+      // Before the entities, so that their names can include the area and
+      // device
+      this.hass.updateHass({ areas: areasById, devices: devicesById });
 
       // Entities that services changed keep their state when only the areas
-      // change
+      // or devices change
       if (changedProps.has("entities")) {
         this.hass.addEntities(this.entities, true);
       } else {

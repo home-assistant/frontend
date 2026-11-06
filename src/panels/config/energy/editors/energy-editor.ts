@@ -11,6 +11,7 @@ import type {
   GridSourceTypeEnergyPreference,
   HomeSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
+  WaterGasResource,
   WaterSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import type { StatisticsMetaData } from "../../../../data/recorder";
@@ -58,12 +59,16 @@ export interface EnergyWaterSourceEditorParams {
   saveCallback: (source: WaterSourceTypeEnergyPreference) => Promise<void>;
 }
 
-/** For both electricity and water devices */
 export interface EnergyDeviceEditorParams {
   device?: DeviceConsumptionEnergyPreference;
   device_consumptions: DeviceConsumptionEnergyPreference[];
   statsMetadata?: Record<string, StatisticsMetaData>;
   saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
+}
+
+export interface EnergyWaterGasDeviceEditorParams extends EnergyDeviceEditorParams {
+  resource: WaterGasResource;
+  allowedUnitClass?: EnergyGasUnitClass;
 }
 
 export type EnergyEditorConfig =
@@ -74,7 +79,7 @@ export type EnergyEditorConfig =
   | { kind: "device"; params: EnergyDeviceEditorParams }
   | { kind: "gas"; params: EnergyGasSourceEditorParams }
   | { kind: "water"; params: EnergyWaterSourceEditorParams }
-  | { kind: "water_device"; params: EnergyDeviceEditorParams };
+  | { kind: "water_gas_device"; params: EnergyWaterGasDeviceEditorParams };
 
 export interface EnergyEditorStatus {
   /** Whether there are changes to save */

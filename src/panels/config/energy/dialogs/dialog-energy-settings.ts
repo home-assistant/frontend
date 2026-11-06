@@ -8,6 +8,7 @@ import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
 import { DialogMixin } from "../../../../dialogs/dialog-mixin";
 import type {
+  EnergyEditorConfig,
   EnergyEditorElement,
   EnergyEditorStatus,
 } from "../editors/energy-editor";
@@ -22,7 +23,10 @@ const HEADERS = {
   device: "ui.panel.config.energy.device_consumption.dialog.header",
   gas: "ui.panel.config.energy.gas.dialog.header",
   water: "ui.panel.config.energy.water.dialog.header",
-  water_device: "ui.panel.config.energy.device_consumption_water.dialog.header",
+  water_gas_device: {
+    water: "ui.panel.config.energy.device_consumption_water.dialog.header",
+    gas: "ui.panel.config.energy.device_consumption_gas.dialog.header",
+  },
 } as const;
 
 @customElement("dialog-energy-settings")
@@ -44,7 +48,7 @@ export class DialogEnergySettings extends DialogMixin<EnergySettingsDialogParams
     return html`
       <ha-dialog
         open
-        header-title=${this._localize(HEADERS[this.params.editor.kind])}
+        header-title=${this._localize(this._header(this.params.editor))}
         .preventScrimClose=${!!this._status?.dirty}
         @energy-editor-status-changed=${this._statusChanged}
       >
@@ -70,6 +74,12 @@ export class DialogEnergySettings extends DialogMixin<EnergySettingsDialogParams
         </ha-dialog-footer>
       </ha-dialog>
     `;
+  }
+
+  private _header(editor: EnergyEditorConfig) {
+    return editor.kind === "water_gas_device"
+      ? HEADERS.water_gas_device[editor.params.resource]
+      : HEADERS[editor.kind];
   }
 
   private _statusChanged(

@@ -108,15 +108,24 @@
         against a mocked backend in the browser. No Home Assistant server is
         necessary.
       </p>
-      <p>There are two components:</p>
+      <p>
+        <code>&lt;ha-embed-provider&gt;</code> holds the mocked backend and its
+        entities. These components render dashboard content with the backend of
+        a provider:
+      </p>
       <ul>
+        <li><code>&lt;ha-embed-card&gt;</code> renders one card.</li>
         <li>
-          <code>&lt;ha-embed-provider&gt;</code> holds the mocked backend and
-          its entities.
+          <code>&lt;ha-embed-section&gt;</code> renders one section, or a
+          section strategy.
         </li>
         <li>
-          <code>&lt;ha-embed-card&gt;</code> renders one card. It uses the
-          backend of a provider.
+          <code>&lt;ha-embed-view&gt;</code> renders one view, a view strategy,
+          or one view of a dashboard.
+        </li>
+        <li>
+          <code>&lt;ha-embed-dashboard&gt;</code> renders a dashboard, or a
+          dashboard strategy, with its tabs.
         </li>
       </ul>
       <p>
@@ -324,6 +333,193 @@
           </script><!-- htmlmin:ignore -->
         </ha-embed-card>
       </div>
+      <p>
+        The other components find their provider the same way, and take the
+        same <code>provider</code> attribute.
+      </p>
+
+      <h2>Sections</h2>
+      <p>
+        <code>&lt;ha-embed-section&gt;</code> renders a section the same way as
+        in a sections view. The configuration is the same as in a dashboard,
+        so headings span the top, and a <code>strategy</code> generates the
+        section. The section takes the width of the component.
+      </p>
+      <pre><code>&lt;ha-embed-section&gt;
+  &lt;script type="text/yaml"&gt;
+    cards:
+      - type: heading
+        heading: Kitchen
+      - type: tile
+        entity: light.kitchen
+      - type: tile
+        entity: switch.kettle
+  &lt;/script&gt;
+&lt;/ha-embed-section&gt;</code></pre>
+      <ha-embed-provider>
+        <!-- htmlmin:ignore --><script type="text/yaml">
+          entities:
+            - entity_id: light.kitchen_ceiling
+              state: "on"
+              device_id: kitchen_ceiling
+              attributes:
+                friendly_name: Ceiling
+                supported_color_modes: [brightness]
+                color_mode: brightness
+                brightness: 200
+            - entity_id: switch.kettle
+              state: "off"
+              area_id: kitchen
+              attributes:
+                friendly_name: Kettle
+                device_class: outlet
+            - entity_id: sensor.kitchen_temperature
+              state: "21.4"
+              area_id: kitchen
+              attributes:
+                friendly_name: Kitchen temperature
+                device_class: temperature
+                state_class: measurement
+                unit_of_measurement: °C
+          devices:
+            - id: kitchen_ceiling
+              name: Kitchen ceiling light
+              manufacturer: Acme
+              model: Smart bulb
+              area_id: kitchen
+        </script><!-- htmlmin:ignore -->
+        <div class="single">
+          <ha-embed-section>
+            <!-- htmlmin:ignore --><script type="text/yaml">
+              cards:
+                - type: heading
+                  heading: Kitchen
+                - type: tile
+                  entity: light.kitchen_ceiling
+                  tap_action:
+                    action: toggle
+                - type: tile
+                  entity: switch.kettle
+                  tap_action:
+                    action: toggle
+                - type: tile
+                  entity: sensor.kitchen_temperature
+                  grid_options:
+                    columns: 12
+            </script><!-- htmlmin:ignore -->
+          </ha-embed-section>
+        </div>
+      </ha-embed-provider>
+
+      <h2>Views</h2>
+      <p>
+        <code>&lt;ha-embed-view&gt;</code> renders a view, with its badges and
+        layout. A <code>strategy</code> generates the view. Give the component
+        the width the view needs: masonry and sidebar views pick their columns
+        from the width of the page, not the component.
+      </p>
+      <pre><code>&lt;ha-embed-view&gt;
+  &lt;script type="text/yaml"&gt;
+    type: sections
+    badges:
+      - entity: sensor.outside_temperature
+    sections:
+      - cards: …
+  &lt;/script&gt;
+&lt;/ha-embed-view&gt;</code></pre>
+      <p>
+        To show one view of a dashboard, or of a dashboard strategy, put the
+        dashboard in <code>dashboard</code> and the path or index of the view
+        in <code>view</code>. Without <code>view</code>, the first view shows.
+      </p>
+      <pre><code>&lt;ha-embed-view&gt;
+  &lt;script type="text/yaml"&gt;
+    dashboard:
+      strategy:
+        type: custom:my-dashboard
+    view: overview
+  &lt;/script&gt;
+&lt;/ha-embed-view&gt;</code></pre>
+      <ha-embed-view provider="shared">
+        <!-- htmlmin:ignore --><script type="text/yaml">
+          type: sections
+          max_columns: 2
+          badges:
+            - entity: sensor.outside_temperature
+          sections:
+            - cards:
+                - type: heading
+                  heading: Living room
+                - type: tile
+                  entity: light.living_room
+                  tap_action:
+                    action: toggle
+                - type: tile
+                  entity: switch.coffee_maker
+                  tap_action:
+                    action: toggle
+            - cards:
+                - type: heading
+                  heading: Hallway
+                - type: thermostat
+                  entity: climate.hallway
+        </script><!-- htmlmin:ignore -->
+      </ha-embed-view>
+
+      <h2>Dashboards</h2>
+      <p>
+        <code>&lt;ha-embed-dashboard&gt;</code> renders a dashboard with its
+        tabs. A <code>strategy</code> generates the dashboard. Each dashboard
+        keeps its own tab, so switching tabs does not change the address of
+        your page. The dashboard scrolls inside the component, under its
+        toolbar. The component is 600 pixels high; set its
+        <code>height</code> to change that. Set <code>view</code> to the path
+        or index of the first view to show.
+      </p>
+      <pre><code>&lt;ha-embed-dashboard style="height: 480px"&gt;
+  &lt;script type="text/yaml"&gt;
+    views:
+      - title: Home
+        path: home
+        cards: …
+      - title: Climate
+        path: climate
+        cards: …
+  &lt;/script&gt;
+&lt;/ha-embed-dashboard&gt;</code></pre>
+      <ha-embed-dashboard provider="shared" style="height: 480px">
+        <!-- htmlmin:ignore --><script type="text/yaml">
+          views:
+            - title: Home
+              path: home
+              type: sections
+              max_columns: 2
+              sections:
+                - cards:
+                    - type: heading
+                      heading: Living room
+                    - type: tile
+                      entity: light.living_room
+                      tap_action:
+                        action: toggle
+                    - type: tile
+                      entity: switch.coffee_maker
+                      tap_action:
+                        action: toggle
+                - cards:
+                    - type: heading
+                      heading: Outside
+                    - type: tile
+                      entity: sensor.outside_temperature
+            - title: Climate
+              path: climate
+              type: sections
+              sections:
+                - cards:
+                    - type: thermostat
+                      entity: climate.hallway
+        </script><!-- htmlmin:ignore -->
+      </ha-embed-dashboard>
 
       <h2>Light and dark mode</h2>
       <p>
@@ -375,7 +571,7 @@ provider.entities = Object.values(provider.hass.states).map((entity) =&gt;
         <code>provider.hass.states</code>.
       </p>
 
-      <h2>Areas, calendars and energy</h2>
+      <h2>Areas, devices, calendars and energy</h2>
       <p>
         Some cards need data that is not an entity. To set it, put an object in
         the script tag of the provider instead of the list. The object has the
@@ -385,7 +581,15 @@ provider.entities = Object.values(provider.hass.states).map((entity) =&gt;
         <li>
           <code>areas</code>: a list of areas, each with an
           <code>area_id</code> and a <code>name</code>. Without it, each
-          <code>area_id</code> of the entities becomes an area.
+          <code>area_id</code> of the entities and devices becomes an area.
+        </li>
+        <li>
+          <code>devices</code>: a list of devices, each with an
+          <code>id</code> and a <code>name</code>, and optionally a
+          <code>manufacturer</code>, <code>model</code> and
+          <code>area_id</code>. Entities belong to a device with their
+          <code>device_id</code>, and cards and strategies then find the
+          device and its name.
         </li>
         <li>
           <code>calendars</code>: the events of calendar entities, by entity
@@ -679,14 +883,92 @@ customElements.define("embed-demo-custom-card", EmbedDemoCustomCard);</code></pr
           <td>Attribute and property</td>
           <td>
             The ID of the provider to use. Without it, the card uses the
-            provider around it, else the first provider on the page.
+            provider around it, else the first provider on the page. The other
+            components take it too.
+          </td>
+        </tr>
+      </table>
+      <h3><code>&lt;ha-embed-section&gt;</code></h3>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td><code>config</code></td>
+          <td>Attribute and property</td>
+          <td>
+            The section configuration or section strategy, the same as in a
+            dashboard. A JSON or YAML script child sets the first
+            configuration.
+          </td>
+        </tr>
+      </table>
+      <h3><code>&lt;ha-embed-view&gt;</code></h3>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td><code>config</code></td>
+          <td>Attribute and property</td>
+          <td>
+            The view configuration or view strategy, the same as in a
+            dashboard. A JSON or YAML script child sets the first
+            configuration.
+          </td>
+        </tr>
+        <tr>
+          <td><code>dashboard</code></td>
+          <td>Attribute and property</td>
+          <td>
+            A dashboard configuration or dashboard strategy, to show one of its
+            views instead of <code>config</code>. A script child with a
+            <code>dashboard</code> key, and optionally <code>view</code>, sets
+            it.
+          </td>
+        </tr>
+        <tr>
+          <td><code>view</code></td>
+          <td>Attribute and property</td>
+          <td>
+            The path or index of the view of <code>dashboard</code> to show.
+            Without it, the first view.
+          </td>
+        </tr>
+      </table>
+      <h3><code>&lt;ha-embed-dashboard&gt;</code></h3>
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td><code>config</code></td>
+          <td>Attribute and property</td>
+          <td>
+            The dashboard configuration or dashboard strategy. A JSON or YAML
+            script child sets the first configuration.
+          </td>
+        </tr>
+        <tr>
+          <td><code>view</code></td>
+          <td>Attribute and property</td>
+          <td>
+            The path or index of the first view to show. Without it, the first
+            view.
           </td>
         </tr>
       </table>
       <p>
         The mocked backend knows the actions of lights, switches, climate,
         covers, fans, locks, media players, and more. Actions that open dialogs,
-        such as <code>more-info</code>, do nothing.
+        such as <code>more-info</code>, do nothing. Dashboards can't be edited,
+        and their toolbar only shows their tabs.
       </p>
     </main>
     <script>

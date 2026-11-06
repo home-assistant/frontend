@@ -211,7 +211,8 @@ export class EnergyGasSettings extends LitElement {
         allowedGasUnitClass: getEnergyGasUnitClass(
           preferences,
           source?.stat_energy_from,
-          this.statsMetadata
+          this.statsMetadata,
+          "source"
         ),
         gas_sources: preferences.energy_sources.filter(isGasSource),
         saveCallback: (newSource) => this._saveSource(newSource, source),

@@ -1,5 +1,6 @@
 import type { AlarmMode } from "../../../data/alarm_control_panel";
 import type { HvacMode } from "../../../data/climate";
+import type { FanSpeedStyle } from "../../../data/fan";
 import type { OperationMode } from "../../../data/water_heater";
 import type { ForecastPrecipitationType } from "../../../data/weather";
 
@@ -140,6 +141,7 @@ export interface FanPresetModesCardFeatureConfig {
 
 export interface FanSpeedCardFeatureConfig {
   type: "fan-speed";
+  style?: FanSpeedStyle;
 }
 
 export interface AlarmModesCardFeatureConfig {

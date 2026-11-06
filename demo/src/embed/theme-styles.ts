@@ -1,4 +1,4 @@
-import { unsafeCSS } from "lit";
+import { css, unsafeCSS } from "lit";
 import { hex2rgb } from "../../../src/common/color/convert-color";
 import { darkColorVariables } from "../../../src/resources/theme/color";
 import { darkSemanticVariables } from "../../../src/resources/theme/semantic.globals";
@@ -59,3 +59,37 @@ export const embedThemeStyles = unsafeCSS(
   scopeThemeStyles(themeStyles, ".theme") +
     `.theme.dark{${darkVariables.join("")}}`
 );
+
+/**
+ * The styles of every embed element: the theme, and the page styles of the
+ * app, for the `.theme` wrapper of `EmbedElement`.
+ */
+export const embedElementStyles = [
+  embedThemeStyles,
+  css`
+    :host([hidden]) {
+      display: none;
+    }
+    /* The text styles the app sets on html and body, so that the content does
+       not inherit the text styles of the page that embeds it. */
+    .theme {
+      color: var(--primary-text-color);
+      font-family: var(--ha-font-family-body);
+      font-size: var(--ha-font-size-m);
+      font-weight: var(--ha-font-weight-body);
+      line-height: normal;
+      letter-spacing: normal;
+      text-align: start;
+      -moz-osx-font-smoothing: var(--ha-moz-osx-font-smoothing);
+      -webkit-font-smoothing: var(--ha-font-smoothing);
+    }
+    /* What setDirectionStyles sets on the app for a right-to-left language,
+       here only for the content */
+    .theme[dir="rtl"] {
+      --direction: rtl;
+      --float-start: right;
+      --float-end: left;
+      --scale-direction: -1;
+    }
+  `,
+];
