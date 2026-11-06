@@ -1,0 +1,23 @@
+{
+  "living_room": ["dnevna soba", "dnevni boravak"],
+  "bedroom": ["spavaća soba", "soba za goste"],
+  "kids_room": ["dečja soba", "igraonica"],
+  "kitchen": ["kuhinja"],
+  "dining_room": ["trpezarija"],
+  "bathroom": ["kupatilo", "tuš"],
+  "toilet": ["wc", "toalet"],
+  "office": ["kancelarija", "radna soba"],
+  "laundry_room": ["vešernica"],
+  "hallway": ["hodnik", "predsoblje", "ulaz"],
+  "stairs": ["stepenice", "stepenište"],
+  "garage": ["garaža"],
+  "garden": ["bašta", "dvorište", "travnjak", "staklenik"],
+  "terrace": ["terasa", "balkon"],
+  "basement": ["podrum"],
+  "attic": ["tavan", "potkrovlje"],
+  "storage": ["ostava", "špajz", "šupa"],
+  "utility_room": ["kotlarnica"],
+  "gym": ["teretana"],
+  "pool": ["bazen"],
+  "home_cinema": ["kućni bioskop"]
+}

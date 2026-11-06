@@ -1,0 +1,23 @@
+{
+  "living_room": ["vardagsrum", "allrum", "sällskapsrum"],
+  "bedroom": ["sovrum", "gästrum", "master bedroom"],
+  "kids_room": ["barnrum", "lekrum"],
+  "kitchen": ["kök"],
+  "dining_room": ["matsal", "matrum"],
+  "bathroom": ["badrum", "dusch", "duschrum"],
+  "toilet": ["toalett", "wc", "gästtoalett"],
+  "office": ["kontor", "arbetsrum", "hemmakontor"],
+  "laundry_room": ["tvättstuga", "tvättrum"],
+  "hallway": ["hall", "hallen", "korridor", "entré", "tambur"],
+  "stairs": ["trappa", "trapphus"],
+  "garage": ["garage", "carport"],
+  "garden": ["trädgård", "gräsmatta", "växthus", "tomt"],
+  "terrace": ["terrass", "altan", "balkong", "veranda", "uteplats"],
+  "basement": ["källare"],
+  "attic": ["vind", "vindsförråd"],
+  "storage": ["förråd", "skafferi", "klädkammare", "bod"],
+  "utility_room": ["pannrum", "teknikrum", "serverrum"],
+  "gym": ["gym", "träningsrum"],
+  "pool": ["pool", "simbassäng"],
+  "home_cinema": ["hemmabio", "biorum", "tv rum"]
+}

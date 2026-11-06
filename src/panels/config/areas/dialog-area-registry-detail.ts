@@ -1,5 +1,5 @@
 import type { HassEntity } from "home-assistant-js-websocket";
-import type { CSSResultGroup } from "lit";
+import type { CSSResultGroup, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -29,6 +29,10 @@ import type {
   AreaRegistryEntryMutableParams,
 } from "../../../data/area/area_registry";
 import { deleteAreaRegistryEntry } from "../../../data/area/area_registry";
+import {
+  getAreaIconSuggestions,
+  ROOM_ICONS,
+} from "../../../data/area_icon_suggestions";
 import {
   SENSOR_DEVICE_CLASS_HUMIDITY,
   SENSOR_DEVICE_CLASS_TEMPERATURE,
@@ -96,6 +100,12 @@ class DialogAreaDetail
 
   @state() private _submitting = false;
 
+  @state() private _suggestedIcons?: string[];
+
+  private _iconFollowsName = false;
+
+  private _iconSuggestionRequest = 0;
+
   @state() private _open = false;
 
   @state() private _suggestionInclude: MetadataSuggestionInclude = {
@@ -128,6 +138,7 @@ class DialogAreaDetail
       this._temperatureEntity = null;
       this._humidityEntity = null;
     }
+    this._iconFollowsName = !this._params.entry;
     this._open = true;
     this._initDirtyTracking({ type: "deep" }, this._currentState());
     await this.updateComplete;
@@ -149,6 +160,29 @@ class DialogAreaDetail
   public closeDialog(): boolean {
     this._open = false;
     return true;
+  }
+
+  protected willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
+    if (changedProps.has("_name") || changedProps.has("_aliases")) {
+      this._updateSuggestedIcons();
+    }
+  }
+
+  private async _updateSuggestedIcons() {
+    const request = ++this._iconSuggestionRequest;
+    const icons = await getAreaIconSuggestions(
+      [this._name ?? "", ...(this._aliases ?? [])],
+      this.hass.locale.language
+    );
+    if (request !== this._iconSuggestionRequest) {
+      return;
+    }
+    this._suggestedIcons = icons;
+    if (this._iconFollowsName) {
+      this._icon = icons[0] ?? null;
+      this._updateDirtyState(this._currentState());
+    }
   }
 
   private _entityName(entityId: string | null): string | null {
@@ -193,6 +227,7 @@ class DialogAreaDetail
         .value=${this._icon}
         @value-changed=${this._iconChanged}
         .label=${this.hass.localize("ui.panel.config.areas.editor.icon")}
+        .suggestedIcons=${this._suggestedIcons}
       ></ha-icon-picker>
 
       <ha-floor-picker
@@ -300,6 +335,7 @@ class DialogAreaDetail
     this._suggestionInclude = {
       ...this._suggestionInclude,
       name: this._name.trim() === "",
+      room: !this._icon || this._iconFollowsName,
     };
 
     return generateMetadataSuggestionTask<{
@@ -347,6 +383,11 @@ class DialogAreaDetail
 
     if (processed.floor) {
       this._floor = processed.floor;
+    }
+
+    if (processed.room) {
+      this._icon = ROOM_ICONS[processed.room][0];
+      this._iconFollowsName = false;
     }
 
     this._updateDirtyState(this._currentState());
@@ -464,6 +505,7 @@ class DialogAreaDetail
   private _iconChanged(ev) {
     this._error = undefined;
     this._icon = ev.detail.value;
+    this._iconFollowsName = false;
     this._updateDirtyState(this._currentState());
   }
 

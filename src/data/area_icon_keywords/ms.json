@@ -1,0 +1,23 @@
+{
+  "living_room": ["ruang tamu", "ruang keluarga", "bilik tamu"],
+  "bedroom": ["bilik tidur", "bilik", "bilik tetamu"],
+  "kids_room": ["bilik kanak kanak", "bilik anak", "bilik permainan"],
+  "kitchen": ["dapur"],
+  "dining_room": ["ruang makan", "bilik makan"],
+  "bathroom": ["bilik mandi"],
+  "toilet": ["tandas", "toilet", "wc"],
+  "office": ["pejabat", "bilik kerja", "bilik belajar"],
+  "laundry_room": ["bilik dobi", "ruang dobi"],
+  "hallway": ["koridor", "laluan", "pintu masuk", "serambi masuk"],
+  "stairs": ["tangga"],
+  "garage": ["garaj", "porch kereta"],
+  "garden": ["taman", "laman", "halaman", "kebun"],
+  "terrace": ["teres", "balkoni", "beranda", "anjung"],
+  "basement": ["bilik bawah tanah", "ruang bawah tanah"],
+  "attic": ["loteng"],
+  "storage": ["stor", "bilik stor", "gudang"],
+  "utility_room": ["bilik utiliti", "bilik teknikal"],
+  "gym": ["gim", "bilik senaman"],
+  "pool": ["kolam renang"],
+  "home_cinema": ["teater rumah", "pawagam rumah"]
+}

@@ -1,0 +1,48 @@
+{
+  "living_room": ["salón", "sala de estar", "sala", "living"],
+  "bedroom": [
+    "dormitorio",
+    "habitación",
+    "recámara",
+    "cuarto",
+    "alcoba",
+    "habitación de invitados"
+  ],
+  "kids_room": [
+    "habitación infantil",
+    "cuarto de los niños",
+    "habitación de los niños",
+    "cuarto del bebé",
+    "sala de juegos"
+  ],
+  "kitchen": ["cocina"],
+  "dining_room": ["comedor"],
+  "bathroom": ["baño", "cuarto de baño", "ducha"],
+  "toilet": ["aseo", "inodoro", "wc", "servicio", "retrete"],
+  "office": ["oficina", "despacho", "estudio"],
+  "laundry_room": ["lavadero", "lavandería", "cuarto de lavado"],
+  "hallway": [
+    "pasillo",
+    "recibidor",
+    "entrada",
+    "vestíbulo",
+    "hall",
+    "distribuidor"
+  ],
+  "stairs": ["escalera", "escaleras"],
+  "garage": ["garaje", "cochera"],
+  "garden": ["jardín", "patio trasero", "césped", "invernadero", "huerto"],
+  "terrace": ["terraza", "balcón", "porche", "patio"],
+  "basement": ["sótano", "bodega"],
+  "attic": ["ático", "desván", "buhardilla"],
+  "storage": ["trastero", "almacén", "despensa", "armario", "cobertizo"],
+  "utility_room": [
+    "sala técnica",
+    "cuarto técnico",
+    "sala de calderas",
+    "cuarto de máquinas"
+  ],
+  "gym": ["gimnasio", "sala de fitness"],
+  "pool": ["piscina", "alberca"],
+  "home_cinema": ["cine en casa", "sala de cine", "sala de tv"]
+}

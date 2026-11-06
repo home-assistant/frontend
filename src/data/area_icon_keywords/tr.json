@@ -1,0 +1,23 @@
+{
+  "living_room": ["oturma odası", "salon"],
+  "bedroom": ["yatak odası", "misafir odası"],
+  "kids_room": ["çocuk odası", "oyun odası"],
+  "kitchen": ["mutfak"],
+  "dining_room": ["yemek odası"],
+  "bathroom": ["banyo", "duş"],
+  "toilet": ["tuvalet", "wc"],
+  "office": ["ofis", "çalışma odası"],
+  "laundry_room": ["çamaşır odası"],
+  "hallway": ["koridor", "hol", "antre", "giriş"],
+  "stairs": ["merdiven"],
+  "garage": ["garaj"],
+  "garden": ["bahçe", "çim", "sera"],
+  "terrace": ["teras", "balkon", "veranda"],
+  "basement": ["bodrum", "mahzen"],
+  "attic": ["çatı katı", "tavan arası"],
+  "storage": ["depo", "kiler"],
+  "utility_room": ["kazan dairesi", "teknik oda"],
+  "gym": ["spor salonu"],
+  "pool": ["havuz"],
+  "home_cinema": ["ev sineması"]
+}

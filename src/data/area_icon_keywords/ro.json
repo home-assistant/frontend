@@ -1,0 +1,23 @@
+{
+  "living_room": ["sufragerie", "living", "cameră de zi"],
+  "bedroom": ["dormitor", "dormitorul", "cameră de oaspeți"],
+  "kids_room": ["camera copiilor", "camera copilului", "cameră de joacă"],
+  "kitchen": ["bucătărie", "bucătăria"],
+  "dining_room": ["sala de mese", "dining"],
+  "bathroom": ["baie", "baia", "duș"],
+  "toilet": ["toaletă", "wc"],
+  "office": ["birou", "birou acasă"],
+  "laundry_room": ["spălătorie"],
+  "hallway": ["hol", "hol de intrare", "coridor", "intrare"],
+  "stairs": ["scări", "scara"],
+  "garage": ["garaj"],
+  "garden": ["grădină", "curte", "gazon", "seră"],
+  "terrace": ["terasă", "balcon", "verandă"],
+  "basement": ["subsol", "pivniță"],
+  "attic": ["pod", "mansardă"],
+  "storage": ["debara", "cămară", "depozit", "magazie"],
+  "utility_room": ["centrală termică", "cameră tehnică"],
+  "gym": ["sală de sport", "sala de fitness"],
+  "pool": ["piscină"],
+  "home_cinema": ["cinematograf acasă", "home cinema"]
+}

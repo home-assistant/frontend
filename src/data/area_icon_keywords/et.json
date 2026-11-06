@@ -1,0 +1,23 @@
+{
+  "living_room": ["elutuba"],
+  "bedroom": ["magamistuba", "külalistetuba"],
+  "kids_room": ["lastetuba", "mängutuba"],
+  "kitchen": ["köök"],
+  "dining_room": ["söögituba"],
+  "bathroom": ["vannituba", "vannitoba", "dušš", "pesuruum"],
+  "toilet": ["tualett", "wc"],
+  "office": ["kabinet", "kontor", "tööruum"],
+  "laundry_room": ["pesuköök"],
+  "hallway": ["koridor", "esik", "eeskoda"],
+  "stairs": ["trepp", "trepikoda"],
+  "garage": ["garaaž"],
+  "garden": ["aed", "muru", "kasvuhoone"],
+  "terrace": ["terrass", "rõdu", "veranda"],
+  "basement": ["kelder"],
+  "attic": ["pööning"],
+  "storage": ["panipaik", "sahver", "kuur"],
+  "utility_room": ["tehnoruum", "katlaruum"],
+  "gym": ["jõusaal"],
+  "pool": ["bassein"],
+  "home_cinema": ["kodukino"]
+}

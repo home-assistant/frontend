@@ -1,0 +1,23 @@
+{
+  "living_room": ["olohuone", "oleskelutila", "tupa"],
+  "bedroom": ["makuuhuone", "vierashuone"],
+  "kids_room": ["lastenhuone", "leikkihuone"],
+  "kitchen": ["keittiö", "keittokomero"],
+  "dining_room": ["ruokailuhuone", "ruokailutila"],
+  "bathroom": ["kylpyhuone", "pesuhuone", "suihku"],
+  "toilet": ["wc", "vessa", "käymälä"],
+  "office": ["toimisto", "työhuone", "kotitoimisto"],
+  "laundry_room": ["kodinhoitohuone", "pyykkihuone"],
+  "hallway": ["eteinen", "käytävä", "aula"],
+  "stairs": ["portaat", "porraskäytävä"],
+  "garage": ["autotalli", "autokatos"],
+  "garden": ["puutarha", "piha", "nurmikko", "kasvihuone"],
+  "terrace": ["terassi", "parveke", "kuisti", "veranta"],
+  "basement": ["kellari"],
+  "attic": ["ullakko", "vintti"],
+  "storage": ["varasto", "vaatehuone", "ruokakomero", "vaja"],
+  "utility_room": ["tekninen tila", "lämmönjakohuone", "pannuhuone"],
+  "gym": ["kuntosali", "kuntohuone"],
+  "pool": ["uima allas", "allas"],
+  "home_cinema": ["kotiteatteri", "elokuvahuone"]
+}

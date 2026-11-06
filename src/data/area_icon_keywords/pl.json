@@ -1,0 +1,28 @@
+{
+  "living_room": ["salon", "pokój dzienny", "pokój gościnny"],
+  "bedroom": ["sypialnia"],
+  "kids_room": [
+    "pokój dziecięcy",
+    "pokój dziecka",
+    "pokój dzieci",
+    "pokój zabaw"
+  ],
+  "kitchen": ["kuchnia", "aneks kuchenny"],
+  "dining_room": ["jadalnia"],
+  "bathroom": ["łazienka", "prysznic"],
+  "toilet": ["toaleta", "wc", "ubikacja"],
+  "office": ["biuro", "gabinet", "pracownia"],
+  "laundry_room": ["pralnia"],
+  "hallway": ["korytarz", "przedpokój", "hol", "wiatrołap", "sień"],
+  "stairs": ["schody", "klatka schodowa"],
+  "garage": ["garaż", "wiata"],
+  "garden": ["ogród", "ogródek", "trawnik", "szklarnia"],
+  "terrace": ["taras", "balkon", "weranda"],
+  "basement": ["piwnica", "suterena"],
+  "attic": ["strych", "poddasze"],
+  "storage": ["spiżarnia", "schowek", "magazyn", "komórka", "garderoba"],
+  "utility_room": ["kotłownia", "pomieszczenie techniczne", "serwerownia"],
+  "gym": ["siłownia"],
+  "pool": ["basen"],
+  "home_cinema": ["kino domowe", "sala kinowa"]
+}

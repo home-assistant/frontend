@@ -1,0 +1,23 @@
+{
+  "living_room": ["nappali"],
+  "bedroom": ["hálószoba", "háló", "vendégszoba"],
+  "kids_room": ["gyerekszoba", "játszószoba"],
+  "kitchen": ["konyha"],
+  "dining_room": ["étkező", "ebédlő"],
+  "bathroom": ["fürdőszoba", "fürdő", "zuhanyzó"],
+  "toilet": ["wc", "mosdó", "vécé"],
+  "office": ["iroda", "dolgozószoba"],
+  "laundry_room": ["mosókonyha"],
+  "hallway": ["folyosó", "előszoba", "hall", "közlekedő"],
+  "stairs": ["lépcső", "lépcsőház"],
+  "garage": ["garázs", "autóbeálló"],
+  "garden": ["kert", "udvar", "pázsit", "üvegház"],
+  "terrace": ["terasz", "erkély", "veranda"],
+  "basement": ["pince", "alagsor"],
+  "attic": ["padlás", "tetőtér"],
+  "storage": ["tároló", "kamra", "raktár", "gardrób"],
+  "utility_room": ["kazánház", "gépészeti helyiség"],
+  "gym": ["edzőterem", "konditerem"],
+  "pool": ["medence", "uszoda"],
+  "home_cinema": ["házimozi", "mozi szoba"]
+}

@@ -1,13 +1,17 @@
 import type { RenderItemFunction } from "@lit-labs/virtualizer/virtualize";
-import type { TemplateResult } from "lit";
+import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../common/string/compare";
+import type { LocalizeFunc } from "../common/translations/localize";
 import { customIcons } from "../data/custom_icons";
 import type { ValueChangedEvent } from "../types";
 import "./ha-combo-box-item";
 import "./ha-generic-picker";
+import type { HaGenericPicker } from "./ha-generic-picker";
 import "./ha-icon";
 import type { PickerComboBoxItem } from "./ha-picker-combo-box";
 
@@ -60,6 +64,7 @@ const loadIcons = async () => {
   (await Promise.all(customIconLoads)).forEach((customIconItems) => {
     ICONS.push(...customIconItems);
   });
+  ICONS.sort((a, b) => caseInsensitiveStringCompare(a.id, b.id));
 };
 
 const loadCustomIconItems = async (
@@ -81,8 +86,8 @@ const loadCustomIconItems = async (
 
 const rowRenderer: RenderItemFunction<PickerComboBoxItem> = (item) => html`
   <ha-combo-box-item>
-    <ha-icon .icon=${item.id} slot="start"></ha-icon>
-    ${item.id}
+    <ha-icon .icon=${item.icon ?? item.id} slot="start"></ha-icon>
+    ${item.icon ?? item.id}
   </ha-combo-box-item>
 `;
 
@@ -104,12 +109,32 @@ export class HaIconPicker extends LitElement {
 
   @property({ type: Boolean }) public invalid = false;
 
-  private _getIconPickerItems = (): PickerComboBoxItem[] => ICONS;
+  @property({ attribute: false }) public suggestedIcons?: string[];
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @query("ha-generic-picker") private _picker?: HaGenericPicker;
+
+  private _getIconPickerItems = () =>
+    this._itemsWithSuggestions(ICONS, this.suggestedIcons, this._localize);
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("suggestedIcons") || changedProps.has("_localize")) {
+      this._picker?.refreshItems();
+    }
+  }
 
   protected render(): TemplateResult {
     return html`
       <ha-generic-picker
         allow-custom-value
+        no-sort
+        .pinBlock=${
+          this.value && this.suggestedIcons?.includes(this.value)
+            ? "nearest"
+            : undefined
+        }
         .getItems=${this._getIconPickerItems}
         .helper=${this.helper}
         .disabled=${this.disabled}
@@ -128,15 +153,35 @@ export class HaIconPicker extends LitElement {
     `;
   }
 
+  private _itemsWithSuggestions = memoizeOne(
+    (
+      icons: PickerComboBoxItem[],
+      suggestedIcons: string[] | undefined,
+      localize: LocalizeFunc
+    ): (PickerComboBoxItem | string)[] => {
+      if (!suggestedIcons?.length) {
+        return icons;
+      }
+      const suggested = new Set(suggestedIcons);
+      return [
+        localize("ui.components.icon_picker.suggested"),
+        ...suggestedIcons.map((icon) => ({ id: icon, primary: icon, icon })),
+        localize("ui.components.icon_picker.all_icons"),
+        ...icons.filter((item) => !suggested.has(item.id)),
+      ];
+    }
+  );
+
   // Filter can take a significant chunk of frame (up to 3-5 ms)
   private _filterIcons = memoizeOne(
     (
       filter: string,
       filteredItems: PickerComboBoxItem[],
-      allItems: PickerComboBoxItem[]
+      _allItems: PickerComboBoxItem[]
     ): PickerComboBoxItem[] => {
       const normalizedFilter = filter.toLowerCase().replace(/\s+/g, "-");
-      const iconItems = allItems?.length ? allItems : filteredItems;
+      // The full list also holds the suggestions and their section titles
+      const iconItems = ICONS.length ? ICONS : filteredItems;
 
       if (!normalizedFilter.length) {
         return iconItems;
@@ -175,8 +220,7 @@ export class HaIconPicker extends LitElement {
   protected firstUpdated() {
     if (!ICONS_LOADED) {
       loadIcons().then(() => {
-        this._getIconPickerItems = (): PickerComboBoxItem[] => ICONS;
-        this.requestUpdate();
+        this._picker?.refreshItems();
       });
     }
   }

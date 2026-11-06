@@ -1105,6 +1105,10 @@
         "failed_create_floor": "Failed to create floor.",
         "unknown": "Unknown floor selected"
       },
+      "icon_picker": {
+        "suggested": "Suggested",
+        "all_icons": "All icons"
+      },
       "area-filter": {
         "title": "Areas",
         "no_areas": "No areas",
