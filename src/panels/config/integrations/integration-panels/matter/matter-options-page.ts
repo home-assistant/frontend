@@ -320,6 +320,11 @@ class MatterOptionsPage extends LitElement {
           max-width: var(--ha-content-width-narrow);
           margin: auto;
         }
+
+        ha-row-item::part(headline),
+        ha-row-item::part(supporting-text) {
+          white-space: normal;
+        }
       `,
     ];
   }
