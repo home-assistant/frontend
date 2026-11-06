@@ -22,10 +22,10 @@ export interface FloorRegistryEntryMutableParams {
 }
 
 export const createFloorRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   values: FloorRegistryEntryMutableParams
 ) =>
-  hass.callWS<FloorRegistryEntry>({
+  callWS<FloorRegistryEntry>({
     type: "config/floor_registry/create",
     ...values,
   });
@@ -35,7 +35,7 @@ export const updateFloorRegistryEntry = (
   floorId: string,
   updates: Partial<FloorRegistryEntryMutableParams>
 ) =>
-  hass.callWS<AreaRegistryEntry>({
+  hass.callWS<FloorRegistryEntry>({
     type: "config/floor_registry/update",
     floor_id: floorId,
     ...updates,

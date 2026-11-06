@@ -17,7 +17,9 @@ import {
   mdiTrafficLight,
 } from "@mdi/js";
 import type { AutomationElementGroupCollection } from "./automation";
+import { CONDITION_BUILDING_BLOCKS } from "./condition";
 import type { Action } from "./script";
+import { getActionType } from "./script";
 
 export const ACTION_ICONS = {
   condition: mdiAbTesting,
@@ -41,6 +43,24 @@ export const ACTION_ICONS = {
   variables: mdiApplicationVariableOutline,
   set_conversation_response: mdiBullhorn,
 } as const;
+
+// Plain function on purpose: the trace tree calls this once per action node
+// with a distinct object each time, so a single-entry memoize-one cache
+// would never hit.
+export const getAutomationActionType = (action: Action | undefined) => {
+  if (!action) {
+    return undefined;
+  }
+  if ("action" in action) {
+    return getActionType(action);
+  }
+  if (CONDITION_BUILDING_BLOCKS.some((key) => key in action)) {
+    return "condition" as const;
+  }
+  return Object.keys(ACTION_ICONS).find(
+    (option) => option in action
+  ) as keyof typeof ACTION_ICONS;
+};
 
 export const YAML_ONLY_ACTION_TYPES = new Set<keyof typeof ACTION_ICONS>([
   "variables",

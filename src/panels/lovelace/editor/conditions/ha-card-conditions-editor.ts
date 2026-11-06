@@ -1,10 +1,10 @@
-import { consume } from "@lit/context";
 import { mdiContentPaste, mdiDragHorizontalVariant, mdiPlus } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { repeat } from "lit/directives/repeat";
+import { consume } from "../../../../common/decorators/consume";
 import { storage } from "../../../../common/decorators/storage";
 import type {
   HASSDomCurrentTargetEvent,

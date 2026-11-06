@@ -59,7 +59,7 @@ export class HaTileContainer extends LitElement {
         class="background"
         role=${ifDefined(this.interactive ? "button" : undefined)}
         tabindex=${ifDefined(this.interactive ? "0" : undefined)}
-        aria-labelledby="info"
+        aria-labelledby=${ifDefined(this.interactive ? "info" : undefined)}
         .actionHandler=${actionHandler(this.actionHandlerOptions)}
         @focus=${this._handleFocus}
         @blur=${this._handleBlur}
@@ -74,7 +74,13 @@ export class HaTileContainer extends LitElement {
         <div class="row">
           <div class="content ${classMap(contentClasses)}">
             <slot name="icon"></slot>
-            <slot name="info" id="info"></slot>
+            <div
+              class="info"
+              id="info"
+              aria-hidden=${ifDefined(this.interactive ? "true" : undefined)}
+            >
+              <slot name="info"></slot>
+            </div>
           </div>
           <slot name="features-inline"></slot>
         </div>
@@ -147,11 +153,18 @@ export class HaTileContainer extends LitElement {
     .vertical.fixed-info-height {
       /* pin sizing so every tile in a grid reserves the same height, wrapping or not, secondary or not */
       gap: 2px;
-      --ha-tile-info-gap: 2px;
-      --ha-tile-info-primary-line-height: var(--ha-space-4);
-      --ha-tile-info-primary-min-height: var(--ha-space-8);
-      --ha-tile-info-min-height: var(--ha-space-12);
+      /* private, so a theme's --ha-tile-info-* override is not outranked from in here */
+      --_tile-info-fixed-gap: 2px;
+      /* the primary line height lives on hui-area-card's .twoline, the only caller that wraps */
+      --_tile-info-fixed-primary-min-height: var(--ha-space-8);
+      --_tile-info-fixed-min-height: var(--ha-space-12);
     }
+    .info {
+      display: flex;
+      width: 100%;
+      min-width: 0;
+    }
+    .vertical .info,
     .vertical ::slotted([slot="info"]) {
       width: 100%;
       flex: none;
@@ -179,6 +192,7 @@ export class HaTileContainer extends LitElement {
     .container.inline ::slotted([slot="features-inline"]) {
       /* size the feature on the 6 column grid track, so it lines up with neighbouring tiles */
       width: calc(50% - var(--column-gap, 0px) / 2 - var(--ha-space-3));
+      --feature-columns: 2;
       flex: none;
       padding: 0 var(--ha-space-3);
       padding-inline-start: 0;

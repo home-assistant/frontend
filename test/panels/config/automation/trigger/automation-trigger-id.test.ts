@@ -12,6 +12,7 @@ import {
   GENERATED_TRIGGER_ID_PREFIX,
   getExplicitTriggerIds,
   getTriggerIdOptions,
+  hasCustomTriggerId,
   isGeneratedTriggerId,
   makeDuplicateTriggerIdsUnique,
   stripGeneratedTriggerIds,
@@ -24,6 +25,41 @@ const GENERATED_TRIGGER_ID_PATTERN = new RegExp(
 );
 
 describe("automation trigger IDs", () => {
+  it("ignores null trigger entries from incomplete YAML", () => {
+    const triggers = [
+      null,
+      { trigger: "state", entity_id: "light.kitchen", id: "kitchen" },
+      { triggers: [null] },
+    ] as unknown as Trigger[];
+
+    const options = getTriggerIdOptions(triggers);
+
+    expect(options.map((option) => option.id)).toEqual(["kitchen"]);
+    expect(
+      cleanupUnusedGeneratedTriggerIds({
+        triggers,
+        conditions: [],
+        actions: [],
+      } as AutomationConfig).triggers
+    ).toBe(triggers);
+    expect(stripGeneratedTriggerIds(null as unknown as Trigger)).toBeNull();
+  });
+
+  it("ignores scalar action entries from invalid YAML", () => {
+    const actions = [
+      1,
+      { choose: [{ conditions: [], sequence: [1, null] }] },
+    ] as unknown as Action[];
+
+    expect(
+      cleanupUnusedGeneratedTriggerIds({
+        triggers: [],
+        conditions: [],
+        actions,
+      } as AutomationConfig).actions
+    ).toEqual(actions);
+  });
+
   it("creates generated trigger ID options that do not collide with existing IDs", () => {
     const triggers: Trigger[] = [
       { trigger: "state", entity_id: "light.kitchen" },
@@ -47,6 +83,26 @@ describe("automation trigger IDs", () => {
       { draft: false, index: 2 },
     ]);
     expect(options[2].id).toBe(`${GENERATED_TRIGGER_ID_PREFIX}aB3x`);
+  });
+
+  it("treats only stored, non-generated IDs as custom", () => {
+    const triggers: Trigger[] = [
+      { trigger: "state", entity_id: "binary_sensor.door", id: "door_open" },
+      { trigger: "state", entity_id: "binary_sensor.door" },
+      {
+        trigger: "event",
+        event_type: "homeassistant_start",
+        id: `${GENERATED_TRIGGER_ID_PREFIX}aB3x`,
+      },
+      { trigger: "time", at: "12:00:00", id: "" },
+    ];
+
+    expect(getTriggerIdOptions(triggers).map(hasCustomTriggerId)).toEqual([
+      true,
+      false,
+      false,
+      false,
+    ]);
   });
 
   it("stores a generated ID on the selected trigger", () => {
@@ -194,6 +250,42 @@ describe("automation trigger IDs", () => {
       conditions: [{ condition: "trigger", id: ["manual-id"] }],
       actions: [{ condition: "trigger", id: "" }],
     });
+  });
+
+  it("updates a trigger condition that omits its ID", () => {
+    // Core requires an ID, but the editor can hold one without it before saving.
+    const original = { condition: "trigger" } as TriggerCondition;
+    const config: AutomationConfig = {
+      triggers: [{ trigger: "event", event_type: "test", id: "manual-id" }],
+      conditions: [original],
+      actions: [],
+    };
+
+    const updated = updateTriggerCondition(
+      config,
+      original,
+      { ...original, id: ["manual-id"] },
+      config.triggers
+    );
+
+    expect(updated.conditions).toEqual([
+      { condition: "trigger", id: ["manual-id"] },
+    ]);
+  });
+
+  it("leaves trigger conditions that omit their ID untouched during cleanup", () => {
+    const config: AutomationConfig = {
+      triggers: [],
+      conditions: [{ condition: "trigger" }],
+      actions: [],
+    };
+
+    expect(
+      cleanupRemovedGeneratedTriggerReferences(
+        config,
+        new Set([`${GENERATED_TRIGGER_ID_PREFIX}aB3x`])
+      )
+    ).toBe(config);
   });
 
   it("removes dangling generated references when no triggers remain", () => {

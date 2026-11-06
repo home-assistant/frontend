@@ -92,7 +92,6 @@ export class MoreInfoHistory extends LitElement {
                   </ha-alert>`
                 : this._statistics
                   ? html`<statistics-chart
-                      .hass=${this.hass}
                       .isLoadingData=${!this._statistics}
                       .statisticsData=${this._statistics}
                       .metadata=${this._metadata}
@@ -103,7 +102,6 @@ export class MoreInfoHistory extends LitElement {
                     ></statistics-chart>`
                   : html`<state-history-charts
                       up-to-now
-                      .hass=${this.hass}
                       .historyData=${this._stateHistory}
                       .isLoadingData=${!this._stateHistory}
                       .showNames=${false}
@@ -193,7 +191,7 @@ export class MoreInfoHistory extends LitElement {
 
   private async _getStatisticsMetaData(statisticIds: string[] | undefined) {
     const statsMetadataArray = await getStatisticMetadata(
-      this.hass,
+      this.hass.callWS,
       statisticIds
     );
     const statisticsMetaData = {};
@@ -209,7 +207,7 @@ export class MoreInfoHistory extends LitElement {
     // faster.
     const _metadata = this._getStatisticsMetaData([this.entityId]);
     const _statistics = fetchStatistics(
-      this.hass!,
+      this.hass!.callWS,
       subHours(new Date(), 24),
       undefined,
       [this.entityId],

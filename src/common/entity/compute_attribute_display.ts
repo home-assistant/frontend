@@ -6,6 +6,7 @@ import {
 } from "../../data/entity/entity_attributes";
 import type { EntityRegistryDisplayEntry } from "../../data/entity/entity_registry";
 import type { FrontendLocaleData } from "../../data/translation";
+import { TimeZone } from "../../data/translation";
 import type { WeatherEntity } from "../../data/weather";
 import { getWeatherUnit } from "../../data/weather";
 import type { HomeAssistant, ValuePart } from "../../types";
@@ -17,7 +18,7 @@ import { capitalizeFirstLetter } from "../string/capitalize-first-letter";
 import { isDate } from "../string/is_date";
 import { isTimestamp } from "../string/is_timestamp";
 import { blankBeforeUnit } from "../translations/blank_before_unit";
-import type { LocalizeFunc } from "../translations/localize";
+import type { LocalizeFunc, LocalizeKeys } from "../translations/localize";
 import { computeDomain } from "./compute_domain";
 import { computeStateDomain } from "./compute_state_domain";
 
@@ -115,6 +116,24 @@ export const computeAttributeValueToParts = (
         }
       }
 
+      // Date only, which is timezone agnostic, so parse and format it as
+      // local time to keep the same calendar day
+      if (isDate(attributeValue)) {
+        const date = new Date(`${attributeValue}T00:00`);
+        if (checkValidDate(date)) {
+          return [
+            {
+              type: "value",
+              value: formatDate(
+                date,
+                { ...locale, time_zone: TimeZone.local },
+                config
+              ),
+            },
+          ];
+        }
+      }
+
       // Value was not a timestamp, so only do date formatting
       const date = new Date(attributeValue);
       if (checkValidDate(date)) {
@@ -198,6 +217,8 @@ export const computeAttributeNameDisplay = (
     localize(
       `component.${domain}.entity_component._.state_attributes.${attribute}.name`
     ) ||
+    // Attributes every entity can have, which no integration translates
+    localize(`ui.components.attributes.names.${attribute}` as LocalizeKeys) ||
     capitalizeFirstLetter(
       attribute
         .replace(/_/g, " ")

@@ -1,16 +1,18 @@
+import { mdiViewDashboard } from "@mdi/js";
 import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-alert";
 import "../../../../components/ha-button";
-import "../../../../components/ha-icon";
+import "../../../../components/ha-dialog";
 import "../../../../components/ha-dialog-footer";
-import "../../../../components/ha-list";
-import "../../../../components/ha-radio-list-item";
+import "../../../../components/ha-icon";
 import "../../../../components/ha-select";
 import "../../../../components/ha-spinner";
-import "../../../../components/ha-dialog";
+import "../../../../components/ha-svg-icon";
+import "../../../../components/item/ha-list-item-option";
+import "../../../../components/list/ha-list-selectable";
 import type { LovelaceConfig } from "../../../../data/lovelace/config/types";
 import { fetchConfig } from "../../../../data/lovelace/config/types";
 import { isStrategyView } from "../../../../data/lovelace/config/view";
@@ -156,39 +158,60 @@ export class HuiDialogSelectView extends LitElement {
     }
 
     const views = this._selectableConfig.views;
-    if (views.length < 2) {
-      return nothing;
-    }
 
-    const hasIcon = views.some(({ icon }) => icon);
+    const dashboardTitle = this._params?.allowDashboardChange
+      ? this._dashboards.find(
+          (dashboard) =>
+            dashboard.url_path === (this._urlPath ?? LOVELACE_PANEL)
+        )?.title
+      : undefined;
+    const viewsHeading = dashboardTitle
+      ? this.hass.localize(
+          "ui.panel.lovelace.editor.select_view.views_heading",
+          { dashboard: dashboardTitle }
+        )
+      : undefined;
 
     return html`
-      <ha-list>
+      ${viewsHeading ? html`<h3>${viewsHeading}</h3>` : nothing}
+      <ha-list-selectable
+        aria-label=${
+          viewsHeading ??
+          this.hass.localize("ui.panel.lovelace.editor.select_view.views_label")
+        }
+        @ha-list-item-selected=${this._viewChanged}
+      >
         ${views.map((view, idx) => {
           const isStrategy = isStrategyView(view);
 
           return html`
-            <ha-radio-list-item
-              .graphic=${hasIcon ? "icon" : nothing}
-              @click=${this._viewChanged}
-              .value=${idx.toString()}
+            <ha-list-item-option
               .selected=${this._selectedViewIdx === idx}
               .disabled=${isStrategy && !this._params?.includeStrategyViews}
               ?autofocus=${idx === 0 && !this._params!.allowDashboardChange}
             >
-              <span>
-                ${view.title}${
+              ${
+                view.icon
+                  ? html`<ha-icon slot="start" .icon=${view.icon}></ha-icon>`
+                  : html`<ha-svg-icon
+                      slot="start"
+                      .path=${mdiViewDashboard}
+                    ></ha-svg-icon>`
+              }
+              <span slot="headline">
+                ${
+                  view.title ||
+                  this.hass.localize("ui.panel.lovelace.views.unnamed_view")
+                }${
                   isStrategy
                     ? ` (${this.hass.localize("ui.panel.lovelace.editor.select_view.strategy_type")})`
                     : nothing
                 }
               </span>
-
-              <ha-icon .icon=${view.icon} slot="graphic"></ha-icon>
-            </ha-radio-list-item>
+            </ha-list-item-option>
           `;
         })}
-      </ha-list>
+      </ha-list-selectable>
     `;
   }
 
@@ -223,12 +246,8 @@ export class HuiDialogSelectView extends LitElement {
     this._loading = false;
   }
 
-  private _viewChanged(e) {
-    const view = Number(e.target.value);
-
-    if (!isNaN(view)) {
-      this._selectedViewIdx = view;
-    }
+  private _viewChanged(ev: CustomEvent<number>) {
+    this._selectedViewIdx = ev.detail;
   }
 
   private _selectView(): void {
@@ -251,13 +270,16 @@ export class HuiDialogSelectView extends LitElement {
       css`
         ha-select {
           width: 100%;
+          margin-bottom: var(--ha-space-4);
+        }
+        h3,
+        ha-alert {
+          display: block;
+          margin: var(--ha-space-4) 0;
         }
         .loading {
           display: flex;
           justify-content: center;
-        }
-        mwc-radio-list-item {
-          direction: ltr;
         }
       `,
     ];

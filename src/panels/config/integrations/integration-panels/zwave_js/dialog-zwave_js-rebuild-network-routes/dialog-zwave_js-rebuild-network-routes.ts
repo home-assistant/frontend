@@ -1,4 +1,4 @@
-import { consume, provide, type ContextType } from "@lit/context";
+import { provide, type ContextType } from "@lit/context";
 import {
   mdiAlert,
   mdiCheckCircle,
@@ -12,6 +12,7 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../../common/decorators/consume";
 import "../../../../../../components/ha-button";
 import type { HaButton } from "../../../../../../components/ha-button";
 import "../../../../../../components/ha-dialog";

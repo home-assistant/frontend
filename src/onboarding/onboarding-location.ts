@@ -1,5 +1,6 @@
 import {
   mdiCrosshairsGps,
+  mdiHome,
   mdiMagnify,
   mdiMapMarker,
   mdiMapSearchOutline,
@@ -7,17 +8,23 @@ import {
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { fireEvent } from "../common/dom/fire_event";
+import {
+  HOME_ZONE_ENTITY_ID,
+  zoneColor,
+} from "../common/map/entity-map-colors";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-alert";
 import "../components/ha-button";
-import "../components/ha-list";
-import "../components/ha-list-item";
 import "../components/ha-spinner";
 import "../components/input/ha-input";
 import type { HaInput } from "../components/input/ha-input";
+import "../components/item/ha-list-item-base";
+import "../components/item/ha-list-item-button";
+import "../components/list/ha-list-base";
 import "../components/map/ha-locations-editor";
 import type {
   HaLocationsEditor,
@@ -136,7 +143,11 @@ class OnboardingLocation extends LitElement {
         ${
           this._places !== undefined
             ? html`
-                <ha-list activatable>
+                <ha-list-base
+                  aria-label=${this._localize(
+                    "ui.panel.page-onboarding.core-config.search_results"
+                  )}
+                >
                   ${
                     this._places?.length
                       ? this._places.map((place) => {
@@ -159,26 +170,28 @@ class OnboardingLocation extends LitElement {
                           ]
                             .filter(Boolean)
                             .join(", ");
-                          return html`<ha-list-item
+                          return html`<ha-list-item-button
                             @click=${this._itemClicked}
                             .placeId=${place.place_id}
-                            .selected=${this._highlightedMarker === place.place_id}
-                            .activated=${this._highlightedMarker === place.place_id}
-                            .twoline=${primary && secondary}
+                            aria-current=${this._highlightedMarker === place.place_id ? "true" : nothing}
+                            class=${classMap({
+                              selected:
+                                this._highlightedMarker === place.place_id,
+                            })}
                           >
-                            ${primary || secondary}
-                            <span slot="secondary"
+                            <span slot="headline">${primary || secondary}</span>
+                            <span slot="supporting-text"
                               >${primary ? secondary : ""}</span
                             >
-                          </ha-list-item>`;
+                          </ha-list-item-button>`;
                         })
-                      : html`<ha-list-item noninteractive
-                          >${
-                            this._places === null ? "" : "No results"
-                          }</ha-list-item
-                        >`
+                      : html`<ha-list-item-base>
+                          <span slot="headline"
+                            >${this._places === null ? "" : "No results"}</span
+                          >
+                        </ha-list-item-base>`
                   }
-                </ha-list>
+                </ha-list-base>
               `
             : nothing
         }
@@ -188,7 +201,8 @@ class OnboardingLocation extends LitElement {
         .locations=${this._markerLocations(
           this._location,
           this._places,
-          this._highlightedMarker
+          this._highlightedMarker,
+          zoneColor(HOME_ZONE_ENTITY_ID, false, [], getComputedStyle(this))
         )}
         zoom="14"
         .themeMode=${darkMql.matches ? "dark" : "light"}
@@ -238,14 +252,25 @@ class OnboardingLocation extends LitElement {
 
   private _markerLocations = memoizeOne(
     (
-      location?: [number, number],
-      places?: OpenStreetMapPlace[] | null,
-      highlightedMarker?: number
+      location: [number, number] | undefined,
+      places: OpenStreetMapPlace[] | null | undefined,
+      highlightedMarker: number | undefined,
+      homeColor: string
     ): MarkerLocation[] => {
+      // Drawn like the home zone on a map
+      const home: Pick<
+        MarkerLocation,
+        "iconPath" | "zone_marker" | "radius_color"
+      > = {
+        iconPath: mdiHome,
+        zone_marker: true,
+        radius_color: homeColor,
+      };
       if (!places) {
         return [
           {
             id: LOCATION_MARKER_ID,
+            ...home,
             latitude: (location || AMSTERDAM)[0],
             longitude: (location || AMSTERDAM)[1],
             location_editable: true,
@@ -255,8 +280,9 @@ class OnboardingLocation extends LitElement {
       return places?.length
         ? places.map((place) => ({
             id: String(place.place_id),
-            iconPath:
-              place.place_id === highlightedMarker ? undefined : mdiMapMarker,
+            ...(place.place_id === highlightedMarker
+              ? home
+              : { iconPath: mdiMapMarker }),
             latitude:
               location && place.place_id === highlightedMarker
                 ? location[0]
@@ -288,7 +314,7 @@ class OnboardingLocation extends LitElement {
       (plc) => plc.place_id === Number(ev.detail.id)
     )!;
     this._location = [Number(place.lat), Number(place.lon)];
-    this._country = place.address.country_code.toUpperCase();
+    this._setCountry(place.address.country_code);
   }
 
   private _itemClicked(ev) {
@@ -297,7 +323,7 @@ class OnboardingLocation extends LitElement {
       (plc) => plc.place_id === ev.currentTarget.placeId
     )!;
     this._location = [Number(place.lat), Number(place.lon)];
-    this._country = place.address.country_code.toUpperCase();
+    this._setCountry(place.address.country_code);
   }
 
   private async _addressSearch(ev: KeyboardEvent) {
@@ -335,7 +361,8 @@ class OnboardingLocation extends LitElement {
           Number(this._places[0].lat),
           Number(this._places[0].lon),
         ];
-        this._country = this._places[0].address.country_code.toUpperCase();
+        this._setCountry(this._places[0].address.country_code);
+        this._elevation = undefined;
       }
     } catch (e: any) {
       this._places = undefined;
@@ -351,9 +378,17 @@ class OnboardingLocation extends LitElement {
     }
     this._places = null;
     const reverse = await reverseGeocode(this._location, this.hass);
-    this._country = reverse.address.country_code.toUpperCase();
+    this._setCountry(reverse.address.country_code);
     this._places = [reverse];
     this._highlightedMarker = reverse.place_id;
+  }
+
+  private _setCountry(countryCode: string) {
+    this._country = countryCode.toUpperCase();
+    // Detected values belong to the detected location
+    this._unitSystem = undefined;
+    this._currency = undefined;
+    this._timeZone = undefined;
   }
 
   private async _handleButtonClick(ev) {
@@ -487,44 +522,33 @@ class OnboardingLocation extends LitElement {
           border-radius: var(--mdc-shape-large, 16px);
           overflow: hidden;
         }
-        ha-list {
+        ha-list-base {
           width: 100%;
           border: 1px solid var(--divider-color);
           box-sizing: border-box;
           border-top-width: 0;
           border-bottom-left-radius: var(--mdc-shape-small, 4px);
           border-bottom-right-radius: var(--mdc-shape-small, 4px);
-          --mdc-list-vertical-padding: 0;
+          overflow: hidden;
+          --ha-row-item-min-height: 72px;
         }
-        ha-list-item {
-          height: 72px;
+        ha-list-item-button.selected::part(base) {
+          background-color: var(--ha-color-fill-primary-quiet-resting);
+        }
+        ha-list-item-button.selected::part(headline) {
+          color: var(--primary-color);
         }
         .attribution {
           /* input helper style */
           margin: 0;
           padding: 4px 16px 12px 16px;
           color: var(--mdc-text-field-label-ink-color, rgba(0, 0, 0, 0.6));
-          font-family: var(
-            --mdc-typography-caption-font-family,
-            var(--mdc-typography-font-family, var(--ha-font-family-body))
-          );
-          font-size: var(
-            --mdc-typography-caption-font-size,
-            var(--ha-font-size-xs)
-          );
-          font-weight: var(
-            --mdc-typography-caption-font-weight,
-            var(--ha-font-weight-normal)
-          );
-          letter-spacing: var(
-            --mdc-typography-caption-letter-spacing,
-            0.0333333333em
-          );
-          text-decoration: var(
-            --mdc-typography-caption-text-decoration,
-            inherit
-          );
-          text-transform: var(--mdc-typography-caption-text-transform, inherit);
+          font-family: var(--ha-font-family-body);
+          font-size: var(--ha-font-size-xs);
+          font-weight: var(--ha-font-weight-normal);
+          letter-spacing: 0.0333333333em;
+          text-decoration: inherit;
+          text-transform: inherit;
         }
         .attribution a {
           color: inherit;

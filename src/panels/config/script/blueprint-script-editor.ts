@@ -1,7 +1,7 @@
-import { consume } from "@lit/context";
 import { mdiContentSave } from "@mdi/js";
 import { css, html, nothing, type CSSResultGroup } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../common/decorators/consume";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button";
 import "../../../components/ha-markdown";
@@ -60,7 +60,7 @@ export class HaBlueprintScriptEditor extends HaBlueprintGenericEditor {
   }
 
   protected async _getBlueprints() {
-    this._blueprints = await fetchBlueprints(this.hass, "script");
+    this._blueprints = await fetchBlueprints(this.hass.callWS, "script");
   }
 
   static get styles(): CSSResultGroup {

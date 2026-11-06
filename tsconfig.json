@@ -8,9 +8,13 @@
     // Modules
     "module": "ESNext",
     "moduleResolution": "bundler",
+    // Resolve workspace packages to their sources, see packages/components
+    "customConditions": ["ha-source"],
     "resolveJsonModule": true,
     // Babel handles transpiling and no need for declaration files
     "noEmit": true,
+    // Lets build scripts import the shared .mts workflow helpers
+    "allowImportingTsExtensions": true,
     // Caching
     "incremental": true,
     "tsBuildInfoFile": "node_modules/.cache/typescript/.tsbuildinfo",
@@ -30,6 +34,10 @@
       {
         "name": "ts-lit-plugin",
         "strict": true,
+        // Follows imports of @home-assistant/components entry points (workspace
+        // packages resolve through node_modules) to the component classes
+        // that declare their tags
+        "maxNodeModuleImportDepth": 2,
         "rules": {
           // Custom elements
           "no-unknown-tag-name": "error",
@@ -70,9 +78,6 @@
       "lit/polyfill-support": ["./node_modules/lit/polyfill-support.js"],
       "@lit-labs/virtualizer/layouts/grid": [
         "./node_modules/@lit-labs/virtualizer/layouts/grid.js"
-      ],
-      "@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver": [
-        "./node_modules/@lit-labs/virtualizer/polyfills/resize-observer-polyfill/ResizeObserver.js"
       ],
       "@lit-labs/observers/resize-controller": [
         "./node_modules/@lit-labs/observers/resize-controller.js"
@@ -159,5 +164,5 @@
     }
   },
   // Exclude e2e tests — they have their own tsconfig that adds node types.
-  "exclude": ["test/e2e"]
+  "exclude": ["test/e2e", "packages/*/dist"]
 }

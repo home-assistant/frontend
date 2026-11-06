@@ -29,9 +29,16 @@ const processAreasForMediaPlayers = (
     const area = hass.areas[areaId];
     if (!area) continue;
 
-    const areaFilter = generateEntityFilter(hass, {
-      area: area.area_id,
-    });
+    const areaFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        area: area.area_id,
+      }
+    );
     const areaEntities = entities.filter(areaFilter);
     const areaCards: LovelaceCardConfig[] = [];
 
@@ -63,9 +70,16 @@ const processUnassignedEntities = (
   hass: HomeAssistant,
   entities: string[]
 ): LovelaceCardConfig[] => {
-  const unassignedFilter = generateEntityFilter(hass, {
-    area: null,
-  });
+  const unassignedFilter = generateEntityFilter(
+    hass.states,
+    hass.entities,
+    hass.devices,
+    hass.areas,
+    hass.floors,
+    {
+      area: null,
+    }
+  );
   const unassignedEntities = entities.filter(unassignedFilter);
   const areaCards: LovelaceCardConfig[] = [];
 
@@ -101,7 +115,15 @@ export class HomeMMediaPlayersViewStrategy extends ReactiveElement {
     const allEntities = Object.keys(hass.states);
 
     const mediaPlayersFilters = HOME_SUMMARIES_FILTERS.media_players.map(
-      (filter) => generateEntityFilter(hass, filter)
+      (filter) =>
+        generateEntityFilter(
+          hass.states,
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors,
+          filter
+        )
     );
 
     const entities = findEntities(allEntities, mediaPlayersFilters);

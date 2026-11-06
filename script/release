@@ -6,7 +6,7 @@ set -e
 cd "$(dirname "$0")/.."
 
 # Install node modules
-yarn install
+pnpm install --frozen-lockfile
 
 script/build_frontend
 

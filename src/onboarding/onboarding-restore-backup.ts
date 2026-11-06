@@ -13,11 +13,11 @@ import {
   type BackupOnboardingConfig,
   type BackupOnboardingInfo,
 } from "../data/backup_onboarding";
-import type { CloudStatus } from "../data/cloud";
 import {
   fetchHaCloudStatus,
   signOutHaCloud,
   waitForIntegration,
+  type OnboardingCloudStatus,
 } from "../data/onboarding";
 import { showToast } from "../util/toast";
 import "./onboarding-loading";
@@ -53,7 +53,7 @@ class OnboardingRestoreBackup extends LitElement {
 
   @state() private _failed?: boolean;
 
-  @state() private _cloudStatus?: CloudStatus;
+  @state() private _cloudStatus?: OnboardingCloudStatus;
 
   @storage({
     key: "onboarding-restore-backup-backup-id",

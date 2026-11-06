@@ -21,6 +21,7 @@ import type { LogbookChain } from "./logbook-chain-resolver";
 import type { LogbookCause } from "./logbook-entry-model";
 import {
   computeLogbookItem,
+  computeRunTraceLink,
   computeTraceLink,
   entityDisplay,
   isRunRow,
@@ -252,7 +253,7 @@ class HaLogbookChain extends LitElement {
   private _renderRunNode(row: LogbookEntry) {
     const item = computeLogbookItem(this.hass, row);
     const time = this._formatTimeWithMs(item.when);
-    const traceLink = computeTraceLink(this.traceContexts, row.context_id);
+    const traceLink = computeRunTraceLink(this.traceContexts, row);
     return this._renderRow(
       row.entity_id,
       html`

@@ -5,7 +5,10 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { computeStateName } from "../../../common/entity/compute_state_name";
+import {
+  computeEntityEntryNameParts,
+  DEFAULT_ENTITY_NAME,
+} from "../../../common/entity/compute_entity_name_display";
 import type {
   EntityDomainFilter,
   EntityDomainFilterFunc,
@@ -69,7 +72,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
       this._fetchEntities();
     }
     if (!this.hasUpdated) {
-      fetchCloudStatus(this.hass).then((status) => {
+      fetchCloudStatus(this.hass.callWS).then((status) => {
         this._cloudStatus = status;
       });
     }
@@ -322,13 +325,7 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
             </ha-alert>`
           : html`
               <ha-row-item>
-                <span slot="headline">
-                  ${
-                    this.hass.states[this.entityId]
-                      ? computeStateName(this.hass.states[this.entityId])
-                      : this.entityId
-                  }
-                </span>
+                <span slot="headline">${this._computedName(this.entry)}</span>
                 <span slot="supporting-text">
                   ${this.hass.localize(
                     "ui.dialogs.voice-settings.entity_name_alias_description"
@@ -350,6 +347,14 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
             `
       }
     `;
+  }
+
+  // Same composition as the backend's computed name alias
+  private _computedName(entry: ExtEntityRegistryEntry): string {
+    const parts = computeEntityEntryNameParts(entry, this.hass);
+    return DEFAULT_ENTITY_NAME.map((item) => parts[item.type])
+      .filter(Boolean)
+      .join(" ");
   }
 
   private async _toggleEntityNameAlias(ev) {
@@ -447,6 +452,10 @@ export class EntityVoiceSettings extends SubscribeMixin(LitElement) {
         }
         ha-row-item {
           --ha-row-item-padding-inline: 0;
+        }
+        ha-row-item::part(headline),
+        ha-row-item::part(supporting-text) {
+          white-space: normal;
         }
         img {
           height: 32px;

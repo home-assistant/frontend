@@ -1,7 +1,6 @@
 import type { TemplateResult } from "lit";
 import { LitElement, css, html } from "lit";
 import { customElement, state } from "lit/decorators";
-import "../../../../src/components/ha-formfield";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../../src/types";
 import "../../components/demo-black-white-row";
@@ -64,13 +63,12 @@ class DemoHaAutomationEditorAction extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="options">
-        <ha-formfield label="Disabled">
-          <ha-switch
-            .name=${"disabled"}
-            .checked=${this._disabled}
-            @change=${this._handleOptionChange}
-          ></ha-switch>
-        </ha-formfield>
+        <ha-switch
+          .name=${"disabled"}
+          .checked=${this._disabled}
+          @change=${this._handleOptionChange}
+          >Disabled</ha-switch
+        >
       </div>
       ${SCHEMAS.map(
         (info, sampleIdx) => html`
@@ -111,7 +109,7 @@ class DemoHaAutomationEditorAction extends LitElement {
       max-width: 800px;
       margin: 16px auto;
     }
-    .options ha-formfield {
+    .options ha-switch {
       margin-right: 16px;
     }
   `;

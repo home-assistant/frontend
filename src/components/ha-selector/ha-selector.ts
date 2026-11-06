@@ -71,6 +71,7 @@ const LOAD_ELEMENTS = {
   ui_color: () => import("./ha-selector-ui-color"),
   ui_state_content: () => import("./ha-selector-ui-state-content"),
   ui_time_format: () => import("./ha-selector-ui-time-format"),
+  unit_of_measurement: () => import("./ha-selector-unit-of-measurement"),
 } satisfies Record<SelectorType, () => Promise<unknown>>;
 
 const LEGACY_UI_SELECTORS = new Set(["ui-action", "ui-color"]);
@@ -92,7 +93,10 @@ export class HaSelector extends LitElement {
   @property() public helper?: string;
 
   @property({ attribute: false })
-  public localizeValue?: (key: string) => string;
+  public localizeValue?: (
+    key: string,
+    values?: Record<string, string>
+  ) => string;
 
   @property() public placeholder?: any;
 

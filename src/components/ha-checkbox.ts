@@ -1,6 +1,6 @@
 import WaCheckbox from "@home-assistant/webawesome/dist/components/checkbox/checkbox";
 import { css, type CSSResultGroup } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 
 /**
  * Home Assistant checkbox component
@@ -32,6 +32,7 @@ import { customElement } from "lit/decorators";
  * @cssprop --ha-checkbox-checked-icon-scale - The size of the checked and indeterminate icons relative to the checkbox. Defaults to `0.9`.
  * @cssprop --ha-checkbox-border-radius - The border radius of the checkbox control. Defaults to `--ha-border-radius-sm`.
  * @cssprop --ha-checkbox-border-width - The border width of the checkbox control. Defaults to `--ha-border-width-md`.
+ * @cssprop --ha-checkbox-min-touch-size - Minimum touch target size around the checkbox. Defaults to `40px`.
  * @cssprop --ha-checkbox-required-marker - The marker shown after the label for required fields. Defaults to `"*"`.
  * @cssprop --ha-checkbox-required-marker-offset - Offset of the required marker. Defaults to `0.1rem`.
  *
@@ -39,9 +40,13 @@ import { customElement } from "lit/decorators";
  * @attr {boolean} disabled - Disables the checkbox.
  * @attr {boolean} indeterminate - Draws the checkbox in an indeterminate state.
  * @attr {boolean} required - Makes the checkbox a required field.
+ * @attr {("brand"|"neutral"|"danger"|"warning"|"success")} variant - Sets the checked color variant. "brand" is default.
  */
 @customElement("ha-checkbox")
 export class HaCheckbox extends WaCheckbox {
+  @property({ reflect: true })
+  variant: "brand" | "neutral" | "success" | "warning" | "danger" = "brand";
+
   /**
    * Returns the configured checkbox value, independent of checked state.
    *
@@ -77,14 +82,18 @@ export class HaCheckbox extends WaCheckbox {
           );
           --checked-icon-color: var(
             --ha-checkbox-checked-icon-color,
-            var(--wa-color-brand-on-loud)
+            var(--checkbox-on-fill-color)
           );
 
           --wa-form-control-activated-color: var(
             --ha-checkbox-checked-background-color,
-            var(--ha-color-fill-primary-loud-resting)
+            var(--checkbox-fill-color)
           );
           -webkit-tap-highlight-color: transparent;
+
+          --checkbox-fill-color: var(--ha-color-fill-primary-loud-resting);
+          --checkbox-fill-color-hover: var(--ha-color-fill-primary-loud-hover);
+          --checkbox-on-fill-color: var(--wa-color-brand-on-loud);
 
           --checked-icon-scale: var(--ha-checkbox-checked-icon-scale, 0.9);
           --wa-form-control-required-content: var(
@@ -95,6 +104,30 @@ export class HaCheckbox extends WaCheckbox {
             --ha-checkbox-required-marker-offset,
             0.1rem
           );
+        }
+
+        :host([variant="neutral"]) {
+          --checkbox-fill-color: var(--ha-color-fill-neutral-loud-resting);
+          --checkbox-fill-color-hover: var(--ha-color-fill-neutral-loud-hover);
+          --checkbox-on-fill-color: var(--ha-color-on-neutral-loud);
+        }
+
+        :host([variant="success"]) {
+          --checkbox-fill-color: var(--ha-color-fill-success-loud-resting);
+          --checkbox-fill-color-hover: var(--ha-color-fill-success-loud-hover);
+          --checkbox-on-fill-color: var(--ha-color-on-success-loud);
+        }
+
+        :host([variant="warning"]) {
+          --checkbox-fill-color: var(--ha-color-fill-warning-loud-resting);
+          --checkbox-fill-color-hover: var(--ha-color-fill-warning-loud-hover);
+          --checkbox-on-fill-color: var(--ha-color-on-warning-loud);
+        }
+
+        :host([variant="danger"]) {
+          --checkbox-fill-color: var(--ha-color-fill-danger-loud-resting);
+          --checkbox-fill-color-hover: var(--ha-color-fill-danger-loud-hover);
+          --checkbox-on-fill-color: var(--ha-color-on-danger-loud);
         }
 
         [part~="base"] {
@@ -112,6 +145,22 @@ export class HaCheckbox extends WaCheckbox {
             var(--ha-border-width-md)
           );
           margin-inline-end: 0;
+        }
+
+        [part~="control"]::before {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 100%;
+          height: 100%;
+          min-width: var(--ha-checkbox-min-touch-size, 40px);
+          min-height: var(--ha-checkbox-min-touch-size, 40px);
+        }
+
+        label:has(input:disabled) [part~="control"]::before {
+          pointer-events: none;
         }
 
         [part~="label"] {
@@ -141,11 +190,11 @@ export class HaCheckbox extends WaCheckbox {
         label:has(input:indeterminate:not(:disabled)):hover [part~="control"] {
           background-color: var(
             --ha-checkbox-checked-background-color-hover,
-            var(--ha-color-fill-primary-loud-hover)
+            var(--checkbox-fill-color-hover)
           );
           border-color: var(
             --ha-checkbox-checked-background-color-hover,
-            var(--ha-color-fill-primary-loud-hover)
+            var(--checkbox-fill-color-hover)
           );
         }
       `,

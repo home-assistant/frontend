@@ -1,4 +1,5 @@
 import type { BarSeriesOption } from "echarts/charts";
+import type { HassEntities } from "home-assistant-js-websocket";
 import { computeYAxisFractionDigits } from "../../../../components/chart/y-axis-fraction-digits";
 import { fillDataGapsAndRoundCaps } from "../../../../components/chart/round-caps";
 import type {
@@ -10,6 +11,7 @@ import type { Statistics, StatisticsMetaData } from "../../../../data/recorder";
 import { getStatisticLabel } from "../../../../data/recorder";
 import type { HomeAssistant } from "../../../../types";
 import { getEnergyColor } from "./common/color";
+import { sumEnergyStatistics } from "./common/sum-statistics";
 import {
   type EnergyDataPoint,
   generateFillBuckets,
@@ -17,12 +19,21 @@ import {
 } from "./common/energy-chart-options";
 
 export interface EnergyGasGraphDataParams {
-  hass: HomeAssistant;
+  states: HassEntities;
+  formatEntityName: HomeAssistant["formatEntityName"];
+  darkMode: boolean;
   energyData: EnergyData;
   computedStyles: CSSStyleDeclaration;
   /** Current time, injected so the transform is deterministic. */
   now: Date;
+  /** Sums all gas sources into one series with this name. */
+  combinedName?: string;
 }
+
+type GasChartSource = Pick<
+  GasSourceTypeEnergyPreference,
+  "stat_energy_from" | "name"
+>;
 
 export interface EnergyGasGraphData {
   chartData: BarSeriesOption[];
@@ -38,13 +49,14 @@ export interface EnergyGasGraphData {
 /**
  * Transforms an energy collection update (`EnergyData` + config + environment)
  * into the gas graph card's chart series and derived state. Pure data
- * processing: every environment read (current time, theme style, hass) is
- * injected so the transform is deterministic and benchmarkable.
+ * processing: every environment read (current time, theme style, entity
+ * states and names) is injected so the transform is deterministic and
+ * benchmarkable.
  */
 export function generateEnergyGasGraphData(
   params: EnergyGasGraphDataParams
 ): EnergyGasGraphData {
-  const { hass, energyData, computedStyles, now } = params;
+  const { energyData, computedStyles, now, combinedName } = params;
 
   const start = energyData.start;
   const end = energyData.end || now;
@@ -56,6 +68,14 @@ export function generateEnergyGasGraphData(
     energyData.prefs.energy_sources.filter(
       (source) => source.type === "gas"
     ) as GasSourceTypeEnergyPreference[];
+
+  const combine = combinedName !== undefined && gasSources.length > 1;
+  const statIds = gasSources.map((source) => source.stat_energy_from);
+  const chartSources: GasChartSource[] = combine
+    ? [{ stat_energy_from: "gas", name: combinedName }]
+    : gasSources;
+  const chartStats = (statistics: Statistics): Statistics =>
+    combine ? { gas: sumEnergyStatistics(statistics, statIds) } : statistics;
 
   const unit = energyData.gasUnit;
 
@@ -78,12 +98,12 @@ export function generateEnergyGasGraphData(
   if (energyData.statsCompare) {
     datasets.push(
       ...processDataSet(
-        hass,
+        params,
         compareTransform,
         period,
-        energyData.statsCompare,
+        chartStats(energyData.statsCompare),
         energyData.statsMetadata,
-        gasSources,
+        chartSources,
         computedStyles,
         trackY,
         true
@@ -92,7 +112,7 @@ export function generateEnergyGasGraphData(
   } else {
     // add empty dataset so compare bars are first
     // `stack: gas` so it doesn't take up space yet
-    const firstId = gasSources[0]?.stat_energy_from ?? "placeholder";
+    const firstId = chartSources[0]?.stat_energy_from ?? "placeholder";
     datasets.push({
       id: "compare-" + firstId,
       type: "bar",
@@ -103,12 +123,12 @@ export function generateEnergyGasGraphData(
 
   datasets.push(
     ...processDataSet(
-      hass,
+      params,
       compareTransform,
       period,
-      energyData.stats,
+      chartStats(energyData.stats),
       energyData.statsMetadata,
-      gasSources,
+      chartSources,
       computedStyles,
       trackY
     )
@@ -153,12 +173,12 @@ function processTotal(
 }
 
 function processDataSet(
-  hass: HomeAssistant,
+  { states, formatEntityName, darkMode }: EnergyGasGraphDataParams,
   compareTransform: (ts: Date) => Date,
   period: ReturnType<typeof getSuggestedPeriod>,
   statistics: Statistics,
   statisticsMetaData: Record<string, StatisticsMetaData>,
-  gasSources: GasSourceTypeEnergyPreference[],
+  gasSources: GasChartSource[],
   computedStyles: CSSStyleDeclaration,
   trackY: (v: number) => void,
   compare = false
@@ -218,12 +238,17 @@ function processDataSet(
       id: compare ? "compare-" + statId : statId,
       name:
         source.name ||
-        getStatisticLabel(hass, statId, statisticsMetaData[statId]),
+        getStatisticLabel(
+          states,
+          formatEntityName,
+          statId,
+          statisticsMetaData[statId]
+        ),
       barMaxWidth: 50,
       itemStyle: {
         borderColor: getEnergyColor(
           computedStyles,
-          hass.themes.darkMode,
+          darkMode,
           false,
           compare,
           "--energy-gas-color",
@@ -232,7 +257,7 @@ function processDataSet(
       },
       color: getEnergyColor(
         computedStyles,
-        hass.themes.darkMode,
+        darkMode,
         true,
         compare,
         "--energy-gas-color",

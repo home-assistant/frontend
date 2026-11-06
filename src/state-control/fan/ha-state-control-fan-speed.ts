@@ -1,8 +1,9 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import { computeAttributeNameDisplay } from "../../common/entity/compute_attribute_display";
 import type { HASSDomEvent } from "../../common/dom/fire_event";
 import { stateActive } from "../../common/entity/state_active";
@@ -21,6 +22,7 @@ import { UNAVAILABLE } from "../../data/entity/entity";
 import { DOMAIN_ATTRIBUTES_UNITS } from "../../data/entity/entity_attributes";
 import type { FanEntity, FanSpeed } from "../../data/fan";
 import {
+  computeDefaultFanSpeedStyle,
   computeFanSpeedIcon,
   computeFanSpeeds,
   fanPercentageToSpeed,
@@ -102,7 +104,10 @@ export class HaStateControlFanSpeed extends LitElement {
   protected render() {
     const color = stateColorCss(this.stateObj);
 
-    const speeds = computeFanSpeeds(this.stateObj);
+    const speeds =
+      computeDefaultFanSpeedStyle(this.stateObj) === "buttons"
+        ? computeFanSpeeds(this.stateObj)
+        : undefined;
 
     if (speeds) {
       const options = speeds

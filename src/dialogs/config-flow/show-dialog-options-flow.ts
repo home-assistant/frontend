@@ -141,8 +141,11 @@ export const showOptionsFlowDialog = (
         );
       },
 
-      renderShowFormStepFieldLocalizeValue(hass, _step, key) {
-        return hass.localize(`component.${configEntry.domain}.selector.${key}`);
+      renderShowFormStepFieldLocalizeValue(hass, _step, key, values) {
+        return hass.localize(
+          `component.${configEntry.domain}.selector.${key}`,
+          values
+        );
       },
 
       renderShowFormStepSubmitButton(hass, step) {

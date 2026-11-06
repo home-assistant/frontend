@@ -11,10 +11,8 @@ import { generateEnergyData } from "../fixtures/energy";
 const computedStyles = createMockComputedStyle({
   "--energy-gas-color": "#1b7ea0",
 });
-const hass = {
-  ...createMockHass(),
-  themes: { darkMode: false },
-} as any;
+const { states, formatEntityName } = createMockHass();
+const baseParams = { states, formatEntityName, darkMode: false };
 
 const now = new Date("2024-02-15T00:00:00Z");
 
@@ -29,6 +27,7 @@ const gasPrefs = (sources: number): EnergyPreferences => ({
   })),
   device_consumption: [],
   device_consumption_water: [],
+  device_consumption_gas: [],
 });
 
 const small = generateEnergyData(1, {
@@ -53,7 +52,7 @@ describe("generateEnergyGasGraphData", () => {
   test("small (1 day hourly, 2 sources)", async ({ bench }) => {
     await bench("small (1 day hourly, 2 sources)", () => {
       generateEnergyGasGraphData({
-        hass,
+        ...baseParams,
         energyData: small,
         computedStyles,
         now,
@@ -64,7 +63,7 @@ describe("generateEnergyGasGraphData", () => {
   test("medium (month hourly + compare, 3 sources)", async ({ bench }) => {
     await bench("medium (month hourly + compare, 3 sources)", () => {
       generateEnergyGasGraphData({
-        hass,
+        ...baseParams,
         energyData: medium,
         computedStyles,
         now,
@@ -75,7 +74,7 @@ describe("generateEnergyGasGraphData", () => {
   test("large (month 5-minute + compare, 4 sources)", async ({ bench }) => {
     await bench("large (month 5-minute + compare, 4 sources)", () => {
       generateEnergyGasGraphData({
-        hass,
+        ...baseParams,
         energyData: large,
         computedStyles,
         now,

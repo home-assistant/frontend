@@ -11,7 +11,6 @@ export const mockPersistentNotification = (hass: MockHomeAssistant) => {
           message: "There was motion detected in the backyard.",
           notification_id: "demo-1",
           title: "Motion Detected!",
-          status: "unread",
         },
       },
     } as PersistentNotificationMessage);

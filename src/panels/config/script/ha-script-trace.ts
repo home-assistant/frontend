@@ -1,5 +1,4 @@
 import "@home-assistant/webawesome/dist/components/divider/divider";
-import { consume } from "@lit/context";
 import {
   mdiDotsVertical,
   mdiDownload,
@@ -12,6 +11,8 @@ import {
 import type { CSSResultGroup, TemplateResult, PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   fireEvent,
@@ -36,13 +37,20 @@ import type {
   HatScriptGraph,
   NodeInfo,
 } from "../../../components/trace/hat-script-graph";
-import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
+import {
+  fireRelatedContext,
+  fullEntitiesContext,
+  manifestsContext,
+} from "../../../data/context";
+import type { DomainManifestLookup } from "../../../data/integration";
+import { buildTraceLabels } from "../../../data/trace-labels";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
 import type { LogbookEntry } from "../../../data/logbook";
 import { getLogbookDataForContext } from "../../../data/logbook";
 import type { ScriptEntity } from "../../../data/script";
 import type { ScriptTrace, ScriptTraceExtended } from "../../../data/trace";
-import { loadTrace, loadTraces } from "../../../data/trace";
+import { getTracePath, loadTrace, loadTraces } from "../../../data/trace";
+import { TraceRunController } from "../../../data/trace-run-controller";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -72,6 +80,10 @@ export class HaScriptTrace extends LitElement {
   @property({ attribute: false }) public route!: Route;
 
   @state()
+  @consume({ context: manifestsContext, subscribe: true })
+  _manifests?: DomainManifestLookup;
+
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityRegistry?: EntityRegistryEntry[];
 
@@ -93,12 +105,33 @@ export class HaScriptTrace extends LitElement {
 
   @query("hat-script-graph") private _graph?: HatScriptGraph;
 
+  private _runNavigation = new TraceRunController(this, {
+    tracePath: () => getTracePath("script", this.scriptId),
+    shownRunId: () => this._runId,
+    loadRun: (runId) => {
+      this._selected = undefined;
+      this._loadTraces(runId);
+    },
+  });
+
+  /**
+   * `hass` is replaced on every state update, so comparing it would rebuild
+   * every label on every state event. The run already happened, so only the
+   * trace and the registries the descriptions read can change the result.
+   */
+  private _traceLabels = memoizeOne(
+    buildTraceLabels,
+    ([trace, , entities, manifests], [pTrace, , pEntities, pManifests]) =>
+      trace === pTrace && entities === pEntities && manifests === pManifests
+  );
+
   protected render(): TemplateResult {
     const stateObj = this._entityId
       ? this.hass.states[this._entityId]
       : undefined;
 
-    const title = stateObj?.attributes.friendly_name || this._entityId;
+    const title =
+      (stateObj && this.hass.formatEntityName(stateObj)) || this._entityId;
 
     let devButtons: TemplateResult | string = "";
     if (__DEV__) {
@@ -194,7 +227,6 @@ export class HaScriptTrace extends LitElement {
                     .path=${mdiRayEndArrow}
                   ></ha-icon-button>
                   <ha-trace-picker
-                    .hass=${this.hass}
                     .traces=${this._traces}
                     .value=${this._runId}
                     @value-changed=${this._pickTrace}
@@ -257,6 +289,16 @@ export class HaScriptTrace extends LitElement {
         <hat-script-graph
           .trace=${this._trace}
           .selected=${this._selected?.path}
+          .labels=${
+            this._trace
+              ? this._traceLabels(
+                  this._trace,
+                  this.hass,
+                  this._entityRegistry,
+                  this._manifests
+                )
+              : undefined
+          }
           @graph-node-selected=${this._pickNode}
         ></hat-script-graph>
       </div>
@@ -374,11 +416,14 @@ export class HaScriptTrace extends LitElement {
     if (changedProps.get("scriptId")) {
       this._traces = undefined;
       this._runId = undefined;
+      this._selected = undefined;
       this._trace = undefined;
       this._logbookEntries = undefined;
       this._entityId = undefined;
       if (this.scriptId) {
-        this._loadTraces();
+        // A link from another trace reuses this page and names the run.
+        const params = new URLSearchParams(location.search);
+        this._loadTraces(params.get("run_id") || undefined);
       }
     }
 
@@ -403,6 +448,7 @@ export class HaScriptTrace extends LitElement {
       this._trace = undefined;
       this._logbookEntries = undefined;
       this._loadTrace();
+      this._runNavigation.writeRunIdToUrl(this._runId);
     }
   }
 
@@ -425,18 +471,21 @@ export class HaScriptTrace extends LitElement {
 
   private _pickOlderTrace() {
     const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
-    this._runId = this._traces![curIndex + 1].run_id;
-    this._selected = undefined;
+    this._pickRun(this._traces![curIndex + 1].run_id);
   }
 
   private _pickNewerTrace() {
     const curIndex = this._traces!.findIndex((tr) => tr.run_id === this._runId);
-    this._runId = this._traces![curIndex - 1].run_id;
-    this._selected = undefined;
+    this._pickRun(this._traces![curIndex - 1].run_id);
   }
 
   private _pickTrace(ev) {
-    this._runId = ev.detail.value;
+    this._pickRun(ev.detail.value);
+  }
+
+  private _pickRun(runId: string) {
+    this._runNavigation.cancelLinkRequest();
+    this._runId = runId;
     this._selected = undefined;
   }
 
@@ -458,11 +507,18 @@ export class HaScriptTrace extends LitElement {
   );
 
   private _refreshTraces() {
-    this._loadTraces();
+    // Keep the run of a link that is still loading.
+    this._loadTraces(this._runNavigation.requestedRunId);
   }
 
   private async _loadTraces(runId?: string) {
-    this._traces = await loadTraces(this.hass, "script", this.scriptId);
+    const request = this._runNavigation.startListRequest(runId);
+    const traces = await loadTraces(this.hass, "script", this.scriptId);
+    if (!this._runNavigation.isLatestListRequest(request)) {
+      return;
+    }
+    this._runNavigation.endListRequest();
+    this._traces = traces;
     // Newest will be on top.
     this._traces.reverse();
 
@@ -490,6 +546,9 @@ export class HaScriptTrace extends LitElement {
           "ui.panel.config.automation.trace.trace_no_longer_available"
         ),
       });
+      if (!this._runNavigation.isLatestListRequest(request)) {
+        return;
+      }
     }
 
     // See if we can set a default runID
@@ -499,13 +558,10 @@ export class HaScriptTrace extends LitElement {
   }
 
   private async _loadTrace() {
-    const trace = await loadTrace(
-      this.hass,
-      "script",
-      this.scriptId,
-      this._runId!
-    );
-    this._logbookEntries = isComponentLoaded(this.hass.config, "logbook")
+    const request = this._runNavigation.startTraceRequest();
+    const runId = this._runId!;
+    const trace = await loadTrace(this.hass, "script", this.scriptId, runId);
+    const logbookEntries = isComponentLoaded(this.hass.config, "logbook")
       ? await getLogbookDataForContext(
           this.hass,
           trace.timestamp.start,
@@ -513,6 +569,14 @@ export class HaScriptTrace extends LitElement {
         )
       : [];
 
+    // Another run was picked, or the same run loaded again, meanwhile.
+    if (
+      !this._runNavigation.isLatestTraceRequest(request) ||
+      runId !== this._runId
+    ) {
+      return;
+    }
+    this._logbookEntries = logbookEntries;
     this._trace = trace;
   }
 
@@ -617,7 +681,6 @@ export class HaScriptTrace extends LitElement {
           align-items: center;
           justify-content: center;
           height: var(--header-height);
-          background-color: var(--primary-background-color);
           color: var(--app-header-text-color, white);
           border-bottom: var(--app-header-border-bottom, none);
           box-sizing: border-box;
@@ -628,7 +691,6 @@ export class HaScriptTrace extends LitElement {
           min-height: 0;
           display: flex;
           overflow: hidden;
-          background-color: var(--card-background-color);
         }
 
         :host([narrow]) .main {
@@ -652,6 +714,10 @@ export class HaScriptTrace extends LitElement {
         }
 
         .graph {
+          background: var(
+            --ha-panel-background,
+            var(--primary-background-color)
+          );
           box-sizing: border-box;
           display: flex;
           flex-direction: column;
@@ -678,10 +744,13 @@ export class HaScriptTrace extends LitElement {
           min-width: 0;
           min-height: 0;
           overflow-y: auto;
-          background-color: var(--card-background-color);
+          background: var(--ha-card-background, var(--card-background-color));
         }
         ha-tab-group {
-          background-color: var(--primary-background-color);
+          background: var(
+            --ha-panel-toolbar-background,
+            var(--ha-panel-background, var(--primary-background-color))
+          );
           border-bottom: 1px solid var(--divider-color);
           direction: var(--direction);
         }

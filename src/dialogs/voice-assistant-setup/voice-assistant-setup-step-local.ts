@@ -285,7 +285,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
         this.hass,
         wyomingEntities.map((ent) => ent.entity_id)
       )
-    );
+    ).filter((ent): ent is ExtEntityRegistryEntry => ent !== null);
 
     this._localTts = entityRegs.filter(
       (ent) =>
@@ -333,7 +333,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
           flow.context.configuration_url.includes(
             type === "tts" ? this._ttsAddonName : this._sttAddonName
           )) ||
-          (flow.context.title_placeholders.name &&
+          (flow.context.title_placeholders?.name &&
             flow.context.title_placeholders.name
               .toLowerCase()
               .includes(
@@ -350,7 +350,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     });
     if (step.type !== "create_entry") {
       throw new Error(
-        `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { app: type === "tts" ? this._ttsProviderName : this._sttProviderName })}${"errors" in step ? `: ${step.errors.base}` : ""}`
+        `${this.hass.localize("ui.panel.config.voice_assistants.satellite_wizard.local.errors.failed_create_entry", { app: type === "tts" ? this._ttsProviderName : this._sttProviderName })}${"errors" in step ? `: ${step.errors?.base}` : ""}`
       );
     }
   }
@@ -362,7 +362,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       return;
     }
 
-    const pipelines = await listAssistPipelines(this.hass);
+    const pipelines = await listAssistPipelines(this.hass.callWS);
 
     if (pipelines.preferred_pipeline) {
       pipelines.pipelines.sort((a) =>
@@ -394,7 +394,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       "select",
       "select_option",
       { option: localPipeline.name },
-      { entity_id: this.assistConfiguration?.pipeline_entity_id }
+      { entity_id: this.assistConfiguration?.pipeline_entity_id ?? undefined }
     );
     this._nextStep();
   }
@@ -402,11 +402,11 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
   private async _createPipeline(ttsEntityId: string, sttEntityId: string) {
     // Create a pipeline with local TTS and STT
 
-    const pipelines = await listAssistPipelines(this.hass);
+    const pipelines = await listAssistPipelines(this.hass.callWS);
 
     const agent = (
       await listAgents(
-        this.hass,
+        this.hass.callWS,
         this.language || this.hass.config.language,
         this.hass.config.country || undefined
       )
@@ -420,7 +420,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     const ttsEngine = (
       await listTTSEngines(
-        this.hass,
+        this.hass.callWS,
         this.language,
         this.hass.config.country || undefined
       )
@@ -431,7 +431,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
     }
 
     const ttsVoices = await listTTSVoices(
-      this.hass,
+      this.hass.callWS,
       ttsEntityId,
       ttsEngine.supported_languages[0]
     );
@@ -442,7 +442,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
 
     const sttEngine = (
       await listSTTEngines(
-        this.hass,
+        this.hass.callWS,
         this.language,
         this.hass.config.country || undefined
       )
@@ -503,7 +503,7 @@ export class HaVoiceAssistantSetupStepLocal extends LitElement {
       "select",
       "select_option",
       { option: localPipeline.name },
-      { entity_id: this.assistConfiguration?.pipeline_entity_id }
+      { entity_id: this.assistConfiguration?.pipeline_entity_id ?? undefined }
     );
     this._nextStep();
     return undefined;

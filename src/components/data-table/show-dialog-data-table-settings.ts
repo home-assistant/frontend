@@ -1,5 +1,4 @@
 import { fireEvent } from "../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../common/translations/localize";
 import type { DataTableColumnContainer } from "./ha-data-table";
 
 export interface DataTableSettingsDialogParams {
@@ -10,7 +9,6 @@ export interface DataTableSettingsDialogParams {
   ) => void;
   hiddenColumns?: string[];
   columnOrder?: string[];
-  localizeFunc?: LocalizeFunc;
 }
 
 export const loadDataTableSettingsDialog = () =>

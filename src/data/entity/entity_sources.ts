@@ -1,3 +1,4 @@
+import type { HassEntities } from "home-assistant-js-websocket";
 import { timeCachePromiseFunc } from "../../common/util/time-cache-function-promise";
 import type { HomeAssistant } from "../../types";
 
@@ -7,20 +8,25 @@ interface EntitySource {
 
 export type EntitySources = Record<string, EntitySource>;
 
-const fetchEntitySources = (
-  hass: Pick<HomeAssistant, "callWS">
-): Promise<EntitySources> => hass.callWS({ type: "entity/source" });
+const caches = new WeakMap<HomeAssistant["callWS"], Record<string, unknown>>();
 
 export const fetchEntitySourcesWithCache = (
-  hass: Pick<HomeAssistant, "callWS" | "states">
-): Promise<EntitySources> =>
-  timeCachePromiseFunc(
+  callWS: HomeAssistant["callWS"],
+  states: HassEntities
+): Promise<EntitySources> => {
+  let cache = caches.get(callWS);
+  if (!cache) {
+    cache = {};
+    caches.set(callWS, cache);
+  }
+  return timeCachePromiseFunc(
     "_entitySources",
     // cache for 30 seconds
     30000,
-    fetchEntitySources,
+    () => callWS<EntitySources>({ type: "entity/source" }),
     // We base the cache on number of states. If number of states
     // changes we force a refresh
-    (hass2) => Object.keys(hass2.states).length,
-    hass
+    () => Object.keys(states).length,
+    cache
   );
+};

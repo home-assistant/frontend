@@ -1,23 +1,48 @@
 import { mdiChartBox, mdiChevronDown, mdiChevronUp } from "@mdi/js";
-import type { HassEntity } from "home-assistant-js-websocket";
-import { css, html, LitElement, nothing, type TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import type { HassConfig, HassEntity } from "home-assistant-js-websocket";
+import {
+  css,
+  html,
+  LitElement,
+  nothing,
+  type PropertyValues,
+  type TemplateResult,
+} from "lit";
+import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { LegendFitController } from "../../../common/controllers/legend-fit-controller";
+import { consume } from "../../../common/decorators/consume";
+import {
+  consumeEntityStates,
+  consumeLocalize,
+} from "../../../common/decorators/consume-context-entry";
+import { transform } from "../../../common/decorators/transform";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { getGraphColorByIndex } from "../../../common/color/colors";
 import { computeCssColor } from "../../../common/color/compute-color";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { normalizeValueBySIPrefix } from "../../../common/number/normalize-by-si-prefix";
-import { MobileAwareMixin } from "../../../mixins/mobile-aware-mixin";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import type { EntityNameItem } from "../../../common/entity/compute_entity_name_display";
 import "../../../components/chips/ha-assist-chip";
 import "../../../components/ha-card";
 import "../../../components/ha-segmented-bar";
 import type { Segment } from "../../../components/ha-segmented-bar";
 import "../../../components/ha-svg-icon";
-import type { HomeAssistant } from "../../../types";
+import {
+  configContext,
+  formattersContext,
+  uiContext,
+} from "../../../data/context";
+import type { Themes } from "../../../data/ws-themes";
+import type {
+  HomeAssistant,
+  HomeAssistantConfig,
+  HomeAssistantFormatters,
+  HomeAssistantUI,
+} from "../../../types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { processConfigEntities } from "../common/process-config-entities";
 import { findEntities } from "../common/find-entities";
@@ -27,9 +52,6 @@ import type {
   LovelaceGridOptions,
 } from "../types";
 import type { DistributionCardConfig, DistributionEntityConfig } from "./types";
-
-const LEGEND_OVERFLOW_LIMIT = 10;
-const LEGEND_OVERFLOW_LIMIT_MOBILE = 6;
 
 interface ProcessedEntity {
   entity: string;
@@ -48,10 +70,7 @@ interface LegendItem {
 }
 
 @customElement("hui-distribution-card")
-export class HuiDistributionCard
-  extends MobileAwareMixin(LitElement)
-  implements LovelaceCard
-{
+export class HuiDistributionCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-distribution-card-editor");
     return document.createElement("hui-distribution-card-editor");
@@ -123,22 +142,51 @@ export class HuiDistributionCard
     };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
-
   @state() private _config?: DistributionCardConfig;
 
   @state() private _configEntities?: ProcessedEntity[];
+
+  @state() private _entityIds: string[] = [];
+
+  @state()
+  @consumeEntityStates({ entityIdPath: ["_entityIds"] })
+  private _stateObjs?: Record<string, HassEntity>;
+
+  @state()
+  @consume({ context: formattersContext, subscribe: true })
+  private _formatters!: HomeAssistantFormatters;
+
+  @state() @consumeLocalize() private _localize!: LocalizeFunc;
+
+  @state()
+  @consume({ context: configContext, subscribe: true })
+  @transform<HomeAssistantConfig, HassConfig>({
+    transformer: ({ config }) => config,
+  })
+  private _hassConfig!: HassConfig;
+
+  @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _themes!: Themes;
 
   @state() private _hiddenEntities = new Set<string>();
 
   @state() private _expandLegend = false;
 
+  private _legendFit = new LegendFitController(this);
+
   public setConfig(config: DistributionCardConfig): void {
     this._config = config;
+    this._expandLegend = config.expand_legend ?? false;
 
     // Handle empty entities gracefully
     if (!config.entities || config.entities.length === 0) {
       this._configEntities = [];
+      this._entityIds = [];
       return;
     }
 
@@ -151,6 +199,7 @@ export class HuiDistributionCard
       name: entity.name,
       color: entity.color,
     }));
+    this._entityIds = this._configEntities.map((entity) => entity.entity);
   }
 
   public getCardSize(): number {
@@ -166,15 +215,19 @@ export class HuiDistributionCard
   }
 
   private _validateDeviceClasses = memoizeOne(
-    (entities: ProcessedEntity[], hass: HomeAssistant): string | null => {
+    (
+      entityIds: string[],
+      stateObjs: Record<string, HassEntity>,
+      localize: LocalizeFunc
+    ): string | null => {
       const domains = new Set<string>();
       const deviceClasses = new Set<string>();
 
-      entities.forEach((entity) => {
-        const stateObj = hass.states[entity.entity];
+      entityIds.forEach((entityId) => {
+        const stateObj = stateObjs[entityId];
         if (stateObj) {
           // Check domain
-          const domain = computeDomain(entity.entity);
+          const domain = computeDomain(entityId);
           domains.add(domain);
 
           // Default to "none" if no device_class (Home Assistant pattern)
@@ -185,7 +238,7 @@ export class HuiDistributionCard
 
       // If more than one domain, entities are incompatible
       if (domains.size > 1) {
-        return hass.localize(
+        return localize(
           "ui.panel.lovelace.cards.distribution.domain_mismatch",
           { domains: Array.from(domains).join(", ") }
         );
@@ -193,7 +246,7 @@ export class HuiDistributionCard
 
       // If more than one device_class, entities are incompatible
       if (deviceClasses.size > 1) {
-        return hass.localize(
+        return localize(
           "ui.panel.lovelace.cards.distribution.device_class_mismatch",
           { classes: Array.from(deviceClasses).join(", ") }
         );
@@ -212,7 +265,8 @@ export class HuiDistributionCard
     const hiddenIndices: number[] = [];
 
     // Access data from instance properties instead of parameters
-    if (!this._configEntities || !this.hass) {
+    const stateObjs = this._stateObjs;
+    if (!this._configEntities || !stateObjs) {
       return { segments, hiddenIndices };
     }
 
@@ -226,7 +280,7 @@ export class HuiDistributionCard
 
     // Create segments for ALL entities (including hidden ones with positive values)
     entitiesWithIndex.forEach((entity) => {
-      const stateObj = this.hass!.states[entity.entity];
+      const stateObj = stateObjs[entity.entity];
       if (!stateObj) return;
 
       const rawValue = Number(stateObj.state);
@@ -239,8 +293,8 @@ export class HuiDistributionCard
       const color = entity.color
         ? computeCssColor(entity.color)
         : getGraphColorByIndex(entity.originalIndex, computedStyles);
-      const name = this.hass!.formatEntityName(stateObj, entity.name);
-      const formattedValue = this.hass!.formatEntityState(stateObj);
+      const name = this._formatters.formatEntityName(stateObj, entity.name);
+      const formattedValue = this._formatters.formatEntityState(stateObj);
 
       segments.push({
         value: value,
@@ -262,24 +316,25 @@ export class HuiDistributionCard
   }
 
   private _computeLegendItems(): LegendItem[] {
-    if (!this._configEntities || !this.hass) {
+    const stateObjs = this._stateObjs;
+    if (!this._configEntities || !stateObjs) {
       return [];
     }
 
     const computedStyles = getComputedStyle(this);
 
     return this._configEntities.map((entity, index) => {
-      const stateObj = this.hass!.states[entity.entity];
+      const stateObj = stateObjs[entity.entity];
       const value = stateObj ? Number(stateObj.state) : 0;
       const isHidden = this._hiddenEntities.has(entity.entity);
       const isZeroOrNegative = !stateObj || value <= 0 || isNaN(value);
 
       const name = stateObj
-        ? this.hass!.formatEntityName(stateObj, entity.name)
+        ? this._formatters.formatEntityName(stateObj, entity.name)
         : entity.entity;
 
       const formattedValue = stateObj
-        ? this.hass!.formatEntityState(stateObj)
+        ? this._formatters.formatEntityState(stateObj)
         : "";
 
       return {
@@ -337,22 +392,18 @@ export class HuiDistributionCard
 
   private _renderLegend(): TemplateResult {
     const legendItems = this._computeLegendItems();
-    const overflowLimit = this._isMobileSize
-      ? LEGEND_OVERFLOW_LIMIT_MOBILE
-      : LEGEND_OVERFLOW_LIMIT;
+    const fit = this._legendFit.fit ?? legendItems.length;
 
     return html`
-      <ul class="legend">
-        ${legendItems.map((item, index) => {
-          if (!this._expandLegend && index >= overflowLimit) {
-            return nothing;
-          }
-          return html`
+      <ul class="legend" ${this._legendFit.target()}>
+        ${legendItems.map(
+          (item, index) => html`
             <li
               class=${classMap({
                 "legend-item": true,
                 hidden: item.isHidden,
                 disabled: item.isDisabled,
+                overflow: !this._expandLegend && index >= fit,
               })}
               data-entity=${item.entity}
               data-disabled=${item.isDisabled}
@@ -381,23 +432,28 @@ export class HuiDistributionCard
                   : nothing
               }
             </li>
-          `;
-        })}
+          `
+        )}
         ${
-          legendItems.length > overflowLimit
+          legendItems.length
             ? html`
-                <li>
+                <li
+                  class=${classMap({
+                    "legend-more": true,
+                    overflow: fit >= legendItems.length,
+                  })}
+                >
                   <ha-assist-chip
                     @click=${this._toggleExpandLegend}
                     filled
                     .label=${
                       this._expandLegend
-                        ? this.hass!.localize(
+                        ? this._localize(
                             "ui.components.history_charts.collapse_legend"
                           )
-                        : `${this.hass!.localize(
+                        : `${this._localize(
                             "ui.components.history_charts.expand_legend"
-                          )} (${legendItems.length - overflowLimit})`
+                          )} (${legendItems.length - fit})`
                     }
                   >
                     <ha-svg-icon
@@ -413,8 +469,15 @@ export class HuiDistributionCard
     `;
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("_configEntities")) {
+      this._legendFit.refit();
+    }
+  }
+
   protected render(): TemplateResult | typeof nothing {
-    if (!this._config || !this.hass) {
+    if (!this._config) {
       return nothing;
     }
 
@@ -426,7 +489,7 @@ export class HuiDistributionCard
             <div class="empty-state">
               <ha-svg-icon .path=${mdiChartBox}></ha-svg-icon>
               <p>
-                ${this.hass.localize(
+                ${this._localize(
                   "ui.panel.lovelace.cards.distribution.add_entities"
                 )}
               </p>
@@ -436,16 +499,21 @@ export class HuiDistributionCard
       `;
     }
 
+    const stateObjs = this._stateObjs;
+    if (!stateObjs) {
+      return nothing;
+    }
+
     // Check for missing entities
-    const missingEntities = this._configEntities.filter(
-      (entity) => !this.hass!.states[entity.entity]
+    const missingEntities = this._entityIds.filter(
+      (entityId) => !stateObjs[entityId]
     );
 
     if (missingEntities.length === this._configEntities.length) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${missingEntities.map((entity) =>
-            createEntityNotFoundWarning(this.hass!, entity.entity)
+        <hui-warning>
+          ${missingEntities.map(() =>
+            createEntityNotFoundWarning(this._localize, this._hassConfig)
           )}
         </hui-warning>
       `;
@@ -453,12 +521,13 @@ export class HuiDistributionCard
 
     // Validate device classes
     const deviceClassError = this._validateDeviceClasses(
-      this._configEntities,
-      this.hass
+      this._entityIds,
+      stateObjs,
+      this._localize
     );
     if (deviceClassError) {
       return html`
-        <hui-warning .hass=${this.hass}>
+        <hui-warning>
           <ha-alert alert-type="error">${deviceClassError}</ha-alert>
         </hui-warning>
       `;
@@ -473,7 +542,7 @@ export class HuiDistributionCard
             segmentData.segments.length === 0
               ? html`
                   <div class="empty-state">
-                    ${this.hass.localize(
+                    ${this._localize(
                       "ui.panel.lovelace.cards.distribution.no_data"
                     )}
                   </div>
@@ -513,6 +582,7 @@ export class HuiDistributionCard
     }
 
     .legend {
+      position: relative;
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
@@ -520,6 +590,11 @@ export class HuiDistributionCard
       margin: var(--ha-space-3) 0 0 0;
       padding: 0;
       list-style: none;
+    }
+
+    .legend > .overflow {
+      position: absolute;
+      visibility: hidden;
     }
 
     .legend-item {
@@ -598,10 +673,11 @@ export class HuiDistributionCard
 
     ha-assist-chip {
       height: 24px;
-      --_label-text-weight: 500;
-      --_leading-space: 8px;
-      --_trailing-space: 8px;
-      --_icon-label-space: 4px;
+      --ha-button-height: 24px;
+      --ha-chip-label-weight: 500;
+      --ha-assist-chip-leading-space: var(--ha-space-2);
+      --ha-assist-chip-trailing-space: var(--ha-space-2);
+      --ha-assist-chip-icon-label-space: var(--ha-space-1);
     }
 
     .legend li:has(ha-assist-chip) {

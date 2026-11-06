@@ -1,19 +1,26 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { html, LitElement, nothing, type PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../common/decorators/consume";
 import { createDurationData } from "../../../common/datetime/create_duration_data";
 import { formatDurationNarrow } from "../../../common/datetime/format_duration";
+import { normalizeDuration } from "../../../common/datetime/normalize_duration";
 import { hasTemplate } from "../../../common/string/has-template";
 import type { ForDict } from "../../../data/automation";
 import { internationalizationContext } from "../../../data/context";
 import { rowSummaryStyles } from "./styles";
 
+const SUMMARY_UNITS = {
+  enableDay: true,
+  enableSecond: true,
+  enableMillisecond: true,
+};
+
 interface HaAutomationRowOptionsConfig {
   options?: {
     for?: string | number | ForDict;
     offset?: string | number | ForDict;
-    offset_type?: "before" | "after";
   };
   timeout?: string | number | ForDict;
 }
@@ -62,20 +69,18 @@ export class HaAutomationRowOptions extends LitElement {
             this._i18n.localize(
               "ui.panel.config.automation.editor.row_options.for",
               {
-                duration: forDuration,
+                duration: forDuration.text,
               }
             )
           );
         }
 
-        const offsetDuration = this._duration(options.offset);
-        if (offsetDuration) {
-          const offsetType =
-            options.offset_type === "before" ? "before" : "after";
+        const offset = this._duration(options.offset);
+        if (offset) {
           parts.push(
             this._i18n.localize(
-              `ui.panel.config.automation.editor.row_options.offset_${offsetType}`,
-              { offset: offsetDuration }
+              `ui.panel.config.automation.editor.row_options.offset_${offset.negative ? "before" : "after"}`,
+              { offset: offset.text }
             )
           );
         }
@@ -87,7 +92,7 @@ export class HaAutomationRowOptions extends LitElement {
           parts.push(
             this._i18n.localize(
               "ui.panel.config.automation.editor.row_options.timeout",
-              { duration: timeoutDuration }
+              { duration: timeoutDuration.text }
             )
           );
         }
@@ -97,7 +102,9 @@ export class HaAutomationRowOptions extends LitElement {
     }
   );
 
-  private _duration(value: unknown): string | undefined {
+  private _duration(
+    value: unknown
+  ): { negative: boolean; text: string } | undefined {
     if (value === undefined || hasTemplate(value)) {
       return undefined;
     }
@@ -112,7 +119,9 @@ export class HaAutomationRowOptions extends LitElement {
     ) {
       return undefined;
     }
-    return formatDurationNarrow(this._i18n.locale, duration);
+    const normalized = normalizeDuration(duration, SUMMARY_UNITS);
+    const text = formatDurationNarrow(this._i18n.locale, normalized.duration);
+    return text ? { negative: normalized.negative, text } : undefined;
   }
 
   static styles = rowSummaryStyles;

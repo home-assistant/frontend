@@ -16,6 +16,7 @@ import "../../../../../components/list/ha-list-selectable-virtualized";
 import type { ZHADeviceEndpoint, ZHAGroup } from "../../../../../data/zha";
 import {
   addMembersToGroup,
+  computeZHAEntityName,
   fetchGroup,
   fetchGroupableDevices,
 } from "../../../../../data/zha";
@@ -262,8 +263,9 @@ class DialogZHAAddGroupMembers
   }
 
   private _deviceEndpointDetails(deviceEndpoint: ZHADeviceEndpoint): string {
-    const entityNames = deviceEndpoint.entities.map(
-      (entity) => entity.name || entity.original_name || entity.entity_id
+    const deviceName = this._deviceEndpointName(deviceEndpoint);
+    const entityNames = deviceEndpoint.entities.map((entity) =>
+      computeZHAEntityName(entity, deviceName)
     );
     const entitySummary = entityNames.length
       ? entityNames.length > 2

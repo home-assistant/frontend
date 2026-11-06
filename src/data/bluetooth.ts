@@ -9,14 +9,14 @@ import type { DataTableRowData } from "../components/data-table/ha-data-table";
 export interface BluetoothDeviceData extends DataTableRowData {
   address: string;
   connectable: boolean;
-  manufacturer_data: Record<number, string>;
+  manufacturer_data: Record<string, string>;
   name: string;
   rssi: number;
   service_data: Record<string, string>;
   service_uuids: string[];
   source: string;
   time: number;
-  tx_power: number;
+  tx_power: number | null;
   raw: string | null;
 }
 

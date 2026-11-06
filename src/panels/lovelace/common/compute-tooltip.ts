@@ -1,4 +1,3 @@
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import type { ActionConfig } from "../../../data/lovelace/config/action";
 import type { HomeAssistant } from "../../../types";
 
@@ -74,7 +73,7 @@ export const computeTooltip = (hass: HomeAssistant, config: Config): string => {
   if (config.entity) {
     stateName =
       config.entity in hass.states
-        ? computeStateName(hass.states[config.entity])
+        ? hass.formatEntityName(hass.states[config.entity])
         : config.entity;
   }
 

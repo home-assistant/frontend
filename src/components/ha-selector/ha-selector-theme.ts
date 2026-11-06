@@ -1,13 +1,10 @@
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import type { ThemeSelector } from "../../data/selector";
-import type { HomeAssistant } from "../../types";
 import "../ha-theme-picker";
 
 @customElement("ha-selector-theme")
 export class HaThemeSelector extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
-
   @property({ attribute: false }) public selector!: ThemeSelector;
 
   @property() public value?: string;

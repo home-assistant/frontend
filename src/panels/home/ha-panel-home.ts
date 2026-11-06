@@ -50,7 +50,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   @state() private _lovelace?: Lovelace;
 
-  @state() private _config: FrontendSystemData["home"] = {};
+  @state() private _config?: HomeFrontendSystemData;
 
   @state() private _previewConfig?: HomeFrontendSystemData;
 
@@ -87,8 +87,8 @@ class PanelHome extends SubscribeMixin(LitElement) {
   }
 
   private get _showBanner(): boolean {
-    // Don't show if already dismissed
-    if (this._config.welcome_banner_dismissed) {
+    // Don't show until the config loaded or if already dismissed
+    if (!this._config || this._config.welcome_banner_dismissed) {
       return false;
     }
     // Don't show if HA is not running
@@ -204,7 +204,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
     if (homeResult.status === "rejected") {
       // eslint-disable-next-line no-console
       console.error("Failed to load home configuration:", homeResult.reason);
-      this._config = {};
+      this._config = undefined;
     } else {
       this._config = homeResult.value || {};
     }
@@ -267,7 +267,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
 
   private _editHome = () => {
     showEditHomeDialog(this, {
-      config: this._config,
+      config: this._config ?? {},
       saveConfig: (config) => this._saveConfig(config),
       previewConfig: this._setPreviewConfig,
     });
@@ -304,7 +304,7 @@ class PanelHome extends SubscribeMixin(LitElement) {
     showAreaRegistryDetailDialog(this, {
       entry: area,
       updateEntry: (values) =>
-        updateAreaRegistryEntry(this.hass, areaId, values),
+        updateAreaRegistryEntry(this.hass.callWS, areaId, values),
     });
   };
 
@@ -405,6 +405,9 @@ class PanelHome extends SubscribeMixin(LitElement) {
   private _learnMore() {
     showNewOverviewDialog(this, {
       dismiss: async () => {
+        if (!this._config) {
+          return;
+        }
         const newConfig = {
           ...this._config,
           welcome_banner_dismissed: true,
@@ -421,11 +424,11 @@ class PanelHome extends SubscribeMixin(LitElement) {
       strategy: {
         type: "home",
         alert_entities: this._securityConfig.alert_entities,
-        favorite_entities: config.favorite_entities,
+        favorite_entities: config?.favorite_entities,
         home_panel: true,
-        hide_welcome_message: config.hide_welcome_message,
-        hide_suggested_entities: config.hide_suggested_entities,
-        shortcuts: config.shortcuts,
+        hide_welcome_message: config?.hide_welcome_message,
+        hide_suggested_entities: config?.hide_suggested_entities,
+        shortcuts: config?.shortcuts,
       },
     };
   }

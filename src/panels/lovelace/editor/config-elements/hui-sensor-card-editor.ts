@@ -30,6 +30,7 @@ const cardConfigStruct = assign(
     entity: optional(string()),
     name: optional(entityNameStruct),
     icon: optional(string()),
+    color: optional(string()),
     graph: optional(union([literal("line"), literal("none")])),
     unit: optional(string()),
     detail: optional(number()),
@@ -88,6 +89,14 @@ export class HuiSensorCardEditor
               },
             },
             {
+              name: "color",
+              selector: {
+                ui_color: {
+                  include_state: true,
+                },
+              },
+            },
+            {
               name: "graph",
               selector: {
                 select: {
@@ -116,11 +125,11 @@ export class HuiSensorCardEditor
           schema: [
             {
               name: "min",
-              selector: { number: { mode: "box" } },
+              selector: { number: { mode: "box", step: "any" } },
             },
             {
               name: "max",
-              selector: { number: { mode: "box" } },
+              selector: { number: { mode: "box", step: "any" } },
             },
           ],
         },
@@ -144,10 +153,24 @@ export class HuiSensorCardEditor
         .data=${data}
         .schema=${this._schema(this.hass.localize)}
         .computeLabel=${this._computeLabelCallback}
+        .computeHelper=${this._computeHelperCallback}
         @value-changed=${this._valueChanged}
       ></ha-form>
     `;
   }
+
+  private _computeHelperCallback = (
+    schema: SchemaUnion<ReturnType<typeof this._schema>>
+  ) => {
+    switch (schema.name) {
+      case "color":
+        return this.hass!.localize(
+          `ui.panel.lovelace.editor.card.tile.${schema.name}_helper`
+        );
+      default:
+        return undefined;
+    }
+  };
 
   private _valueChanged(ev: CustomEvent): void {
     const config = ev.detail.value;

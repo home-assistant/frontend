@@ -26,6 +26,13 @@ const CONFIGS = [
     },
   },
   {
+    heading: "Playing Music (all features)",
+    config: {
+      type: "media-control",
+      entity: "media_player.music_all_features",
+    },
+  },
+  {
     heading: "Playing Stream",
     config: {
       type: "media-control",
@@ -100,6 +107,13 @@ const CONFIGS = [
     config: {
       type: "media-control",
       entity: "media_player.theater_off_static",
+    },
+  },
+  {
+    heading: "Player Off (assumed state, cannot be switched on)",
+    config: {
+      type: "media-control",
+      entity: "media_player.theater_off_assumed",
     },
   },
   {

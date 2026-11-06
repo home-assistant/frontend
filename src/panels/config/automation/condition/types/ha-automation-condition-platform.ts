@@ -1,3 +1,4 @@
+import { provide } from "@lit/context";
 import { mdiAlertOutline, mdiHelpCircleOutline } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -33,6 +34,7 @@ import {
 } from "../../../../../data/target";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
+import { targetExpandGroupContext } from "../../../../../components/target-picker/target-expand-group-context";
 
 // Mirrors `MAX_HISTORY_PRIMING_LOOKBACK` in homeassistant/helpers/condition.py:
 // when a condition has a `for:` duration, the recorder is only queried this far
@@ -47,6 +49,10 @@ const showOptionalToggle = (field: ConditionDescription["fields"][string]) =>
 
 @customElement("ha-automation-condition-platform")
 export class HaPlatformCondition extends LitElement {
+  // Triggers and conditions don't expand the groups their targets name.
+  @provide({ context: targetExpandGroupContext })
+  protected _targetExpandGroup = false;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public condition!: PlatformCondition;
@@ -458,12 +464,16 @@ export class HaPlatformCondition extends LitElement {
     this.requestUpdate("_checkedKeys");
   }
 
-  private _localizeValueCallback = (key: string) => {
+  private _localizeValueCallback = (
+    key: string,
+    values?: Record<string, string>
+  ) => {
     if (!this.condition?.condition) {
       return "";
     }
     return this.hass.localize(
-      `component.${getConditionDomain(this.condition.condition)}.selector.${key}`
+      `component.${getConditionDomain(this.condition.condition)}.selector.${key}`,
+      values
     );
   };
 

@@ -43,8 +43,11 @@ describe("generateStatisticsChartData", () => {
   const meanIds = ["sensor.temp_indoor", "sensor.temp_outdoor"];
   const sumIds = ["sensor.energy_a", "sensor.energy_b"];
 
+  const { states, formatEntityName, localize } = createMockHass();
   const baseParams = {
-    hass: createMockHass(),
+    states,
+    formatEntityName,
+    localize,
     computedStyle,
     now,
     hiddenStats: new Set<string>(),
@@ -140,12 +143,12 @@ describe("generateStatisticsChartData", () => {
     expect(
       generateStatisticsChartData({
         ...baseParams,
-        hass: createMockHass({
+        states: {
           [id]: createMockEntityState(id, "21.5", {
             unit_of_measurement: "°C",
             device_class: "temperature",
           }),
-        }),
+        },
         now: recentNow,
         statisticsData: generateStatistics(5, {
           ids: [id],

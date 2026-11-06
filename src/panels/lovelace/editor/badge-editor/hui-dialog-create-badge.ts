@@ -3,20 +3,18 @@ import type { CSSResultGroup } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
+import { storage } from "../../../../common/decorators/storage";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-button";
 import "../../../../components/ha-dialog";
-import "../../../../components/ha-dialog-footer";
 import "../../../../components/ha-dialog-header";
+import "../../../../components/ha-paste-bar";
 import "../../../../components/ha-tab-group";
 import "../../../../components/ha-tab-group-tab";
 import type { LovelaceBadgeConfig } from "../../../../data/lovelace/config/badge";
-import type { LovelaceViewConfig } from "../../../../data/lovelace/config/view";
 import type { HassDialog } from "../../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { addBadge } from "../config-util";
-import { findLovelaceContainer } from "../lovelace-path";
+import { appendAtPath, getAtPath, getParentPath } from "../lovelace-path";
 import "./hui-badge-picker";
 import "./hui-badge-suggestion-picker";
 import type { CreateBadgeDialogParams } from "./show-create-badge-dialog";
@@ -33,11 +31,20 @@ export class HuiCreateDialogBadge
 
   @state() private _open = false;
 
-  @state() private _containerConfig!: LovelaceViewConfig;
+  @state() private _containerConfig!: { title?: string };
 
   @state() private _currTab: "badge" | "entity" = "entity";
 
   @state() private _narrow = false;
+
+  @state()
+  @storage({
+    key: "dashboardBadgeClipboard",
+    state: true,
+    subscribe: true,
+    storage: "sessionStorage",
+  })
+  private _clipboard?: LovelaceBadgeConfig;
 
   public async showDialog(params: CreateBadgeDialogParams): Promise<void> {
     this._params = params;
@@ -46,10 +53,11 @@ export class HuiCreateDialogBadge
       "all and (max-width: 450px), all and (max-height: 500px)"
     ).matches;
 
-    const containerConfig = findLovelaceContainer(
+    const containerPath = getParentPath(params.path);
+    const containerConfig = getAtPath<{ title?: string }>(
       params.lovelaceConfig,
-      params.path
-    );
+      containerPath
+    )!;
 
     if ("strategy" in containerConfig) {
       throw new Error("Can't edit strategy");
@@ -130,7 +138,9 @@ export class HuiCreateDialogBadge
                     .prioritizedBadgeTypes=${this._params.suggestedBadges}
                     @badge-suggestion-picked=${this._handleSuggestionPicked}
                     @browse-badges=${this._handleBrowseBadges}
-                  ></hui-badge-suggestion-picker>
+                  >
+                    ${this._renderPasteBar()}
+                  </hui-badge-suggestion-picker>
                 `
               : html`
                   <hui-badge-picker
@@ -139,22 +149,27 @@ export class HuiCreateDialogBadge
                     .lovelace=${this._params.lovelaceConfig}
                     .hass=${this.hass}
                     @config-changed=${this._handleBadgePicked}
-                  ></hui-badge-picker>
+                  >
+                    ${this._renderPasteBar()}
+                  </hui-badge-picker>
                 `
           )}
         </div>
-
-        <ha-dialog-footer slot="footer">
-          <ha-button
-            slot="secondaryAction"
-            appearance="plain"
-            @click=${this._cancel}
-          >
-            ${this.hass!.localize("ui.common.cancel")}
-          </ha-button>
-        </ha-dialog-footer>
       </ha-dialog>
     `;
+  }
+
+  private _renderPasteBar() {
+    if (!this._clipboard) {
+      return nothing;
+    }
+
+    return html`<ha-paste-bar
+      .label=${this.hass.localize(
+        "ui.panel.lovelace.editor.badge_picker.paste_badge"
+      )}
+      @paste-element=${this._paste}
+    ></ha-paste-bar>`;
   }
 
   private _ignoreKeydown(ev: KeyboardEvent) {
@@ -165,6 +180,10 @@ export class HuiCreateDialogBadge
     return [
       haStyleDialog,
       css`
+        :host {
+          --dialog-safe-area-inset-bottom: var(--safe-area-inset-bottom, 0px);
+        }
+
         ha-dialog {
           --dialog-content-padding: 0;
           --dialog-z-index: 6;
@@ -180,8 +199,31 @@ export class HuiCreateDialogBadge
         ha-dialog::part(body) {
           overflow: hidden;
         }
-        ha-dialog-footer {
-          border-top: 1px solid var(--divider-color);
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-dialog {
+            --safe-area-inset-bottom: 0px;
+          }
+          ha-paste-bar {
+            padding-bottom: max(
+              var(--dialog-safe-area-inset-bottom),
+              var(--ha-space-3)
+            );
+          }
+          hui-badge-picker:not(:has(> ha-paste-bar)) {
+            --ha-badge-picker-content-padding-bottom: var(
+              --dialog-safe-area-inset-bottom
+            );
+          }
+          hui-badge-suggestion-picker {
+            --ha-suggestion-picker-main-padding-bottom: var(
+              --dialog-safe-area-inset-bottom
+            );
+          }
+          hui-badge-suggestion-picker:not(:has(> ha-paste-bar)) {
+            --ha-suggestion-picker-tree-padding-bottom: var(
+              --dialog-safe-area-inset-bottom
+            );
+          }
         }
 
         ha-tab-group-tab {
@@ -219,9 +261,9 @@ export class HuiCreateDialogBadge
   ): Promise<void> {
     const config = ev.detail.config;
     const lovelaceConfig = this._params!.lovelaceConfig;
-    const containerPath = this._params!.path;
+    const badgesPath = this._params!.path;
     const saveConfig = this._params!.saveConfig;
-    const newConfig = addBadge(lovelaceConfig, containerPath, config);
+    const newConfig = appendAtPath(lovelaceConfig, badgesPath, config);
     await saveConfig(newConfig);
     this.closeDialog();
   }
@@ -236,11 +278,29 @@ export class HuiCreateDialogBadge
       }
     }
 
+    this._editNewBadge(config);
+  }
+
+  private _paste() {
+    this._editNewBadge(this._clipboard!);
+  }
+
+  private _editNewBadge(config: LovelaceBadgeConfig) {
+    const lovelaceConfig = this._params!.lovelaceConfig;
+    const badgesPath = this._params!.path;
+    const saveConfig = this._params!.saveConfig;
     showEditBadgeDialog(this, {
-      lovelaceConfig: this._params!.lovelaceConfig,
-      saveConfig: this._params!.saveConfig,
-      path: this._params!.path,
+      lovelaceConfig,
+      saveBadgeConfig: async (newBadgeConfig) => {
+        const newConfig = appendAtPath(
+          lovelaceConfig,
+          badgesPath,
+          newBadgeConfig
+        );
+        await saveConfig(newConfig);
+      },
       badgeConfig: config,
+      isNew: true,
     });
 
     this.closeDialog();

@@ -16,13 +16,17 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
 
   @state() private _config?: EntityConfig;
 
-  private _computeCanToggle(hass: HomeAssistant, entityIds: string[]): boolean {
-    return entityIds.some((entityId) => {
+  private _computeCanToggle(
+    hass: HomeAssistant,
+    entityIds: string[] | undefined
+  ): boolean {
+    // Nested groups may not exist
+    return (entityIds ?? []).some((entityId) => {
       const domain = computeDomain(entityId);
       if (domain === "group") {
         return this._computeCanToggle(
           hass,
-          this.hass?.states[entityId].attributes.entity_id
+          hass.states[entityId]?.attributes.entity_id
         );
       }
       return DOMAINS_TOGGLE.has(domain);
@@ -49,8 +53,8 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
 
     if (!stateObj) {
       return html`
-        <hui-warning .hass=${this.hass}>
-          ${createEntityNotFoundWarning(this.hass, this._config.entity)}
+        <hui-warning>
+          ${createEntityNotFoundWarning(this.hass.localize, this.hass.config)}
         </hui-warning>
       `;
     }

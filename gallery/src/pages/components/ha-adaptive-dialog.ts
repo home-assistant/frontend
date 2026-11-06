@@ -9,7 +9,6 @@ import "../../../../src/components/ha-form/ha-form";
 import "../../../../src/components/ha-icon-button";
 import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 import { provideHass } from "../../../../src/fake_data/provide_hass";
-import type { HomeAssistant } from "../../../../src/types";
 
 const SCHEMA: HaFormSchema[] = [
   { type: "string", name: "Name", default: "", autofocus: true },
@@ -31,11 +30,8 @@ type DialogType =
 export class DemoHaAdaptiveDialog extends LitElement {
   @state() private _openDialog: DialogType = false;
 
-  @state() private _hass?: HomeAssistant;
-
   protected firstUpdated() {
-    const hass = provideHass(this);
-    this._hass = hass;
+    provideHass(this);
   }
 
   protected render() {
@@ -89,7 +85,6 @@ export class DemoHaAdaptiveDialog extends LitElement {
         </ha-card>
 
         <ha-adaptive-dialog
-          .hass=${this._hass}
           .open=${this._openDialog === "basic"}
           header-title="Basic adaptive dialog"
           @closed=${this._handleClosed}
@@ -98,7 +93,6 @@ export class DemoHaAdaptiveDialog extends LitElement {
         </ha-adaptive-dialog>
 
         <ha-adaptive-dialog
-          .hass=${this._hass}
           .open=${this._openDialog === "basic-subtitle-below"}
           header-title="Adaptive dialog with subtitle"
           header-subtitle="This is an adaptive dialog with a subtitle below"
@@ -108,7 +102,6 @@ export class DemoHaAdaptiveDialog extends LitElement {
         </ha-adaptive-dialog>
 
         <ha-adaptive-dialog
-          .hass=${this._hass}
           .open=${this._openDialog === "basic-subtitle-above"}
           header-title="Adaptive dialog with subtitle above"
           header-subtitle="This is an adaptive dialog with a subtitle above"
@@ -119,7 +112,6 @@ export class DemoHaAdaptiveDialog extends LitElement {
         </ha-adaptive-dialog>
 
         <ha-adaptive-dialog
-          .hass=${this._hass}
           .open=${this._openDialog === "small"}
           width="small"
           header-title="Small adaptive dialog"
@@ -129,7 +121,6 @@ export class DemoHaAdaptiveDialog extends LitElement {
         </ha-adaptive-dialog>
 
         <ha-adaptive-dialog
-          .hass=${this._hass}
           .open=${this._openDialog === "large"}
           width="large"
           header-title="Large adaptive dialog"
@@ -139,7 +130,6 @@ export class DemoHaAdaptiveDialog extends LitElement {
         </ha-adaptive-dialog>
 
         <ha-adaptive-dialog
-          .hass=${this._hass}
           .open=${this._openDialog === "form"}
           header-title="Adaptive dialog with form"
           header-subtitle="This is an adaptive dialog with a form"
@@ -163,7 +153,6 @@ export class DemoHaAdaptiveDialog extends LitElement {
         </ha-adaptive-dialog>
 
         <ha-adaptive-dialog
-          .hass=${this._hass}
           .allowModeChange=${this._openDialog === "allow-mode-change"}
           header-title="Adaptive dialog with allow mode change"
           header-subtitle="Resize the window while this dialog is open"
@@ -176,7 +165,6 @@ export class DemoHaAdaptiveDialog extends LitElement {
         </ha-adaptive-dialog>
 
         <ha-adaptive-dialog
-          .hass=${this._hass}
           .open=${this._openDialog === "actions"}
           header-title="Adaptive dialog with actions"
           header-subtitle="This is an adaptive dialog with header actions"
@@ -395,7 +383,6 @@ export class DemoHaAdaptiveDialog extends LitElement {
         <h3>Example usage</h3>
 
         <pre><code>&lt;ha-adaptive-dialog
-  .hass=\${this.hass}
   open
   header-title="Dialog title"
   header-subtitle="Dialog subtitle"
@@ -607,7 +594,7 @@ export class DemoHaAdaptiveDialog extends LitElement {
 
         <p>Example:</p>
 
-        <pre><code>&lt;ha-adaptive-dialog .hass=\${this.hass} open&gt;
+        <pre><code>&lt;ha-adaptive-dialog open&gt;
   &lt;ha-form autofocus .schema=\${schema}&gt;&lt;/ha-form&gt;
 &lt;/ha-adaptive-dialog&gt;</code></pre>
       </div>

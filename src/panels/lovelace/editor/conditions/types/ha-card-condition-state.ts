@@ -1,8 +1,8 @@
-import { consume } from "@lit/context";
 import { html, LitElement } from "lit";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { assert, literal, object, optional, string } from "superstruct";
+import { consume } from "../../../../../common/decorators/consume";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import type { LocalizeFunc } from "../../../../../common/translations/localize";
 import "../../../../../components/ha-form/ha-form";
@@ -15,7 +15,6 @@ import type { HomeAssistant } from "../../../../../types";
 import type { StateCondition } from "../../../common/validate-condition";
 import type { ConditionsEntityContext } from "../context";
 import { conditionsEntityContext } from "../context";
-import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import {
   CURRENT_ENTITY_ID,
   currentEntityOption,
@@ -153,7 +152,7 @@ export class HaCardConditionState extends LitElement {
       ? this.hass.states[currentEntityId]
       : undefined;
     const currentEntityName = currentStateObj
-      ? computeStateName(currentStateObj)
+      ? this.hass.formatEntityName(currentStateObj)
       : undefined;
 
     const data: StateConditionData = {

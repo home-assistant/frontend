@@ -108,3 +108,83 @@ describe("normalizeAutomationConfig deprecated option reporting", () => {
     ).not.toThrow();
   });
 });
+
+describe("migrateAutomationConfig offset type", () => {
+  const migrateTrigger = (trigger: Record<string, unknown>) =>
+    (
+      migrateAutomationConfig({ triggers: [trigger as any] }).triggers as any
+    )[0];
+
+  it.each([
+    ["sun.sunrise", { hours: 1 }, { hours: -1 }],
+    [
+      "calendar.event_started",
+      { hours: 1, minutes: 30 },
+      { hours: -1, minutes: -30 },
+    ],
+    ["sun.sunset", { hours: -1 }, { hours: 1 }],
+    [
+      "sun.dawn",
+      "00:30:00",
+      { hours: 0, minutes: -30, seconds: 0, milliseconds: 0 },
+    ],
+  ])(
+    "folds a `before` offset type into the sign for %s",
+    (trigger, offset, expected) => {
+      expect(
+        migrateTrigger({ trigger, options: { offset, offset_type: "before" } })
+      ).toEqual({ trigger, options: { offset: expected } });
+    }
+  );
+
+  it("drops an `after` offset type and keeps the offset", () => {
+    expect(
+      migrateTrigger({
+        trigger: "calendar.event_ended",
+        options: { offset: { hours: 1 }, offset_type: "after" },
+      })
+    ).toEqual({
+      trigger: "calendar.event_ended",
+      options: { offset: { hours: 1 } },
+    });
+  });
+
+  it("drops the offset type when there is no offset", () => {
+    expect(
+      migrateTrigger({
+        trigger: "sun.sunrise",
+        options: { offset_type: "before" },
+      })
+    ).toEqual({ trigger: "sun.sunrise", options: {} });
+  });
+
+  it("leaves an offset it cannot read untouched", () => {
+    const options = { offset: "{{ offset }}", offset_type: "before" };
+    expect(
+      migrateTrigger({ trigger: "sun.sunrise", options: { ...options } })
+    ).toEqual({ trigger: "sun.sunrise", options });
+  });
+
+  it("leaves other integrations untouched", () => {
+    const options = { offset: { hours: 1 }, offset_type: "before" };
+    expect(
+      migrateTrigger({ trigger: "custom.event", options: { ...options } })
+    ).toEqual({ trigger: "custom.event", options });
+  });
+
+  it("does not flag the migration as deprecated", () => {
+    const report: AutomationMigrationReport = { deprecated: false };
+    migrateAutomationConfig(
+      {
+        triggers: [
+          {
+            trigger: "sun.sunrise",
+            options: { offset: { hours: 1 }, offset_type: "before" },
+          } as any,
+        ],
+      },
+      report
+    );
+    expect(report.deprecated).toBe(false);
+  });
+});

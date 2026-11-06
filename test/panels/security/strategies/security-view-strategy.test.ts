@@ -56,7 +56,7 @@ describe("security-view-strategy", () => {
       {
         type: "alert",
         entity: "binary_sensor.window",
-        color: "amber",
+        alert_color: "amber",
         visibility: [
           {
             condition: "state",

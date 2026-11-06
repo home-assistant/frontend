@@ -18,17 +18,6 @@ const polyfillSupport = {
     safari: 17.4,
     samsung: 15.0,
   },
-  "element-getattributenames": {
-    android: 61,
-    chrome: 61,
-    edge: 18,
-    firefox: 45,
-    ios: 10.3,
-    opera: 48,
-    opera_mobile: 45,
-    safari: 10.1,
-    samsung: 8.0,
-  },
   "element-toggleattribute": {
     android: 69,
     chrome: 69,
@@ -67,39 +56,20 @@ const polyfillSupport = {
   "intl-other": {
     // Not specified (i.e. always try polyfill) since compatibility depends on supported locales
   },
-  "resize-observer": {
-    android: 64,
-    chrome: 64,
-    edge: 79,
-    firefox: 69,
-    ios: 13.4,
-    opera: 51,
-    opera_mobile: 47,
-    safari: 13.1,
-    samsung: 9.0,
-  },
 };
 
-// Map of global variables and/or instance and static properties to the
-// corresponding polyfill key and actual module to import
+// Map of instance and static properties to the corresponding polyfill key
+// and actual module to import
 const polyfillMap = {
-  global: {
-    ResizeObserver: {
-      key: "resize-observer",
-      module: join(POLYFILL_DIR, "resize-observer.ts"),
-    },
-  },
   instance: {
     attachInternals: {
       key: "element-internals",
       module: "element-internals-polyfill",
     },
-    ...Object.fromEntries(
-      ["getAttributeNames", "toggleAttribute"].map((prop) => {
-        const key = `element-${prop.toLowerCase()}`;
-        return [prop, { key, module: join(POLYFILL_DIR, `${key}.ts`) }];
-      })
-    ),
+    toggleAttribute: {
+      key: "element-toggleattribute",
+      module: join(POLYFILL_DIR, "element-toggleattribute.ts"),
+    },
   },
   static: {
     Intl: {

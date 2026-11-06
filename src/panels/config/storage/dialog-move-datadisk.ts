@@ -37,7 +37,7 @@ interface MoveDatadiskFormState {
 const calculateMoveTime = memoizeOne((hostInfo: HassioHostInfo): number => {
   // Assume a speed of 30 MB/s.
   const moveTime = (hostInfo.disk_used * 1000) / 60 / 30;
-  const rebootTime = (hostInfo.startup_time * 4) / 60;
+  const rebootTime = ((hostInfo.startup_time ?? 0) * 4) / 60;
   return Math.ceil((moveTime + rebootTime) / 10) * 10;
 });
 
@@ -145,7 +145,7 @@ class MoveDatadiskDialog extends DirtyStateProviderMixin<MoveDatadiskFormState>(
                 ${this.hass.localize(
                   "ui.panel.config.storage.datadisk.description",
                   {
-                    current_path: this._osInfo.data_disk,
+                    current_path: this._osInfo.data_disk ?? "",
                     time: calculateMoveTime(this._hostInfo),
                   }
                 )}

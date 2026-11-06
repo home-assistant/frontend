@@ -137,7 +137,6 @@ export class BluetoothNetworkVisualization extends LitElement {
             : nothing
         }
         <ha-network-graph
-          .hass=${this.hass}
           .searchFilter=${this._searchFilter}
           .data=${this._formatNetworkData(this._data, this._scanners)}
           .searchableAttributes=${this._getSearchableAttributes}

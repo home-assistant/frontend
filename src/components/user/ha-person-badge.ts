@@ -1,8 +1,9 @@
-import { consume, type ContextType } from "@lit/context";
+import type { ContextType } from "@lit/context";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
+import { consume } from "../../common/decorators/consume";
 import type { BasePerson } from "../../data/person";
 import { computeUserInitials } from "../../data/user";
 import { connectionContext } from "../../data/context";
@@ -48,7 +49,7 @@ class PersonBadge extends LitElement {
       width: 100%;
       height: 100%;
       background-size: cover;
-      border-radius: var(--ha-border-radius-circle);
+      border-radius: var(--ha-picture-border-radius);
     }
     .initials {
       display: inline-flex;
@@ -57,7 +58,7 @@ class PersonBadge extends LitElement {
       box-sizing: border-box;
       width: 100%;
       height: 100%;
-      border-radius: var(--ha-border-radius-circle);
+      border-radius: var(--ha-picture-border-radius);
       background-color: var(--light-primary-color);
       text-decoration: none;
       color: var(--text-light-primary-color, var(--primary-text-color));

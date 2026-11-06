@@ -347,6 +347,10 @@ export class CloudGooglePref extends LitElement {
     ha-row-item {
       --ha-row-item-padding-inline: 0;
     }
+    ha-row-item::part(headline),
+    ha-row-item::part(supporting-text) {
+      white-space: normal;
+    }
     ha-input {
       width: 250px;
       margin-top: 8px;

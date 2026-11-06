@@ -17,6 +17,7 @@ import type { EnergyViewPath } from "./energy-cards";
 import {
   hasDeviceConsumption,
   hasEnergySource,
+  hasGasDevices,
   hasGasSource,
   hasNowViewContent,
   hasPowerSources,
@@ -91,7 +92,8 @@ export class EnergyDashboardStrategy extends ReactiveElement {
       !prefs ||
       (prefs.device_consumption.length === 0 &&
         prefs.energy_sources.length === 0 &&
-        !hasWaterDevices(prefs))
+        !hasWaterDevices(prefs) &&
+        !hasGasDevices(prefs))
     ) {
       await import("../cards/energy-setup-wizard-card");
       return {
@@ -102,7 +104,7 @@ export class EnergyDashboardStrategy extends ReactiveElement {
     const hasEnergy = hasEnergySource(prefs);
     const hasPowerSource = hasPowerSources(prefs);
     const hasWater = hasWaterSource(prefs) || hasWaterDevices(prefs);
-    const hasGas = hasGasSource(prefs);
+    const hasGas = hasGasSource(prefs) || hasGasDevices(prefs);
     const hasDevices = hasDeviceConsumption(prefs);
 
     const hidden = _config.hidden_cards;
@@ -155,7 +157,13 @@ async function fetchEnergyPrefs(
   hass: HomeAssistant,
   defaultCollection?: string
 ): Promise<EnergyPreferences> {
-  const collection = getEnergyDataCollection(hass, {
+  const collection = getEnergyDataCollection(hass.connection, {
+    callWS: hass.callWS,
+    entities: hass.entities,
+    states: hass.states,
+    locale: hass.locale,
+    config: hass.config,
+    panelUrl: hass.panelUrl,
     key: defaultCollection || DEFAULT_ENERGY_COLLECTION_KEY,
     // When landing directly on the "Now" view this warms its real-time
     // collection, so it must be created with midnight rollover too.

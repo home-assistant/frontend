@@ -37,11 +37,13 @@ import type {
   UpdatesCardConfig,
 } from "../../cards/types";
 import { computeFavoriteCardConfig } from "../helpers/favorite-cards";
+import { findMaintenanceEntities } from "../../../maintenance/strategies/maintenance-view-strategy";
 import {
   computeDefaultSecurityAlertVisibility,
   filterSecurityAlertEntities,
   resolveSecurityAlertSeverity,
 } from "../../../security/strategies/security-alerts";
+import { findSecurityEntities } from "../../../security/strategies/security-view-strategy";
 import {
   LARGE_SCREEN_CONDITION,
   SMALL_SCREEN_CONDITION,
@@ -77,7 +79,7 @@ export const preloadHomeEnergyPreferences = (hass: HomeAssistant) => {
     return existing;
   }
 
-  const request = getEnergyPreferences(hass).catch(() => undefined);
+  const request = getEnergyPreferences(hass.callWS).catch(() => undefined);
   energyPreferencesPromises.set(hass.connection, request);
   return request;
 };
@@ -159,12 +161,26 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     const allEntities = Object.keys(hass.states);
 
     const otherDevicesFilters = OTHER_DEVICES_FILTERS.map((filter) =>
-      generateEntityFilter(hass, filter)
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        filter
+      )
     );
 
-    const primaryFilter = generateEntityFilter(hass, {
-      entity_category: "none",
-    });
+    const primaryFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        entity_category: "none",
+      }
+    );
 
     // Only show the devices tile if the other devices view has content: it
     // only renders area-less primary entities that belong to a device.
@@ -318,19 +334,26 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
     }
 
     const mediaPlayerFilter = HOME_SUMMARIES_FILTERS.media_players.map(
-      (filter) => generateEntityFilter(hass, filter)
+      (filter) =>
+        generateEntityFilter(
+          hass.states,
+          hass.entities,
+          hass.devices,
+          hass.areas,
+          hass.floors,
+          filter
+        )
     );
 
     const lightsFilters = HOME_SUMMARIES_FILTERS.light.map((filter) =>
-      generateEntityFilter(hass, filter)
-    );
-
-    const securityFilters = HOME_SUMMARIES_FILTERS.security.map((filter) =>
-      generateEntityFilter(hass, filter)
-    );
-
-    const maintenanceFilters = HOME_SUMMARIES_FILTERS.maintenance.map(
-      (filter) => generateEntityFilter(hass, filter)
+      generateEntityFilter(
+        hass.states,
+        hass.entities,
+        hass.devices,
+        hass.areas,
+        hass.floors,
+        filter
+      )
     );
 
     const hasLights =
@@ -339,11 +362,9 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       findEntities(allEntities, mediaPlayerFilter).length > 0;
     const hasClimate = hass.panels.climate && hasClimateEntities(hass);
     const hasSecurity =
-      hass.panels.security &&
-      findEntities(allEntities, securityFilters).length > 0;
+      hass.panels.security && findSecurityEntities(hass).length > 0;
     const hasMaintenance =
-      hass.panels.maintenance &&
-      findEntities(allEntities, maintenanceFilters).length > 0;
+      hass.panels.maintenance && findMaintenanceEntities(hass).length > 0;
 
     const alertEntities = config.alert_entities ?? [];
     const alertSeverityEntities = filterSecurityAlertEntities(
@@ -356,10 +377,17 @@ export class HomeOverviewViewStrategy extends ReactiveElement {
       conditions: computeDefaultSecurityAlertVisibility(alertEntity.entity),
     }));
 
-    const weatherFilter = generateEntityFilter(hass, {
-      domain: "weather",
-      entity_category: "none",
-    });
+    const weatherFilter = generateEntityFilter(
+      hass.states,
+      hass.entities,
+      hass.devices,
+      hass.areas,
+      hass.floors,
+      {
+        domain: "weather",
+        entity_category: "none",
+      }
+    );
 
     const weatherEntity = Object.keys(hass.states)
       .filter(weatherFilter)

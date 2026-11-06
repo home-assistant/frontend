@@ -51,11 +51,12 @@ The badge component is a small component that displays a number or status inform
 
 **Properties/Attributes**
 
-| Name     | Type                    | Default     | Description                                                  |
-| -------- | ----------------------- | ----------- | ------------------------------------------------------------ |
-| type     | `"badge"` or `"button"` | `"badge"`   | If it's button it shows a ripple effect                      |
-| label    | string                  | `undefined` | Text label for the badge, only visible if `iconOnly = false` |
-| iconOnly | boolean                 | `false`     | Only show label                                              |
+| Name            | Type                    | Default     | Description                                                   |
+| --------------- | ----------------------- | ----------- | ------------------------------------------------------------- |
+| type            | `"badge"` or `"button"` | `"badge"`   | If it's button it shows a ripple effect                       |
+| label           | string                  | `undefined` | Text label for the badge, only visible if `iconOnly = false`  |
+| iconOnly        | boolean                 | `false`     | Only show label                                               |
+| accessibleLabel | string                  | `undefined` | Accessible name of the button, only used if `iconOnly = true` |
 
 **CSS Custom Properties**
 

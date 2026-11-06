@@ -10,14 +10,12 @@ import { navigate } from "../../common/navigate";
 import { computeRouteTail } from "../../common/url/route";
 import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-icon-button";
-import type { HassioAddonDetails } from "../../data/hassio/addon";
-import {
-  fetchHassioAddonInfo,
-  startHassioAddon,
-} from "../../data/hassio/addon";
+import { startHassioAddon } from "../../data/hassio/addon";
 import { extractApiErrorMessage } from "../../data/hassio/common";
+import type { IngressAppInfo } from "../../data/hassio/ingress";
 import {
   createHassioSession,
+  fetchIngressAppInfo,
   validateHassioSession,
 } from "../../data/hassio/ingress";
 import {
@@ -45,7 +43,7 @@ class HaPanelApp extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
-  @state() private _addon?: HassioAddonDetails;
+  @state() private _addon?: IngressAppInfo;
 
   @state() private _loadingMessage?: string;
 
@@ -227,17 +225,28 @@ class HaPanelApp extends LitElement {
   }
 
   private async _fetchData(addonSlug: string) {
-    const createSessionPromise = createHassioSession(this.hass);
+    const createSessionPromise = createHassioSession(this.hass, addonSlug);
+    // The app info checks below may return before the session is awaited,
+    // and both fail when a non-admin opens an admin-only app
+    createSessionPromise.catch(() => undefined);
 
-    let addon: HassioAddonDetails;
+    let addon: IngressAppInfo;
 
     try {
-      addon = await fetchHassioAddonInfo(this.hass.callWS, addonSlug);
+      addon = await fetchIngressAppInfo(this.hass, addonSlug);
     } catch (err: any) {
       await this._showErrorAndNavigateHome(
         addonSlug,
-        extractApiErrorMessage(err)
+        err?.code === "unauthorized"
+          ? this.hass.localize("ui.panel.app.error_app_unauthorized")
+          : this.hass.localize("ui.panel.app.error_loading_app", {
+              error: extractApiErrorMessage(err),
+            })
       );
+      return;
+    }
+
+    if (this._getAddonSlug() !== addonSlug || !this.isConnected) {
       return;
     }
 
@@ -312,19 +321,21 @@ class HaPanelApp extends LitElement {
 
     try {
       session = await createSessionPromise;
-    } catch (_err: any) {
+    } catch (err: any) {
       if (this._sessionKeepAlive) {
         clearInterval(this._sessionKeepAlive);
       }
       await this._showErrorAndNavigateHome(
         addon.name,
-        this.hass.localize("ui.panel.app.error_creating_session")
+        this.hass.localize("ui.panel.app.error_creating_session", {
+          error: extractApiErrorMessage(err),
+        })
       );
       return;
     }
 
     // Check if user navigated away while we were fetching
-    if (this._getAddonSlug() !== addonSlug) {
+    if (this._getAddonSlug() !== addonSlug || !this.isConnected) {
       return;
     }
 
@@ -335,7 +346,7 @@ class HaPanelApp extends LitElement {
       try {
         await validateHassioSession(this.hass, session);
       } catch (_err: any) {
-        session = await createHassioSession(this.hass);
+        session = await createHassioSession(this.hass, addonSlug);
       }
     }, 60000);
 
@@ -464,7 +475,7 @@ class HaPanelApp extends LitElement {
       {
         type: "home-assistant/properties",
         narrow: this.narrow,
-        route: this._computeRouteTail(this.route),
+        route: this._computeAppRoute(this.route, this.panel?.config?.addon),
         // Resolved insets so an addon that handles the safe area itself can
         // apply them. Vertical uses the raw insets, horizontal the content
         // variables (the docked sidebar already absorbs its side).
@@ -483,7 +494,12 @@ class HaPanelApp extends LitElement {
     );
   }
 
-  private _computeRouteTail = memoizeOne(computeRouteTail);
+  // A dedicated app panel already receives the app's route tail, only the
+  // generic /app/<slug> panel still has the slug in its path.
+  private _computeAppRoute = memoizeOne(
+    (route: Route, addon?: string): Route =>
+      addon ? route : computeRouteTail(route)
+  );
 
   static styles = css`
     :host {

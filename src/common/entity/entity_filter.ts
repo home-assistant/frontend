@@ -20,6 +20,11 @@ export interface EntityFilter {
 
 export type EntityFilterFunc = (entityId: string) => boolean;
 
+export type EntityFilterSources = Pick<
+  HomeAssistant,
+  "states" | "entities" | "devices" | "areas" | "floors"
+>;
+
 const normalizeFilterArray = <T>(
   value: T | null | T[] | (T | null)[] | undefined
 ): Set<T | null> | undefined => {
@@ -33,10 +38,11 @@ const normalizeFilterArray = <T>(
 };
 
 export const generateEntityFilter = (
-  hass: Pick<
-    HomeAssistant,
-    "states" | "entities" | "devices" | "areas" | "floors"
-  >,
+  states: HomeAssistant["states"],
+  entities: HomeAssistant["entities"],
+  devices: HomeAssistant["devices"],
+  areas: HomeAssistant["areas"],
+  floors: HomeAssistant["floors"],
   filter: EntityFilter
 ): EntityFilterFunc => {
   const domains = filter.domain
@@ -48,9 +54,9 @@ export const generateEntityFilter = (
   const deviceClasses = filter.device_class
     ? new Set(ensureArray(filter.device_class))
     : undefined;
-  const floors = normalizeFilterArray(filter.floor);
-  const areas = normalizeFilterArray(filter.area);
-  const devices = normalizeFilterArray(filter.device);
+  const floorIds = normalizeFilterArray(filter.floor);
+  const areaIds = normalizeFilterArray(filter.area);
+  const deviceIds = normalizeFilterArray(filter.device);
   const entityCategories = filter.entity_category
     ? new Set(ensureArray(filter.entity_category))
     : undefined;
@@ -60,7 +66,7 @@ export const generateEntityFilter = (
     : undefined;
 
   return (entityId: string) => {
-    const stateObj = hass.states[entityId] as HassEntity | undefined;
+    const stateObj = states[entityId] as HassEntity | undefined;
     if (!stateObj) {
       return false;
     }
@@ -83,31 +89,31 @@ export const generateEntityFilter = (
 
     const { area, floor, device, entity } = getEntityContext(
       stateObj,
-      hass.entities,
-      hass.devices,
-      hass.areas,
-      hass.floors
+      entities,
+      devices,
+      areas,
+      floors
     );
 
     if (entity && entity.hidden) {
       return false;
     }
 
-    if (floors) {
+    if (floorIds) {
       const floorId = floor?.floor_id ?? null;
-      if (!floors.has(floorId)) {
+      if (!floorIds.has(floorId)) {
         return false;
       }
     }
-    if (areas) {
+    if (areaIds) {
       const areaId = area?.area_id ?? null;
-      if (!areas.has(areaId)) {
+      if (!areaIds.has(areaId)) {
         return false;
       }
     }
-    if (devices) {
+    if (deviceIds) {
       const deviceId = device?.id ?? null;
-      if (!devices.has(deviceId)) {
+      if (!deviceIds.has(deviceId)) {
         return false;
       }
     }
@@ -155,4 +161,21 @@ export const findEntities = (
   }
 
   return results;
+};
+
+export const findFilteredEntities = (
+  sources: EntityFilterSources,
+  filters: EntityFilter[]
+): string[] => {
+  const filterFuncs = filters.map((filter) =>
+    generateEntityFilter(
+      sources.states,
+      sources.entities,
+      sources.devices,
+      sources.areas,
+      sources.floors,
+      filter
+    )
+  );
+  return findEntities(Object.keys(sources.states), filterFuncs);
 };

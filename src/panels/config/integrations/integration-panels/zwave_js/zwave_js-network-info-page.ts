@@ -57,7 +57,13 @@ class ZWaveJSNetworkInfoPage extends LitElement {
                         )}
                       </span>
                       <span slot="supporting-text">
-                        ${formatHomeIdAsHex(this._network.controller.home_id)}
+                        ${
+                          this._network.controller.home_id !== null
+                            ? formatHomeIdAsHex(
+                                this._network.controller.home_id
+                              )
+                            : nothing
+                        }
                       </span>
                     </ha-list-item-base>
                     <ha-list-item-base>
@@ -104,12 +110,17 @@ class ZWaveJSNetworkInfoPage extends LitElement {
       haStyle,
       css`
         .container {
-          padding: var(--ha-space-2) var(--ha-space-4) var(--ha-space-4);
+          padding: var(--ha-space-2) var(--ha-content-gutter) var(--ha-space-4);
         }
 
         ha-card {
-          max-width: 600px;
+          max-width: var(--ha-content-width-narrow);
           margin: auto;
+        }
+
+        ha-list-item-base::part(supporting-text) {
+          font-size: var(--ha-font-size-m);
+          white-space: normal;
         }
       `,
     ];

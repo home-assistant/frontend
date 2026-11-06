@@ -1,7 +1,7 @@
-import { consume } from "@lit/context";
 import { mdiLinkVariantOff } from "@mdi/js";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { consume } from "../../../../common/decorators/consume";
 import { ensureArray } from "../../../../common/array/ensure-array";
 import { capitalizeFirstLetter } from "../../../../common/string/capitalize-first-letter";
 import "../../../../components/ha-svg-icon";
@@ -34,7 +34,7 @@ export class HaAutomationTriggerReferences extends LitElement {
   protected render() {
     const options = this._triggers?.options ?? [];
     const showIndices = this._triggers?.showIndices ?? false;
-    const selectedIds = ensureArray(this.condition.id).filter(Boolean);
+    const selectedIds = (ensureArray(this.condition.id) ?? []).filter(Boolean);
     const selectedTriggers = options.filter((option) =>
       selectedIds.includes(option.id)
     );

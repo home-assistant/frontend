@@ -1,5 +1,3 @@
-import { startOfYesterday } from "date-fns";
-import { consume } from "@lit/context";
 import {
   mdiDelete,
   mdiDevices,
@@ -12,22 +10,24 @@ import {
   mdiScriptText,
   mdiShape,
   mdiTools,
+  mdiTransitConnectionVariant,
 } from "@mdi/js";
+import { startOfYesterday } from "date-fns";
 import type { HassEntity } from "home-assistant-js-websocket/dist/types";
 import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { consume } from "../../../common/decorators/consume";
+import { transform } from "../../../common/decorators/transform";
 import type { HASSDomCurrentTargetEvent } from "../../../common/dom/fire_event";
 import { computeDeviceNameDisplay } from "../../../common/entity/compute_device_name";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { goBack, navigate } from "../../../common/navigate";
-import { createSearchParam } from "../../../common/url/search-params";
 import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
+import { createSearchParam } from "../../../common/url/search-params";
 import { groupBy } from "../../../common/util/group-by";
 import { afterNextRender } from "../../../common/util/render-status";
 import { createColumnsController } from "../../../common/util/responsive-columns";
@@ -36,19 +36,30 @@ import "../../../components/ha-card";
 import "../../../components/ha-dropdown";
 import type { HaDropdownSelectEvent } from "../../../components/ha-dropdown";
 import "../../../components/ha-dropdown-item";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-next";
 import "../../../components/ha-icon-button-next";
-import "../../../components/ha-list";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
+import "../../../components/item/ha-list-item-base";
+import "../../../components/item/ha-list-item-button";
+import "../../../components/list/ha-list-base";
+import "../../../components/list/ha-list-nav";
 import type { AreaRegistryEntry } from "../../../data/area/area_registry";
 import {
   deleteAreaRegistryEntry,
   updateAreaRegistryEntry,
 } from "../../../data/area/area_registry";
 import type { AutomationEntity } from "../../../data/automation";
-import { fireRelatedContext, fullEntitiesContext } from "../../../data/context";
+import type { ConfigEntry } from "../../../data/config_entries";
+import {
+  brandsAccessTokenContext,
+  configEntriesContext,
+  fireRelatedContext,
+  fullEntitiesContext,
+} from "../../../data/context";
 import type { DeviceRegistryEntry } from "../../../data/device/device_registry";
 import { sortDeviceRegistryByName } from "../../../data/device/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
@@ -67,8 +78,9 @@ import "../../../layouts/hass-error-screen";
 import "../../../layouts/hass-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
-import { isHelperDomain } from "../helpers/const";
+import { brandsUrl } from "../../../util/brands-url";
 import "../../logbook/ha-logbook";
+import { isHelperDomain } from "../helpers/const";
 import {
   loadAreaAddToDialog,
   showAreaAddToDialog,
@@ -89,12 +101,14 @@ type AreaQuickLinkKey =
 const NAVIGATION_ACTIONS: {
   value: string;
   path: string;
+  params?: string;
   icon: string;
   countKey: AreaQuickLinkKey;
 }[] = [
   {
     value: "navigate-devices",
     path: "/config/devices/dashboard",
+    params: "&status=disabled",
     icon: mdiDevices,
     countKey: "devices",
   },
@@ -145,6 +159,24 @@ class HaConfigAreaPage extends LitElement {
   @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   _entityReg: EntityRegistryEntry[] = [];
+
+  // Integration domain per config entry ID, to show the brand icon of a device
+  @state()
+  @consume({ context: configEntriesContext, subscribe: true })
+  @transform<ConfigEntry[], Record<string, string>>({
+    transformer: (entries) =>
+      entries
+        ? Object.fromEntries(
+            entries.map((entry) => [entry.entry_id, entry.domain])
+          )
+        : undefined,
+  })
+  private _configEntryDomains?: Record<string, string>;
+
+  @state()
+  @consume({ context: brandsAccessTokenContext, subscribe: true })
+  // @ts-ignore re-render trigger only, its value is never read
+  private _brandsAccessToken?: string;
 
   @state() private _related?: RelatedResult;
 
@@ -273,11 +305,7 @@ class HaConfigAreaPage extends LitElement {
     // them without mutating the shared registry objects.
     const devices = memberships.devices.map((entry) => ({
       ...entry,
-      name: computeDeviceNameDisplay(
-        entry,
-        this.hass.localize,
-        this.hass.states
-      ),
+      name: computeDeviceNameDisplay(entry, this.hass.localize),
     }));
     sortDeviceRegistryByName(devices, this.hass.locale.language);
 
@@ -377,18 +405,23 @@ class HaConfigAreaPage extends LitElement {
         .header=${this.hass.localize("ui.panel.config.devices.caption")}
         >${
           devices.length
-            ? html`<ha-list>
+            ? html`<ha-list-nav
+                .ariaLabel=${this.hass.localize(
+                  "ui.panel.config.devices.caption"
+                )}
+              >
                 ${devices.map(
                   (device) => html`
-                    <a href="/config/devices/device/${device.id}">
-                      <ha-list-item hasMeta>
-                        <span>${device.name}</span>
-                        <ha-icon-next slot="meta"></ha-icon-next>
-                      </ha-list-item>
-                    </a>
+                    <ha-list-item-button
+                      .href=${`/config/devices/device/${device.id}`}
+                      .headline=${device.name}
+                    >
+                      ${this._renderDeviceIcon(device)}
+                      <ha-icon-next slot="end"></ha-icon-next>
+                    </ha-list-item-button>
                   `
                 )}
-              </ha-list>`
+              </ha-list-nav>`
             : html`
                 <div class="no-entries">
                   ${this.hass.localize("ui.panel.config.devices.no_devices")}
@@ -404,20 +437,24 @@ class HaConfigAreaPage extends LitElement {
       >
         ${
           nonAutomatedEntities.length
-            ? html`<ha-list>
+            ? html`<ha-list-base
+                aria-label=${this.hass.localize(
+                  "ui.panel.config.areas.editor.linked_entities_caption"
+                )}
+              >
                 ${nonAutomatedEntities.map(
                   (entity) => html`
-                    <ha-list-item
+                    <ha-list-item-button
                       @click=${this._openEntity}
                       .entity=${entity}
-                      hasMeta
+                      .headline=${entity.name ?? undefined}
                     >
-                      <span>${entity.name}</span>
-                      <ha-icon-next slot="meta"></ha-icon-next>
-                    </ha-list-item>
+                      ${this._renderEntityIcon(entity)}
+                      <ha-icon-next slot="end"></ha-icon-next>
+                    </ha-list-item-button>
                   `
-                )}</ha-list
-              >`
+                )}
+              </ha-list-base>`
             : html`
                 <div class="no-entries">
                   ${this.hass.localize(
@@ -446,14 +483,19 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.assigned_to_area"
                           )}:
                         </h3>
-                        <ha-list>
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.automations_assigned",
+                            { area: area.name }
+                          )}
+                        >
                           ${groupedAutomations.map((automation) =>
                             this._renderAutomation(
                               automation.name,
                               automation.entity
                             )
-                          )}</ha-list
-                        >`
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -463,14 +505,19 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.targeting_area"
                           )}:
                         </h3>
-                        <ha-list>
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.automations_targeting",
+                            { area: area.name }
+                          )}
+                        >
                           ${relatedAutomations.map((automation) =>
                             this._renderAutomation(
                               automation.name,
                               automation.entity
                             )
-                          )}</ha-list
-                        >`
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -504,11 +551,16 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.assigned_to_area"
                           )}:
                         </h3>
-                        <ha-list>
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.scenes_assigned",
+                            { area: area.name }
+                          )}
+                        >
                           ${groupedScenes.map((scene) =>
                             this._renderScene(scene.name, scene.entity)
-                          )}</ha-list
-                        >`
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -518,11 +570,16 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.targeting_area"
                           )}:
                         </h3>
-                        <ha-list>
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.scenes_targeting",
+                            { area: area.name }
+                          )}
+                        >
                           ${relatedScenes.map((scene) =>
                             this._renderScene(scene.name, scene.entity)
-                          )}</ha-list
-                        >`
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -556,9 +613,16 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.assigned_to_area"
                           )}:
                         </h3>
-                        ${groupedScripts.map((script) =>
-                          this._renderScript(script.name, script.entity)
-                        )}`
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.scripts_assigned",
+                            { area: area.name }
+                          )}
+                        >
+                          ${groupedScripts.map((script) =>
+                            this._renderScript(script.name, script.entity)
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -568,9 +632,16 @@ class HaConfigAreaPage extends LitElement {
                             "ui.panel.config.areas.targeting_area"
                           )}:
                         </h3>
-                        ${relatedScripts.map((script) =>
-                          this._renderScript(script.name, script.entity)
-                        )}`
+                        <ha-list-nav
+                          .ariaLabel=${this.hass.localize(
+                            "ui.panel.config.areas.related_lists.scripts_targeting",
+                            { area: area.name }
+                          )}
+                        >
+                          ${relatedScripts.map((script) =>
+                            this._renderScript(script.name, script.entity)
+                          )}
+                        </ha-list-nav>`
                     : ""
                 }
                 ${
@@ -660,7 +731,9 @@ class HaConfigAreaPage extends LitElement {
             .path=${mdiDotsVertical}
           ></ha-icon-button>
 
-          ${NAVIGATION_ACTIONS.map(
+          ${NAVIGATION_ACTIONS.filter(
+            (action) => quickLinkCounts[action.countKey]
+          ).map(
             (action) => html`
               <ha-dropdown-item value=${action.value}>
                 <ha-svg-icon slot="icon" .path=${action.icon}></ha-svg-icon>
@@ -672,8 +745,13 @@ class HaConfigAreaPage extends LitElement {
               </ha-dropdown-item>
             `
           )}
-
-          <wa-divider></wa-divider>
+          ${
+            NAVIGATION_ACTIONS.some(
+              (action) => quickLinkCounts[action.countKey]
+            )
+              ? html`<wa-divider></wa-divider>`
+              : nothing
+          }
 
           <ha-dropdown-item value="edit" .data=${area}>
             <ha-svg-icon slot="icon" .path=${mdiPencil}> </ha-svg-icon>
@@ -712,7 +790,7 @@ class HaConfigAreaPage extends LitElement {
         ] as unknown as EntityType;
         if (entityState) {
           groupedEntities.push({
-            name: computeStateName(entityState),
+            name: this.hass.formatEntityName(entityState),
             entity: entityState,
           });
         }
@@ -730,7 +808,7 @@ class HaConfigAreaPage extends LitElement {
         const entityState = this.hass.states[entity] as EntityType;
         if (entityState) {
           relatedEntities.push({
-            name: entityState ? computeStateName(entityState) : "",
+            name: this.hass.formatEntityName(entityState),
             entity: entityState,
           });
         }
@@ -747,48 +825,109 @@ class HaConfigAreaPage extends LitElement {
     return { groupedEntities, relatedEntities };
   }
 
+  private _renderDeviceIcon(device: DeviceRegistryEntry) {
+    const entryIds = device.primary_config_entry
+      ? [device.primary_config_entry, ...device.config_entries]
+      : device.config_entries;
+    const domain = entryIds
+      .map((entryId) => this._configEntryDomains?.[entryId])
+      .find(Boolean);
+
+    if (!domain) {
+      return html`<ha-svg-icon
+        slot="start"
+        .path=${
+          device.entry_type === "service"
+            ? mdiTransitConnectionVariant
+            : mdiDevices
+        }
+      ></ha-svg-icon>`;
+    }
+
+    return html`<img
+      slot="start"
+      alt=""
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+      src=${brandsUrl(
+        {
+          domain,
+          type: "icon",
+          darkOptimized: this.hass.themes?.darkMode,
+        },
+        this.hass.auth.data.hassUrl
+      )}
+      @error=${this._onImageError}
+      @load=${this._onImageLoad}
+    />`;
+  }
+
+  private _renderEntityIcon(entity: EntityRegistryEntry) {
+    const stateObj = this.hass.states[entity.entity_id];
+    return stateObj
+      ? html`<ha-state-icon slot="start" .stateObj=${stateObj}></ha-state-icon>`
+      : html`<ha-domain-icon
+          slot="start"
+          .domain=${computeDomain(entity.entity_id)}
+          .icon=${entity.icon ?? undefined}
+        ></ha-domain-icon>`;
+  }
+
+  // Keep the space of a brand icon that failed to load so the rows stay aligned
+  private _onImageError(ev: HASSDomCurrentTargetEvent<HTMLImageElement>) {
+    ev.currentTarget.style.visibility = "hidden";
+  }
+
+  private _onImageLoad(ev: HASSDomCurrentTargetEvent<HTMLImageElement>) {
+    ev.currentTarget.style.visibility = "";
+  }
+
   private _renderScene(name: string, entityState: SceneEntity) {
-    return html`<ha-tooltip
-        .for="scene-${slugify(entityState.entity_id)}"
-        .distance=${-4}
-        .disabled=${!!entityState.attributes.id}
-      >
-        ${this.hass.localize("ui.panel.config.devices.cant_edit")}
-      </ha-tooltip>
-      <a
-        .id="scene-${slugify(entityState.entity_id)}"
-        href=${ifDefined(
-          entityState.attributes.id
-            ? `/config/scene/edit/${entityState.attributes.id}`
-            : undefined
-        )}
-      >
-        <ha-list-item .disabled=${!entityState.attributes.id} hasMeta>
-          <span>${name}</span>
-          <ha-icon-next slot="meta"></ha-icon-next>
-        </ha-list-item>
-      </a> `;
+    return entityState.attributes.id
+      ? this._renderLink(
+          name,
+          entityState,
+          `/config/scene/edit/${entityState.attributes.id}`
+        )
+      : this._renderNotEditable(
+          name,
+          entityState,
+          `scene-${slugify(entityState.entity_id)}`
+        );
   }
 
   private _renderAutomation(name: string, entityState: AutomationEntity) {
-    return html`<a
-        id="automation-${slugify(entityState.entity_id)}"
-        href=${ifDefined(
-          entityState.attributes.id
-            ? `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
-            : undefined
-        )}
-      >
-        <ha-list-item .disabled=${!entityState.attributes.id} hasMeta>
-          <span>${name}</span>
-          <ha-icon-next slot="meta"></ha-icon-next>
-        </ha-list-item>
-      </a>
-      <ha-tooltip
-        for="automation-${slugify(entityState.entity_id)}"
-        .disabled=${!!entityState.attributes.id}
-        .distance=${-4}
-        >${this.hass.localize("ui.panel.config.devices.cant_edit")}
+    return entityState.attributes.id
+      ? this._renderLink(
+          name,
+          entityState,
+          `/config/automation/edit/${encodeURIComponent(entityState.attributes.id)}`
+        )
+      : this._renderNotEditable(
+          name,
+          entityState,
+          `automation-${slugify(entityState.entity_id)}`
+        );
+  }
+
+  private _renderLink(name: string, entityState: HassEntity, href: string) {
+    return html`<ha-list-item-button .href=${href} .headline=${name}>
+      <ha-state-icon slot="start" .stateObj=${entityState}></ha-state-icon>
+      <ha-icon-next slot="end"></ha-icon-next>
+    </ha-list-item-button>`;
+  }
+
+  private _renderNotEditable(
+    name: string,
+    entityState: HassEntity,
+    id: string
+  ) {
+    return html`<ha-list-item-base id=${id} .headline=${name}>
+        <ha-state-icon slot="start" .stateObj=${entityState}></ha-state-icon>
+        <ha-icon-next slot="end"></ha-icon-next>
+      </ha-list-item-base>
+      <ha-tooltip .for=${id} .distance=${-4}>
+        ${this.hass.localize("ui.panel.config.devices.cant_edit")}
       </ha-tooltip>`;
   }
 
@@ -800,12 +939,7 @@ class HaConfigAreaPage extends LitElement {
     if (entry) {
       url = `/config/script/edit/${entry.unique_id}`;
     }
-    return html`<a href=${url}>
-      <ha-list-item hasMeta>
-        <span>${name}</span>
-        <ha-icon-next slot="meta"></ha-icon-next>
-      </ha-list-item>
-    </a>`;
+    return this._renderLink(name, entityState, url);
   }
 
   private async _findRelated() {
@@ -849,7 +983,9 @@ class HaConfigAreaPage extends LitElement {
 
     const navAction = NAVIGATION_ACTIONS.find((a) => a.value === action);
     if (navAction) {
-      navigate(`${navAction.path}?historyBack=1&area=${this.areaId}`);
+      navigate(
+        `${navAction.path}?historyBack=1&area=${this.areaId}${navAction.params ?? ""}`
+      );
       return;
     }
 
@@ -883,7 +1019,7 @@ class HaConfigAreaPage extends LitElement {
     showAreaRegistryDetailDialog(this, {
       entry,
       updateEntry: async (values) =>
-        updateAreaRegistryEntry(this.hass!, entry!.area_id, values),
+        updateAreaRegistryEntry(this.hass!.callWS, entry!.area_id, values),
     });
   }
 
@@ -935,15 +1071,15 @@ class HaConfigAreaPage extends LitElement {
 
         :host {
           display: block;
+          height: 100%;
         }
         .container {
           display: flex;
           flex-wrap: wrap;
           gap: var(--ha-space-4);
           margin: auto;
-          max-width: 1280px;
-          box-sizing: border-box;
-          padding: var(--ha-space-2) var(--ha-space-4);
+          max-width: var(--ha-content-width-wide);
+          padding: var(--ha-space-2) var(--ha-content-gutter);
           margin-top: var(--ha-space-8);
           margin-bottom: var(--ha-space-8);
         }
@@ -969,8 +1105,20 @@ class HaConfigAreaPage extends LitElement {
           color: var(--primary-text-color);
         }
 
-        ha-card > a:first-child {
-          display: block;
+        ha-list-base,
+        ha-list-nav {
+          --ha-list-padding: var(--ha-space-2) 0;
+        }
+        ha-list-item-base {
+          color: var(--disabled-text-color);
+        }
+        ha-list-item-button ha-icon-next {
+          color: var(--secondary-text-color);
+        }
+        img[slot="start"] {
+          width: 24px;
+          height: 24px;
+          object-fit: contain;
         }
         ha-card > *:first-child {
           margin-top: -16px;

@@ -1,9 +1,9 @@
-import { consume } from "@lit/context";
 import { mdiDelete, mdiFileUpload } from "@mdi/js";
 import type { PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { consume } from "../common/decorators/consume";
 import { ensureArray } from "../common/array/ensure-array";
 import { consumeLocalize } from "../common/decorators/consume-context-entry";
 import { transform } from "../common/decorators/transform";
@@ -73,6 +73,15 @@ export class HaFileUpload extends LitElement {
     super.firstUpdated(changedProperties);
     if (this.autoOpenFileDialog) {
       this._openFilePicker();
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    // Reset the native input when the value is cleared from outside, so
+    // picking the same file again still fires a change event.
+    if (changedProperties.has("value") && !this.value && this._input) {
+      this._input.value = "";
     }
   }
 

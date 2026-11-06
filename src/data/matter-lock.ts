@@ -42,9 +42,9 @@ export interface MatterLockUser {
   user_index: number | null;
   user_name: string | null;
   user_unique_id: number | null;
-  user_status: MatterLockUserStatus;
+  user_status: MatterLockUserStatus | "unknown";
   user_type: MatterLockUserType;
-  credential_rule: MatterLockCredentialRule;
+  credential_rule: MatterLockCredentialRule | "unknown";
   credentials: MatterLockCredentialRef[];
   next_user_index: number | null;
 }
@@ -64,9 +64,9 @@ export interface SetMatterLockUserParams {
 export interface SetMatterLockCredentialParams {
   credential_type: MatterLockCredentialType;
   credential_data: string;
-  credential_index?: number | null;
-  user_index?: number | null;
-  user_status?: MatterLockUserStatus;
+  credential_index?: number;
+  user_index?: number;
+  user_status?: "occupied_enabled" | "occupied_disabled";
   user_type?: MatterLockUserType;
 }
 

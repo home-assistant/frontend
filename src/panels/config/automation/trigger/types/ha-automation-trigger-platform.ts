@@ -1,3 +1,4 @@
+import { provide } from "@lit/context";
 import { mdiHelpCircleOutline } from "@mdi/js";
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
@@ -22,6 +23,7 @@ import {
 } from "../../../../../data/trigger";
 import type { HomeAssistant } from "../../../../../types";
 import { documentationUrl } from "../../../../../util/documentation-url";
+import { targetExpandGroupContext } from "../../../../../components/target-picker/target-expand-group-context";
 
 const showOptionalToggle = (field: TriggerDescription["fields"][string]) =>
   field.selector &&
@@ -37,6 +39,10 @@ const DEFAULT_KEYS: (keyof PlatformTrigger)[] = [
 
 @customElement("ha-automation-trigger-platform")
 export class HaPlatformTrigger extends LitElement {
+  // Triggers and conditions don't expand the groups their targets name.
+  @provide({ context: targetExpandGroupContext })
+  protected _targetExpandGroup = false;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: PlatformTrigger;
@@ -448,12 +454,16 @@ export class HaPlatformTrigger extends LitElement {
     this.requestUpdate("_checkedKeys");
   }
 
-  private _localizeValueCallback = (key: string) => {
+  private _localizeValueCallback = (
+    key: string,
+    values?: Record<string, string>
+  ) => {
     if (!this.trigger?.trigger) {
       return "";
     }
     return this.hass.localize(
-      `component.${getTriggerDomain(this.trigger.trigger)}.selector.${key}`
+      `component.${getTriggerDomain(this.trigger.trigger)}.selector.${key}`,
+      values
     );
   };
 

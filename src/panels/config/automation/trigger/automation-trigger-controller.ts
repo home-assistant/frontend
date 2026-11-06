@@ -1,11 +1,14 @@
-import { ContextConsumer, ContextProvider } from "@lit/context";
+import { ContextProvider } from "@lit/context";
 import type { LitElement, ReactiveController } from "lit";
 import memoizeOne from "memoize-one";
 import type {
   AutomationConfig,
   SidebarConfig,
+  Trigger,
   TriggerCondition,
 } from "../../../../data/automation";
+import { ContextSubscriptionController } from "../../../../common/decorators/consume";
+import type { LocalizeFunc } from "../../../../common/translations/localize";
 import { internationalizationContext } from "../../../../data/context";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import {
@@ -17,6 +20,7 @@ import {
   getExplicitTriggerIds,
   isGeneratedTriggerId,
   makeDuplicateTriggerIdsUnique,
+  replaceLeafTrigger,
   updateTriggerCondition,
 } from "./automation-trigger-id";
 import { preserveAutomationRowKeys } from "../ha-automation-sortable-list-mixin";
@@ -41,10 +45,8 @@ interface AutomationTriggerControllerOptions {
  * the corresponding row keys so an open sidebar continues to track the edited row.
  */
 export class AutomationTriggerController implements ReactiveController {
-  private _i18n: ContextConsumer<
-    typeof internationalizationContext,
-    LitElement
-  >;
+  // Only read in event handlers, so it does not need to rerender the host.
+  private _localize?: LocalizeFunc;
 
   private _provider: ContextProvider<typeof automationTriggerContext>;
 
@@ -56,10 +58,13 @@ export class AutomationTriggerController implements ReactiveController {
     private _host: LitElement,
     private _options: AutomationTriggerControllerOptions
   ) {
-    this._i18n = new ContextConsumer(_host, {
-      context: internationalizationContext,
-      subscribe: true,
-    });
+    new ContextSubscriptionController(
+      _host,
+      internationalizationContext,
+      ({ localize }) => {
+        this._localize = localize;
+      }
+    );
     this._provider = new ContextProvider(_host, {
       context: automationTriggerContext,
       initialValue: {
@@ -67,6 +72,7 @@ export class AutomationTriggerController implements ReactiveController {
         showIndices: false,
         select: this._selectTriggerIds,
         fixDuplicateIds: this._fixDuplicateTriggerIds,
+        updateTriggerId: this._updateTriggerId,
       },
     });
     _host.addController(this);
@@ -154,7 +160,7 @@ export class AutomationTriggerController implements ReactiveController {
   };
 
   private _fixDuplicateTriggerIds = async () => {
-    const localize = this._i18n.value?.localize;
+    const localize = this._localize;
     if (!this._options.getConfig() || !this._options.canEdit() || !localize) {
       return;
     }
@@ -174,6 +180,23 @@ export class AutomationTriggerController implements ReactiveController {
     if (confirmed && config && this._options.canEdit()) {
       this._commit(makeDuplicateTriggerIdsUnique(config));
     }
+  };
+
+  /**
+   * Commit an explicit ID edit directly. Ordinary edits pass through cleanupRemovedIds,
+   * which would treat a changed generated ID as a deleted trigger and strip its references.
+   */
+  private _updateTriggerId = (original: Trigger, updated: Trigger): boolean => {
+    const config = this._options.getConfig();
+    if (!config || !this._options.canEdit()) {
+      return false;
+    }
+    const triggers = replaceLeafTrigger(config.triggers, original, updated);
+    if (triggers === config.triggers) {
+      return false;
+    }
+    this._commit({ ...config, triggers });
+    return true;
   };
 
   private _commit(config: AutomationConfig) {

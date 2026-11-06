@@ -1,6 +1,6 @@
-import { consume } from "@lit/context";
 import { html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { consume } from "../../common/decorators/consume";
 import { transform } from "../../common/decorators/transform";
 import type { DateSelector } from "../../data/selector";
 import { internationalizationContext } from "../../data/context";

@@ -1,11 +1,12 @@
 import type { Connection } from "home-assistant-js-websocket";
-import { createCollection } from "home-assistant-js-websocket";
+import { getCollection } from "home-assistant-js-websocket";
 import type { Store } from "home-assistant-js-websocket/dist/store";
 import { stringCompare } from "../common/string/compare";
 import type { HomeAssistant } from "../types";
 import { debounce } from "../common/util/debounce";
+import type { RegistryEntry } from "./registry";
 
-export interface CategoryRegistryEntry {
+export interface CategoryRegistryEntry extends RegistryEntry {
   category_id: string;
   name: string;
   icon: string | null;
@@ -26,12 +27,12 @@ export const fetchCategoryRegistry = (conn: Connection, scope: string) =>
       categories.sort((ent1, ent2) => stringCompare(ent1.name, ent2.name))
     );
 
-export const subscribeCategoryRegistry = (
+export const getCategoryRegistryCollection = (
   conn: Connection,
-  scope: string,
-  onChange: (floors: CategoryRegistryEntry[]) => void
+  scope: string
 ) =>
-  createCollection<CategoryRegistryEntry[]>(
+  getCollection<CategoryRegistryEntry[]>(
+    conn,
     `_categoryRegistry_${scope}`,
     (conn2: Connection) => fetchCategoryRegistry(conn2, scope),
     (conn2: Connection, store: Store<CategoryRegistryEntry[]>) =>
@@ -46,29 +47,33 @@ export const subscribeCategoryRegistry = (
           true
         ),
         "category_registry_updated"
-      ),
-    conn,
-    onChange
+      )
   );
 
+export const subscribeCategoryRegistry = (
+  conn: Connection,
+  scope: string,
+  onChange: (floors: CategoryRegistryEntry[]) => void
+) => getCategoryRegistryCollection(conn, scope).subscribe(onChange);
+
 export const createCategoryRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   scope: string,
   values: CategoryRegistryEntryMutableParams
 ) =>
-  hass.callWS<CategoryRegistryEntry>({
+  callWS<CategoryRegistryEntry>({
     type: "config/category_registry/create",
     scope,
     ...values,
   });
 
 export const updateCategoryRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   scope: string,
   category_id: string,
   updates: Partial<CategoryRegistryEntryMutableParams>
 ) =>
-  hass.callWS<CategoryRegistryEntry>({
+  callWS<CategoryRegistryEntry>({
     type: "config/category_registry/update",
     scope,
     category_id,
@@ -76,11 +81,11 @@ export const updateCategoryRegistryEntry = (
   });
 
 export const deleteCategoryRegistryEntry = (
-  hass: HomeAssistant,
+  callWS: HomeAssistant["callWS"],
   scope: string,
   category_id: string
 ) =>
-  hass.callWS({
+  callWS({
     type: "config/category_registry/delete",
     scope,
     category_id,

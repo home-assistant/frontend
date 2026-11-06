@@ -214,7 +214,7 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
     const dongles = this._hardwareInfo?.hardware.filter(
       (hw) =>
         hw.dongle !== null &&
-        (!hw.config_entries.length ||
+        (!hw.config_entries?.length ||
           hw.config_entries.some(
             (entryId) =>
               this._configEntries?.[entryId] &&
@@ -223,19 +223,19 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
     );
 
     if (boardData) {
-      boardConfigEntries = boardData.config_entries
+      boardConfigEntries = (boardData.config_entries ?? [])
         .map((id) => this._configEntries?.[id])
         .filter(
           (entry) => entry?.supports_options && !entry.disabled_by
         ) as ConfigEntry[];
-      boardId = boardData.board!.hassio_board_id;
-      boardName = boardData.name;
+      boardId = boardData.board!.hassio_board_id ?? undefined;
+      boardName = boardData.name ?? undefined;
       documentationURL = sanitizeHttpUrl(boardData.url);
       imageURL = hardwareBrandsUrl(
         {
           category: "boards",
           manufacturer: boardData.board!.manufacturer,
-          model: boardData.board!.model,
+          model: boardData.board!.model ?? undefined,
           darkOptimized: this.hass.themes?.darkMode,
         },
         this.hass.auth.data.hassUrl
@@ -355,7 +355,7 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
             dongles?.length
               ? html`<ha-card outlined>
                   ${dongles.map((dongle) => {
-                    const configEntry = dongle.config_entries
+                    const configEntry = (dongle.config_entries ?? [])
                       .map((id) => this._configEntries?.[id])
                       .filter(
                         (entry) => entry?.supports_options && !entry.disabled_by
@@ -400,7 +400,6 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
                     </div>
                     <div class="card-content loading-container">
                       <ha-chart-base
-                        .hass=${this.hass}
                         .data=${this._getChartData(this._cpuEntries)}
                         .options=${this._chartOptions}
                       ></ha-chart-base>
@@ -442,7 +441,6 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
                     </div>
                     <div class="card-content loading-container">
                       <ha-chart-base
-                        .hass=${this.hass}
                         .data=${this._getChartData(this._memoryEntries)}
                         .options=${this._chartOptions}
                       ></ha-chart-base>
@@ -513,15 +511,13 @@ class HaConfigHardwareOverview extends SubscribeMixin(LitElement) {
     haStyle,
     css`
       .content {
-        padding: 28px 20px 0;
-        max-width: 1040px;
+        padding: 28px var(--ha-content-gutter) 0;
+        max-width: var(--ha-content-width-narrow);
         margin: 0 auto;
         --mdc-list-side-padding: 24px;
         --mdc-list-vertical-padding: 0;
       }
       ha-card {
-        max-width: 600px;
-        margin: 0 auto;
         height: 100%;
         justify-content: space-between;
         flex-direction: column;

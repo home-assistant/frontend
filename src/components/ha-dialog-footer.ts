@@ -16,8 +16,8 @@ import { customElement } from "lit/decorators";
  *
  * @remarks
  * **Button Styling Guidance:**
- * - `primaryAction` slot: Use `variant="accent"`
- * - `secondaryAction` slot: Use `variant="plain"`
+ * - `primaryAction` slot: Use the default `appearance="accent"`
+ * - `secondaryAction` slot: Use `appearance="plain"`
  */
 @customElement("ha-dialog-footer")
 export class HaDialogFooter extends LitElement {

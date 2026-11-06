@@ -18,7 +18,7 @@ jobs:
   deploy_dev:
     runs-on: ubuntu-latest
     name: Deploy Development
-    if: github.event_name != 'push'
+    if: github.repository == 'home-assistant/frontend' && github.ref_name != 'master'
     environment:
       name: Cast Development
       url: ${{ steps.deploy.outputs.netlify_url }}
@@ -30,17 +30,17 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
 
       - name: Build Cast
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-cast
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Netlify
         id: deploy
-        uses: ./.github/actions/netlify-deploy
+        uses: $/.github/actions/netlify-deploy
         with:
           dir: cast/dist
           alias: dev
@@ -50,7 +50,7 @@ jobs:
   deploy_master:
     runs-on: ubuntu-latest
     name: Deploy Production
-    if: github.event_name == 'push'
+    if: github.repository == 'home-assistant/frontend' && github.ref_name == 'master'
     environment:
       name: Cast Production
       url: ${{ steps.deploy.outputs.netlify_url }}
@@ -62,17 +62,17 @@ jobs:
           persist-credentials: false
 
       - name: Setup Node and install
-        uses: ./.github/actions/setup
+        uses: $/.github/actions/setup
 
       - name: Build Cast
-        uses: ./.github/actions/build
+        uses: $/.github/actions/build
         with:
           target: build-cast
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Netlify
         id: deploy
-        uses: ./.github/actions/netlify-deploy
+        uses: $/.github/actions/netlify-deploy
         with:
           dir: cast/dist
           auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
