@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ZHADevice } from "../../../../../src/data/zha";
+import { ZHADeviceType } from "../../../../../src/data/zha";
 import {
   countBands,
   groupByArea,
@@ -31,7 +32,7 @@ const device = (overrides: Partial<ZHADevice> & { ieee: string }): ZHADevice =>
     entities: [{ entity_id: "sensor.test" }],
     manufacturer_code: 0,
     device_reg_id: overrides.ieee,
-    device_type: "EndDevice",
+    device_type: ZHADeviceType.EndDevice,
     active_coordinator: false,
     signature: {},
     neighbors: [],
@@ -235,8 +236,8 @@ describe("healthGroups", () => {
   it("collects routers", () => {
     const groups = healthGroups(
       [
-        device({ ieee: "a", device_type: "Router" }),
-        device({ ieee: "b", device_type: "EndDevice" }),
+        device({ ieee: "a", device_type: ZHADeviceType.Router }),
+        device({ ieee: "b", device_type: ZHADeviceType.EndDevice }),
       ],
       noBattery,
       NOW

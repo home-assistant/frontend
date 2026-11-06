@@ -21,10 +21,10 @@ import { blankBeforePercent } from "../../../../../common/translations/blank_bef
 import "../../../../../components/ha-alert";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-expansion-panel";
-import "../../../../../components/ha-md-list";
-import "../../../../../components/ha-md-list-item";
 import "../../../../../components/ha-spinner";
 import "../../../../../components/ha-svg-icon";
+import "../../../../../components/item/ha-list-item-button";
+import "../../../../../components/list/ha-list-nav";
 import type { ZHADevice } from "../../../../../data/zha";
 import { fetchDevices } from "../../../../../data/zha";
 import "../../../../../layouts/hass-subpage";
@@ -97,6 +97,7 @@ class ZHANetworkHealthPage extends LitElement {
   /** Battery percentage reported by the device, if it has a battery sensor. */
   private _batteryLevel = (device: ZHADevice): number | null => {
     for (const entity of device.entities) {
+      if (!entity.entity_id) continue;
       const stateObj = this.hass.states[entity.entity_id];
       if (stateObj?.attributes.device_class === "battery") {
         const level = Number(stateObj.state);
@@ -268,7 +269,13 @@ class ZHANetworkHealthPage extends LitElement {
                           `ui.panel.config.zha.network_health.${group.key}_advice`
                         )}
                       </p>
-                      <ha-md-list> ${this._renderByArea(group)} </ha-md-list>
+                      <ha-list-nav
+                        .ariaLabel=${this.hass.localize(
+                          `ui.panel.config.zha.network_health.${group.key}`
+                        )}
+                      >
+                        ${this._renderByArea(group)}
+                      </ha-list-nav>
                     `
                   : nothing
               }
@@ -312,7 +319,7 @@ class ZHANetworkHealthPage extends LitElement {
     ].filter(Boolean);
 
     return html`
-      <ha-md-list-item type="link" href=${`/config/zha/device/${device.ieee}`}>
+      <ha-list-item-button href=${`/config/zha/device/${device.ieee}`}>
         <ha-svg-icon
           slot="start"
           class=${(level === null ? `signal ${band}` : "battery") + stale}
@@ -332,7 +339,7 @@ class ZHANetworkHealthPage extends LitElement {
                 : `LQI ${device.lqi}`
           }
         </span>
-      </ha-md-list-item>
+      </ha-list-item-button>
     `;
   }
 
@@ -522,13 +529,14 @@ class ZHANetworkHealthPage extends LitElement {
           line-height: 1.4;
         }
 
-        ha-md-list {
-          background: none;
-          padding: 0;
-          --md-list-item-top-space: var(--ha-space-1);
-          --md-list-item-bottom-space: var(--ha-space-1);
-          --md-list-item-leading-space: calc(var(--ha-space-4) + 32px);
-          --md-list-item-trailing-space: var(--ha-space-4);
+        ha-list-item-button {
+          --ha-row-item-padding-block: var(--ha-space-1);
+          --ha-row-item-padding-inline: var(--ha-space-4);
+          --ha-row-item-min-height: 40px;
+        }
+
+        ha-list-item-button::part(base) {
+          padding-inline-start: calc(var(--ha-space-4) + 32px);
         }
 
         .signal.strong {
