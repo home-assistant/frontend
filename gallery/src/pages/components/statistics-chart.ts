@@ -1,6 +1,7 @@
 import type { PropertyValues } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import type { ChartSelectMode } from "../../../../src/components/chart/ha-chart-base";
 import "../../../../src/components/chart/statistics-chart";
 import "../../../../src/components/ha-button";
 import "../../../../src/components/ha-card";
@@ -124,7 +125,7 @@ interface RangeExample {
   statTypes: StatisticType[];
   chartType: "line" | "bar";
   unit: string;
-  selectRange: boolean;
+  selectMode: ChartSelectMode;
   hint: string;
 }
 
@@ -133,24 +134,24 @@ const RANGE_EXAMPLES: RangeExample[] = [
     id: "point",
     title: "Point selection",
     description:
-      "A click selects the hour that contains it, and everything outside fades. Dragging still zooms.",
+      "With select-mode set to point, a click selects the hour that contains it, and everything outside fades. Dragging still zooms.",
     statistics: { [HEAT_PUMP_ID]: HEAT_PUMP },
     statTypes: ["change"],
     chartType: "bar",
     unit: "kWh",
-    selectRange: false,
+    selectMode: "point",
     hint: "Click on a bar to select its hour.",
   },
   {
     id: "range-bar",
     title: "Range selection on bars",
     description:
-      "With select-range, dragging selects a time range instead of zooming, so several bars can be selected at once. A click still selects one bar.",
+      "With select-mode set to range, dragging selects a time range instead of zooming, so several bars can be selected at once. A click still selects one bar.",
     statistics: { [HEAT_PUMP_ID]: HEAT_PUMP },
     statTypes: ["change"],
     chartType: "bar",
     unit: "kWh",
-    selectRange: true,
+    selectMode: "range",
     hint: "Click or drag on the chart to select one or more bars.",
   },
   {
@@ -161,7 +162,7 @@ const RANGE_EXAMPLES: RangeExample[] = [
     statTypes: ["mean", "min", "max"],
     chartType: "line",
     unit: "°C",
-    selectRange: true,
+    selectMode: "range",
     hint: "Click or drag on the chart to select a period.",
   },
 ];
@@ -278,7 +279,7 @@ export class DemoStatisticsChart extends LitElement {
             .highlight=${selection}
             .clickForMoreInfo=${false}
             data-example=${example.id}
-            .selectRange=${example.selectRange}
+            .selectMode=${example.selectMode}
             hide-legend
             @chart-select=${this._rangeSelected}
           ></statistics-chart>

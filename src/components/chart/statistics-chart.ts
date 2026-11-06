@@ -50,6 +50,7 @@ import type {
 } from "../../types";
 import { getPeriodicAxisLabelConfig } from "./axis-label";
 import type {
+  ChartSelectMode,
   ChartTimeRange,
   CustomLegendOption,
   HaChartBase,
@@ -133,8 +134,8 @@ export class StatisticsChart extends LitElement {
   @property({ attribute: "expand-legend", type: Boolean })
   public expandLegend?: boolean;
 
-  @property({ attribute: "select-range", type: Boolean })
-  public selectRange = false;
+  @property({ attribute: "select-mode" })
+  public selectMode: ChartSelectMode = "none";
 
   @property({ attribute: "zoom-slider" })
   public zoomSlider: ZoomSliderMode = "auto";
@@ -263,7 +264,7 @@ export class StatisticsChart extends LitElement {
         .snapSelection=${this._snapSelection}
         .options=${this._chartOptions}
         .height=${this.height}
-        .selectRange=${this.selectRange}
+        .selectMode=${this.selectMode}
         .zoomSlider=${this.zoomSlider}
         style=${styleMap({ height: this.height })}
         @dataset-hidden=${this._datasetHidden}
