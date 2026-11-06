@@ -13,6 +13,8 @@ import {
 import type { RouterOptions } from "../../layouts/hass-router-page";
 import { HassRouterPage } from "../../layouts/hass-router-page";
 import type { HomeAssistant, Route } from "../../types";
+import { KeyboardShortcutMixin } from "../../mixins/keyboard-shortcut-mixin";
+import { navigate } from "../../common/navigate";
 
 declare global {
   // for fire event
@@ -27,8 +29,25 @@ declare global {
   }
 }
 
+const EDITOR_SECTIONS = new Set(["automation", "script", "scene"]);
+
+const findFab = (root: ParentNode): HTMLElement | null => {
+  const fab = root.querySelector<HTMLElement>('[slot="fab"]');
+  fab?.click();
+  if (fab) {
+    return fab.querySelector<HTMLElement>('[slot="trigger"]') ?? fab;
+  }
+  for (const el of root.querySelectorAll("*")) {
+    const found = el.shadowRoot && findFab(el.shadowRoot);
+    if (found) {
+      return found;
+    }
+  }
+  return null;
+};
+
 @customElement("ha-panel-config")
-class HaPanelConfig extends HassRouterPage {
+class HaPanelConfig extends KeyboardShortcutMixin(HassRouterPage) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean }) public narrow = false;
@@ -386,6 +405,19 @@ class HaPanelConfig extends HassRouterPage {
     el.isWide = isWide;
     el.narrow = this.narrow;
     el.cloudStatus = this._cloudStatus;
+  }
+
+  protected supportedAltShortcuts(): SupportedShortcuts {
+    return {
+      N: () => {
+        const [, , section, page] = location.pathname.split("/");
+        if (EDITOR_SECTIONS.has(section) && (!page || page === "dashboard")) {
+          navigate(`/config/${section}/edit/new`);
+          return;
+        }
+        findFab(this.shadowRoot ?? this)?.click();
+      },
+    };
   }
 
   private async _updateCloudStatus() {

@@ -185,6 +185,10 @@ const _SHORTCUTS: Section[] = [
         shortcut: [CTRL_CMD, "Shift", "Y"],
         descriptionTranslationKey: "ui.dialogs.shortcuts.other.toggle_yaml",
       },
+      {
+        shortcut: [CTRL_CMD, "Alt", "N"],
+        descriptionTranslationKey: "ui.dialogs.shortcuts.other.add_new",
+      },
     ],
   },
 ];
