@@ -811,9 +811,13 @@ export class HaDataTable extends LitElement {
   }
 
   // Group headers are keyed by their group, so they keep their actions' state
-  // when the data changes
+  // when the data changes. The prefixes keep them apart from row ids.
   private _keyFunction = (row: DataTableRowData) =>
-    row?.[this.id] || row?.groupHeader || row;
+    row?.[this.id]
+      ? `row-${row[this.id]}`
+      : row?.groupHeader !== undefined
+        ? `group-${row.groupHeader}`
+        : row;
 
   private _renderMainValue(value: unknown) {
     return this.clickable
