@@ -102,13 +102,16 @@ export class HaEntityActionBar extends HaActionBar {
     if (!this.entityId) {
       return;
     }
-    await copyToClipboard(this.entityId);
+    const entityId = this.entityId;
+    // Close before the async copy, so a late close-picker can't hit a reopened
+    // picker or drop a queued afterClose callback.
+    fireEvent(this, "close-picker");
+    await copyToClipboard(entityId);
     showToast(this, {
       message: this._i18n.localize(
         "ui.components.entity.entity-action-bar.copied_entity_id"
       ),
     });
-    fireEvent(this, "close-picker");
   }
 }
 
