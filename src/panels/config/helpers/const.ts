@@ -48,9 +48,10 @@ export const HELPER_CATEGORIES = [
 
 export type HelperCategory = (typeof HELPER_CATEGORIES)[number];
 
-// Helper integrations have no category in their manifest, so the known ones
-// are grouped here. Any other helper falls into "other".
-const HELPER_DOMAIN_CATEGORIES: Record<string, HelperCategory> = {
+// Helper integrations have no category or short description in their
+// manifest, so the ones shipped with Home Assistant are listed here. Any other
+// helper falls into "other" and has no description.
+const HELPER_DOMAIN_CATEGORIES = {
   input_boolean: "input",
   input_button: "input",
   input_datetime: "input",
@@ -62,6 +63,7 @@ const HELPER_DOMAIN_CATEGORIES: Record<string, HelperCategory> = {
   timer: "time",
   tod: "time",
   history_stats: "time",
+  compensation: "calculation",
   derivative: "calculation",
   filter: "calculation",
   integration: "calculation",
@@ -73,7 +75,19 @@ const HELPER_DOMAIN_CATEGORIES: Record<string, HelperCategory> = {
   trend: "calculation",
   template: "calculation",
   utility_meter: "calculation",
-};
+  generic_hygrostat: "other",
+  generic_thermostat: "other",
+  group: "other",
+  manual: "other",
+  otp: "other",
+  switch_as_x: "other",
+} as const satisfies Record<string, HelperCategory>;
+
+export type KnownHelperDomain = keyof typeof HELPER_DOMAIN_CATEGORIES;
+
+export const isKnownHelperDomain = (
+  domain: string
+): domain is KnownHelperDomain => domain in HELPER_DOMAIN_CATEGORIES;
 
 export const getHelperCategory = (domain: string): HelperCategory =>
-  HELPER_DOMAIN_CATEGORIES[domain] ?? "other";
+  isKnownHelperDomain(domain) ? HELPER_DOMAIN_CATEGORIES[domain] : "other";

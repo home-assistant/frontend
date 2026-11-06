@@ -1,5 +1,6 @@
 import { mdiAlertOutline } from "@mdi/js";
 import Fuse from "fuse.js";
+import type { HassConfig } from "home-assistant-js-websocket";
 import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -16,6 +17,7 @@ import "../../../components/ha-button";
 import "../../../components/ha-combo-box-item";
 import "../../../components/ha-dialog";
 import "../../../components/ha-dialog-footer";
+import "../../../components/ha-domain-icon";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-picker-combo-box";
 import type {
@@ -26,7 +28,6 @@ import type {
 import "../../../components/ha-spinner";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-tooltip";
-import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import { getConfigFlowHandlers } from "../../../data/config_flow";
 import { createCounter } from "../../../data/counter";
 import {
@@ -51,20 +52,25 @@ import { createTimer } from "../../../data/timer";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
+import { DirtyStateProviderMixin } from "../../../mixins/dirty-state-provider-mixin";
 import {
   multiTermSortedSearch,
   type FuseWeightedKey,
 } from "../../../resources/fuseMultiTerm";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant, ValueChangedEvent } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
 import type {
   Helper,
   HelperCategory,
   HelperDomain,
   HelperFormItem,
 } from "./const";
-import { getHelperCategory, HELPER_CATEGORIES, isHelperDomain } from "./const";
+import {
+  getHelperCategory,
+  HELPER_CATEGORIES,
+  isHelperDomain,
+  isKnownHelperDomain,
+} from "./const";
 import type { ShowDialogHelperDetailParams } from "./show-dialog-helper-detail";
 
 type HelperCreators = Record<
@@ -134,6 +140,7 @@ const HELPER_SEARCH_KEYS: FuseWeightedKey[] = [
   { name: "primary", weight: 10 },
   { name: "search_labels.aliases", weight: 8 },
   { name: "id", weight: 4 },
+  { name: "secondary", weight: 2 },
 ];
 
 @customElement("dialog-helper-detail")
@@ -148,6 +155,8 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
   @state() private _open = false;
 
+  @state() private _shown = false;
+
   @state() private _domain?: string;
 
   @state() private _error?: string;
@@ -158,7 +167,6 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
   @state() private _loading = false;
 
-  // Kept for going back from a helper form, the picker reads it when it opens.
   private _category?: HelperCategory;
 
   @query("ha-picker-combo-box") private _comboBox?: HaPickerComboBox;
@@ -204,10 +212,12 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
   protected updated(changedProps: PropertyValues<this>): void {
     super.updated(changedProps);
-    // The config translations may load after the list was built, and the
-    // picker only asks for its items again when told to.
     const oldHass = changedProps.get("hass");
-    if (oldHass && oldHass.localize !== this.hass.localize) {
+    if (
+      oldHass &&
+      (oldHass.localize !== this.hass.localize ||
+        oldHass.config !== this.hass.config)
+    ) {
       this._comboBox?.refreshItems();
     }
   }
@@ -216,8 +226,16 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._open = false;
   }
 
+  private _dialogShown(ev: Event): void {
+    if (ev.eventPhase !== Event.AT_TARGET) {
+      return;
+    }
+    this._shown = true;
+  }
+
   private _dialogClosed(): void {
     this._open = false;
+    this._shown = false;
     this._error = undefined;
     this._domain = undefined;
     this._params = undefined;
@@ -242,6 +260,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     }
     let content: TemplateResult;
     let footer: TemplateResult | typeof nothing = nothing;
+    let showPicker = false;
 
     if (this._domain && !this._loading) {
       content = html`
@@ -286,17 +305,24 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     } else if (this._loading || this._helperFlows === undefined) {
       content = html`<ha-spinner></ha-spinner>`;
     } else {
+      showPicker = true;
       content = html`
         <ha-picker-combo-box
           autofocus
           mode="dialog"
+          .shown=${this._shown}
           no-sort
           .label=${this.hass.localize(
             "ui.panel.config.integrations.search_helper"
           )}
           .getItems=${this._getItems}
           .rowRenderer=${this._renderHelperRow}
-          .sections=${this._getSections(this._helperFlows, this.hass.localize)}
+          .sections=${this._getSections(
+            this._helperFlows,
+            this.hass.localize,
+            this.hass.config,
+            this.hass.locale.language
+          )}
           .selectedSection=${this._category}
           @index-selected=${this._helperPicked}
         ></ha-picker-combo-box>
@@ -305,6 +331,8 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
 
     return html`
       <ha-dialog
+        class=${showPicker ? "picker" : ""}
+        .flexContent=${showPicker}
         .open=${this._open}
         .preventScrimClose=${this.isDirtyState}
         header-title=${
@@ -324,6 +352,7 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
               )
             : this.hass.localize("ui.panel.config.helpers.dialog.create_helper")
         }
+        @after-show=${this._dialogShown}
         @closed=${this._dialogClosed}
       >
         ${content} ${footer}
@@ -332,7 +361,12 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   }
 
   private _getHelperItems = memoizeOne(
-    (flowHelpers: string[], localize: LocalizeFunc): HelperPickerItem[] => {
+    (
+      flowHelpers: string[],
+      localize: LocalizeFunc,
+      config: HassConfig,
+      language: string
+    ): HelperPickerItem[] => {
       const domains = [
         ...(Object.keys(HELPERS) as HelperDomain[]),
         ...flowHelpers,
@@ -346,10 +380,14 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
               (helperDomain &&
                 localize(`ui.panel.config.helpers.types.${helperDomain}`)) ||
               domainToName(localize, domain),
+            secondary: isKnownHelperDomain(domain)
+              ? localize(
+                  `ui.panel.config.helpers.dialog.descriptions.${domain}`
+                )
+              : undefined,
             category: getHelperCategory(domain),
             // Only OG helpers need to be loaded prior adding one
-            loaded:
-              !helperDomain || isComponentLoaded(this.hass.config, domain),
+            loaded: !helperDomain || isComponentLoaded(config, domain),
             search_labels: {
               aliases: helperDomain
                 ? (HELPERS[helperDomain].alias?.join(" ") ?? null)
@@ -357,16 +395,24 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
             },
           };
         })
-        .sort((a, b) =>
-          stringCompare(a.primary, b.primary, this.hass.locale.language)
-        );
+        .sort((a, b) => stringCompare(a.primary, b.primary, language));
     }
   );
 
   // Only offer the categories that have helpers.
   private _getSections = memoizeOne(
-    (flowHelpers: string[], localize: LocalizeFunc) => {
-      const items = this._getHelperItems(flowHelpers, localize);
+    (
+      flowHelpers: string[],
+      localize: LocalizeFunc,
+      config: HassConfig,
+      language: string
+    ) => {
+      const items = this._getHelperItems(
+        flowHelpers,
+        localize,
+        config,
+        language
+      );
       return HELPER_CATEGORIES.filter((category) =>
         items.some((item) => item.category === category)
       ).map((category) => ({
@@ -389,7 +435,9 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
     this._category = section as HelperCategory | undefined;
     const allItems = this._getHelperItems(
       this._helperFlows ?? [],
-      this.hass.localize
+      this.hass.localize,
+      this.hass.config,
+      this.hass.locale.language
     );
     const items = search
       ? multiTermSortedSearch(
@@ -419,25 +467,21 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
   };
 
   private _renderHelperRow = (item: PickerComboBoxItem) => {
-    const { id: domain, primary, loaded } = item as HelperPickerItem;
+    const { id: domain, primary, secondary, loaded } = item as HelperPickerItem;
     return html`
       <ha-combo-box-item>
-        <img
+        <ha-domain-icon
           slot="start"
-          loading="lazy"
-          alt=""
-          src=${brandsUrl(
-            {
-              domain,
-              type: "icon",
-              darkOptimized: this.hass.themes?.darkMode,
-            },
-            this.hass.auth.data.hassUrl
-          )}
-          crossorigin="anonymous"
-          referrerpolicy="no-referrer"
-        />
+          style="margin: var(--ha-space-1);"
+          .domain=${domain}
+          brand-fallback
+        ></ha-domain-icon>
         <span slot="headline">${primary}</span>
+        ${
+          secondary
+            ? html`<span slot="supporting-text">${secondary}</span>`
+            : nothing
+        }
         ${
           loaded
             ? html`<ha-icon-next slot="end"></ha-icon-next>`
@@ -616,13 +660,15 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         ha-dialog {
           --dialog-content-padding: 0;
         }
+        /* Keep the size steady while the list is filtered. Small screens
+           show the dialog fullscreen, which this would override. */
+        @media all and (min-width: 451px) and (min-height: 501px) {
+          ha-dialog.picker {
+            --ha-dialog-min-height: min(620px, 90vh);
+          }
+        }
         ha-icon-next {
           width: var(--ha-space-6);
-        }
-        ha-combo-box-item img {
-          width: 24px;
-          height: 24px;
-          object-fit: contain;
         }
         ha-tooltip {
           pointer-events: auto;
@@ -633,20 +679,6 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         .form ha-area-picker {
           display: block;
           margin-top: var(--ha-space-4);
-        }
-        ha-picker-combo-box {
-          height: calc(60vh - 116px);
-        }
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-picker-combo-box {
-            height: calc(
-              100vh -
-                116px - var(--safe-area-inset-top, 0px) - var(
-                  --safe-area-inset-bottom,
-                  0px
-                )
-            );
-          }
         }
       `,
     ];
