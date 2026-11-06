@@ -13,6 +13,7 @@ import {
   mdiRefresh,
   mdiRoomService,
   mdiShuffleDisabled,
+  mdiTimerOffOutline,
 } from "@mdi/js";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
@@ -456,9 +457,17 @@ export class HatScriptGraph extends LitElement {
 
   private _renderWaitNode(
     model: TraceActionNode<WaitAction | WaitForTriggerAction>,
-    graphStart = false
+    graphStart = false,
+    graphEnd = false
   ) {
     const { config: node, path, track } = model;
+    if (model.branches.length) {
+      return this._renderWaitForTriggerBranches(
+        model as TraceActionNode<WaitForTriggerAction>,
+        graphStart,
+        graphEnd
+      );
+    }
     return html`
       <hat-graph-node
         .graphStart=${graphStart}
@@ -478,6 +487,66 @@ export class HatScriptGraph extends LitElement {
         aria-current=${ifDefined(this.selected === path || undefined)}
         tabindex=${model.hasTrace ? "0" : "-1"}
       ></hat-graph-node>
+    `;
+  }
+
+  private _renderWaitForTriggerBranches(
+    node: TraceActionNode<WaitForTriggerAction>,
+    graphStart: boolean,
+    graphEnd: boolean
+  ) {
+    const { config, path, track } = node;
+    const branchIcons = [mdiCallReceived, mdiTimerOffOutline];
+    return html`
+      <hat-graph-branch
+        .end=${graphEnd}
+        tabindex=${node.hasTrace ? "0" : "-1"}
+        @focus=${this._selectNode(config, path, "action")}
+        ?track=${track}
+        ?active=${this.selected === path}
+        .notEnabled=${node.disabled}
+        role="group"
+        aria-label=${ifDefined(this.labels?.[path])}
+        aria-current=${ifDefined(this.selected === path || undefined)}
+        aria-disabled=${ifDefined(node.disabled || undefined)}
+      >
+        <hat-graph-node
+          .graphStart=${graphStart}
+          .iconPath=${ACTION_ICONS.wait_for_trigger}
+          building-block
+          ?track=${track}
+          ?active=${this.selected === path}
+          .notEnabled=${node.disabled}
+          .error=${node.error}
+          slot="head"
+          nofocus
+          aria-hidden="true"
+        ></hat-graph-node>
+        ${node.branches.map((branch, i) =>
+          branch.children.length
+            ? html`<div
+                class="graph-container"
+                ?track=${branch.hasTrace}
+                ?unfinished=${branch.unfinished}
+              >
+                <hat-graph-node
+                  .iconPath=${branchIcons[i]}
+                  ?track=${branch.hasTrace}
+                  ?active=${this.selected === path}
+                  .notEnabled=${branch.disabled}
+                  nofocus
+                  aria-hidden="true"
+                ></hat-graph-node>
+                ${this._renderBranchActions(branch.children, graphEnd)}
+              </div>`
+            : graphEnd
+              ? nothing
+              : html`<hat-graph-spacer
+                  aria-hidden="true"
+                  ?track=${branch.hasTrace}
+                ></hat-graph-spacer>`
+        )}
+      </hat-graph-branch>
     `;
   }
 
