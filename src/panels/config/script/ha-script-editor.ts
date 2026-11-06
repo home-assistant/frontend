@@ -22,8 +22,12 @@ import type { CSSResultGroup, PropertyValues, TemplateResult } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { UndoRedoController } from "../../../common/controllers/undo-redo-controller";
+import {
+  ConfigChangeUndoRedoController,
+  type ConfigChangeStep,
+} from "../../../common/controllers/config-change-undo-redo-controller";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { afterNextRender } from "../../../common/util/render-status";
 import { goBack, navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
 import { promiseTimeout } from "../../../common/util/promise-timeout";
@@ -64,7 +68,12 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../resources/styles";
 import type { Entries } from "../../../types";
 import { isMac } from "../../../util/is_mac";
+import {
+  getUndoRevealTarget,
+  type UndoStepMeta,
+} from "../automation/automation-path";
 import { showEditorToast } from "../automation/editor-toast";
+import { preserveAutomationRowKey } from "../automation/ha-automation-sortable-list-mixin";
 import { showAutomationModeDialog } from "../automation/automation-mode-dialog/show-dialog-automation-mode";
 import { showAutomationSaveDialog } from "../automation/automation-save-dialog/show-dialog-automation-save";
 import { showAutomationSaveTimeoutDialog } from "../automation/automation-save-timeout-dialog/show-dialog-automation-save-timeout";
@@ -102,9 +111,13 @@ export class HaScriptEditor extends SubscribeMixin(
     checkValidation: () => this._checkValidation(),
   };
 
-  private _undoRedoController = new UndoRedoController<ScriptConfig>(this, {
-    apply: (config) => this._applyUndoRedo(config),
-    currentConfig: () => this.config!,
+  private _undoRedoController = new ConfigChangeUndoRedoController<
+    ScriptConfig,
+    UndoStepMeta
+  >(this, {
+    apply: (config, step, undo) => this._applyUndoRedo(config, step, undo),
+    currentConfig: () => this.config,
+    onCopy: preserveAutomationRowKey,
   });
 
   public override get isDirtyState(): boolean {
@@ -443,6 +456,8 @@ export class HaScriptEditor extends SubscribeMixin(
                           `
                         : html`
                             <manual-script-editor
+                              @drag-start=${this._dragStarted}
+                              @drag-end=${this._dragEnded}
                               .hass=${this.hass}
                               .narrow=${this.narrow}
                               .isWide=${this.isWide}
@@ -667,7 +682,13 @@ export class HaScriptEditor extends SubscribeMixin(
 
   private _valueChanged(ev) {
     if (this.config) {
-      this._undoRedoController.commit(this.config);
+      this._undoRedoController.commit(
+        this.config,
+        ev.detail.value,
+        (changes) => ({
+          sidebarRow: this._manualEditor?.findSidebarRow(changes),
+        })
+      );
     }
 
     this.config = ev.detail.value;
@@ -757,10 +778,7 @@ export class HaScriptEditor extends SubscribeMixin(
       return;
     }
 
-    if (this.config) {
-      this._undoRedoController.commit(this.config);
-    }
-
+    // Committed to the undo stack by the value-changed it fires
     this._manualEditor?.addFields();
     this._updateDirtyState({
       config: this.config!,
@@ -917,6 +935,7 @@ export class HaScriptEditor extends SubscribeMixin(
         config: this.config!,
         domain: "script",
         updateConfig: async (config, entityRegistryUpdate) => {
+          this._undoRedoController.commit(this.config!, config);
           this.config = config;
           this.entityRegistryUpdate = entityRegistryUpdate;
           this._updateDirtyState({
@@ -940,6 +959,7 @@ export class HaScriptEditor extends SubscribeMixin(
       showAutomationModeDialog(this, {
         config: this.config!,
         updateConfig: (config) => {
+          this._undoRedoController.commit(this.config!, config);
           this.config = config;
           this._updateDirtyState({
             config,
@@ -1120,14 +1140,32 @@ export class HaScriptEditor extends SubscribeMixin(
     this._manualEditor?.deleteSelectedRow();
   }
 
-  private _applyUndoRedo(config: ScriptConfig) {
-    this._manualEditor?.triggerCloseSidebar();
+  private _applyUndoRedo(
+    config: ScriptConfig,
+    step: ConfigChangeStep<UndoStepMeta>,
+    undo: boolean
+  ) {
     this.config = config;
     this._updateDirtyState({
       config: this.config,
       entityRegistryUpdate: this.entityRegistryUpdate,
     });
+    const { paths, openSidebar } = getUndoRevealTarget(step, undo);
+    this._manualEditor?.revealPaths(paths, openSidebar);
   }
+
+  private _dragStarted = () => {
+    this._undoRedoController.startGroup();
+    this._manualEditor?.dragStarted();
+  };
+
+  // A drag between lists changes both, each after its next render
+  private _dragEnded = () => {
+    afterNextRender(() => {
+      this._undoRedoController.endGroup();
+      this._manualEditor?.dragEnded();
+    });
+  };
 
   private _undo() {
     this._undoRedoController.undo();

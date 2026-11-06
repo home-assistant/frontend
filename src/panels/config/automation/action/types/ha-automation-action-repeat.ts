@@ -8,6 +8,7 @@ import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant } from "../../../../../types";
 import "../ha-automation-action";
 import type { ActionElement } from "../ha-automation-action-row";
+import { AutomationPathController } from "../../automation-path";
 
 import { isTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/ha-form/ha-form";
@@ -39,6 +40,11 @@ export class HaRepeatAction extends LitElement implements ActionElement {
   @property({ type: Boolean, attribute: "sidebar" }) public inSidebar = false;
 
   @property({ type: Boolean, attribute: "indent" }) public indent = false;
+
+  // The form edits the repeat options, so its fields are keyed below "repeat"
+  protected readonly pathController = new AutomationPathController(this, {
+    segment: () => ["repeat"],
+  });
 
   @query("ha-form")
   private _formElement?: HaForm;
