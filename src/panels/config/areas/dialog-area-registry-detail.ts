@@ -175,7 +175,7 @@ class DialogAreaDetail
       [this._name ?? "", ...(this._aliases ?? [])],
       this.hass.locale.language
     );
-    if (request !== this._iconSuggestionRequest) {
+    if (request !== this._iconSuggestionRequest || !this._open) {
       return;
     }
     this._suggestedIcons = icons;
@@ -385,7 +385,7 @@ class DialogAreaDetail
       this._floor = processed.floor;
     }
 
-    if (processed.room) {
+    if (processed.room && (!this._icon || this._iconFollowsName)) {
       this._icon = ROOM_ICONS[processed.room][0];
       this._iconFollowsName = false;
     }

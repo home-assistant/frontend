@@ -54,17 +54,17 @@ const createIconItem = (icon: IconData, prefix: string): PickerComboBoxItem => {
 const loadIcons = async () => {
   ICONS_LOADED = true;
 
-  const iconList = await import("../../build/mdi/iconList.json");
-  ICONS = iconList.default.map((icon) => createIconItem(icon, "mdi"));
+  const sortIcons = (icons: PickerComboBoxItem[]) =>
+    icons.sort((a, b) => caseInsensitiveStringCompare(a.id, b.id));
 
-  const customIconLoads: Promise<PickerComboBoxItem[]>[] = [];
-  Object.keys(customIcons).forEach((iconSet) => {
-    customIconLoads.push(loadCustomIconItems(iconSet));
-  });
-  (await Promise.all(customIconLoads)).forEach((customIconItems) => {
-    ICONS.push(...customIconItems);
-  });
-  ICONS.sort((a, b) => caseInsensitiveStringCompare(a.id, b.id));
+  const iconList = await import("../../build/mdi/iconList.json");
+  const mdiIcons = iconList.default.map((icon) => createIconItem(icon, "mdi"));
+  ICONS = sortIcons([...mdiIcons]);
+
+  const customIconItems = await Promise.all(
+    Object.keys(customIcons).map(loadCustomIconItems)
+  );
+  ICONS = sortIcons([...mdiIcons, ...customIconItems.flat()]);
 };
 
 const loadCustomIconItems = async (
