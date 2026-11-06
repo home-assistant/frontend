@@ -76,6 +76,8 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
 
   @property({ attribute: false }) public editMode?: boolean;
 
+  @property({ attribute: false }) public mode?: FavoriteKind;
+
   @state() private _favoritePositions: number[] = [];
 
   @state() private _favoriteTiltPositions: number[] = [];
@@ -190,17 +192,10 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       return;
     }
 
-    if (kind === "position") {
-      this._api.callService("cover", "set_cover_position", {
-        entity_id: this.stateObj.entity_id,
-        position: favorite,
-      });
-      return;
-    }
-
-    this._api.callService("cover", "set_cover_tilt_position", {
-      entity_id: this.stateObj.entity_id,
-      tilt_position: favorite,
+    fireEvent(this, "cover-command", {
+      service:
+        kind === "position" ? "set_cover_position" : "set_cover_tilt_position",
+      value: favorite,
     });
   }
 
@@ -419,8 +414,10 @@ export class HaMoreInfoCoverFavoritePositions extends LitElement {
       return nothing;
     }
 
-    const supportsPosition = coverSupportsPosition(this.stateObj);
-    const supportsTiltPosition = coverSupportsTiltPosition(this.stateObj);
+    const supportsPosition =
+      coverSupportsPosition(this.stateObj) && this.mode !== "tilt";
+    const supportsTiltPosition =
+      coverSupportsTiltPosition(this.stateObj) && this.mode !== "position";
     const showPositionSection = supportsPosition
       ? this.editMode || this._favoritePositions.length > 0
       : false;
