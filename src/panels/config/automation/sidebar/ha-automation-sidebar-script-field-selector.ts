@@ -8,7 +8,6 @@ import type { LocalizeKeys } from "../../../../common/translations/localize";
 import "../../../../components/ha-dropdown-item";
 import type { ScriptFieldSidebarConfig } from "../../../../data/automation";
 import type { HomeAssistant } from "../../../../types";
-import { isMac } from "../../../../util/is_mac";
 import "../../script/ha-script-field-selector-editor";
 import type HaAutomationConditionEditor from "../action/ha-automation-action-editor";
 import { sidebarEditorStyles } from "../styles";
