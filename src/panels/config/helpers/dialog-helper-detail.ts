@@ -660,8 +660,6 @@ export class DialogHelperDetail extends DirtyStateProviderMixin<
         ha-dialog {
           --dialog-content-padding: 0;
         }
-        /* Keep the size steady while the list is filtered. Small screens
-           show the dialog fullscreen, which this would override. */
         @media all and (min-width: 451px) and (min-height: 501px) {
           ha-dialog.picker {
             --ha-dialog-min-height: min(620px, 90vh);
