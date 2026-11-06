@@ -27,6 +27,7 @@ import { mainWindow } from "../../../../common/dom/get_main_window";
 import { copyToClipboard } from "../../../../common/util/copy-clipboard";
 import { formatNumberWithUnit } from "../../../../common/number/format_number";
 import type { LocalizeFunc } from "../../../../common/translations/localize";
+import type { ChartSelectMode } from "../../../../components/chart/ha-chart-base";
 import "../../../../components/chart/statistics-chart";
 import type { StatisticsChart } from "../../../../components/chart/statistics-chart";
 import "../../../../components/date-picker/ha-date-range-picker";
@@ -213,6 +214,14 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
 
   private get _isSum() {
     return Boolean(this.params!.statistic.has_sum);
+  }
+
+  // A sum can only be corrected one period at a time
+  private get _selectMode(): ChartSelectMode {
+    if (!this._correcting) {
+      return "none";
+    }
+    return this._isSum ? "point" : "range";
   }
 
   private get _validRange() {
@@ -466,14 +475,13 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
                         .startTime=${this._previewStart}
                         .endTime=${this._previewEnd}
                         .period=${this._previewPeriod}
-                        .selectRange=${this._correcting && !this._isSum}
+                        .selectMode=${this._selectMode}
                         .highlight=${this._selection}
                         hide-legend
                         zoom-slider="always"
                         .clickForMoreInfo=${false}
                         height="300px"
-                        @chart-grid-click=${this._chartClicked}
-                        @chart-range-select=${this._chartRangeSelected}
+                        @chart-select=${this._chartSelected}
                       ></statistics-chart>
                     </div>
                     ${this._correcting ? this._renderSelection() : nothing}`
@@ -942,22 +950,7 @@ class DialogStatistic extends DialogMixin<DialogStatisticParams>(LitElement) {
       row && this._isSum ? this._round(row.change ?? 0) : undefined;
   }
 
-  private _chartClicked(ev: HASSDomEvent<HASSDomEvents["chart-grid-click"]>) {
-    if (!this._correcting || this._busy || this._loading) {
-      return;
-    }
-    const time = ev.detail.x;
-    const row = this._rows.find(
-      (stat) => stat.start <= time && time < stat.end
-    );
-    if (row) {
-      this._select(row);
-    }
-  }
-
-  private _chartRangeSelected(
-    ev: HASSDomEvent<HASSDomEvents["chart-range-select"]>
-  ) {
+  private _chartSelected(ev: HASSDomEvent<HASSDomEvents["chart-select"]>) {
     if (!this._correcting || this._busy || this._loading) {
       return;
     }
