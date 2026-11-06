@@ -798,6 +798,7 @@ export interface DistributionCardConfig extends LovelaceCardConfig {
   type: "distribution";
   title?: string;
   entities: (string | DistributionEntityConfig)[];
+  expand_legend?: boolean;
 }
 
 export interface DiscoveredDevicesCardConfig extends LovelaceCardConfig {
