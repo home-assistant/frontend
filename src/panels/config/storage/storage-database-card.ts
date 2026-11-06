@@ -3,7 +3,7 @@ import { LitElement, css, html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import type { HassConfig } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
-import { COLORS_COUNT } from "../../../common/color/colors";
+import { getGraphColorByIndex } from "../../../common/color/colors";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { consume } from "../../../common/decorators/consume";
 import { consumeLocalize } from "../../../common/decorators/consume-context-entry";
@@ -30,25 +30,41 @@ import {
   fullEntitiesContext,
   internationalizationContext,
   statesContext,
+  uiContext,
 } from "../../../data/context";
 import type {
   RecorderDatabaseUsage,
   RecorderTableUsage,
 } from "../../../data/recorder";
 import type { EntityRegistryEntry } from "../../../data/entity/entity_registry";
-import {
-  fetchRecorderDatabaseUsage,
-  groupSmallTables,
-} from "../../../data/recorder";
+import { fetchRecorderDatabaseUsage } from "../../../data/recorder";
 import { showMoreInfoDialog } from "../../../dialogs/more-info/show-ha-more-info-dialog";
 import type { FrontendLocaleData } from "../../../data/translation";
+import type { Themes } from "../../../data/ws-themes";
 import type {
   HomeAssistant,
   HomeAssistantApi,
   HomeAssistantConfig,
   HomeAssistantInternationalization,
+  HomeAssistantUI,
 } from "../../../types";
 import { bytesToString } from "../../../util/bytes-to-string";
+
+// Tables below minShare of the total are summed into otherBytes.
+export const groupSmallTables = (
+  tables: RecorderTableUsage[],
+  minShare = 0.01
+): { tables: RecorderTableUsage[]; otherBytes: number; totalBytes: number } => {
+  const totalBytes = tables.reduce((sum, table) => sum + table.bytes, 0);
+  const large = tables.filter(
+    (table) => table.bytes > 0 && table.bytes >= totalBytes * minShare
+  );
+  return {
+    tables: large,
+    otherBytes: totalBytes - large.reduce((sum, table) => sum + table.bytes, 0),
+    totalBytes,
+  };
+};
 
 interface EntityUsageRow extends DataTableRowData {
   entity_id: string;
@@ -85,10 +101,18 @@ export class StorageDatabaseCard extends LitElement {
   private _api!: HomeAssistantApi;
 
   @state()
+  @consume({ context: uiContext, subscribe: true })
+  @transform<HomeAssistantUI, Themes>({
+    transformer: ({ themes }) => themes,
+  })
+  private _themes!: Themes;
+
+  // Not reactive: read for names and clicks, rows follow the entity registry.
   @consume({ context: statesContext, subscribe: true })
   private _states!: HomeAssistant["states"];
 
   // Includes disabled entities, which have no state but can have recorded data.
+  @state()
   @consume({ context: fullEntitiesContext, subscribe: true })
   private _entityRegistry: EntityRegistryEntry[] = [];
 
@@ -165,7 +189,12 @@ export class StorageDatabaseCard extends LitElement {
               .heading=${this._localize(
                 "ui.panel.config.storage.database.tables"
               )}
-              .segments=${this._tableSegments(usage.tables, this._localize)}
+              .segments=${this._tableSegments(
+                usage.tables,
+                usage.total_bytes,
+                this._localize,
+                this._themes
+              )}
             ></ha-segmented-bar>`
           : nothing
       }
@@ -173,7 +202,7 @@ export class StorageDatabaseCard extends LitElement {
         <ha-data-table
           .narrow=${this.narrow}
           .columns=${this._columns(this._localize, this._locale, this.narrow)}
-          .data=${this._rows(usage, this._states)}
+          .data=${this._rows(usage, this._entityRegistry)}
           .searchLabel=${this._localize(
             "ui.panel.config.storage.database.search"
           )}
@@ -189,7 +218,13 @@ export class StorageDatabaseCard extends LitElement {
   }
 
   private _tableSegments = memoizeOne(
-    (tables: RecorderTableUsage[], localize: LocalizeFunc): Segment[] => {
+    (
+      tables: RecorderTableUsage[],
+      totalBytes: number,
+      localize: LocalizeFunc,
+      _themes: Themes
+    ): Segment[] => {
+      const computedStyles = getComputedStyle(this);
       const grouped = groupSmallTables(tables);
       const segments = grouped.tables.map((table) => ({
         name: table.table,
@@ -201,25 +236,40 @@ export class StorageDatabaseCard extends LitElement {
           bytes: grouped.otherBytes,
         });
       }
-      return segments.map((segment, index) => ({
+      const result: Segment[] = segments.map((segment, index) => ({
         value: segment.bytes,
-        // CSS variables, so a theme change applies without a new report.
-        color: `var(--graph-color-${index + 1}, var(--color-${(index % COLORS_COUNT) + 1}))`,
+        color: getGraphColorByIndex(index, computedStyles),
         label: html`${segment.name}
           <span style="color: var(--secondary-text-color)"
             >${bytesToString(segment.bytes)}</span
           >`,
       }));
+      // SQLite free pages (or PostgreSQL catalogs) are not part of any table.
+      const unusedBytes = totalBytes - grouped.totalBytes;
+      if (unusedBytes > 0) {
+        result.push({
+          value: unusedBytes,
+          color:
+            "var(--ha-bar-background-color, var(--secondary-background-color))",
+          label: html`${localize("ui.panel.config.storage.database.unused_space")}
+            <span style="color: var(--secondary-text-color)"
+              >${bytesToString(unusedBytes)}</span
+            >`,
+        });
+      }
+      return result;
     }
   );
 
+  // Keyed on the entity registry, not the states, so renames update the
+  // names without rebuilding the rows on every state change.
   private _rows = memoizeOne(
     (
       usage: RecorderDatabaseUsage,
-      states: HomeAssistant["states"]
+      _entityRegistry: EntityRegistryEntry[]
     ): EntityUsageRow[] =>
       usage.entities.map((entity) => {
-        const stateObj = states[entity.entity_id];
+        const stateObj = this._states[entity.entity_id];
         return {
           ...entity,
           name: stateObj ? computeStateName(stateObj) : entity.entity_id,

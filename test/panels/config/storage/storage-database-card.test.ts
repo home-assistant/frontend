@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { groupSmallTables } from "../../src/data/recorder";
+import { groupSmallTables } from "../../../../src/panels/config/storage/storage-database-card";
 
 describe("groupSmallTables", () => {
   it("sums tables below the share into other bytes", () => {
@@ -20,6 +20,7 @@ describe("groupSmallTables", () => {
         { table: "statistics", bytes: 95 },
       ],
       otherBytes: 5,
+      totalBytes: 1000,
     });
   });
 
@@ -27,6 +28,7 @@ describe("groupSmallTables", () => {
     expect(groupSmallTables([{ table: "states", bytes: 10 }])).toEqual({
       tables: [{ table: "states", bytes: 10 }],
       otherBytes: 0,
+      totalBytes: 10,
     });
   });
 });

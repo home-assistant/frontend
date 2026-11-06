@@ -1,7 +1,7 @@
 import type { Connection } from "home-assistant-js-websocket";
 import { DEFAULT_ENTITY_NAME } from "../common/entity/entity_name_config";
 import type { HaDurationData } from "../components/ha-duration-input";
-import type { HomeAssistant } from "../types";
+import type { HomeAssistant, HomeAssistantApi } from "../types";
 import { firstWeekday } from "../common/datetime/first_weekday";
 
 export interface RecorderInfo {
@@ -176,43 +176,21 @@ export interface RecorderEntityUsage {
   bytes: number;
 }
 
-export interface RecorderEventTypeUsage {
-  event_type: string;
-  events: number;
-  bytes: number;
-}
-
 export interface RecorderDatabaseUsage {
   generated_at: string;
   total_bytes: number;
   tables: RecorderTableUsage[];
   entities: RecorderEntityUsage[];
-  event_types: RecorderEventTypeUsage[];
 }
 
 export const fetchRecorderDatabaseUsage = (
-  hass: Pick<HomeAssistant, "callWS">,
+  api: Pick<HomeAssistantApi, "callWS">,
   refresh = false
 ) =>
-  hass.callWS<RecorderDatabaseUsage>({
+  api.callWS<RecorderDatabaseUsage>({
     type: "recorder/database_usage",
     refresh,
   });
-
-// Tables below minShare of the total are summed into otherBytes.
-export const groupSmallTables = (
-  tables: RecorderTableUsage[],
-  minShare = 0.01
-): { tables: RecorderTableUsage[]; otherBytes: number } => {
-  const total = tables.reduce((sum, table) => sum + table.bytes, 0);
-  const large = tables.filter(
-    (table) => table.bytes > 0 && table.bytes >= total * minShare
-  );
-  return {
-    tables: large,
-    otherBytes: total - large.reduce((sum, table) => sum + table.bytes, 0),
-  };
-};
 
 export type EntityRecordingDisabler = "user";
 
