@@ -5,6 +5,7 @@ import type { CSSResultGroup, PropertyValues } from "lit";
 import { LitElement, css, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { deepEqual } from "../../common/util/deep-equal";
 import { consume } from "../../common/decorators/consume";
 import {
   consumeLocalize,
@@ -72,21 +73,33 @@ class DialogJoinMediaPlayers extends LitElement {
 
   public showDialog(params: JoinMediaPlayersDialogParams): void {
     this._entityId = params.entityId;
+    this._error = undefined;
     this._open = true;
   }
 
   protected willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
-    if (!changedProps.has("_entityId") || !this._entityId) {
+    if (
+      !this._entityId ||
+      (!changedProps.has("_entityId") && !changedProps.has("_states"))
+    ) {
       return;
     }
     const entityId = this._entityId;
     const stateObj = this._states[entityId] as MediaPlayerEntity | undefined;
+    const members = stateObj?.attributes.group_members ?? [];
+    // The group with its leader first, or just the opened player when alone
+    const groupMembers =
+      members.length > 1 && members.includes(entityId) ? members : [entityId];
+    const opened = changedProps.has("_entityId");
 
-    this._groupMembers =
-      stateObj?.attributes.group_members?.filter((id) => id !== entityId) || [];
-
-    this._selectedEntities = this._groupMembers;
+    if (!opened && deepEqual(groupMembers, this._groupMembers)) {
+      return;
+    }
+    this._groupMembers = groupMembers;
+    if (opened || !this._submitting) {
+      this._selectedEntities = groupMembers;
+    }
   }
 
   public closeDialog() {
@@ -98,8 +111,6 @@ class DialogJoinMediaPlayers extends LitElement {
     this._entityId = undefined;
     this._selectedEntities = [];
     this._groupMembers = [];
-    this._submitting = false;
-    this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -124,6 +135,7 @@ class DialogJoinMediaPlayers extends LitElement {
           <ha-button
             appearance="plain"
             slot="actionItems"
+            .disabled=${!!this._submitting}
             @click=${this._selectAll}
           >
             ${this._localize("ui.card.media_player.select_all")}
@@ -135,42 +147,49 @@ class DialogJoinMediaPlayers extends LitElement {
             : nothing
         }
         <div class="content">
-          <ha-media-player-toggle
-            .entityId=${entityId}
-            checked
-            disabled
-          ></ha-media-player-toggle>
-          ${this._mediaPlayerEntities(
-            entityId,
-            this._entities,
-            this._states
-          ).map(
+          ${this._rows(entityId).map(
             (id) =>
               html`<ha-media-player-toggle
                 .entityId=${id}
                 .checked=${this._selectedEntities.includes(id)}
+                .disabled=${!!this._submitting || this._isOnlyMember(id)}
+                .leader=${this._isLeader(id)}
+                .showVolume=${this._groupMembers.includes(id)}
                 @change=${this._handleSelectedChange}
               ></ha-media-player-toggle>`
           )}
         </div>
         <ha-dialog-footer slot="footer">
-          <ha-button
-            appearance="plain"
-            slot="secondaryAction"
-            @click=${this.closeDialog}
-          >
-            ${this._localize("ui.common.cancel")}
-          </ha-button>
-          <ha-button
-            .disabled=${!!this._submitting}
-            slot="primaryAction"
-            @click=${this._submit}
-          >
-            ${this._localize("ui.common.apply")}
+          <ha-button slot="primaryAction" @click=${this.closeDialog}>
+            ${this._localize("ui.common.close")}
           </ha-button>
         </ha-dialog-footer>
       </ha-dialog>
     `;
+  }
+
+  // The group first, leader on top, then the players that could join it
+  private _rows(entityId: string): string[] {
+    const groupMembers = this._groupMembers.filter((id) => this._states[id]);
+    return [
+      ...groupMembers,
+      ...this._mediaPlayerEntities(
+        entityId,
+        this._entities,
+        this._states
+      ).filter((id) => !groupMembers.includes(id)),
+    ];
+  }
+
+  private _isLeader(entityId: string): boolean {
+    return this._groupMembers.length > 1 && this._groupMembers[0] === entityId;
+  }
+
+  // A player alone has no group to leave
+  private _isOnlyMember(entityId: string): boolean {
+    return (
+      this._groupMembers.length === 1 && this._groupMembers[0] === entityId
+    );
   }
 
   private _mediaPlayerEntities = memoizeOne(
@@ -210,11 +229,16 @@ class DialogJoinMediaPlayers extends LitElement {
     if (!this._entityId) {
       return;
     }
-    this._selectedEntities = this._mediaPlayerEntities(
-      this._entityId,
-      this._entities,
-      this._states
-    );
+    this._applySelection([
+      ...new Set([
+        ...this._selectedEntities,
+        ...this._mediaPlayerEntities(
+          this._entityId,
+          this._entities,
+          this._states
+        ),
+      ]),
+    ]);
   }
 
   private _handleSelectedChange(ev) {
@@ -224,30 +248,40 @@ class DialogJoinMediaPlayers extends LitElement {
     if (ev.target.checked) {
       selectedEntities.push(ev.target.entityId);
     }
-    this._selectedEntities = selectedEntities;
+    this._applySelection(selectedEntities);
   }
 
-  private async _submit(): Promise<void> {
-    if (!this._entityId) {
+  private async _applySelection(selectedEntities: string[]): Promise<void> {
+    if (!this._entityId || this._submitting) {
       return;
     }
 
+    const previous = this._selectedEntities;
+    const hasAdded = selectedEntities.some((id) => !previous.includes(id));
+    const removed = previous.filter((id) => !selectedEntities.includes(id));
+
+    this._selectedEntities = selectedEntities;
     this._error = undefined;
+    // Stays set if the dialog closes, so a reopened dialog can't send changes
+    // while this call is still running.
     this._submitting = true;
     try {
-      // If media is already playing
-      await mediaPlayerJoin(
-        this._api.callService,
-        this._entityId,
-        this._selectedEntities
-      );
+      if (hasAdded) {
+        // Join through the group leader and send every member: some
+        // integrations form a new group with only the players they receive
+        // when the target isn't the leader.
+        const leader = this._groupMembers[0];
+        await mediaPlayerJoin(
+          this._api.callService,
+          leader,
+          selectedEntities.filter((id) => id !== leader)
+        );
+      }
       await Promise.all(
-        this._groupMembers
-          .filter((entityId) => !this._selectedEntities.includes(entityId))
-          .map((entityId) => mediaPlayerUnjoin(this._api.callService, entityId))
+        removed.map((id) => mediaPlayerUnjoin(this._api.callService, id))
       );
-      this.closeDialog();
     } catch (err) {
+      this._selectedEntities = this._groupMembers;
       this._error = extractApiErrorMessage(err);
     }
     this._submitting = false;
