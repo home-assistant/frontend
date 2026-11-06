@@ -8,6 +8,7 @@ import { createRef, ref } from "lit/directives/ref";
 import { repeat } from "lit/directives/repeat";
 import memoizeOne from "memoize-one";
 import { consume } from "../common/decorators/consume";
+import { transform } from "../common/decorators/transform";
 import { getDeviceAreaId } from "../common/entity/context/get_device_context";
 import {
   FilterPanelController,
@@ -74,9 +75,17 @@ export class HaFilterFloorAreas extends LitElement {
   @state()
   private _entities?: ContextType<typeof fullEntitiesContext>;
 
-  @consume({ context: statesContext, subscribe: true })
+  // Only a state being added or removed can change the state-only entities,
+  // so plain state updates keep the previous set and don't rerender
   @state()
-  private _states?: ContextType<typeof statesContext>;
+  @consume({ context: statesContext, subscribe: true })
+  @transform<ContextType<typeof statesContext>, Set<string>>({
+    transformer: function (this: HaFilterFloorAreas, states) {
+      const ids = new Set(Object.keys(states));
+      return deepEqual(ids, this._stateIds) ? this._stateIds : ids;
+    },
+  })
+  private _stateIds?: Set<string>;
 
   @property({ attribute: false }) public value?: FloorAreasFilterValue;
 
@@ -107,8 +116,7 @@ export class HaFilterFloorAreas extends LitElement {
       (this.value?.no_area &&
         (properties.has("_devices") ||
           properties.has("_entities") ||
-          (properties.has("_states") &&
-            this._stateIdsChanged(properties.get("_states")))))
+          (this.type !== "device" && properties.has("_stateIds"))))
     ) {
       this._findRelated();
     }
@@ -441,30 +449,12 @@ export class HaFilterFloorAreas extends LitElement {
       .map((entity) => entity.entity_id);
     // Entities without a registry entry can't have an area
     const registered = new Set(entities.map((entity) => entity.entity_id));
-    for (const entityId of Object.keys(this._states || {})) {
+    for (const entityId of this._stateIds || []) {
       if (!registered.has(entityId)) {
         items.push(entityId);
       }
     }
     return items;
-  }
-
-  // Only a state being added or removed can change the state-only entities,
-  // so skip the lookup on plain state updates
-  private _stateIdsChanged(
-    oldStates?: ContextType<typeof statesContext>
-  ): boolean {
-    if (this.type === "device") {
-      return false;
-    }
-    if (!this._states || !oldStates) {
-      return true;
-    }
-    const ids = Object.keys(this._states);
-    return (
-      ids.length !== Object.keys(oldStates).length ||
-      ids.some((id) => !(id in oldStates))
-    );
   }
 
   private _handleClearFilterKeydown(ev: KeyboardEvent) {
