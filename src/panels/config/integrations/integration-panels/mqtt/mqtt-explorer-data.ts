@@ -31,8 +31,9 @@ const messagesSize = (messages: Iterable<MQTTExplorerMessage>): number => {
 
 /**
  * Removes the oldest messages when their total size exceeds the budget.
- * Messages of other topics go first; the newest message of `keepTopic` is
- * never removed. Mutates `messages` and returns the number removed.
+ * The newest message of every topic is never removed, the tree previews it.
+ * Older messages of `keepTopic` go last. Mutates `messages` and returns the
+ * number removed.
  */
 export const trimMessages = (
   messages: Map<string, ExplorerMessage[]>,
@@ -48,31 +49,30 @@ export const trimMessages = (
   }
   const target = maxSize * TRIM_TARGET;
   const candidates: ExplorerMessage[] = [];
-  const kept: ExplorerMessage[] = [];
+  const keptTopicHistory: ExplorerMessage[] = [];
   for (const [topic, topicMessages] of messages) {
-    if (topic === keepTopic) {
-      kept.push(...topicMessages.slice(1));
-    } else {
-      candidates.push(...topicMessages);
-    }
+    (topic === keepTopic ? keptTopicHistory : candidates).push(
+      ...topicMessages.slice(1)
+    );
   }
   candidates.sort((a, b) => a.id - b.id);
-  kept.sort((a, b) => a.id - b.id);
+  keptTopicHistory.sort((a, b) => a.id - b.id);
   const removed = new Set<number>();
-  for (const message of [...candidates, ...kept]) {
+  for (const message of [...candidates, ...keptTopicHistory]) {
     if (size <= target) {
       break;
     }
     removed.add(message.id);
     size -= messageSize(message);
   }
+  if (!removed.size) {
+    return 0;
+  }
   for (const [topic, topicMessages] of messages) {
     const remaining = topicMessages.filter(
       (message) => !removed.has(message.id)
     );
-    if (!remaining.length) {
-      messages.delete(topic);
-    } else if (remaining.length !== topicMessages.length) {
+    if (remaining.length !== topicMessages.length) {
       messages.set(topic, remaining);
     }
   }
@@ -138,9 +138,66 @@ export const parseJsonPayload = (payload: string): unknown => {
   }
 };
 
-export const formatPayload = (payload: string): string => {
-  const parsed = parseJsonPayload(payload);
-  return parsed === undefined ? payload : JSON.stringify(parsed, null, 2);
+const JSON_WHITESPACE = new Set([" ", "\t", "\n", "\r"]);
+
+/**
+ * Indents a JSON payload without parsing it into values, so numbers, duplicate
+ * keys and escapes stay exactly as received. Returns undefined when the payload
+ * is not a JSON object or array.
+ */
+export const prettyPrintJson = (payload: string): string | undefined => {
+  if (parseJsonPayload(payload) === undefined) {
+    return undefined;
+  }
+  const text = payload.trim();
+  let out = "";
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  const newline = () => `\n${"  ".repeat(depth)}`;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (inString) {
+      out += char;
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (JSON_WHITESPACE.has(char)) {
+      continue;
+    }
+    if (char === "{" || char === "[") {
+      let next = i + 1;
+      while (JSON_WHITESPACE.has(text[next])) {
+        next++;
+      }
+      if (text[next] === (char === "{" ? "}" : "]")) {
+        out += char + text[next];
+        i = next;
+        continue;
+      }
+      depth++;
+      out += char + newline();
+    } else if (char === "}" || char === "]") {
+      depth--;
+      out += newline() + char;
+    } else if (char === ",") {
+      out += `,${newline()}`;
+    } else if (char === ":") {
+      out += ": ";
+    } else {
+      if (char === '"') {
+        inString = true;
+      }
+      out += char;
+    }
+  }
+  return out;
 };
 
 const IDENTIFIER = /^[A-Za-z_$][\w$]*$/;

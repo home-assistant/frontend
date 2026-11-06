@@ -1,20 +1,27 @@
-import { mdiChevronDown, mdiChevronRight } from "@mdi/js";
+import type { ContextType } from "@lit/context";
 import type { CSSResultGroup, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
+import { consume } from "../../../../../common/decorators/consume";
 import { storage } from "../../../../../common/decorators/storage";
 import { formatDurationDigital } from "../../../../../common/datetime/format_duration";
-import { relativeTime } from "../../../../../common/datetime/relative_time";
 import { formatNumber } from "../../../../../common/number/format_number";
 import "../../../../../components/ha-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-switch";
 import "../../../../../components/input/ha-input";
+import "../../../../../components/item/ha-list-item-option";
+import "../../../../../components/list/ha-list-selectable-virtualized";
+import type { HaListSelectableVirtualized } from "../../../../../components/list/ha-list-selectable-virtualized";
+import type { HaListVirtualizedItem } from "../../../../../components/list/ha-list-virtualized";
+import {
+  connectionContext,
+  internationalizationContext,
+} from "../../../../../data/context";
 import type {
   MQTTExplorerEvent,
   MQTTExplorerTopic,
@@ -22,7 +29,6 @@ import type {
 } from "../../../../../data/mqtt";
 import { subscribeMQTTExplorer } from "../../../../../data/mqtt";
 import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant } from "../../../../../types";
 import { showToast } from "../../../../../util/toast";
 import { getWsErrorMessage } from "../../../../../util/ws-error";
 import type { ExplorerMessage, TopicTreeNode } from "./mqtt-explorer-data";
@@ -34,15 +40,25 @@ import {
   trimMessages,
 } from "./mqtt-explorer-data";
 import "./mqtt-explorer-topic";
+import "./mqtt-explorer-tree-row";
+import type { ExplorerRow } from "./mqtt-explorer-tree-row";
 
 const MAX_BUSIEST_ROWS = 200;
+// Row height including its border, used to size the virtualized list.
+const ROW_HEIGHT = 41;
+const MAX_VISIBLE_ROWS = 15;
 // The backend sends an event every interval, also when nothing changed.
 const STALL_CHECK_MS = 5000;
 const STALLED_INTERVALS = 3;
 
 @customElement("mqtt-explorer-card")
 class MqttExplorerCard extends LitElement {
-  @property({ attribute: false }) public hass!: HomeAssistant;
+  @state()
+  @consume({ context: internationalizationContext, subscribe: true })
+  private _i18n!: ContextType<typeof internationalizationContext>;
+
+  @consume({ context: connectionContext, subscribe: true })
+  private _connection!: ContextType<typeof connectionContext>;
 
   @state()
   @storage({
@@ -113,27 +129,68 @@ class MqttExplorerCard extends LitElement {
       .slice(0, MAX_BUSIEST_ROWS)
   );
 
+  private _rows = memoizeOne(
+    (
+      version: number,
+      busiest: boolean,
+      expanded: Set<string>,
+      selected?: string
+    ): ExplorerRow[] => {
+      const row = (
+        name: string,
+        path: string,
+        depth: number,
+        topic?: MQTTExplorerTopic,
+        node?: TopicTreeNode
+      ): ExplorerRow => ({
+        id: path,
+        interactive: true,
+        name,
+        depth,
+        topic,
+        node,
+        expanded: expanded.has(path),
+        selected: topic !== undefined && path === selected,
+        preview: topic ? this._messages.get(topic.topic)?.[0]?.payload : "",
+      });
+      if (busiest) {
+        return this._busiestTopics(version).map((topic) =>
+          row(topic.topic, topic.topic, 0, topic)
+        );
+      }
+      const rows: ExplorerRow[] = [];
+      const addChildren = (node: TopicTreeNode, depth: number) => {
+        for (const child of sortedChildren(node)) {
+          rows.push(row(child.name, child.path, depth, child.topic, child));
+          if (expanded.has(child.path)) {
+            addChildren(child, depth + 1);
+          }
+        }
+      };
+      addChildren(this._tree(version), 0);
+      return rows;
+    }
+  );
+
   protected render(): TemplateResult {
     const selectedTopic = this._selected
       ? this._topics.get(this._selected)
       : undefined;
+    const localize = this._i18n.localize;
 
     return html`
-      <ha-card
-        .header=${this.hass.localize("ui.panel.config.mqtt.explorer.title")}
-      >
+      <ha-card .header=${localize("ui.panel.config.mqtt.explorer.title")}>
         <div class="card-content">
           <p class="secondary">
-            ${this.hass.localize("ui.panel.config.mqtt.explorer.description")}
+            ${localize("ui.panel.config.mqtt.explorer.description")}
           </p>
           <div class="controls">
             <ha-input
-              .label=${this.hass.localize(
-                "ui.panel.config.mqtt.explorer.filter"
-              )}
+              .label=${localize("ui.panel.config.mqtt.explorer.filter")}
               .value=${this._filter}
               .disabled=${this._unsubscribe !== undefined || this._starting}
               @change=${this._handleFilter}
+              @keydown=${this._filterKeyDown}
             ></ha-input>
             <ha-button
               appearance="plain"
@@ -141,16 +198,14 @@ class MqttExplorerCard extends LitElement {
               .loading=${this._starting}
               @click=${this._toggle}
             >
-              ${this.hass.localize(
+              ${localize(
                 this._unsubscribe
                   ? "ui.panel.config.mqtt.explorer.stop"
                   : "ui.panel.config.mqtt.explorer.start"
               )}
             </ha-button>
             <ha-switch .checked=${this._busiest} @change=${this._handleBusiest}
-              >${this.hass.localize(
-                "ui.panel.config.mqtt.explorer.busiest_first"
-              )}</ha-switch
+              >${localize("ui.panel.config.mqtt.explorer.busiest_first")}</ha-switch
             >
           </div>
           ${this._renderTotals()}
@@ -167,30 +222,9 @@ class MqttExplorerCard extends LitElement {
                   <div class="tree">
                     ${
                       this._topics.size
-                        ? html`<div role="list">
-                            ${
-                              this._busiest
-                                ? this._busiestTopics(this._version).map(
-                                    (topic) =>
-                                      html`<div role="listitem">
-                                        ${this._renderRow(
-                                          topic.topic,
-                                          topic.topic,
-                                          0,
-                                          topic
-                                        )}
-                                      </div>`
-                                  )
-                                : this._renderChildren(
-                                    this._tree(this._version),
-                                    0
-                                  )
-                            }
-                          </div>`
+                        ? this._renderTree()
                         : html`<p class="secondary empty">
-                            ${this.hass.localize(
-                              "ui.panel.config.mqtt.explorer.no_topics"
-                            )}
+                            ${localize("ui.panel.config.mqtt.explorer.no_topics")}
                           </p>`
                     }
                   </div>
@@ -215,26 +249,58 @@ class MqttExplorerCard extends LitElement {
     `;
   }
 
+  private _renderTree(): TemplateResult {
+    const rows = this._currentRows();
+    const truncated = this._busiest && this._topics.size > MAX_BUSIEST_ROWS;
+    return html`
+      <ha-list-selectable-virtualized
+        controlled
+        aria-label=${this._i18n.localize("ui.panel.config.mqtt.explorer.topics")}
+        style=${styleMap({
+          height: `${Math.min(rows.length, MAX_VISIBLE_ROWS) * ROW_HEIGHT}px`,
+        })}
+        .rows=${rows}
+        .rowRenderer=${this._renderRow}
+        @ha-list-item-selected=${this._rowSelected}
+        @keydown=${this._treeKeyDown}
+        @mqtt-explorer-toggle-expanded=${this._expanderClicked}
+      ></ha-list-selectable-virtualized>
+      ${
+        truncated
+          ? html`<p class="secondary note">
+              ${this._i18n.localize(
+                "ui.panel.config.mqtt.explorer.rows_truncated",
+                {
+                  shown: formatNumber(MAX_BUSIEST_ROWS, this._i18n.locale),
+                  total: formatNumber(this._topics.size, this._i18n.locale),
+                }
+              )}
+            </p>`
+          : nothing
+      }
+    `;
+  }
+
   private _renderTotals(): TemplateResult | typeof nothing {
+    const localize = this._i18n.localize;
+    const locale = this._i18n.locale;
     if (!this._total) {
       return this._unsubscribe
         ? html`<p class="totals">
-            ${this.hass.localize("ui.panel.config.mqtt.explorer.waiting")}
+            ${localize("ui.panel.config.mqtt.explorer.waiting")}
           </p>`
         : nothing;
     }
     const elapsed = Math.max(0, Math.round(this._now - this._started));
     return html`
       <p class="totals">
-        ${this.hass.localize("ui.panel.config.mqtt.explorer.totals", {
+        ${localize("ui.panel.config.mqtt.explorer.totals", {
           messages: this._formatRate(this._total.message_rate),
-          kilobytes: formatNumber(
-            this._total.byte_rate / 1024,
-            this.hass.locale,
-            { maximumFractionDigits: 1 }
-          ),
+          kilobytes: formatNumber(this._total.byte_rate / 1024, locale, {
+            maximumFractionDigits: 1,
+          }),
           topics: this._total.topics,
-          elapsed: formatDurationDigital(this.hass.locale, {
+          elapsed: formatDurationDigital(locale, {
             hours: Math.floor(elapsed / 3600),
             minutes: Math.floor((elapsed % 3600) / 60),
             seconds: elapsed % 60,
@@ -242,15 +308,14 @@ class MqttExplorerCard extends LitElement {
         })}
         ${
           this._total.dropped_messages
-            ? html`<br />${this.hass.localize(
-                  "ui.panel.config.mqtt.explorer.dropped",
-                  { count: this._total.dropped_messages }
-                )}`
+            ? html`<br />${localize("ui.panel.config.mqtt.explorer.dropped", {
+                  count: this._total.dropped_messages,
+                })}`
             : nothing
         }
         ${
           this._total.dropped_payloads
-            ? html`<br />${this.hass.localize(
+            ? html`<br />${localize(
                   "ui.panel.config.mqtt.explorer.dropped_payloads",
                   { count: this._total.dropped_payloads }
                 )}`
@@ -258,154 +323,37 @@ class MqttExplorerCard extends LitElement {
         }
         ${
           this._trimmed
-            ? html`<br />${this.hass.localize(
-                  "ui.panel.config.mqtt.explorer.trimmed",
-                  { count: this._trimmed }
-                )}`
+            ? html`<br />${localize("ui.panel.config.mqtt.explorer.trimmed", {
+                  count: this._trimmed,
+                })}`
             : nothing
         }
       </p>
     `;
   }
 
-  private _renderChildren(
-    node: TopicTreeNode,
-    depth: number
-  ): TemplateResult[] {
-    return sortedChildren(node).map((child) => {
-      const expanded = this._expanded.has(child.path);
-      return html`
-        <div role="listitem">
-          ${this._renderRow(child.name, child.path, depth, child.topic, child)}
-          ${
-            expanded
-              ? html`<div role="list">
-                  ${this._renderChildren(child, depth + 1)}
-                </div>`
-              : nothing
-          }
-        </div>
-      `;
-    });
-  }
-
-  private _renderRow(
-    name: string,
-    path: string,
-    depth: number,
-    topic?: MQTTExplorerTopic,
-    node?: TopicTreeNode
-  ): TemplateResult {
-    const hasChildren = node !== undefined && node.children.size > 0;
-    const expanded = this._expanded.has(path);
-    const lastMessage = topic
-      ? this._messages.get(topic.topic)?.[0]
-      : undefined;
-    const selected = topic !== undefined && path === this._selected;
+  private _renderRow = (item: HaListVirtualizedItem): TemplateResult => {
+    const row = item as ExplorerRow;
+    const hasChildren = Boolean(row.node?.children.size);
     return html`
-      <div
-        class=${classMap({ row: true, selected })}
-        style=${styleMap({ "padding-inline-start": `${depth * 16}px` })}
+      <ha-list-item-option
+        .selected=${row.selected}
+        aria-expanded=${ifDefined(
+          hasChildren ? (row.expanded ? "true" : "false") : undefined
+        )}
+        style="border-bottom: 1px solid var(--divider-color)"
       >
-        ${
-          hasChildren
-            ? html`<ha-icon-button
-                .path=${expanded ? mdiChevronDown : mdiChevronRight}
-                .label=${this.hass.localize(
-                  expanded
-                    ? "ui.panel.config.mqtt.explorer.collapse"
-                    : "ui.panel.config.mqtt.explorer.expand"
-                )}
-                data-path=${path}
-                @click=${this._toggleExpanded}
-              ></ha-icon-button>`
-            : html`<span class="spacer"></span>`
-        }
-        <button
-          class="label"
-          data-path=${path}
-          data-topic=${topic ? "1" : ""}
-          aria-expanded=${ifDefined(
-            !topic && hasChildren ? (expanded ? "true" : "false") : undefined
-          )}
-          aria-current=${ifDefined(selected ? "true" : undefined)}
-          @click=${this._rowClicked}
-        >
-          <span class="main">
-            <span class="name" dir="ltr"
-              >${
-                name ||
-                this.hass.localize("ui.panel.config.mqtt.explorer.empty_level")
-              }</span
-            >
-            ${
-              topic
-                ? html`
-                    ${
-                      topic.retained
-                        ? html`<span class="badge"
-                            >${this.hass.localize(
-                              "ui.panel.config.mqtt.explorer.retained"
-                            )}</span
-                          >`
-                        : nothing
-                    }
-                    <span class="preview" dir="ltr"
-                      >${lastMessage?.payload ?? ""}</span
-                    >
-                  `
-                : nothing
-            }
-          </span>
-          <span class="meta topics">
-            ${
-              hasChildren
-                ? this.hass.localize(
-                    "ui.panel.config.mqtt.explorer.topic_count",
-                    {
-                      count: node.topicCount,
-                    }
-                  )
-                : nothing
-            }
-            ${
-              topic && !hasChildren
-                ? this.hass.localize(
-                    "ui.panel.config.mqtt.explorer.subscriptions",
-                    { count: topic.subscriptions }
-                  )
-                : nothing
-            }
-          </span>
-          <span class="meta numeric">
-            ${this.hass.localize("ui.panel.config.mqtt.explorer.rate", {
-              messages: formatNumber(
-                node?.messages ?? topic?.messages ?? 0,
-                this.hass.locale
-              ),
-              rate: this._formatRate(
-                node?.messageRate ?? topic?.message_rate ?? 0
-              ),
-            })}
-          </span>
-          <span class="meta ago">
-            ${
-              topic
-                ? relativeTime(
-                    new Date(topic.last_received * 1000),
-                    this.hass.locale,
-                    new Date(this._now * 1000)
-                  )
-                : nothing
-            }
-          </span>
-        </button>
-      </div>
+        <mqtt-explorer-tree-row
+          slot="content"
+          .row=${row}
+          .now=${this._now}
+        ></mqtt-explorer-tree-row>
+      </ha-list-item-option>
     `;
-  }
+  };
 
   private _formatRate(rate: number): string {
-    return formatNumber(rate, this.hass.locale, { maximumFractionDigits: 1 });
+    return formatNumber(rate, this._i18n.locale, { maximumFractionDigits: 1 });
   }
 
   private _handleFilter(ev: InputEvent): void {
@@ -416,22 +364,66 @@ class MqttExplorerCard extends LitElement {
     this._busiest = (ev.target as HTMLInputElement).checked;
   }
 
-  private _toggleExpanded(ev: Event): void {
-    const path = (ev.currentTarget as HTMLElement).dataset.path!;
+  private _filterKeyDown(ev: KeyboardEvent): void {
+    if (ev.key !== "Enter" || ev.isComposing) {
+      return;
+    }
+    this._filter = (ev.target as HTMLInputElement).value;
+    if (this._filter && !this._unsubscribe) {
+      this._toggle();
+    }
+  }
+
+  private _setExpanded(path: string, expand: boolean): void {
+    if (this._expanded.has(path) === expand) {
+      return;
+    }
     const expanded = new Set(this._expanded);
-    if (!expanded.delete(path)) {
+    if (expand) {
       expanded.add(path);
+    } else {
+      expanded.delete(path);
     }
     this._expanded = expanded;
   }
 
-  private _rowClicked(ev: Event): void {
-    const target = ev.currentTarget as HTMLElement;
-    if (target.dataset.topic) {
-      this._selected = target.dataset.path;
-    } else {
-      this._toggleExpanded(ev);
+  private _expanderClicked(ev: CustomEvent<{ path: string }>): void {
+    const path = ev.detail.path;
+    this._setExpanded(path, !this._expanded.has(path));
+  }
+
+  private _currentRows(): ExplorerRow[] {
+    return this._rows(
+      this._version,
+      this._busiest,
+      this._expanded,
+      this._selected
+    );
+  }
+
+  private _rowSelected(ev: CustomEvent<number>): void {
+    const row = this._currentRows()[ev.detail];
+    if (!row) {
+      return;
     }
+    if (row.topic) {
+      this._selected = row.id;
+    } else {
+      this._setExpanded(row.id, !row.expanded);
+    }
+  }
+
+  private _treeKeyDown(ev: KeyboardEvent): void {
+    if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") {
+      return;
+    }
+    const list = ev.currentTarget as HaListSelectableVirtualized;
+    const row = this._currentRows()[list.getActiveItemIndex()];
+    if (!row?.node?.children.size) {
+      return;
+    }
+    ev.preventDefault();
+    this._setExpanded(row.id, ev.key === "ArrowRight");
   }
 
   private _closeDetail(): void {
@@ -503,13 +495,13 @@ class MqttExplorerCard extends LitElement {
     let unsubscribe: () => void;
     try {
       unsubscribe = await subscribeMQTTExplorer(
-        this.hass,
+        this._connection.connection,
         this._handleEvent,
         this._filter
       );
     } catch (err: unknown) {
       showToast(this, {
-        message: this.hass.localize(
+        message: this._i18n.localize(
           "ui.panel.config.mqtt.explorer.start_failed",
           { error: getWsErrorMessage(err) ?? String(err) }
         ),
@@ -540,7 +532,7 @@ class MqttExplorerCard extends LitElement {
     if (
       !stalled ||
       this._resubscribing ||
-      !this.hass.connection.connected ||
+      !this._connection.connected ||
       Date.now() - this._lastEvent < this._interval * STALLED_INTERVALS * 1000
     ) {
       return;
@@ -548,7 +540,7 @@ class MqttExplorerCard extends LitElement {
     this._resubscribing = true;
     try {
       const unsubscribe = await subscribeMQTTExplorer(
-        this.hass,
+        this._connection.connection,
         this._handleEvent,
         this._filter
       );
@@ -602,8 +594,6 @@ class MqttExplorerCard extends LitElement {
         }
         .tree {
           container-type: inline-size;
-          max-height: 640px;
-          overflow-y: auto;
           border: 1px solid var(--divider-color);
           border-radius: var(--ha-border-radius-md);
         }
@@ -611,97 +601,19 @@ class MqttExplorerCard extends LitElement {
           padding: var(--ha-space-4);
           margin: 0;
         }
-        .row {
-          display: flex;
-          align-items: center;
-          min-height: 40px;
-          border-bottom: 1px solid var(--divider-color);
+        ha-list-selectable-virtualized {
+          --ha-row-item-min-height: 40px;
+          --ha-row-item-padding-block: var(--ha-space-1);
+          --ha-row-item-padding-inline: var(--ha-space-2);
+          --ha-row-item-gap: 0;
         }
-        .row.selected {
-          background-color: rgba(var(--rgb-primary-color), 0.12);
-        }
-        .row ha-icon-button {
-          --ha-icon-button-size: 32px;
-          flex-shrink: 0;
-        }
-        .spacer {
-          width: 32px;
-          flex-shrink: 0;
-        }
-        .label {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) 7em 9em 8em;
-          flex: 1;
-          align-items: center;
-          gap: var(--ha-space-3);
-          min-width: 0;
-          padding: var(--ha-space-1) var(--ha-space-2);
-          border: none;
-          background: none;
-          color: var(--primary-text-color);
-          font: inherit;
-          text-align: start;
-          cursor: pointer;
-        }
-        .label:hover {
-          background-color: var(--secondary-background-color);
-        }
-        .main {
-          display: flex;
-          align-items: center;
-          gap: var(--ha-space-2);
-          min-width: 0;
-        }
-        .name {
-          flex-shrink: 0;
-          max-width: 100%;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          font-weight: var(--ha-font-weight-medium);
-          white-space: nowrap;
-        }
-        .preview {
-          flex: 1;
-          min-width: 0;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          font-family: var(--ha-font-family-code);
+        .note {
+          margin: 0;
+          padding: var(--ha-space-2) var(--ha-space-4);
           font-size: var(--ha-font-size-s);
-          color: var(--secondary-text-color);
-        }
-        .meta {
-          white-space: nowrap;
-          font-size: var(--ha-font-size-s);
-          color: var(--secondary-text-color);
-        }
-        .meta {
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .numeric,
-        .ago {
-          text-align: end;
-        }
-        .badge {
-          padding: 0 var(--ha-space-2);
-          border-radius: var(--ha-border-radius-pill);
-          background-color: var(--secondary-background-color);
-          font-size: var(--ha-font-size-xs);
-          white-space: nowrap;
         }
         mqtt-explorer-topic {
           padding: var(--ha-space-2) 0;
-        }
-        @container (max-width: 560px) {
-          .label {
-            grid-template-columns: minmax(0, 1fr) auto;
-          }
-          .preview,
-          .topics,
-          .ago {
-            display: none;
-          }
         }
       `,
     ];

@@ -4,7 +4,7 @@ import type { ExplorerMessage } from "../../../../../../src/panels/config/integr
 import {
   buildTopicTree,
   diffJsonPayloads,
-  formatPayload,
+  prettyPrintJson,
   sortedChildren,
   trimMessages,
 } from "../../../../../../src/panels/config/integrations/integration-panels/mqtt/mqtt-explorer-data";
@@ -60,11 +60,37 @@ describe("buildTopicTree", () => {
   });
 });
 
-describe("formatPayload", () => {
-  it("pretty prints JSON and leaves other payloads alone", () => {
-    expect(formatPayload('{"a":1}')).toBe('{\n  "a": 1\n}');
-    expect(formatPayload("online")).toBe("online");
-    expect(formatPayload("{not json")).toBe("{not json");
+describe("prettyPrintJson", () => {
+  it("indents JSON objects and arrays", () => {
+    expect(prettyPrintJson('{"a":1,"b":[1,2],"c":{}}')).toBe(
+      '{\n  "a": 1,\n  "b": [\n    1,\n    2\n  ],\n  "c": {}\n}'
+    );
+    expect(prettyPrintJson(" [ ] ")).toBe("[]");
+  });
+
+  it("matches JSON.stringify for regular payloads", () => {
+    const payload = '{"state": "ON", "list": [{"x": -1.5}, null, true]}';
+    expect(prettyPrintJson(payload)).toBe(
+      JSON.stringify(JSON.parse(payload), null, 2)
+    );
+  });
+
+  it("keeps big numbers, duplicate keys and escapes as received", () => {
+    expect(prettyPrintJson('{"id": 12345678901234567890}')).toBe(
+      '{\n  "id": 12345678901234567890\n}'
+    );
+    expect(prettyPrintJson('{"a": 1, "a": 2}')).toBe(
+      '{\n  "a": 1,\n  "a": 2\n}'
+    );
+    expect(prettyPrintJson('{"s": "a, \\"{b}\\": [c]\\\\"}')).toBe(
+      '{\n  "s": "a, \\"{b}\\": [c]\\\\"\n}'
+    );
+  });
+
+  it("returns undefined for payloads that aren't a JSON object or array", () => {
+    expect(prettyPrintJson("online")).toBeUndefined();
+    expect(prettyPrintJson("42")).toBeUndefined();
+    expect(prettyPrintJson("{not json")).toBeUndefined();
   });
 });
 
@@ -159,31 +185,41 @@ describe("trimMessages", () => {
     expect(ids(messages)).toEqual({ a: [5, 3], b: [4] });
   });
 
-  it("drops topics without messages left", () => {
+  it("keeps the newest message of every topic", () => {
     const messages = new Map([
       ["a", history("a", [1])],
       ["b", history("b", [2, 3])],
     ]);
     expect(trimMessages(messages, 2500)).toBe(1);
-    expect(ids(messages)).toEqual({ b: [3, 2] });
+    expect(ids(messages)).toEqual({ a: [1], b: [3] });
   });
 
-  it("removes other topics before the kept topic", () => {
+  it("stays over the budget rather than remove the newest messages", () => {
+    const messages = new Map([
+      ["a", history("a", [1, 2])],
+      ["b", history("b", [3])],
+      ["c", history("c", [4])],
+    ]);
+    expect(trimMessages(messages, 1000)).toBe(1);
+    expect(ids(messages)).toEqual({ a: [2], b: [3], c: [4] });
+  });
+
+  it("removes the history of other topics before the kept topic", () => {
     const messages = new Map([
       ["a", history("a", [1, 2, 3])],
       ["b", history("b", [4, 5])],
     ]);
     expect(trimMessages(messages, 4000, "a")).toBe(2);
-    expect(ids(messages)).toEqual({ a: [3, 2, 1] });
+    expect(ids(messages)).toEqual({ a: [3, 2], b: [5] });
   });
 
-  it("never removes the newest message of the kept topic", () => {
+  it("removes the history of the kept topic last", () => {
     const messages = new Map([
       ["a", history("a", [1, 2, 3])],
-      ["b", history("b", [4])],
+      ["b", history("b", [4, 5])],
     ]);
     expect(trimMessages(messages, 500, "a")).toBe(3);
-    expect(ids(messages)).toEqual({ a: [3] });
+    expect(ids(messages)).toEqual({ a: [3], b: [5] });
   });
 
   it("counts the per message overhead for small payloads", () => {

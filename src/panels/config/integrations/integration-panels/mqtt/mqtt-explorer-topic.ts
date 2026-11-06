@@ -4,12 +4,14 @@ import type { PropertyValues, TemplateResult } from "lit";
 import { css, html, LitElement, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { consume } from "../../../../../common/decorators/consume";
+import { storage } from "../../../../../common/decorators/storage";
 import { transform } from "../../../../../common/decorators/transform";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { formatTimeWithSeconds } from "../../../../../common/datetime/format_time";
 import { formatNumber } from "../../../../../common/number/format_number";
 import { copyToClipboard } from "../../../../../common/util/copy-clipboard";
 import "../../../../../components/ha-icon-button";
+import "../../../../../components/ha-switch";
 import "../../../../../components/item/ha-list-item-option";
 import "../../../../../components/list/ha-list-selectable";
 import {
@@ -24,7 +26,7 @@ import type {
 import { bytesToString } from "../../../../../util/bytes-to-string";
 import { showToast } from "../../../../../util/toast";
 import type { ExplorerMessage } from "./mqtt-explorer-data";
-import { diffJsonPayloads, formatPayload } from "./mqtt-explorer-data";
+import { diffJsonPayloads, prettyPrintJson } from "./mqtt-explorer-data";
 
 const CHANGE_SIGNS = { added: "+", removed: "−", changed: "~" } as const;
 
@@ -48,6 +50,14 @@ class MqttExplorerTopic extends LitElement {
 
   @state() private _selectedId?: number;
 
+  @state()
+  @storage({
+    key: "panel-dev-mqtt-explorer-pretty",
+    state: true,
+    subscribe: false,
+  })
+  private _pretty = false;
+
   protected willUpdate(changedProps: PropertyValues<this>): void {
     if (
       changedProps.has("topic") &&
@@ -64,6 +74,9 @@ class MqttExplorerTopic extends LitElement {
     );
     const selected = this.messages[index];
     const previous = this.messages[index + 1];
+    const pretty = selected ? prettyPrintJson(selected.payload) : undefined;
+    const shownPayload =
+      this._pretty && pretty !== undefined ? pretty : selected?.payload;
 
     return html`
       <div class="header">
@@ -126,6 +139,18 @@ class MqttExplorerTopic extends LitElement {
                 <h3>
                   ${this._i18n.localize("ui.panel.config.mqtt.explorer.payload")}
                 </h3>
+                ${
+                  pretty !== undefined
+                    ? html`<ha-switch
+                        class="pretty"
+                        .checked=${this._pretty}
+                        @change=${this._handlePretty}
+                        >${this._i18n.localize(
+                          "ui.panel.config.mqtt.explorer.pretty_print"
+                        )}</ha-switch
+                      >`
+                    : nothing
+                }
                 <ha-icon-button
                   .path=${mdiContentCopy}
                   .label=${this._i18n.localize(
@@ -134,7 +159,7 @@ class MqttExplorerTopic extends LitElement {
                   @click=${this._copyPayload}
                 ></ha-icon-button>
               </div>
-              <pre dir="ltr">${formatPayload(selected.payload)}</pre>
+              <pre dir="ltr">${shownPayload}</pre>
               ${
                 selected.truncated
                   ? html`<p class="secondary">
@@ -231,6 +256,10 @@ class MqttExplorerTopic extends LitElement {
     this._selectedId = this.messages[ev.detail]?.id;
   }
 
+  private _handlePretty(ev: Event): void {
+    this._pretty = (ev.target as HTMLInputElement).checked;
+  }
+
   private async _copyPayload(): Promise<void> {
     const selected =
       this.messages.find((msg) => msg.id === this._selectedId) ??
@@ -274,7 +303,12 @@ class MqttExplorerTopic extends LitElement {
       margin: var(--ha-space-4) 0 var(--ha-space-2);
     }
     .section-header h3 {
+      flex: 1;
       margin: var(--ha-space-2) 0 0;
+    }
+    .pretty {
+      margin-top: var(--ha-space-2);
+      font-size: var(--ha-font-size-s);
     }
     .messages {
       display: block;

@@ -1,3 +1,4 @@
+import type { Connection } from "home-assistant-js-websocket";
 import type { HomeAssistant } from "../types";
 
 export interface MQTTMessage {
@@ -109,13 +110,11 @@ export interface MQTTExplorerEvent {
 }
 
 export const subscribeMQTTExplorer = (
-  hass: HomeAssistant,
+  connection: Connection,
   callback: (event: MQTTExplorerEvent) => void,
-  topic: string,
-  interval?: number
+  topic: string
 ) =>
-  hass.connection.subscribeMessage<MQTTExplorerEvent>(callback, {
+  connection.subscribeMessage<MQTTExplorerEvent>(callback, {
     type: "mqtt/explorer/subscribe",
     topic,
-    interval,
   });

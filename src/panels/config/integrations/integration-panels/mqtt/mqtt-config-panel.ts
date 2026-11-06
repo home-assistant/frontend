@@ -138,7 +138,7 @@ export class MQTTConfigPanel extends LitElement {
             ${this._renderMyNetworkCard(deviceIds.size, entityCount)}
             ${this._renderNavigationCard()} ${this._renderPublishCard()}
             <mqtt-subscribe-card .hass=${this.hass}></mqtt-subscribe-card>
-            <mqtt-explorer-card .hass=${this.hass}></mqtt-explorer-card>
+            <mqtt-explorer-card></mqtt-explorer-card>
           </div>
         </div>
       </hass-subpage>
