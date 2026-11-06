@@ -1979,7 +1979,7 @@ export class HaDataTable extends LitElement {
           align-self: stretch;
           margin-top: -12px;
           margin-inline-start: auto;
-          /* The rows' icon button size, inherited by the slotted ones */
+          /* The rows' icon button size, inherited by the actions */
           --_button-size: var(--data-table-group-actions-button-size, 48px);
           --ha-icon-button-size: var(--_button-size);
           --mdc-icon-size: var(--data-table-group-actions-icon-size, 24px);
@@ -1992,9 +1992,9 @@ export class HaDataTable extends LitElement {
           position: sticky;
           inset-inline-end: 0;
           cursor: default;
-          /* Don't pass the group name's weight on to slotted menus */
+          /* Don't pass the group name's weight on to the actions */
           font-weight: var(--ha-font-weight-normal);
-          /* Inherited by the slotted icon buttons, like the rows' icon cells */
+          /* Inherited by the actions, like the rows' icon cells */
           color: var(
             --data-table-group-actions-color,
             var(--secondary-text-color)
