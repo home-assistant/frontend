@@ -792,8 +792,18 @@ class HuiPowerSankeyCard
       ? getPowerFromState(this._states[homeStatRate])
       : undefined;
 
+    const hasGridPower = gridValues.length > 0;
+    const hasSolarPower = prefs.energy_sources.some(
+      (source) => source.type === "solar" && source.stat_rate
+    );
     const flows = computeConsumptionSingle(
-      { from_grid, to_grid, solar, to_battery, from_battery },
+      {
+        from_grid: hasGridPower ? from_grid : undefined,
+        to_grid: hasGridPower ? to_grid : undefined,
+        solar: hasSolarPower ? solar : undefined,
+        to_battery,
+        from_battery,
+      },
       { measured: hasMeasured ? measured : undefined, used_total: homePower }
     );
 

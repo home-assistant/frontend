@@ -747,7 +747,7 @@ describe("Measured battery flows", () => {
     );
   });
 
-  it("keeps solar charging without a solar source out of the grid", () => {
+  it("keeps solar charging without a solar source out of the home load", () => {
     assert.deepEqual(
       computeConsumptionSingle(
         { from_grid: 5, to_grid: 0, solar: undefined, ...noTotals },
@@ -766,9 +766,55 @@ describe("Measured battery flows", () => {
         solar_to_battery: 2,
         solar_to_grid: 0,
         used_solar: 0,
-        used_grid: 3,
+        used_grid: 5,
         used_battery: 1,
-        used_total: 4,
+        used_total: 6,
+      }
+    );
+  });
+
+  it("keeps grid charging out of the home load without a grid import meter", () => {
+    const { consumption } = computeConsumptionData(
+      {
+        solar: { 1: 3 },
+        grid_to_battery: { 1: 2 },
+        solar_to_battery: { 1: 0 },
+        battery_to_home: { 1: 1 },
+        battery_to_grid: { 1: 0 },
+        to_battery_totals: {},
+        from_battery_totals: {},
+        total: {},
+        timestamps: [1],
+      },
+      undefined
+    );
+    assert.equal(consumption.used_total[1], 4);
+    assert.equal(consumption.used_solar[1], 3);
+    assert.equal(consumption.grid_to_battery[1], 2);
+  });
+
+  it("keeps battery to grid without an export meter out of the home load", () => {
+    assert.deepEqual(
+      computeConsumptionSingle(
+        { from_grid: 3, to_grid: undefined, solar: 0, ...noTotals },
+        {
+          measured: {
+            grid_to_battery: 0,
+            solar_to_battery: 0,
+            battery_to_home: 0,
+            battery_to_grid: 1,
+          },
+        }
+      ),
+      {
+        grid_to_battery: 0,
+        battery_to_grid: 1,
+        solar_to_battery: 0,
+        solar_to_grid: 0,
+        used_solar: 0,
+        used_grid: 3,
+        used_battery: 0,
+        used_total: 3,
       }
     );
   });
